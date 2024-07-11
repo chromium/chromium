@@ -37,6 +37,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/webauthn/android/mock_webauthn_cred_man_delegate.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -61,6 +62,7 @@ using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::Return;
 using ::testing::WithArg;
+using webauthn::MockWebAuthnCredManDelegate;
 using webauthn::WebAuthnCredManDelegate;
 using IsOriginSecure = TouchToFillView::IsOriginSecure;
 
@@ -99,23 +101,6 @@ struct MockTouchToFillView : TouchToFillView {
               (override));
   MOCK_METHOD(void, OnCredentialSelected, (const UiCredential&));
   MOCK_METHOD(void, OnDismiss, ());
-};
-
-struct MockWebAuthnCredManDelegate : public WebAuthnCredManDelegate {
-  MockWebAuthnCredManDelegate()
-      : WebAuthnCredManDelegate(/*web_contents=*/nullptr) {}
-
-  MOCK_METHOD(WebAuthnCredManDelegate::State, HasPasskeys, (), (override));
-
-  MOCK_METHOD(void,
-              TriggerCredManUi,
-              (WebAuthnCredManDelegate::RequestPasswords),
-              (override));
-
-  MOCK_METHOD(void,
-              SetRequestCompletionCallback,
-              (base::RepeatingCallback<void(bool)>),
-              (override));
 };
 
 struct MakeUiCredentialParams {

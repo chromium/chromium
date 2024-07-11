@@ -362,6 +362,10 @@ void TabAndroid::InitializeAutofillIfNecessary(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(autofill::AutofillProvider::FromWebContents(web_contents_.get()));
   if (autofill::ContentAutofillClient::FromWebContents(web_contents_.get())) {
+    // We need to initialize the keyboard suppressor before creating any
+    // AutofillManagers and after the autofill client is available.
+    autofill::AutofillProvider::FromWebContents(web_contents_.get())
+        ->MaybeInitKeyboardSuppressor();
     return;
   }
   android_autofill::AndroidAutofillClient::CreateForWebContents(

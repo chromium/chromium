@@ -19,6 +19,10 @@ class AndroidAutofillProviderTestApi {
     return provider_->current_field_.id;
   }
 
+  TouchToFillKeyboardSuppressor& keyboard_suppressor() {
+    return *provider_->keyboard_suppressor_;
+  }
+
  private:
   const raw_ref<AndroidAutofillProvider> provider_;
 };

@@ -7,11 +7,12 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "components/android_autofill/browser/autofill_provider.h"
 #include "components/android_autofill/browser/android_autofill_provider_bridge.h"
+#include "components/android_autofill/browser/autofill_provider.h"
 #include "components/android_autofill/browser/form_data_android.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
@@ -247,6 +248,32 @@ class AndroidAutofillProvider : public AutofillProvider,
   // TODO(crbug.com/40284788): Remove once a fix is landed on the renderer side.
   void SetBottomSheetShownOff();
 
+  // Stops the keyboard suppression. Called when the CredMan UI was closed. If
+  // the UI was dismissed without selecting a passkey, `success` will be false.
+  void OnCredManUiClosed(bool success);
+
+  // Returns true if CredMan *may* be shown for the given field. It only returns
+  // false if the sheet was already shown or prefetching concluded and indicated
+  // that no passkeys are available.
+  bool IntendsToShowCredMan(content::RenderFrameHost* rfh) const;
+
+  // Returns true if a passkey request is pending  or succeeded for the given
+  // `rfh` and the CredMan UI should be shown when the given `field` is focused.
+  bool ShouldShowCredManForField(const FormFieldData& field,
+                                 content::RenderFrameHost* rfh);
+
+  // Triggers a prefetched passkey request which opens a bottom sheet.
+  void ShowCredManSheet(content::RenderFrameHost* rfh);
+
+  enum class CredManBottomSheetLifecycle {
+    kNotShown,   // The sheet hasn't been shown. Does not indicate it will be.
+    kIsShowing,  // The sheet was triggered. Does not guarantee it's visible.
+    kClosed,     // The sheet was dismissed and shouldn't be shown again.
+  };
+
+  CredManBottomSheetLifecycle credman_sheet_status_ =
+      CredManBottomSheetLifecycle::kNotShown;
+
   // This is used by the keyboard suppressor. We update it with the result of
   // the platform method call `showAutofillDialog`. Since we are not notified
   // when the bottom sheet is dismissed, we set a timer to set it to `false`
@@ -315,6 +342,8 @@ class AndroidAutofillProvider : public AutofillProvider,
 
   // Used for handling keyboard suppression in case there's a bottom sheet.
   std::unique_ptr<TouchToFillKeyboardSuppressor> keyboard_suppressor_;
+
+  base::WeakPtrFactory<AndroidAutofillProvider> weak_ptr_factory_{this};
 };
 }  // namespace autofill
 

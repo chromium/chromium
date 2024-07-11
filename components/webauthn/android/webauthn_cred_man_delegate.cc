@@ -49,7 +49,7 @@ void WebAuthnCredManDelegate::TriggerCredManUi(
                                  !filling_callback_.is_null());
 }
 
-WebAuthnCredManDelegate::State WebAuthnCredManDelegate::HasPasskeys() {
+WebAuthnCredManDelegate::State WebAuthnCredManDelegate::HasPasskeys() const {
   return has_passkeys_;
 }
 

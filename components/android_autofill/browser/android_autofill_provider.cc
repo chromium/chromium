@@ -22,6 +22,7 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
@@ -30,6 +31,7 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/webauthn/android/webauthn_cred_man_delegate_factory.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -44,7 +46,10 @@ using ::autofill::mojom::SubmissionSource;
 using ::base::android::JavaRef;
 using ::content::BrowserThread;
 using ::password_manager::PasswordForm;
+using ::webauthn::WebAuthnCredManDelegate;
+using ::webauthn::WebAuthnCredManDelegateFactory;
 using FieldInfo = ::autofill::AndroidAutofillProviderBridge::FieldInfo;
+using RequestPasswords = WebAuthnCredManDelegate::RequestPasswords;
 
 constexpr int kMinimumSdkVersionForPrefillRequests =
     base::android::SdkVersion::SDK_VERSION_U;
@@ -85,6 +90,21 @@ bool ShouldCachePasswordForm(const PasswordForm& pw_form) {
          (pw_form.IsLikelyChangePasswordForm() &&
           base::FeatureList::IsEnabled(
               features::kAndroidAutofillPrefillRequestsForChangePassword));
+}
+
+content::RenderFrameHost* GetRenderFrameHost(AutofillManager* manager) {
+  return static_cast<ContentAutofillDriver&>(manager->driver())
+      .render_frame_host();
+}
+
+WebAuthnCredManDelegate* GetCredManDelegate(content::RenderFrameHost* rfh) {
+  return WebAuthnCredManDelegateFactory::GetFactory(
+             content::WebContents::FromRenderFrameHost(rfh))
+      ->GetRequestDelegate(rfh);
+}
+
+WebAuthnCredManDelegate* GetCredManDelegate(AutofillManager* manager) {
+  return GetCredManDelegate(GetRenderFrameHost(manager));
 }
 
 constexpr base::TimeDelta kWasBottomSheetShownFlipTimeout =
@@ -144,6 +164,7 @@ void AndroidAutofillProvider::DidFinishNavigation(
       !navigation_handle->IsSameDocument()) {
     OnHidePopup(manager_.get());
     last_queried_field_rfh_id_ = {};
+    credman_sheet_status_ = CredManBottomSheetLifecycle::kNotShown;
   }
 }
 
@@ -164,9 +185,8 @@ void AndroidAutofillProvider::OnAskForValuesToFill(
   // in response, see OnAutofillAvailable.
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  static_cast<ContentAutofillDriver&>(manager->driver())
-      .render_frame_host()
-      ->ForEachRenderFrameHost([this, &field](content::RenderFrameHost* rfh) {
+  GetRenderFrameHost(manager)->ForEachRenderFrameHost(
+      [this, &field](content::RenderFrameHost* rfh) {
         LocalFrameToken frame_token(rfh->GetFrameToken().value());
         if (frame_token == field.host_frame()) {
           last_queried_field_rfh_id_ = rfh->GetGlobalId();
@@ -452,6 +472,11 @@ void AndroidAutofillProvider::OnFocusOnFormField(
     const FormFieldData& field) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  if (ShouldShowCredManForField(field, GetRenderFrameHost(manager))) {
+    ShowCredManSheet(GetRenderFrameHost(manager));
+    // TODO: crbug.com/332471454 - Ensure this doesn't mess up WebView metrics.
+  }
+
   FieldInfo field_info;
   if (!IsLinkedForm(form) ||
       !form_->GetSimilarFieldIndex(field, &field_info.index)) {
@@ -564,12 +589,19 @@ bool AndroidAutofillProvider::IntendsToShowBottomSheet(
     FormGlobalId form,
     FieldGlobalId field,
     const FormData& form_data) const {
-  return !has_used_cached_form_ && cached_data_ && cached_data_->cached_form &&
-         form == cached_data_->cached_form->form().global_id();
+  return IntendsToShowCredMan(GetRenderFrameHost(&manager)) ||
+         (ArePrefillRequestsSupported() && !has_used_cached_form_ &&
+          cached_data_ && cached_data_->cached_form &&
+          form == cached_data_->cached_form->form().global_id());
 }
 
 bool AndroidAutofillProvider::WasBottomSheetJustShown(
     AutofillManager& manager) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillVirtualViewStructureAndroid) &&
+      credman_sheet_status_ == CredManBottomSheetLifecycle::kIsShowing) {
+    return true;
+  }
   // TODO(crbug.com/40284788) Remove the timer once a fix is landed on the
   // renderer side.
   was_shown_bottom_sheet_timer_.Start(
@@ -582,9 +614,59 @@ void AndroidAutofillProvider::SetBottomSheetShownOff() {
   was_bottom_sheet_just_shown_ = false;
 }
 
+bool AndroidAutofillProvider::IntendsToShowCredMan(
+    content::RenderFrameHost* rfh) const {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillVirtualViewStructureAndroid)) {
+    return false;
+  }
+  const WebAuthnCredManDelegate* delegate = GetCredManDelegate(rfh);
+  if (!delegate ||
+      delegate->HasPasskeys() == WebAuthnCredManDelegate::State::kNoPasskeys) {
+    return false;  // Requests finished with empty passkey list.
+  }
+  // Don't show more than once per page.
+  return credman_sheet_status_ == CredManBottomSheetLifecycle::kNotShown;
+}
+
+bool AndroidAutofillProvider::ShouldShowCredManForField(
+    const FormFieldData& field,
+    content::RenderFrameHost* rfh) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillVirtualViewStructureAndroid)) {
+    return false;
+  }
+  // TODO: crbug.com/352241673 - use field.parsed_autocomplete() when populated.
+  std::optional<AutocompleteParsingResult> parsed_autocomplete =
+      ParseAutocompleteAttribute(field.autocomplete_attribute());
+  if (!parsed_autocomplete || !parsed_autocomplete->webauthn) {
+    return false;  // Only trigger conditional requests if a site prefers it.
+  }
+  // TODO: crbug.com/332471454 - Trigger Chrome no-passkey sheet?
+  WebAuthnCredManDelegate* delegate = GetCredManDelegate(rfh);
+  if (!delegate ||
+      delegate->HasPasskeys() != WebAuthnCredManDelegate::State::kHasPasskeys) {
+    return false;  // Requests either not finished or has empty passkey list.
+  }
+  return credman_sheet_status_ == CredManBottomSheetLifecycle::kNotShown;
+}
+
+void AndroidAutofillProvider::ShowCredManSheet(content::RenderFrameHost* rfh) {
+  CHECK_EQ(credman_sheet_status_, CredManBottomSheetLifecycle::kNotShown);
+  if (WebAuthnCredManDelegate* delegate = GetCredManDelegate(rfh)) {
+    credman_sheet_status_ = CredManBottomSheetLifecycle::kIsShowing;
+    delegate->SetRequestCompletionCallback(
+        base::BindRepeating(&AndroidAutofillProvider::OnCredManUiClosed,
+                            weak_ptr_factory_.GetWeakPtr()));
+    delegate->TriggerCredManUi(RequestPasswords(false));
+  }
+}
+
 void AndroidAutofillProvider::MaybeInitKeyboardSuppressor() {
   // Return early if prefill requests are not supported.
-  if (!ArePrefillRequestsSupported()) {
+  if (!ArePrefillRequestsSupported() &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillVirtualViewStructureAndroid)) {
     return;
   }
   keyboard_suppressor_ = std::make_unique<TouchToFillKeyboardSuppressor>(
@@ -616,8 +698,17 @@ gfx::RectF AndroidAutofillProvider::ToClientAreaBound(
 }
 
 void AndroidAutofillProvider::Reset() {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillVirtualViewStructureAndroid) &&
+      manager_) {
+    if (WebAuthnCredManDelegate* delegate =
+            GetCredManDelegate(manager_.get())) {
+      delegate->SetRequestCompletionCallback(base::DoNothing());
+    }
+  }
   manager_ = nullptr;
   form_.reset();
+  credman_sheet_status_ = CredManBottomSheetLifecycle::kNotShown;
   current_field_ = {};
   check_submission_ = false;
   was_shown_bottom_sheet_timer_.Stop();
@@ -630,8 +721,8 @@ void AndroidAutofillProvider::Reset() {
 
   // Resets the Java instance and hides the datalist popup if there is one.
   bridge_->Reset();
-  // TODO(crbug.com/40283554): Also send an unfocus event to make sure that the
-  // Autofill session is truly terminated.
+  // TODO(crbug.com/40283554): Also send an unfocus event to make sure that
+  // the Autofill session is truly terminated.
 }
 
 void AndroidAutofillProvider::CancelSession() {
@@ -663,8 +754,8 @@ void AndroidAutofillProvider::MaybeSendPrefillRequest(
     return;
   }
 
-  // Return if there has already been a cache request or if there is already an
-  // ongoing Autofill session.
+  // Return if there has already been a cache request or if there is already
+  // an ongoing Autofill session.
   if (cached_data_ || form_) {
     return;
   }
@@ -689,8 +780,8 @@ void AndroidAutofillProvider::MaybeSendPrefillRequest(
       overrides &&
       base::FeatureList::IsEnabled(
           features::kAndroidAutofillUsePwmPredictionsForOverrides)) {
-    // If we manage to match the fields that the password form parser identified
-    // as username and password fields, override their types.
+    // If we manage to match the fields that the password form parser
+    // identified as username and password fields, override their types.
     cached_data_->password_parser_overrides = *std::move(overrides);
     cached_data_->cached_form->UpdateFieldTypes(
         cached_data_->password_parser_overrides.ToFieldTypeMap());
@@ -731,8 +822,8 @@ AndroidAutofillProvider::PasswordParserOverrides::FromLoginForm(
   }
   // A login form must always have a username field and a password field.
   if (!result.username_field_id || !result.password_field_id) {
-    // TODO(crbug.com/41496211): This should never be reachable. Remove once it
-    // is clear how it can happen.
+    // TODO(crbug.com/41496211): This should never be reachable. Remove once
+    // it is clear how it can happen.
     SCOPED_CRASH_KEY_NUMBER("crbug1523259", "pw_form.username_id",
                             pw_form.username_element_renderer_id.value());
     SCOPED_CRASH_KEY_NUMBER("crbug1523259", "pw_form.password_id",
@@ -763,5 +854,13 @@ AndroidAutofillProvider::CachedData&
 AndroidAutofillProvider::CachedData::operator=(CachedData&&) = default;
 
 AndroidAutofillProvider::CachedData::~CachedData() = default;
+
+void AndroidAutofillProvider::OnCredManUiClosed(bool success) {
+  credman_sheet_status_ = CredManBottomSheetLifecycle::kClosed;
+  if (keyboard_suppressor_) {
+    keyboard_suppressor_->Unsuppress();
+  }
+  // TODO: crbug.com/332471454 - Open the keyboard on failure.
+}
 
 }  // namespace autofill

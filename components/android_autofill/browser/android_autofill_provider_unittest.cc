@@ -22,6 +22,7 @@
 #include "components/android_autofill/browser/form_data_android.h"
 #include "components/android_autofill/browser/form_data_android_test_api.h"
 #include "components/android_autofill/browser/mock_form_field_data_android_bridge.h"
+#include "components/autofill/android/touch_to_fill_keyboard_suppressor.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
@@ -33,6 +34,9 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/webauthn/android/mock_webauthn_cred_man_delegate.h"
+#include "components/webauthn/android/webauthn_cred_man_delegate_factory.h"
+#include "components/webauthn/android/webauthn_cred_man_delegate_factory_test_api.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -56,6 +60,8 @@ using ::testing::NiceMock;
 using ::testing::Optional;
 using ::testing::Property;
 using ::testing::ResultOf;
+using ::testing::Return;
+using ::testing::SaveArg;
 using ::testing::Truly;
 using ::testing::UnorderedElementsAre;
 using ::testing::WithArg;
@@ -136,6 +142,23 @@ FormData CreateTestChangePasswordForm() {
                            /*value=*/"", FormControlType::kInputPassword),
        CreateTestFormField(/*label=*/"Password", /*name=*/"password2",
                            /*value=*/"", FormControlType::kInputPassword)});
+  return form;
+}
+
+FormData CreateTestWebAuthnPasswordFormData() {
+  std::vector<FormFieldData> fields;
+  fields.push_back(CreateTestFormField(
+      /*label=*/"Username:", /*name=*/"username",
+      /*value=*/"", FormControlType::kInputText, /*autocomplete=*/"webauthn"));
+  fields.push_back(
+      CreateTestFormField(/*label=*/"Password:", /*name=*/"password",
+                          /*value=*/"", FormControlType::kInputPassword));
+  FormData form;
+  form.set_renderer_id(test::MakeFormRendererId());
+  form.set_url(GURL("https://foo.com/form.html"));
+  form.set_action(GURL("https://foo.com/submit.html"));
+  form.set_main_frame_origin(url::Origin::Create(form.url()));
+  form.set_fields(std::move(fields));
   return form;
 }
 
@@ -234,7 +257,8 @@ content::RenderFrameHost* NavigateAndCommitFrame(content::RenderFrameHost* rfh,
 
 }  // namespace
 
-class AndroidAutofillProviderTest : public content::RenderViewHostTestHarness {
+class AndroidAutofillProviderTestBase
+    : public content::RenderViewHostTestHarness {
  public:
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
@@ -259,11 +283,6 @@ class AndroidAutofillProviderTest : public content::RenderViewHostTestHarness {
 
     // Create the provider.
     AndroidAutofillProvider::CreateForWebContents(web_contents());
-
-    // Navigation forces the creation of an AndroidAutofillManager for the main
-    // frame.
-    NavigateAndCommit(GURL("about:blank"));
-    FocusWebContentsOnMainFrame();
   }
 
   void TearDown() override {
@@ -307,6 +326,18 @@ class AndroidAutofillProviderTest : public content::RenderViewHostTestHarness {
   raw_ptr<MockAndroidAutofillProviderBridge> provider_bridge_ = nullptr;
   base::test::ScopedFeatureList feature_list_{
       features::kAndroidAutofillCancelSessionOnNavigation};
+};
+
+class AndroidAutofillProviderTest : public AndroidAutofillProviderTestBase {
+ public:
+  void SetUp() override {
+    AndroidAutofillProviderTestBase::SetUp();
+
+    // Navigation forces the creation of an AndroidAutofillManager for the main
+    // frame.
+    NavigateAndCommit(GURL("about:blank"));
+    FocusWebContentsOnMainFrame();
+  }
 };
 
 // Tests that AndroidAutofillManager keeps track of the predictions it is
@@ -830,6 +861,141 @@ TEST_F(AndroidAutofillProviderTest, CancelSessionOnNavigation) {
 
   EXPECT_CALL(provider_bridge(), CancelSession());
   android_autofill_manager().Reset();
+}
+
+class AndroidAutofillProviderWithCredManTest
+    : public AndroidAutofillProviderTestBase {
+ public:
+  void SetUp() override {
+    AndroidAutofillProviderTestBase::SetUp();
+
+    autofill_provider().MaybeInitKeyboardSuppressor();
+
+    // Navigation creates the AndroidAutofillManager for the main frame.
+    NavigateAndCommit(GURL("about:blank"));
+    FocusWebContentsOnMainFrame();
+
+    // Load a form with webuthn-annotated username and regular password fields.
+    test_webauthn_form_ = CreateFormDataForFrame(
+        CreateTestWebAuthnPasswordFormData(), main_frame_token());
+
+    InitializeWebAuthnFactoryWithMock();
+  }
+
+  void InitializeWebAuthnFactoryWithMock() {
+    auto mock_cred_man_delegate =
+        std::make_unique<NiceMock<webauthn::MockWebAuthnCredManDelegate>>();
+    webauthn::test_api(web_authn_delegate_factory())
+        .EmplaceDelegateForFrame(main_frame(),
+                                 std::move(mock_cred_man_delegate));
+
+    ON_CALL(cred_man_delegate(), HasPasskeys())
+        .WillByDefault(
+            Return(webauthn::WebAuthnCredManDelegate::State::kHasPasskeys));
+  }
+
+  webauthn::WebAuthnCredManDelegateFactory* web_authn_delegate_factory() {
+    return webauthn::WebAuthnCredManDelegateFactory::GetFactory(web_contents());
+  }
+
+  const FormData& test_form() const { return test_webauthn_form_; }
+
+  const FormFieldData& webauthn_email_field() const {
+    return test_form().fields()[0];
+  }
+
+  const FormFieldData& non_webauthn_password_field() const {
+    return test_form().fields()[1];
+  }
+
+  void FocusFormField(const FormFieldData& field) {
+    keyboard_suppressor().OnBeforeAskForValuesToFill(
+        android_autofill_manager(), test_webauthn_form_.global_id(),
+        field.global_id(), test_webauthn_form_);
+    android_autofill_manager().SimulateOnAskForValuesToFill(test_webauthn_form_,
+                                                            field);
+    android_autofill_manager().SimulateOnFocusOnFormField(test_webauthn_form_,
+                                                          field);
+    keyboard_suppressor().OnAfterAskForValuesToFill(
+        android_autofill_manager(), test_webauthn_form_.global_id(),
+        field.global_id());
+  }
+
+  webauthn::MockWebAuthnCredManDelegate& cred_man_delegate() {
+    return *static_cast<webauthn::MockWebAuthnCredManDelegate*>(
+        web_authn_delegate_factory()->GetRequestDelegate(main_frame()));
+  }
+
+  TouchToFillKeyboardSuppressor& keyboard_suppressor() {
+    return test_api(autofill_provider()).keyboard_suppressor();
+  }
+
+ private:
+  FormData test_webauthn_form_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillVirtualViewStructureAndroid};
+};
+
+TEST_F(AndroidAutofillProviderWithCredManTest, CallsCredManOnlyOnce) {
+  EXPECT_CALL(cred_man_delegate(),
+              TriggerCredManUi(Eq(
+                  webauthn::WebAuthnCredManDelegate::RequestPasswords(false))));
+  FocusFormField(webauthn_email_field());
+
+  // No further call!
+  FocusFormField(non_webauthn_password_field());
+  FocusFormField(webauthn_email_field());
+}
+
+TEST_F(AndroidAutofillProviderWithCredManTest,
+       CallsCredManAgainAfterNavigation) {
+  EXPECT_CALL(cred_man_delegate(),
+              TriggerCredManUi(Eq(
+                  webauthn::WebAuthnCredManDelegate::RequestPasswords(false))));
+  FocusFormField(webauthn_email_field());
+
+  // Navigate which allows CredMan to be shown again.
+  NavigateAndCommit(GURL("about:to-do-stuff"));
+  EXPECT_CALL(cred_man_delegate(),
+              TriggerCredManUi(Eq(
+                  webauthn::WebAuthnCredManDelegate::RequestPasswords(false))));
+  FocusFormField(webauthn_email_field());
+}
+
+TEST_F(AndroidAutofillProviderWithCredManTest,
+       SuppressesKeyboardForCredManCall) {
+  EXPECT_CALL(cred_man_delegate(),
+              TriggerCredManUi(Eq(
+                  webauthn::WebAuthnCredManDelegate::RequestPasswords(false))));
+  base::RepeatingCallback<void(bool)> completed_callback;
+  EXPECT_CALL(cred_man_delegate(), SetRequestCompletionCallback)
+      .WillOnce(SaveArg<0>(&completed_callback));
+  FocusFormField(webauthn_email_field());
+
+  // Keyboard is suppressed while CredMan is showing.
+  EXPECT_TRUE(keyboard_suppressor().is_suppressing());
+  Mock::VerifyAndClearExpectations(&cred_man_delegate());
+
+  // After resetting CredMan, the keyboard suppressing stopped.
+  completed_callback.Run(/*success=*/true);
+  EXPECT_FALSE(keyboard_suppressor().is_suppressing());
+}
+
+TEST_F(AndroidAutofillProviderWithCredManTest, NoCredManWithoutAnnotation) {
+  EXPECT_CALL(cred_man_delegate(), TriggerCredManUi).Times(0);
+  FocusFormField(non_webauthn_password_field());
+
+  EXPECT_FALSE(keyboard_suppressor().is_suppressing());
+}
+
+TEST_F(AndroidAutofillProviderWithCredManTest,
+       SkipsCredManCallWithoutPasskeys) {
+  ON_CALL(cred_man_delegate(), HasPasskeys())
+      .WillByDefault(
+          Return(webauthn::WebAuthnCredManDelegate::State::kNoPasskeys));
+
+  EXPECT_CALL(cred_man_delegate(), TriggerCredManUi).Times(0);
+  FocusFormField(webauthn_email_field());
 }
 
 class AndroidAutofillProviderPrefillRequestTest

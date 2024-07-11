@@ -7611,6 +7611,7 @@ test("unit_tests") {
       "//components/webapk:proto",
       "//components/webapps/browser",
       "//components/webauthn/android",
+      "//components/webauthn/android:test_support",
       "//content/public/android:content_java",
       "//gin:v8_snapshot_assets",
       "//ui/accessibility",
