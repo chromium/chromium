@@ -5,3 +5,8 @@
 -GpuChannelTest.CreateFailsIfSharedContextIsLost
 -GpuChannelTest.CreateOffscreenCommandBuffer
 -GpuChannelTest.IncompatibleStreamIds
+
+# TODO(crbug.com/352379282): These tests have failed since
+# https://crrev.com/c/5690471.
+-Service/FeatureInfoTest.InitializeWithANGLE_BGRA8/0
+-Service/FeatureInfoTest.InitializeWithANGLE_BGRA8/1
