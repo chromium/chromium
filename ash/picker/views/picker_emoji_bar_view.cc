@@ -214,6 +214,10 @@ PickerEmojiBarView::PickerEmojiBarView(PickerEmojiBarViewDelegate* delegate,
                                   base::Unretained(this)),
               IconButton::Type::kSmallFloating, &kPickerMoreEmojisIcon,
               IDS_PICKER_MORE_EMOJIS_BUTTON_ACCESSIBLE_NAME));
+
+  StyleUtil::SetUpInkDropForButton(more_emojis_button_, gfx::Insets(),
+                                   /*highlight_on_hover=*/true,
+                                   /*highlight_on_focus=*/true);
 }
 
 PickerEmojiBarView::~PickerEmojiBarView() = default;
