@@ -435,6 +435,10 @@ void TabGroupSyncServiceImpl::HandleTabGroupAdded(const base::Uuid& guid,
     return;
   }
 
+  if (!is_initialized_) {
+    return;
+  }
+
   for (auto& observer : observers_) {
     observer.OnTabGroupAdded(*saved_tab_group, source);
   }
@@ -461,6 +465,10 @@ void TabGroupSyncServiceImpl::HandleTabGroupUpdated(
     return;
   }
 
+  if (!is_initialized_) {
+    return;
+  }
+
   for (auto& observer : observers_) {
     observer.OnTabGroupUpdated(*saved_tab_group, source);
   }
@@ -470,8 +478,11 @@ void TabGroupSyncServiceImpl::HandleTabGroupRemoved(
     std::pair<base::Uuid, std::optional<LocalTabGroupID>> id_pair,
     TriggerSource source) {
   VLOG(2) << __func__;
-  for (auto& observer : observers_) {
-    observer.OnTabGroupRemoved(id_pair.first, source);
+
+  if (is_initialized_) {
+    for (auto& observer : observers_) {
+      observer.OnTabGroupRemoved(id_pair.first, source);
+    }
   }
 
   auto local_id = id_pair.second;
@@ -483,6 +494,10 @@ void TabGroupSyncServiceImpl::HandleTabGroupRemoved(
   // is closed in the UI.
   if (source == TriggerSource::REMOTE) {
     AddDeletedGroupIdToPref(local_id.value(), id_pair.first);
+  }
+
+  if (!is_initialized_) {
+    return;
   }
 
   for (auto& observer : observers_) {
@@ -528,6 +543,11 @@ void TabGroupSyncServiceImpl::SavedTabGroupLocalIdChanged(
   VLOG(2) << __func__;
   const SavedTabGroup* saved_tab_group = model_->Get(group_guid);
   CHECK(saved_tab_group);
+
+  if (!is_initialized_) {
+    return;
+  }
+
   for (auto& observer : observers_) {
     observer.OnTabGroupUpdated(*saved_tab_group, TriggerSource::LOCAL);
   }
