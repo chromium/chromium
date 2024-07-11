@@ -629,6 +629,9 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
     @Override
     public void onDestroyView() {
         PersonalDataManagerFactory.getForProfile(getProfile()).unregisterDataObserver(this);
+        if (mReauthenticatorBridge != null) {
+            mReauthenticatorBridge.destroy();
+        }
         super.onDestroyView();
     }
 }
