@@ -72,7 +72,8 @@ std::u16string GetAccessibleTrayName(
 }
 
 std::u16string GetAccessibleBubbleName(
-    const FocusModeSession::Snapshot& session_snapshot) {
+    const FocusModeSession::Snapshot& session_snapshot,
+    const std::u16string& task_title) {
   if (session_snapshot.state == FocusModeSession::State::kEnding) {
     std::u16string title = l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE);
@@ -82,8 +83,6 @@ std::u16string GetAccessibleBubbleName(
         IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_DIALOG, title, body);
   }
 
-  const std::u16string task_title =
-      base::UTF8ToUTF16(FocusModeController::Get()->selected_task_title());
   const std::u16string time_remaining =
       focus_mode_util::GetDurationString(session_snapshot.remaining_time,
                                          /*digital_format=*/false);
@@ -297,7 +296,13 @@ std::u16string FocusModeTray::GetAccessibleNameForBubble() {
     return std::u16string();
   }
 
-  return GetAccessibleBubbleName(session_snapshot_.value());
+  const FocusModeTask* selected_task =
+      FocusModeController::Get()->tasks_model().selected_task();
+  const std::u16string task_title =
+      selected_task ? base::UTF8ToUTF16(selected_task->title)
+                    : std::u16string();
+
+  return GetAccessibleBubbleName(session_snapshot_.value(), task_title);
 }
 
 void FocusModeTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
