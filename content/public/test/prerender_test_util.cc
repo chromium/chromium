@@ -664,6 +664,18 @@ void PrerenderTestHelper::OpenNewWindowWithoutOpener(WebContents& web_contents,
   EXPECT_TRUE(ExecJs(&web_contents, JsReplace(script, url.spec())));
 }
 
+void PrerenderTestHelper::SetHoldback(PreloadingType preloading_type,
+                                      PreloadingPredictor predictor,
+                                      bool holdback) {
+  preloading_config_override_.SetHoldback(preloading_type, predictor, holdback);
+}
+
+void PrerenderTestHelper::SetHoldback(std::string_view preloading_type,
+                                      std::string_view predictor,
+                                      bool holdback) {
+  preloading_config_override_.SetHoldback(preloading_type, predictor, holdback);
+}
+
 ::testing::AssertionResult PrerenderTestHelper::VerifyPrerenderingState(
     const GURL& gurl) {
   PrerenderHostRegistry& registry = GetPrerenderHostRegistry(GetWebContents());

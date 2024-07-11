@@ -35,7 +35,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/navigation_handle_observer.h"
-#include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
@@ -368,6 +367,11 @@ static const auto kMockElapsedTime =
 class PrerenderBookmarkBarNavigationTestBase
     : public BookmarkBarNavigationTest {
  public:
+  PrerenderBookmarkBarNavigationTestBase()
+      : prerender_helper_(base::BindRepeating(
+            &PrerenderBookmarkBarNavigationTestBase::GetActiveWebContents,
+            base::Unretained(this))) {}
+
   content::WebContents* GetActiveWebContents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
@@ -428,7 +432,7 @@ class PrerenderBookmarkBarNavigationTestBase
   }
 
  private:
-  content::test::PreloadingConfigOverride preloading_config_override_;
+  content::test::PrerenderTestHelper prerender_helper_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<base::ScopedMockElapsedTimersForTest> scoped_test_timer_;
 };
