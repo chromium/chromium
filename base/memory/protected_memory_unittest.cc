@@ -76,23 +76,7 @@ void VerifyInstanceIsNotWriteable(T& instance, const size_t bit_increment = 3) {
 }
 #endif  // BUILDFLAG(PROTECTED_MEMORY_ENABLED)
 
-DEFINE_PROTECTED_DATA ProtectedMemory<int, false /*ConstructLazily*/>
-    g_default_initialization;
-
-TEST(ProtectedMemoryTest, DefaultInitialization) {
-  EXPECT_EQ(*g_default_initialization, int());
-}
-
-DEFINE_PROTECTED_DATA ProtectedMemory<Data, false /*ConstructLazily*/>
-    g_with_initialization_declaration(4, 3);
-
-TEST(ProtectedMemoryTest, InitializationDeclaration) {
-  EXPECT_EQ(g_with_initialization_declaration->foo, 4);
-  EXPECT_EQ(g_with_initialization_declaration->bar, 3);
-}
-
-DEFINE_PROTECTED_DATA ProtectedMemory<int, false /*ConstructLazily*/>
-    g_explicit_initialization;
+DEFINE_PROTECTED_DATA ProtectedMemory<int> g_explicit_initialization;
 
 TEST(ProtectedMemoryTest, ExplicitInitializationWithExplicitValue) {
   static ProtectedMemoryInitializer initializer_explicit_value(
@@ -101,7 +85,7 @@ TEST(ProtectedMemoryTest, ExplicitInitializationWithExplicitValue) {
   EXPECT_EQ(*g_explicit_initialization, 4);
 }
 
-DEFINE_PROTECTED_DATA ProtectedMemory<int, false /*ConstructLazily*/>
+DEFINE_PROTECTED_DATA ProtectedMemory<int>
     g_explicit_initialization_with_default_value;
 
 TEST(ProtectedMemoryTest, VerifyExplicitInitializationWithDefaultValue) {
@@ -112,7 +96,7 @@ TEST(ProtectedMemoryTest, VerifyExplicitInitializationWithDefaultValue) {
 }
 
 DEFINE_PROTECTED_DATA
-ProtectedMemory<DataWithNonTrivialConstructor, true /*ConstructLazily*/>
+ProtectedMemory<DataWithNonTrivialConstructor>
     g_lazily_initialized_with_explicit_initialization;
 
 TEST(ProtectedMemoryTest, ExplicitLazyInitializationWithExplicitValue) {
@@ -123,8 +107,7 @@ TEST(ProtectedMemoryTest, ExplicitLazyInitializationWithExplicitValue) {
 }
 
 DEFINE_PROTECTED_DATA
-ProtectedMemory<DataWithNonTrivialConstructor, true /*ConstructLazily*/>
-    g_uninitialized;
+ProtectedMemory<DataWithNonTrivialConstructor> g_uninitialized;
 
 TEST(ProtectedMemoryDeathTest, AccessWithoutInitialization) {
   EXPECT_CHECK_DEATH_WITH(g_uninitialized.operator*(), "");
@@ -132,22 +115,25 @@ TEST(ProtectedMemoryDeathTest, AccessWithoutInitialization) {
 }
 
 #if BUILDFLAG(PROTECTED_MEMORY_ENABLED)
-DEFINE_PROTECTED_DATA ProtectedMemory<Data, false /*ConstructLazily*/>
-    g_eagerly_initialized;
+DEFINE_PROTECTED_DATA ProtectedMemory<Data> g_initialized;
 
 TEST(ProtectedMemoryTest, VerifySetValue) {
-  ASSERT_NE(g_eagerly_initialized->foo, 5);
-  EXPECT_EQ(g_eagerly_initialized->bar, -1);
+  static ProtectedMemoryInitializer initializer_explicit_value(g_initialized);
+  ASSERT_NE(g_initialized->foo, 5);
+  EXPECT_EQ(g_initialized->bar, -1);
   {
-    base::AutoWritableMemory writer(g_eagerly_initialized);
+    base::AutoWritableMemory writer(g_initialized);
     writer.GetProtectedDataPtr()->foo = 5;
   }
-  EXPECT_EQ(g_eagerly_initialized->foo, 5);
-  EXPECT_EQ(g_eagerly_initialized->bar, -1);
+  EXPECT_EQ(g_initialized->foo, 5);
+  EXPECT_EQ(g_initialized->bar, -1);
 }
 
+DEFINE_PROTECTED_DATA ProtectedMemory<Data> g_not_writable;
+
 TEST(ProtectedMemoryDeathTest, AccessWithoutWriteAccessCrashes) {
-  VerifyInstanceIsNotWriteable(g_with_initialization_declaration);
+  static ProtectedMemoryInitializer initializer_explicit_value(g_not_writable);
+  VerifyInstanceIsNotWriteable(g_not_writable);
 }
 
 TEST(ProtectedMemoryDeathTest, FailsIfDefinedOutsideOfProtectMemoryRegion) {

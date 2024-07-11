@@ -19,7 +19,7 @@ namespace blink {
 RuntimeEnabledFeaturesBase::Backup::Backup()
   : {% for feature in features -%}
     {%- if feature.is_protected_feature -%}
-    {{feature.data_member_name}}(*RuntimeEnabledFeaturesBase::{{feature.data_member_name}})
+    {{feature.data_member_name}}(RuntimeEnabledFeaturesBase::get_{{feature.data_member_name}}())
     {%- else -%}
     {{feature.data_member_name}}(RuntimeEnabledFeaturesBase::{{feature.data_member_name}})
     {%- endif -%}
@@ -151,6 +151,9 @@ void RuntimeEnabledFeaturesBase::UpdateStatusFromBaseFeatures() {
 {% for feature in features %}
 {% if feature.is_protected_feature %}
 void RuntimeEnabledFeaturesBase::Set{{feature.name}}Enabled(bool enabled) {
+  if (get_{{feature.data_member_name}}() == enabled) {
+    return;
+  }
   base::AutoWritableMemory protected_memory_writer({{feature.data_member_name}});
   protected_memory_writer.GetProtectedData() = enabled;
 }
@@ -198,7 +201,7 @@ bool RuntimeEnabledFeaturesBase::{{feature.name}}Enabled(const FeatureContext* c
     return true;
   {% endfor %}
   {% if feature.is_protected_feature %}
-  if (*{{feature.data_member_name}})
+  if (get_{{feature.data_member_name}}())
   {% else %}
   if ({{feature.data_member_name}})
   {% endif %}
@@ -217,7 +220,7 @@ bool RuntimeEnabledFeaturesBase::{{feature.name}}Enabled(const FeatureContext* c
 {% for feature in features %}
 {% if feature.status_type == 'str' %}
 {% if feature.is_protected_feature %}
-DEFINE_PROTECTED_DATA base::ProtectedMemory<bool> RuntimeEnabledFeaturesBase::{{feature.data_member_name}}({{'true' if feature.status == 'stable' else 'false'}});
+DEFINE_PROTECTED_DATA base::ProtectedMemory<bool> RuntimeEnabledFeaturesBase::{{feature.data_member_name}};
 {% else %}
 bool RuntimeEnabledFeaturesBase::{{feature.data_member_name}} = {{'true' if feature.status == 'stable' else 'false'}};
 {% endif %}
@@ -248,5 +251,16 @@ bool RuntimeEnabledFeaturesBase::{{feature.data_member_name}} = {{'true' if feat
 {% endif %}
 {% endfor %}
 #endif
+
+// Simple getter methods for protected memory values that ensure they are
+// properly initialized before first access.
+{% for feature in features %}
+{% if feature.is_protected_feature %}
+bool RuntimeEnabledFeaturesBase::get_{{feature.data_member_name}}() {
+  static base::ProtectedMemoryInitializer {{feature.data_member_name}}initializer({{feature.data_member_name}}, {{'true' if feature.status == 'stable' else 'false'}});
+  return *{{feature.data_member_name}};
+}
+{% endif %}
+{% endfor %}
 
 } // namespace blink

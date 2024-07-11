@@ -15,6 +15,7 @@
 
 namespace base {
 
+#if BUILDFLAG(PROTECTED_MEMORY_ENABLED)
 namespace {
 
 bool SetMemory(void* start, void* end, DWORD prot) {
@@ -49,5 +50,6 @@ bool AutoWritableMemoryBase::SetMemoryReadWrite(void* start, void* end) {
 bool AutoWritableMemoryBase::SetMemoryReadOnly(void* start, void* end) {
   return SetMemory(start, end, PAGE_READONLY);
 }
+#endif  // BUILDFLAG(PROTECTED_MEMORY_ENABLED)
 
 }  // namespace base

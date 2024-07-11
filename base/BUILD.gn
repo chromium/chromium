@@ -2597,7 +2597,7 @@ buildflag_header("protected_memory_buildflags") {
   header_dir = "base/memory"
 
   # Currently Protected Memory is only supported on Windows.
-  protected_memory_enabled = is_win
+  protected_memory_enabled = !is_component_build && is_win
 
   flags = [ "PROTECTED_MEMORY_ENABLED=$protected_memory_enabled" ]
 }

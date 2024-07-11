@@ -779,6 +779,7 @@ _CONFIG = [
 
             # Protected memory
             'base::ProtectedMemory',
+            'base::ProtectedMemoryInitializer',
             'base::AutoWritableMemory',
 
             # Allow Highway SIMD Library and the possible namespace aliases.

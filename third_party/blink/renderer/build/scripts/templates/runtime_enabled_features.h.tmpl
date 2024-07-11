@@ -39,6 +39,14 @@ class PLATFORM_EXPORT RuntimeEnabledFeaturesBase {
     {% endfor %}
   };
 
+  // Simple getter methods for protected memory values that ensure they are
+  // properly initialized before first access.
+  {% for feature in features %}
+  {% if feature.is_protected_feature %}
+  static bool get_{{feature.data_member_name}}();
+  {% endif %}
+  {% endfor %}
+
   {% for feature in features %}
   {% if not feature.in_origin_trial %}
   static bool {{feature.name}}Enabled() {
@@ -51,7 +59,7 @@ class PLATFORM_EXPORT RuntimeEnabledFeaturesBase {
       return true;
     {% endfor %}
     {% if feature.is_protected_feature %}
-    return *{{feature.data_member_name}};
+    return get_{{feature.data_member_name}}();
     {% else %}
     return {{feature.data_member_name}};
     {% endif %}
