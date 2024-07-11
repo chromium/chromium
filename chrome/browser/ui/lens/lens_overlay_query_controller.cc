@@ -642,6 +642,9 @@ void LensOverlayQueryController::
   additional_search_query_params = AddVisualSearchInteractionLogData(
       additional_search_query_params, selection_type);
 
+  // Update the analytics id of the request id for the new interaction.
+  request_id_generator_->CreateNewAnalyticsId();
+
   // Fetch the interaction request.
   lens::LensOverlayServerRequest server_request = CreateInteractionRequest(
       std::move(region), query_text, object_id, image_crop, client_logs,
