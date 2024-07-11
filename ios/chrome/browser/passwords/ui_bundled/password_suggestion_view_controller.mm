@@ -9,6 +9,7 @@
 #import "components/autofill/core/common/password_generation_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/passwords/ui_bundled/password_constants.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
@@ -69,7 +70,14 @@ constexpr CGFloat customSpacingAfterImage = 1;
       base::SysNSStringToUTF16(self.userEmail));
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_USE_SUGGESTED_STRONG_PASSWORD);
-  self.secondaryActionString = l10n_util::GetNSString(IDS_CANCEL);
+  if (_asProactive) {
+    self.secondaryActionString =
+        l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD);
+    self.secondaryActionImage =
+        DefaultSymbolWithPointSize(kKeyboardSymbol, kSymbolActionPointSize);
+  } else {
+    self.secondaryActionString = l10n_util::GetNSString(IDS_CANCEL);
+  }
 
   [super viewDidLoad];
 

@@ -453,6 +453,7 @@ TEST_F(CWVAutofillControllerTest, SuggestPasswordCallback) {
   __block BOOL decision_handler_called = NO;
   [autofill_controller_ sharedPasswordController:password_controller_
                   showGeneratedPotentialPassword:fake_generated_password
+                                       proactive:NO
                                  decisionHandler:^(BOOL accept) {
                                    decision_handler_called = YES;
                                    EXPECT_TRUE(accept);

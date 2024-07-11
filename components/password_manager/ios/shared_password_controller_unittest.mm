@@ -582,6 +582,7 @@ TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
 
   [[delegate_ expect] sharedPasswordController:controller_
                 showGeneratedPotentialPassword:[OCMArg isNotNil]
+                                     proactive:NO
                                decisionHandler:[OCMArg any]];
   EXPECT_CALL(password_manager_, SetGenerationElementAndTypeForForm);
 
@@ -657,6 +658,7 @@ TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword) {
       }];
   [[delegate_ expect] sharedPasswordController:controller_
                 showGeneratedPotentialPassword:[OCMArg isNotNil]
+                                     proactive:NO
                                decisionHandler:decision_handler_arg];
 
   id fill_completion_handler_arg =
@@ -723,6 +725,7 @@ TEST_F(SharedPasswordControllerTest, TriggerPasswordGeneration) {
 
   [[delegate_ expect] sharedPasswordController:controller_
                 showGeneratedPotentialPassword:[OCMArg isNotNil]
+                                     proactive:NO
                                decisionHandler:[OCMArg any]];
   EXPECT_CALL(password_manager_, SetGenerationElementAndTypeForForm);
 
@@ -768,6 +771,7 @@ TEST_F(SharedPasswordControllerTest, LastFocusedFieldData) {
 
   [[delegate_ reject] sharedPasswordController:controller_
                 showGeneratedPotentialPassword:[OCMArg isNotNil]
+                                     proactive:NO
                                decisionHandler:[OCMArg any]];
 
   [controller_ triggerPasswordGeneration];
@@ -1407,6 +1411,7 @@ TEST_F(SharedPasswordControllerTest, DeclinePasswordGenerationDialog) {
       }];
   [[delegate_ expect] sharedPasswordController:controller_
                 showGeneratedPotentialPassword:[OCMArg isNotNil]
+                                     proactive:NO
                                decisionHandler:decision_handler_arg];
 
   OCMStub([driver_helper_ PasswordManagerDriver:frame]);

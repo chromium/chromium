@@ -127,11 +127,15 @@ void AutofillBottomSheetTabHelper::OnFormMessageReceived(
       base::Contains(registered_password_renderer_ids_[frame_id], renderer_id);
   bool is_payments_related =
       base::Contains(registered_payments_renderer_ids_[frame_id], renderer_id);
+  bool is_password_generation_related = base::Contains(
+      registered_password_generation_renderer_ids_[frame_id], renderer_id);
 
   if (is_password_related) {
     ShowPasswordBottomSheet(params);
   } else if (is_payments_related) {
     ShowPaymentsBottomSheet(params);
+  } else if (is_password_generation_related) {
+    ShowProactivePasswordGenerationBottomSheet(params);
   }
 }
 

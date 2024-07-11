@@ -39,9 +39,11 @@ class PasswordManagerClient;
 // Called to inform the delegate that it should prompt the user for a decision
 // on whether or not to use the |generatedPotentialPassword|.
 // |decisionHandler| takes a single BOOL indicating if the user accepted the
-// the suggested |generatedPotentialPassword|.
+// the suggested |generatedPotentialPassword|. The secondary action string is
+// set according to the value of |proactive|.
 - (void)sharedPasswordController:(SharedPasswordController*)controller
     showGeneratedPotentialPassword:(NSString*)generatedPotentialPassword
+                         proactive:(BOOL)proactive
                    decisionHandler:(void (^)(BOOL accept))decisionHandler;
 
 // Called when SharedPasswordController accepts a suggestion displayed to the

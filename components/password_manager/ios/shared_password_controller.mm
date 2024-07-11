@@ -137,6 +137,10 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 
 - (BOOL)IsOffTheRecord;
 
+// Tracks whether the potential generated password has been proactively shown
+// or through the keyboard accessory
+@property(nonatomic) BOOL isProactivePasswordGeneration;
+
 @end
 
 @implementation SharedPasswordController {
@@ -191,10 +195,6 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   // Delegate for the PasswordAutofillAgent that receives information from
   // Autofill.
   std::unique_ptr<PasswordAutofillAgentDelegateImpl> _agentDelegate;
-
-  // Tracks whether the potential generated password has been proactively shown
-  // or through the keyboard accessory
-  BOOL _isProactivePasswordGeneration;
 }
 
 - (instancetype)initWithWebState:(web::WebState*)webState
@@ -896,6 +896,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     [self.delegate
               sharedPasswordController:self
         showGeneratedPotentialPassword:self.generatedPotentialPassword
+                             proactive:self.isProactivePasswordGeneration
                        decisionHandler:^(BOOL accept) {
                          SharedPasswordController* strongSelf = weakSelf;
                          if (!strongSelf) {

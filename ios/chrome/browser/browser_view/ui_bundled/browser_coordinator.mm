@@ -2952,13 +2952,14 @@ enum class ToolbarKind {
 #pragma mark - PasswordSuggestionCommands
 
 - (void)showPasswordSuggestion:(NSString*)passwordSuggestion
+                     proactive:(BOOL)proactive
                decisionHandler:(void (^)(BOOL accept))decisionHandler {
   self.passwordSuggestionCoordinator = [[PasswordSuggestionCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
               passwordSuggestion:passwordSuggestion
                  decisionHandler:decisionHandler
-                     asProactive:NO];
+                     asProactive:proactive];
   self.passwordSuggestionCoordinator.delegate = self;
   [self.passwordSuggestionCoordinator start];
 }
