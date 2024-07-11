@@ -10,7 +10,7 @@
 #include <utility>
 
 #if BUILDFLAG(IS_FUCHSIA)
-#include <fuchsia/sysmem/cpp/fidl.h>
+#include <fuchsia/sysmem2/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 #endif
 
@@ -82,53 +82,63 @@ class TestBufferCollection {
       : handle_(std::move(handle)) {
     sysmem_allocator_ = base::ComponentContextForProcess()
                             ->svc()
-                            ->Connect<fuchsia::sysmem::Allocator>();
+                            ->Connect<fuchsia::sysmem2::Allocator>();
     sysmem_allocator_.set_error_handler([](zx_status_t status) {
       ZX_LOG(FATAL, status)
           << "The fuchsia.sysmem.Allocator channel was terminated.";
     });
-    sysmem_allocator_->SetDebugClientInfo("CrTestBufferCollection",
-                                          base::GetCurrentProcId());
+    fuchsia::sysmem2::AllocatorSetDebugClientInfoRequest set_debug_request;
+    set_debug_request.set_name("CrTestBufferCollection");
+    set_debug_request.set_id(base::GetCurrentProcId());
+    sysmem_allocator_->SetDebugClientInfo(std::move(set_debug_request));
 
-    sysmem_allocator_->BindSharedCollection(
-        fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>(
-            std::move(collection_token)),
-        buffers_collection_.NewRequest());
+    fuchsia::sysmem2::AllocatorBindSharedCollectionRequest bind_shared_request;
+    bind_shared_request.set_token(fidl::InterfaceHandle<fuchsia::sysmem2::BufferCollectionToken>(
+            std::move(collection_token)));
+    bind_shared_request.set_buffer_collection_request(buffers_collection_.NewRequest());
+    sysmem_allocator_->BindSharedCollection(std::move(bind_shared_request));
 
-    fuchsia::sysmem::BufferCollectionConstraints buffer_constraints;
-    buffer_constraints.usage.cpu = fuchsia::sysmem::cpuUsageRead;
-    zx_status_t status = buffers_collection_->SetConstraints(
-        /*has_constraints=*/true, std::move(buffer_constraints));
+    fuchsia::sysmem2::BufferCollectionSetConstraintsRequest set_constraints_request;
+    auto& buffer_constraints = *set_constraints_request.mutable_constraints();
+    buffer_constraints.mutable_usage()->set_cpu(fuchsia::sysmem2::CPU_USAGE_READ);
+    zx_status_t status = buffers_collection_->SetConstraints(std::move(set_constraints_request));
     ZX_CHECK(status == ZX_OK, status) << "BufferCollection::SetConstraints()";
   }
 
   TestBufferCollection(const TestBufferCollection&) = delete;
   TestBufferCollection& operator=(const TestBufferCollection&) = delete;
 
-  ~TestBufferCollection() { buffers_collection_->Close(); }
+  ~TestBufferCollection() { buffers_collection_->Release(); }
 
   size_t GetNumBuffers() {
     if (!buffer_collection_info_) {
-      zx_status_t wait_status;
-      fuchsia::sysmem::BufferCollectionInfo_2 info;
+      fuchsia::sysmem2::BufferCollection_WaitForAllBuffersAllocated_Result wait_result;
       zx_status_t status =
-          buffers_collection_->WaitForBuffersAllocated(&wait_status, &info);
-      ZX_CHECK(status == ZX_OK, status)
-          << "BufferCollection::WaitForBuffersAllocated()";
-      ZX_CHECK(wait_status == ZX_OK, wait_status)
-          << "BufferCollection::WaitForBuffersAllocated()";
+          buffers_collection_->WaitForAllBuffersAllocated(&wait_result);
+      if (status != ZX_OK) {
+        ZX_LOG(FATAL, status) <<
+            "BufferCollection::WaitForAllBuffersAllocated() (status)";
+      } else if (wait_result.is_framework_err()) {
+        LOG(FATAL) <<
+            "BufferCollection::WaitForAllBuffersAllocated (framework_err): " <<
+            fidl::ToUnderlying(wait_result.framework_err());
+      } else if (!wait_result.is_response()) {
+        LOG(FATAL) << "BufferCollection::WaitForAllBuffersAllocated (err)" <<
+            static_cast<uint32_t>(wait_result.err());
+      }
+      auto info = std::move(*wait_result.response().mutable_buffer_collection_info());
       buffer_collection_info_ = std::move(info);
     }
-    return buffer_collection_info_->buffer_count;
+    return buffer_collection_info_->buffers().size();
   }
 
  private:
   zx::eventpair handle_;
 
-  fuchsia::sysmem::AllocatorPtr sysmem_allocator_;
-  fuchsia::sysmem::BufferCollectionSyncPtr buffers_collection_;
+  fuchsia::sysmem2::AllocatorPtr sysmem_allocator_;
+  fuchsia::sysmem2::BufferCollectionSyncPtr buffers_collection_;
 
-  std::optional<fuchsia::sysmem::BufferCollectionInfo_2>
+  std::optional<fuchsia::sysmem2::BufferCollectionInfo>
       buffer_collection_info_;
 };
 #endif

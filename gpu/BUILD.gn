@@ -141,7 +141,7 @@ static_library("test_support") {
 
   if (is_fuchsia) {
     deps += [
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem:fuchsia.sysmem_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem2:fuchsia.sysmem2_hlcpp",
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     ]
   }
