@@ -46,6 +46,8 @@ static_library("enrollment") {
     "tpm_enrollment_key_signing_service.h",
   ]
 
+  public_deps = [ "//third_party/private_membership" ]
+
   deps = [
     "//ash/constants",
     "//base",
@@ -86,17 +88,8 @@ static_library("enrollment") {
     "//services/network/public/cpp:cpp_base",
     "//services/network/public/mojom",
     "//third_party/abseil-cpp:absl",
-    "//third_party/private_membership",
     "//third_party/private_membership:private_membership_proto",
     "//url",
-  ]
-
-  public_deps = [
-    # Indirectly included via //chrome/browser/ash/login/oobe_quick_start,
-    # but this cannot depend on it due to circular dependency.
-    # Instead, depend on the third_party target directly.
-    # We should remove this once circular dependency gets resolved.
-    "//chromeos/ash/components/nearby/common/connections_manager",
   ]
 }
 
@@ -110,11 +103,14 @@ static_library("test_support") {
     "fake_auto_enrollment_client.h",
   ]
 
+  public_deps = [ "//build:branding_buildflags" ]
+
   deps = [
     ":enrollment",
     "//base",
-    "//chrome/browser/ash",
+    "//chrome/browser/ash/login",
     "//chromeos/ash/components/dbus/oobe_config",
+    "//chromeos/ash/components/system",
     "//components/policy/proto:",
     "//components/policy/test_support",
     "//services/network/public/cpp",

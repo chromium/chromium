@@ -41,6 +41,7 @@ static_library("lock") {
     "//chrome/browser/ash/extensions/autotest_private",
     "//chrome/browser/ash/extensions/file_manager",
     "//chrome/browser/ash/input_method",
+    "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/login/ui",
@@ -70,6 +71,7 @@ static_library("lock") {
     "//chrome/browser/ash/extensions/autotest_private",
     "//chrome/browser/ash/extensions/file_manager",
     "//chrome/browser/ash/input_method",
+    "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/extensions",
   ]
@@ -144,6 +146,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/login:test_support",
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/login/ui",

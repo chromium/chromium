@@ -39,6 +39,7 @@ static_library("users") {
     "//ash/public/cpp",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_mode",
+    "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/login/users/default_user_image",
     "//chrome/browser/extensions",
@@ -70,7 +71,10 @@ static_library("users") {
     "//ui/wm",
   ]
 
-  allow_circular_includes_from = [ "//chrome/browser/ash/policy/core" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/policy/core",
+  ]
 }
 
 static_library("test_support") {
@@ -122,6 +126,7 @@ source_set("browser_tests") {
     "//base",
     "//chrome/browser/ash",
     "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/login:test_support",
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/ownership",

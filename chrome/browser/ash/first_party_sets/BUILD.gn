@@ -17,6 +17,7 @@ source_set("browser_tests") {
     "//ash/constants",
     "//base",
     "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/login:test_support",
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/first_party_sets",
     "//chrome/browser/profiles:profile",

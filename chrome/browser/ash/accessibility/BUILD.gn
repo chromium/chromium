@@ -191,6 +191,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/ash/base",
     "//chrome/browser/ash/input_method/ui",
+    "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/login/ui",

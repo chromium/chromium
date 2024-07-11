@@ -32,6 +32,7 @@ static_library("login_screen_extension_ui") {
   deps = [
     "//ash/public/cpp",
     "//chrome/app:generated_resources",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//content/public/browser",
     "//ui/display",

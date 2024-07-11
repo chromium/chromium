@@ -28,6 +28,7 @@ static_library("shimless_rma") {
     "//chrome/app:generated_resources_grit",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/login",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",

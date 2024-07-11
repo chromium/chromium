@@ -283,13 +283,14 @@ source_set("browser_tests") {
   ]
 
   deps = [
+    ":dbus",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/ash",
     "//chrome/browser/ash:test_support",
-    "//chrome/browser/ash/dbus",
+    "//chrome/browser/ash/login:test_support",
     "//chrome/browser/ash/net",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",

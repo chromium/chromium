@@ -93,6 +93,7 @@ source_set("onc") {
     deps += [
       "//ash/constants:constants",
       "//base",
+      "//chrome/browser/ash/login",
       "//chrome/browser/ash/login/session",
       "//chrome/browser/ash/policy/core",
       "//chromeos/ash/components/install_attributes",
@@ -103,7 +104,10 @@ source_set("onc") {
       "//components/user_manager:user_manager",
       "//dbus",
     ]
-    allow_circular_includes_from = [ "//chrome/browser/ash/policy/core" ]
+    allow_circular_includes_from = [
+      "//chrome/browser/ash/login",
+      "//chrome/browser/ash/policy/core",
+    ]
   }
 }
 

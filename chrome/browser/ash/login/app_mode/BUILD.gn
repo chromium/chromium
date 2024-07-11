@@ -28,6 +28,7 @@ static_library("app_mode") {
     "//chrome/browser/ash/app_mode/web_app",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/profiles:profile",
@@ -47,12 +48,6 @@ static_library("app_mode") {
     "//services/network/public/mojom:url_loader_base_shared",
     "//ui/gfx",
     "//url",
-
-    # We can't depend on //c/b/a due to a cycle. However, we are including some
-    # of its headers and hence need some of its public_deps.
-    # TODO(b/335293584): Move to //c/b/a/login.
-    # TODO(b/335294371): Replace with //c/b/a/policy.
-    "//third_party/private_membership",
   ]
 }
 

@@ -29,6 +29,7 @@ static_library("online_reauth") {
   deps = [
     "//ash",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/auth",
     "//chrome/common:constants",
     "//chromeos/ash/components/settings",

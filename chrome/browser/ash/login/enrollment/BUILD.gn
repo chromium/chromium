@@ -22,6 +22,7 @@ static_library("enrollment") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/ash/login/",
     "//chrome/browser/ash/login/screens",
     "//chromeos/ash/components/network",
     "//chromeos/dbus/tpm_manager",
@@ -49,19 +50,12 @@ static_library("enrollment") {
     "//services/network/public/cpp",
     "//third_party/abseil-cpp:absl",
     "//ui/chromeos",
-
-    # We can't depend on //c/b/a due to a cycle. However, we are including some
-    # of its headers and hence need some of its public_deps.
-    # TODO(b/335293584): Replace with //c/b/a/login/ui.
-    "//chrome/browser/ash/login/oobe_quick_start",
-
-    # We can't depend on //c/b/a due to a cycle. However, we are including some
-    # of its headers and hence need some of its public_deps.
-    # TODO(b/335294371): Replace with //c/b/a/policy.
-    "//third_party/private_membership",
   ]
 
-  allow_circular_includes_from = [ "//chrome/browser/ash/login/demo_mode" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login/",
+    "//chrome/browser/ash/login/demo_mode",
+  ]
 }
 
 static_library("test_support") {

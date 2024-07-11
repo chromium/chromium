@@ -52,6 +52,7 @@ static_library("session") {
     "//chrome/browser/ash/login/saml",
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/google",
     "//chrome/browser/scalable_iph:scalable_iph_factory",
     "//chrome/browser/screen_ai:screen_ai_dlc_installer",
@@ -106,15 +107,6 @@ static_library("session") {
     "//media",
     "//rlz/buildflags",
     "//url",
-
-    # We can't depend on //c/b/a due to a cycle. However, we are including
-    # some of its headers and hence need some of its public_deps.
-    "//chrome/browser/ash/login/oobe_quick_start",
-
-    # We can't depend on //c/b/a due to a cycle. However, we are including
-    # some of its headers and hence need some of its public_deps.
-    # TODO(b/335294371): Replace with //c/b/a/policy/enrollment.
-    "//third_party/private_membership",
   ]
 
   allow_circular_includes_from = [
@@ -153,6 +145,7 @@ source_set("browser_tests") {
     "//ash/constants",
     "//base",
     "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/login:test_support",
     "//chrome/browser/ash/login/lock:test_support",
     "//chrome/browser/ash/login/ui",
     "//chrome/browser/google",

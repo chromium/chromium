@@ -104,6 +104,7 @@ static_library("app_mode") {
     "//chrome/browser/ash/app_mode/web_app",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/extensions",
+    "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/app_mode",
     "//chrome/browser/ash/login/auth",
     "//chrome/browser/ash/login/session",
@@ -135,6 +136,7 @@ static_library("app_mode") {
 
   allow_circular_includes_from = [
     "//chrome/browser/ash/app_mode/web_app",
+    "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/app_mode",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/login/ui",

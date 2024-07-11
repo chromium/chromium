@@ -34,6 +34,7 @@ static_library("autotest_private") {
     "//chrome/browser/ash/fusebox",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/input_method",
+    "//chrome/browser/ash/login",
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/power/ml/smart_dim",

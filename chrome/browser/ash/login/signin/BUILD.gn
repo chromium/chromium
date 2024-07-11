@@ -64,6 +64,7 @@ static_library("signin") {
     "//chrome/app/theme:theme_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/account_manager",
+    "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/lock/online_reauth",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/sync",
@@ -86,7 +87,10 @@ static_library("signin") {
     "//url",
   ]
 
-  allow_circular_includes_from = [ "//chrome/browser/ash/login/session" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/session",
+  ]
 }
 
 source_set("browser_tests") {

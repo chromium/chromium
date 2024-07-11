@@ -23,15 +23,12 @@ static_library("customization") {
     "//chrome/browser/ash/extensions",
     "//chrome/browser/ash/login/users/avatar",
     "//chrome/browser/ash/net",
+    "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/profiles",
     "//chrome/common",
     "//chromeos/ash/components/system",
     "//components/pref_registry",
     "//content/public/browser",
-
-    # TODO(b/335293584): Remove these when customization deps on c/b/a/login.
-    "//chromeos/ash/components/nearby/common/connections_manager",
-    "//third_party/private_membership",
   ]
 }
 

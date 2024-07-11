@@ -141,10 +141,6 @@ static_library("ui") {
     "//ui/compositor",
     "//ui/gfx",
     "//ui/gfx/geometry",
-
-    # We can't depend on //c/b/a due to cycle. However, we include
-    # some of its headers and hence need some of its public_deps.
-    "//third_party/private_membership",
   ]
 
   allow_circular_includes_from = [
@@ -173,6 +169,7 @@ static_library("test_support") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/ash/app_mode",
+    "//chrome/browser/ash/login",
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//components/login",
     "//components/prefs",
@@ -211,6 +208,7 @@ source_set("browser_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash",
     "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/login:test_support",
     "//chrome/browser/ash/login/lock",
     "//chrome/browser/ash/login/lock:test_support",
     "//chrome/browser/ash/login/screens",

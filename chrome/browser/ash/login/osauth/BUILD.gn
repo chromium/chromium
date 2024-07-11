@@ -63,6 +63,7 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/login:test_support",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/osauth/public",
     "//chromeos/ash/components/osauth/test_support",
