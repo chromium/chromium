@@ -23,7 +23,7 @@ if (enable_vulkan) {
     if (use_vulkan_xcb) {
       defines += [ "USE_VULKAN_XCB" ]
     }
-    if (ozone_platform_wayland) {
+    if (ozone_platform_wayland && !use_system_libwayland) {
       configs = [ "//third_party/wayland:wayland_config" ]
     }
   }

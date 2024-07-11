@@ -7,6 +7,7 @@ import("//build/config/linux/pkg_config.gni")
 import("//build/config/python.gni")
 import("//build/config/ui.gni")
 import("//build/toolchain/toolchain.gni")
+import("//third_party/wayland/features.gni")
 import("//third_party/wayland/wayland_protocol.gni")
 
 wayland_protocol("text_cursor_position_protocol") {
@@ -72,7 +73,9 @@ config("weston_config") {
 
   ldflags = [ "-Wl,-rpath=\$ORIGIN" ]
 
-  configs = [ "//third_party/wayland:wayland_config" ]
+  if (!use_system_libwayland) {
+    configs = [ "//third_party/wayland:wayland_config" ]
+  }
 }
 
 pkg_config("pixman") {
