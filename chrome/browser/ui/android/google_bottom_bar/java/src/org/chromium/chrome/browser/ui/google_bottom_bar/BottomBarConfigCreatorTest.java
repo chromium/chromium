@@ -11,11 +11,11 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId.ADD_NOTES;
-import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId.PIH_BASIC;
-import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId.REFRESH;
-import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId.SAVE;
-import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId.SHARE;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.ADD_NOTES;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.PIH_BASIC;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.REFRESH;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.SAVE;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.SHARE;
 
 import android.app.PendingIntent;
 import android.content.Context;
@@ -37,7 +37,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
-import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId;
+import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.TestActivity;
 
@@ -69,27 +69,46 @@ public class BottomBarConfigCreatorTest {
 
     @Test
     public void emptyString_returnsDefaultConfig() {
-        assertDefaultConfig(mConfigCreator.create("", List.of()));
+        GoogleBottomBarIntentParams params = GoogleBottomBarIntentParams.getDefaultInstance();
+        assertDefaultConfig(mConfigCreator.create(params, List.of()));
     }
 
     @Test
     public void onlyOneItem_returnsDefaultConfig() {
-        assertDefaultConfig(mConfigCreator.create("1", List.of()));
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder().addEncodedButton(1).build();
+
+        assertDefaultConfig(mConfigCreator.create(params, List.of()));
     }
 
     @Test
     public void invalidButtonIdInList_returnsDefaultConfig() {
-        assertDefaultConfig(mConfigCreator.create("0,10,1", List.of()));
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .addAllEncodedButton(List.of(0, 10, 1))
+                        .build();
+
+        assertDefaultConfig(mConfigCreator.create(params, List.of()));
     }
 
     @Test
     public void invalidSpotlightButton_returnsDefaultConfig() {
-        assertDefaultConfig(mConfigCreator.create("10,1,2,3", List.of()));
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .addAllEncodedButton(List.of(10, 1, 2, 3))
+                        .build();
+
+        assertDefaultConfig(mConfigCreator.create(params, List.of()));
     }
 
     @Test
     public void noSpotlightParamList_nullSpotlight_correctButtonList() {
-        BottomBarConfig buttonConfig = mConfigCreator.create("0,1,2,3", List.of());
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .addAllEncodedButton(List.of(0, 1, 2, 3))
+                        .build();
+
+        BottomBarConfig buttonConfig = mConfigCreator.create(params, List.of());
 
         assertNull(buttonConfig.getSpotlightId());
         assertEquals(3, buttonConfig.getButtonList().size());
@@ -98,7 +117,12 @@ public class BottomBarConfigCreatorTest {
 
     @Test
     public void withSpotlightParamList_correctSpotlightSet_correctButtonList() {
-        BottomBarConfig buttonConfig = mConfigCreator.create("1,1,2,3", List.of());
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .addAllEncodedButton(List.of(1, 1, 2, 3))
+                        .build();
+
+        BottomBarConfig buttonConfig = mConfigCreator.create(params, List.of());
         Integer spotlight = buttonConfig.getSpotlightId();
 
         assertNotNull(spotlight);
@@ -109,9 +133,11 @@ public class BottomBarConfigCreatorTest {
     @Test
     public void createButtonConfigList_emptyCustomButtonParamsList() {
         List<Integer> buttonIdList = List.of(PIH_BASIC, PIH_BASIC, SHARE, SAVE, ADD_NOTES, REFRESH);
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder().addAllEncodedButton(buttonIdList).build();
 
         // empty customButtonParamsList - SAVE and ADD_NOTES are not included in the final list
-        BottomBarConfig buttonConfig = mConfigCreator.create(buttonIdList, new ArrayList<>());
+        BottomBarConfig buttonConfig = mConfigCreator.create(params, new ArrayList<>());
         assertEquals(3, buttonConfig.getButtonList().size());
     }
 
@@ -121,25 +147,27 @@ public class BottomBarConfigCreatorTest {
                 List.of(
                         PIH_BASIC, PIH_BASIC, SHARE, SAVE, ADD_NOTES,
                         REFRESH); // PIH_BASIC, SHARE, SAVE, ADD_NOTES, REFRESH
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder().addAllEncodedButton(buttonIdList).build();
         Drawable drawable = mock(Drawable.class);
         when(mCustomButtonParams.getId()).thenReturn(100); // SAVE
         when(mCustomButtonParams.getIcon(mContext)).thenReturn(drawable);
 
         // ADD_NOTES and REFRESH are not included in the final list as they are not supported
-        BottomBarConfig buttonConfig =
-                mConfigCreator.create(buttonIdList, List.of(mCustomButtonParams));
+        BottomBarConfig buttonConfig = mConfigCreator.create(params, List.of(mCustomButtonParams));
         assertEquals(3, buttonConfig.getButtonList().size());
     }
 
     @Test
     public void createButtonConfigList_buttonIdListWithoutCustomParamId() {
         List<Integer> buttonIdList = List.of(PIH_BASIC, PIH_BASIC, SHARE); // PIH_BASIC, SHARE
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder().addAllEncodedButton(buttonIdList).build();
 
         when(mCustomButtonParams.getId()).thenReturn(100); // SAVE
 
         // SAVE is not included in the final list
-        BottomBarConfig buttonConfig =
-                mConfigCreator.create(buttonIdList, List.of(mCustomButtonParams));
+        BottomBarConfig buttonConfig = mConfigCreator.create(params, List.of(mCustomButtonParams));
         assertEquals(2, buttonConfig.getButtonList().size());
     }
 
@@ -150,10 +178,13 @@ public class BottomBarConfigCreatorTest {
         when(mCustomButtonParams.getIcon(mContext)).thenReturn(drawable);
         var pendingIntent = mock(PendingIntent.class);
         when(mCustomButtonParams.getPendingIntent()).thenReturn(pendingIntent);
-
         // PIH_BASIC, SHARE, SAVE, REFRESH
-        BottomBarConfig buttonConfig =
-                mConfigCreator.create("1,1,2,3,5", List.of(mCustomButtonParams));
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .addAllEncodedButton(List.of(1, 1, 2, 3, 5))
+                        .build();
+
+        BottomBarConfig buttonConfig = mConfigCreator.create(params, List.of(mCustomButtonParams));
 
         // the button has the expected custom button params set
         assertEquals(pendingIntent, buttonConfig.getButtonList().get(2).getPendingIntent());
@@ -166,10 +197,13 @@ public class BottomBarConfigCreatorTest {
         when(mCustomButtonParams.getIcon(mContext)).thenReturn(drawable);
         var pendingIntent = mock(PendingIntent.class);
         when(mCustomButtonParams.getPendingIntent()).thenReturn(pendingIntent);
-
         // PIH_BASIC, SHARE, SAVE
-        BottomBarConfig buttonConfig =
-                mConfigCreator.create("0,1,2,3", List.of(mCustomButtonParams));
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .addAllEncodedButton(List.of(0, 1, 2, 3))
+                        .build();
+
+        BottomBarConfig buttonConfig = mConfigCreator.create(params, List.of(mCustomButtonParams));
 
         Bitmap expectedBitmap =
                 drawableToBitmap(
@@ -197,8 +231,8 @@ public class BottomBarConfigCreatorTest {
     private static void assertDefaultConfig(BottomBarConfig config) {
         assertNull(config.getSpotlightId());
         assertEquals(3, config.getButtonList().size());
-        assertEquals(ButtonId.SAVE, config.getButtonList().get(0).getId());
-        assertEquals(ButtonId.PIH_BASIC, config.getButtonList().get(1).getId());
-        assertEquals(ButtonId.SHARE, config.getButtonList().get(2).getId());
+        assertEquals(SAVE, config.getButtonList().get(0).getId());
+        assertEquals(PIH_BASIC, config.getButtonList().get(1).getId());
+        assertEquals(SHARE, config.getButtonList().get(2).getId());
     }
 }

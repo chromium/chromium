@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
-import org.chromium.base.cached_flags.StringCachedFieldTrialParameter;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -29,11 +28,6 @@ import java.util.List;
 public class GoogleBottomBarCoordinator {
 
     private static final String TAG = "GBBCoordinator";
-    private static final String BUTTON_LIST_PARAM = "google_bottom_bar_button_list";
-
-    public static final StringCachedFieldTrialParameter GOOGLE_BOTTOM_BAR_PARAM_BUTTON_LIST =
-            ChromeFeatureList.newStringCachedFieldTrialParameter(
-                    ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR, BUTTON_LIST_PARAM, "");
 
     /** Returns true if GoogleBottomBar is enabled in the feature flag. */
     public static boolean isFeatureEnabled() {
@@ -124,16 +118,7 @@ public class GoogleBottomBarCoordinator {
             GoogleBottomBarIntentParams intentParams,
             List<CustomButtonParams> customButtonsOnGoogleBottomBar) {
         BottomBarConfigCreator configCreator = new BottomBarConfigCreator(mContext);
-
-        // Encoded button list provided in intent from embedder
-        if (intentParams.getEncodedButtonCount() != 0) {
-            return configCreator.create(
-                    intentParams.getEncodedButtonList(), customButtonsOnGoogleBottomBar);
-        }
-
-        // Fall back on encoded string provided in Finch param
-        return configCreator.create(
-                GOOGLE_BOTTOM_BAR_PARAM_BUTTON_LIST.getValue(), customButtonsOnGoogleBottomBar);
+        return configCreator.create(intentParams, customButtonsOnGoogleBottomBar);
     }
 
     private @Nullable PageInsightsCoordinator getPageInsightsCoordinator() {

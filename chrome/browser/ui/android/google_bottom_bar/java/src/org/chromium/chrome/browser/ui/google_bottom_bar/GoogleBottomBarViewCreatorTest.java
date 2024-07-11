@@ -10,10 +10,10 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId.CUSTOM;
-import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId.PIH_BASIC;
-import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId.SAVE;
-import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId.SHARE;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.CUSTOM;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.PIH_BASIC;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.SAVE;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.SHARE;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BOTTOM_BAR_CREATED_HISTOGRAM;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BUTTON_SHOWN_HISTOGRAM;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BUTTON_UPDATED_HISTOGRAM;
@@ -43,9 +43,10 @@ import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId;
+import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarCreatedEvent;
+import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
 import org.chromium.ui.base.TestActivity;
 
 import java.util.ArrayList;
@@ -101,7 +102,9 @@ public class GoogleBottomBarViewCreatorTest {
 
     private BottomBarConfig getEvenLayoutConfig() {
         List<Integer> buttonIdList = List.of(0, PIH_BASIC, SHARE, SAVE);
-        return mConfigCreator.create(buttonIdList, new ArrayList<>());
+        return mConfigCreator.create(
+                GoogleBottomBarIntentParams.newBuilder().addAllEncodedButton(buttonIdList).build(),
+                new ArrayList<>());
     }
 
     private void setUpPageInsightsCoordinatorSupplier() {
@@ -115,7 +118,9 @@ public class GoogleBottomBarViewCreatorTest {
 
     private BottomBarConfig getAllChromeButtonsConfig(List<Integer> buttonIdList) {
         setUpPageInsightsCoordinatorSupplier();
-        return mConfigCreator.create(buttonIdList, new ArrayList<>());
+        return mConfigCreator.create(
+                GoogleBottomBarIntentParams.newBuilder().addAllEncodedButton(buttonIdList).build(),
+                new ArrayList<>());
     }
 
     private BottomBarConfig getAllEmbedderButtonsConfig() {
@@ -127,11 +132,12 @@ public class GoogleBottomBarViewCreatorTest {
                         getMockCustomButtonParams(SHARE),
                         getMockCustomButtonParams(SAVE));
 
-        return mConfigCreator.create(buttonIdList, customButtonParamsList);
+        return mConfigCreator.create(
+                GoogleBottomBarIntentParams.newBuilder().addAllEncodedButton(buttonIdList).build(),
+                customButtonParamsList);
     }
 
-    private CustomButtonParams getMockCustomButtonParams(
-            @BottomBarConfigCreator.ButtonId int buttonId) {
+    private CustomButtonParams getMockCustomButtonParams(@ButtonId int buttonId) {
         CustomButtonParams customButtonParams = mock(CustomButtonParams.class);
         Drawable drawable = mock(Drawable.class);
         when(drawable.mutate()).thenReturn(drawable);
@@ -147,7 +153,9 @@ public class GoogleBottomBarViewCreatorTest {
 
     private BottomBarConfig getSpotlightLayoutConfig() {
         List<Integer> buttonIdList = List.of(PIH_BASIC, PIH_BASIC, SHARE, SAVE);
-        return mConfigCreator.create(buttonIdList, new ArrayList<>());
+        return mConfigCreator.create(
+                GoogleBottomBarIntentParams.newBuilder().addAllEncodedButton(buttonIdList).build(),
+                new ArrayList<>());
     }
 
     @Test
@@ -225,7 +233,11 @@ public class GoogleBottomBarViewCreatorTest {
         List<Integer> buttonIdList = List.of(0, PIH_BASIC);
         mGoogleBottomBarViewCreator =
                 getGoogleBottomBarViewCreator(
-                        mConfigCreator.create(buttonIdList, new ArrayList<>()));
+                        mConfigCreator.create(
+                                GoogleBottomBarIntentParams.newBuilder()
+                                        .addAllEncodedButton(buttonIdList)
+                                        .build(),
+                                new ArrayList<>()));
         mGoogleBottomBarViewCreator.createGoogleBottomBarView();
 
         mGoogleBottomBarViewCreator.logButtons();
@@ -248,10 +260,12 @@ public class GoogleBottomBarViewCreatorTest {
         mGoogleBottomBarViewCreator =
                 getGoogleBottomBarViewCreator(
                         mConfigCreator.create(
-                                buttonIdList,
+                                GoogleBottomBarIntentParams.newBuilder()
+                                        .addAllEncodedButton(buttonIdList)
+                                        .build(),
                                 List.of(
                                         getMockCustomButtonParams(PIH_BASIC),
-                                        getMockCustomButtonParams(ButtonId.CUSTOM))));
+                                        getMockCustomButtonParams(CUSTOM))));
         mGoogleBottomBarViewCreator.createGoogleBottomBarView();
 
         mGoogleBottomBarViewCreator.logButtons();
@@ -273,7 +287,10 @@ public class GoogleBottomBarViewCreatorTest {
         mGoogleBottomBarViewCreator =
                 getGoogleBottomBarViewCreator(
                         mConfigCreator.create(
-                                buttonIdList, List.of(getMockCustomButtonParams(PIH_BASIC))));
+                                GoogleBottomBarIntentParams.newBuilder()
+                                        .addAllEncodedButton(buttonIdList)
+                                        .build(),
+                                List.of(getMockCustomButtonParams(PIH_BASIC))));
         mGoogleBottomBarViewCreator.createGoogleBottomBarView();
 
         mGoogleBottomBarViewCreator.logButtons();
