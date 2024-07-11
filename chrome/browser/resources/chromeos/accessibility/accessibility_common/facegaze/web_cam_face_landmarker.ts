@@ -98,7 +98,16 @@ export class WebCamFaceLandmarker {
       return;
     }
 
-    const frame = await this.imageCapture_!.grabFrame();
+    let frame;
+    try {
+      frame = await this.imageCapture_!.grabFrame();
+    } catch (error) {
+      // grabFrame() can occasionally return an error, so in these cases, we
+      // should handle the error and simply return instead of trying to process
+      // the frame.
+      return;
+    }
+
     const startTime = performance.now();
     const result = this.faceLandmarker_.detect(/*image=*/ frame);
     const latency = performance.now() - startTime;
