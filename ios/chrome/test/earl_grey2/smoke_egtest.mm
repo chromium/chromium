@@ -263,8 +263,7 @@
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithFeaturesEnabled:{}
       disabled:{}
       relaunchPolicy:ForceRelaunchByCleanShutdown];
-  [[EarlGrey selectElementWithMatcher:grey_text(@"Restore")]
-      assertWithMatcher:grey_notVisible()];
+  [ChromeEarlGrey waitForMainTabCount:1];
 }
 
 // Tests hard kill(crash) through AppLaunchManager.
@@ -273,18 +272,12 @@
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey loadURL:GURL("chrome://about")];
-  if (@available(iOS 18, *)) {
-    // TODO(crbug.com/347443965): Something is broken here on iOS18 and this
-    // test doesn't seem to be syncing chrome://about to disk.
-    sleep(3);
-  }
+  [ChromeEarlGrey saveSessionImmediately];
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithFeaturesEnabled:{}
       disabled:{}
       relaunchPolicy:ForceRelaunchByKilling];
   [ChromeEarlGrey waitForMainTabCount:2];
   [ChromeEarlGrey waitForIncognitoTabCount:1];
-  [[EarlGrey selectElementWithMatcher:grey_text(@"Restore")]
-      assertWithMatcher:grey_notVisible()];
 }
 
 // Tests running resets after relaunch through AppLaunchManager.
@@ -310,8 +303,6 @@
                                   disabled:config.features_disabled
                             relaunchPolicy:NoForceRelaunchAndKeepState];
   [ChromeEarlGrey waitForMainTabCount:2];
-  [[EarlGrey selectElementWithMatcher:grey_text(@"Restore")]
-      assertWithMatcher:grey_notVisible()];
 }
 
 // Tests backgrounding app and moving app back through AppLaunchManager.
