@@ -10,6 +10,7 @@ import logging
 import os
 import sys
 import unicodedata
+import xml.etree.ElementTree
 from typing import Any, Dict, Generator, List, Optional, Sequence, Set, Tuple
 
 # Add extra dependencies to the python path.
@@ -259,8 +260,10 @@ def _load_emoji_characters_from_files(data_paths: List[str]) -> Set[str]:
 
 
 def _convert_unicode_ranges_to_emoji_chars(
-        unicode_ranges: List[Tuple[int, int]],
-        ignore_errors: bool = True) -> Generator[EmojiPickerChar, None, None]:
+    unicode_ranges: List[Tuple[int, int]],
+    cldr_map: Dict[str, EmojiPickerChar],
+    ignore_errors: bool = True
+) -> Generator[EmojiPickerChar, None, None]:
     """Converts unicode ranges to `EmojiPickerChar` instances.
 
     Given a list of unicode ranges, it iterates over all characters in all the
@@ -298,14 +301,17 @@ def _convert_unicode_ranges_to_emoji_chars(
         # Iterate over all code points in the range.
         for code_point in range(start_code_point, end_code_point + 1):
             try:
-                # For the current code point, create the corresponding
-                # character and lookup its name in the unicodedata. Then,
-                # create an instance of  `EmojiPickerChar` from the data.
                 unicode_character = chr(code_point)
-                yield EmojiPickerChar(
-                    string=unicode_character,
-                    name=unicodedata.name(unicode_character).lower(),
-                    keywords=CUSTOM_KEYWORDS.get(unicode_character, []))
+                if unicode_character in cldr_map:
+                    yield cldr_map[unicode_character]
+                else:
+                    # For the current code point, create the corresponding
+                    # character and lookup its name in the unicodedata. Then,
+                    # create an instance of  `EmojiPickerChar` from the data.
+                    yield EmojiPickerChar(
+                        string=unicode_character,
+                        name=unicodedata.name(unicode_character).lower(),
+                        keywords=CUSTOM_KEYWORDS.get(unicode_character, []))
             except ValueError:
                 # If ignore_errors is False, raise the exception.
                 if not ignore_errors:
@@ -319,10 +325,12 @@ def _convert_unicode_ranges_to_emoji_chars(
 
 
 def get_symbols_groups(
-        group_unicode_ranges: Dict[str, List[Tuple[int, int]]],
-        search_only: bool = False,
-        ignore_errors: bool = True,
-        filter_set: Optional[Set[str]] = None) -> List[EmojiPickerGroup]:
+    group_unicode_ranges: Dict[str, List[Tuple[int, int]]],
+    cldr_map: Dict[str, EmojiPickerChar],
+    search_only: bool = False,
+    ignore_errors: bool = True,
+    filter_set: Optional[Set[str]] = None
+) -> List[EmojiPickerGroup]:
     """Creates symbols data from predefined groups and their unicode ranges.
 
     Args:
@@ -332,6 +340,7 @@ def get_symbols_groups(
             unicode characters is silently ignored.
         filter_set: If not None, the characters that exist in this set are
             excluded from output symbol groups.
+        cldr_map: Dictionary of cldr data for symbol chars.
 
     Raises:
         ValueError: If a unicode character does not exist in the data source
@@ -342,7 +351,7 @@ def get_symbols_groups(
     for (group_name, unicode_ranges) in group_unicode_ranges.items():
         LOGGER.info('generating symbols for group %s.', group_name)
         emoji_chars = _convert_unicode_ranges_to_emoji_chars(
-            unicode_ranges, ignore_errors=ignore_errors)
+            unicode_ranges, ignore_errors=ignore_errors, cldr_map=cldr_map)
         emoji = [
             EmojiPickerEmoji(base=emoji_char) for emoji_char in emoji_chars
             if filter_set is None or emoji_char.string not in filter_set
@@ -353,6 +362,25 @@ def get_symbols_groups(
                                        search_only=search_only)
         emoji_groups.append(emoji_group)
     return emoji_groups
+
+
+def parse_cldr_annotations(keyword_file: str) -> Dict[str, EmojiPickerChar]:
+    symbol_to_data: Dict[str, EmojiPickerChar] = {}
+
+    tree = xml.etree.ElementTree.parse(keyword_file)
+    root = tree.getroot()
+
+    for tag in root.iterfind('./annotations/annotation[@cp]'):
+        cp = tag.get('cp')
+
+        if cp not in symbol_to_data:
+            symbol_to_data[cp] = EmojiPickerChar(string=cp, name='')
+
+        if tag.get('type') == 'tts':
+            symbol_to_data[cp].name = tag.text
+        else:
+            symbol_to_data[cp].keywords = tag.text.split(' | ')
+    return symbol_to_data
 
 
 def main(argv: List[str]) -> None:
@@ -367,6 +395,10 @@ def main(argv: List[str]) -> None:
                         action='store_true',
                         help='Set the logging level to Debug.')
     parser.add_argument('--filter-data-paths', action='append', nargs='+')
+    parser.add_argument('--cldr_data_paths',
+                        default=[],
+                        nargs='*',
+                        help='Paths to find CLDR unicode annotations')
 
     args = parser.parse_args(argv)
 
@@ -387,16 +419,23 @@ def main(argv: List[str]) -> None:
     # Explicitly remove individual symbols that don't render on ChromeOS
     filter_set |= INVALID_SYMBOLS
 
+    cldr_map: Dict[str, EmojiPickerChar] = {}
+    for path in args.cldr_data_paths:
+        # Would replace existing symbols if already exists.
+        cldr_map.update(parse_cldr_annotations(path))
+
     # Add symbol groups.
     symbols_groups = get_symbols_groups(group_unicode_ranges=SYMBOLS_GROUPS,
                                         filter_set=filter_set,
-                                        search_only=False)
+                                        search_only=False,
+                                        cldr_map=cldr_map)
 
     # Add search-only symbol groups.
     symbols_groups.extend(
         get_symbols_groups(group_unicode_ranges=SEARCH_ONLY_SYMBOLS_GROUPS,
                            filter_set=filter_set,
-                           search_only=True))
+                           search_only=True,
+                           cldr_map=cldr_map))
 
     # Create the data and convert them to dict.
     symbols_groups_dicts = []
