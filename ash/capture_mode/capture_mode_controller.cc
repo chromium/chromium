@@ -880,15 +880,6 @@ void CaptureModeController::RefreshContentProtection() {
   }
 }
 
-void CaptureModeController::ToggleAnnotationsOverlayEnabled() {
-  CHECK(is_recording_in_progress());
-  CHECK(video_recording_watcher_);
-  CHECK(video_recording_watcher_->active_behavior()
-            ->ShouldCreateAnnotationsOverlayController());
-
-  video_recording_watcher_->ToggleAnnotationsOverlayEnabled();
-}
-
 bool CaptureModeController::IsRootDriveFsPath(
     const base::FilePath& path) const {
   base::FilePath mounted_path;

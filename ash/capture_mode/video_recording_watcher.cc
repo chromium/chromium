@@ -8,7 +8,7 @@
 #include <optional>
 
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
-#include "ash/annotator/annotations_overlay_controller.h"
+#include "ash/annotator/annotator_controller.h"
 #include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_camera_preview_view.h"
@@ -135,6 +135,10 @@ CameraPreviewView* GetCameraPreviewView() {
       ->camera_preview_view();
 }
 
+bool PointerHighlightingEnabled() {
+  return !Shell::Get()->annotator_controller()->is_annotator_enabled();
+}
+
 }  // namespace
 
 // -----------------------------------------------------------------------------
@@ -242,16 +246,13 @@ VideoRecordingWatcher::VideoRecordingWatcher(
   window_being_recorded_->AddPreTargetHandler(
       this, ui::EventTarget::Priority::kAccessibility);
 
-  const bool should_create_annotations_overlay =
-      active_behavior_->ShouldCreateAnnotationsOverlayController();
-  if (should_create_annotations_overlay) {
+  if (active_behavior_->ShouldCreateAnnotationsOverlayController()) {
     std::optional<gfx::Rect> region_bounds =
         recording_source_ == CaptureModeSource::kRegion
             ? std::optional<gfx::Rect>(partial_region_bounds_)
             : std::nullopt;
-    annotations_overlay_controller_ =
-        std::make_unique<AnnotationsOverlayController>(window_being_recorded_,
-                                                       region_bounds);
+    Shell::Get()->annotator_controller()->CreateAnnotationOverlayForWindow(
+        window_being_recorded_, region_bounds);
   }
 
   controller_->camera_controller()->OnRecordingStarted(active_behavior_);
@@ -268,14 +269,6 @@ VideoRecordingWatcher::~VideoRecordingWatcher() {
   CHECK(is_shutting_down_);
 }
 
-void VideoRecordingWatcher::ToggleAnnotationsOverlayEnabled() {
-  CHECK(active_behavior_->ShouldCreateAnnotationsOverlayController());
-  CHECK(!is_shutting_down_);
-  CHECK(annotations_overlay_controller_);
-
-  annotations_overlay_controller_->Toggle();
-}
-
 void VideoRecordingWatcher::ShutDown() {
   is_shutting_down_ = true;
   CHECK(window_being_recorded_);
@@ -284,7 +277,6 @@ void VideoRecordingWatcher::ShutDown() {
   cursor_events_throttle_timer_.Stop();
   cursor_capture_overlay_remote_.reset();
   root_observer_.reset();
-  annotations_overlay_controller_.reset();
   demo_tools_controller_.reset();
   dimmers_.clear();
   ReleaseLayer();
@@ -885,11 +877,6 @@ void VideoRecordingWatcher::OnWindowSizeChangeThrottleTimerFiring() {
 
   controller_->OnRecordedWindowSizeChanged(
       window_being_recorded_->bounds().size());
-}
-
-bool VideoRecordingWatcher::PointerHighlightingEnabled() const {
-  return !(annotations_overlay_controller_ &&
-           annotations_overlay_controller_->is_enabled());
 }
 
 }  // namespace ash

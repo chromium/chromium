@@ -129,6 +129,8 @@ TEST_F(ProjectorUiControllerTest, HideTrayWhenAnnotatorIsEnabled) {
   controller_->ShowAnnotationTray(Shell::GetPrimaryRootWindow());
   EXPECT_TRUE(projector_annotation_tray->visible_preferred());
 
+  Shell::Get()->annotator_controller()->CreateAnnotationOverlayForWindow(
+      Shell::GetPrimaryRootWindow(), std::nullopt);
   Shell::Get()->annotator_controller()->EnableAnnotatorTool();
   EXPECT_TRUE(Shell::Get()->annotator_controller()->is_annotator_enabled());
 

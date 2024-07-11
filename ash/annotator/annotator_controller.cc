@@ -4,6 +4,7 @@
 
 #include "ash/annotator/annotator_controller.h"
 
+#include "ash/annotator/annotations_overlay_controller.h"
 #include "ash/annotator/annotator_metrics.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/projector/projector_annotation_tray.h"
@@ -15,6 +16,7 @@
 #include "ash/webui/annotator/public/cpp/annotator_client.h"
 #include "base/check.h"
 #include "ui/aura/window.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace ash {
 namespace {
@@ -67,25 +69,12 @@ void SetProjectorAnnotationTrayVisibility(aura::Window* root, bool visible) {
     projector_annotation_tray->SetVisiblePreferred(visible);
   }
 }
-
-void ToggleAnnotatorCanvas() {
-  auto* capture_mode_controller = CaptureModeController::Get();
-  // TODO(b/200292852): This check should not be necessary, but because
-  // several Projector unit tests that rely on mocking and don't test the real
-  // code path, we can end up calling |ToggleAnnotationsOverlayEnabled()|
-  // without ever starting a Projector recording session.
-  // |CaptureModeController| asserts all invariants via DCHECKs, and those
-  // tests would crash. Remove any unnecessary mocks and test the real thing
-  // if possible.
-  if (capture_mode_controller->is_recording_in_progress()) {
-    capture_mode_controller->ToggleAnnotationsOverlayEnabled();
-  }
-}
 }  // namespace
 
 AnnotatorController::AnnotatorController() = default;
 
 AnnotatorController::~AnnotatorController() {
+  annotations_overlay_controller_.reset();
   client_ = nullptr;
   current_root_ = nullptr;
 }
@@ -121,7 +110,7 @@ void AnnotatorController::UnregisterView(aura::Window* window) {
 }
 
 void AnnotatorController::EnableAnnotatorTool() {
-  if (!annotator_enabled_) {
+  if (!annotator_enabled_ && annotations_overlay_controller_) {
     ToggleAnnotatorCanvas();
     annotator_enabled_ = !annotator_enabled_;
     // TODO(b/342104047): Decouple from projector metrics.
@@ -134,8 +123,16 @@ void AnnotatorController::DisableAnnotator() {
   if (current_root_) {
     UnregisterView(current_root_);
   }
-
+  annotations_overlay_controller_.reset();
   canvas_initialized_state_.reset();
+}
+
+void AnnotatorController::CreateAnnotationOverlayForWindow(
+    aura::Window* window,
+    std::optional<gfx::Rect> partial_region_bounds) {
+  annotations_overlay_controller_ =
+      std::make_unique<AnnotationsOverlayController>(window,
+                                                     partial_region_bounds);
 }
 
 void AnnotatorController::SetToolClient(AnnotatorClient* client) {
@@ -178,6 +175,16 @@ void AnnotatorController::UpdateTrayEnabledState() {
 std::unique_ptr<AnnotationsOverlayView>
 AnnotatorController::CreateAnnotationsOverlayView() const {
   return client_->CreateAnnotationsOverlayView();
+}
+
+void AnnotatorController::ToggleAnnotatorCanvas() {
+  auto* capture_mode_controller = CaptureModeController::Get();
+  // TODO(b/342104047): This check is necessary as long as we only toggle
+  // annotator from Projector. Once we start using the annotator outside of
+  // Projector, we should remove the check.
+  if (capture_mode_controller->is_recording_in_progress()) {
+    annotations_overlay_controller_->Toggle();
+  }
 }
 
 }  // namespace ash

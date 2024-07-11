@@ -120,11 +120,25 @@ TEST_F(AnnotatorControllerTest, UnregisterViewWhenAnnotatorIsEnabled) {
   annotator_controller()->RegisterView(Shell::GetPrimaryRootWindow());
   EXPECT_TRUE(projector_annotation_tray->visible_preferred());
 
+  annotator_controller()->CreateAnnotationOverlayForWindow(
+      Shell::GetPrimaryRootWindow(), std::nullopt);
   annotator_controller()->EnableAnnotatorTool();
   EXPECT_TRUE(annotator_controller()->is_annotator_enabled());
 
   annotator_controller()->UnregisterView(Shell::GetPrimaryRootWindow());
   EXPECT_FALSE(projector_annotation_tray->visible_preferred());
+}
+
+TEST_F(AnnotatorControllerTest, EnableAnnotator) {
+  // Does nothing as there is no view for annotating.
+  annotator_controller()->EnableAnnotatorTool();
+  EXPECT_FALSE(annotator_controller()->is_annotator_enabled());
+
+  // Enables the annotator after creating the view for annotating.
+  annotator_controller()->CreateAnnotationOverlayForWindow(
+      Shell::GetPrimaryRootWindow(), std::nullopt);
+  annotator_controller()->EnableAnnotatorTool();
+  EXPECT_TRUE(annotator_controller()->is_annotator_enabled());
 }
 
 TEST_F(AnnotatorControllerTest, DisableAnnotator) {
@@ -136,6 +150,8 @@ TEST_F(AnnotatorControllerTest, DisableAnnotator) {
   annotator_controller()->RegisterView(Shell::GetPrimaryRootWindow());
   EXPECT_TRUE(projector_annotation_tray->visible_preferred());
 
+  annotator_controller()->CreateAnnotationOverlayForWindow(
+      Shell::GetPrimaryRootWindow(), std::nullopt);
   annotator_controller()->EnableAnnotatorTool();
   EXPECT_TRUE(annotator_controller()->is_annotator_enabled());
 
@@ -149,6 +165,8 @@ TEST_F(AnnotatorControllerTest, EnablingDisablingMarker) {
   base::HistogramTester histogram_tester;
 
   // Enable marker.
+  annotator_controller()->CreateAnnotationOverlayForWindow(
+      Shell::GetPrimaryRootWindow(), std::nullopt);
   annotator_controller()->EnableAnnotatorTool();
   EXPECT_TRUE(annotator_controller()->is_annotator_enabled());
 
@@ -163,6 +181,8 @@ TEST_F(AnnotatorControllerTest, EnablingDisablingMarker) {
 
 TEST_F(AnnotatorControllerTest, ToggleMarkerWithKeyboardShortcut) {
   annotator_controller()->RegisterView(Shell::GetPrimaryRootWindow());
+  annotator_controller()->CreateAnnotationOverlayForWindow(
+      Shell::GetPrimaryRootWindow(), std::nullopt);
   annotator_controller()->OnCanvasInitialized(true);
 
   auto* event_generator = GetEventGenerator();
@@ -185,6 +205,8 @@ TEST_F(AnnotatorControllerTest, SetAnnotatorToolAndStorePref) {
       0u);
 
   annotator_controller()->RegisterView(Shell::GetPrimaryRootWindow());
+  annotator_controller()->CreateAnnotationOverlayForWindow(
+      Shell::GetPrimaryRootWindow(), std::nullopt);
   annotator_controller()->OnCanvasInitialized(true);
   // Assert that the icon image for the annotator is set.
   ASSERT_EQ(projector_annotation_tray->tray_container()->children().size(), 1u);
@@ -206,6 +228,8 @@ TEST_F(AnnotatorControllerTest, SetAnnotatorToolAndStorePref) {
 // Tests that long pressing the ProjectorAnnotationTray shows a bubble.
 TEST_F(AnnotatorControllerTest, LongPressShowsBubble) {
   annotator_controller()->RegisterView(Shell::GetPrimaryRootWindow());
+  annotator_controller()->CreateAnnotationOverlayForWindow(
+      Shell::GetPrimaryRootWindow(), std::nullopt);
   annotator_controller()->OnCanvasInitialized(true);
 
   auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
@@ -251,6 +275,8 @@ TEST_F(AnnotatorControllerTest, LongPressShowsBubble) {
 // Tests that tapping the ProjectorAnnotationTray enables annotation.
 TEST_F(AnnotatorControllerTest, TapEnabledAnnotation) {
   annotator_controller()->RegisterView(Shell::GetPrimaryRootWindow());
+  annotator_controller()->CreateAnnotationOverlayForWindow(
+      Shell::GetPrimaryRootWindow(), std::nullopt);
   annotator_controller()->OnCanvasInitialized(true);
 
   GestureTapOn(Shell::GetPrimaryRootWindowController()
@@ -268,6 +294,8 @@ TEST_F(AnnotatorControllerTest, OnCanvasInitialized) {
 
   EXPECT_FALSE(projector_annotation_tray->GetEnabled());
 
+  annotator_controller()->CreateAnnotationOverlayForWindow(
+      Shell::GetPrimaryRootWindow(), std::nullopt);
   annotator_controller()->OnCanvasInitialized(/*success=*/true);
   EXPECT_TRUE(annotator_controller()->GetAnnotatorAvailability());
   EXPECT_TRUE(projector_annotation_tray->GetEnabled());
@@ -279,6 +307,8 @@ TEST_F(AnnotatorControllerTest, OnCanvasInitialized) {
 
 TEST_F(AnnotatorControllerTest, ToggleAnnotationTray) {
   annotator_controller()->RegisterView(Shell::GetPrimaryRootWindow());
+  annotator_controller()->CreateAnnotationOverlayForWindow(
+      Shell::GetPrimaryRootWindow(), std::nullopt);
   annotator_controller()->OnCanvasInitialized(true);
   EXPECT_FALSE(annotator_controller()->is_annotator_enabled());
 

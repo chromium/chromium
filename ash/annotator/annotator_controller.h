@@ -21,11 +21,16 @@ namespace aura {
 class Window;
 }  // namespace aura
 
+namespace gfx {
+class Rect;
+}  // namespace gfx
+
 namespace ash {
 
 struct AnnotatorTool;
 class AnnotatorClient;
 class AnnotationsOverlayView;
+class AnnotationsOverlayController;
 
 // The controller in charge of annotator UI.
 class ASH_EXPORT AnnotatorController : public AnnotatorControllerBase {
@@ -46,10 +51,20 @@ class ASH_EXPORT AnnotatorController : public AnnotatorControllerBase {
   // Hides annotation tray for `current_root` if it was previously registered
   // with the controller.
   void UnregisterView(aura::Window* current_root);
-  // Invoked when marker button is pressed.
+  // Invoked when marker button is pressed. Enables annotating.
   void EnableAnnotatorTool();
   // Resets the canvas and disables the annotator functionality.
   void DisableAnnotator();
+  // Creates `annotations_overlay_controller_` for the `window`. This is
+  // necessary, as it adds a view for annotating on top of the `window` and
+  // loads the Ink library in the view. After the call, annotating is still
+  // disabled, until the EnableAnnotatorTool() method is called.
+  // TODO(b/342104047): Once the markup pod is implemented, make this method
+  // private, called from EnableAnnotatorTool(). Add handling for multiple
+  // displays.
+  void CreateAnnotationOverlayForWindow(
+      aura::Window* window,
+      std::optional<gfx::Rect> partial_region_bounds);
 
   // AnnotatorControllerBase:
   void SetToolClient(AnnotatorClient* client) override;
@@ -71,6 +86,13 @@ class ASH_EXPORT AnnotatorController : public AnnotatorControllerBase {
   }
 
  private:
+  friend class CaptureModeTestApi;
+
+  // Toggles annotation overlay widget on or off. When on, the annotations
+  // overlay widget's window will be shown and can consume all the events
+  // targeting the underlying window. Otherwise, it's hidden and cannot accept
+  // any events.
+  void ToggleAnnotatorCanvas();
   raw_ptr<AnnotatorClient> client_ = nullptr;
   // True if the canvas is initialized successfully, false if it failed to
   // initialize. An absent value indicates that the initialization has not
@@ -81,6 +103,8 @@ class ASH_EXPORT AnnotatorController : public AnnotatorControllerBase {
   raw_ptr<aura::Window> current_root_ = nullptr;
   // If set, will be called when the canvas is initialized.
   base::OnceClosure on_canvas_initialized_callback_for_test_;
+  // Controls and owns the overlay widget, which is used to host annotations.
+  std::unique_ptr<AnnotationsOverlayController> annotations_overlay_controller_;
 };
 
 }  // namespace ash

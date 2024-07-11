@@ -4,6 +4,7 @@
 
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 
+#include "ash/annotator/annotator_controller.h"
 #include "ash/capture_mode/camera_video_frame_renderer.h"
 #include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
@@ -13,6 +14,7 @@
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/video_recording_watcher.h"
+#include "ash/shell.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/run_loop.h"
@@ -163,7 +165,9 @@ CaptureModeTestApi::GetAnnotationsOverlayController() {
       video_recording_watcher->active_behavior();
   CHECK(active_behavior);
   CHECK(active_behavior->ShouldCreateAnnotationsOverlayController());
-  return video_recording_watcher->annotations_overlay_controller_.get();
+  return Shell::Get()
+      ->annotator_controller()
+      ->annotations_overlay_controller_.get();
 }
 
 void CaptureModeTestApi::SimulateOpeningFolderSelectionDialog() {
