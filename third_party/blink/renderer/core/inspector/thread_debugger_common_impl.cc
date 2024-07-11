@@ -1004,12 +1004,10 @@ void ThreadDebuggerCommonImpl::consoleTimeEnd(
 
 void ThreadDebuggerCommonImpl::consoleTimeStamp(
     const v8_inspector::StringView& title) {
-  ExecutionContext* ec = CurrentExecutionContext(isolate_);
-  // TODO(dgozman): we can save on a copy here if TracedValue would take a
-  // StringView.
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
-      "TimeStamp", inspector_time_stamp_event::Data, ec, ToCoreString(title));
-  probe::ConsoleTimeStamp(ec, ToCoreString(title));
+      "TimeStamp", inspector_time_stamp_event::Data,
+      CurrentExecutionContext(isolate_), ToCoreString(title));
+  probe::ConsoleTimeStamp(isolate_, title);
 }
 
 void ThreadDebuggerCommonImpl::startRepeatingTimer(

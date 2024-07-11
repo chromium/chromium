@@ -126,6 +126,10 @@ inline CoreProbeSink* ToCoreProbeSink(ExecutionContext* context) {
   return context ? context->GetProbeSink() : nullptr;
 }
 
+inline CoreProbeSink* ToCoreProbeSink(v8::Isolate* isolate) {
+  return isolate ? CurrentExecutionContext(isolate)->GetProbeSink() : nullptr;
+}
+
 inline CoreProbeSink* ToCoreProbeSink(ScriptState* script_state) {
   return ToCoreProbeSink(ToExecutionContext(script_state));
 }
