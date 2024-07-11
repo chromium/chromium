@@ -212,9 +212,7 @@ public class ChromeActionModeHandler {
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            if (!mHelper.isActionModeValid() && !mHelper.isPasteActionModeValid()) return true;
-            assert (!mHelper.isActionModeValid()) || (!mHelper.isPasteActionModeValid())
-                    : "Can't have both a paste and normal menu showing at the same time";
+            if (!mHelper.isActionModeValid()) return true;
 
             ReadAloudController readAloud = mReadAloudControllerSupplier.get();
             if (readAloud != null) {

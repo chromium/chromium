@@ -84,12 +84,6 @@ public abstract class ActionModeCallbackHelper {
     public abstract boolean isActionModeValid();
 
     /**
-     * @return {@code true} if paste action mode is started and in proper working state. if null, it
-     *     was not started or is in finished, destroyed state.
-     */
-    public abstract boolean isPasteActionModeValid();
-
-    /**
      * @see ActionMode#finish()
      */
     public abstract void finishActionMode();
