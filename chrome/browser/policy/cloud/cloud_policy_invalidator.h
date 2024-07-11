@@ -10,12 +10,14 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_handler.h"
 #include "components/invalidation/public/invalidation_util.h"
@@ -34,10 +36,19 @@ class InvalidationService;
 
 namespace policy {
 
+// The invalidation service.
+using InvalidationServicePtr = raw_ptr<invalidation::InvalidationService>;
+using InvalidationListenerPtr = raw_ptr<invalidation::InvalidationListener>;
+
+// The state of the object.
+enum class State { UNINITIALIZED, STOPPED, STARTED, SHUT_DOWN };
+
 // Listens for and provides policy invalidations.
-class CloudPolicyInvalidator : public invalidation::InvalidationHandler,
-                               public CloudPolicyCore::Observer,
-                               public CloudPolicyStore::Observer {
+class CloudPolicyInvalidator
+    : public invalidation::InvalidationHandler,
+      public invalidation::InvalidationListener::Observer,
+      public CloudPolicyCore::Observer,
+      public CloudPolicyStore::Observer {
  public:
   // The number of minutes to delay a policy refresh after receiving an
   // invalidation with no payload.
@@ -91,9 +102,11 @@ class CloudPolicyInvalidator : public invalidation::InvalidationHandler,
 
   // Initializes the invalidator. No invalidations will be generated before this
   // method is called. This method must only be called once.
-  // |invalidation_service| is the invalidation service to use and must remain
-  // valid until Shutdown is called.
-  void Initialize(invalidation::InvalidationService* invalidation_service);
+  // `invalidation_service` or `invalidation_listener` is the invalidation
+  // service to use and must remain valid until Shutdown is called.
+  void Initialize(std::variant<invalidation::InvalidationService*,
+                               invalidation::InvalidationListener*>
+                      invalidation_service_or_listener);
 
   // Shuts down and disables invalidations. It must be called before the object
   // is destroyed.
@@ -102,9 +115,7 @@ class CloudPolicyInvalidator : public invalidation::InvalidationHandler,
   // The highest invalidation version that was handled already.
   int64_t highest_handled_invalidation_version() const;
 
-  invalidation::InvalidationService* invalidation_service_for_test() const {
-    return invalidation_service_;
-  }
+  invalidation::InvalidationService* invalidation_service_for_test() const;
 
   // invalidation::InvalidationHandler:
   void OnInvalidatorStateChange(invalidation::InvalidatorState state) override;
@@ -121,6 +132,13 @@ class CloudPolicyInvalidator : public invalidation::InvalidationHandler,
   // CloudPolicyStore::Observer:
   void OnStoreLoaded(CloudPolicyStore* store) override;
   void OnStoreError(CloudPolicyStore* store) override;
+
+  // InvalidationListener::Observer:
+  void OnExpectationChanged(
+      invalidation::InvalidationsExpected expected) override;
+  void OnInvalidationReceived(
+      const invalidation::DirectInvalidation& invalidation) override;
+  std::string GetType() const override;
 
  private:
   // Handles policy refresh depending on invalidations availability and incoming
@@ -221,34 +239,34 @@ class CloudPolicyInvalidator : public invalidation::InvalidationHandler,
     base::WeakPtrFactory<PolicyInvalidationHandler> weak_factory_{this};
   };
 
-  // Returns true if `this` is observing `invalidation_service_`.
+  // Returns true if `this` is observing `invalidation_service_` or
+  // `invalidation_listener_`.
   bool IsRegistered() const;
 
-  // Returns true if `IsRegistered()` and `invalidation_service_` is enabled.
+  // Returns true if `IsRegistered()` and `invalidation_service_` or
+  // `invalidation_listener_` is enabled.
   bool AreInvalidationsEnabled() const;
 
   // Update topic subscription with the invalidation service based on the
   // given policy data.
-  void UpdateSubscription(const enterprise_management::PolicyData* policy);
+  void UpdateSubscriptionWithInvalidationService(
+      const enterprise_management::PolicyData* policy);
+
+  // The event executed when the store is loaded.
+  void HandleOnStoreLoadedForListener(
+      invalidation::InvalidationListener* listener);
 
   // Registers this handler with |invalidation_service_| if needed and
   // subscribes to the given |topic| with the invalidation service.
-  void Register(const invalidation::Topic& topic);
+  void RegisterWithInvalidationService(const invalidation::Topic& topic);
 
   // Unregisters this handler and unsubscribes from the current topic with
   // the invalidation service.
   // TODO(crbug.com/40676667): Topic subscriptions remain active after browser
   // restart, so explicit unsubscription here causes redundant (un)subscription
   // traffic (and potentially leaking subscriptions).
-  void Unregister();
+  void UnregisterWithInvalidationService();
 
-  // The state of the object.
-  enum State {
-    UNINITIALIZED,
-    STOPPED,
-    STARTED,
-    SHUT_DOWN
-  };
   State state_;
 
   PolicyInvalidationHandler policy_invalidation_handler_;
@@ -257,6 +275,8 @@ class CloudPolicyInvalidator : public invalidation::InvalidationHandler,
   const PolicyInvalidationScope scope_;
 
   // The unique name to be returned with by GetOwnerName().
+  // TODO(b/341376574): Remove once does not implement
+  // `invalidation::InvalidationHandler`.
   const std::string owner_name_;
 
   // The cloud policy core.
@@ -267,16 +287,23 @@ class CloudPolicyInvalidator : public invalidation::InvalidationHandler,
   base::ScopedObservation<CloudPolicyStore, CloudPolicyInvalidator>
       store_observation_{this};
 
-  // The invalidation service.
-  raw_ptr<invalidation::InvalidationService, AcrossTasksDanglingUntriaged>
-      invalidation_service_;
+  std::variant<InvalidationServicePtr, InvalidationListenerPtr>
+      invalidation_service_or_listener_ =
+          static_cast<InvalidationServicePtr>(nullptr);
 
+  invalidation::InvalidationsExpected are_invalidations_expected_ =
+      invalidation::InvalidationsExpected::kMaybe;
+
+  base::ScopedObservation<invalidation::InvalidationListener,
+                          CloudPolicyInvalidator>
+      invalidation_listener_observation_{this};
   base::ScopedObservation<invalidation::InvalidationService,
                           CloudPolicyInvalidator>
       invalidation_service_observation_{this};
 
   // The topic representing the policy in the invalidation service.
   invalidation::Topic topic_;
+  const std::string device_local_account_id_;
 
   // A thread checker to make sure that callbacks are invoked on the correct
   // thread.
