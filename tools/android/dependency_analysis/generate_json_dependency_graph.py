@@ -13,7 +13,7 @@ import pathlib
 import subprocess
 import sys
 
-from typing import Dict, Optional, Tuple, Union
+from typing import Dict, Tuple, Union
 
 import class_dependency
 import package_dependency
@@ -21,6 +21,9 @@ import serialization
 import target_dependency
 
 _SRC_PATH = pathlib.Path(__file__).resolve().parents[3]
+sys.path.append(str(_SRC_PATH / 'build'))
+import gn_helpers
+
 sys.path.append(str(_SRC_PATH / 'build/android'))
 from pylib import constants
 
@@ -324,11 +327,10 @@ def main():
                 f'Re-building {len(to_recompile)} jars for up-to-date deps. '
                 'This may take a while the first time through. Pass '
                 '--show-ninja to see ninja progress.')
+        cmd = gn_helpers.CreateBuildCommand(args.build_output_dir)
         if args.j:
-            cmd = [subprocess_utils.resolve_ninja(), '-j', args.j]
-        else:
-            cmd = [subprocess_utils.resolve_autoninja()]
-        subprocess.run(cmd + ['-C', args.build_output_dir] + to_recompile,
+            cmd += ['-j', args.j]
+        subprocess.run(cmd + to_recompile,
                        capture_output=not args.show_ninja,
                        check=True)
 
