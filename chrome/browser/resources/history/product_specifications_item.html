@@ -26,6 +26,7 @@
 <div role="row" on-pointerdown="onRowPointerDown_">
   <div id="item-container">
     <cr-checkbox id="checkbox" checked="{{checked}}"
+        on-pointerdown="onCheckboxPointerDown_"
         on-change="onCheckboxChange_">
     </cr-checkbox>
     <div id="link-container">

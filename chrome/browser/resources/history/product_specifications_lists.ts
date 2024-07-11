@@ -18,7 +18,7 @@ import {FocusGrid} from 'chrome://resources/js/focus_grid.js';
 import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {ItemCheckboxSelectEvent, ItemMenuOpenEvent} from './product_specifications_item.js';
+import type {ItemCheckboxSelectEvent, ItemMenuOpenEvent, ProductSpecificationsItemElement} from './product_specifications_item.js';
 import {getTemplate} from './product_specifications_lists.html.js';
 
 export interface ProductSpecificationsListsElement {
@@ -51,6 +51,7 @@ export class ProductSpecificationsListsElement extends PolymerElement {
         notify: true,
         type: Boolean,
       },
+      lastSelectedIndex_: Number,
       allItems_: Array,
       uuidOfOpenMenu_: Object,
     };
@@ -58,6 +59,7 @@ export class ProductSpecificationsListsElement extends PolymerElement {
 
   selectedItems: Set<string> = new Set();
   private pendingDelete_: boolean = false;
+  private lastSelectedIndex_: number|undefined = undefined;
 
   private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
   private allItems_: ProductSpecificationsSet[] = [];
@@ -115,10 +117,39 @@ export class ProductSpecificationsListsElement extends PolymerElement {
   }
 
   private onItemSelected_(e: ItemCheckboxSelectEvent) {
-    if (!this.selectedItems.has(e.detail.uuid)) {
-      this.selectedItems.add(e.detail.uuid);
+    const index = e.detail.index;
+    const itemElements =
+        this.shadowRoot!.querySelectorAll('product-specifications-item');
+    const toSelect =
+        !this.selectedItems.has(itemElements[index].item.uuid.value);
+
+    if (this.lastSelectedIndex_ === undefined || !e.detail.shiftKey) {
+      this.changeSelection_(index, toSelect, itemElements);
+      this.lastSelectedIndex_ = index;
+      return;
+    }
+
+    // Handle shift selection. Change the selection state of all items between
+    // |index| and |lastSelected| to the selection state of |item|.
+    for (let i = Math.min(index, this.lastSelectedIndex_);
+         i <= Math.min(
+                  Math.max(index, this.lastSelectedIndex_),
+                  this.allItems_.length - 1);
+         i++) {
+      this.changeSelection_(i, toSelect, itemElements);
+    }
+    this.lastSelectedIndex_ = index;
+  }
+
+  private changeSelection_(
+      index: number, toSelect: boolean,
+      itemElements: NodeListOf<ProductSpecificationsItemElement>) {
+    if (toSelect) {
+      this.selectedItems.add(this.allItems_[index].uuid.value);
+      itemElements[index].checked = true;
     } else {
-      this.selectedItems.delete(e.detail.uuid);
+      this.selectedItems.delete(this.allItems_[index].uuid.value);
+      itemElements[index].checked = false;
     }
   }
 
@@ -153,6 +184,11 @@ export class ProductSpecificationsListsElement extends PolymerElement {
     }
     this.pendingDelete_ = true;
     return Promise.all(promises);
+  }
+
+  private resetAfterDelete_() {
+    this.pendingDelete_ = false;
+    this.fire_('unselect-all');
   }
 
   private fire_(eventName: string, detail?: any) {

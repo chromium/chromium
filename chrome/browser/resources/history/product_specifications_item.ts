@@ -20,7 +20,9 @@ import {getTemplate} from './product_specifications_item.html.js';
 
 export type ItemCheckboxSelectEvent = CustomEvent<{
   checked: boolean,
+  shiftKey: boolean,
   uuid: string,
+  index: number,
 }>;
 
 export type ItemMenuOpenEvent = CustomEvent<{
@@ -50,21 +52,24 @@ export class ProductSpecificationsItemElement extends PolymerElement {
       item: Object,
 
       checked: Boolean,
+
+      index: Number,
     };
   }
 
   item: ProductSpecificationsSet;
-
   checked: boolean;
-
+  index: number;
+  private isShiftKeyDown_: boolean = false;
   private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   private onLinkClick_() {
     this.shoppingApi_.showProductSpecificationsSetForUuid(this.item.uuid);
   }
 
+  // This is necessary for shift-checkbox detection: preventing the mousedown
+  // allows the mousedown to happen at the checkbox before the on-change.
   private onRowPointerDown_(e: PointerEvent) {
-    // Prevent shift clicking a checkbox from selecting text.
     if (e.shiftKey) {
       e.preventDefault();
     }
@@ -75,14 +80,19 @@ export class ProductSpecificationsItemElement extends PolymerElement {
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
-  private onCheckboxChange_(e: MouseEvent) {
-    // Prevent shift clicking a checkbox from selecting text.
-    if (e.shiftKey) {
-      e.preventDefault();
-    }
-    this.fire_(
-        'product-spec-item-select',
-        {checked: this.checked, uuid: this.item.uuid.value});
+  private onCheckboxPointerDown_(e: PointerEvent) {
+    this.isShiftKeyDown_ = e.shiftKey;
+  }
+
+  private onCheckboxChange_() {
+    const detail: ItemCheckboxSelectEvent['detail'] = {
+      checked: this.checked,
+      shiftKey: this.isShiftKeyDown_,
+      uuid: this.item.uuid.value,
+      index: this.index,
+    };
+    this.fire_('product-spec-item-select', detail);
+    this.isShiftKeyDown_ = false;
   }
 
   private getItemTitle_(): string {
@@ -106,6 +116,7 @@ export class ProductSpecificationsItemElement extends PolymerElement {
 
   private onMenuButtonClick_(e: Event) {
     e.stopPropagation();
+    // ItemMenuOpenEvent
     this.fire_('item-menu-open', {uuid: this.item.uuid, target: e.target});
   }
 }

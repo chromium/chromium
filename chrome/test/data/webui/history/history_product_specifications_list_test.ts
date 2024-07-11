@@ -13,6 +13,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
+
 suite('ProductSpecificationsListTest', () => {
   const shoppingServiceApi = TestMock.fromClass(ShoppingBrowserProxyImpl);
   let productSpecificationsList: ProductSpecificationsListsElement;
@@ -41,6 +42,16 @@ suite('ProductSpecificationsListTest', () => {
               uuid: {value: 'ex2'},
               urls: [{url: 'dot com 2a'}, {url: 'dot com 2b'}],
             },
+            {
+              name: 'example3',
+              uuid: {value: 'ex3'},
+              urls: [{url: 'dot com 3a'}, {url: 'dot com 3b'}],
+            },
+            {
+              name: 'example4',
+              uuid: {value: 'ex4'},
+              urls: [{url: 'dot com 4a'}, {url: 'dot com 4b'}],
+            },
           ],
         }));
   }
@@ -60,7 +71,7 @@ suite('ProductSpecificationsListTest', () => {
   test('load', async () => {
     const items = productSpecificationsList.shadowRoot!.querySelectorAll(
         'product-specifications-item');
-    assertEquals(2, items.length);
+    assertEquals(4, items.length);
     const firstItem = items[0]!.item;
     assertEquals('example1', firstItem.name);
     assertEquals('ex1', firstItem.uuid.value);
@@ -71,12 +82,27 @@ suite('ProductSpecificationsListTest', () => {
     assertEquals('ex2', secondItem.uuid.value);
     assertDeepEquals(
         [{url: 'dot com 2a'}, {url: 'dot com 2b'}], secondItem.urls);
+
+    assertDeepEquals(
+        {
+          name: 'example3',
+          uuid: {value: 'ex3'},
+          urls: [{url: 'dot com 3a'}, {url: 'dot com 3b'}],
+        },
+        items[2]!.item);
+    assertDeepEquals(
+        {
+          name: 'example4',
+          uuid: {value: 'ex4'},
+          urls: [{url: 'dot com 4a'}, {url: 'dot com 4b'}],
+        },
+        items[3]!.item);
   });
 
   test('displays correct header', async () => {
     const items = productSpecificationsList.shadowRoot!.querySelectorAll(
         'product-specifications-item');
-    assertEquals(2, items.length);
+    assertEquals(4, items.length);
 
     const cardTitleHeader = productSpecificationsList.shadowRoot!.querySelector(
         '#card-title-header');
@@ -110,7 +136,7 @@ suite('ProductSpecificationsListTest', () => {
 
     const items = productSpecificationsList.shadowRoot!.querySelectorAll(
         'product-specifications-item');
-    assertEquals(2, items.length);
+    assertEquals(4, items.length);
 
     const secondItem = items[1]!;
     secondItem.dispatchEvent(new CustomEvent('item-menu-open', {
@@ -131,7 +157,7 @@ suite('ProductSpecificationsListTest', () => {
     await ensureLazyLoaded();
     const items = productSpecificationsList.shadowRoot!.querySelectorAll(
         'product-specifications-item');
-    assertEquals(2, items.length);
+    assertEquals(4, items.length);
     const firstItem = items[0]!;
     firstItem.dispatchEvent(new CustomEvent('item-menu-open', {
       bubbles: true,
@@ -210,14 +236,13 @@ suite('ProductSpecificationsListTest', () => {
         shoppingServiceApi.getArgs('deleteProductSpecificationsSet')[1]);
   });
 
-
   test('focus with arrow keys', async () => {
     const items = productSpecificationsList.shadowRoot!.querySelectorAll(
         'product-specifications-item');
 
     const focusGrid = productSpecificationsList.getFocusGridForTesting();
     assertTrue(!!focusGrid);
-    assertEquals(2, focusGrid.rows.length);
+    assertEquals(4, focusGrid.rows.length);
 
     const focusedCheckbox = items[0]!.$.checkbox.getFocusableElement();
     focusedCheckbox.focus();
@@ -248,24 +273,71 @@ suite('ProductSpecificationsListTest', () => {
     });
     callbackRouterRemote.onProductSpecificationsSetRemoved({value: 'ex2'});
     callbackRouterRemote.onProductSpecificationsSetAdded({
-      name: 'example3',
-      urls: [{url: 'dot com 3'}, {url: 'dot com 4'}],
-      uuid: {value: 'ex3'},
+      name: 'example5',
+      urls: [{url: 'dot com 5'}, {url: 'dot com 6'}],
+      uuid: {value: 'ex5'},
     });
     await flushTasks();
 
     const items = productSpecificationsList.shadowRoot!.querySelectorAll(
         'product-specifications-item');
-    assertEquals(2, items.length);
+    assertEquals(4, items.length);
+    assertDeepEquals(
+        {
+          name: 'example1',
+          uuid: {value: 'ex1'},
+          urls: [{url: 'dot com 1'}, {url: 'dot com 2'}],
+        },
+        items[0]!.item);
+    assertDeepEquals(
+        {
+          name: 'example3',
+          uuid: {value: 'ex3'},
+          urls: [{url: 'dot com 3a'}, {url: 'dot com 3b'}],
+        },
+        items[1]!.item);
+    assertDeepEquals(
+        {
+          name: 'example5',
+          uuid: {value: 'ex5'},
+          urls: [{url: 'dot com 5'}, {url: 'dot com 6'}],
+        },
+        items[3]!.item);
+  });
 
-    const firstItem = items[0]!.item;
-    assertEquals('example1', firstItem.name);
-    assertEquals('ex1', firstItem.uuid.value);
-    assertDeepEquals([{url: 'dot com 1'}, {url: 'dot com 2'}], firstItem.urls);
+  test('shift checkbox causes multi select', async function() {
+    await ensureLazyLoaded();
+    const items = productSpecificationsList.shadowRoot!.querySelectorAll(
+        'product-specifications-item');
+    assertDeepEquals(new Set(), productSpecificationsList.selectedItems);
 
-    const secondItem = items[1]!.item;
-    assertEquals('example3', secondItem.name);
-    assertEquals('ex3', secondItem.uuid.value);
-    assertDeepEquals([{url: 'dot com 3'}, {url: 'dot com 4'}], secondItem.urls);
+    const firstItem = items[1]!;
+    firstItem.dispatchEvent(new CustomEvent('product-spec-item-select', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        checked: true,
+        shiftKey: false,
+        uuid: 'ex2',
+        index: 1,
+      },
+    }));
+
+    const lastItem = items[3]!;
+    lastItem.dispatchEvent(new CustomEvent('product-spec-item-select', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        checked: true,
+        shiftKey: true,
+        uuid: 'ex4',
+        index: 3,
+      },
+    }));
+
+    await flushTasks();
+    assertDeepEquals(
+        new Set(['ex2', 'ex3', 'ex4']),
+        productSpecificationsList.selectedItems);
   });
 });

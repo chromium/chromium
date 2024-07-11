@@ -117,10 +117,28 @@ export async function shiftClick(element: CrLitElement): Promise<void> {
     buttons: 1,
     shiftKey: true,
   };
-
   element.dispatchEvent(new MouseEvent('mousedown', props));
   element.dispatchEvent(new MouseEvent('mouseup', props));
   element.dispatchEvent(new MouseEvent('click', props));
+  await element.updateComplete;
+}
+
+/**
+ * Sends a shift click event to |element|, using PointerEvent.
+ */
+export async function shiftPointerClick(element: CrLitElement): Promise<void> {
+  const xy = middleOfNode(element);
+  const props = {
+    bubbles: true,
+    cancelable: true,
+    clientX: xy.x,
+    clientY: xy.y,
+    buttons: 1,
+    shiftKey: true,
+  };
+  element.dispatchEvent(new PointerEvent('pointerdown', props));
+  element.dispatchEvent(new PointerEvent('pointerup', props));
+  element.dispatchEvent(new PointerEvent('click', props));
   await element.updateComplete;
 }
 

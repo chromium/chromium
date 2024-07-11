@@ -9,6 +9,10 @@ import {ShoppingBrowserProxyImpl} from 'chrome://history/history.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
+import {shiftPointerClick} from './test_util.js';
+
 
 suite('ProductSpecificationsItemTest', () => {
   const shoppingServiceApi = TestMock.fromClass(ShoppingBrowserProxyImpl);
@@ -22,6 +26,7 @@ suite('ProductSpecificationsItemTest', () => {
       uuid: {value: 'ex1'},
       urls: [{url: 'dot com 1'}],
     };
+    productSpecificationsItem.index = 0;
     document.body.appendChild(productSpecificationsItem);
   }
 
@@ -40,11 +45,15 @@ suite('ProductSpecificationsItemTest', () => {
     let selectionCount = 0;
     let checked = false;
     let uuid = '';
+    let shiftKey = false;
+    let index = -1;
     productSpecificationsItem.addEventListener(
         'product-spec-item-select', function(e) {
           selectionCount++;
           checked = e.detail.checked;
           uuid = e.detail.uuid;
+          shiftKey = e.detail.shiftKey;
+          index = e.detail.index;
         });
     const checkbox = productSpecificationsItem.$.checkbox;
     checkbox.click();
@@ -53,6 +62,8 @@ suite('ProductSpecificationsItemTest', () => {
     assertEquals(1, selectionCount);
     assertEquals(true, checked);
     assertEquals('ex1', uuid);
+    assertEquals(false, shiftKey);
+    assertEquals(0, index);
   });
 
   test('menu click fires event', async () => {
@@ -98,5 +109,17 @@ suite('ProductSpecificationsItemTest', () => {
           {value: 'ex1'},
           shoppingServiceApi.getArgs('showProductSpecificationsSetForUuid')[0]);
     });
+  });
+
+  test('shift on checkbox click', async () => {
+    const selectEventPromise =
+        eventToPromise('product-spec-item-select', productSpecificationsItem);
+    await shiftPointerClick(productSpecificationsItem.$.checkbox);
+    const selectEvent = await selectEventPromise;
+
+    assertEquals(true, selectEvent.detail.checked);
+    assertEquals('ex1', selectEvent.detail.uuid);
+    assertEquals(true, selectEvent.detail.shiftKey);
+    assertEquals(0, selectEvent.detail.index);
   });
 });
