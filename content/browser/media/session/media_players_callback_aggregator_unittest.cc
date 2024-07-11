@@ -4,6 +4,7 @@
 
 #include "content/browser/media/session/media_players_callback_aggregator.h"
 
+#include "base/not_fatal_until.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -58,7 +59,7 @@ class FakeMediaSession {
   void OnRequestVisibility(int player_id,
                            base::OnceCallback<void(bool)> get_visibility_cb) {
     auto it = fake_players_.find(player_id);
-    DCHECK(it != fake_players_.end());
+    CHECK(it != fake_players_.end(), base::NotFatalUntil::M130);
 
     bool desired_visibility = it->second;
     std::move(get_visibility_cb).Run(desired_visibility);

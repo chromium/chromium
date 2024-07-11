@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "content/browser/devtools/shared_worker_devtools_agent_host.h"
 #include "content/browser/loader/file_url_loader_factory.h"
@@ -286,7 +287,7 @@ void SharedWorkerServiceImpl::NotifyClientRemoved(
     GlobalRenderFrameHostId client_render_frame_host_id) {
   auto it = shared_worker_client_counts_.find(
       std::make_pair(token, client_render_frame_host_id));
-  DCHECK(it != shared_worker_client_counts_.end());
+  CHECK(it != shared_worker_client_counts_.end(), base::NotFatalUntil::M130);
 
   int& count = it->second;
   DCHECK_GT(count, 0);

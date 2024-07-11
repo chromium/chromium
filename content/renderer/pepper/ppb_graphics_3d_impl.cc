@@ -15,6 +15,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -264,7 +265,7 @@ void PPB_Graphics3D_Impl::ReturnFrontBuffer(const gpu::Mailbox& mailbox,
     // `current_color_buffer_` because it could have changed do to resize.
   } else {
     auto it = inflight_color_buffers_.find(mailbox);
-    DCHECK(it != inflight_color_buffers_.end());
+    CHECK(it != inflight_color_buffers_.end(), base::NotFatalUntil::M130);
     RecycleColorBuffer(std::move(it->second), sync_token, is_lost);
     inflight_color_buffers_.erase(it);
   }

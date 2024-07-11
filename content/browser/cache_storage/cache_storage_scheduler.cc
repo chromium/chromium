@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "content/browser/cache_storage/cache_storage_histogram_utils.h"
@@ -96,7 +97,7 @@ void CacheStorageScheduler::CompleteOperationAndRunNext(
     CacheStorageSchedulerId id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = running_operations_.find(id);
-  DCHECK(it != running_operations_.end());
+  CHECK(it != running_operations_.end(), base::NotFatalUntil::M130);
   DCHECK_EQ(it->second->id(), id);
 
   if (it->second->mode() == CacheStorageSchedulerMode::kShared) {

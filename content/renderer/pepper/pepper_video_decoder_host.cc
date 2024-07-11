@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "content/common/pepper_file_util.h"
@@ -546,7 +547,7 @@ void PepperVideoDecoderHost::NotifyError(
 
 const uint8_t* PepperVideoDecoderHost::DecodeIdToAddress(uint32_t decode_id) {
   PendingDecodeList::const_iterator it = GetPendingDecodeById(decode_id);
-  DCHECK(it != pending_decodes_.end());
+  CHECK(it != pending_decodes_.end(), base::NotFatalUntil::M130);
   uint32_t shm_id = it->shm_id;
   return static_cast<uint8_t*>(shm_buffers_[shm_id].mapping.memory());
 }

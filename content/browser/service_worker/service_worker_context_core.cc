@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/services/storage/public/cpp/quota_client_callback_wrapper.h"
@@ -467,7 +468,7 @@ void ServiceWorkerClientOwner::UpdateServiceWorkerClientClientID(
     const std::string& current_client_uuid,
     const std::string& new_client_uuid) {
   auto it = service_worker_clients_by_uuid_.find(current_client_uuid);
-  DCHECK(it != service_worker_clients_by_uuid_.end());
+  CHECK(it != service_worker_clients_by_uuid_.end(), base::NotFatalUntil::M130);
   std::unique_ptr<ServiceWorkerClient> service_worker_client =
       std::move(it->second);
   service_worker_clients_by_uuid_.erase(it);
@@ -950,7 +951,7 @@ void ServiceWorkerContextCore::AddLiveVersion(ServiceWorkerVersion* version) {
 void ServiceWorkerContextCore::RemoveLiveVersion(int64_t id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto it = live_versions_.find(id);
-  DCHECK(it != live_versions_.end());
+  CHECK(it != live_versions_.end(), base::NotFatalUntil::M130);
   ServiceWorkerVersion* version = it->second;
 
   if (version->running_status() != blink::EmbeddedWorkerStatus::kStopped) {

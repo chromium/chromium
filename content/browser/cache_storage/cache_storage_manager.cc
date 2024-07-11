@@ -25,6 +25,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
@@ -470,7 +471,7 @@ void CacheStorageManager::CacheStorageUnreferenced(
   DCHECK(cache_storage);
   cache_storage->AssertUnreferenced();
   auto it = cache_storage_map_.find({bucket_locator, owner});
-  DCHECK(it != cache_storage_map_.end());
+  CHECK(it != cache_storage_map_.end(), base::NotFatalUntil::M130);
   DCHECK(it->second.get() == cache_storage);
 
   // Currently we don't do anything when a CacheStorage instance becomes
@@ -702,7 +703,7 @@ void CacheStorageManager::DeleteBucketDataDidGetExists(
   CacheStorageHandle handle = OpenCacheStorage(bucket_locator, owner);
 
   auto it = cache_storage_map_.find({bucket_locator, owner});
-  DCHECK(it != cache_storage_map_.end());
+  CHECK(it != cache_storage_map_.end(), base::NotFatalUntil::M130);
 
   CacheStorage* cache_storage = it->second.release();
   cache_storage->ResetManager();

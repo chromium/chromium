@@ -22,6 +22,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -166,7 +167,7 @@ class PerProcessRenderViewHostSet : public base::SupportsUserData::Data {
 
   void Erase(const RenderViewHostImpl* rvh) {
     auto it = render_view_host_instances_.find(rvh);
-    DCHECK(it != render_view_host_instances_.end());
+    CHECK(it != render_view_host_instances_.end(), base::NotFatalUntil::M130);
     render_view_host_instances_.erase(it);
   }
 

@@ -600,7 +600,7 @@ bool URLLoaderInterceptor::Intercept(RequestParams* params) {
 void URLLoaderInterceptor::IOState::WrapperBindingError(Wrapper* wrapper) {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::IO));
   auto it = subresource_wrappers_.find(wrapper);
-  DCHECK(it != subresource_wrappers_.end());
+  CHECK(it != subresource_wrappers_.end());
   subresource_wrappers_.erase(it);
 }
 

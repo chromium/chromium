@@ -1151,7 +1151,7 @@ void SharedStorageWorkletHost::
         const std::string& error_message,
         uint32_t index) {
   auto it = unresolved_urns_.find(urn_uuid);
-  DCHECK(it != unresolved_urns_.end());
+  CHECK(it != unresolved_urns_.end(), base::NotFatalUntil::M130);
 
   if ((success && index >= it->second.size()) || (!success && index != 0)) {
     // This could indicate a compromised worklet environment, so let's terminate
@@ -1183,7 +1183,7 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
     uint32_t index,
     BudgetResult budget_result) {
   auto it = unresolved_urns_.find(urn_uuid);
-  DCHECK(it != unresolved_urns_.end());
+  CHECK(it != unresolved_urns_.end(), base::NotFatalUntil::M130);
 
   std::vector<blink::mojom::SharedStorageUrlWithMetadataPtr>
       urls_with_metadata = std::move(it->second);

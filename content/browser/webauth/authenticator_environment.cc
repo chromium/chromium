@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "content/browser/webauth/virtual_authenticator.h"
 #include "content/browser/webauth/virtual_discovery.h"
@@ -99,7 +100,7 @@ void AuthenticatorEnvironment::AddVirtualAuthenticatorReceiver(
     mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticatorManager>
         receiver) {
   auto it = virtual_authenticator_managers_.find(node);
-  DCHECK(it != virtual_authenticator_managers_.end());
+  CHECK(it != virtual_authenticator_managers_.end(), base::NotFatalUntil::M130);
   it->second->AddReceiver(std::move(receiver));
 }
 

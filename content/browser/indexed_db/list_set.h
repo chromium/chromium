@@ -13,6 +13,7 @@
 #include <set>
 
 #include "base/check_op.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 
 //
@@ -52,7 +53,7 @@ class list_set {
       return;
     set_.erase(elem);
     typename std::list<T>::iterator it = base::ranges::find(list_, elem);
-    DCHECK(it != list_.end());
+    CHECK(it != list_.end(), base::NotFatalUntil::M130);
     list_.erase(it);
   }
 

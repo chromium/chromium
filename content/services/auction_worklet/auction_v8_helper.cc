@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -743,7 +744,7 @@ void AuctionV8Helper::SetResumeCallback(int context_group_id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::AutoLock hold_lock(context_groups_lock_);
   auto it = resume_callbacks_.find(context_group_id);
-  DCHECK(it != resume_callbacks_.end());
+  CHECK(it != resume_callbacks_.end(), base::NotFatalUntil::M130);
   DCHECK(it->second.is_null());
   it->second = std::move(resume_callback);
 }

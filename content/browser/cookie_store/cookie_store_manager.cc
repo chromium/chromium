@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "content/browser/cookie_store/cookie_change_subscriptions.pb.h"
@@ -525,7 +526,7 @@ void CookieStoreManager::DeactivateSubscriptions(
     subscription->RemoveFromList();
   }
   auto it = subscriptions_by_url_key_.find(url_key);
-  DCHECK(it != subscriptions_by_url_key_.end());
+  CHECK(it != subscriptions_by_url_key_.end(), base::NotFatalUntil::M130);
   if (it->second.empty())
     subscriptions_by_url_key_.erase(it);
 }

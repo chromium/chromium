@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -307,7 +308,7 @@ void DirectFromSellerSignalsRequester::OnSignalsDownloaded(
   // will also destroy the downloader. The Request won't try to cancel anything
   // after this since running the callback clears the Request's iterator.
   auto it = coalesced_downloads_.find(signals_url);
-  DCHECK(it != coalesced_downloads_.end());
+  CHECK(it != coalesced_downloads_.end(), base::NotFatalUntil::M130);
   DCHECK_EQ(signals_url, it->second.downloader->source_url());
   std::list<raw_ptr<Request>> requests;
   std::swap(requests, it->second.requests);
