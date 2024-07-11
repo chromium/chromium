@@ -1203,14 +1203,13 @@ class circular_deque {
 
     // Update the new end and prepare the iterators for copying. The newly
     // used space contains uninitialized memory.
+    const size_t cap = buffer_.capacity();
     size_t src = end_;
-    end_ = (end_ + count) % buffer_.capacity();
+    end_ = (end_ + count) % cap;
     size_t dest = end_;
 
-    *insert_begin =
-        iterator(this, (begin_ + begin_offset) % buffer_.capacity());
-    *insert_end =
-        iterator(this, (insert_begin->index_ + count) % buffer_.capacity());
+    *insert_begin = iterator(this, (begin_ + begin_offset) % cap);
+    *insert_end = iterator(this, (insert_begin->index_ + count) % cap);
 
     // Move the elements. This will always involve shifting logically to the
     // right, so move in a right-to-left order.
@@ -1218,8 +1217,8 @@ class circular_deque {
       if (src == insert_begin->index_) {
         break;
       }
-      --src;
-      --dest;
+      src = (src + cap - 1u) % cap;
+      dest = (dest + cap - 1u) % cap;
       VectorBuffer::MoveConstructRange(buffer_.subspan(src, 1u),
                                        buffer_.subspan(dest, 1u));
     }

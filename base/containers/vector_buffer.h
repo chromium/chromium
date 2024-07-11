@@ -104,16 +104,16 @@ class VectorBuffer {
     return UNSAFE_BUFFERS(buffer_ + capacity_);
   }
 
-  span<T> as_span() { return subspan(0u, capacity_); }
+  span<T> as_span() {
+    // SAFETY: The `buffer_` array's size is `capacity_` so this gives the
+    // pointer to the start and one-past-the-end of the `buffer_`.
+    return UNSAFE_BUFFERS(span(buffer_, buffer_ + capacity_));
+  }
 
-  span<T> subspan(size_t index) { return subspan(index, capacity_ - index); }
+  span<T> subspan(size_t index) { return as_span().subspan(index); }
 
   span<T> subspan(size_t index, size_t size) {
-    CHECK_LE(index + size, capacity_);
-    // SAFETY: We check above that `index + size` is at most `capacity_` so
-    // adding it to the `buffer_` (which is an array of size `capacity_`) gives
-    // a pointer that is to the same allocation.
-    return UNSAFE_BUFFERS(span(buffer_ + index, buffer_ + index + size));
+    return as_span().subspan(index, size);
   }
 
   // DestructRange ------------------------------------------------------------
