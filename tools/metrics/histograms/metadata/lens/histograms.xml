@@ -112,6 +112,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Lens.Overlay.ByInvocationSource.{InvocationSource}.TimeToFirstInteraction"
+    units="ms" expires_after="2025-05-06">
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the user first interacts with the overlay, sliced by
+    invocation source. Measures the elapsed time between when the overlay was
+    invoked and when the user first interacts with the overlay. Nothing is
+    logged when the user enters through the image context menu.
+  </summary>
+</histogram>
+
 <histogram name="Lens.Overlay.Dismissed" enum="LensOverlayDismissalSource"
     expires_after="2025-05-06">
   <owner>jdonnelly@chromium.org</owner>
@@ -237,6 +250,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded once when the lens overlay UI is shown. This UMA histogram is used
     to track feature usage and retention, and thus should never expire.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.TimeToFirstInteraction" units="ms"
+    expires_after="2025-05-06">
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the user first interacts with the overlay. Measures the
+    elapsed time between when the overlay was invoked and when the user first
+    interacts with the overlay. Nothing is logged when the user enters through
+    the image context menu.
   </summary>
 </histogram>
 
