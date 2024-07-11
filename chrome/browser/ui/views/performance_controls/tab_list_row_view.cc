@@ -93,7 +93,23 @@ TabListRowView::TabListRowView(
   TabUIHelper* const tab_ui_helper = TabUIHelper::FromWebContents(web_contents);
   CHECK(tab_ui_helper);
 
-  views::ImageView* const favicon = AddChildView(
+  // The container adds all contents of the row as child views to ensure that we
+  // have consistent margin space on the left and right side of the row and the
+  // hover highlighting effects goes across the entire row.
+  views::View* row_container = AddChildView(std::make_unique<views::View>());
+  // Use the dialog bubble's insets to give the left and right ends of the
+  // container some space away from the edge of row view.
+  views::LayoutProvider* const layout_provider = views::LayoutProvider::Get();
+  CHECK(layout_provider);
+  gfx::Insets side_insets =
+      layout_provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG);
+  side_insets.set_top(0);
+  side_insets.set_bottom(0);
+  row_container->SetProperty(views::kMarginsKey, side_insets);
+  row_container->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kHorizontal);
+
+  views::ImageView* const favicon = row_container->AddChildView(
       std::make_unique<views::ImageView>(tab_ui_helper->GetFavicon()));
 
   favicon->SetBackground(views::CreateThemedRoundedRectBackground(
@@ -102,21 +118,14 @@ TabListRowView::TabListRowView(
       kFaviconBorderThickness, kFaviconCornerRadius,
       ui::kColorSysNeutralContainer));
 
-  // Use the dialog bubble's insets to give the favicon and and close button
-  // some space away from the edge of row view.
-  views::LayoutProvider* const layout_provider = views::LayoutProvider::Get();
-  CHECK(layout_provider);
-  const gfx::Insets side_insets =
-      layout_provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG);
   favicon->SetProperty(
       views::kMarginsKey,
-      gfx::Insets::TLBR(kFaviconVerticalMargin, side_insets.left(),
-                        kFaviconVerticalMargin,
+      gfx::Insets::TLBR(kFaviconVerticalMargin, 0, kFaviconVerticalMargin,
                         ChromeLayoutProvider::Get()->GetDistanceMetric(
                             views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
 
-  AddChildView(CreateTextView(tab_ui_helper->GetTitle(),
-                              web_contents->GetLastCommittedURL()));
+  row_container->AddChildView(CreateTextView(
+      tab_ui_helper->GetTitle(), web_contents->GetLastCommittedURL()));
 
   std::unique_ptr<views::ImageButton> close_button =
       views::CreateVectorImageButtonWithNativeTheme(
@@ -129,11 +138,9 @@ TabListRowView::TabListRowView(
   close_button->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification().WithAlignment(views::LayoutAlignment::kEnd));
-  close_button->SetProperty(views::kMarginsKey,
-                            gfx::Insets::TLBR(0, 0, 0, side_insets.right()));
   views::InstallCircleHighlightPathGenerator(close_button.get());
   close_button->SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
-  close_button_ = AddChildView(std::move(close_button));
+  close_button_ = row_container->AddChildView(std::move(close_button));
 
   inkdrop_container_->SetProperty(views::kViewIgnoredByLayoutKey, true);
   SetNotifyEnterExitOnChild(true);
