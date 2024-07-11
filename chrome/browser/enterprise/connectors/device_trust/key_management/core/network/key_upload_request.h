@@ -10,6 +10,10 @@
 
 #include "url/gurl.h"
 
+namespace enterprise_management {
+class DeviceManagementRequest;
+}
+
 namespace enterprise_connectors {
 
 class SigningKeyPair;
@@ -29,14 +33,24 @@ class KeyUploadRequest {
   // given request url `dm_server_url` and `dm_token` as authentication. Uses
   // `new_key_pair`, `old_key_pair` and nonce to generate the rotation request
   // body. `nonce` is an opaque binary blob and should not be treated as an
-  // ASCII or UTF-8 string. Returns std::nullopt if any parameter is invalid,
-  // or if serialization of the request fails.
+  // ASCII or UTF-8 string. Returns std::nullopt if any parameter is invalid, or
+  // if serialization of the request fails.
   static std::optional<const KeyUploadRequest> Create(
       const GURL& dm_server_url,
       const std::string& dm_token,
       const SigningKeyPair& new_key_pair,
       const SigningKeyPair& old_key_pair,
       const std::string& nonce);
+
+  // Builds the public key upload key request using using `new_key_pair`,
+  // `old_key_pair` and nonce to generate the rotation request body. `nonce` is
+  // an opaque binary blob and should not be treated as an ASCII or UTF-8
+  // string. Returns std::nullopt if any parameter is invalid. Old key pair and
+  // nonce are only needed for rotation, and not for creating a new public key.
+  static std::optional<const enterprise_management::DeviceManagementRequest>
+  BuildUploadPublicKeyRequest(const SigningKeyPair& new_key_pair,
+                              const SigningKeyPair* old_key_pair = nullptr,
+                              std::optional<std::string> nonce = std::nullopt);
 
   const GURL& dm_server_url() const { return dm_server_url_; }
   const std::string& dm_token() const { return dm_token_; }

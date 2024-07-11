@@ -12,6 +12,8 @@ namespace policy {
 class DeviceManagementService;
 }  // namespace policy
 
+// TODO(b/351201459): Remove this entirely, when
+// DTCRetryUploadingPublicKeyEnabled is fully launched.
 namespace enterprise_connectors {
 
 // Given the `client_id`, 'dm_token', `profile_id` and

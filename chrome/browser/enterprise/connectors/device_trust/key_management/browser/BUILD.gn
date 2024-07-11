@@ -27,11 +27,14 @@ source_set("browser") {
     "//base",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands",
     "//components/enterprise",
+    "//components/enterprise/client_certificates/core",
+    "//components/policy/core/common",
     "//components/policy/proto",
     "//third_party/abseil-cpp:absl",
   ]
 
   deps = [
+    "//chrome/browser/enterprise/connectors/device_trust:features",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/common",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core:util",
@@ -83,6 +86,7 @@ source_set("unit_tests") {
     ":browser",
     ":test_support",
     "//base/test:test_support",
+    "//chrome/browser/enterprise/connectors/device_trust:features",
     "//chrome/browser/enterprise/connectors/device_trust/common",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands:test_support",
@@ -94,6 +98,8 @@ source_set("unit_tests") {
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",
     "//components/enterprise",
     "//components/enterprise:test_support",
+    "//components/enterprise/client_certificates/core",
+    "//components/enterprise/client_certificates/core:test_support",
     "//components/policy/core/common",
     "//components/policy/core/common:test_support",
     "//components/prefs:test_support",

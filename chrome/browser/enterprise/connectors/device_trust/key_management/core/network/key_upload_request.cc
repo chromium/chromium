@@ -29,11 +29,32 @@ BPKUR::KeyType AlgorithmToType(
   }
 }
 
-bool BuildUploadPublicKeyRequest(
+bool AreParametersValid(const GURL& dm_server_url,
+                        const std::string& dm_token,
+                        const SigningKeyPair& key_pair) {
+  return dm_server_url.is_valid() && !dm_token.empty() &&
+         dm_token.size() <= kMaxDMTokenLength && !key_pair.is_empty();
+}
+
+}  // namespace
+
+KeyUploadRequest::KeyUploadRequest(const GURL& dm_server_url,
+                                   const std::string& dm_token,
+                                   const std::string& request_body)
+    : dm_server_url_(dm_server_url),
+      dm_token_(dm_token),
+      request_body_(request_body) {
+  DCHECK(dm_server_url_.is_valid());
+  DCHECK(!dm_token_.empty());
+  DCHECK(!request_body_.empty());
+}
+
+// static
+std::optional<const enterprise_management::DeviceManagementRequest>
+KeyUploadRequest::BuildUploadPublicKeyRequest(
     const SigningKeyPair& new_key_pair,
-    enterprise_management::BrowserPublicKeyUploadRequest* request,
-    const SigningKeyPair* old_key_pair = nullptr,
-    std::optional<std::string> nonce = std::nullopt) {
+    const SigningKeyPair* old_key_pair,
+    std::optional<std::string> nonce) {
   // A nonce is only needed in key rotation scenarios.
   DCHECK_EQ(!!old_key_pair, nonce.has_value());
 
@@ -56,35 +77,19 @@ bool BuildUploadPublicKeyRequest(
   std::optional<std::vector<uint8_t>> signature =
       old_key_pair ? old_key_pair->key()->SignSlowly(buffer)
                    : new_key_pair.key()->SignSlowly(buffer);
-  if (!signature.has_value())
-    return false;
+  if (!signature.has_value()) {
+    return std::nullopt;
+  }
+
+  enterprise_management::DeviceManagementRequest overall_request;
+  auto* request = overall_request.mutable_browser_public_key_upload_request();
 
   request->set_public_key(pubkey.data(), pubkey.size());
   request->set_signature(signature->data(), signature->size());
   request->set_key_trust_level(new_key_pair.trust_level());
   request->set_key_type(AlgorithmToType(new_key_pair.key()->Algorithm()));
 
-  return true;
-}
-
-bool AreParametersValid(const GURL& dm_server_url,
-                        const std::string& dm_token,
-                        const SigningKeyPair& key_pair) {
-  return dm_server_url.is_valid() && !dm_token.empty() &&
-         dm_token.size() <= kMaxDMTokenLength && !key_pair.is_empty();
-}
-
-}  // namespace
-
-KeyUploadRequest::KeyUploadRequest(const GURL& dm_server_url,
-                                   const std::string& dm_token,
-                                   const std::string& request_body)
-    : dm_server_url_(dm_server_url),
-      dm_token_(dm_token),
-      request_body_(request_body) {
-  DCHECK(dm_server_url_.is_valid());
-  DCHECK(!dm_token_.empty());
-  DCHECK(!request_body_.empty());
+  return overall_request;
 }
 
 // static
@@ -96,20 +101,14 @@ std::optional<const KeyUploadRequest> KeyUploadRequest::Create(
     return std::nullopt;
   }
 
-  enterprise_management::DeviceManagementRequest overall_request;
-  if (!BuildUploadPublicKeyRequest(
-          key_pair,
-          overall_request.mutable_browser_public_key_upload_request())) {
-    return std::nullopt;
-  }
-
+  std::optional<enterprise_management::DeviceManagementRequest>
+      overall_request = BuildUploadPublicKeyRequest(key_pair);
   std::string request_body;
-  if (!overall_request.SerializeToString(&request_body) &&
+  if (overall_request && overall_request->SerializeToString(&request_body) &&
       !request_body.empty()) {
-    return std::nullopt;
+    return KeyUploadRequest(dm_server_url, dm_token, request_body);
   }
-
-  return KeyUploadRequest(dm_server_url, dm_token, request_body);
+  return std::nullopt;
 }
 
 // static
@@ -124,21 +123,17 @@ std::optional<const KeyUploadRequest> KeyUploadRequest::Create(
     return std::nullopt;
   }
 
-  enterprise_management::DeviceManagementRequest overall_request;
-  if (!BuildUploadPublicKeyRequest(
-          new_key_pair,
-          overall_request.mutable_browser_public_key_upload_request(),
-          &old_key_pair, nonce)) {
-    return std::nullopt;
-  }
+  std::optional<enterprise_management::DeviceManagementRequest>
+      overall_request =
+          BuildUploadPublicKeyRequest(new_key_pair, &old_key_pair, nonce);
 
   std::string request_body;
-  if (!overall_request.SerializeToString(&request_body) &&
+  if (overall_request && overall_request->SerializeToString(&request_body) &&
       !request_body.empty()) {
-    return std::nullopt;
+    return KeyUploadRequest(dm_server_url, dm_token, request_body);
   }
 
-  return KeyUploadRequest(dm_server_url, dm_token, request_body);
+  return std::nullopt;
 }
 
 }  // namespace enterprise_connectors
