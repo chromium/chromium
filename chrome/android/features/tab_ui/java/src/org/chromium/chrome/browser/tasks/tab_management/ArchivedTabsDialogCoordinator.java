@@ -10,9 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -20,12 +23,15 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tab_ui.TabSwitcher.OnTabSelectingListener;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.NavigationProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -108,6 +114,30 @@ public class ArchivedTabsDialogCoordinator {
                 updateTitle();
             };
 
+    private final GridCardOnClickListenerProvider mGridCardOnCLickListenerProvider =
+            new GridCardOnClickListenerProvider() {
+                @Nullable
+                @Override
+                public TabActionListener openTabGridDialog(@NonNull Tab tab) {
+                    return null;
+                }
+
+                @Override
+                public void onTabSelecting(int tabId, boolean fromActionButton) {
+                    hide();
+
+                    Tab tab = mArchivedTabModel.getTabById(tabId);
+                    mArchivedTabModelOrchestrator
+                            .getTabArchiver()
+                            .unarchiveAndRestoreTab(mRegularTabCreator, tab);
+
+                    // Post task to allow the tab to be unregistered.
+                    PostTask.postTask(
+                            TaskTraits.UI_DEFAULT,
+                            () -> mOnTabSelectingListener.onTabSelecting(tab.getId()));
+                }
+            };
+
     private final @NonNull Context mContext;
     private final @NonNull ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
     private final @NonNull TabModel mArchivedTabModel;
@@ -122,6 +152,7 @@ public class ArchivedTabsDialogCoordinator {
     private ViewGroup mView;
     private @TabActionState int mTabActionState = TabActionState.CLOSABLE;
     private TabListEditorCoordinator mTabListEditorCoordinator;
+    private OnTabSelectingListener mOnTabSelectingListener;
 
     /**
      * @param context The android context.
@@ -166,11 +197,17 @@ public class ArchivedTabsDialogCoordinator {
                 .setOnClickListener(this::closeAllInactiveTabs);
     }
 
-    public void show() {
+    /**
+     * Shows the dialog.
+     *
+     * @param onTabSelectingListener Allows a tab to be selected in the main tab switcher.
+     */
+    public void show(OnTabSelectingListener onTabSelectingListener) {
         if (mTabListEditorCoordinator == null) {
             createTabListEditorCoordinator();
         }
 
+        mOnTabSelectingListener = onTabSelectingListener;
         mArchivedTabModel.getTabCountSupplier().addObserver(mTabCountObserver);
 
         // Add the dialog view.
@@ -249,7 +286,8 @@ public class ArchivedTabsDialogCoordinator {
                         mRootView,
                         /* displayGroups= */ false,
                         mSnackbarManager,
-                        TabProperties.TabActionState.CLOSABLE);
+                        TabProperties.TabActionState.CLOSABLE,
+                        mGridCardOnCLickListenerProvider);
     }
 
     @VisibleForTesting

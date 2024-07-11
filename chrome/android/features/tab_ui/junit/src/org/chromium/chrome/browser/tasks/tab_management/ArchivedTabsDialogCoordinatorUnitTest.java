@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -59,6 +60,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
+    @Spy private ViewGroup mRootView;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Mock private ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
     @Mock private TabModelSelectorBase mArchivedTabModelSelector;
@@ -68,9 +70,9 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private TabListEditorCoordinator mTabListEditorCoordinator;
     @Mock private TabListEditorController mTabListEditorController;
-    @Spy private ViewGroup mRootView;
     @Mock private TabCreator mRegularTabCreator;
     @Mock private BackPressManager mBackPressManager;
+    @Mock private TabSwitcher.OnTabSelectingListener mOnTabSelectingListener;
 
     private Context mContext;
     private ArchivedTabsDialogCoordinator mCoordinator;
@@ -110,7 +112,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
 
     @Test
     public void testShow() {
-        mCoordinator.show();
+        mCoordinator.show(mOnTabSelectingListener);
         verify(mRootView).addView(any());
         verify(mTabListEditorController).setNavigationProvider(any());
         verify(mTabListEditorController).setToolbarTitle("0 inactive tabs");
@@ -127,7 +129,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
 
     @Test
     public void testAddRemoveTab() {
-        mCoordinator.show();
+        mCoordinator.show(mOnTabSelectingListener);
 
         // First add a tab
         doReturn(1).when(mArchivedTabModel).getCount();

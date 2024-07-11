@@ -490,7 +490,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             mMessageManager.bind(
                     mTabListCoordinator,
                     mParentView,
-                    /* priceWelcomeMessageReviewActionProvider= */ mMediator);
+                    /* priceWelcomeMessageReviewActionProvider= */ mMediator,
+                    (tabId) -> mMediator.onTabSelecting(tabId, false));
             mMessageManager.addObserver(mMessageUpdateObserver);
             updateBottomPadding();
             mTabListCoordinator.prepareTabSwitcherPaneView();

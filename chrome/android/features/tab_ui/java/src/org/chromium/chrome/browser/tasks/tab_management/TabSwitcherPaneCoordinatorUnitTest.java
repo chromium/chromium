@@ -193,7 +193,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         mIsVisibleSupplier.set(true);
 
         verify(mMessageManager).registerMessages(any());
-        verify(mMessageManager).bind(any(), any(), any());
+        verify(mMessageManager).bind(any(), any(), any(), any());
     }
 
     DialogController showTabGridDialogWithTabs() {

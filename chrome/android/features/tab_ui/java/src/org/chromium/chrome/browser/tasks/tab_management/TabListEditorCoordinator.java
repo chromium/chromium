@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorExitMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -217,6 +218,7 @@ class TabListEditorCoordinator {
     private final boolean mDisplayGroups;
     private final ViewGroup mRootView;
     private final TabContentManager mTabContentManager;
+    private final @Nullable GridCardOnClickListenerProvider mGridCardOnClickListenerProvider;
 
     private MultiThumbnailCardProvider mMultiThumbnailCardProvider;
     private TabListCoordinator mTabListCoordinator;
@@ -247,7 +249,10 @@ class TabListEditorCoordinator {
             ViewGroup rootView,
             boolean displayGroups,
             SnackbarManager snackbarManager,
-            @TabActionState int initialTabActionState) {
+            @TabActionState int initialTabActionState,
+            @Nullable
+                    TabListMediator.GridCardOnClickListenerProvider
+                            gridCardOnClickListenerProvider) {
         try (TraceEvent e = TraceEvent.scoped("TabListEditorCoordinator.constructor")) {
             mContext = context;
             mParentView = parentView;
@@ -261,6 +266,7 @@ class TabListEditorCoordinator {
             mTabContentManager = tabContentManager;
             assert mode == TabListCoordinator.TabListMode.GRID
                     || mode == TabListCoordinator.TabListMode.LIST;
+            mGridCardOnClickListenerProvider = gridCardOnClickListenerProvider;
 
             // The change processor isn't created until TabListCoordinator is created (lazily).
             mTabListEditorLayout =
@@ -392,7 +398,7 @@ class TabListEditorCoordinator {
                         mCurrentTabModelFilterSupplier,
                         thumbnailProvider,
                         mDisplayGroups,
-                        /* gridCardOnClickListenerProvider= */ null,
+                        mGridCardOnClickListenerProvider,
                         /* dialogHandler= */ null,
                         mTabActionState,
                         this::getSelectionDelegate,

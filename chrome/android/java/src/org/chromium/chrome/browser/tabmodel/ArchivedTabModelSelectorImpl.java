@@ -98,6 +98,11 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
                     public void setIndex(int i, final @TabSelectionType int type) {
                         // Intentional noop.
                     }
+
+                    @Override
+                    public Tab getNextTabIfClosed(int id, boolean uponExit) {
+                        return null;
+                    }
                 };
         ((ArchivedTabCreator) tabCreator).setTabModel(normalModel);
 

@@ -120,7 +120,8 @@ public class TabListEditorManager {
                             mRootView,
                             /* displayGroups= */ true,
                             mSnackbarManager,
-                            TabProperties.TabActionState.SELECTABLE);
+                            TabProperties.TabActionState.SELECTABLE,
+                            /* gridCardOnClickListenerProvider= */ null);
             mControllerSupplier.set(mTabListEditorCoordinator.getController());
         }
     }

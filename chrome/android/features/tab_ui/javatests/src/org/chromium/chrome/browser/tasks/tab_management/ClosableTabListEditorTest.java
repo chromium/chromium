@@ -93,7 +93,8 @@ public class ClosableTabListEditorTest {
                                             .getCompositorViewHolderForTesting(),
                                     /* displayGroups= */ true,
                                     mSnackbarManager,
-                                    TabProperties.TabActionState.CLOSABLE);
+                                    TabProperties.TabActionState.CLOSABLE,
+                                    /* gridCardOnClickListenerProvider= */ null);
 
                     mTabListEditorController = mTabListEditorCoordinator.getController();
                     mTabListEditorLayout =

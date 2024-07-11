@@ -202,7 +202,8 @@ public class SelectableTabListEditorTest {
                                     compositorViewHolder,
                                     /* displayGroups= */ true,
                                     mSnackbarManager,
-                                    TabProperties.TabActionState.SELECTABLE);
+                                    TabProperties.TabActionState.SELECTABLE,
+                                    /* gridCardOnClickListenerProvider= */ null);
 
                     mTabListEditorController = mTabListEditorCoordinator.getController();
                     mTabListEditorLayout =

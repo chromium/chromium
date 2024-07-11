@@ -210,13 +210,14 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
      * @param tabListCoordinator The {@link TabListCoordinator} to show messages on.
      * @param container The {@link ViewGroup} of the container view.
      * @param priceWelcomeMessageReviewActionProvider The review action provider for price welcome.
+     * @param onTabSelectingListener The {@link OnTabSelectingListener} for the parent tab switcher.
      */
     public void bind(
             @NonNull TabListCoordinator tabListCoordinator,
             @NonNull ViewGroup container,
             @NonNull
-                    PriceWelcomeMessageReviewActionProvider
-                            priceWelcomeMessageReviewActionProvider) {
+                    PriceWelcomeMessageReviewActionProvider priceWelcomeMessageReviewActionProvider,
+            @NonNull TabSwitcher.OnTabSelectingListener onTabSelectingListener) {
         TabListCoordinator oldTabListCoordinator = mTabListCoordinatorSupplier.get();
         if (oldTabListCoordinator != null) {
             if (oldTabListCoordinator != tabListCoordinator) {
@@ -228,6 +229,9 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                 priceWelcomeMessageReviewActionProvider);
 
         mTabGridIphDialogCoordinator.setParentView(container);
+        if (mArchivedTabsMessageService != null) {
+            mArchivedTabsMessageService.setOnTabSelectingListener(onTabSelectingListener);
+        }
 
         // Don't add any messages. Wait for the next time tabs are loaded into the coordinator.
     }

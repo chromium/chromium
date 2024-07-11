@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tab_ui.TabSwitcher.OnTabSelectingListener;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MessageCardScope;
@@ -105,6 +106,7 @@ public class ArchivedTabsMessageService extends MessageService
     private View mCustomCardView;
     private PropertyModel mCustomCardModel;
     private boolean mMessageSentToQueue;
+    private OnTabSelectingListener mOnTabSelectingListener;
 
     ArchivedTabsMessageService(
             @NonNull Context context,
@@ -177,13 +179,17 @@ public class ArchivedTabsMessageService extends MessageService
         }
     }
 
-    // Private methods.
-
     @Override
     public void addObserver(MessageService.MessageObserver obs) {
         super.addObserver(obs);
         maybeSendMessageToQueue();
     }
+
+    public void setOnTabSelectingListener(OnTabSelectingListener onTabSelectingListener) {
+        mOnTabSelectingListener = onTabSelectingListener;
+    }
+
+    // Private methods.
 
     @VisibleForTesting
     void maybeSendMessageToQueue() {
@@ -206,7 +212,7 @@ public class ArchivedTabsMessageService extends MessageService
         if (mArchivedTabsDialogCoordinator == null) {
             createArchivedTabsDialogCoordinator();
         }
-        mArchivedTabsDialogCoordinator.show();
+        mArchivedTabsDialogCoordinator.show(mOnTabSelectingListener);
     }
 
     private void createArchivedTabsDialogCoordinator() {

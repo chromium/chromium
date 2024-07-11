@@ -35,6 +35,8 @@ import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator.Observer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.tab.Tab;
@@ -243,6 +245,26 @@ public class ArchivedTabsDialogCoordinatorTest {
                     mActivityTestRule.getActivity().getOnBackPressedDispatcher().onBackPressed();
                 });
         mRobot.resultRobot.verifyTabListEditorIsHidden();
+    }
+
+    @Test
+    @MediumTest
+    public void testRestoreAndOpenSingleTab() throws Exception {
+        Tab tab = addArchivedTab(new GURL("https://www.google.com"), "test 1");
+        addArchivedTab(new GURL("https://test.com"), "test 2");
+        assertEquals(1, mRegularTabModel.getCount());
+        assertEquals(2, mArchivedTabModel.getCount());
+        showDialog(2);
+
+        mRobot.actionRobot.clickItemAtAdapterPosition(0);
+        mRobot.resultRobot.verifyTabListEditorIsHidden();
+        assertEquals(2, mRegularTabModel.getCount());
+        assertEquals(1, mArchivedTabModel.getCount());
+
+        LayoutTestUtils.waitForLayout(
+                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
+        Tab activityTab = mActivityTestRule.getActivity().getActivityTabProvider().get();
+        assertEquals(tab, activityTab);
     }
 
     private void showDialog(int numTabs) {

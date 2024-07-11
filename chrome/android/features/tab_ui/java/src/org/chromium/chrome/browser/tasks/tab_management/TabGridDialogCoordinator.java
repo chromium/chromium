@@ -306,7 +306,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             mRootView,
                             /* displayGroups= */ false,
                             mSnackbarManager,
-                            TabProperties.TabActionState.SELECTABLE);
+                            TabProperties.TabActionState.SELECTABLE,
+                            /* gridCardOnClickListenerProvider= */ null);
         }
 
         return mTabListEditorCoordinator.getController();
