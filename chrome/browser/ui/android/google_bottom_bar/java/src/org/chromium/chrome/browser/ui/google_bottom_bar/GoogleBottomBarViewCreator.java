@@ -96,11 +96,12 @@ public class GoogleBottomBarViewCreator {
     private void maybeAddSearchbox() {
         ViewGroup searchboxContainer = mRootView.findViewById(R.id.bottom_bar_searchbox_container);
         if (searchboxContainer != null) {
-            searchboxContainer.addView(createSearchboxView(searchboxContainer));
+            searchboxContainer.addView(
+                    createGoogleBottomBarSearchboxLayoutView(searchboxContainer));
         }
     }
 
-    private View createSearchboxView(ViewGroup searchboxContainer) {
+    private View createGoogleBottomBarSearchboxLayoutView(ViewGroup searchboxContainer) {
         View searchboxView =
                 LayoutInflater.from(mContext)
                         .inflate(
@@ -108,9 +109,21 @@ public class GoogleBottomBarViewCreator {
                                 searchboxContainer,
                                 /* attachToRoot= */ false);
 
-        ImageButton lensButton =
-                searchboxView.findViewById(R.id.google_bottom_bar_searchbox_lens_button);
-        lensButton.setOnClickListener(v -> mActionsHandler.openLens());
+        searchboxView
+                .findViewById(R.id.google_bottom_bar_searchbox_super_g_button)
+                .setOnClickListener(v -> mActionsHandler.openGoogleAppHome());
+
+        searchboxView
+                .findViewById(R.id.google_bottom_bar_searchbox_hint_text_view)
+                .setOnClickListener(v -> mActionsHandler.openGoogleAppSearch());
+
+        searchboxView
+                .findViewById(R.id.google_bottom_bar_searchbox_mic_button)
+                .setOnClickListener(v -> mActionsHandler.openGoogleAppVoiceSearch());
+
+        searchboxView
+                .findViewById(R.id.google_bottom_bar_searchbox_lens_button)
+                .setOnClickListener(v -> mActionsHandler.openLens());
 
         return searchboxView;
     }

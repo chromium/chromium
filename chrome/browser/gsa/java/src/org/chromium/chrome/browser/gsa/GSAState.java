@@ -32,6 +32,9 @@ import java.util.regex.Pattern;
 /** A class responsible for representing the current state of Chrome's integration with GSA. */
 public class GSAState {
     public static final String PACKAGE_NAME = "com.google.android.googlequicksearchbox";
+    public static final String GOOGLE_APP_CLASS_NAME =
+            "com.google.android.apps.search.googleapp.activity.GoogleAppActivity";
+    public static final String VOICE_SEARCH_INTENT_ACTION = "android.intent.action.VOICE_ASSIST";
 
     /** Used to observe state changes in the class. */
     public interface Observer {
@@ -43,10 +46,9 @@ public class GSAState {
 
     private static final int GSA_VERSION_FOR_DOCUMENT = 300401021;
     private static final int GMS_CORE_VERSION = 6577010;
-
-    static final String SEARCH_INTENT_PACKAGE = "com.google.android.googlequicksearchbox";
     private static final String GMS_CORE_PACKAGE = "com.google.android.gms";
 
+    static final String SEARCH_INTENT_PACKAGE = "com.google.android.googlequicksearchbox";
     static final String SEARCH_INTENT_ACTION =
             "com.google.android.googlequicksearchbox.TEXT_ASSIST";
 

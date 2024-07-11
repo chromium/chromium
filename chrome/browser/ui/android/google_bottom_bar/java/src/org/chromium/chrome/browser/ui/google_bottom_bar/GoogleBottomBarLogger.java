@@ -67,6 +67,7 @@ class GoogleBottomBarLogger {
         GoogleBottomBarButtonEvent.SHARE_EMBEDDER,
         GoogleBottomBarButtonEvent.CUSTOM_EMBEDDER,
         GoogleBottomBarButtonEvent.SEARCH_EMBEDDER,
+        GoogleBottomBarButtonEvent.SEARCH_CHROME,
         GoogleBottomBarButtonEvent.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -80,8 +81,9 @@ class GoogleBottomBarLogger {
         int SHARE_EMBEDDER = 6;
         int CUSTOM_EMBEDDER = 7;
         int SEARCH_EMBEDDER = 8;
+        int SEARCH_CHROME = 9;
 
-        int COUNT = 9;
+        int COUNT = 10;
         // NOTE: This must be kept in sync with the definition |GoogleBottomBarButtonEvent|
         // in tools/metrics/histograms/metadata/custom_tabs/enums.xml.
     }
@@ -162,7 +164,7 @@ class GoogleBottomBarLogger {
             case ButtonId.SEARCH -> {
                 return buttonConfig.getPendingIntent() != null
                         ? GoogleBottomBarButtonEvent.SEARCH_EMBEDDER
-                        : GoogleBottomBarButtonEvent.UNKNOWN;
+                        : GoogleBottomBarButtonEvent.SEARCH_CHROME;
             }
             case ButtonId.CUSTOM -> {
                 return buttonConfig.getPendingIntent() != null
