@@ -42,7 +42,7 @@ bool ShouldSerializeReferrer(const Referrer& referrer) {
 
 using HttpRequestHeaders = NavigationItem::HttpRequestHeaders;
 
-// Value 5i2 was picked as a tradeoff between saving memory from excessively
+// Value 512 was picked as a tradeoff between saving memory from excessively
 // long titles, while preserving the entire title as often as possible for
 // features like Sync, where titles can be shared to other platforms that
 // have UI surfaces supporting longer titles than iOS.
