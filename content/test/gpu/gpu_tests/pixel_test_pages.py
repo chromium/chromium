@@ -66,8 +66,8 @@ class PixelTestPage(sghitb.SkiaGoldHeartbeatTestCase):
       self,
       url: str,
       name: str,
-      test_rect: List[int],
       *args,
+      test_rect: Optional[List[int]] = None,
       crop_action: Optional[ca.BaseCropAction] = None,
       browser_args: Optional[BrowserArgType] = None,
       restart_browser_after_test: bool = False,
@@ -87,6 +87,7 @@ class PixelTestPage(sghitb.SkiaGoldHeartbeatTestCase):
     # TODO(crbug.com/349510532): Remove this automatic conversion once all
     # tests explicitly provide a crop action.
     if crop_action is None:
+      assert test_rect
       self.crop_action = ca.FixedRectCropAction(test_rect[0], test_rect[1],
                                                 test_rect[2], test_rect[3])
     else:
@@ -611,77 +612,84 @@ class PixelTestPages():
         ]
         video_frame_query_params = '?sourceType=sw_decoder'
 
+      # For most tests which have a few elements of interest.
+      standard_crop = ca.NonWhiteContentCropAction(
+          initial_crop=ca.FixedRectCropAction(0, 0, 500, 500))
+      # For tests which don't have a white background to remove. In this case,
+      # we're effectively just making sure the color is correct.
+      fixed_crop = ca.FixedRectCropAction(0, 0, 300, 300)
+
       return [
           PixelTestPage('pixel_webgpu_import_video_frame.html' +
                         video_frame_query_params,
                         base_name + '_WebGPUImportVideoFrame',
-                        test_rect=[0, 0, 400, 200],
+                        crop_action=standard_crop,
                         browser_args=webgpu_args),
           PixelTestPage(
               'pixel_webgpu_import_video_frame.html' + video_frame_query_params,
               base_name + '_WebGPUImportVideoFrameUnaccelerated',
-              test_rect=[0, 0, 400, 200],
+              crop_action=standard_crop,
               browser_args=webgpu_args + [cba.DISABLE_ACCELERATED_2D_CANVAS]),
           PixelTestPage(
               'pixel_webgpu_import_video_frame_offscreen_canvas.html' +
               video_frame_query_params,
               base_name + '_WebGPUImportVideoFrameOffscreenCanvas',
-              test_rect=[0, 0, 400, 200],
+              crop_action=standard_crop,
               browser_args=webgpu_args),
           PixelTestPage(
               'pixel_webgpu_import_video_frame_offscreen_canvas.html' +
               video_frame_query_params,
               base_name + '_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas',
-              test_rect=[0, 0, 400, 200],
+              crop_action=standard_crop,
               browser_args=webgpu_args + [cba.DISABLE_ACCELERATED_2D_CANVAS]),
           PixelTestPage('pixel_webgpu_webgl_teximage2d.html',
                         base_name + '_WebGPUWebGLTexImage2D',
-                        test_rect=[0, 0, 400, 200],
+                        crop_action=standard_crop,
                         browser_args=webgpu_args),
           PixelTestPage('pixel_webgpu_canvas2d_drawimage.html',
                         base_name + '_WebGPUCanvas2DDrawImage',
-                        test_rect=[0, 0, 400, 200],
+                        crop_action=standard_crop,
                         browser_args=webgpu_args),
           PixelTestPage('pixel_webgpu_copy_image.html',
                         base_name + '_WebGPUToDataURL',
-                        test_rect=[0, 0, 400, 300],
+                        crop_action=standard_crop,
                         browser_args=webgpu_args),
           PixelTestPage('pixel_webgpu_cached_swap_buffer_invalidated.html',
                         base_name +
                         '_WebGPUCachedSwapBufferInvalidatedShouldBeBlank',
-                        test_rect=[0, 0, 300, 300],
+                        crop_action=fixed_crop,
                         browser_args=webgpu_args),
           PixelTestPage('pixel_webgpu_copy_externalImage_2d_canvas.html',
                         base_name + '_WebGPUCopyExternalImage2DCanvas',
-                        test_rect=[0, 0, 400, 200],
+                        crop_action=standard_crop,
                         browser_args=webgpu_args),
           PixelTestPage('pixel_webgpu_copy_externalImage_imageData.html',
                         base_name + '_WebGPUCopyExternalImageImageData',
-                        test_rect=[0, 0, 400, 200],
+                        crop_action=standard_crop,
                         browser_args=webgpu_args),
           PixelTestPage('pixel_webgpu_copy_externalImage_imageBitmap.html',
                         base_name + '_WebGPUCopyExternalImageImageBitmap',
-                        test_rect=[0, 0, 400, 200],
+                        crop_action=standard_crop,
                         browser_args=webgpu_args),
           PixelTestPage('pixel_webgpu_copy_externalImage_offscreenCanvas.html',
                         base_name + '_WebGPUCopyExternalImageOffscreenCanvas',
-                        test_rect=[0, 0, 400, 200],
+                        crop_action=standard_crop,
                         browser_args=webgpu_args),
           PixelTestPage('pixel_webgpu_copy_externalImage_webgl_canvas.html',
                         base_name + '_WebGPUCopyExternalImageWebGLCanvas',
-                        test_rect=[0, 0, 400, 200],
+                        crop_action=standard_crop,
                         browser_args=webgpu_args),
           PixelTestPage('pixel_webgpu_copy_externalImage_webgpu_canvas.html',
                         base_name + '_WebGPUCopyExternalImageWebGPUCanvas',
-                        test_rect=[0, 0, 400, 200],
+                        crop_action=standard_crop,
                         browser_args=webgpu_args),
           PixelTestPage('pixel_webgpu_display_p3.html',
                         base_name + '_WebGPUDisplayP3',
-                        test_rect=[0, 0, 300, 300],
+                        crop_action=standard_crop,
                         browser_args=webgpu_args),
           PixelTestPage('pixel_webgpu_canvas_format_reinterpretation.html',
                         base_name + '_WebGPUCanvasFormatReinterpretation',
-                        test_rect=[0, 0, 300, 300],
+                        crop_action=standard_crop,
                         browser_args=webgpu_args),
       ]
 
