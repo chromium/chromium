@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 import android.view.View;
 import android.view.View.MeasureSpec;
+import android.view.ViewGroup;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -618,5 +619,16 @@ public class BaseSuggestionViewTest {
                 mSemicompactSuggestionViewHeight / 2,
                 paddingStart + mLargeDecorationIconWidthPx / 2,
                 mSemicompactSuggestionViewHeight);
+
+        mView.decorationIcon.getLayoutParams().width = 66;
+        mView.decorationIcon.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        mView.setUseLargeDecorationIcon(false);
+        executeLayoutTest(giveSuggestionWidth, giveContentHeight, View.LAYOUT_DIRECTION_LTR);
+        // Calling setUseLargeDecorationIcon should preserve its layout params' width and height.
+        // Updating the width and height for a larger intrinsic image size is the responsibility of
+        // BaseSuggestionViewBinder#updateSuggestionIcon.
+        Assert.assertEquals(66, mView.decorationIcon.getLayoutParams().width);
+        Assert.assertEquals(
+                ViewGroup.LayoutParams.WRAP_CONTENT, mView.decorationIcon.getLayoutParams().height);
     }
 }

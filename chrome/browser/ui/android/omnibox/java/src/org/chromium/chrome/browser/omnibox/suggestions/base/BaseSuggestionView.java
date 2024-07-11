@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.LayoutRes;
@@ -188,12 +189,16 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
      * SuggestionLayout#SuggestionLayout(Context)} for the exact size difference.
      */
     public void setUseLargeDecorationIcon(boolean useLargeDecorationIcon) {
+        ViewGroup.LayoutParams oldParams = decorationIcon.getLayoutParams();
         if (useLargeDecorationIcon) {
             decorationIcon.setLayoutParams(SuggestionLayout.LayoutParams.forLargeDecorationIcon());
         } else {
             decorationIcon.setLayoutParams(
                     LayoutParams.forViewType(LayoutParams.SuggestionViewType.DECORATION));
         }
+
+        decorationIcon.getLayoutParams().width = oldParams.width;
+        decorationIcon.getLayoutParams().height = oldParams.height;
     }
 
     /** Control whether the decoration icon should be visible. */
