@@ -609,11 +609,47 @@ void WindowPerformance::OnPresentationPromiseResolved(
   responsiveness_metrics_->FlushExpiredKeydown(end_time);
 }
 
+void WindowPerformance::FlushEventTimingsOnPageHidden() {
+  ReportAllPendingEventTimingsOnPageHidden();
+
+  // Remove any remaining events that are not flushed by the above step.
+  responsiveness_metrics_->FlushAllEventsAtPageHidden();
+}
+
+// At visibility change, we report event timings of current pending events. The
+// registered presentation callback, when invoked, would be ignored.
+void WindowPerformance::ReportAllPendingEventTimingsOnPageHidden() {
+  // By the time visibility change happens, DomWindow object should still be
+  // alive. This is just to be safe.
+  if (!DomWindow() || !DomWindow()->document()) {
+    return;
+  }
+
+  if (events_data_.empty()) {
+    return;
+  }
+
+  InteractiveDetector* interactive_detector =
+      InteractiveDetector::From(*(DomWindow()->document()));
+
+  // Using the processingEnd timestamp in place of visibility change timestamp.
+  while (!events_data_.empty()) {
+    ReportEvent(interactive_detector, events_data_.front(),
+                events_data_.front()->GetProcessingEnd());
+    events_data_.pop_front();
+  }
+}
+
 void WindowPerformance::ReportEventTimings() {
   CHECK(DomWindow() && DomWindow()->document());
   InteractiveDetector* interactive_detector =
       InteractiveDetector::From(*(DomWindow()->document()));
-  CHECK(!events_data_.empty());
+
+  // At a visibility change, all pending events are reported. Hence the
+  // event_data_ could be empty.
+  if (events_data_.empty()) {
+    return;
+  }
 
   for (uint64_t presentation_index_to_report =
            events_data_.front()->GetPresentationIndex();
@@ -769,9 +805,9 @@ std::optional<base::TimeTicks> WindowPerformance::GetFallbackTime(
 
   // If the page visibility was changed. We fallback entry's end time to its
   // processingEnd (as if there was no next paint needed). crbug.com/1312568.
-  const bool was_page_visibility_changed =
-      last_visibility_change_timestamp_ > event_timestamp &&
-      last_visibility_change_timestamp_ < presentation_timestamp;
+  bool was_page_visibility_changed =
+      last_hidden_timestamp_ > event_timestamp &&
+      last_hidden_timestamp_ < presentation_timestamp;
 
   // An javascript synchronous modal dialog showed before the event frame
   // got presented. User could wait for arbitrarily long on the dialog. Thus
@@ -938,9 +974,23 @@ void WindowPerformance::AddSoftNavigationEntry(const AtomicString& name,
 }
 
 void WindowPerformance::PageVisibilityChanged() {
-  last_visibility_change_timestamp_ = base::TimeTicks::Now();
+  PageVisibilityChangedWithTimestamp(base::TimeTicks::Now());
+}
+
+void WindowPerformance::PageVisibilityChangedWithTimestamp(
+    base::TimeTicks visibility_change_timestamp) {
+  // Only flush event timing data when page visibility changes from visible to
+  // invisible.
+  if (!GetPage()->IsPageVisible()) {
+    last_hidden_timestamp_ = visibility_change_timestamp;
+
+    if (RuntimeEnabledFeaturesBase::
+            ReportEventTimingAtVisibilityChangeEnabled()) {
+      FlushEventTimingsOnPageHidden();
+    }
+  }
   AddVisibilityStateEntry(GetPage()->IsPageVisible(),
-                          last_visibility_change_timestamp_);
+                          visibility_change_timestamp);
 }
 
 void WindowPerformance::WillShowModalDialog() {

@@ -766,6 +766,15 @@ void ResponsivenessMetrics::FlushKeydown() {
   key_code_entry_map_.clear();
 }
 
+void ResponsivenessMetrics::FlushAllEventsAtPageHidden() {
+  // Flush events that are waiting to be set an interaction id.
+  FlushPointerdownAndPointerup();
+
+  FlushKeydown();
+
+  FlushSequenceBasedKeyboardEvents();
+}
+
 uint32_t ResponsivenessMetrics::GetInteractionCount() const {
   return interaction_count_;
 }
