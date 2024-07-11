@@ -7317,6 +7317,8 @@ static_library("ui") {
       "webui/certificate_manager/certificate_manager_utils.h",
       "webui/certificate_manager/chrome_root_store_cert_source.cc",
       "webui/certificate_manager/chrome_root_store_cert_source.h",
+      "webui/certificate_manager/client_cert_sources.cc",
+      "webui/certificate_manager/client_cert_sources.h",
       "webui/certificate_manager/enterprise_cert_sources.cc",
       "webui/certificate_manager/enterprise_cert_sources.h",
     ]
