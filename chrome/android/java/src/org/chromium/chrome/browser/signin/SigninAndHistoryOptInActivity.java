@@ -345,14 +345,18 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
         AccountManagerFacadeProvider.getInstance()
                 .createAddAccountIntent(
                         intent -> {
+                            final ActivityWindowAndroid windowAndroid = getWindowAndroid();
+                            if (windowAndroid == null) {
+                                // The activity was shut down. Do nothing.
+                                return;
+                            }
                             if (intent == null) {
                                 // AccountManagerFacade couldn't create the intent, use SigninUtils
                                 // to open settings instead.
                                 SigninUtils.openSettingsForAllAccounts(this);
                                 return;
                             }
-
-                            getWindowAndroid().showIntent(intent, onAddAccountCompleted, null);
+                            windowAndroid.showIntent(intent, onAddAccountCompleted, null);
                         });
     }
 
