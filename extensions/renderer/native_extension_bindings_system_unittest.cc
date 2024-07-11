@@ -199,7 +199,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, Events) {
 // i.e. chrome.foo === chrome.foo.
 TEST_F(NativeExtensionBindingsSystemUnittest, APIObjectsAreEqual) {
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("foo").AddPermission("idle").Build();
+      ExtensionBuilder("foo").AddAPIPermission("idle").Build();
   RegisterExtension(extension);
 
   v8::HandleScope handle_scope(isolate());
@@ -286,7 +286,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestBridgingToJSCustomBindings) {
   source_map()->RegisterModule("idle", kCustomBinding);
 
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("foo").AddPermission("idle").Build();
+      ExtensionBuilder("foo").AddAPIPermission("idle").Build();
   RegisterExtension(extension);
 
   v8::HandleScope handle_scope(isolate());
@@ -375,7 +375,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestSendRequestHook) {
   source_map()->RegisterModule("idle", kCustomBinding);
 
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("foo").AddPermission("idle").Build();
+      ExtensionBuilder("foo").AddAPIPermission("idle").Build();
   RegisterExtension(extension);
 
   v8::HandleScope handle_scope(isolate());
@@ -498,7 +498,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
 TEST_F(NativeExtensionBindingsSystemUnittest,
        TestPrefixedApiMethodsAndSystemBinding) {
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("foo").AddPermission("system.cpu").Build();
+      ExtensionBuilder("foo").AddAPIPermission("system.cpu").Build();
   RegisterExtension(extension);
 
   v8::HandleScope handle_scope(isolate());
@@ -588,7 +588,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestLastError) {
 
 TEST_F(NativeExtensionBindingsSystemUnittest, TestCustomProperties) {
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("storage extension").AddPermission("storage").Build();
+      ExtensionBuilder("storage extension").AddAPIPermission("storage").Build();
   RegisterExtension(extension);
 
   v8::HandleScope handle_scope(isolate());
@@ -624,7 +624,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestCustomProperties) {
 TEST_F(NativeExtensionBindingsSystemUnittest,
        CheckDifferentContextsHaveDifferentAPIObjects) {
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("extension").AddPermission("idle").Build();
+      ExtensionBuilder("extension").AddAPIPermission("idle").Build();
   RegisterExtension(extension);
 
   v8::HandleScope handle_scope(isolate());
@@ -728,7 +728,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestUsingOtherChromeObjects) {
 // Tests updating a context's bindings after adding or removing permissions.
 TEST_F(NativeExtensionBindingsSystemUnittest, TestUpdatingPermissions) {
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("extension").AddPermission("idle").Build();
+      ExtensionBuilder("extension").AddAPIPermission("idle").Build();
 
   RegisterExtension(extension);
 
@@ -860,7 +860,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
           .SetID(kAllowlistedId)
-          .AddPermission("networkingPrivate")
+          .AddAPIPermission("networkingPrivate")
           .Build();
 
   RegisterExtension(extension);
@@ -892,7 +892,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
           .SetID(kAllowlistedId)
-          .AddPermission("networking.onc")
+          .AddAPIPermission("networking.onc")
           .Build();
   RegisterExtension(extension);
 
@@ -1027,7 +1027,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, APIIsInitializedByOwningContext) {
   source_map()->RegisterModule("idle", kCustomBinding);
 
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("foo").AddPermission("idle").Build();
+      ExtensionBuilder("foo").AddAPIPermission("idle").Build();
   RegisterExtension(extension);
 
   v8::HandleScope handle_scope(isolate());

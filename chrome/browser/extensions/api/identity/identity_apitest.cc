@@ -786,7 +786,7 @@ class IdentityGetProfileUserInfoFunctionTest : public IdentityTestWithSignin {
   }
 
   scoped_refptr<const Extension> CreateExtensionWithEmailPermission() {
-    return ExtensionBuilder("Test").AddPermission("identity.email").Build();
+    return ExtensionBuilder("Test").AddAPIPermission("identity.email").Build();
   }
 };
 

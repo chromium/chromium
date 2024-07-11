@@ -1561,7 +1561,7 @@ TEST_F(ExtensionContextMenuModelTest,
 
   // Add an extension that wants access to a.com.
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("extension").AddPermission("*://a.com/*").Build();
+      ExtensionBuilder("extension").AddHostPermission("*://a.com/*").Build();
   InitializeAndAddExtension(*extension);
 
   // Additionally, grant it the (unrequested) access to b.com.
@@ -1725,7 +1725,7 @@ TEST_F(ExtensionContextMenuModelTest, TestClickingPageAccessLearnMore) {
 
   // Add an extension that wants access to a.com.
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("extension").AddPermission("*://a.com/*").Build();
+      ExtensionBuilder("extension").AddHostPermission("*://a.com/*").Build();
   InitializeAndAddExtension(*extension);
 
   PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
@@ -2299,7 +2299,7 @@ TEST_P(ExtensionContextMenuModelWithUserHostControlsTest,
 
   // Add an extension that wants access to a.com.
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("extension").AddPermission("*://a.com/*").Build();
+      ExtensionBuilder("extension").AddHostPermission("*://a.com/*").Build();
   InitializeAndAddExtension(*extension);
 
   EXPECT_FALSE(PermissionsManager::Get(profile())->HasWithheldHostPermissions(

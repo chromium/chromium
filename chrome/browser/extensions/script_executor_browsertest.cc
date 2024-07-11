@@ -80,7 +80,9 @@ class ScriptExecutorBrowserTest : public ExtensionBrowserTest {
   const Extension* LoadExtensionWithHostPermission(
       const std::string& host_permission) {
     scoped_refptr<const Extension> extension =
-        ExtensionBuilder("extension").AddPermission(host_permission).Build();
+        ExtensionBuilder("extension")
+            .AddHostPermission(host_permission)
+            .Build();
     extension_service()->AddExtension(extension.get());
     EXPECT_TRUE(
         extension_registry()->enabled_extensions().GetByID(extension->id()));

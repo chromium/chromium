@@ -92,7 +92,7 @@ class DocumentScanAPIHandlerTest : public testing::Test {
 
     extension_ = ExtensionBuilder(kExtensionName)
                      .SetID(kExtensionId)
-                     .AddPermission(kExtensionPermissionName)
+                     .AddAPIPermission(kExtensionPermissionName)
                      .Build();
     ExtensionRegistry::Get(testing_profile_)->AddEnabled(extension_);
 
@@ -421,7 +421,7 @@ TEST_F(DocumentScanAPIHandlerTest, GetScannerList_ApprovalFollowsExtension) {
 
   auto extension2 = ExtensionBuilder("extension2")
                         .SetID("extension2id")
-                        .AddPermission(kExtensionPermissionName)
+                        .AddAPIPermission(kExtensionPermissionName)
                         .Build();
 
   // First request is approved by the user.
@@ -600,7 +600,7 @@ TEST_F(DocumentScanAPIHandlerTest, OpenScanner_SecondExtensionOpenFails) {
   // scanner created by CreateScannerId above.
   auto extension2 = ExtensionBuilder("extension2")
                         .SetID("extension2id")
-                        .AddPermission(kExtensionPermissionName)
+                        .AddAPIPermission(kExtensionPermissionName)
                         .Build();
   std::string scanner_id2 = CreateScannerIdForExtension(extension2,
                                                         /*unique_id=*/false);
@@ -732,7 +732,7 @@ TEST_F(DocumentScanAPIHandlerTest, CloseScanner_CloseInvalidHandleFails) {
   // valid for the second extension.
   auto extension2 = ExtensionBuilder("extension2")
                         .SetID("extension2id")
-                        .AddPermission(kExtensionPermissionName)
+                        .AddAPIPermission(kExtensionPermissionName)
                         .Build();
 
   CloseScannerFuture close_future1;
@@ -1279,7 +1279,7 @@ TEST_F(DocumentScanAPIHandlerTest, StartScan_HandleNotMine) {
   // not authorized to use the scanner handle opened for the first extension.
   auto extension2 = ExtensionBuilder("extension2")
                         .SetID("extension2id")
-                        .AddPermission(kExtensionPermissionName)
+                        .AddAPIPermission(kExtensionPermissionName)
                         .Build();
 
   api::document_scan::StartScanOptions options;
@@ -1328,7 +1328,7 @@ TEST_F(DocumentScanAPIHandlerTest, CancelScan_HandleNotMine) {
 
   auto extension2 = ExtensionBuilder("extension2")
                         .SetID("extension2id")
-                        .AddPermission(kExtensionPermissionName)
+                        .AddAPIPermission(kExtensionPermissionName)
                         .Build();
 
   // Trying to cancel the scan using extension2 will fail since that extension
@@ -1544,7 +1544,7 @@ TEST_F(DocumentScanAPIHandlerTest, UnloadExtension) {
 
   auto extension2 = ExtensionBuilder("extension2")
                         .SetID("extension2id")
-                        .AddPermission(kExtensionPermissionName)
+                        .AddAPIPermission(kExtensionPermissionName)
                         .Build();
   MarkExtensionTrusted("extension2id");
 
@@ -1588,7 +1588,7 @@ TEST_F(DocumentScanAPIHandlerTest, Shutdown) {
 
   auto extension2 = ExtensionBuilder("extension2")
                         .SetID("extension2id")
-                        .AddPermission(kExtensionPermissionName)
+                        .AddAPIPermission(kExtensionPermissionName)
                         .Build();
   MarkExtensionTrusted("extension2id");
 

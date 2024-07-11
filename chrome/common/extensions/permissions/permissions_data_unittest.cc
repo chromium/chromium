@@ -859,12 +859,12 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, TabSpecific) {
 TEST_F(ExtensionScriptAndCaptureVisibleTest, CaptureChromeURLs) {
   const int kTabId = 42;
   scoped_refptr<const Extension> all_urls =
-      ExtensionBuilder("all urls").AddPermission("<all_urls>").Build();
+      ExtensionBuilder("all urls").AddHostPermission("<all_urls>").Build();
   EXPECT_EQ(DISALLOWED,
             GetExtensionAccess(all_urls.get(), settings_url, kTabId));
 
   scoped_refptr<const Extension> active_tab =
-      ExtensionBuilder("active tab").AddPermission("activeTab").Build();
+      ExtensionBuilder("active tab").AddAPIPermission("activeTab").Build();
   EXPECT_EQ(DISALLOWED,
             GetExtensionAccess(active_tab.get(), settings_url, kTabId));
   {
@@ -887,12 +887,12 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, CaptureChromeURLs) {
 TEST_F(ExtensionScriptAndCaptureVisibleTest, CaptureChromeUntrustedURLs) {
   const int kTabId = 42;
   scoped_refptr<const Extension> all_urls =
-      ExtensionBuilder("all urls").AddPermission("<all_urls>").Build();
+      ExtensionBuilder("all urls").AddHostPermission("<all_urls>").Build();
   EXPECT_EQ(DISALLOWED,
             GetExtensionAccess(all_urls.get(), chrome_untrusted_url, kTabId));
 
   scoped_refptr<const Extension> active_tab =
-      ExtensionBuilder("active tab").AddPermission("activeTab").Build();
+      ExtensionBuilder("active tab").AddAPIPermission("activeTab").Build();
   EXPECT_EQ(DISALLOWED,
             GetExtensionAccess(active_tab.get(), chrome_untrusted_url, kTabId));
 
@@ -918,13 +918,13 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, CaptureChromeUntrustedURLs) {
 TEST_F(ExtensionScriptAndCaptureVisibleTest, CaptureFileURLs) {
   const int kTabId = 42;
   scoped_refptr<const Extension> all_urls =
-      ExtensionBuilder("all urls").AddPermission("<all_urls>").Build();
+      ExtensionBuilder("all urls").AddHostPermission("<all_urls>").Build();
   // Currently, the extension has not been granted file access, so it should
   // not have access to a file:// URL.
   EXPECT_EQ(DISALLOWED, GetExtensionAccess(all_urls.get(), file_url, kTabId));
 
   scoped_refptr<const Extension> active_tab =
-      ExtensionBuilder("active tab").AddPermission("activeTab").Build();
+      ExtensionBuilder("active tab").AddAPIPermission("activeTab").Build();
   EXPECT_EQ(DISALLOWED, GetExtensionAccess(active_tab.get(), file_url, kTabId));
   {
     APIPermissionSet tab_api_permissions;
@@ -1470,16 +1470,16 @@ class CaptureVisiblePageTest : public testing::Test {
  private:
   void SetUp() override {
     all_urls_ = ExtensionBuilder("all urls")
-                    .AddPermission("<all_urls>")
+                    .AddHostPermission("<all_urls>")
                     .SetID(std::string(32, 'a'))
                     .Build();
     active_tab_ = ExtensionBuilder("active tab")
-                      .AddPermission("activeTab")
+                      .AddAPIPermission("activeTab")
                       .SetID(std::string(32, 'b'))
                       .Build();
     page_capture_ = ExtensionBuilder("page capture")
-                        .AddPermission("pageCapture")
-                        .AddPermission("activeTab")
+                        .AddAPIPermission("pageCapture")
+                        .AddAPIPermission("activeTab")
                         .SetID(std::string(32, 'd'))
                         .Build();
   }

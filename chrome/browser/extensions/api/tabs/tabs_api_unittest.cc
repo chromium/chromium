@@ -69,7 +69,7 @@ base::Value::List RunTabsQueryFunction(content::BrowserContext* browser_context,
 // Creates an extension with "tabs" permission.
 scoped_refptr<const Extension> CreateTabsExtension() {
   return ExtensionBuilder("Extension with tabs permission")
-      .AddPermission("tabs")
+      .AddAPIPermission("tabs")
       .Build();
 }
 
@@ -706,7 +706,7 @@ TEST_F(TabsApiUnitTest,
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("UpdateTest")
           .SetID("pmgljoohajacndjcjlajcopidgnhphcl")
-          .AddPermission("lockWindowFullscreenPrivate")
+          .AddAPIPermission("lockWindowFullscreenPrivate")
           .Build();
   const GURL kExampleCom("http://example.com");
   const GURL kChromiumOrg("https://chromium.org");
@@ -993,7 +993,7 @@ TEST_F(TabsApiUnitTest,
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("MoveWithinWindowTest")
           .SetID("pmgljoohajacndjcjlajcopidgnhphcl")
-          .AddPermission("lockWindowFullscreenPrivate")
+          .AddAPIPermission("lockWindowFullscreenPrivate")
           .Build();
 
   // Add several web contents to the browser and get their tab IDs.
@@ -1371,7 +1371,7 @@ TEST_F(TabsApiUnitTest,
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("GroupTest")
           .SetID("pmgljoohajacndjcjlajcopidgnhphcl")
-          .AddPermission("lockWindowFullscreenPrivate")
+          .AddAPIPermission("lockWindowFullscreenPrivate")
           .Build();
 
   // Add several web contents to the browser and get their tab IDs.
@@ -1556,7 +1556,7 @@ TEST_F(
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("UngroupTest")
           .SetID("pmgljoohajacndjcjlajcopidgnhphcl")
-          .AddPermission("lockWindowFullscreenPrivate")
+          .AddAPIPermission("lockWindowFullscreenPrivate")
           .Build();
 
   // Add several web contents to the browser and get their tab IDs.
@@ -1820,7 +1820,7 @@ TEST_F(
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("GoForwardAndBackTest")
           .SetID("pmgljoohajacndjcjlajcopidgnhphcl")
-          .AddPermission("lockWindowFullscreenPrivate")
+          .AddAPIPermission("lockWindowFullscreenPrivate")
           .Build();
 
   const std::vector<GURL> urls = {GURL("http://www.foo.com"),
@@ -1984,10 +1984,11 @@ TEST_F(TabsApiUnitTest, TabsGoForwardAndBackWithoutTabId) {
 // Ensure tabs.captureVisibleTab respects any Data Leak Prevention restrictions.
 TEST_F(TabsApiUnitTest, ScreenshotsRestricted) {
   // Setup the function and extension.
-  scoped_refptr<const Extension> extension = ExtensionBuilder("Screenshot")
-                                                 .AddPermission("tabs")
-                                                 .AddPermission("<all_urls>")
-                                                 .Build();
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("Screenshot")
+          .AddAPIPermission("tabs")
+          .AddHostPermission("<all_urls>")
+          .Build();
   auto function = base::MakeRefCounted<TabsCaptureVisibleTabFunction>();
   function->set_extension(extension.get());
 
@@ -2045,10 +2046,11 @@ TEST_F(TabsApiUnitTest, DontCreateTabsInLockedFullscreenMode) {
 // Screenshot should return an error when disabled in user profile preferences.
 TEST_F(TabsApiUnitTest, ScreenshotDisabledInProfilePreferences) {
   // Setup the function and extension.
-  scoped_refptr<const Extension> extension = ExtensionBuilder("Screenshot")
-                                                 .AddPermission("tabs")
-                                                 .AddPermission("<all_urls>")
-                                                 .Build();
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("Screenshot")
+          .AddAPIPermission("tabs")
+          .AddHostPermission("<all_urls>")
+          .Build();
   auto function = base::MakeRefCounted<TabsCaptureVisibleTabFunction>();
   function->set_extension(extension.get());
 
@@ -2213,7 +2215,7 @@ TEST_F(TabsApiUnitTest,
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("DiscardTest")
           .SetID("pmgljoohajacndjcjlajcopidgnhphcl")
-          .AddPermission("lockWindowFullscreenPrivate")
+          .AddAPIPermission("lockWindowFullscreenPrivate")
           .Build();
   const GURL kExampleCom("http://example.com");
 

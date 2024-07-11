@@ -82,7 +82,7 @@ base::Value::Dict RunTabGroupsGetFunction(
 // Creates an extension with "tabGroups" permission.
 scoped_refptr<const Extension> CreateTabGroupsExtension() {
   return ExtensionBuilder("Extension with tabGroups permission")
-      .AddPermission("tabGroups")
+      .AddAPIPermission("tabGroups")
       .Build();
 }
 

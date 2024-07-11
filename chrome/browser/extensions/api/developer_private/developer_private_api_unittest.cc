@@ -1599,7 +1599,7 @@ TEST_F(DeveloperPrivateApiUnitTest, InstallDroppedFileUserScript) {
 
 TEST_F(DeveloperPrivateApiUnitTest, GrantHostPermission) {
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("test").AddPermission("<all_urls>").Build();
+      ExtensionBuilder("test").AddHostPermission("<all_urls>").Build();
   service()->AddExtension(extension.get());
 
   PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
@@ -1652,7 +1652,7 @@ TEST_F(DeveloperPrivateApiUnitTest, GrantHostPermission) {
 
 TEST_F(DeveloperPrivateApiUnitTest, RemoveHostPermission) {
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("test").AddPermission("<all_urls>").Build();
+      ExtensionBuilder("test").AddHostPermission("<all_urls>").Build();
   service()->AddExtension(extension.get());
 
   PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
@@ -1726,7 +1726,7 @@ TEST_F(DeveloperPrivateApiUnitTest, RemoveHostPermission) {
 
 TEST_F(DeveloperPrivateApiUnitTest, UpdateHostAccess) {
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("test").AddPermission("<all_urls>").Build();
+      ExtensionBuilder("test").AddHostPermission("<all_urls>").Build();
   service()->AddExtension(extension.get());
 
   PermissionsManager* permissions_manager =
@@ -1746,7 +1746,7 @@ TEST_F(DeveloperPrivateApiUnitTest, UpdateHostAccess) {
 TEST_F(DeveloperPrivateApiUnitTest,
        UpdateHostAccess_SpecificSitesRemovedOnTransitionToOnClick) {
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("test").AddPermission("<all_urls>").Build();
+      ExtensionBuilder("test").AddHostPermission("<all_urls>").Build();
   service()->AddExtension(extension.get());
   ScriptingPermissionsModifier modifier(profile(), extension.get());
   modifier.SetWithholdHostPermissions(true);
@@ -1792,7 +1792,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
 TEST_F(DeveloperPrivateApiUnitTest,
        UpdateHostAccess_SpecificSitesRemovedOnTransitionToAllSites) {
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("test").AddPermission("<all_urls>").Build();
+      ExtensionBuilder("test").AddHostPermission("<all_urls>").Build();
   service()->AddExtension(extension.get());
   ScriptingPermissionsModifier modifier(profile(), extension.get());
   modifier.SetWithholdHostPermissions(true);
@@ -1821,7 +1821,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
 TEST_F(DeveloperPrivateApiUnitTest,
        UpdateHostAccess_BroadPermissionsRemovedOnTransitionToSpecificSites) {
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("test").AddPermission("<all_urls>").Build();
+      ExtensionBuilder("test").AddHostPermission("<all_urls>").Build();
   service()->AddExtension(extension.get());
   ScriptingPermissionsModifier modifier(profile(), extension.get());
   modifier.SetWithholdHostPermissions(true);
@@ -1866,7 +1866,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
 TEST_F(DeveloperPrivateApiUnitTest,
        UpdateHostAccess_GrantScopeGreaterThanRequestedScope) {
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("test").AddPermission("http://*/*").Build();
+      ExtensionBuilder("test").AddHostPermission("http://*/*").Build();
   service()->AddExtension(extension.get());
   ScriptingPermissionsModifier modifier(profile(), extension.get());
   modifier.SetWithholdHostPermissions(true);
@@ -1928,7 +1928,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
 TEST_F(DeveloperPrivateApiUnitTest,
        UpdateHostAccess_UnrequestedHostsDispatchUpdateEvents) {
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("test").AddPermission("http://google.com/*").Build();
+      ExtensionBuilder("test").AddHostPermission("http://google.com/*").Build();
   service()->AddExtension(extension.get());
   ScriptingPermissionsModifier modifier(profile(), extension.get());
   modifier.SetWithholdHostPermissions(true);
@@ -2346,19 +2346,19 @@ TEST_F(DeveloperPrivateApiWithPermittedSitesUnitTest,
 
   scoped_refptr<const Extension> extension_1 =
       ExtensionBuilder("test")
-          .AddPermission("https://*.google.com/")
-          .AddPermission("http://www.google.com/")
-          .AddPermission("http://images.google.com/")
-          .AddPermission("https://example.com/")
-          .AddPermission("*://localhost/")
+          .AddHostPermission("https://*.google.com/")
+          .AddHostPermission("http://www.google.com/")
+          .AddHostPermission("http://images.google.com/")
+          .AddHostPermission("https://example.com/")
+          .AddHostPermission("*://localhost/")
           .Build();
 
   scoped_refptr<const Extension> extension_2 =
       ExtensionBuilder("test_2")
-          .AddPermission("https://mail.google.com/")
-          .AddPermission("http://www.google.com/")
-          .AddPermission("http://www.asdf.com/")
-          .AddPermission("http://localhost:8080/")
+          .AddHostPermission("https://mail.google.com/")
+          .AddHostPermission("http://www.google.com/")
+          .AddHostPermission("http://www.asdf.com/")
+          .AddHostPermission("http://localhost:8080/")
           .Build();
   AddExtensionAndGrantPermissions(profile(), service(), *extension_1);
   AddExtensionAndGrantPermissions(profile(), service(), *extension_2);
@@ -2428,15 +2428,15 @@ TEST_F(DeveloperPrivateApiWithPermittedSitesUnitTest,
 
   scoped_refptr<const Extension> extension_1 =
       ExtensionBuilder("specific_hosts")
-          .AddPermission("https://*.google.ca/")
-          .AddPermission("http://www.example.com/")
+          .AddHostPermission("https://*.google.ca/")
+          .AddHostPermission("http://www.example.com/")
           .Build();
 
   scoped_refptr<const Extension> extension_2 =
-      ExtensionBuilder("all_.com").AddPermission("*://*.com/*").Build();
+      ExtensionBuilder("all_.com").AddHostPermission("*://*.com/*").Build();
 
   scoped_refptr<const Extension> extension_3 =
-      ExtensionBuilder("all_urls").AddPermission("<all_urls>").Build();
+      ExtensionBuilder("all_urls").AddHostPermission("<all_urls>").Build();
   AddExtensionAndGrantPermissions(profile(), service(), *extension_1);
   AddExtensionAndGrantPermissions(profile(), service(), *extension_2);
   AddExtensionAndGrantPermissions(profile(), service(), *extension_3);
@@ -2492,7 +2492,7 @@ TEST_F(DeveloperPrivateApiWithPermittedSitesUnitTest,
 TEST_F(DeveloperPrivateApiUnitTest,
        DeveloperPrivateGetUserAndExtensionSitesByEtld_RuntimeGrantedHosts) {
   scoped_refptr<const Extension> extension_1 =
-      ExtensionBuilder("runtime_hosts").AddPermission("<all_urls>").Build();
+      ExtensionBuilder("runtime_hosts").AddHostPermission("<all_urls>").Build();
   AddExtensionAndGrantPermissions(profile(), service(), *extension_1);
 
   auto get_user_and_extension_sites = [this](const std::string& expected_json) {
@@ -2530,7 +2530,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   }])");
 
   scoped_refptr<const Extension> extension_2 =
-      ExtensionBuilder("test").AddPermission(kExampleCom).Build();
+      ExtensionBuilder("test").AddHostPermission(kExampleCom).Build();
   AddExtensionAndGrantPermissions(profile(), service(), *extension_2);
 
   get_user_and_extension_sites(R"([{
@@ -2608,11 +2608,13 @@ TEST_F(DeveloperPrivateApiUnitTest,
   namespace developer = api::developer_private;
 
   scoped_refptr<const Extension> extension_1 =
-      ExtensionBuilder("test").AddPermission("*://mail.google.com/").Build();
+      ExtensionBuilder("test")
+          .AddHostPermission("*://mail.google.com/")
+          .Build();
 
   scoped_refptr<const Extension> extension_2 =
       ExtensionBuilder("test_2")
-          .AddPermission("*://images.google.com/")
+          .AddHostPermission("*://images.google.com/")
           .Build();
   AddExtensionAndGrantPermissions(profile(), service(), *extension_1);
   AddExtensionAndGrantPermissions(profile(), service(), *extension_2);
@@ -2649,7 +2651,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   namespace developer = api::developer_private;
 
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("test").AddPermission("<all_urls>").Build();
+      ExtensionBuilder("test").AddHostPermission("<all_urls>").Build();
   AddExtensionAndGrantPermissions(profile(), service(), *extension);
 
   std::vector<developer::MatchingExtensionInfo> infos;
@@ -2694,9 +2696,9 @@ TEST_F(DeveloperPrivateApiUnitTest,
 
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("test")
-          .AddPermission("http://a.example.com/*")
-          .AddPermission("*://b.example.com/*")
-          .AddPermission("http://google.com/*")
+          .AddHostPermission("http://a.example.com/*")
+          .AddHostPermission("*://b.example.com/*")
+          .AddHostPermission("http://google.com/*")
           .Build();
   AddExtensionAndGrantPermissions(profile(), service(), *extension);
 
@@ -2758,8 +2760,8 @@ TEST_F(DeveloperPrivateApiUnitTest,
 
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("test")
-          .AddPermission("*://*.example.com/*")
-          .AddPermission("*://*.google.com/*")
+          .AddHostPermission("*://*.example.com/*")
+          .AddHostPermission("*://*.google.com/*")
           .Build();
   AddExtensionAndGrantPermissions(profile(), service(), *extension);
 
@@ -2835,9 +2837,9 @@ TEST_F(DeveloperPrivateApiUnitTest,
   namespace developer = api::developer_private;
 
   scoped_refptr<const Extension> extension_1 =
-      ExtensionBuilder("test_1").AddPermission("<all_urls>").Build();
+      ExtensionBuilder("test_1").AddHostPermission("<all_urls>").Build();
   scoped_refptr<const Extension> extension_2 =
-      ExtensionBuilder("test_2").AddPermission("<all_urls>").Build();
+      ExtensionBuilder("test_2").AddHostPermission("<all_urls>").Build();
   AddExtensionAndGrantPermissions(profile(), service(), *extension_1);
   AddExtensionAndGrantPermissions(profile(), service(), *extension_2);
 

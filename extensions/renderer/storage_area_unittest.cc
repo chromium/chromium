@@ -28,7 +28,7 @@ using StorageAreaTest = NativeExtensionBindingsSystemUnittest;
 // (with a helpful error message).
 TEST_F(StorageAreaTest, TestUnboundedUse) {
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("foo").AddPermission("storage").Build();
+      ExtensionBuilder("foo").AddAPIPermission("storage").Build();
   RegisterExtension(extension);
 
   v8::HandleScope handle_scope(isolate());
@@ -57,7 +57,7 @@ TEST_F(StorageAreaTest, TestUnboundedUse) {
 
 TEST_F(StorageAreaTest, TestUseAfterInvalidation) {
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("foo").AddPermission("storage").Build();
+      ExtensionBuilder("foo").AddAPIPermission("storage").Build();
   RegisterExtension(extension);
 
   v8::HandleScope handle_scope(isolate());
@@ -89,7 +89,7 @@ TEST_F(StorageAreaTest, TestUseAfterInvalidation) {
 
 TEST_F(StorageAreaTest, InvalidInvocationError) {
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("foo").AddPermission("storage").Build();
+      ExtensionBuilder("foo").AddAPIPermission("storage").Build();
   RegisterExtension(extension);
 
   v8::HandleScope handle_scope(isolate());
@@ -122,7 +122,7 @@ TEST_F(StorageAreaTest, InvalidInvocationError) {
 TEST_F(StorageAreaTest, HasOnChanged) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("foo")
                                                  .SetManifestVersion(3)
-                                                 .AddPermission("storage")
+                                                 .AddAPIPermission("storage")
                                                  .Build();
   RegisterExtension(extension);
 
@@ -162,7 +162,7 @@ TEST_F(StorageAreaTest, HasOnChanged) {
 TEST_F(StorageAreaTest, PromiseBasedFunctionsForManifestV3) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("foo")
                                                  .SetManifestVersion(3)
-                                                 .AddPermission("storage")
+                                                 .AddAPIPermission("storage")
                                                  .Build();
   RegisterExtension(extension);
 
@@ -211,7 +211,7 @@ TEST_F(StorageAreaTest, PromiseBasedFunctionsForManifestV3) {
 TEST_F(StorageAreaTest, PromiseBasedFunctionsDisallowedForManifestV2) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("foo")
                                                  .SetManifestVersion(2)
-                                                 .AddPermission("storage")
+                                                 .AddAPIPermission("storage")
                                                  .Build();
   RegisterExtension(extension);
 

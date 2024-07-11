@@ -112,7 +112,7 @@ TEST(FeatureProviderTest, PermissionFeatureAvailability) {
 
   scoped_refptr<const Extension> app =
       ExtensionBuilder("test app", ExtensionBuilder::Type::PLATFORM_APP)
-          .AddPermission("power")
+          .AddAPIPermission("power")
           .Build();
   ASSERT_TRUE(app->is_platform_app());
 

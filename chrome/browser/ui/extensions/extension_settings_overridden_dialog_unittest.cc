@@ -55,7 +55,7 @@ class ExtensionSettingsOverriddenDialogUnitTest
     extensions::ExtensionBuilder builder(name);
     builder.SetLocation(location);
     if (include_extra_perms)
-      builder.AddPermission("storage");
+      builder.AddAPIPermission("storage");
     scoped_refptr<const extensions::Extension> extension = builder.Build();
     service()->AddExtension(extension.get());
     return extension.get();

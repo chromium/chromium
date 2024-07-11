@@ -85,11 +85,11 @@ TEST_F(ExtensionsInternalsUnitTest, WriteToStringPermissions) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("test")
           .SetID("ddchlicdkolnonkihahngkmmmjnjlkkf")
-          .AddPermission("activeTab")
+          .AddAPIPermission("activeTab")
           .SetManifestKey("automation", true)
           .SetManifestKey("optional_permissions",
                           base::Value::List().Append("storage"))
-          .AddPermission("https://example.com/*")
+          .AddHostPermission("https://example.com/*")
           .AddContentScript("not-real.js", {"https://chromium.org/foo"})
           .Build();
 
@@ -136,7 +136,9 @@ TEST_F(ExtensionsInternalsUnitTest, WriteToStringTabSpecificPermissions) {
       profile(), base::BindRepeating(&BuildEventRouter));
 
   scoped_refptr<const extensions::Extension> extension =
-      extensions::ExtensionBuilder("test").AddPermission("activeTab").Build();
+      extensions::ExtensionBuilder("test")
+          .AddAPIPermission("activeTab")
+          .Build();
   service()->AddExtension(extension.get());
 
   ExtensionsInternalsSource source(profile());
@@ -189,7 +191,7 @@ TEST_F(ExtensionsInternalsUnitTest, WriteToStringWithheldPermissions) {
 
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("test")
-          .AddPermission("https://example.com/*")
+          .AddHostPermission("https://example.com/*")
           .Build();
   service()->AddExtension(extension.get());
 

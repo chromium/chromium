@@ -437,7 +437,7 @@ TEST_F(PermissionsUpdaterTest,
   InitializeEmptyExtensionService();
 
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("extension").AddPermission("*://*/*").Build();
+      ExtensionBuilder("extension").AddHostPermission("*://*/*").Build();
 
   PermissionsUpdater updater(profile());
   updater.InitializePermissions(extension.get());
@@ -601,7 +601,7 @@ TEST_F(PermissionsUpdaterTest, ChromeFaviconIsNotARevokableHost) {
   {
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("all urls extension")
-            .AddPermission("<all_urls>")
+            .AddHostPermission("<all_urls>")
             .Build();
     URLPattern all_urls_pattern(
         Extension::kValidHostPermissionSchemes &
@@ -647,7 +647,7 @@ TEST_F(PermissionsUpdaterTest, GrantingBroadRuntimePermissions) {
 
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
-          .AddPermission("https://maps.google.com/*")
+          .AddHostPermission("https://maps.google.com/*")
           .Build();
 
   const URLPattern kMapsPattern(Extension::kValidHostPermissionSchemes,
@@ -958,7 +958,7 @@ TEST_F(PermissionsUpdaterTestWithEnhancedHostControls,
 
   // Install and initialize an extension that wants to run everywhere.
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("extension").AddPermission("<all_urls>").Build();
+      ExtensionBuilder("extension").AddHostPermission("<all_urls>").Build();
 
   {
     PermissionsUpdater updater(profile());

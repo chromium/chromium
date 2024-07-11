@@ -54,10 +54,10 @@ scoped_refptr<const Extension> CreateTestExtension(
     bool has_tab_capture_permission) {
   ExtensionBuilder builder(name);
   if (has_active_tab_permission) {
-    builder.AddPermission("activeTab");
+    builder.AddAPIPermission("activeTab");
   }
   if (has_tab_capture_permission) {
-    builder.AddPermission("tabCapture");
+    builder.AddAPIPermission("tabCapture");
   }
 
   return builder.Build();

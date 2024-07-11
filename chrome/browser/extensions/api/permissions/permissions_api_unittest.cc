@@ -241,7 +241,7 @@ TEST_F(PermissionsAPIUnitTest, ContainsAndGetAllWithRuntimeHostPermissions) {
   constexpr char kContentScriptCom[] = "https://contentscript.com/*";
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
-          .AddPermission(kExampleCom)
+          .AddHostPermission(kExampleCom)
           .AddContentScript("foo.js", {kContentScriptCom, kExampleCom})
           .Build();
 
@@ -441,7 +441,7 @@ TEST_F(PermissionsAPIUnitTest,
   // permissions.
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
-          .AddPermission("https://example.com/*")
+          .AddHostPermission("https://example.com/*")
           .AddContentScript("foo.js", {kContentScriptPattern})
           .Build();
   AddExtensionAndGrantPermissions(*extension);
@@ -1016,7 +1016,7 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
        AddSiteAccessRequest_ActiveTab) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("Extension")
                                                  .SetManifestVersion(3)
-                                                 .AddPermission("activeTab")
+                                                 .AddAPIPermission("activeTab")
                                                  .Build();
   AddExtensionAndWithheldPermissions(*extension);
 

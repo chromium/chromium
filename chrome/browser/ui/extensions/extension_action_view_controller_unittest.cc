@@ -291,7 +291,7 @@ TEST_F(ExtensionActionViewControllerUnitTest, OnlyHostPermissionsAppearance) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("just hosts")
           .SetLocation(ManifestLocation::kInternal)
-          .AddPermission("https://www.google.com/*")
+          .AddHostPermission("https://www.google.com/*")
           .Build();
 
   extension_service()->GrantPermissions(extension.get());
@@ -570,7 +570,7 @@ ExtensionActionViewControllerGrayscaleTest::CreateExtension(
       break;
     }
     case PermissionType::kExplicitHost:
-      builder.AddPermission(kHostGoogle);
+      builder.AddHostPermission(kHostGoogle);
       break;
   }
 
@@ -659,8 +659,8 @@ TEST_F(ExtensionActionViewControllerUnitTest, ActiveTabIconAppearance) {
   static constexpr char16_t kNoAccessTooltip[] = u"active tab";
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("active tab")
-          .AddPermission("activeTab")
-          .AddPermission(kGrantedHost.spec())
+          .AddAPIPermission("activeTab")
+          .AddHostPermission(kGrantedHost.spec())
           .Build();
   extension_service()->GrantPermissions(extension.get());
   extension_service()->AddExtension(extension.get());
@@ -1119,7 +1119,7 @@ TEST_F(ExtensionActionViewControllerWithSidePanelUnitTest,
       extensions::ExtensionBuilder("just side panel")
           .SetLocation(ManifestLocation::kInternal)
           .SetManifestVersion(3)
-          .AddPermission("sidePanel")
+          .AddAPIPermission("sidePanel")
           .Build();
 
   extension_service()->GrantPermissions(extension.get());

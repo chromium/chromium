@@ -188,7 +188,7 @@ class ExtensionInstallPromptTestWithholdingAllowed
 TEST_F(ExtensionInstallPromptTestWithholdingAllowed,
        PromptShouldShowWithholdingUI) {
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("test").AddPermission("<all_urls>").Build();
+      ExtensionBuilder("test").AddHostPermission("<all_urls>").Build();
   content::TestWebContentsFactory factory;
   ExtensionInstallPrompt prompt(factory.CreateWebContents(profile()));
   ShowDialogTestFuture show_dialog_future;
@@ -203,7 +203,7 @@ TEST_F(ExtensionInstallPromptTestWithholdingAllowed,
 TEST_F(ExtensionInstallPromptTestWithholdingAllowed,
        DoesntShowForNoHostsRequested) {
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("no_host").AddPermission("tabs").Build();
+      ExtensionBuilder("no_host").AddAPIPermission("tabs").Build();
   content::TestWebContentsFactory factory;
   ExtensionInstallPrompt prompt(factory.CreateWebContents(profile()));
   ShowDialogTestFuture show_dialog_future;
@@ -219,7 +219,7 @@ TEST_F(ExtensionInstallPromptTestWithholdingAllowed,
        DoesntShowForWithholdingNotAllowed) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("all_hosts")
-          .AddPermission("<all_urls>")
+          .AddHostPermission("<all_urls>")
           .SetLocation(mojom::ManifestLocation::kExternalPolicy)
           .Build();
   content::TestWebContentsFactory factory;

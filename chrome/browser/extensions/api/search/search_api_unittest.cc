@@ -26,7 +26,7 @@ namespace {
 // Creates an extension with "search" permission.
 scoped_refptr<const Extension> CreateSearchExtension() {
   return ExtensionBuilder("Extension with search permission")
-      .AddPermission("search")
+      .AddAPIPermission("search")
       .Build();
 }
 

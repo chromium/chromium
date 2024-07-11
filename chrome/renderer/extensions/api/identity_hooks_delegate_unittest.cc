@@ -27,7 +27,7 @@ TEST_F(IdentityHooksDelegateTest, GetAuthToken) {
   // Register extension.
   scoped_refptr<const Extension> extension = ExtensionBuilder("testExtension")
                                                  .SetManifestVersion(3)
-                                                 .AddPermission("identity")
+                                                 .AddAPIPermission("identity")
                                                  .Build();
   RegisterExtension(extension);
   v8::HandleScope handle_scope(isolate());

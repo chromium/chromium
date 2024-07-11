@@ -352,7 +352,7 @@ class RuntimeHooksDelegateNativeMessagingTest
   ~RuntimeHooksDelegateNativeMessagingTest() override {}
 
   scoped_refptr<const Extension> BuildExtension() override {
-    return ExtensionBuilder("foo").AddPermission("nativeMessaging").Build();
+    return ExtensionBuilder("foo").AddAPIPermission("nativeMessaging").Build();
   }
 };
 
@@ -564,7 +564,7 @@ class RuntimeHooksDelegateNativeMessagingMV3Test
   scoped_refptr<const Extension> BuildExtension() override {
     return ExtensionBuilder("foo")
         .SetManifestKey("manifest_version", 3)
-        .AddPermission("nativeMessaging")
+        .AddAPIPermission("nativeMessaging")
         .Build();
   }
 };

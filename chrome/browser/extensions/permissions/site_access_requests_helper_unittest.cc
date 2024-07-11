@@ -89,7 +89,7 @@ SiteAccessRequestsHelperUnittest::InstallExtensionWithActiveTab(
   auto extension = ExtensionBuilder(name)
                        .SetManifestVersion(3)
                        .SetID(crx_file::id_util::GenerateId(name))
-                       .AddPermission("activeTab")
+                       .AddAPIPermission("activeTab")
                        .Build();
   service()->AddExtension(extension.get());
 

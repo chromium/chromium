@@ -392,7 +392,7 @@ class PrintingAPIHandlerUnittest : public testing::Test {
     const char kPermissionName[] = "printing";
     extension_ = ExtensionBuilder(kExtensionName)
                      .SetID(kExtensionId)
-                     .AddPermission(kPermissionName)
+                     .AddAPIPermission(kPermissionName)
                      .Build();
     ExtensionRegistry::Get(testing_profile_)->AddEnabled(extension_);
 

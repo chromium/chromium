@@ -933,7 +933,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, UpdateDevToolsWindow) {
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, ExtensionAPICannotNavigateDevtools) {
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("Test").AddPermission("tabs").Build();
+      ExtensionBuilder("Test").AddAPIPermission("tabs").Build();
 
   DevToolsWindow* devtools = DevToolsWindowTesting::OpenDevToolsWindowSync(
       browser()->tab_strip_model()->GetWebContentsAt(0), false /* is_docked */);
@@ -1330,7 +1330,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DuplicateTab) {
   scoped_refptr<TabsDuplicateFunction> duplicate_tab_function(
       new TabsDuplicateFunction());
   scoped_refptr<const Extension> empty_tab_extension =
-      ExtensionBuilder("Test").AddPermission("tabs").Build();
+      ExtensionBuilder("Test").AddAPIPermission("tabs").Build();
   duplicate_tab_function->set_extension(empty_tab_extension.get());
   duplicate_tab_function->set_has_callback(true);
 
@@ -1497,7 +1497,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, WindowsCreate) {
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, ExecuteScriptOnDevTools) {
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("Test").AddPermission("tabs").Build();
+      ExtensionBuilder("Test").AddAPIPermission("tabs").Build();
 
   DevToolsWindow* devtools = DevToolsWindowTesting::OpenDevToolsWindowSync(
       browser()->tab_strip_model()->GetWebContentsAt(0), false /* is_docked */);

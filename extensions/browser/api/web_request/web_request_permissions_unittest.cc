@@ -389,7 +389,7 @@ TEST_F(ExtensionWebRequestPermissionsTest,
        CanExtensionAccessURLWithWithheldPermissions) {
   ExtensionsAPIClient api_client;
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("ext").AddPermission("<all_urls>").Build();
+      ExtensionBuilder("ext").AddHostPermission("<all_urls>").Build();
   URLPatternSet all_urls(
       {URLPattern(Extension::kValidHostPermissionSchemes, "<all_urls>")});
   // Simulate withholding the <all_urls> permission.

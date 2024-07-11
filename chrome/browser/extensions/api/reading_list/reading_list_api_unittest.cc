@@ -39,7 +39,7 @@ namespace {
 // Create an extension with "readingList" permission.
 scoped_refptr<const Extension> CreateReadingListExtension() {
   return ExtensionBuilder("Extension with readingList permission")
-      .AddPermission("readingList")
+      .AddAPIPermission("readingList")
       .Build();
 }
 
