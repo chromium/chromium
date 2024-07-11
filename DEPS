@@ -1112,7 +1112,11 @@ deps = {
               'version': 'UYQZhJpB3MWpJIAcesI-M1bqRoTghiKCYr_SD9tPDewC',
           },
       ],
-      'condition': 'checkout_android and non_git_source',
+      # TODO(b/352185555): This path is ready for non_git_sources but some
+      # files in this package are too large for existing limits. Do not add
+      # `non_git_source` here until we evaluate how big android sources are
+      # and agree on some final limits.
+      'condition': 'checkout_android',
       'dep_type': 'cipd',
   },
 
