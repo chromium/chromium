@@ -20,11 +20,17 @@ build_webui("build") {
       [ "//chrome/browser/ui/webui/data_sharing:mojo_bindings_ts__generator" ]
   mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/data_sharing/data_sharing.mojom-webui.ts" ]
 
-  static_files = [ "data_sharing.html" ]
+  static_files = [
+    "data_sharing.html",
+    "data_sharing_api.html",
+  ]
 
   non_web_component_files = [
-    "data_sharing.ts",
     "browser_proxy.ts",
+    "browser_proxy_api.ts",
+    "browser_proxy_base.ts",
+    "data_sharing.ts",
+    "data_sharing_api.ts",
   ]
 
   if (is_chrome_branded) {

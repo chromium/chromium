@@ -2,19 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {PageHandlerInterface} from './data_sharing.mojom-webui.js';
-import {PageHandlerFactory, PageHandlerRemote} from './data_sharing.mojom-webui.js';
+import {BrowserProxyBase} from './browser_proxy_base.js';
 
-export class BrowserProxy {
-  handler: PageHandlerInterface;
-
+// Browser proxy for data sharing UI.
+// Only implement APIs related to data sharing UI.
+export class BrowserProxy extends BrowserProxyBase {
   constructor() {
-    this.handler = new PageHandlerRemote();
-
-    const factory = PageHandlerFactory.getRemote();
-    factory.createPageHandler(
-        (this.handler as PageHandlerRemote).$.bindNewPipeAndPassReceiver());
-
+    super();
     this.handler.showUI();
   }
 
