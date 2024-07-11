@@ -12,6 +12,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -24,9 +26,9 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_utils.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_idle_status_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_commands.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_idle_status_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -79,6 +81,22 @@
       tabGridDidPerformAction:TabGridActionType::kInPageAction];
   auto scoped_lock = self.webStateList->StartBatchOperation();
   self.webStateList->DeleteGroup(_tabGroup.get());
+  _tabGroup.reset();
+}
+
+- (void)closeGroup {
+  [self.tabGridIdleStatusHandler
+      tabGridDidPerformAction:TabGridActionType::kInPageAction];
+  if (IsTabGroupSyncEnabled()) {
+    tab_groups::TabGroupSyncService* syncService =
+        tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
+            self.browser->GetBrowserState());
+    tab_groups::utils::CloseTabGroupLocally(_tabGroup.get(), self.webStateList,
+                                            syncService);
+  } else {
+    CloseAllWebStatesInGroup(*self.webStateList, _tabGroup.get(),
+                             WebStateList::CLOSE_USER_ACTION);
+  }
   _tabGroup.reset();
 }
 

@@ -15,6 +15,9 @@
 - (void)ungroup;
 
 // Closes the tabs and deletes the current group.
+- (void)closeGroup;
+
+// Deletes the tabs and deletes the current group.
 - (void)deleteGroup;
 
 @end

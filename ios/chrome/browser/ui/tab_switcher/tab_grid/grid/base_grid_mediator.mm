@@ -1018,6 +1018,10 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   [self closeTabGroup:group andDeleteGroup:YES];
 }
 
+- (void)closeTabGroup:(const TabGroup*)group {
+  [self closeTabGroup:group andDeleteGroup:NO];
+}
+
 - (void)ungroupTabGroup:(const TabGroup*)group {
   [self.tabGridIdleStatusHandler
       tabGridDidPerformAction:TabGridActionType::kInPageAction];

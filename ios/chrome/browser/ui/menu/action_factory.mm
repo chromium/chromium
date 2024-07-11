@@ -561,6 +561,21 @@
   return action;
 }
 
+- (UIAction*)actionToCloseTabGroupWithBlock:(ProceduralBlock)block {
+  CHECK(IsTabGroupInGridEnabled());
+  CHECK(IsTabGroupSyncEnabled());
+
+  UIImage* image =
+      DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize);
+  UIAction* action = [self
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_CLOSEGROUP)
+                image:image
+                 type:MenuActionType::CloseTabGroup
+                block:block];
+  action.attributes = UIMenuElementAttributesDestructive;
+  return action;
+}
+
 #pragma mark - Private
 
 // Creates a UIAction instance for closing a tab with a provided `title`.

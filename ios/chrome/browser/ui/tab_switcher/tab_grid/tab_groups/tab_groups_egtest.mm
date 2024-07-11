@@ -116,6 +116,12 @@ id<GREYMatcher> DeleteGroupButton() {
       IDS_IOS_CONTENT_CONTEXT_DELETEGROUP);
 }
 
+// Returns the matcher for `Close Group` button.
+id<GREYMatcher> CloseGroupButton() {
+  return ContextMenuItemWithAccessibilityLabelId(
+      IDS_IOS_CONTENT_CONTEXT_CLOSEGROUP);
+}
+
 // Identifier for cell at given `index` in the tab grid.
 NSString* IdentifierForTabCellAtIndex(unsigned int index) {
   return [NSString stringWithFormat:@"%@%u", kGridCellIdentifierPrefix, index];
@@ -285,6 +291,13 @@ void UngroupGroupAtIndex(int group_cell_index) {
 void DeleteGroupAtIndex(int group_cell_index) {
   DisplayContextMenuForGroupCellAtIndex(group_cell_index);
   [[EarlGrey selectElementWithMatcher:DeleteGroupButton()]
+      performAction:grey_tap()];
+}
+
+// Closes the group cell at index `group_cell_index`.
+void CloseGroupAtIndex(int group_cell_index) {
+  DisplayContextMenuForGroupCellAtIndex(group_cell_index);
+  [[EarlGrey selectElementWithMatcher:CloseGroupButton()]
       performAction:grey_tap()];
 }
 
@@ -541,6 +554,25 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
                                           1)] assertWithMatcher:grey_nil()];
 }
 
+// Tests closing a group from the group's context menu action in the grid.
+- (void)testClosingGroupUsingGridContextMenu {
+  // Create a tab cell with `Tab 1` as its title.
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+
+  CloseGroupAtIndex(0);
+
+  // The tab and the group are closed.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(
+                                          l10n_util::GetPluralNSStringF(
+                                              IDS_IOS_TAB_GROUP_TABS_NUMBER, 1),
+                                          1)] assertWithMatcher:grey_nil()];
+}
+
 // Tests closing the group from the close button.
 - (void)testCloseTabGroup {
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
@@ -704,16 +736,13 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
       performAction:grey_tap()];
 
   // Check the different buttons.
-  [[EarlGrey selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
-                                          IDS_IOS_CONTENT_CONTEXT_RENAMEGROUP)]
+  [[EarlGrey selectElementWithMatcher:RenameGroupButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
-
-  [[EarlGrey selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
-                                          IDS_IOS_CONTENT_CONTEXT_UNGROUP)]
+  [[EarlGrey selectElementWithMatcher:UngroupButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
-
-  [[EarlGrey selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
-                                          IDS_IOS_CONTENT_CONTEXT_DELETEGROUP)]
+  [[EarlGrey selectElementWithMatcher:DeleteGroupButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:CloseGroupButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

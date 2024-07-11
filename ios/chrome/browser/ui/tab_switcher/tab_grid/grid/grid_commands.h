@@ -70,6 +70,9 @@ class WebStateID;
 // Tells the receiver to delete the `group`.
 - (void)deleteTabGroup:(const TabGroup*)group;
 
+// Tells the receiver to close the `group`.
+- (void)closeTabGroup:(const TabGroup*)group;
+
 // Tells the receiver to ungroup the `group`.
 - (void)ungroupTabGroup:(const TabGroup*)group;
 

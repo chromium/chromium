@@ -329,6 +329,14 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
                   [weakSelf.contextMenuDelegate ungroupTabGroup:group
                                                       incognito:incognito];
                 }]];
+  if (IsTabGroupSyncEnabled() && !incognito) {
+    // TODO(crbug.com/352297050): Don't show "Close group" when signed out or
+    // not synced.
+    [menuElements addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
+                    [weakSelf.contextMenuDelegate closeTabGroup:group
+                                                      incognito:incognito];
+                  }]];
+  }
   [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
                   [weakSelf.contextMenuDelegate deleteTabGroup:group
                                                      incognito:incognito];

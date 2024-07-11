@@ -379,28 +379,33 @@ constexpr CGFloat kSpace = 8;
       initWithScenario:kMenuScenarioHistogramTabGroupViewMenuEntry];
 
   __weak TabGroupViewController* weakSelf = self;
-  UIAction* renameGroup = [actionFactory actionToRenameTabGroupWithBlock:^{
-    [weakSelf displayEditionMenu];
-  }];
+  NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
-  UIAction* newTabAction = [actionFactory actionToAddNewTabInGroupWithBlock:^{
-    [weakSelf openNewTab];
-  }];
+  [menuElements addObject:[actionFactory actionToRenameTabGroupWithBlock:^{
+                  [weakSelf displayEditionMenu];
+                }]];
 
-  UIAction* ungroupAction = [actionFactory actionToUngroupTabGroupWithBlock:^{
-    [weakSelf ungroup];
-  }];
+  [menuElements addObject:[actionFactory actionToAddNewTabInGroupWithBlock:^{
+                  [weakSelf openNewTab];
+                }]];
 
-  UIAction* deleteGroupAction =
-      [actionFactory actionToDeleteTabGroupWithBlock:^{
-        [weakSelf deleteGroup];
-      }];
+  [menuElements addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
+                  [weakSelf ungroup];
+                }]];
 
-  return
-      [UIMenu menuWithTitle:@""
-                   children:@[
-                     renameGroup, newTabAction, ungroupAction, deleteGroupAction
-                   ]];
+  if (IsTabGroupSyncEnabled()) {
+    // TODO(crbug.com/352297050): Don't show "Close group" when signed, not
+    // synced or incognito.
+    [menuElements addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
+                    [weakSelf closeGroup];
+                  }]];
+  }
+
+  [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+                  [weakSelf deleteGroup];
+                }]];
+
+  return [UIMenu menuWithTitle:@"" children:menuElements];
 }
 
 // Opens a new tab in the group.
@@ -422,6 +427,12 @@ constexpr CGFloat kSpace = 8;
 }
 
 // Closes the tabs and deletes the current group and closes the view.
+- (void)closeGroup {
+  [self.mutator closeGroup];
+  [_handler hideTabGroup];
+}
+
+// Deletes the tabs and deletes the current group and closes the view.
 - (void)deleteGroup {
   [self.mutator deleteGroup];
   [_handler hideTabGroup];

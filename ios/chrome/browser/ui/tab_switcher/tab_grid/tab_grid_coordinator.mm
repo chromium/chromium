@@ -1498,7 +1498,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (void)deleteTabGroup:(const TabGroup*)group incognito:(BOOL)incognito {
   CHECK(IsTabGroupInGridEnabled())
-      << "You should not be able to close a tab group outside the Tab Groups "
+      << "You should not be able to delete a tab group outside the Tab Groups "
          "experiment.";
   if (incognito) {
     [self.incognitoTabsMediator deleteTabGroup:group];
@@ -1506,6 +1506,15 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   }
 
   [self.regularTabsMediator deleteTabGroup:group];
+}
+
+- (void)closeTabGroup:(const TabGroup*)group incognito:(BOOL)incognito {
+  CHECK(IsTabGroupInGridEnabled())
+      << "You should not be able to close a tab group outside the Tab Groups "
+         "experiment.";
+  CHECK(!incognito);
+
+  [self.regularTabsMediator closeTabGroup:group];
 }
 
 - (void)ungroupTabGroup:(const TabGroup*)group incognito:(BOOL)incognito {

@@ -77,6 +77,10 @@ class WebStateID;
 // state of the group.
 - (void)deleteTabGroup:(const TabGroup*)group incognito:(BOOL)incognito;
 
+// Tells the delegate to close the group. `incognito` tracks the incognito state
+// of the group.
+- (void)closeTabGroup:(const TabGroup*)group incognito:(BOOL)incognito;
+
 // Tells the delegate to ungroup the `group`. `incognito` tracks the incognito
 // state of the group.
 - (void)ungroupTabGroup:(const TabGroup*)group incognito:(BOOL)incognito;
