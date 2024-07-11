@@ -281,9 +281,9 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
     // Check if there are notifications received in the background to send the
     // respective NAUs.
     NSUserDefaults* defaults = app_group::GetGroupUserDefaults();
-    if ([defaults objectForKey:@"kContentNotificationContentArray"] != nil) {
+    if ([defaults objectForKey:kContentNotificationContentArrayKey] != nil) {
       NSMutableArray* contentArray = [[defaults
-          objectForKey:@"kContentNotificationContentArray"] mutableCopy];
+          objectForKey:kContentNotificationContentArrayKey] mutableCopy];
       // Report in 5 item increments.
       NSMutableArray* uploadedItems = [NSMutableArray array];
       for (NSData* item in contentArray) {
@@ -307,9 +307,9 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
       [contentArray removeObjectsInArray:uploadedItems];
       if (contentArray.count > 0) {
         [defaults setObject:contentArray
-                     forKey:@"kContentNotificationContentArray"];
+                     forKey:kContentNotificationContentArrayKey];
       } else {
-        [defaults setObject:nil forKey:@"kContentNotificationContentArray"];
+        [defaults setObject:nil forKey:kContentNotificationContentArrayKey];
       }
     }
     // Send an NAU every time the OS authorization status changes.
