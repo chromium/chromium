@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
@@ -347,6 +348,44 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, DefaultSizes) {
 
   const int expected_width = kDefaultOptions.window_size.width();
   const int expected_height = kDefaultOptions.window_size.height();
+
+  EXPECT_THAT(EvaluateScript(web_contents, "screen.width"),
+              DictHasValue("result.result.value", expected_width));
+  EXPECT_THAT(EvaluateScript(web_contents, "screen.height"),
+              DictHasValue("result.result.value", expected_height));
+
+  EXPECT_THAT(EvaluateScript(web_contents, "window.outerWidth"),
+              DictHasValue("result.result.value", expected_width));
+  EXPECT_THAT(EvaluateScript(web_contents, "window.outerHeight"),
+              DictHasValue("result.result.value", expected_height));
+
+  EXPECT_THAT(EvaluateScript(web_contents, "window.innerWidth"),
+              DictHasValue("result.result.value", expected_width));
+  EXPECT_THAT(EvaluateScript(web_contents, "window.innerHeight"),
+              DictHasValue("result.result.value", expected_height));
+}
+
+class HeadlessBrowserWindowSizeTest : public HeadlessBrowserTest {
+ public:
+  static constexpr gfx::Size kWindowSize = {1920, 1080};
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HeadlessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        switches::kWindowSize,
+        base::StringPrintf("%u,%u", kWindowSize.width(), kWindowSize.height()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(HeadlessBrowserWindowSizeTest, WindowSize) {
+  HeadlessBrowserContext* browser_context =
+      browser()->CreateBrowserContextBuilder().Build();
+
+  HeadlessWebContents* web_contents =
+      browser_context->CreateWebContentsBuilder().Build();
+
+  const int expected_width = kWindowSize.width();
+  const int expected_height = kWindowSize.height();
 
   EXPECT_THAT(EvaluateScript(web_contents, "screen.width"),
               DictHasValue("result.result.value", expected_width));
