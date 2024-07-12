@@ -287,6 +287,21 @@ source_set("unit_tests") {
   }
 }
 
+source_set("perf_test_utils") {
+  testonly = true
+  deps = [
+    ":chromeos",
+    "//base/test:test_support",
+    "//media/gpu/test:video_test_environment",
+    "//testing/gtest",
+    "//testing/perf",
+  ]
+  sources = [
+    "perf_test_util.cc",
+    "perf_test_util.h",
+  ]
+}
+
 test("image_processor_test") {
   sources = [ "image_processor_test.cc" ]
   deps = [
@@ -323,6 +338,7 @@ if (use_v4l2_codec) {
     sources = [ "image_processor_perf_test.cc" ]
     deps = [
       ":chromeos",
+      ":perf_test_utils",
       "//base/test:test_support",
       "//media:test_support",
       "//media/gpu:video_frame_mapper_common",
@@ -337,5 +353,26 @@ if (use_v4l2_codec) {
     if (enable_vulkan) {
       deps += [ "//gpu/command_buffer/service:gles2" ]
     }
+  }
+}
+
+if (use_v4l2_codec && enable_vulkan) {
+  test("vulkan_overlay_adaptor_test") {
+    sources = [ "vulkan_overlay_adaptor_test.cc" ]
+    deps = [
+      ":chromeos",
+      ":perf_test_utils",
+      "//base/test:test_support",
+      "//gpu/command_buffer/service:gles2",
+      "//media:test_support",
+      "//media/gpu:video_frame_mapper_common",
+      "//media/gpu/test:helpers",
+      "//media/gpu/test:video_test_environment",
+      "//testing/gtest",
+      "//testing/perf",
+      "//third_party/libyuv",
+      "//ui/gl",
+      "//ui/gl:test_support",
+    ]
   }
 }

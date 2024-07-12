@@ -1,0 +1,561 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include <sys/mman.h>
+#include <sys/poll.h>
+
+#include <cstdint>
+#include <vector>
+
+#include "base/bits.h"
+#include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/functional/callback.h"
+#include "base/rand_util.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/config/gpu_feature_info.h"
+#include "media/base/video_frame.h"
+#include "media/base/video_frame_layout.h"
+#include "media/base/video_types.h"
+#include "media/gpu/chromeos/chromeos_compressed_gpu_memory_buffer_video_frame_utils.h"
+#include "media/gpu/chromeos/fourcc.h"
+#include "media/gpu/chromeos/perf_test_util.h"
+#include "media/gpu/chromeos/platform_video_frame_utils.h"
+#include "media/gpu/chromeos/vulkan_image_processor.h"
+#include "media/gpu/test/image.h"
+#include "media/gpu/test/image_quality_metrics.h"
+#include "media/gpu/test/video_test_environment.h"
+#include "media/gpu/video_frame_mapper_factory.h"
+#include "third_party/libyuv/include/libyuv.h"
+#include "ui/gfx/overlay_transform.h"
+#include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_context.h"
+#include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_utils.h"
+#include "ui/gl/init/gl_factory.h"
+#include "ui/gl/test/gl_surface_test_support.h"
+#include "ui/ozone/public/ozone_platform.h"
+
+static constexpr size_t kMM21TileWidth = 16;
+static constexpr size_t kMM21TileHeight = 32;
+static constexpr int kRandomFrameSeed = 1000;
+
+namespace media {
+namespace {
+
+const char* usage_msg =
+    "usage: vulkan_overlay_adaptor_test\n"
+    "[--gtest_help] [--help] [-v=<level>] [--vmodule=<config>] \n";
+
+const char* help_msg =
+    "Run the vulkan image processor perf tests.\n\n"
+    "The following arguments are supported:\n"
+    "  --gtest_help          display the gtest help and exit.\n"
+    "  --help                display this help and exit.\n"
+    "  --source_directory    specify test input files location.\n"
+    "  --output_directory    specify test output file location. Defaults to "
+    "                        execution directory if not specified.\n"
+    "   -v                   enable verbose mode, e.g. -v=2.\n"
+    "  --vmodule             enable verbose mode for the specified module.\n";
+
+// File for MM21 detile and scaling test.
+const base::FilePath::CharType* kMM21Image =
+    FILE_PATH_LITERAL("puppets-480x270.mm21.yuv");
+// Files for MT2T Vulkan detile test.
+const base::FilePath::CharType* kMT2TImage =
+    FILE_PATH_LITERAL("crowd_run_1080x512.mt2t");
+
+void InitWithImage(const uint8_t* img_data,
+                   const gfx::Size size,
+                   uint8_t* y_plane,
+                   size_t y_stride,
+                   uint8_t* uv_plane,
+                   size_t uv_stride) {
+  libyuv::NV12Copy(img_data, size.width(), img_data + size.GetArea(),
+                   size.width(), y_plane, y_stride, uv_plane, uv_stride,
+                   size.width(), size.height());
+}
+
+void InitWithRandom(const gfx::Size size,
+                    uint8_t* y_plane,
+                    size_t y_stride,
+                    uint8_t* uv_plane,
+                    size_t uv_stride) {
+  base::span<uint8_t> y_plane_span = UNSAFE_BUFFERS(base::span(
+      y_plane, y_stride * base::checked_cast<size_t>(size.height())));
+  base::span<uint8_t> uv_plane_span = UNSAFE_BUFFERS(base::span(
+      uv_plane, uv_stride * base::checked_cast<size_t>(size.height()) / 2u));
+  const auto width = base::checked_cast<size_t>(size.width());
+
+  for (int row = 0; row < size.height(); row++) {
+    auto [row_bytes, rem] = y_plane_span.split_at(y_stride);
+    base::RandBytes(row_bytes.first(width));
+    y_plane_span = rem;
+  }
+  for (int row = 0; row < size.height() / 2; row++) {
+    auto [row_bytes, rem] = uv_plane_span.split_at(uv_stride);
+    base::RandBytes(row_bytes.first(width));
+    uv_plane_span = rem;
+  }
+}
+
+class VulkanImageProcessorTest
+    : public testing::Test,
+      public testing::WithParamInterface<TiledImageFormat> {
+ public:
+  VulkanImageProcessorTest();
+  ~VulkanImageProcessorTest() = default;
+
+  struct PrintToStringParamName {
+    template <class ParamType>
+    std::string operator()(
+        const testing::TestParamInfo<ParamType>& info) const {
+      return base::StringPrintf("%s", (info.param == kMM21) ? "MM21" : "MT2T");
+    }
+  };
+
+  void ProcessMailboxes(gpu::Mailbox in_mailbox,
+                        const gfx::Size& size,
+                        gpu::Mailbox out_mailbox,
+                        const gfx::RectF& display_rect,
+                        const gfx::RectF& crop_rect,
+                        gfx::OverlayTransform transform,
+                        VulkanImageProcessor& processor);
+
+  scoped_refptr<VideoFrame> CreateVideoFrame(
+      gpu::Mailbox mailbox,
+      const gfx::Size& coded_size,
+      base::OnceCallback<void(gfx::Size, uint8_t*, size_t, uint8_t*, size_t)>
+          frame_init_cb,
+      bool is_10bit);
+
+  scoped_refptr<VideoFrame> CreateFramebuffer(gpu::Mailbox mailbox,
+                                              const gfx::Size& coded_size,
+                                              bool is_10bit);
+
+ private:
+  scoped_refptr<gl::GLShareGroup> share_group_;
+  scoped_refptr<gl::GLSurface> surface_;
+  scoped_refptr<gl::GLContext> context_;
+  scoped_refptr<gpu::SharedContextState> context_state_;
+  gpu::SharedImageManager shared_image_manager_;
+  gpu::GpuPreferences gpu_preferences_;
+  gpu::GpuDriverBugWorkarounds gpu_workarounds_;
+  gpu::GpuFeatureInfo gpu_info_;
+  std::unique_ptr<gpu::SharedImageFactory> shared_image_factory_;
+};
+
+VulkanImageProcessorTest::VulkanImageProcessorTest()
+    : share_group_(base::MakeRefCounted<gl::GLShareGroup>()),
+      surface_(gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(),
+                                                  gfx::Size())),
+      context_(gl::init::CreateGLContext(share_group_.get(),
+                                         surface_.get(),
+                                         gl::GLContextAttribs())) {
+  context_->MakeCurrent(surface_.get());
+  context_state_ = base::MakeRefCounted<gpu::SharedContextState>(
+      share_group_, surface_, context_, false, base::DoNothing(),
+      gpu::GpuPreferences().gr_context_type);
+  shared_image_factory_ = std::make_unique<gpu::SharedImageFactory>(
+      gpu_preferences_, gpu_workarounds_, gpu_info_, context_state_.get(),
+      &shared_image_manager_, nullptr, false);
+}
+
+void VulkanImageProcessorTest::ProcessMailboxes(
+    gpu::Mailbox in_mailbox,
+    const gfx::Size& size,
+    gpu::Mailbox out_mailbox,
+    const gfx::RectF& display_rect,
+    const gfx::RectF& crop_rect,
+    gfx::OverlayTransform transform,
+    VulkanImageProcessor& processor) {
+  auto in_vulkan_representation = shared_image_manager_.ProduceVulkan(
+      in_mailbox, nullptr, processor.GetVulkanDeviceQueue(),
+      processor.GetVulkanImplementation(), /*needs_detiling=*/true);
+  auto out_vulkan_representation = shared_image_manager_.ProduceVulkan(
+      out_mailbox, nullptr, processor.GetVulkanDeviceQueue(),
+      processor.GetVulkanImplementation(), /*needs_detiling=*/true);
+  {
+    std::vector<VkSemaphore> begin_semaphores;
+    std::vector<VkSemaphore> end_semaphores;
+    auto in_access = in_vulkan_representation->BeginScopedAccess(
+        gpu::RepresentationAccessMode::kRead, begin_semaphores, end_semaphores);
+    auto out_access = out_vulkan_representation->BeginScopedAccess(
+        gpu::RepresentationAccessMode::kWrite, begin_semaphores,
+        end_semaphores);
+
+    processor.Process(in_access->GetVulkanImage(), size,
+                      out_access->GetVulkanImage(), display_rect, crop_rect,
+                      transform, begin_semaphores, end_semaphores);
+  }
+}
+
+scoped_refptr<VideoFrame> VulkanImageProcessorTest::CreateVideoFrame(
+    gpu::Mailbox mailbox,
+    const gfx::Size& coded_size,
+    base::OnceCallback<
+        void(const gfx::Size, uint8_t*, size_t, uint8_t*, size_t)>
+        frame_init_cb,
+    bool is_10bit) {
+  constexpr base::TimeDelta kNullTimestamp;
+  const size_t bpp_numerator = is_10bit ? 5 : 1;
+  const size_t bpp_denom = is_10bit ? 4 : 1;
+  const gfx::Size alloc_size(
+      base::bits::AlignUp(base::checked_cast<size_t>(coded_size.width()),
+                          kMM21TileWidth),
+      base::bits::AlignUp(base::checked_cast<size_t>(coded_size.height()),
+                          kMM21TileHeight) *
+          bpp_numerator / bpp_denom);
+
+  scoped_refptr<VideoFrame> frame = CreateGpuMemoryBufferVideoFrame(
+      VideoPixelFormat::PIXEL_FORMAT_NV12, alloc_size, gfx::Rect(alloc_size),
+      alloc_size, kNullTimestamp, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+
+  std::unique_ptr<VideoFrameMapper> frame_mapper =
+      VideoFrameMapperFactory::CreateMapper(
+          VideoPixelFormat::PIXEL_FORMAT_NV12,
+          VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+          /*force_linear_buffer_mapper=*/true,
+          /*must_support_intel_media_compressed_buffers=*/false);
+  scoped_refptr<VideoFrame> mapped_frame =
+      frame_mapper->Map(frame, PROT_READ | PROT_WRITE);
+
+  std::move(frame_init_cb)
+      .Run(alloc_size,
+           mapped_frame->GetWritableVisibleData(VideoFrame::Plane::kY),
+           mapped_frame->stride(VideoFrame::Plane::kY),
+           mapped_frame->GetWritableVisibleData(VideoFrame::Plane::kUV),
+           mapped_frame->stride(VideoFrame::Plane::kUV));
+
+  auto gmb = CreateGpuMemoryBufferHandle(frame.get());
+  viz::SharedImageFormat format_nv12 = viz::SharedImageFormat::MultiPlane(
+      viz::SharedImageFormat::PlaneConfig::kY_UV,
+      viz::SharedImageFormat::Subsampling::k420,
+      viz::SharedImageFormat::ChannelFormat::k8);
+  format_nv12.SetPrefersExternalSampler();
+  shared_image_factory_->CreateSharedImage(
+      mailbox, format_nv12, frame->coded_size(), gfx::ColorSpace::CreateSRGB(),
+      kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
+      gpu::SharedImageUsage::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel",
+      std::move(gmb));
+
+  return mapped_frame;
+}
+
+scoped_refptr<VideoFrame> VulkanImageProcessorTest::CreateFramebuffer(
+    gpu::Mailbox mailbox,
+    const gfx::Size& coded_size,
+    bool is_10bit) {
+  constexpr base::TimeDelta kNullTimestamp;
+
+  scoped_refptr<VideoFrame> frame = CreateGpuMemoryBufferVideoFrame(
+      is_10bit ? VideoPixelFormat::PIXEL_FORMAT_XR30
+               : VideoPixelFormat::PIXEL_FORMAT_ARGB,
+      coded_size, gfx::Rect(coded_size), coded_size, kNullTimestamp,
+      gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+
+  auto gmb = CreateGpuMemoryBufferHandle(frame.get());
+  shared_image_factory_->CreateSharedImage(
+      mailbox,
+      is_10bit ? viz::SinglePlaneFormat::kBGRA_1010102
+               : viz::SinglePlaneFormat::kBGRA_8888,
+      coded_size, gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+      kUnpremul_SkAlphaType,
+      gpu::SharedImageUsage::SHARED_IMAGE_USAGE_DISPLAY_WRITE |
+          gpu::SharedImageUsage::SHARED_IMAGE_USAGE_SCANOUT,
+      "TestLabel", std::move(gmb));
+
+  std::unique_ptr<VideoFrameMapper> frame_mapper =
+      VideoFrameMapperFactory::CreateMapper(
+          is_10bit ? VideoPixelFormat::PIXEL_FORMAT_XR30
+                   : VideoPixelFormat::PIXEL_FORMAT_ARGB,
+          VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+          /*force_linear_buffer_mapper=*/true,
+          /*must_support_intel_media_compressed_buffers=*/false);
+  scoped_refptr<VideoFrame> mapped_frame =
+      frame_mapper->Map(frame, PROT_READ | PROT_WRITE);
+
+  return mapped_frame;
+}
+
+TEST_P(VulkanImageProcessorTest, Correctness) {
+  bool is_10bit = GetParam() == kMT2T;
+  const size_t bpp_numerator = is_10bit ? 5 : 1;
+  const size_t bpp_denom = is_10bit ? 4 : 1;
+
+  auto in_mailbox = gpu::Mailbox::Generate();
+  auto out_mailbox = gpu::Mailbox::Generate();
+
+  test::Image image(media::g_source_directory.Append(
+      base::FilePath(is_10bit ? kMT2TImage : kMM21Image)));
+  ASSERT_TRUE(image.Load());
+  gfx::Size size(
+      base::bits::AlignUp(base::checked_cast<size_t>(image.Size().width()),
+                          kMM21TileWidth),
+      base::bits::AlignUp(base::checked_cast<size_t>(image.Size().height()),
+                          kMM21TileHeight));
+  auto init_cb = base::BindOnce(&InitWithImage, image.Data());
+  auto in_frame =
+      CreateVideoFrame(in_mailbox, image.Size(), std::move(init_cb), is_10bit);
+
+  gfx::Size output_size(1000, 1000);
+  auto out_frame = CreateFramebuffer(out_mailbox, output_size, is_10bit);
+
+  auto vulkan_image_processor =
+      VulkanImageProcessor::Create(/*is_protected=*/false, GetParam());
+
+  ProcessMailboxes(in_mailbox, image.VisibleRect().size(), out_mailbox,
+                   gfx::RectF(base::checked_cast<float>(output_size.width()),
+                              base::checked_cast<float>(output_size.height())),
+                   gfx::RectF(1.0f, 1.0f), gfx::OVERLAY_TRANSFORM_NONE,
+                   *vulkan_image_processor);
+  // This implicitly waits for all semaphores to signal.
+  vulkan_image_processor->GetVulkanDeviceQueue()
+      ->GetFenceHelper()
+      ->PerformImmediateCleanup();
+
+  // Replicate Vulkan image processing with LibYUV to check our results.
+  uint8_t* argb_framebuf = reinterpret_cast<uint8_t*>(
+      mmap(nullptr, output_size.GetArea() * 4, PROT_READ | PROT_WRITE,
+           MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+  if (is_10bit) {
+    uint16_t* p010_y = reinterpret_cast<uint16_t*>(
+        mmap(nullptr, size.GetArea() * 2, PROT_READ | PROT_WRITE,
+             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+    uint16_t* p010_uv = reinterpret_cast<uint16_t*>(
+        mmap(nullptr, size.GetArea(), PROT_READ | PROT_WRITE,
+             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+    ASSERT_FALSE(libyuv::MT2TToP010(
+        image.Data(), size.width() * bpp_numerator / bpp_denom,
+        image.Data() + size.GetArea() * bpp_numerator / bpp_denom,
+        size.width() * bpp_numerator / bpp_denom, p010_y, size.width(), p010_uv,
+        size.width(), size.width(), size.height()));
+
+    uint16_t* small_i010_y = reinterpret_cast<uint16_t*>(
+        mmap(nullptr, size.GetArea() * 2, PROT_READ | PROT_WRITE,
+             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+    uint16_t* small_i010_u = reinterpret_cast<uint16_t*>(
+        mmap(nullptr, size.GetArea() / 2, PROT_READ | PROT_WRITE,
+             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+    uint16_t* small_i010_v = reinterpret_cast<uint16_t*>(
+        mmap(nullptr, size.GetArea() / 2, PROT_READ | PROT_WRITE,
+             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+    ASSERT_FALSE(libyuv::P010ToI010(
+        p010_y, size.width(), p010_uv, size.width(), small_i010_y, size.width(),
+        small_i010_u, size.width() / 2, small_i010_v, size.width() / 2,
+        image.VisibleRect().width(), image.VisibleRect().height()));
+
+    uint16_t* i010_y = reinterpret_cast<uint16_t*>(
+        mmap(nullptr, output_size.GetArea() * 2, PROT_READ | PROT_WRITE,
+             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+    uint16_t* i010_u = reinterpret_cast<uint16_t*>(
+        mmap(nullptr, output_size.GetArea() / 2, PROT_READ | PROT_WRITE,
+             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+    uint16_t* i010_v = reinterpret_cast<uint16_t*>(
+        mmap(nullptr, output_size.GetArea() / 2, PROT_READ | PROT_WRITE,
+             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+    ASSERT_FALSE(libyuv::I420Scale_16(
+        small_i010_y, size.width(), small_i010_u, size.width() / 2,
+        small_i010_v, size.width() / 2, image.VisibleRect().width(),
+        image.VisibleRect().height(), i010_y, output_size.width(), i010_u,
+        output_size.width() / 2, i010_v, output_size.width() / 2,
+        output_size.width(), output_size.height(), libyuv::kFilterBilinear));
+
+    ASSERT_FALSE(libyuv::I010ToAR30(
+        i010_y, output_size.width(), i010_u, output_size.width() / 2, i010_v,
+        output_size.width() / 2, argb_framebuf, output_size.width() * 4,
+        output_size.width(), output_size.height()));
+
+    double psnr = test::ComputeAR30PSNR(
+        reinterpret_cast<const uint32_t*>(
+            out_frame->visible_data(VideoFrame::Plane::kARGB)),
+        out_frame->stride(VideoFrame::Plane::kARGB) / 4,
+        reinterpret_cast<const uint32_t*>(argb_framebuf), output_size.width(),
+        output_size.width(), output_size.height());
+
+    // TODO(b/328227651): We have to keep this PSNR threshold pretty low
+    // because LibYUV produces inaccurate results in the 10-bit YUV->ARGB
+    // conversion. We should try to fix this discrepancy though.
+    constexpr double kPsnrThreshold = 25.0;
+    ASSERT_TRUE(psnr >= kPsnrThreshold);
+
+    munmap(p010_y, size.GetArea() * 2);
+    munmap(p010_uv, size.GetArea());
+    munmap(small_i010_y, size.GetArea() * 2);
+    munmap(small_i010_u, size.GetArea() / 2);
+    munmap(small_i010_v, size.GetArea() / 2);
+    munmap(i010_y, output_size.GetArea() * 2);
+    munmap(i010_u, output_size.GetArea() / 2);
+    munmap(i010_v, output_size.GetArea() / 2);
+  } else {
+    uint8_t* small_i420_y = reinterpret_cast<uint8_t*>(
+        mmap(nullptr, size.GetArea(), PROT_READ | PROT_WRITE,
+             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+    uint8_t* small_i420_u = reinterpret_cast<uint8_t*>(
+        mmap(nullptr, size.GetArea() / 4, PROT_READ | PROT_WRITE,
+             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+    uint8_t* small_i420_v = reinterpret_cast<uint8_t*>(
+        mmap(nullptr, size.GetArea() / 4, PROT_READ | PROT_WRITE,
+             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+    ASSERT_FALSE(libyuv::MM21ToI420(
+        image.Data(), size.width(), image.Data() + size.GetArea(), size.width(),
+        small_i420_y, size.width(), small_i420_u, size.width() / 2,
+        small_i420_v, size.width() / 2, size.width(), size.height()));
+
+    uint8_t* i420_y = reinterpret_cast<uint8_t*>(
+        mmap(nullptr, output_size.GetArea(), PROT_READ | PROT_WRITE,
+             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+    uint8_t* i420_u = reinterpret_cast<uint8_t*>(
+        mmap(nullptr, output_size.GetArea() / 4, PROT_READ | PROT_WRITE,
+             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+    uint8_t* i420_v = reinterpret_cast<uint8_t*>(
+        mmap(nullptr, output_size.GetArea() / 4, PROT_READ | PROT_WRITE,
+             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+    ASSERT_FALSE(libyuv::I420Scale(
+        small_i420_y, size.width(), small_i420_u, size.width() / 2,
+        small_i420_v, size.width() / 2, image.VisibleRect().width(),
+        image.VisibleRect().height(), i420_y, output_size.width(), i420_u,
+        output_size.width() / 2, i420_v, output_size.width() / 2,
+        output_size.width(), output_size.height(), libyuv::kFilterBilinear));
+
+    ASSERT_FALSE(libyuv::I420ToARGB(
+        i420_y, output_size.width(), i420_u, output_size.width() / 2, i420_v,
+        output_size.width() / 2, argb_framebuf, output_size.width() * 4,
+        output_size.width(), output_size.height()));
+
+    double psnr = libyuv::CalcFramePsnr(
+        out_frame->visible_data(VideoFrame::Plane::kARGB),
+        out_frame->stride(VideoFrame::Plane::kARGB), argb_framebuf,
+        output_size.width() * 4, output_size.width(), output_size.height());
+    constexpr double kPsnrThreshold = 35.0;
+    ASSERT_TRUE(psnr >= kPsnrThreshold);
+
+    munmap(small_i420_y, size.GetArea());
+    munmap(small_i420_u, size.GetArea() / 4);
+    munmap(small_i420_v, size.GetArea() / 4);
+    munmap(i420_y, output_size.GetArea());
+    munmap(i420_u, output_size.GetArea() / 4);
+    munmap(i420_v, output_size.GetArea() / 4);
+  }
+  munmap(argb_framebuf, output_size.GetArea() * 4);
+}
+
+TEST_P(VulkanImageProcessorTest, Performance) {
+  constexpr size_t kNumberOfTestFrames = 10;
+  constexpr size_t kNumberOfTestCycles = 200;
+  constexpr int kTestImageWidth = 1920;
+  constexpr int kTestImageHeight = 1088;
+
+  const bool is_10bit = GetParam() == kMT2T;
+
+  gfx::Size test_image_size(kTestImageWidth, kTestImageHeight);
+  gfx::Size test_coded_size(
+      base::bits::AlignUp(base::checked_cast<size_t>(test_image_size.width()),
+                          kMM21TileWidth),
+      base::bits::AlignUp(base::checked_cast<size_t>(test_image_size.height()),
+                          kMM21TileHeight));
+  std::array<gpu::Mailbox, kNumberOfTestFrames> in_mailboxes;
+  std::array<scoped_refptr<VideoFrame>, kNumberOfTestFrames> in_frames;
+  std::array<gpu::Mailbox, kNumberOfTestFrames> out_mailboxes;
+  std::array<scoped_refptr<VideoFrame>, kNumberOfTestFrames> out_frames;
+
+  for (size_t i = 0; i < kNumberOfTestFrames; i++) {
+    auto init_cb = base::BindOnce(&InitWithRandom);
+    in_mailboxes[i] = gpu::Mailbox::Generate();
+    in_frames[i] = CreateVideoFrame(in_mailboxes[i], test_coded_size,
+                                    std::move(init_cb), is_10bit);
+
+    out_mailboxes[i] = gpu::Mailbox::Generate();
+    out_frames[i] =
+        CreateFramebuffer(out_mailboxes[i], test_image_size, is_10bit);
+  }
+
+  auto vulkan_image_processor =
+      VulkanImageProcessor::Create(/*is_protected=*/false, GetParam());
+
+  auto start_time = base::TimeTicks::Now();
+  for (size_t i = 0; i < kNumberOfTestCycles; i++) {
+    ProcessMailboxes(
+        in_mailboxes[i % kNumberOfTestFrames], test_image_size,
+        out_mailboxes[i % kNumberOfTestFrames],
+        gfx::RectF(base::checked_cast<float>(test_image_size.width()),
+                   base::checked_cast<float>(test_image_size.height())),
+        gfx::RectF(1.0f, 1.0f), gfx::OVERLAY_TRANSFORM_NONE,
+        *vulkan_image_processor);
+  }
+  auto end_time = base::TimeTicks::Now();
+
+  base::TimeDelta delta_time = end_time - start_time;
+  const double fps = (kNumberOfTestCycles / delta_time.InSecondsF());
+  WriteJsonResult({{"FramesDecoded", kNumberOfTestCycles},
+                   {"TotalDurationMs", delta_time.InMicrosecondsF()},
+                   {"FramesPerSecond", fps}});
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         VulkanImageProcessorTest,
+                         testing::Values(kMM21, kMT2T),
+                         VulkanImageProcessorTest::PrintToStringParamName());
+
+}  // namespace
+}  // namespace media
+
+int main(int argc, char** argv) {
+  base::CommandLine::Init(argc, argv);
+
+  // Print the help message if requested. This needs to be done before
+  // initializing gtest, to overwrite the default gtest help message.
+  const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+  LOG_ASSERT(cmd_line);
+  if (cmd_line->HasSwitch("help")) {
+    std::cout << media::usage_msg << "\n" << media::help_msg;
+    return 0;
+  }
+
+  base::CommandLine::SwitchMap switches = cmd_line->GetSwitches();
+  for (base::CommandLine::SwitchMap::const_iterator it = switches.begin();
+       it != switches.end(); ++it) {
+    if (it->first.find("gtest_") == 0 ||               // Handled by GoogleTest
+        it->first == "v" || it->first == "vmodule") {  // Handled by Chrome
+      continue;
+    }
+
+    if (it->first == "source_directory") {
+      media::g_source_directory = base::FilePath(it->second);
+    } else if (it->first == "output_directory") {
+      media::g_output_directory = base::FilePath(it->second);
+    } else {
+      std::cout << "unknown option: --" << it->first << "\n"
+                << media::usage_msg;
+      return EXIT_FAILURE;
+    }
+  }
+  srand(kRandomFrameSeed);
+  testing::InitGoogleTest(&argc, argv);
+
+  auto* const test_environment = new media::test::VideoTestEnvironment;
+  media::g_env = reinterpret_cast<media::test::VideoTestEnvironment*>(
+      testing::AddGlobalTestEnvironment(test_environment));
+
+  // TODO(b/316374371) Try to remove Ozone and replace with EGL and GL.
+  ui::OzonePlatform::InitParams ozone_param;
+  ozone_param.single_process = true;
+  ui::OzonePlatform::InitializeForUI(ozone_param);
+  ui::OzonePlatform::InitializeForGPU(ozone_param);
+  gl::GLSurfaceTestSupport::InitializeOneOffImplementation(
+      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2),
+      /*fallback_to_software_gl=*/false);
+
+  return RUN_ALL_TESTS();
+}
