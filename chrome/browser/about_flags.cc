@@ -590,20 +590,28 @@ const FeatureEntry::FeatureParam kCCTBottomBarButtonBalancedWithHomeParam[] = {
     {"google_bottom_bar_button_list", "0,3,10,2"}};
 const FeatureEntry::FeatureParam kCCTBottomBarButtonsBalancedWithCustomParam[] =
     {{"google_bottom_bar_button_list", "0,3,8,2"}};
+const FeatureEntry::FeatureParam kCCTBottomBarButtonsBalancedWithSearchParam[] =
+    {{"google_bottom_bar_button_list", "0,3,9,2"}};
 const FeatureEntry::FeatureParam kCCTBottomBarHomeInSpotlightParam[] = {
     {"google_bottom_bar_button_list", "10,10,3,2"}};
 const FeatureEntry::FeatureParam kCCTBottomBarCustomInSpotlightParam[] = {
     {"google_bottom_bar_button_list", "8,8,3,2"}};
+const FeatureEntry::FeatureParam kCCTBottomBarSearchInSpotlightParam[] = {
+    {"google_bottom_bar_button_list", "9,9,3,2"}};
 
 const FeatureEntry::FeatureVariation kCCTGoogleBottomBarVariations[] = {
     {"Balanced with home button", kCCTBottomBarButtonBalancedWithHomeParam,
      std::size(kCCTBottomBarButtonBalancedWithHomeParam), nullptr},
     {"Balanced with custom button", kCCTBottomBarButtonsBalancedWithCustomParam,
      std::size(kCCTBottomBarButtonsBalancedWithCustomParam), nullptr},
+    {"Balanced with search button", kCCTBottomBarButtonsBalancedWithSearchParam,
+     std::size(kCCTBottomBarButtonsBalancedWithSearchParam), nullptr},
     {"home button in spotlight", kCCTBottomBarHomeInSpotlightParam,
      std::size(kCCTBottomBarHomeInSpotlightParam), nullptr},
     {"custom button in spotlight", kCCTBottomBarCustomInSpotlightParam,
      std::size(kCCTBottomBarCustomInSpotlightParam), nullptr},
+    {"search button in spotlight", kCCTBottomBarSearchInSpotlightParam,
+     std::size(kCCTBottomBarSearchInSpotlightParam), nullptr},
 };
 
 const FeatureEntry::FeatureParam kCCTDoubleDeckerBottomBarParam[] = {
