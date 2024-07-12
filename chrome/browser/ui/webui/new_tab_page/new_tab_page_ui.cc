@@ -28,7 +28,6 @@
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar_page_handler.h"
-#include "chrome/browser/new_tab_page/modules/v2/history_clusters/history_clusters_page_handler_v2.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption_page_handler.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
@@ -926,13 +925,6 @@ void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<ntp::history_clusters::mojom::PageHandler>
         pending_page_handler) {
   history_clusters_handler_ = std::make_unique<HistoryClustersPageHandler>(
-      std::move(pending_page_handler), web_contents());
-}
-
-void NewTabPageUI::BindInterface(
-    mojo::PendingReceiver<ntp::history_clusters_v2::mojom::PageHandler>
-        pending_page_handler) {
-  history_clusters_handler_v2_ = std::make_unique<HistoryClustersPageHandlerV2>(
       std::move(pending_page_handler), web_contents());
 }
 

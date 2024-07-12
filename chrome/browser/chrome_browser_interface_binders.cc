@@ -162,7 +162,6 @@
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters.mojom.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar.mojom.h"
-#include "chrome/browser/new_tab_page/modules/v2/history_clusters/history_clusters_v2.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption.mojom.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
@@ -1324,21 +1323,6 @@ void PopulateChromeWebUIFrameBinders(
   if (base::FeatureList::IsEnabled(ntp_features::kNtpFeedModule)) {
     RegisterWebUIControllerInterfaceBinder<ntp::feed::mojom::FeedHandler,
                                            NewTabPageUI>(map);
-  }
-
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpHistoryClustersModule) ||
-      base::FeatureList::IsEnabled(
-          ntp_features::kNtpHistoryClustersModuleLoad)) {
-    if (ntp_features::IsNtpModulesRedesignedEnabled(
-            g_browser_process->GetApplicationLocale(),
-            GetVariationsServiceCountryCode(
-                g_browser_process->variations_service()))) {
-      RegisterWebUIControllerInterfaceBinder<
-          ntp::history_clusters_v2::mojom::PageHandler, NewTabPageUI>(map);
-    } else {
-      RegisterWebUIControllerInterfaceBinder<
-          ntp::history_clusters::mojom::PageHandler, NewTabPageUI>(map);
-    }
   }
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpTabResumptionModule)) {

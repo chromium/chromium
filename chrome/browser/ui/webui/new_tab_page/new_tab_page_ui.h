@@ -17,7 +17,6 @@
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters.mojom.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar.mojom.h"
-#include "chrome/browser/new_tab_page/modules/v2/history_clusters/history_clusters_v2.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption.mojom.h"
 #include "components/user_education/webui/help_bubble_handler.h"
@@ -81,7 +80,6 @@ class FooHandler;
 class GoogleCalendarPageHandler;
 class GURL;
 class HistoryClustersPageHandler;
-class HistoryClustersPageHandlerV2;
 class MostRelevantTabResumptionPageHandler;
 class MostVisitedHandler;
 class NewTabPageHandler;
@@ -196,13 +194,6 @@ class NewTabPageUI
       mojo::PendingReceiver<ntp::history_clusters::mojom::PageHandler>
           pending_page_handler);
 
-  // Instantiates the implementor of the
-  // ntp::history_clusters_v2::mojom::PageHandler mojo interface passing to it
-  // the pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<ntp::history_clusters_v2::mojom::PageHandler>
-          pending_page_handler);
-
   void BindInterface(mojo::PendingReceiver<
                      ntp::most_relevant_tab_resumption::mojom::PageHandler>
                          pending_page_handler);
@@ -289,7 +280,6 @@ class NewTabPageUI
 #endif
   std::unique_ptr<CartHandler> cart_handler_;
   std::unique_ptr<HistoryClustersPageHandler> history_clusters_handler_;
-  std::unique_ptr<HistoryClustersPageHandlerV2> history_clusters_handler_v2_;
   std::unique_ptr<MostRelevantTabResumptionPageHandler>
       most_relevant_tab_resumption_handler_;
   std::unique_ptr<TabResumptionPageHandler> tab_resumption_handler_;
