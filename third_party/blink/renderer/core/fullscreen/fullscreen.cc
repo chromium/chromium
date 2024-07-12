@@ -69,10 +69,7 @@ namespace blink {
 
 namespace {
 
-// UMA keys for tracking the duration of a fullscreen request based on
-// the initiation source.
-static constexpr char kFullscreenDurationMetricKeyPopup[] =
-    "Blink.Element.Fullscreen.DurationUpTo1H.Popup";
+// UMA key for tracking the duration of a fullscreen request.
 static constexpr char kFullscreenDurationMetricKeyRequestFullscreen[] =
     "Blink.Element.Fullscreen.DurationUpTo1H.RequestFullscreen";
 
@@ -1020,12 +1017,6 @@ ScriptPromise<IDLUndefined> Fullscreen::ExitFullscreen(
                                            ? element_params->request_type()
                                            : FullscreenRequestType::kUnprefixed;
   if (element_params) {
-    // Track fullscreen popup requests without any other flags.
-    if (request_type == FullscreenRequestType::kForWindowOpen) {
-      UMA_HISTOGRAM_LONG_TIMES(
-          kFullscreenDurationMetricKeyPopup,
-          base::TimeTicks::Now() - element_params->fullscreen_enter_time());
-    }
     // Track traditional HTML requests without any other flags (e.g. XR).
     // ForCrossProcessDescendant is excluded here to ensure the counter is only
     // incremented when this function is invoked for the top frame.
