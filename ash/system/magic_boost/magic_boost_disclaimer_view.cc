@@ -44,11 +44,12 @@ constexpr char kWidgetName[] = "MagicBoostDisclaimerViewWidget";
 
 // Paddings, sizes and insets.
 constexpr int kImageWidth = 512;
+constexpr int kImageHeight = 236;
 constexpr int kContainerPadding = 32;
 constexpr int kTextContainerBetweenChildSpacing = 16;
 constexpr int kContainerBottomPadding = 28;
 constexpr int kWidgetWidth = kImageWidth;
-constexpr int kWidgetHeight = 650;
+constexpr int kWidgetMiniumHeight = 650;
 constexpr int kBetweenButtonsSpacing = 8;
 constexpr int kButtonHeight = 32;
 constexpr int kRadius = 20;
@@ -59,7 +60,8 @@ constexpr gfx::Insets kButtonContainerInsets =
                       kContainerBottomPadding,
                       kContainerPadding);
 constexpr gfx::Insets kTextContainerInsets = gfx::Insets(kContainerPadding);
-constexpr gfx::Size kImagePreferredSize(/*width=*/kImageWidth, /*height=*/236);
+constexpr gfx::Size kImagePreferredSize(/*width=*/kImageWidth,
+                                        /*height=*/kImageHeight);
 
 views::StyledLabel::RangeStyleInfo GetBodyTextStyle() {
   views::StyledLabel::RangeStyleInfo style;
@@ -181,10 +183,13 @@ MagicBoostDisclaimerView::MagicBoostDisclaimerView(
                       .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
                       .SetHorizontalAlignment(
                           gfx::HorizontalAlignment::ALIGN_LEFT)
+                      .CopyAddressTo(&title_)
                       .SetText(l10n_util::GetStringUTF16(
                           IDS_ASH_MAGIC_BOOST_DISCLAIMER_TITLE)),
-                  GetParagraphOneBuilder(), GetParagraphTwoBuilder(),
-                  GetParagraphThreeBuilder(), GetParagraphFourBuilder()),
+                  GetParagraphOneBuilder().CopyAddressTo(&paragraph_one_),
+                  GetParagraphTwoBuilder().CopyAddressTo(&paragraph_two_),
+                  GetParagraphThreeBuilder().CopyAddressTo(&paragraph_three_),
+                  GetParagraphFourBuilder().CopyAddressTo(&paragraph_four_)),
           views::Builder<views::BoxLayoutView>()
               .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
               .SetBetweenChildSpacing(kBetweenButtonsSpacing)
@@ -234,9 +239,11 @@ views::UniqueWidgetPtr MagicBoostDisclaimerView::CreateWidget(
 
   views::UniqueWidgetPtr widget =
       std::make_unique<views::Widget>(std::move(params));
-  widget->SetContentsView(std::make_unique<MagicBoostDisclaimerView>(
+  auto disclaimer_view = std::make_unique<MagicBoostDisclaimerView>(
       std::move(press_accept_button_callback),
-      std::move(press_decline_button_callback)));
+      std::move(press_decline_button_callback));
+  const int widget_height = disclaimer_view->GetPreferredSize().height();
+  widget->SetContentsView(std::move(disclaimer_view));
 
   // Shows the widget in the middle of the screen.
   aura::Window* window = Shell::GetRootWindowForDisplayId(display_id);
@@ -246,8 +253,8 @@ views::UniqueWidgetPtr MagicBoostDisclaimerView::CreateWidget(
   }
   auto center = window->bounds().CenterPoint();
   widget->SetBounds(gfx::Rect(center.x() - kWidgetWidth / 2,
-                              center.y() - kWidgetHeight / 2, kWidgetWidth,
-                              kWidgetHeight));
+                              center.y() - widget_height / 2, kWidgetWidth,
+                              widget_height));
 
   return widget;
 }
@@ -261,6 +268,22 @@ void MagicBoostDisclaimerView::RequestFocus() {
   views::View::RequestFocus();
 
   accept_button_->RequestFocus();
+}
+
+gfx::Size MagicBoostDisclaimerView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  const int body_width = kWidgetWidth - 2 * kContainerPadding;
+  int height = kImageHeight + paragraph_one_->GetHeightForWidth(body_width) +
+               paragraph_two_->GetHeightForWidth(body_width) +
+               paragraph_three_->GetHeightForWidth(body_width) +
+               paragraph_four_->GetHeightForWidth(body_width) +
+               title_->GetHeightForWidth(body_width) +
+               accept_button_->GetHeightForWidth(body_width) +
+               kContainerPadding * 2 + kContainerBottomPadding +
+               kTextContainerBetweenChildSpacing * 4;
+  height = std::max(height, kWidgetMiniumHeight);
+
+  return gfx::Size(kWidgetWidth, height);
 }
 
 BEGIN_METADATA(MagicBoostDisclaimerView)

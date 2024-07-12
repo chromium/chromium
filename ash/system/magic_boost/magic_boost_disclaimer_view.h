@@ -12,7 +12,9 @@
 
 namespace views {
 
+class Label;
 class MdTextButton;
+class StyledLabel;
 class UniqueWidgetPtr;
 
 }  // namespace views
@@ -35,6 +37,8 @@ class ASH_EXPORT MagicBoostDisclaimerView : public views::View {
 
   // views::View:
   void RequestFocus() override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   // Creates a widget that contains a `DisclaimerView`, shown in the middle of
   // the screen.
@@ -49,6 +53,11 @@ class ASH_EXPORT MagicBoostDisclaimerView : public views::View {
  private:
   // Owned by the views hierarchy.
   raw_ptr<views::MdTextButton> accept_button_ = nullptr;
+  raw_ptr<views::Label> title_;
+  raw_ptr<views::StyledLabel> paragraph_one_;
+  raw_ptr<views::StyledLabel> paragraph_two_;
+  raw_ptr<views::StyledLabel> paragraph_three_;
+  raw_ptr<views::StyledLabel> paragraph_four_;
 
   base::WeakPtrFactory<MagicBoostDisclaimerView> weak_ptr_factory_{this};
 };
