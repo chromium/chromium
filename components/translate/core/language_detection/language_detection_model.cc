@@ -5,9 +5,12 @@
 #include "components/translate/core/language_detection/language_detection_model.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "components/language/core/common/language_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -92,6 +95,7 @@ void LanguageDetectionModel::UpdateWithFile(base::File model_file) {
       ->mutable_cpu_settings()
       ->set_num_threads(num_threads_);
 
+  base::ElapsedTimer timer;
 // Windows doesn't support using mmap for the language detection model.
 #if !BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(kMmapLanguageDetectionModel)) {
@@ -121,6 +125,8 @@ void LanguageDetectionModel::UpdateWithFile(base::File model_file) {
                             true);
     return;
   }
+  base::UmaHistogramTimes("LanguageDetection.TFLiteModel.Create.Duration",
+                          timer.Elapsed());
 
   recorder.set_state(LanguageDetectionModelState::kModelAvailable);
 
@@ -134,6 +140,8 @@ bool LanguageDetectionModel::IsAvailable() const {
 std::pair<std::string, float> LanguageDetectionModel::DetectTopLanguage(
     const std::u16string& sampled_str) const {
   TRACE_EVENT("browser", "LanguageDetectionModel::DetectTopLanguage");
+  base::ElapsedTimer timer;
+
   DCHECK(IsAvailable());
   std::string utf8_sample = base::UTF16ToUTF8(sampled_str);
 
@@ -145,12 +153,23 @@ std::pair<std::string, float> LanguageDetectionModel::DetectTopLanguage(
   }
 
   auto status_or_categories = lang_detection_model_->ClassifyText(utf8_sample);
-  if (!status_or_categories.ok() || status_or_categories.value().empty()) {
+  base::UmaHistogramTimes("LanguageDetection.TFLiteModel.ClassifyText.Duration",
+                          timer.Elapsed());
+  base::UmaHistogramCounts1M("LanguageDetection.TFLiteModel.ClassifyText.Size",
+                             utf8_sample.size());
+  bool detected =
+      status_or_categories.ok() && !status_or_categories.value().empty();
+  base::UmaHistogramBoolean(
+      "LanguageDetection.TFLiteModel.ClassifyText.Detected", detected);
+  if (!detected) {
     return std::make_pair(translate::kUnknownLanguageCode, 0.0);
   }
   auto& categories = status_or_categories.value();
   auto top_category =
       std::min_element(categories.begin(), categories.end(), sort_category());
+  base::UmaHistogramSparse(
+      "LanguageDetection.TFLiteModel.ClassifyText.HighestConfidenceLanguage",
+      base::HashMetricName(top_category->class_name));
   return std::make_pair(top_category->class_name, top_category->score);
 }
 

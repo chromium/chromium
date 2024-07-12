@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -67,6 +68,8 @@ TEST(LanguageDetectionModelTest, UnsupportedModelFileProvided) {
       LanguageDetectionModelState::kModelFileValid, 1);
   histogram_tester.ExpectUniqueSample(
       "LanguageDetection.TFLiteModel.InvalidModelFile", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "LanguageDetection.TFLiteModel.Create.Duration", 0);
 }
 
 TEST(LanguageDetectionModelTest, ValidModelFileProvided) {
@@ -81,6 +84,30 @@ TEST(LanguageDetectionModelTest, ValidModelFileProvided) {
       LanguageDetectionModelState::kModelAvailable, 1);
   histogram_tester.ExpectTotalCount(
       "LanguageDetection.TFLiteModel.InvalidModelFile", 0);
+  histogram_tester.ExpectTotalCount(
+      "LanguageDetection.TFLiteModel.Create.Duration", 1);
+}
+
+TEST(LanguageDetectionModelTest, DetectLanguageMetrics) {
+  base::HistogramTester histogram_tester;
+  base::File file = GetValidModelFile();
+  LanguageDetectionModel language_detection_model;
+  language_detection_model.UpdateWithFile(std::move(file));
+  EXPECT_TRUE(language_detection_model.IsAvailable());
+
+  std::u16string contents = u"This is a page apparently written in English.";
+  LanguageDetectionModel::Prediction preciction =
+      language_detection_model.DetectLanguage(contents);
+  EXPECT_EQ("en", preciction.language);
+  histogram_tester.ExpectUniqueSample(
+      "LanguageDetection.TFLiteModel.ClassifyText.Size", contents.length(), 1);
+  histogram_tester.ExpectTotalCount(
+      "LanguageDetection.TFLiteModel.ClassifyText.Duration", 1);
+  histogram_tester.ExpectUniqueSample(
+      "LanguageDetection.TFLiteModel.ClassifyText.Detected", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "LanguageDetection.TFLiteModel.ClassifyText.HighestConfidenceLanguage",
+      base::HashMetricName("en"), 1);
 }
 
 TEST(LanguageDetectionModelTest, ReliableLanguageDetermination) {
