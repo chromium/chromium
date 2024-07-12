@@ -189,6 +189,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "fuchsia-smoke-sherlock-roller",
+)
+
+chrome_internal_verifier(
     builder = "ipad-device",
 )
 
