@@ -162,7 +162,9 @@ void AIManagerKeyedService::CreateTextSession(
   }
   // The new `AITextSession` shares the same lifetime with the `receiver`.
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<AITextSession>(std::move(session)), std::move(receiver));
+      std::make_unique<AITextSession>(std::move(session),
+                                      config_params.sampling_params),
+      std::move(receiver));
   std::move(callback).Run(/*success=*/true);
 }
 

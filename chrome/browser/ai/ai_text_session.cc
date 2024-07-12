@@ -21,8 +21,9 @@ using ModelExecutionError = optimization_guide::
 
 AITextSession::AITextSession(
     std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-        session)
-    : session_(std::move(session)) {}
+        session,
+    std::optional<optimization_guide::SamplingParams> sampling_params)
+    : session_(std::move(session)), sampling_params_(sampling_params) {}
 
 AITextSession::~AITextSession() = default;
 

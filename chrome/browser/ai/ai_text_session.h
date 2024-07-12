@@ -16,7 +16,8 @@ class AITextSession : public blink::mojom::AITextSession {
  public:
   explicit AITextSession(
       std::unique_ptr<
-          optimization_guide::OptimizationGuideModelExecutor::Session> session);
+          optimization_guide::OptimizationGuideModelExecutor::Session> session,
+      std::optional<optimization_guide::SamplingParams> sampling_params);
   AITextSession(const AITextSession&) = delete;
   AITextSession& operator=(const AITextSession&) = delete;
 
@@ -40,6 +41,8 @@ class AITextSession : public blink::mojom::AITextSession {
   // The `RemoteSet` storing all the responders, each of them corresponds to one
   // `Execute()` call.
   mojo::RemoteSet<blink::mojom::ModelStreamingResponder> responder_set_;
+  // The sampling parameters used when creating the current AITextSession.
+  std::optional<optimization_guide::SamplingParams> sampling_params_;
 
   base::WeakPtrFactory<AITextSession> weak_ptr_factory_{this};
 };
