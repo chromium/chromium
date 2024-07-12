@@ -258,7 +258,6 @@ class CustomizeChromePageHandlerTest : public testing::Test {
         .Times(1)
         .WillOnce(SaveArg<0>(&ntp_custom_background_service_observer_));
     const std::vector<std::pair<const std::string, int>> module_id_names = {
-        {"recipe_tasks", IDS_NTP_MODULES_RECIPE_TASKS_SENTENCE},
         {"chrome_cart", IDS_NTP_MODULES_CART_SENTENCE}};
     handler_ = std::make_unique<CustomizeChromePageHandler>(
         mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>(),
@@ -784,8 +783,7 @@ class CustomizeChromePageHandlerWithModulesTest
   void SetUp() override {
     base::test::ScopedFeatureList features;
     features.InitWithFeatures(
-        /*enabled_features=*/{ntp_features::kNtpRecipeTasksModule,
-                              ntp_features::kNtpChromeCartModule},
+        /*enabled_features=*/{ntp_features::kNtpChromeCartModule},
         /*disabled_features=*/{});
     CustomizeChromePageHandlerTest::SetUp();
   }
@@ -817,11 +815,9 @@ TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModulesSettings) {
 
   EXPECT_TRUE(visible);
   EXPECT_FALSE(managed);
-  EXPECT_EQ(2u, modules_settings.size());
-  EXPECT_EQ("recipe_tasks", modules_settings[0]->id);
-  EXPECT_TRUE(modules_settings[0]->enabled);
-  EXPECT_EQ(kChromeCartId, modules_settings[1]->id);
-  EXPECT_FALSE(modules_settings[1]->enabled);
+  EXPECT_EQ(1u, modules_settings.size());
+  EXPECT_EQ(kChromeCartId, modules_settings[0]->id);
+  EXPECT_FALSE(modules_settings[0]->enabled);
 }
 
 TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModulesVisible) {

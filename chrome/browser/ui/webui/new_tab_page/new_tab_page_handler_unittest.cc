@@ -385,7 +385,7 @@ class NewTabPageHandlerTest : public testing::Test {
 
  private:
   const std::vector<std::pair<const std::string, int>> module_id_names = {
-      {"recipe_tasks", IDS_NTP_MODULES_RECIPE_TASKS_SENTENCE}};
+      {"drive", IDS_NTP_MODULES_DRIVE_SENTENCE}};
   raw_ptr<MockHatsService> mock_hats_service_;
 };
 
@@ -906,11 +906,11 @@ TEST_F(NewTabPageHandlerTest, GetModulesIdNames) {
           }));
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{ntp_features::kNtpRecipeTasksModule},
+      /*enabled_features=*/{ntp_features::kNtpDriveModule},
       /*disabled_features=*/{});
   handler_->GetModulesIdNames(callback.Get());
   EXPECT_EQ(modules_details.size(), 1u);
-  EXPECT_EQ(modules_details.front()->id, "recipe_tasks");
+  EXPECT_EQ(modules_details.front()->id, "drive");
 }
 
 TEST_F(NewTabPageHandlerTest, GetModulesOrder) {
@@ -939,14 +939,14 @@ TEST_F(NewTabPageHandlerTest, SurveyLaunchedEligibleModulesCriteria) {
       {
           {features::kHappinessTrackingSurveysForDesktopNtpModules,
            {{ntp_features::kNtpModulesEligibleForHappinessTrackingSurveyParam,
-             "recipe_tasks,drive"}}},
+             "google_calendar,drive"}}},
       },
       {});
 
   EXPECT_CALL(*mock_hats_service(),
               LaunchDelayedSurveyForWebContents(_, _, _, _, _, _, _, _, _, _))
       .Times(1);
-  const std::vector<std::string> module_ids = {"recipe_tasks", "cart"};
+  const std::vector<std::string> module_ids = {"google_calendar", "cart"};
   handler_->OnModulesLoadedWithData(module_ids);
 
   for (const auto& module_id : module_ids) {
@@ -969,7 +969,7 @@ TEST_F(NewTabPageHandlerTest, SurveyLaunchSkippedEligibleModulesCriteria) {
   EXPECT_CALL(*mock_hats_service(),
               LaunchDelayedSurveyForWebContents(_, _, _, _, _, _, _, _, _, _))
       .Times(0);
-  const std::vector<std::string> module_ids = {"recipe_tasks"};
+  const std::vector<std::string> module_ids = {"google_calendar"};
   handler_->OnModulesLoadedWithData(module_ids);
 
   for (const auto& module_id : module_ids) {

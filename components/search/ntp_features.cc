@@ -281,11 +281,6 @@ BASE_FEATURE(kNtpLensDirectUpload,
              "NtpLensDirectUpload",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, recipe tasks module will be shown.
-BASE_FEATURE(kNtpRecipeTasksModule,
-             "NtpRecipeTasksModule",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, SafeBrowsing module will be shown to a target user.
 BASE_FEATURE(kNtpSafeBrowsingModule,
              "NtpSafeBrowsingModule",
@@ -470,11 +465,6 @@ const char kNtpSafeBrowsingModuleCooldownPeriodDaysParam[] =
     "NtpSafeBrowsingModuleCooldownPeriodDaysParam";
 const char kNtpSafeBrowsingModuleCountMaxParam[] =
     "NtpSafeBrowsingModuleCountMaxParam";
-const char kNtpRecipeTasksModuleDataParam[] = "NtpRecipeTasksModuleDataParam";
-const char kNtpRecipeTasksModuleCacheMaxAgeSParam[] =
-    "NtpRecipeTasksModuleCacheMaxAgeSParam";
-const char kNtpRecipeTasksModuleExperimentGroupParam[] =
-    "NtpRecipeTasksModuleExperimentGroupParam";
 const char kNtpHistoryClustersModuleBeginTimeDurationHoursParam[] =
     "NtpHistoryClustersModuleBeginTimeDurationHoursParam";
 const char kNtpHistoryClustersModuleMinimumVisitsRequiredParam[] =

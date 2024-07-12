@@ -70,7 +70,6 @@ BASE_DECLARE_FEATURE(kNtpPhotosModuleSplitSvgOptInArtWork);
 BASE_DECLARE_FEATURE(kNtpFeedModule);
 BASE_DECLARE_FEATURE(kNtpOneGoogleBar);
 BASE_DECLARE_FEATURE(kNtpLensDirectUpload);
-BASE_DECLARE_FEATURE(kNtpRecipeTasksModule);
 BASE_DECLARE_FEATURE(kNtpSafeBrowsingModule);
 BASE_DECLARE_FEATURE(kNtpSharepointModule);
 BASE_DECLARE_FEATURE(kNtpShortcuts);
@@ -167,14 +166,6 @@ extern const char kNtpSafeBrowsingModuleCountMaxParam[];
 extern const char kNtpSafeBrowsingModuleCooldownPeriodDaysParam[];
 // Parameter determining the variation of the omnibox theme matching.
 extern const char kRealboxMatchOmniboxThemeVariantParam[];
-// Parameter determining the type of recipe data to request.
-extern const char kNtpRecipeTasksModuleDataParam[];
-// Parameter determining the max age in seconds of the cache for recipe tasks
-// data.
-extern const char kNtpRecipeTasksModuleCacheMaxAgeSParam[];
-// Parameter for communicating the experiment group of the recipe tasks module
-// experiment.
-extern const char kNtpRecipeTasksModuleExperimentGroupParam[];
 // Parameter for determining the maximum number of hours to look back to show a
 // history cluster.
 extern const char kNtpHistoryClustersModuleBeginTimeDurationHoursParam[];

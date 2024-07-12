@@ -11,7 +11,6 @@ namespace variations {
 class VariationsService;
 }  // namespace variations
 
-bool IsRecipeTasksModuleEnabled();
 bool IsCartModuleEnabled();
 bool IsDriveModuleEnabled();
 bool IsHistoryClustersModuleEnabled();

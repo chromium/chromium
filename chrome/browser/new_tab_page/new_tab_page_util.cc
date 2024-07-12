@@ -37,15 +37,6 @@ bool IsInUS() {
 
 // If feature is overridden manually or by finch, read the feature flag value.
 // Otherwise filter by os, locale and country code.
-bool IsRecipeTasksModuleEnabled() {
-  if (base::FeatureList::GetInstance()->IsFeatureOverridden(
-          ntp_features::kNtpRecipeTasksModule.name)) {
-    return base::FeatureList::IsEnabled(ntp_features::kNtpRecipeTasksModule);
-  }
-
-  return false;
-}
-
 bool IsCartModuleEnabled() {
   if (base::FeatureList::GetInstance()->IsFeatureOverridden(
           ntp_features::kNtpChromeCartModule.name)) {

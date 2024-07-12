@@ -26,7 +26,6 @@ const std::vector<base::test::FeatureRef>& kAllModuleFeatures = {
     ntp_features::kNtpDriveModule,
     ntp_features::kNtpFeedModule,
     ntp_features::kNtpHistoryClustersModule,
-    ntp_features::kNtpRecipeTasksModule,
     ntp_features::kNtpOutlookCalendarModule,
 };
 
@@ -44,8 +43,7 @@ std::vector<base::test::FeatureRef> ComputeDisabledFeaturesList(
 
 TEST(NewTabPageModulesTest, MakeModuleIdNames_SingleModuleEnabled) {
   const std::vector<base::test::FeatureRef>& some_module_features = {
-      ntp_features::kNtpRecipeTasksModule, ntp_features::kNtpFeedModule,
-      ntp_features::kNtpHistoryClustersModule};
+      ntp_features::kNtpFeedModule, ntp_features::kNtpHistoryClustersModule};
   for (auto& feature : some_module_features) {
     base::test::ScopedFeatureList features;
     features.InitWithFeatures(
@@ -63,7 +61,7 @@ TEST(NewTabPageModulesTest, MakeModuleIdNames_SingleModuleEnabled) {
 TEST(NewTabPageModulesTest, MakeModuleIdNames_WithDriveModule) {
   base::test::ScopedFeatureList features;
   const std::vector<base::test::FeatureRef>& enabled_features = {
-      ntp_features::kNtpRecipeTasksModule, ntp_features::kNtpDriveModule};
+      ntp_features::kNtpDriveModule};
   features.InitWithFeatures(
       /*enabled_features=*/enabled_features,
       /*disabled_features=*/ComputeDisabledFeaturesList(kAllModuleFeatures,
@@ -72,7 +70,7 @@ TEST(NewTabPageModulesTest, MakeModuleIdNames_WithDriveModule) {
   const std::vector<std::pair<const std::string, int>> module_id_names =
       MakeModuleIdNames(/*drive_module_enabled=*/true,
                         /*is_managed_profile=*/false);
-  ASSERT_EQ(2u, module_id_names.size());
+  ASSERT_EQ(1u, module_id_names.size());
 }
 
 TEST(NewTabPageModulesTest, MakeModuleIdNames_Managed) {
@@ -125,7 +123,7 @@ TEST(NewTabPageModulesTest, MakeModuleIdNames_DummyModules) {
 
 const char kSampleUserEmail[] = "user@gmail.com";
 const std::vector<std::pair<const std::string, int>> kSampleModules = {
-    {"recipe_tasks", IDS_NTP_MODULES_RECIPE_TASKS_SENTENCE}};
+    {"drive", IDS_NTP_MODULES_DRIVE_SENTENCE}};
 
 TEST(NewTabPageModulesTest, HasModulesEnabled_SignedInAccount) {
   base::test::TaskEnvironment task_environment;

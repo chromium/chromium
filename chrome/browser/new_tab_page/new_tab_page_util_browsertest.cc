@@ -21,8 +21,7 @@ class NewTabPageUtilEnableFlagBrowserTest : public NewTabPageUtilBrowserTest {
  public:
   NewTabPageUtilEnableFlagBrowserTest() {
     features_.InitWithFeatures(
-        {ntp_features::kNtpRecipeTasksModule,
-         ntp_features::kNtpChromeCartModule, ntp_features::kNtpDriveModule},
+        {ntp_features::kNtpChromeCartModule, ntp_features::kNtpDriveModule},
         {});
   }
 };
@@ -30,22 +29,10 @@ class NewTabPageUtilEnableFlagBrowserTest : public NewTabPageUtilBrowserTest {
 class NewTabPageUtilDisableFlagBrowserTest : public NewTabPageUtilBrowserTest {
  public:
   NewTabPageUtilDisableFlagBrowserTest() {
-    features_.InitWithFeatures({}, {ntp_features::kNtpRecipeTasksModule,
-                                    ntp_features::kNtpChromeCartModule,
+    features_.InitWithFeatures({}, {ntp_features::kNtpChromeCartModule,
                                     ntp_features::kNtpDriveModule});
   }
 };
-
-IN_PROC_BROWSER_TEST_F(NewTabPageUtilEnableFlagBrowserTest,
-                       EnableRecipesThroughOverride) {
-  auto locale = std::make_unique<ScopedBrowserLocale>("en-US");
-  g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
-  EXPECT_TRUE(IsRecipeTasksModuleEnabled());
-}
-
-IN_PROC_BROWSER_TEST_F(NewTabPageUtilBrowserTest, RecipesDisabled) {
-  EXPECT_FALSE(IsRecipeTasksModuleEnabled());
-}
 
 IN_PROC_BROWSER_TEST_F(NewTabPageUtilBrowserTest, EnableCartByToT) {
   auto locale = std::make_unique<ScopedBrowserLocale>("en-US");

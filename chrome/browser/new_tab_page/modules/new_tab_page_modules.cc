@@ -60,22 +60,6 @@ const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
                          IDS_OMNIBOX_HISTORY_CLUSTERS_SEARCH_HINT);
   }
 
-  if (IsRecipeTasksModuleEnabled()) {
-    std::vector<std::string> splitExperimentGroup = base::SplitString(
-        base::GetFieldTrialParamValueByFeature(
-            ntp_features::kNtpRecipeTasksModule,
-            ntp_features::kNtpRecipeTasksModuleExperimentGroupParam),
-        "-", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-    bool recipes_historical_experiment_enabled =
-        !splitExperimentGroup.empty() &&
-        splitExperimentGroup[0] == "historical";
-
-    details.emplace_back("recipe_tasks",
-                         recipes_historical_experiment_enabled
-                             ? IDS_NTP_MODULES_RECIPE_VIEWED_TASKS_SENTENCE
-                             : IDS_NTP_MODULES_RECIPE_TASKS_SENTENCE);
-  }
-
   if (IsCartModuleEnabled() &&
       (!base::FeatureList::IsEnabled(
            ntp_features::kNtpChromeCartInHistoryClusterModule) ||

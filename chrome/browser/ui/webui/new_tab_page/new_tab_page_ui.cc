@@ -633,18 +633,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
           "true");
   source->AddBoolean("modulesRedesignedEnabled", redesigned_modules_enabled);
 
-  std::vector<std::string> splitExperimentGroup = base::SplitString(
-      base::GetFieldTrialParamValueByFeature(
-          ntp_features::kNtpRecipeTasksModule,
-          ntp_features::kNtpRecipeTasksModuleExperimentGroupParam),
-      "-", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  source->AddBoolean(
-      "modulesRecipeHistoricalExperimentEnabled",
-      !splitExperimentGroup.empty() && splitExperimentGroup[0] == "historical");
-  source->AddBoolean(
-      "moduleRecipeExtendedExperimentEnabled",
-      !splitExperimentGroup.empty() && (splitExperimentGroup[0] == "historical" || splitExperimentGroup[0] == "mix"));
-
   source->AddBoolean("modulesChromeCartInHistoryClustersModuleEnabled",
                      base::FeatureList::IsEnabled(
                          ntp_features::kNtpChromeCartInHistoryClusterModule));
