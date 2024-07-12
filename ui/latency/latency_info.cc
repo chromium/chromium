@@ -76,8 +76,6 @@ namespace ui {
 
 LatencyInfo::LatencyInfo() = default;
 
-LatencyInfo::LatencyInfo(SourceEventType type) : source_event_type_(type) {}
-
 LatencyInfo::LatencyInfo(const LatencyInfo& other) = default;
 LatencyInfo::LatencyInfo(LatencyInfo&& other) = default;
 
@@ -121,13 +119,9 @@ void LatencyInfo::TraceIntermediateFlowEvents(
 }
 
 void LatencyInfo::AddNewLatencyFrom(const LatencyInfo& other) {
-  // Don't clobber an existing trace_id_ or ukm_source_id_.
+  // Don't clobber an existing trace_id_.
   if (trace_id_ == -1) {
     trace_id_ = other.trace_id();
-  }
-
-  if (ukm_source_id_ == ukm::kInvalidSourceId) {
-    ukm_source_id_ = other.ukm_source_id();
   }
 
   for (const auto& lc : other.latency_components()) {

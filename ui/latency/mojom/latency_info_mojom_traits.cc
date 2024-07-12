@@ -8,60 +8,6 @@
 
 namespace mojo {
 
-namespace {
-
-ui::mojom::SourceEventType UISourceEventTypeToMojo(ui::SourceEventType type) {
-  switch (type) {
-    case ui::SourceEventType::UNKNOWN:
-      return ui::mojom::SourceEventType::UNKNOWN;
-    case ui::SourceEventType::WHEEL:
-      return ui::mojom::SourceEventType::WHEEL;
-    case ui::SourceEventType::MOUSE:
-      return ui::mojom::SourceEventType::MOUSE;
-    case ui::SourceEventType::TOUCH:
-      return ui::mojom::SourceEventType::TOUCH;
-    case ui::SourceEventType::INERTIAL:
-      return ui::mojom::SourceEventType::INERTIAL;
-    case ui::SourceEventType::KEY_PRESS:
-      return ui::mojom::SourceEventType::KEY_PRESS;
-    case ui::SourceEventType::TOUCHPAD:
-      return ui::mojom::SourceEventType::TOUCHPAD;
-    case ui::SourceEventType::SCROLLBAR:
-      return ui::mojom::SourceEventType::SCROLLBAR;
-    case ui::SourceEventType::OTHER:
-      return ui::mojom::SourceEventType::OTHER;
-  }
-  NOTREACHED_IN_MIGRATION();
-  return ui::mojom::SourceEventType::UNKNOWN;
-}
-
-ui::SourceEventType MojoSourceEventTypeToUI(ui::mojom::SourceEventType type) {
-  switch (type) {
-    case ui::mojom::SourceEventType::UNKNOWN:
-      return ui::SourceEventType::UNKNOWN;
-    case ui::mojom::SourceEventType::WHEEL:
-      return ui::SourceEventType::WHEEL;
-    case ui::mojom::SourceEventType::MOUSE:
-      return ui::SourceEventType::MOUSE;
-    case ui::mojom::SourceEventType::TOUCH:
-      return ui::SourceEventType::TOUCH;
-    case ui::mojom::SourceEventType::INERTIAL:
-      return ui::SourceEventType::INERTIAL;
-    case ui::mojom::SourceEventType::KEY_PRESS:
-      return ui::SourceEventType::KEY_PRESS;
-    case ui::mojom::SourceEventType::TOUCHPAD:
-      return ui::SourceEventType::TOUCHPAD;
-    case ui::mojom::SourceEventType::SCROLLBAR:
-      return ui::SourceEventType::SCROLLBAR;
-    case ui::mojom::SourceEventType::OTHER:
-      return ui::SourceEventType::OTHER;
-  }
-  NOTREACHED_IN_MIGRATION();
-  return ui::SourceEventType::UNKNOWN;
-}
-
-}  // namespace
-
 // static
 const ui::LatencyInfo::LatencyMap&
 StructTraits<ui::mojom::LatencyInfoDataView,
@@ -73,13 +19,6 @@ StructTraits<ui::mojom::LatencyInfoDataView,
 int64_t StructTraits<ui::mojom::LatencyInfoDataView, ui::LatencyInfo>::trace_id(
     const ui::LatencyInfo& info) {
   return info.trace_id();
-}
-
-// static
-ukm::SourceId
-StructTraits<ui::mojom::LatencyInfoDataView, ui::LatencyInfo>::ukm_source_id(
-    const ui::LatencyInfo& info) {
-  return info.ukm_source_id();
 }
 
 // static
@@ -98,13 +37,6 @@ bool StructTraits<ui::mojom::LatencyInfoDataView, ui::LatencyInfo>::began(
 bool StructTraits<ui::mojom::LatencyInfoDataView, ui::LatencyInfo>::terminated(
     const ui::LatencyInfo& info) {
   return info.terminated();
-}
-
-// static
-ui::mojom::SourceEventType
-StructTraits<ui::mojom::LatencyInfoDataView,
-             ui::LatencyInfo>::source_event_type(const ui::LatencyInfo& info) {
-  return UISourceEventTypeToMojo(info.source_event_type());
 }
 
 // static
@@ -128,11 +60,9 @@ bool StructTraits<ui::mojom::LatencyInfoDataView, ui::LatencyInfo>::Read(
   if (!data.ReadLatencyComponents(&out->latency_components_))
     return false;
   out->trace_id_ = data.trace_id();
-  out->ukm_source_id_ = data.ukm_source_id();
   out->coalesced_ = data.coalesced();
   out->began_ = data.began();
   out->terminated_ = data.terminated();
-  out->source_event_type_ = MojoSourceEventTypeToUI(data.source_event_type());
   out->gesture_scroll_id_ = data.gesture_scroll_id();
   out->touch_trace_id_ = data.touch_trace_id();
 

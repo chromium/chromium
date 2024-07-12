@@ -52,72 +52,6 @@ constexpr int kChangedButtonFlagMask =
     EF_LEFT_MOUSE_BUTTON | EF_MIDDLE_MOUSE_BUTTON | EF_RIGHT_MOUSE_BUTTON |
     EF_BACK_MOUSE_BUTTON | EF_FORWARD_MOUSE_BUTTON;
 
-SourceEventType EventTypeToLatencySourceEventType(EventType type) {
-  switch (type) {
-    case ET_UNKNOWN:
-    // SourceEventType for GestureEvents can be either TOUCH or WHEEL. The
-    // proper value is assigned in the constructors.
-    case ET_GESTURE_SCROLL_BEGIN:
-    case ET_GESTURE_SCROLL_END:
-    case ET_GESTURE_SCROLL_UPDATE:
-    case ET_GESTURE_TAP:
-    case ET_GESTURE_TAP_DOWN:
-    case ET_GESTURE_TAP_CANCEL:
-    case ET_GESTURE_TAP_UNCONFIRMED:
-    case ET_GESTURE_DOUBLE_TAP:
-    case ET_GESTURE_BEGIN:
-    case ET_GESTURE_END:
-    case ET_GESTURE_TWO_FINGER_TAP:
-    case ET_GESTURE_PINCH_BEGIN:
-    case ET_GESTURE_PINCH_END:
-    case ET_GESTURE_PINCH_UPDATE:
-    case ET_GESTURE_SHORT_PRESS:
-    case ET_GESTURE_LONG_PRESS:
-    case ET_GESTURE_LONG_TAP:
-    case ET_GESTURE_SWIPE:
-    case ET_GESTURE_SHOW_PRESS:
-    // Flings can be GestureEvents too.
-    case ET_SCROLL_FLING_START:
-    case ET_SCROLL_FLING_CANCEL:
-      return SourceEventType::UNKNOWN;
-
-    case ET_KEY_PRESSED:
-      return SourceEventType::KEY_PRESS;
-
-    case ET_MOUSE_PRESSED:
-    case ET_MOUSE_DRAGGED:
-    case ET_MOUSE_RELEASED:
-    case ET_MOUSE_MOVED:
-    case ET_MOUSE_ENTERED:
-    case ET_MOUSE_EXITED:
-    // We measure latency for key presses, not key releases. Most behavior is
-    // keyed off of presses, and release latency is higher than press latency as
-    // it's impacted by event handling of the press event.
-    case ET_KEY_RELEASED:
-    case ET_MOUSE_CAPTURE_CHANGED:
-    case ET_DROP_TARGET_EVENT:
-    case ET_CANCEL_MODE:
-    case ET_UMA_DATA:
-      return SourceEventType::OTHER;
-
-    case ET_TOUCH_RELEASED:
-    case ET_TOUCH_PRESSED:
-    case ET_TOUCH_MOVED:
-    case ET_TOUCH_CANCELLED:
-      return SourceEventType::TOUCH;
-
-    case ET_MOUSEWHEEL:
-    case ET_SCROLL:
-      return SourceEventType::WHEEL;
-
-    case ET_LAST:
-      NOTREACHED_IN_MIGRATION();
-      return SourceEventType::UNKNOWN;
-  }
-  NOTREACHED_IN_MIGRATION();
-  return SourceEventType::UNKNOWN;
-}
-
 std::string MomentumPhaseToString(EventMomentumPhase phase) {
   switch (phase) {
     case EventMomentumPhase::NONE:
@@ -316,8 +250,6 @@ Event::Event(EventType type, base::TimeTicks time_stamp, int flags)
       time_stamp_(time_stamp.is_null() ? EventTimeForNow() : time_stamp),
       flags_(flags),
       native_event_(CreateInvalidPlatformEvent()) {
-  if (type_ < ET_LAST)
-    latency()->set_source_event_type(EventTypeToLatencySourceEventType(type));
 }
 
 Event::Event(const PlatformEvent& native_event, EventType type, int flags)
@@ -327,8 +259,6 @@ Event::Event(const PlatformEvent& native_event, EventType type, int flags)
       // Note that the construction of an Event directly from a PlatformEvent
       // is the only time that ShouldCopyPlatformEvents() is not consulted.
       native_event_(native_event) {
-  if (type_ < ET_LAST)
-    latency()->set_source_event_type(EventTypeToLatencySourceEventType(type));
   ComputeEventLatencyOS(native_event);
 
 #if BUILDFLAG(IS_OZONE)
@@ -367,14 +297,11 @@ Event& Event::operator=(const Event& rhs) {
     else
       properties_.reset();
   }
-  latency_.set_source_event_type(SourceEventType::OTHER);
   return *this;
 }
 
 void Event::SetType(EventType type) {
   type_ = type;
-  if (type_ < ET_LAST)
-    latency()->set_source_event_type(EventTypeToLatencySourceEventType(type));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -442,7 +369,6 @@ MouseEvent::MouseEvent(const PlatformEvent& native_event)
       movement_(GetMouseMovementFromNative(native_event)),
 #endif
       pointer_details_(GetMousePointerDetailsFromNative(native_event)) {
-  latency()->set_source_event_type(SourceEventType::MOUSE);
   latency()->AddLatencyNumberWithTimestamp(
       INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, time_stamp());
   latency()->AddLatencyNumber(INPUT_EVENT_LATENCY_UI_COMPONENT);
@@ -462,7 +388,6 @@ MouseEvent::MouseEvent(EventType type,
   DCHECK_NE(ET_MOUSEWHEEL, type);
   DCHECK_EQ(changed_button_flags_,
             changed_button_flags_ & kChangedButtonFlagMask);
-  latency()->set_source_event_type(SourceEventType::MOUSE);
   latency()->AddLatencyNumber(INPUT_EVENT_LATENCY_UI_COMPONENT);
   if (this->type() == ET_MOUSE_MOVED && IsAnyButton())
     SetType(ET_MOUSE_DRAGGED);
@@ -1235,10 +1160,6 @@ ScrollEvent::ScrollEvent(const PlatformEvent& native_event)
     NOTREACHED_IN_MIGRATION() << "Unexpected event type " << type()
                               << " when constructing a ScrollEvent.";
   }
-  if (IsScrollEvent())
-    latency()->set_source_event_type(SourceEventType::WHEEL);
-  else
-    latency()->set_source_event_type(SourceEventType::TOUCH);
 }
 
 ScrollEvent::ScrollEvent(EventType type,
@@ -1262,7 +1183,6 @@ ScrollEvent::ScrollEvent(EventType type,
       momentum_phase_(momentum_phase),
       scroll_event_phase_(scroll_event_phase) {
   CHECK(IsScrollEvent());
-  latency()->set_source_event_type(SourceEventType::WHEEL);
 }
 
 ScrollEvent::ScrollEvent(EventType type,
@@ -1333,12 +1253,6 @@ GestureEvent::GestureEvent(float x,
                    flags | EF_FROM_TOUCH),
       details_(details),
       unique_touch_event_id_(unique_touch_event_id) {
-  latency()->set_source_event_type(SourceEventType::TOUCH);
-  // TODO(crbug.com/40586823) Other touchpad gesture should report as TOUCHPAD.
-  if (IsPinchEvent() &&
-      details.device_type() == GestureDeviceType::DEVICE_TOUCHPAD) {
-    latency()->set_source_event_type(SourceEventType::TOUCHPAD);
-  }
 }
 
 GestureEvent::GestureEvent(const GestureEvent& other) = default;

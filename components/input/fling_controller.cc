@@ -264,7 +264,7 @@ void FlingController::GenerateAndSendWheelEvents(
     blink::WebMouseWheelEvent::Phase phase) {
   MouseWheelEventWithLatencyInfo synthetic_wheel(
       WebInputEvent::Type::kMouseWheel, current_fling_parameters_.modifiers,
-      current_time, ui::LatencyInfo(ui::SourceEventType::WHEEL));
+      current_time, ui::LatencyInfo());
   synthetic_wheel.event.delta_units =
       ui::ScrollGranularity::kScrollByPrecisePixel;
   synthetic_wheel.event.delta_x = delta.x();
@@ -287,7 +287,7 @@ void FlingController::GenerateAndSendGestureScrollEvents(
     const gfx::Vector2dF& delta /* = gfx::Vector2dF() */) {
   GestureEventWithLatencyInfo synthetic_gesture(
       type, current_fling_parameters_.modifiers, current_time,
-      ui::LatencyInfo(ui::SourceEventType::INERTIAL));
+      ui::LatencyInfo());
   synthetic_gesture.event.SetPositionInWidget(current_fling_parameters_.point);
   synthetic_gesture.event.SetPositionInScreen(
       current_fling_parameters_.global_point);

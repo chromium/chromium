@@ -15,10 +15,6 @@ static_assert(static_cast<int>(ui::mojom::LatencyComponentType::kMaxValue) ==
                   static_cast<int>(ui::LATENCY_COMPONENT_TYPE_LAST),
               "Enum size mismatch");
 
-static_assert(static_cast<int>(ui::mojom::SourceEventType::kMaxValue) ==
-                  static_cast<int>(ui::SourceEventType::LAST),
-              "Enum size mismatch");
-
 template <>
 struct COMPONENT_EXPORT(LATENCY_SHARED_MOJOM_TRAITS)
     ArrayTraits<ui::LatencyInfo::LatencyMap> {
@@ -50,12 +46,9 @@ struct COMPONENT_EXPORT(LATENCY_SHARED_MOJOM_TRAITS)
   static const ui::LatencyInfo::LatencyMap& latency_components(
       const ui::LatencyInfo& info);
   static int64_t trace_id(const ui::LatencyInfo& info);
-  static ukm::SourceId ukm_source_id(const ui::LatencyInfo& info);
   static bool coalesced(const ui::LatencyInfo& info);
   static bool began(const ui::LatencyInfo& info);
   static bool terminated(const ui::LatencyInfo& info);
-  static ui::mojom::SourceEventType source_event_type(
-      const ui::LatencyInfo& info);
   static int64_t gesture_scroll_id(const ui::LatencyInfo& info);
   static int64_t touch_trace_id(const ui::LatencyInfo& info);
   static bool Read(ui::mojom::LatencyInfoDataView data, ui::LatencyInfo* out);

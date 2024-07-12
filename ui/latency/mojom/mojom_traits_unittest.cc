@@ -45,26 +45,20 @@ class StructTraitsTest : public testing::Test, public mojom::TraitsTestService {
 TEST_F(StructTraitsTest, LatencyInfo) {
   LatencyInfo latency;
   latency.set_trace_id(5);
-  latency.set_ukm_source_id(10);
   ASSERT_FALSE(latency.terminated());
   latency.AddLatencyNumber(INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT);
   latency.AddLatencyNumber(INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT);
   latency.AddLatencyNumber(INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT);
 
   EXPECT_EQ(5, latency.trace_id());
-  EXPECT_EQ(10, latency.ukm_source_id());
   EXPECT_TRUE(latency.terminated());
-
-  latency.set_source_event_type(ui::SourceEventType::TOUCH);
 
   mojo::Remote<mojom::TraitsTestService> remote = GetTraitsTestRemote();
   LatencyInfo output;
   remote->EchoLatencyInfo(latency, &output);
 
   EXPECT_EQ(latency.trace_id(), output.trace_id());
-  EXPECT_EQ(latency.ukm_source_id(), output.ukm_source_id());
   EXPECT_EQ(latency.terminated(), output.terminated());
-  EXPECT_EQ(latency.source_event_type(), output.source_event_type());
 
   EXPECT_TRUE(
       output.FindLatency(INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, nullptr));

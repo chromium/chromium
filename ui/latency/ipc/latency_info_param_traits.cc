@@ -34,11 +34,9 @@ namespace IPC {
 void ParamTraits<ui::LatencyInfo>::Write(base::Pickle* m, const param_type& p) {
   WriteParam(m, p.latency_components_);
   WriteParam(m, p.trace_id_);
-  WriteParam(m, p.ukm_source_id_);
   WriteParam(m, p.coalesced_);
   WriteParam(m, p.began_);
   WriteParam(m, p.terminated_);
-  WriteParam(m, p.source_event_type_);
 }
 
 bool ParamTraits<ui::LatencyInfo>::Read(const base::Pickle* m,
@@ -49,15 +47,11 @@ bool ParamTraits<ui::LatencyInfo>::Read(const base::Pickle* m,
 
   if (!ReadParam(m, iter, &p->trace_id_))
     return false;
-  if (!ReadParam(m, iter, &p->ukm_source_id_))
-    return false;
   if (!ReadParam(m, iter, &p->coalesced_))
     return false;
   if (!ReadParam(m, iter, &p->began_))
     return false;
   if (!ReadParam(m, iter, &p->terminated_))
-    return false;
-  if (!ReadParam(m, iter, &p->source_event_type_))
     return false;
 
   return true;
@@ -68,15 +62,11 @@ void ParamTraits<ui::LatencyInfo>::Log(const param_type& p, std::string* l) {
   l->append(" ");
   LogParam(p.trace_id_, l);
   l->append(" ");
-  LogParam(p.ukm_source_id_, l);
-  l->append(" ");
   LogParam(p.coalesced_, l);
   l->append(" ");
   LogParam(p.began_, l);
   l->append(" ");
   LogParam(p.terminated_, l);
-  l->append(" ");
-  LogParam(p.source_event_type_, l);
 }
 
 }  // namespace IPC

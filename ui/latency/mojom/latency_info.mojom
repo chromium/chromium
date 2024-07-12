@@ -42,27 +42,13 @@ enum LatencyComponentType {
   INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT,
 };
 
-enum SourceEventType {
-  UNKNOWN,
-  WHEEL,
-  MOUSE,
-  TOUCH,
-  INERTIAL,
-  KEY_PRESS,
-  TOUCHPAD,
-  SCROLLBAR,
-  OTHER,
-};
-
 // See ui/latency/latency_info.h
 struct LatencyInfo {
   map<LatencyComponentType, mojo_base.mojom.TimeTicks> latency_components;
   int64 trace_id;
-  int64 ukm_source_id;
   bool coalesced;
   bool began;
   bool terminated;
-  SourceEventType source_event_type;
   // optional: only valid on GestureScroll events.
   int64 gesture_scroll_id;
   // optional: only valid on Touch events.

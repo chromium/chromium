@@ -20,7 +20,6 @@
 #include "third_party/skia/include/private/chromium/GrDeferredDisplayList.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/presentation_feedback.h"
-#include "ui/latency/latency_tracker.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "components/viz/service/display/dc_layer_overlay.h"
@@ -30,7 +29,6 @@ namespace viz {
 namespace {
 
 void ReportLatency(const gfx::SwapTimings& timings,
-                   ui::LatencyTracker* tracker,
                    std::vector<ui::LatencyInfo> latency_info) {
   for (auto& latency : latency_info) {
     latency.AddLatencyNumberWithTimestamp(
@@ -38,7 +36,6 @@ void ReportLatency(const gfx::SwapTimings& timings,
     latency.AddLatencyNumberWithTimestamp(
         ui::INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT, timings.swap_end);
   }
-  tracker->OnGpuSwapBuffersCompleted(std::move(latency_info));
 }
 
 }  // namespace
@@ -100,8 +97,7 @@ SkiaOutputDevice::SkiaOutputDevice(
           std::move(did_swap_buffer_complete_callback)),
       release_overlays_callback_(std::move(release_overlays_callback)),
       memory_type_tracker_(
-          std::make_unique<gpu::MemoryTypeTracker>(memory_tracker)),
-      latency_tracker_(std::make_unique<ui::LatencyTracker>()) {
+          std::make_unique<gpu::MemoryTypeTracker>(memory_tracker)) {
   if (gr_context_) {
     CHECK(!graphite_context_);
     capabilities_.max_render_target_size = gr_context->maxRenderTargetSize();
@@ -215,8 +211,7 @@ void SkiaOutputDevice::FinishSwapBuffers(
 
   pending_swaps_.front().CallFeedback();
 
-  ReportLatency(params.swap_response.timings, latency_tracker_.get(),
-                std::move(frame.latency_info));
+  ReportLatency(params.swap_response.timings, std::move(frame.latency_info));
 
   pending_swaps_.pop();
 

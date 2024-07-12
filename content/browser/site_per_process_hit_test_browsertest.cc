@@ -1402,8 +1402,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
                             blink::WebInputEvent::Type::kTouchStart, child_rwhv,
                             touch_start_point_in_child, touch_start_point));
 
-    router->RouteTouchEvent(root_rwhv, &touch_start_event,
-                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+    router->RouteTouchEvent(root_rwhv, &touch_start_event, ui::LatencyInfo());
 
     await_begin_in_child.Wait();
 
@@ -1420,8 +1419,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
                             blink::WebInputEvent::Type::kGestureTapDown,
                             child_rwhv, touch_start_point_in_child,
                             touch_start_point));
-    router->RouteGestureEvent(root_rwhv, &gesture_tap_event,
-                              ui::LatencyInfo(ui::SourceEventType::TOUCH));
+    router->RouteGestureEvent(root_rwhv, &gesture_tap_event, ui::LatencyInfo());
     await_tap_in_child.Wait();
   }
 
@@ -1441,8 +1439,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
         base::BindRepeating(await_touch_event_with_position,
                             blink::WebInputEvent::Type::kTouchMove, child_rwhv,
                             touch_move_point_in_child, touch_move_point));
-    router->RouteTouchEvent(root_rwhv, &touch_move_event,
-                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+    router->RouteTouchEvent(root_rwhv, &touch_move_event, ui::LatencyInfo());
     await_move_in_child.Wait();
   }
 
@@ -1491,10 +1488,10 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
                             root_rwhv, touch_start_point, touch_start_point));
 
     router->RouteGestureEvent(root_rwhv, &gesture_scroll_begin,
-                              ui::LatencyInfo(ui::SourceEventType::TOUCH));
+                              ui::LatencyInfo());
     await_begin_in_child.Wait();
     router->RouteGestureEvent(root_rwhv, &gesture_scroll_update,
-                              ui::LatencyInfo(ui::SourceEventType::TOUCH));
+                              ui::LatencyInfo());
     await_update_in_child.Wait();
     await_update_in_root.Wait();
     thread_observer.Wait();
@@ -1516,8 +1513,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
         base::BindRepeating(await_touch_event_with_position,
                             blink::WebInputEvent::Type::kTouchEnd, child_rwhv,
                             touch_start_point_in_child, touch_move_point));
-    router->RouteTouchEvent(root_rwhv, &touch_end_event,
-                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+    router->RouteTouchEvent(root_rwhv, &touch_end_event, ui::LatencyInfo());
     await_end_in_child.Wait();
 
     blink::WebGestureEvent gesture_scroll_end(
@@ -1537,7 +1533,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
                             child_rwhv, touch_start_point_in_child,
                             touch_move_point));
     router->RouteGestureEvent(root_rwhv, &gesture_scroll_end,
-                              ui::LatencyInfo(ui::SourceEventType::TOUCH));
+                              ui::LatencyInfo());
     await_scroll_end_in_child.Wait();
 
     thread_observer.Wait();
@@ -1662,8 +1658,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   SetWebEventPositions(&touch_start_event.touches[0], touch_start_point,
                        root_rwhv);
   touch_start_event.unique_touch_event_id = 1;
-  router->RouteTouchEvent(root_rwhv, &touch_start_event,
-                          ui::LatencyInfo(ui::SourceEventType::TOUCH));
+  router->RouteTouchEvent(root_rwhv, &touch_start_event, ui::LatencyInfo());
   child_touch_start_waiter.Wait();
 
   ASSERT_EQ(1U, child_event_observer.events_received().size());
@@ -1688,8 +1683,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   SetWebEventPositions(&touch_move_event.touches[0], touch_move_point,
                        root_rwhv);
   touch_move_event.unique_touch_event_id = 2;
-  router->RouteTouchEvent(root_rwhv, &touch_move_event,
-                          ui::LatencyInfo(ui::SourceEventType::TOUCH));
+  router->RouteTouchEvent(root_rwhv, &touch_move_event, ui::LatencyInfo());
   child_touch_move_waiter.Wait();
 
   ASSERT_EQ(2U, child_event_observer.events_received().size());
@@ -1714,8 +1708,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   SetWebEventPositions(&touch_end_event.touches[0], touch_move_point,
                        root_rwhv);
   touch_end_event.unique_touch_event_id = 3;
-  router->RouteTouchEvent(root_rwhv, &touch_end_event,
-                          ui::LatencyInfo(ui::SourceEventType::TOUCH));
+  router->RouteTouchEvent(root_rwhv, &touch_end_event, ui::LatencyInfo());
   child_touch_end_waiter.Wait();
 
   ASSERT_EQ(3U, child_event_observer.events_received().size());
@@ -1958,8 +1951,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   InputEventAckWaiter root_touch_waiter(
       root_rwhv->GetRenderWidgetHost(),
       blink::WebInputEvent::Type::kTouchStart);
-  router->RouteTouchEvent(root_rwhv, &touch_event,
-                          ui::LatencyInfo(ui::SourceEventType::TOUCH));
+  router->RouteTouchEvent(root_rwhv, &touch_event, ui::LatencyInfo());
   root_touch_waiter.Wait();
 
   blink::WebGestureEvent gesture_event(
@@ -1968,8 +1960,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
       blink::WebInputEvent::GetStaticTimeStampForTests(),
       blink::WebGestureDevice::kTouchscreen);
   gesture_event.unique_touch_event_id = touch_event.unique_touch_event_id;
-  router->RouteGestureEvent(root_rwhv, &gesture_event,
-                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+  router->RouteGestureEvent(root_rwhv, &gesture_event, ui::LatencyInfo());
 
   scroll_end_at_parent.Wait();
   // By this point, the parent frame attempted to bubble scroll to the main
@@ -2319,8 +2310,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
     touch_event.unique_touch_event_id = 1;
     InputEventAckWaiter waiter(rwhv_child->GetRenderWidgetHost(),
                                blink::WebInputEvent::Type::kTouchStart);
-    router->RouteTouchEvent(rwhv_root, &touch_event,
-                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+    router->RouteTouchEvent(rwhv_root, &touch_event, ui::LatencyInfo());
     // With async hit testing, make sure the target for the initial TouchStart
     // is resolved before sending the rest of the stream.
     waiter.Wait();
@@ -2331,8 +2321,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
         blink::WebInputEvent::GetStaticTimeStampForTests(),
         blink::WebGestureDevice::kTouchscreen);
     gesture_event.unique_touch_event_id = touch_event.unique_touch_event_id;
-    router->RouteGestureEvent(rwhv_root, &gesture_event,
-                              ui::LatencyInfo(ui::SourceEventType::TOUCH));
+    router->RouteGestureEvent(rwhv_root, &gesture_event, ui::LatencyInfo());
   }
 
 #if defined(USE_AURA)
@@ -2392,7 +2381,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
       overscroll_threshold + 1;
 #endif
   router->RouteGestureEvent(rwhv_root, &gesture_scroll_begin,
-                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+                            ui::LatencyInfo());
 
   // Make sure the child is indeed receiving the gesture stream.
   gesture_begin_observer_child.Wait();
@@ -2416,7 +2405,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   mock_overscroll_observer->Reset();
   // This will bring us into an overscroll gesture.
   router->RouteGestureEvent(rwhv_root, &gesture_scroll_update,
-                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+                            ui::LatencyInfo());
   // Note that in addition to verifying that we get the overscroll update, it
   // is necessary to wait before sending the next event to prevent our multiple
   // GestureScrollUpdates from being coalesced.
@@ -2427,7 +2416,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   *delta = 10.0f;
   mock_overscroll_observer->Reset();
   router->RouteGestureEvent(rwhv_root, &gesture_scroll_update,
-                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+                            ui::LatencyInfo());
   mock_overscroll_observer->WaitForUpdate();
 
   // Now we reverse direction. The child could scroll in this direction, but
@@ -2435,7 +2424,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   *delta = -5.0f;
   mock_overscroll_observer->Reset();
   router->RouteGestureEvent(rwhv_root, &gesture_scroll_update,
-                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+                            ui::LatencyInfo());
   mock_overscroll_observer->WaitForUpdate();
 
   blink::WebGestureEvent gesture_scroll_end(
@@ -2447,8 +2436,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   gesture_scroll_end.data.scroll_end.delta_units =
       ui::ScrollGranularity::kScrollByPrecisePixel;
   mock_overscroll_observer->Reset();
-  router->RouteGestureEvent(rwhv_root, &gesture_scroll_end,
-                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+  router->RouteGestureEvent(rwhv_root, &gesture_scroll_end, ui::LatencyInfo());
   mock_overscroll_observer->WaitForEnd();
 
   // Ensure that the method of providing the child's scroll events to the root
@@ -5732,8 +5720,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 
   content::TestPageScaleObserver scale_observer(shell()->web_contents());
 
-  router->RouteGestureEvent(root_view, &double_tap_zoom,
-                            ui::LatencyInfo(ui::SourceEventType::WHEEL));
+  router->RouteGestureEvent(root_view, &double_tap_zoom, ui::LatencyInfo());
 
   // Ensure the child frame saw the wheel event.
   EXPECT_EQ(false, EvalJs(child_frame_host,

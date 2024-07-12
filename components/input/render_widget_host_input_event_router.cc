@@ -1159,8 +1159,7 @@ bool RenderWidgetHostInputEventRouter::BubbleScrollEvent(
          event.GetType() == blink::WebInputEvent::Type::kGestureScrollUpdate ||
          event.GetType() == blink::WebInputEvent::Type::kGestureScrollEnd);
 
-  ui::LatencyInfo latency_info =
-      ui::WebInputEventTraits::CreateLatencyInfoForWebGestureEvent(event);
+  ui::LatencyInfo latency_info;
 
   if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollBegin) {
     forced_last_fling_start_target_to_stop_flinging_for_test_ = false;
@@ -1280,10 +1279,7 @@ void RenderWidgetHostInputEventRouter::SendGestureScrollBegin(
   scroll_begin.data.scroll_begin.delta_hint_units =
       ui::ScrollGranularity::kScrollByPrecisePixel;
   scroll_begin.data.scroll_begin.scrollable_area_element_id = 0;
-  view->ProcessGestureEvent(
-      scroll_begin,
-      ui::WebInputEventTraits::CreateLatencyInfoForWebGestureEvent(
-          scroll_begin));
+  view->ProcessGestureEvent(scroll_begin, ui::LatencyInfo());
 }
 
 void RenderWidgetHostInputEventRouter::SendGestureScrollEnd(
@@ -1309,9 +1305,7 @@ void RenderWidgetHostInputEventRouter::SendGestureScrollEnd(
     default:
       NOTREACHED_IN_MIGRATION();
   }
-  view->ProcessGestureEvent(
-      scroll_end,
-      ui::WebInputEventTraits::CreateLatencyInfoForWebGestureEvent(scroll_end));
+  view->ProcessGestureEvent(scroll_end, ui::LatencyInfo());
 }
 
 void RenderWidgetHostInputEventRouter::SendGestureScrollEnd(
@@ -1325,9 +1319,7 @@ void RenderWidgetHostInputEventRouter::SendGestureScrollEnd(
       blink::WebGestureEvent::InertialPhaseState::kUnknownMomentum;
   scroll_end.data.scroll_end.delta_units =
       ui::ScrollGranularity::kScrollByPrecisePixel;
-  view->ProcessGestureEvent(
-      scroll_end,
-      ui::WebInputEventTraits::CreateLatencyInfoForWebGestureEvent(scroll_end));
+  view->ProcessGestureEvent(scroll_end, ui::LatencyInfo());
 }
 
 void RenderWidgetHostInputEventRouter::WillDetachChildView(

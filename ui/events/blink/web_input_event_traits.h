@@ -6,11 +6,6 @@
 #define UI_EVENTS_BLINK_WEB_INPUT_EVENT_TRAITS_H_
 
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "ui/latency/latency_info.h"
-
-namespace blink {
-class WebGestureEvent;
-}
 
 namespace ui {
 
@@ -24,8 +19,6 @@ class WebInputEventTraits {
 
   // Return uniqueTouchEventId for WebTouchEvent, otherwise return 0.
   static uint32_t GetUniqueTouchEventId(const blink::WebInputEvent& event);
-  static LatencyInfo CreateLatencyInfoForWebGestureEvent(
-      const blink::WebGestureEvent& event);
 };
 
 }  // namespace ui

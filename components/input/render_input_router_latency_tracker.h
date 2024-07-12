@@ -13,7 +13,6 @@
 #include "base/component_export.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/latency/latency_info.h"
-#include "ui/latency/latency_tracker.h"
 
 namespace input {
 

@@ -225,8 +225,7 @@ IN_PROC_BROWSER_TEST_F(TouchpadPinchBrowserTest,
         double_tap_zoom.data.tap.tap_count = 1;
         double_tap_zoom.SetNeedsWheelEvent(true);
 
-        SimulateGestureEvent(web_contents, double_tap_zoom,
-                             ui::LatencyInfo(ui::SourceEventType::WHEEL));
+        SimulateGestureEvent(web_contents, double_tap_zoom, ui::LatencyInfo());
       }));
 }
 

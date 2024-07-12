@@ -375,7 +375,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
                                 bool& ended_delegated_ink_trail) override;
   void ResetDelegatedInkPointPrediction(
       bool& ended_delegated_ink_trail) override;
-  ukm::SourceId GetCurrentPageUkmSourceId() override;
   void NotifyObserversOfInputEvent(const blink::WebInputEvent& event) override;
   void NotifyObserversOfInputEventAcks(
       blink::mojom::InputEventResultSource ack_source,

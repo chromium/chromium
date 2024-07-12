@@ -416,8 +416,7 @@ void RenderWidgetHostViewEventHandler::OnScrollEvent(ui::ScrollEvent* event) {
     if (should_route_event) {
       if (maybe_synthetic_fling_cancel) {
         host_->delegate()->GetInputEventRouter()->RouteGestureEvent(
-            host_view_, &*maybe_synthetic_fling_cancel,
-            ui::LatencyInfo(ui::SourceEventType::WHEEL));
+            host_view_, &*maybe_synthetic_fling_cancel, ui::LatencyInfo());
       }
       host_->delegate()->GetInputEventRouter()->RouteMouseWheelEvent(
           host_view_, &mouse_wheel_event, *event->latency());
@@ -433,8 +432,7 @@ void RenderWidgetHostViewEventHandler::OnScrollEvent(ui::ScrollEvent* event) {
     blink::WebGestureEvent gesture_event = ui::MakeWebGestureEvent(*event);
     if (should_route_event) {
       host_->delegate()->GetInputEventRouter()->RouteGestureEvent(
-          host_view_, &gesture_event,
-          ui::LatencyInfo(ui::SourceEventType::WHEEL));
+          host_view_, &gesture_event, ui::LatencyInfo());
     } else {
       host_->ForwardGestureEvent(gesture_event);
     }
@@ -537,8 +535,7 @@ void RenderWidgetHostViewEventHandler::OnGestureEvent(ui::GestureEvent* event) {
     fling_cancel.data.fling_cancel.target_viewport = false;
     if (ShouldRouteEvents()) {
       host_->delegate()->GetInputEventRouter()->RouteGestureEvent(
-          host_view_, &fling_cancel,
-          ui::LatencyInfo(ui::SourceEventType::TOUCH));
+          host_view_, &fling_cancel, ui::LatencyInfo());
     } else {
       host_->ForwardGestureEvent(fling_cancel);
     }

@@ -43,10 +43,6 @@ class Context;
 class Recording;
 }  // namespace skgpu::graphite
 
-namespace ui {
-class LatencyTracker;
-}  // namespace ui
-
 namespace viz {
 
 class VulkanContextProvider;
@@ -279,7 +275,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
   std::unique_ptr<gpu::MemoryTypeTracker> memory_type_tracker_;
 
  private:
-  std::unique_ptr<ui::LatencyTracker> latency_tracker_;
   // A mapping from skipped swap ID to its corresponding OutputSurfaceFrame.
   base::flat_map<uint64_t, OutputSurfaceFrame> skipped_swap_info_;
 };

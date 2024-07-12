@@ -31,10 +31,6 @@ using testing::ElementsAre;
 namespace content {
 namespace {
 
-// Trace ids are generated in sequence in practice, but in these tests, we don't
-// care about the value, so we'll just use a constant.
-const char kUrl[] = "http://www.foo.bar.com/subpage/1";
-
 void AddFakeComponentsWithTimeStamp(
     const input::RenderInputRouterLatencyTracker& tracker,
     ui::LatencyInfo* latency,
@@ -126,7 +122,6 @@ class RenderInputRouterLatencyTrackerTest
   }
 
   input::RenderInputRouterLatencyTracker* tracker() { return tracker_.get(); }
-  ui::LatencyTracker* viz_tracker() { return &viz_tracker_; }
 
   void ResetHistograms() {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
@@ -153,118 +148,9 @@ class RenderInputRouterLatencyTrackerTest
  protected:
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<input::RenderInputRouterLatencyTracker> tracker_;
-  ui::LatencyTracker viz_tracker_;
   RenderInputRouterLatencyTrackerTestBrowserClient test_browser_client_;
   raw_ptr<ContentBrowserClient> old_browser_client_;
 };
-
-// Flaky on Android. https://crbug.com/970841
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_TestWheelToFirstScrollHistograms \
-  DISABLED_TestWheelToFirstScrollHistograms
-#else
-#define MAYBE_TestWheelToFirstScrollHistograms TestWheelToFirstScrollHistograms
-#endif
-
-TEST_F(RenderInputRouterLatencyTrackerTest,
-       MAYBE_TestWheelToFirstScrollHistograms) {
-  const GURL url(kUrl);
-  size_t total_ukm_entry_count = 0;
-  contents()->NavigateAndCommit(url);
-  ukm::SourceId source_id = static_cast<WebContentsImpl*>(contents())
-                                ->GetPrimaryMainFrame()
-                                ->GetPageUkmSourceId();
-  EXPECT_NE(ukm::kInvalidSourceId, source_id);
-  for (bool rendering_on_main : {false, true}) {
-    ResetHistograms();
-    {
-      auto wheel = blink::SyntheticWebMouseWheelEventBuilder::Build(
-          blink::WebMouseWheelEvent::kPhaseChanged);
-      base::TimeTicks now = base::TimeTicks::Now();
-      wheel.SetTimeStamp(now);
-      ui::EventLatencyMetadata event_latency_metadata;
-      ui::LatencyInfo wheel_latency(ui::SourceEventType::WHEEL);
-      wheel_latency.AddLatencyNumberWithTimestamp(
-          ui::INPUT_EVENT_LATENCY_FIRST_SCROLL_UPDATE_ORIGINAL_COMPONENT, now);
-      AddFakeComponentsWithTimeStamp(*tracker(), &wheel_latency, now);
-      AddRenderingScheduledComponent(&wheel_latency, rendering_on_main, now);
-      tracker()->OnInputEvent(wheel, &wheel_latency, &event_latency_metadata);
-      base::TimeTicks begin_rwh_timestamp;
-      EXPECT_TRUE(wheel_latency.FindLatency(
-          ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT, &begin_rwh_timestamp));
-      EXPECT_TRUE(wheel_latency.FindLatency(
-          ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, nullptr));
-      EXPECT_FALSE(
-          event_latency_metadata.arrived_in_browser_main_timestamp.is_null());
-      EXPECT_EQ(event_latency_metadata.arrived_in_browser_main_timestamp,
-                begin_rwh_timestamp);
-      tracker()->OnInputEventAck(
-          wheel, &wheel_latency,
-          blink::mojom::InputEventResultState::kNotConsumed);
-      viz_tracker()->OnGpuSwapBuffersCompleted({wheel_latency});
-
-      // UKM metrics.
-      total_ukm_entry_count++;
-      ExpectUkmReported(
-          source_id, "Event.ScrollBegin.Wheel",
-          {"TimeToScrollUpdateSwapBegin", "TimeToHandled", "IsMainThread"},
-          total_ukm_entry_count);
-    }
-  }
-}
-
-// Flaky on Android. https://crbug.com/970841
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_TestWheelToScrollHistograms DISABLED_TestWheelToScrollHistograms
-#else
-#define MAYBE_TestWheelToScrollHistograms TestWheelToScrollHistograms
-#endif
-
-TEST_F(RenderInputRouterLatencyTrackerTest, MAYBE_TestWheelToScrollHistograms) {
-  const GURL url(kUrl);
-  size_t total_ukm_entry_count = 0;
-  contents()->NavigateAndCommit(url);
-  ukm::SourceId source_id = static_cast<WebContentsImpl*>(contents())
-                                ->GetPrimaryMainFrame()
-                                ->GetPageUkmSourceId();
-  EXPECT_NE(ukm::kInvalidSourceId, source_id);
-  for (bool rendering_on_main : {false, true}) {
-    ResetHistograms();
-    {
-      auto wheel = blink::SyntheticWebMouseWheelEventBuilder::Build(
-          blink::WebMouseWheelEvent::kPhaseChanged);
-      base::TimeTicks now = base::TimeTicks::Now();
-      wheel.SetTimeStamp(now);
-      ui::EventLatencyMetadata event_latency_metadata;
-      ui::LatencyInfo wheel_latency(ui::SourceEventType::WHEEL);
-      wheel_latency.AddLatencyNumberWithTimestamp(
-          ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT, now);
-      AddFakeComponentsWithTimeStamp(*tracker(), &wheel_latency, now);
-      AddRenderingScheduledComponent(&wheel_latency, rendering_on_main, now);
-      tracker()->OnInputEvent(wheel, &wheel_latency, &event_latency_metadata);
-      base::TimeTicks begin_rwh_timestamp;
-      EXPECT_TRUE(wheel_latency.FindLatency(
-          ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT, &begin_rwh_timestamp));
-      EXPECT_TRUE(wheel_latency.FindLatency(
-          ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, nullptr));
-      EXPECT_FALSE(
-          event_latency_metadata.arrived_in_browser_main_timestamp.is_null());
-      EXPECT_EQ(event_latency_metadata.arrived_in_browser_main_timestamp,
-                begin_rwh_timestamp);
-      tracker()->OnInputEventAck(
-          wheel, &wheel_latency,
-          blink::mojom::InputEventResultState::kNotConsumed);
-      viz_tracker()->OnGpuSwapBuffersCompleted({wheel_latency});
-
-      // UKM metrics.
-      total_ukm_entry_count++;
-      ExpectUkmReported(
-          source_id, "Event.ScrollUpdate.Wheel",
-          {"TimeToScrollUpdateSwapBegin", "TimeToHandled", "IsMainThread"},
-          total_ukm_entry_count);
-    }
-  }
-}
 
 TEST_F(RenderInputRouterLatencyTrackerTest,
        LatencyTerminatedOnAckIfGSUIgnored) {
@@ -278,10 +164,6 @@ TEST_F(RenderInputRouterLatencyTrackerTest,
       scroll.SetTimeStamp(now);
       ui::LatencyInfo scroll_latency;
       ui::EventLatencyMetadata event_latency_metadata;
-      scroll_latency.set_source_event_type(
-          source_device == blink::WebGestureDevice::kTouchscreen
-              ? ui::SourceEventType::TOUCH
-              : ui::SourceEventType::WHEEL);
       AddFakeComponentsWithTimeStamp(*tracker(), &scroll_latency, now);
       AddRenderingScheduledComponent(&scroll_latency, rendering_on_main, now);
       tracker()->OnInputEvent(scroll, &scroll_latency, &event_latency_metadata);

@@ -9911,6 +9911,10 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Event.ScrollBegin.Touch">
+  <obsolete>
+    Deprecated as of 07/2024. Replaced with Graphics.Smoothness.EventLatency
+    breakdown metrics, and total latencies.
+  </obsolete>
   <owner>nzolghadr@chromium.org</owner>
   <summary>
     Metrics related to first scroll action caused by the generated ScrollUpdate
@@ -9950,6 +9954,10 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Event.ScrollBegin.Wheel">
+  <obsolete>
+    Deprecated as of 07/2024. Replaced with Graphics.Smoothness.EventLatency
+    breakdown metrics, and total latencies.
+  </obsolete>
   <owner>nzolghadr@chromium.org</owner>
   <summary>
     Metrics related to first scroll action caused by the generated ScrollUpdate
@@ -10043,6 +10051,10 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Event.ScrollUpdate.Touch">
+  <obsolete>
+    Deprecated as of 07/2024. Replaced with Graphics.Smoothness.EventLatency
+    breakdown metrics, and total latencies.
+  </obsolete>
   <owner>nzolghadr@chromium.org</owner>
   <summary>
     Metrics related to a scroll action caused by the generated ScrollUpdate
@@ -10080,6 +10092,10 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Event.ScrollUpdate.Wheel">
+  <obsolete>
+    Deprecated as of 07/2024. Replaced with Graphics.Smoothness.EventLatency
+    breakdown metrics, and total latencies.
+  </obsolete>
   <owner>nzolghadr@chromium.org</owner>
   <owner>tdresser@chromium.org</owner>
   <summary>

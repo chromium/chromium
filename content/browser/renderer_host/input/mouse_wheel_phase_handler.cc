@@ -179,11 +179,10 @@ void MouseWheelPhaseHandler::SendSyntheticWheelEventWithPhaseEnded(
       return;
 
     widget_host->delegate()->GetInputEventRouter()->RouteMouseWheelEvent(
-        host_view_, &last_mouse_wheel_event_,
-        ui::LatencyInfo(ui::SourceEventType::WHEEL));
+        host_view_, &last_mouse_wheel_event_, ui::LatencyInfo());
   } else {
-    host_view_->ProcessMouseWheelEvent(
-        last_mouse_wheel_event_, ui::LatencyInfo(ui::SourceEventType::WHEEL));
+    host_view_->ProcessMouseWheelEvent(last_mouse_wheel_event_,
+                                       ui::LatencyInfo());
   }
 }
 

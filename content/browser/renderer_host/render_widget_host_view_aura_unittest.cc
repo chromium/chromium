@@ -3408,35 +3408,6 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFramesWithMemoryPressure) {
     views[i]->Destroy();
 }
 
-TEST_F(RenderWidgetHostViewAuraTest, SourceEventTypeExistsInLatencyInfo) {
-  // WHEEL source exists.
-  ui::ScrollEvent scroll(ui::ET_SCROLL, gfx::Point(2, 2), ui::EventTimeForNow(),
-                         0, 0, 0, 0, 0, 2);
-  view_->OnScrollEvent(&scroll);
-  EXPECT_EQ(widget_host_->GetMockRenderInputRouter()
-                ->GetLastWheelOrTouchEventLatencyInfo()
-                ->source_event_type(),
-            ui::SourceEventType::WHEEL);
-
-  // TOUCH source exists.
-  ui::TouchEvent press(ui::ET_TOUCH_PRESSED, gfx::Point(30, 30),
-                       ui::EventTimeForNow(),
-                       ui::PointerDetails(ui::EventPointerType::kTouch, 0));
-  ui::TouchEvent move(ui::ET_TOUCH_MOVED, gfx::Point(20, 20),
-                      ui::EventTimeForNow(),
-                      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
-  ui::TouchEvent release(ui::ET_TOUCH_RELEASED, gfx::Point(20, 20),
-                         ui::EventTimeForNow(),
-                         ui::PointerDetails(ui::EventPointerType::kTouch, 0));
-  view_->OnTouchEvent(&press);
-  view_->OnTouchEvent(&move);
-  EXPECT_EQ(widget_host_->GetMockRenderInputRouter()
-                ->GetLastWheelOrTouchEventLatencyInfo()
-                ->source_event_type(),
-            ui::SourceEventType::TOUCH);
-  view_->OnTouchEvent(&release);
-}
-
 TEST_F(RenderWidgetHostViewAuraTest, VisibleViewportTest) {
   gfx::Rect view_rect(100, 100);
 

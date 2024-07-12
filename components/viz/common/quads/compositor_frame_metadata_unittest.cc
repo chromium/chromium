@@ -33,7 +33,6 @@ bool AreBeginFrameAcksEqual(const BeginFrameAck& a, const BeginFrameAck& b) {
 bool AreLatencyInfosEqual(const ui::LatencyInfo& a, const ui::LatencyInfo& b) {
   return a.began() == b.began() && a.terminated() == b.terminated() &&
          a.coalesced() == b.coalesced() && a.trace_id() == b.trace_id() &&
-         a.ukm_source_id() == b.ukm_source_id() &&
          a.gesture_scroll_id() == b.gesture_scroll_id();
 }
 
@@ -64,7 +63,7 @@ TEST(CompositorFrameMetadata, Clone) {
   metadata.may_contain_video = true;
   metadata.is_handling_interaction = true;
   metadata.root_background_color = SkColors::kBlue;
-  metadata.latency_info.emplace_back(ui::SourceEventType::KEY_PRESS);
+  metadata.latency_info.emplace_back();
   metadata.referenced_surfaces.emplace_back(
       SurfaceId(frame_sink_id, local_id1), SurfaceId(frame_sink_id, local_id2));
   metadata.activation_dependencies.emplace_back(

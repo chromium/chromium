@@ -225,8 +225,8 @@ void MouseWheelEventQueue::ProcessMouseWheelAck(
       // no GSB is sent.
       if (!client_->IsWheelScrollInProgress())
         SendScrollBegin(scroll_update, synthetic);
-      client_->ForwardGestureEventWithLatencyInfo(
-          scroll_update, ui::LatencyInfo(ui::SourceEventType::WHEEL));
+      client_->ForwardGestureEventWithLatencyInfo(scroll_update,
+                                                  ui::LatencyInfo());
     }
 
     if (current_phase_ended && client_->IsWheelScrollInProgress()) {
@@ -304,8 +304,7 @@ void MouseWheelEventQueue::SendScrollEnd(WebGestureEvent update_event,
     scroll_end.data.scroll_end.generated_by_fling_controller = true;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  client_->ForwardGestureEventWithLatencyInfo(
-      scroll_end, ui::LatencyInfo(ui::SourceEventType::WHEEL));
+  client_->ForwardGestureEventWithLatencyInfo(scroll_end, ui::LatencyInfo());
 }
 
 void MouseWheelEventQueue::SendScrollBegin(
@@ -317,8 +316,7 @@ void MouseWheelEventQueue::SendScrollBegin(
       ui::ScrollBeginFromScrollUpdate(gesture_update);
   scroll_begin.data.scroll_begin.synthetic = synthetic;
 
-  client_->ForwardGestureEventWithLatencyInfo(
-      scroll_begin, ui::LatencyInfo(ui::SourceEventType::WHEEL));
+  client_->ForwardGestureEventWithLatencyInfo(scroll_begin, ui::LatencyInfo());
 }
 
 }  // namespace input

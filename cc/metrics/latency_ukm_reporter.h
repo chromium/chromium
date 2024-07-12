@@ -12,6 +12,7 @@
 #include "cc/cc_export.h"
 #include "cc/metrics/compositor_frame_reporter.h"
 #include "cc/metrics/event_metrics.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace ukm {
 class UkmRecorder;

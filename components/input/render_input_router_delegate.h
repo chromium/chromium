@@ -45,8 +45,6 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouterDelegate {
   virtual void ResetDelegatedInkPointPrediction(
       bool& ended_delegated_ink_trail) = 0;
 
-  virtual ukm::SourceId GetCurrentPageUkmSourceId() = 0;
-
   virtual bool IsIgnoringWebInputEvents(
       const blink::WebInputEvent& event) const = 0;
 

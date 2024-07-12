@@ -1481,8 +1481,7 @@ void RenderWidgetHostImpl::SetNewContentRenderingTimeoutForTesting(
 }
 
 void RenderWidgetHostImpl::ForwardMouseEvent(const WebMouseEvent& mouse_event) {
-  ForwardMouseEventWithLatencyInfo(mouse_event,
-                                   ui::LatencyInfo(ui::SourceEventType::MOUSE));
+  ForwardMouseEventWithLatencyInfo(mouse_event, ui::LatencyInfo());
   if (owner_delegate_) {
     owner_delegate_->RenderWidgetDidForwardMouseEvent(mouse_event);
   }
@@ -1525,8 +1524,7 @@ void RenderWidgetHostImpl::ForwardMouseEventWithLatencyInfo(
 
 void RenderWidgetHostImpl::ForwardWheelEvent(
     const WebMouseWheelEvent& wheel_event) {
-  ForwardWheelEventWithLatencyInfo(wheel_event,
-                                   ui::LatencyInfo(ui::SourceEventType::WHEEL));
+  ForwardWheelEventWithLatencyInfo(wheel_event, ui::LatencyInfo());
 }
 
 void RenderWidgetHostImpl::ForwardWheelEventWithLatencyInfo(
@@ -1570,20 +1568,13 @@ void RenderWidgetHostImpl::WaitForInputProcessed(base::OnceClosure callback) {
 
 void RenderWidgetHostImpl::ForwardGestureEvent(
     const WebGestureEvent& gesture_event) {
-  GetRenderInputRouter()->ForwardGestureEventWithLatencyInfo(
-      gesture_event,
-      ui::WebInputEventTraits::CreateLatencyInfoForWebGestureEvent(
-          gesture_event));
+  GetRenderInputRouter()->ForwardGestureEventWithLatencyInfo(gesture_event,
+                                                             ui::LatencyInfo());
 }
 
 void RenderWidgetHostImpl::ForwardKeyboardEvent(
     const input::NativeWebKeyboardEvent& key_event) {
   ui::LatencyInfo latency_info;
-
-  if (key_event.GetType() == WebInputEvent::Type::kRawKeyDown ||
-      key_event.GetType() == WebInputEvent::Type::kChar) {
-    latency_info.set_source_event_type(ui::SourceEventType::KEY_PRESS);
-  }
   ForwardKeyboardEventWithLatencyInfo(key_event, latency_info);
 }
 
@@ -2484,10 +2475,6 @@ RenderWidgetHostImpl::GetLastRenderFrameMetadata() {
   return render_frame_metadata_provider()->LastRenderFrameMetadata();
 }
 
-ukm::SourceId RenderWidgetHostImpl::GetCurrentPageUkmSourceId() {
-  return delegate()->GetCurrentPageUkmSourceId();
-}
-
 void RenderWidgetHostImpl::NotifyObserversOfInputEvent(
     const WebInputEvent& event) {
   AddPendingUserActivation(event);
@@ -2867,7 +2854,7 @@ void RenderWidgetHostImpl::AutoscrollFling(const gfx::Vector2dF& velocity) {
     scroll_begin.data.scroll_begin.delta_y_hint = velocity.y();
 
     GetRenderInputRouter()->ForwardGestureEventWithLatencyInfo(
-        scroll_begin, ui::LatencyInfo(ui::SourceEventType::OTHER));
+        scroll_begin, ui::LatencyInfo());
     sent_autoscroll_scroll_begin_ = true;
   }
 
@@ -2878,8 +2865,8 @@ void RenderWidgetHostImpl::AutoscrollFling(const gfx::Vector2dF& velocity) {
   event.data.fling_start.velocity_x = velocity.x();
   event.data.fling_start.velocity_y = velocity.y();
 
-  GetRenderInputRouter()->ForwardGestureEventWithLatencyInfo(
-      event, ui::LatencyInfo(ui::SourceEventType::OTHER));
+  GetRenderInputRouter()->ForwardGestureEventWithLatencyInfo(event,
+                                                             ui::LatencyInfo());
 }
 
 void RenderWidgetHostImpl::AutoscrollEnd() {
@@ -2899,8 +2886,8 @@ void RenderWidgetHostImpl::AutoscrollEnd() {
   cancel_event.data.fling_cancel.prevent_boosting = true;
   cancel_event.SetPositionInWidget(autoscroll_start_position_);
 
-  GetRenderInputRouter()->ForwardGestureEventWithLatencyInfo(
-      cancel_event, ui::LatencyInfo(ui::SourceEventType::OTHER));
+  GetRenderInputRouter()->ForwardGestureEventWithLatencyInfo(cancel_event,
+                                                             ui::LatencyInfo());
 }
 
 bool RenderWidgetHostImpl::IsAutoscrollInProgress() {

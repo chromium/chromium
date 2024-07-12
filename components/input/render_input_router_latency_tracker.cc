@@ -111,11 +111,6 @@ void RenderInputRouterLatencyTracker::OnInputEvent(
     active_multi_finger_gesture_ = touch_event.touches_length != 1;
   }
 
-  if (latency->source_event_type() == ui::SourceEventType::KEY_PRESS) {
-    DCHECK(event.GetType() == WebInputEvent::Type::kChar ||
-           event.GetType() == WebInputEvent::Type::kRawKeyDown);
-  }
-
   // This is the only place to add the BEGIN_RWH component. So this component
   // should not already be present in the latency info.
   bool found_component = latency->FindLatency(
@@ -221,8 +216,6 @@ void RenderInputRouterLatencyTracker::OnInputEventAck(
 void RenderInputRouterLatencyTracker::OnEventStart(ui::LatencyInfo* latency) {
   static uint64_t global_trace_id = 0;
   latency->set_trace_id(++global_trace_id);
-  latency->set_ukm_source_id(
-      render_input_router_delegate_->GetCurrentPageUkmSourceId());
 }
 
 }  // namespace input

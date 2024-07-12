@@ -19,6 +19,7 @@
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "cc/metrics/predictor_jank_tracker.h"
 #include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace ukm {
 class UkmRecorder;
