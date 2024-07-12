@@ -2042,17 +2042,17 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.Performance.GetUpdatesAndEventsForSerialization"
-    units="microseconds" expires_after="2025-02-28">
+<histogram name="Accessibility.Performance.FinalizingTreeLifecycleStage"
+    units="microseconds" expires_after="2025-07-07">
+  <owner>lucasradaelli@google.com</owner>
   <owner>mschillaci@google.com</owner>
   <owner>aleventhal@chromium.org</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    Tracks time spent on the render process collecting nodes, node data and
-    events for the next serialization. Logged each time the method is run during
-    post-lifecycle steps.
+    Tracks time spent on the render process executing the lifecycle stage
+    FinalizingTree.
 
     Warning: This metric may include reports from clients with low-resolution
     clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
@@ -2092,16 +2092,18 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.Performance.ProcessDeferredAccessibilityEvents2"
-    units="microseconds" expires_after="2025-02-28">
+<histogram
+    name="Accessibility.Performance.ProcessDeferredUpdatesLifecycleStage"
+    units="microseconds" expires_after="2025-07-07">
+  <owner>lucasradaelli@google.com</owner>
   <owner>mschillaci@google.com</owner>
   <owner>aleventhal@chromium.org</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    Tracks time spent on the render process processing deferred accessibility
-    events.
+    Tracks time spent on the render process executing the accessibility stage
+    ProcessDeferredUpdates.
 
     Warning: This metric may include reports from clients with low-resolution
     clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
@@ -2153,6 +2155,26 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.Performance.SerializeLifecycleStage"
+    units="microseconds" expires_after="2025-07-07">
+  <owner>lucasradaelli@google.com</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>aleventhal@chromium.org</owner>
+  <owner>janewman@microsoft.com</owner>
+  <owner>kevers@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks time spent on the render process executing the lifecycle stage
+    Serialize.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.Performance.SerializeLocationChanges"
     units="microseconds" expires_after="2025-02-28">
   <owner>mschillaci@google.com</owner>
@@ -2173,6 +2195,27 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram
+    name="Accessibility.Performance.TotalAccessibilityCleanLayoutLifecycleStages"
+    units="microseconds" expires_after="2025-07-07">
+  <owner>lucasradaelli@google.com</owner>
+  <owner>mschillaci@google.com</owner>
+  <owner>aleventhal@chromium.org</owner>
+  <owner>janewman@microsoft.com</owner>
+  <owner>kevers@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks time spent on the render process executing all the accessibility
+    lifecycle stages that run when layout is clean.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.Performance.Tree.Unserialize2"
     units="microseconds" expires_after="2025-02-28">
   <owner>aleventhal@chromium.org</owner>
@@ -2183,25 +2226,6 @@ even if they fit the naming pattern. -->
   <summary>
     Tracks time spent on the browser process unserializing accessibility
     updates. Logged each time the method is run without returning early.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.Performance.UpdateTreeIfNeeded"
-    units="microseconds" expires_after="2025-02-28">
-  <owner>mschillaci@google.com</owner>
-  <owner>aleventhal@chromium.org</owner>
-  <owner>janewman@microsoft.com</owner>
-  <owner>kevers@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Tracks time spent on the render process ensuring the tree is fully updated
-    so that it can be frozen for the next serialization.
 
     Warning: This metric may include reports from clients with low-resolution
     clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports

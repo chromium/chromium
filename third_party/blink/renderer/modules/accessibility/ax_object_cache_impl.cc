@@ -867,7 +867,7 @@ AXObject* AXObjectCacheImpl::Root() {
     return root;
   }
 
-  ProcessDeferredAccessibilityEvents(GetDocument(), /*force*/ true);
+  CommitAXUpdates(GetDocument(), /*force*/ true);
   return Get(document_);
 }
 
@@ -926,7 +926,7 @@ void AXObjectCacheImpl::UpdateAXForAllDocuments() {
   // Next flush all accessibility events and dirty objects, for both the main
   // and popup document, and update tree if needed.
   if (IsDirty() || HasObjectsPendingSerialization()) {
-    ProcessDeferredAccessibilityEvents(GetDocument(), /*force*/ true);
+    CommitAXUpdates(GetDocument(), /*force*/ true);
   }
 }
 
@@ -2786,7 +2786,6 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
 }
 
 void AXObjectCacheImpl::FinalizeTree() {
-  lifecycle_.AdvanceTo(AXObjectCacheLifecycle::kFinalizingTree);
   if (Root()->HasDirtyDescendants()) {
     HeapDeque<Member<AXObject>> objects_to_process;
     objects_to_process.push_back(Root());
@@ -3024,8 +3023,7 @@ bool AXObjectCacheImpl::IsReadyToProcessDeferredEvents() {
   return true;
 }
 
-void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
-                                                           bool force) {
+void AXObjectCacheImpl::CommitAXUpdates(Document& document, bool force) {
   if (IsPopup(document)) {
     // Only process popup document together with main document.
     DCHECK_EQ(&document, GetPopupDocumentIfShowing());
@@ -3118,6 +3116,10 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
 
   lifecycle_.AdvanceTo(AXObjectCacheLifecycle::kProcessDeferredUpdates);
 
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Accessibility.Performance.TotalAccessibilityCleanLayoutLifecycleStages");
+  TRACE_EVENT0("accessibility", "TotalAccessibilityCleanLayoutLifecycleStages");
+
   // Upon exiting this function, listen for tree updates again.
   absl::Cleanup lifecycle_returns_to_queueing_updates = [this] {
     lifecycle_.EnsureStateAtMost(AXObjectCacheLifecycle::kDeferTreeUpdates);
@@ -3128,10 +3130,9 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
   // ------------ Process deferred events and update tree  --------------------
   {
     {
-      // Start traces after early returns, including all all significant work.
       SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
-          "Accessibility.Performance.ProcessDeferredAccessibilityEvents2");
-      TRACE_EVENT0("accessibility", "ProcessDeferredAccessibilityEvents2");
+          "Accessibility.Performance.ProcessDeferredUpdatesLifecycleStage");
+      TRACE_EVENT0("accessibility", "ProcessDeferredUpdatesLifecycleStage");
 
       // If this is the first update, ensure that both an initial tree exists
       // and that the relation cache is initialized. Any existing content with
@@ -3151,9 +3152,9 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
 
       if (IsDirty()) {
         if (GetPopupDocumentIfShowing()) {
-          ProcessDeferredAccessibilityEventsImpl(*GetPopupDocumentIfShowing());
+          CommitAXUpdatesImpl(*GetPopupDocumentIfShowing());
         }
-        ProcessDeferredAccessibilityEventsImpl(document);
+        CommitAXUpdatesImpl(document);
       }
     }
 
@@ -3168,10 +3169,6 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
     tree_update_callback_queue_popup_.clear();
 
     {
-      SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
-          "Accessibility.Performance.UpdateTreeIfNeeded");
-      TRACE_EVENT0("accessibility", "UpdateTreeIfNeeded");
-
 #if defined(REDUCE_AX_INLINE_TEXTBOXES)
       // On Android, the inline textboxes of focused editable subtrees are
       // always loaded, but only if inline text boxes are enabled.
@@ -3201,18 +3198,30 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
       CHECK(nodes_with_pending_children_changed_.empty());
       CHECK(nodes_with_pending_scroll_changed_.empty());
 
-      // Build out tree, such that each node has computed its children.
-      FinalizeTree();
+      {
+        lifecycle_.AdvanceTo(AXObjectCacheLifecycle::kFinalizingTree);
+        SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+            "Accessibility.Performance.FinalizingTreeLifecycleStage");
+        TRACE_EVENT0("accessibility", "FinalizingTreeLifecycleStage");
 
-      CHECK(tree_update_callback_queue_main_.empty());
-      CHECK(tree_update_callback_queue_popup_.empty());
-      CHECK(nodes_with_pending_children_changed_.empty());
-      CHECK(nodes_with_pending_scroll_changed_.empty());
+        // Build out tree, such that each node has computed its children.
+        FinalizeTree();
 
-      // Updating the tree did not add dirty objects.
-      DUMP_WILL_BE_CHECK(!IsDirty());
+        CHECK(tree_update_callback_queue_main_.empty());
+        CHECK(tree_update_callback_queue_popup_.empty());
+        CHECK(nodes_with_pending_children_changed_.empty());
+        CHECK(nodes_with_pending_scroll_changed_.empty());
+
+        // Updating the tree did not add dirty objects.
+        DUMP_WILL_BE_CHECK(!IsDirty());
+      }
     }
   }
+
+  lifecycle_.AdvanceTo(AXObjectCacheLifecycle::kSerialize);
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Accessibility.Performance.SerializeLifecycleStage");
+  TRACE_EVENT0("accessibility", "SerializeLifecycleStage");
 
   // Check whether serializations are needed, or whether we are just here to
   // update as part of a tree snapshot.
@@ -3227,8 +3236,6 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
     // will be called again.
     return;
   }
-
-  lifecycle_.AdvanceTo(AXObjectCacheLifecycle::kSerialize);
 
   // ------------------------ Freeze and serialize ---------------------------
   {
@@ -3363,8 +3370,7 @@ bool AXObjectCacheImpl::SerializeUpdatesAndEvents() {
   return success;
 }
 
-void AXObjectCacheImpl::ProcessDeferredAccessibilityEventsImpl(
-    Document& document) {
+void AXObjectCacheImpl::CommitAXUpdatesImpl(Document& document) {
   // Call the queued callback methods that do processing which must occur when
   // layout is clean. These callbacks are stored in
   // tree_update_callback_queue_, and have names like
@@ -3407,7 +3413,7 @@ bool AXObjectCacheImpl::IsDirty() {
     return true;
   }
   // If tree updates are paused, consider the cache dirty. The next time
-  // ProcessDeferredAccessibilityEvents() is called, the entire tree will be
+  // CommitAXUpdates() is called, the entire tree will be
   // rebuilt from the root.
   if (tree_updates_paused_) {
     return true;
@@ -4750,11 +4756,11 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequired(
 // AXObjectCacheImpl::AddEventToSerializationQueue to queue it.
 //
 // 2) When the lifecycle is ready to be serialized,
-// AXObjectCacheImpl::ProcessDeferredAccessibilityEvents is called which first
+// AXObjectCacheImpl::CommitAXUpdates is called which first
 // checks if it's time to make a new serialization, and if not, it will early
 // return in order to add a delay between serializations.
 //
-// 3) AXObjectCacheImpl::ProcessDeferredAccessibilityEvents then calls
+// 3) AXObjectCacheImpl::CommitAXUpdates then calls
 // RenderAccessibilityImpl:AXReadyCallback to start serialization process.
 //
 // Check the below CL for more information:
@@ -5318,10 +5324,6 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
     std::vector<ui::AXEvent>& events,
     bool& had_end_of_test_event,
     bool& had_load_complete_messages) {
-  TRACE_EVENT0("accessibility", "GetUpdatesAndEventsForSerialization");
-  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
-      "Accessibility.Performance.GetUpdatesAndEventsForSerialization");
-
   HashSet<int32_t> already_serialized_ids;
 
   DCHECK_GE(GetDocument().Lifecycle().GetState(),
@@ -5841,7 +5843,7 @@ const AtomicString& AXObjectCacheImpl::ComputedRoleForNode(Node* node) {
   // from the main document, and hence any forced update to the popup document's
   // lifecycle here is not re-entrance but rather a "forced" lifecycle update.
   DocumentLifecycle::DisallowTransitionScope scoped(document_->Lifecycle());
-  ProcessDeferredAccessibilityEvents(GetDocument(), /*force*/ true);
+  CommitAXUpdates(GetDocument(), /*force*/ true);
   ScopedFreezeAXCache scoped_freeze_cache(*this);
   AXObject* obj = Get(node);
   return AXObject::AriaRoleName(obj ? obj->ComputeFinalRoleForSerialization()
@@ -5852,7 +5854,7 @@ String AXObjectCacheImpl::ComputedNameForNode(Node* node) {
   // Accessibility tree must be updated before getting an object. See comment in
   // ComputedRoleForNode() for explanation of disallow transition scope usage.
   DocumentLifecycle::DisallowTransitionScope scoped(document_->Lifecycle());
-  ProcessDeferredAccessibilityEvents(GetDocument(), /*force*/ true);
+  CommitAXUpdates(GetDocument(), /*force*/ true);
   ScopedFreezeAXCache scoped_freeze_cache(*this);
   AXObject* obj = Get(node);
   return obj ? obj->ComputedName() : "";

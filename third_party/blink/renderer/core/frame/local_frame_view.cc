@@ -2721,8 +2721,8 @@ void LocalFrameView::RunAccessibilitySteps() {
 
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
     if (AXObjectCache* cache = frame_view.ExistingAXObjectCache()) {
-      cache->ProcessDeferredAccessibilityEvents(
-          *frame_view.GetFrame().GetDocument());
+      cache->CommitAXUpdates(*frame_view.GetFrame().GetDocument(),
+                             /*force=*/false);
     }
   });
 }

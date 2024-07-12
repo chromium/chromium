@@ -137,7 +137,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   void RemoveInspectorAgent(InspectorAccessibilityAgent*);
 
   // Ensure that a full document lifecycle will occur, which in turn ensures
-  // that a call to ProcessDeferredAccessibilityEvents() will occur soon.
+  // that a call to CommitAXUpdates() will occur soon.
   void ScheduleAXUpdate() const override;
 
   void Dispose() override;
@@ -319,7 +319,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   int GetLocationSerializationDelay();
 
   // Called during the accessibility lifecycle to refresh the AX tree.
-  void ProcessDeferredAccessibilityEvents(Document&, bool force) override;
+  void CommitAXUpdates(Document&, bool force) override;
 
   // Called when a HTMLFrameOwnerElement (such as an iframe element) changes the
   // embedding token of its child frame.
@@ -825,10 +825,10 @@ class MODULES_EXPORT AXObjectCacheImpl
   HeapMojoRemote<mojom::blink::RenderAccessibilityHost>&
   GetOrCreateRemoteRenderAccessibilityHost();
   WebLocalFrameClient* GetWebLocalFrameClient() const;
-  void ProcessDeferredAccessibilityEventsImpl(Document&);
+  void CommitAXUpdatesImpl(Document&);
   void UpdateLifecycleIfNeeded(Document& document);
 
-  // Helper for ProcessDeferredAccessibilityEvents. Checks if layout is ready.
+  // Helper for CommitAXUpdates. Checks if layout is ready.
   bool IsReadyToProcessDeferredEvents();
 
   // Is the main document currently parsing content, as opposed to being blocked
@@ -948,7 +948,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 #endif
 
   // If non-zero, do not do work to process a11y or build the a11y tree in
-  // ProcessDeferredAccessibilityEvents(). Will be set to 0 when more content
+  // CommitAXUpdates(). Will be set to 0 when more content
   // is loaded or the load is completed.
   size_t allowed_tree_update_pauses_remaining_ = 0;
   // If null, then any new connected node will unpause tree updates.

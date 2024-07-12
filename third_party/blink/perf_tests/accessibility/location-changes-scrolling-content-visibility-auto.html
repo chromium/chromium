@@ -102,9 +102,10 @@ PerfTestRunner.startMeasureValuesAsync({
                   // construction to pass.
   tracingCategories: 'accessibility',
   traceEventsToMeasure: [
-      'ProcessDeferredAccessibilityEvents2',
-      'UpdateTreeIfNeeded',
-      'GetUpdatesAndEventsForSerialization',
+      'TotalAccessibilityCleanLayoutLifecycleStages',
+      'ProcessDeferredUpdatesLifecycleStage',
+    'FinalizingTreeLifecycleStage',
+      'SerializeLifecycleStage',
       'RenderAccessibilityImpl::SendPendingAccessibilityEvents',
       'BrowserAccessibilityManager::OnAccessibilityEvents',
       'SerializeLocationChanges',
