@@ -303,7 +303,10 @@ public class FullscreenVideoPictureInPictureController {
         // Inform the WebContents when we enter and when we leave PiP.
         final WebContents webContents = getWebContents();
         // If we're closing the tab, just stop here.
-        if (webContents == null) return;
+        if (webContents == null) {
+            Log.i(TAG, "Tab is closing, not entering Picture-in-picture");
+            return;
+        }
 
         webContents.setHasPersistentVideo(true);
 
@@ -314,6 +317,7 @@ public class FullscreenVideoPictureInPictureController {
 
         mOnLeavePipCallbacks.add(
                 () -> {
+                    Log.i(TAG, "Running Picture-in-picture exit callbacks");
                     webContents.setHasPersistentVideo(false);
                     getInfoBarContainerForTab(activityTab).setHidden(false);
                 });
@@ -360,10 +364,11 @@ public class FullscreenVideoPictureInPictureController {
     }
 
     /**
-     * Notify us that the framework has exited from Picture in Picture mode.  Perform any cleanup
-     * required.  It's okay to call this even when we don't believe that we're in PiP mode.
+     * Notify us that the framework has exited from Picture in Picture mode. Perform any cleanup
+     * required. It's okay to call this even when we don't believe that we're in PiP mode.
      */
     public void onFrameworkExitedPictureInPicture() {
+        Log.i(TAG, "Framework exited picture in picture");
         onExitedPictureInPicture(MetricsEndReason.RESUME);
     }
 
@@ -412,6 +417,7 @@ public class FullscreenVideoPictureInPictureController {
                     new FullscreenManager.Observer() {
                         @Override
                         public void onExitFullscreen(Tab tab) {
+                            Log.i(TAG, "Exiting fullscreen");
                             dismissActivityIfNeeded(mActivity, MetricsEndReason.LEFT_FULLSCREEN);
                         }
                     };
@@ -499,6 +505,7 @@ public class FullscreenVideoPictureInPictureController {
     private void dismissActivityIfNeeded(Activity activity, @MetricsEndReason int reason) {
         // Something interesting happened -- make sure we've updated our preference for auto-PiP
         // with the framework, if applicable.
+        Log.i(TAG, "Dismiss activity with reason " + reason);
         updateAutoPictureInPictureStatus();
 
         if (!isPipSessionActive()) {
@@ -512,6 +519,7 @@ public class FullscreenVideoPictureInPictureController {
         // `isPipSessionActive()` will be false, or (b) try to close PiP properly.  We also don't
         // try to pro-rate the exit delay; it's short and arbitrary anyway.
         if (SystemClock.elapsedRealtime() - mLastOnEnteredTimeMillis < MIN_EXIT_DELAY_MILLIS) {
+            Log.i(TAG, "Posting deferred callback to dismiss activity.");
             PostTask.postDelayedTask(
                     TaskTraits.UI_USER_BLOCKING,
                     () -> dismissActivityIfNeeded(activity, reason),
@@ -706,6 +714,7 @@ public class FullscreenVideoPictureInPictureController {
 
         @Override
         public void hasEffectivelyFullscreenVideoChange(boolean isFullscreen) {
+            Log.i(TAG, "Effective video fullscreen change: " + isFullscreen);
             if (isFullscreen) {
                 mUpdateAutoPipRunnable.run();
                 // Also post a delayed handler to update the status again, once things have had some

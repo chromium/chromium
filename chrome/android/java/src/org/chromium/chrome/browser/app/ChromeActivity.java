@@ -1200,6 +1200,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             ensureFullscreenVideoPictureInPictureController();
         }
         if (mFullscreenVideoPictureInPictureController != null) {
+            Log.i(TAG, "onResumeWithNative: exiting picture in picture if needed");
             mFullscreenVideoPictureInPictureController.onFrameworkExitedPictureInPicture();
         }
 
@@ -1249,7 +1250,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         getLaunchCauseMetrics().onUserLeaveHint();
 
         // Can be in finishing state. No need to attempt PIP.
-        if (isActivityFinishingOrDestroyed()) return;
+        if (isActivityFinishingOrDestroyed()) {
+            Log.i(TAG, "onUserLeaveHint: skipping PiP during shutdown");
+            return;
+        }
 
         ensureFullscreenVideoPictureInPictureController();
         mFullscreenVideoPictureInPictureController.attemptPictureInPicture();
@@ -1274,6 +1278,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void onPictureInPictureModeChanged(boolean inPicture, Configuration newConfig) {
         super.onPictureInPictureModeChanged(inPicture, newConfig);
+        Log.i(
+                TAG,
+                "Picture in picture mode changed, inPicture: " + inPicture,
+                " custom tabs: " + wasInPictureInPictureForMinimizedCustomTabs());
         if (wasInPictureInPictureForMinimizedCustomTabs()) return;
         if (inPicture) {
             ensureFullscreenVideoPictureInPictureController();
@@ -1348,6 +1356,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         startUmaSession();
 
         if (mFullscreenVideoPictureInPictureController != null) {
+            Log.i(TAG, "onNewIntentWithNative: exiting picture in picture if needed");
             mFullscreenVideoPictureInPictureController.onFrameworkExitedPictureInPicture();
         }
 
