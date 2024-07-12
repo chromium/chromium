@@ -279,7 +279,6 @@ class CONTENT_EXPORT AttributionStorageSql {
   [[nodiscard]] ReplaceReportResult MaybeReplaceLowerPriorityEventLevelReport(
       const AttributionReport& report,
       int num_attributions,
-      int64_t conversion_priority,
       std::optional<AttributionReport>& replaced_report)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 

@@ -1027,7 +1027,6 @@ AttributionStorageSql::ReplaceReportResult
 AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
     const AttributionReport& report,
     int num_attributions,
-    int64_t conversion_priority,
     std::optional<AttributionReport>& replaced_report) {
   DCHECK_GE(num_attributions, 0);
 
@@ -1105,7 +1104,7 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
   // it. We could explicitly check the trigger time here, but it would only
   // be relevant in the case of an ill-behaved clock, in which case the rest of
   // the attribution functionality would probably also break.
-  if (conversion_priority <= min_priority) {
+  if (data->priority <= min_priority) {
     return ReplaceReportResult::kDropNewReport;
   }
 
@@ -1632,7 +1631,6 @@ EventLevelResult AttributionStorageSql::MaybeStoreEventLevelReport(
 
   const auto maybe_replace_lower_priority_report_result =
       MaybeReplaceLowerPriorityEventLevelReport(report, num_attributions,
-                                                event_level_data->priority,
                                                 replaced_report);
 
   const auto commit_and_return = [&](EventLevelResult result) {
