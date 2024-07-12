@@ -421,6 +421,8 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     // than margins, no strip widgets should be drawn within the padding region.
     private float mLeftPadding;
     private float mRightPadding;
+    // Set during onDown called via BUTTON_PRIMARY. Cleared in onUpOrCancel.
+    private boolean mOnDownWithButtonPrimary;
 
     // New tab button with tab strip end padding
     private final float mFixedEndPadding;
@@ -1735,7 +1737,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
      * Called on touch drag event.
      *
      * @param time The current time of the app in ms.
-     * @param x The y coordinate of the end of the drag event.
+     * @param x The x coordinate of the end of the drag event.
      * @param y The y coordinate of the end of the drag event.
      * @param deltaX The number of pixels dragged in the x direction.
      */
@@ -1748,8 +1750,15 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         // 1. Reset the button state.
         mNewTabButton.drag(x, y);
 
+        // 2. If a tab was pressed in onDown and is now dragged, start tab drag/reorder.
+        // This is to enable tab drag with BUTTON_PRIMARY (mouse / trackpad) via onDown.
+        // Tab drags for touch events are handled via onLongPress.
+        if (mOnDownWithButtonPrimary && mInteractingTab != null && !mInReorderMode) {
+            startDragOrReorderTab(time, x, y, mInteractingTab);
+        }
+
         if (mInReorderMode) {
-            // 2.a. Handle reordering tabs.
+            // 3.a. Handle reordering tabs.
             // This isn't the accumulated delta since the beginning of the drag.  It accumulates
             // the delta X until a threshold is crossed and then the event gets processed.
             float accumulatedDeltaX = x - mLastReorderX;
@@ -1777,10 +1786,10 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                 }
             }
         } else if (!mScroller.isFinished()) {
-            // 2.b. Still scrolling, update the scroll destination here.
+            // 3.b. Still scrolling, update the scroll destination here.
             mScroller.setFinalX((int) (mScroller.getFinalX() + deltaX));
         } else {
-            // 2.c. Not scrolling.
+            // 3.c. Not scrolling.
             if (!mIsStripScrollInProgress) {
                 mIsStripScrollInProgress = true;
                 RecordUserAction.record("MobileToolbarSlideTabs");
@@ -1905,9 +1914,9 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             mInteractingTab = null;
         }
 
-        // If event is from primary button click, allow tab drag.
+        // If event is from primary button click, set flag to use during drag.
         if (MotionEventUtils.isPrimaryButton(buttons) && !clickedClose && clickedTab != null) {
-            startDragOrReorderTab(time, x, x, clickedTab);
+            mOnDownWithButtonPrimary = true;
         }
     }
 
@@ -1925,7 +1934,6 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             showTabMenu(clickedTab);
         } else {
             resetResizeTimeout(false);
-
             startDragOrReorderTab(time, x, y, clickedTab);
         }
     }
@@ -2313,6 +2321,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             mTabCreator.launchNtp();
         }
         mIsStripScrollInProgress = false;
+        mOnDownWithButtonPrimary = false;
     }
 
     /**

@@ -1469,29 +1469,33 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    public void testOnDown_OnTab_WithMouse() {
+    public void testOnDownAndDrag_OnTab_WithMouse() {
         // Initialize.
         initializeTest(false, false, true, 0, 5);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(150f);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
 
-        // Press down on second tab with mouse.
+        // Press down on second tab with mouse followed by drag.
         when(tabs[1].checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(false);
         mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
-        mStripLayoutHelper.onDown(TIMESTAMP, 150f, 0f, true, MotionEvent.BUTTON_PRIMARY);
+        mStripLayoutHelper.onDown(TIMESTAMP, 150f, 0, true, MotionEvent.BUTTON_PRIMARY);
+        mStripLayoutHelper.drag(TIMESTAMP, DRAG_START_POINT.x, DRAG_START_POINT.y, 30f);
 
         // Verify.
-        assertFalse(
-                "New tab button should not be pressed.",
-                mStripLayoutHelper.getNewTabButton().isPressed());
         assertEquals(
                 "Second tab should be interacting tab.",
                 tabs[1],
                 mStripLayoutHelper.getInteractingTabForTesting());
         assertTrue(
-                "Should start reorder mode when pressing down on tab with mouse.",
+                "Should start reorder mode when dragging on pressed on tab with mouse.",
                 mStripLayoutHelper.getInReorderModeForTesting());
-        verify(tabs[1], never()).setClosePressed(anyBoolean(), anyBoolean());
+        verify(mTabDragSource)
+                .startTabDragAction(
+                        mToolbarContainerView,
+                        mModel.getTabAt(1),
+                        DRAG_START_POINT,
+                        tabs[1].getDrawX(),
+                        tabs[1].getWidth());
     }
 
     @Test
