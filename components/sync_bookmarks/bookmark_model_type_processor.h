@@ -67,6 +67,7 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   void OnSyncStarting(const syncer::DataTypeActivationRequest& request,
                       StartCallback start_callback) override;
   void OnSyncStopping(syncer::SyncStopMetadataFate metadata_fate) override;
+  void HasUnsyncedData(base::OnceCallback<void(bool)> callback) override;
   void GetAllNodesForDebugging(AllNodesCallback callback) override;
   void GetTypeEntitiesCountForDebugging(
       base::OnceCallback<void(const syncer::TypeEntitiesCount&)> callback)

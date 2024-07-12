@@ -1217,6 +1217,14 @@ void ClientTagBasedModelTypeProcessor::ResetState(
   weak_ptr_factory_for_worker_.InvalidateWeakPtrs();
 }
 
+void ClientTagBasedModelTypeProcessor::HasUnsyncedData(
+    base::OnceCallback<void(bool)> callback) {
+  // Note that if there's a `model_error_`, there might be unsynced data that
+  // remains unsynced indefinitely (at least until the next browser restart).
+  std::move(callback).Run(entity_tracker_ &&
+                          entity_tracker_->HasLocalChanges());
+}
+
 void ClientTagBasedModelTypeProcessor::GetAllNodesForDebugging(
     AllNodesCallback callback) {
   if (!bridge_) {

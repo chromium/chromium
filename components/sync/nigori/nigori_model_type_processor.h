@@ -53,6 +53,7 @@ class NigoriModelTypeProcessor : public ModelTypeProcessor,
   void OnSyncStarting(const DataTypeActivationRequest& request,
                       StartCallback callback) override;
   void OnSyncStopping(SyncStopMetadataFate metadata_fate) override;
+  void HasUnsyncedData(base::OnceCallback<void(bool)> callback) override;
   void GetAllNodesForDebugging(AllNodesCallback callback) override;
   void GetTypeEntitiesCountForDebugging(
       base::OnceCallback<void(const TypeEntitiesCount&)> callback)

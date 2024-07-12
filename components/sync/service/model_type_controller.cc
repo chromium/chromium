@@ -278,6 +278,15 @@ bool ModelTypeController::ShouldRunInTransportOnlyMode() const {
   return delegate_map_.count(SyncMode::kTransportOnly) != 0;
 }
 
+void ModelTypeController::HasUnsyncedData(
+    base::OnceCallback<void(bool)> callback) {
+  if (!delegate_) {
+    std::move(callback).Run(false);
+    return;
+  }
+  delegate_->HasUnsyncedData(std::move(callback));
+}
+
 void ModelTypeController::GetAllNodes(AllNodesCallback callback) {
   CHECK(delegate_);
   delegate_->GetAllNodesForDebugging(std::move(callback));

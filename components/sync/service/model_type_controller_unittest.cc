@@ -19,6 +19,7 @@
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/service/configure_context.h"
 #include "components/sync/test/fake_model_type_processor.h"
+#include "components/sync/test/mock_model_type_controller_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,30 +44,6 @@ const char kRunFailuresHistogram[] = "Sync.DataTypeRunFailures2";
 MATCHER(ErrorIsSet, "") {
   return arg.IsSet();
 }
-
-class MockDelegate : public ModelTypeControllerDelegate {
- public:
-  MOCK_METHOD(void,
-              OnSyncStarting,
-              (const DataTypeActivationRequest& request,
-               StartCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              OnSyncStopping,
-              (SyncStopMetadataFate metadata_fate),
-              (override));
-  MOCK_METHOD(void,
-              GetAllNodesForDebugging,
-              (AllNodesCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              GetTypeEntitiesCountForDebugging,
-              (base::OnceCallback<void(const TypeEntitiesCount&)> callback),
-              (const override));
-  MOCK_METHOD(void, RecordMemoryUsageAndCountsHistograms, (), (override));
-  MOCK_METHOD(void, ClearMetadataIfStopped, (), (override));
-  MOCK_METHOD(void, ReportBridgeErrorForTest, (), (override));
-};
 
 // Class used to expose ReportModelError() publicly.
 class TestModelTypeController : public ModelTypeController {
@@ -126,12 +103,12 @@ class ModelTypeControllerTest : public testing::Test {
     return true;
   }
 
-  MockDelegate* delegate() { return &mock_delegate_; }
+  MockModelTypeControllerDelegate* delegate() { return &mock_delegate_; }
   TestModelTypeController* controller() { return &controller_; }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  NiceMock<MockDelegate> mock_delegate_;
+  NiceMock<MockModelTypeControllerDelegate> mock_delegate_;
   FakeModelTypeProcessor processor_;
   TestModelTypeController controller_;
 };
@@ -509,8 +486,8 @@ TEST_F(ModelTypeControllerTest, StopAndReportErrorWhileStarting) {
 // with two delegates.
 TEST(ModelTypeControllerWithMultiDelegateTest, ToggleSyncMode) {
   base::test::SingleThreadTaskEnvironment task_environment;
-  NiceMock<MockDelegate> delegate_for_full_sync_mode;
-  NiceMock<MockDelegate> delegate_for_transport_mode;
+  NiceMock<MockModelTypeControllerDelegate> delegate_for_full_sync_mode;
+  NiceMock<MockModelTypeControllerDelegate> delegate_for_transport_mode;
 
   ModelTypeController controller(
       kTestModelType,

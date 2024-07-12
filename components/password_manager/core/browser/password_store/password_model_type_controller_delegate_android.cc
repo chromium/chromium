@@ -31,6 +31,15 @@ void PasswordModelTypeConrollerDelegateAndroid::OnSyncStarting(
 void PasswordModelTypeConrollerDelegateAndroid::OnSyncStopping(
     syncer::SyncStopMetadataFate metadata_fate) {}
 
+void PasswordModelTypeConrollerDelegateAndroid::HasUnsyncedData(
+    base::OnceCallback<void(bool)> callback) {
+  // No data is managed by PasswordModelTypeControllerDelegate - this datatype
+  // doesn't use the built-in SyncEngine to communicate changes to/from the Sync
+  // server; instead, Android-specific functionality is used for that. So there
+  // can't be unsynced changes here.
+  std::move(callback).Run(false);
+}
+
 void PasswordModelTypeConrollerDelegateAndroid::GetAllNodesForDebugging(
     AllNodesCallback callback) {
   // This is not implemented because it's not worth the hassle just to display

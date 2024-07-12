@@ -24,6 +24,13 @@ void OnSyncStartingHelperOnModelThread(
   delegate->OnSyncStarting(request, std::move(callback_bound_to_ui_thread));
 }
 
+void HasUnsyncedDataHelperOnModelThread(
+    base::OnceCallback<void(bool)> callback_bound_to_ui_thread,
+    base::WeakPtr<ModelTypeControllerDelegate> delegate) {
+  DCHECK(delegate);
+  delegate->HasUnsyncedData(std::move(callback_bound_to_ui_thread));
+}
+
 void GetAllNodesForDebuggingHelperOnModelThread(
     ProxyModelTypeControllerDelegate::AllNodesCallback
         callback_bound_to_ui_thread,
@@ -105,6 +112,14 @@ void ProxyModelTypeControllerDelegate::OnSyncStopping(
     SyncStopMetadataFate metadata_fate) {
   PostTask(FROM_HERE,
            base::BindOnce(&StopSyncHelperOnModelThread, metadata_fate));
+}
+
+void ProxyModelTypeControllerDelegate::HasUnsyncedData(
+    base::OnceCallback<void(bool)> callback) {
+  PostTask(
+      FROM_HERE,
+      base::BindOnce(&HasUnsyncedDataHelperOnModelThread,
+                     base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
 void ProxyModelTypeControllerDelegate::GetAllNodesForDebugging(

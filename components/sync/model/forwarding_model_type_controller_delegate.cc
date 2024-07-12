@@ -29,6 +29,11 @@ void ForwardingModelTypeControllerDelegate::OnSyncStopping(
   other_->OnSyncStopping(metadata_fate);
 }
 
+void ForwardingModelTypeControllerDelegate::HasUnsyncedData(
+    base::OnceCallback<void(bool)> callback) {
+  other_->HasUnsyncedData(std::move(callback));
+}
+
 void ForwardingModelTypeControllerDelegate::GetAllNodesForDebugging(
     AllNodesCallback callback) {
   other_->GetAllNodesForDebugging(std::move(callback));

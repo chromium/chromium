@@ -252,6 +252,11 @@ void NigoriModelTypeProcessor::OnSyncStopping(
   }
 }
 
+void NigoriModelTypeProcessor::HasUnsyncedData(
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(entity_ && entity_->RequiresCommitRequest());
+}
+
 void NigoriModelTypeProcessor::GetAllNodesForDebugging(
     AllNodesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

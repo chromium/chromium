@@ -7,7 +7,6 @@
 #include <cstddef>
 #include <utility>
 
-#include "base/barrier_closure.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -46,6 +45,7 @@
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/service/backend_migrator.h"
 #include "components/sync/service/configure_context.h"
+#include "components/sync/service/get_types_with_unsynced_data_request_barrier.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/service/sync_api_component_factory.h"
 #include "components/sync/service/sync_auth_manager.h"
@@ -75,6 +75,10 @@ namespace {
 
 BASE_FEATURE(kSyncUnsubscribeFromTypesWithPermanentErrors,
              "SyncUnsubscribeFromTypesWithPermanentErrors",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGetTypesWithUnsyncedDataViaController,
+             "GetTypesWithUnsyncedDataViaController",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -2067,7 +2071,7 @@ void SyncServiceImpl::GetAllNodesForDebugging(
       // but their ModelTypeControllers are still NOT_RUNNING.
       helper->OnReceivedNodesForType(type, base::Value::List());
     } else {
-      controller->GetAllNodes(base::BindRepeating(
+      controller->GetAllNodes(base::BindOnce(
           &GetAllNodesRequestHelper::OnReceivedNodesForType, helper));
     }
   }
@@ -2437,17 +2441,49 @@ void SyncServiceImpl::OnSetupInProgressHandleDestroyed() {
 void SyncServiceImpl::GetTypesWithUnsyncedData(
     ModelTypeSet requested_types,
     base::OnceCallback<void(ModelTypeSet)> callback) const {
-  if (!engine_ || !engine_->IsInitialized()) {
-    // TODO(crbug.com/40071018): Wait for the sync engine to be initialized.
-    std::move(callback).Run(ModelTypeSet());
+  if (!base::FeatureList::IsEnabled(kGetTypesWithUnsyncedDataViaController)) {
+    if (!engine_ || !engine_->IsInitialized()) {
+      // TODO(crbug.com/40071018): Wait for the sync engine to be initialized.
+      std::move(callback).Run(ModelTypeSet());
+      return;
+    }
+    engine_->GetTypesWithUnsyncedData(base::BindOnce(
+        [](ModelTypeSet requested_types,
+           base::OnceCallback<void(ModelTypeSet)> callback,
+           ModelTypeSet types) {
+          std::move(callback).Run(base::Intersection(types, requested_types));
+        },
+        requested_types, std::move(callback)));
     return;
   }
-  engine_->GetTypesWithUnsyncedData(base::BindOnce(
-      [](ModelTypeSet requested_types,
-         base::OnceCallback<void(ModelTypeSet)> callback, ModelTypeSet types) {
-        std::move(callback).Run(base::Intersection(types, requested_types));
-      },
-      requested_types, std::move(callback)));
+
+  // NIGORI currently isn't supported, because its controller isn't in
+  // `model_type_controllers_`. If needed, support could be added via
+  // SyncEngine.
+  CHECK(!requested_types.Has(NIGORI));
+
+  if (requested_types.empty()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), ModelTypeSet()));
+    return;
+  }
+
+  auto helper = base::MakeRefCounted<GetTypesWithUnsyncedDataRequestBarrier>(
+      requested_types, std::move(callback));
+
+  for (ModelType type : requested_types) {
+    auto it = model_type_controllers_.find(type);
+    if (it == model_type_controllers_.end()) {
+      // This should be rare, but can happen e.g. if a requested type is
+      // disabled via feature flag.
+      helper->OnReceivedResultForType(type, /*has_unsynced_data=*/false);
+      continue;
+    }
+    ModelTypeController* controller = it->second.get();
+    controller->HasUnsyncedData(base::BindOnce(
+        &GetTypesWithUnsyncedDataRequestBarrier::OnReceivedResultForType,
+        helper, type));
+  }
 }
 
 void SyncServiceImpl::GetLocalDataDescriptions(

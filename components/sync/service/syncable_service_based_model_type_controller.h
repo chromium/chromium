@@ -31,7 +31,8 @@ class SyncableServiceBasedModelTypeController : public ModelTypeController {
     kTransportModeWithSingleModel
   };
 
-  // `syncable_service` may be null in tests.
+  // `syncable_service` may be null in some cases, e.g. when the underlying
+  // service failed to initialize, and in tests.
   // `delegate_mode` determines whether only a single delegate (for full-sync
   // mode) will be created, or two separate delegates for both full-sync and
   // transport mode.

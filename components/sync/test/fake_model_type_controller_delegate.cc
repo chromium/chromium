@@ -91,6 +91,11 @@ void FakeModelTypeControllerDelegate::OnSyncStopping(
   sync_started_ = false;
 }
 
+void FakeModelTypeControllerDelegate::HasUnsyncedData(
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(false);
+}
+
 void FakeModelTypeControllerDelegate::GetAllNodesForDebugging(
     ModelTypeControllerDelegate::AllNodesCallback callback) {
   std::move(callback).Run(type_, base::Value::List());

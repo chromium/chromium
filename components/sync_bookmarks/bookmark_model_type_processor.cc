@@ -660,6 +660,12 @@ void BookmarkModelTypeProcessor::StartTrackingMetadata() {
   bookmark_model_->AddObserver(bookmark_model_observer_.get());
 }
 
+void BookmarkModelTypeProcessor::HasUnsyncedData(
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(bookmark_tracker_ &&
+                          bookmark_tracker_->HasLocalChanges());
+}
+
 void BookmarkModelTypeProcessor::GetAllNodesForDebugging(
     AllNodesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
