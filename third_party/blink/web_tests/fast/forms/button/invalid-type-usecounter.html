@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://github.com/whatwg/html/issues/10462">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<button>button</button>
+
+<script>
+const invalidValueCounterId = 5032;
+const emptyValueCounterId = 5033;
+test(() => {
+  assert_false(internals.isUseCounted(document, invalidValueCounterId),
+    'Invalid value UseCounter should initially not be counted.');
+  assert_false(internals.isUseCounted(document, emptyValueCounterId),
+    'Empty value UseCounter should initially not be counted.');
+
+  const button = document.querySelector('button');
+  button.setAttribute('type', 'submit');
+
+  assert_false(internals.isUseCounted(document, invalidValueCounterId),
+    'Invalid value UseCounter should not be counted for type=submit.');
+  assert_false(internals.isUseCounted(document, emptyValueCounterId),
+    'Empty value UseCounter should not be counted for type=submit.');
+
+  button.setAttribute('type', 'foo');
+
+  assert_true(internals.isUseCounted(document, invalidValueCounterId),
+    'Invalid value UseCounter should be counted for type=foo.');
+  assert_false(internals.isUseCounted(document, emptyValueCounterId),
+    'Empty value UseCounter should not be counted for type=foo.');
+
+  button.setAttribute('type', '');
+
+  assert_true(internals.isUseCounted(document, emptyValueCounterId),
+    'Empty value UseCounter should be counted for type="".');
+}, 'Tests for UseCounters for button type attribute values.');
+</script>

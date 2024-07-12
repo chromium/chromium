@@ -4398,6 +4398,8 @@ enum WebFeature {
   kCrossOriginOpenerPolicyNoopenerAllowPopups = 5029,
   kCrossOriginOpenerPolicyNoopenerAllowPopupsReportOnly = 5030,
   kV8ConsoleContext = 5031,
+  kButtonTypeAttrInvalid = 5032,
+  kButtonTypeAttrEmptyString = 5033,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

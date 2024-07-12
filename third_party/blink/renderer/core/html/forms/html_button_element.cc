@@ -133,6 +133,14 @@ void HTMLButtonElement::ParseAttribute(
                EqualIgnoringASCIICase(params.new_value, "popover")) {
       type_ = kPopover;
     } else {
+      if (!params.new_value.IsNull()) {
+        if (params.new_value.empty()) {
+          UseCounter::Count(GetDocument(),
+                            WebFeature::kButtonTypeAttrEmptyString);
+        } else if (!EqualIgnoringASCIICase(params.new_value, "submit")) {
+          UseCounter::Count(GetDocument(), WebFeature::kButtonTypeAttrInvalid);
+        }
+      }
       type_ = kSubmit;
     }
     UpdateWillValidateCache();
