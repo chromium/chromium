@@ -359,8 +359,7 @@ void DumpAccessibilityTestBase::WaitForExpectedText(ui::AXMode mode) {
 
     // Block until the next accessibility notification in any frame.
     VLOG(1) << "Waiting until the next accessibility event";
-    AccessibilityNotificationWaiter accessibility_waiter(
-        GetWebContents(), mode, ax::mojom::Event::kNone);
+    AccessibilityNotificationWaiter accessibility_waiter(GetWebContents());
     ASSERT_TRUE(accessibility_waiter.WaitForNotification());
   }
 }
@@ -484,8 +483,7 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
       VLOG(1) << "Waiting until the next accessibility event";
       // TODO(aleventhal) Try waiting for kEndOfTest to make sure all events
       // after code execution are captured.
-      AccessibilityNotificationWaiter accessibility_waiter(
-          web_contents, ui::AXMode(), ax::mojom::Event::kNone);
+      AccessibilityNotificationWaiter accessibility_waiter(web_contents);
       ASSERT_TRUE(accessibility_waiter.WaitForNotification());
     }
   }
@@ -568,8 +566,7 @@ void DumpAccessibilityTestBase::WaitForAllFramesLoaded(ui::AXMode mode) {
 
     // Block until the next accessibility notification in any frame.
     VLOG(1) << "Waiting until the next accessibility event";
-    AccessibilityNotificationWaiter accessibility_waiter(
-        web_contents, mode, ax::mojom::Event::kNone);
+    AccessibilityNotificationWaiter accessibility_waiter(web_contents);
     ASSERT_TRUE(accessibility_waiter.WaitForNotification());
   }
 }
@@ -623,8 +620,7 @@ DumpAccessibilityTestBase::CaptureEvents(InvokeAction invoke_action,
   // This will ensure that after calling the go() function, we
   // block until we've received an accessibility event generated as
   // a result of this function.
-  AccessibilityNotificationWaiter waiter(GetWebContents(), mode,
-                                         ax::mojom::Event::kNone);
+  AccessibilityNotificationWaiter waiter(GetWebContents());
 
   // Run any script, e.g. go().
   // If an action was performed, we already waited for the kClicked event in

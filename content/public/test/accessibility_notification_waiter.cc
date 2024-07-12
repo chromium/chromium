@@ -31,7 +31,8 @@ AccessibilityNotificationWaiter::AccessibilityNotificationWaiter(
       event_to_wait_for_(ax::mojom::Event::kNone),
       generated_event_to_wait_for_(std::nullopt),
       loop_runner_(std::make_unique<base::RunLoop>()),
-      loop_runner_quit_closure_(loop_runner_->QuitClosure()) {
+      loop_runner_quit_closure_(loop_runner_->QuitClosure()),
+      wait_for_any_event_(true) {
   ListenToAllFrames(web_contents);
 }
 
@@ -101,13 +102,16 @@ void AccessibilityNotificationWaiter::ListenToAllFrames(
 
 void AccessibilityNotificationWaiter::ListenToFrame(
     RenderFrameHostImpl* frame_host) {
-  if (event_to_wait_for_)
+  if (event_to_wait_for_ || wait_for_any_event_) {
     BindOnAccessibilityEvent(frame_host);
-  if (generated_event_to_wait_for_)
+  }
+  if (generated_event_to_wait_for_ || wait_for_any_event_) {
     BindOnGeneratedEvent(frame_host);
+  }
 
   if (event_to_wait_for_ == ax::mojom::Event::kNone ||
-      event_to_wait_for_ == ax::mojom::Event::kLocationChanged) {
+      event_to_wait_for_ == ax::mojom::Event::kLocationChanged ||
+      wait_for_any_event_) {
     BindOnLocationsChanged(frame_host);
   }
 }
@@ -160,7 +164,7 @@ void AccessibilityNotificationWaiter::OnAccessibilityEvent(
   VLOG(1) << "OnAccessibilityEvent " << event_type;
 
   if (event_to_wait_for_ == ax::mojom::Event::kNone ||
-      event_to_wait_for_ == event_type) {
+      event_to_wait_for_ == event_type || wait_for_any_event_) {
     event_target_id_ = event_target_id;
     event_browser_accessibility_manager_ =
         rfhi ? rfhi->GetOrCreateBrowserAccessibilityManager() : nullptr;
@@ -201,7 +205,7 @@ void AccessibilityNotificationWaiter::OnGeneratedEvent(
   DCHECK_NE(event_target_id, ui::kInvalidAXNodeID);
   VLOG(1) << "OnGeneratedEvent " << event;
 
-  if (generated_event_to_wait_for_ == event) {
+  if (generated_event_to_wait_for_ == event || wait_for_any_event_) {
     event_target_id_ = event_target_id;
     event_browser_accessibility_manager_ = manager;
     notification_count_++;

@@ -34,10 +34,16 @@ class WebContents;
 // received.
 class AccessibilityNotificationWaiter : public WebContentsObserver {
  public:
+  // Will wait for any event across all ways including scroll or location
+  // changes as well normal and generated events.
   explicit AccessibilityNotificationWaiter(WebContents* web_contents);
+
+  // Wait for a specific Blink event.
   AccessibilityNotificationWaiter(WebContents* web_contents,
                                   ui::AXMode accessibility_mode,
                                   ax::mojom::Event event);
+
+  // Wait for a specific AXEventGenerator event.
   AccessibilityNotificationWaiter(WebContents* web_contents,
                                   ui::AXMode accessibility_mode,
                                   ui::AXEventGenerator::Event event);
@@ -138,6 +144,7 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
   bool notification_received_ = false;
   int frame_count_ = 0;
   int notification_count_ = 0;
+  bool wait_for_any_event_ = false;
 
   base::WeakPtrFactory<AccessibilityNotificationWaiter> weak_factory_{this};
 };
