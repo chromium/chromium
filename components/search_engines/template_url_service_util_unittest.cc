@@ -15,21 +15,18 @@
 #include "base/values.h"
 #include "base/version_info/version_info.h"
 #include "components/country_codes/country_codes.h"
-#include "components/metrics/metrics_pref_names.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/search_engines/util.h"
-#include "components/signin/public/base/signin_switches.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/webdata/common/web_database_service.h"
 #include "components/webdata/common/webdata_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -317,14 +314,6 @@ class TemplateURLServiceUtilLoadParametrizedTest
       feature_list_.InitAndDisableFeature(
           switches::kSearchEnginesSortingCleanup);
     }
-
-    TemplateURLPrepopulateData::RegisterProfilePrefs(prefs_.registry());
-    TemplateURLService::RegisterProfilePrefs(prefs_.registry());
-    local_state_.registry()->RegisterBooleanPref(
-        metrics::prefs::kMetricsReportingEnabled, true);
-    search_engine_choice_service_ =
-        std::make_unique<search_engines::SearchEngineChoiceService>(
-            prefs_, local_state_);
   }
 
   bool IsSearchEnginesSortingCleanupEnabled() const { return GetParam(); }
@@ -351,8 +340,9 @@ class TemplateURLServiceUtilLoadParametrizedTest
     resource_metadata.builtin_keyword_milestone = initial_state.milestone;
     resource_metadata.builtin_keyword_country = initial_state.country;
     CallGetSearchProvidersUsingLoadedEngines(
-        &prefs_, search_engine_choice_service_.get(), &template_urls,
-        resource_metadata);
+        &prefs(),
+        &search_engines_test_environment_.search_engine_choice_service(),
+        &template_urls, resource_metadata);
 
     std::optional<bool> use_extended_list_output =
         prefs().HasPrefPath(
@@ -371,13 +361,16 @@ class TemplateURLServiceUtilLoadParametrizedTest
             .use_extended_list = use_extended_list_output};
   }
 
-  PrefService& prefs() { return prefs_; }
+  PrefService& prefs() {
+    return search_engines_test_environment_.pref_service();
+  }
+
+  search_engines::SearchEngineChoiceService& search_engine_choice_service() {
+    return search_engines_test_environment_.search_engine_choice_service();
+  }
 
  private:
-  sync_preferences::TestingPrefServiceSyncable prefs_;
-  TestingPrefServiceSimple local_state_;
-  std::unique_ptr<search_engines::SearchEngineChoiceService>
-      search_engine_choice_service_;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -394,6 +387,7 @@ TEST_P(TemplateURLServiceUtilLoadParametrizedTest,
        GetSearchProvidersUsingLoadedEngines_choiceTriggerFeatureOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(switches::kSearchEngineChoiceTrigger);
+  search_engine_choice_service().ClearCountryIdCacheForTesting();
   prefs().SetInteger(country_codes::kCountryIDAtInstall, kEeaCountryId);
 
   const KeywordTestMetadata kDefaultUpdatedState = {
@@ -462,6 +456,7 @@ TEST_P(TemplateURLServiceUtilLoadParametrizedTest,
        GetSearchProvidersUsingLoadedEngines_choiceTriggerFeatureOnOutOfEea) {
   base::test::ScopedFeatureList feature_list{
       switches::kSearchEngineChoiceTrigger};
+  search_engine_choice_service().ClearCountryIdCacheForTesting();
   prefs().SetInteger(country_codes::kCountryIDAtInstall, kNonEeaCountryId);
 
   const KeywordTestMetadata kDefaultUpdatedState = {
@@ -530,6 +525,7 @@ TEST_P(TemplateURLServiceUtilLoadParametrizedTest,
        GetSearchProvidersUsingLoadedEngines_choiceTriggerFeatureOnInEea) {
   base::test::ScopedFeatureList feature_list{
       switches::kSearchEngineChoiceTrigger};
+  search_engine_choice_service().ClearCountryIdCacheForTesting();
   prefs().SetInteger(country_codes::kCountryIDAtInstall, kEeaCountryId);
   const size_t kEeaKeywordEnginesCount =
       TemplateURLPrepopulateData::GetPrepopulationSetFromCountryIDForTesting(

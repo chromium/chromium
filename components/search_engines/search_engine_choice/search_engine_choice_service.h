@@ -91,6 +91,10 @@ class SearchEngineChoiceService : public KeyedService {
       const ChoiceScreenDisplayState& display_state,
       bool is_from_cached_state = false);
 
+  // Clears the country id cache to be able to change countries multiple times
+  // in tests.
+  void ClearCountryIdCacheForTesting();
+
  private:
   // Checks if the search engine choice should be prompted again, based on
   // experiment parameters. If a reprompt is needed, some preferences related to

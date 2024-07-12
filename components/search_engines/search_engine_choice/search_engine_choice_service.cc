@@ -654,6 +654,11 @@ int SearchEngineChoiceService::GetCountryIdInternal() {
 #endif
 }
 
+void SearchEngineChoiceService::ClearCountryIdCacheForTesting() {
+  CHECK_IS_TEST();
+  country_id_cache_.reset();
+}
+
 #if BUILDFLAG(IS_ANDROID)
 void SearchEngineChoiceService::ProcessGetCountryResponseFromPlayApi(
     int country_id) {
