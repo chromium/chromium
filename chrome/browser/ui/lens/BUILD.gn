@@ -13,6 +13,8 @@ source_set("lens") {
   sources = [
     "lens_overlay_controller.cc",
     "lens_overlay_controller.h",
+    "lens_overlay_entry_point_controller.cc",
+    "lens_overlay_entry_point_controller.h",
     "lens_overlay_event_handler.cc",
     "lens_overlay_event_handler.h",
     "lens_overlay_side_panel_coordinator.cc",

@@ -879,6 +879,7 @@ class Browser : public TabStripModelObserver,
   views::WebView* GetWebView() override;
   void OpenURL(const GURL& gurl, WindowOpenDisposition disposition) override;
   const SessionID& GetSessionID() override;
+  bool IsTabStripVisible() override;
   tabs::TabInterface* GetActiveTabInterface() override;
   BrowserWindowFeatures& GetFeatures() override;
   web_modal::WebContentsModalDialogHost*

@@ -31,7 +31,6 @@
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_permission_bubble_controller.h"
 #include "chrome/browser/ui/lens/lens_search_bubble_controller.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
@@ -284,6 +283,15 @@ bool LensOverlayController::IsEnabled(Browser* browser) {
     return false;
   }
 
+  // Disable in fullscreen without top-chrome. Need to check that
+  // browser->window() exists to avoid to skip this check during initialization.
+  // We skip this check since during initialization, it is too early to know if
+  // the top-chrome exists or not.
+  if (!lens::features::GetLensOverlayEnableInFullscreen() &&
+      browser->window() && !browser->IsTabStripVisible()) {
+    return false;
+  }
+
   // Lens Overlay is disabled via enterprise policy.
   lens::prefs::LensOverlaySettingsPolicyValue policy_value =
       static_cast<lens::prefs::LensOverlaySettingsPolicyValue>(
@@ -338,6 +346,7 @@ void LensOverlayController::ShowUI(
   }
 
   invocation_source_ = invocation_source;
+
   // Request user permission before grabbing a screenshot.
   Browser* tab_browser = chrome::FindBrowserWithTab(tab_->GetContents());
   CHECK(tab_browser);
@@ -1394,6 +1403,15 @@ bool LensOverlayController::HandleKeyboardEvent(
 }
 
 void LensOverlayController::OnFullscreenStateChanged() {
+  // Flag is enabled to allow Lens Overlay in fullscreen no matter what so we
+  // can exit early.
+  if (lens::features::GetLensOverlayEnableInFullscreen()) {
+    return;
+  }
+  // If there is top chrome we can keep the overlay open.
+  if (tab_->GetBrowserWindowInterface()->IsTabStripVisible()) {
+    return;
+  }
   CloseUISync(lens::LensOverlayDismissalSource::kFullscreened);
 }
 

@@ -144,7 +144,6 @@
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/unload_controller.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -666,10 +665,20 @@ Browser::Browser(const CreateParams& params)
         ->ListenToFullScreenChanges();
   }
 
+  // Initialize the browser features that rely on the browser window now that it
+  // is initialized.
+  features_->InitPostWindowConstruction(this);
+
   BrowserList::AddBrowser(this);
 }
 
 Browser::~Browser() {
+  // Tear down `BrowserWindowFeatures` and `BrowserUserData`s now to avoid
+  // exposing them to Browser in a partially-destroyed state. Eventually,
+  // all BrowserUserData should be converted to features. Until then,
+  // destroy `features_` because that's what breaks things the least :)
+  features_.reset();
+
   saved_tab_group_observation_.Reset();
 
   // Stop observing notifications and destroy the tab monitor before continuing
@@ -1103,6 +1112,10 @@ void Browser::OpenURL(const GURL& gurl, WindowOpenDisposition disposition) {
 
 const SessionID& Browser::GetSessionID() {
   return session_id_;
+}
+
+bool Browser::IsTabStripVisible() {
+  return window_->IsToolbarShowing();
 }
 
 tabs::TabInterface* Browser::GetActiveTabInterface() {

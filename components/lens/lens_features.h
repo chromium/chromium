@@ -473,6 +473,11 @@ extern bool GetLensOverlayEnableErrorPage();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern std::string GetLensOverlayGscQueryParamValue();
 
+// Whether to allow the Lens Overlay in fullscreen without top Chrome. When this
+// is disabled, Lens Overlay is only enabled if top chrome is enabled.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetLensOverlayEnableInFullscreen();
+
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_
