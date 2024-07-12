@@ -82,11 +82,18 @@ std::string KioskAppLaunchError::GetErrorMessage(Error error) {
 
 // static
 void KioskAppLaunchError::Save(KioskAppLaunchError::Error error) {
-  PrefService* local_state = g_browser_process->local_state();
-  ScopedDictPrefUpdate dict_update(local_state,
-                                   KioskChromeAppManager::kKioskDictionaryName);
-  dict_update->SetByDottedPath(kKeyLaunchError, static_cast<int>(error));
   s_last_error = error;
+
+  PrefService* local_state = g_browser_process->local_state();
+  {
+    ScopedDictPrefUpdate dict_update(
+        local_state, KioskChromeAppManager::kKioskDictionaryName);
+    dict_update->SetByDottedPath(kKeyLaunchError, static_cast<int>(error));
+  }
+
+  // Make sure that the kiosk launch error gets written to disk before the
+  // browser is killed.
+  local_state->CommitPendingWrite();
 }
 
 // static

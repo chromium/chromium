@@ -5,6 +5,7 @@
 #define CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_LAUNCHER_H_
 
 #include <optional>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"

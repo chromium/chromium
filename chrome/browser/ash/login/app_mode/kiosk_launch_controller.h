@@ -115,7 +115,7 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
   // Callback invoked when the launch finished, either successfully or aborted
   // due to an error.
   using LaunchCompleteCallback =
-      base::OnceCallback<void(std::optional<KioskAppLaunchError::Error> error)>;
+      base::OnceCallback<void(KioskAppLaunchError::Error error)>;
 
   KioskLaunchController(LoginDisplayHost* host,
                         OobeUI* oobe_ui,
@@ -162,8 +162,8 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
   // Values here can only be modified through the `KioskTestHelper` class.
   class TestOverrides {
    private:
-    friend class KioskTestHelper;
     friend class KioskLaunchController;
+    friend class KioskTestHelper;
 
     // Whether we should skip the wait for minimum screen show time.
     static bool skip_splash_wait;

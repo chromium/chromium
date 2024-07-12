@@ -40,10 +40,6 @@ class FakeKioskController : public KioskController {
   void RemoveProfileLoadFailedObserver(
       KioskProfileLoadFailedObserver* observer) override;
   bool HandleAccelerator(LoginAcceleratorAction action) override;
-  void InitializeKioskSystemSession(
-      Profile* profile,
-      const KioskAppId& kiosk_app_id,
-      const std::optional<std::string>& app_name) override;
   KioskSystemSession* GetKioskSystemSession() override;
   kiosk_vision::TelemetryProcessor* GetKioskVisionTelemetryProcessor() override;
   kiosk_vision::InternalsPageProcessor* GetKioskVisionInternalsPageProcessor()

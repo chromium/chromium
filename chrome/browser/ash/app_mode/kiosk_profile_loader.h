@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_MODE_KIOSK_PROFILE_LOADER_H_
 
 #include <memory>
+#include <variant>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
