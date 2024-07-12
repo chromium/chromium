@@ -16,6 +16,7 @@
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/lens_server_proto/lens_overlay_client_context.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_client_logs.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_cluster_info.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_image_crop.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_image_data.pb.h"
@@ -110,12 +111,10 @@ class LensOverlayQueryController {
       lens::LensOverlayServerRequest request_data,
       base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
           fetcher_created_callback,
-      EndpointFetcherCallback fetched_response_callback,
-      std::optional<uint64_t> gen204_identifier);
+      EndpointFetcherCallback fetched_response_callback);
 
   // Sends a latency Gen204 ping if enabled.
-  virtual void SendLatencyGen204IfEnabled(int64_t latency_ms,
-                                          uint64_t gen204_identifier);
+  virtual void SendLatencyGen204IfEnabled(int64_t latency_ms);
 
   // The callback for full image requests, including upon query flow start
   // and interaction retries.
@@ -167,11 +166,11 @@ class LensOverlayQueryController {
   // Fetches the endpoint using the initial image data.
   void FetchFullImageRequest(
       std::unique_ptr<lens::LensOverlayRequestId> request_id,
-      lens::ImageData image_data);
+      lens::ImageData image_data,
+      lens::LensOverlayClientLogs client_logs);
 
   // Handles the endpoint fetch response for the initial request.
   void FullImageFetchResponseHandler(
-      uint64_t gen204_identifier,
       int64_t query_start_time_ms,
       std::unique_ptr<EndpointResponse> response);
 
@@ -200,7 +199,8 @@ class LensOverlayQueryController {
       std::optional<std::string> object_id,
       lens::LensOverlaySelectionType selection_type,
       std::map<std::string, std::string> additional_search_query_params,
-      std::optional<lens::ImageCrop> image_crop);
+      std::optional<lens::ImageCrop> image_crop,
+      lens::LensOverlayClientLogs client_logs);
 
   // Fetches the endpoint for an interaction request and creates a Lens search
   // url if the request is the most recent request.
@@ -212,6 +212,7 @@ class LensOverlayQueryController {
       lens::LensOverlaySelectionType selection_type,
       std::map<std::string, std::string> additional_search_query_params,
       std::optional<lens::ImageCrop> image_crop,
+      lens::LensOverlayClientLogs client_logs,
       lens::LensOverlayClusterInfo cluster_info);
 
   // Creates the metadata for an interaction request using the latest
@@ -221,6 +222,7 @@ class LensOverlayQueryController {
       std::optional<std::string> query_text,
       std::optional<std::string> object_id,
       std::optional<lens::ImageCrop> image_crop,
+      lens::LensOverlayClientLogs client_logs,
       std::unique_ptr<lens::LensOverlayRequestId> request_id);
 
   // Resets the request cluster info state.
@@ -239,7 +241,6 @@ class LensOverlayQueryController {
                      base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
                          fetcher_created_callback,
                      EndpointFetcherCallback fetched_response_callback,
-                     std::optional<uint64_t> gen204_identifier,
                      std::vector<std::string> headers);
 
   // The request id generator.
@@ -317,6 +318,9 @@ class LensOverlayQueryController {
   // once per session because the search box theme is also only set once
   // per session.
   bool use_dark_mode_;
+
+  // The current gen204 id for logging, set on each overlay invocation.
+  uint64_t gen204_id_;
 
   base::WeakPtrFactory<LensOverlayQueryController> weak_ptr_factory_{this};
 };

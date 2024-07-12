@@ -1073,9 +1073,10 @@ void LensOverlayController::DidCaptureScreenshot(
 
   // Encode the screenshot so we can transform it into a data URI for the WebUI.
   scoped_refptr<base::RefCountedBytes> data;
+  lens::LensOverlayClientLogs client_logs;
   if (!lens::EncodeImage(
           bitmap, lens::features::GetLensOverlayScreenshotRenderQuality(),
-          &data)) {
+          &data, client_logs)) {
     // TODO(b/334185985): Handle case when screenshot data URI encoding fails.
     CloseUISync(
         lens::LensOverlayDismissalSource::kErrorScreenshotEncodingFailed);

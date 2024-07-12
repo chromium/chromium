@@ -69,6 +69,9 @@ constexpr char kRegion[] = "US";
 // The time zone.
 constexpr char kTimeZone[] = "America/Los_Angeles";
 
+// The parameter key for gen204 request.
+constexpr char kGen204IdentifierQueryParameter[] = "plla";
+
 class FakeEndpointFetcher : public EndpointFetcher {
  public:
   explicit FakeEndpointFetcher(EndpointResponse response)
@@ -114,6 +117,7 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
 
   lens::LensOverlayObjectsResponse fake_objects_response_;
   lens::LensOverlayInteractionResponse fake_interaction_response_;
+  lens::LensOverlayClientLogs sent_client_logs_;
   lens::LensOverlayObjectsRequest sent_objects_request_;
   lens::LensOverlayInteractionRequest sent_interaction_request_;
   int num_gen204_pings_sent_ = 0;
@@ -123,8 +127,7 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
       lens::LensOverlayServerRequest request_data,
       base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
           fetcher_created_callback,
-      EndpointFetcherCallback endpoint_fetcher_callback,
-      std::optional<uint64_t> gen204_identifier) override {
+      EndpointFetcherCallback endpoint_fetcher_callback) override {
     lens::LensOverlayServerResponse fake_server_response;
     if (request_data.has_objects_request()) {
       sent_objects_request_.CopyFrom(request_data.objects_request());
@@ -137,6 +140,7 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
     } else {
       NOTREACHED_IN_MIGRATION();
     }
+    sent_client_logs_.CopyFrom(request_data.client_logs());
 
     EndpointResponse fake_endpoint_response;
     fake_endpoint_response.response = fake_server_response.SerializeAsString();
@@ -151,8 +155,7 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
     fetcher->PerformRequest(std::move(endpoint_fetcher_callback), kTestApiKey);
   }
 
-  void SendLatencyGen204IfEnabled(int64_t latency_ms,
-                                  uint64_t gen204_identifier) override {
+  void SendLatencyGen204IfEnabled(int64_t latency_ms) override {
     num_gen204_pings_sent_++;
   }
 };
@@ -190,6 +193,19 @@ class LensOverlayQueryControllerTest : public testing::Test {
     lens::LensOverlayVisualSearchInteractionData proto;
     EXPECT_TRUE(proto.ParseFromString(serialized_proto));
     return proto.log_data().user_selection_data().selection_type();
+  }
+
+  void CheckGen204IdsMatch(
+      const lens::LensOverlayClientLogs& client_logs,
+      const lens::proto::LensOverlayUrlResponse& url_response) {
+    std::string url_gen204_id;
+    bool has_gen204_id = net::GetValueForKeyInQuery(
+        GURL(url_response.url()), kGen204IdentifierQueryParameter,
+        &url_gen204_id);
+    ASSERT_TRUE(has_gen204_id);
+    ASSERT_TRUE(client_logs.has_paella_id());
+    ASSERT_EQ(base::NumberToString(client_logs.paella_id()).c_str(),
+              url_gen204_id);
   }
 
  protected:
@@ -260,6 +276,9 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
                 .time_zone(),
             kTimeZone);
   ASSERT_EQ(query_controller.num_gen204_pings_sent_, 0);
+  ASSERT_EQ(query_controller.sent_client_logs_.lens_overlay_entry_point(),
+            lens::LensOverlayClientLogs::APP_MENU);
+  ASSERT_TRUE(query_controller.sent_client_logs_.has_paella_id());
 }
 
 TEST_F(LensOverlayQueryControllerTest,
@@ -362,6 +381,8 @@ TEST_F(LensOverlayQueryControllerTest,
           .has_query_metadata());
   ASSERT_TRUE(has_start_time);
   ASSERT_EQ(query_controller.num_gen204_pings_sent_, 1);
+  CheckGen204IdsMatch(query_controller.sent_client_logs_,
+                      url_response_future.Get());
 }
 
 TEST_F(LensOverlayQueryControllerTest,
@@ -481,6 +502,8 @@ TEST_F(LensOverlayQueryControllerTest,
           .has_query_metadata());
   ASSERT_TRUE(has_start_time);
   ASSERT_EQ(query_controller.num_gen204_pings_sent_, 1);
+  CheckGen204IdsMatch(query_controller.sent_client_logs_,
+                      url_response_future.Get());
 }
 
 TEST_F(LensOverlayQueryControllerTest,
@@ -587,6 +610,8 @@ TEST_F(LensOverlayQueryControllerTest,
       kTestQueryText);
   ASSERT_TRUE(has_start_time);
   ASSERT_EQ(query_controller.num_gen204_pings_sent_, 1);
+  CheckGen204IdsMatch(query_controller.sent_client_logs_,
+                      url_response_future.Get());
 }
 
 TEST_F(LensOverlayQueryControllerTest,
@@ -696,6 +721,8 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_TRUE(url_response_future.IsReady());
   ASSERT_TRUE(interaction_data_response_future.IsReady());
   ASSERT_EQ(query_controller.num_gen204_pings_sent_, 2);
+  CheckGen204IdsMatch(query_controller.sent_client_logs_,
+                      url_response_future.Get());
 }
 
 }  // namespace lens
