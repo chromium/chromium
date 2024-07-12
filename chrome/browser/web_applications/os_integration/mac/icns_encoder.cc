@@ -41,9 +41,9 @@ constexpr IcnsBlockTypes kIcnsBlockTypes[] = {
 std::vector<uint8_t> CreateBlockHeader(uint32_t type, size_t data_length) {
   std::vector<uint8_t> result(8u);
   auto [first, second] = base::span(result).split_at<4u>();
-  first.copy_from(base::numerics::U32ToBigEndian(type));
-  second.copy_from(base::numerics::U32ToBigEndian(
-      base::checked_cast<uint32_t>(data_length + 8u)));
+  first.copy_from(base::U32ToBigEndian(type));
+  second.copy_from(
+      base::U32ToBigEndian(base::checked_cast<uint32_t>(data_length + 8u)));
   return result;
 }
 

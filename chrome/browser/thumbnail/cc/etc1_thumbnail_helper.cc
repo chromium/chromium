@@ -44,7 +44,7 @@ bool ReadBigEndianU32FromFile(base::File& file, uint32_t* out) {
   if (file.ReadAtCurrentPos(buffer).value_or(0u) != buffer.size()) {
     return false;
   }
-  *out = base::numerics::U32FromBigEndian(buffer);
+  *out = base::U32FromBigEndian(buffer);
   return true;
 }
 bool ReadBigEndianFloatFromFile(base::File& file, float* out) {
@@ -52,17 +52,16 @@ bool ReadBigEndianFloatFromFile(base::File& file, float* out) {
   if (file.ReadAtCurrentPos(buffer).value_or(0u) != buffer.size()) {
     return false;
   }
-  *out = base::numerics::FloatFromBigEndian(buffer);
+  *out = base::FloatFromBigEndian(buffer);
   return true;
 }
 
 bool WriteBigEndianU32ToFile(base::File& file,
                              base::StrictNumeric<uint32_t> v) {
-  return file.WriteAtCurrentPos(base::numerics::U32ToBigEndian(v)) == sizeof(v);
+  return file.WriteAtCurrentPos(base::U32ToBigEndian(v)) == sizeof(v);
 }
 bool WriteBigEndianFloatToFile(base::File& file, float v) {
-  return file.WriteAtCurrentPos(base::numerics::FloatToBigEndian(v)) ==
-         sizeof(v);
+  return file.WriteAtCurrentPos(base::FloatToBigEndian(v)) == sizeof(v);
 }
 
 // TODO(khushalsagar): This is a hack to ensure correct byte size computation

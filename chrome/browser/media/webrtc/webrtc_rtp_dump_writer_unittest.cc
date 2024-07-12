@@ -229,7 +229,7 @@ class WebRtcRtpDumpWriterTest : public testing::Test {
     header = header.subspan(header_length_without_extn);
 
     uint16_t extension_count =
-        base::numerics::U16FromBigEndian(header.subspan(2u).first<2u>());
+        base::U16FromBigEndian(header.subspan(2u).first<2u>());
 
     if (header.size() < (extension_count + 1u) * 4u) {
       return false;

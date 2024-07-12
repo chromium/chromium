@@ -114,9 +114,9 @@ Status ConfigurationFileController::VerifySignature(ConfigFile config_file) {
 
   // Verify the value signed on the server using the big-endian representation
   // of the configuration file version.
-  return verifier_.Verify(base::as_string_view(base::numerics::U32ToBigEndian(
-                              config_file.version())),
-                          config_file.config_file_signature());
+  return verifier_.Verify(
+      base::as_string_view(base::U32ToBigEndian(config_file.version())),
+      config_file.config_file_signature());
 }
 
 // static

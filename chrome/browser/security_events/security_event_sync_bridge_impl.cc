@@ -34,7 +34,7 @@ std::string GetStorageKeyFromSpecifics(
   // TODO(markusheintz): Until we force |event_time_usec| to never conflict,
   // this has the potential for errors.
   std::array<uint8_t, 8> key;
-  base::span(key).copy_from(base::numerics::U64ToBigEndian(
+  base::span(key).copy_from(base::U64ToBigEndian(
       base::checked_cast<uint64_t>(specifics.event_time_usec())));
   return std::string(key.begin(), key.end());
 }

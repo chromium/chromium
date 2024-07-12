@@ -137,7 +137,7 @@ std::optional<AccessCode> Authenticator::Generate(base::Time timestamp) const {
   // The algorithm for PAC generation is using data in Big-endian byte order to
   // feed HMAC.
   std::array<uint8_t, sizeof(uint64_t)> big_endian_timestamp =
-      base::numerics::U64ToBigEndian(
+      base::U64ToBigEndian(
           // NOTE: This will convert negative numbers to large positive ones.
           static_cast<uint64_t>(adjusted_timestamp));
 
@@ -149,8 +149,8 @@ std::optional<AccessCode> Authenticator::Generate(base::Time timestamp) const {
 
   // Read 4 bytes in Big-endian order starting from |offset|.
   const int8_t offset = digest.back() & 0xf;
-  int32_t result = base::numerics::U32FromBigEndian(
-      base::span(digest).subspan(offset).first<4u>());
+  int32_t result =
+      base::U32FromBigEndian(base::span(digest).subspan(offset).first<4u>());
   // Clear sign bit.
   result &= 0x7fffffff;
 
