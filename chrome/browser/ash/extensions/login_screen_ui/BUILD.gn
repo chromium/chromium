@@ -53,3 +53,35 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "login_screen_ui_apitest.cc" ]
+
+  deps = [
+    ":login_screen_ui",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/ash",
+    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/accessibility:test_support",
+    "//chrome/browser/ash/login/ui/login_screen_extension_ui",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/version_info",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//extensions/common",
+    "//ui/aura",
+    "//ui/base/ime",
+    "//ui/views",
+    "//url",
+  ]
+}

@@ -32,3 +32,28 @@ static_library("speech") {
     "//media",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "speech_recognition_private_apitest.cc",
+    "speech_recognition_private_base_test.cc",
+    "speech_recognition_private_base_test.h",
+    "speech_recognition_private_manager_browsertest.cc",
+    "speech_recognition_private_recognizer_browsertest.cc",
+  ]
+
+  deps = [
+    ":speech",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//extensions:test_support",
+  ]
+}

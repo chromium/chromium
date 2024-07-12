@@ -140,3 +140,41 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "accessibility_features_apitest.cc",
+    "default_keyboard_extension_browser_test.cc",
+    "default_keyboard_extension_browser_test.h",
+    "incoming_native_messaging_apitest.cc",
+    "input_method_apitest_chromeos.cc",
+  ]
+
+  deps = [
+    ":extensions",
+    "//ash",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/accessibility:test_support",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//components/prefs",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//extensions/common",
+    "//ipc:message_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base/ime/ash",
+    "//url",
+  ]
+}

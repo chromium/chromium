@@ -33,3 +33,32 @@ static_library("users_private") {
     "//google_apis",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "users_private_apitest.cc" ]
+
+  deps = [
+    ":users_private",
+    "//base",
+    "//chrome/browser/ash",
+    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/login/lock",
+    "//chrome/browser/ash/login/lock:test_support",
+    "//chrome/browser/ash/ownership",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/settings",
+    "//components/keyed_service/core",
+    "//components/ownership",
+    "//components/prefs",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//crypto",
+    "//extensions/browser",
+    "//extensions/common",
+  ]
+}

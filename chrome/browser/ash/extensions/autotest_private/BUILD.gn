@@ -83,3 +83,51 @@ static_library("autotest_private") {
     "//url",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "autotest_private_apitest.cc" ]
+
+  deps = [
+    ":autotest_private",
+    "//ash",
+    "//ash:test_support",
+    "//ash/app_list",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//ash/components/arc:notification_test_support",
+    "//ash/components/arc:prefs",
+    "//ash/components/arc/session",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/app_list/search/test:browser_test_support",
+    "//chrome/browser/ash/app_list/search/test:test_support",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/tracing",
+    "//chrome/browser/ash/arc/tracing/test:test_support",
+    "//chrome/browser/ash/system_web_apps/test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//components/feature_engagement/public",
+    "//components/language/core/browser",
+    "//components/policy:policy_code_generate",
+    "//components/policy/core/common",
+    "//components/policy/core/common:test_support",
+    "//components/prefs",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//ui/aura",
+    "//ui/events",
+    "//ui/events:test_support",
+    "//ui/views",
+  ]
+}

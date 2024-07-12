@@ -187,6 +187,46 @@ source_set("unit_tests") {
   ]
 }
 
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "file_manager_private_apitest.cc" ]
+
+  deps = [
+    ":file_manager",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash",
+    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/crostini:test_support",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/file_manager:test_support",
+    "//chrome/browser/ash/policy/dlp",
+    "//chrome/browser/ash/policy/dlp/dialogs",
+    "//chrome/browser/chromeos",
+    "//chrome/browser/chromeos:test_support",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/cros_disks",
+    "//chromeos/ash/components/disks",
+    "//chromeos/ash/components/disks:test_support",
+    "//chromeos/dbus/dlp",
+    "//components/drive",
+    "//components/prefs",
+    "//components/signin/public/identity_manager:test_support",
+    "//content/test:test_support",
+    "//extensions/common",
+    "//google_apis/common:test_support",
+    "//storage/browser",
+  ]
+}
+
 fuzzer_test("create_fnmatch_query_fuzzer") {
   sources = [ "create_fnmatch_query_fuzzer.cc" ]
   deps = [
