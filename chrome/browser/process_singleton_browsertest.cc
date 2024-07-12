@@ -79,16 +79,12 @@ class ChromeStarter : public base::RefCountedThreadSafe<ChromeStarter> {
   void StartChrome(base::WaitableEvent* start_event, bool first_run) {
     base::CommandLine command_line_for_relaunch(
         initial_command_line_for_relaunch_.GetProgram());
-    test_launcher_utils::RemoveCommandLineSwitch(
-        initial_command_line_for_relaunch_, switches::kUserDataDir,
-        &command_line_for_relaunch);
+    command_line_for_relaunch.RemoveSwitch(switches::kUserDataDir);
     command_line_for_relaunch.AppendSwitchPath(switches::kUserDataDir,
                                                user_data_dir_);
 
     if (first_run) {
-      base::CommandLine tmp_command_line = command_line_for_relaunch;
-      test_launcher_utils::RemoveCommandLineSwitch(
-          tmp_command_line, switches::kNoFirstRun, &command_line_for_relaunch);
+      command_line_for_relaunch.RemoveSwitch(switches::kNoFirstRun);
       command_line_for_relaunch.AppendSwitch(switches::kForceFirstRun);
     }
 

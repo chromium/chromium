@@ -92,20 +92,6 @@ void PrepareBrowserCommandLineForBrowserTests(base::CommandLine* command_line,
     command_line->AppendArg(url::kAboutBlankURL);
 }
 
-void RemoveCommandLineSwitch(const base::CommandLine& in_command_line,
-                             const std::string& switch_to_remove,
-                             base::CommandLine* out_command_line) {
-  const base::CommandLine::SwitchMap& switch_map =
-      in_command_line.GetSwitches();
-  for (auto i = switch_map.begin(); i != switch_map.end(); ++i) {
-    const std::string& switch_name = i->first;
-    if (switch_name == switch_to_remove)
-      continue;
-
-    out_command_line->AppendSwitchNative(switch_name, i->second);
-  }
-}
-
 bool CreateUserDataDir(base::ScopedTempDir* temp_dir) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   base::FilePath user_data_dir =

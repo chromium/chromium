@@ -581,11 +581,9 @@ class SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest
 
  protected:
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    base::CommandLine default_command_line(base::CommandLine::NO_PROGRAM);
     SystemNetworkContextManagerBrowsertest::SetUpDefaultCommandLine(
-        &default_command_line);
-    test_launcher_utils::RemoveCommandLineSwitch(
-        default_command_line, switches::kDisableComponentUpdate, command_line);
+        command_line);
+    command_line->RemoveSwitch(switches::kDisableComponentUpdate);
   }
 
   net::test_server::EmbeddedTestServer* https_server() {
