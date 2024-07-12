@@ -217,15 +217,11 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
         } else if (type == OverscrollAction.HISTORY_NAVIGATION) {
             if (mNavigationCoordinator != null) {
                 mNavigationCoordinator.startGesture();
+                // Note: triggerUi returns true as long as the handler is in a valid state, i.e.
+                // even if the navigation direction doesn't have further history entries.
                 boolean navigable =
                         mNavigationCoordinator.triggerUi(initiatingEdge, startX, startY);
-                // TODO(crbug.com/331778964): This assumes right is forward which will soon depend
-                // on UI language. It's used to also handle cases where we're going forward past the
-                // latest session history entry but we can make triggerUi return that information
-                // rather than computing it separately here.
-                boolean navigateForward = initiatingEdge == BackGestureEventSwipeEdge.RIGHT;
-                boolean showGlow = navigateForward && !mTab.canGoForward();
-                return showGlow || navigable;
+                return navigable;
             }
         }
         mSwipeType = OverscrollAction.NONE;

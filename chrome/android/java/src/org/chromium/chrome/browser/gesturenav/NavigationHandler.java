@@ -227,38 +227,37 @@ class NavigationHandler implements TouchEventObserver {
     boolean triggerUi(@BackGestureEventSwipeEdge int initiatingEdge, float x, float y) {
         if (!isValidState()) return false;
 
+        mInitialX = x;
+        mInitialY = y;
+
         // TODO(crbug.com/331778964): This will soon account for UI writing direction.
         boolean forward = initiatingEdge == BackGestureEventSwipeEdge.RIGHT;
 
         mModel.set(DIRECTION, forward);
-        boolean navigable = canNavigate(forward);
-        if (navigable) {
+        if (canNavigate(forward)) {
             if (mState != GestureState.STARTED) mModel.set(ACTION, GestureAction.RESET_BUBBLE);
             mModel.set(CLOSE_INDICATOR, getCloseIndicator(forward));
             mModel.set(ACTION, GestureAction.SHOW_ARROW);
             mState = GestureState.DRAGGED;
-        }
 
-        mInitialX = x;
-        mInitialY = y;
-        if (navigable && willUpdateTabHistory(forward)) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)) {
-                mTabOnBackGestureHandler = TabOnBackGestureHandler.from(mTab);
-                mTabOnBackGestureHandler.onBackStarted(
-                        x, y, getProgress(), getBackDirection(), forward);
+            if (willUpdateTabHistory(forward)) {
+                if (ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)) {
+                    mTabOnBackGestureHandler = TabOnBackGestureHandler.from(mTab);
+                    mTabOnBackGestureHandler.onBackStarted(
+                            x, y, getProgress(), getBackDirection(), forward);
+                }
+                BackPressMetrics.recordNavStatusOnGestureStart(
+                        mTab.getWebContents().hasUncommittedNavigationInPrimaryMainFrame(),
+                        mTab.getWindowAndroid().getActivity().get().getWindow());
+                mStartNavDuringOngoingGesture = false;
+                mBackGestureForTabHistoryInProgress = true;
             }
-            BackPressMetrics.recordNavStatusOnGestureStart(
-                    mTab.getWebContents().hasUncommittedNavigationInPrimaryMainFrame(),
-                    mTab.getWindowAndroid().getActivity().get().getWindow());
-            mStartNavDuringOngoingGesture = false;
-            mBackGestureForTabHistoryInProgress = true;
         }
 
-        return navigable;
+        return true;
     }
 
     /**
-     *
      * @param forward {@code true} for forward navigation, or {@code false} for back.
      * @return True if the gesture is going to navigate page rather than closing tab or exiting app.
      */
