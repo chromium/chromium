@@ -1280,7 +1280,8 @@ TEST_F(PasswordAccessoryControllerTest, ShowAndSelectPasskey) {
       PasskeyCredential::RpId("rpid.com"),
       PasskeyCredential::CredentialId({21, 22, 23, 24}),
       PasskeyCredential::UserId({81, 28, 83, 84}),
-      PasskeyCredential::Username("someone@example.com"));
+      PasskeyCredential::Username("someone@example.com"),
+      PasskeyCredential::DisplayName("someone"));
   const std::optional<std::vector<PasskeyCredential>> kTestPasskeys(
       {kTestPasskey});
   ON_CALL(*webauthn_credentials_delegate(), GetPasskeys)
@@ -1298,7 +1299,7 @@ TEST_F(PasswordAccessoryControllerTest, ShowAndSelectPasskey) {
       controller()->GetSheetData(),
       AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
                                   passwords_title_str(kExampleDomain))
-          .AddPasskeySection(kTestPasskey.username(),
+          .AddPasskeySection(kTestPasskey.display_name(),
                              kTestPasskey.credential_id())
           .AppendFooterCommand(manage_passwords_and_passkeys_str(),
                                autofill::AccessoryAction::MANAGE_PASSWORDS)

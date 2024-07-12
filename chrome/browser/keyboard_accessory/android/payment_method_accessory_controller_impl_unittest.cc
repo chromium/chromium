@@ -540,8 +540,7 @@ TEST_F(PaymentMethodAccessoryControllerTest,
 
   Iban iban;
   iban.set_value(std::u16string(test::kIbanValue16));
-  std::string guid =
-      data_manager_.test_payments_data_manager().AddAsLocalIban(iban);
+  data_manager_.test_payments_data_manager().AddAsLocalIban(iban);
 
   EXPECT_CALL(filling_source_observer_,
               Run(controller(), IsFillingSourceAvailable(true)));
@@ -563,7 +562,7 @@ TEST_F(PaymentMethodAccessoryControllerTest,
                 .AppendSimpleField(card.GetRawInfo(CREDIT_CARD_NAME_FULL))
                 .AppendSimpleField(std::u16string())
                 .AddIbanInfo(iban.GetIdentifierStringForAutofillDisplay(),
-                             iban.value(), guid)
+                             iban.value(), /*id=*/"")
                 .Build());
 }
 

@@ -19,7 +19,7 @@ namespace autofill {
 // Represents a selectable item within a UserInfo or a PromoCodeInfo in the
 // manual fallback UI, such as the username or a credit card number or a promo
 // code.
-class AccessorySheetField {
+class AccessorySheetField final {
  public:
   AccessorySheetField(std::u16string display_text,
                       std::u16string text_to_fill,
@@ -27,13 +27,13 @@ class AccessorySheetField {
                       std::string id,
                       bool is_obfuscated,
                       bool selectable);
-  AccessorySheetField(const AccessorySheetField& field);
-  AccessorySheetField(AccessorySheetField&& field);
+  AccessorySheetField(const AccessorySheetField&);
+  AccessorySheetField& operator=(const AccessorySheetField&);
+  AccessorySheetField(AccessorySheetField&&);
+  AccessorySheetField& operator=(AccessorySheetField&&);
 
   ~AccessorySheetField();
 
-  AccessorySheetField& operator=(const AccessorySheetField& field);
-  AccessorySheetField& operator=(AccessorySheetField&& field);
 
   const std::u16string& display_text() const { return display_text_; }
 
@@ -47,7 +47,8 @@ class AccessorySheetField {
 
   bool selectable() const { return selectable_; }
 
-  bool operator==(const AccessorySheetField& field) const;
+  bool operator==(const AccessorySheetField&) const = default;
+
  private:
   std::u16string display_text_;
   // The string that would be used to fill in the form, for cases when it is
@@ -65,7 +66,7 @@ class AccessorySheetField {
 // or a Credit Card, or the credentials for a website). For credentials,
 // 'is_exact_match' is used to determine the origin (first-party match, a PSL or
 // affiliated match) of the credential.
-class UserInfo {
+class UserInfo final {
  public:
   using IsExactMatch = base::StrongAlias<class IsExactMatchTag, bool>;
 
@@ -74,13 +75,13 @@ class UserInfo {
   UserInfo(std::string origin, IsExactMatch is_exact_match);
   UserInfo(std::string origin, GURL icon_url);
   UserInfo(std::string origin, IsExactMatch is_exact_match, GURL icon_url);
-  UserInfo(const UserInfo& user_info);
-  UserInfo(UserInfo&& field);
+
+  UserInfo(const UserInfo&);
+  UserInfo& operator=(const UserInfo&);
+  UserInfo(UserInfo&&);
+  UserInfo& operator=(UserInfo&&);
 
   ~UserInfo();
-
-  UserInfo& operator=(const UserInfo& user_info);
-  UserInfo& operator=(UserInfo&& user_info);
 
   void add_field(AccessorySheetField field) {
     fields_.push_back(std::move(field));
@@ -91,7 +92,7 @@ class UserInfo {
   IsExactMatch is_exact_match() const { return is_exact_match_; }
   const GURL icon_url() const { return icon_url_; }
 
-  bool operator==(const UserInfo& user_info) const;
+  bool operator==(const UserInfo&) const = default;
 
  private:
   std::string origin_;
@@ -104,18 +105,20 @@ class UserInfo {
 std::ostream& operator<<(std::ostream& out, const AccessorySheetField& field);
 std::ostream& operator<<(std::ostream& out, const UserInfo& user_info);
 
-class PlusAddressSection {
+class PlusAddressSection final {
  public:
   explicit PlusAddressSection(const std::u16string& plus_address);
-  PlusAddressSection(const PlusAddressSection& plus_address_section);
-  PlusAddressSection(PlusAddressSection&& plus_address_section);
 
-  PlusAddressSection& operator=(const PlusAddressSection& plus_address_section);
-  PlusAddressSection& operator=(PlusAddressSection&& plus_address_section);
+  PlusAddressSection(const PlusAddressSection&);
+  PlusAddressSection& operator=(const PlusAddressSection&);
+  PlusAddressSection(PlusAddressSection&&);
+  PlusAddressSection& operator=(PlusAddressSection&&);
 
   ~PlusAddressSection();
 
   const AccessorySheetField plus_address() const { return plus_address_; }
+
+  bool operator==(const PlusAddressSection&) const = default;
 
  private:
   AccessorySheetField plus_address_;
@@ -124,22 +127,22 @@ class PlusAddressSection {
 std::ostream& operator<<(std::ostream& out, const PlusAddressSection& field);
 
 // Represents a passkey entry shown in the password accessory.
-class PasskeySection {
+class PasskeySection final {
  public:
   PasskeySection(std::string display_name, std::vector<uint8_t> passkey_id);
-  PasskeySection(const PasskeySection& passkey_section);
-  PasskeySection(PasskeySection&& passkey_section);
+
+  PasskeySection(const PasskeySection&);
+  PasskeySection& operator=(const PasskeySection&);
+  PasskeySection(PasskeySection&&);
+  PasskeySection& operator=(PasskeySection&&);
 
   ~PasskeySection();
-
-  PasskeySection& operator=(const PasskeySection& passkey_section);
-  PasskeySection& operator=(PasskeySection&& passkey_section);
 
   const std::string display_name() const { return display_name_; }
 
   const std::vector<uint8_t> passkey_id() const { return passkey_id_; }
 
-  bool operator==(const PasskeySection& passkey_section) const;
+  bool operator==(const PasskeySection&) const = default;
 
  private:
   std::string display_name_;
@@ -151,22 +154,22 @@ std::ostream& operator<<(std::ostream& out,
 
 // Represents data pertaining to promo code offers to be shown on the Payments
 // tab of manual fallback UI.
-class PromoCodeInfo {
+class PromoCodeInfo final {
  public:
   PromoCodeInfo(std::u16string promo_code, std::u16string details_text);
-  PromoCodeInfo(const PromoCodeInfo& promo_code_info);
-  PromoCodeInfo(PromoCodeInfo&& promo_code_info);
+
+  PromoCodeInfo(const PromoCodeInfo&);
+  PromoCodeInfo& operator=(const PromoCodeInfo&);
+  PromoCodeInfo(PromoCodeInfo&&);
+  PromoCodeInfo& operator=(PromoCodeInfo&&);
 
   ~PromoCodeInfo();
-
-  PromoCodeInfo& operator=(const PromoCodeInfo& promo_code_info);
-  PromoCodeInfo& operator=(PromoCodeInfo&& promo_code_info);
 
   const AccessorySheetField promo_code() const { return promo_code_; }
 
   const std::u16string details_text() const { return details_text_; }
 
-  bool operator==(const PromoCodeInfo& promo_code_info) const;
+  bool operator==(const PromoCodeInfo&) const = default;
 
  private:
   AccessorySheetField promo_code_;
@@ -178,20 +181,20 @@ std::ostream& operator<<(std::ostream& out,
 
 // Represents data pertaining to IBANs to be shown on the Payments methods
 // tab of manual fallback UI.
-class IbanInfo {
+class IbanInfo final {
  public:
   IbanInfo(std::u16string value, std::u16string text_to_fill, std::string id);
-  IbanInfo(const IbanInfo& iban_info);
-  IbanInfo(IbanInfo&& iban_info);
+
+  IbanInfo(const IbanInfo&);
+  IbanInfo& operator=(const IbanInfo&);
+  IbanInfo(IbanInfo&&);
+  IbanInfo& operator=(IbanInfo&&);
 
   ~IbanInfo();
 
-  IbanInfo& operator=(const IbanInfo& iban_info);
-  IbanInfo& operator=(IbanInfo&& iban_info);
-
   const AccessorySheetField value() const { return value_; }
 
-  bool operator==(const IbanInfo& iban_info) const;
+  bool operator==(const IbanInfo&) const = default;
 
  private:
   AccessorySheetField value_;
@@ -200,22 +203,22 @@ class IbanInfo {
 std::ostream& operator<<(std::ostream& out, const IbanInfo& iban);
 
 // Represents a command below the suggestions, such as "Manage password...".
-class FooterCommand {
+class FooterCommand final {
  public:
   FooterCommand(std::u16string display_text, AccessoryAction action);
-  FooterCommand(const FooterCommand& footer_command);
-  FooterCommand(FooterCommand&& footer_command);
+
+  FooterCommand(const FooterCommand&);
+  FooterCommand& operator=(const FooterCommand&);
+  FooterCommand(FooterCommand&&);
+  FooterCommand& operator=(FooterCommand&&);
 
   ~FooterCommand();
-
-  FooterCommand& operator=(const FooterCommand& footer_command);
-  FooterCommand& operator=(FooterCommand&& footer_command);
 
   const std::u16string& display_text() const { return display_text_; }
 
   AccessoryAction accessory_action() const { return accessory_action_; }
 
-  bool operator==(const FooterCommand& fc) const;
+  bool operator==(const FooterCommand&) const = default;
 
  private:
   std::u16string display_text_;
@@ -228,18 +231,18 @@ std::ostream& operator<<(std::ostream& out, const AccessoryTabType& type);
 
 // Toggle to be displayed above the suggestions. One such toggle can be used,
 // for example, to turn password saving on for the current origin.
-class OptionToggle {
+class OptionToggle final {
  public:
   OptionToggle(std::u16string display_text,
                bool enabled,
                AccessoryAction accessory_action);
-  OptionToggle(const OptionToggle& option_toggle);
-  OptionToggle(OptionToggle&& option_toggle);
+
+  OptionToggle(const OptionToggle&);
+  OptionToggle& operator=(const OptionToggle&);
+  OptionToggle(OptionToggle&&);
+  OptionToggle& operator=(OptionToggle&&);
 
   ~OptionToggle();
-
-  OptionToggle& operator=(const OptionToggle& option_toggle);
-  OptionToggle& operator=(OptionToggle&& option_toggle);
 
   const std::u16string& display_text() const { return display_text_; }
 
@@ -247,7 +250,7 @@ class OptionToggle {
 
   AccessoryAction accessory_action() const { return accessory_action_; }
 
-  bool operator==(const OptionToggle& option_toggle) const;
+  bool operator==(const OptionToggle&) const = default;
 
  private:
   std::u16string display_text_;
@@ -257,7 +260,7 @@ class OptionToggle {
 
 // Represents the contents of a bottom sheet tab below the keyboard accessory,
 // which can correspond to passwords, credit cards, or profiles data.
-class AccessorySheetData {
+class AccessorySheetData final {
  public:
   class Builder;
 
@@ -265,13 +268,13 @@ class AccessorySheetData {
   AccessorySheetData(AccessoryTabType sheet_type,
                      std::u16string title,
                      std::u16string warning);
-  AccessorySheetData(const AccessorySheetData& data);
-  AccessorySheetData(AccessorySheetData&& data);
+
+  AccessorySheetData(const AccessorySheetData&);
+  AccessorySheetData& operator=(const AccessorySheetData&);
+  AccessorySheetData(AccessorySheetData&&);
+  AccessorySheetData& operator=(AccessorySheetData&&);
 
   ~AccessorySheetData();
-
-  AccessorySheetData& operator=(const AccessorySheetData& data);
-  AccessorySheetData& operator=(AccessorySheetData&& data);
 
   const std::u16string& title() const { return title_; }
   AccessoryTabType get_sheet_type() const { return sheet_type_; }
@@ -336,7 +339,7 @@ class AccessorySheetData {
     return footer_commands_;
   }
 
-  bool operator==(const AccessorySheetData& data) const;
+  bool operator==(const AccessorySheetData&) const = default;
 
  private:
   AccessoryTabType sheet_type_;
@@ -366,7 +369,7 @@ std::ostream& operator<<(std::ostream& out, const AccessorySheetData& data);
 //           .AppendField(...)
 //           .AppendField(...)
 //       .Build();
-class AccessorySheetData::Builder {
+class AccessorySheetData::Builder final {
  public:
   Builder(AccessoryTabType type, std::u16string title);
   ~Builder();

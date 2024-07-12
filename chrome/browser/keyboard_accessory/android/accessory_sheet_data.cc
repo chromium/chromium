@@ -24,26 +24,17 @@ AccessorySheetField::AccessorySheetField(std::u16string display_text,
       is_obfuscated_(is_obfuscated),
       selectable_(selectable) {}
 
-AccessorySheetField::AccessorySheetField(const AccessorySheetField& field) =
-    default;
+AccessorySheetField::AccessorySheetField(const AccessorySheetField&) = default;
 
-AccessorySheetField::AccessorySheetField(AccessorySheetField&& field) = default;
+AccessorySheetField::AccessorySheetField(AccessorySheetField&&) = default;
 
 AccessorySheetField::~AccessorySheetField() = default;
 
 AccessorySheetField& AccessorySheetField::operator=(
-    const AccessorySheetField& field) = default;
+    const AccessorySheetField&) = default;
 
-AccessorySheetField& AccessorySheetField::operator=(
-    AccessorySheetField&& field) = default;
-
-bool AccessorySheetField::operator==(const AccessorySheetField& field) const {
-  return display_text_ == field.display_text_ &&
-         text_to_fill_ == field.text_to_fill_ &&
-         a11y_description_ == field.a11y_description_ && id_ == field.id_ &&
-         is_obfuscated_ == field.is_obfuscated_ &&
-         selectable_ == field.selectable_;
-}
+AccessorySheetField& AccessorySheetField::operator=(AccessorySheetField&&) =
+    default;
 
 std::ostream& operator<<(std::ostream& os, const AccessorySheetField& field) {
   os << "(display text: \"" << field.display_text() << "\", "
@@ -73,21 +64,15 @@ UserInfo::UserInfo(std::string origin,
       is_exact_match_(is_exact_match),
       icon_url_(std::move(icon_url)) {}
 
-UserInfo::UserInfo(const UserInfo& user_info) = default;
+UserInfo::UserInfo(const UserInfo&) = default;
 
-UserInfo::UserInfo(UserInfo&& field) = default;
+UserInfo& UserInfo::operator=(const UserInfo&) = default;
+
+UserInfo::UserInfo(UserInfo&&) = default;
+
+UserInfo& UserInfo::operator=(UserInfo&&) = default;
 
 UserInfo::~UserInfo() = default;
-
-UserInfo& UserInfo::operator=(const UserInfo& user_info) = default;
-
-UserInfo& UserInfo::operator=(UserInfo&& user_info) = default;
-
-bool UserInfo::operator==(const UserInfo& user_info) const {
-  return fields_ == user_info.fields_ && origin_ == user_info.origin_ &&
-         is_exact_match_ == user_info.is_exact_match_ &&
-         icon_url_ == user_info.icon_url_;
-}
 
 std::ostream& operator<<(std::ostream& os, const UserInfo& user_info) {
   os << "origin: \"" << user_info.origin() << "\", "
@@ -109,16 +94,15 @@ PlusAddressSection::PlusAddressSection(const std::u16string& plus_address)
                                         /*is_obfuscated=*/false,
                                         /*selectable=*/true)) {}
 
-PlusAddressSection::PlusAddressSection(const PlusAddressSection& user_info) =
+PlusAddressSection::PlusAddressSection(const PlusAddressSection&) = default;
+
+PlusAddressSection& PlusAddressSection::operator=(const PlusAddressSection&) =
     default;
 
-PlusAddressSection::PlusAddressSection(PlusAddressSection&& field) = default;
+PlusAddressSection::PlusAddressSection(PlusAddressSection&&) = default;
 
-PlusAddressSection& PlusAddressSection::operator=(
-    const PlusAddressSection& user_info) = default;
-
-PlusAddressSection& PlusAddressSection::operator=(
-    PlusAddressSection&& user_info) = default;
+PlusAddressSection& PlusAddressSection::operator=(PlusAddressSection&&) =
+    default;
 
 PlusAddressSection::~PlusAddressSection() = default;
 
@@ -134,22 +118,15 @@ PasskeySection::PasskeySection(std::string display_name,
     : display_name_(std::move(display_name)),
       passkey_id_(std::move(passkey_id)) {}
 
-PasskeySection::PasskeySection(const PasskeySection& passkey_section) = default;
+PasskeySection::PasskeySection(const PasskeySection&) = default;
 
-PasskeySection::PasskeySection(PasskeySection&& passkey_section) = default;
+PasskeySection& PasskeySection::operator=(const PasskeySection&) = default;
+
+PasskeySection::PasskeySection(PasskeySection&&) = default;
+
+PasskeySection& PasskeySection::operator=(PasskeySection&&) = default;
 
 PasskeySection::~PasskeySection() = default;
-
-PasskeySection& PasskeySection::operator=(
-    const PasskeySection& passkey_section) = default;
-
-PasskeySection& PasskeySection::operator=(PasskeySection&& passkey_section) =
-    default;
-
-bool PasskeySection::operator==(const PasskeySection& passkey_section) const {
-  return display_name_ == passkey_section.display_name_ &&
-         base::ranges::equal(passkey_id_, passkey_section.passkey_id_);
-}
 
 std::ostream& operator<<(std::ostream& os,
                          const PasskeySection& passkey_section) {
@@ -169,22 +146,15 @@ PromoCodeInfo::PromoCodeInfo(std::u16string promo_code,
                                       /*selectable=*/true)),
       details_text_(details_text) {}
 
-PromoCodeInfo::PromoCodeInfo(const PromoCodeInfo& promo_code_info) = default;
+PromoCodeInfo::PromoCodeInfo(const PromoCodeInfo&) = default;
 
-PromoCodeInfo::PromoCodeInfo(PromoCodeInfo&& promo_code_info) = default;
+PromoCodeInfo& PromoCodeInfo::operator=(const PromoCodeInfo&) = default;
+
+PromoCodeInfo::PromoCodeInfo(PromoCodeInfo&&) = default;
+
+PromoCodeInfo& PromoCodeInfo::operator=(PromoCodeInfo&&) = default;
 
 PromoCodeInfo::~PromoCodeInfo() = default;
-
-PromoCodeInfo& PromoCodeInfo::operator=(const PromoCodeInfo& promo_code_info) =
-    default;
-
-PromoCodeInfo& PromoCodeInfo::operator=(PromoCodeInfo&& promo_code_info) =
-    default;
-
-bool PromoCodeInfo::operator==(const PromoCodeInfo& promo_code_info) const {
-  return promo_code_ == promo_code_info.promo_code_ &&
-         details_text_ == promo_code_info.details_text_;
-}
 
 std::ostream& operator<<(std::ostream& os,
                          const PromoCodeInfo& promo_code_info) {
@@ -203,19 +173,15 @@ IbanInfo::IbanInfo(std::u16string value,
                                  /*is_obfuscated=*/false,
                                  /*selectable=*/true)) {}
 
-IbanInfo::IbanInfo(const IbanInfo& iban_info) = default;
+IbanInfo::IbanInfo(const IbanInfo&) = default;
 
-IbanInfo::IbanInfo(IbanInfo&& iban_info) = default;
+IbanInfo& IbanInfo::operator=(const IbanInfo&) = default;
+
+IbanInfo::IbanInfo(IbanInfo&&) = default;
+
+IbanInfo& IbanInfo::operator=(IbanInfo&&) = default;
 
 IbanInfo::~IbanInfo() = default;
-
-IbanInfo& IbanInfo::operator=(const IbanInfo& iban_info) = default;
-
-IbanInfo& IbanInfo::operator=(IbanInfo&& iban_info) = default;
-
-bool IbanInfo::operator==(const IbanInfo& iban_info) const {
-  return value_ == iban_info.value_;
-}
 
 std::ostream& operator<<(std::ostream& os, const IbanInfo& iban_info) {
   os << "iban_info: \"" << iban_info.value() << "\"";
@@ -226,22 +192,15 @@ FooterCommand::FooterCommand(std::u16string display_text,
                              AccessoryAction action)
     : display_text_(std::move(display_text)), accessory_action_(action) {}
 
-FooterCommand::FooterCommand(const FooterCommand& footer_command) = default;
+FooterCommand::FooterCommand(const FooterCommand&) = default;
 
-FooterCommand::FooterCommand(FooterCommand&& footer_command) = default;
+FooterCommand& FooterCommand::operator=(const FooterCommand&) = default;
+
+FooterCommand& FooterCommand::operator=(FooterCommand&&) = default;
+
+FooterCommand::FooterCommand(FooterCommand&&) = default;
 
 FooterCommand::~FooterCommand() = default;
-
-FooterCommand& FooterCommand::operator=(const FooterCommand& footer_command) =
-    default;
-
-FooterCommand& FooterCommand::operator=(FooterCommand&& footer_command) =
-    default;
-
-bool FooterCommand::operator==(const FooterCommand& fc) const {
-  return display_text_ == fc.display_text_ &&
-         accessory_action_ == fc.accessory_action_;
-}
 
 std::ostream& operator<<(std::ostream& os, const FooterCommand& fc) {
   return os << "(display text: \"" << fc.display_text() << "\", "
@@ -255,22 +214,15 @@ OptionToggle::OptionToggle(std::u16string display_text,
       enabled_(enabled),
       accessory_action_(action) {}
 
-OptionToggle::OptionToggle(const OptionToggle& option_toggle) = default;
+OptionToggle::OptionToggle(const OptionToggle&) = default;
 
-OptionToggle::OptionToggle(OptionToggle&& option_toggle) = default;
+OptionToggle& OptionToggle::operator=(const OptionToggle&) = default;
+
+OptionToggle::OptionToggle(OptionToggle&&) = default;
+
+OptionToggle& OptionToggle::operator=(OptionToggle&&) = default;
 
 OptionToggle::~OptionToggle() = default;
-
-OptionToggle& OptionToggle::operator=(const OptionToggle& option_toggle) =
-    default;
-
-OptionToggle& OptionToggle::operator=(OptionToggle&& option_toggle) = default;
-
-bool OptionToggle::operator==(const OptionToggle& option_toggle) const {
-  return display_text_ == option_toggle.display_text_ &&
-         enabled_ == option_toggle.enabled_ &&
-         accessory_action_ == option_toggle.accessory_action_;
-}
 
 std::ostream& operator<<(std::ostream& os, const OptionToggle& ot) {
   return os << "(display text: \"" << ot.display_text() << "\", "
@@ -299,6 +251,7 @@ std::ostream& operator<<(std::ostream& os, const AccessoryTabType& type) {
 AccessorySheetData::AccessorySheetData(AccessoryTabType sheet_type,
                                        std::u16string title)
     : AccessorySheetData(sheet_type, std::move(title), std::u16string()) {}
+
 AccessorySheetData::AccessorySheetData(AccessoryTabType sheet_type,
                                        std::u16string title,
                                        std::u16string warning)
@@ -306,26 +259,17 @@ AccessorySheetData::AccessorySheetData(AccessoryTabType sheet_type,
       title_(std::move(title)),
       warning_(std::move(warning)) {}
 
-AccessorySheetData::AccessorySheetData(const AccessorySheetData& data) =
+AccessorySheetData::AccessorySheetData(const AccessorySheetData&) = default;
+
+AccessorySheetData& AccessorySheetData::operator=(const AccessorySheetData&) =
     default;
 
-AccessorySheetData::AccessorySheetData(AccessorySheetData&& data) = default;
+AccessorySheetData::AccessorySheetData(AccessorySheetData&&) = default;
+
+AccessorySheetData& AccessorySheetData::operator=(AccessorySheetData&&) =
+    default;
 
 AccessorySheetData::~AccessorySheetData() = default;
-
-AccessorySheetData& AccessorySheetData::operator=(
-    const AccessorySheetData& data) = default;
-
-AccessorySheetData& AccessorySheetData::operator=(AccessorySheetData&& data) =
-    default;
-
-bool AccessorySheetData::operator==(const AccessorySheetData& data) const {
-  return sheet_type_ == data.sheet_type_ && title_ == data.title_ &&
-         warning_ == data.warning_ && option_toggle_ == data.option_toggle_ &&
-         user_info_list_ == data.user_info_list_ &&
-         promo_code_info_list_ == data.promo_code_info_list_ &&
-         footer_commands_ == data.footer_commands_;
-}
 
 std::ostream& operator<<(std::ostream& os, const AccessorySheetData& data) {
   os << data.get_sheet_type() << " with title: \"" << data.title();
@@ -346,6 +290,10 @@ std::ostream& operator<<(std::ostream& os, const AccessorySheetData& data) {
   os << "], and promo code info list: [";
   for (const PromoCodeInfo& promo_code_info : data.promo_code_info_list()) {
     os << promo_code_info << ", ";
+  }
+  os << "], and iban info list: [";
+  for (const IbanInfo& iban_info : data.iban_info_list()) {
+    os << iban_info << ", ";
   }
   os << "], footer commands: [";
   for (const FooterCommand& footer_command : data.footer_commands()) {
