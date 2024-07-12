@@ -327,6 +327,15 @@ public class FullscreenVideoPictureInPictureController {
         addObserversIfNeeded();
     }
 
+    /**
+     * Called when `mActivity` is stopped, to allow us to clean up. A new instance will be created
+     * later, when the activity is restarted.
+     */
+    public void onStop() {
+        // Unconditionally remove listeners, since a new instance will be created onStart.
+        removeObserversIfNeeded();
+    }
+
     private static Rect getVideoBounds(WebContents webContents, Activity activity) {
         Rect rect = webContents.getFullscreenVideoSize();
         if (rect == null || rect.width() == 0 || rect.height() == 0) return null;

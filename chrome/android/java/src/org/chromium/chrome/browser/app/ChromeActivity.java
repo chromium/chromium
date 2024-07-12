@@ -1339,6 +1339,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (mContextReporter != null) {
             mContextReporter.disable();
         }
+        if (mFullscreenVideoPictureInPictureController != null) {
+            mFullscreenVideoPictureInPictureController.onStop();
+            mFullscreenVideoPictureInPictureController = null;
+        }
         super.onStopWithNative();
         endUmaSession();
     }
