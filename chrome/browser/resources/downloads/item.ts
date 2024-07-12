@@ -388,6 +388,9 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       return DisplayType.SUSPICIOUS;
     }
 
+    // TODO(crbug.com/350780005): Make this and remaining switches in this file
+    // exhaustive by including cases for all enum values and adding assertNotReached
+    // at the end.
     switch (this.data.dangerType) {
       // Mimics logic in download_ui_model.cc for downloads with danger_type
       // DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE.
@@ -400,6 +403,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       case DangerType.kDangerousHost:
       case DangerType.kPotentiallyUnwanted:
       case DangerType.kDeepScannedOpenedDangerous:
+      case DangerType.kCookieTheft:
         return DisplayType.DANGEROUS;
 
       case DangerType.kUncommonContent:
@@ -672,7 +676,8 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         (this.data.dangerType === DangerType.kDangerousContent ||
          this.data.dangerType === DangerType.kDangerousHost ||
          this.data.dangerType === DangerType.kDangerousUrl ||
-         this.data.dangerType === DangerType.kPotentiallyUnwanted);
+         this.data.dangerType === DangerType.kPotentiallyUnwanted ||
+         this.data.dangerType === DangerType.kCookieTheft);
   }
 
   private computeIsReviewable_(): boolean {

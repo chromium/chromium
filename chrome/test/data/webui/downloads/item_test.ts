@@ -361,6 +361,21 @@ suite('item tests', function() {
             'red',
             item.shadowRoot!.querySelector('iron-icon')!.getAttribute(
                 'icon-color'));
+
+        item.set('data', createDownload({
+                   filePath: 'unique1',
+                   hideDate: false,
+                   dangerType: DangerType.kCookieTheft,
+                 }));
+
+        assertEquals(
+            'downloads:dangerous',
+            item.shadowRoot!.querySelector('iron-icon')!.icon);
+        assertTrue(item.$['file-icon'].hidden);
+        assertEquals(
+            'red',
+            item.shadowRoot!.querySelector('iron-icon')!.getAttribute(
+                'icon-color'));
       });
 
   test(

@@ -38,7 +38,7 @@ namespace {
 // changing this value.
 // LINT.IfChange
 constexpr int kTailoredWarningVersion = 3;
-constexpr int kTailoredWarningVersionDownloadReportWithoutUserDecision = 4;
+constexpr int kTailoredWarningVersionDownloadReportWithoutUserDecision = 5;
 // LINT.ThenChange(/components/safe_browsing/core/common/proto/csd.proto)
 
 DownloadRequestMaker::TabUrls TabUrlsFromWebContents(
