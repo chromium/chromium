@@ -143,11 +143,6 @@ FormatPixmapSupport GetFormatPixmapSupport(
 bool set_format_supported_metric = false;
 #endif
 
-void RecordIsNewMultiplanarFormat(bool is_multiplanar) {
-  base::UmaHistogramBoolean("GPU.SharedImage.IsNewMultiplanarFormat",
-                            is_multiplanar);
-}
-
 gfx::GpuMemoryBufferType GetNativeBufferType() {
 #if BUILDFLAG(IS_APPLE)
   return gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
@@ -629,11 +624,6 @@ bool SharedImageFactory::CreateSharedImage(
     // BufferPlane parameter.
     LOG(ERROR) << "Invalid format " << format.ToString();
     return false;
-  }
-
-  // Log UMA for multiplanar shared image formats.
-  if (format.is_multi_plane()) {
-    RecordIsNewMultiplanarFormat(/*is_multiplanar*/ true);
   }
 
   gfx::GpuMemoryBufferType gmb_type = buffer_handle.type;

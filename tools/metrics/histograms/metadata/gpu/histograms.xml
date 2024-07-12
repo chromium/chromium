@@ -1395,18 +1395,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.SharedImage.IsNewMultiplanarFormat" enum="Boolean"
-    expires_after="2025-01-05">
-  <owner>hitawala@chromium.org</owner>
-  <owner>vasilyt@chromium.org</owner>
-  <summary>
-    Tracks the multiplanar format used for creating shared image with
-    GpuMemoryBuffers. Result is a bool that checks if the format is a new
-    multiplanar shared image format or legacy multiplanar buffer format. This is
-    logged once per CreateSharedImage with GpuMemoryBuffer call.
-  </summary>
-</histogram>
-
 <histogram name="GPU.SkiaBackendType" enum="SkiaBackendType"
     expires_after="2025-02-01">
   <owner>kylechar@chromium.org</owner>
