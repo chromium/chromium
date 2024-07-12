@@ -190,7 +190,7 @@ class EnclaveManager : public EnclaveManagerInterface {
 
   // Get a callback to sign with the registered "hw" key. Only valid to call if
   // `is_ready`.
-  device::enclave::SigningCallback HardwareKeySigningCallback();
+  device::enclave::SigningCallback IdentityKeySigningCallback();
   // Get a callback to sign with the registered "uv" key. Only valid to call if
   // `is_ready`.
   device::enclave::SigningCallback UserVerifyingKeySigningCallback(
@@ -328,7 +328,7 @@ class EnclaveManager : public EnclaveManagerInterface {
   // cached, or will attempt to load them asynchronously otherwise.
   // If the key fails to load, the callback will be invoked with nullptr and
   // the device's enclave registration will be reset.
-  void GetHardwareKeyForSignature(
+  void GetIdentityKeyForSignature(
       base::OnceCallback<void(
           scoped_refptr<unexportable_keys::RefCountedUnexportableSigningKey>)>
           callback);
@@ -389,7 +389,7 @@ class EnclaveManager : public EnclaveManagerInterface {
   // Allow keys to persist across sequences because loading them is slow.
   scoped_refptr<crypto::RefCountedUserVerifyingSigningKey> user_verifying_key_;
   scoped_refptr<unexportable_keys::RefCountedUnexportableSigningKey>
-      hardware_key_;
+      identity_key_;
 
   unsigned store_keys_count_ = 0;
 

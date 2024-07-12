@@ -59,13 +59,13 @@ message EnclaveLocalState {
 
   // User contains state for a specific GAIA ID.
   message User {
-    // The hardware-bound, not-user-verification-interlocked device key:
+    // The not-user-verification-interlocked device key:
     //
     // These three members are either all empty or all non-empty.
-    bytes wrapped_hardware_private_key = 1;
+    bytes wrapped_identity_private_key = 1;
     // If non-empty, this contains a valid SubjectPublicKeyInfo.
-    bytes hardware_public_key = 2;
-    // This is currently SHA-256(hardware_public_key) but need not be.
+    bytes identity_public_key = 2;
+    // This is currently SHA-256(identity_public_key) but need not be.
     bytes device_id = 5;
 
     // The hardware-bound, user-verification-interlocked device key.
@@ -77,7 +77,7 @@ message EnclaveLocalState {
     bytes uv_public_key = 4;
 
     // Whether this device has been registered with the enclave. If this is
-    // true then `hardware_public_key` and `member_public_key` must be
+    // true then `identity_public_key` and `member_public_key` must be
     // non-empty.
     bool registered = 6;
 

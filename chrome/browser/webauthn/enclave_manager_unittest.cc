@@ -286,7 +286,7 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
       std::unique_ptr<enclave::ClaimedPIN> claimed_pin,
       std::unique_ptr<sync_pb::WebauthnCredentialSpecifics>* out_specifics) {
     auto ui_request = std::make_unique<enclave::CredentialRequest>();
-    ui_request->signing_callback = manager_.HardwareKeySigningCallback();
+    ui_request->signing_callback = manager_.IdentityKeySigningCallback();
     int32_t secret_version;
     std::vector<uint8_t> wrapped_secret;
     std::tie(secret_version, wrapped_secret) =
@@ -402,7 +402,7 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
       ui_request = std::move(custom_ui_request);
     } else {
       ui_request = std::make_unique<enclave::CredentialRequest>();
-      ui_request->signing_callback = manager_.HardwareKeySigningCallback();
+      ui_request->signing_callback = manager_.IdentityKeySigningCallback();
       ui_request->wrapped_secret =
           *manager_.GetWrappedSecret(/*version=*/kSecretVersion);
       ui_request->entity = std::move(entity);
@@ -604,7 +604,7 @@ TEST_F(EnclaveManagerTest, RegistrationFailureAndRetry) {
   const std::string public_key = manager_.local_state_for_testing()
                                      .users()
                                      .find(gaia)
-                                     ->second.hardware_public_key();
+                                     ->second.identity_public_key();
   ASSERT_FALSE(public_key.empty());
 
   BoolFuture register_future;
@@ -619,7 +619,7 @@ TEST_F(EnclaveManagerTest, RegistrationFailureAndRetry) {
   ASSERT_TRUE(public_key == manager_.local_state_for_testing()
                                 .users()
                                 .find(gaia)
-                                ->second.hardware_public_key());
+                                ->second.identity_public_key());
 }
 
 TEST_F(EnclaveManagerTest, PrimaryUserChange) {
@@ -1307,7 +1307,7 @@ TEST_F(EnclaveManagerTest, MAYBE_HardwareKeyLost) {
   EXPECT_TRUE(key_future_present.Get().has_value());
 
   crypto::ScopedNullUnexportableKeyProvider null_hw_provider;
-  auto signing_callback = manager_.HardwareKeySigningCallback();
+  auto signing_callback = manager_.IdentityKeySigningCallback();
   quit_closure = task_env_.QuitClosure();
   std::move(signing_callback)
       .Run({1, 2, 3, 4},
@@ -1724,7 +1724,7 @@ TEST_F(EnclaveUVTest, UnregisterOnFailedDeferredUVKeyCreation) {
 
   base::RunLoop run_loop;
   auto ui_request = std::make_unique<enclave::CredentialRequest>();
-  ui_request->signing_callback = manager_.HardwareKeySigningCallback();
+  ui_request->signing_callback = manager_.IdentityKeySigningCallback();
   ui_request->wrapped_secret =
       *manager_.GetWrappedSecret(/*version=*/kSecretVersion);
   ui_request->entity = GetTestEntity();

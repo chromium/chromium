@@ -1181,19 +1181,19 @@ void GPMEnclaveController::StartEnclaveTransaction(
   switch (*uv_method_) {
     case EnclaveUserVerificationMethod::kNone:
       request->signing_callback =
-          enclave_manager_->HardwareKeySigningCallback();
+          enclave_manager_->IdentityKeySigningCallback();
       break;
 
     case EnclaveUserVerificationMethod::kImplicit:
       request->signing_callback =
-          enclave_manager_->HardwareKeySigningCallback();
+          enclave_manager_->IdentityKeySigningCallback();
       use_unwrapped_secret = true;
       request->user_verified = true;
       break;
 
     case EnclaveUserVerificationMethod::kPIN:
       request->signing_callback =
-          enclave_manager_->HardwareKeySigningCallback();
+          enclave_manager_->IdentityKeySigningCallback();
       CHECK(claimed_pin);
       request->claimed_pin = std::move(claimed_pin);
       request->pin_result_callback =
@@ -1219,7 +1219,7 @@ void GPMEnclaveController::StartEnclaveTransaction(
       // it as being user verified because this will trigger UV creation and
       // the system will verify the user for that operation.
       request->signing_callback =
-          enclave_manager_->HardwareKeySigningCallback();
+          enclave_manager_->IdentityKeySigningCallback();
       request->user_verified = true;
       request->uv_key_creation_callback =
           enclave_manager_->UserVerifyingKeyCreationCallback();
