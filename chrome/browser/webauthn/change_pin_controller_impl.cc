@@ -15,14 +15,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
-#include "components/sync/base/user_selectable_type.h"
-#include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_user_settings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "device/fido/features.h"
@@ -41,9 +37,6 @@ ChangePinControllerImpl::ChangePinControllerImpl(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   enclave_manager_ =
       EnclaveManagerFactory::GetAsEnclaveManagerForProfile(profile);
-  sync_service_ = SyncServiceFactory::IsSyncAllowed(profile)
-                      ? SyncServiceFactory::GetForProfile(profile)
-                      : nullptr;
   model_ = std::make_unique<AuthenticatorRequestDialogModel>(
       web_contents->GetPrimaryMainFrame());
   model_observation_.Observe(model_.get());
@@ -59,12 +52,8 @@ bool ChangePinControllerImpl::IsChangePinFlowAvailable() {
   if (!enclave_enabled_) {
     return false;
   }
-  bool sync_enabled = sync_service_ && sync_service_->IsSyncFeatureEnabled() &&
-                      sync_service_->GetUserSettings()->GetSelectedTypes().Has(
-                          syncer::UserSelectableType::kPasswords);
-  bool enclave_valid = enclave_enabled_ && enclave_manager_->is_ready() &&
-                       enclave_manager_->has_wrapped_pin();
-  return sync_enabled && enclave_valid;
+  return enclave_enabled_ && enclave_manager_->is_registered() &&
+         enclave_manager_->is_ready() && enclave_manager_->has_wrapped_pin();
 }
 
 void ChangePinControllerImpl::StartChangePin(SuccessCallback callback) {

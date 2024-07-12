@@ -11,7 +11,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {$$, eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
@@ -642,31 +642,10 @@ suite('SettingsSectionTest', function() {
     document.body.appendChild(section);
     await flushTasks();
 
-    const changePasswordManagerPinRow =
-        section.shadowRoot!.querySelector<HTMLElement>(
-            '#changePasswordManagerPinRow');
-
-    assertFalse(!!changePasswordManagerPinRow);
+    assertFalse(isVisible($$(section, '#changePasswordManagerPinRow')));
   });
 
   test('Change Password Manager PIN is available', async function() {
-    passwordManager.data.isPasswordManagerPinAvailable = true;
-
-    const section = document.createElement('settings-section');
-    document.body.appendChild(section);
-    await flushTasks();
-
-    const changePasswordManagerPinRow =
-        section.shadowRoot!.querySelector<HTMLElement>(
-            '#changePasswordManagerPinRow');
-
-    assertTrue(!!changePasswordManagerPinRow);
-
-    changePasswordManagerPinRow.click();
-    await passwordManager.whenCalled('changePasswordManagerPin');
-  });
-
-  test('Change Password Manager PIN row hides with sync', async function() {
     syncProxy.syncInfo = {
       isEligibleForAccountStorage: false,
       isSyncingPasswords: true,
@@ -676,30 +655,51 @@ suite('SettingsSectionTest', function() {
     const section = document.createElement('settings-section');
     document.body.appendChild(section);
     await flushTasks();
-    await passwordManager.whenCalled('isPasswordManagerPinAvailable');
 
-    let changePasswordManagerPinRow =
-        section.shadowRoot!.querySelector<HTMLElement>(
-            '#changePasswordManagerPinRow');
+    const changePasswordManagerPinRow =
+        $$(section, '#changePasswordManagerPinRow');
 
     assertTrue(!!changePasswordManagerPinRow);
 
-    passwordManager.data.isPasswordManagerPinAvailable = false;
-    webUIListenerCallback('sync-info-changed', {
-      isEligibleForAccountStorage: false,
-      isSyncingPasswords: false,
-    });
-    await flushTasks();
-    await passwordManager.whenCalled('isPasswordManagerPinAvailable');
-
-    changePasswordManagerPinRow =
-        section.shadowRoot!.querySelector<HTMLElement>(
-            '#changePasswordManagerPinRow');
-
-    assertFalse(!!changePasswordManagerPinRow);
+    changePasswordManagerPinRow.click();
+    await passwordManager.whenCalled('changePasswordManagerPin');
   });
 
+  test(
+      'Change PIN and Disconnect Enclave rows hides with sync',
+      async function() {
+        syncProxy.syncInfo = {
+          isEligibleForAccountStorage: false,
+          isSyncingPasswords: true,
+        };
+        passwordManager.data.isPasswordManagerPinAvailable = true;
+        passwordManager.data.isConnectedToCloudAuthenticator = true;
+
+        const section = document.createElement('settings-section');
+        document.body.appendChild(section);
+        await flushTasks();
+        await passwordManager.whenCalled('isPasswordManagerPinAvailable');
+
+        assertTrue(isVisible($$(section, '#changePasswordManagerPinRow')));
+        assertTrue(isVisible($$(section, '#disconnectCloudAuthenticatorRow')));
+
+        webUIListenerCallback('sync-info-changed', {
+          isEligibleForAccountStorage: false,
+          isSyncingPasswords: false,
+        });
+        await flushTasks();
+        await passwordManager.whenCalled('isPasswordManagerPinAvailable');
+        await passwordManager.whenCalled('isConnectedToCloudAuthenticator');
+
+        assertFalse(isVisible($$(section, '#changePasswordManagerPinRow')));
+        assertFalse(isVisible($$(section, '#disconnectCloudAuthenticatorRow')));
+      });
+
   test('After successful PIN Change toast is shown', async function() {
+    syncProxy.syncInfo = {
+      isEligibleForAccountStorage: false,
+      isSyncingPasswords: true,
+    };
     passwordManager.data.isPasswordManagerPinAvailable = true;
 
     const section = document.createElement('settings-section');
@@ -707,8 +707,7 @@ suite('SettingsSectionTest', function() {
     await flushTasks();
 
     const changePasswordManagerPinRow =
-        section.shadowRoot!.querySelector<HTMLElement>(
-            '#changePasswordManagerPinRow');
+        $$(section, '#changePasswordManagerPinRow');
 
     assertTrue(!!changePasswordManagerPinRow);
 
@@ -734,6 +733,10 @@ suite('SettingsSectionTest', function() {
   });
 
   test('Disconnect Cloud Authenticator', async function() {
+    syncProxy.syncInfo = {
+      isEligibleForAccountStorage: false,
+      isSyncingPasswords: true,
+    };
     passwordManager.data.isConnectedToCloudAuthenticator = true;
     passwordManager.data.disconnectCloudAuthenticatorSuccessful = true;
 
@@ -742,8 +745,7 @@ suite('SettingsSectionTest', function() {
     await flushTasks();
 
     const disconnectCloudAuthenticatorRow =
-        section.shadowRoot!.querySelector<HTMLElement>(
-            '#disconnectCloudAuthenticatorRow');
+        $$(section, '#disconnectCloudAuthenticatorRow');
     assertTrue(!!disconnectCloudAuthenticatorRow);
 
     const disconnectButton =
@@ -753,13 +755,11 @@ suite('SettingsSectionTest', function() {
     disconnectButton.click();
 
     await eventToPromise('cr-dialog-open', section);
-    const dialog = section.shadowRoot!.querySelector<HTMLElement>(
-        '#disconnectCloudAuthenticatorDialog');
+    const dialog = $$(section, '#disconnectCloudAuthenticatorDialog');
     assertTrue(!!dialog);
 
-    const confirmButton =
-        dialog?.shadowRoot!.querySelector<HTMLElement>('#confirmButton');
-    assertTrue(!!confirmButton);
+    const confirmButton = $$(dialog, '#confirmButton')!;
+    assertTrue(isVisible(confirmButton));
 
     confirmButton.click();
     await passwordManager.whenCalled('disconnectCloudAuthenticator');
@@ -777,7 +777,7 @@ suite('SettingsSectionTest', function() {
     document.body.appendChild(section);
     await flushTasks();
 
-    assertTrue(!!section.shadowRoot!.querySelector('full-data-reset'));
+    assertTrue(isVisible($$(section, 'full-data-reset')));
   });
 
   test(
@@ -789,6 +789,6 @@ suite('SettingsSectionTest', function() {
         document.body.appendChild(section);
         await flushTasks();
 
-        assertFalse(!!section.shadowRoot!.querySelector('full-data-reset'));
+        assertFalse(isVisible($$(section, 'full-data-reset')));
       });
 });

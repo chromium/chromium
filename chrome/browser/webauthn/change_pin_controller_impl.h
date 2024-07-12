@@ -6,8 +6,12 @@
 #define CHROME_BROWSER_WEBAUTHN_CHANGE_PIN_CONTROLLER_IMPL_H_
 
 #include <memory>
+#include <optional>
+#include <string>
 
-#include "base/supports_user_data.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/change_pin_controller.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -15,10 +19,6 @@
 namespace content {
 class WebContents;
 }  // namespace content
-
-namespace syncer {
-class SyncService;
-}  // namespace syncer
 
 struct AuthenticatorRequestDialogModel;
 class EnclaveManager;
@@ -114,8 +114,6 @@ class ChangePinControllerImpl
   SuccessCallback notify_pin_change_callback_;
   // EnclaveManager is a KeyedService.
   raw_ptr<EnclaveManager> enclave_manager_ = nullptr;
-  // SyncService is a KeyedService.
-  raw_ptr<syncer::SyncService> sync_service_ = nullptr;
   std::optional<std::string> rapt_ = std::nullopt;
 
   base::ScopedObservation<AuthenticatorRequestDialogModel,

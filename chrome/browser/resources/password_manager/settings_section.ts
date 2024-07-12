@@ -159,8 +159,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   static get observers() {
     return [
       'updateIsPasswordManagerPinAvailable_(isSyncingPasswords)',
-      // TODO(b/338959659):
-      //'updateIsCloudAuthenticatorConnected_(isSyncingPasswords)',
+      'updateIsCloudAuthenticatorConnected_(isSyncingPasswords)',
     ];
   }
 
@@ -433,7 +432,8 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
 
   private updateIsPasswordManagerPinAvailable_() {
     PasswordManagerImpl.getInstance().isPasswordManagerPinAvailable().then(
-        available => this.isPasswordManagerPinAvailable_ = available);
+        available => this.isPasswordManagerPinAvailable_ =
+            available && this.isSyncingPasswords);
   }
 
   private onChangePasswordManagerPinRowClick_() {
@@ -443,7 +443,8 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
 
   private updateIsCloudAuthenticatorConnected_() {
     PasswordManagerImpl.getInstance().isConnectedToCloudAuthenticator().then(
-        connected => this.isConnectedToCloudAuthenticator_ = connected);
+        connected => this.isConnectedToCloudAuthenticator_ =
+            connected && this.isSyncingPasswords);
   }
 
   private onDisconnectCloudAuthenticatorClick_() {
@@ -457,6 +458,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   private onDisconnectCloudAuthenticator_(e: CustomEvent): void {
     this.isDisconnectCloudAuthenticatorInProgress_ = false;
     this.updateIsCloudAuthenticatorConnected_();
+    this.updateIsPasswordManagerPinAvailable_();
     if (e.detail.success) {
       this.showToastForCloudAuthenticatorDisconnected_();
     }
