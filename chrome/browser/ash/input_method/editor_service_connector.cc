@@ -47,7 +47,15 @@ orca::mojom::EditorConfigPtr GenerateConfig() {
 
 }  // namespace
 
-EditorServiceConnector::EditorServiceConnector() {
+EditorServiceConnector::EditorServiceConnector() {}
+
+EditorServiceConnector::~EditorServiceConnector() = default;
+
+bool EditorServiceConnector::SetUpNewEditorService() {
+  if (IsBound()) {
+    return false;
+  }
+
   content::ServiceProcessHost::Launch(
       remote_orca_service_connector_.BindNewPipeAndPassReceiver(),
       content::ServiceProcessHost::Options()
@@ -56,9 +64,9 @@ EditorServiceConnector::EditorServiceConnector() {
           .Pass());
 
   remote_orca_service_connector_.reset_on_disconnect();
-}
 
-EditorServiceConnector::~EditorServiceConnector() = default;
+  return true;
+}
 
 void EditorServiceConnector::BindEditor(
     mojo::PendingAssociatedReceiver<orca::mojom::EditorClientConnector>
