@@ -149,7 +149,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                             onToolbarAlphaChange,
                             userEducationHelper);
         }
-        return Pair.create(new TabSwitcherPaneAdapter(pane), pane);
+        return Pair.create(pane, pane);
     }
 
     @Override

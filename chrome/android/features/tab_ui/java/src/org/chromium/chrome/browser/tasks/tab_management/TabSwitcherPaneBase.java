@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.hub.ShrinkExpandAnimationData;
 import org.chromium.chrome.browser.hub.ShrinkExpandHubLayoutAnimationFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
+import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.tab_ui.R;
@@ -59,7 +60,7 @@ import java.util.function.DoubleConsumer;
  * An abstract {@link Pane} representing a tab switcher for shared logic between the normal and
  * incognito modes.
  */
-public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandler {
+public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitcherResetHandler {
     private static final String TAG = "TabSwitcherPaneBase";
 
     protected final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonDataSupplier =
@@ -354,6 +355,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
         assert false : "Not reached.";
     }
 
+    @Override
     public void initWithNative() {
         if (mNativeInitialized) return;
 
@@ -366,6 +368,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
     }
 
     /** Returns a {@link Supplier} that provides dialog visibility information. */
+    @Override
     public @Nullable Supplier<Boolean> getTabGridDialogVisibilitySupplier() {
         @Nullable
         TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
@@ -374,11 +377,13 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
     }
 
     /** Returns a {@link TabSwitcherCustomViewManager} for supplying custom views. */
+    @Override
     public @Nullable TabSwitcherCustomViewManager getTabSwitcherCustomViewManager() {
         return mTabSwitcherCustomViewManager;
     }
 
     /** Returns the number of elements in the tab switcher's tab list model. */
+    @Override
     public int getTabSwitcherTabListModelSize() {
         @Nullable
         TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
@@ -387,6 +392,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
     }
 
     /** Set the tab switcher's RecyclerViewPosition. */
+    @Override
     public void setTabSwitcherRecyclerViewPosition(RecyclerViewPosition position) {
         @Nullable
         TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
@@ -395,6 +401,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
     }
 
     /** Show the Quick Delete animation on the tab list . */
+    @Override
     public void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs) {
         @Nullable
         TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
@@ -403,6 +410,19 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
             return;
         }
         coordinator.showQuickDeleteAnimation(onAnimationEnd, tabs);
+    }
+
+    /**
+     * Open the invitation modal on top of the tab switcher view when an invitation intent is
+     * intercepted.
+     *
+     * @param invitationId The id of the invitation.
+     */
+    @Override
+    public void openInvitationModal(String invitationId) {
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        if (coordinator == null) return;
+        coordinator.openInvitationModal(invitationId);
     }
 
     /**
@@ -572,18 +592,6 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
         mHandler.removeCallbacks(mSoftCleanupRunnable);
         mHandler.removeCallbacks(mHardCleanupRunnable);
         mHandler.removeCallbacks(mDestroyCoordinatorRunnable);
-    }
-
-    /**
-     * Open the invitation modal on top of the tab switcher view when an invitation intent is
-     * intercepted.
-     *
-     * @param invitationId The id of the invitation.
-     */
-    public void openInvitationModal(String invitationId) {
-        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
-        if (coordinator == null) return;
-        coordinator.openInvitationModal(invitationId);
     }
 
     void softCleanupForTesting() {
