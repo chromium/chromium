@@ -186,7 +186,7 @@ base::Value GenerateNonAgeOpenid4VpRequest() {
 
 TEST_F(DigitalIdentityRequestImplTest,
        ComputeIntersitialType_OnlyNonAgeDataElement) {
-  EXPECT_EQ(InterstitialType::kHighRisk,
+  EXPECT_EQ(InterstitialType::kLowRisk,
             ComputeInterstitialType(GenerateNonAgeOpenid4VpRequest()));
 }
 
@@ -205,7 +205,7 @@ TEST_F(DigitalIdentityRequestImplTest, ComputeInterstitialType_EmptyPathList) {
   ASSERT_TRUE(IsNonEmptyList(paths));
   paths->GetList().resize(0);
 
-  EXPECT_EQ(InterstitialType::kHighRisk,
+  EXPECT_EQ(InterstitialType::kLowRisk,
             ComputeInterstitialType(std::move(request)));
 }
 
@@ -218,7 +218,7 @@ TEST_F(DigitalIdentityRequestImplTest,
   base::Value::List& path_list = paths->GetList();
   path_list.Append(path_list.front().Clone());
 
-  EXPECT_EQ(InterstitialType::kHighRisk,
+  EXPECT_EQ(InterstitialType::kLowRisk,
             ComputeInterstitialType(std::move(request)));
 }
 
@@ -228,7 +228,7 @@ TEST_F(DigitalIdentityRequestImplTest, ComputeInterstitialType_NoPath) {
   ASSERT_TRUE(IsNonEmptyList(fields));
   RemoveDictKey(fields->GetList().front().GetDict(), "path");
 
-  EXPECT_EQ(InterstitialType::kHighRisk,
+  EXPECT_EQ(InterstitialType::kLowRisk,
             ComputeInterstitialType(std::move(request)));
 }
 
@@ -239,7 +239,7 @@ TEST_F(DigitalIdentityRequestImplTest,
   ASSERT_TRUE(IsNonEmptyList(fields));
   fields->GetList().resize(0);
 
-  EXPECT_EQ(InterstitialType::kHighRisk,
+  EXPECT_EQ(InterstitialType::kLowRisk,
             ComputeInterstitialType(std::move(request)));
 }
 
@@ -256,7 +256,7 @@ TEST_F(DigitalIdentityRequestImplTest,
   })");
   fields->GetList().Append(std::move(new_field));
 
-  EXPECT_EQ(InterstitialType::kHighRisk,
+  EXPECT_EQ(InterstitialType::kLowRisk,
             ComputeInterstitialType(std::move(request)));
 }
 
@@ -273,7 +273,7 @@ TEST_F(DigitalIdentityRequestImplTest,
   })");
   fields->GetList().Append(std::move(new_field));
 
-  EXPECT_EQ(InterstitialType::kHighRisk,
+  EXPECT_EQ(InterstitialType::kLowRisk,
             ComputeInterstitialType(std::move(request)));
 }
 
@@ -284,7 +284,7 @@ TEST_F(DigitalIdentityRequestImplTest, ComputeInterstitialType_NoConstraints) {
   ASSERT_TRUE(IsNonEmptyList(input_descriptors));
   RemoveDictKey(input_descriptors->GetList().front().GetDict(), "constraints");
 
-  EXPECT_EQ(InterstitialType::kHighRisk,
+  EXPECT_EQ(InterstitialType::kLowRisk,
             ComputeInterstitialType(std::move(request)));
 }
 
@@ -296,7 +296,7 @@ TEST_F(DigitalIdentityRequestImplTest,
   ASSERT_TRUE(IsNonEmptyList(input_descriptors));
   input_descriptors->GetList().resize(0);
 
-  EXPECT_EQ(InterstitialType::kHighRisk,
+  EXPECT_EQ(InterstitialType::kLowRisk,
             ComputeInterstitialType(std::move(request)));
 }
 
@@ -310,7 +310,7 @@ TEST_F(DigitalIdentityRequestImplTest,
   base::Value::List& input_descriptor_list = input_descriptors->GetList();
   input_descriptor_list.Append(input_descriptor_list.front().Clone());
 
-  EXPECT_EQ(InterstitialType::kHighRisk,
+  EXPECT_EQ(InterstitialType::kLowRisk,
             ComputeInterstitialType(std::move(request)));
 }
 
@@ -325,7 +325,7 @@ TEST_F(DigitalIdentityRequestImplTest,
   ASSERT_TRUE(input_descriptor_list.front().is_dict());
   input_descriptor_list.front().GetDict().Set("id", "not_mdl");
 
-  EXPECT_EQ(InterstitialType::kHighRisk,
+  EXPECT_EQ(InterstitialType::kLowRisk,
             ComputeInterstitialType(std::move(request)));
 }
 
@@ -334,7 +334,7 @@ TEST_F(DigitalIdentityRequestImplTest,
   base::Value request = GenerateOnlyAgeOpenid4VpRequest();
   RemoveDictKey(request.GetDict(), "presentation_definition");
 
-  EXPECT_EQ(InterstitialType::kHighRisk,
+  EXPECT_EQ(InterstitialType::kLowRisk,
             ComputeInterstitialType(std::move(request)));
 }
 

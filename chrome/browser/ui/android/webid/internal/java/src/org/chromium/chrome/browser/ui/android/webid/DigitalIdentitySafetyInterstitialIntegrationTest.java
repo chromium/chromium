@@ -241,16 +241,16 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
     }
 
     /**
-     * Test that the high risk interstitial is shown when credentials other than age are requested.
+     * Test that the low risk interstitial is shown when credentials other than age are requested.
      */
     @Test
     @LargeTest
     @EnableFeatures("WebIdentityDigitalCredentials:dialog/default")
-    public void testShowHighRiskInterstitialWhenRequestCredentialsOtherThanAge()
+    public void testShowLowRiskInterstitialWhenRequestCredentialsOtherThanAge()
             throws TimeoutException {
         checkDigitalIdentityRequestWithDialogFieldTrialParam(
                 "request_age_and_name_button",
-                R.string.digital_identity_interstitial_high_risk_dialog_text);
+                R.string.digital_identity_interstitial_low_risk_dialog_text);
     }
 
     /** Test that no interstitial is shown by default. */

@@ -55,28 +55,19 @@ void DigitalIdentitySafetyInterstitialControllerDesktop::ShowInterstitialImpl(
     content::WebContents& web_contents,
     bool was_request_aborted) {
   int body_resource_id = 0;
-  int positive_button_label_resource_id = 0;
-  ui::ButtonStyle positive_button_style = ui::ButtonStyle::kDefault;
-  ui::ButtonStyle negative_button_style = ui::ButtonStyle::kDefault;
-  ui::DialogButton default_button = ui::DialogButton::DIALOG_BUTTON_OK;
+  int negative_button_label_resource_id = 0;
   switch (interstitial_type_) {
     case InterstitialType::kHighRisk:
       body_resource_id =
           IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_HIGH_RISK_DIALOG_TEXT;
-      positive_button_label_resource_id =
-          IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_HIGH_RISK_POSITIVE_BUTTON_TEXT;
-      positive_button_style = ui::ButtonStyle::kText;
-      negative_button_style = ui::ButtonStyle::kProminent;
-      default_button = ui::DialogButton::DIALOG_BUTTON_CANCEL;
+      negative_button_label_resource_id =
+          IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_HIGH_RISK_NEGATIVE_BUTTON_TEXT;
       break;
     case InterstitialType::kLowRisk:
       body_resource_id =
           IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_LOW_RISK_DIALOG_TEXT;
-      positive_button_label_resource_id =
-          IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_LOW_RISK_POSITIVE_BUTTON_TEXT;
-      positive_button_style = ui::ButtonStyle::kProminent;
-      negative_button_style = ui::ButtonStyle::kText;
-      default_button = ui::DialogButton::DIALOG_BUTTON_OK;
+      negative_button_label_resource_id =
+          IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_LOW_RISK_NEGATIVE_BUTTON_TEXT;
       break;
   }
 
@@ -87,10 +78,10 @@ void DigitalIdentitySafetyInterstitialControllerDesktop::ShowInterstitialImpl(
           rp_origin_, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
   std::u16string body_text =
       l10n_util::GetStringFUTF16(body_resource_id, formatted_origin);
-  std::u16string positive_button_label =
-      l10n_util::GetStringUTF16(positive_button_label_resource_id);
-  std::u16string negative_button_label = l10n_util::GetStringUTF16(
-      IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_NEGATIVE_BUTTON_TEXT);
+  std::u16string positive_button_label = l10n_util::GetStringUTF16(
+      IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_POSITIVE_BUTTON_TEXT);
+  std::u16string negative_button_label =
+      l10n_util::GetStringUTF16(negative_button_label_resource_id);
 
   ui::DialogModel::Builder dialog_model_builder(
       std::make_unique<ui::DialogModelDelegate>());
@@ -101,7 +92,7 @@ void DigitalIdentitySafetyInterstitialControllerDesktop::ShowInterstitialImpl(
                          weak_ptr_factory_.GetWeakPtr()),
           DialogButton::Params()
               .SetLabel(positive_button_label)
-              .SetStyle(positive_button_style)
+              .SetStyle(ui::ButtonStyle::kText)
               .SetEnabled(positive_button_enabled))
       .AddCancelButton(
           base::BindOnce(&DigitalIdentitySafetyInterstitialControllerDesktop::
@@ -109,8 +100,8 @@ void DigitalIdentitySafetyInterstitialControllerDesktop::ShowInterstitialImpl(
                          weak_ptr_factory_.GetWeakPtr()),
           DialogButton::Params()
               .SetLabel(negative_button_label)
-              .SetStyle(negative_button_style))
-      .OverrideDefaultButton(default_button)
+              .SetStyle(ui::ButtonStyle::kProminent))
+      .OverrideDefaultButton(ui::DIALOG_BUTTON_CANCEL)
       .SetDialogDestroyingCallback(
           base::BindOnce(&DigitalIdentitySafetyInterstitialControllerDesktop::
                              OnUserDeniedPermission,

@@ -16504,22 +16504,22 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <!-- Interstitial shown prior to making digital identity request to wallet -->
     <!-- Android strings are declared in android_chrome_strings.grd. -->
     <message name="IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_DIALOG_TITLE" translateable="false">
-      Caution
+      Make sure you trust this site with your data
     </message>
     <message name="IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_LOW_RISK_DIALOG_TEXT" translateable="false">
-      <ph name="WEBSITE_ORIGIN">$1<ex>www.cheapalcohol.com</ex></ph> would like to ask Android to give you options for sharing your identity information.
+      <ph name="WEBSITE_ORIGIN">$1<ex>www.cheapalcohol.com</ex></ph> wants to use personal info from your digital wallet. Only continue if you trust this site.
     </message>
-    <message name="IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_LOW_RISK_POSITIVE_BUTTON_TEXT" translateable="false">
-      Share
+    <message name="IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_LOW_RISK_NEGATIVE_BUTTON_TEXT" translateable="false">
+      Cancel
     </message>
     <message name="IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_HIGH_RISK_DIALOG_TEXT" translateable="false">
-      <ph name="WEBSITE_ORIGIN">$1<ex>www.cheapalcohol.com</ex></ph> would like to ask Android for access to your identity. Chrome cannot determine what privacy risks this may pose.
+      <ph name="WEBSITE_ORIGIN">$1<ex>www.cheapalcohol.com</ex></ph> wants to use personal info from your digital wallet. Only continue if you trust this site. Dangerous sites might trick you into revealing things like your legal name or ID number.
     </message>
-    <message name="IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_HIGH_RISK_POSITIVE_BUTTON_TEXT" translateable="false">
-      Share Anyway
+    <message name="IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_HIGH_RISK_NEGATIVE_BUTTON_TEXT" translateable="false">
+      Back to safety
     </message>
-    <message name="IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_NEGATIVE_BUTTON_TEXT" translateable="false">
-      Do Not Share
+    <message name="IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_POSITIVE_BUTTON_TEXT" translateable="false">
+      Continue
     </message>
     <message name="IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_REQUEST_ABORTED_DIALOG_TEXT" translateable="false">
       <ph name="WEBSITE_ORIGIN">$1<ex>www.cheapalcohol.com</ex></ph> has canceled the request for identity information.

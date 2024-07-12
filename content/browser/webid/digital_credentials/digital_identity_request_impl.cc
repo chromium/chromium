@@ -206,7 +206,7 @@ DigitalIdentityRequestImpl::ComputeInterstitialType(
   return (request.has_value() &&
           CanRequestCredentialBypassInterstitial(*request))
              ? std::nullopt
-             : std::optional<InterstitialType>(InterstitialType::kHighRisk);
+             : std::optional<InterstitialType>(InterstitialType::kLowRisk);
 }
 
 DigitalIdentityRequestImpl::DigitalIdentityRequestImpl(
