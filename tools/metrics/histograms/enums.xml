@@ -11254,6 +11254,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5029" label="CrossOriginOpenerPolicyNoopenerAllowPopups"/>
   <int value="5030"
       label="CrossOriginOpenerPolicyNoopenerAllowPopupsReportOnly"/>
+  <int value="5031" label="V8ConsoleContext"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
