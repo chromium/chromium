@@ -11,6 +11,11 @@
 
 namespace flag_descriptions {
 
+const char kAppBackgroundRefreshName[] = "Enable app background refresh";
+const char kAppBackgroundRefreshDescription[] =
+    "Schedules app background refresh after some minimum period of time has "
+    "passed after the last refresh.";
+
 const char kAutofillCreditCardUploadName[] =
     "Offers uploading Autofilled credit cards";
 const char kAutofillCreditCardUploadDescription[] =

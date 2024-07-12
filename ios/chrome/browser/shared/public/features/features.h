@@ -712,4 +712,11 @@ BASE_DECLARE_FEATURE(kHomeCustomization);
 // Returns true if Home Customization is enabled.
 bool IsHomeCustomizationEnabled();
 
+// Feature flag to enable app background refresh.
+// Use IsAppBackgroundRefreshEnabled() instead of this constant directly.
+BASE_DECLARE_FEATURE(kEnableAppBackgroundRefresh);
+
+// Whether app background refresh is enabled.
+bool IsAppBackgroundRefreshEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

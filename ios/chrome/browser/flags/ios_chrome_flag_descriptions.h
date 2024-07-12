@@ -13,6 +13,10 @@
 
 namespace flag_descriptions {
 
+// Title and description for the flag that disables app background refresh.
+extern const char kAppBackgroundRefreshName[];
+extern const char kAppBackgroundRefreshDescription[];
+
 // Title and description for the flag to control upstreaming credit cards.
 extern const char kAutofillCreditCardUploadName[];
 extern const char kAutofillCreditCardUploadDescription[];

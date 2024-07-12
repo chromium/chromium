@@ -889,3 +889,11 @@ BASE_FEATURE(kHomeCustomization,
 bool IsHomeCustomizationEnabled() {
   return base::FeatureList::IsEnabled(kHomeCustomization);
 }
+
+BASE_FEATURE(kEnableAppBackgroundRefresh,
+             "EnableAppBackgroundRefresh",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAppBackgroundRefreshEnabled() {
+  return base::FeatureList::IsEnabled(kEnableAppBackgroundRefresh);
+}
