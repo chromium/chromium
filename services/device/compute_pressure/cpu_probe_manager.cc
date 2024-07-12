@@ -131,6 +131,18 @@ void CpuProbeManager::Stop() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
+system_cpu::CpuProbe* CpuProbeManager::cpu_probe() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return system_cpu_probe_.get();
+}
+
+const std::array<double,
+                 static_cast<size_t>(mojom::PressureState::kMaxValue) + 1>&
+CpuProbeManager::state_thresholds() const {
+  return state_randomization_requested_ ? kStateRandomizedThresholds
+                                        : kStateBaseThresholds;
+}
+
 void CpuProbeManager::ToggleStateRandomization() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -160,9 +172,7 @@ mojom::PressureState CpuProbeManager::CalculateState(
   // PressureState using CpuSample needs to be determined.
   // At this moment the algorithm is the simplest possible
   // with thresholds defining the state.
-  const auto& kStateThresholds = state_randomization_requested_
-                                     ? kStateRandomizedThresholds
-                                     : kStateBaseThresholds;
+  const auto& kStateThresholds = state_thresholds();
 
   auto it = base::ranges::lower_bound(kStateThresholds, sample.cpu_utilization);
   if (it == kStateThresholds.end()) {
@@ -189,11 +199,6 @@ void CpuProbeManager::SetCpuProbeForTesting(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!timer_.IsRunning());
   system_cpu_probe_ = std::move(cpu_probe);
-}
-
-system_cpu::CpuProbe* CpuProbeManager::GetCpuProbeForTesting() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return system_cpu_probe_.get();
 }
 
 }  // namespace device

@@ -26,6 +26,7 @@ bool FakePressureManager::is_bound() const {
 void FakePressureManager::AddClient(
     mojo::PendingRemote<mojom::PressureClient> client,
     mojom::PressureSource source,
+    const std::optional<base::UnguessableToken>& token,
     AddClientCallback callback) {
   if (is_supported_) {
     clients_[source].Add(std::move(client));

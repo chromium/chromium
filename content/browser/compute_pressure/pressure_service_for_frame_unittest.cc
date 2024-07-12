@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "content/browser/compute_pressure/pressure_client_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/test/navigation_simulator.h"
@@ -275,9 +276,10 @@ class InterceptingFakePressureManager : public device::FakePressureManager {
 
   void AddClient(mojo::PendingRemote<device::mojom::PressureClient> client,
                  device::mojom::PressureSource source,
+                 const std::optional<base::UnguessableToken>& token,
                  AddClientCallback callback) override {
     std::move(interception_callback_).Run();
-    device::FakePressureManager::AddClient(std::move(client), source,
+    device::FakePressureManager::AddClient(std::move(client), source, token,
                                            std::move(callback));
   }
 

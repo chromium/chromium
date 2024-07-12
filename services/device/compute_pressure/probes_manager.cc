@@ -16,11 +16,14 @@ ProbesManager::ProbesManager(base::TimeDelta sampling_interval)
     // base::Unretained usage is safe here because the callback is only run
     // while `cpu_probe_manager_` is alive, and `cpu_probe_manager_` is owned by
     // this instance.
-    : cpu_probe_manager_(CpuProbeManager::Create(
-          sampling_interval,
+    : sampling_interval_(sampling_interval),
+      cpu_probe_sampling_callback_(
           base::BindRepeating(&ProbesManager::UpdateClients,
                               base::Unretained(this),
-                              mojom::PressureSource::kCpu))) {
+                              mojom::PressureSource::kCpu)),
+      cpu_probe_manager_(
+          CpuProbeManager::Create(sampling_interval,
+                                  cpu_probe_sampling_callback_)) {
   constexpr size_t kPressureSourceSize =
       static_cast<size_t>(mojom::PressureSource::kMaxValue) + 1u;
   for (size_t source_index = 0u; source_index < kPressureSourceSize;
@@ -54,6 +57,10 @@ mojom::PressureStatus ProbesManager::AddClient(
   }
 }
 
+base::TimeDelta ProbesManager::sampling_interval() const {
+  return sampling_interval_;
+}
+
 void ProbesManager::UpdateClients(mojom::PressureSource source,
                                   mojom::PressureState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -73,27 +80,29 @@ void ProbesManager::OnClientRemoteDisconnected(
   if (clients_[source].empty()) {
     switch (source) {
       case mojom::PressureSource::kCpu: {
-        cpu_probe_manager_->Stop();
+        if (cpu_probe_manager_) {
+          cpu_probe_manager_->Stop();
+        }
         return;
       }
     }
   }
 }
 
-void ProbesManager::SetCpuProbeForTesting(
-    std::unique_ptr<system_cpu::CpuProbe> cpu_probe) {
+CpuProbeManager* ProbesManager::cpu_probe_manager() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return cpu_probe_manager_.get();
+}
 
-  constexpr base::TimeDelta kDefaultSamplingIntervalForTesting =
-      base::Milliseconds(10);
+void ProbesManager::set_cpu_probe_manager(
+    std::unique_ptr<CpuProbeManager> cpu_probe_manager) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  cpu_probe_manager_ = std::move(cpu_probe_manager);
+}
 
-  // base::Unretained usage is safe here because the callback is only run
-  // while `cpu_probe_manager_` is alive, and `cpu_probe_manager_` is owned by
-  // this instance.
-  cpu_probe_manager_ = CpuProbeManager::CreateForTesting(
-      std::move(cpu_probe), kDefaultSamplingIntervalForTesting,
-      base::BindRepeating(&ProbesManager::UpdateClients, base::Unretained(this),
-                          mojom::PressureSource::kCpu));
+const base::RepeatingCallback<void(mojom::PressureState)>&
+ProbesManager::cpu_probe_sampling_callback() const {
+  return cpu_probe_sampling_callback_;
 }
 
 }  // namespace device

@@ -86,6 +86,11 @@ class CpuProbeManagerTest : public ::testing::TestWithParam<ResponseDelay> {
     }
   }
 
+  void SetProbeSample(CpuSample cpu_sample) {
+    static_cast<FakeCpuProbe*>(cpu_probe_manager_->cpu_probe())
+        ->SetLastSample(cpu_sample);
+  }
+
  protected:
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -138,15 +143,14 @@ TEST_P(CpuProbeManagerTest, CreateCpuProbeExists) {
   std::unique_ptr<CpuProbeManager> cpu_probe_manager =
       CpuProbeManager::Create(TestTimeouts::tiny_timeout(), base::DoNothing());
   if (cpu_probe_manager) {
-    EXPECT_TRUE(!!cpu_probe_manager->GetCpuProbeForTesting());
+    EXPECT_TRUE(!!cpu_probe_manager->cpu_probe());
   }
 }
 
 TEST_P(CpuProbeManagerTest, EnsureStarted) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  static_cast<FakeCpuProbe*>(cpu_probe_manager_->GetCpuProbeForTesting())
-      ->SetLastSample(std::make_optional(CpuSample{0.9}));
+  SetProbeSample(CpuSample{0.9});
   cpu_probe_manager_->EnsureStarted();
   WaitForUpdate();
 
@@ -185,8 +189,7 @@ TEST_P(CpuProbeManagerDeathTest, CalculateStateValueTooLarge) {
 TEST_P(CpuProbeManagerTest, EnsureStartedCheckBreakCalibrationMitigation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  static_cast<FakeCpuProbe*>(cpu_probe_manager_->GetCpuProbeForTesting())
-      ->SetLastSample(CpuSample{0.86});
+  SetProbeSample(CpuSample{0.86});
   cpu_probe_manager_->EnsureStarted();
   WaitForUpdate();
   EXPECT_THAT(samples_.back(),
@@ -195,8 +198,7 @@ TEST_P(CpuProbeManagerTest, EnsureStartedCheckBreakCalibrationMitigation) {
   cpu_probe_manager_->Stop();
   samples_.clear();
 
-  static_cast<FakeCpuProbe*>(cpu_probe_manager_->GetCpuProbeForTesting())
-      ->SetLastSample(CpuSample{0.86});
+  SetProbeSample(CpuSample{0.86});
   cpu_probe_manager_->EnsureStarted();
   WaitForUpdate();
   // First toggling.
@@ -374,8 +376,7 @@ TEST_P(CpuProbeManagerDelayedResponseTest, StopDelayedEnsureStartedImmediate) {
   cpu_probe_manager_->Stop();
 
   samples_.clear();
-  static_cast<FakeCpuProbe*>(cpu_probe_manager_->GetCpuProbeForTesting())
-      ->SetLastSample(CpuSample{0.9});
+  SetProbeSample(CpuSample{0.9});
 
   cpu_probe_manager_->EnsureStarted();
   WaitForUpdate();
@@ -390,8 +391,7 @@ TEST_P(CpuProbeManagerDelayedResponseTest, StopDelayedEnsureStartedDelayed) {
   WaitForUpdate();
   cpu_probe_manager_->Stop();
   samples_.clear();
-  static_cast<FakeCpuProbe*>(cpu_probe_manager_->GetCpuProbeForTesting())
-      ->SetLastSample(CpuSample{0.9});
+  SetProbeSample(CpuSample{0.9});
 
   task_environment_.FastForwardBy(TestTimeouts::action_timeout());
   cpu_probe_manager_->EnsureStarted();
@@ -408,8 +408,7 @@ TEST_P(CpuProbeManagerDelayedResponseTest,
   cpu_probe_manager_->Stop();
 
   samples_.clear();
-  static_cast<FakeCpuProbe*>(cpu_probe_manager_->GetCpuProbeForTesting())
-      ->SetLastSample(CpuSample{0.9});
+  SetProbeSample(CpuSample{0.9});
 
   cpu_probe_manager_->EnsureStarted();
   WaitForUpdate();
@@ -424,8 +423,7 @@ TEST_P(CpuProbeManagerDelayedResponseTest, StopImmediateEnsureStartedDelayed) {
   cpu_probe_manager_->Stop();
 
   samples_.clear();
-  static_cast<FakeCpuProbe*>(cpu_probe_manager_->GetCpuProbeForTesting())
-      ->SetLastSample(CpuSample{0.9});
+  SetProbeSample(CpuSample{0.9});
 
   task_environment_.FastForwardBy(TestTimeouts::action_timeout());
   cpu_probe_manager_->EnsureStarted();
@@ -442,8 +440,7 @@ TEST_P(CpuProbeManagerDelayedResponseTest, StopEnsureStartedNoRace) {
     GTEST_SKIP();
   }
 
-  static_cast<FakeCpuProbe*>(cpu_probe_manager_->GetCpuProbeForTesting())
-      ->SetLastSample(CpuSample{0.9});
+  SetProbeSample(CpuSample{0.9});
 
   cpu_probe_manager_->EnsureStarted();
 
@@ -453,8 +450,7 @@ TEST_P(CpuProbeManagerDelayedResponseTest, StopEnsureStartedNoRace) {
 
   cpu_probe_manager_->Stop();
   EXPECT_THAT(samples_, ::testing::IsEmpty());
-  static_cast<FakeCpuProbe*>(cpu_probe_manager_->GetCpuProbeForTesting())
-      ->SetLastSample(CpuSample{0.65});
+  SetProbeSample(CpuSample{0.65});
   cpu_probe_manager_->EnsureStarted();
 
   WaitForUpdate();

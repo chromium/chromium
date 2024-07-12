@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/system_cpu/cpu_sample.h"
 #include "services/device/public/mojom/pressure_update.mojom-shared.h"
@@ -69,16 +70,24 @@ class CpuProbeManager {
 
   void SetCpuProbeForTesting(std::unique_ptr<system_cpu::CpuProbe>);
 
-  system_cpu::CpuProbe* GetCpuProbeForTesting();
-
- private:
-  friend class PressureManagerImpl;
-  FRIEND_TEST_ALL_PREFIXES(CpuProbeManagerDeathTest,
-                           CalculateStateValueTooLarge);
-
+ protected:
   CpuProbeManager(std::unique_ptr<system_cpu::CpuProbe> system_cpu_probe,
                   base::TimeDelta,
                   base::RepeatingCallback<void(mojom::PressureState)>);
+
+  system_cpu::CpuProbe* cpu_probe();
+
+  // Returns the current thresholds being used for each mojom::PressureState,
+  // taking state randomization into account.
+  const std::array<double,
+                   static_cast<size_t>(mojom::PressureState::kMaxValue) + 1>&
+  state_thresholds() const;
+
+ private:
+  friend class CpuProbeManagerTest;
+  FRIEND_TEST_ALL_PREFIXES(CpuProbeManagerDeathTest,
+                           CalculateStateValueTooLarge);
+  FRIEND_TEST_ALL_PREFIXES(CpuProbeManagerTest, CreateCpuProbeExists);
 
   // Implements the "break calibration" mitigation by toggling the
   // |state_randomization_requested_| flag every |randomization_time_|

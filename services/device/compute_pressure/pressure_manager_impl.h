@@ -8,9 +8,11 @@
 #include <map>
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -21,6 +23,8 @@
 namespace device {
 
 class ProbesManager;
+class VirtualProbesManager;
+
 // Handles the communication between content/browser and services.
 //
 // This class owns one instance of probe for each PressureSource. The probe
@@ -38,7 +42,8 @@ class PressureManagerImpl : public mojom::PressureManager {
   static constexpr base::TimeDelta kDefaultSamplingInterval = base::Seconds(1);
 
   // Factory method for production instances.
-  static std::unique_ptr<PressureManagerImpl> Create();
+  static std::unique_ptr<PressureManagerImpl> Create(
+      base::TimeDelta sampling_interval = kDefaultSamplingInterval);
 
   ~PressureManagerImpl() override;
 
@@ -50,6 +55,7 @@ class PressureManagerImpl : public mojom::PressureManager {
   // device::mojom::PressureManager implementation.
   void AddClient(mojo::PendingRemote<mojom::PressureClient> client,
                  mojom::PressureSource source,
+                 const std::optional<base::UnguessableToken>& token,
                  AddClientCallback callback) override;
 
   ProbesManager* GetProbesManagerForTesting() const;
@@ -59,13 +65,33 @@ class PressureManagerImpl : public mojom::PressureManager {
 
   explicit PressureManagerImpl(base::TimeDelta sampling_interval);
 
+  void AddVirtualPressureSource(
+      const base::UnguessableToken& token,
+      mojom::PressureSource source,
+      mojom::VirtualPressureSourceMetadataPtr metadata,
+      AddVirtualPressureSourceCallback callback) override;
+  void RemoveVirtualPressureSource(
+      const base::UnguessableToken& token,
+      mojom::PressureSource source,
+      RemoveVirtualPressureSourceCallback callback) override;
+  void UpdateVirtualPressureSourceState(
+      const ::base::UnguessableToken& token,
+      mojom::PressureSource source,
+      mojom::PressureState state,
+      UpdateVirtualPressureSourceStateCallback callback) override;
+
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::TimeDelta sampling_interval_;
 
   mojo::ReceiverSet<mojom::PressureManager> receivers_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::unique_ptr<ProbesManager> probes_manager_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::flat_map<base::UnguessableToken, std::unique_ptr<VirtualProbesManager>>
+      virtual_probes_managers_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace device

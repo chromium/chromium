@@ -46,7 +46,7 @@ void PressureClientImpl::AddClient(
     // is owned by this class.
     client_receiver_.set_disconnect_handler(
         base::BindOnce(&PressureClientImpl::Reset, base::Unretained(this)));
-    pressure_manager->AddClient(std::move(pending_remote), source,
+    pressure_manager->AddClient(std::move(pending_remote), source, std::nullopt,
                                 std::move(callback));
   } else {
     std::move(callback).Run(device::mojom::PressureStatus::kOk);
