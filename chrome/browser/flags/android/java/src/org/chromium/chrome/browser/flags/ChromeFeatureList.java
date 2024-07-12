@@ -555,7 +555,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAndroidElegantTextHeight =
             newCachedFlag(ANDROID_ELEGANT_TEXT_HEIGHT, false);
     public static final CachedFlag sAndroidGoogleSansText =
-            newCachedFlag(ANDROID_GOOGLE_SANS_TEXT, false);
+            newCachedFlag(ANDROID_GOOGLE_SANS_TEXT, true);
     public static final CachedFlag sAndroidHubFloatingActionButton =
             newCachedFlag(
                     ANDROID_HUB_FLOATING_ACTION_BUTTON,
