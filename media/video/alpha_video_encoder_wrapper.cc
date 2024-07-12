@@ -170,7 +170,6 @@ void AlphaVideoEncoderWrapper::Encode(scoped_refptr<VideoFrame> frame,
 
     VideoEncoderOutput output = std::move(yuv_output_).value();
     output.alpha_data = std::move(alpha_output_->data);
-    output.alpha_size = alpha_output_->size;
     output_cb_.Run(std::move(output), {});
   }
 

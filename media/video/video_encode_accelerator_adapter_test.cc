@@ -605,7 +605,7 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, DroppedFrame) {
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
           std::optional<VideoEncoder::CodecDescription>) {
-        if (output.size == 0) {
+        if (output.data.empty()) {
           dropped_output_timestamps.push_back(output.timestamp);
           return;
         }

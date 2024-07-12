@@ -1372,7 +1372,7 @@ void VideoEncoder::CallOutputCallback(
 
   MarkCodecActive();
 
-  if (output.size == 0) {
+  if (output.data.empty()) {
     // The encoder drops a frame.WebCodecs doesn't specify a way of signaling
     // a frame was dropped. For now, the output callback is not invoked for the
     // dropped frame. TODO(https://www.w3.org/TR/webcodecs/#encodedvideochunk):
@@ -1380,8 +1380,7 @@ void VideoEncoder::CallOutputCallback(
     return;
   }
 
-  auto buffer = media::DecoderBuffer::FromArray(
-      std::move(output.data).take_first(output.size));
+  auto buffer = media::DecoderBuffer::FromArray(std::move(output.data));
   buffer->set_timestamp(output.timestamp);
   buffer->set_is_key_frame(output.key_frame);
 

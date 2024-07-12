@@ -42,10 +42,7 @@ struct MEDIA_EXPORT VideoEncoderOutput {
   // Feel free take these buffers out and use underlying memory as is without
   // copying.
   base::HeapArray<uint8_t> data;
-  size_t size = 0;
-
   base::HeapArray<uint8_t> alpha_data;
-  size_t alpha_size = 0;
 
   base::TimeDelta timestamp;
   bool key_frame = false;

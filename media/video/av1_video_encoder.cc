@@ -556,7 +556,7 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     if (output.key_frame) {
       temporal_svc_frame_index_ = 0;
     }
-    if (output.size != 0) {
+    if (!output.data.empty()) {
       temporal_svc_frame_index_++;
     }
   }
@@ -652,10 +652,9 @@ VideoEncoderOutput Av1VideoEncoder::GetEncoderOutput(
     if (pkt->kind == AOM_CODEC_CX_FRAME_PKT) {
       // The encoder is operating synchronously. There should be exactly one
       // encoded packet, or the frame is dropped.
-      CHECK_EQ(output.size, 0u);
-      output.size = pkt->data.frame.sz;
-      output.data = base::HeapArray<uint8_t>::Uninit(output.size);
-      memcpy(output.data.data(), pkt->data.frame.buf, output.size);
+      output.data = base::HeapArray<uint8_t>::CopiedFrom(
+          {reinterpret_cast<uint8_t*>(pkt->data.frame.buf),
+           pkt->data.frame.sz});
       output.key_frame = (pkt->data.frame.flags & AOM_FRAME_IS_KEY) != 0;
       output.temporal_id = output.key_frame ? 0 : temporal_id;
       output.color_space = color_space;

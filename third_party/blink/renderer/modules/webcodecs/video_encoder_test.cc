@@ -349,7 +349,6 @@ TEST_F(
                                          media::EncoderStatus::Codes::kOk));
             media::VideoEncoderOutput out;
             out.data = base::HeapArray<uint8_t>::Uninit(100);
-            out.size = 100;
             out.key_frame = true;
             scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
                 FROM_HERE,

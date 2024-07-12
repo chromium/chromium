@@ -785,7 +785,6 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
   VideoEncoderOutput result;
   result.key_frame = metadata.key_frame;
   result.timestamp = metadata.timestamp;
-  result.size = metadata.payload_size_bytes;
   if (metadata.h264.has_value())
     result.temporal_id = metadata.h264.value().temporal_idx;
   else if (metadata.vp9.has_value())
@@ -813,42 +812,37 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
 
   const base::WritableSharedMemoryMapping& mapping =
       output_buffer_handles_[buffer_id]->GetMapping();
-  DCHECK_LE(result.size, mapping.size());
+  DCHECK_LE(metadata.payload_size_bytes, mapping.size());
 
-  if (result.size > 0) {
+  if (metadata.payload_size_bytes > 0) {
     bool stream_converted = false;
+    auto src = mapping.GetMemoryAsSpan<uint8_t>(metadata.payload_size_bytes);
+
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    uint8_t* src = static_cast<uint8_t*>(mapping.memory());
-    size_t dst_size = result.size;
     size_t actual_output_size = 0;
-    auto dst = base::HeapArray<uint8_t>::Uninit(dst_size);
+    auto dst = base::HeapArray<uint8_t>::Uninit(metadata.payload_size_bytes);
     bool config_changed = false;
     media::MP4Status status;
     if (h264_converter_) {
-      status = h264_converter_->ConvertChunk(
-          base::span<uint8_t>(src, result.size), dst, &config_changed,
-          &actual_output_size);
-      if (status.code() == MP4Status::Codes::kBufferTooSmall) {
-        // Between AnnexB and AVCC bitstream formats, the start code length and
-        // the nal size length can be different. See H.264 specification at
-        // http://www.itu.int/rec/T-REC-H.264. Retry the conversion if the
-        // output buffer size is too small.
-        dst_size = actual_output_size;
-        dst = base::HeapArray<uint8_t>::Uninit(dst_size);
-        status = h264_converter_->ConvertChunk(
-            base::span<uint8_t>(src, result.size), dst, &config_changed,
-            &actual_output_size);
-      }
-
-      if (!status.is_ok()) {
-        NotifyErrorStatus(
-            EncoderStatus(EncoderStatus::Codes::kBitstreamConversionError,
-                          "Failed to convert a buffer to h264 chunk")
-                .AddCause(std::move(status)));
-        return;
-      }
-      result.size = actual_output_size;
-      result.data = std::move(dst);
+      do {
+        status = h264_converter_->ConvertChunk(src, dst, &config_changed,
+                                               &actual_output_size);
+        if (status.code() == MP4Status::Codes::kBufferTooSmall) {
+          // Between AnnexB and AVCC bitstream formats, the start code length
+          // and the nal size length can be different. See H.264 specification
+          // at http://www.itu.int/rec/T-REC-H.264. Retry the conversion if the
+          // output buffer size is too small.
+          dst = base::HeapArray<uint8_t>::Uninit(actual_output_size);
+          continue;
+        } else if (!status.is_ok()) {
+          NotifyErrorStatus(
+              EncoderStatus(EncoderStatus::Codes::kBitstreamConversionError,
+                            "Failed to convert a buffer to h264 chunk")
+                  .AddCause(std::move(status)));
+          return;
+        }
+      } while (!status.is_ok());
+      result.data = std::move(dst).take_first(actual_output_size);
       stream_converted = true;
 
       if (config_changed) {
@@ -865,26 +859,21 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC) && \
     BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
       if (h265_converter_) {
-        status = h265_converter_->ConvertChunk(
-            base::span<uint8_t>(src, result.size), dst, &config_changed,
-            &actual_output_size);
-        if (status.code() == MP4Status::Codes::kBufferTooSmall) {
-          dst_size = actual_output_size;
-          dst = base::HeapArray<uint8_t>::Uninit(dst_size);
-          status = h265_converter_->ConvertChunk(
-              base::span<uint8_t>(src, result.size), dst, &config_changed,
-              &actual_output_size);
-        }
-
-        if (!status.is_ok()) {
-          NotifyErrorStatus(
-              EncoderStatus(EncoderStatus::Codes::kBitstreamConversionError,
-                            "Failed to convert a buffer to h265 chunk")
-                  .AddCause(std::move(status)));
-          return;
-        }
-        result.size = actual_output_size;
-        result.data = std::move(dst);
+        do {
+          status = h265_converter_->ConvertChunk(src, dst, &config_changed,
+                                                 &actual_output_size);
+          if (status.code() == MP4Status::Codes::kBufferTooSmall) {
+            dst = base::HeapArray<uint8_t>::Uninit(actual_output_size);
+            continue;
+          } else if (!status.is_ok()) {
+            NotifyErrorStatus(
+                EncoderStatus(EncoderStatus::Codes::kBitstreamConversionError,
+                              "Failed to convert a buffer to h265 chunk")
+                    .AddCause(std::move(status)));
+            return;
+          }
+        } while (!status.is_ok());
+        result.data = std::move(dst).take_first(actual_output_size);
         stream_converted = true;
 
         if (config_changed) {
@@ -903,8 +892,7 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
     }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
     if (!stream_converted) {
-      result.data = base::HeapArray<uint8_t>::Uninit(result.size);
-      memcpy(result.data.data(), mapping.memory(), result.size);
+      result.data = base::HeapArray<uint8_t>::CopiedFrom(src);
     }
   }
 

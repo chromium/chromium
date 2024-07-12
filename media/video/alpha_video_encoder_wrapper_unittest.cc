@@ -224,9 +224,7 @@ TEST_P(AlphaVideoEncoderWrapperTest, OutputCountEqualsFrameCount) {
       [&](VideoEncoderOutput output,
           std::optional<VideoEncoder::CodecDescription> desc) {
         EXPECT_FALSE(output.data.empty());
-        EXPECT_GT(output.size, 0u);
         EXPECT_FALSE(output.alpha_data.empty());
-        EXPECT_GT(output.alpha_size, 0u);
         EXPECT_EQ(output.timestamp, frame_duration * outputs_count);
         outputs_count++;
       });
@@ -265,8 +263,7 @@ TEST_P(AlphaVideoEncoderWrapperTest, EncodeAndDecode) {
   VideoEncoder::OutputCB encoder_output_cb = base::BindLambdaForTesting(
       [&, this](VideoEncoderOutput output,
                 std::optional<VideoEncoder::CodecDescription> desc) {
-        auto buffer = DecoderBuffer::FromArray(
-            std::move(output.data).take_first(output.size));
+        auto buffer = DecoderBuffer::FromArray(std::move(output.data));
         buffer->set_timestamp(output.timestamp);
         buffer->set_is_key_frame(output.key_frame);
         EXPECT_FALSE(output.alpha_data.empty());
