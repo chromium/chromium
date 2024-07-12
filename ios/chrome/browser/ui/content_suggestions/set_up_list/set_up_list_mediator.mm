@@ -119,7 +119,8 @@ bool DefaultBrowserPromoCompleted() {
                         syncService:(syncer::SyncService*)syncService
                     identityManager:(signin::IdentityManager*)identityManager
               authenticationService:(AuthenticationService*)authService
-                         sceneState:(SceneState*)sceneState {
+                         sceneState:(SceneState*)sceneState
+              isDefaultSearchEngine:(BOOL)isDefaultSearchEngine {
   self = [super init];
   if (self) {
     _prefService = prefService;
@@ -171,7 +172,7 @@ bool DefaultBrowserPromoCompleted() {
         IsContentNotificationExperimentEnabled() &&
         IsContentNotificationSetUpListEnabled(
             identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin),
-            self.isDefaultSearchEngine, prefService);
+            isDefaultSearchEngine, prefService);
 
     _setUpList = [SetUpList buildFromPrefs:prefService
                                 localState:_localState

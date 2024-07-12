@@ -61,6 +61,7 @@ class SyncService;
                     identityManager:(signin::IdentityManager*)identityManager
               authenticationService:(AuthenticationService*)authService
                          sceneState:(SceneState*)sceneState
+              isDefaultSearchEngine:(BOOL)isDefaultSearchEngine
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -99,9 +100,6 @@ class SyncService;
 // Recorder for content suggestions metrics.
 @property(nonatomic, weak)
     ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
-
-// `YES` if the user is using Google as default search engine.
-@property(nonatomic, assign) BOOL isDefaultSearchEngine;
 
 @end
 

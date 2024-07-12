@@ -273,7 +273,8 @@ class MagicStackRankingModelTest : public PlatformTest {
                   syncService:syncService
               identityManager:identityManager
         authenticationService:authenticationService
-                   sceneState:scene_state_];
+                   sceneState:scene_state_
+        isDefaultSearchEngine:NO];
     _parcelTrackingMediator = [[FakeParcelTrackingMediator alloc]
         initWithShoppingService:shopping_service_.get()
          URLLoadingBrowserAgent:url_loader_];

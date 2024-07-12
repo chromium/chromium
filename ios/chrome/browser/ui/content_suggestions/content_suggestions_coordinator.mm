@@ -291,16 +291,6 @@
   BOOL isSetupListEnabled = set_up_list_utils::IsSetUpListActive(
       GetApplicationContext()->GetLocalState());
   if (isSetupListEnabled) {
-    _setUpListMediator = [[SetUpListMediator alloc]
-          initWithPrefService:prefs
-                  syncService:syncService
-              identityManager:identityManager
-        authenticationService:authenticationService
-                   sceneState:self.browser->GetSceneState()];
-    _setUpListMediator.commandHandler = self;
-    _setUpListMediator.contentSuggestionsMetricsRecorder =
-        self.contentSuggestionsMetricsRecorder;
-    _setUpListMediator.delegate = self.delegate;
     const TemplateURL* defaultSearchURLTemplate =
         ios::TemplateURLServiceFactory::GetForBrowserState(
             self.browser->GetBrowserState())
@@ -308,7 +298,17 @@
     BOOL isDefaultSearchEngine = defaultSearchURLTemplate &&
                                  defaultSearchURLTemplate->prepopulate_id() ==
                                      TemplateURLPrepopulateData::google.id;
-    _setUpListMediator.isDefaultSearchEngine = isDefaultSearchEngine;
+    _setUpListMediator = [[SetUpListMediator alloc]
+          initWithPrefService:prefs
+                  syncService:syncService
+              identityManager:identityManager
+        authenticationService:authenticationService
+                   sceneState:self.browser->GetSceneState()
+        isDefaultSearchEngine:isDefaultSearchEngine];
+    _setUpListMediator.commandHandler = self;
+    _setUpListMediator.contentSuggestionsMetricsRecorder =
+        self.contentSuggestionsMetricsRecorder;
+    _setUpListMediator.delegate = self.delegate;
     self.contentSuggestionsMediator.setUpListMediator = _setUpListMediator;
     [moduleMediators addObject:_setUpListMediator];
   }
