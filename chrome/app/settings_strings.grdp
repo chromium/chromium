@@ -1376,7 +1376,7 @@
     Inactive tabs appearance
   </message>
   <message name="IDS_SETTINGS_PERFORMANCE_DISCARD_RING_TREATMENT_ENABLED_DESCRIPTION_WITH_LEARN_LINK" desc="Label for a performance settings toggle description that controls whether the inactive tab UI is shown. Also contains a link to the help center article.">
-    A dotted circle appears around site icons. <ph name="BEGIN_LINK">&lt;a href="#" aria-description="$1"&gt;</ph>Learn more about inactive tabs<ph name="END_LINK">&lt;/a&gt;</ph>
+    A dotted circle appears around site icons. <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank" aria-description="$2"&gt;</ph>Learn more about inactive tabs<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_PERFORMANCE_TAB_HOVER_PREVIEW_CARD_LINK_TITLE" desc="Title for the link row that points to tab hover preview card apperance settings.">
     Tab hover preview card appearance
@@ -1388,7 +1388,7 @@
     Performance issue alerts
   </message>
   <message name="IDS_SETTINGS_PERFORMANCE_INTERVENTION_NOTIFICATION_ENABLED_DESCRIPTION" desc="Label for a performance settings toggle that controls whether performance intervention notifications should be shown and link to learn more about performance issue alerts.">
-    Get notifications that suggest ways to improve detected performance issues. <ph name="BEGIN_LINK">&lt;a href="#" aria-description="$1"&gt;</ph>Learn more about performance issue alerts<ph name="END_LINK">&lt;/a&gt;</ph>
+    Get notifications that suggest ways to improve detected performance issues. <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank" aria-description="$2"&gt;</ph>Learn more about performance issue alerts<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
 
   <!-- Languages Page -->

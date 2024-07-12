@@ -864,12 +864,14 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
       "discardRingTreatmentEnabledDescriptionWithLearnLink",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_PERFORMANCE_DISCARD_RING_TREATMENT_ENABLED_DESCRIPTION_WITH_LEARN_LINK,
+          chrome::kDiscardRingTreatmentLearnMoreUrl,
           l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
 
   html_source->AddString(
       "performanceInterventionEnabledDescription",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_PERFORMANCE_INTERVENTION_NOTIFICATION_ENABLED_DESCRIPTION,
+          chrome::kPerformanceInterventionLearnMoreUrl,
           l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
 
   html_source->AddString(
