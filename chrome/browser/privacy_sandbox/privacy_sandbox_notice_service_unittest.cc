@@ -8,6 +8,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_notice_constants.h"
 #include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -25,18 +26,20 @@ class PrivacySandboxNoticeServiceTest : public testing::Test {
     RegisterProfilePrefs(prefs()->registry());
   }
 
+  std::string GetTopicsNoticeName() {
+#if BUILDFLAG(IS_ANDROID)
+    return kTopicsConsentModalClankBrApp;
+#else
+    return kTopicsConsentModal;
+#endif
+  }
+
   TestingPrefServiceSimple* prefs() { return &prefs_; }
 
  private:
   base::test::TaskEnvironment task_env_;
   TestingPrefServiceSimple prefs_;
 };
-
-#if BUILDFLAG(IS_ANDROID)
-constexpr char kTopicsConsentNoticeName[] = "TopicsConsentModalClank";
-#else
-constexpr char kTopicsConsentNoticeName[] = "TopicsConsentModal";
-#endif
 
 // If original prefs are set from Settings, then new prefs shouldn't be set and
 // should be their default values.
@@ -49,7 +52,7 @@ TEST_F(PrivacySandboxNoticeServiceTest,
                    base::Time::FromMillisecondsSinceUnixEpoch(100));
   auto notice_service = PrivacySandboxNoticeService(prefs());
   const auto result = notice_service.GetNoticeStorage()->ReadNoticeData(
-      prefs(), kTopicsConsentNoticeName);
+      prefs(), GetTopicsNoticeName());
   EXPECT_EQ(result->schema_version, 0);
   EXPECT_EQ(result->notice_action_taken,
             NoticeActionTaken::kUnknownActionPreMigration);
@@ -63,7 +66,7 @@ TEST_F(PrivacySandboxNoticeServiceTest,
       static_cast<int>(TopicsConsentUpdateSource::kConfirmation));
   auto notice_service = privacy_sandbox::PrivacySandboxNoticeService(prefs());
   const auto result = notice_service.GetNoticeStorage()->ReadNoticeData(
-      prefs(), kTopicsConsentNoticeName);
+      prefs(), GetTopicsNoticeName());
   EXPECT_EQ(result->schema_version, 0);
   EXPECT_EQ(result->notice_action_taken, NoticeActionTaken::kNotSet);
   EXPECT_EQ(base::TimeToValue(result->notice_action_taken_time), "0");
@@ -79,7 +82,7 @@ TEST_F(PrivacySandboxNoticeServiceTest,
                    base::Time::FromMillisecondsSinceUnixEpoch(100));
   auto notice_service = PrivacySandboxNoticeService(prefs());
   const auto result = notice_service.GetNoticeStorage()->ReadNoticeData(
-      prefs(), kTopicsConsentNoticeName);
+      prefs(), GetTopicsNoticeName());
   EXPECT_EQ(result->schema_version, 0);
   EXPECT_EQ(result->notice_action_taken, NoticeActionTaken::kOptIn);
   EXPECT_EQ(result->notice_action_taken_time,
@@ -96,7 +99,7 @@ TEST_F(PrivacySandboxNoticeServiceTest,
                    base::Time::FromMillisecondsSinceUnixEpoch(100));
   auto notice_service = PrivacySandboxNoticeService(prefs());
   const auto result = notice_service.GetNoticeStorage()->ReadNoticeData(
-      prefs(), kTopicsConsentNoticeName);
+      prefs(), GetTopicsNoticeName());
   EXPECT_EQ(result->schema_version, 0);
   EXPECT_EQ(result->notice_action_taken, NoticeActionTaken::kOptOut);
   EXPECT_EQ(result->notice_action_taken_time,

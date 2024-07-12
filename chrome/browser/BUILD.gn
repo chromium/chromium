@@ -2395,6 +2395,7 @@ static_library("browser") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/privacy_sandbox",
+    "//components/privacy_sandbox:privacy_sandbox_notice_constants",
     "//components/privacy_sandbox:privacy_sandbox_notice_storage",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
     "//components/privacy_sandbox:tpcd",

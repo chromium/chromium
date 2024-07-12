@@ -33,6 +33,12 @@ component("features") {
   public_deps = [ "//base" ]
 }
 
+source_set("privacy_sandbox_notice_constants") {
+  sources = [ "privacy_sandbox_notice_constants.h" ]
+
+  public_deps = [ "//base" ]
+}
+
 source_set("tracking_protection_onboarding") {
   sources = [
     "tracking_protection_onboarding.cc",

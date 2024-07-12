@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/privacy_sandbox_notice_constants.h"
 #include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 
@@ -51,10 +52,12 @@ PrivacySandboxNoticeStorage* PrivacySandboxNoticeService::GetNoticeStorage() {
 void PrivacySandboxNoticeService::MigratePrivacySandboxPrefsToDataModel() {
   // TopicsConsentModal
   {
+// TODO(crbug.com/352577199): Once CCTs are refactored using the storage
+// service, change this migration code to take into account CCTs.
 #if BUILDFLAG(IS_ANDROID)
-    std::string topics_notice_name = "TopicsConsentModalClank";
+    std::string topics_notice_name = kTopicsConsentModalClankBrApp;
 #else
-    std::string topics_notice_name = "TopicsConsentModal";
+    std::string topics_notice_name = kTopicsConsentModal;
 #endif  // BUILDFLAG(IS_ANDROID)
     // Set schema version.
     notice_storage_->SetSchemaVersion(pref_service_, topics_notice_name, 0);
