@@ -7400,3 +7400,6 @@ crbug.com/335895982 [ Linux ] virtual/gethtml-disabled/external/wpt/shadow-dom/d
 
 # Gardener 2024-05-15
 b/40270061 http/tests/inspector-protocol/tracing/runtime-stats.js [ Crash Failure Pass Timeout ]
+
+# Gardener 2024-06-28
+crbug.com/349938120 [ Linux ] wpt_internal/webmidi/requestmidiaccess-basic.https.html [ Failure Pass ]
