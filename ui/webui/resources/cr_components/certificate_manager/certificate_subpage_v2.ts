@@ -1,10 +1,14 @@
-// Copyright 2024 The Chromium Authors
+﻿// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
- * @fileoverview The 'certificate-enterprise-certs-v2' component shows a summary
- * of all enterprise certificates used for server certificate verification.
+ * @fileoverview The 'certificate-subpage-v2' component is designed to show a
+ * subpage. This subpage contains:
+ *
+ *   - header text
+ *   - one or more lists of certs
+ *   - a back button for navigating back to the previous page
  *
  * This component is used in the new Certificate Management UI in
  * ./certificate_manager_v2.ts.
@@ -14,15 +18,12 @@ import './certificate_list_v2.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_icons.css.js';
 
-import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './certificate_enterprise_certs_v2.html.js';
-import {CertificateSource} from './certificate_manager_v2.mojom-webui.js';
+import type {CertificateSource} from './certificate_manager_v2.mojom-webui.js';
+import {getTemplate} from './certificate_subpage_v2.html.js';
 
-const CertificateEnterpriseCertsV2ElementBase = I18nMixin(PolymerElement);
-
-export interface CertificateEnterpriseCertsV2Element {
+export interface CertificateSubpageV2Element {
   $: {
     backButton: HTMLElement,
   };
@@ -34,10 +35,16 @@ declare global {
   }
 }
 
-export class CertificateEnterpriseCertsV2Element extends
-    CertificateEnterpriseCertsV2ElementBase {
+export class SubpageCertificateList {
+  headerText: string;
+  hideExport: boolean;
+  certSource: CertificateSource;
+}
+
+export class CertificateSubpageV2Element extends
+    PolymerElement {
   static get is() {
-    return 'certificate-enterprise-certs-v2';
+    return 'certificate-subpage-v2';
   }
 
   static get template() {
@@ -46,12 +53,13 @@ export class CertificateEnterpriseCertsV2Element extends
 
   static get properties() {
     return {
-      certificateSourceEnum_: {
-        type: Object,
-        value: CertificateSource,
-      },
+      subpageTitle: String,
+      subpageCertLists: Array,
     };
   }
+
+  subpageTitle: string;
+  subpageCertLists: SubpageCertificateList[] = [];
 
   private onBackButtonClick_(e: Event) {
     e.preventDefault();
@@ -62,10 +70,9 @@ export class CertificateEnterpriseCertsV2Element extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'certificate-enterprise-certs-v2': CertificateEnterpriseCertsV2Element;
+    'certificate-subpage-v2': CertificateSubpageV2Element;
   }
 }
 
 customElements.define(
-    CertificateEnterpriseCertsV2Element.is,
-    CertificateEnterpriseCertsV2Element);
+    CertificateSubpageV2Element.is, CertificateSubpageV2Element);

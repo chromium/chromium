@@ -73,6 +73,8 @@ void AddCertificateManagerV2Strings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_NO_CERTIFICATES_ROW},
       {"certificateManagerV2ExportButtonLabel",
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_EXPORT_BUTTON_LABEL},
+      {"certificateManagerV2PlatformCertsTitle",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_TITLE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

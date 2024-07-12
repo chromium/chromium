@@ -149,6 +149,7 @@
 
       <cr-link-row id="viewOsImportedCerts"
           label="View imported certificates from Windows"
+          on-click="onPlatformCertsLinkRowClick_"
           hidden="[[!importOsCertsEnabled_]]">
       </cr-link-row>
       <if expr="is_win or is_macosx">
@@ -181,10 +182,17 @@
       </certificate-list-v2>
     </div>
 
-    <certificate-enterprise-certs-v2 id="adminCertsSection" path="admincerts"
-        on-hash-copied="onHashCopied_"
-        on-navigate-back="onNavigateBack_">
-    </certificate-enterprise-certs-v2>
+    <certificate-subpage-v2 id="adminCertsSection" path="admincerts"
+        on-hash-copied="onHashCopied_" on-navigate-back="onNavigateBack_"
+        subpage-title="[[i18n('certificateManagerV2AdminCertsTitle')]]"
+        subpage-cert-lists="[[enterpriseSubpageLists_]]">
+    </certificate-subpage-v2>
+
+    <certificate-subpage-v2 id="platformCertsSection" path="platformcerts"
+        on-hash-copied="onHashCopied_" on-navigate-back="onNavigateBack_"
+        subpage-title="[[i18n('certificateManagerV2PlatformCertsTitle')]]"
+        subpage-cert-lists="[[platformSubpageLists_]]">
+    </certificate-subpage-v2>
   </iron-pages>
 </div>
 <cr-toast id="toast" duration="5000">

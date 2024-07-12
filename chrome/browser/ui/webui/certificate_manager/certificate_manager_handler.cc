@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/webui/certificate_manager/chrome_root_store_cert_source.h"
 #include "chrome/browser/ui/webui/certificate_manager/client_cert_sources.h"
 #include "chrome/browser/ui/webui/certificate_manager/enterprise_cert_sources.h"
+#include "chrome/browser/ui/webui/certificate_manager/platform_cert_sources.h"
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -84,6 +85,23 @@ CertificateManagerPageHandler::GetCertSource(
       case certificate_manager_v2::mojom::CertificateSource::
           kEnterpriseDistrustedCerts:
         source_ptr = std::make_unique<EnterpriseDistrustedCertSource>(profile_);
+        break;
+      case certificate_manager_v2::mojom::CertificateSource::
+          kPlatformUserTrustedCerts:
+        source_ptr = std::make_unique<PlatformCertSource>(
+            "trusted_certs", cert_verifier::mojom::CertificateTrust::kTrusted);
+        break;
+      case certificate_manager_v2::mojom::CertificateSource::
+          kPlatformUserIntermediateCerts:
+        source_ptr = std::make_unique<PlatformCertSource>(
+            "intermediate_certs",
+            cert_verifier::mojom::CertificateTrust::kUnspecified);
+        break;
+      case certificate_manager_v2::mojom::CertificateSource::
+          kPlatformUserDistrustedCerts:
+        source_ptr = std::make_unique<PlatformCertSource>(
+            "distrusted_certs",
+            cert_verifier::mojom::CertificateTrust::kDistrusted);
         break;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
       case certificate_manager_v2::mojom::CertificateSource::

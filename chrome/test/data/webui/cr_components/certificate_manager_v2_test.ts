@@ -263,6 +263,33 @@ suite('CertificateManagerV2Test', () => {
         certManager.$.localCertSection.classList.contains('iron-selected'));
   });
 
+  test('show platform certs', async () => {
+    initializeElement();
+    await microtasksFinished();
+    assertFalse(
+        certManager.$.platformCertsSection.classList.contains('iron-selected'));
+    certManager.$.viewOsImportedCerts.click();
+    await microtasksFinished();
+    assertTrue(
+        certManager.$.platformCertsSection.classList.contains('iron-selected'));
+  });
+
+  test('navigate back from platform certs', async () => {
+    initializeElement();
+    await microtasksFinished();
+    certManager.$.viewOsImportedCerts.click();
+    await microtasksFinished();
+    assertTrue(
+        certManager.$.platformCertsSection.classList.contains('iron-selected'));
+    certManager.$.platformCertsSection.$.backButton.click();
+    await microtasksFinished();
+    assertFalse(
+        certManager.$.platformCertsSection.classList.contains('iron-selected'));
+    assertTrue(
+        certManager.$.localCertSection.classList.contains('iron-selected'));
+  });
+
+
   test('click local certs section', async () => {
     initializeElement();
     certManager.$.localMenuItem.click();

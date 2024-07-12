@@ -8,8 +8,8 @@
  * and Chrome Cert Management Enterprise policies launch.
  */
 
-import './certificate_enterprise_certs_v2.js';
 import './certificate_list_v2.js';
+import './certificate_subpage_v2.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
@@ -31,11 +31,13 @@ import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {CertificateEnterpriseCertsV2Element} from './certificate_enterprise_certs_v2.js';
+// import type {CertificateEnterpriseCertsV2Element} from
+// './certificate_enterprise_certs_v2.js';
 import type {CertificateListV2Element} from './certificate_list_v2.js';
 import {getTemplate} from './certificate_manager_v2.html.js';
 import type {CertPolicyInfo} from './certificate_manager_v2.mojom-webui.js';
 import {CertificateSource} from './certificate_manager_v2.mojom-webui.js';
+import type {CertificateSubpageV2Element, SubpageCertificateList} from './certificate_subpage_v2.js';
 import {CertificatesV2BrowserProxy} from './certificates_v2_browser_proxy.js';
 
 export enum Page {
@@ -44,6 +46,7 @@ export enum Page {
   CRS_CERTS = 'crscerts',
   // Sub-pages
   ADMIN_CERTS = 'admincerts',
+  PLATFORM_CERTS = 'platformcerts',
 }
 
 const CertificateManagerV2ElementBase = I18nMixin(PolymerElement);
@@ -75,7 +78,8 @@ export interface CertificateManagerV2Element {
     clientCertSection: HTMLElement,
     crsCertSection: HTMLElement,
     adminCertsInstalledLinkRow: HTMLElement,
-    adminCertsSection: CertificateEnterpriseCertsV2Element,
+    adminCertsSection: CertificateSubpageV2Element,
+    platformCertsSection: CertificateSubpageV2Element,
   };
 }
 
@@ -92,7 +96,56 @@ export class CertificateManagerV2Element extends
   static get properties() {
     return {
       selectedPage_: String,
-      tabNames_: Array,
+      enterpriseSubpageLists_: {
+        type: Array,
+        value: () => {
+          return [
+            {
+              headerText: loadTimeData.getString(
+                  'certificateManagerV2TrustedCertsList'),
+              certSource: CertificateSource.kEnterpriseTrustedCerts,
+              hideExport: false,
+            },
+            {
+              headerText: loadTimeData.getString(
+                  'certificateManagerV2IntermediateCertsList'),
+              certSource: CertificateSource.kEnterpriseIntermediateCerts,
+              hideExport: false,
+            },
+            {
+              headerText: loadTimeData.getString(
+                  'certificateManagerV2DistrustedCertsList'),
+              certSource: CertificateSource.kEnterpriseDistrustedCerts,
+              hideExport: false,
+            },
+          ];
+        },
+      },
+      platformSubpageLists_: {
+        type: Array,
+        value: () => {
+          return [
+            {
+              headerText: loadTimeData.getString(
+                  'certificateManagerV2TrustedCertsList'),
+              certSource: CertificateSource.kPlatformUserTrustedCerts,
+              hideExport: false,
+            },
+            {
+              headerText: loadTimeData.getString(
+                  'certificateManagerV2IntermediateCertsList'),
+              certSource: CertificateSource.kPlatformUserIntermediateCerts,
+              hideExport: false,
+            },
+            {
+              headerText: loadTimeData.getString(
+                  'certificateManagerV2DistrustedCertsList'),
+              certSource: CertificateSource.kPlatformUserDistrustedCerts,
+              hideExport: false,
+            },
+          ];
+        },
+      },
 
       toastMessage_: String,
 
@@ -118,13 +171,13 @@ export class CertificateManagerV2Element extends
     };
   }
 
-  // TODO(crbug.com/40928765): create constants for paths for TS even if the
-  // html has to have its own set of constants.
   private selectedPage_: Page = Page.LOCAL_CERTS;
   private toastMessage_: string;
   private certPolicy_: CertPolicyInfo;
   private importOsCertsEnabled_: boolean;
   private importOsCertsEnabledManaged_: boolean;
+  private enterpriseSubpageLists_: SubpageCertificateList[];
+  private platformSubpageLists_: SubpageCertificateList[];
 
   override ready() {
     super.ready();
@@ -156,10 +209,16 @@ export class CertificateManagerV2Element extends
   private getSelectedTopLevelPage_(): string {
     switch (this.selectedPage_) {
       case Page.ADMIN_CERTS:
+      case Page.PLATFORM_CERTS:
         return Page.LOCAL_CERTS;
       default:
         return this.selectedPage_;
     }
+  }
+
+  private onPlatformCertsLinkRowClick_(e: Event) {
+    e.preventDefault();
+    this.selectedPage_ = Page.PLATFORM_CERTS;
   }
 
   private onAdminCertsInstalledLinkRowClick_(e: Event) {
