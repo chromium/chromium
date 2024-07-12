@@ -2604,12 +2604,12 @@ crbug.com/347045480 external/wpt/webrtc/RTCRtpReceiver-video-jitterBufferTarget-
 crbug.com/347045480 external/wpt/webrtc/RTCRtpReceiver-audio-jitterBufferTarget-stats.https.html [ Failure ]
 
 # DCHECKs: https://ci.chromium.org/ui/p/chromium/builders/try/mac-rel/1852480/overview
-external/wpt/webcodecs/full-cycle-test.https.any.html?h264_avc [ Crash ]
-external/wpt/webcodecs/full-cycle-test.https.any.worker.html?h264_avc [ Crash ]
+crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.html?h264_avc [ Crash ]
+crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.worker.html?h264_avc [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/svg/painting/reftests/non-scaling-stroke-003.html [ Failure ]
-[ Win11-arm64 ] external/wpt/webcodecs/video-encoder-config.https.any.worker.html [ Failure Timeout ]
+crbug.com/352407781 external/wpt/svg/painting/reftests/non-scaling-stroke-003.html [ Failure ]
+crbug.com/352390127 [ Win11-arm64 ] external/wpt/webcodecs/video-encoder-config.https.any.worker.html [ Failure Timeout ]
 crbug.com/352100866 [ Mac13 ] virtual/threaded/external/wpt/css/css-backgrounds/background-size/vector/wide--cover--percent-width-omitted-height.html [ Failure ]
 crbug.com/352177983 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/fence-report-event-cross-origin-urn-iframe-no-subframe-opt-in.https.html [ Timeout ]
 crbug.com/352191344 [ Mac10.15 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/window-open.https.sub.html [ Timeout ]
