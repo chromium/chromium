@@ -181,7 +181,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         // attached to a ChromeActivity, as the main tab might have been initialized prior to
         // inflation.
         if (mTabProvider.getTab() != null) {
-            ViewGroup bottomContainer = (ViewGroup) findViewById(R.id.bottom_container);
+            ViewGroup bottomContainer = findViewById(R.id.bottom_container);
             InfoBarContainer.get(mTabProvider.getTab()).setParentView(bottomContainer);
         }
 

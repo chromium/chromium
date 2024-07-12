@@ -817,7 +817,7 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener, F
                 break;
 
             default:
-                TextView errorCodeTextView = (TextView) mErrorView.findViewById(R.id.error_code);
+                TextView errorCodeTextView = mErrorView.findViewById(R.id.error_code);
                 errorCodeTextView.setText(
                         getResources().getString(R.string.cablev2_error_code, errorCode));
 
@@ -828,7 +828,7 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener, F
         ((View) mErrorView.findViewById(R.id.error_settings_button))
                 .setVisibility(settingsButtonVisible ? View.VISIBLE : View.INVISIBLE);
 
-        TextView descriptionTextView = (TextView) mErrorView.findViewById(R.id.error_description);
+        TextView descriptionTextView = mErrorView.findViewById(R.id.error_description);
         descriptionTextView.setText(desc);
     }
 }

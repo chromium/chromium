@@ -244,8 +244,7 @@ public class PasswordGenerationIntegrationTest {
     private void toggleAccessorySheet() {
         CriteriaHelper.pollUiThread(
                 () -> {
-                    mKeyboardAccessoryBarItems =
-                            (RecyclerView) mActivity.findViewById(R.id.bar_items_view);
+                    mKeyboardAccessoryBarItems = mActivity.findViewById(R.id.bar_items_view);
                     return mKeyboardAccessoryBarItems != null;
                 });
         CriteriaHelper.pollUiThread(
@@ -273,8 +272,7 @@ public class PasswordGenerationIntegrationTest {
     private void clickSuggestPasswordInItemsBar() {
         CriteriaHelper.pollUiThread(
                 () -> {
-                    mKeyboardAccessoryBarItems =
-                            (RecyclerView) mActivity.findViewById(R.id.bar_items_view);
+                    mKeyboardAccessoryBarItems = mActivity.findViewById(R.id.bar_items_view);
                     Button button =
                             (Button)
                                     mKeyboardAccessoryBarItems.findViewHolderForLayoutPosition(0)

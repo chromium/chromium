@@ -82,15 +82,15 @@ public class DistilledPagePrefsView extends LinearLayout
     @Override
     public void onFinishInflate() {
         super.onFinishInflate();
-        mRadioGroup = (RadioGroup) findViewById(R.id.radio_button_group);
+        mRadioGroup = findViewById(R.id.radio_button_group);
         mColorModeButtons.put(Theme.LIGHT, initializeAndGetButton(R.id.light_mode, Theme.LIGHT));
         mColorModeButtons.put(Theme.DARK, initializeAndGetButton(R.id.dark_mode, Theme.DARK));
         mColorModeButtons.put(Theme.SEPIA, initializeAndGetButton(R.id.sepia_mode, Theme.SEPIA));
 
-        mFontScaleSeekBar = (SeekBar) findViewById(R.id.font_size);
-        mFontScaleTextView = (TextView) findViewById(R.id.font_size_percentage);
+        mFontScaleSeekBar = findViewById(R.id.font_size);
+        mFontScaleTextView = findViewById(R.id.font_size_percentage);
 
-        mFontFamilySpinner = (Spinner) findViewById(R.id.font_family);
+        mFontFamilySpinner = findViewById(R.id.font_family);
     }
 
     private void initDistilledPagePrefs(DistilledPagePrefs distilledPagePrefs) {
@@ -244,13 +244,10 @@ public class DistilledPagePrefsView extends LinearLayout
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {}
 
-    /**
-     * Initiatializes a Button and selects it if it corresponds to the current
-     * theme.
-     */
+    /** Initiatializes a Button and selects it if it corresponds to the current theme. */
     private RadioButton initializeAndGetButton(int id, final int theme) {
         Theme.validate(theme);
-        final RadioButton button = (RadioButton) findViewById(id);
+        final RadioButton button = findViewById(id);
         button.setOnClickListener(
                 new View.OnClickListener() {
                     @Override

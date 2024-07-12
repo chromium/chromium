@@ -34,11 +34,11 @@ class PasswordInfoBarUtils {
                 (LinearLayout)
                         LayoutInflater.from(context).inflate(R.layout.infobar_footer, null, false);
 
-        TextView emailView = (TextView) footer.findViewById(R.id.infobar_footer_email);
+        TextView emailView = footer.findViewById(R.id.infobar_footer_email);
         emailView.setText(email);
 
         RoundedCornerImageView profilePicView =
-                (RoundedCornerImageView) footer.findViewById(R.id.infobar_footer_profile_pic);
+                footer.findViewById(R.id.infobar_footer_profile_pic);
         Bitmap resizedProfilePic =
                 Bitmap.createScaledBitmap(accountImage, smallIconSize, smallIconSize, false);
         profilePicView.setRoundedCorners(

@@ -138,12 +138,12 @@ public class LightweightFirstRunActivity extends FirstRunActivityBase
                                     "<LINK2>", "</LINK2>", clickableChromeAdditionalTermsSpan));
         }
 
-        mTosAndPrivacyTextView = (TextView) findViewById(R.id.lightweight_fre_tos_and_privacy);
+        mTosAndPrivacyTextView = findViewById(R.id.lightweight_fre_tos_and_privacy);
         mTosAndPrivacyTextView.setText(tosAndPrivacyText);
         mTosAndPrivacyTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
         mLightweightFreButtons = findViewById(R.id.lightweight_fre_buttons);
-        mOkButton = (Button) findViewById(R.id.button_primary);
+        mOkButton = findViewById(R.id.button_primary);
         mOkButton.setOnClickListener(view -> acceptTermsOfService());
 
         ((Button) findViewById(R.id.button_secondary))

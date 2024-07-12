@@ -311,8 +311,7 @@ public class SearchActivityTest {
         mTestDelegate.shouldDelayLoadingNative = true;
         final SearchActivity searchActivity = startSearchActivity(0, /* isVoiceSearch= */ true);
         final SearchActivityLocationBarLayout locationBar =
-                (SearchActivityLocationBarLayout)
-                        searchActivity.findViewById(R.id.search_location_bar);
+                searchActivity.findViewById(R.id.search_location_bar);
 
         LocationBarCoordinator locationBarCoordinator =
                 searchActivity.getLocationBarCoordinatorForTesting();
@@ -530,7 +529,7 @@ public class SearchActivityTest {
 
         LocationBarCoordinator locationBarCoordinator =
                 searchActivity.getLocationBarCoordinatorForTesting();
-        UrlBar urlBar = (UrlBar) searchActivity.findViewById(R.id.url_bar);
+        UrlBar urlBar = searchActivity.findViewById(R.id.url_bar);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     locationBarCoordinator.onUrlChangedForTesting();
@@ -629,7 +628,7 @@ public class SearchActivityTest {
     private void setUrlBarText(final Activity activity, final String url) {
         CriteriaHelper.pollUiThread(
                 () -> {
-                    UrlBar urlBar = (UrlBar) activity.findViewById(R.id.url_bar);
+                    UrlBar urlBar = activity.findViewById(R.id.url_bar);
                     try {
                         Criteria.checkThat(
                                 "UrlBar not focusable", urlBar.isFocusable(), Matchers.is(true));
@@ -642,7 +641,7 @@ public class SearchActivityTest {
                 });
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    UrlBar urlBar = (UrlBar) activity.findViewById(R.id.url_bar);
+                    UrlBar urlBar = activity.findViewById(R.id.url_bar);
                     urlBar.setText(url);
                 });
     }

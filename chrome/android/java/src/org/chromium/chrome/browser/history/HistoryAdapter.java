@@ -367,18 +367,15 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
                 privacyDisclaimerContainer.findViewById(R.id.privacy_disclaimer_bottom_space);
         mClearBrowsingDataButtonHeaderItem = new HeaderItem(1, clearBrowsingDataButtonContainer);
         mClearBrowsingDataButton =
-                (Button)
-                        clearBrowsingDataButtonContainer.findViewById(
-                                R.id.clear_browsing_data_button);
+                clearBrowsingDataButtonContainer.findViewById(R.id.clear_browsing_data_button);
 
         if (mManager.launchedForApp()) {
             ViewGroup historyOpenInChromeButtonContainer = getCctOpenInChromeButtonContainer(null);
 
             mHistoryOpenInChromeHeaderItem = new HeaderItem(1, historyOpenInChromeButtonContainer);
             mHistoryOpenInChromeButton =
-                    (Button)
-                            historyOpenInChromeButtonContainer.findViewById(
-                                    R.id.open_full_chrome_history_button);
+                    historyOpenInChromeButtonContainer.findViewById(
+                            R.id.open_full_chrome_history_button);
         }
 
         updateClearBrowsingDataButtonVisibility();
@@ -392,8 +389,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
                         LayoutInflater.from(mManager.getContext())
                                 .inflate(
                                         R.layout.history_clear_browsing_data_header, parent, false);
-        Button clearBrowsingDataButton =
-                (Button) viewGroup.findViewById(R.id.clear_browsing_data_button);
+        Button clearBrowsingDataButton = viewGroup.findViewById(R.id.clear_browsing_data_button);
         clearBrowsingDataButton.setOnClickListener(v -> mManager.onClearBrowsingDataClicked());
         return viewGroup;
     }
@@ -404,7 +400,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
                         LayoutInflater.from(mManager.getContext())
                                 .inflate(R.layout.open_full_chrome_history_header, parent, true);
         Button clearBrowsingDataButton =
-                (Button) viewGroup.findViewById(R.id.open_full_chrome_history_button);
+                viewGroup.findViewById(R.id.open_full_chrome_history_button);
         clearBrowsingDataButton.setOnClickListener(v -> mManager.onOpenFullChromeHistoryClicked());
         return viewGroup;
     }
@@ -414,8 +410,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
                 (ViewGroup)
                         LayoutInflater.from(mManager.getContext())
                                 .inflate(R.layout.app_history_filter, parent, true);
-        mAppFilterChip =
-                (ChipView) historyAppFilterContainer.findViewById(R.id.app_history_filter_chip);
+        mAppFilterChip = historyAppFilterContainer.findViewById(R.id.app_history_filter_chip);
         mAppFilterChip.setOnClickListener(v -> mManager.onAppFilterClicked());
         mAppFilterChip.getPrimaryTextView().setText(R.string.history_filter_by_app);
         mAppFilterChip.addDropdownIcon();

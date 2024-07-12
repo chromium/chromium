@@ -164,9 +164,9 @@ public class TouchToFillCreditCardTest {
     }
 
     private void verifyCardIsCorrectlyDisplayed(View cardItemLayout) {
-        TextView cardNameLayout = (TextView) cardItemLayout.findViewById(card_name);
-        TextView cardNumberLayout = (TextView) cardItemLayout.findViewById(card_number);
-        TextView cardDescLayout = (TextView) cardItemLayout.findViewById(description_line_2);
+        TextView cardNameLayout = cardItemLayout.findViewById(card_name);
+        TextView cardNumberLayout = cardItemLayout.findViewById(card_number);
+        TextView cardDescLayout = cardItemLayout.findViewById(description_line_2);
         // Check that the card name is displayed
         checkThat(cardNameLayout.getText().toString(), is(CARD_NAME));
         // Check that the last four digits of the card are displayed

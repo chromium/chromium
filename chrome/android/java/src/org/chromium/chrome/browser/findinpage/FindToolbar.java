@@ -251,7 +251,7 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
         setOrientation(HORIZONTAL);
         setGravity(Gravity.CENTER_VERTICAL);
 
-        mFindQuery = (FindQuery) findViewById(R.id.find_query);
+        mFindQuery = findViewById(R.id.find_query);
         mFindQuery.setFindToolbar(this);
         mFindQuery.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_FILTER);
         mFindQuery.setSelectAllOnFocus(true);
@@ -322,7 +322,7 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
                     }
                 });
 
-        mFindStatus = (TextView) findViewById(R.id.find_status);
+        mFindStatus = findViewById(R.id.find_status);
         setStatus("", false);
 
         mFindPrevButton = findViewById(R.id.find_prev_button);

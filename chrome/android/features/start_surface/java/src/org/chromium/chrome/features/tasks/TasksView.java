@@ -79,12 +79,12 @@ public class TasksView extends CoordinatorLayoutForPointer {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mCardTabSwitcherContainer = (FrameLayout) findViewById(R.id.tab_switcher_module_container);
+        mCardTabSwitcherContainer = findViewById(R.id.tab_switcher_module_container);
         mMvTilesContainerLayout = findViewById(R.id.mv_tiles_container);
         mSearchBoxCoordinator = new SearchBoxCoordinator(getContext(), this);
         mHomeModulesLayout = findViewById(R.id.home_modules_recycler_view);
 
-        mHeaderView = (AppBarLayout) findViewById(R.id.task_surface_header);
+        mHeaderView = findViewById(R.id.task_surface_header);
 
         forceHeaderScrollable();
 
@@ -170,16 +170,14 @@ public class TasksView extends CoordinatorLayoutForPointer {
      */
     void initializeIncognitoDescriptionView() {
         assert mIncognitoDescriptionView == null;
-        ViewStub containerStub =
-                (ViewStub) findViewById(R.id.incognito_description_container_layout_stub);
+        ViewStub containerStub = findViewById(R.id.incognito_description_container_layout_stub);
         View containerView = containerStub.inflate();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
             containerView.setFocusable(true);
             containerView.setFocusableInTouchMode(true);
         }
 
-        ViewStub incognitoDescriptionViewStub =
-                (ViewStub) findViewById(R.id.task_view_incognito_layout_stub);
+        ViewStub incognitoDescriptionViewStub = findViewById(R.id.task_view_incognito_layout_stub);
         incognitoDescriptionViewStub.setLayoutResource(R.layout.incognito_description_layout);
         mIncognitoDescriptionView =
                 (IncognitoDescriptionView) incognitoDescriptionViewStub.inflate();

@@ -46,8 +46,7 @@ public class WebappSplashScreenHomescreenIconTest {
     @SmallTest
     @Feature({"Webapps"})
     public void testShowFallbackIcon() {
-        ImageView splashImage =
-                (ImageView) mSplashScreen.findViewById(R.id.webapp_splash_screen_icon);
+        ImageView splashImage = mSplashScreen.findViewById(R.id.webapp_splash_screen_icon);
         BitmapDrawable drawable = (BitmapDrawable) splashImage.getDrawable();
 
         Assert.assertEquals(192, drawable.getBitmap().getWidth());

@@ -201,20 +201,20 @@ public class CardUnmaskPrompt
                         cardArtUrl, /* isVirtualCard= */ isVirtualCard));
 
         updateTitleForCustomView(title, context);
-        mInstructions = (TextView) mMainView.findViewById(R.id.instructions);
+        mInstructions = mMainView.findViewById(R.id.instructions);
         mInstructions.setText(instructions);
-        mNoRetryErrorMessage = (TextView) mMainView.findViewById(R.id.no_retry_error_message);
-        mCardUnmaskInput = (EditText) mMainView.findViewById(R.id.card_unmask_input);
+        mNoRetryErrorMessage = mMainView.findViewById(R.id.no_retry_error_message);
+        mCardUnmaskInput = mMainView.findViewById(R.id.card_unmask_input);
         if (isVirtualCard) {
             mCardUnmaskInput.setHint("");
         }
-        mMonthInput = (EditText) mMainView.findViewById(R.id.expiration_month);
-        mYearInput = (EditText) mMainView.findViewById(R.id.expiration_year);
+        mMonthInput = mMainView.findViewById(R.id.expiration_month);
+        mYearInput = mMainView.findViewById(R.id.expiration_year);
         mExpirationContainer = mMainView.findViewById(R.id.expiration_container);
-        mNewCardLink = (TextView) mMainView.findViewById(R.id.new_card_link);
+        mNewCardLink = mMainView.findViewById(R.id.new_card_link);
         mNewCardLink.setOnClickListener(this);
-        mErrorMessage = (TextView) mMainView.findViewById(R.id.error_message);
-        mUseScreenlockCheckbox = (CheckBox) mMainView.findViewById(R.id.use_screenlock_checkbox);
+        mErrorMessage = mMainView.findViewById(R.id.error_message);
+        mUseScreenlockCheckbox = mMainView.findViewById(R.id.use_screenlock_checkbox);
         mUseScreenlockCheckbox.setChecked(defaultUseScreenlockChecked);
         if (!shouldOfferWebauthn) {
             mUseScreenlockCheckbox.setVisibility(View.GONE);
@@ -222,13 +222,12 @@ public class CardUnmaskPrompt
         }
         logCheckBoxInitialStateStats(mUseScreenlockCheckbox.isChecked());
         mUseScreenlockCheckbox.setOnCheckedChangeListener(this);
-        mControlsContainer = (ViewGroup) mMainView.findViewById(R.id.controls_container);
+        mControlsContainer = mMainView.findViewById(R.id.controls_container);
         mVerificationOverlay = mMainView.findViewById(R.id.verification_overlay);
-        mVerificationProgressBar =
-                (ProgressBar) mMainView.findViewById(R.id.verification_progress_bar);
-        mVerificationView = (TextView) mMainView.findViewById(R.id.verification_message);
+        mVerificationProgressBar = mMainView.findViewById(R.id.verification_progress_bar);
+        mVerificationView = mMainView.findViewById(R.id.verification_message);
         mSuccessMessageDurationMilliseconds = successMessageDurationMilliseconds;
-        ImageView cvcHintImage = (ImageView) mMainView.findViewById(R.id.cvc_hint_image);
+        ImageView cvcHintImage = mMainView.findViewById(R.id.cvc_hint_image);
         cvcHintImage.setImageResource(cvcDrawableId);
         cvcHintImage.setContentDescription(cvcImageAnnouncement);
 
@@ -337,7 +336,7 @@ public class CardUnmaskPrompt
     }
 
     private void updateTitleForCustomView(String title, Context context) {
-        TextView titleView = (TextView) mMainView.findViewById(R.id.title);
+        TextView titleView = mMainView.findViewById(R.id.title);
         titleView.setText(title);
     }
 

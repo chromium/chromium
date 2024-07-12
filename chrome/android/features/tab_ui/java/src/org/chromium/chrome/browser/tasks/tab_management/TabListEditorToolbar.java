@@ -51,8 +51,8 @@ class TabListEditorToolbar extends SelectableListToolbar<Integer> {
         super.onFinishInflate();
 
         showNavigationButton();
-        mActionViewLayout = (TabListEditorActionViewLayout) findViewById(R.id.action_view_layout);
-        mMenuButton = (ChromeImageButton) findViewById(R.id.list_menu_button);
+        mActionViewLayout = findViewById(R.id.action_view_layout);
+        mMenuButton = findViewById(R.id.list_menu_button);
 
         // Can be overridden by #setToolbarTitle.
         mNumberRollView.setStringForZero(R.string.tab_selection_editor_toolbar_select_tabs);

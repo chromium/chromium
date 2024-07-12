@@ -31,7 +31,7 @@ public class FeedManagementActivity extends SnackbarActivity {
         setContentView(coordinator.getView());
 
         // Set up the toolbar and back button.
-        Toolbar toolbar = (Toolbar) findViewById(R.id.action_bar);
+        Toolbar toolbar = findViewById(R.id.action_bar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }

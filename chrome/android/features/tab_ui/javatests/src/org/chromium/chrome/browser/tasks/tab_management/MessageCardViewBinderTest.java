@@ -181,9 +181,9 @@ public class MessageCardViewBinderTest extends BlankUiTestActivityTestCase {
     @UiThreadTest
     @SmallTest
     public void testUpdateMessageCardColor() {
-        TextView description = (TextView) mItemView.findViewById(R.id.description);
-        TextView actionButton = (TextView) mItemView.findViewById(R.id.action_button);
-        ImageView closeButton = (ImageView) mItemView.findViewById(R.id.close_button);
+        TextView description = mItemView.findViewById(R.id.description);
+        TextView actionButton = mItemView.findViewById(R.id.action_button);
+        ImageView closeButton = mItemView.findViewById(R.id.close_button);
 
         mItemViewModel.set(MessageCardViewProperties.IS_INCOGNITO, false);
         assertThat(

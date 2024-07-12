@@ -45,7 +45,7 @@ public class ArCompositorDelegateImpl implements ArCompositorDelegate {
     @Override
     public @NonNull ViewGroup getArSurfaceParent() {
         // the ar_view_holder is a FrameLayout, up-cast to a ViewGroup.
-        return (ViewGroup) mActivity.findViewById(R.id.ar_view_holder);
+        return mActivity.findViewById(R.id.ar_view_holder);
     }
 
     @Override

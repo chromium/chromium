@@ -169,7 +169,7 @@ public class NavigationPopupTest {
                     ListView list = popup.getListView();
                     View view =
                             list.getAdapter().getView(list.getAdapter().getCount() - 1, null, list);
-                    TextView text = (TextView) view.findViewById(R.id.entry_title);
+                    TextView text = view.findViewById(R.id.entry_title);
                     Assert.assertNotNull(text);
                     Assert.assertEquals(
                             text.getResources().getString(R.string.show_full_history),
@@ -189,7 +189,7 @@ public class NavigationPopupTest {
                     ListView list = popup.getListView();
                     View view =
                             list.getAdapter().getView(list.getAdapter().getCount() - 1, null, list);
-                    TextView text = (TextView) view.findViewById(R.id.entry_title);
+                    TextView text = view.findViewById(R.id.entry_title);
                     Assert.assertNotNull(text);
                     Assert.assertNotEquals(
                             text.getResources().getString(R.string.show_full_history),

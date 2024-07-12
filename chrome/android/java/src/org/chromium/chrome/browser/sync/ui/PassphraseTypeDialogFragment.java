@@ -60,11 +60,10 @@ public class PassphraseTypeDialogFragment extends DialogFragment
                 getActivity().getLayoutInflater().inflate(R.layout.sync_passphrase_types, null);
 
         final CheckedTextView explicitPassphraseCheckbox =
-                (CheckedTextView) dialog.findViewById(R.id.explicit_passphrase_checkbox);
+                dialog.findViewById(R.id.explicit_passphrase_checkbox);
         final CheckedTextView keystorePassphraseCheckbox =
-                (CheckedTextView) dialog.findViewById(R.id.keystore_passphrase_checkbox);
-        final TextViewWithClickableSpans resetSyncLink =
-                (TextViewWithClickableSpans) dialog.findViewById(R.id.reset_sync_link);
+                dialog.findViewById(R.id.keystore_passphrase_checkbox);
+        final TextViewWithClickableSpans resetSyncLink = dialog.findViewById(R.id.reset_sync_link);
 
         if (isExplicitPassphraseType(getArguments().getInt(ARG_CURRENT_TYPE))) {
             explicitPassphraseCheckbox.setChecked(true);

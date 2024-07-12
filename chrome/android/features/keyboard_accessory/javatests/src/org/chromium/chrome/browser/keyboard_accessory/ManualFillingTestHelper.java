@@ -180,7 +180,7 @@ public class ManualFillingTestHelper {
                                         .getActivity()
                                         .findViewById(R.id.keyboard_accessory));
         assert keyboardAccessory != null;
-        return (RecyclerView) keyboardAccessory.findViewById(R.id.bar_items_view);
+        return keyboardAccessory.findViewById(R.id.bar_items_view);
     }
 
     public void focusPasswordField() throws TimeoutException {

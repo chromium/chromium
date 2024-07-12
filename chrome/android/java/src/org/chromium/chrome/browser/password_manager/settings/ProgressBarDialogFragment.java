@@ -36,11 +36,10 @@ public class ProgressBarDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View dialog =
                 getActivity().getLayoutInflater().inflate(R.layout.passwords_progress_dialog, null);
-        MaterialProgressBar bar =
-                (MaterialProgressBar) dialog.findViewById(R.id.passwords_progress_bar);
+        MaterialProgressBar bar = dialog.findViewById(R.id.passwords_progress_bar);
         bar.setIndeterminate(true);
-        return new AlertDialog
-                .Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_AlertDialog_NoActionBar)
+        return new AlertDialog.Builder(
+                        getActivity(), R.style.ThemeOverlay_BrowserUI_AlertDialog_NoActionBar)
                 .setView(dialog)
                 .setNegativeButton(R.string.cancel, mHandler)
                 .setTitle(

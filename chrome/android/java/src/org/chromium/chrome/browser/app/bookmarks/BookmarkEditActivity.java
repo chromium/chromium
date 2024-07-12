@@ -122,7 +122,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
         mTitleEditText = findViewById(R.id.title_text);
         mUrlEditText = findViewById(R.id.url_text);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -137,7 +137,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
                         });
 
         boolean isFolder = item.isFolder();
-        TextView folderTitle = (TextView) findViewById(R.id.folder_title);
+        TextView folderTitle = findViewById(R.id.folder_title);
         folderTitle.setText(isFolder ? R.string.bookmark_parent_folder : R.string.bookmark_folder);
         mUrlEditText.setVisibility(isFolder ? View.GONE : View.VISIBLE);
         getSupportActionBar().setTitle(isFolder ? R.string.edit_folder : R.string.edit_bookmark);

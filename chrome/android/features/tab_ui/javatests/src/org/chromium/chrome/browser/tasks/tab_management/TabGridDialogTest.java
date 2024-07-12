@@ -2452,7 +2452,7 @@ public class TabGridDialogTest {
 
     private RecyclerView getRecyclerView(ChromeTabbedActivity cta) {
         ViewGroup group = (ViewGroup) cta.findViewById(getTabSwitcherAncestorId(cta));
-        return (RecyclerView) group.findViewById(R.id.tab_list_recycler_view);
+        return group.findViewById(R.id.tab_list_recycler_view);
     }
 
     private void enterTabListEditor(ChromeTabbedActivity cta) {

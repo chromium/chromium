@@ -137,8 +137,8 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
 
     private void selectItem(
             Dialog dialog, int position, String expectedItemId, boolean expectedEnabledState) {
-        final ListView items = (ListView) dialog.findViewById(R.id.items);
-        final Button button = (Button) dialog.findViewById(R.id.positive);
+        final ListView items = dialog.findViewById(R.id.items);
+        final Button button = dialog.findViewById(R.id.positive);
 
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(items.getChildAt(0), Matchers.notNullValue()));
@@ -158,7 +158,7 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
     }
 
     private View getRowView(Dialog dialog, int position) {
-        ListView items = (ListView) dialog.findViewById(R.id.items);
+        ListView items = dialog.findViewById(R.id.items);
         int actualPosition = position - 1;
         int first = items.getFirstVisiblePosition();
         int last = items.getLastVisiblePosition();
@@ -528,10 +528,9 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
         Dialog dialog = mChooserDialog.getDialogForTesting();
         Assert.assertTrue(dialog.isShowing());
 
-        TextViewWithClickableSpans statusView =
-                (TextViewWithClickableSpans) dialog.findViewById(R.id.status);
-        final ListView items = (ListView) dialog.findViewById(R.id.items);
-        final Button button = (Button) dialog.findViewById(R.id.positive);
+        TextViewWithClickableSpans statusView = dialog.findViewById(R.id.status);
+        final ListView items = dialog.findViewById(R.id.items);
+        final Button button = dialog.findViewById(R.id.positive);
 
         // Before we add items to the dialog, the 'searching' message should be
         // showing, the Commit button should be disabled and the list view hidden.
@@ -578,10 +577,9 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
         Dialog dialog = mChooserDialog.getDialogForTesting();
         Assert.assertTrue(dialog.isShowing());
 
-        TextViewWithClickableSpans statusView =
-                (TextViewWithClickableSpans) dialog.findViewById(R.id.status);
-        final ListView items = (ListView) dialog.findViewById(R.id.items);
-        final Button button = (Button) dialog.findViewById(R.id.positive);
+        TextViewWithClickableSpans statusView = dialog.findViewById(R.id.status);
+        final ListView items = dialog.findViewById(R.id.items);
+        final Button button = dialog.findViewById(R.id.positive);
 
         // Before we add items to the dialog, the 'searching' message should be
         // showing, the Commit button should be disabled and the list view hidden.
@@ -621,7 +619,7 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    final Button button = (Button) dialog.findViewById(R.id.positive);
+                    final Button button = dialog.findViewById(R.id.positive);
                     Assert.assertTrue(button.isEnabled());
 
                     mChooserDialog.removeItemFromList("key1");
@@ -646,7 +644,7 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
         selectItem(dialog, 2, "key2", true);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    final Button button = (Button) dialog.findViewById(R.id.positive);
+                    final Button button = dialog.findViewById(R.id.positive);
                     DeviceItemAdapter itemAdapter = mChooserDialog.getItemAdapterForTesting();
 
                     Assert.assertTrue(button.isEnabled());
@@ -681,7 +679,7 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
         selectItem(dialog, 2, "key2", true);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Button button = (Button) dialog.findViewById(R.id.positive);
+                    Button button = dialog.findViewById(R.id.positive);
                     DeviceItemAdapter itemAdapter = mChooserDialog.getItemAdapterForTesting();
                     Assert.assertTrue(button.isEnabled());
 
@@ -700,10 +698,9 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
                     Dialog dialog = mChooserDialog.getDialogForTesting();
                     Assert.assertTrue(dialog.isShowing());
 
-                    TextViewWithClickableSpans statusView =
-                            (TextViewWithClickableSpans) dialog.findViewById(R.id.status);
-                    final ListView items = (ListView) dialog.findViewById(R.id.items);
-                    final Button button = (Button) dialog.findViewById(R.id.positive);
+                    TextViewWithClickableSpans statusView = dialog.findViewById(R.id.status);
+                    final ListView items = dialog.findViewById(R.id.items);
+                    final Button button = dialog.findViewById(R.id.positive);
 
                     DeviceItemAdapter itemAdapter = mChooserDialog.getItemAdapterForTesting();
                     final String nonExistentKey = "key";
@@ -763,10 +760,9 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
                     Dialog dialog = mChooserDialog.getDialogForTesting();
                     Assert.assertTrue(dialog.isShowing());
 
-                    TextViewWithClickableSpans statusView =
-                            (TextViewWithClickableSpans) dialog.findViewById(R.id.status);
-                    final ListView items = (ListView) dialog.findViewById(R.id.items);
-                    final Button button = (Button) dialog.findViewById(R.id.positive);
+                    TextViewWithClickableSpans statusView = dialog.findViewById(R.id.status);
+                    final ListView items = dialog.findViewById(R.id.items);
+                    final Button button = dialog.findViewById(R.id.positive);
 
                     DeviceItemAdapter itemAdapter = mChooserDialog.getItemAdapterForTesting();
                     final String nonExistentKey = "key";

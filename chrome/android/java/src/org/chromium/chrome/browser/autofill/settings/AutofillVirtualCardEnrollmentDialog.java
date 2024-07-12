@@ -81,7 +81,7 @@ public class AutofillVirtualCardEnrollmentDialog {
                 LayoutInflater.from(mContext)
                         .inflate(R.layout.virtual_card_enrollment_dialog, null);
 
-        TextView titleTextView = (TextView) customView.findViewById(R.id.dialog_title);
+        TextView titleTextView = customView.findViewById(R.id.dialog_title);
         AutofillUiUtils.inlineTitleStringWithLogo(
                 mContext,
                 titleTextView,
@@ -89,7 +89,7 @@ public class AutofillVirtualCardEnrollmentDialog {
                 R.drawable.google_pay_with_divider);
 
         TextView virtualCardEducationTextView =
-                (TextView) customView.findViewById(R.id.virtual_card_education);
+                customView.findViewById(R.id.virtual_card_education);
         virtualCardEducationTextView.setText(
                 AutofillUiUtils.getSpannableStringWithClickableSpansToOpenLinksInCustomTabs(
                         mContext,
@@ -102,8 +102,7 @@ public class AutofillVirtualCardEnrollmentDialog {
                                                 .VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK)));
         virtualCardEducationTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
-        TextView googleLegalMessageTextView =
-                (TextView) customView.findViewById(R.id.google_legal_message);
+        TextView googleLegalMessageTextView = customView.findViewById(R.id.google_legal_message);
         googleLegalMessageTextView.setText(
                 AutofillUiUtils.getSpannableStringForLegalMessageLines(
                         mContext,
@@ -116,8 +115,7 @@ public class AutofillVirtualCardEnrollmentDialog {
                                                 .VIRTUAL_CARD_ENROLLMENT_GOOGLE_PAYMENTS_TOS_LINK)));
         googleLegalMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
-        TextView issuerLegalMessageTextView =
-                (TextView) customView.findViewById(R.id.issuer_legal_message);
+        TextView issuerLegalMessageTextView = customView.findViewById(R.id.issuer_legal_message);
         issuerLegalMessageTextView.setText(
                 AutofillUiUtils.getSpannableStringForLegalMessageLines(
                         mContext,

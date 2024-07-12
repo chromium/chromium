@@ -175,8 +175,8 @@ public class BluetoothChooserDialogTest {
 
     private void selectItem(int position) {
         final Dialog dialog = mChooserDialog.mItemChooserDialog.getDialogForTesting();
-        final ListView items = (ListView) dialog.findViewById(R.id.items);
-        final Button button = (Button) dialog.findViewById(R.id.positive);
+        final ListView items = dialog.findViewById(R.id.items);
+        final Button button = dialog.findViewById(R.id.positive);
 
         clickItemAtPosition(items, position - 1);
 
@@ -249,10 +249,9 @@ public class BluetoothChooserDialogTest {
         Dialog dialog = itemChooser.getDialogForTesting();
         Assert.assertTrue(dialog.isShowing());
 
-        TextViewWithClickableSpans statusView =
-                (TextViewWithClickableSpans) dialog.findViewById(R.id.status);
-        final ListView items = (ListView) dialog.findViewById(R.id.items);
-        final Button button = (Button) dialog.findViewById(R.id.positive);
+        TextViewWithClickableSpans statusView = dialog.findViewById(R.id.status);
+        final ListView items = dialog.findViewById(R.id.items);
+        final Button button = dialog.findViewById(R.id.positive);
 
         // Before we add items to the dialog, the 'searching' message should be
         // showing, the Commit button should be disabled and the list view hidden.
@@ -278,10 +277,9 @@ public class BluetoothChooserDialogTest {
         Dialog dialog = itemChooser.getDialogForTesting();
         Assert.assertTrue(dialog.isShowing());
 
-        TextViewWithClickableSpans statusView =
-                (TextViewWithClickableSpans) dialog.findViewById(R.id.status);
-        final ListView items = (ListView) dialog.findViewById(R.id.items);
-        final Button button = (Button) dialog.findViewById(R.id.positive);
+        TextViewWithClickableSpans statusView = dialog.findViewById(R.id.status);
+        final ListView items = dialog.findViewById(R.id.items);
+        final Button button = dialog.findViewById(R.id.positive);
 
         // Before we add items to the dialog, the 'searching' message should be
         // showing, the Commit button should be disabled and the list view hidden.
@@ -306,10 +304,9 @@ public class BluetoothChooserDialogTest {
         Dialog dialog = mChooserDialog.mItemChooserDialog.getDialogForTesting();
         Assert.assertTrue(dialog.isShowing());
 
-        TextViewWithClickableSpans statusView =
-                (TextViewWithClickableSpans) dialog.findViewById(R.id.status);
+        TextViewWithClickableSpans statusView = dialog.findViewById(R.id.status);
         final View items = dialog.findViewById(R.id.items);
-        final Button button = (Button) dialog.findViewById(R.id.positive);
+        final Button button = dialog.findViewById(R.id.positive);
         final View progress = dialog.findViewById(R.id.progress);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -402,12 +399,10 @@ public class BluetoothChooserDialogTest {
         Dialog dialog = itemChooser.getDialogForTesting();
         Assert.assertTrue(dialog.isShowing());
 
-        final TextViewWithClickableSpans statusView =
-                (TextViewWithClickableSpans) dialog.findViewById(R.id.status);
-        final TextViewWithClickableSpans errorView =
-                (TextViewWithClickableSpans) dialog.findViewById(R.id.not_found_message);
+        final TextViewWithClickableSpans statusView = dialog.findViewById(R.id.status);
+        final TextViewWithClickableSpans errorView = dialog.findViewById(R.id.not_found_message);
         final View items = dialog.findViewById(R.id.items);
-        final Button button = (Button) dialog.findViewById(R.id.positive);
+        final Button button = dialog.findViewById(R.id.positive);
         final View progress = dialog.findViewById(R.id.progress);
 
         final TestAndroidPermissionDelegate permissionDelegate =
@@ -491,12 +486,10 @@ public class BluetoothChooserDialogTest {
         Dialog dialog = itemChooser.getDialogForTesting();
         Assert.assertTrue(dialog.isShowing());
 
-        final TextViewWithClickableSpans statusView =
-                (TextViewWithClickableSpans) dialog.findViewById(R.id.status);
-        final TextViewWithClickableSpans errorView =
-                (TextViewWithClickableSpans) dialog.findViewById(R.id.not_found_message);
+        final TextViewWithClickableSpans statusView = dialog.findViewById(R.id.status);
+        final TextViewWithClickableSpans errorView = dialog.findViewById(R.id.not_found_message);
         final View items = dialog.findViewById(R.id.items);
-        final Button button = (Button) dialog.findViewById(R.id.positive);
+        final Button button = dialog.findViewById(R.id.positive);
         final View progress = dialog.findViewById(R.id.progress);
 
         final TestAndroidPermissionDelegate permissionDelegate =
@@ -555,12 +548,10 @@ public class BluetoothChooserDialogTest {
         Dialog dialog = itemChooser.getDialogForTesting();
         Assert.assertTrue(dialog.isShowing());
 
-        final TextViewWithClickableSpans statusView =
-                (TextViewWithClickableSpans) dialog.findViewById(R.id.status);
-        final TextViewWithClickableSpans errorView =
-                (TextViewWithClickableSpans) dialog.findViewById(R.id.not_found_message);
+        final TextViewWithClickableSpans statusView = dialog.findViewById(R.id.status);
+        final TextViewWithClickableSpans errorView = dialog.findViewById(R.id.not_found_message);
         final View items = dialog.findViewById(R.id.items);
-        final Button button = (Button) dialog.findViewById(R.id.positive);
+        final Button button = dialog.findViewById(R.id.positive);
         final View progress = dialog.findViewById(R.id.progress);
 
         final TestAndroidPermissionDelegate permissionDelegate =

@@ -290,8 +290,7 @@ public class SwitchToTabTest {
         moveActivityToFront(cta1);
 
         // Switch back to cta1, and try to switch to "about.html" in cta2.
-        LocationBarLayout locationBarLayout =
-                (LocationBarLayout) cta1.findViewById(R.id.location_bar);
+        LocationBarLayout locationBarLayout = cta1.findViewById(R.id.location_bar);
         typeAndClickMatchingTabMatchSuggestion(cta1, locationBarLayout, aboutTab);
 
         CriteriaHelper.pollUiThread(

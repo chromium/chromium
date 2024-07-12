@@ -49,8 +49,7 @@ public class WebappSplashScreenIconTest {
     @SmallTest
     @Feature({"Webapps"})
     public void testShowSplashIcon() {
-        ImageView splashImage =
-                (ImageView) mSplashScreen.findViewById(R.id.webapp_splash_screen_icon);
+        ImageView splashImage = mSplashScreen.findViewById(R.id.webapp_splash_screen_icon);
         BitmapDrawable drawable = (BitmapDrawable) splashImage.getDrawable();
 
         Assert.assertEquals(512, drawable.getBitmap().getWidth());

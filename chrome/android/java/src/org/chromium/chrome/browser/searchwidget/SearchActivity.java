@@ -287,9 +287,7 @@ public class SearchActivity extends AsyncInitializationActivity
         setContentView(contentView);
 
         // Build the search box.
-        mSearchBox =
-                (SearchActivityLocationBarLayout)
-                        contentView.findViewById(R.id.search_location_bar);
+        mSearchBox = contentView.findViewById(R.id.search_location_bar);
         View anchorView = contentView.findViewById(R.id.toolbar);
 
         // Update the status bar's color based on the toolbar color.

@@ -227,7 +227,7 @@ public class SplashController extends CustomTabTabObserver
             return;
         }
 
-        mParentView = (ViewGroup) mActivity.findViewById(android.R.id.content);
+        mParentView = mActivity.findViewById(android.R.id.content);
         mParentView.addView(mSplashView);
 
         recordTraceEventsShowedSplash();

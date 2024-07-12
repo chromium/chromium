@@ -82,18 +82,18 @@ public class PassphraseDialogFragment extends DialogFragment implements OnClickL
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View v = inflater.inflate(R.layout.sync_enter_passphrase, null);
 
-        TextView promptText = (TextView) v.findViewById(R.id.prompt_text);
+        TextView promptText = v.findViewById(R.id.prompt_text);
         promptText.setText(getPromptText());
         promptText.setMovementMethod(LinkMovementMethod.getInstance());
 
-        TextView resetText = (TextView) v.findViewById(R.id.reset_text);
+        TextView resetText = v.findViewById(R.id.reset_text);
         resetText.setText(getResetText());
         resetText.setMovementMethod(LinkMovementMethod.getInstance());
         resetText.setVisibility(View.VISIBLE);
 
-        mVerifyingTextView = (TextView) v.findViewById(R.id.verifying);
+        mVerifyingTextView = v.findViewById(R.id.verifying);
 
-        mPassphraseEditText = (EditText) v.findViewById(R.id.passphrase);
+        mPassphraseEditText = v.findViewById(R.id.passphrase);
         mPassphraseEditText.setOnEditorActionListener(
                 new OnEditorActionListener() {
                     @Override

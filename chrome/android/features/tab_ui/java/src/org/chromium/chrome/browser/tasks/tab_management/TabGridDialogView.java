@@ -848,10 +848,9 @@ public class TabGridDialogView extends FrameLayout {
         ((TextView) (mAnimationCardView.findViewById(R.id.tab_title)))
                 .setTextColor(((TextView) (view.findViewById(R.id.tab_title))).getTextColors());
 
-        TabThumbnailView originalThumbnailView =
-                (TabThumbnailView) view.findViewById(R.id.tab_thumbnail);
+        TabThumbnailView originalThumbnailView = view.findViewById(R.id.tab_thumbnail);
         TabThumbnailView animationThumbnailView =
-                (TabThumbnailView) mAnimationCardView.findViewById(R.id.tab_thumbnail);
+                mAnimationCardView.findViewById(R.id.tab_thumbnail);
         if (originalThumbnailView.isPlaceholder()) {
             animationThumbnailView.setImageDrawable(null);
         } else {

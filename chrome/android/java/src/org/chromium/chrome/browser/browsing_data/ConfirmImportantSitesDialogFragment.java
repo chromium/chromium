@@ -85,8 +85,8 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
                         inflater.inflate(R.layout.confirm_important_sites_list_row, parent, false);
 
                 ViewAndFaviconHolder viewHolder = new ViewAndFaviconHolder();
-                viewHolder.checkboxView = (CheckBox) childView.findViewById(R.id.icon_row_checkbox);
-                viewHolder.imageView = (ImageView) childView.findViewById(R.id.icon_row_image);
+                viewHolder.checkboxView = childView.findViewById(R.id.icon_row_checkbox);
+                viewHolder.imageView = childView.findViewById(R.id.icon_row_image);
                 childView.setTag(viewHolder);
             }
             ViewAndFaviconHolder viewHolder = (ViewAndFaviconHolder) childView.getTag();
@@ -360,7 +360,7 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
                 getActivity()
                         .getLayoutInflater()
                         .inflate(R.layout.clear_browsing_important_dialog_listview, null);
-        mSitesListView = (ListView) messageAndListView.findViewById(R.id.select_dialog_listview);
+        mSitesListView = messageAndListView.findViewById(R.id.select_dialog_listview);
         mSitesListView.setAdapter(mAdapter);
         mSitesListView.setOnItemClickListener(mAdapter);
         TextView message = messageAndListView.findViewById(R.id.message);

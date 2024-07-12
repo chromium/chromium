@@ -46,7 +46,7 @@ public class TabListView extends SelectableItemViewBase<Integer> {
         assert mTabActionState != TabActionState.UNSET;
         var resources = getResources();
 
-        ImageView actionButton = (ImageView) findViewById(R.id.end_button);
+        ImageView actionButton = findViewById(R.id.end_button);
         actionButton.setVisibility(View.VISIBLE);
         int closeButtonSize = (int) resources.getDimension(R.dimen.tab_grid_close_button_size);
         Bitmap bitmap = BitmapFactory.decodeResource(resources, R.drawable.btn_close);

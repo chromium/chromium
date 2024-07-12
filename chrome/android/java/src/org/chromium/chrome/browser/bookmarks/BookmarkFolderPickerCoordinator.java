@@ -93,7 +93,7 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
                         improvedBookmarkRowCoordinator,
                         shoppingService);
 
-        FadingShadowView shadow = (FadingShadowView) mView.findViewById(R.id.shadow);
+        FadingShadowView shadow = mView.findViewById(R.id.shadow);
         shadow.init(mContext.getColor(R.color.toolbar_shadow_color), FadingShadow.POSITION_TOP);
         mRecyclerView.setOnScrollListener(
                 new RecyclerView.OnScrollListener() {
@@ -128,7 +128,7 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
 
     /** Returns the {@link Toolbar} for the folder picker. */
     public Toolbar getToolbar() {
-        return (Toolbar) mView.findViewById(R.id.toolbar);
+        return mView.findViewById(R.id.toolbar);
     }
 
     public void updateToolbarButtons() {

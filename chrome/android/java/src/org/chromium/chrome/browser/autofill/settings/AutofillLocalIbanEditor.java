@@ -71,10 +71,10 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
                 PersonalDataManagerFactory.getForProfile(getProfile());
         mIban = personalDataManager.getIban(mGUID);
 
-        mDoneButton = (Button) v.findViewById(R.id.button_primary);
-        mNickname = (EditText) v.findViewById(R.id.iban_nickname_edit);
-        mNicknameLabel = (TextInputLayout) v.findViewById(R.id.iban_nickname_label);
-        mValue = (EditText) v.findViewById(R.id.iban_value_edit);
+        mDoneButton = v.findViewById(R.id.button_primary);
+        mNickname = v.findViewById(R.id.iban_nickname_edit);
+        mNicknameLabel = v.findViewById(R.id.iban_nickname_label);
+        mValue = v.findViewById(R.id.iban_value_edit);
 
         mNickname.setOnFocusChangeListener(
                 (view, hasFocus) -> mNicknameLabel.setCounterEnabled(hasFocus));

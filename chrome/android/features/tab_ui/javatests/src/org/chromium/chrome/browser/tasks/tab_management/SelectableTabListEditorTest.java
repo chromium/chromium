@@ -172,7 +172,7 @@ public class SelectableTabListEditorTest {
         }
 
         mTabModelSelector = cta.getTabModelSelector();
-        mParentView = (ViewGroup) cta.findViewById(R.id.coordinator);
+        mParentView = cta.findViewById(R.id.coordinator);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCreationDialogManager =

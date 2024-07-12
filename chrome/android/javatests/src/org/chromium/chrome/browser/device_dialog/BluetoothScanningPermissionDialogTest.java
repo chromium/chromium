@@ -101,9 +101,9 @@ public class BluetoothScanningPermissionDialogTest {
     public void testAddDevice() {
         Dialog dialog = mPermissionDialog.getDialogForTesting();
 
-        final ListView items = (ListView) dialog.findViewById(R.id.items);
-        final Button allowButton = (Button) dialog.findViewById(R.id.allow);
-        final Button blockButton = (Button) dialog.findViewById(R.id.block);
+        final ListView items = dialog.findViewById(R.id.items);
+        final Button allowButton = dialog.findViewById(R.id.allow);
+        final Button blockButton = dialog.findViewById(R.id.block);
 
         // The 'Allow' and 'Block' button should be visible and enabled.
         Assert.assertEquals(View.VISIBLE, allowButton.getVisibility());

@@ -1301,7 +1301,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
                             LayoutInflater.from(getContext())
                                     .inflate(R.layout.payment_request_spinny, null);
 
-            TextView textView = (TextView) spinnyLayout.findViewById(R.id.message);
+            TextView textView = spinnyLayout.findViewById(R.id.message);
             textView.setText(getContext().getString(R.string.payments_checking_option));
 
             return spinnyLayout;

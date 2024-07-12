@@ -547,7 +547,7 @@ public class RootUiCoordinator
                             @Override
                             public View getZoomControlView() {
                                 ViewStub viewStub =
-                                        (ViewStub) mActivity.findViewById(R.id.page_zoom_container);
+                                        mActivity.findViewById(R.id.page_zoom_container);
                                 return viewStub.inflate();
                             }
 

@@ -1111,7 +1111,7 @@ public class FirstRunIntegrationTest {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    Button button = (Button) activity.findViewById(id);
+                    Button button = activity.findViewById(id);
                     Assert.assertNotNull(message, button);
                     button.performClick();
                 });

@@ -336,7 +336,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         if (maximizeButton == null) {
             ViewStub maximizeButtonStub = findViewById(R.id.maximize_button_stub);
             maximizeButtonStub.inflate();
-            maximizeButton = (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
+            maximizeButton = findViewById(R.id.custom_tabs_sidepanel_maximize);
         }
         mMaximizeButtonEnabled = true;
         setMaximizeButtonDrawable(maximizedOnInit);
@@ -528,7 +528,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     public ImageButton getMaximizeButtonForTest() {
-        return (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
+        return findViewById(R.id.custom_tabs_sidepanel_maximize);
     }
 
     @Override
@@ -601,8 +601,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         for (int i = 0; i < numCustomActionButtons; i++) {
             updateButtonTint((ImageButton) mCustomActionButtons.getChildAt(i));
         }
-        ImageButton maximizeButton =
-                (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
+        ImageButton maximizeButton = findViewById(R.id.custom_tabs_sidepanel_maximize);
         if (maximizeButton != null) updateButtonTint(maximizeButton);
         updateButtonTint(mLocationBar.getSecurityButton());
     }
@@ -1233,7 +1232,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         public void onFinishInflate(View container) {
-            mUrlBar = (TextView) container.findViewById(R.id.url_bar);
+            mUrlBar = container.findViewById(R.id.url_bar);
             mUrlBar.setHint("");
             mUrlBar.setEnabled(false);
             mTitleBar = container.findViewById(R.id.title_bar);

@@ -91,13 +91,13 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
 
         View v = super.onCreateView(inflater, container, savedInstanceState);
 
-        mDoneButton = (Button) v.findViewById(R.id.button_primary);
-        mNameLabel = (TextInputLayout) v.findViewById(R.id.credit_card_name_label);
-        mNameText = (EditText) v.findViewById(R.id.credit_card_name_edit);
-        mNicknameLabel = (TextInputLayout) v.findViewById(R.id.credit_card_nickname_label);
-        mNicknameText = (EditText) v.findViewById(R.id.credit_card_nickname_edit);
-        mNumberLabel = (TextInputLayout) v.findViewById(R.id.credit_card_number_label);
-        mNumberText = (EditText) v.findViewById(R.id.credit_card_number_edit);
+        mDoneButton = v.findViewById(R.id.button_primary);
+        mNameLabel = v.findViewById(R.id.credit_card_name_label);
+        mNameText = v.findViewById(R.id.credit_card_name_edit);
+        mNicknameLabel = v.findViewById(R.id.credit_card_nickname_label);
+        mNicknameText = v.findViewById(R.id.credit_card_nickname_edit);
+        mNumberLabel = v.findViewById(R.id.credit_card_number_label);
+        mNumberText = v.findViewById(R.id.credit_card_number_edit);
 
         mNicknameText.addTextChangedListener(nicknameTextWatcher());
         mNicknameText.setOnFocusChangeListener(
@@ -110,27 +110,24 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
 
         if (mIsCvcStorageEnabled) {
             LinearLayout creditCardExpirationSpinnerContainer =
-                    (LinearLayout) v.findViewById(R.id.credit_card_expiration_spinner_container);
-            TextView creditCardExpirationLabel =
-                    (TextView) v.findViewById(R.id.credit_card_expiration_label);
+                    v.findViewById(R.id.credit_card_expiration_spinner_container);
+            TextView creditCardExpirationLabel = v.findViewById(R.id.credit_card_expiration_label);
             creditCardExpirationSpinnerContainer.setVisibility(View.GONE);
             creditCardExpirationLabel.setVisibility(View.GONE);
 
-            mExpirationDate = (EditText) v.findViewById(R.id.expiration_month_and_year);
+            mExpirationDate = v.findViewById(R.id.expiration_month_and_year);
             mExpirationDate.addTextChangedListener(expirationDateTextWatcher());
 
-            mCvc = (EditText) v.findViewById(R.id.cvc);
-            mCvcHintImage = (ImageView) v.findViewById(R.id.cvc_hint_image);
+            mCvc = v.findViewById(R.id.cvc);
+            mCvcHintImage = v.findViewById(R.id.cvc_hint_image);
             mNumberText.addTextChangedListener(creditCardNumberTextWatcherForCvc());
         } else {
             RelativeLayout creditCardExpirationAndCvcLayout =
-                    (RelativeLayout) v.findViewById(R.id.credit_card_expiration_and_cvc_layout);
+                    v.findViewById(R.id.credit_card_expiration_and_cvc_layout);
             creditCardExpirationAndCvcLayout.setVisibility(View.GONE);
 
-            mExpirationMonth =
-                    (Spinner) v.findViewById(R.id.autofill_credit_card_editor_month_spinner);
-            mExpirationYear =
-                    (Spinner) v.findViewById(R.id.autofill_credit_card_editor_year_spinner);
+            mExpirationMonth = v.findViewById(R.id.autofill_credit_card_editor_month_spinner);
+            mExpirationYear = v.findViewById(R.id.autofill_credit_card_editor_year_spinner);
 
             addSpinnerAdapters();
         }

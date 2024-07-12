@@ -48,9 +48,9 @@ public class RecentTabsGroupView extends RelativeLayout {
     public void onFinishInflate() {
         super.onFinishInflate();
         mRow = getRootView().findViewById(R.id.recent_tabs_group_view);
-        mTimeLabel = (TextView) findViewById(R.id.time_label);
-        mDeviceLabel = (TextView) findViewById(R.id.device_label);
-        mExpandCollapseIcon = (ImageView) findViewById(R.id.expand_collapse_icon);
+        mTimeLabel = findViewById(R.id.time_label);
+        mDeviceLabel = findViewById(R.id.device_label);
+        mExpandCollapseIcon = findViewById(R.id.expand_collapse_icon);
 
         // Create drawable for expand/collapse arrow.
         LevelListDrawable collapseIcon = new LevelListDrawable();

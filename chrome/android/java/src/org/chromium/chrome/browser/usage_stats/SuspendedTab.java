@@ -181,7 +181,7 @@ public class SuspendedTab extends EmptyTabObserver implements UserData, TabViewP
 
     private void updateFqdnText() {
         Context context = mTab.getContext();
-        TextView explanationText = (TextView) mView.findViewById(R.id.suspended_tab_explanation);
+        TextView explanationText = mView.findViewById(R.id.suspended_tab_explanation);
         explanationText.setText(
                 context.getString(R.string.usage_stats_site_paused_explanation, mFqdn));
         setSettingsLinkClickListener();

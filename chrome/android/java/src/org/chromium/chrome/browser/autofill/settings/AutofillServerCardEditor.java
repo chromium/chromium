@@ -184,8 +184,7 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
                             mServerCardEditLinkOpenerCallback.onResult(getEditCardLink());
                         });
 
-        final LinearLayout virtualCardContainerLayout =
-                (LinearLayout) v.findViewById(R.id.virtual_card_ui);
+        final LinearLayout virtualCardContainerLayout = v.findViewById(R.id.virtual_card_ui);
         mVirtualCardEnrollmentButton = v.findViewById(R.id.virtual_card_enrollment_button);
         if (showVirtualCardEnrollmentButton()) {
             virtualCardContainerLayout.setVisibility(View.VISIBLE);

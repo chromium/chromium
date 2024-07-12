@@ -723,8 +723,8 @@ public class ManageSyncSettingsTest {
         PassphraseCreationDialogFragment pcdf = getPassphraseCreationDialogFragment();
         AlertDialog dialog = (AlertDialog) pcdf.getDialog();
         Button okButton = dialog.getButton(Dialog.BUTTON_POSITIVE);
-        EditText enterPassphrase = (EditText) dialog.findViewById(R.id.passphrase);
-        EditText confirmPassphrase = (EditText) dialog.findViewById(R.id.confirm_passphrase);
+        EditText enterPassphrase = dialog.findViewById(R.id.passphrase);
+        EditText confirmPassphrase = dialog.findViewById(R.id.confirm_passphrase);
 
         // Error if you try to submit empty passphrase.
         Assert.assertNull(confirmPassphrase.getError());

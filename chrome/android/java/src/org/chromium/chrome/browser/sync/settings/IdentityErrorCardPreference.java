@@ -98,8 +98,8 @@ public class IdentityErrorCardPreference extends Preference
     }
 
     private void setupIdentityErrorCardView(View card) {
-        TextView error = (TextView) card.findViewById(R.id.identity_error_card_error_description);
-        Button button = (Button) card.findViewById(R.id.identity_error_card_button);
+        TextView error = card.findViewById(R.id.identity_error_card_error_description);
+        Button button = card.findViewById(R.id.identity_error_card_button);
 
         ErrorCardDetails error_card_details =
                 SyncSettingsUtils.getIdentityErrorErrorCardDetails(mIdentityError);

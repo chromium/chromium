@@ -333,8 +333,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
                 .getTabThumbnailWithCallback(eq(tabId), any(), any());
         mCoordinator.resetWithTabList(mTabModelFilter);
 
-        TabListRecyclerView recyclerView =
-                (TabListRecyclerView) mActivity.findViewById(R.id.tab_list_recycler_view);
+        TabListRecyclerView recyclerView = mActivity.findViewById(R.id.tab_list_recycler_view);
         // Manually size the view so that the children get added this is to work around robolectric
         // view testing limitations.
         recyclerView.measure(0, 0);
@@ -347,8 +346,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         // 2) Twice due to thumbnail size changes on initial and repeat layout.
         verify(mTabContentManager, times(3)).getTabThumbnailWithCallback(eq(tabId), any(), any());
 
-        TabThumbnailView thumbnailView =
-                (TabThumbnailView) mActivity.findViewById(R.id.tab_thumbnail);
+        TabThumbnailView thumbnailView = mActivity.findViewById(R.id.tab_thumbnail);
         assertNotNull(thumbnailView);
         assertFalse(thumbnailView.isPlaceholder());
 

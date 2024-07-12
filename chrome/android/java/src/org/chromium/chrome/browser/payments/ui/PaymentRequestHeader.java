@@ -62,7 +62,7 @@ public class PaymentRequestHeader extends FrameLayout {
     public void setTitleAndOrigin(String title, String origin, int securityLevel, Profile profile) {
         ((TextView) findViewById(R.id.page_title)).setText(title);
 
-        TextView hostName = (TextView) findViewById(R.id.hostname);
+        TextView hostName = findViewById(R.id.hostname);
         Spannable url = new SpannableStringBuilder(origin);
         final boolean useDarkColors =
                 !ColorUtils.shouldUseLightForegroundOnBackground(mBackgroundColor);

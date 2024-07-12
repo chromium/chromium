@@ -221,7 +221,7 @@ public class SearchWidgetProviderTest {
                         parentView.addView(view);
 
                         // Confirm that the string is correct.
-                        TextView titleView = (TextView) view.findViewById(R.id.title);
+                        TextView titleView = view.findViewById(R.id.title);
                         Assert.assertEquals(View.VISIBLE, titleView.getVisibility());
                         Assert.assertEquals(expectedString, titleView.getHint());
 

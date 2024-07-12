@@ -46,7 +46,7 @@ public class OtherFormsOfHistoryDialogFragment extends DialogFragment
         View view = inflater.inflate(R.layout.other_forms_of_history_dialog, null);
 
         // Linkify the <link></link> span in the dialog text.
-        TextView textView = (TextView) view.findViewById(R.id.text);
+        TextView textView = view.findViewById(R.id.text);
         final SpannableString textWithLink =
                 SpanApplier.applySpans(
                         textView.getText().toString(),

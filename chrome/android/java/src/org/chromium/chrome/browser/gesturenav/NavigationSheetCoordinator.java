@@ -166,7 +166,7 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
     private boolean openSheet(boolean expandIfSmall, boolean animate) {
         mContentView =
                 (NavigationSheetView) mLayoutInflater.inflate(R.layout.navigation_sheet, null);
-        ListView listview = (ListView) mContentView.findViewById(R.id.navigation_entries);
+        ListView listview = mContentView.findViewById(R.id.navigation_entries);
         listview.setAdapter(mModelAdapter);
         NavigationHistory history = mDelegate.getHistory(mForward, mProfile.isOffTheRecord());
         // If there is no entry, the sheet should not be opened. This is the case when in a fresh

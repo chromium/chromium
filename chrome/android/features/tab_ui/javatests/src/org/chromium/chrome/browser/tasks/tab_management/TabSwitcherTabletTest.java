@@ -453,7 +453,7 @@ public class TabSwitcherTabletTest {
     }
 
     private void checkTabSwitcherViewHolderStub(ChromeTabbedActivity cta, boolean exists) {
-        ViewStub tabSwitcherStub = (ViewStub) cta.findViewById(R.id.tab_switcher_view_holder_stub);
+        ViewStub tabSwitcherStub = cta.findViewById(R.id.tab_switcher_view_holder_stub);
         if (exists) {
             assertTrue(
                     "TabSwitcher view stub should not be inflated",

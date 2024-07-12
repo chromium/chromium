@@ -428,7 +428,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         getDragBarBackground()
                 .setColor(ColorUtils.overlayColor(mToolbarColor, scrimColor, scrimFraction));
 
-        ImageView handle = (ImageView) mActivity.findViewById(R.id.drag_handle);
+        ImageView handle = mActivity.findViewById(R.id.drag_handle);
         @ColorInt int handleColor = mActivity.getColor(R.color.drag_handlebar_color_baseline);
         if (scrimFraction > 0.f) {
             handle.setColorFilter(ColorUtils.overlayColor(handleColor, scrimColor, scrimFraction));
@@ -551,7 +551,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
                 mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation);
         float elevation = isMaxWidthLandscapeBottomSheet ? maxWidthBottomSheetEv : regBottomSheetEv;
 
-        ViewGroup coordinatorLayout = (ViewGroup) mActivity.findViewById(R.id.coordinator);
+        ViewGroup coordinatorLayout = mActivity.findViewById(R.id.coordinator);
         coordinatorLayout.setElevation(elevation);
         if (handleView != null) {
             handleView.setElevation(elevation);

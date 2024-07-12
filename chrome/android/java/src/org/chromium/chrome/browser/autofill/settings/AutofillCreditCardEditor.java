@@ -76,8 +76,7 @@ public abstract class AutofillCreditCardEditor extends AutofillEditorBase
             }
         }
 
-        mBillingAddress =
-                (Spinner) v.findViewById(R.id.autofill_credit_card_editor_billing_address_spinner);
+        mBillingAddress = v.findViewById(R.id.autofill_credit_card_editor_billing_address_spinner);
         mBillingAddress.setAdapter(profilesAdapter);
 
         // TODO(rouslan): Use an [+ ADD ADDRESS] button instead of disabling the dropdown.

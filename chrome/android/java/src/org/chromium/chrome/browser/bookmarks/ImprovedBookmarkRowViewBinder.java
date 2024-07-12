@@ -18,8 +18,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class ImprovedBookmarkRowViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey key) {
         ImprovedBookmarkRow row = (ImprovedBookmarkRow) view;
-        ImprovedBookmarkFolderView folderView =
-                (ImprovedBookmarkFolderView) view.findViewById(R.id.folder_view);
+        ImprovedBookmarkFolderView folderView = view.findViewById(R.id.folder_view);
         if (key == ImprovedBookmarkRowProperties.ENABLED) {
             row.setRowEnabled(model.get(ImprovedBookmarkRowProperties.ENABLED));
         } else if (key == ImprovedBookmarkRowProperties.TITLE) {

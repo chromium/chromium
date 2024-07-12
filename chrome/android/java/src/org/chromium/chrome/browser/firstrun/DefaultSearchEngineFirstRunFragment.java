@@ -43,10 +43,8 @@ public class DefaultSearchEngineFirstRunFragment extends Fragment implements Fir
         View rootView =
                 inflater.inflate(
                         R.layout.default_search_engine_first_run_fragment, container, false);
-        mEngineLayout =
-                (RadioButtonLayout)
-                        rootView.findViewById(R.id.default_search_engine_dialog_options);
-        mButton = (Button) rootView.findViewById(R.id.button_primary);
+        mEngineLayout = rootView.findViewById(R.id.default_search_engine_dialog_options);
+        mButton = rootView.findViewById(R.id.button_primary);
         mButton.setEnabled(false);
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_ENGINE_PROMO_DIALOG_REWRITE)) {

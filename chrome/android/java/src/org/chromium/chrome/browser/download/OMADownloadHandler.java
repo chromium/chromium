@@ -540,15 +540,15 @@ public class OMADownloadHandler extends BroadcastReceiver {
                 (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = inflater.inflate(R.layout.confirm_oma_download, null);
 
-        TextView textView = (TextView) v.findViewById(R.id.oma_download_name);
+        TextView textView = v.findViewById(R.id.oma_download_name);
         textView.setText(omaInfo.getValue(OMA_NAME));
-        textView = (TextView) v.findViewById(R.id.oma_download_vendor);
+        textView = v.findViewById(R.id.oma_download_vendor);
         textView.setText(omaInfo.getValue(OMA_VENDOR));
-        textView = (TextView) v.findViewById(R.id.oma_download_size);
+        textView = v.findViewById(R.id.oma_download_size);
         textView.setText(omaInfo.getValue(OMA_SIZE));
-        textView = (TextView) v.findViewById(R.id.oma_download_type);
+        textView = v.findViewById(R.id.oma_download_type);
         textView.setText(getOpennableType(omaInfo));
-        textView = (TextView) v.findViewById(R.id.oma_download_description);
+        textView = v.findViewById(R.id.oma_download_description);
         textView.setText(omaInfo.getValue(OMA_DESCRIPTION));
 
         DialogInterface.OnClickListener clickListener =

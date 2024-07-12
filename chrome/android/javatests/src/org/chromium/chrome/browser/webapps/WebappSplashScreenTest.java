@@ -195,12 +195,11 @@ public class WebappSplashScreenTest {
         ViewGroup splashScreen = mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
         Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
 
-        ImageView splashImage =
-                (ImageView) splashScreen.findViewById(R.id.webapp_splash_screen_icon);
+        ImageView splashImage = splashScreen.findViewById(R.id.webapp_splash_screen_icon);
         Assert.assertEquals(size, splashImage.getMeasuredWidth());
         Assert.assertEquals(size, splashImage.getMeasuredHeight());
 
-        TextView splashText = (TextView) splashScreen.findViewById(R.id.webapp_splash_screen_name);
+        TextView splashText = splashScreen.findViewById(R.id.webapp_splash_screen_name);
         int[] rules = ((RelativeLayout.LayoutParams) splashText.getLayoutParams()).getRules();
         Assert.assertEquals(RelativeLayout.TRUE, rules[RelativeLayout.ALIGN_PARENT_BOTTOM]);
         Assert.assertEquals(0, rules[RelativeLayout.BELOW]);
@@ -232,15 +231,14 @@ public class WebappSplashScreenTest {
         Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
 
         // There's no icon displayed.
-        ImageView splashImage =
-                (ImageView) splashScreen.findViewById(R.id.webapp_splash_screen_icon);
+        ImageView splashImage = splashScreen.findViewById(R.id.webapp_splash_screen_icon);
         Assert.assertNull(splashImage);
 
         View spacer = splashScreen.findViewById(R.id.webapp_splash_space);
         Assert.assertNotNull(spacer);
 
         // The web app name is anchored to the top of the spacer.
-        TextView splashText = (TextView) splashScreen.findViewById(R.id.webapp_splash_screen_name);
+        TextView splashText = splashScreen.findViewById(R.id.webapp_splash_screen_name);
         int[] rules = ((RelativeLayout.LayoutParams) splashText.getLayoutParams()).getRules();
         Assert.assertEquals(0, rules[RelativeLayout.ALIGN_PARENT_BOTTOM]);
         Assert.assertEquals(0, rules[RelativeLayout.BELOW]);
@@ -257,15 +255,14 @@ public class WebappSplashScreenTest {
         Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
 
         // There's no icon displayed.
-        ImageView splashImage =
-                (ImageView) splashScreen.findViewById(R.id.webapp_splash_screen_icon);
+        ImageView splashImage = splashScreen.findViewById(R.id.webapp_splash_screen_icon);
         Assert.assertNull(splashImage);
 
         View spacer = splashScreen.findViewById(R.id.webapp_splash_space);
         Assert.assertNotNull(spacer);
 
         // The web app name is anchored to the top of the spacer.
-        TextView splashText = (TextView) splashScreen.findViewById(R.id.webapp_splash_screen_name);
+        TextView splashText = splashScreen.findViewById(R.id.webapp_splash_screen_name);
         int[] rules = ((RelativeLayout.LayoutParams) splashText.getLayoutParams()).getRules();
         Assert.assertEquals(0, rules[RelativeLayout.ALIGN_PARENT_BOTTOM]);
         Assert.assertEquals(0, rules[RelativeLayout.BELOW]);

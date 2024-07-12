@@ -234,11 +234,11 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
                             LayoutInflater.from(layout.getContext())
                                     .inflate(R.layout.infobar_footer, null, false);
 
-            TextView emailView = (TextView) footer.findViewById(R.id.infobar_footer_email);
+            TextView emailView = footer.findViewById(R.id.infobar_footer_email);
             emailView.setText(mAccountFooterEmail);
 
             RoundedCornerImageView profilePicView =
-                    (RoundedCornerImageView) footer.findViewById(R.id.infobar_footer_profile_pic);
+                    footer.findViewById(R.id.infobar_footer_profile_pic);
             Bitmap resizedProfilePic =
                     Bitmap.createScaledBitmap(
                             mAccountFooterAvatar, smallIconSize, smallIconSize, false);

@@ -133,7 +133,7 @@ class TabListViewBinder {
         bindListTab(model, view, propertyKey);
 
         if (TabProperties.IS_INCOGNITO == propertyKey) {
-            ImageView closeButton = (ImageView) view.findViewById(R.id.end_button);
+            ImageView closeButton = view.findViewById(R.id.end_button);
             ImageViewCompat.setImageTintList(
                     closeButton,
                     TabUiThemeProvider.getActionButtonTintList(
@@ -147,7 +147,7 @@ class TabListViewBinder {
         } else if (TabProperties.TAB_GROUP_INFO == propertyKey
                 || TabProperties.TAB_ID == propertyKey) {
             @Nullable TabGroupInfo tabGroupInfo = model.get(TabProperties.TAB_GROUP_INFO);
-            ImageView actionButton = (ImageView) view.findViewById(R.id.end_button);
+            ImageView actionButton = view.findViewById(R.id.end_button);
             Resources res = view.getResources();
 
             // Only change the drawable if the property key in question is for tab groups.
@@ -191,12 +191,12 @@ class TabListViewBinder {
         final @ColorInt int textColor =
                 TabUiThemeUtils.getTitleTextColor(
                         view.getContext(), isIncognito, /* isSelected= */ false);
-        TextView titleView = (TextView) view.findViewById(R.id.title);
-        TextView descriptionView = (TextView) view.findViewById(R.id.description);
+        TextView titleView = view.findViewById(R.id.title);
+        TextView descriptionView = view.findViewById(R.id.description);
         titleView.setTextColor(textColor);
         descriptionView.setTextColor(textColor);
 
-        ImageView faviconView = (ImageView) view.findViewById(R.id.start_icon);
+        ImageView faviconView = view.findViewById(R.id.start_icon);
         if (faviconView.getBackground() == null) {
             faviconView.setBackgroundResource(R.drawable.list_item_icon_modern_bg);
         }
@@ -230,7 +230,7 @@ class TabListViewBinder {
             tabListView.setItem(tabId);
         } else if (TabProperties.IS_SELECTED == propertyKey) {
             boolean isSelected = model.get(TabProperties.IS_SELECTED);
-            ImageView actionButton = (ImageView) view.findViewById(R.id.end_button);
+            ImageView actionButton = view.findViewById(R.id.end_button);
             actionButton.getBackground().setLevel(isSelected ? selectedLevel : defaultLevel);
             DrawableCompat.setTintList(
                     actionButton.getBackground().mutate(),
@@ -249,12 +249,12 @@ class TabListViewBinder {
     }
 
     private static void setFavicon(View view, Drawable favicon) {
-        ImageView faviconView = (ImageView) view.findViewById(R.id.start_icon);
+        ImageView faviconView = view.findViewById(R.id.start_icon);
         faviconView.setImageDrawable(favicon);
     }
 
     private static void setTabGroupColorIcon(ViewGroup view, PropertyModel model) {
-        ImageView colorIconView = (ImageView) view.findViewById(R.id.icon);
+        ImageView colorIconView = view.findViewById(R.id.icon);
 
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
             colorIconView.setVisibility(View.VISIBLE);

@@ -30,14 +30,14 @@ public class DefaultSearchEngineDialogHelperUtils {
         // Wait for the options to appear.
         CriteriaHelper.pollUiThread(
                 () -> {
-                    ViewGroup options = (ViewGroup) rootView.findViewById(OPTION_LAYOUT_ID);
+                    ViewGroup options = rootView.findViewById(OPTION_LAYOUT_ID);
                     Criteria.checkThat(options.getChildCount(), Matchers.greaterThan(0));
                 });
 
         // Click on the first search engine option available.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ViewGroup options = (ViewGroup) rootView.findViewById(OPTION_LAYOUT_ID);
+                    ViewGroup options = rootView.findViewById(OPTION_LAYOUT_ID);
                     options.getChildAt(0).performClick();
                     sSelectedEngine = (String) (options.getChildAt(0).getTag());
                 });

@@ -87,7 +87,7 @@ public class RecentTabsPage
         mRecentTabsManager.setUpdatedCallback(this);
         LayoutInflater inflater = LayoutInflater.from(activity);
         mView = (ViewGroup) inflater.inflate(R.layout.recent_tabs_page, null);
-        mListView = (ExpandableListView) mView.findViewById(R.id.odp_listview);
+        mListView = mView.findViewById(R.id.odp_listview);
         mAdapter = new RecentTabsRowAdapter(activity, recentTabsManager);
         mListView.setAdapter(mAdapter);
         mListView.setOnChildClickListener(this);

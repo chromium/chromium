@@ -234,8 +234,7 @@ public class TileGroupTest {
                 () -> {
                     SnackbarManager snackbarManager = activity.getSnackbarManager();
                     Criteria.checkThat(snackbarManager.isShowing(), Matchers.is(true));
-                    TextView snackbarMessage =
-                            (TextView) activity.findViewById(R.id.snackbar_message);
+                    TextView snackbarMessage = activity.findViewById(R.id.snackbar_message);
                     Criteria.checkThat(snackbarMessage, Matchers.notNullValue());
                     Criteria.checkThat(
                             snackbarMessage.getText().toString(),

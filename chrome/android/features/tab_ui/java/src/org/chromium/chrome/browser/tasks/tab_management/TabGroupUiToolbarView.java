@@ -42,7 +42,7 @@ public class TabGroupUiToolbarView extends FrameLayout {
         mRightButton = findViewById(R.id.toolbar_right_button);
         mFadingEdgeStart = findViewById(R.id.tab_strip_fading_edge_start);
         mFadingEdgeEnd = findViewById(R.id.tab_strip_fading_edge_end);
-        mContainerView = (ViewGroup) findViewById(R.id.toolbar_container_view);
+        mContainerView = findViewById(R.id.toolbar_container_view);
         mMainContent = findViewById(R.id.main_content);
     }
 

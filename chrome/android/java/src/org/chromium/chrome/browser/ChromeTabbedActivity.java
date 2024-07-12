@@ -754,8 +754,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         LazyOneshotSupplier<ViewGroup> rootViewSupplier =
                 LazyOneshotSupplier.fromSupplier(
                         () -> {
-                            ViewStub stub =
-                                    (ViewStub) findViewById(R.id.tab_switcher_view_holder_stub);
+                            ViewStub stub = findViewById(R.id.tab_switcher_view_holder_stub);
                             return (ViewGroup) stub.inflate();
                         });
 
@@ -801,8 +800,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             CompositorViewHolder compositorViewHolder = getCompositorViewHolderSupplier().get();
 
             ViewGroup tabSwitcherViewHolder = findViewById(R.id.tab_switcher_view_holder);
-            ViewStub tabHoverCardViewStub =
-                    (ViewStub) findViewById(R.id.tab_hover_card_holder_stub);
+            ViewStub tabHoverCardViewStub = findViewById(R.id.tab_hover_card_holder_stub);
             View toolbarContainerView = findViewById(R.id.toolbar_container);
             mDragDropDelegate = new DragAndDropDelegateImpl();
             mDragDropDelegate.setDragAndDropBrowserDelegate(
@@ -2099,8 +2097,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
                                 | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
-        mContentContainer = (ViewGroup) findViewById(android.R.id.content);
-        mControlContainer = (ToolbarControlContainer) findViewById(R.id.control_container);
+        mContentContainer = findViewById(android.R.id.content);
+        mControlContainer = findViewById(R.id.control_container);
 
         // Instead of overriding AsyncInitializationActivity#onFirstDrawComplete like the other
         // activities, we're adding our own draw detector here because this activity's draw can be

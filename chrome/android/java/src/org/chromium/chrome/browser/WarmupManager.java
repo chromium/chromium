@@ -443,14 +443,13 @@ public class WarmupManager {
                             LayoutInflaterUtils.inflate(
                                     layoutInflater, R.layout.main, contentHolder);
             if (toolbarContainerId != ActivityUtils.NO_RESOURCE_ID) {
-                ViewStub stub = (ViewStub) mainView.findViewById(R.id.control_container_stub);
+                ViewStub stub = mainView.findViewById(R.id.control_container_stub);
                 stub.setLayoutResource(toolbarContainerId);
                 stub.inflate();
             }
             // It cannot be assumed that the result of toolbarContainerStub.inflate() will be
             // the control container since it may be wrapped in another view.
-            ControlContainer controlContainer =
-                    (ControlContainer) mainView.findViewById(R.id.control_container);
+            ControlContainer controlContainer = mainView.findViewById(R.id.control_container);
 
             if (toolbarId != ActivityUtils.NO_RESOURCE_ID && controlContainer != null) {
                 controlContainer.initWithToolbar(toolbarId);

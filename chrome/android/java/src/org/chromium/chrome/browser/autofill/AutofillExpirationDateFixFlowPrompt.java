@@ -88,21 +88,21 @@ public class AutofillExpirationDateFixFlowPrompt extends AutofillSaveCardPromptB
                 confirmButtonLabel,
                 filledConfirmButton);
         mDelegate = delegate;
-        mErrorMessage = (TextView) mDialogView.findViewById(R.id.error_message);
+        mErrorMessage = mDialogView.findViewById(R.id.error_message);
         // Infobar: show masked card number only.
-        TextView cardDetailsMasked = (TextView) mDialogView.findViewById(R.id.cc_details_masked);
+        TextView cardDetailsMasked = mDialogView.findViewById(R.id.cc_details_masked);
         cardDetailsMasked.setText(cardLabel);
         mDialogView.findViewById(R.id.message_divider).setVisibility(View.GONE);
         mDialogView.findViewById(R.id.google_pay_logo).setVisibility(View.GONE);
 
-        mMonthInput = (EditText) mDialogView.findViewById(R.id.cc_month_edit);
+        mMonthInput = mDialogView.findViewById(R.id.cc_month_edit);
         mMonthInput.addTextChangedListener(this);
         mMonthInput.setOnFocusChangeListener(
                 (view, hasFocus) -> {
                     mDidFocusOnMonth |= hasFocus;
                 });
 
-        mYearInput = (EditText) mDialogView.findViewById(R.id.cc_year_edit);
+        mYearInput = mDialogView.findViewById(R.id.cc_year_edit);
         mYearInput.addTextChangedListener(this);
         mYearInput.setOnFocusChangeListener(
                 (view, hasFocus) -> {

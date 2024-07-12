@@ -270,7 +270,7 @@ public class LocationBarModelTest {
      * @return The id of the current {@link Tab} as far as the {@link LocationBarModel} sees it.
      */
     public static int getCurrentTabId(final ChromeTabbedActivity activity) {
-        ToolbarLayout toolbar = (ToolbarLayout) activity.findViewById(R.id.toolbar);
+        ToolbarLayout toolbar = activity.findViewById(R.id.toolbar);
         Assert.assertNotNull("Toolbar is null", toolbar);
 
         ToolbarDataProvider dataProvider = toolbar.getToolbarDataProvider();

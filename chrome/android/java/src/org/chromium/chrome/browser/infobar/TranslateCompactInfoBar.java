@@ -248,7 +248,7 @@ public class TranslateCompactInfoBar extends InfoBar
                     }
                 });
 
-        mTabLayout = (TranslateTabLayout) content.findViewById(R.id.translate_infobar_tabs);
+        mTabLayout = content.findViewById(R.id.translate_infobar_tabs);
         if (mDefaultTextColor > 0) {
             mTabLayout.setTabTextColors(
                     SemanticColorUtils.getDefaultTextColor(getContext()),

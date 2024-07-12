@@ -871,7 +871,7 @@ public class ContextualSearchPanel extends OverlayPanel {
         if (scrimFraction > 0.f) {
             toolbarColor = getScrimmedColor(mActivity, toolbarColor, scrimFraction);
         }
-        ToolbarLayout toolbarLayout = (ToolbarLayout) mActivity.findViewById(R.id.toolbar);
+        ToolbarLayout toolbarLayout = mActivity.findViewById(R.id.toolbar);
         ColorDrawable toolbarBackground = (ColorDrawable) toolbarLayout.getBackground();
         toolbarBackground.setColor(toolbarColor);
 
@@ -880,7 +880,7 @@ public class ContextualSearchPanel extends OverlayPanel {
     }
 
     private void scrimImage(int viewId, int colorId, float scrimFraction) {
-        ImageView view = (ImageView) mActivity.findViewById(viewId);
+        ImageView view = mActivity.findViewById(viewId);
         if (view == null) return;
         int baseColor = mActivity.getColor(colorId);
         if (scrimFraction > 0.f) {

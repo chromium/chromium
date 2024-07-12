@@ -208,7 +208,7 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
         super.onFinishInflate();
 
         View view = getView();
-        mCaption = (TextView) view.findViewById(R.id.contextual_search_caption);
+        mCaption = view.findViewById(R.id.contextual_search_caption);
         mBaseBottomPadding = mCaption.getPaddingBottom();
         padBottomForEdgeToEdge();
     }

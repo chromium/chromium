@@ -182,9 +182,9 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                 childView = inflater.inflate(R.layout.recent_tabs_list_item, parent, false);
 
                 ViewHolder viewHolder = new ViewHolder();
-                viewHolder.textView = (TextView) childView.findViewById(R.id.title_row);
-                viewHolder.domainView = (TextView) childView.findViewById(R.id.domain_row);
-                viewHolder.imageView = (ImageView) childView.findViewById(R.id.recent_tabs_favicon);
+                viewHolder.textView = childView.findViewById(R.id.title_row);
+                viewHolder.domainView = childView.findViewById(R.id.domain_row);
+                viewHolder.imageView = childView.findViewById(R.id.recent_tabs_favicon);
                 viewHolder.imageView.setBackgroundResource(R.drawable.list_item_icon_modern_bg);
                 viewHolder.itemLayout = childView.findViewById(R.id.recent_tabs_list_item_layout);
                 childView.setTag(viewHolder);

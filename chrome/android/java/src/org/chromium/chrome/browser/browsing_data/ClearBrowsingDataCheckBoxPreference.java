@@ -48,7 +48,7 @@ public class ClearBrowsingDataCheckBoxPreference extends ChromeBaseCheckBoxPrefe
 
         mView = holder.itemView;
 
-        final TextView textView = (TextView) mView.findViewById(android.R.id.summary);
+        final TextView textView = mView.findViewById(android.R.id.summary);
 
         // Create custom onTouch listener to be able to respond to click events inside the summary.
         textView.setOnTouchListener(
