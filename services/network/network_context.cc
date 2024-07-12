@@ -1388,7 +1388,7 @@ void NetworkContext::QueueReport(
     base::Value::Dict body) {
   QueueReportInternal(type, group, url, reporting_source,
                       network_anonymization_key, user_agent, std::move(body),
-                      ReportingTargetType::kDeveloper);
+                      net::ReportingTargetType::kDeveloper);
 }
 
 void NetworkContext::QueueEnterpriseReport(
@@ -1401,7 +1401,7 @@ void NetworkContext::QueueEnterpriseReport(
     base::Value::Dict body) {
   QueueReportInternal(type, group, url, reporting_source,
                       network_anonymization_key, user_agent, std::move(body),
-                      ReportingTargetType::kEnterprise);
+                      net::ReportingTargetType::kEnterprise);
 }
 
 void NetworkContext::QueueReportInternal(
@@ -1412,7 +1412,7 @@ void NetworkContext::QueueReportInternal(
     const net::NetworkAnonymizationKey& network_anonymization_key,
     const std::optional<std::string>& user_agent,
     base::Value::Dict body,
-    ReportingTargetType target_type) {
+    net::ReportingTargetType target_type) {
 #if BUILDFLAG(ENABLE_REPORTING)
   // If |reporting_source| is provided, it must not be empty.
   DCHECK(!(reporting_source.has_value() && reporting_source->is_empty()));

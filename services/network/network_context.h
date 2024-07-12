@@ -799,7 +799,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const net::NetworkAnonymizationKey& network_anonymization_key,
       const std::optional<std::string>& user_agent,
       base::Value::Dict body,
-      ReportingTargetType target_type);
+      net::ReportingTargetType target_type);
 
   const raw_ptr<NetworkService> network_service_;
 

@@ -1036,7 +1036,7 @@ class MockReportingService : public net::ReportingService {
       const std::string& type,
       base::Value::Dict body,
       int depth,
-      ReportingTargetType target_type) override {
+      net::ReportingTargetType target_type) override {
     NOTREACHED_IN_MIGRATION();
   }
 

@@ -968,7 +968,7 @@ TEST_F(NetworkContextTest, QueueEnterpriseReport) {
   EXPECT_EQ(kUserAgent_, reports[0]->user_agent);
   EXPECT_EQ(kGroup_, reports[0]->group);
   EXPECT_EQ(kType_, reports[0]->type);
-  EXPECT_EQ(ReportingTargetType::kEnterprise, reports[0]->target_type);
+  EXPECT_EQ(net::ReportingTargetType::kEnterprise, reports[0]->target_type);
 }
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
@@ -2604,7 +2604,8 @@ TEST_F(NetworkContextTest, ClearReportingCacheReports) {
   GURL domain("http://google.com");
   network_context->url_request_context()->reporting_service()->QueueReport(
       domain, std::nullopt, net::NetworkAnonymizationKey(), "Mozilla/1.0",
-      "group", "type", base::Value::Dict(), 0, ReportingTargetType::kDeveloper);
+      "group", "type", base::Value::Dict(), 0,
+      net::ReportingTargetType::kDeveloper);
   network_context->QueueEnterpriseReport("type", "group", domain, std::nullopt,
                                          net::NetworkAnonymizationKey(),
                                          "Mozilla/1.0", base::Value::Dict());
@@ -2634,13 +2635,15 @@ TEST_F(NetworkContextTest, ClearReportingCacheReportsWithFilter) {
   net::ReportingService* reporting_service =
       network_context->url_request_context()->reporting_service();
   GURL url1("http://google.com");
-  reporting_service->QueueReport(
-      url1, std::nullopt, net::NetworkAnonymizationKey(), "Mozilla/1.0",
-      "group", "type", base::Value::Dict(), 0, ReportingTargetType::kDeveloper);
+  reporting_service->QueueReport(url1, std::nullopt,
+                                 net::NetworkAnonymizationKey(), "Mozilla/1.0",
+                                 "group", "type", base::Value::Dict(), 0,
+                                 net::ReportingTargetType::kDeveloper);
   GURL url2("http://chromium.org");
-  reporting_service->QueueReport(
-      url2, std::nullopt, net::NetworkAnonymizationKey(), "Mozilla/1.0",
-      "group", "type", base::Value::Dict(), 0, ReportingTargetType::kDeveloper);
+  reporting_service->QueueReport(url2, std::nullopt,
+                                 net::NetworkAnonymizationKey(), "Mozilla/1.0",
+                                 "group", "type", base::Value::Dict(), 0,
+                                 net::ReportingTargetType::kDeveloper);
 
   std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>> reports;
   reporting_cache->GetReports(&reports);
@@ -2673,13 +2676,15 @@ TEST_F(NetworkContextTest,
   net::ReportingService* reporting_service =
       network_context->url_request_context()->reporting_service();
   GURL url1("http://192.168.0.1");
-  reporting_service->QueueReport(
-      url1, std::nullopt, net::NetworkAnonymizationKey(), "Mozilla/1.0",
-      "group", "type", base::Value::Dict(), 0, ReportingTargetType::kDeveloper);
+  reporting_service->QueueReport(url1, std::nullopt,
+                                 net::NetworkAnonymizationKey(), "Mozilla/1.0",
+                                 "group", "type", base::Value::Dict(), 0,
+                                 net::ReportingTargetType::kDeveloper);
   GURL url2("http://192.168.0.2");
-  reporting_service->QueueReport(
-      url2, std::nullopt, net::NetworkAnonymizationKey(), "Mozilla/1.0",
-      "group", "type", base::Value::Dict(), 0, ReportingTargetType::kDeveloper);
+  reporting_service->QueueReport(url2, std::nullopt,
+                                 net::NetworkAnonymizationKey(), "Mozilla/1.0",
+                                 "group", "type", base::Value::Dict(), 0,
+                                 net::ReportingTargetType::kDeveloper);
 
   std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>> reports;
   reporting_cache->GetReports(&reports);
