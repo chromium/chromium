@@ -91,6 +91,8 @@ class AutofillMetrics {
   // Autocomplete Events.
   // These events are not based on forms nor submissions, but depend on the
   // the usage of the Autocomplete feature.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum AutocompleteEvent {
     // A dropdown with Autocomplete suggestions was shown.
     AUTOCOMPLETE_SUGGESTIONS_SHOWN = 0,
@@ -106,6 +108,8 @@ class AutofillMetrics {
 
   // The user action that triggered the deletion of a suggestion entry.
   // These values are used in enums.xml; do not reorder or renumber entries!
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class SingleEntryRemovalMethod {
     // The user pressed shift delete while an Autofill popup menu entry was
     // selected.
@@ -119,6 +123,8 @@ class AutofillMetrics {
   };
 
   // Represents card submitted state.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum SubmittedCardStateMetric {
     // Submitted card has valid card number and expiration date.
     HAS_CARD_NUMBER_AND_EXPIRATION_DATE,
@@ -134,6 +140,8 @@ class AutofillMetrics {
   // Metric to measure if a submitted card's expiration date matches the same
   // server card's expiration date. Cards are considered to be the same if they
   // have the same last four digits.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum SubmittedServerCardExpirationStatusMetric {
     // The submitted card and the unmasked server card had the same expiration
     // date.
@@ -154,6 +162,8 @@ class AutofillMetrics {
 
   // Metric to distinguish between local and server saves for credit cards or
   // IBANs.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class SaveTypeMetric {
     LOCAL = 0,
     SERVER = 1,
@@ -162,6 +172,8 @@ class AutofillMetrics {
 
   // Metric to measure if a card for which upload was offered is already stored
   // as a local card on the device or if it has not yet been seen.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum UploadOfferedCardOriginMetric {
     // Credit card upload was offered for a local card already on the device.
     OFFERING_UPLOAD_OF_LOCAL_CARD,
@@ -172,6 +184,8 @@ class AutofillMetrics {
 
   // Metric to measure if a card for which upload was accepted is already stored
   // as a local card on the device or if it has not yet been seen.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum UploadAcceptedCardOriginMetric {
     // The user accepted upload of a local card already on the device.
     USER_ACCEPTED_UPLOAD_OF_LOCAL_CARD,
@@ -181,10 +195,9 @@ class AutofillMetrics {
   };
 
   // Metrics to track events in CardUnmaskAuthenticationSelectionDialog.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class CardUnmaskAuthenticationSelectionDialogResultMetric {
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-
     // Default value, should never be used.
     kUnknown = 0,
     // User canceled the dialog before selecting a challenge option.
@@ -219,6 +232,8 @@ class AutofillMetrics {
   //
   // For each of these prediction types, these metrics are also logged by
   // actual and predicted field type.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum FieldTypeQualityMetric {
     // The field was found to be of type T, which matches the predicted type.
     // i.e. actual_type == predicted type == T
@@ -303,6 +318,8 @@ class AutofillMetrics {
   // Entries should not be renumbered and numeric values should never be reused.
   // Please update "EmailPredictionConfusionMatrix" in
   // `tools/metrics/histograms/enums.xml` when new enums are added.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class EmailPredictionConfusionMatrix {
     kTruePositive = 0,
     kFalsePositive = 1,
@@ -314,6 +331,8 @@ class AutofillMetrics {
 
   // Metrics measuring how well rationalization has performed given user's
   // actual input.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum RationalizationQualityMetric {
     // Rationalization did make it better for the user. Most commonly, user
     // have left it empty as rationalization predicted.
@@ -332,6 +351,8 @@ class AutofillMetrics {
     NUM_RATIONALIZATION_QUALITY_METRICS
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum QualityMetricPredictionSource {
     PREDICTION_SOURCE_UNKNOWN,    // Not used. The prediction source is unknown.
     PREDICTION_SOURCE_HEURISTIC,  // Local heuristic field-type prediction.
@@ -340,6 +361,8 @@ class AutofillMetrics {
     NUM_QUALITY_METRIC_SOURCES
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum QualityMetricType {
     TYPE_SUBMISSION = 0,      // Logged based on user's submitted data.
     TYPE_NO_SUBMISSION,       // Logged based on user's entered data.
@@ -349,6 +372,8 @@ class AutofillMetrics {
 
   // Each of these is logged at most once per query to the server, which in turn
   // occurs at most once per page load.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum ServerQueryMetric {
     QUERY_SENT = 0,           // Sent a query to the server.
     QUERY_RESPONSE_RECEIVED,  // Received a response.
@@ -369,6 +394,8 @@ class AutofillMetrics {
   };
 
   // Logs usage of "Scan card" control item.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum ScanCreditCardPromptMetric {
     // "Scan card" was presented to the user.
     SCAN_CARD_ITEM_SHOWN,
@@ -380,6 +407,8 @@ class AutofillMetrics {
   };
 
   // Cardholder name fix flow prompt metrics.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum CardholderNameFixFlowPromptEvent {
     // The prompt was shown.
     CARDHOLDER_NAME_FIX_FLOW_PROMPT_SHOWN = 0,
@@ -393,6 +422,8 @@ class AutofillMetrics {
   };
 
   // Expiration date fix flow prompt metrics.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class ExpirationDateFixFlowPromptEvent {
     // The prompt was accepted by user.
     EXPIRATION_DATE_FIX_FLOW_PROMPT_ACCEPTED = 0,
@@ -404,6 +435,8 @@ class AutofillMetrics {
   };
 
   // Events related to the Unmask Credit Card Prompt.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum UnmaskPromptEvent {
@@ -447,6 +480,8 @@ class AutofillMetrics {
   };
 
   // Possible results of Payments RPCs.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum PaymentsRpcMetricResult {
     // Request succeeded.
     PAYMENTS_RESULT_SUCCESS = 0,
@@ -465,6 +500,8 @@ class AutofillMetrics {
 
   // For measuring the network request time of various Wallet API calls. See
   // WalletClient::RequestType.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum WalletApiCallMetric {
     UNKNOWN_API_CALL,  // Catch all. Should never be used.
     ACCEPT_LEGAL_DOCUMENTS,
@@ -477,6 +514,8 @@ class AutofillMetrics {
 
   // For measuring the frequency of errors while communicating with the Wallet
   // server.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum WalletErrorMetric {
     // Baseline metric: Issued a request to the Wallet server.
     WALLET_ERROR_BASELINE_ISSUED_REQUEST = 0,
@@ -519,6 +558,8 @@ class AutofillMetrics {
   // server. This is similar to the wallet::RequiredAction enum; but unlike
   // that enum, the values in this one must remain constant over time, so that
   // the metrics can be consistently interpreted on the server-side.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum WalletRequiredActionMetric {
     // Baseline metric: Issued a request to the Wallet server.
     WALLET_REQUIRED_ACTION_BASELINE_ISSUED_REQUEST = 0,
@@ -538,15 +579,21 @@ class AutofillMetrics {
   };
 
   // To record whether the upload event was sent.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class UploadEventStatus { kNotSent, kSent, kMaxValue = kSent };
 
   // To record if the value in an autofilled field was edited by the user.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class AutofilledFieldUserEditingStatusMetric {
     AUTOFILLED_FIELD_WAS_EDITED = 0,
     AUTOFILLED_FIELD_WAS_NOT_EDITED = 1,
     kMaxValue = AUTOFILLED_FIELD_WAS_NOT_EDITED,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class AutocompleteState {
     kNone = 0,
     kValid = 1,
@@ -558,6 +605,8 @@ class AutofillMetrics {
 
   // The autofill statuses of a field that are recorded into UKM to help us
   // understand the autofill performance and user behaviors.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class AutofillStatus {
     kIsFocusable = 0,
     kWasFocused = 1,
@@ -769,6 +818,8 @@ class AutofillMetrics {
     const raw_ptr<FormInteractionsUkmLogger> logger_;
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class PredictionState {
     kNone = 0,
     kServer = 1,
