@@ -447,6 +447,11 @@ extern const char kHttpsUpgradesDescription[];
 extern const char kIdentityDiscAccountMenuName[];
 extern const char kIdentityDiscAccountMenuDescription[];
 
+// Title and description for the flag that updates the inactive tab from a
+// header to a button.
+extern const char kInactiveTabButtonRefactoringName[];
+extern const char kInactiveTabButtonRefactoringDescription[];
+
 // Title and description for the flag to indicate the identity error in
 // the overflow menu.
 extern const char kIndicateIdentityErrorInOverflowMenuName[];

@@ -1949,6 +1949,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"app-background-refresh-ios", flag_descriptions::kAppBackgroundRefreshName,
      flag_descriptions::kAppBackgroundRefreshDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableAppBackgroundRefresh)},
+    {"inactive-tab-button-refactoring",
+     flag_descriptions::kInactiveTabButtonRefactoringName,
+     flag_descriptions::kInactiveTabButtonRefactoringDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kInactiveTabButtonRefactoring)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

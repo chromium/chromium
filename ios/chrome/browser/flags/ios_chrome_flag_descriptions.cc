@@ -525,6 +525,12 @@ const char kIdentityDiscAccountMenuDescription[] =
     "When enabled, tapping the identity disc on the New Tab page shows the "
     "account menu UI.";
 
+const char kInactiveTabButtonRefactoringName[] =
+    "Inactive tab button refactoring";
+const char kInactiveTabButtonRefactoringDescription[] =
+    "When enabled, the inactive tab button is refactored to be a cell instead "
+    "of a header.";
+
 const char kIndicateIdentityErrorInOverflowMenuName[] =
     "Indicate Identity Error in Overflow Menu";
 const char kIndicateIdentityErrorInOverflowMenuDescription[] =

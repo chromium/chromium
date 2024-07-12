@@ -719,4 +719,10 @@ BASE_DECLARE_FEATURE(kEnableAppBackgroundRefresh);
 // Whether app background refresh is enabled.
 bool IsAppBackgroundRefreshEnabled();
 
+// Feature flag for replacing the Inactive Tabs header by a button.
+BASE_DECLARE_FEATURE(kInactiveTabButtonRefactoring);
+
+// Whether the inactive tab entry point should be a button.
+bool IsInactiveTabButtonRefactoringEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_
