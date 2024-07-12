@@ -364,13 +364,15 @@ void IOSTabGroupSyncDelegate::UpdateLocalWebState(
 
   // Otherwise, in order to update the URL without loading it, replace the
   // current `web_state` with a new one that has not been loaded.
+  // To avoid accidentally closing a group with only one tab, add the new tab to
+  // the group before removing the old one.
   TabInsertionBrowserAgent* tab_insertion_browser_agent =
       TabInsertionBrowserAgent::FromBrowser(tab_group_info.browser);
-  web_state_list->CloseWebStateAt(web_state_index,
-                                  WebStateList::CLOSE_NO_FLAGS);
   web::WebState* local_web_state =
       InsertDistantTab(saved_tab, tab_insertion_browser_agent, web_state_index,
                        tab_group_info.tab_group);
+  web_state_list->CloseWebStateAt(web_state_index + 1,
+                                  WebStateList::CLOSE_NO_FLAGS);
 
   // Do the association on the server.
   UpdateLocalTabId(local_web_state, tab_group_info.tab_group, saved_tab);

@@ -339,7 +339,8 @@ TEST_F(IOSTabGroupSyncDelegateTest, CreateTabGroupBackgroundScene) {
   VerifyLocalTabGroup(target_web_state_list, 1);
 }
 
-TEST_F(IOSTabGroupSyncDelegateTest, CloseTabGroup) {
+// Tests `CloseLocalTabGroup`.
+TEST_F(IOSTabGroupSyncDelegateTest, CloseLocalTabGroup) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
@@ -363,7 +364,8 @@ TEST_F(IOSTabGroupSyncDelegateTest, CloseTabGroup) {
   EXPECT_EQ("| g* h", builder_same_browser_state.GetWebStateListDescription());
 }
 
-TEST_F(IOSTabGroupSyncDelegateTest, UpdateTabGroup) {
+// Tests `CloseLocalTabGroup` correctly updates all local tabs.
+TEST_F(IOSTabGroupSyncDelegateTest, UpdateLocalTabGroup) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
@@ -461,6 +463,46 @@ TEST_F(IOSTabGroupSyncDelegateTest, UpdateTabGroup) {
   EXPECT_EQ(third_tab_updated_url, third_web_state->GetVisibleURL());
   EXPECT_EQ(kThirdTabTitle, third_web_state->GetTitle());
   EXPECT_EQ(2, tab_group->range().count());
+}
+
+// Tests `CloseLocalTabGroup` correctly updates local group with one tab.
+TEST_F(IOSTabGroupSyncDelegateTest, UpdateLocalTabGroupOneTab) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "| a* [0 b ] c", browser_->GetBrowserState()));
+
+  WebStateList* web_state_list_same_browser_state =
+      browser_same_browser_state_->GetWebStateList();
+  WebStateListBuilderFromDescription builder_same_browser_state(
+      web_state_list_same_browser_state);
+  ASSERT_TRUE(builder_same_browser_state.BuildWebStateListFromDescription(
+      "| [1 e* f ] g h ", browser_->GetBrowserState()));
+
+  const TabGroup* tab_group = builder.GetTabGroupForIdentifier('0');
+  base::Uuid saved_tab_group_id = base::Uuid::GenerateRandomV4();
+  std::vector<SavedTabGroupTab> tabs;
+  SavedTabGroupTab first_tab = FirstTab(saved_tab_group_id);
+
+  SavedTabGroup saved_group(u"my group", TabGroupColorId::kPink, tabs,
+                            std::make_optional(0), saved_tab_group_id);
+  saved_group.SetLocalGroupId(tab_group->tab_group_id());
+
+  EXPECT_CALL(*mock_service_, UpdateLocalTabId(_, kFirstTabId, _)).Times(1);
+
+  // Update the local group with only one tab.
+  saved_group.AddTabFromSync(first_tab);
+  delegate_->UpdateLocalTabGroup(saved_group);
+  web::WebState* first_web_state = web_state_list->GetWebStateAt(1);
+  FakeUpdateLocalTabId(first_web_state, first_tab, saved_group);
+  ASSERT_EQ(3, web_state_list->count());
+  EXPECT_FALSE(first_web_state->IsRealized());
+  EXPECT_EQ(kFirstTabURL, first_web_state->GetVisibleURL());
+  EXPECT_EQ(kFirstTabTitle, first_web_state->GetTitle());
+  EXPECT_EQ(1, tab_group->range().count());
+  EXPECT_TRUE([tab_group->GetTitle() isEqual:@"my group"]);
+  EXPECT_TRUE([tab_group->GetColor()
+      isEqual:TabGroup::ColorForTabGroupColorId(TabGroupColorId::kPink)]);
 }
 
 // Tests that the service correctly returns local ids.
