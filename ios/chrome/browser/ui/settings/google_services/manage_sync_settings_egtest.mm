@@ -280,10 +280,11 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
       assertWithMatcher:grey_notVisible()];
 }
 
+// TODO(crbug.com/352725030): This test is flaky.
 // Tests the unsynced data dialog shows when there are unsynced passwords. Also
 // verifies that the user is still signed in when the dialog Cancel button is
 // tapped.
-- (void)testUnsyncedDataDialogShowsInCaseOfUnsyncedPasswords {
+- (void)FLAKY_testUnsyncedDataDialogShowsInCaseOfUnsyncedPasswords {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
