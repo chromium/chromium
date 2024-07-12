@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
+#include "ui/views/view_observer.h"
 
 class Browser;
 class ExtensionMenuItemView;
@@ -20,7 +21,8 @@ class ExtensionsToolbarContainer;
 
 // An implementation of ExtensionActionTestHelper that works with the
 // ExtensionsMenu.
-class ExtensionsMenuTestUtil : public ExtensionActionTestHelper {
+class ExtensionsMenuTestUtil : public ExtensionActionTestHelper,
+                               views::ViewObserver {
  public:
   ExtensionsMenuTestUtil(Browser* browser, bool is_real_window);
   ExtensionsMenuTestUtil(const ExtensionsMenuTestUtil&) = delete;
@@ -45,8 +47,9 @@ class ExtensionsMenuTestUtil : public ExtensionActionTestHelper {
   gfx::Size GetMaxAvailableSizeToFitBubbleOnScreen(
       const extensions::ExtensionId& id) override;
 
+  void OnViewIsDeleting(views::View* observed_view) override;
+
  private:
-  class MenuViewObserver;
   class Wrapper;
 
   // Returns the ExtensionMenuItemView for the given `id` from the
@@ -64,14 +67,8 @@ class ExtensionsMenuTestUtil : public ExtensionActionTestHelper {
   raw_ptr<ExtensionsToolbarContainer, DanglingUntriaged> extensions_container_ =
       nullptr;
 
-  // Helps make sure that `menu_view_`, if existent, is set to null when
-  // destroyed by the widget or via manual means.
-  std::unique_ptr<MenuViewObserver> menu_view_observer_;
-
   // The actual pointer to an ExtensionsMenuView, non-null if alive.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION ExtensionsMenuView* menu_view_ = nullptr;
+  raw_ptr<ExtensionsMenuView> menu_view_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_TEST_UTIL_H_
