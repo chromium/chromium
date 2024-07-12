@@ -20,6 +20,7 @@
 using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForCookiesTimeout;
 
+// TODO(crbug.com/352534785): Remove the dependency of OCMock.
 class CRWWKHTTPCookieStoreTest : public PlatformTest {
  public:
   CRWWKHTTPCookieStoreTest()
@@ -27,7 +28,7 @@ class CRWWKHTTPCookieStoreTest : public PlatformTest {
     wk_website_data_store_ = CreateDataStore();
     mock_http_cookie_store_ =
         OCMPartialMock(wk_website_data_store_.httpCookieStore);
-    crw_cookie_store_.HTTPCookieStore = mock_http_cookie_store_;
+    crw_cookie_store_.websiteDataStore = wk_website_data_store_;
     NSURL* test_cookie_url = [NSURL URLWithString:@"http://foo.google.com/bar"];
     test_cookie_1_ = [NSHTTPCookie cookieWithProperties:@{
       NSHTTPCookiePath : test_cookie_url.path,
@@ -193,7 +194,7 @@ TEST_F(CRWWKHTTPCookieStoreTest, ChangeCookieStore) {
   wk_website_data_store_ = CreateDataStore();
   mock_http_cookie_store_ =
       OCMPartialMock(wk_website_data_store_.httpCookieStore);
-  crw_cookie_store_.HTTPCookieStore = mock_http_cookie_store_;
+  crw_cookie_store_.websiteDataStore = wk_website_data_store_;
 
   // Verify that internal getAllCookies is called.
   OCMExpect([mock_http_cookie_store_ getAllCookies:[OCMArg any]])
@@ -215,7 +216,7 @@ TEST_F(CRWWKHTTPCookieStoreTest, ChangeCookieStore) {
 // Tests that if the internal cookie store is nil, getAllCookie will still run
 // its callback.
 TEST_F(CRWWKHTTPCookieStoreTest, NilCookieStore) {
-  crw_cookie_store_.HTTPCookieStore = nil;
+  crw_cookie_store_.websiteDataStore = nil;
   // GetCookies should return empty array when there is no cookie store.
   NSArray<NSHTTPCookie*>* result = GetCookies();
   EXPECT_EQ(0U, result.count);

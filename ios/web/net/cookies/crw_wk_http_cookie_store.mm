@@ -12,15 +12,15 @@ namespace {
 // possible. This function is needed because some of WKHTTPCookieStore methods
 // completion handlers are not called until there is a WKWebView on the view
 // hierarchy.
-void PrioritizeWKHTTPCookieStoreCallbacks() {
+void PrioritizeWKHTTPCookieStoreCallbacks(WKWebsiteDataStore* data_store) {
+  CHECK(data_store);
   // TODO(crbug.com/41414488): Currently this hack is needed to fix
   // crbug.com/885218. Remove when the behavior of
   // [WKHTTPCookieStore getAllCookies:] changes.
   NSSet* data_types = [NSSet setWithObject:WKWebsiteDataTypeCookies];
-  [[WKWebsiteDataStore defaultDataStore]
-      fetchDataRecordsOfTypes:data_types
-            completionHandler:^(NSArray<WKWebsiteDataRecord*>* records){
-            }];
+  [data_store fetchDataRecordsOfTypes:data_types
+                    completionHandler:^(NSArray<WKWebsiteDataRecord*>* records){
+                    }];
 }
 }  // namespace
 
@@ -36,33 +36,66 @@ void PrioritizeWKHTTPCookieStoreCallbacks() {
 
 - (void)getAllCookies:(void (^)(NSArray<NSHTTPCookie*>*))completionHandler {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  NSArray<NSHTTPCookie*>* result = _HTTPCookieStore ? _cachedCookies : @[];
+  NSArray<NSHTTPCookie*>* result =
+      _websiteDataStore.httpCookieStore ? _cachedCookies : @[];
   if (result) {
     dispatch_async(dispatch_get_main_queue(), ^{
       completionHandler(result);
     });
-  } else {
-    __weak __typeof(self) weakSelf = self;
-    [_HTTPCookieStore getAllCookies:^(NSArray<NSHTTPCookie*>* cookies) {
-      weakSelf.cachedCookies = cookies;
-      completionHandler(cookies);
-    }];
-    PrioritizeWKHTTPCookieStoreCallbacks();
+    return;
   }
+
+  if (!_websiteDataStore) {
+    // CRWWKHTTPCookieStore doesn't retain `_websiteDataStore` instance so it's
+    // possible that it becomes nil while tearing down an application. Call the
+    // callback if it's nil.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      completionHandler(@[]);
+    });
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  [_websiteDataStore.httpCookieStore
+      getAllCookies:^(NSArray<NSHTTPCookie*>* cookies) {
+        weakSelf.cachedCookies = cookies;
+        completionHandler(cookies);
+      }];
+  PrioritizeWKHTTPCookieStoreCallbacks(_websiteDataStore);
 }
 
 - (void)setCookie:(NSHTTPCookie*)cookie
     completionHandler:(nullable void (^)(void))completionHandler {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   _cachedCookies = nil;
-  [_HTTPCookieStore setCookie:cookie completionHandler:completionHandler];
+  if (!_websiteDataStore) {
+    // CRWWKHTTPCookieStore doesn't retain `_websiteDataStore` instance so it's
+    // possible that it becomes nil while tearing down an application. Call the
+    // callback if it's nil.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      completionHandler();
+    });
+    return;
+  }
+  [_websiteDataStore.httpCookieStore setCookie:cookie
+                             completionHandler:completionHandler];
 }
 
 - (void)deleteCookie:(NSHTTPCookie*)cookie
     completionHandler:(nullable void (^)(void))completionHandler {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   _cachedCookies = nil;
-  [_HTTPCookieStore deleteCookie:cookie completionHandler:completionHandler];
+  if (!_websiteDataStore) {
+    // CRWWKHTTPCookieStore doesn't retain `_websiteDataStore` instance so it's
+    // possible that it becomes nil while tearing down an application. Call the
+    // callback if it's nil.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      completionHandler();
+    });
+    return;
+  }
+  [_websiteDataStore.httpCookieStore deleteCookie:cookie
+                                completionHandler:completionHandler];
 }
 
 - (void)clearCookies:(void (^)(void))completionHandler {
@@ -73,19 +106,21 @@ void PrioritizeWKHTTPCookieStoreCallbacks() {
   }];
 }
 
-- (void)setHTTPCookieStore:(WKHTTPCookieStore*)newCookieStore {
+- (void)setWebsiteDataStore:(WKWebsiteDataStore*)newWebsiteDataStore {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   _cachedCookies = nil;
-  if (newCookieStore == _HTTPCookieStore)
+  if (newWebsiteDataStore == _websiteDataStore) {
     return;
-  [_HTTPCookieStore removeObserver:self];
-  _HTTPCookieStore = newCookieStore;
-  [_HTTPCookieStore addObserver:self];
+  }
+  [_websiteDataStore.httpCookieStore removeObserver:self];
+  _websiteDataStore = newWebsiteDataStore;
+  [_websiteDataStore.httpCookieStore addObserver:self];
 }
 
 #pragma mark WKHTTPCookieStoreObserver method
 
 - (void)cookiesDidChangeInCookieStore:(WKHTTPCookieStore*)cookieStore {
+  CHECK_EQ(cookieStore, _websiteDataStore.httpCookieStore);
   _cachedCookies = nil;
 }
 
@@ -97,8 +132,9 @@ void PrioritizeWKHTTPCookieStoreCallbacks() {
   _cachedCookies = nil;
 
   // If there are no cookies to clear, then invoke the completion handler and
-  // return, otherwise ask `_HTTPCookieStore` to delete all cookies, invoking
-  // the completion handler after the last delete operation completes.
+  // return, otherwise ask `_websiteDataStore.httpCookieStore` to delete all
+  // cookies, invoking the completion handler after the last delete operation
+  // completes.
   __block NSUInteger counter = cookies.count;
   if (counter == 0) {
     completionHandler();
@@ -106,12 +142,12 @@ void PrioritizeWKHTTPCookieStoreCallbacks() {
   }
 
   for (NSHTTPCookie* cookie in cookies) {
-    [_HTTPCookieStore deleteCookie:cookie
-                 completionHandler:^{
-                   if (--counter == 0) {
-                     completionHandler();
-                   }
-                 }];
+    [_websiteDataStore.httpCookieStore deleteCookie:cookie
+                                  completionHandler:^{
+                                    if (--counter == 0) {
+                                      completionHandler();
+                                    }
+                                  }];
   }
 }
 

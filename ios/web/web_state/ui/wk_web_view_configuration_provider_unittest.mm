@@ -7,6 +7,7 @@
 #import <WebKit/WebKit.h>
 
 #import "base/memory/ptr_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
@@ -201,6 +202,72 @@ TEST_F(WKWebViewConfigurationProviderTest, GetContentRuleListProvider) {
   WKWebViewConfigurationProvider& provider = GetProvider(browser_state.get());
 
   EXPECT_NE(nil, provider.GetContentRuleListProvider());
+}
+
+// Tests that WKWebViewConfiguration has a different data store if browser state
+// returns a different storage ID.
+TEST_F(WKWebViewConfigurationProviderTest, DifferentDataStore) {
+  // Create a configuration with an identifier.
+  auto browser_state1 = std::make_unique<FakeBrowserState>();
+  browser_state1->SetWebKitStorageID(
+      base::SysNSStringToUTF8([NSUUID UUID].UUIDString));
+  WKWebViewConfigurationProvider* provider1 =
+      &GetProvider(browser_state1.get());
+  WKWebViewConfiguration* config1 = provider1->GetWebViewConfiguration();
+  EXPECT_TRUE(config1.websiteDataStore);
+  EXPECT_TRUE(config1.websiteDataStore.persistent);
+
+  // Create another configuration with another identifier.
+  auto browser_state2 = std::make_unique<FakeBrowserState>();
+  browser_state2->SetWebKitStorageID(
+      base::SysNSStringToUTF8([NSUUID UUID].UUIDString));
+  WKWebViewConfigurationProvider* provider2 =
+      &GetProvider(browser_state2.get());
+  WKWebViewConfiguration* config2 = provider2->GetWebViewConfiguration();
+  EXPECT_TRUE(config2.websiteDataStore);
+  EXPECT_TRUE(config2.websiteDataStore.persistent);
+
+  if (@available(iOS 17.0, *)) {
+    // `dataStoreForIdentifier:` is available after iOS 17.
+    // Check if the data store is different.
+    EXPECT_NE(config1.websiteDataStore, config2.websiteDataStore);
+    EXPECT_NE(config1.websiteDataStore.httpCookieStore,
+              config2.websiteDataStore.httpCookieStore);
+  } else {
+    // Otherwise, the default data store should be used.
+    EXPECT_EQ(config1.websiteDataStore, config2.websiteDataStore);
+    EXPECT_EQ(config1.websiteDataStore.httpCookieStore,
+              config2.websiteDataStore.httpCookieStore);
+  }
+}
+
+// Tests that WKWebViewConfiguration has the same data store if browser state
+// returns the same storage ID.
+TEST_F(WKWebViewConfigurationProviderTest, SameDataStoreForSameID) {
+  std::string uuid = base::SysNSStringToUTF8([NSUUID UUID].UUIDString);
+
+  // Create a configuration with an identifier.
+  auto browser_state1 = std::make_unique<FakeBrowserState>();
+  browser_state1->SetWebKitStorageID(uuid);
+  WKWebViewConfigurationProvider* provider1 =
+      &GetProvider(browser_state1.get());
+  WKWebViewConfiguration* config1 = provider1->GetWebViewConfiguration();
+  EXPECT_TRUE(config1.websiteDataStore);
+  EXPECT_TRUE(config1.websiteDataStore.persistent);
+
+  // Create another configuration with the same identifier.
+  auto browser_state2 = std::make_unique<FakeBrowserState>();
+  browser_state2->SetWebKitStorageID(uuid);
+  WKWebViewConfigurationProvider* provider2 =
+      &GetProvider(browser_state2.get());
+  WKWebViewConfiguration* config2 = provider2->GetWebViewConfiguration();
+  EXPECT_TRUE(config2.websiteDataStore);
+  EXPECT_TRUE(config2.websiteDataStore.persistent);
+
+  // The data store should be the same.
+  EXPECT_EQ(config1.websiteDataStore, config2.websiteDataStore);
+  EXPECT_EQ(config1.websiteDataStore.httpCookieStore,
+            config2.websiteDataStore.httpCookieStore);
 }
 
 }  // namespace

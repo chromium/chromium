@@ -17,10 +17,12 @@
 // wrapped WKHTTPCookieStore.
 @interface CRWWKHTTPCookieStore : NSObject
 
-// CRWWKHTTPCookieStore will not retain the WKHTTPCookieStore instance, and it
-// will be deleted with the owning WKWebSiteDataStore.
-// Note: CookieStore must be set before any web view that uses it is created.
-@property(nonatomic, weak) WKHTTPCookieStore* HTTPCookieStore;
+// WKHTTPCookieStore will be accessed via `websiteDataStore`.
+// CRWWKHTTPCookieStore will not retain the WKWebsiteDataStore and
+// WKHTTPCookieStore instances, and they will be deleted while tearing down an
+// application.
+// Note: the data store must be set before any web view that uses it is created.
+@property(nonatomic, weak) WKWebsiteDataStore* websiteDataStore;
 
 // Fetches all stored cookies. If the store didn't change between calls, this
 // method will return the cached result of the last call.

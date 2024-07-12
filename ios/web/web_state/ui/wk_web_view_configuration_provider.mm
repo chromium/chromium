@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
+
 #import <vector>
 
 #import "base/check.h"
@@ -75,11 +76,31 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
     configuration_ = [configuration copy];
   }
 
-  if (browser_state_->IsOffTheRecord() && configuration == nil) {
-    // Set the data store only when configuration is nil because the data store
-    // in the configuration should be used.
-    [configuration_
-        setWebsiteDataStore:[WKWebsiteDataStore nonPersistentDataStore]];
+  // Set the data store only when configuration is nil because the data
+  // store in the configuration should be used.
+  if (configuration == nil) {
+    if (browser_state_->IsOffTheRecord()) {
+      // The data is stored in memory. A new non-persistent data store is
+      // created for each incognito browser state.
+      [configuration_
+          setWebsiteDataStore:[WKWebsiteDataStore nonPersistentDataStore]];
+    } else {
+      const std::string& storage_id = browser_state_->GetWebKitStorageID();
+      if (!storage_id.empty()) {
+        if (@available(iOS 17.0, *)) {
+          // Set the data store to configuration when the browser state is not
+          // incognito and the storage ID exists. `dataStoreForIdentifier:` is
+          // available after iOS 17. Otherwise, use the default data store.
+          [configuration_
+              setWebsiteDataStore:
+                  [WKWebsiteDataStore
+                      dataStoreForIdentifier:
+                          [[NSUUID alloc]
+                              initWithUUIDString:base::SysUTF8ToNSString(
+                                                     storage_id)]]];
+        }
+      }
+    }
   }
 
   // Explicitly set the default data store to the configuration. The data store

@@ -100,7 +100,7 @@ base::OnceClosure ChainClosure(base::OnceClosure one, base::OnceClosure two) {
 // fail but this won't crash).
 class WKHTTPSystemCookieStore::Helper {
  public:
-  explicit Helper(WKHTTPCookieStore* cookie_store);
+  explicit Helper(WKWebsiteDataStore* data_store);
 
   // Type of the callbacks used by the different methods.
   using DeleteCookieCallback = base::OnceCallback<void()>;
@@ -126,7 +126,7 @@ class WKHTTPSystemCookieStore::Helper {
   // is deleted, the callback will still be invoked with an empty array.
   void FetchCookies(FetchCookiesCallback callback);
 
-  void SetCookieStore(WKHTTPCookieStore* cookie_store);
+  void SetDataStore(WKWebsiteDataStore* data_store);
 
  private:
   __strong CRWWKHTTPCookieStore* crw_cookie_store_ = nil;
@@ -134,11 +134,11 @@ class WKHTTPSystemCookieStore::Helper {
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 };
 
-WKHTTPSystemCookieStore::Helper::Helper(WKHTTPCookieStore* cookie_store)
+WKHTTPSystemCookieStore::Helper::Helper(WKWebsiteDataStore* data_store)
     : ui_task_runner_(web::GetUIThreadTaskRunner({})),
       io_task_runner_(web::GetIOThreadTaskRunner({})) {
   crw_cookie_store_ = [[CRWWKHTTPCookieStore alloc] init];
-  crw_cookie_store_.HTTPCookieStore = cookie_store;
+  crw_cookie_store_.websiteDataStore = data_store;
 }
 
 void WKHTTPSystemCookieStore::Helper::DeleteCookie(
@@ -198,17 +198,17 @@ void WKHTTPSystemCookieStore::Helper::FetchCookies(
                             }));
 }
 
-void WKHTTPSystemCookieStore::Helper::SetCookieStore(
-    WKHTTPCookieStore* cookie_store) {
-  crw_cookie_store_.HTTPCookieStore = cookie_store;
+void WKHTTPSystemCookieStore::Helper::SetDataStore(
+    WKWebsiteDataStore* data_store) {
+  crw_cookie_store_.websiteDataStore = data_store;
 }
 
 #pragma mark - SystemCookieStore
 
 WKHTTPSystemCookieStore::WKHTTPSystemCookieStore(
     WKWebViewConfigurationProvider* config_provider) {
-  helper_ = std::make_unique<Helper>(config_provider->GetWebViewConfiguration()
-                                         .websiteDataStore.httpCookieStore);
+  helper_ = std::make_unique<Helper>(
+      config_provider->GetWebViewConfiguration().websiteDataStore);
 
   config_provider->AddObserver(this);
 }
@@ -273,7 +273,7 @@ NSHTTPCookieAcceptPolicy WKHTTPSystemCookieStore::GetCookieAcceptPolicy() {
 void WKHTTPSystemCookieStore::DidCreateNewConfiguration(
     WKWebViewConfigurationProvider* provider,
     WKWebViewConfiguration* new_config) {
-  helper_->SetCookieStore(new_config.websiteDataStore.httpCookieStore);
+  helper_->SetDataStore(new_config.websiteDataStore);
 }
 
 #pragma mark private methods
