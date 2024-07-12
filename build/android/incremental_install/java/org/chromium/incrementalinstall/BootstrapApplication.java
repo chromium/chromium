@@ -53,10 +53,6 @@ public final class BootstrapApplication extends Application {
     protected void attachBaseContext(Context context) {
         super.attachBaseContext(context);
         try {
-            ApplicationInfo appInfo =
-                    context.getPackageManager()
-                            .getApplicationInfo(
-                                    context.getPackageName(), PackageManager.GET_META_DATA);
             mActivityThread =
                     Reflect.invokeMethod(
                             Class.forName("android.app.ActivityThread"), "currentActivityThread");
@@ -70,12 +66,21 @@ public final class BootstrapApplication extends Application {
             }
 
             // When running with an instrumentation that lives in a different package from the
-            // application, we must load the dex files and native libraries from both pacakges.
+            // application, we must load the dex files and native libraries from both packages.
             // This logic likely won't work when the instrumentation is incremental, but the app is
             // non-incremental. This configuration isn't used right now though.
             String appPackageName = getPackageName();
             String instPackageName = instContext.getPackageName();
             boolean instPackageNameDiffers = !appPackageName.equals(instPackageName);
+
+            PackageManager pm = context.getPackageManager();
+            ApplicationInfo instAppInfo =
+                    pm.getApplicationInfo(instPackageName, PackageManager.GET_META_DATA);
+            ApplicationInfo appAppInfo =
+                    instPackageNameDiffers
+                            ? pm.getApplicationInfo(appPackageName, PackageManager.GET_META_DATA)
+                            : instAppInfo;
+
             Log.i(TAG, "App PackageName: " + appPackageName);
             if (instPackageNameDiffers) {
                 Log.i(TAG, "Inst PackageName: " + instPackageName);
@@ -126,7 +131,7 @@ public final class BootstrapApplication extends Application {
             // AppComponentFactory was introduced in Android P.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 String realAppComponentFactory =
-                        appInfo.metaData.getString(REAL_APP_COMPONENT_FACTORY);
+                        appAppInfo.metaData.getString(REAL_APP_COMPONENT_FACTORY);
                 if (realAppComponentFactory != null) {
                     BootstrapAppComponentFactory.sDelegate =
                             (AppComponentFactory)
@@ -142,7 +147,7 @@ public final class BootstrapApplication extends Application {
                     metaDataName = REAL_INSTRUMENTATION_META_DATA_NAME1;
                 }
                 mRealInstrumentation =
-                        initInstrumentation(appInfo.metaData.getString(metaDataName));
+                        initInstrumentation(instAppInfo.metaData.getString(metaDataName));
             } else {
                 Log.i(TAG, "No instrumentation active.");
             }
@@ -157,7 +162,7 @@ public final class BootstrapApplication extends Application {
             // attachBaseContext() is called from ActivityThread#handleBindApplication() and
             // Application#mApplication is changed right after we return. Thus, we cannot swap
             // the Application instances until onCreate() is called.
-            String realApplicationName = appInfo.metaData.getString(REAL_APP_META_DATA_NAME);
+            String realApplicationName = appAppInfo.metaData.getString(REAL_APP_META_DATA_NAME);
             Log.i(TAG, "Instantiating " + realApplicationName);
             Instrumentation anyInstrumentation =
                     mRealInstrumentation != null ? mRealInstrumentation : mOrigInstrumentation;
