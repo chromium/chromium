@@ -81,6 +81,7 @@ source_set("model") {
     "//google_apis",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/bookmarks/model:model_utils",
+    "//ios/chrome/browser/browser_state/model:constants",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/policy/model:policy_util",

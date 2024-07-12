@@ -61,8 +61,23 @@ class ChromeAccountManagerService : public KeyedService,
         ChromeAccountManagerService* chrome_account_manager_service) {}
   };
 
+  // Enum to list which type of identities ChromeAccountManagerService can list.
+  // TODO(crbug.com/331783685): This enum is a temporary solution until a better
+  // solution is implemented.
+  enum class VisibleIdentities {
+    // This is the default value. The service can list all available identities.
+    kAll,
+    // The service can only list identities that are managed.
+    kManagedOnly,
+    // The service can only list identities that are non-managed.
+    kNonManagedOnly,
+  };
+
   // Initializes the service.
-  explicit ChromeAccountManagerService(PrefService* pref_service);
+  // Filter identities according to the profile. The value should always be
+  // kAll when the multiple profile feature is not enabled.
+  explicit ChromeAccountManagerService(PrefService* pref_service,
+                                       VisibleIdentities visible_identities);
   ChromeAccountManagerService(const ChromeAccountManagerService&) = delete;
   ChromeAccountManagerService& operator=(const ChromeAccountManagerService&) =
       delete;
@@ -146,6 +161,12 @@ class ChromeAccountManagerService : public KeyedService,
   ResizedAvatarCache* regular_avatar_cache_;
   // ResizedAvatarCache for IdentityAvatarSize::Large.
   ResizedAvatarCache* large_avatar_cache_;
+
+  // Filter identities according to the profile. The value should always be
+  // kAll when the multiple profile feature is not enabled.
+  // TODO(crbug.com/331783685): This enum is a temporary solution until a better
+  // solution is implemented.
+  VisibleIdentities visible_identities_ = VisibleIdentities::kAll;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_CHROME_ACCOUNT_MANAGER_SERVICE_H_

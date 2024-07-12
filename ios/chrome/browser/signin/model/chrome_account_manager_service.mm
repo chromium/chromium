@@ -22,6 +22,13 @@ namespace {
 
 using IteratorResult = SystemIdentityManager::IteratorResult;
 
+// Suffix used to know if the identity is managed or not. Ideally GCRSSOSevice
+// should be used, but the APIs are asynchronous, and to avoid cache issues,
+// for a temporary solution, this prefix is used.
+// TODO(crbug.com/331783685): Need another implementation to assign an identity
+// to a profile.
+NSString* const kGmailSuffix = @"@gmail.com";
+
 // Filter class skipping restricted account.
 class SkipRestricted {
  public:
@@ -121,12 +128,29 @@ class Iterator {
  public:
   using ResultType = typename T::ResultType;
 
-  Iterator(T t, F f) : t_(t), f_(f) {}
+  Iterator(T t,
+           F f,
+           ChromeAccountManagerService::VisibleIdentities visible_identities)
+      : t_(t), f_(f), visible_identities_(visible_identities) {}
 
   IteratorResult Run(id<SystemIdentity> identity) {
-    if (f_.ShouldFilter(identity))
+    switch (visible_identities_) {
+      case ChromeAccountManagerService::VisibleIdentities::kAll:
+        break;
+      case ChromeAccountManagerService::VisibleIdentities::kManagedOnly:
+        if ([identity.userEmail hasSuffix:kGmailSuffix]) {
+          return IteratorResult::kContinueIteration;
+        }
+        break;
+      case ChromeAccountManagerService::VisibleIdentities::kNonManagedOnly:
+        if (![identity.userEmail hasSuffix:kGmailSuffix]) {
+          return IteratorResult::kContinueIteration;
+        }
+        break;
+    }
+    if (f_.ShouldFilter(identity)) {
       return IteratorResult::kContinueIteration;
-
+    }
     return t_.ForEach(identity);
   }
 
@@ -135,13 +159,17 @@ class Iterator {
  private:
   T t_;
   F f_;
+  ChromeAccountManagerService::VisibleIdentities visible_identities_;
 };
 
 // Helper function to iterator over ChromeIdentityService identities.
 template <typename T, typename F>
-typename T::ResultType IterateOverIdentities(T t, F f) {
+typename T::ResultType IterateOverIdentities(
+    T t,
+    F f,
+    ChromeAccountManagerService::VisibleIdentities visible_identities) {
   using Iter = Iterator<T, F>;
-  Iter iterator(std::move(t), std::move(f));
+  Iter iterator(std::move(t), std::move(f), visible_identities);
   GetApplicationContext()->GetSystemIdentityManager()->IterateOverIdentities(
       base::BindRepeating(&Iter::Run, base::Unretained(&iterator)));
   return iterator.Result();
@@ -158,8 +186,9 @@ PatternAccountRestriction PatternAccountRestrictionFromPreference(
 }  // anonymous namespace.
 
 ChromeAccountManagerService::ChromeAccountManagerService(
-    PrefService* pref_service)
-    : pref_service_(pref_service) {
+    PrefService* pref_service,
+    VisibleIdentities visible_identities)
+    : pref_service_(pref_service), visible_identities_(visible_identities) {
   // pref_service is null in test environment. In prod environment pref_service
   // comes from GetApplicationContext()->GetLocalState() and couldn't be null.
   if (pref_service_) {
@@ -181,12 +210,14 @@ ChromeAccountManagerService::~ChromeAccountManagerService() {}
 
 bool ChromeAccountManagerService::HasIdentities() const {
   return IterateOverIdentities(FindFirstIdentity{},
-                               SkipRestricted{restriction_}) != nil;
+                               SkipRestricted{restriction_},
+                               visible_identities_) != nil;
 }
 
 bool ChromeAccountManagerService::HasRestrictedIdentities() const {
   return IterateOverIdentities(FindFirstIdentity{},
-                               KeepRestricted{restriction_}) != nil;
+                               KeepRestricted{restriction_},
+                               visible_identities_) != nil;
 }
 
 bool ChromeAccountManagerService::IsValidIdentity(
@@ -207,7 +238,8 @@ id<SystemIdentity> ChromeAccountManagerService::GetIdentityWithGaiaID(
 
   return IterateOverIdentities(
       FindFirstIdentity{},
-      CombineOr{SkipRestricted{restriction_}, KeepGaiaID{gaia_id}});
+      CombineOr{SkipRestricted{restriction_}, KeepGaiaID{gaia_id}},
+      visible_identities_);
 }
 
 id<SystemIdentity> ChromeAccountManagerService::GetIdentityWithGaiaID(
@@ -223,13 +255,13 @@ id<SystemIdentity> ChromeAccountManagerService::GetIdentityWithGaiaID(
 
 NSArray<id<SystemIdentity>>* ChromeAccountManagerService::GetAllIdentities()
     const {
-  return IterateOverIdentities(CollectIdentities{},
-                               SkipRestricted{restriction_});
+  return IterateOverIdentities(
+      CollectIdentities{}, SkipRestricted{restriction_}, visible_identities_);
 }
 
 id<SystemIdentity> ChromeAccountManagerService::GetDefaultIdentity() const {
-  return IterateOverIdentities(FindFirstIdentity{},
-                               SkipRestricted{restriction_});
+  return IterateOverIdentities(
+      FindFirstIdentity{}, SkipRestricted{restriction_}, visible_identities_);
 }
 
 UIImage* ChromeAccountManagerService::GetIdentityAvatarWithIdentity(
