@@ -236,6 +236,64 @@ public class ArchivedTabsDialogCoordinatorTest {
 
     @Test
     @MediumTest
+    public void testSelectionModeMenuItem_CloseTabs() {
+        addArchivedTab(new GURL("https://google.com"), "test 1");
+        addArchivedTab(new GURL("https://google.com"), "test 2");
+        addArchivedTab(new GURL("https://google.com"), "test 3");
+        showDialog(3);
+        assertEquals(1, mRegularTabModel.getCount());
+        assertEquals(3, mArchivedTabModel.getCount());
+
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
+
+        mRobot.actionRobot.clickItemAtAdapterPosition(0);
+        mRobot.actionRobot.clickItemAtAdapterPosition(1);
+        mRobot.resultRobot.verifyToolbarSelectionText("2 tabs");
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Close tabs");
+        mRobot.resultRobot.verifyAdapterHasItemCount(1);
+        assertEquals(1, mRegularTabModel.getCount());
+        assertEquals(1, mArchivedTabModel.getCount());
+
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
+
+        mRobot.actionRobot.clickItemAtAdapterPosition(0);
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Close tab");
+        mRobot.resultRobot.verifyTabListEditorIsHidden();
+        assertEquals(1, mRegularTabModel.getCount());
+        assertEquals(0, mArchivedTabModel.getCount());
+    }
+
+    @Test
+    @MediumTest
+    public void testSelectionModeMenuItem_RestoreTabs() {
+        addArchivedTab(new GURL("https://google.com"), "test 1");
+        addArchivedTab(new GURL("https://google.com"), "test 2");
+        addArchivedTab(new GURL("https://google.com"), "test 3");
+        showDialog(3);
+        assertEquals(1, mRegularTabModel.getCount());
+        assertEquals(3, mArchivedTabModel.getCount());
+
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
+
+        mRobot.actionRobot.clickItemAtAdapterPosition(0);
+        mRobot.actionRobot.clickItemAtAdapterPosition(1);
+        mRobot.resultRobot.verifyToolbarSelectionText("2 tabs");
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Restore tabs");
+        mRobot.resultRobot.verifyAdapterHasItemCount(1);
+        assertEquals(3, mRegularTabModel.getCount());
+        assertEquals(1, mArchivedTabModel.getCount());
+
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
+
+        mRobot.actionRobot.clickItemAtAdapterPosition(0);
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Restore tab");
+        mRobot.resultRobot.verifyTabListEditorIsHidden();
+        assertEquals(4, mRegularTabModel.getCount());
+        assertEquals(0, mArchivedTabModel.getCount());
+    }
+
+    @Test
+    @MediumTest
     public void testCloseDialogWithBackButton() throws Exception {
         addArchivedTab(new GURL("https://google.com"), "test 2");
         showDialog(1);

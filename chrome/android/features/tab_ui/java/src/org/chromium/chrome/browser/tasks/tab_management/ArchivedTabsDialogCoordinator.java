@@ -63,12 +63,8 @@ public class ArchivedTabsDialogCoordinator {
             new ArchiveDelegate() {
                 @Override
                 public void restoreAllArchivedTabs() {
-                    while (mArchivedTabModel.getCount() > 0) {
-                        mArchivedTabModelOrchestrator
-                                .getTabArchiver()
-                                .unarchiveAndRestoreTab(
-                                        mRegularTabCreator, mArchivedTabModel.getTabAt(0));
-                    }
+                    List<Tab> tabs = TabModelUtils.convertTabListToListOfTabs(mArchivedTabModel);
+                    restoreArchivedTabs(tabs);
                 }
 
                 @Override
@@ -84,12 +80,17 @@ public class ArchivedTabsDialogCoordinator {
 
                 @Override
                 public void restoreArchivedTabs(List<Tab> tabs) {
-                    // TODO(crbug.com/347795628): Implement this.
+                    for (Tab tab : tabs) {
+                        mArchivedTabModelOrchestrator
+                                .getTabArchiver()
+                                .unarchiveAndRestoreTab(mRegularTabCreator, tab);
+                    }
+                    moveToState(TabActionState.CLOSABLE);
                 }
 
                 @Override
                 public void closeArchivedTabs(List<Tab> tabs) {
-                    // TODO(crbug.com/347795628): Implement this.
+                    mArchivedTabModel.closeMultipleTabs(tabs, /* canUndo= */ true);
                 }
             };
 

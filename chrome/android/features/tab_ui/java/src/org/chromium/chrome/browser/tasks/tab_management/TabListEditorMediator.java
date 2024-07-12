@@ -114,16 +114,14 @@ class TabListEditorMediator
                         if (type == TabLaunchType.FROM_RESTORE
                                 || type == TabLaunchType.FROM_REPARENTING
                                 || type == TabLaunchType.FROM_STARTUP) {
-                            hide();
+                            mNavigationProvider.goBack();
                         }
                     }
 
                     @Override
                     public void willCloseTab(Tab tab, boolean didCloseAlone) {
-                        // TODO(crbug.com/338103697): Query the TabList for the current tab action
-                        // state.
                         if (mTabActionState != TabProperties.TabActionState.CLOSABLE) {
-                            hide();
+                            mNavigationProvider.goBack();
                         }
                     }
 
@@ -133,7 +131,7 @@ class TabListEditorMediator
                     public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
                         if (mTabActionState == TabProperties.TabActionState.CLOSABLE
                                 && type == TabSelectionType.FROM_USER) {
-                            hide();
+                            mNavigationProvider.goBack();
                         }
                     }
                 };
