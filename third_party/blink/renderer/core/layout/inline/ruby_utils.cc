@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/inline/ruby_utils.h"
 
 #include <tuple>
@@ -1199,11 +1194,13 @@ RubyBlockPositionCalculator& RubyBlockPositionCalculator::PlaceLines(
       em_height = line_box_metrics;
     }
     LayoutUnit offset = em_height.descent;
-    for (auto it = base_iterator; it != ruby_lines_.begin(); --it) {
-      RubyLine& ruby_line = **std::prev(it);
-      FontHeight metrics = ruby_line.UpdateMetrics();
+    auto lines_before_base =
+        ruby_lines_.MakeSpan().first(base::checked_cast<size_t>(
+            std::distance(ruby_lines_.begin(), base_iterator)));
+    for (auto& ruby_line : base::Reversed(lines_before_base)) {
+      FontHeight metrics = ruby_line->UpdateMetrics();
       offset += metrics.ascent;
-      ruby_line.MoveInBlockDirection(offset);
+      ruby_line->MoveInBlockDirection(offset);
       offset += metrics.descent;
     }
     annotation_metrics_.descent = offset;
@@ -1220,11 +1217,12 @@ RubyBlockPositionCalculator& RubyBlockPositionCalculator::PlaceLines(
       em_height = line_box_metrics;
     }
     LayoutUnit offset = -em_height.ascent;
-    for (auto it = std::next(base_iterator); it != ruby_lines_.end(); ++it) {
-      RubyLine& ruby_line = **it;
-      FontHeight metrics = ruby_line.UpdateMetrics();
+    for (auto& ruby_line :
+         ruby_lines_.MakeSpan().last(base::checked_cast<size_t>(
+             std::distance(base_iterator, ruby_lines_.end()) - 1))) {
+      FontHeight metrics = ruby_line->UpdateMetrics();
       offset -= metrics.descent;
-      ruby_line.MoveInBlockDirection(offset);
+      ruby_line->MoveInBlockDirection(offset);
       offset -= metrics.ascent;
     }
     annotation_metrics_.ascent = -offset;
