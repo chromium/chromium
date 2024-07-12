@@ -34,9 +34,10 @@ class CrossUserSharingPublicKey {
   CrossUserSharingPublicKey Clone() const;
 
  private:
-  explicit CrossUserSharingPublicKey(base::span<const uint8_t> public_key);
+  explicit CrossUserSharingPublicKey(
+      base::span<const uint8_t, X25519_PUBLIC_VALUE_LEN> public_key);
 
-  uint8_t public_key_[X25519_PUBLIC_VALUE_LEN];
+  std::array<uint8_t, X25519_PUBLIC_VALUE_LEN> public_key_;
 };
 
 }  // namespace syncer

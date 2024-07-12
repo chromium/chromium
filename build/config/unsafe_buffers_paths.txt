@@ -82,6 +82,7 @@
 +components/performance_manager/
 +components/plus_addresses/
 +components/prefs/
++components/sync/
 -courgette/
 -crypto/
 -data/

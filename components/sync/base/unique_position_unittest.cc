@@ -68,20 +68,15 @@ class UniquePositionTest : public ::testing::Test {
   const UniquePosition kHugePosition = FromBytes(
       std::string(UniquePosition::kCompressBytesThreshold, '\xFF') + '\xAB');
 
-  const UniquePosition kPositionArray[7] = {
-      kGenericPredecessor,   kGenericSuccessor, kBigPosition,
-      kBigPositionLessTwo,   kBiggerPosition,   kSmallPosition,
-      kSmallPositionPlusOne,
-  };
+  const std::array<UniquePosition, 7> kPositionArray = {
+      kGenericPredecessor,  kGenericSuccessor, kBigPosition,
+      kBigPositionLessTwo,  kBiggerPosition,   kSmallPosition,
+      kSmallPositionPlusOne};
 
-  const UniquePosition kSortedPositionArray[7] = {
+  const std::array<UniquePosition, 7> kSortedPositionArray = {
       kSmallPosition,    kSmallPositionPlusOne, kGenericPredecessor,
       kGenericSuccessor, kBigPositionLessTwo,   kBigPosition,
-      kBiggerPosition,
-  };
-
-  const size_t kNumPositions = std::size(kPositionArray);
-  const size_t kNumSortedPositions = std::size(kSortedPositionArray);
+      kBiggerPosition};
 };
 
 static constexpr char kMinSuffix[] = {
@@ -215,14 +210,12 @@ TEST_F(RelativePositioningTest, ComparisonSanityTest2) {
 
 // Exercise comparision functions by sorting and re-sorting the list.
 TEST_F(RelativePositioningTest, SortPositions) {
-  ASSERT_EQ(kNumPositions, kNumSortedPositions);
-  UniquePosition positions[std::size(kPositionArray)];
-  for (size_t i = 0; i < kNumPositions; ++i) {
-    positions[i] = kPositionArray[i];
-  }
+  std::array<UniquePosition, 7> positions;
+  ASSERT_EQ(kPositionArray.size(), kSortedPositionArray.size());
+  base::span(positions).copy_from(kPositionArray);
 
-  std::sort(&positions[0], &positions[kNumPositions], PositionLessThan());
-  for (size_t i = 0; i < kNumPositions; ++i) {
+  std::ranges::sort(positions, PositionLessThan());
+  for (size_t i = 0; i < kPositionArray.size(); ++i) {
     EXPECT_TRUE(positions[i].Equals(kSortedPositionArray[i]))
         << "i: " << i << ", " << positions[i].ToDebugString()
         << " != " << kSortedPositionArray[i].ToDebugString();
@@ -231,15 +224,14 @@ TEST_F(RelativePositioningTest, SortPositions) {
 
 // Some more exercise for the comparison function.
 TEST_F(RelativePositioningTest, ReverseSortPositions) {
-  ASSERT_EQ(kNumPositions, kNumSortedPositions);
-  UniquePosition positions[std::size(kPositionArray)];
-  for (size_t i = 0; i < kNumPositions; ++i) {
-    positions[i] = kPositionArray[i];
-  }
+  std::array<UniquePosition, 7> positions;
+  ASSERT_EQ(kPositionArray.size(), kSortedPositionArray.size());
+  ASSERT_EQ(kPositionArray.size(), positions.size());
+  base::span(positions).copy_from(kPositionArray);
 
-  std::reverse(&positions[0], &positions[kNumPositions]);
-  std::sort(&positions[0], &positions[kNumPositions], PositionLessThan());
-  for (size_t i = 0; i < kNumPositions; ++i) {
+  std::ranges::reverse(positions);
+  std::ranges::sort(positions, PositionLessThan());
+  for (size_t i = 0; i < kPositionArray.size(); ++i) {
     EXPECT_TRUE(positions[i].Equals(kSortedPositionArray[i]))
         << "i: " << i << ", " << positions[i].ToDebugString()
         << " != " << kSortedPositionArray[i].ToDebugString();
@@ -254,13 +246,13 @@ TEST_P(PositionInsertTest, InsertBetween) {
   const std::string suffix = GetParam();
   ASSERT_TRUE(UniquePosition::IsValidSuffix(suffix));
 
-  for (size_t i = 0; i < kNumSortedPositions; ++i) {
+  for (size_t i = 0; i < kSortedPositionArray.size(); ++i) {
     const UniquePosition& predecessor = kSortedPositionArray[i];
     // Verify our suffixes are unique before we continue.
     if (IsSuffixInUse(predecessor, suffix))
       continue;
 
-    for (size_t j = i + 1; j < kNumSortedPositions; ++j) {
+    for (size_t j = i + 1; j < kSortedPositionArray.size(); ++j) {
       const UniquePosition& successor = kSortedPositionArray[j];
 
       // Another guard against non-unique suffixes.
@@ -278,7 +270,7 @@ TEST_P(PositionInsertTest, InsertBetween) {
 
 TEST_P(PositionInsertTest, InsertBefore) {
   const std::string suffix = GetParam();
-  for (size_t i = 0; i < kNumSortedPositions; ++i) {
+  for (size_t i = 0; i < kSortedPositionArray.size(); ++i) {
     const UniquePosition& successor = kSortedPositionArray[i];
     // Verify our suffixes are unique before we continue.
     if (IsSuffixInUse(successor, suffix))
@@ -292,7 +284,7 @@ TEST_P(PositionInsertTest, InsertBefore) {
 
 TEST_P(PositionInsertTest, InsertAfter) {
   const std::string suffix = GetParam();
-  for (size_t i = 0; i < kNumSortedPositions; ++i) {
+  for (size_t i = 0; i < kSortedPositionArray.size(); ++i) {
     const UniquePosition& predecessor = kSortedPositionArray[i];
     // Verify our suffixes are unique before we continue.
     if (IsSuffixInUse(predecessor, suffix))
@@ -501,62 +493,56 @@ class PositionFromIntTest : public UniquePositionTest {
   }
 
  protected:
-  static const int64_t kTestValues[];
-  static const size_t kNumTestValues;
-
+  static constexpr auto kTestValues =
+      std::to_array<int64_t>({0LL,
+                              1LL,
+                              -1LL,
+                              2LL,
+                              -2LL,
+                              3LL,
+                              -3LL,
+                              0x79LL,
+                              -0x79LL,
+                              0x80LL,
+                              -0x80LL,
+                              0x81LL,
+                              -0x81LL,
+                              0xFELL,
+                              -0xFELL,
+                              0xFFLL,
+                              -0xFFLL,
+                              0x100LL,
+                              -0x100LL,
+                              0x101LL,
+                              -0x101LL,
+                              0xFA1AFELL,
+                              -0xFA1AFELL,
+                              0xFFFFFFFELL,
+                              -0xFFFFFFFELL,
+                              0xFFFFFFFFLL,
+                              -0xFFFFFFFFLL,
+                              0x100000000LL,
+                              -0x100000000LL,
+                              0x100000001LL,
+                              -0x100000001LL,
+                              0xFFFFFFFFFFLL,
+                              -0xFFFFFFFFFFLL,
+                              0x112358132134LL,
+                              -0x112358132134LL,
+                              0xFEFFBEEFABC1234LL,
+                              -0xFEFFBEEFABC1234LL,
+                              INT64_MAX,
+                              INT64_MIN,
+                              INT64_MIN + 1,
+                              INT64_MAX - 1});
   std::string NextSuffix() { return generator_.NextSuffix(); }
 
  private:
   SuffixGenerator generator_;
 };
 
-const int64_t PositionFromIntTest::kTestValues[] = {0LL,
-                                                    1LL,
-                                                    -1LL,
-                                                    2LL,
-                                                    -2LL,
-                                                    3LL,
-                                                    -3LL,
-                                                    0x79LL,
-                                                    -0x79LL,
-                                                    0x80LL,
-                                                    -0x80LL,
-                                                    0x81LL,
-                                                    -0x81LL,
-                                                    0xFELL,
-                                                    -0xFELL,
-                                                    0xFFLL,
-                                                    -0xFFLL,
-                                                    0x100LL,
-                                                    -0x100LL,
-                                                    0x101LL,
-                                                    -0x101LL,
-                                                    0xFA1AFELL,
-                                                    -0xFA1AFELL,
-                                                    0xFFFFFFFELL,
-                                                    -0xFFFFFFFELL,
-                                                    0xFFFFFFFFLL,
-                                                    -0xFFFFFFFFLL,
-                                                    0x100000000LL,
-                                                    -0x100000000LL,
-                                                    0x100000001LL,
-                                                    -0x100000001LL,
-                                                    0xFFFFFFFFFFLL,
-                                                    -0xFFFFFFFFFFLL,
-                                                    0x112358132134LL,
-                                                    -0x112358132134LL,
-                                                    0xFEFFBEEFABC1234LL,
-                                                    -0xFEFFBEEFABC1234LL,
-                                                    INT64_MAX,
-                                                    INT64_MIN,
-                                                    INT64_MIN + 1,
-                                                    INT64_MAX - 1};
-
-const size_t PositionFromIntTest::kNumTestValues =
-    std::size(PositionFromIntTest::kTestValues);
-
 TEST_F(PositionFromIntTest, IsValid) {
-  for (size_t i = 0; i < kNumTestValues; ++i) {
+  for (size_t i = 0; i < kTestValues.size(); ++i) {
     const UniquePosition pos =
         UniquePosition::FromInt64(kTestValues[i], NextSuffix());
     EXPECT_TRUE(pos.IsValid()) << "i = " << i << "; " << pos.ToDebugString();
@@ -566,23 +552,23 @@ TEST_F(PositionFromIntTest, IsValid) {
 template <typename T, typename LessThan = std::less<T>>
 class IndexedLessThan {
  public:
-  explicit IndexedLessThan(const T* values) : values_(values) {}
+  explicit IndexedLessThan(base::span<const T> values) : values_(values) {}
 
   bool operator()(int i1, int i2) {
     return less_than_(values_[i1], values_[i2]);
   }
 
  private:
-  const raw_ptr<const T, AllowPtrArithmetic> values_;
+  base::span<const T> values_;
   LessThan less_than_;
 };
 
 TEST_F(PositionFromIntTest, ConsistentOrdering) {
-  UniquePosition positions[kNumTestValues];
-  std::vector<int> original_ordering(kNumTestValues);
-  std::vector<int> int64_ordering(kNumTestValues);
-  std::vector<int> position_ordering(kNumTestValues);
-  for (size_t i = 0; i < kNumTestValues; ++i) {
+  std::array<UniquePosition, kTestValues.size()> positions;
+  std::vector<int> original_ordering(kTestValues.size());
+  std::vector<int> int64_ordering(kTestValues.size());
+  std::vector<int> position_ordering(kTestValues.size());
+  for (size_t i = 0; i < kTestValues.size(); ++i) {
     positions[i] = UniquePosition::FromInt64(kTestValues[i], NextSuffix());
     original_ordering[i] = int64_ordering[i] = position_ordering[i] = i;
   }
