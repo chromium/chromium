@@ -5498,6 +5498,7 @@ static_library("browser") {
       "//chrome/browser/ui/ash/accessibility",
       "//chrome/browser/ui/ash/ambient",
       "//chrome/browser/ui/ash/annotator",
+      "//chrome/browser/ui/ash/api/tasks",
       "//chrome/browser/ui/ash/system_web_apps",
       "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings",
       "//chrome/browser/ui/webui/ash/app_install:mojo_bindings",
@@ -5809,6 +5810,7 @@ static_library("browser") {
       "//chrome/browser/ui/ash/accessibility",
       "//chrome/browser/ui/ash/ambient",
       "//chrome/browser/ui/ash/annotator",
+      "//chrome/browser/ui/ash/api/tasks",
     ]
 
     if (is_chrome_branded) {
