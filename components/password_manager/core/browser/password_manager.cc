@@ -1465,7 +1465,7 @@ void PasswordManager::ProcessAutofillPredictions(
   manager->ProcessServerPredictions(predictions_);
 }
 
-PasswordFormManager* PasswordManager::GetSubmittedManager() {
+PasswordFormManager* PasswordManager::GetSubmittedManager() const {
   if (owned_submitted_form_manager_) {
     return owned_submitted_form_manager_.get();
   }
@@ -1473,7 +1473,7 @@ PasswordFormManager* PasswordManager::GetSubmittedManager() {
   return password_form_cache_.GetSubmittedManager();
 }
 
-std::optional<PasswordForm> PasswordManager::GetSubmittedCredentials() {
+std::optional<PasswordForm> PasswordManager::GetSubmittedCredentials() const {
   PasswordFormManager* submitted_manager = GetSubmittedManager();
   if (submitted_manager) {
     return submitted_manager->GetPendingCredentials();

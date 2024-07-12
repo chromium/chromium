@@ -247,7 +247,7 @@ class PasswordManager : public PasswordManagerInterface {
   bool IsFormManagerPendingPasswordUpdate() const;
 
   // Returns the submitted PasswordForm if there exists one.
-  std::optional<PasswordForm> GetSubmittedCredentials();
+  std::optional<PasswordForm> GetSubmittedCredentials() const override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(
@@ -314,7 +314,7 @@ class PasswordManager : public PasswordManagerInterface {
   // be nullptr if there is no submitted form.
   // TODO(crbug.com/40570965): Remove when the old PasswordFormManager is
   // gone.
-  PasswordFormManager* GetSubmittedManager();
+  PasswordFormManager* GetSubmittedManager() const;
 
   // Resets the form manager that corresponds to the submitted form, if it's
   // available.

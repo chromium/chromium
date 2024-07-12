@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/safe_browsing/chrome_password_reuse_detection_manager_client.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo.h"
@@ -254,6 +255,8 @@ void ProfilePickerDiceSignInProvider::OnProfileInitialized(
           .Then(base::BindOnce(std::move(switch_finished_callback), true));
   host_->ShowScreen(contents(), BuildSigninURL(),
                     std::move(navigation_finished_closure));
+  ChromePasswordReuseDetectionManagerClient::CreateForProfilePickerWebContents(
+      contents());
   // Attach a `DiceTabHelper` to the `WebContents` to trigger the completion
   // of the step.
   DiceTabHelper::CreateForWebContents(contents());

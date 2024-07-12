@@ -4257,6 +4257,16 @@ chromium-metrics-reviews@google.com.
   <token key="Store" variants="Store"/>
 </histogram>
 
+<histogram
+    name="PasswordProtection.AttemptsToSavePasswordHashFromProfilePicker"
+    enum="BooleanSuccess" expires_after="2025-01-26">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Track attempts to save password hashes from the profile picker sign-in flow.
+  </summary>
+</histogram>
+
 <histogram name="PasswordProtection.CSDCacheContainsDebuggingMetadata"
     enum="BooleanPresent" expires_after="2024-11-16">
   <owner>andysjlim@chromium.org</owner>

@@ -32,7 +32,7 @@ class PasswordFormCacheImpl : public PasswordFormCache {
 
   void AddFormManager(std::unique_ptr<PasswordFormManager> manager);
   void ResetSubmittedManager();
-  PasswordFormManager* GetSubmittedManager();
+  PasswordFormManager* GetSubmittedManager() const;
   std::unique_ptr<PasswordFormManager> MoveOwnedSubmittedManager();
   void Clear();
   bool IsEmpty() const;

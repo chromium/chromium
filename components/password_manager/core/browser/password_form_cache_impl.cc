@@ -60,7 +60,7 @@ void PasswordFormCacheImpl::ResetSubmittedManager() {
   }
 }
 
-PasswordFormManager* PasswordFormCacheImpl::GetSubmittedManager() {
+PasswordFormManager* PasswordFormCacheImpl::GetSubmittedManager() const {
   for (const std::unique_ptr<PasswordFormManager>& manager : form_managers_) {
     if (manager->is_submitted()) {
       return manager.get();

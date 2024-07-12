@@ -355,6 +355,10 @@ BASE_FEATURE(kSafeBrowsingDailyPhishingReportsLimit,
              "SafeBrowsingDailyPhishingReportsLimit",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSavePasswordHashFromProfilePicker,
+             "SavePasswordHashFromProfilePicker",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kClientSideDetectionDebuggingMetadataCache,
              "ClientSideDetectionDebuggingMetadataCache",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -140,6 +140,9 @@ class PasswordManagerInterface : public FormSubmissionObserver {
   virtual const PasswordForm* GetParsedObservedForm(
       PasswordManagerDriver* driver,
       autofill::FieldRendererId field_id) const = 0;
+  // Returns the submitted form.
+  virtual std::optional<password_manager::PasswordForm>
+  GetSubmittedCredentials() const = 0;
 
 #if BUILDFLAG(IS_IOS)
   // Handles a subframe form submission. In contrast to OnPasswordFormSubmitted
