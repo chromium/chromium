@@ -94,7 +94,8 @@ SavedTabGroupKeyedService::SavedTabGroupKeyedService(
     Profile* profile,
     syncer::DeviceInfoTracker* device_info_tracker)
     : profile_(profile),
-      listener_(this, profile),
+      wrapper_service_(std::make_unique<TabGroupServiceWrapper>(nullptr, this)),
+      listener_(wrapper_service_.get(), profile),
       sync_bridge_mediator_(
           model(),
           profile->GetPrefs(),
@@ -104,6 +105,8 @@ SavedTabGroupKeyedService::SavedTabGroupKeyedService(
           MaybeCreateSyncConfigurationForSharedTabGroupData(GetStoreFactory())),
       metrics_logger_(
           std::make_unique<TabGroupSyncMetricsLogger>(device_info_tracker)) {
+  // TODO: Don't observe depending on which service we are using in
+  // `wrapper_service_`.
   model()->AddObserver(this);
 
   metrics_timer_.Start(

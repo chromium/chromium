@@ -8,6 +8,7 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_tab_state.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
@@ -102,12 +103,12 @@ bool IsURLInRedirectChain(const GURL& url,
 SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
     content::WebContents* web_contents,
     base::Token token,
-    SavedTabGroupKeyedService* service)
+    TabGroupServiceWrapper* wrapper_service)
     : token_(token),
       web_contents_(web_contents),
       favicon_driver_(
           favicon::ContentFaviconDriver::FromWebContents(web_contents)),
-      service_(service) {
+      wrapper_service_(wrapper_service) {
   Observe(web_contents_);
   if (favicon_driver_) {
     favicon_driver_->AddObserver(this);
@@ -118,12 +119,12 @@ SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
     content::WebContents* web_contents,
     content::NavigationHandle* navigation_handle,
     base::Token token,
-    SavedTabGroupKeyedService* service)
+    TabGroupServiceWrapper* wrapper_service)
     : token_(token),
       web_contents_(web_contents),
       favicon_driver_(
           favicon::ContentFaviconDriver::FromWebContents(web_contents)),
-      service_(service),
+      wrapper_service_(wrapper_service),
       handle_from_sync_update_(navigation_handle) {
   Observe(web_contents_);
   if (favicon_driver_) {
@@ -184,20 +185,17 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
     return;
   }
 
-  const SavedTabGroup* group = service_->model()->GetGroupContainingTab(token_);
-  CHECK(group);
+  std::optional<SavedTabGroup> group = saved_group();
+  SavedTabGroupTab* tab = group->GetTab(token_);
+  CHECK(tab);
 
-  service_->UpdateAttributions(group->local_group_id().value(), token_);
-
-  SavedTabGroupTab tab_copy = *group->GetTab(token_);
-  tab_copy.SetTitle(web_contents_->GetTitle());
-  tab_copy.SetURL(web_contents_->GetURL());
-  tab_copy.SetFavicon(favicon::TabFaviconFromWebContents(web_contents_));
-
-  // Copy before moving the `tab_copy`.
-  base::Uuid tab_guid = tab_copy.saved_tab_guid();
-  service_->model()->UpdateTabInGroup(group->saved_guid(), std::move(tab_copy));
-  service_->OnTabNavigatedLocally(group->saved_guid(), tab_guid);
+  wrapper_service_->SetFaviconForTab(
+      group->local_group_id().value(), token_,
+      favicon::TabFaviconFromWebContents(web_contents_));
+  wrapper_service_->UpdateTab(group->local_group_id().value(), token_,
+                              web_contents_->GetTitle(),
+                              web_contents_->GetURL(), /*position=*/
+                              std::nullopt);
 }
 
 void SavedTabGroupWebContentsListener::DidGetUserInteraction(
@@ -207,17 +205,15 @@ void SavedTabGroupWebContentsListener::DidGetUserInteraction(
 
 void SavedTabGroupWebContentsListener::TitleWasSet(
     content::NavigationEntry* entry) {
-  const SavedTabGroup* group = service_->model()->GetGroupContainingTab(token_);
-  CHECK(group);
-
   // Don't update the title if the URL should not be synced.
   if (!SavedTabGroupUtils::IsURLValidForSavedTabGroups(entry->GetURL())) {
     return;
   }
 
-  SavedTabGroupTab tab_copy = *group->GetTab(token_);
-  tab_copy.SetTitle(entry->GetTitleForDisplay());
-  service_->model()->UpdateTabInGroup(group->saved_guid(), std::move(tab_copy));
+  std::optional<SavedTabGroup> group = saved_group();
+  wrapper_service_->UpdateTab(group->local_group_id().value(), token_,
+                              entry->GetTitleForDisplay(), entry->GetURL(),
+                              /*position=*/std::nullopt);
 }
 
 void SavedTabGroupWebContentsListener::OnFaviconUpdated(
@@ -226,18 +222,21 @@ void SavedTabGroupWebContentsListener::OnFaviconUpdated(
     const GURL& icon_url,
     bool icon_url_changed,
     const gfx::Image& image) {
-  const SavedTabGroup* group = service_->model()->GetGroupContainingTab(token_);
-  CHECK(group);
-
   // Don't update the favicon if the URL should not be synced.
   if (!SavedTabGroupUtils::IsURLValidForSavedTabGroups(
           favicon_driver->GetActiveURL())) {
     return;
   }
 
-  SavedTabGroupTab tab_copy = *group->GetTab(token_);
-  tab_copy.SetFavicon(image);
-  service_->model()->UpdateTabInGroup(group->saved_guid(), std::move(tab_copy));
+  std::optional<SavedTabGroup> group = saved_group();
+  SavedTabGroupTab* tab = group->GetTab(token_);
+
+  wrapper_service_->SetFaviconForTab(
+      group->local_group_id().value(), token_,
+      favicon::TabFaviconFromWebContents(web_contents_));
+  wrapper_service_->UpdateTab(group->local_group_id().value(), token_,
+                              tab->title(), tab->url(),
+                              /*position=*/std::nullopt);
 }
 
 void SavedTabGroupWebContentsListener::UpdateTabRedirectChain(
@@ -250,6 +249,18 @@ void SavedTabGroupWebContentsListener::UpdateTabRedirectChain(
   for (const auto& url : navigation_handle->GetRedirectChain()) {
     tab_redirect_chain_.emplace_back(url);
   }
+}
+
+const std::optional<SavedTabGroup>
+SavedTabGroupWebContentsListener::saved_group() {
+  std::vector<SavedTabGroup> all_groups = wrapper_service_->GetAllGroups();
+  auto iter = base::ranges::find_if(
+      all_groups, [&](const SavedTabGroup& potential_group) {
+        return potential_group.ContainsTab(token_);
+      });
+  CHECK(iter != all_groups.end());
+
+  return *iter;
 }
 
 }  // namespace tab_groups

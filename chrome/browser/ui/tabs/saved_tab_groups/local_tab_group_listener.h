@@ -20,8 +20,8 @@ class WebContents;
 
 namespace tab_groups {
 
+class TabGroupServiceWrapper;
 class SavedTabGroup;
-class SavedTabGroupKeyedService;
 
 // Keeps a saved tab group up to date as it's changed locally.
 class LocalTabGroupListener {
@@ -29,7 +29,7 @@ class LocalTabGroupListener {
   LocalTabGroupListener(
       tab_groups::TabGroupId local_id,
       base::Uuid saved_guid,
-      SavedTabGroupKeyedService* service,
+      TabGroupServiceWrapper* wrapper_service,
       std::map<content::WebContents*, base::Uuid> web_contents_to_uuid);
   virtual ~LocalTabGroupListener();
 
@@ -107,15 +107,13 @@ class LocalTabGroupListener {
   void RemoveWebContentsFromSync(content::WebContents* contents,
                                  bool should_close_tab);
 
-  const SavedTabGroup* saved_group() const;
-
   // Whether local tab group changes will be ignored (`paused_` is true) or
   // reflected in the saved group (`paused_` is false).
   bool paused_ = false;
 
   std::unordered_map<content::WebContents*, SavedTabGroupWebContentsListener>
       web_contents_to_tab_id_map_;
-  const raw_ptr<SavedTabGroupKeyedService> service_;
+  const raw_ptr<TabGroupServiceWrapper> wrapper_service_;
   const tab_groups::TabGroupId local_id_;
   const base::Uuid saved_guid_;
 };

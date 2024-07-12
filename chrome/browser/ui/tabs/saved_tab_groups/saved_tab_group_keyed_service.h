@@ -29,6 +29,8 @@ class DeviceInfoTracker;
 
 namespace tab_groups {
 
+class TabGroupServiceWrapper;
+
 // Serves to instantiate and own the SavedTabGroup infrastructure for the
 // browser.
 class SavedTabGroupKeyedService : public KeyedService,
@@ -182,6 +184,10 @@ class SavedTabGroupKeyedService : public KeyedService,
 
   // The profile used to instantiate the keyed service.
   raw_ptr<Profile> profile_ = nullptr;
+
+  // Represents sync backend. After migration, it will be a pointer to
+  // TabGroupSyncService.
+  std::unique_ptr<TabGroupServiceWrapper> wrapper_service_;
 
   // The current representation of this profiles saved tab groups.
   SavedTabGroupModel model_;

@@ -8,8 +8,10 @@
 #include <vector>
 
 #include "base/token.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
 #include "components/favicon/core/favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
+#include "components/saved_tab_groups/saved_tab_group.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -21,18 +23,16 @@ class WebContents;
 
 namespace tab_groups {
 
-class SavedTabGroupKeyedService;
-
 class SavedTabGroupWebContentsListener : public content::WebContentsObserver,
                                          public favicon::FaviconDriverObserver {
  public:
   SavedTabGroupWebContentsListener(content::WebContents* web_contents,
                                    base::Token token,
-                                   SavedTabGroupKeyedService* service);
+                                   TabGroupServiceWrapper* wrapper_service);
   SavedTabGroupWebContentsListener(content::WebContents* web_contents,
                                    content::NavigationHandle* navigation_handle,
                                    base::Token token,
-                                   SavedTabGroupKeyedService* service);
+                                   TabGroupServiceWrapper* wrapper_service);
   ~SavedTabGroupWebContentsListener() override;
 
   // content::WebContentsObserver
@@ -57,11 +57,14 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver,
  private:
   void UpdateTabRedirectChain(content::NavigationHandle* navigation_handle);
 
+  // Retrieves the SavedTabGroup that contains `token_`.
+  const std::optional<SavedTabGroup> saved_group();
+
   const base::Token token_;
   const raw_ptr<content::WebContents> web_contents_;
   // Used to update the favicon for this tab.
   const raw_ptr<favicon::FaviconDriver> favicon_driver_;
-  const raw_ptr<SavedTabGroupKeyedService> service_;
+  const raw_ptr<TabGroupServiceWrapper> wrapper_service_;
 
   // Holds the current redirect chain which is used for equality check for any
   // incoming URL update. If any of the URLs in the chain matches with the new

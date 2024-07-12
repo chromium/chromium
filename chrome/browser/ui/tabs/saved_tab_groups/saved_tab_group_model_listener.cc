@@ -10,8 +10,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/local_tab_group_listener.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -27,10 +27,10 @@ namespace tab_groups {
 SavedTabGroupModelListener::SavedTabGroupModelListener() = default;
 
 SavedTabGroupModelListener::SavedTabGroupModelListener(
-    SavedTabGroupKeyedService* service,
+    TabGroupServiceWrapper* wrapper_service,
     Profile* profile)
-    : service_(service), profile_(profile) {
-  DCHECK(service);
+    : wrapper_service_(wrapper_service), profile_(profile) {
+  DCHECK(wrapper_service);
   DCHECK(profile);
   for (Browser* browser : *BrowserList::GetInstance()) {
     OnBrowserAdded(browser);
@@ -203,8 +203,8 @@ void SavedTabGroupModelListener::ConnectToLocalTabGroup(
   CHECK_EQ(local_group_size, web_contents_map.size());
 
   auto [iterator, success] = local_tab_group_listeners_.try_emplace(
-      local_group_id, local_group_id, saved_tab_group.saved_guid(), service_,
-      web_contents_map);
+      local_group_id, local_group_id, saved_tab_group.saved_guid(),
+      wrapper_service_, web_contents_map);
   CHECK(success);
 }
 
@@ -226,7 +226,7 @@ void SavedTabGroupModelListener::ResumeTrackingLocalTabGroup(
 
 void SavedTabGroupModelListener::DisconnectLocalTabGroup(
     tab_groups::TabGroupId tab_group_id) {
-  service_->model()->OnGroupClosedInTabStrip(tab_group_id);
+  wrapper_service_->RemoveLocalTabGroupMapping(tab_group_id);
   local_tab_group_listeners_.erase(tab_group_id);
 }
 

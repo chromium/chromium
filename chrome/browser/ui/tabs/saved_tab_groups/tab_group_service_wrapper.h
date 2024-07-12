@@ -91,6 +91,14 @@ class TabGroupServiceWrapper : public TabGroupSyncService {
   void OnTabsReorderedLocally(const base::Uuid& group_guid);
   void OnTabGroupVisualsChanged(const base::Uuid& group_guid);
 
+  // Used to manually set the favicon for a specific tab. Should only be used in
+  // the `saved_keyed_service_` code paths.
+  // TODO(crbug.com/348486163): Find a way to support favicons for the
+  // sync_service_ code paths.
+  void SetFaviconForTab(const LocalTabGroupID& group_id,
+                        const LocalTabID& tab_id,
+                        std::optional<gfx::Image> favicon);
+
  private:
   bool ShouldUseSyncService();
 
