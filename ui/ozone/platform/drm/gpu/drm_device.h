@@ -46,13 +46,6 @@ class DrmDevice : public DrmWrapper,
                std::vector<uint32_t> connectors,
                const drmModeModeInfo& mode) override;
 
-  // Sets the value of the property with ID |property_id| to |value| on the
-  // connector with ID |connector_id|. It performs a blocking Commit if the
-  // driver is atomic, or uses the legacy call otherwise.
-  bool SetConnectorPropertyValue(uint32_t connector_id,
-                                 uint32_t property_id,
-                                 uint64_t value);
-
   // Schedules a pageflip for CRTC |crtc_id|. This function will return
   // immediately. Upon completion of the pageflip event, the CRTC will be
   // displaying the buffer with ID |framebuffer| and will have a DRM event
@@ -77,13 +70,6 @@ class DrmDevice : public DrmWrapper,
 
   display::DrmFormatsAndModifiers GetFormatsAndModifiersForCrtc(
       uint32_t crtc_id) const override;
-
-  // Using the Atomic API, sets the value of property with ID |property_id| to
-  // |value|. The property is applied to the object(Connector, CRTC or Plane)
-  // with ID |object_id|.
-  virtual bool AddAndCommitObjectProperty(uint32_t object_id,
-                                          uint32_t property_id,
-                                          uint64_t value);
 
   virtual int modeset_sequence_id() const;
   HardwareDisplayPlaneManager* plane_manager() { return plane_manager_.get(); }

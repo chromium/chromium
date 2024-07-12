@@ -221,11 +221,11 @@ class DrmWrapper {
   virtual ScopedDrmPropertyPtr GetProperty(drmModeConnector* connector,
                                            const char* name) const;
 
-  // Using the Legacy API, sets the value of property with ID |property_id| to
-  // |value|. The property is applied to the connector with ID |connector_id|.
-  virtual bool SetConnectorProperty(uint32_t connector_id,
-                                    uint32_t property_id,
-                                    uint64_t value);
+  // Sets the value of property with ID |property_id| to |value|. The property
+  // is applied to the connector with ID |connector_id|.
+  virtual bool SetProperty(uint32_t connector_id,
+                           uint32_t property_id,
+                           uint64_t value);
 
   /****************
    * Property Blobs

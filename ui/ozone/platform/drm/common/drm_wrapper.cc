@@ -393,12 +393,10 @@ ScopedDrmPropertyPtr DrmWrapper::GetProperty(uint32_t id) const {
   return ScopedDrmPropertyPtr(drmModeGetProperty(drm_fd_.get(), id));
 }
 
-bool DrmWrapper::SetConnectorProperty(uint32_t connector_id,
-                                      uint32_t property_id,
-                                      uint64_t value) {
+bool DrmWrapper::SetProperty(uint32_t connector_id,
+                             uint32_t property_id,
+                             uint64_t value) {
   DCHECK(drm_fd_.is_valid());
-  DCHECK(!is_atomic_);
-
   return !drmModeConnectorSetProperty(drm_fd_.get(), connector_id, property_id,
                                       value);
 }

@@ -228,16 +228,6 @@ bool DrmDevice::SetCrtc(uint32_t crtc_id,
   return true;
 }
 
-bool DrmDevice::SetConnectorPropertyValue(uint32_t connector_id,
-                                          uint32_t property_id,
-                                          uint64_t value) {
-  if (is_atomic()) {
-    return AddAndCommitObjectProperty(connector_id, property_id, value);
-  } else {
-    return SetConnectorProperty(connector_id, property_id, value);
-  }
-}
-
 bool DrmDevice::PageFlip(uint32_t crtc_id,
                          uint32_t framebuffer,
                          scoped_refptr<PageFlipRequest> page_flip_request) {
@@ -289,34 +279,6 @@ display::DrmFormatsAndModifiers DrmDevice::GetFormatsAndModifiersForCrtc(
     drm_formats_and_modifiers.emplace(format, modifiers);
   }
   return drm_formats_and_modifiers;
-}
-
-bool DrmDevice::AddAndCommitObjectProperty(uint32_t object_id,
-                                           uint32_t property_id,
-                                           uint64_t value) {
-  DCHECK(is_atomic());
-
-  ScopedDrmAtomicReqPtr property_set(drmModeAtomicAlloc());
-  int ret = drmModeAtomicAddProperty(property_set.get(), object_id, property_id,
-                                     value);
-  if (ret < 0) {
-    LOG(ERROR) << "Failed to add object[id=" << object_id
-               << "] property[id=" << property_id << "] to " << value
-               << ". ret: " << ret;
-    return false;
-  }
-
-  // If we try to do this in a non-blocking fashion, this can return EBUSY since
-  // there could be a pending page flip. Do a blocking commit (the same as the
-  // legacy API) to ensure the properties are applied.
-  // TODO(b/318780947): Serialize these calls to avoid blocking commits.
-  if (!DrmWrapper::CommitProperties(property_set.get(), 0, 0)) {
-    LOG(ERROR) << "Failed to commit object[id=" << object_id
-               << "] property[id=" << property_id << "] to " << value;
-    return false;
-  }
-
-  return true;
 }
 
 int DrmDevice::modeset_sequence_id() const { return modeset_sequence_id_; }

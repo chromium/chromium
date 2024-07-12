@@ -342,12 +342,9 @@ class FakeDrmDevice : public DrmDevice {
   ScopedDrmPropertyPtr GetProperty(drmModeConnector* connector,
                                    const char* name) const override;
   ScopedDrmPropertyPtr GetProperty(uint32_t id) const override;
-  bool SetConnectorProperty(uint32_t connector_id,
-                            uint32_t property_id,
-                            uint64_t value) override;
-  bool AddAndCommitObjectProperty(uint32_t object_id,
-                                  uint32_t property_id,
-                                  uint64_t value) override;
+  bool SetProperty(uint32_t connector_id,
+                   uint32_t property_id,
+                   uint64_t value) override;
   ScopedDrmPropertyBlob CreatePropertyBlob(const void* blob,
                                            size_t size) override;
   void DestroyPropertyBlob(uint32_t id) override;
