@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_FRAGMENT_ITEMS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_FRAGMENT_ITEMS_H_
 
@@ -34,7 +29,7 @@ class CORE_EXPORT FragmentItems final {
   wtf_size_t Size() const { return items_.size(); }
 
   using Span = base::span<const FragmentItem>;
-  Span Items() const { return base::make_span(ItemsData(), items_.size()); }
+  Span Items() const { return items_.MakeSpan(); }
   bool Equals(const Span& span) const {
     return ItemsData() == span.data() && Size() == span.size();
   }

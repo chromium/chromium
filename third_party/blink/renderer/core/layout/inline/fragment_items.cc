@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/inline/fragment_items.h"
 
 #include "base/ranges/algorithm.h"
@@ -70,8 +65,8 @@ FragmentItems::FragmentItems(const FragmentItems& other)
 }
 
 bool FragmentItems::IsSubSpan(const Span& span) const {
-  return span.empty() ||
-         (span.data() >= ItemsData() && &span.back() < ItemsData() + Size());
+  return span.empty() || (span.data() >= ItemsData() && !items_.empty() &&
+                          &span.back() <= &items_.back());
 }
 
 void FragmentItems::FinalizeAfterLayout(
