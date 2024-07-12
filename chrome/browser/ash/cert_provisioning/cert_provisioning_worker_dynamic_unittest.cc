@@ -206,6 +206,10 @@ GetNextInstructionResult NextInstructionProofOfPossession() {
   em::CertProvGetNextInstructionResponse next_instruction_response;
   next_instruction_response.mutable_proof_of_possession_instruction()
       ->set_data_to_sign(GetDataToSignStr());
+  next_instruction_response.mutable_proof_of_possession_instruction()
+      ->set_signature_algorithm(
+          enterprise_management::CertProvSignatureAlgorithm::
+              SIGNATURE_ALGORITHM_RSA_PKCS1_V1_5_NO_HASH);
 
   return next_instruction_response;
 }
@@ -1149,6 +1153,83 @@ TEST_F(CertProvisioningWorkerDynamicTest, VaTooManyTwoProofsOfPossession) {
   EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
   EXPECT_EQ(callback_observer_.Get<CertProvisioningWorkerState>(),
             CertProvisioningWorkerState::kFailed);
+}
+
+// Checks that the worker correctly handles a "proof of possession" instruction
+// that doesn't explicitly specify any signature algorithm.
+TEST_F(CertProvisioningWorkerDynamicTest,
+       ProofOfPossessionNoSignatureAlgorithm) {
+  const CertProfile cert_profile(
+      kCertProfileId, kCertProfileName, kCertProfileVersion,
+      /*is_va_enabled=*/false, kCertProfileRenewalPeriod,
+      ProtocolVersion::kDynamic);
+  const std::string process_id = GenerateCertProvisioningId();
+  const CertProvisioningClient::ProvisioningProcess provisioning_process(
+      process_id, CertScope::kUser, kCertProfileId, kCertProfileVersion,
+      GetPublicKeyBin());
+
+  CertProvisioningWorkerDynamic worker(
+      process_id, CertScope::kUser, GetProfile(), &testing_pref_service_,
+      cert_profile, &cert_provisioning_client_, MakeInvalidator(),
+      GetStateChangeCallback(), GetResultCallback());
+
+  EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
+      .Times(AtLeast(1));
+  {
+    testing::InSequence seq;
+
+    EXPECT_CALL(*platform_keys_service_,
+                GenerateRSAKey(TokenId::kUser, kNonVaKeyModulusLengthBits,
+                               /*sw_backed=*/false,
+                               /*callback=*/_))
+        .Times(1)
+        .WillOnce(RunOnceCallback<3>(GetPublicKeyBin(), Status::kSuccess));
+
+    EXPECT_CALL(*key_permissions_manager_,
+                AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate,
+                                 GetPublicKeyBin()));
+
+    EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(
+        SetAttributeForKey(TokenId::kUser, GetPublicKeyBin(),
+                           KeyAttributeType::kCertificateProvisioningId,
+                           GetCertProfileIdBin(), _));
+
+    EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+                 StartResultOk());
+
+    em::CertProvGetNextInstructionResponse proof_of_possession_instruction;
+    proof_of_possession_instruction.mutable_proof_of_possession_instruction()
+        ->set_data_to_sign(GetDataToSignStr());
+    // Do not set `signature_algorithm` on `proof_of_possession_instruction`.
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        std::move(proof_of_possession_instruction));
+
+    EXPECT_SIGN_RSAPKC1_RAW_OK(
+        SignRSAPKCS1Raw(::testing::Optional(TokenId::kUser), GetDataToSignBin(),
+                        GetPublicKeyBin(), /*callback=*/_));
+
+    EXPECT_UPLOAD_PROOF_OF_POSSESSION(
+        UploadProofOfPossession(Eq(std::ref(provisioning_process)),
+                                GetSignatureStr(),
+                                /*callback=*/_),
+        NoDataResultOk());
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionImportCertificate(kFakeCertificate));
+
+    EXPECT_IMPORT_CERTIFICATE_OK(
+        ImportCertificate(TokenId::kUser, /*certificate=*/_, /*callback=*/_));
+  }
+
+  worker.DoStep();
+  EXPECT_EQ(worker.GetState(), CertProvisioningWorkerState::kSucceeded);
+
+  EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
+  EXPECT_EQ(callback_observer_.Get<CertProvisioningWorkerState>(),
+            CertProvisioningWorkerState::kSucceeded);
 }
 
 // Checks that the worker fails if the server requests more than one

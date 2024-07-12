@@ -34,6 +34,7 @@
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "content/public/browser/browser_context.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_util.h"
@@ -545,6 +546,11 @@ void CertProvisioningWorkerDynamic::OnProofOfPossessionInstructionReceived(
     return;
   }
 
+  if (proof_of_possession_instruction.has_signature_algorithm()) {
+    signature_algorithm_ =
+        proof_of_possession_instruction.signature_algorithm();
+  }
+
   data_to_sign_ = StrToBytes(proof_of_possession_instruction.data_to_sign());
   RETURN_ON_FINAL_STATE(UpdateState(
       FROM_HERE,
@@ -738,12 +744,24 @@ void CertProvisioningWorkerDynamic::BuildProofOfPossession() {
   }
   attempted_proof_of_possession_ = true;
 
-  platform_keys_service_->SignRSAPKCS1Raw(
-      GetPlatformKeysTokenId(cert_scope_), std::move(data_to_sign_),
-      public_key_,
-      base::BindRepeating(
-          &CertProvisioningWorkerDynamic::OnBuildProofOfPossessionDone,
-          weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+  switch (signature_algorithm_) {
+    case em::CertProvSignatureAlgorithm::
+        SIGNATURE_ALGORITHM_RSA_PKCS1_V1_5_NO_HASH:
+      platform_keys_service_->SignRSAPKCS1Raw(
+          GetPlatformKeysTokenId(cert_scope_), std::move(data_to_sign_),
+          public_key_,
+          base::BindRepeating(
+              &CertProvisioningWorkerDynamic::OnBuildProofOfPossessionDone,
+              weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+      break;
+    case em::CertProvSignatureAlgorithm::SIGNATURE_ALGORITHM_UNSPECIFIED:
+      failure_message_ =
+          base::StrCat({"Unknown signature algorithm", GetLogInfoBlock()});
+      FINAL_STATE_EXPECTED(
+          UpdateState(FROM_HERE, CertProvisioningWorkerState::kFailed));
+      return;
+  }
+
   data_to_sign_.clear();
 }
 
