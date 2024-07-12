@@ -124,6 +124,9 @@ enum Destination {
   // |CHROME_CRASH_EVENTS| is for fatal chrome crash events.
   CHROME_CRASH_EVENTS = 32;
 
+  // |CROS_SECURITY_FILE| is for events that read or modify sensitive files.
+  CROS_SECURITY_FILE = 33;
+
   reserved 8;
 }
 
