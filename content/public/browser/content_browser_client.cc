@@ -125,8 +125,6 @@ bool ContentBrowserClient::IsShuttingDown() {
   return false;
 }
 
-void ContentBrowserClient::ThreadPoolWillTerminate() {}
-
 bool ContentBrowserClient::AllowGpuLaunchRetryOnIOThread() {
   return true;
 }

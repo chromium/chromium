@@ -271,7 +271,6 @@ void CallStackProfileBuilder::OnProfileCompleted(
   module_index_.clear();
   modules_.clear();
   sample_timestamps_.clear();
-  work_id_recorder_ = nullptr;
 }
 
 // static

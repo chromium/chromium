@@ -12,6 +12,8 @@
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/browser_main_runner.h"
 
+class MainThreadStackSamplingProfiler;
+
 // Android override of ChromeMainDelegate
 class ChromeMainDelegateAndroid : public ChromeMainDelegate {
  public:
@@ -33,6 +35,7 @@ class ChromeMainDelegateAndroid : public ChromeMainDelegate {
   void ProcessExiting(const std::string& process_type) override {}
 
  private:
+  std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler_;
   std::unique_ptr<content::BrowserMainRunner> browser_runner_;
 };
 

@@ -295,9 +295,4 @@ bool StackCopierSignal::CopyStack(StackBuffer* stack_buffer,
   return copied;
 }
 
-std::vector<uintptr_t*> StackCopierSignal::GetRegistersToRewrite(
-    RegisterContext* thread_context) {
-  return thread_delegate_->GetRegistersToRewrite(thread_context);
-}
-
 }  // namespace base

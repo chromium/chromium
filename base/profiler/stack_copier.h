@@ -49,19 +49,7 @@ class BASE_EXPORT StackCopier {
                          RegisterContext* thread_context,
                          Delegate* delegate) = 0;
 
-  // Creates a copy of StackBuffer so that it can be passed to another thread.
-  // `stack_top` as passed in will match stack_top in `stack_buffer` but
-  // will be modified to match the returned StackBuffer. Similarly any
-  // registers in `thread_context` will be manipulated so they are relative to
-  // the result of this function.
-  std::unique_ptr<StackBuffer> CloneStack(const StackBuffer& stack_buffer,
-                                          uintptr_t* stack_top,
-                                          RegisterContext* thread_context);
-
  protected:
-  virtual std::vector<uintptr_t*> GetRegistersToRewrite(
-      RegisterContext* thread_context) = 0;
-
   // If the value at |pointer| points to the original stack, rewrite it to point
   // to the corresponding location in the copied stack.
   //

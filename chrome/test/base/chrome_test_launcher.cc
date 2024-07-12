@@ -225,14 +225,6 @@ bool ChromeTestChromeMainDelegate::ShouldHandleConsoleControlEvents() {
 
 void ChromeTestChromeMainDelegate::CreateThreadPool(std::string_view name) {
   base::test::TaskEnvironment::CreateThreadPool();
-
-// `ChromeMainDelegateAndroid::PreSandboxStartup` creates the profiler a little
-// later.
-#if !BUILDFLAG(IS_ANDROID)
-  // Start the sampling profiler as early as possible - namely, once the thread
-  // pool has been created.
-  sampling_profiler_ = std::make_unique<MainThreadStackSamplingProfiler>();
-#endif
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -307,6 +299,8 @@ int LaunchChromeTests(size_t parallel_jobs,
   base::debug::HandleHooks::PatchLoadedModules();
 #endif  // BUILDFLAG(IS_WIN)
 
+  const auto& command_line = *base::CommandLine::ForCurrentProcess();
+
   // PoissonAllocationSampler's TLS slots need to be set up before
   // MainThreadStackSamplingProfiler, which can allocate TLS slots of its own.
   // On some platforms pthreads can malloc internally to access higher-numbered
@@ -315,6 +309,13 @@ int LaunchChromeTests(size_t parallel_jobs,
   // TODO(crbug.com/40062835): Clean up other paths that call this Init()
   // function, which are now redundant.
   base::PoissonAllocationSampler::Init();
+
+  // Initialize sampling profiler for tests that relaunching a browser. This
+  // mimics the behavior in standalone Chrome, where this is done in
+  // chrome/app/chrome_main.cc, which does not get called by tests.
+  std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler;
+  if (command_line.HasSwitch(switches::kLaunchAsBrowser))
+    sampling_profiler = std::make_unique<MainThreadStackSamplingProfiler>();
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   ChromeCrashReporterClient::Create();

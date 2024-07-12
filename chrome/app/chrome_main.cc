@@ -20,6 +20,7 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_result_codes.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
 #include "content/public/app/content_main.h"
 #include "content/public/common/content_switches.h"
 #include "headless/public/headless_shell.h"
@@ -182,14 +183,19 @@ int ChromeMain(int argc, const char** argv) {
 #endif
 
   // PoissonAllocationSampler's TLS slots need to be set up before
-  // MainThreadStackSamplingProfiler (in ChromeMainDelegate::ThreadPoolCreated),
-  // which can allocate TLS slots of its own. On some platforms pthreads can
-  // malloc internally to access higher-numbered TLS slots, which can cause
-  // reentry in the heap profiler. (See the comment on
-  // ReentryGuard::InitTLSSlot().)
+  // MainThreadStackSamplingProfiler, which can allocate TLS slots of its own.
+  // On some platforms pthreads can malloc internally to access higher-numbered
+  // TLS slots, which can cause reentry in the heap profiler. (See the comment
+  // on ReentryGuard::InitTLSSlot().)
   // TODO(crbug.com/40062835): Clean up other paths that call this Init()
   // function, which are now redundant.
   base::PoissonAllocationSampler::Init();
+
+  // Start the sampling profiler as early as possible - namely, once the command
+  // line data is available. Allocated as an object on the stack to ensure that
+  // the destructor runs on shutdown, which is important to avoid the profiler
+  // thread's destruction racing with main thread destruction.
+  MainThreadStackSamplingProfiler scoped_sampling_profiler;
 
   // Chrome-specific process modes.
   std::unique_ptr<headless::HeadlessModeHandle> headless_mode_handle;

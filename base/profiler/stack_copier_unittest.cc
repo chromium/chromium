@@ -7,15 +7,13 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "base/profiler/stack_copier.h"
-
 #include <cstring>
 #include <iterator>
 #include <memory>
 #include <numeric>
 
-#include "base/profiler/register_context.h"
 #include "base/profiler/stack_buffer.h"
+#include "base/profiler/stack_copier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,19 +25,6 @@ class CopyFunctions : public StackCopier {
  public:
   using StackCopier::CopyStackContentsAndRewritePointers;
   using StackCopier::RewritePointerIfInOriginalStack;
-
-  std::vector<uintptr_t*> GetRegistersToRewrite(
-      RegisterContext* thread_context) override {
-    return {&RegisterContextStackPointer(thread_context)};
-  }
-
-  bool CopyStack(StackBuffer* stack_buffer,
-                 uintptr_t* stack_top,
-                 TimeTicks* timestamp,
-                 RegisterContext* thread_context,
-                 Delegate* delegate) override {
-    return false;
-  }
 };
 
 static constexpr size_t kTestStackBufferSize = sizeof(uintptr_t) * 4;
@@ -250,39 +235,6 @@ TEST(StackCopierTest, StackCopy_NonAlignedStackPointerAlignedRewrite) {
   // copy.
   EXPECT_EQ(reinterpret_cast<uintptr_t>(&stack_copy_buffer.as_uintptr[2]),
             stack_copy_buffer.as_uintptr[1]);
-}
-
-TEST(StackCopierTest, CloneStack) {
-  StackBuffer original_stack(kTestStackBufferSize);
-  // Fill the stack buffer with increasing uintptr_t values.
-  std::iota(
-      &original_stack.buffer()[0],
-      &original_stack.buffer()[0] + (original_stack.size() / sizeof(uintptr_t)),
-      100);
-  // Replace the third value with an address within the buffer.
-  original_stack.buffer()[2] =
-      reinterpret_cast<uintptr_t>(&original_stack.buffer()[1]);
-
-  uintptr_t stack_top = reinterpret_cast<uintptr_t>(original_stack.buffer()) +
-                        original_stack.size();
-  CopyFunctions copy_functions;
-  RegisterContext thread_context;
-  RegisterContextStackPointer(&thread_context) =
-      reinterpret_cast<uintptr_t>(original_stack.buffer());
-  std::unique_ptr<StackBuffer> cloned_stack =
-      copy_functions.CloneStack(original_stack, &stack_top, &thread_context);
-
-  EXPECT_EQ(original_stack.buffer()[0], cloned_stack->buffer()[0]);
-  EXPECT_EQ(original_stack.buffer()[1], cloned_stack->buffer()[1]);
-  EXPECT_EQ(reinterpret_cast<uintptr_t>(&cloned_stack->buffer()[1]),
-            cloned_stack->buffer()[2]);
-  EXPECT_EQ(original_stack.buffer()[3], cloned_stack->buffer()[3]);
-  uintptr_t expected_stack_top =
-      reinterpret_cast<uintptr_t>(cloned_stack->buffer()) +
-      original_stack.size();
-  EXPECT_EQ(RegisterContextStackPointer(&thread_context),
-            reinterpret_cast<uintptr_t>(cloned_stack->buffer()));
-  EXPECT_EQ(stack_top, expected_stack_top);
 }
 
 }  // namespace base

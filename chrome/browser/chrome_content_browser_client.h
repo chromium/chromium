@@ -123,7 +123,6 @@ class ChromeSerialDelegate;
 class ChromeUsbDelegate;
 class ChromeWebAuthenticationDelegate;
 class HttpAuthCoordinator;
-class MainThreadStackSamplingProfiler;
 struct NavigateParams;
 
 #if BUILDFLAG(ENABLE_VR)
@@ -171,7 +170,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool IsBrowserStartupComplete() override;
   void SetBrowserStartupIsCompleteForTesting() override;
   bool IsShuttingDown() override;
-  void ThreadPoolWillTerminate() override;
   content::StoragePartitionConfig GetStoragePartitionConfigForSite(
       content::BrowserContext* browser_context,
       const GURL& site) override;
@@ -1072,9 +1070,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
           callback) override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  void SetSamplingProfiler(
-      std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler);
-
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,
@@ -1281,8 +1276,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   // Tracks whether the browser was started in "minimal" mode (as opposed to
   // full browser mode), where most subsystems are not initialized.
   bool is_minimal_mode_ = false;
-
-  std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler_;
 
   base::WeakPtrFactory<ChromeContentBrowserClient> weak_factory_{this};
 };

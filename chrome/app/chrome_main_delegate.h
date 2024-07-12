@@ -31,7 +31,6 @@ class TracingSamplerProfiler;
 
 class ChromeContentBrowserClient;
 class ChromeContentUtilityClient;
-class MainThreadStackSamplingProfiler;
 
 // Chrome implementation of ContentMainDelegate.
 class ChromeMainDelegate : public content::ContentMainDelegate {
@@ -68,7 +67,6 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
   std::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override;
   bool ShouldCreateFeatureList(InvokedIn invoked_in) override;
   bool ShouldInitializeMojo(InvokedIn invoked_in) override;
-  void CreateThreadPool(std::string_view name) override;
 #if BUILDFLAG(IS_WIN)
   bool ShouldHandleConsoleControlEvents() override;
 #endif
@@ -104,12 +102,6 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<chromeos::LacrosService> lacros_service_;
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-  // The sampling profiler exists until the `ChromeContentBrowserClient` is
-  // created and ownership is passed to it.
-  std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler_;
 #endif
 };
 
