@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.components.segmentation_platform.ClassificationResult;
 import org.chromium.components.segmentation_platform.InputContext;
+import org.chromium.components.segmentation_platform.PredictionOptions;
 import org.chromium.components.segmentation_platform.prediction_status.PredictionStatus;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -631,6 +632,42 @@ public class HomeModulesMediatorUnitTest {
         // Verifies that createInputContext() returns an empty one with invalid score value.
         InputContext inputContext = mMediator.createInputContext();
         verifyEmptyInputContext(inputContext);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER,
+        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2
+    })
+    public void testCreateOptions_FlagEnabled() {
+        assertTrue(
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2));
+
+        // Verifies that createPredictionOptions() returns ondemand prediction options.
+        PredictionOptions actualOptions = mMediator.createPredictionOptions();
+        PredictionOptions expectedOptions =
+                new PredictionOptions(
+                        /* onDemandExecution= */ true,
+                        /* canUpdateCacheForFutureRequests= */ true,
+                        /* fallbackAllowed= */ true);
+        actualOptions.equals(expectedOptions);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER})
+    @DisableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2})
+    public void testCreateOptions_FlagDisabled() {
+        assertFalse(
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2));
+
+        // Verifies that createPredictionOptions() returns cache prediction options.
+        PredictionOptions actualOptions = mMediator.createPredictionOptions();
+        PredictionOptions expectedOptions = new PredictionOptions(false);
+        actualOptions.equals(expectedOptions);
     }
 
     @Test

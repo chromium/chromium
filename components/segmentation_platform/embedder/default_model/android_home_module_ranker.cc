@@ -236,11 +236,14 @@ AndroidHomeModuleRanker::GetModelConfig() {
   // Set features.
   writer.AddUmaFeatures(kUMAFeatures.data(), kUMAFeatures.size());
 
-  // Add freshness for all modules as custom input.
-  writer.AddFromInputContext("single_tab_input", kSingleTabFreshness);
-  writer.AddFromInputContext("price_change_input", kPriceChangeFreshness);
-  writer.AddFromInputContext("tab_resumption_input",
-                             kTabResumptionForAndroidHomeFreshness);
+  if (base::FeatureList::IsEnabled(
+          features::kSegmentationPlatformAndroidHomeModuleRankerV2)) {
+    // Add freshness for all modules as custom input.
+    writer.AddFromInputContext("single_tab_input", kSingleTabFreshness);
+    writer.AddFromInputContext("price_change_input", kPriceChangeFreshness);
+    writer.AddFromInputContext("tab_resumption_input",
+                               kTabResumptionForAndroidHomeFreshness);
+  }
 
   return std::make_unique<ModelConfig>(std::move(metadata), kModelVersion);
 }
@@ -249,8 +252,12 @@ void AndroidHomeModuleRanker::ExecuteModelWithInput(
     const ModelProvider::Request& inputs,
     ExecutionCallback callback) {
   // Invalid inputs.
-  if (inputs.size() !=
-      kUMAFeatures.size() + kAndroidHomeModuleInputContextKeys.size()) {
+  size_t expected_input_size =
+      base::FeatureList::IsEnabled(
+          features::kSegmentationPlatformAndroidHomeModuleRankerV2)
+          ? kUMAFeatures.size() + kAndroidHomeModuleInputContextKeys.size()
+          : kUMAFeatures.size();
+  if (inputs.size() != expected_input_size) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;

@@ -43,6 +43,23 @@ public class PredictionOptions {
                 canFallbackToExecution);
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+
+        if (!(other instanceof PredictionOptions)) {
+            return false;
+        }
+
+        PredictionOptions that = (PredictionOptions) other;
+
+        return this.mOnDemandExecution == that.mOnDemandExecution
+                && this.mCanUpdateCacheForFutureRequests == that.mCanUpdateCacheForFutureRequests
+                && this.mFallbackAllowed == that.mFallbackAllowed;
+    }
+
     @CalledByNative
     void fillNativePredictionOptions(long target) {
         PredictionOptionsJni.get()

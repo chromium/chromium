@@ -608,13 +608,11 @@ public class HomeModulesMediator {
             ModuleDelegate moduleDelegate,
             Callback<Boolean> onHomeModulesShownCallback,
             Set<Integer> filteredEnabledModuleSet) {
-        // TODO(b/319530611): Convert the API to use on-demand option.
-        PredictionOptions options = new PredictionOptions(false);
         long segmentationServiceCallTimeMs = SystemClock.elapsedRealtime();
 
         mSegmentationPlatformService.getClassificationResult(
                 "android_home_module_ranker",
-                options,
+                /* prediction_options= */ createPredictionOptions(),
                 /* inputContext= */ createInputContext(),
                 result -> {
                     // It is possible that the result is received after the magic stack has been
@@ -640,17 +638,31 @@ public class HomeModulesMediator {
     @VisibleForTesting
     InputContext createInputContext() {
         InputContext inputContext = new InputContext();
-        boolean useFreshnessScore =
-                ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2);
-
         for (@ModuleType int moduleType = 0; moduleType < ModuleType.NUM_ENTRIES; moduleType++) {
             inputContext.addEntry(
                     HomeModulesMetricsUtils.getFreshnessInputContextString(moduleType),
-                    ProcessedValue.fromInt(getFreshnessScore(useFreshnessScore, moduleType)));
+                    ProcessedValue.fromInt(
+                            getFreshnessScore(isHomeModuleRankerV2Enabled(), moduleType)));
         }
 
         return inputContext;
+    }
+
+    /**
+     * Creates an instance of PredictionOptions. If feature flag is enabled generate ondemand
+     * prediction options else will generate cache prediction options.
+     */
+    @VisibleForTesting
+    PredictionOptions createPredictionOptions() {
+        boolean usePredictionOptions = isHomeModuleRankerV2Enabled();
+        if (usePredictionOptions) {
+            return new PredictionOptions(
+                    /* onDemandExecution= */ true,
+                    /* canUpdateCacheForFutureRequests= */ true,
+                    /* fallbackAllowed= */ true);
+        } else {
+            return new PredictionOptions(/* on_demand= */ false);
+        }
     }
 
     /** Returns the freshness score of a module if valid. */
@@ -741,5 +753,10 @@ public class HomeModulesMediator {
 
     boolean getIsShownForTesting() {
         return mIsShown;
+    }
+
+    private boolean isHomeModuleRankerV2Enabled() {
+        return ChromeFeatureList.isEnabled(
+                ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2);
     }
 }

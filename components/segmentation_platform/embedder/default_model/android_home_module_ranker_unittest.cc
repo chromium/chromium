@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/embedder/default_model/android_home_module_ranker.h"
 
 #include "components/segmentation_platform/embedder/default_model/default_model_test_base.h"
+#include "components/segmentation_platform/public/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform {
@@ -29,8 +30,12 @@ TEST_F(AndroidHomeModuleRankerTest, ExecuteModelWithInputForAllModules) {
   ASSERT_TRUE(fetched_metadata_);
 
   EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
-
-  std::vector<float> input(27, 0);
+  size_t input_size =
+      base::FeatureList::IsEnabled(
+          features::kSegmentationPlatformAndroidHomeModuleRankerV2)
+          ? 27
+          : 24;
+  std::vector<float> input(input_size, 0);
   ExpectClassifierResults(
       input, {kPriceChange, kSingleTab, kTabResumptionForAndroidHome});
 }
