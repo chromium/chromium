@@ -17,7 +17,6 @@
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_overview_session.h"
 #include "ash/wm/splitview/split_view_utils.h"
-#include "ash/wm/test/test_non_client_frame_view_ash.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "testing/gtest/include/gtest/gtest.h"
