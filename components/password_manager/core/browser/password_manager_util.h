@@ -167,7 +167,8 @@ void SetCredentialProviderEnabledOnStartup(PrefService* prefs, bool enabled);
 #endif
 
 // Contains all special symbols considered for password-generation.
-inline constexpr char kSpecialSymbols[] = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
+inline constexpr std::u16string_view kSpecialSymbols =
+    u"!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
 
 // Helper functions for character type classification. The built-in functions
 // depend on locale, platform and other stuff. To make the output more

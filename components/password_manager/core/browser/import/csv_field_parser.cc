@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/352295124 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/password_manager/core/browser/import/csv_field_parser.h"
 
 #include <string_view>
@@ -39,8 +34,7 @@ bool CSVFieldParser::NextField(std::string_view* field_contents) {
 
   if (state_ != State::kError) {
     DCHECK_GT(position_, start);  // There must have been at least the ','.
-    *field_contents =
-        std::string_view(row_.data() + start, position_ - start - 1);
+    *field_contents = row_.substr(start, position_ - start - 1);
 
     if (base::StartsWith(*field_contents, "\"")) {
       DCHECK(base::EndsWith(*field_contents, "\"")) << *field_contents;

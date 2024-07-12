@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/352295124 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/password_manager/core/browser/password_sync_util.h"
 
 #include <stddef.h>
+
+#include <array>
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -27,26 +24,23 @@ using PasswordSyncUtilTest = SyncUsernameTestBase;
 
 TEST_F(PasswordSyncUtilTest,
        GetAccountEmailIfSyncFeatureEnabledIncludingPasswords) {
-  const struct TestCase {
+  struct TestCase {
     enum { SYNCING_PASSWORDS, NOT_SYNCING_PASSWORDS } password_sync;
     std::string fake_sync_username;
     std::string expected_result;
     raw_ptr<const syncer::SyncService> sync_service;
-  } kTestCases[] = {
-      {TestCase::NOT_SYNCING_PASSWORDS, "a@example.org", std::string(),
-       sync_service()},
-
-      {TestCase::SYNCING_PASSWORDS, "a@example.org", "a@example.org",
-       sync_service()},
-
-      {TestCase::NOT_SYNCING_PASSWORDS, "a@example.org", std::string(),
-       nullptr},
-
-      {TestCase::NOT_SYNCING_PASSWORDS, "a@example.org", std::string(),
-       nullptr},
   };
+  const auto kTestCases =
+      std::to_array<TestCase>({{TestCase::NOT_SYNCING_PASSWORDS,
+                                "a@example.org", std::string(), sync_service()},
+                               {TestCase::SYNCING_PASSWORDS, "a@example.org",
+                                "a@example.org", sync_service()},
+                               {TestCase::NOT_SYNCING_PASSWORDS,
+                                "a@example.org", std::string(), nullptr},
+                               {TestCase::NOT_SYNCING_PASSWORDS,
+                                "a@example.org", std::string(), nullptr}});
 
-  for (size_t i = 0; i < std::size(kTestCases); ++i) {
+  for (size_t i = 0; i < kTestCases.size(); ++i) {
     SCOPED_TRACE(testing::Message() << "i=" << i);
     SetSyncingPasswords(kTestCases[i].password_sync ==
                         TestCase::SYNCING_PASSWORDS);
@@ -58,18 +52,18 @@ TEST_F(PasswordSyncUtilTest,
 }
 
 TEST_F(PasswordSyncUtilTest, IsSyncAccountEmail) {
-  const struct {
+  struct TestCase {
     std::string fake_sync_email;
     std::string input_username;
     bool expected_result;
-  } kTestCases[] = {
-      {"", "", false},
-      {"", "user@example.org", false},
-      {"sync_user@example.org", "", false},
-      {"sync_user@example.org", "sync_user@example.org", true},
-      {"sync_user@example.org", "sync_user", false},
-      {"sync_user@example.org", "non_sync_user@example.org", false},
   };
+  const auto kTestCases = std::to_array<TestCase>(
+      {{"", "", false},
+       {"", "user@example.org", false},
+       {"sync_user@example.org", "", false},
+       {"sync_user@example.org", "sync_user@example.org", true},
+       {"sync_user@example.org", "sync_user", false},
+       {"sync_user@example.org", "non_sync_user@example.org", false}});
 
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << "i=" << i);

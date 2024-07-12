@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/352295124 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/password_manager/core/browser/http_password_store_migrator.h"
 
 #include <memory>
@@ -265,8 +260,8 @@ TEST_F(HttpPasswordStoreMigratorTest, MigratorDeletionByConsumerWithoutHSTS) {
 }
 
 TEST(HttpPasswordStoreMigrator, MigrateHttpFormToHttpsTestSignonRealm) {
-  const GURL kOrigins[] = {GURL("http://example.org/"),
-                           GURL("http://example.org/path/")};
+  const auto kOrigins = std::to_array<GURL>(
+      {GURL("http://example.org/"), GURL("http://example.org/path/")});
 
   for (bool origin_has_paths : {true, false}) {
     PasswordForm http_html_form;

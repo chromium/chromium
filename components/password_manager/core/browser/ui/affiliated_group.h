@@ -5,11 +5,10 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_AFFILIATED_GROUP_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_AFFILIATED_GROUP_H_
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/352295124 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
+#include <string>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 
@@ -17,7 +16,7 @@ namespace password_manager {
 
 // Struct that represents a collection of credential groups that are grouped
 // based on an Affiliation.
-class AffiliatedGroup {
+class AffiliatedGroup final {
  public:
   AffiliatedGroup();
   AffiliatedGroup(std::vector<CredentialUIEntry> credentials,
@@ -30,8 +29,7 @@ class AffiliatedGroup {
 
   // Credential Groups Getter.
   base::span<const CredentialUIEntry> GetCredentials() const {
-    return base::make_span(credential_groups_.begin(),
-                           credential_groups_.end());
+    return credential_groups_;
   }
 
   // Method that returns the display name for this affiliated group.

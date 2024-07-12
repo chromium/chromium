@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/352295124 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/password_manager/core/browser/http_credentials_cleaner.h"
 
 #include "base/containers/contains.h"
@@ -141,12 +136,12 @@ TEST_P(HttpCredentialCleanerTest, ReportHttpMigrationMetrics) {
     std::string histogram_name;
   };
 
-  static const std::string signon_realm[2] = {"https://example.org/realm/",
-                                              "https://example.org/"};
+  static const std::array<std::string, 2> signon_realm = {
+      "https://example.org/realm/", "https://example.org/"};
 
-  static const std::u16string username[2] = {u"user0", u"user1"};
+  static const std::array<std::u16string, 2> username = {u"user0", u"user1"};
 
-  static const std::u16string password[2] = {u"pass0", u"pass1"};
+  static const std::array<std::u16string, 2> password = {u"pass0", u"pass1"};
 
   base::test::TaskEnvironment task_environment;
   store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);

@@ -9,11 +9,15 @@
 
 #include <string_view>
 
+#include "base/memory/stack_allocated.h"
+
 namespace password_manager {
 
 // CSVFieldParser is created for a row (line) of comma-separated-values and
 // iteratively returns individual fields.
 class CSVFieldParser {
+  STACK_ALLOCATED();
+
  public:
   // Maximum number of fields accepted.
   constexpr static size_t kMaxFields = 100;

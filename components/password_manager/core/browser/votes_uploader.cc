@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/352295124 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/password_manager/core/browser/votes_uploader.h"
 
 #include <iostream>
@@ -193,7 +188,7 @@ bool IsAddingUsernameToExistingMatch(
 // defined by the string |kSpecialSymbols|.
 int GetRandomSpecialSymbol() {
   return password_manager_util::kSpecialSymbols[base::RandGenerator(
-      std::size(password_manager_util::kSpecialSymbols))];
+      password_manager_util::kSpecialSymbols.size())];
 }
 
 // Returns a random special symbol used in |password|.

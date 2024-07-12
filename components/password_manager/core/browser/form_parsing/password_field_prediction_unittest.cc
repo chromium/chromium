@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/352295124 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
 
+#include <array>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -63,47 +59,47 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
     FieldType expected_type;
     bool may_use_prefilled_placeholder;
     std::vector<FieldType> additional_types;
-  } test_fields[] = {
-      {"full_name", FormControlType::kInputText, UNKNOWN_TYPE, UNKNOWN_TYPE,
-       false},
-      // Password Manager is interested only in credential related types.
-      {"Email", FormControlType::kInputEmail, EMAIL_ADDRESS, EMAIL_ADDRESS,
-       false},
-      {"username", FormControlType::kInputText, USERNAME, USERNAME, true},
-      {"Password", FormControlType::kInputPassword, PASSWORD, PASSWORD, false},
-      {"confirm_password", FormControlType::kInputPassword,
-       CONFIRMATION_PASSWORD, CONFIRMATION_PASSWORD, true},
-      // username in |additional_types| takes precedence if the feature is
-      // enabled.
-      {"email",
-       FormControlType::kInputText,
-       EMAIL_ADDRESS,
-       USERNAME,
-       false,
-       {USERNAME}},
-      // cvc in |additional_types| takes precedence if the feature is enabled.
-      {"cvc",
-       FormControlType::kInputPassword,
-       PASSWORD,
-       CREDIT_CARD_VERIFICATION_CODE,
-       false,
-       {CREDIT_CARD_VERIFICATION_CODE}},
-      // `CREDIT_CARD_NUMBER` takes precedence over any credential related
-      // types.
-      {"cc-number",
-       FormControlType::kInputPassword,
-       PASSWORD,
-       CREDIT_CARD_NUMBER,
-       false,
-       {CREDIT_CARD_NUMBER}},
-      // non-password, non-cvc types in |additional_types| are ignored.
-      {"email",
-       FormControlType::kInputText,
-       UNKNOWN_TYPE,
-       UNKNOWN_TYPE,
-       false,
-       {EMAIL_ADDRESS}},
   };
+  const auto test_fields = std::to_array<TestField>(
+      {{"full_name", FormControlType::kInputText, UNKNOWN_TYPE, UNKNOWN_TYPE,
+        false},
+       // Password Manager is interested only in credential related types.
+       {"Email", FormControlType::kInputEmail, EMAIL_ADDRESS, EMAIL_ADDRESS,
+        false},
+       {"username", FormControlType::kInputText, USERNAME, USERNAME, true},
+       {"Password", FormControlType::kInputPassword, PASSWORD, PASSWORD, false},
+       {"confirm_password", FormControlType::kInputPassword,
+        CONFIRMATION_PASSWORD, CONFIRMATION_PASSWORD, true},
+       // username in |additional_types| takes precedence if the feature is
+       // enabled.
+       {"email",
+        FormControlType::kInputText,
+        EMAIL_ADDRESS,
+        USERNAME,
+        false,
+        {USERNAME}},
+       // cvc in |additional_types| takes precedence if the feature is enabled.
+       {"cvc",
+        FormControlType::kInputPassword,
+        PASSWORD,
+        CREDIT_CARD_VERIFICATION_CODE,
+        false,
+        {CREDIT_CARD_VERIFICATION_CODE}},
+       // `CREDIT_CARD_NUMBER` takes precedence over any credential related
+       // types.
+       {"cc-number",
+        FormControlType::kInputPassword,
+        PASSWORD,
+        CREDIT_CARD_NUMBER,
+        false,
+        {CREDIT_CARD_NUMBER}},
+       // non-password, non-cvc types in |additional_types| are ignored.
+       {"email",
+        FormControlType::kInputText,
+        UNKNOWN_TYPE,
+        UNKNOWN_TYPE,
+        false,
+        {EMAIL_ADDRESS}}});
 
   FormData form_data;
   base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>

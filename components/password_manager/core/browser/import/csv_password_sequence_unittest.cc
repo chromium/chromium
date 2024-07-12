@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/352295124 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
 
+#include <array>
 #include <iterator>
 #include <string>
 #include <string_view>
@@ -53,16 +49,16 @@ TEST(CSVPasswordSequenceTest, Iteration) {
       ",<,Alice,123?,even,https://example.net,213,,past header count = "
       "ignored\n"
       ":),,Bob,ABCD!,odd,https://example.org,132,regular note\n";
-  constexpr struct {
+  struct ExpectedCredential {
     std::string_view url;
     std::string_view username;
     std::string_view password;
     std::string_view note;
-  } kExpectedCredentials[] = {
-      {"http://example.com", "user", "pwd", "Note\nwith two lines"},
-      {"https://example.net", "Alice", "even", ""},
-      {"https://example.org", "Bob", "odd", "regular note"},
   };
+  constexpr auto kExpectedCredentials = std::to_array<ExpectedCredential>(
+      {{"http://example.com", "user", "pwd", "Note\nwith two lines"},
+       {"https://example.net", "Alice", "even", ""},
+       {"https://example.org", "Bob", "odd", "regular note"}});
   CSVPasswordSequence seq(kCsv);
   EXPECT_EQ(CSVPassword::Status::kOK, seq.result());
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/352295124 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/password_manager/core/browser/votes_uploader.h"
 
 #include <algorithm>
@@ -492,9 +487,10 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesMetadata) {
   // Checks that randomization distorts information about present and missed
   // character classes, but a true value is still restorable with aggregation
   // of many distorted reports.
-  const char* kPasswordSnippets[kNumberOfPasswordAttributes] = {"abc", "*-_"};
+  constexpr std::array<const char*, kNumberOfPasswordAttributes>
+      kPasswordSnippets = {"abc", "*-_"};
   for (int test_case = 0; test_case < 10; ++test_case) {
-    bool has_password_attribute[kNumberOfPasswordAttributes];
+    std::array<bool, kNumberOfPasswordAttributes> has_password_attribute;
     std::u16string password_value;
     for (int i = 0; i < kNumberOfPasswordAttributes; ++i) {
       has_password_attribute[i] = base::RandGenerator(2);
@@ -506,8 +502,8 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesMetadata) {
       continue;
     }
 
-    int reported_false[kNumberOfPasswordAttributes] = {0, 0};
-    int reported_true[kNumberOfPasswordAttributes] = {0, 0};
+    std::array<int, kNumberOfPasswordAttributes> reported_false = {0, 0};
+    std::array<int, kNumberOfPasswordAttributes> reported_true = {0, 0};
 
     int reported_actual_length = 0;
     int reported_wrong_length = 0;
