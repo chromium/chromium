@@ -31,6 +31,23 @@ namespace extensions {
 
 using service_worker_test_utils::TestServiceWorkerTaskQueueObserver;
 
+namespace {
+
+// Convenience method for checking true/false counts of boolean histograms.
+void CheckBooleanHistogramCounts(const char* histogram_name,
+                                 int true_count,
+                                 int false_count,
+                                 base::HistogramTester& histogram_tester) {
+  histogram_tester.ExpectBucketCount(histogram_name,
+                                     /*sample=*/true,
+                                     /*expected_count=*/true_count);
+  histogram_tester.ExpectBucketCount(histogram_name,
+                                     /*sample=*/false,
+                                     /*expected_count=*/false_count);
+}
+
+}  // namespace
+
 // Tests related to the registration state of extension background service
 // workers.
 class ServiceWorkerRegistrationApiTest : public ExtensionApiTest {
@@ -69,9 +86,9 @@ class ServiceWorkerRegistrationApiTest : public ExtensionApiTest {
     return worker_ids.size() == 1;
   }
 
-  // Returns the value of `self.currentVersion` in the service worker context
-  // of the extension with the given `extension_id`.
-  int GetVersionFlagFromServiceWorker(const ExtensionId& extension_id) {
+  // Returns the value of `self.currentVersion` in the background context of the
+  // extension with the given `extension_id`.
+  int GetVersionFlagFromBackgroundContext(const ExtensionId& extension_id) {
     static constexpr char kScript[] =
         R"(chrome.test.sendScriptResult(
                self.currentVersion ? self.currentVersion : -1);)";
@@ -145,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
   EXPECT_EQ(mojom::ManifestLocation::kUnpacked, extension->location());
   const ExtensionId id = extension->id();
 
-  EXPECT_EQ(base::Value(1), GetVersionFlagFromServiceWorker(id));
+  EXPECT_EQ(base::Value(1), GetVersionFlagFromBackgroundContext(id));
 
   // Unlike `LoadExtension()`, `ReloadExtension()` doesn't automatically wait
   // for the service worker to be ready, so we need to wait for a message to
@@ -159,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
   // Note: `extension` is unsafe to use here since the extension has been
   // reloaded.
 
-  EXPECT_EQ(base::Value(2), GetVersionFlagFromServiceWorker(id));
+  EXPECT_EQ(base::Value(2), GetVersionFlagFromBackgroundContext(id));
 }
 
 // Tests updating an extension and installing it immediately while it has an
@@ -254,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
                       "document.body.innerText;"));
 
   // Verify the service worker is at v1.
-  EXPECT_EQ(base::Value(1), GetVersionFlagFromServiceWorker(id));
+  EXPECT_EQ(base::Value(1), GetVersionFlagFromBackgroundContext(id));
 
   {
     // Install v2. This will result in the extension updating. We set
@@ -301,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
   EXPECT_TRUE(HasActiveServiceWorker(id));
 
   // The service worker context should be that of the new version.
-  EXPECT_EQ(base::Value(2), GetVersionFlagFromServiceWorker(id));
+  EXPECT_EQ(base::Value(2), GetVersionFlagFromBackgroundContext(id));
 }
 
 // Tests that updating an unpacked extension properly updates the extension's
@@ -664,18 +681,6 @@ class ServiceWorkerManifestVersionBrowserTest
                       {.wait_for_registration_stored = true});
     ASSERT_TRUE(extension);
     extension_ = extension;
-  }
-
-  void CheckBooleanHistogramCounts(const char* histogram_name,
-                                   int true_count,
-                                   int false_count,
-                                   base::HistogramTester& histogram_tester) {
-    histogram_tester.ExpectBucketCount(histogram_name,
-                                       /*sample=*/true,
-                                       /*expected_count=*/true_count);
-    histogram_tester.ExpectBucketCount(histogram_name,
-                                       /*sample=*/false,
-                                       /*expected_count=*/false_count);
   }
 
   void ReleaseExtension() { extension_ = nullptr; }
