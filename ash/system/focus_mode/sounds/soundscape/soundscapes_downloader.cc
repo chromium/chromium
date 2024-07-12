@@ -59,8 +59,11 @@ constexpr net::NetworkTrafficAnnotationTag kFocusSoundsNetworkTag =
          cookies_allowed: NO
          setting:
            "Cannot be disabled via settings."
-         policy_exception_justification:
-           "Not implemented yet. Feature is WIP."
+         chrome_policy {
+           FocusModeSoundsEnabled {
+             FocusModeSoundsEnabled: "disabled"
+           }
+         }
         })");
 
 std::unique_ptr<network::SimpleURLLoader> CreateSimpleURLLoader(

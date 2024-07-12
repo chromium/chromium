@@ -22,7 +22,6 @@ namespace ash::youtube_music {
 namespace {
 
 // Traffic annotation tag for system admins and regulators.
-// TODO(yongshun): Figure out if we need to add a policy.
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("youtube_music_integration",
                                         R"(
@@ -50,9 +49,11 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         policy {
           cookies_allowed: NO
           setting: "This feature cannot be disabled in settings."
-          policy_exception_justification:
-            "Experimental feature disabled by default. Policy not yet "
-            "implemented."
+          chrome_policy {
+            FocusModeSoundsEnabled {
+              FocusModeSoundsEnabled: "focus-sounds"
+            }
+          }
         }
     )");
 

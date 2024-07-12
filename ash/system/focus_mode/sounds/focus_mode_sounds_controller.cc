@@ -31,16 +31,14 @@ namespace {
 
 constexpr int kPlaylistNum = 4;
 
-// TODO(b/328121041): Update the field for `policy_exception_justification`
-// after we added a policy and keep the `user_data` up-to-date.
 constexpr net::NetworkTrafficAnnotationTag kFocusModeSoundsThumbnailTag =
     net::DefineNetworkTrafficAnnotation("focus_mode_sounds_image_downloader",
                                         R"(
         semantics {
           sender: "Focus Mode"
           description:
-            "Download YouTube Music playlist thumbnails which will be shown "
-            "on the focus mode panel."
+            "Download Focus Mode Sounds playlist thumbnails which will be "
+            "shown on the focus mode panel."
           trigger: "User opens a panel in Focus Mode."
           data: "None."
           destination: GOOGLE_OWNED_SERVICE
@@ -61,9 +59,11 @@ constexpr net::NetworkTrafficAnnotationTag kFocusModeSoundsThumbnailTag =
          cookies_allowed: NO
          setting:
            "This feature is off by default and can be overridden by user."
-         policy_exception_justification:
-           "Experimental feature disabled by default. Policy not yet "
-           "implemented."
+         chrome_policy {
+           FocusModeSoundsEnabled {
+             FocusModeSoundsEnabled: "disabled"
+           }
+         }
         })");
 }
 
