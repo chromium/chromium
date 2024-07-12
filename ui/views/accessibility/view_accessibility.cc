@@ -707,6 +707,15 @@ void ViewAccessibility::RemoveKeyShortcuts() {
   data_.RemoveStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts);
 }
 
+void ViewAccessibility::SetChildTreeNodeAppId(const std::string& app_id) {
+  data_.AddStringAttribute(ax::mojom::StringAttribute::kChildTreeNodeAppId,
+                           app_id);
+}
+
+void ViewAccessibility::RemoveChildTreeNodeAppId() {
+  data_.RemoveStringAttribute(ax::mojom::StringAttribute::kChildTreeNodeAppId);
+}
+
 void ViewAccessibility::SetIsSelected(bool selected) {
   data_.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, selected);
 }
