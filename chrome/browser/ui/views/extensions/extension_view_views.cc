@@ -96,7 +96,7 @@ void ExtensionViewViews::SetContainer(
 }
 
 ExtensionViewViews::Container* ExtensionViewViews::GetContainer() const {
-  return container_;
+  return container_.get();
 }
 
 void ExtensionViewViews::AddObserver(Observer* observer) {
