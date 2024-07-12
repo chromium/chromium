@@ -227,8 +227,8 @@ void SavedTabGroupUtils::OpenOrMoveSavedGroupToNewWindow(
   auto* const service =
       SavedTabGroupServiceFactory::GetForProfile(browser->profile());
   const auto* const save_group = service->model()->Get(saved_group_guid);
-  // In case the group has been deleted.
-  if (!save_group) {
+  // In case the group has been deleted or has no tabs.
+  if (!save_group || save_group->saved_tabs().empty()) {
     return;
   }
 
@@ -247,6 +247,9 @@ void SavedTabGroupUtils::OpenOrMoveSavedGroupToNewWindow(
         browser_with_local_group_id, saved_group_guid,
         tab_groups::OpeningSource::kOpenedFromRevisitUi);
   }
+
+  // Ensure that the saved group did open in the browser.
+  CHECK(save_group->local_group_id().has_value());
 
   // Move the open group to a new browser window.
   browser_with_local_group_id->tab_strip_model()
