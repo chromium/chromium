@@ -91,11 +91,11 @@ class ResizeAreaTest : public ViewsTestBase {
   int resize_amount() { return delegate_->resize_amount(); }
   bool done_resizing() { return delegate_->done_resizing(); }
   bool on_resize_called() { return delegate_->on_resize_called(); }
-  views::Widget* widget() { return widget_; }
+  views::Widget* widget() { return widget_.get(); }
 
  private:
   std::unique_ptr<TestResizeAreaDelegate> delegate_;
-  raw_ptr<views::Widget> widget_ = nullptr;
+  std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 
   // The number of ui::ET_GESTURE_SCROLL_UPDATE events seen by
@@ -133,22 +133,22 @@ void ResizeAreaTest::SetUp() {
   resize_area->SetBounds(0, 0, size.width(), size.height());
 
   views::Widget::InitParams init_params(
-      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
                    views::Widget::InitParams::TYPE_WINDOW_FRAMELESS));
   init_params.bounds = gfx::Rect(size);
 
-  widget_ = new views::Widget();
+  widget_ = std::make_unique<views::Widget>();
   widget_->Init(std::move(init_params));
   widget_->SetContentsView(std::move(resize_area));
   widget_->Show();
 
   event_generator_ =
-      std::make_unique<ui::test::EventGenerator>(GetRootWindow(widget_));
+      std::make_unique<ui::test::EventGenerator>(GetRootWindow(widget_.get()));
 }
 
 void ResizeAreaTest::TearDown() {
   if (widget_ && !widget_->IsClosed()) {
-    widget_.ExtractAsDangling()->Close();
+    widget_.reset();
   }
 
   views::ViewsTestBase::TearDown();

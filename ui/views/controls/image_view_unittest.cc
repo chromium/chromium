@@ -58,7 +58,7 @@ class ImageViewTest : public ViewsTestBase,
     ViewsTestBase::SetUp();
 
     Widget::InitParams params =
-        CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
                      Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.bounds = gfx::Rect(200, 200);
     widget_.Init(std::move(params));

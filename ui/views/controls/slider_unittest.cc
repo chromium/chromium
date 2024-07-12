@@ -26,7 +26,6 @@
 #include "ui/views/test/slider_test_api.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
-#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_utils.h"
@@ -149,7 +148,7 @@ class SliderTest : public views::ViewsTestBase,
   // The maximum y value within the bounds of the slider.
   int max_y_ = 0;
   // The widget container for the slider being tested.
-  views::UniqueWidgetPtr widget_;
+  std::unique_ptr<Widget> widget_;
   // An event generator.
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };
@@ -186,7 +185,7 @@ void SliderTest::SetUp() {
   default_locale_ = base::i18n::GetConfiguredLocale();
 
   views::Widget::InitParams init_params(
-      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
                    views::Widget::InitParams::TYPE_WINDOW_FRAMELESS));
   init_params.bounds = gfx::Rect(size);
 

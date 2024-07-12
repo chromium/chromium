@@ -50,7 +50,7 @@ const gfx::Size SeparatorTest::kTestImageSize{24, 24};
 
 void SeparatorTest::SetUp() {
   ViewsTestBase::SetUp();
-  widget_ = CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  widget_ = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   separator_ = widget_->SetContentsView(std::make_unique<Separator>());
   expected_foreground_color_ =
       widget_->GetColorProvider()->GetColor(kForegroundColorId);
