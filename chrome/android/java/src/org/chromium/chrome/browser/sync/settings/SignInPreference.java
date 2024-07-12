@@ -18,7 +18,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.SigninAndHistoryOptInActivityLauncherImpl;
+import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
-import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.prefs.PrefService;
@@ -207,16 +207,16 @@ public class SignInPreference extends Preference
                                 new AccountPickerBottomSheetStrings.Builder(
                                                 R.string.signin_account_picker_bottom_sheet_title)
                                         .build();
-                        SigninAndHistoryOptInActivityLauncherImpl.get()
+                        SigninAndHistorySyncActivityLauncherImpl.get()
                                 .launchActivityIfAllowed(
                                         getContext(),
                                         mProfile,
                                         bottomSheetStrings,
-                                        SigninAndHistoryOptInCoordinator.NoAccountSigninMode
+                                        SigninAndHistorySyncCoordinator.NoAccountSigninMode
                                                 .BOTTOM_SHEET,
-                                        SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                                        SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                                 .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                        SigninAndHistoryOptInCoordinator.HistoryOptInMode.OPTIONAL,
+                                        SigninAndHistorySyncCoordinator.HistoryOptInMode.OPTIONAL,
                                         SigninAccessPoint.SETTINGS);
                     } else {
                         SyncConsentActivityLauncherImpl.get()

@@ -138,8 +138,8 @@ public class SyncPromoController {
     private final @StringRes int mDescriptionStringId;
     private final boolean mShouldSuppressSecodaryButton;
     private final SyncConsentActivityLauncher mSyncConsentActivityLauncher;
-    private final SigninAndHistoryOptInActivityLauncher mSigninAndHistoryOptInActivityLauncher;
-    private final @SigninAndHistoryOptInCoordinator.HistoryOptInMode int mHistoryOptInMode;
+    private final SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
+    private final @SigninAndHistorySyncCoordinator.HistoryOptInMode int mHistoryOptInMode;
     private final Delegate mDelegate;
 
     private @Nullable DisplayableProfileData mProfileData;
@@ -247,20 +247,19 @@ public class SyncPromoController {
      * @param bottomSheetStrings Contains the string resource IDs for the sign-in bottom sheet.
      * @param accessPoint Specifies the AccessPoint from which the promo is to be shown.
      * @param syncConsentActivityLauncher Launcher of {@link SyncConsentActivity}.
-     * @param signinAndHistoryOptInActivityLauncher Launcher of {@link
-     *     SigninAndHistoryOptInActivity}.
+     * @param signinAndHistorySyncActivityLauncher Launcher of {@link SigninAndHistorySyncActivity}.
      */
     public SyncPromoController(
             Profile profile,
             @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
             @AccessPoint int accessPoint,
             SyncConsentActivityLauncher syncConsentActivityLauncher,
-            SigninAndHistoryOptInActivityLauncher signinAndHistoryOptInActivityLauncher) {
+            SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher) {
         mProfile = profile;
         mBottomSheetStrings = bottomSheetStrings;
         mAccessPoint = accessPoint;
         mSyncConsentActivityLauncher = syncConsentActivityLauncher;
-        mSigninAndHistoryOptInActivityLauncher = signinAndHistoryOptInActivityLauncher;
+        mSigninAndHistorySyncActivityLauncher = signinAndHistorySyncActivityLauncher;
         switch (mAccessPoint) {
             case SigninAccessPoint.BOOKMARK_MANAGER:
                 mImpressionUserActionName = "Signin_Impression_FromBookmarkManager";
@@ -275,7 +274,7 @@ public class SyncPromoController {
                     mDescriptionStringId = R.string.sync_promo_description_bookmarks;
                 }
                 mShouldSuppressSecodaryButton = false;
-                mHistoryOptInMode = SigninAndHistoryOptInCoordinator.HistoryOptInMode.NONE;
+                mHistoryOptInMode = SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE;
                 // TODO(b/332704829): Move delegate creation outside of this constructor.
                 mDelegate = this::getPromoPrimaryButtonText;
                 break;
@@ -292,7 +291,7 @@ public class SyncPromoController {
                     mDescriptionStringId = R.string.sync_promo_description_ntp_content_suggestions;
                 }
                 mShouldSuppressSecodaryButton = false;
-                mHistoryOptInMode = SigninAndHistoryOptInCoordinator.HistoryOptInMode.NONE;
+                mHistoryOptInMode = SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE;
                 // TODO(b/332704829): Move delegate creation outside of this constructor.
                 mDelegate = this::getPromoPrimaryButtonText;
                 break;
@@ -309,7 +308,7 @@ public class SyncPromoController {
                     mDescriptionStringId = R.string.sync_promo_description_recent_tabs;
                     mShouldSuppressSecodaryButton = false;
                 }
-                mHistoryOptInMode = SigninAndHistoryOptInCoordinator.HistoryOptInMode.REQUIRED;
+                mHistoryOptInMode = SigninAndHistorySyncCoordinator.HistoryOptInMode.REQUIRED;
                 // TODO(b/332704829): Move delegate creation outside of this constructor.
                 mDelegate =
                         (context, profileData) -> {
@@ -336,7 +335,7 @@ public class SyncPromoController {
                                 ? R.string.sync_promo_description_settings_without_passwords
                                 : R.string.sync_promo_description_settings;
                 mShouldSuppressSecodaryButton = false;
-                mHistoryOptInMode = SigninAndHistoryOptInCoordinator.HistoryOptInMode.NONE;
+                mHistoryOptInMode = SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE;
                 // TODO(b/332704829): Move delegate creation outside of this constructor.
                 mDelegate =
                         (context, profileData) -> {
@@ -688,21 +687,21 @@ public class SyncPromoController {
         recordShowCountHistogram(UserAction.CONTINUED);
         if (launchSigninFlow) {
             if (mAccessPoint == SigninAccessPoint.RECENT_TABS) {
-                mSigninAndHistoryOptInActivityLauncher.launchActivityForHistorySyncDedicatedFlow(
+                mSigninAndHistorySyncActivityLauncher.launchActivityForHistorySyncDedicatedFlow(
                         context,
                         mProfile,
                         mBottomSheetStrings,
-                        SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                        SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                        SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                        SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                 .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                         mAccessPoint);
             } else {
-                mSigninAndHistoryOptInActivityLauncher.launchActivityIfAllowed(
+                mSigninAndHistorySyncActivityLauncher.launchActivityIfAllowed(
                         context,
                         mProfile,
                         mBottomSheetStrings,
-                        SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                        SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                        SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                        SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                 .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                         mHistoryOptInMode,
                         mAccessPoint);
@@ -717,21 +716,21 @@ public class SyncPromoController {
         recordShowCountHistogram(UserAction.CONTINUED);
         if (launchSigninFlow) {
             if (mAccessPoint == SigninAccessPoint.RECENT_TABS) {
-                mSigninAndHistoryOptInActivityLauncher.launchActivityForHistorySyncDedicatedFlow(
+                mSigninAndHistorySyncActivityLauncher.launchActivityForHistorySyncDedicatedFlow(
                         context,
                         mProfile,
                         mBottomSheetStrings,
-                        SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                        SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                        SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                        SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                 .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                         mAccessPoint);
             } else {
-                mSigninAndHistoryOptInActivityLauncher.launchActivityIfAllowed(
+                mSigninAndHistorySyncActivityLauncher.launchActivityIfAllowed(
                         context,
                         mProfile,
                         mBottomSheetStrings,
-                        SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                        SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                        SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                        SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                 .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                         mHistoryOptInMode,
                         mAccessPoint);
@@ -746,21 +745,21 @@ public class SyncPromoController {
         recordShowCountHistogram(UserAction.CONTINUED);
         if (launchSigninFlow) {
             if (mAccessPoint == SigninAccessPoint.RECENT_TABS) {
-                mSigninAndHistoryOptInActivityLauncher.launchActivityForHistorySyncDedicatedFlow(
+                mSigninAndHistorySyncActivityLauncher.launchActivityForHistorySyncDedicatedFlow(
                         context,
                         mProfile,
                         mBottomSheetStrings,
-                        SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                        SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                        SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                        SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                 .CHOOSE_ACCOUNT_BOTTOM_SHEET,
                         mAccessPoint);
             } else {
-                mSigninAndHistoryOptInActivityLauncher.launchActivityIfAllowed(
+                mSigninAndHistorySyncActivityLauncher.launchActivityIfAllowed(
                         context,
                         mProfile,
                         mBottomSheetStrings,
-                        SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                        SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                        SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                        SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                 .CHOOSE_ACCOUNT_BOTTOM_SHEET,
                         mHistoryOptInMode,
                         mAccessPoint);

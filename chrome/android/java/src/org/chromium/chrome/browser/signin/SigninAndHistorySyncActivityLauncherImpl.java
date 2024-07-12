@@ -17,50 +17,49 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInActivityLauncher;
-import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 /**
- * SigninAndHistoryOptInActivityLauncherImpl creates the proper intent and then launches the {@link
- * SigninAndHistoryOptInActivity} in different scenarios.
+ * SigninAndHistorySyncActivityLauncherImpl creates the proper intent and then launches the {@link
+ * SigninAndHistorySyncActivity} in different scenarios.
  */
-public final class SigninAndHistoryOptInActivityLauncherImpl
-        implements SigninAndHistoryOptInActivityLauncher {
-    private static SigninAndHistoryOptInActivityLauncher sLauncher;
+public final class SigninAndHistorySyncActivityLauncherImpl
+        implements SigninAndHistorySyncActivityLauncher {
+    private static SigninAndHistorySyncActivityLauncher sLauncher;
 
     /** Singleton instance getter */
     @MainThread
-    public static SigninAndHistoryOptInActivityLauncher get() {
+    public static SigninAndHistorySyncActivityLauncher get() {
         ThreadUtils.assertOnUiThread();
         if (sLauncher == null) {
-            sLauncher = new SigninAndHistoryOptInActivityLauncherImpl();
+            sLauncher = new SigninAndHistorySyncActivityLauncherImpl();
         }
         return sLauncher;
     }
 
-    public static void setLauncherForTest(
-            @Nullable SigninAndHistoryOptInActivityLauncher launcher) {
+    public static void setLauncherForTest(@Nullable SigninAndHistorySyncActivityLauncher launcher) {
         var oldValue = sLauncher;
         sLauncher = launcher;
         ResettersForTesting.register(() -> sLauncher = oldValue);
     }
 
-    private SigninAndHistoryOptInActivityLauncherImpl() {}
+    private SigninAndHistorySyncActivityLauncherImpl() {}
 
     @Override
     public boolean launchActivityIfAllowed(
             @NonNull Context context,
             @NonNull Profile profile,
             @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
-            @SigninAndHistoryOptInCoordinator.NoAccountSigninMode int noAccountSigninMode,
-            @SigninAndHistoryOptInCoordinator.WithAccountSigninMode int withAccountSigninMode,
-            @SigninAndHistoryOptInCoordinator.HistoryOptInMode int historyOptInMode,
+            @SigninAndHistorySyncCoordinator.NoAccountSigninMode int noAccountSigninMode,
+            @SigninAndHistorySyncCoordinator.WithAccountSigninMode int withAccountSigninMode,
+            @SigninAndHistorySyncCoordinator.HistoryOptInMode int historyOptInMode,
             @AccessPoint int accessPoint) {
         Intent intent =
-                SigninAndHistoryOptInActivity.createIntent(
+                SigninAndHistorySyncActivity.createIntent(
                         context,
                         bottomSheetStrings,
                         noAccountSigninMode,
@@ -75,11 +74,11 @@ public final class SigninAndHistoryOptInActivityLauncherImpl
             @NonNull Context context,
             @NonNull Profile profile,
             @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
-            @SigninAndHistoryOptInCoordinator.NoAccountSigninMode int noAccountSigninMode,
-            @SigninAndHistoryOptInCoordinator.WithAccountSigninMode int withAccountSigninMode,
+            @SigninAndHistorySyncCoordinator.NoAccountSigninMode int noAccountSigninMode,
+            @SigninAndHistorySyncCoordinator.WithAccountSigninMode int withAccountSigninMode,
             @SigninAccessPoint int signinAccessPoint) {
         Intent intent =
-                SigninAndHistoryOptInActivity.createIntentForDedicatedFlow(
+                SigninAndHistorySyncActivity.createIntentForDedicatedFlow(
                         context,
                         bottomSheetStrings,
                         noAccountSigninMode,
@@ -89,7 +88,7 @@ public final class SigninAndHistoryOptInActivityLauncherImpl
                 context,
                 profile,
                 intent,
-                SigninAndHistoryOptInCoordinator.HistoryOptInMode.REQUIRED,
+                SigninAndHistorySyncCoordinator.HistoryOptInMode.REQUIRED,
                 signinAccessPoint);
     }
 
@@ -97,10 +96,10 @@ public final class SigninAndHistoryOptInActivityLauncherImpl
             Context context,
             Profile profile,
             Intent intent,
-            @SigninAndHistoryOptInCoordinator.HistoryOptInMode int historyOptInMode,
+            @SigninAndHistorySyncCoordinator.HistoryOptInMode int historyOptInMode,
             @SigninAccessPoint int accessPoint) {
-        if (SigninAndHistoryOptInCoordinator.willShowSigninUI(profile)
-                || SigninAndHistoryOptInCoordinator.willShowHistorySyncUI(
+        if (SigninAndHistorySyncCoordinator.willShowSigninUI(profile)
+                || SigninAndHistorySyncCoordinator.willShowHistorySyncUI(
                         profile, historyOptInMode)) {
             context.startActivity(intent);
             return true;
@@ -118,10 +117,10 @@ public final class SigninAndHistoryOptInActivityLauncherImpl
 
     @Override
     public void launchUpgradePromoActivityIfAllowed(Context context, Profile profile) {
-        if (SigninAndHistoryOptInCoordinator.willShowSigninUI(profile)
-                || SigninAndHistoryOptInCoordinator.willShowHistorySyncUI(
-                        profile, SigninAndHistoryOptInCoordinator.HistoryOptInMode.OPTIONAL)) {
-            Intent intent = SigninAndHistoryOptInActivity.createIntentForUpgradePromo(context);
+        if (SigninAndHistorySyncCoordinator.willShowSigninUI(profile)
+                || SigninAndHistorySyncCoordinator.willShowHistorySyncUI(
+                        profile, SigninAndHistorySyncCoordinator.HistoryOptInMode.OPTIONAL)) {
+            Intent intent = SigninAndHistorySyncActivity.createIntentForUpgradePromo(context);
             context.startActivity(intent);
         }
     }

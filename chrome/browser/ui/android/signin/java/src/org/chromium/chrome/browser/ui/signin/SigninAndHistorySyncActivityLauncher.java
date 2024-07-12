@@ -17,8 +17,8 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/** Allows for launching {@link SigninAndHistoryOptInActivity} in modularized code. */
-public interface SigninAndHistoryOptInActivityLauncher {
+/** Allows for launching {@link SigninAndHistorySyncActivity} in modularized code. */
+public interface SigninAndHistorySyncActivityLauncher {
     /** Sign-in access points that are eligible to the sign-in and history opt-in flow. */
     @IntDef({
         SigninAccessPoint.RECENT_TABS,
@@ -36,7 +36,7 @@ public interface SigninAndHistoryOptInActivityLauncher {
     @interface AccessPoint {}
 
     /**
-     * Launches the {@link SigninAndHistoryOptInActivity} from an eligible access point, shows error
+     * Launches the {@link SigninAndHistorySyncActivity} from an eligible access point, shows error
      * UI if sign-in is not allowed. Returns a boolean indicating whether the activity was launched.
      *
      * @param profile the current profile.
@@ -50,17 +50,15 @@ public interface SigninAndHistoryOptInActivityLauncher {
      * @param accessPoint The access point from which the sign-in was triggered.
      */
     @MainThread
-    boolean launchActivityIfAllowed(
-            Context context,
-            Profile profile,
+    boolean launchActivityIfAllowed(Context context, Profile profile,
             @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
-            @SigninAndHistoryOptInCoordinator.NoAccountSigninMode int noAccountSigninMode,
-            @SigninAndHistoryOptInCoordinator.WithAccountSigninMode int withAccountSigninMode,
-            @SigninAndHistoryOptInCoordinator.HistoryOptInMode int historyOptInMode,
+            @SigninAndHistorySyncCoordinator.NoAccountSigninMode int noAccountSigninMode,
+            @SigninAndHistorySyncCoordinator.WithAccountSigninMode int withAccountSigninMode,
+            @SigninAndHistorySyncCoordinator.HistoryOptInMode int historyOptInMode,
             @AccessPoint int accessPoint);
 
     /**
-     * Launches the {@link SigninAndHistoryOptInActivity} from an eligible access point where the
+     * Launches the {@link SigninAndHistorySyncActivity} from an eligible access point where the
      * flow is dedicated to enabling history sync. Shows error UI if sign-in is not allowed.
      *
      * @param profile the current profile.
@@ -72,16 +70,14 @@ public interface SigninAndHistoryOptInActivityLauncher {
      * @param signinAccessPoint The access point from which the sign-in was triggered.
      */
     @MainThread
-    void launchActivityForHistorySyncDedicatedFlow(
-            @NonNull Context context,
-            @NonNull Profile profile,
-            @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
-            @SigninAndHistoryOptInCoordinator.NoAccountSigninMode int noAccountSigninMode,
-            @SigninAndHistoryOptInCoordinator.WithAccountSigninMode int withAccountSigninMode,
+    void launchActivityForHistorySyncDedicatedFlow(@NonNull Context context,
+            @NonNull Profile profile, @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
+            @SigninAndHistorySyncCoordinator.NoAccountSigninMode int noAccountSigninMode,
+            @SigninAndHistorySyncCoordinator.WithAccountSigninMode int withAccountSigninMode,
             @SigninAccessPoint int signinAccessPoint);
 
     /**
-     * Launches the upgrade promo flavor of the {@link SigninAndHistoryOptInActivity} if sign-in and
+     * Launches the upgrade promo flavor of the {@link SigninAndHistorySyncActivity} if sign-in and
      * history opt-in are allowed.
      */
     @MainThread

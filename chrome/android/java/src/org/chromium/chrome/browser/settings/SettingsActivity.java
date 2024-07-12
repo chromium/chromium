@@ -78,7 +78,7 @@ import org.chromium.chrome.browser.safety_hub.SafetyHubBaseFragment;
 import org.chromium.chrome.browser.safety_hub.SafetyHubFragment;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleDelegateImpl;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
-import org.chromium.chrome.browser.signin.SigninAndHistoryOptInActivityLauncherImpl;
+import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.site_settings.ChromeSiteSettingsDelegate;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -554,7 +554,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     new SafetyCheckUpdatesDelegateImpl(),
                     new SafetyCheckBridge(mProfile),
                     mSettingsLauncher,
-                    SigninAndHistoryOptInActivityLauncherImpl.get(),
+                    SigninAndHistorySyncActivityLauncherImpl.get(),
                     SyncConsentActivityLauncherImpl.get(),
                     getModalDialogManagerSupplier(),
                     SyncServiceFactory.getForProfile(mProfile),

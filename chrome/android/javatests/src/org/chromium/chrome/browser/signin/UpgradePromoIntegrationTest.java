@@ -106,12 +106,12 @@ public class UpgradePromoIntegrationTest {
             new BaseActivityTestRule(BlankUiTestActivity.class);
 
     @Rule(order = 2)
-    public final BaseActivityTestRule<SigninAndHistoryOptInActivity> mActivityTestRule =
-            new BaseActivityTestRule(SigninAndHistoryOptInActivity.class);
+    public final BaseActivityTestRule<SigninAndHistorySyncActivity> mActivityTestRule =
+            new BaseActivityTestRule(SigninAndHistorySyncActivity.class);
 
     @Mock private HistorySyncHelper mHistorySyncHelperMock;
 
-    private SigninAndHistoryOptInActivity mActivity;
+    private SigninAndHistorySyncActivity mActivity;
 
     @Before
     public void setUp() {
@@ -399,7 +399,7 @@ public class UpgradePromoIntegrationTest {
 
     private void launchActivity(boolean shouldReplaceProgressBars) {
         Intent intent =
-                SigninAndHistoryOptInActivity.createIntentForUpgradePromo(
+                SigninAndHistorySyncActivity.createIntentForUpgradePromo(
                         ApplicationProvider.getApplicationContext());
         mActivityTestRule.launchActivity(intent);
         mActivity = mActivityTestRule.getActivity();

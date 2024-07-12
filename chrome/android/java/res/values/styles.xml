@@ -113,20 +113,20 @@ found in the LICENSE file.
     The background is translucent since the parent activity content should be
     visible when the bottom sheet or the non-full-screen history sync opt-in
     dialog is shown on tablet. -->
-    <style name="Base.Theme.Chromium.SigninAndHistoryOptInActivity"
+    <style name="Base.Theme.Chromium.SigninAndHistorySyncActivity"
         parent="Theme.Chromium.Activity.Fullscreen">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:navigationBarColor">@macro/bottom_system_nav_color</item>
-        <item name="android:windowAnimationStyle">@style/SigninAndHistoryOptInActivityAnimation</item>
+        <item name="android:windowAnimationStyle">@style/SigninAndHistorySyncActivityAnimation</item>
     </style>
-    <style name="Theme.Chromium.SigninAndHistoryOptInActivity"
-        parent="Base.Theme.Chromium.SigninAndHistoryOptInActivity" />
+    <style name="Theme.Chromium.SigninAndHistorySyncActivity"
+        parent="Base.Theme.Chromium.SigninAndHistorySyncActivity" />
 
     <!-- TODO(crbug.com/345176436): This animation style is used to set the
          enter animation for the history sync dialog. This animation should be
          configured using ModalDialogProperties instead. -->
-    <style name="SigninAndHistoryOptInActivityAnimation" parent="@android:style/Animation.Dialog">
+    <style name="SigninAndHistorySyncActivityAnimation" parent="@android:style/Animation.Dialog">
       <item name="android:windowExitAnimation">@null</item>
       <item name="android:windowEnterAnimation">@anim/slide_in_up</item>
     </style>

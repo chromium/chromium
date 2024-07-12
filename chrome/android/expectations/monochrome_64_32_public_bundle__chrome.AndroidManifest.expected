@@ -354,12 +354,12 @@
         android:label="@string/settings"
         android:theme="@style/Theme.Chromium.Settings">
     </activity>  # DIFF-ANCHOR: d32b85df
-    <activity  # DIFF-ANCHOR: 74e09449
-        android:name="org.chromium.chrome.browser.signin.SigninAndHistoryOptInActivity"
+    <activity  # DIFF-ANCHOR: d4d45613
+        android:name="org.chromium.chrome.browser.signin.SigninAndHistorySyncActivity"
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
         android:exported="false"
-        android:theme="@style/Theme.Chromium.SigninAndHistoryOptInActivity">
-    </activity>  # DIFF-ANCHOR: 74e09449
+        android:theme="@style/Theme.Chromium.SigninAndHistorySyncActivity">
+    </activity>  # DIFF-ANCHOR: d4d45613
     <activity  # DIFF-ANCHOR: fbf1ba15
         android:name="org.chromium.chrome.browser.signin.SyncConsentActivity"
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"

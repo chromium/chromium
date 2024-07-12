@@ -21,7 +21,7 @@ public class SecondaryActivityBackPressUma {
         SecondaryActivity.HISTORY,
         SecondaryActivity.SETTINGS,
         SecondaryActivity.BOOKMARK_FOLDER_PICKER,
-        SecondaryActivity.SIGNIN_AND_HISTORY_OPT_IN,
+        SecondaryActivity.SIGNIN_AND_HISTORY_SYNC,
         SecondaryActivity.NUM_TYPES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -33,7 +33,7 @@ public class SecondaryActivityBackPressUma {
         int HISTORY = 4;
         int SETTINGS = 5;
         int BOOKMARK_FOLDER_PICKER = 6;
-        int SIGNIN_AND_HISTORY_OPT_IN = 7;
+        int SIGNIN_AND_HISTORY_SYNC = 7;
 
         int NUM_TYPES = 8;
     }

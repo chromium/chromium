@@ -168,7 +168,7 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
                 mActivity,
                 mActivity.getOnBackPressedDispatcher(),
                 bottomSheetBackPressHandler,
-                SecondaryActivity.SIGNIN_AND_HISTORY_OPT_IN);
+                SecondaryActivity.SIGNIN_AND_HISTORY_SYNC);
 
         mAccountPickerBottomSheetCoordinator =
                 new AccountPickerBottomSheetCoordinator(

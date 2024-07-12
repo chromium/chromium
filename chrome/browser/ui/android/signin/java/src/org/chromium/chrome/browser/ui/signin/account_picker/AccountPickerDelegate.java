@@ -18,7 +18,7 @@ public interface AccountPickerDelegate {
     /**
      * Returns whether the "add account" action is handled by the delegate. TODO(b/326019991):
      * Remove the method once all bottom sheet entry points will be started from
-     * `SigninAndHistoryOptInActivity`.
+     * `SigninAndHistorySyncActivity`.
      */
     boolean canHandleAddAccount();
 

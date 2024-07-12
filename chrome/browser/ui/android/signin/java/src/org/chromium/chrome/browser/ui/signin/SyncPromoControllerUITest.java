@@ -57,9 +57,9 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.HistoryOptInMode;
-import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.NoAccountSigninMode;
-import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.WithAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator.HistoryOptInMode;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator.NoAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
@@ -111,7 +111,7 @@ public class SyncPromoControllerUITest {
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Mock private SyncConsentActivityLauncher mSyncConsentActivityLauncher;
-    @Mock private SigninAndHistoryOptInActivityLauncher mSigninAndHistoryOptInActivityLauncher;
+    @Mock private SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
 
     @Before
     public void setUp() {
@@ -271,7 +271,7 @@ public class SyncPromoControllerUITest {
 
         onView(withId(R.id.sync_promo_signin_button)).perform(click());
 
-        verify(mSigninAndHistoryOptInActivityLauncher)
+        verify(mSigninAndHistorySyncActivityLauncher)
                 .launchActivityIfAllowed(
                         any(Context.class),
                         any(Profile.class),
@@ -363,7 +363,7 @@ public class SyncPromoControllerUITest {
 
         onView(withId(R.id.sync_promo_choose_account_button)).perform(click());
 
-        verify(mSigninAndHistoryOptInActivityLauncher)
+        verify(mSigninAndHistorySyncActivityLauncher)
                 .launchActivityIfAllowed(
                         any(Context.class),
                         any(Profile.class),
@@ -506,7 +506,7 @@ public class SyncPromoControllerUITest {
 
         onView(withText(R.string.signin_promo_turn_on)).perform(click());
 
-        verify(mSigninAndHistoryOptInActivityLauncher)
+        verify(mSigninAndHistorySyncActivityLauncher)
                 .launchActivityForHistorySyncDedicatedFlow(
                         any(Context.class),
                         any(Profile.class),
@@ -550,7 +550,7 @@ public class SyncPromoControllerUITest {
 
         onView(withText(R.string.signin_promo_turn_on)).perform(click());
 
-        verify(mSigninAndHistoryOptInActivityLauncher)
+        verify(mSigninAndHistorySyncActivityLauncher)
                 .launchActivityForHistorySyncDedicatedFlow(
                         any(Context.class),
                         any(Profile.class),
@@ -594,7 +594,7 @@ public class SyncPromoControllerUITest {
 
         onView(withText(R.string.signin_promo_turn_on)).perform(click());
 
-        verify(mSigninAndHistoryOptInActivityLauncher)
+        verify(mSigninAndHistorySyncActivityLauncher)
                 .launchActivityForHistorySyncDedicatedFlow(
                         any(Context.class),
                         any(Profile.class),
@@ -753,7 +753,7 @@ public class SyncPromoControllerUITest {
                                             BOTTOM_SHEET_STRINGS,
                                             accessPoint,
                                             mSyncConsentActivityLauncher,
-                                            mSigninAndHistoryOptInActivityLauncher);
+                                            mSigninAndHistorySyncActivityLauncher);
                             syncPromoController.setUpSyncPromoView(
                                     profileDataCache,
                                     promoView.findViewById(R.id.signin_promo_view_container),

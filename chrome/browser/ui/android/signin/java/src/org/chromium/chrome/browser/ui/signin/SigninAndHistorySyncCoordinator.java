@@ -49,9 +49,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Responsible of showing the correct sub-component of the sign-in and history opt-in flow. */
-public class SigninAndHistoryOptInCoordinator
-        implements SigninAccountPickerCoordinator.Delegate,
-                HistorySyncCoordinator.HistorySyncDelegate {
+public class SigninAndHistorySyncCoordinator implements SigninAccountPickerCoordinator.Delegate,
+                                                        HistorySyncCoordinator.HistorySyncDelegate {
     private final WindowAndroid mWindowAndroid;
     private final ComponentActivity mActivity;
     private final ViewGroup mContainerView;
@@ -155,7 +154,7 @@ public class SigninAndHistoryOptInCoordinator
     }
 
     /**
-     * Creates an instance of {@link SigninAndHistoryOptInCoordinator} and shows the sign-in bottom
+     * Creates an instance of {@link SigninAndHistorySyncCoordinator} and shows the sign-in bottom
      * sheet.
      *
      * @param windowAndroid The window that hosts the sign-in & history opt-in flow.
@@ -168,18 +167,15 @@ public class SigninAndHistoryOptInCoordinator
      * @param isHistorySyncDedicatedFlow Whether the flow is dedicated to enabling history sync
      *     (recent tabs for example).
      */
-    public SigninAndHistoryOptInCoordinator(
-            @NonNull WindowAndroid windowAndroid,
-            @NonNull ComponentActivity activity,
-            @NonNull Delegate delegate,
+    public SigninAndHistorySyncCoordinator(@NonNull WindowAndroid windowAndroid,
+            @NonNull ComponentActivity activity, @NonNull Delegate delegate,
             @NonNull DeviceLockActivityLauncher deviceLockActivityLauncher,
             @NonNull OneshotSupplier<Profile> profileSupplier,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
             @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
             @NoAccountSigninMode int noAccountSigninMode,
             @WithAccountSigninMode int withAccountSigninMode,
-            @HistoryOptInMode int historyOptInMode,
-            @SigninAccessPoint int signinAccessPoint,
+            @HistoryOptInMode int historyOptInMode, @SigninAccessPoint int signinAccessPoint,
             boolean isHistorySyncDedicatedFlow) {
         mWindowAndroid = windowAndroid;
         mActivity = activity;
@@ -197,7 +193,7 @@ public class SigninAndHistoryOptInCoordinator
         mContainerView =
                 (ViewGroup)
                         LayoutInflater.from(mActivity)
-                                .inflate(R.layout.signin_history_opt_in_container, null);
+                                .inflate(R.layout.signin_history_sync_container, null);
 
         // TODO(crbug.com/41493768): Implement the loading state UI.
     }

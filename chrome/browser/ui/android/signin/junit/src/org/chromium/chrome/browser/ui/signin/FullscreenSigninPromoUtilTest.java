@@ -77,7 +77,7 @@ public class FullscreenSigninPromoUtilTest {
 
     @Mock private SyncConsentActivityLauncher mSyncPromoLauncherMock;
 
-    @Mock private SigninAndHistoryOptInActivityLauncher mUpgradePromoLauncherMock;
+    @Mock private SigninAndHistorySyncActivityLauncher mUpgradePromoLauncherMock;
 
     @Mock private Profile mProfile;
 

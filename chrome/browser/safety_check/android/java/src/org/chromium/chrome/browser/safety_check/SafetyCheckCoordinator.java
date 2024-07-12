@@ -16,7 +16,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.prefs.PrefService;
@@ -47,7 +47,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
      *     interface.
      * @param bridge An instances of {@link SafetyCheckBridge} to access C++ APIs.
      * @param settingsLauncher An instance implementing the {@link SettingsLauncher} interface.
-     * @param signinLauncher An instance implementing {@link SigninAndHistoryOptInActivityLauncher}.
+     * @param signinLauncher An instance implementing {@link SigninAndHistorySyncActivityLauncher}.
      * @param syncLauncher An instance implementing {@link SyncConsentActivityLauncher}.
      * @param modalDialogManagerSupplier An supplier for the {@link ModalDialogManager}.
      * @param passwordStoreBridge Provides access to stored passwords.
@@ -60,7 +60,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
             SafetyCheckUpdatesDelegate updatesClient,
             SafetyCheckBridge bridge,
             SettingsLauncher settingsLauncher,
-            SigninAndHistoryOptInActivityLauncher signinLauncher,
+            SigninAndHistorySyncActivityLauncher signinLauncher,
             SyncConsentActivityLauncher syncLauncher,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             @Nullable SyncService syncService,
@@ -88,7 +88,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
             SafetyCheckUpdatesDelegate updatesClient,
             SafetyCheckBridge bridge,
             SettingsLauncher settingsLauncher,
-            SigninAndHistoryOptInActivityLauncher signinLauncher,
+            SigninAndHistorySyncActivityLauncher signinLauncher,
             SyncConsentActivityLauncher syncLauncher,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             @Nullable SyncService syncService,

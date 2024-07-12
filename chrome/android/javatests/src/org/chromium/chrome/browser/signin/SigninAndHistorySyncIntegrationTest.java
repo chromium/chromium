@@ -53,9 +53,9 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.HistoryOptInMode;
-import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.NoAccountSigninMode;
-import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.WithAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator.HistoryOptInMode;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator.NoAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -79,15 +79,15 @@ import org.chromium.ui.test.util.ViewUtils;
 // TODO(crbug.com/41496906): Tests temporarily disabled for automotive. They should be
 // re-enabled once the new sign-in flow is implemented for automotive.
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-public class SigninAndHistoryOptInIntegrationTest {
+public class SigninAndHistorySyncIntegrationTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule(order = 0)
     public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     /*
-     * The tested SigninAndHistoryOptInActivity will be on top of the BlankUiTestActivity.
-     * Given the bottom sheet dismissal without sign-in action closes SigninAndHistoryOptInActivity,
+     * The tested SigninAndHistorySyncActivity will be on top of the BlankUiTestActivity.
+     * Given the bottom sheet dismissal without sign-in action closes SigninAndHistorySyncActivity,
      * using BlankUiTestActivity allows to:
      *   - avoid `NoActivityResumedException` during the backpress action;
      *   - better approximate the normal behavior of the new sign-in flow which is always opened
@@ -98,10 +98,10 @@ public class SigninAndHistoryOptInIntegrationTest {
             new BaseActivityTestRule(BlankUiTestActivity.class);
 
     @Rule(order = 2)
-    public final BaseActivityTestRule<SigninAndHistoryOptInActivity> mActivityTestRule =
-            new BaseActivityTestRule(SigninAndHistoryOptInActivity.class);
+    public final BaseActivityTestRule<SigninAndHistorySyncActivity> mActivityTestRule =
+            new BaseActivityTestRule(SigninAndHistorySyncActivity.class);
 
-    private SigninAndHistoryOptInActivity mActivity;
+    private SigninAndHistorySyncActivity mActivity;
     private @SigninAccessPoint int mSigninAccessPoint = SigninAccessPoint.NTP_SIGNED_OUT_ICON;
 
     @Mock private HistorySyncHelper mHistorySyncHelperMock;
@@ -524,14 +524,9 @@ public class SigninAndHistoryOptInIntegrationTest {
                 new AccountPickerBottomSheetStrings.Builder(
                                 R.string.signin_account_picker_bottom_sheet_title)
                         .build();
-        Intent intent =
-                SigninAndHistoryOptInActivity.createIntent(
-                        ApplicationProvider.getApplicationContext(),
-                        bottomSheetStrings,
-                        noAccountSigninMode,
-                        withAccountSigninMode,
-                        historyOptInMode,
-                        mSigninAccessPoint);
+        Intent intent = SigninAndHistorySyncActivity.createIntent(
+                ApplicationProvider.getApplicationContext(), bottomSheetStrings,
+                noAccountSigninMode, withAccountSigninMode, historyOptInMode, mSigninAccessPoint);
         mActivityTestRule.launchActivity(intent);
         mActivity = mActivityTestRule.getActivity();
     }

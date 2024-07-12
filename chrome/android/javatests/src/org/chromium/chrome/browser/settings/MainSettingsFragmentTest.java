@@ -98,7 +98,7 @@ import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.safety_hub.SafetyHubFragment;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
-import org.chromium.chrome.browser.signin.SigninAndHistoryOptInActivityLauncherImpl;
+import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -111,8 +111,8 @@ import org.chromium.chrome.browser.sync.settings.SyncPromoPreference.State;
 import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInActivityLauncher;
-import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
@@ -184,7 +184,7 @@ public class MainSettingsFragmentTest {
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
 
     @Mock private SyncConsentActivityLauncher mSyncConsentActivityLauncher;
-    @Mock private SigninAndHistoryOptInActivityLauncher mSigninAndHistoryOptInActivityLauncher;
+    @Mock private SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
     @Mock private HomeModulesConfigManager mHomeModulesConfigManager;
 
     private MainSettings mMainSettings;
@@ -196,8 +196,8 @@ public class MainSettingsFragmentTest {
         PasswordCheckFactory.setPasswordCheckForTesting(mPasswordCheck);
         mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeJniMock);
         SyncConsentActivityLauncherImpl.setLauncherForTest(mSyncConsentActivityLauncher);
-        SigninAndHistoryOptInActivityLauncherImpl.setLauncherForTest(
-                mSigninAndHistoryOptInActivityLauncher);
+        SigninAndHistorySyncActivityLauncherImpl.setLauncherForTest(
+                mSigninAndHistorySyncActivityLauncher);
         DeveloperSettings.setIsEnabledForTests(true);
         NightModeUtils.setNightModeSupportedForTesting(true);
         Intents.init();
@@ -424,16 +424,16 @@ public class MainSettingsFragmentTest {
         onView(withText(R.string.signin_settings_subtitle)).check(matches(isDisplayed()));
         onView(withText(R.string.signin_settings_title)).perform(click());
 
-        verify(mSigninAndHistoryOptInActivityLauncher)
+        verify(mSigninAndHistorySyncActivityLauncher)
                 .launchActivityIfAllowed(
                         any(Activity.class),
                         any(Profile.class),
                         any(AccountPickerBottomSheetStrings.class),
-                        eq(SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET),
+                        eq(SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET),
                         eq(
-                                SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                                SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET),
-                        eq(SigninAndHistoryOptInCoordinator.HistoryOptInMode.OPTIONAL),
+                        eq(SigninAndHistorySyncCoordinator.HistoryOptInMode.OPTIONAL),
                         eq(SigninAccessPoint.SETTINGS));
     }
 

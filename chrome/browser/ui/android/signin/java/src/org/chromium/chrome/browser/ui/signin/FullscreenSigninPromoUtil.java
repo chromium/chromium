@@ -33,17 +33,18 @@ import java.util.Set;
 /**
  * Helper class responsible of launching the full screen sync promo, i.e. {@link
  * SyncConsentActivity}. After UNO, this will launch the re-FRE with {@link
- * SigninAndHistoryOptInActivity}.
+ * SigninAndHistorySyncActivity}.
  */
 public final class FullscreenSigninPromoUtil {
     /**
-     * Launches the {@link SyncConsentActivity}  or the {@link igninAndHistoryOptInActivity} if it needs to be displayed.
+     * Launches the {@link SyncConsentActivity} or the {@link igninAndHistoryOptInActivity} if it
+     * needs to be displayed.
      *
      * @param context The {@link Context} to launch the {@link SyncConsentActivity}.
      * @param profile The active user profile.
      * @param syncConsentActivityLauncher launcher used to launch the {@link SyncConsentActivity}.
-     * @param signinAndHistoryOptInActivityLauncher launcher used to launch the {@link
-     *     SigninAndHistoryOptInActivity}.
+     * @param signinAndHistorySyncActivityLauncher launcher used to launch the {@link
+     *     SigninAndHistorySyncActivity}.
      * @param currentMajorVersion The current major version of Chrome.
      * @return Whether the signin promo is shown.
      */
@@ -51,14 +52,14 @@ public final class FullscreenSigninPromoUtil {
             Context context,
             Profile profile,
             SyncConsentActivityLauncher syncConsentActivityLauncher,
-            SigninAndHistoryOptInActivityLauncher signinAndHistoryOptInActivityLauncher,
+            SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher,
             final int currentMajorVersion) {
         final SigninPreferencesManager prefManager = SigninPreferencesManager.getInstance();
         if (shouldLaunchPromo(profile, prefManager, currentMajorVersion)) {
             if (ChromeFeatureList.isEnabled(
                             ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
                     && !BuildInfo.getInstance().isAutomotive) {
-                signinAndHistoryOptInActivityLauncher.launchUpgradePromoActivityIfAllowed(
+                signinAndHistorySyncActivityLauncher.launchUpgradePromoActivityIfAllowed(
                         context, profile);
             } else {
                 syncConsentActivityLauncher.launchActivityIfAllowed(

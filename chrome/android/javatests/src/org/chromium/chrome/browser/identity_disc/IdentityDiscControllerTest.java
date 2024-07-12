@@ -59,7 +59,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivity;
-import org.chromium.chrome.browser.signin.SigninAndHistoryOptInActivity;
+import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivity;
 import org.chromium.chrome.browser.signin.SyncConsentActivity;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -213,7 +213,7 @@ public class IdentityDiscControllerTest {
             Activity signinActivity =
                     ActivityTestUtils.waitForActivity(
                             InstrumentationRegistry.getInstrumentation(),
-                            SigninAndHistoryOptInActivity.class,
+                            SigninAndHistorySyncActivity.class,
                             () -> onView(withId(R.id.optional_toolbar_button)).perform(click()));
             if (signinActivity != null) {
                 ApplicationTestUtils.finishActivity(signinActivity);

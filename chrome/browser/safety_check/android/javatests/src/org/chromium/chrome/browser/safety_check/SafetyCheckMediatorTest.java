@@ -86,8 +86,8 @@ import org.chromium.chrome.browser.safety_check.SafetyCheckMediator.SafetyCheckI
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsingState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInActivityLauncher;
-import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.prefs.PrefService;
@@ -133,7 +133,7 @@ public class SafetyCheckMediatorTest {
     @Mock private SafetyCheckBridge.Natives mSafetyCheckBridge;
     @Mock private Profile mProfile;
     @Mock private SafetyCheckUpdatesDelegate mUpdatesDelegate;
-    @Mock private SigninAndHistoryOptInActivityLauncher mSigninLauncher;
+    @Mock private SigninAndHistorySyncActivityLauncher mSigninLauncher;
     @Mock private SyncConsentActivityLauncher mSyncLauncher;
     @Mock private SettingsLauncher mSettingsLauncher;
     @Mock private SyncService mSyncService;
@@ -787,11 +787,11 @@ public class SafetyCheckMediatorTest {
                         any(),
                         eq(mProfile),
                         any(),
-                        eq(SigninAndHistoryOptInCoordinator.NoAccountSigninMode.ADD_ACCOUNT),
+                        eq(SigninAndHistorySyncCoordinator.NoAccountSigninMode.ADD_ACCOUNT),
                         eq(
-                                SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                                SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET),
-                        eq(SigninAndHistoryOptInCoordinator.HistoryOptInMode.NONE),
+                        eq(SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE),
                         eq(SigninAccessPoint.SAFETY_CHECK));
     }
 

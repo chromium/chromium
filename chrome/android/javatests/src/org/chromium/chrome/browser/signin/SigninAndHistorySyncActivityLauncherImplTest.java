@@ -38,10 +38,11 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -51,11 +52,11 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
-/** Tests {@link SigninAndHistoryOptInActivityLauncherImpl}. */
+/** Tests {@link SigninAndHistorySyncActivityLauncherImpl}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-public class SigninAndHistoryOptInActivityLauncherImplTest {
+public class SigninAndHistorySyncActivityLauncherImplTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
@@ -90,16 +91,16 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    SigninAndHistoryOptInActivityLauncherImpl.get()
+                    SigninAndHistorySyncActivityLauncherImpl.get()
                             .launchActivityIfAllowed(
                                     mContextMock,
                                     mProfileMock,
                                     BOTTOM_SHEET_STRINGS,
-                                    SigninAndHistoryOptInCoordinator.NoAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
-                                    SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                    SigninAndHistoryOptInCoordinator.HistoryOptInMode.NONE,
+                                    SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
                                     SigninAccessPoint.NTP_SIGNED_OUT_ICON);
                 });
 
@@ -116,16 +117,16 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    SigninAndHistoryOptInActivityLauncherImpl.get()
+                    SigninAndHistorySyncActivityLauncherImpl.get()
                             .launchActivityIfAllowed(
                                     mContextMock,
                                     mProfileMock,
                                     BOTTOM_SHEET_STRINGS,
-                                    SigninAndHistoryOptInCoordinator.NoAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
-                                    SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                    SigninAndHistoryOptInCoordinator.HistoryOptInMode.REQUIRED,
+                                    SigninAndHistorySyncCoordinator.HistoryOptInMode.REQUIRED,
                                     SigninAccessPoint.NTP_SIGNED_OUT_ICON);
                 });
 
@@ -139,14 +140,14 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    SigninAndHistoryOptInActivityLauncherImpl.get()
+                    SigninAndHistorySyncActivityLauncherImpl.get()
                             .launchActivityForHistorySyncDedicatedFlow(
                                     mContextMock,
                                     mProfileMock,
                                     BOTTOM_SHEET_STRINGS,
-                                    SigninAndHistoryOptInCoordinator.NoAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
-                                    SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                                     SigninAccessPoint.RECENT_TABS);
                 });
@@ -164,16 +165,16 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    SigninAndHistoryOptInActivityLauncherImpl.get()
+                    SigninAndHistorySyncActivityLauncherImpl.get()
                             .launchActivityIfAllowed(
                                     mContextMock,
                                     mProfileMock,
                                     BOTTOM_SHEET_STRINGS,
-                                    SigninAndHistoryOptInCoordinator.NoAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
-                                    SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                    SigninAndHistoryOptInCoordinator.HistoryOptInMode.REQUIRED,
+                                    SigninAndHistorySyncCoordinator.HistoryOptInMode.REQUIRED,
                                     SigninAccessPoint.NTP_SIGNED_OUT_ICON);
                 });
 
@@ -190,16 +191,16 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    SigninAndHistoryOptInActivityLauncherImpl.get()
+                    SigninAndHistorySyncActivityLauncherImpl.get()
                             .launchActivityIfAllowed(
                                     mContextMock,
                                     mProfileMock,
                                     BOTTOM_SHEET_STRINGS,
-                                    SigninAndHistoryOptInCoordinator.NoAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
-                                    SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                    SigninAndHistoryOptInCoordinator.HistoryOptInMode.REQUIRED,
+                                    SigninAndHistorySyncCoordinator.HistoryOptInMode.REQUIRED,
                                     SigninAccessPoint.NTP_SIGNED_OUT_ICON);
                 });
 
@@ -217,16 +218,16 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    SigninAndHistoryOptInActivityLauncherImpl.get()
+                    SigninAndHistorySyncActivityLauncherImpl.get()
                             .launchActivityIfAllowed(
                                     mContextMock,
                                     mProfileMock,
                                     BOTTOM_SHEET_STRINGS,
-                                    SigninAndHistoryOptInCoordinator.NoAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
-                                    SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                    SigninAndHistoryOptInCoordinator.HistoryOptInMode.NONE,
+                                    SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
                                     SigninAccessPoint.NTP_SIGNED_OUT_ICON);
                 });
 
@@ -243,14 +244,14 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    SigninAndHistoryOptInActivityLauncherImpl.get()
+                    SigninAndHistorySyncActivityLauncherImpl.get()
                             .launchActivityForHistorySyncDedicatedFlow(
                                     mContextMock,
                                     mProfileMock,
                                     BOTTOM_SHEET_STRINGS,
-                                    SigninAndHistoryOptInCoordinator.NoAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
-                                    SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                                     SigninAccessPoint.RECENT_TABS);
                 });
@@ -272,16 +273,16 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    SigninAndHistoryOptInActivityLauncherImpl.get()
+                    SigninAndHistorySyncActivityLauncherImpl.get()
                             .launchActivityIfAllowed(
                                     mActivityTestRule.getActivity(),
                                     mProfileMock,
                                     BOTTOM_SHEET_STRINGS,
-                                    SigninAndHistoryOptInCoordinator.NoAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
-                                    SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                    SigninAndHistoryOptInCoordinator.HistoryOptInMode.NONE,
+                                    SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
                                     SigninAccessPoint.NTP_SIGNED_OUT_ICON);
                 });
 
@@ -296,6 +297,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
     @Test
     @MediumTest
     // TODO(crbug.com/41493758): Update this test when the error UI will be implemented.
+    @DisabledTest(message = "https://crbug.com/352314425")
     public void testLaunchActivityForHistorySyncDedicatedFlowWhenSigninIsDisabledByPolicy() {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
@@ -307,14 +309,14 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    SigninAndHistoryOptInActivityLauncherImpl.get()
+                    SigninAndHistorySyncActivityLauncherImpl.get()
                             .launchActivityForHistorySyncDedicatedFlow(
                                     mActivityTestRule.getActivity(),
                                     mProfileMock,
                                     BOTTOM_SHEET_STRINGS,
-                                    SigninAndHistoryOptInCoordinator.NoAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.NoAccountSigninMode
                                             .BOTTOM_SHEET,
-                                    SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                                     SigninAccessPoint.RECENT_TABS);
                 });
@@ -334,7 +336,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    SigninAndHistoryOptInActivityLauncherImpl.get()
+                    SigninAndHistorySyncActivityLauncherImpl.get()
                             .launchUpgradePromoActivityIfAllowed(mContextMock, mProfileMock);
                 });
 
@@ -351,11 +353,11 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    SigninAndHistoryOptInActivityLauncherImpl.get()
+                    SigninAndHistorySyncActivityLauncherImpl.get()
                             .launchUpgradePromoActivityIfAllowed(mContextMock, mProfileMock);
                 });
 
-        verify(mContextMock, never()).startActivity(notNull());
+       verify(mContextMock, never()).startActivity(notNull());
     }
 
     @Test
@@ -370,7 +372,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    SigninAndHistoryOptInActivityLauncherImpl.get()
+                    SigninAndHistorySyncActivityLauncherImpl.get()
                             .launchUpgradePromoActivityIfAllowed(mContextMock, mProfileMock);
                 });
 
@@ -388,7 +390,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    SigninAndHistoryOptInActivityLauncherImpl.get()
+                    SigninAndHistorySyncActivityLauncherImpl.get()
                             .launchUpgradePromoActivityIfAllowed(mContextMock, mProfileMock);
                 });
 
@@ -406,7 +408,7 @@ public class SigninAndHistoryOptInActivityLauncherImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    SigninAndHistoryOptInActivityLauncherImpl.get()
+                    SigninAndHistorySyncActivityLauncherImpl.get()
                             .launchUpgradePromoActivityIfAllowed(mContextMock, mProfileMock);
                 });
 

@@ -18,13 +18,13 @@ import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.signinbottomsheet.SigninBottomSheetCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.SigninAndHistoryOptInActivityLauncherImpl;
+import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -121,15 +121,15 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
                 new AccountPickerBottomSheetStrings.Builder(
                                 R.string.signin_account_picker_bottom_sheet_title)
                         .build();
-        SigninAndHistoryOptInActivityLauncherImpl.get()
+        SigninAndHistorySyncActivityLauncherImpl.get()
                 .launchActivityIfAllowed(
                         mActivity,
                         mProfile,
                         strings,
-                        SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                        SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                        SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                        SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                 .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                        SigninAndHistoryOptInCoordinator.HistoryOptInMode.NONE,
+                        SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
                         signinAccessPoint);
     }
 
@@ -149,15 +149,15 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
                                             .signin_account_picker_bottom_sheet_subtitle_for_back_of_card_menu_signin)
                             .setDismissButtonStringId(R.string.cancel)
                             .build();
-            SigninAndHistoryOptInActivityLauncherImpl.get()
+            SigninAndHistorySyncActivityLauncherImpl.get()
                     .launchActivityIfAllowed(
                             mActivity,
                             mProfile,
                             strings,
-                            SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                            SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                            SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                            SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                     .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                            SigninAndHistoryOptInCoordinator.HistoryOptInMode.NONE,
+                            SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
                             signinAccessPoint);
             return;
         }

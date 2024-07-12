@@ -27,10 +27,10 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImp
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
-import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
-import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.HistoryOptInMode;
-import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.NoAccountSigninMode;
-import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.WithAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator.HistoryOptInMode;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator.NoAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.UpgradePromoCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
@@ -55,25 +55,25 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
  * <p>The activity may also hold the re-FRE which consists of a fullscreen sign-in dialog followed
  * by the history sync opt-in. This is why the dependency on {@link FirstRunActivityBase} is needed.
  */
-public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
-        implements SigninAndHistoryOptInCoordinator.Delegate, UpgradePromoCoordinator.Delegate {
-    private static final String ARGUMENT_ACCESS_POINT = "SigninAndHistoryOptInActivity.AccessPoint";
+public class SigninAndHistorySyncActivity extends FirstRunActivityBase
+        implements SigninAndHistorySyncCoordinator.Delegate, UpgradePromoCoordinator.Delegate {
+    private static final String ARGUMENT_ACCESS_POINT = "SigninAndHistorySyncActivity.AccessPoint";
     private static final String ARGUMENT_BOTTOM_SHEET_STRINGS_TITLE =
-            "SigninAndHistoryOptInActivity.BottomSheetStringsTitle";
+            "SigninAndHistorySyncActivity.BottomSheetStringsTitle";
     private static final String ARGUMENT_BOTTOM_SHEET_STRINGS_SUBTITLE =
-            "SigninAndHistoryOptInActivity.BottomSheetStringsSubtitle";
+            "SigninAndHistorySyncActivity.BottomSheetStringsSubtitle";
     private static final String ARGUMENT_BOTTOM_SHEET_STRINGS_DISMISS =
-            "SigninAndHistoryOptInActivity.BottomSheetStringsDismiss";
+            "SigninAndHistorySyncActivity.BottomSheetStringsDismiss";
     private static final String ARGUMENT_NO_ACCOUNT_SIGNIN_MODE =
-            "SigninAndHistoryOptInActivity.NoAccountSigninMode";
+            "SigninAndHistorySyncActivity.NoAccountSigninMode";
     private static final String ARGUMENT_WITH_ACCOUNT_SIGNIN_MODE =
-            "SigninAndHistoryOptInActivity.WithAccountSigninMode";
+            "SigninAndHistorySyncActivity.WithAccountSigninMode";
     private static final String ARGUMENT_HISTORY_OPT_IN_MODE =
-            "SigninAndHistoryOptInActivity.HistoryOptInMode";
+            "SigninAndHistorySyncActivity.HistoryOptInMode";
     private static final String ARGUMENT_IS_HISTORY_SYNC_DEDICATED_FLOW =
-            "SigninAndHistoryOptInActivity.IsHistorySyncDedicatedFlow";
+            "SigninAndHistorySyncActivity.IsHistorySyncDedicatedFlow";
     private static final String ARGUMENT_IS_UPGRADE_PROMO =
-            "SigninAndHistoryOptInActivity.IsUpgradePromo";
+            "SigninAndHistorySyncActivity.IsUpgradePromo";
 
     private final OneshotSupplierImpl<Profile> mProfileSupplier = new OneshotSupplierImpl<>();
     // TODO(b/41493788): Move this to FirstRunActivityBase
@@ -82,7 +82,7 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
     // null.
     // TODO(b/326019991): Consider making each of these implement a common interface to skip the
     // redundancy.
-    private SigninAndHistoryOptInCoordinator mCoordinator;
+    private SigninAndHistorySyncCoordinator mCoordinator;
     private UpgradePromoCoordinator mUpgradePromoCoordinator;
 
     @Override
@@ -146,20 +146,11 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
         boolean isHistorySyncDedicatedFlow =
                 intent.getBooleanExtra(ARGUMENT_IS_HISTORY_SYNC_DEDICATED_FLOW, false);
 
-        mCoordinator =
-                new SigninAndHistoryOptInCoordinator(
-                        getWindowAndroid(),
-                        this,
-                        this,
-                        DeviceLockActivityLauncherImpl.get(),
-                        mProfileSupplier,
-                        getModalDialogManagerSupplier(),
-                        bottomSheetStrings,
-                        noAccountSigninMode,
-                        withAccountSigninMode,
-                        historyOptInMode,
-                        signinAccessPoint,
-                        isHistorySyncDedicatedFlow);
+        mCoordinator = new SigninAndHistorySyncCoordinator(getWindowAndroid(), this, this,
+                DeviceLockActivityLauncherImpl.get(), mProfileSupplier,
+                getModalDialogManagerSupplier(), bottomSheetStrings, noAccountSigninMode,
+                withAccountSigninMode, historyOptInMode, signinAccessPoint,
+                isHistorySyncDedicatedFlow);
 
         setContentView(mCoordinator.getView());
         onInitialLayoutInflationComplete();
@@ -208,7 +199,7 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
     }
 
     /**
-     * Implements {@link SigninAndHistoryOptInCoordinator.Delegate} and {@link
+     * Implements {@link SigninAndHistorySyncCoordinator.Delegate} and {@link
      * UpgradePromoCoordinator.Delegate}.
      */
     @Override
@@ -219,13 +210,13 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
         overridePendingTransition(0, R.anim.fast_fade_out);
     }
 
-    /** Implements {@link SigninAndHistoryOptInCoordinator.Delegate}. */
+    /** Implements {@link SigninAndHistorySyncCoordinator.Delegate}. */
     @Override
     public boolean isHistorySyncShownFullScreen() {
         return !isTablet();
     }
 
-    /** Implements {@link SigninAndHistoryOptInCoordinator.Delegate}. */
+    /** Implements {@link SigninAndHistorySyncCoordinator.Delegate}. */
     @Override
     public void setStatusBarColor(int statusBarColor) {
         StatusBarColorController.setStatusBarColor(getWindow(), statusBarColor);
@@ -265,7 +256,7 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
 
     @Override
     public @SecondaryActivityBackPressUma.SecondaryActivity int getSecondaryActivity() {
-        return SecondaryActivityBackPressUma.SecondaryActivity.SIGNIN_AND_HISTORY_OPT_IN;
+        return SecondaryActivityBackPressUma.SecondaryActivity.SIGNIN_AND_HISTORY_SYNC;
     }
 
     public static @NonNull Intent createIntent(
@@ -277,7 +268,7 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
             @SigninAccessPoint int signinAccessPoint) {
         assert bottomSheetStrings != null;
 
-        Intent intent = new Intent(context, SigninAndHistoryOptInActivity.class);
+        Intent intent = new Intent(context, SigninAndHistorySyncActivity.class);
         intent.putExtra(ARGUMENT_BOTTOM_SHEET_STRINGS_TITLE, bottomSheetStrings.titleStringId);
         intent.putExtra(
                 ARGUMENT_BOTTOM_SHEET_STRINGS_SUBTITLE, bottomSheetStrings.subtitleStringId);
@@ -309,14 +300,14 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
     }
 
     public static @NonNull Intent createIntentForUpgradePromo(Context context) {
-        Intent intent = new Intent(context, SigninAndHistoryOptInActivity.class);
+        Intent intent = new Intent(context, SigninAndHistorySyncActivity.class);
         intent.putExtra(ARGUMENT_IS_UPGRADE_PROMO, true);
         return intent;
     }
 
     /**
      * Implements {@link UpgradePromoCoordinator.Delegate} and {@link
-     * SigninAndHistoryOptInCoordinator.Delegate}
+     * SigninAndHistorySyncCoordinator.Delegate}
      */
     @Override
     public void addAccount() {

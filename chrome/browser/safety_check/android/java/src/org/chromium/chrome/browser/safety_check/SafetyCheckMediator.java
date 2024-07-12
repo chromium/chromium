@@ -46,8 +46,8 @@ import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFr
 import org.chromium.chrome.browser.safety_check.PasswordsCheckPreferenceProperties.PasswordsState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsingState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
-import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInActivityLauncher;
-import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -104,7 +104,7 @@ class SafetyCheckMediator {
     private SettingsLauncher mSettingsLauncher;
 
     /** Client to launch a SigninActivity. */
-    private SigninAndHistoryOptInActivityLauncher mSigninLauncher;
+    private SigninAndHistorySyncActivityLauncher mSigninLauncher;
 
     /** Client to launch a SyncActivity. */
     private SyncConsentActivityLauncher mSyncLauncher;
@@ -198,7 +198,7 @@ class SafetyCheckMediator {
      * @param safetyCheckModel A model instance.
      * @param client An updates client.
      * @param settingsLauncher An instance of the {@link SettingsLauncher} implementation.
-     * @param signinLauncher An instance implementing {@link SigninAndHistoryOptInActivityLauncher}.
+     * @param signinLauncher An instance implementing {@link SigninAndHistorySyncActivityLauncher}.
      * @param syncLauncher An instance implementing {@SigninActivityLauncher}.
      * @param passwordStoreBridge Provides access to stored passwords.
      * @param modalDialogManagerSupplier A supplier for the {@link ModalDialogManager}.
@@ -211,7 +211,7 @@ class SafetyCheckMediator {
             SafetyCheckUpdatesDelegate client,
             SafetyCheckBridge bridge,
             SettingsLauncher settingsLauncher,
-            SigninAndHistoryOptInActivityLauncher signinLauncher,
+            SigninAndHistorySyncActivityLauncher signinLauncher,
             SyncConsentActivityLauncher syncLauncher,
             SyncService syncService,
             PrefService prefService,
@@ -246,7 +246,7 @@ class SafetyCheckMediator {
             SafetyCheckUpdatesDelegate client,
             SafetyCheckBridge bridge,
             SettingsLauncher settingsLauncher,
-            SigninAndHistoryOptInActivityLauncher signinLauncher,
+            SigninAndHistorySyncActivityLauncher signinLauncher,
             SyncConsentActivityLauncher syncLauncher,
             SyncService syncService,
             PrefService prefService,
@@ -282,7 +282,7 @@ class SafetyCheckMediator {
             SafetyCheckUpdatesDelegate client,
             SafetyCheckBridge bridge,
             SettingsLauncher settingsLauncher,
-            SigninAndHistoryOptInActivityLauncher signinLauncher,
+            SigninAndHistorySyncActivityLauncher signinLauncher,
             SyncConsentActivityLauncher syncLauncher,
             @Nullable SyncService syncService,
             PrefService prefService,
@@ -620,11 +620,10 @@ class SafetyCheckMediator {
                                     p.getContext(),
                                     mProfile,
                                     strings,
-                                    SigninAndHistoryOptInCoordinator.NoAccountSigninMode
-                                            .ADD_ACCOUNT,
-                                    SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                                    SigninAndHistorySyncCoordinator.NoAccountSigninMode.ADD_ACCOUNT,
+                                    SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                    SigninAndHistoryOptInCoordinator.HistoryOptInMode.NONE,
+                                    SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
                                     SigninAccessPoint.SAFETY_CHECK);
                         } else {
                             // Open the sync page.

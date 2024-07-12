@@ -24,7 +24,7 @@ import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.chrome.browser.signin.SigninAndHistoryOptInActivityLauncherImpl;
+import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -36,7 +36,7 @@ import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
-import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
@@ -367,15 +367,15 @@ public class IdentityDiscController
                                         R.string
                                                 .signin_account_picker_bottom_sheet_benefits_subtitle)
                                 .build();
-                SigninAndHistoryOptInActivityLauncherImpl.get()
+                SigninAndHistorySyncActivityLauncherImpl.get()
                         .launchActivityIfAllowed(
                                 mContext,
                                 mProfileSupplier.get().getOriginalProfile(),
                                 bottomSheetStrings,
-                                SigninAndHistoryOptInCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                                SigninAndHistoryOptInCoordinator.WithAccountSigninMode
+                                SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
+                                SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                SigninAndHistoryOptInCoordinator.HistoryOptInMode.OPTIONAL,
+                                SigninAndHistorySyncCoordinator.HistoryOptInMode.OPTIONAL,
                                 SigninAccessPoint.NTP_SIGNED_OUT_ICON);
             } else {
                 SyncConsentActivityLauncherImpl.get()

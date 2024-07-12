@@ -98,7 +98,7 @@ public class SyncPromoControllerTest {
 
     @Mock private SyncConsentActivityLauncher mSyncConsentActivityLauncher;
 
-    @Mock private SigninAndHistoryOptInActivityLauncher mSigninAndHistoryOptInActivityLauncher;
+    @Mock private SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
 
     private final SharedPreferencesManager mSharedPreferencesManager =
             ChromeSharedPreferences.getInstance();
@@ -128,7 +128,7 @@ public class SyncPromoControllerTest {
                         BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.NTP_FEED_TOP_PROMO,
                         mSyncConsentActivityLauncher,
-                        mSigninAndHistoryOptInActivityLauncher);
+                        mSigninAndHistorySyncActivityLauncher);
     }
 
     @Test
@@ -147,7 +147,7 @@ public class SyncPromoControllerTest {
                         BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.NTP_FEED_TOP_PROMO,
                         mSyncConsentActivityLauncher,
-                        mSigninAndHistoryOptInActivityLauncher);
+                        mSigninAndHistorySyncActivityLauncher);
 
         Assert.assertFalse(syncPromoController.canShowSyncPromo());
     }
@@ -373,7 +373,7 @@ public class SyncPromoControllerTest {
                         BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mSyncConsentActivityLauncher,
-                        mSigninAndHistoryOptInActivityLauncher);
+                        mSigninAndHistorySyncActivityLauncher);
         Assert.assertFalse(syncPromoController.canShowSyncPromo());
     }
 
@@ -388,7 +388,7 @@ public class SyncPromoControllerTest {
                         BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mSyncConsentActivityLauncher,
-                        mSigninAndHistoryOptInActivityLauncher);
+                        mSigninAndHistorySyncActivityLauncher);
         Assert.assertTrue(syncPromoController.canShowSyncPromo());
     }
 
@@ -405,7 +405,7 @@ public class SyncPromoControllerTest {
                         BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mSyncConsentActivityLauncher,
-                        mSigninAndHistoryOptInActivityLauncher);
+                        mSigninAndHistorySyncActivityLauncher);
         Assert.assertFalse(syncPromoController.canShowSyncPromo());
     }
 
@@ -421,7 +421,7 @@ public class SyncPromoControllerTest {
                         BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mSyncConsentActivityLauncher,
-                        mSigninAndHistoryOptInActivityLauncher);
+                        mSigninAndHistorySyncActivityLauncher);
         Assert.assertTrue(syncPromoController.canShowSyncPromo());
     }
 
@@ -437,7 +437,7 @@ public class SyncPromoControllerTest {
                         BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mSyncConsentActivityLauncher,
-                        mSigninAndHistoryOptInActivityLauncher);
+                        mSigninAndHistorySyncActivityLauncher);
         Assert.assertTrue(syncPromoController.canShowSyncPromo());
     }
 
@@ -453,7 +453,7 @@ public class SyncPromoControllerTest {
                         BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.RECENT_TABS,
                         mSyncConsentActivityLauncher,
-                        mSigninAndHistoryOptInActivityLauncher);
+                        mSigninAndHistorySyncActivityLauncher);
         Assert.assertFalse(syncPromoController.canShowSyncPromo());
     }
 
@@ -472,7 +472,7 @@ public class SyncPromoControllerTest {
                         BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.RECENT_TABS,
                         mSyncConsentActivityLauncher,
-                        mSigninAndHistoryOptInActivityLauncher);
+                        mSigninAndHistorySyncActivityLauncher);
         Assert.assertFalse(syncPromoController.canShowSyncPromo());
     }
 
@@ -488,7 +488,7 @@ public class SyncPromoControllerTest {
                         BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.RECENT_TABS,
                         mSyncConsentActivityLauncher,
-                        mSigninAndHistoryOptInActivityLauncher);
+                        mSigninAndHistorySyncActivityLauncher);
         Assert.assertTrue(syncPromoController.canShowSyncPromo());
     }
 
@@ -507,7 +507,7 @@ public class SyncPromoControllerTest {
                         BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.RECENT_TABS,
                         mSyncConsentActivityLauncher,
-                        mSigninAndHistoryOptInActivityLauncher);
+                        mSigninAndHistorySyncActivityLauncher);
         Assert.assertFalse(syncPromoController.canShowSyncPromo());
     }
 
@@ -525,7 +525,7 @@ public class SyncPromoControllerTest {
                         BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.RECENT_TABS,
                         mSyncConsentActivityLauncher,
-                        mSigninAndHistoryOptInActivityLauncher);
+                        mSigninAndHistorySyncActivityLauncher);
         Assert.assertTrue(syncPromoController.canShowSyncPromo());
     }
 
@@ -544,7 +544,7 @@ public class SyncPromoControllerTest {
                         BOTTOM_SHEET_STRINGS,
                         SigninAccessPoint.RECENT_TABS,
                         mSyncConsentActivityLauncher,
-                        mSigninAndHistoryOptInActivityLauncher);
+                        mSigninAndHistorySyncActivityLauncher);
         Assert.assertTrue(syncPromoController.canShowSyncPromo());
     }
 
