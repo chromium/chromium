@@ -119,7 +119,8 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelSharedImageInterface
       const SharedImageInfo& si_info,
       Microsoft::WRL::ComPtr<ID3D11Texture2D> texture,
       scoped_refptr<gpu::DXGISharedHandleState> dxgi_shared_handle_state,
-      size_t array_slice);
+      size_t array_slice,
+      const bool is_thread_safe);
 #endif
 
   SequenceId sequence() { return sequence_; }

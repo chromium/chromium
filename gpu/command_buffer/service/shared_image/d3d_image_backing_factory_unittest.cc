@@ -253,20 +253,20 @@ TEST_F(D3DImageBackingFactoryTestSwapChain, CreateAndPresentSwapChain) {
   ASSERT_TRUE(back_buffer_d3d_backing);
   ASSERT_TRUE(front_buffer_d3d_backing);
 
-  EXPECT_EQ(S_OK, back_buffer_d3d_backing->GetSwapChainForTesting()->GetBuffer(
+  EXPECT_EQ(S_OK, back_buffer_d3d_backing->swap_chain_for_testing()->GetBuffer(
                       /*buffer_index=*/0, IID_PPV_ARGS(&d3d11_texture)));
   EXPECT_TRUE(d3d11_texture);
   EXPECT_EQ(d3d11_texture,
-            back_buffer_d3d_backing->GetD3D11TextureForTesting());
+            back_buffer_d3d_backing->d3d11_texture_for_testing());
   d3d11_texture.Reset();
 
-  EXPECT_EQ(back_buffer_d3d_backing->GetSwapChainForTesting(),
-            front_buffer_d3d_backing->GetSwapChainForTesting());
-  EXPECT_EQ(S_OK, front_buffer_d3d_backing->GetSwapChainForTesting()->GetBuffer(
+  EXPECT_EQ(back_buffer_d3d_backing->swap_chain_for_testing(),
+            front_buffer_d3d_backing->swap_chain_for_testing());
+  EXPECT_EQ(S_OK, front_buffer_d3d_backing->swap_chain_for_testing()->GetBuffer(
                       /*buffer_index=*/1, IID_PPV_ARGS(&d3d11_texture)));
   EXPECT_TRUE(d3d11_texture);
   EXPECT_EQ(d3d11_texture,
-            front_buffer_d3d_backing->GetD3D11TextureForTesting());
+            front_buffer_d3d_backing->d3d11_texture_for_testing());
   d3d11_texture.Reset();
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> back_factory_ref =
@@ -2059,8 +2059,9 @@ void D3DImageBackingFactoryTest::RunMultiplanarUploadAndReadback(
   backing->SetCleared();
 
   // If UpdateSubresource() is used, the staging texture shouldn't be created.
-  EXPECT_EQ(!static_cast<D3DImageBacking*>(backing)->has_staging_texture(),
-            use_update_subresource);
+  EXPECT_EQ(
+      !static_cast<D3DImageBacking*>(backing)->HasStagingTextureForTesting(),
+      use_update_subresource);
 
   auto skia_representation = shared_image_representation_factory_->ProduceSkia(
       mailbox, context_state_);

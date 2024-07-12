@@ -117,7 +117,8 @@ GpuChannelSharedImageInterface::CreateSharedImageForD3D11Video(
     const SharedImageInfo& si_info,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> texture,
     scoped_refptr<gpu::DXGISharedHandleState> dxgi_shared_handle_state,
-    size_t array_slice) {
+    size_t array_slice,
+    const bool is_thread_safe) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
   if (!shared_image_stub_) {
@@ -136,7 +137,8 @@ GpuChannelSharedImageInterface::CreateSharedImageForD3D11Video(
           mailbox, metadata.format, metadata.size, metadata.color_space,
           metadata.surface_origin, metadata.alpha_type, metadata.usage,
           si_info.debug_label, texture, std::move(dxgi_shared_handle_state),
-          caps, GL_TEXTURE_EXTERNAL_OES, array_slice);
+          caps, GL_TEXTURE_EXTERNAL_OES, array_slice,
+          /*use_update_subresource1=*/false, is_thread_safe);
 
   if (!backing) {
     return nullptr;

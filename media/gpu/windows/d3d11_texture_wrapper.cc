@@ -260,7 +260,8 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
         helper_->GetDXGISharedHandleManager()->CreateAnonymousSharedHandleState(
             base::win::ScopedHandle(shared_handle), texture);
   }
-
+  const bool is_thread_safe =
+      IsDedicatedMediaServiceThreadEnabled(gl::ANGLEImplementation::kD3D11);
   if (base::FeatureList::IsEnabled(media::kUseClientSharedImageForD3D11Video)) {
     gpu::SharedImageInfo si_info{
         DXGIFormatToMultiPlanarSharedImageFormat(dxgi_format),
@@ -275,7 +276,8 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
             helper_->GetSharedImageStub()->shared_image_interface();
     scoped_refptr<gpu::ClientSharedImage> shared_image =
         gpu_channel_shared_image_interface->CreateSharedImageForD3D11Video(
-            si_info, texture, std::move(dxgi_shared_handle_state), array_slice);
+            si_info, texture, std::move(dxgi_shared_handle_state), array_slice,
+            is_thread_safe);
     if (!shared_image) {
       std::move(on_error_cb)
           .Run(std::move(D3D11Status::Codes::kCreateSharedImageFailed));
@@ -311,7 +313,8 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
             mailbox, DXGIFormatToMultiPlanarSharedImageFormat(dxgi_format),
             size, color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
             usage, "VideoTexture", texture, std::move(dxgi_shared_handle_state),
-            caps, GL_TEXTURE_EXTERNAL_OES, array_slice);
+            caps, GL_TEXTURE_EXTERNAL_OES, array_slice,
+            /*use_update_subresource1=*/false, is_thread_safe);
 
     if (!backing) {
       std::move(on_error_cb)
