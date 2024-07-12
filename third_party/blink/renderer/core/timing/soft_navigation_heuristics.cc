@@ -41,14 +41,14 @@ const char kPageLoadInternalSoftNavigationOutcome[] =
 // LINT.IfChange
 enum SoftNavigationOutcome {
   kSoftNavigationDetected = 0,
-  kNoAncestorTask = 1,
+
+  kNoSoftNavContextDuringUrlChange = 1,
   kNoPaint = 2,
-  kNoAncestorTaskOrPaint = 3,
   kNoDomModification = 4,
-  kNoAncestorOrDomModification = 5,
-  kNoPaintOrDomModification = 6,
-  kNoConditionsMet = 7,
-  kMaxValue = kNoConditionsMet,
+
+  kNoPaintOrDomModification = kNoPaint | kNoDomModification,
+
+  kMaxValue = kNoPaintOrDomModification,
 };
 // LINT.ThenChange(/tools/metrics/histograms/enums.xml:SoftNavigationOutcome)
 
@@ -159,24 +159,23 @@ void SoftNavigationHeuristics::Dispose() {
 
 void SoftNavigationHeuristics::RecordUmaForNonSoftNavigationInteraction(
     const SoftNavigationContext& context) const {
-  // For all interactions which included a URL modification, log the
-  // criteria which were not met. Note that we assume here that an ancestor
-  // task was found when the URL change was made.
-  if (!context.Url().empty()) {
-    if (!context.HasMainModification()) {
-      if (!paint_conditions_met_) {
-        base::UmaHistogramEnumeration(
-            kPageLoadInternalSoftNavigationOutcome,
-            SoftNavigationOutcome::kNoDomModification);
-      } else {
-        base::UmaHistogramEnumeration(
-            kPageLoadInternalSoftNavigationOutcome,
-            SoftNavigationOutcome::kNoPaintOrDomModification);
-      }
-    } else if (!paint_conditions_met_) {
-      base::UmaHistogramEnumeration(kPageLoadInternalSoftNavigationOutcome,
-                                    SoftNavigationOutcome::kNoPaint);
-    }
+  // For all interactions which included a (soft nav context attributable) URL
+  // modification, yet were not declared soft navs, log the criteria which were
+  // not met.
+  if (context.Url().empty()) {
+    return;
+  }
+
+  if (!paint_conditions_met_ && !context.HasMainModification()) {
+    base::UmaHistogramEnumeration(
+        kPageLoadInternalSoftNavigationOutcome,
+        SoftNavigationOutcome::kNoPaintOrDomModification);
+  } else if (!paint_conditions_met_) {
+    base::UmaHistogramEnumeration(kPageLoadInternalSoftNavigationOutcome,
+                                  SoftNavigationOutcome::kNoPaint);
+  } else if (!context.HasMainModification()) {
+    base::UmaHistogramEnumeration(kPageLoadInternalSoftNavigationOutcome,
+                                  SoftNavigationOutcome::kNoDomModification);
   }
 }
 
@@ -261,8 +260,9 @@ void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
       EmitSoftNavigationEntryIfAllConditionsMet(context);
     }
   } else {
-    base::UmaHistogramEnumeration(kPageLoadInternalSoftNavigationOutcome,
-                                  SoftNavigationOutcome::kNoAncestorTask);
+    base::UmaHistogramEnumeration(
+        kPageLoadInternalSoftNavigationOutcome,
+        SoftNavigationOutcome::kNoSoftNavContextDuringUrlChange);
   }
 }
 
