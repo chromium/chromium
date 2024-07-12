@@ -118,7 +118,7 @@ void GWSAbandonedPageLoadMetricsObserver::LogPageLoadHistogram(
   // time / the time when we first log all the milestones, so we explicitly skip
   // that case (hiding the navigation before it starts shouldn't count anyways).
   if (name != internal::kHistogramGWSLeakageNavigationStart) {
-    if (WasBackgrounded() && event_time > first_hidden_timestamp_) {
+    if (WasBackgrounded() && event_time > first_backgrounded_timestamp_) {
       suffix += internal::kSuffixWasBackgrounded;
     }
     if (WasHidden() && event_time > first_hidden_timestamp_) {
@@ -302,7 +302,7 @@ void GWSAbandonedPageLoadMetricsObserver::LogPreviousHidingIfNeeded() {
 void GWSAbandonedPageLoadMetricsObserver::LogPreviousBackgroundingIfNeeded() {
   if (WasBackgrounded() && !did_log_backgrounding_) {
     LogMetricsOnAbandon(internal::kAbandonReasonAppBackgrounded,
-                        first_hidden_timestamp_);
+                        first_backgrounded_timestamp_);
     did_log_backgrounding_ = true;
   }
 }
