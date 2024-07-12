@@ -25,7 +25,8 @@
 #import "url/gurl.h"
 
 @interface LensOverlayCoordinator () <LensOverlayCommands,
-                                      UISheetPresentationControllerDelegate>
+                                      UISheetPresentationControllerDelegate,
+                                      LensOverlayResultConsumer>
 
 // The tab helper for the instance for the active web state.
 @property(nonatomic, readonly, assign) LensOverlayTabHelper* tabHelper;
@@ -90,6 +91,10 @@
     return;
   }
   _mediator = [[LensOverlayMediator alloc] init];
+
+  // Results UI is lazily initialized; see comment in LensOverlayResultConsumer
+  // section.
+  _mediator.resultConsumer = self;
 }
 
 - (LensOverlayTabHelper*)tabHelper {
@@ -180,10 +185,10 @@
     [_containerViewController.presentingViewController
         dismissViewControllerAnimated:animated
                            completion:^{
-                             [self destroyViewControllers];
+                             [self destroyViewControllersAndMediators];
                            }];
   } else {
-    [self destroyViewControllers];
+    [self destroyViewControllersAndMediators];
   }
 }
 
@@ -193,6 +198,19 @@
     (UIPresentationController*)presentationController {
   return presentationController !=
          _resultViewController.sheetPresentationController;
+}
+
+#pragma mark - LensOverlayResultConsumer
+
+// This coordinator acts as a proxy consumer to the result consumer to implement
+// lazy initialization of the result UI.
+// Upon any call, the results UI is created and set as consumer, then the call
+// is repeated.
+- (void)loadResultsURL:(GURL)url {
+  DCHECK(!_resultMediator);
+
+  [self startResultPage];
+  [_resultMediator loadResultsURL:url];
 }
 
 #pragma mark - private
@@ -240,6 +258,7 @@
   _resultViewController = nil;
   [_resultMediator disconnect];
   _resultMediator = nil;
+  _mediator.resultConsumer = self;
 }
 
 - (BOOL)isUICreated {
@@ -247,8 +266,10 @@
 }
 
 // Disconnect and destroy all of the owned view controllers.
-- (void)destroyViewControllers {
+- (void)destroyViewControllersAndMediators {
+  [self stopResultPage];
   _containerViewController = nil;
+  _mediator = nil;
 }
 
 // Captures a screenshot of the active web state.
