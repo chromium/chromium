@@ -161,7 +161,6 @@ void UserManagerBase::Shutdown() {
 }
 
 const UserList& UserManagerBase::GetUsers() const {
-  const_cast<UserManagerBase*>(this)->EnsureUsersLoaded();
   return users_;
 }
 
@@ -533,16 +532,12 @@ void UserManagerBase::RemoveUserFromListImpl(
 
   RemoveNonCryptohomeData(account_id);
   KnownUser(local_state_.get()).RemovePrefs(account_id);
-  if (user_loading_stage_ == STAGE_LOADED) {
-    // After the User object is deleted from memory in DeleteUser() here,
-    // the account_id reference will be invalid if the reference points
-    // to the account_id in the User object.
-    DeleteUser(
-        RemoveRegularOrSupervisedUserFromList(account_id, reason.has_value()));
-  } else {
-    NOTREACHED_IN_MIGRATION() << "Users are not loaded yet.";
-    return;
-  }
+
+  // After the User object is deleted from memory in DeleteUser() here,
+  // the account_id reference will be invalid if the reference points
+  // to the account_id in the User object.
+  DeleteUser(
+      RemoveRegularOrSupervisedUserFromList(account_id, reason.has_value()));
 
   if (reason.has_value()) {
     NotifyUserRemoved(account_id, reason.value());
@@ -1150,10 +1145,6 @@ void UserManagerBase::EnsureUsersLoaded() {
     return;
   }
 
-  if (user_loading_stage_ != STAGE_NOT_LOADED)
-    return;
-  user_loading_stage_ = STAGE_LOADING;
-
   const base::Value::List& prefs_regular_users =
       local_state_->GetList(prefs::kRegularUsersPref);
 
@@ -1225,7 +1216,6 @@ void UserManagerBase::EnsureUsersLoaded() {
       user->set_display_email(*display_email);
     }
   }
-  user_loading_stage_ = STAGE_LOADED;
 
   for (auto& observer : observer_list_) {
     observer.OnUserListLoaded();
@@ -1254,7 +1244,6 @@ void UserManagerBase::LoadDeviceLocalAccounts(
 }
 
 UserList& UserManagerBase::GetUsersAndModify() {
-  EnsureUsersLoaded();
   return users_;
 }
 
@@ -1564,6 +1553,7 @@ void UserManagerBase::Initialize() {
       known_user.CleanObsoletePrefs();
     }
   }
+  EnsureUsersLoaded();
   NotifyLoginStateUpdated();
 }
 

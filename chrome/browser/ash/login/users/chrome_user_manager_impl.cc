@@ -372,8 +372,6 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
       owner_email, std::string() /* id */, AccountType::UNKNOWN);
   SetOwnerId(owner_account_id);
 
-  EnsureUsersLoaded();
-
   bool changed = UpdateAndCleanUpDeviceLocalAccounts(
       policy::GetDeviceLocalAccounts(cros_settings()));
 

@@ -168,6 +168,10 @@ class UserManagerTest : public testing::Test {
 
   void TearDown() override {
     wallpaper_controller_client_.reset();
+    user_image_manager_registry_.reset();
+    if (user_manager_) {
+      user_manager_->Destroy();
+    }
 
     // Shut down the DeviceSettingsService.
     DeviceSettingsService::Get()->UnsetSessionManager();
@@ -206,9 +210,14 @@ class UserManagerTest : public testing::Test {
     // it subscribes UserManager singleton.
     wallpaper_controller_client_.reset();
     user_image_manager_registry_.reset();
-    user_manager_.Reset(ChromeUserManagerImpl::CreateChromeUserManager());
+    if (user_manager_) {
+      user_manager_->Destroy();
+      user_manager_.reset();
+    }
+    user_manager_ = ChromeUserManagerImpl::CreateChromeUserManager();
+    user_manager_->Initialize();
     user_image_manager_registry_ =
-        std::make_unique<ash::UserImageManagerRegistry>(user_manager_.Get());
+        std::make_unique<ash::UserImageManagerRegistry>(user_manager_.get());
     wallpaper_controller_client_ = std::make_unique<
         WallpaperControllerClientImpl>(
         std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
@@ -285,7 +294,7 @@ class UserManagerTest : public testing::Test {
   // local_state_ should be destructed after ProfileManager.
   std::unique_ptr<ScopedTestingLocalState> local_state_;
 
-  user_manager::TypedScopedUserManager<ChromeUserManagerImpl> user_manager_;
+  std::unique_ptr<ChromeUserManagerImpl> user_manager_;
   std::unique_ptr<ash::UserImageManagerRegistry> user_image_manager_registry_;
   base::ScopedTempDir temp_dir_;
 };
@@ -499,33 +508,37 @@ TEST_F(UserManagerTest, DoNotSaveKioskAccountsToKRegularUsersPref) {
 }
 
 TEST_F(UserManagerTest, RemoveUser) {
-  auto user_manager = ChromeUserManagerImpl::CreateChromeUserManager();
-
   // Create owner account and login in.
-  user_manager->UserLoggedIn(kOwnerAccountId, kOwnerAccountId.GetUserEmail(),
-                             false /* browser_restart */, false /* is_child */);
+  user_manager_->UserLoggedIn(kOwnerAccountId, kOwnerAccountId.GetUserEmail(),
+                              false /* browser_restart */,
+                              false /* is_child */);
 
   // Create non-owner account  and login in.
-  user_manager->UserLoggedIn(kAccountId0, kAccountId0.GetUserEmail(),
-                             false /* browser_restart */, false /* is_child */);
+  user_manager_->UserLoggedIn(kAccountId0, kAccountId0.GetUserEmail(),
+                              false /* browser_restart */,
+                              false /* is_child */);
 
-  ASSERT_EQ(2U, user_manager->GetUsers().size());
+  ASSERT_EQ(2U, user_manager_->GetUsers().size());
 
   // Removing logged-in account is unacceptable.
-  user_manager->RemoveUser(kAccountId0,
-                           user_manager::UserRemovalReason::UNKNOWN);
-  EXPECT_EQ(2U, user_manager->GetUsers().size());
+  user_manager_->RemoveUser(kAccountId0,
+                            user_manager::UserRemovalReason::UNKNOWN);
+  EXPECT_EQ(2U, user_manager_->GetUsers().size());
 
   // Recreate the user manager to log out all accounts.
-  user_manager = ChromeUserManagerImpl::CreateChromeUserManager();
+  ResetUserManager();
+
   UserManagerObserverTest observer_test;
-  user_manager->AddObserver(&observer_test);
-  ASSERT_EQ(2U, user_manager->GetUsers().size());
-  ASSERT_EQ(0U, user_manager->GetLoggedInUsers().size());
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::Observer>
+      observation{&observer_test};
+  observation.Observe(user_manager_.get());
+  ASSERT_EQ(2U, user_manager_->GetUsers().size());
+  ASSERT_EQ(0U, user_manager_->GetLoggedInUsers().size());
 
   // Get a pointer to the user that will be removed.
   user_manager::User* user_to_remove = nullptr;
-  for (user_manager::User* user : user_manager->GetUsers()) {
+  for (user_manager::User* user : user_manager_->GetUsers()) {
     if (user->GetAccountId() == kAccountId0) {
       user_to_remove = user;
       break;
@@ -536,19 +549,19 @@ TEST_F(UserManagerTest, RemoveUser) {
 
   // Pass the account id of the user to be removed from the user list to verify
   // that a reference to the account id will not be used after user removal.
-  user_manager->RemoveUser(kAccountId0,
-                           user_manager::UserRemovalReason::UNKNOWN);
+  user_manager_->RemoveUser(kAccountId0,
+                            user_manager::UserRemovalReason::UNKNOWN);
   EXPECT_EQ(1, observer_test.OnUserToBeRemovedCallCount());
   EXPECT_EQ(1, observer_test.OnUserRemovedCallCount());
-  EXPECT_EQ(1U, user_manager->GetUsers().size());
+  EXPECT_EQ(1U, user_manager_->GetUsers().size());
 
   // Removing owner account is unacceptable.
   observer_test.ResetCallCounts();
-  user_manager->RemoveUser(kOwnerAccountId,
-                           user_manager::UserRemovalReason::UNKNOWN);
+  user_manager_->RemoveUser(kOwnerAccountId,
+                            user_manager::UserRemovalReason::UNKNOWN);
   EXPECT_EQ(0, observer_test.OnUserToBeRemovedCallCount());
   EXPECT_EQ(0, observer_test.OnUserRemovedCallCount());
-  EXPECT_EQ(1U, user_manager->GetUsers().size());
+  EXPECT_EQ(1U, user_manager_->GetUsers().size());
 }
 
 TEST_F(UserManagerTest, RemoveRegularUsersExceptOwnerFromList) {

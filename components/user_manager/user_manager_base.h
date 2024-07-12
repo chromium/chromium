@@ -262,10 +262,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // equals to active_user_, active_user_ is reset to NULL.
   virtual void DeleteUser(User* user);
 
-  // Loads |users_| from Local State if the list has not been loaded yet.
-  // Subsequent calls have no effect. Must be called on the UI thread.
-  virtual void EnsureUsersLoaded();
-
   // Loads device local accounts from the Local state and fills in
   // |device_local_accounts_set|.
   void LoadDeviceLocalAccounts(std::set<AccountId>* device_local_accounts_set);
@@ -356,9 +352,9 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   UserList lru_logged_in_users_;
 
  private:
-  // Stages of loading user list from preferences. Some methods can have
-  // different behavior depending on stage.
-  enum UserLoadStage { STAGE_NOT_LOADED = 0, STAGE_LOADING, STAGE_LOADED };
+  // Loads |users_| from Local State if the list has not been loaded yet.
+  // Subsequent calls have no effect. Must be called on the UI thread.
+  void EnsureUsersLoaded();
 
   // Returns a list of users who have logged into this device previously.
   // Same as GetUsers but used if you need to modify User from that list.
@@ -430,9 +426,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
 
   // Handles multi-user sign-in policy.
   MultiUserSignInPolicyController multi_user_sign_in_policy_controller_;
-
-  // Indicates stage of loading user from prefs.
-  UserLoadStage user_loading_stage_ = STAGE_NOT_LOADED;
 
   // Cached flag of whether the currently logged-in user existed before this
   // login.
