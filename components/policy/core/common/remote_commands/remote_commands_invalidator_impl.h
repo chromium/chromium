@@ -28,7 +28,7 @@ class POLICY_EXPORT RemoteCommandsInvalidatorImpl
       public CloudPolicyStore::Observer {
  public:
   RemoteCommandsInvalidatorImpl(CloudPolicyCore* core,
-                                base::Clock* clock,
+                                const base::Clock* clock,
                                 PolicyInvalidationScope scope);
   RemoteCommandsInvalidatorImpl(const RemoteCommandsInvalidatorImpl&) = delete;
   RemoteCommandsInvalidatorImpl& operator=(

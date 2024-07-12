@@ -53,7 +53,7 @@ std::string ComposeOwnerName(PolicyInvalidationScope scope) {
 
 RemoteCommandsInvalidatorImpl::RemoteCommandsInvalidatorImpl(
     CloudPolicyCore* core,
-    base::Clock* clock,
+    const base::Clock* clock,
     PolicyInvalidationScope scope)
     : RemoteCommandsInvalidator(ComposeOwnerName(scope)),
       core_(core),

@@ -662,6 +662,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//components/account_id",
+    "//components/invalidation:test_support",
     "//components/invalidation/impl:test_support",
     "//components/policy:generated",
     "//components/prefs:test_support",

@@ -23,6 +23,7 @@ namespace policy {
 
 namespace {
 
+// TODO(b/351754537): Decide on final invalidation type name.
 constexpr char RemoteCommandsInvalidatorType[] = "remote_command";
 
 template <typename T, typename U>
