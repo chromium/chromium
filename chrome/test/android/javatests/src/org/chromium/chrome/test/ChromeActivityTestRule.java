@@ -60,7 +60,6 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
-import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -100,11 +99,6 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
         // instrumentation thread for asserts. See crbug.com/1173814 for more
         // details.
         ObservableSupplierImpl.setIgnoreThreadChecksForTesting(true);
-
-        // Preload Calendar so that it does not trigger ReadFromDisk Strict mode
-        // violations if called on the UI Thread. See https://crbug.com/705477 and
-        // https://crbug.com/577185
-        Calendar.getInstance();
 
         // Tests are run on bots that are offline by default. This might cause
         // offline UI to show and cause flakiness or failures in tests. Using this
