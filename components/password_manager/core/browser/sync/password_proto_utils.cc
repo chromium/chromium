@@ -77,11 +77,8 @@ sync_pb::PasswordIssues PasswordIssuesMapToProto(
         insecure_metadata.create_time.ToDeltaSinceWindowsEpoch()
             .InMicroseconds());
     issue.set_is_muted(insecure_metadata.is_muted.value());
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kPasswordIssuesInSpecificsMetadata)) {
-      issue.set_trigger_notification_from_backend_on_detection(
-          insecure_metadata.trigger_notification_from_backend.value());
-    }
+    issue.set_trigger_notification_from_backend_on_detection(
+        insecure_metadata.trigger_notification_from_backend.value());
     switch (insecure_type) {
       case InsecureType::kLeaked:
         DCHECK(!password_issues.has_leaked_password_issue());
@@ -106,17 +103,11 @@ sync_pb::PasswordIssues PasswordIssuesMapToProto(
 
 InsecurityMetadata InsecurityMetadataFromProto(
     const sync_pb::PasswordIssues::PasswordIssue& issue) {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordIssuesInSpecificsMetadata)) {
     return InsecurityMetadata(
         ConvertToBaseTime(issue.date_first_detection_windows_epoch_micros()),
         IsMuted(issue.is_muted()),
         TriggerBackendNotification(
             issue.trigger_notification_from_backend_on_detection()));
-  }
-  return InsecurityMetadata(
-      ConvertToBaseTime(issue.date_first_detection_windows_epoch_micros()),
-      IsMuted(issue.is_muted()), TriggerBackendNotification(false));
 }
 
 base::flat_map<InsecureType, InsecurityMetadata> PasswordIssuesMapFromProto(
@@ -302,11 +293,8 @@ sync_pb::PasswordSpecificsMetadata SpecificsMetadataFromPassword(
   password_metadata.set_blacklisted(password_form.blocked_by_user);
   password_metadata.set_date_last_used_windows_epoch_micros(
       password_form.date_last_used.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordIssuesInSpecificsMetadata)) {
-    *password_metadata.mutable_password_issues() =
-        PasswordIssuesMapToProto(password_form.password_issues);
-  }
+  *password_metadata.mutable_password_issues() =
+      PasswordIssuesMapToProto(password_form.password_issues);
   password_metadata.set_type(static_cast<int>(password_form.type));
   return password_metadata;
 }

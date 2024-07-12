@@ -31,13 +31,6 @@ BASE_FEATURE(kIOSPasswordBottomSheetAutofocus,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // IS_IOS
 
-// Killswitch for changes regarding password issues in
-// `PasswordSpcificsMetadata`. Guards writing issues to metadata and preserving
-// the new notification field.
-BASE_FEATURE(kPasswordIssuesInSpecificsMetadata,
-             "PasswordIssuesInSpecificsMetadata",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables filling and saving for forms in shadow DOM.
 BASE_FEATURE(kShadowDomSupport,
              "ShadowDomSupport",
