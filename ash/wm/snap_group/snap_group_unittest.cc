@@ -7838,6 +7838,48 @@ TEST_F(SnapGroupTabletConversionTest, TransitionToTabletInOverview) {
       overview_item1_bounds_clamshell));
 }
 
+// Tests that transitioning to tablet mode while an `OverviewGroupItem` is in
+// partial Overview mode does not result in a crash. Regression test for crash
+// stack trace reported in http://b/346617565#comment20.
+TEST_F(SnapGroupTabletConversionTest, TransitionToTabletInPartialOverview) {
+  UpdateDisplay("800x600");
+
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+
+  // Create `w3` to partially occlude primary snapped `w1`.
+  std::unique_ptr<aura::Window> w3(
+      CreateAppWindow(gfx::Rect(200, 200, 200, 200)));
+  std::unique_ptr<aura::Window> w4(CreateAppWindow());
+
+  // Snap `w4` to secondary to start the partial Overview.
+  //                                |
+  //                                |-------+
+  //     +----+    +------+------+  |       |
+  //     | w3 |    |  w1  |  w2  |  |   w4  |
+  //     |    |    |      |      |  |       |
+  //     +----+    +------+------+  |       |
+  //                                |-------+
+  //                                |
+
+  SnapOneTestWindow(w4.get(), WindowStateType::kSecondarySnapped,
+                    chromeos::kOneThirdSnapRatio);
+  VerifySplitViewOverviewSession(w4.get());
+
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  const auto* overview_grid = GetOverviewGridForRoot(root_window);
+  ASSERT_TRUE(overview_grid);
+  EXPECT_EQ(2u, overview_grid->window_list().size());
+  EXPECT_TRUE(w1->IsVisible());
+  EXPECT_TRUE(w2->IsVisible());
+
+  // Verify that the the `OverviewGroupItem` is removed and replaced with two
+  // separate items after converting to tablet mode.
+  SwitchToTabletMode();
+  EXPECT_EQ(3u, overview_grid->window_list().size());
+}
+
 // -----------------------------------------------------------------------------
 // SnapGroupMultipleSnapGroupsTest:
 
