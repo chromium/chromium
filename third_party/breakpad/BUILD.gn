@@ -1049,6 +1049,8 @@ if (is_win) {
         "breakpad/src/common/windows/symbol_collector_client.cc",
         "breakpad/src/common/windows/symbol_collector_client.h",
       ]
+      defines = [ "HAVE_ZLIB" ]
+      deps = [ "//third_party/zlib" ]
     }
 
     static_library("ms_symbol_server_converter") {
