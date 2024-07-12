@@ -51,8 +51,8 @@ TestNetworkQualityEstimator::TestNetworkQualityEstimator(
     : NetworkQualityEstimator(
           std::make_unique<NetworkQualityEstimatorParams>(variation_params),
           NetLog::Get()),
-      embedded_test_server_(base::FilePath(kTestFilePath)),
-      suppress_notifications_for_testing_(suppress_notifications_for_testing) {
+      suppress_notifications_for_testing_(suppress_notifications_for_testing),
+      embedded_test_server_(base::FilePath(kTestFilePath)) {
   SetUseLocalHostRequestsForTesting(allow_local_host_requests_for_tests);
   SetUseSmallResponsesForTesting(allow_smaller_responses_for_tests);
 }
@@ -60,8 +60,8 @@ TestNetworkQualityEstimator::TestNetworkQualityEstimator(
 TestNetworkQualityEstimator::TestNetworkQualityEstimator(
     std::unique_ptr<NetworkQualityEstimatorParams> params)
     : NetworkQualityEstimator(std::move(params), NetLog::Get()),
-      embedded_test_server_(base::FilePath(kTestFilePath)),
-      suppress_notifications_for_testing_(false) {}
+      suppress_notifications_for_testing_(false),
+      embedded_test_server_(base::FilePath(kTestFilePath)) {}
 
 TestNetworkQualityEstimator::~TestNetworkQualityEstimator() = default;
 

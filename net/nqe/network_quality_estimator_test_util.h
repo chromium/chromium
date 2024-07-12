@@ -276,14 +276,18 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
   // If set, GetRTTEstimateInternal() would return the set value.
   std::optional<base::TimeDelta> start_time_null_end_to_end_rtt_;
 
-  LocalHttpTestServer embedded_test_server_;
-
   // If true, notifications are not sent to any of the observers.
   const bool suppress_notifications_for_testing_;
 
   size_t ping_rtt_received_count_ = 0;
 
   std::optional<size_t> transport_rtt_observation_count_last_ect_computation_;
+
+  // Destroy this first, since destroying the test server will wait (and run an
+  // event loop while waiting for the test server to stop on its task runner).
+  // While this loop is running, the estimator may receive posted tasks with new
+  // observations, which may potentially read and write other fields of `this`.
+  LocalHttpTestServer embedded_test_server_;
 };
 
 }  // namespace net
