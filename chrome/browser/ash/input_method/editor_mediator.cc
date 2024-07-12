@@ -56,58 +56,18 @@ EditorMediator::~EditorMediator() = default;
 
 void EditorMediator::BindEditorClient(
     mojo::PendingReceiver<orca::mojom::EditorClient> pending_receiver) {
-  if (editor_client_connector_ != nullptr) {
-    editor_client_connector_->BindEditorClient(std::move(pending_receiver));
+  if (service_connection_) {
+    service_connection_->editor_client_connector()->BindEditorClient(
+        std::move(pending_receiver));
   }
 }
 
 void EditorMediator::OnEditorServiceConnected(bool is_connection_successful) {}
 
-void EditorMediator::SetupEditorService() {
-  if (editor_service_connector_.SetUpNewEditorService()) {
-    BindNewEditorConnection();
-  }
-}
-
-void EditorMediator::BindNewEditorConnection() {
-  if (editor_service_connector_.IsBound()) {
-    system_actuator_.reset();
-    text_query_provider_.reset();
-    editor_client_connector_.reset();
-    editor_event_proxy_.reset();
-
-    mojo::PendingAssociatedRemote<orca::mojom::SystemActuator>
-        system_actuator_remote;
-    mojo::PendingAssociatedRemote<orca::mojom::TextQueryProvider>
-        text_query_provider_remote;
-    mojo::PendingAssociatedReceiver<orca::mojom::EditorClientConnector>
-        editor_client_connector_receiver;
-    mojo::PendingAssociatedReceiver<orca::mojom::EditorEventSink>
-        editor_event_sink_receiver;
-
-    system_actuator_ = std::make_unique<EditorSystemActuator>(
-        profile_, system_actuator_remote.InitWithNewEndpointAndPassReceiver(),
-        this);
-    text_query_provider_ = std::make_unique<EditorTextQueryProvider>(
-        text_query_provider_remote.InitWithNewEndpointAndPassReceiver(),
-        metrics_recorder_.get(),
-        std::make_unique<EditorTextQueryFromManta>(profile_));
-    editor_client_connector_ = std::make_unique<EditorClientConnector>(
-        editor_client_connector_receiver.InitWithNewEndpointAndPassRemote());
-    editor_event_proxy_ = std::make_unique<EditorEventProxy>(
-        editor_event_sink_receiver.InitWithNewEndpointAndPassRemote());
-
-    editor_service_connector_.BindEditor(
-        std::move(editor_client_connector_receiver),
-        std::move(editor_event_sink_receiver),
-        std::move(system_actuator_remote),
-        std::move(text_query_provider_remote));
-
-    // TODO: b:300838514 - We should only bind the native UI with the shared lib
-    // when the Rewrite UI is shown. Consider add a listener to the
-    // write/rewrite UI and move the binding there.
-    panel_manager_.BindEditorClient();
-  }
+void EditorMediator::ResetEditorConnections() {
+  service_connection_ = std::make_unique<ServiceConnection>(
+      profile_, this, metrics_recorder_.get(), editor_service_connector_.get());
+  panel_manager_.BindEditorClient();
 }
 
 void EditorMediator::BindEditorPanelManager(
@@ -139,16 +99,17 @@ void EditorMediator::OnFocus(int context_id) {
     return;
   }
 
-  if (IsAllowedForUse() && !editor_service_connector_.IsBound()) {
-    SetupEditorService();
+  if (IsAllowedForUse() && !editor_service_connector_) {
+    editor_service_connector_ = std::make_unique<EditorServiceConnector>();
+    ResetEditorConnections();
   }
 
   GetTextFieldContextualInfo(
       base::BindOnce(&EditorMediator::OnTextFieldContextualInfoChanged,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  if (system_actuator_ != nullptr) {
-    system_actuator_->OnFocus(context_id);
+  if (service_connection_) {
+    service_connection_->system_actuator()->OnFocus(context_id);
   }
 }
 
@@ -162,8 +123,9 @@ void EditorMediator::OnBlur() {
 void EditorMediator::OnActivateIme(std::string_view engine_id) {
   editor_context_.OnActivateIme(engine_id);
 
-  if (base::FeatureList::IsEnabled(ash::features::kOrcaServiceConnection)) {
-    BindNewEditorConnection();
+  if (base::FeatureList::IsEnabled(ash::features::kOrcaServiceConnection) &&
+      service_connection_) {
+    ResetEditorConnections();
   }
 }
 
@@ -282,8 +244,8 @@ void EditorMediator::CacheContext() {
       surrounding_text_.text, surrounding_text_.selection_range);
   editor_context_.OnTextSelectionLengthChanged(selected_length);
 
-  if (editor_event_proxy_ != nullptr) {
-    editor_event_proxy_->OnSurroundingTextChanged(
+  if (service_connection_) {
+    service_connection_->editor_event_proxy()->OnSurroundingTextChanged(
         surrounding_text_.text, surrounding_text_.selection_range);
   }
 }
@@ -294,13 +256,64 @@ void EditorMediator::FetchAndUpdateInputContext() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+EditorMediator::ServiceConnection::ServiceConnection(
+    Profile* profile,
+    EditorMediator* mediator,
+    EditorMetricsRecorder* metrics_recorder,
+    EditorServiceConnector* service_connector) {
+  mojo::PendingAssociatedRemote<orca::mojom::SystemActuator>
+      system_actuator_remote;
+  mojo::PendingAssociatedRemote<orca::mojom::TextQueryProvider>
+      text_query_provider_remote;
+  mojo::PendingAssociatedReceiver<orca::mojom::EditorClientConnector>
+      editor_client_connector_receiver;
+  mojo::PendingAssociatedReceiver<orca::mojom::EditorEventSink>
+      editor_event_sink_receiver;
+
+  system_actuator_ = std::make_unique<EditorSystemActuator>(
+      profile, system_actuator_remote.InitWithNewEndpointAndPassReceiver(),
+      mediator);
+  text_query_provider_ = std::make_unique<EditorTextQueryProvider>(
+      text_query_provider_remote.InitWithNewEndpointAndPassReceiver(),
+      metrics_recorder, std::make_unique<EditorTextQueryFromManta>(profile));
+  editor_client_connector_ = std::make_unique<EditorClientConnector>(
+      editor_client_connector_receiver.InitWithNewEndpointAndPassRemote());
+  editor_event_proxy_ = std::make_unique<EditorEventProxy>(
+      editor_event_sink_receiver.InitWithNewEndpointAndPassRemote());
+
+  service_connector->BindEditor(std::move(editor_client_connector_receiver),
+                                std::move(editor_event_sink_receiver),
+                                std::move(system_actuator_remote),
+                                std::move(text_query_provider_remote));
+}
+
+EditorMediator::ServiceConnection::~ServiceConnection() = default;
+
+EditorEventProxy* EditorMediator::ServiceConnection::editor_event_proxy() {
+  return editor_event_proxy_.get();
+}
+
+EditorClientConnector*
+EditorMediator::ServiceConnection::editor_client_connector() {
+  return editor_client_connector_.get();
+}
+
+EditorTextQueryProvider*
+EditorMediator::ServiceConnection::text_query_provider() {
+  return text_query_provider_.get();
+}
+
+EditorSystemActuator* EditorMediator::ServiceConnection::system_actuator() {
+  return system_actuator_.get();
+}
+
 void EditorMediator::OnTextFieldContextualInfoChanged(
     const TextFieldContextualInfo& info) {
   editor_context_.OnInputContextUpdated(
       IMEBridge::Get()->GetCurrentInputContext(), info);
 
-  if (system_actuator_ != nullptr) {
-    system_actuator_->OnInputContextUpdated(info.tab_url);
+  if (service_connection_) {
+    service_connection_->system_actuator()->OnInputContextUpdated(info.tab_url);
   }
 }
 
@@ -335,14 +348,13 @@ void EditorMediator::Shutdown() {
   // second phase is the destruction of the eKeyedService itself.
   mako_bubble_coordinator_.CloseUI();
   profile_ = nullptr;
-  text_query_provider_ = nullptr;
   consent_store_ = nullptr;
   editor_switch_ = nullptr;
 }
 
 bool EditorMediator::SetTextQueryProviderResponseForTesting(
     const std::vector<std::string>& mock_results) {
-  text_query_provider_->SetProvider(
+  service_connection_->text_query_provider()->SetProvider(
       std::make_unique<EditorTextQueryFromMemory>(mock_results));  // IN-TEST
   return true;
 }

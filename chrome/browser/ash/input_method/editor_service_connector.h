@@ -30,10 +30,6 @@ class EditorServiceConnector {
       mojo::PendingAssociatedRemote<orca::mojom::TextQueryProvider>
           text_query_provider);
 
-  // returns true if the editor service requires a new editor service, and false
-  // otherwise.
-  bool SetUpNewEditorService();
-
   bool IsBound();
 
  private:

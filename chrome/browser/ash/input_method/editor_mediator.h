@@ -127,11 +127,29 @@ class EditorMediator : public EditorContext::Observer,
     gfx::Range selection_range;
   };
 
-  void OnTextFieldContextualInfoChanged(const TextFieldContextualInfo& info);
+  class ServiceConnection {
+   public:
+    ServiceConnection(Profile* profile,
+                      EditorMediator* mediator,
+                      EditorMetricsRecorder* metrics_recorder,
+                      EditorServiceConnector* service_connector);
+    ~ServiceConnection();
 
-  void SetupEditorService();
-  void BindNewEditorConnection();
+    EditorEventProxy* editor_event_proxy();
+    EditorClientConnector* editor_client_connector();
+    EditorTextQueryProvider* text_query_provider();
+    EditorSystemActuator* system_actuator();
+
+   private:
+    std::unique_ptr<EditorEventProxy> editor_event_proxy_;
+    std::unique_ptr<EditorClientConnector> editor_client_connector_;
+    std::unique_ptr<EditorTextQueryProvider> text_query_provider_;
+    std::unique_ptr<EditorSystemActuator> system_actuator_;
+  };
+
+  void OnTextFieldContextualInfoChanged(const TextFieldContextualInfo& info);
   void OnEditorServiceConnected(bool is_connection_bound);
+  void ResetEditorConnections();
 
   bool GetUserPref();
   void SetUserPref(bool value);
@@ -147,15 +165,9 @@ class EditorMediator : public EditorContext::Observer,
   std::unique_ptr<EditorSwitch> editor_switch_;
   std::unique_ptr<EditorMetricsRecorder> metrics_recorder_;
   std::unique_ptr<EditorConsentStore> consent_store_;
-  EditorServiceConnector editor_service_connector_;
+  std::unique_ptr<EditorServiceConnector> editor_service_connector_;
+  std::unique_ptr<ServiceConnection> service_connection_;
   EditorLiveRegionAnnouncer announcer_;
-
-  // TODO: b:298285960 - add the instantiation of this instance.
-  std::unique_ptr<EditorEventProxy> editor_event_proxy_;
-  std::unique_ptr<EditorClientConnector> editor_client_connector_;
-  std::unique_ptr<EditorTextQueryProvider> text_query_provider_;
-  std::unique_ptr<EditorSystemActuator> system_actuator_;
-
   SurroundingText surrounding_text_;
 
   std::optional<EditorMode> editor_mode_override_for_testing_;
