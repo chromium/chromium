@@ -441,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
 
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                        TriggeringExtensionClosesMenu) {
-  LoadTestExtension("extensions/trigger_actions/browser_action");
+  LoadTestExtension("extensions/api_test/trigger_actions/browser_action");
   ShowUi("");
   VerifyUi();
 
@@ -606,7 +606,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                        ManageExtensionsOpensExtensionsPage) {
   // Ensure the menu is visible by adding an extension.
-  LoadTestExtension("extensions/trigger_actions/browser_action");
+  LoadTestExtension("extensions/api_test/trigger_actions/browser_action");
   ShowUi("");
   VerifyUi();
 
