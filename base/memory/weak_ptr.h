@@ -102,12 +102,12 @@ class GLSurface;
 
 namespace media_router {
 class MediaRoutesObserver;
-}
+}  // namespace media_router
 
 namespace ppapi {
 namespace proxy {
 class PluginDispatcher;
-}
+}  // namespace proxy
 }  // namespace ppapi
 
 namespace storage {
@@ -118,12 +118,11 @@ class CopyOrMoveHookDelegateComposite;
 namespace ui {
 class MenuModel;
 class TextInputClient;
-class WaylandWindow;
 }  // namespace ui
 
 namespace views {
 class WidgetDelegate;
-}
+}  // namespace views
 
 namespace base {
 
@@ -538,7 +537,6 @@ class SupportsWeakPtr : public internal::SupportsWeakPtrBase {
   friend class storage::CopyOrMoveHookDelegateComposite;
   friend class ui::MenuModel;
   friend class ui::TextInputClient;
-  friend class ui::WaylandWindow;
   friend class views::WidgetDelegate;
 
   // The constructor is private so only the declared friends can construct
