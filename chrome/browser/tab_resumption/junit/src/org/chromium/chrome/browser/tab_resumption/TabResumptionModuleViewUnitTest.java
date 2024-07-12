@@ -125,8 +125,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
 
         String testTitle1 = "This is a test title";
         String testTitle2 = "Here is another test title";
-        TextView titleTextView =
-                ((TextView) mModuleView.findViewById(R.id.tab_resumption_title_description));
+        TextView titleTextView = mModuleView.findViewById(R.id.tab_resumption_title_description);
 
         mModuleView.setTitle(testTitle1);
         Assert.assertEquals(testTitle1, titleTextView.getText());

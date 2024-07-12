@@ -20,7 +20,7 @@ class PageZoomViewBinder {
             ((SeekBar) view.findViewById(R.id.page_zoom_slider))
                     .setProgress(model.get(PageZoomProperties.CURRENT_SEEK_VALUE));
 
-            TextView textView = ((TextView) view.findViewById(R.id.page_zoom_current_zoom_level));
+            TextView textView = view.findViewById(R.id.page_zoom_current_zoom_level);
 
             long zoomLevel =
                     Math.round(

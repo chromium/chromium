@@ -310,11 +310,9 @@ public class AppLanguagePromoDialog {
 
         AppLanguagePromptRowViewHolder(View view) {
             super(view);
-            mPrimaryNameTextView = ((TextView) itemView.findViewById(R.id.primary_language_name));
-            mSecondaryNameTextView =
-                    ((TextView) itemView.findViewById(R.id.secondary_language_name));
-            mRadioButton =
-                    ((RadioButton) itemView.findViewById(R.id.app_language_prompt_radiobutton));
+            mPrimaryNameTextView = itemView.findViewById(R.id.primary_language_name);
+            mSecondaryNameTextView = itemView.findViewById(R.id.secondary_language_name);
+            mRadioButton = itemView.findViewById(R.id.app_language_prompt_radiobutton);
 
             view.setOnClickListener(this);
             mRadioButton.setOnClickListener(this);
