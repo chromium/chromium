@@ -135,8 +135,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         value: false,
         reflectToAttribute: true,
       },
-      contextMenuX: Number,
-      contextMenuY: Number,
+      selectedTextContextMenuX: Number,
+      selectedTextContextMenuY: Number,
+      detectedTextContextMenuX: Number,
+      detectedTextContextMenuY: Number,
       screenshotDataUri: String,
       isPointerInside: Boolean,
       currentGesture: emptyGestureEvent(),
@@ -179,8 +181,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private showSelectedTextContextMenu: boolean;
   private showDetectedTextContextMenu: boolean;
   // Location at which to show the context menus.
-  private contextMenuX: number;
-  private contextMenuY: number;
+  private selectedTextContextMenuX: number;
+  private selectedTextContextMenuY: number;
+  private detectedTextContextMenuX: number;
+  private detectedTextContextMenuY: number;
   private highlightedText: string = '';
   private contentLanguage: string = '';
   private textSelectionStartIndex: number = -1;
@@ -261,8 +265,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         document, 'show-selected-text-context-menu',
         (e: CustomEvent<SelectedTextContextMenuData>) => {
           this.showSelectedTextContextMenu = true;
-          this.contextMenuX = e.detail.left;
-          this.contextMenuY = e.detail.bottom;
+          this.selectedTextContextMenuX = e.detail.left;
+          this.selectedTextContextMenuY = e.detail.bottom;
           this.highlightedText = e.detail.text;
           this.contentLanguage = e.detail.contentLanguage;
           this.textSelectionStartIndex = e.detail.selectionStartIndex;
@@ -277,8 +281,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.eventTracker_.add(
         document, 'show-detected-text-context-menu', (e: CustomEvent) => {
           this.showDetectedTextContextMenu = true;
-          this.contextMenuX = e.detail.left;
-          this.contextMenuY = e.detail.bottom;
+          this.detectedTextContextMenuX = e.detail.left;
+          this.detectedTextContextMenuY = e.detail.bottom;
           this.detectedTextStartIndex = e.detail.selectionStartIndex;
           this.detectedTextEndIndex = e.detail.selectionEndIndex;
         });

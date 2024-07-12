@@ -151,16 +151,20 @@
 
   .context-menu {
     align-items: flex-start;
+    animation: scale-out 150ms cubic-bezier(0.2, 0.0, 0, 1.0);
     background: var(--color-selection-element);
     border-radius: 8px;
     box-shadow: 0px 2px 6px 0px rgba(60, 64, 67, 0.16);
     cursor: default;
-    display: none;
+    display: flex;
     flex-direction: column;
     justify-content: center;
+    opacity: 0;
     padding: 8px 0px;
     pointer-events: auto;
     position: absolute;
+    visibility: hidden;
+    transition: opacity 150ms, visibility 150ms;
     z-index: 6;
   }
 
@@ -168,14 +172,11 @@
     justify-content: space-between;
   }
 
-  :host([show-selected-text-context-menu]) #selectedTextContextMenu {
-    /* TODO: b/338642962 - Add animation */
-    display: flex;
-  }
-
+  :host([show-selected-text-context-menu]) #selectedTextContextMenu,
   :host([show-detected-text-context-menu]) #detectedTextContextMenu {
-    /* TODO: b/338642962 - Add animation */
-    display: flex;
+    animation: scale-in 250ms cubic-bezier(0.2, 0.0, 0, 1.0);
+    opacity: 1;
+    visibility: visible;
   }
 
   .context-menu-item {
@@ -266,6 +267,25 @@
       scale: 100%;
     }
   }
+
+  @keyframes scale-in {
+    from {
+      transform: scale(0);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes scale-out {
+    from {
+      transform: scale(1);
+    }
+
+    to {
+      transform: scale(0.8);
+    }
+  }
 </style>
 <div id="selectionOverlay" on-pointerenter="handlePointerEnter"
     on-pointerleave="handlePointerLeave">
@@ -293,7 +313,8 @@
   <div id="initialFlashScrim"></div>
   <div id="contextMenuOverlay">
     <div id="selectedTextContextMenu" class="context-menu" role="menu"
-        style$="[[getContextMenuStyle(contextMenuX, contextMenuY)]]"
+        style$="[[getContextMenuStyle(selectedTextContextMenuX,
+                                      selectedTextContextMenuY)]]"
         on-pointerenter="handlePointerEnterContextMenu"
         on-pointerleave="handlePointerLeaveContextMenu">
       <div class="context-menu-item" role="menuitem" on-pointerup="handleCopy">
@@ -307,7 +328,8 @@
       </div>
     </div>
     <div id="detectedTextContextMenu" class="context-menu" role="menu"
-        style$="[[getContextMenuStyle(contextMenuX, contextMenuY)]]"
+        style$="[[getContextMenuStyle(detectedTextContextMenuX,
+                                      detectedTextContextMenuY)]]"
         on-pointerenter="handlePointerEnterContextMenu"
         on-pointerleave="handlePointerLeaveContextMenu">
       <div class="context-menu-item" role="menuitem"
