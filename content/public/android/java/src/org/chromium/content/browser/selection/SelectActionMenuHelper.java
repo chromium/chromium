@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.textclassifier.TextClassification;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -33,6 +34,7 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.content.R;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.SelectionClient;
+import org.chromium.content_public.browser.SelectionClient.Result;
 import org.chromium.content_public.browser.SelectionMenuGroup;
 import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
@@ -126,47 +128,13 @@ public class SelectActionMenuHelper {
     // Do not instantiate.
     private SelectActionMenuHelper() {}
 
-    /**
-     * Removes all the menu item groups potentially added using
-     * {@link #getSelectionMenuItems}.
-     */
+    /** Removes all the menu item groups potentially added using {@link #getMenuItems}. */
     public static void removeAllAddedGroupsFromMenu(Menu menu) {
         // Only remove action mode items we added. See more http://crbug.com/709878.
         menu.removeGroup(R.id.select_action_menu_default_items);
         menu.removeGroup(R.id.select_action_menu_assist_items);
         menu.removeGroup(R.id.select_action_menu_text_processing_items);
         menu.removeGroup(android.R.id.textAssist);
-    }
-
-    /**
-     * Returns all items for the text selection menu when there is no text selected (i.e. an
-     * editable input field).
-     */
-    public static SortedSet<SelectionMenuGroup> getNonSelectionMenuItems(
-            @Nullable Context context,
-            SelectActionMenuDelegate delegate,
-            @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate) {
-        SortedSet<SelectionMenuGroup> pasteMenuItems = new TreeSet<>();
-        pasteMenuItems.add(
-                getDefaultItems(
-                        context,
-                        delegate,
-                        selectionActionMenuDelegate,
-                        /* isSelectionPassword= */ false,
-                        /* selectedText= */ ""));
-
-        if (selectionActionMenuDelegate != null) {
-            List<SelectionMenuItem> additionalMenuItems =
-                    selectionActionMenuDelegate.getAdditionalNonSelectionItems();
-            if (!additionalMenuItems.isEmpty()) {
-                // Additional menu item group which comes after default menu items.
-                SelectionMenuGroup additionalItemGroup =
-                        new SelectionMenuGroup(Menu.NONE, GroupItemOrder.SECONDARY_ASSIST_ITEMS);
-                additionalItemGroup.addItems(additionalMenuItems);
-                pasteMenuItems.add(additionalItemGroup);
-            }
-        }
-        return pasteMenuItems;
     }
 
     /**
@@ -177,7 +145,7 @@ public class SelectActionMenuHelper {
      * @param isSelectionReadOnly true if the selection is non-editable.
      * @param textProcessingIntentHandler the intent handler for text processing actions.
      */
-    public static SortedSet<SelectionMenuGroup> getSelectionMenuItems(
+    public static SortedSet<SelectionMenuGroup> getMenuItems(
             SelectActionMenuDelegate delegate,
             Context context,
             @Nullable SelectionClient.Result classificationResult,
@@ -187,6 +155,7 @@ public class SelectActionMenuHelper {
             @Nullable TextProcessingIntentHandler textProcessingIntentHandler,
             @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate) {
         SortedSet<SelectionMenuGroup> itemGroups = new TreeSet<>();
+
         itemGroups.add(
                 getDefaultItems(
                         context,
@@ -194,34 +163,36 @@ public class SelectActionMenuHelper {
                         selectionActionMenuDelegate,
                         isSelectionPassword,
                         selectedText));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            SelectionMenuGroup primaryAssistItem =
-                    getPrimaryAssistItems(context, classificationResult);
-            if (primaryAssistItem != null) {
-                itemGroups.add(primaryAssistItem);
-            }
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            SelectionMenuGroup secondaryAssistItems = getSecondaryAssistItems(classificationResult);
-            if (secondaryAssistItems != null) {
-                itemGroups.add(secondaryAssistItems);
-            }
-        }
-        SelectionMenuGroup textProcessingItems =
+
+        SelectionMenuGroup primarySelectionAssistItems =
+                getPrimaryAssistItems(context, selectedText, classificationResult);
+        if (primarySelectionAssistItems != null) itemGroups.add(primarySelectionAssistItems);
+
+        SelectionMenuGroup secondaryAssistItems =
+                getSecondaryAssistItems(
+                        selectionActionMenuDelegate, classificationResult, selectedText);
+        if (secondaryAssistItems != null) itemGroups.add(secondaryAssistItems);
+
+        itemGroups.add(
                 getTextProcessingItems(
                         context,
                         isSelectionPassword,
                         isSelectionReadOnly,
                         textProcessingIntentHandler,
-                        selectionActionMenuDelegate);
-        itemGroups.add(textProcessingItems);
+                        selectionActionMenuDelegate));
+
         return itemGroups;
     }
 
     @Nullable
     @RequiresApi(Build.VERSION_CODES.O)
     private static SelectionMenuGroup getPrimaryAssistItems(
-            Context context, @Nullable SelectionClient.Result classificationResult) {
+            Context context,
+            String selectedText,
+            @Nullable SelectionClient.Result classificationResult) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || selectedText.isEmpty()) {
+            return null;
+        }
         if (classificationResult == null || !classificationResult.hasNamedAction()) {
             return null;
         }
@@ -276,9 +247,26 @@ public class SelectActionMenuHelper {
     }
 
     @Nullable
-    @RequiresApi(Build.VERSION_CODES.P)
     private static SelectionMenuGroup getSecondaryAssistItems(
-            @Nullable SelectionClient.Result classificationResult) {
+            @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate,
+            @Nullable Result classificationResult,
+            String selectedText) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return null;
+
+        // We have to use android.R.id.textAssist as group id to make framework show icons for
+        // menu items if there is selected text.
+        @IdRes int groupId = selectedText.isEmpty() ? Menu.NONE : android.R.id.textAssist;
+        SelectionMenuGroup secondaryAssistItems =
+                new SelectionMenuGroup(groupId, GroupItemOrder.SECONDARY_ASSIST_ITEMS);
+
+        if (selectedText.isEmpty() && selectionActionMenuDelegate != null) {
+            List<SelectionMenuItem> additionalMenuItems =
+                    selectionActionMenuDelegate.getAdditionalNonSelectionItems();
+            if (!additionalMenuItems.isEmpty()) {
+                secondaryAssistItems.addItems(additionalMenuItems);
+                return secondaryAssistItems;
+            }
+        }
         if (classificationResult == null) {
             return null;
         }
@@ -299,12 +287,6 @@ public class SelectActionMenuHelper {
         List<Drawable> icons = classificationResult.additionalIcons;
         assert icons == null || icons.size() == count
                 : "icons list should be either null or have the same length with actions.";
-
-        // We have to use android.R.id.textAssist as group id to make framework show icons for
-        // these menu items.
-        SelectionMenuGroup secondaryAssistItems =
-                new SelectionMenuGroup(
-                        android.R.id.textAssist, GroupItemOrder.SECONDARY_ASSIST_ITEMS);
 
         // First action is reserved for primary action so start at index 1.
         final int startIndex = 1;

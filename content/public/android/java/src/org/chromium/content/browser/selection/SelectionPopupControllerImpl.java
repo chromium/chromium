@@ -675,14 +675,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     private MVCListAdapter.ModelList getDropdownItems() {
         MVCListAdapter.ModelList items = new MVCListAdapter.ModelList();
         if (mDropdownMenuDelegate != null) {
-            SortedSet<SelectionMenuGroup> allItemGroups;
-            if (hasSelection()) {
-                allItemGroups = getSelectionMenuItems();
-            } else {
-                allItemGroups =
-                        getNonSelectionMenuItems(
-                                mContext, this, mSelectionActionMenuDelegate);
-            }
+            SortedSet<SelectionMenuGroup> allItemGroups = getMenuItems();
 
             int groupIndex = 0;
             for (SelectionMenuGroup group : allItemGroups) {
@@ -944,12 +937,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     @Override
     public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-        SortedSet<SelectionMenuGroup> menuItems;
-        if (!hasSelection()) {
-            menuItems = getNonSelectionMenuItems(mContext, this, mSelectionActionMenuDelegate);
-        } else {
-            menuItems = getSelectionMenuItems();
-        }
+        SortedSet<SelectionMenuGroup> menuItems = getMenuItems();
 
         SelectActionMenuHelper.removeAllAddedGroupsFromMenu(menu);
         mCustomActionMenuItemClickListeners.clear();
@@ -967,7 +955,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     }
 
     @VisibleForTesting
-    public SortedSet<SelectionMenuGroup> getSelectionMenuItems() {
+    public SortedSet<SelectionMenuGroup> getMenuItems() {
         TextProcessingIntentHandler textProcessingIntentHandler =
                 isSelectActionModeAllowed(MENU_ITEM_PROCESS_TEXT) ? this::processText : null;
 
@@ -984,7 +972,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                             isSelectionPassword(),
                             isFocusedNodeEditable(),
                             getSelectedText(),
-                            SelectActionMenuHelper.getSelectionMenuItems(
+                            SelectActionMenuHelper.getMenuItems(
                                     this,
                                     mContext,
                                     mClassificationResult,
@@ -997,14 +985,6 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
         // Return the cached menu items for this selection.
         return mSelectionMenuCachedResult.getResult();
-    }
-
-    static SortedSet<SelectionMenuGroup> getNonSelectionMenuItems(
-            @Nullable Context context,
-            SelectActionMenuDelegate delegate,
-            @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate) {
-        return SelectActionMenuHelper.getNonSelectionMenuItems(
-                context, delegate, selectionActionMenuDelegate);
     }
 
     /**
@@ -1233,11 +1213,9 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     @Override
     public void onDestroyActionMode() {
-        if (isActionModeValid()) {
-            setActionMode(null);
-            if (mUnselectAllOnDismiss) {
-                clearSelection();
-            }
+        setActionMode(null);
+        if (mUnselectAllOnDismiss) {
+            clearSelection();
         }
     }
 

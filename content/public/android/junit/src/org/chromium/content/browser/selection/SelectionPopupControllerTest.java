@@ -1020,7 +1020,7 @@ public class SelectionPopupControllerTest {
                 MenuSourceType.MENU_SOURCE_MOUSE,
                 mRenderFrameHost);
 
-        SortedSet<SelectionMenuGroup> result = mController.getSelectionMenuItems();
+        SortedSet<SelectionMenuGroup> result = mController.getMenuItems();
         mController.showSelectionMenu(
                 0,
                 0,
@@ -1040,7 +1040,7 @@ public class SelectionPopupControllerTest {
                 mRenderFrameHost);
 
         Assert.assertNotNull(mController.getSelectionMenuCachedResultForTesting());
-        Assert.assertSame(result, mController.getSelectionMenuItems());
+        Assert.assertSame(result, mController.getMenuItems());
     }
 
     @Test
@@ -1065,7 +1065,7 @@ public class SelectionPopupControllerTest {
                 MenuSourceType.MENU_SOURCE_MOUSE,
                 mRenderFrameHost);
 
-        SortedSet<SelectionMenuGroup> result = mController.getSelectionMenuItems();
+        SortedSet<SelectionMenuGroup> result = mController.getMenuItems();
         mController.showSelectionMenu(
                 0,
                 0,
@@ -1086,10 +1086,9 @@ public class SelectionPopupControllerTest {
 
         // Check the menu is different and not similar to the one we have stored.
         Assert.assertNotNull(mController.getSelectionMenuCachedResultForTesting());
-        Assert.assertNotSame(result, mController.getSelectionMenuItems());
+        Assert.assertNotSame(result, mController.getMenuItems());
         Assert.assertNotSame(
-                mController.getSelectionMenuCachedResultForTesting(),
-                mController.getSelectionMenuItems());
+                mController.getSelectionMenuCachedResultForTesting(), mController.getMenuItems());
     }
 
     @Test
