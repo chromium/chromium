@@ -35,7 +35,7 @@ if (concurrent_links == -1) {
       _args += [ "--mem_per_link_gb=45" ]
     } else if (is_android) {
       # Large solink of Android official builds take 30-60GB.
-      _args += [ "--mem_per_link_gb=30" ]
+      _args += [ "--mem_per_link_gb=50" ]
     } else if (is_linux) {
       # OOM quite frequently for linux.
       _args += [ "--mem_per_link_gb=30" ]
