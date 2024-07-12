@@ -20,6 +20,7 @@
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/mock_audio_renderer_sink.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/page/browsing_context_group_info.h"
@@ -164,6 +165,7 @@ class WebRtcAudioRendererTest : public testing::Test {
             web_view_,
             &web_local_frame_client_,
             nullptr,
+            mojo::NullRemote(),
             LocalFrameToken(),
             DocumentToken(),
             /*policy_container=*/nullptr)) {

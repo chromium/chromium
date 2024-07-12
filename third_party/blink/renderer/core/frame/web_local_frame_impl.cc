@@ -108,6 +108,7 @@
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/browser_interface_broker.mojom-blink.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-blink.h"
@@ -897,6 +898,10 @@ gfx::Rect WebLocalFrameImpl::VisibleContentRect() const {
 
 WebView* WebLocalFrameImpl::View() const {
   return ViewImpl();
+}
+
+BrowserInterfaceBrokerProxy& WebLocalFrameImpl::GetBrowserInterfaceBroker() {
+  return GetFrame()->GetBrowserInterfaceBroker();
 }
 
 WebDocument WebLocalFrameImpl::GetDocument() const {
@@ -2023,6 +2028,8 @@ WebLocalFrame* WebLocalFrame::CreateMainFrame(
     WebView* web_view,
     WebLocalFrameClient* client,
     InterfaceRegistry* interface_registry,
+    CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>
+        interface_broker,
     const LocalFrameToken& frame_token,
     const DocumentToken& document_token,
     std::unique_ptr<WebPolicyContainer> policy_container,
@@ -2031,28 +2038,31 @@ WebLocalFrame* WebLocalFrame::CreateMainFrame(
     network::mojom::blink::WebSandboxFlags sandbox_flags,
     const WebURL& creator_base_url) {
   return WebLocalFrameImpl::CreateMainFrame(
-      web_view, client, interface_registry, frame_token, opener, name,
-      sandbox_flags, document_token, std::move(policy_container),
-      creator_base_url);
+      web_view, client, interface_registry, std::move(interface_broker),
+      frame_token, opener, name, sandbox_flags, document_token,
+      std::move(policy_container), creator_base_url);
 }
 
 WebLocalFrame* WebLocalFrame::CreateProvisional(
     WebLocalFrameClient* client,
     InterfaceRegistry* interface_registry,
+    CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>
+        interface_broker,
     const LocalFrameToken& frame_token,
     WebFrame* previous_frame,
     const FramePolicy& frame_policy,
     const WebString& name,
     WebView* web_view) {
-  return WebLocalFrameImpl::CreateProvisional(client, interface_registry,
-                                              frame_token, previous_frame,
-                                              frame_policy, name, web_view);
+  return WebLocalFrameImpl::CreateProvisional(
+      client, interface_registry, std::move(interface_broker), frame_token,
+      previous_frame, frame_policy, name, web_view);
 }
 
 WebLocalFrameImpl* WebLocalFrameImpl::CreateMainFrame(
     WebView* web_view,
     WebLocalFrameClient* client,
     InterfaceRegistry* interface_registry,
+    mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker> interface_broker,
     const LocalFrameToken& frame_token,
     WebFrame* opener,
     const WebString& name,
@@ -2076,14 +2086,16 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateMainFrame(
   frame->InitializeCoreFrame(
       page, nullptr, nullptr, nullptr, FrameInsertType::kInsertInConstructor,
       name, opener ? &ToCoreFrame(*opener)->window_agent_factory() : nullptr,
-      opener, document_token, std::move(policy_container), storage_key,
-      creator_base_url, sandbox_flags);
+      opener, document_token, std::move(interface_broker),
+      std::move(policy_container), storage_key, creator_base_url,
+      sandbox_flags);
   return frame;
 }
 
 WebLocalFrameImpl* WebLocalFrameImpl::CreateProvisional(
     WebLocalFrameClient* client,
     blink::InterfaceRegistry* interface_registry,
+    mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker> interface_broker,
     const LocalFrameToken& frame_token,
     WebFrame* previous_web_frame,
     const FramePolicy& frame_policy,
@@ -2131,6 +2143,7 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateProvisional(
       previous_web_frame->Parent(), nullptr, FrameInsertType::kInsertLater,
       name, &ToCoreFrame(*previous_web_frame)->window_agent_factory(),
       previous_web_frame->Opener(), DocumentToken(),
+      std::move(interface_broker),
       /*policy_container=*/nullptr, StorageKey(),
       /*creator_base_url=*/KURL(), sandbox_flags);
 
@@ -2250,13 +2263,14 @@ void WebLocalFrameImpl::InitializeCoreFrame(
     WindowAgentFactory* window_agent_factory,
     WebFrame* opener,
     const DocumentToken& document_token,
+    mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker> interface_broker,
     std::unique_ptr<blink::WebPolicyContainer> policy_container,
     const StorageKey& storage_key,
     const KURL& creator_base_url,
     network::mojom::blink::WebSandboxFlags sandbox_flags) {
   InitializeCoreFrameInternal(
       page, owner, parent, previous_sibling, insert_type, name,
-      window_agent_factory, opener, document_token,
+      window_agent_factory, opener, document_token, std::move(interface_broker),
       PolicyContainer::CreateFromWebPolicyContainer(
           std::move(policy_container)),
       storage_key, ukm::kInvalidSourceId, creator_base_url, sandbox_flags);
@@ -2272,6 +2286,7 @@ void WebLocalFrameImpl::InitializeCoreFrameInternal(
     WindowAgentFactory* window_agent_factory,
     WebFrame* opener,
     const DocumentToken& document_token,
+    mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker> interface_broker,
     std::unique_ptr<PolicyContainer> policy_container,
     const StorageKey& storage_key,
     ukm::SourceId document_ukm_source_id,
@@ -2283,7 +2298,7 @@ void WebLocalFrameImpl::InitializeCoreFrameInternal(
   SetCoreFrame(MakeGarbageCollected<LocalFrame>(
       local_frame_client_.Get(), page, owner, parent_frame,
       previous_sibling_frame, insert_type, GetLocalFrameToken(),
-      window_agent_factory, interface_registry_));
+      window_agent_factory, interface_registry_, std::move(interface_broker)));
   frame_->Tree().SetName(name);
 
   // See sandbox inheritance: content/browser/renderer_host/sandbox_flags.md
@@ -2366,30 +2381,33 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
   // this identifier.
   ukm::SourceId document_ukm_source_id = ukm::NoURLSourceId();
 
-  auto complete_initialization = [this, owner_element, &policy_container_remote,
-                                  &policy_container_data, &name,
-                                  document_ukm_source_id](
-                                     WebLocalFrame* new_child_frame,
-                                     const DocumentToken& document_token) {
-    // The initial empty document's credentialless bit is the union of:
-    // - its parent's credentialless bit.
-    // - its frame's credentialless attribute.
-    policy_container_data->is_credentialless |= owner_element->Credentialless();
+  auto complete_initialization =
+      [this, owner_element, &policy_container_remote, &policy_container_data,
+       &name, document_ukm_source_id](
+          WebLocalFrame* new_child_frame, const DocumentToken& document_token,
+          CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>
+              interface_broker) {
+        // The initial empty document's credentialless bit is the union of:
+        // - its parent's credentialless bit.
+        // - its frame's credentialless attribute.
+        policy_container_data->is_credentialless |=
+            owner_element->Credentialless();
 
-    std::unique_ptr<PolicyContainer> policy_container =
-        std::make_unique<PolicyContainer>(std::move(policy_container_remote),
-                                          std::move(policy_container_data));
+        std::unique_ptr<PolicyContainer> policy_container =
+            std::make_unique<PolicyContainer>(
+                std::move(policy_container_remote),
+                std::move(policy_container_data));
 
-    KURL creator_base_url(owner_element->GetDocument().BaseURL());
-    To<WebLocalFrameImpl>(new_child_frame)
-        ->InitializeCoreFrameInternal(
-            *GetFrame()->GetPage(), owner_element, this, LastChild(),
-            FrameInsertType::kInsertInConstructor, name,
-            &GetFrame()->window_agent_factory(), nullptr, document_token,
-            std::move(policy_container),
-            GetFrame()->DomWindow()->GetStorageKey(), document_ukm_source_id,
-            creator_base_url);
-  };
+        KURL creator_base_url(owner_element->GetDocument().BaseURL());
+        To<WebLocalFrameImpl>(new_child_frame)
+            ->InitializeCoreFrameInternal(
+                *GetFrame()->GetPage(), owner_element, this, LastChild(),
+                FrameInsertType::kInsertInConstructor, name,
+                &GetFrame()->window_agent_factory(), nullptr, document_token,
+                std::move(interface_broker), std::move(policy_container),
+                GetFrame()->DomWindow()->GetStorageKey(),
+                document_ukm_source_id, creator_base_url);
+      };
 
   // FIXME: Using subResourceAttributeName as fallback is not a perfect
   // solution. subResourceAttributeName returns just one attribute name. The

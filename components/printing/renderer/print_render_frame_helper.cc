@@ -679,8 +679,8 @@ class HeaderAndFooterContext {
 
   blink::WebLocalFrame* CreateFrame() {
     return blink::WebLocalFrame::CreateMainFrame(
-        web_view_, &frame_client_, nullptr, blink::LocalFrameToken(),
-        blink::DocumentToken(), nullptr);
+        web_view_, &frame_client_, nullptr, mojo::NullRemote(),
+        blink::LocalFrameToken(), blink::DocumentToken(), nullptr);
   }
 
   void InitWebView() {
@@ -951,8 +951,8 @@ void PrepareFrameAndViewForPrint::CopySelection(
       /*color_provider_colors=*/nullptr);
   blink::WebView::ApplyWebPreferences(prefs, web_view);
   blink::WebLocalFrame* main_frame = blink::WebLocalFrame::CreateMainFrame(
-      web_view, this, nullptr, blink::LocalFrameToken(), blink::DocumentToken(),
-      nullptr);
+      web_view, this, nullptr, mojo::NullRemote(), blink::LocalFrameToken(),
+      blink::DocumentToken(), nullptr);
   frame_.Reset(main_frame);
   mojo::AssociatedRemote<blink::mojom::FrameWidget> frame_widget;
   mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget>

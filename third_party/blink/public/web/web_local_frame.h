@@ -25,6 +25,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom-forward.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-shared.h"
+#include "third_party/blink/public/mojom/browser_interface_broker.mojom-shared.h"
 #include "third_party/blink/public/mojom/commit_result/commit_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-shared.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-shared.h"
@@ -79,6 +80,7 @@ namespace scheduler {
 class WebAgentGroupScheduler;
 }  // namespace scheduler
 
+class BrowserInterfaceBrokerProxy;
 class FrameScheduler;
 class InterfaceRegistry;
 class PageState;
@@ -134,6 +136,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
       WebView*,
       WebLocalFrameClient*,
       blink::InterfaceRegistry*,
+      CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>,
       const LocalFrameToken& frame_token,
       const DocumentToken& document_token,
       std::unique_ptr<blink::WebPolicyContainer> policy_container,
@@ -164,13 +167,15 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   //
   // Otherwise, if the load should not commit, call Detach() to discard the
   // frame.
-  static WebLocalFrame* CreateProvisional(WebLocalFrameClient*,
-                                          InterfaceRegistry*,
-                                          const LocalFrameToken& frame_token,
-                                          WebFrame* previous_web_frame,
-                                          const FramePolicy&,
-                                          const WebString& name,
-                                          WebView* web_view);
+  static WebLocalFrame* CreateProvisional(
+      WebLocalFrameClient*,
+      InterfaceRegistry*,
+      CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>,
+      const LocalFrameToken& frame_token,
+      WebFrame* previous_web_frame,
+      const FramePolicy&,
+      const WebString& name,
+      WebView* web_view);
 
   // Creates a new local child of this frame. Similar to the other methods that
   // create frames, the returned frame should be freed by calling Close() when
@@ -205,6 +210,8 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   virtual WebContentCaptureClient* ContentCaptureClient() const = 0;
 
   // Basic properties ---------------------------------------------------
+
+  virtual BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() = 0;
 
   LocalFrameToken GetLocalFrameToken() const {
     return GetFrameToken().GetAs<LocalFrameToken>();

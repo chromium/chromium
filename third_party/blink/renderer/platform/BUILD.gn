@@ -1292,6 +1292,8 @@ component("platform") {
     "mojo/big_string_mojom_traits.h",
     "mojo/bluetooth_mojom_traits.cc",
     "mojo/bluetooth_mojom_traits.h",
+    "mojo/browser_interface_broker_proxy_impl.cc",
+    "mojo/browser_interface_broker_proxy_impl.h",
     "mojo/drag_mojom_traits.cc",
     "mojo/drag_mojom_traits.h",
     "mojo/fetch_api_request_headers_mojom_traits.h",

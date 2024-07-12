@@ -416,10 +416,6 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
                                 int32_t world_id) override {}
   bool AllowScriptExtensions() override { return false; }
 
-  BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() override {
-    return GetEmptyBrowserInterfaceBroker();
-  }
-
   AssociatedInterfaceProvider* GetRemoteNavigationAssociatedInterfaces()
       override;
 

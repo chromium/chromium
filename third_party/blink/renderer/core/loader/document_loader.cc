@@ -3445,7 +3445,7 @@ DocumentLoader::GetContentSecurityNotifier() {
   CHECK(frame_);
 
   if (!content_security_notifier_.is_bound()) {
-    GetFrame()->Client()->GetBrowserInterfaceBroker().GetInterface(
+    GetFrame()->GetBrowserInterfaceBroker().GetInterface(
         content_security_notifier_.BindNewPipeAndPassReceiver(
             frame_->GetTaskRunner(TaskType::kInternalLoading)));
   }
@@ -3593,7 +3593,7 @@ CodeCacheHost* DocumentLoader::GetCodeCacheHost() {
     // CommitNavigation message and the following code would not be required and
     // we should just return nullptr here.
     mojo::Remote<mojom::blink::CodeCacheHost> remote;
-    GetLocalFrameClient().GetBrowserInterfaceBroker().GetInterface(
+    frame_->GetBrowserInterfaceBroker().GetInterface(
         remote.BindNewPipeAndPassReceiver());
     code_cache_host_ = std::make_unique<CodeCacheHost>(std::move(remote));
   }
@@ -3614,7 +3614,7 @@ DocumentLoader::CreateWorkerCodeCacheHost() {
   if (GetDisableCodeCacheForTesting())
     return mojo::NullRemote();
   mojo::PendingRemote<mojom::blink::CodeCacheHost> pending_code_cache_host;
-  GetLocalFrameClient().GetBrowserInterfaceBroker().GetInterface(
+  frame_->GetBrowserInterfaceBroker().GetInterface(
       pending_code_cache_host.InitWithNewPipeAndPassReceiver());
   return pending_code_cache_host;
 }

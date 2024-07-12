@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -225,6 +226,8 @@ WebLocalFrame* WebRemoteFrameImpl::CreateLocalChild(
     const LocalFrameToken& frame_token,
     WebFrame* opener,
     const DocumentToken& document_token,
+    CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>
+        interface_broker,
     std::unique_ptr<WebPolicyContainer> policy_container) {
   auto* child = MakeGarbageCollected<WebLocalFrameImpl>(
       base::PassKey<WebRemoteFrameImpl>(), scope, client, interface_registry,
@@ -249,7 +252,8 @@ WebLocalFrame* WebRemoteFrameImpl::CreateLocalChild(
   child->InitializeCoreFrame(
       *GetFrame()->GetPage(), owner, this, previous_sibling,
       FrameInsertType::kInsertInConstructor, name, window_agent_factory, opener,
-      document_token, std::move(policy_container), storage_key,
+      document_token, std::move(interface_broker), std::move(policy_container),
+      storage_key,
       /*creator_base_url=*/KURL());
   DCHECK(child->GetFrame());
   return child;

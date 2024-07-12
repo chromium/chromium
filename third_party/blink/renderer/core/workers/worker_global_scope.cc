@@ -434,7 +434,7 @@ CoreProbeSink* WorkerGlobalScope::GetProbeSink() {
   return nullptr;
 }
 
-const BrowserInterfaceBrokerProxy&
+const BrowserInterfaceBrokerProxyImpl&
 WorkerGlobalScope::GetBrowserInterfaceBroker() const {
   return browser_interface_broker_proxy_;
 }

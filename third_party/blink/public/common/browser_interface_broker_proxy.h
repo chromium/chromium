@@ -5,11 +5,17 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_BROWSER_INTERFACE_BROKER_PROXY_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_BROWSER_INTERFACE_BROKER_PROXY_H_
 
+#include <utility>
+
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
+
+// TODO(https://crbug.com/41482945): Remove `nogncheck` after moving
+// `browser_interface_broker_proxy.h` to `blink/public/platform`.
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"  // nogncheck
 
 namespace blink {
 
@@ -18,26 +24,27 @@ namespace blink {
 // worker-scoped InterfaceProvider (see crbug.com/718652).
 class BLINK_COMMON_EXPORT BrowserInterfaceBrokerProxy {
  public:
-  BrowserInterfaceBrokerProxy() = default;
+  BrowserInterfaceBrokerProxy();
+
   BrowserInterfaceBrokerProxy(const BrowserInterfaceBrokerProxy&) = delete;
   BrowserInterfaceBrokerProxy& operator=(const BrowserInterfaceBrokerProxy&) =
       delete;
 
-  void Bind(mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker,
-            scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-  mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> Reset(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  virtual ~BrowserInterfaceBrokerProxy();
+
+  virtual CrossVariantMojoReceiver<mojom::BrowserInterfaceBrokerInterfaceBase>
+  Reset(scoped_refptr<base::SingleThreadTaskRunner> task_runner) = 0;
 
   // Asks the browser to bind the given receiver. If a non-null testing override
   // was set by |SetBinderForTesting()|, the request will be intercepted by that
   // binder instead of going to the browser.
-  void GetInterface(mojo::GenericPendingReceiver) const;
+  virtual void GetInterface(mojo::GenericPendingReceiver) const = 0;
 
-  // TODO(crbug.com/718652): Add a presubmit check for C++ call sites
+  // TODO(https://crbug.com/40519010): Add a presubmit check for C++ call sites.
   void GetInterface(const std::string& name,
-                    mojo::ScopedMessagePipeHandle pipe) const;
-
-  bool is_bound() const;
+                    mojo::ScopedMessagePipeHandle pipe) const {
+    GetInterface(mojo::GenericPendingReceiver(name, std::move(pipe)));
+  }
 
   // Overrides how the named interface is bound, rather than sending its
   // receivers to the browser. If |binder| is null, any registered override
@@ -46,18 +53,10 @@ class BLINK_COMMON_EXPORT BrowserInterfaceBrokerProxy {
   // Returns |true| if the new binder was successfully set, or |false| if the
   // binder was non-null and an existing binder was already registered for the
   // named interface.
-  bool SetBinderForTesting(
+  virtual bool SetBinderForTesting(
       const std::string& name,
       base::RepeatingCallback<void(mojo::ScopedMessagePipeHandle)> binder)
-      const;
-
- private:
-  mojo::Remote<blink::mojom::BrowserInterfaceBroker> broker_;
-
-  using BinderMap =
-      std::map<std::string,
-               base::RepeatingCallback<void(mojo::ScopedMessagePipeHandle)>>;
-  mutable BinderMap binder_map_for_testing_;
+      const = 0;
 };
 
 // Returns an instance of BrowserInterfaceBrokerProxy that is safe to use but is

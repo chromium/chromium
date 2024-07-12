@@ -119,7 +119,7 @@ IsolatedSVGDocumentHost::IsolatedSVGDocumentHost(
     frame = MakeGarbageCollected<LocalFrame>(
         frame_client_, *page, nullptr, nullptr, nullptr,
         FrameInsertType::kInsertInConstructor, LocalFrameToken(), nullptr,
-        nullptr);
+        nullptr, mojo::NullRemote());
     frame->SetView(MakeGarbageCollected<LocalFrameView>(*frame));
     frame->Init(/*opener=*/nullptr, DocumentToken(),
                 /*policy_container=*/nullptr, StorageKey(),

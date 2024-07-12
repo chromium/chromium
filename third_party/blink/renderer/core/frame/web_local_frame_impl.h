@@ -131,6 +131,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   WebAutofillClient* AutofillClient() override;
   void SetContentCaptureClient(WebContentCaptureClient*) override;
   WebContentCaptureClient* ContentCaptureClient() const override;
+  BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() override;
   WebDocument GetDocument() const override;
   WebString AssignedName() const override;
   ui::AXTreeID GetAXTreeID() const override;
@@ -416,6 +417,8 @@ class CORE_EXPORT WebLocalFrameImpl final
       WindowAgentFactory*,
       WebFrame* opener,
       const DocumentToken& document_token,
+      mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker>
+          interface_broker,
       std::unique_ptr<blink::WebPolicyContainer> policy_container,
       const StorageKey& storage_key,
       const KURL& creator_base_url,
@@ -431,6 +434,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       WebView*,
       WebLocalFrameClient*,
       InterfaceRegistry*,
+      mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker>,
       const LocalFrameToken& frame_token,
       WebFrame* opener,
       const WebString& name,
@@ -441,6 +445,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   static WebLocalFrameImpl* CreateProvisional(
       WebLocalFrameClient*,
       InterfaceRegistry*,
+      mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker>,
       const LocalFrameToken& frame_token,
       WebFrame* previous_frame,
       const FramePolicy&,
@@ -625,6 +630,8 @@ class CORE_EXPORT WebLocalFrameImpl final
       WindowAgentFactory*,
       WebFrame* opener,
       const DocumentToken& document_token,
+      mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker>
+          interface_broker,
       std::unique_ptr<PolicyContainer> policy_container,
       const StorageKey& storage_key,
       ukm::SourceId document_ukm_source_id,

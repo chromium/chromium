@@ -55,6 +55,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
+#include "third_party/blink/public/mojom/browser_interface_broker.mojom-shared.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom-shared.h"
@@ -117,7 +118,6 @@ enum class TreeScopeType;
 }  // namespace mojom
 
 class AssociatedInterfaceProvider;
-class BrowserInterfaceBrokerProxy;
 class WebBackgroundResourceFetchAssets;
 class WebComputedAXTree;
 class WebContentDecryptionModule;
@@ -245,10 +245,6 @@ class BLINK_EXPORT WebLocalFrameClient {
 
   // Services ------------------------------------------------------------
 
-  // Returns a BrowserInterfaceBrokerProxy the frame can use to request
-  // interfaces from the browser.
-  virtual const blink::BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker();
-
   // Returns an AssociatedInterfaceProvider the frame can use to request
   // navigation-associated interfaces from the browser. See also
   // LocalFrame::GetRemoteNavigationAssociatedInterfaces().
@@ -262,14 +258,17 @@ class BLINK_EXPORT WebLocalFrameClient {
   // should create a new WebLocalFrame, insert it into the frame tree, call
   // `complete_creation()`, and return the created frame.
   //
-  // `complete_creation` takes the newly-created `WebLocalFrame` and the
-  // `DocumentToken` to use for its initial empty document as arguments.
+  // `complete_creation` takes the newly-created `WebLocalFrame` as well as the
+  // `DocumentToken` and `BrowserInterfaceBroker` to use for the initial empty
+  // document.
   //
   // `document_ukm_source_id` is the UKM source id to be used for the new
   // document in the frame. If `ukm::kInvalidSourceId` is passed, a new UKM
   // source id will be generated.
-  using FinishChildFrameCreationFn =
-      base::FunctionRef<void(WebLocalFrame*, const DocumentToken&)>;
+  using FinishChildFrameCreationFn = base::FunctionRef<void(
+      WebLocalFrame*,
+      const DocumentToken&,
+      CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>)>;
   virtual WebLocalFrame* CreateChildFrame(
       mojom::TreeScopeType,
       const WebString& name,

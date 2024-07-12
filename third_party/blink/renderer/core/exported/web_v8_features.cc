@@ -5,6 +5,7 @@
 #include "third_party/blink/public/web/web_v8_features.h"
 
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-forward.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/renderer/core/context_features/context_feature_settings.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -34,7 +35,8 @@ void WebV8Features::EnableMojoJS(v8::Local<v8::Context> context, bool enable) {
 // static
 void WebV8Features::EnableMojoJSAndUseBroker(
     v8::Local<v8::Context> context,
-    mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker_remote) {
+    CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>
+        broker_remote) {
   // This code depends on |ContextFeatureSettings::CrashIfMojoJSNotAllowed|
   // through |EnableMojoJS|. If the code is trying to enable mojo JS but mojo JS
   // is not allowed for the process, as determined by the protected memory bool

@@ -54,7 +54,6 @@
 
 namespace blink {
 
-class BrowserInterfaceBrokerProxy;
 class WebDevToolsAgentImpl;
 class WebLocalFrameImpl;
 class WebSpellCheckPanelHostClient;
@@ -230,9 +229,6 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
 
   scoped_refptr<WebBackgroundResourceFetchAssets>
   MaybeGetBackgroundResourceFetchAssets() override;
-
-  const blink::BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker()
-      override;
 
   AssociatedInterfaceProvider* GetRemoteNavigationAssociatedInterfaces()
       override;

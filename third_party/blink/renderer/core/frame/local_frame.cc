@@ -1810,16 +1810,18 @@ bool LocalFrame::ShouldThrottleRendering() const {
   return View() && View()->ShouldThrottleRendering();
 }
 
-LocalFrame::LocalFrame(LocalFrameClient* client,
-                       Page& page,
-                       FrameOwner* owner,
-                       Frame* parent,
-                       Frame* previous_sibling,
-                       FrameInsertType insert_type,
-                       const LocalFrameToken& frame_token,
-                       WindowAgentFactory* inheriting_agent_factory,
-                       InterfaceRegistry* interface_registry,
-                       const base::TickClock* clock)
+LocalFrame::LocalFrame(
+    LocalFrameClient* client,
+    Page& page,
+    FrameOwner* owner,
+    Frame* parent,
+    Frame* previous_sibling,
+    FrameInsertType insert_type,
+    const LocalFrameToken& frame_token,
+    WindowAgentFactory* inheriting_agent_factory,
+    InterfaceRegistry* interface_registry,
+    mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker> interface_broker,
+    const base::TickClock* clock)
     : Frame(client,
             page,
             owner,
@@ -1861,6 +1863,12 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
       GetLocalFramesMap().insert(FrameToken::Hasher()(GetFrameToken()), this);
   CHECK(frame_tracking_result.stored_value) << "Inserting a duplicate item.";
   v8::Isolate* isolate = page.GetAgentGroupScheduler().Isolate();
+
+  if (interface_broker.is_valid()) {  // This may be invalid in unit tests.
+    browser_interface_broker_proxy_.Bind(
+        std::move(interface_broker),
+        page.GetAgentGroupScheduler().DefaultTaskRunner());
+  }
 
   // There is generally one probe sink per local frame tree, so for root frames
   // we create a new child sink and for child frames we propagate one from root.
@@ -2216,9 +2224,12 @@ ContentCaptureManager* LocalFrame::GetOrResetContentCaptureManager() {
   return content_capture_manager_.Get();
 }
 
-const BrowserInterfaceBrokerProxy& LocalFrame::GetBrowserInterfaceBroker() {
-  DCHECK(Client());
-  return Client()->GetBrowserInterfaceBroker();
+BrowserInterfaceBrokerProxy& LocalFrame::GetBrowserInterfaceBroker() {
+  if (!browser_interface_broker_proxy_.is_bound()) {
+    // This branch is taken in unit tests.
+    return GetEmptyBrowserInterfaceBroker();
+  }
+  return browser_interface_broker_proxy_;
 }
 
 AssociatedInterfaceProvider*

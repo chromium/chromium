@@ -88,6 +88,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
+#include "third_party/blink/renderer/platform/mojo/browser_interface_broker_proxy_impl.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_unique_receiver_set.h"
@@ -120,7 +121,6 @@ class AttributionSrcLoader;
 class AuditsIssue;
 class BackgroundColorPaintImageGenerator;
 class BoxShadowPaintImageGenerator;
-class BrowserInterfaceBrokerProxy;
 class ClipPathPaintImageGenerator;
 class Color;
 class ContentCaptureManager;
@@ -212,6 +212,7 @@ class CORE_EXPORT LocalFrame final
       const LocalFrameToken& frame_token,
       WindowAgentFactory* inheriting_agent_factory,
       InterfaceRegistry*,
+      mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker>,
       const base::TickClock* clock = base::DefaultTickClock::GetInstance());
 
   // Initialize the LocalFrame, creating and initializing its LocalDOMWindow. It
@@ -493,7 +494,7 @@ class CORE_EXPORT LocalFrame final
 
   // Return this frame's BrowserInterfaceBroker. Must not be called on detached
   // frames (that is, frames where `Client()` returns nullptr).
-  const BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker();
+  BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker();
 
   InterfaceRegistry* GetInterfaceRegistry() { return interface_registry_; }
 
@@ -1235,6 +1236,9 @@ class CORE_EXPORT LocalFrame final
       feature_handle_for_scheduler_;
 
   WebPrintParams print_params_;
+
+  GC_PLUGIN_IGNORE("https://crbug.com/41482945")
+  BrowserInterfaceBrokerProxyImpl browser_interface_broker_proxy_;
 
   // Holds WebLinkPreviewTriggerer instance if content renderer client wants to
   // inject it. Note that `link_preview_triggerer_` may be nullptr after

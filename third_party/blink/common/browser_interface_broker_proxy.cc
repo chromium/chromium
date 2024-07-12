@@ -4,74 +4,74 @@
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 
-#include <tuple>
+#include <map>
+#include <string>
 
-#include "base/task/single_thread_task_runner.h"
+#include "base/notreached.h"
 #include "base/threading/sequence_local_storage_slot.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace blink {
 
-void BrowserInterfaceBrokerProxy::Bind(
-    mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  DCHECK(task_runner);
-  broker_ = mojo::Remote<blink::mojom::BrowserInterfaceBroker>(
-      std::move(broker), std::move(task_runner));
-}
+namespace {
 
-mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
-BrowserInterfaceBrokerProxy::Reset(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  DCHECK(task_runner);
-  broker_.reset();
-  return broker_.BindNewPipeAndPassReceiver(std::move(task_runner));
-}
+// TODO(https://crbug.com/41482945): Deduplicate `SetBinderForTesting`-related
+// code - after moving `browser_interface_broker_proxy.h` from
+// `blink/public/common` to `blink/public/platform` it should be possible to
+// remove this class/code and instead use `BrowserInterfaceBrokerProxyImpl` from
+// `blink/renderer/platform/mojo/browser_interface_broker_proxy_impl.cc` as the
+// base class of `EmptyBrowserInterfaceBrokerProxy`.  This TODO will be resolved
+// by the WIP CL at https://crrev.com/c/5651622.
+class EmptyBrowserInterfaceBrokerProxy : public BrowserInterfaceBrokerProxy {
+ public:
+  ~EmptyBrowserInterfaceBrokerProxy() override = default;
 
-void BrowserInterfaceBrokerProxy::GetInterface(
-    mojo::GenericPendingReceiver receiver) const {
-  // Local binders can be registered via SetBinderForTesting.
-  DCHECK(receiver.interface_name());
-  auto it = binder_map_for_testing_.find(receiver.interface_name().value());
-  if (it != binder_map_for_testing_.end()) {
-    it->second.Run(receiver.PassPipe());
-    return;
+  CrossVariantMojoReceiver<mojom::BrowserInterfaceBrokerInterfaceBase> Reset(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {
+    // `Reset` should only be called on a real `BrowserInterfaceBrokerProxy`.
+    // It should never be called on `EmptyBrowserInterfaceBrokerProxy`.
+    NOTREACHED_NORETURN();
   }
 
-  broker_->GetInterface(std::move(receiver));
-}
+  void GetInterface(mojo::GenericPendingReceiver receiver) const override {
+    // If present, then use a binder registered via SetBinderForTesting.
+    DCHECK(receiver.interface_name());
+    auto it = binder_map_for_testing_.find(receiver.interface_name().value());
+    if (it != binder_map_for_testing_.end()) {
+      it->second.Run(receiver.PassPipe());
+    }
 
-void BrowserInterfaceBrokerProxy::GetInterface(
-    const std::string& name,
-    mojo::ScopedMessagePipeHandle pipe) const {
-  GetInterface(mojo::GenericPendingReceiver(name, std::move(pipe)));
-}
-
-bool BrowserInterfaceBrokerProxy::is_bound() const {
-  return broker_.is_bound();
-}
-
-bool BrowserInterfaceBrokerProxy::SetBinderForTesting(
-    const std::string& name,
-    base::RepeatingCallback<void(mojo::ScopedMessagePipeHandle)> binder) const {
-  if (!binder) {
-    binder_map_for_testing_.erase(name);
-    return true;
+    // Otherwise, do nothing and leave `receiver` unbound.
   }
 
-  auto result = binder_map_for_testing_.emplace(name, std::move(binder));
-  return result.second;
-}
+  bool SetBinderForTesting(
+      const std::string& name,
+      base::RepeatingCallback<void(mojo::ScopedMessagePipeHandle)> binder)
+      const override {
+    if (!binder) {
+      binder_map_for_testing_.erase(name);
+      return true;
+    }
+
+    auto result = binder_map_for_testing_.emplace(name, std::move(binder));
+    return result.second;
+  }
+
+ private:
+  using BinderMap =
+      std::map<std::string,
+               base::RepeatingCallback<void(mojo::ScopedMessagePipeHandle)>>;
+  mutable BinderMap binder_map_for_testing_;
+};
+
+}  // namespace
+
+BrowserInterfaceBrokerProxy::BrowserInterfaceBrokerProxy() = default;
+BrowserInterfaceBrokerProxy::~BrowserInterfaceBrokerProxy() = default;
 
 BrowserInterfaceBrokerProxy& GetEmptyBrowserInterfaceBroker() {
-  static base::SequenceLocalStorageSlot<BrowserInterfaceBrokerProxy> proxy_slot;
-  if (!proxy_slot.GetValuePointer()) {
-    auto& proxy = proxy_slot.GetOrCreateValue();
-    mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> remote;
-    std::ignore = remote.InitWithNewPipeAndPassReceiver();
-    proxy.Bind(std::move(remote),
-               base::SingleThreadTaskRunner::GetCurrentDefault());
-  }
-
+  static base::SequenceLocalStorageSlot<EmptyBrowserInterfaceBrokerProxy>
+      proxy_slot;
   return proxy_slot.GetOrCreateValue();
 }
 

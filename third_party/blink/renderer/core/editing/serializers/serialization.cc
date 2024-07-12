@@ -882,8 +882,9 @@ static Document* CreateStagingDocumentForMarkupSanitization(
       nullptr,  // Frame* parent
       nullptr,  // Frame* previous_sibling
       FrameInsertType::kInsertInConstructor, blink::LocalFrameToken(),
-      nullptr,  // WindowAgentFactory*
-      nullptr   // InterfaceRegistry*
+      nullptr,            // WindowAgentFactory*
+      nullptr,            // InterfaceRegistry*
+      mojo::NullRemote()  // BrowserInterfaceBroker
   );
   // Don't leak the actual viewport size to unsanitized markup
   LocalFrameView* frame_view =

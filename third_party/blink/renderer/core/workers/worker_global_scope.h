@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/mojo/browser_interface_broker_proxy_impl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
@@ -146,7 +147,8 @@ class CORE_EXPORT WorkerGlobalScope
   ScriptWrappable* ToScriptWrappable() final { return this; }
 
   void AddConsoleMessageImpl(ConsoleMessage*, bool discard_duplicates) final;
-  const BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() const final;
+  const BrowserInterfaceBrokerProxyImpl& GetBrowserInterfaceBroker()
+      const final;
 
   scoped_refptr<base::SingleThreadTaskRunner>
   GetAgentGroupSchedulerCompositorTaskRunner() final {
@@ -345,7 +347,7 @@ class CORE_EXPORT WorkerGlobalScope
   std::unique_ptr<FontMatchingMetrics> font_matching_metrics_;
 
   GC_PLUGIN_IGNORE("https://crbug.com/1381979")
-  blink::BrowserInterfaceBrokerProxy browser_interface_broker_proxy_;
+  blink::BrowserInterfaceBrokerProxyImpl browser_interface_broker_proxy_;
 
   // State transition about worker top-level script evaluation.
   enum class ScriptEvalState {

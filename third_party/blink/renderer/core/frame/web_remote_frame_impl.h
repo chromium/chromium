@@ -72,6 +72,7 @@ class CORE_EXPORT WebRemoteFrameImpl final
       const LocalFrameToken& frame_token,
       WebFrame* opener,
       const DocumentToken& document_token,
+      CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>,
       std::unique_ptr<blink::WebPolicyContainer> policy_container) override;
   void SetReplicatedOrigin(
       const WebSecurityOrigin&,

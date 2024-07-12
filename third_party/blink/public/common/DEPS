@@ -42,3 +42,20 @@ include_rules = [
     "+ui/events/event_latency_metadata.h",
     "+url",
 ]
+
+specific_include_rules = {
+   # Temporarily allow including `cross_variant_mojo_util.h`:
+   # * This header only depends on `//mojo` and so doesn't bring in any
+   #   extra Blink dependencies.
+   # * This temporary exemption helps to keep https://crrev.com/c/5651622 and
+   #   https://crrev.com/c/5647559/8 separate.
+   #
+   # TODO(https://crbug.com/41482945): Move `browser_interface_broker_proxy.h`
+   # from `blink/public/common` to `blink/public/platform` - this header is
+   # only ever included from renderer code and so doesn't need to be in
+   # `common`.  (Also move `browser_interface_broker_proxy.cc` to
+   # `blink/renderer/platform/mojo/`.)
+   'browser_interface_broker_proxy.h': [
+      '+third_party/blink/public/platform/cross_variant_mojo_util.h',
+   ],
+}

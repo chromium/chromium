@@ -266,8 +266,6 @@ class CONTENT_EXPORT RenderFrameImpl
         const blink::LocalFrameToken& frame_token,
         int32_t routing_id,
         mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver,
-        mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
-            browser_interface_broker,
         mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
             associated_interface_provider,
         const base::UnguessableToken& devtools_frame_token,
@@ -281,8 +279,6 @@ class CONTENT_EXPORT RenderFrameImpl
     blink::LocalFrameToken frame_token;
     int32_t routing_id;
     mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver;
-    mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
-        browser_interface_broker;
     mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
         associated_interface_provider;
     base::UnguessableToken devtools_frame_token;
@@ -885,16 +881,12 @@ class CONTENT_EXPORT RenderFrameImpl
     T original_value_;
   };
 
-  // Creates a new RenderFrame. |browser_interface_broker| is the
-  // RenderFrameHost's BrowserInterfaceBroker through which services are exposed
-  // to the RenderFrame.
+  // Creates a new RenderFrame.
   static RenderFrameImpl* Create(
       AgentSchedulingGroup& agent_scheduling_group,
       const blink::LocalFrameToken& frame_token,
       int32_t routing_id,
       mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver,
-      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
-          browser_interface_broker,
       mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
           associated_interface_provider,
       const base::UnguessableToken& devtools_frame_token,
@@ -1321,8 +1313,6 @@ class CONTENT_EXPORT RenderFrameImpl
 
   service_manager::BinderRegistry registry_;
   std::unique_ptr<BlinkInterfaceRegistryImpl> blink_interface_registry_;
-
-  blink::BrowserInterfaceBrokerProxy browser_interface_broker_proxy_;
 
   // If valid, the next ExecutionContext created will enable MojoJS bindings and
   // use this broker to handle Mojo.bindInterface calls.

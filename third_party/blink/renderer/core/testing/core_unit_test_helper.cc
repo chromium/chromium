@@ -32,7 +32,7 @@ LocalFrame* SingleChildLocalFrameClient::CreateFrame(
   LocalFrame* child = MakeGarbageCollected<LocalFrame>(
       child_client, *parent_frame->GetPage(), owner_element, parent_frame,
       nullptr, FrameInsertType::kInsertInConstructor, LocalFrameToken(),
-      &parent_frame->window_agent_factory(), nullptr);
+      &parent_frame->window_agent_factory(), nullptr, mojo::NullRemote());
   child->CreateView(gfx::Size(500, 500), Color::kTransparent);
 
   // The initial empty document's policy container is inherited from its parent.

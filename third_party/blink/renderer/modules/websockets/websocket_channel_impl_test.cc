@@ -106,21 +106,23 @@ class MockWebSocketHandshakeThrottle : public WebSocketHandshakeThrottle {
 class WebSocketChannelImplTestBase : public PageTestBase {
  public:
   void SetUp() override {
-    local_frame_client_ = MakeGarbageCollected<EmptyLocalFrameClient>();
-    local_frame_client_->GetBrowserInterfaceBroker().SetBinderForTesting(
-        mojom::blink::WebSocketConnector::Name_,
-        WTF::BindRepeating(&WebSocketChannelImplTestBase::BindWebSocketConnector,
-                  GetWeakPtr()));
+    PageTestBase::SetUp();
 
-    PageTestBase::SetupPageWithClients(nullptr /* page_clients */,
-                                       local_frame_client_.Get());
+    GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
+        mojom::blink::WebSocketConnector::Name_,
+        WTF::BindRepeating(
+            &WebSocketChannelImplTestBase::BindWebSocketConnector,
+            GetWeakPtr()));
+
     const KURL page_url("http://example.com/");
     NavigateTo(page_url);
   }
 
   void TearDown() override {
-    local_frame_client_->GetBrowserInterfaceBroker().SetBinderForTesting(
+    GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
         mojom::blink::WebSocketConnector::Name_, {});
+
+    PageTestBase::TearDown();
   }
 
   // These need to be implemented in the subclass.

@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_V8_FEATURES_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_V8_FEATURES_H_
 
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/mojom/browser_interface_broker.mojom-forward.h"
+#include "third_party/blink/public/mojom/browser_interface_broker.mojom-shared.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "v8/include/v8-forward.h"
 
@@ -27,7 +27,8 @@ class BLINK_EXPORT WebV8Features {
 
   static void EnableMojoJSAndUseBroker(
       v8::Local<v8::Context> context,
-      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker_remote);
+      CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>
+          broker_remote);
 
   static void EnableMojoJSFileSystemAccessHelper(v8::Local<v8::Context>, bool);
 

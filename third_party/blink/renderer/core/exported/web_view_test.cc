@@ -531,8 +531,8 @@ TEST_F(WebViewTest, SetBaseBackgroundColorBeforeMainFrame) {
 
   frame_test_helpers::TestWebFrameClient web_frame_client;
   WebLocalFrame* frame = WebLocalFrame::CreateMainFrame(
-      web_view, &web_frame_client, nullptr, LocalFrameToken(), DocumentToken(),
-      nullptr);
+      web_view, &web_frame_client, nullptr, mojo::NullRemote(),
+      LocalFrameToken(), DocumentToken(), nullptr);
   web_frame_client.Bind(frame);
 
   frame_test_helpers::TestWebFrameWidget* widget =
@@ -2915,8 +2915,8 @@ TEST_F(WebViewTest, ClientTapHandlingNullWebViewClient) {
       /*web_view_client=*/nullptr, /*compositing_enabled=*/false);
   frame_test_helpers::TestWebFrameClient web_frame_client;
   WebLocalFrame* local_frame = WebLocalFrame::CreateMainFrame(
-      web_view, &web_frame_client, nullptr, LocalFrameToken(), DocumentToken(),
-      nullptr);
+      web_view, &web_frame_client, nullptr, mojo::NullRemote(),
+      LocalFrameToken(), DocumentToken(), nullptr);
   web_frame_client.Bind(local_frame);
   WebNonCompositedWidgetClient widget_client;
   frame_test_helpers::TestWebFrameWidget* widget =
@@ -4361,7 +4361,10 @@ class CreateChildCounterFrameClient
       FrameOwnerElementType,
       WebPolicyContainerBindParams policy_container_bind_params,
       ukm::SourceId document_ukm_source_id,
-      base::FunctionRef<void(WebLocalFrame*, const DocumentToken&)>
+      base::FunctionRef<void(
+          WebLocalFrame*,
+          const DocumentToken&,
+          CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>)>
           complete_initialization) override;
 
   int Count() const { return count_; }
@@ -4379,7 +4382,10 @@ WebLocalFrame* CreateChildCounterFrameClient::CreateChildFrame(
     FrameOwnerElementType frame_owner_element_type,
     WebPolicyContainerBindParams policy_container_bind_params,
     ukm::SourceId document_ukm_source_id,
-    base::FunctionRef<void(WebLocalFrame*, const DocumentToken&)>
+    base::FunctionRef<void(
+        WebLocalFrame*,
+        const DocumentToken&,
+        CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>)>
         complete_initialization) {
   ++count_;
   return TestWebFrameClient::CreateChildFrame(
