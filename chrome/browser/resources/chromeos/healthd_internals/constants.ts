@@ -31,3 +31,11 @@ export const LINE_CHART_COLOR_SET: string[] = [
   '#9f9b04',
   '#83888d',
 ];
+
+/**
+ * The enum for displayed pages in chrome://healthd-internals.
+ */
+export enum PagePath {
+  TELEMETRY = '/telemetry',
+  THERMAL = '/thermal',
+}

@@ -89,6 +89,9 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
   private touchX: number = 0;
   private touchZoomBase: number = 0;
 
+  // Whether the line chart is visible. If not, we don't need to render canvas.
+  private isVisible: boolean = false;
+
   // Initialize the `canvasDrawer`.
   initCanvasDrawer(units: string[], unitBase: number) {
     this.canvasDrawer = new CanvasDrawer(units, unitBase);
@@ -122,6 +125,16 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
     this.endTime = endTime;
     this.updateScrollBar();
     this.updateChart();
+  }
+
+  // Update the visibility of line chart. We don't need to render the chart when
+  // the chart is not visible.
+  updateVisibility(isVisible: boolean) {
+    this.isVisible = isVisible;
+    if (isVisible) {
+      this.updateScrollBar();
+      this.updateChart();
+    }
   }
 
   // Overwrite the maximum value of the chart.
@@ -283,6 +296,9 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
   // Update the scrollbar to the current line chart status after zooming,
   // scrolling... etc.
   private updateScrollBar() {
+    if (!this.isVisible) {
+      return;
+    }
     const scrollRange: number =
         Math.max(this.getChartWidth() - this.getChartVisibleWidth(), 0);
     const isScrolledToRightEdge: boolean =
@@ -323,7 +339,7 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
     const context: CanvasRenderingContext2D|null =
         this.$.mainCanvas.getContext('2d');
     if (context === null || this.canvasDrawer === null ||
-        !this.canvasDrawer.shouldRender()) {
+        !this.canvasDrawer.shouldRender() || !this.isVisible) {
       return;
     }
     this.chartUpdateTimer = setTimeout(() => this.renderCanvas(context));

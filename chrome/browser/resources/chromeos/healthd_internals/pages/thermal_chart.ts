@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/polymer/v3_0/iron-location/iron-location.js';
-import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import '../line_chart/line_chart.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -81,6 +79,10 @@ export class HealthdInternalsThermalChartElement extends PolymerElement {
     for (let i = 0; i < thermalDataSeries.length; ++i) {
       this.$.lineChart.addDataSeries(thermalDataSeries[i]);
     }
+  }
+
+  updateVisibility(isVisble: boolean) {
+    this.$.lineChart.updateVisibility(isVisble);
   }
 }
 

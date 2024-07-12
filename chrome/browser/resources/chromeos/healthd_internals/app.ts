@@ -16,14 +16,14 @@ import {CrRouter} from '//resources/js/cr_router.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {UPDATE_PERIOD} from './constants.js';
+import {PagePath, UPDATE_PERIOD} from './constants.js';
 import {HealthdApiTelemetryResult} from './externs.js';
 import type {HealthdInternalsThermalChartElement} from './pages/thermal_chart.js';
 
 // Interface of pages in chrome://healthd-internals.
 interface Page {
   name: string;
-  path: string;
+  path: PagePath;
 }
 
 export interface HealthdInternalsAppElement {
@@ -44,7 +44,10 @@ export class HealthdInternalsAppElement extends PolymerElement {
   static get properties() {
     return {
       pageList: {type: Array},
-      currentPath: {type: String},
+      currentPath: {
+        type: PagePath,
+        observer: 'currentPathChanged',
+      },
       selectedIndex: {
         type: Number,
         observer: 'selectedIndexChanged',
@@ -69,30 +72,36 @@ export class HealthdInternalsAppElement extends PolymerElement {
   private pageList: Page[] = [
     {
       name: 'Telemetry',
-      path: '/telemetry',
-    },
-    {
-      name: 'Diagnostics',
-      path: '/diagnostics',
-    },
-    {
-      name: 'Event',
-      path: '/event',
+      path: PagePath.TELEMETRY,
     },
     {
       name: 'Thermal Diagram',
-      path: '/thermal',
+      path: PagePath.THERMAL,
     },
   ];
-  private currentPath: string;
+  private currentPath: PagePath;
   private selectedIndex: number;
 
+  // Handle path changes caused by popstate events (back/forward navigation).
+  private currentPathChanged(newPath: PagePath, oldPath: PagePath) {
+    this.updateSelectedIndex(newPath);
+    this.handleVisibilityChanged(newPath, true);
+    this.handleVisibilityChanged(oldPath, false);
+  }
+
+  // Handle selected index changes caused by clicking on navigation items.
   private selectedIndexChanged() {
     this.currentPath = this.pageList[this.selectedIndex]!.path;
   }
 
+  private handleVisibilityChanged(pagePath: PagePath, isVisible: boolean) {
+    if (pagePath === PagePath.THERMAL) {
+      this.$.thermalChart.updateVisibility(isVisible);
+    }
+  }
+
   // Set up periodic fetch data requests to the backend to get required info.
-  private startFetchDataRequests(): void {
+  private startFetchDataRequests() {
     const fetchData = () => {
       sendWithPromise('getHealthdTelemetryInfo')
           .then((data: HealthdApiTelemetryResult) => {
@@ -103,7 +112,7 @@ export class HealthdInternalsAppElement extends PolymerElement {
     setInterval(fetchData, UPDATE_PERIOD);
   }
 
-  private handleHealthdTelemetryInfo(data: HealthdApiTelemetryResult): void {
+  private handleHealthdTelemetryInfo(data: HealthdApiTelemetryResult) {
     this.$.thermalChart.updateThermalData(data.thermals, Date.now());
   }
 }
