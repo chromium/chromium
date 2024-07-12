@@ -901,5 +901,5 @@ public abstract class ChromeFeatureList {
     public static final MutableBooleanParamWithSafeDefault
             sDisableBottomControlsStackerYOffsetDispatching =
                     sBottomBrowserControlsRefactor.newBooleanParam(
-                            "disable_bottom_controls_stacker_y_offset", false);
+                            "disable_bottom_controls_stacker_y_offset", true);
 }

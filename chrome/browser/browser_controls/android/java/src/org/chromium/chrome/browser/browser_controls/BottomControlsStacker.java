@@ -23,7 +23,6 @@ import java.lang.annotation.RetentionPolicy;
 public class BottomControlsStacker implements BrowserControlsStateProvider.Observer {
     private static final String TAG = "BotControlsStacker";
     private static final int INVALID_HEIGHT = -1;
-
     private static boolean sDumpLayerUpdateForTesting;
 
     /** Enums that defines the type and position for each bottom controls. */
@@ -52,6 +51,8 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             };
 
     private final SparseArray<BottomControlsLayer> mLayers = new SparseArray<>();
+    // Recorded the yOffset for all current layers. This only record the yOffset for visible layers.
+    private final SparseIntArray mLayerYOffsets = new SparseIntArray();
     private final BrowserControlsSizer mBrowserControlsSizer;
 
     private int mTotalHeight = INVALID_HEIGHT;
@@ -272,23 +273,58 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
                 height,
                 totalMinHeight);
 
-        // 2. Compare and fix the yOffset with the previous mLayerOffsets.
+        // 2. If animated, compare and fix the yOffset with the previous mLayerOffsets if reposition
+        // is caused by an animated browser controls height adjustment. This needs to run in a
+        // different loop to cooperate browser controls height reduction, as we need to still push
+        // updates to layer that's changed from visible -> hidden.
         if (animated) {
-            // When the height adjustment is animated, we need to read the previous position
-            // offsets decide which layers can be moved.
-            // TODO(crbug.com/345488108): Address animation calculations.
-            Log.w(TAG, "Animated transition not supported yet.");
+            // When bottomOffset is negative, the browser controls is going through a height
+            // reduction.
+            boolean isControlsShrinking = bottomOffset < 0;
+
+            // Create a initial value for layer's yOffset, in case the top layer is hiding,
+            // shrinking the bottom control's height.
+            int layerYOffset = bottomOffset - mTotalHeight;
+            for (int type : STACK_ORDER) {
+                BottomControlsLayer layer = mLayers.get(type);
+                if (layer == null) continue;
+
+                // Read the yOffset calculated in step #1. If the layer is hiding, use a default
+                // value.
+                layerYOffset = yOffsetOfLayers.get(type, layerYOffset + layer.getHeight());
+
+                // When the height adjustment is animated, we need to read the previous position
+                // offsets decide which layers can be moved.
+                int previousYOffset = mLayerYOffsets.get(type, layerYOffset);
+                if (isControlsShrinking) {
+                    // When browser controls shrinking, none of the layers should move upwards (i.e.
+                    // yOffset decrease)
+                    layerYOffset = Math.max(layerYOffset, previousYOffset);
+                } else {
+                    // When browser controls growing, none of the layers should move downward (i.e.
+                    // yOffset increase)
+                    layerYOffset = Math.min(layerYOffset, previousYOffset);
+                }
+
+                yOffsetOfLayers.put(type, layerYOffset);
+            }
         }
 
         // 3. Dispatch the yOffset to each layers. Do this after the calculation is done, so all
         // layers do not change their state during the algorithm.
         for (int layerType : STACK_ORDER) {
             BottomControlsLayer layer = mLayers.get(layerType);
-            if (layer == null || !layer.isVisible()) continue;
+            if (layer == null) continue;
 
             // Record the current yOffset in case the offset will be used for future animated
             // height adjustment.
-            int yOffset = yOffsetOfLayers.get(layerType);
+            int yOffset = yOffsetOfLayers.get(layerType, layer.getHeight());
+            if (!layer.isVisible()) {
+                mLayerYOffsets.delete(layerType);
+            } else {
+                mLayerYOffsets.put(layerType, yOffset);
+            }
+
             layer.onBrowserControlsOffsetUpdate(yOffset);
             if (sDumpLayerUpdateForTesting) {
                 dumpStatsForLayerForTesting(layer, yOffset);

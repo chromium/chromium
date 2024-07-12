@@ -15,6 +15,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
@@ -40,6 +41,12 @@ public class BottomControlsStackerUnitTest {
     public void setup() {
         MockitoAnnotations.openMocks(this);
         mBottomControlsStacker = new BottomControlsStacker(mBrowserControlsSizer);
+
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.sDisableBottomControlsStackerYOffsetDispatching, "false");
+        testValues.addFeatureFlagOverride(ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR, true);
+        FeatureList.setTestValues(testValues);
     }
 
     @Test
@@ -353,6 +360,47 @@ public class BottomControlsStackerUnitTest {
     }
 
     @Test
+    public void reposition_RemoveLayer_RemoveTop_Animated() {
+        TestLayer top = new TestLayer(TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer bottom = new TestLayer(BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF);
+        mBottomControlsStacker.addLayer(top);
+        mBottomControlsStacker.addLayer(bottom);
+
+        mBottomControlsStacker.requestLayerUpdate(false);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(110, 0);
+
+        // Do a offset update so each layers are positioned.
+        onBottomControlsOffsetChanged(0, 0, false);
+        assertLayerYOffset(top, -10);
+        assertLayerYOffset(bottom, 0);
+
+        // Simulate a browser controls height change because top layer is removed.
+        top.setVisible(false);
+        mBottomControlsStacker.requestLayerUpdate(true);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(10, 0);
+        verify(mBrowserControlsSizer).setAnimateBrowserControlsHeightChanges(true);
+
+        // Simulate browser controls update. As top control is removed, the top layer should still
+        // receive updates.
+        onBottomControlsOffsetChanged(-100, 0, true);
+        assertLayerYOffset(top, -10);
+        assertLayerYOffset(bottom, 0);
+
+        onBottomControlsOffsetChanged(-60, 0, true);
+        assertLayerYOffset(top, 30);
+        assertLayerYOffset(bottom, 0);
+
+        onBottomControlsOffsetChanged(-20, 0, true);
+        assertLayerYOffset(top, 70);
+        assertLayerYOffset(bottom, 0);
+
+        // When animation finished, the hidden layer has its yOffset is set to its height.
+        onBottomControlsOffsetChanged(0, 0, false);
+        assertLayerYOffset(top, 100);
+        assertLayerYOffset(bottom, 0);
+    }
+
+    @Test
     public void reposition_RemoveLayer_RemovedBottom() {
         TestLayer top = new TestLayer(TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
         TestLayer bottom = new TestLayer(BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF);
@@ -379,6 +427,47 @@ public class BottomControlsStackerUnitTest {
     }
 
     @Test
+    public void reposition_RemoveLayer_RemovedBottom_Animated() {
+        TestLayer top = new TestLayer(TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer bottom = new TestLayer(BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF);
+        mBottomControlsStacker.addLayer(top);
+        mBottomControlsStacker.addLayer(bottom);
+
+        mBottomControlsStacker.requestLayerUpdate(false);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(110, 0);
+
+        // Do a offset update so each layers are positioned.
+        onBottomControlsOffsetChanged(0, 0, false);
+        assertLayerYOffset(top, -10);
+        assertLayerYOffset(bottom, 0);
+
+        // Simulate a browser controls height change because bottom layer is removed.
+        bottom.setVisible(false);
+        mBottomControlsStacker.requestLayerUpdate(true);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(100, 0);
+        verify(mBrowserControlsSizer).setAnimateBrowserControlsHeightChanges(true);
+
+        // Simulate browser controls update. As the bottom layer is removed, both layer will
+        // receive updates.
+        onBottomControlsOffsetChanged(-10, 0, true);
+        assertLayerYOffset(top, -10);
+        assertLayerYOffset(bottom, 0);
+
+        onBottomControlsOffsetChanged(-6, 0, true);
+        assertLayerYOffset(top, -6);
+        assertLayerYOffset(bottom, 4);
+
+        onBottomControlsOffsetChanged(-2, 0, true);
+        assertLayerYOffset(top, -2);
+        assertLayerYOffset(bottom, 8);
+
+        // When animation settled, the yOffset for the bottom layer is set to its height.
+        onBottomControlsOffsetChanged(0, 0, false);
+        assertLayerYOffset(top, 0);
+        assertLayerYOffset(bottom, 10);
+    }
+
+    @Test
     public void reposition_RemoveLayer_RemovedMid() {
         TestLayer top = new TestLayer(TOP_LAYER, 1000, LayerScrollBehavior.SCROLL_OFF);
         TestLayer mid = new TestLayer(MID_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
@@ -396,7 +485,7 @@ public class BottomControlsStackerUnitTest {
         assertLayerYOffset(mid, -10);
         assertLayerYOffset(bottom, 0);
 
-        // Simulate a browser controls height change because top layer is removed.
+        // Simulate a browser controls height change because mid layer is removed.
         mBottomControlsStacker.removeLayer(mid);
         mBottomControlsStacker.requestLayerUpdate(false);
         verify(mBrowserControlsSizer).setBottomControlsHeight(1010, 0);
@@ -405,6 +494,56 @@ public class BottomControlsStackerUnitTest {
         // offset directly.
         onBottomControlsOffsetChanged(0, 0, false);
         assertLayerYOffset(top, -10);
+        assertLayerYOffset(bottom, 0);
+    }
+
+    @Test
+    public void reposition_RemoveLayer_RemovedMid_Animated() {
+        TestLayer top = new TestLayer(TOP_LAYER, 1000, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer mid = new TestLayer(MID_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer bottom = new TestLayer(BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF);
+        mBottomControlsStacker.addLayer(top);
+        mBottomControlsStacker.addLayer(mid);
+        mBottomControlsStacker.addLayer(bottom);
+
+        mBottomControlsStacker.requestLayerUpdate(false);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(1110, 0);
+
+        // Do a offset update so each layers are positioned.
+        onBottomControlsOffsetChanged(0, 0, false);
+        assertLayerYOffset(top, -110);
+        assertLayerYOffset(mid, -10);
+        assertLayerYOffset(bottom, 0);
+
+        // Simulate a browser controls height change because mid layer is hidden.
+        mid.setVisible(false);
+        mBottomControlsStacker.requestLayerUpdate(true);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(1010, 0);
+        verify(mBrowserControlsSizer).setAnimateBrowserControlsHeightChanges(true);
+
+        // Animation started - bottom controls will hold a negative offset.
+        // As mid layer is hidden, the top layer will change its offset.
+        // The mid layer will receive offsets too, but its height is not part of the browser
+        // controls anymore.
+        onBottomControlsOffsetChanged(-100, 0, true);
+        assertLayerYOffset(top, -110);
+        assertLayerYOffset(mid, -10);
+        assertLayerYOffset(bottom, 0);
+
+        onBottomControlsOffsetChanged(-60, 0, true);
+        assertLayerYOffset(top, -70);
+        assertLayerYOffset(mid, 30);
+        assertLayerYOffset(bottom, 0);
+
+        onBottomControlsOffsetChanged(-20, 0, true);
+        assertLayerYOffset(top, -30);
+        assertLayerYOffset(mid, 70);
+        assertLayerYOffset(bottom, 0);
+
+        // After animation settled, the yOffset for mid layer is set to its heght.
+        onBottomControlsOffsetChanged(0, 0, false);
+        assertLayerYOffset(top, -10);
+        assertLayerYOffset(mid, 100);
         assertLayerYOffset(bottom, 0);
     }
 
@@ -422,6 +561,40 @@ public class BottomControlsStackerUnitTest {
         mBottomControlsStacker.addLayer(bottom);
         mBottomControlsStacker.requestLayerUpdate(false);
         verify(mBrowserControlsSizer).setBottomControlsHeight(110, 0);
+
+        onBottomControlsOffsetChanged(0, 0, false);
+        assertLayerYOffset(top, -10);
+        assertLayerYOffset(bottom, 0);
+    }
+
+    @Test
+    public void reposition_AddLayers_AddBottom_Animated() {
+        TestLayer top = new TestLayer(TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
+        mBottomControlsStacker.addLayer(top);
+        mBottomControlsStacker.requestLayerUpdate(false);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(100, 0);
+
+        onBottomControlsOffsetChanged(0, 0, false);
+        assertLayerYOffset(top, 0);
+
+        TestLayer bottom = new TestLayer(BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF);
+        mBottomControlsStacker.addLayer(bottom);
+        mBottomControlsStacker.requestLayerUpdate(true);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(110, 0);
+        verify(mBrowserControlsSizer).setAnimateBrowserControlsHeightChanges(true);
+
+        // Animation started, both top layer and bottom layer gradually moves up.
+        onBottomControlsOffsetChanged(10, 0, true);
+        assertLayerYOffset(top, 0);
+        assertLayerYOffset(bottom, 10);
+
+        onBottomControlsOffsetChanged(6, 0, true);
+        assertLayerYOffset(top, -4);
+        assertLayerYOffset(bottom, 6);
+
+        onBottomControlsOffsetChanged(2, 0, true);
+        assertLayerYOffset(top, -8);
+        assertLayerYOffset(bottom, 2);
 
         onBottomControlsOffsetChanged(0, 0, false);
         assertLayerYOffset(top, -10);
@@ -449,6 +622,40 @@ public class BottomControlsStackerUnitTest {
     }
 
     @Test
+    public void reposition_AddLayers_AddTop_Animated() {
+        TestLayer bottom = new TestLayer(BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF);
+        mBottomControlsStacker.addLayer(bottom);
+        mBottomControlsStacker.requestLayerUpdate(false);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(10, 0);
+
+        onBottomControlsOffsetChanged(0, 0, false);
+        assertLayerYOffset(bottom, 0);
+
+        TestLayer top = new TestLayer(TOP_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
+        mBottomControlsStacker.addLayer(top);
+        mBottomControlsStacker.requestLayerUpdate(true);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(110, 0);
+        verify(mBrowserControlsSizer).setAnimateBrowserControlsHeightChanges(true);
+
+        // Animation started - only the top layer moves, the bottom layer stay in-place.
+        onBottomControlsOffsetChanged(100, 0, true);
+        assertLayerYOffset(top, 90);
+        assertLayerYOffset(bottom, 0);
+
+        onBottomControlsOffsetChanged(60, 0, true);
+        assertLayerYOffset(top, 50);
+        assertLayerYOffset(bottom, 0);
+
+        onBottomControlsOffsetChanged(20, 0, true);
+        assertLayerYOffset(top, 10);
+        assertLayerYOffset(bottom, 0);
+
+        onBottomControlsOffsetChanged(0, 0, false);
+        assertLayerYOffset(top, -10);
+        assertLayerYOffset(bottom, 0);
+    }
+
+    @Test
     public void reposition_AddLayers_AddMid() {
         TestLayer top = new TestLayer(TOP_LAYER, 1000, LayerScrollBehavior.SCROLL_OFF);
         TestLayer bottom = new TestLayer(BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF);
@@ -466,6 +673,51 @@ public class BottomControlsStackerUnitTest {
         mBottomControlsStacker.requestLayerUpdate(false);
         verify(mBrowserControlsSizer).setBottomControlsHeight(1110, 0);
 
+        onBottomControlsOffsetChanged(0, 0, false);
+        assertLayerYOffset(top, -110);
+        assertLayerYOffset(mid, -10);
+        assertLayerYOffset(bottom, 0);
+    }
+
+    @Test
+    public void reposition_AddLayers_AddMid_Animated() {
+        TestLayer top = new TestLayer(TOP_LAYER, 1000, LayerScrollBehavior.SCROLL_OFF);
+        TestLayer bottom = new TestLayer(BOTTOM_LAYER, 10, LayerScrollBehavior.SCROLL_OFF);
+        mBottomControlsStacker.addLayer(top);
+        mBottomControlsStacker.addLayer(bottom);
+        mBottomControlsStacker.requestLayerUpdate(false);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(1010, 0);
+
+        onBottomControlsOffsetChanged(0, 0, false);
+        assertLayerYOffset(top, -10);
+        assertLayerYOffset(bottom, 0);
+
+        TestLayer mid = new TestLayer(MID_LAYER, 100, LayerScrollBehavior.SCROLL_OFF);
+        mBottomControlsStacker.addLayer(mid);
+        mBottomControlsStacker.requestLayerUpdate(true);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(1110, 0);
+        verify(mBrowserControlsSizer).setAnimateBrowserControlsHeightChanges(true);
+
+        // Animation started, the offset will be set to a positive value as browser control grows.
+        // Since layer mid was added, the bottom layer's offset should not change.
+        onBottomControlsOffsetChanged(100, 0, true);
+        assertLayerYOffset(top, -10);
+        assertLayerYOffset(mid, 90);
+        assertLayerYOffset(bottom, 0);
+
+        // As offset reduces, the top and mid layer will shift up.
+        onBottomControlsOffsetChanged(60, 0, true);
+        assertLayerYOffset(top, -50);
+        assertLayerYOffset(mid, 50);
+        assertLayerYOffset(bottom, 0);
+
+        // As offset reduces, the top and mid layer will shift up.
+        onBottomControlsOffsetChanged(20, 0, true);
+        assertLayerYOffset(top, -90);
+        assertLayerYOffset(mid, 10);
+        assertLayerYOffset(bottom, 0);
+
+        // Reached the final state. No more animations.
         onBottomControlsOffsetChanged(0, 0, false);
         assertLayerYOffset(top, -110);
         assertLayerYOffset(mid, -10);
