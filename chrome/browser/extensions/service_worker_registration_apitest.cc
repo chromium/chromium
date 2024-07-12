@@ -21,6 +21,7 @@
 #include "extensions/browser/service_worker/service_worker_task_queue.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/mojom/manifest.mojom.h"
 #include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -32,6 +33,11 @@ namespace extensions {
 using service_worker_test_utils::TestServiceWorkerTaskQueueObserver;
 
 namespace {
+
+enum class BackgroundType {
+  kPersistentPage,
+  kLazyPage,
+};
 
 // Convenience method for checking true/false counts of boolean histograms.
 void CheckBooleanHistogramCounts(const char* histogram_name,
@@ -849,6 +855,271 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerRegistrationRestartMetricBrowserTest,
       /*expected_count=*/0);
 }
 
+class MV2BackgroundsToMV3WorkerRegistrationMetricBrowserTest
+    : public ServiceWorkerRegistrationApiTest,
+      public testing::WithParamInterface<BackgroundType> {
+ protected:
+  const char* GetMV2ManifestBackgroundSectionForBackgroundType() {
+    switch (GetParam()) {
+      case BackgroundType::kLazyPage:
+        return R"(
+        "background": {
+           "scripts": ["background.js"],
+           "persistent": false
+        }
+      )";
+      case BackgroundType::kPersistentPage:
+        return R"(
+        "background": {
+           "scripts": ["background.js"],
+           "persistent": true
+        }
+      )";
+    }
+  }
+};
+
+// Tests that MV2 extensions of all background types, when updated, emit the
+// metrics for previous worker unregistration and new worker registration.
+IN_PROC_BROWSER_TEST_P(MV2BackgroundsToMV3WorkerRegistrationMetricBrowserTest,
+                       ExtensionUpdate) {
+  static constexpr char kManifestMv2Template[] =
+      R"({
+         "name": "MV2 extension with non-SW background",
+         "version": "1",
+         "manifest_version": 2,
+         %s
+       })";
+
+  static constexpr char kManifestMv3[] =
+      R"({
+         "name": "MV3 extension with service worker",
+         "version": "2",
+         "manifest_version": 3,
+         "background": {
+           "service_worker": "background.js"
+         }
+       })";
+
+  constexpr char kBackgroundTemplate[] =
+      R"(
+        self.currentVersion = %d;
+
+        chrome.runtime.onInstalled.addListener((details) => {
+          chrome.test.sendMessage('v' + self.currentVersion + ' ready');
+        });
+      )";
+
+  const char* ManifestMv2BackgroundSection =
+      GetMV2ManifestBackgroundSectionForBackgroundType();
+
+  // Write and package the first version of the extension.
+  TestExtensionDir extension_dir;
+  extension_dir.WriteManifest(
+      base::StringPrintf(kManifestMv2Template, ManifestMv2BackgroundSection));
+  extension_dir.WriteFile(
+      FILE_PATH_LITERAL("background.js"),
+      base::StringPrintf(kBackgroundTemplate, /*self.currentVersion=*/1));
+  base::FilePath crx_v1_path = extension_dir.Pack("v1.crx");
+
+  // Install the MV2 extension.
+  const Extension* extension_v1 = nullptr;
+  {
+    ExtensionTestMessageListener listener("v1 ready");
+    extension_v1 = InstallExtension(crx_v1_path, /*expected_change=*/1);
+    SCOPED_TRACE("waiting for extension to be installed");
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+  }
+
+  ASSERT_TRUE(extension_v1);
+  EXPECT_EQ("1", extension_v1->version().GetString());
+  const ExtensionId extension_v1_id = extension_v1->id();
+
+  // Verify the first version of the extension is at v1.
+  EXPECT_EQ(base::Value(1),
+            GetVersionFlagFromBackgroundContext(extension_v1_id));
+
+  // Write and package the second version of the extension.
+  extension_dir.WriteManifest(kManifestMv3);
+  extension_dir.WriteFile(
+      FILE_PATH_LITERAL("background.js"),
+      base::StringPrintf(kBackgroundTemplate, /*self.currentVersion=*/2));
+  base::FilePath crx_v2_path = extension_dir.Pack("v2.crx");
+
+  // Update to the second (MV3) version of the extension with a worker.
+  const Extension* extension_v2 = nullptr;
+  base::HistogramTester histogram_tester;  // Monitors metrics during update.
+  {
+    ExtensionTestMessageListener listener("v2 ready");
+    // `extension_v1` will be unsafe to use after update.
+    extension_v2 =
+        UpdateExtension(extension_v1_id, crx_v2_path, /*expected_change=*/0);
+    SCOPED_TRACE("waiting for extension to be updated");
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+  }
+
+  ASSERT_TRUE(extension_v2);
+  EXPECT_EQ("2", extension_v2->version().GetString());
+  EXPECT_EQ(extension_v1_id, extension_v2->id());
+  ASSERT_TRUE(HasActiveServiceWorker(extension_v2->id()));
+
+  // The service worker context should be that of the new version.
+  EXPECT_EQ(base::Value(2),
+            GetVersionFlagFromBackgroundContext(extension_v2->id()));
+
+  // First the old worker registration is unregistered. It is unregistered
+  // twice: once when removing the extension (ServiceWorkerTaskQueue) and then
+  // (redundantly) again before adding the new version of the extension. The
+  // redundant removal is meant to handle the case where a
+  // non-ServiceWorkerTaskQueue-tracked worker is registered for the extension
+  // (example: an MV2 extension that registered a worker via the web API).
+
+  // When updating from an MV2 worker we unregister the previous worker
+  // version first.
+  CheckBooleanHistogramCounts(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationState",
+      /*true_count=*/0, /*false_count=*/1, histogram_tester);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationState_"
+      "DeactivateExtension",
+      /*expected_count=*/0);
+  // We unsuccessfully attempt to unregister it again to handle workers that are
+  // registered via the web API. This is an expected failure.
+  CheckBooleanHistogramCounts(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationState_"
+      "AddExtension",
+      /*true_count=*/0, /*false_count=*/1, histogram_tester);
+
+  // Then the new worker registration is registered.
+  CheckBooleanHistogramCounts(
+      "Extensions.ServiceWorkerBackground.WorkerRegistrationState",
+      /*true_count=*/1, /*false_count=*/0, histogram_tester);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.ServiceWorkerBackground.Registration_FailStatus",
+      /*expected_count=*/0);
+}
+
+class WorkerBackgroundToWorkerBackgroundRegistrationMetricTest
+    : public ServiceWorkerRegistrationApiTest,
+      public testing::WithParamInterface<std::pair<int, int>> {};
+
+// Tests that extensions of either manifest type can update to a worker from a
+// previous worker version and emit metrics for unregistering the previous
+// worker and registering the new worker version.
+IN_PROC_BROWSER_TEST_P(WorkerBackgroundToWorkerBackgroundRegistrationMetricTest,
+                       ExtensionUpdate) {
+  const char kManifestV1Template[] =
+      R"({
+         "name": "Version 1 extension with service worker",
+         "version": "1",
+         "manifest_version": %d,
+         "background": {
+           "service_worker": "background.js"
+         }
+       })";
+
+  static constexpr char kManifestV2Template[] =
+      R"({
+         "name": "Version 2 extension with service worker",
+         "version": "2",
+         "manifest_version": %d,
+         "background": {
+           "service_worker": "background.js"
+         }
+       })";
+
+  constexpr char kBackgroundTemplate[] =
+      R"(
+        self.currentVersion = %d;
+
+        chrome.runtime.onInstalled.addListener((details) => {
+          chrome.test.sendMessage('v' + self.currentVersion + ' ready');
+        });
+      )";
+
+  // Write and package the first version of the extension.
+  TestExtensionDir extension_dir;
+  extension_dir.WriteManifest(base::StringPrintf(
+      kManifestV1Template, /*manifest_version*/ GetParam().first));
+  extension_dir.WriteFile(
+      FILE_PATH_LITERAL("background.js"),
+      base::StringPrintf(kBackgroundTemplate, /*self.currentVersion=*/1));
+  base::FilePath crx_v1_path = extension_dir.Pack("v1.crx");
+
+  // Install the first version of the extension.
+  const Extension* extension_v1 = nullptr;
+  {
+    ExtensionTestMessageListener listener("v1 ready");
+    extension_v1 = InstallExtension(crx_v1_path, /*expected_change=*/1);
+    SCOPED_TRACE("waiting for version 1 of the extension to install");
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+  }
+
+  ASSERT_TRUE(extension_v1);
+  EXPECT_EQ("1", extension_v1->version().GetString());
+  const ExtensionId extension_v1_id = extension_v1->id();
+  ASSERT_TRUE(HasActiveServiceWorker(extension_v1_id));
+
+  // Verify the service worker is at v1.
+  EXPECT_EQ(base::Value(1),
+            GetVersionFlagFromBackgroundContext(extension_v1_id));
+
+  // Write and package the first version of the extension.
+  extension_dir.WriteManifest(base::StringPrintf(
+      kManifestV2Template, /*manifest_version*/ GetParam().second));
+  extension_dir.WriteFile(
+      FILE_PATH_LITERAL("background.js"),
+      base::StringPrintf(kBackgroundTemplate, /*self.currentVersion=*/2));
+  base::FilePath crx_v2_path = extension_dir.Pack("v2.crx");
+
+  // Update to the second version of the extension.
+  const Extension* extension_v2 = nullptr;
+  base::HistogramTester histogram_tester;  // Monitors metrics during update.
+  {
+    ExtensionTestMessageListener listener("v2 ready");
+    // `extension_v1` will be unsafe to use after update.
+    extension_v2 =
+        UpdateExtension(extension_v1_id, crx_v2_path, /*expected_change=*/0);
+    SCOPED_TRACE("waiting for updated version 2 of the extension to install");
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+  }
+
+  ASSERT_TRUE(extension_v2);
+  EXPECT_EQ("2", extension_v2->version().GetString());
+  EXPECT_EQ(extension_v1_id, extension_v2->id());
+  EXPECT_TRUE(HasActiveServiceWorker(extension_v2->id()));
+
+  // The service worker context should be that of the new version.
+  EXPECT_EQ(base::Value(2),
+            GetVersionFlagFromBackgroundContext(extension_v2->id()));
+
+  // First the old worker registration is unregistered. It is unregistered
+  // twice: once when removing the extension (ServiceWorkerTaskQueue) and then
+  // redundantly again (but curiously it succeeds) before adding the new version
+  // of the extension.
+  CheckBooleanHistogramCounts(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationState",
+      /*true_count=*/2, /*false_count=*/0, histogram_tester);
+  // And it's unregistered due to the MV2 service worker being deactivated.
+  CheckBooleanHistogramCounts(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationState_"
+      "DeactivateExtension",
+      /*true_count=*/1, /*false_count=*/0, histogram_tester);
+  // We redundantly attempt to unregister it again to handle workers that are
+  // registered via the web API.
+  CheckBooleanHistogramCounts(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationState_"
+      "AddExtension",
+      /*true_count=*/1, /*false_count=*/0, histogram_tester);
+
+  CheckBooleanHistogramCounts(
+      "Extensions.ServiceWorkerBackground.WorkerRegistrationState",
+      /*true_count=*/1, /*false_count=*/0, histogram_tester);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.ServiceWorkerBackground.Registration_FailStatus",
+      /*expected_count=*/0);
+}
+
 INSTANTIATE_TEST_SUITE_P(MV2,
                          ServiceWorkerRegistrationInstallMetricBrowserTest,
                          testing::Values(2));
@@ -862,5 +1133,28 @@ INSTANTIATE_TEST_SUITE_P(MV2,
 INSTANTIATE_TEST_SUITE_P(MV3,
                          ServiceWorkerRegistrationRestartMetricBrowserTest,
                          testing::Values(3));
+
+INSTANTIATE_TEST_SUITE_P(MV2EventPageToMV3Worker,
+                         MV2BackgroundsToMV3WorkerRegistrationMetricBrowserTest,
+                         testing::Values(BackgroundType::kLazyPage));
+
+INSTANTIATE_TEST_SUITE_P(MV2PersistentPageToMV3Worker,
+                         MV2BackgroundsToMV3WorkerRegistrationMetricBrowserTest,
+                         testing::Values(BackgroundType::kPersistentPage));
+
+INSTANTIATE_TEST_SUITE_P(
+    Mv2ToMv2,
+    WorkerBackgroundToWorkerBackgroundRegistrationMetricTest,
+    testing::Values(std::pair<int, int>(2, 2)));
+
+INSTANTIATE_TEST_SUITE_P(
+    Mv2ToMv3,
+    WorkerBackgroundToWorkerBackgroundRegistrationMetricTest,
+    testing::Values(std::pair<int, int>(2, 3)));
+
+INSTANTIATE_TEST_SUITE_P(
+    Mv3ToMv3,
+    WorkerBackgroundToWorkerBackgroundRegistrationMetricTest,
+    testing::Values(std::pair<int, int>(3, 3)));
 
 }  // namespace extensions
