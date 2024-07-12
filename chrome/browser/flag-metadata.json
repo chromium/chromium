@@ -518,7 +518,7 @@
   {
     "name": "ash-snap-groups",
     "owners": [ "michelefan@chromium.org", "sophiewen@chromium.org", "xdai@chromium.org" ],
-    "expiry_milestone": 129
+    "expiry_milestone": 137
   },
   {
     "name": "ash-split-keyboard-refactor",
