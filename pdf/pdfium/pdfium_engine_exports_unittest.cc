@@ -208,8 +208,10 @@ TEST_F(PDFiumEngineExportsTest, Searchify) {
   base::MockCallback<base::RepeatingCallback<
       screen_ai::mojom::VisualAnnotationPtr(const SkBitmap&)>>
       perform_ocr_callback;
+  // The PDF has 3 images, but one of them has a matrix that results in an image
+  // with size 0, and its image cannot be extracted.
   EXPECT_CALL(perform_ocr_callback, Run)
-      .Times(3)
+      .Times(2)
       .WillRepeatedly([](const SkBitmap& bitmap) {
         CHECK(!bitmap.empty());
         auto annotation = screen_ai::mojom::VisualAnnotation::New();

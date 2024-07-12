@@ -798,11 +798,6 @@ SkBitmap PDFiumPage::GetImageForOcr(int page_object_index) {
       break;
   }
 
-  // TODO(crbug/40068467): Currently, `::chrome_pdf::GetImageForOcr` returns the
-  // full image stored in the PDF without applying the transformation matrix. To
-  // ensure the image sent to OCR matches how users view it on the browser,
-  // rotate the bitmap by the page's rotation. We may also need to consider the
-  // transformation of the image.
   return SkBitmapOperations::Rotate(bitmap, rotation);
 }
 
