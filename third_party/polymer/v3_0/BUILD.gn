@@ -145,6 +145,7 @@ ts_library("library") {
     "//chrome/test/data/webui/app_settings:build_ts",
     "//chrome/test/data/webui/bookmarks:build_ts",
     "//chrome/test/data/webui/cr_components:build_ts",
+    "//chrome/test/data/webui/cr_components/help_bubble:build_ts",
     "//chrome/test/data/webui/cr_elements:build_ts",
     "//chrome/test/data/webui/downloads:build_ts",
     "//chrome/test/data/webui/extensions:build_ts",

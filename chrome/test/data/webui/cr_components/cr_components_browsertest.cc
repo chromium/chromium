@@ -73,17 +73,18 @@ IN_PROC_BROWSER_TEST_F(CrComponentsTest, CustomizeColorSchemeMode) {
 
 IN_PROC_BROWSER_TEST_F(CrComponentsTest, HelpBubbleMixin) {
   set_test_loader_host(chrome::kChromeUINewTabPageHost);
-  RunTest("cr_components/help_bubble_mixin_test.js", "mocha.run()");
+  RunTest("cr_components/help_bubble/help_bubble_mixin_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrComponentsTest, HelpBubbleMixinLit) {
   set_test_loader_host(chrome::kChromeUINewTabPageHost);
-  RunTest("cr_components/help_bubble_mixin_lit_test.js", "mocha.run()");
+  RunTest("cr_components/help_bubble/help_bubble_mixin_lit_test.js",
+          "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrComponentsTest, HelpBubble) {
   set_test_loader_host(chrome::kChromeUINewTabPageHost);
-  RunTest("cr_components/help_bubble_test.js", "mocha.run()");
+  RunTest("cr_components/help_bubble/help_bubble_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrComponentsTest, HorizontalCarousel) {
