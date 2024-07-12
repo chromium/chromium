@@ -689,6 +689,18 @@ void HTMLPermissionElement::DefaultEventHandler(Event& event) {
     event.SetDefaultHandled();
     if (event.IsFullyTrusted() ||
         RuntimeEnabledFeatures::BypassPepcSecurityForTestingEnabled()) {
+      // TODO(crbug.com/352496162): After confirming all permission requests
+      // eventually call |OnEmbeddedPermissionsDecided|, block multiple
+      // permission requests when one is in progress, instead of temporairly
+      // disallowing them.
+      if (pending_request_created_ &&
+          base::TimeTicks::Now() - *pending_request_created_ <
+              kDefaultDisableTimeout) {
+        AddConsoleError(
+            "The permission element already has a request in progress.");
+        return;
+      }
+
       if (IsClickingEnabled()) {
         RequestPageEmbededPermissions();
       }
@@ -720,6 +732,9 @@ void HTMLPermissionElement::RequestPageEmbededPermissions() {
   // rect to calculate expected prompt position in screen coordinates.
   descriptor->element_position = GetBoundingClientRect()->ToEnclosingRect();
   descriptor->permissions = mojo::Clone(permission_descriptors_);
+
+  pending_request_created_ = base::TimeTicks::Now();
+
   GetPermissionService()->RequestPageEmbeddedPermission(
       std::move(descriptor),
       WTF::BindOnce(&HTMLPermissionElement::OnEmbeddedPermissionsDecided,
@@ -779,6 +794,8 @@ void HTMLPermissionElement::OnEmbeddedPermissionControlRegistered(
 
 void HTMLPermissionElement::OnEmbeddedPermissionsDecided(
     EmbeddedPermissionControlResult result) {
+  pending_request_created_ = std::nullopt;
+
   switch (result) {
     case EmbeddedPermissionControlResult::kDismissed:
       DispatchEvent(*Event::Create(event_type_names::kDismiss));

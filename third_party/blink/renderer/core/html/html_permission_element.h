@@ -389,6 +389,9 @@ class CORE_EXPORT HTMLPermissionElement final
   Member<HTMLSpanElement> permission_text_span_;
   Member<IntersectionObserver> intersection_observer_;
 
+  // Keeps track of the time a request was created.
+  std::optional<base::TimeTicks> pending_request_created_;
+
   // Set to true only if all the corresponding permissions (from `type`
   // attribute) are granted.
   bool permissions_granted_ = false;

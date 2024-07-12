@@ -330,6 +330,47 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest, TabSwitchingClosesPrompt) {
   WaitForDismissEvent("camera");
 }
 
+IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
+                       DoubleClickDoesNotTriggerTwoRequests) {
+  SkipInvalidElementMessage();
+  permissions::PermissionRequestManager::FromWebContents(web_contents())
+      ->set_auto_response_for_test(
+          permissions::PermissionRequestManager::AutoResponseType::DISMISS);
+
+  permissions::PermissionRequestObserver observer1(web_contents());
+  content::WebContentsConsoleObserver console_observer(web_contents());
+
+  // Click the element twice.
+  ClickElementWithId(web_contents(), "microphone");
+  ClickElementWithId(web_contents(), "microphone");
+
+  EXPECT_EQ(console_observer.messages().size(), 1u);
+  ExpectConsoleMessage(
+      "The permission element already has a request in progress.");
+
+  // Multiple clicks on the same permission element should only trigger one
+  // request.
+  observer1.Wait();
+  EXPECT_TRUE(observer1.request_shown());
+  WaitForDismissEvent("microphone");
+
+  // Verify that no duplicate "microphone" requests or dismiss events are
+  // created.
+  permissions::PermissionRequestObserver observer2(web_contents());
+  ClickElementWithId(web_contents(), "camera");
+  observer2.Wait();
+  EXPECT_TRUE(observer2.request_shown());
+  WaitForDismissEvent("camera");
+
+  // Verify that clicking again on the same element after the prompt was
+  // dismissed, results in a permission request being shown.
+  permissions::PermissionRequestObserver observer3(web_contents());
+  ClickElementWithId(web_contents(), "microphone");
+  observer3.Wait();
+  WaitForDismissEvent("microphone");
+  EXPECT_TRUE(observer3.request_shown());
+}
+
 class PermissionElementWithSecurityBrowserTest
     : public PermissionElementBrowserTestBase {
  public:
