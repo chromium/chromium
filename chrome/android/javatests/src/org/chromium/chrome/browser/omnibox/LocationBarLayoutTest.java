@@ -36,6 +36,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.MathUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -53,7 +54,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.content_public.browser.test.util.ClickUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -103,7 +103,7 @@ public class LocationBarLayoutTest {
 
     private String getUrlText(UrlBar urlBar) {
         try {
-            return TestThreadUtils.runOnUiThreadBlocking(() -> urlBar.getText().toString());
+            return ThreadUtils.runOnUiThreadBlocking(() -> urlBar.getText().toString());
         } catch (ExecutionException ex) {
             throw new RuntimeException(
                     "Failed to get the UrlBar's text! Exception below:\n" + ex.toString());
@@ -139,14 +139,14 @@ public class LocationBarLayoutTest {
 
     private void setUrlBarTextAndFocus(String text) {
         final UrlBar urlBar = getUrlBar();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     urlBar.requestFocus();
                 });
         CriteriaHelper.pollUiThread(() -> urlBar.hasFocus());
 
         try {
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     new Callable<Void>() {
                         @Override
                         public Void call() throws InterruptedException {
@@ -185,7 +185,10 @@ public class LocationBarLayoutTest {
     @SmallTest
     public void testDeleteButton() throws ExecutionException {
         setUrlBarTextAndFocus("testing");
-        Assert.assertEquals(getDeleteButton().getVisibility(), VISIBLE);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(getDeleteButton().getVisibility(), Matchers.is(VISIBLE));
+                });
         ClickUtils.clickButton(getDeleteButton());
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -201,7 +204,7 @@ public class LocationBarLayoutTest {
 
         Assert.assertEquals(
                 0, RecordHistogram.getHistogramTotalCountForTesting("Android.OmniboxFocusReason"));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     locationBarMediator.setUrlBarFocus(
                             true, SEARCH_TERMS_URL, OmniboxFocusReason.FAKE_BOX_LONG_PRESS);
@@ -212,7 +215,7 @@ public class LocationBarLayoutTest {
         Assert.assertEquals(
                 1, RecordHistogram.getHistogramTotalCountForTesting("Android.OmniboxFocusReason"));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     locationBarMediator.setUrlBarFocus(
                             true, SEARCH_TERMS, OmniboxFocusReason.SEARCH_QUERY);
@@ -223,7 +226,7 @@ public class LocationBarLayoutTest {
         Assert.assertEquals(
                 1, RecordHistogram.getHistogramTotalCountForTesting("Android.OmniboxFocusReason"));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     locationBarMediator.setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
                 });
@@ -232,7 +235,7 @@ public class LocationBarLayoutTest {
         Assert.assertEquals(
                 1, RecordHistogram.getHistogramTotalCountForTesting("Android.OmniboxFocusReason"));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     locationBarMediator.setUrlBarFocus(true, null, OmniboxFocusReason.OMNIBOX_TAP);
                 });
@@ -249,7 +252,7 @@ public class LocationBarLayoutTest {
         View statusIcon = getStatusIconView();
         View urlContainer = getUrlBar();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getUrlBar().requestFocus();
 
@@ -288,7 +291,7 @@ public class LocationBarLayoutTest {
     public void testEnforceMinimumUrlBarWidth() {
         setUrlBarTextAndFocus("");
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     View urlBar = getUrlBar();
                     LocationBarLayout locationBar = getLocationBar();
@@ -337,7 +340,7 @@ public class LocationBarLayoutTest {
     @MediumTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
     public void testTabletUrlBarTranslation_revampEnabled() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     LocationBarLayout locationBar = getLocationBar();
                     View urlBar = getUrlBar();
@@ -384,7 +387,7 @@ public class LocationBarLayoutTest {
     @DisableFeatures(ChromeFeatureList.AVOID_RELAYOUT_DURING_FOCUS_ANIMATION)
     @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
     public void testTabletUrlBarTranslation_revampEnabled_avoidRelayoutDisabled() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     LocationBarLayout locationBar = getLocationBar();
                     View urlBar = getUrlBar();
@@ -406,7 +409,7 @@ public class LocationBarLayoutTest {
     @MediumTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     public void testPhoneUrlBarAndStatusViewTranslation() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Activity activity = mActivityTestRule.getActivity();
                     int statusIconAndUrlBarOffset =
