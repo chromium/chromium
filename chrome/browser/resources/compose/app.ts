@@ -16,6 +16,8 @@ import '//resources/cr_elements/md_select.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+import type {CrA11yAnnouncerElement} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import type {CrFeedbackButtonsElement} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
@@ -84,6 +86,12 @@ export interface ComposeAppElement {
     feedbackButtons: CrFeedbackButtonsElement,
   };
 }
+
+/**
+ * Delay required for screen readers to read out consecutive messages while
+ * focus is being moved between elements.
+ */
+export const TIMEOUT_MS: number = 700;
 
 const ComposeAppElementBase = I18nMixin(CrScrollObserverMixin(PolymerElement));
 
@@ -678,6 +686,14 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private compose_(inputEdited: boolean = false) {
     assert(this.$.textarea.validate());
     assert(this.submitted_);
+    // <if expr="is_macosx">
+    // For VoiceOver, the screen reader on Mac, to read consecutive alerts the
+    // contents must change between announcements. To satisfy this, new results
+    // are announced by alternating between this "loading" message and the
+    // "updated" message. This is also done to announce updates for the undo
+    // and redo functions.
+    this.screenReaderAnnounce_(this.i18n('resultLoadingA11yMessage'));
+    // </if>
     this.$.body.scrollTop = 0;
     this.loading_ = true;
     this.animator_.transitionInLoading();
@@ -692,6 +708,9 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private rewrite_(style: StyleModifier) {
     assert(this.$.textarea.validate());
     assert(this.submitted_);
+    // <if expr="is_macosx">
+    this.screenReaderAnnounce_(this.i18n('resultLoadingA11yMessage'));
+    // </if>
     const bodyHeight = this.$.body.offsetHeight;
     const resultHeight = this.$.resultContainer.offsetHeight;
     this.$.body.scrollTop = 0;
@@ -765,6 +784,9 @@ export class ComposeAppElement extends ComposeAppElementBase {
         this.$.redoButton.focus();
         break;
     }
+
+    this.screenReaderAnnounce_(
+        this.i18n('resultUpdatedA11yMessage'), TIMEOUT_MS);
   }
 
   private composeResponseReceived_(response: ComposeResponse) {
@@ -936,6 +958,9 @@ export class ComposeAppElement extends ComposeAppElementBase {
   }
 
   private async onUndoClick_() {
+    // <if expr="is_macosx">
+    this.screenReaderAnnounce_(this.i18n('undoResultA11yMessage'));
+    // </if>
     try {
       const state = await this.apiProxy_.undo();
       if (state == null) {
@@ -944,7 +969,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
         this.undoEnabled_ = false;
         return;
       }
-
       this.updateWithNewState_(state);
       // If UI Refinements is enabled, then focus is moved from the undo button
       // to the redo button if undo is disabled in the new state. Otherwise, the
@@ -979,6 +1003,9 @@ export class ComposeAppElement extends ComposeAppElementBase {
   }
 
   private async onRedoClick_() {
+    // <if expr="is_macosx">
+    this.screenReaderAnnounce_(this.i18n('redoResultA11yMessage'));
+    // </if>
     try {
       const state = await this.apiProxy_.redo();
       if (state == null) {
@@ -1021,6 +1048,13 @@ export class ComposeAppElement extends ComposeAppElementBase {
       this.selectedLength_ = appState.selectedLength ?? StyleModifier.kUnset;
       this.selectedTone_ = appState.selectedTone ?? StyleModifier.kUnset;
     }
+  }
+
+  private screenReaderAnnounce_(message: string, wait: number = 0) {
+    setTimeout(() => {
+      const announcer = getAnnouncerInstance() as CrA11yAnnouncerElement;
+      announcer.announceWithTimeout(message, wait);
+    });
   }
 
   private onFeedbackSelectedOptionChanged_(

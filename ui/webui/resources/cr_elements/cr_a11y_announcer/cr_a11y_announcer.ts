@@ -76,7 +76,11 @@ export class CrA11yAnnouncerElement extends CustomElement {
     }
   }
 
-  announce(message: string) {
+  announceWithTimeout(message: string, timeout: number) {
+    this.announce(message, timeout);
+  }
+
+  announce(message: string, timeout: number = TIMEOUT_MS) {
     if (this.currentTimeout_ !== null) {
       clearTimeout(this.currentTimeout_);
       this.currentTimeout_ = null;
@@ -110,7 +114,7 @@ export class CrA11yAnnouncerElement extends CustomElement {
 
       this.messages_.length = 0;
       this.currentTimeout_ = null;
-    }, TIMEOUT_MS);
+    }, timeout);
   }
 }
 
