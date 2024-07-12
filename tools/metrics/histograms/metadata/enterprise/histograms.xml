@@ -3071,6 +3071,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.StateDetermination.Status"
+    enum="StateDeterminationStatus" expires_after="2024-12-01">
+  <owner>sergiyb@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    Captures the status of state determination: whether it is enabled and why.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.StateDetermination.StepDuration.{Step}" units="ms"
     expires_after="2024-12-01">
   <owner>sergiyb@google.com</owner>

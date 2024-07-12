@@ -47,6 +47,8 @@ std::string ToUTCString(const base::Time& time) {
                                                 icu::TimeZone::getGMT());
 }
 
+using USDStatus = policy::AutoEnrollmentTypeChecker::USDStatus;
+
 }  // namespace
 
 namespace policy {
@@ -669,6 +671,87 @@ TEST_F(AutoEnrollmentTypeCheckerInitializationTest, ActiveVersion) {
   EXPECT_FALSE(AutoEnrollmentTypeChecker::
                    IsUnifiedStateDeterminationDisabledByKillSwitchForTesting());
 }
+
+class AutoEnrollmentTypeCheckerUSDStatusTest
+    : public AutoEnrollmentTypeCheckerTest {
+ public:
+  void SetUp() override {
+    AutoEnrollmentTypeCheckerTest::SetUp();
+    AutoEnrollmentTypeChecker::SetUnifiedStateDeterminationKillSwitchForTesting(
+        false);
+  }
+
+ protected:
+  base::HistogramTester histograms_;
+};
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+TEST_F(AutoEnrollmentTypeCheckerUSDStatusTest, Default) {
+  AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled();
+
+  histograms_.ExpectUniqueSample(kUMAStateDeterminationStatus,
+                                 USDStatus::kEnabledOnOfficialGoogleChrome, 1);
+}
+
+TEST_F(AutoEnrollmentTypeCheckerUSDStatusTest, FlexDevice) {
+  enrollment_test_helper_.SetUpFlexDevice();
+
+  AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled();
+
+  histograms_.ExpectUniqueSample(kUMAStateDeterminationStatus,
+                                 USDStatus::kEnabledOnOfficialGoogleFlex, 1);
+}
+
+TEST_F(AutoEnrollmentTypeCheckerUSDStatusTest, AlwaysSwitch) {
+  command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+      ash::switches::kEnterpriseEnableUnifiedStateDetermination,
+      AutoEnrollmentTypeChecker::AutoEnrollmentTypeChecker::
+          kUnifiedStateDeterminationAlways);
+
+  AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled();
+
+  histograms_.ExpectUniqueSample(kUMAStateDeterminationStatus,
+                                 USDStatus::kEnabledViaAlwaysSwitch, 1);
+}
+
+TEST_F(AutoEnrollmentTypeCheckerUSDStatusTest, NeverSwitch) {
+  command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+      ash::switches::kEnterpriseEnableUnifiedStateDetermination,
+      AutoEnrollmentTypeChecker::AutoEnrollmentTypeChecker::
+          kUnifiedStateDeterminationNever);
+
+  AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled();
+
+  histograms_.ExpectUniqueSample(kUMAStateDeterminationStatus,
+                                 USDStatus::kDisabledViaNeverSwitch, 1);
+}
+
+TEST_F(AutoEnrollmentTypeCheckerUSDStatusTest, KillSwitch) {
+  AutoEnrollmentTypeChecker::SetUnifiedStateDeterminationKillSwitchForTesting(
+      true);
+
+  AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled();
+
+  histograms_.ExpectUniqueSample(kUMAStateDeterminationStatus,
+                                 USDStatus::kDisabledViaKillSwitch, 1);
+}
+
+TEST_F(AutoEnrollmentTypeCheckerUSDStatusTest, NonChrome) {
+  SetUpNonchromeDevice();
+
+  AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled();
+
+  histograms_.ExpectUniqueSample(kUMAStateDeterminationStatus,
+                                 USDStatus::kDisabledOnNonChromeDevice, 1);
+}
+#else
+TEST_F(AutoEnrollmentTypeCheckerUSDStatusTest, UnbrandedBuild) {
+  AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled();
+
+  histograms_.ExpectUniqueSample(kUMAStateDeterminationStatus,
+                                 USDStatus::kDisabledOnUnbrandedBuild, 1);
+}
+#endif
 
 // An enum for the kind of Chromium OS running on the device.
 enum class DeviceOs {

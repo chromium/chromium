@@ -68,6 +68,20 @@ class AutoEnrollmentTypeChecker {
     kUnknownDueToMissingSystemClockSync = 4,
   };
 
+  // Status of the Unified State Determination.
+  enum class USDStatus {
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    kDisabledViaNeverSwitch = 0,
+    kDisabledViaKillSwitch = 1,
+    kDisabledOnUnbrandedBuild = 2,
+    kDisabledOnNonChromeDevice = 3,
+    kEnabledOnOfficialGoogleChrome = 4,
+    kEnabledOnOfficialGoogleFlex = 5,
+    kEnabledViaAlwaysSwitch = 6,
+    kMaxValue = kEnabledViaAlwaysSwitch
+  };
+
   // Returns true when class has been initialized.
   static bool Initialized();
 

@@ -2504,6 +2504,16 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="GetUserInfoError"/>
 </enum>
 
+<enum name="StateDeterminationStatus">
+  <int value="0" label="Disabled via never switch"/>
+  <int value="1" label="Disabled via kill switch"/>
+  <int value="2" label="Disabled on unbranded build"/>
+  <int value="3" label="Disabled on non-Chrome device"/>
+  <int value="4" label="Enabled on official Google Chrome"/>
+  <int value="5" label="Enabled on official Google Flex"/>
+  <int value="6" label="Enabled via always switch"/>
+</enum>
+
 <enum name="StateKeysRetrievalErrorType">
   <int value="0" label="No error"/>
   <int value="1" label="Invalid response"/>

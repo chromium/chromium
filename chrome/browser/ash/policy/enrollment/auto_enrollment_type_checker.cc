@@ -254,14 +254,36 @@ bool AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled() {
   std::string command_line_mode = command_line->GetSwitchValueASCII(
       ash::switches::kEnterpriseEnableUnifiedStateDetermination);
   if (command_line_mode == kUnifiedStateDeterminationAlways) {
+    base::UmaHistogramEnumeration(kUMAStateDeterminationStatus,
+                                  USDStatus::kEnabledViaAlwaysSwitch);
     return true;
   }
   if (command_line_mode == kUnifiedStateDeterminationNever) {
+    base::UmaHistogramEnumeration(kUMAStateDeterminationStatus,
+                                  USDStatus::kDisabledViaNeverSwitch);
     return false;
   }
   if (IsUnifiedStateDeterminationDisabledByKillSwitch()) {
+    base::UmaHistogramEnumeration(kUMAStateDeterminationStatus,
+                                  USDStatus::kDisabledViaKillSwitch);
     return false;
   }
+
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  base::UmaHistogramEnumeration(kUMAStateDeterminationStatus,
+                                USDStatus::kDisabledOnUnbrandedBuild);
+#else
+  if (IsOfficialGoogleChrome()) {
+    base::UmaHistogramEnumeration(kUMAStateDeterminationStatus,
+                                  USDStatus::kEnabledOnOfficialGoogleChrome);
+  } else if (IsOfficialGoogleFlex()) {
+    base::UmaHistogramEnumeration(kUMAStateDeterminationStatus,
+                                  USDStatus::kEnabledOnOfficialGoogleFlex);
+  } else {
+    base::UmaHistogramEnumeration(kUMAStateDeterminationStatus,
+                                  USDStatus::kDisabledOnNonChromeDevice);
+  }
+#endif
 
   // Official Google OSes support unified state determination.
   return IsOfficialGoogleOS();
