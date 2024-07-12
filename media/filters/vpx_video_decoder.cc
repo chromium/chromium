@@ -230,17 +230,6 @@ bool VpxVideoDecoder::ConfigureDecoder(const VideoDecoderConfig& config) {
   if (config.codec() != VideoCodec::kVP8 && config.codec() != VideoCodec::kVP9)
     return false;
 
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  // When enabled, ffmpeg handles VP8 that doesn't have alpha, and
-  // VpxVideoDecoder will handle VP8 with alpha. FFvp8 is being deprecated.
-  // See http://crbug.com/992235.
-  if (config.codec() == VideoCodec::kVP8 &&
-      FFmpegVideoDecoder::IsCodecSupported(config.codec()) &&
-      config.alpha_mode() == VideoDecoderConfig::AlphaMode::kIsOpaque) {
-    return false;
-  }
-#endif
-
   DCHECK(!vpx_codec_);
   vpx_codec_ = InitializeVpxContext(config);
   if (!vpx_codec_)
