@@ -437,6 +437,10 @@ extern const char kFullscreenSmoothScrollingDescription[];
 extern const char kHomeCustomizationName[];
 extern const char kHomeCustomizationDescription[];
 
+// Title and description for flag covering Home memory improvement changes.
+extern const char kHomeMemoryImprovementsName[];
+extern const char kHomeMemoryImprovementsDescription[];
+
 // Title and description for the flag to enable HTTPS upgrades for
 // eligible.
 extern const char kHttpsUpgradesName[];

@@ -725,4 +725,11 @@ BASE_DECLARE_FEATURE(kInactiveTabButtonRefactoring);
 // Whether the inactive tab entry point should be a button.
 bool IsInactiveTabButtonRefactoringEnabled();
 
+// Feature flag for changes that aim to improve memory footprint on the Home
+// surface.
+BASE_DECLARE_FEATURE(kHomeMemoryImprovements);
+
+// Whether Home memory improvements are enabled.
+bool IsHomeMemoryImprovementsEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

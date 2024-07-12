@@ -905,3 +905,11 @@ BASE_FEATURE(kInactiveTabButtonRefactoring,
 bool IsInactiveTabButtonRefactoringEnabled() {
   return base::FeatureList::IsEnabled(kInactiveTabButtonRefactoring);
 }
+
+BASE_FEATURE(kHomeMemoryImprovements,
+             "HomeMemoryImprovements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsHomeMemoryImprovementsEnabled() {
+  return base::FeatureList::IsEnabled(kHomeMemoryImprovements);
+}

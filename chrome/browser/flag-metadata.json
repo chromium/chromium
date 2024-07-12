@@ -5075,6 +5075,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "home-memory-improvements",
+    "owners": [ "thegreenfrog@google.com", "ajuma@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "http-cache-partitioning",
     "owners": [ "shivanisha@chromium.org" ],
     "expiry_milestone": 95

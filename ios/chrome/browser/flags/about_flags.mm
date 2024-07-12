@@ -1953,6 +1953,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kInactiveTabButtonRefactoringName,
      flag_descriptions::kInactiveTabButtonRefactoringDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kInactiveTabButtonRefactoring)},
+    {"home-memory-improvements", flag_descriptions::kHomeMemoryImprovementsName,
+     flag_descriptions::kHomeMemoryImprovementsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kHomeMemoryImprovements)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

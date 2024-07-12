@@ -515,6 +515,11 @@ const char kHomeCustomizationName[] = "Home Customization";
 const char kHomeCustomizationDescription[] =
     "When enabled, adds a menu to personalize the Home surface.";
 
+const char kHomeMemoryImprovementsName[] = "Home Memory Improvements";
+const char kHomeMemoryImprovementsDescription[] =
+    "When enabled, uses code that aims to improve the memory footprint in "
+    "Home.";
+
 const char kHttpsUpgradesName[] = "HTTPS Upgrades";
 const char kHttpsUpgradesDescription[] =
     "When enabled, eligible navigations will automatically be upgraded to "
