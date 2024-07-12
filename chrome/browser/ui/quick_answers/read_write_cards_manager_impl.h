@@ -31,6 +31,8 @@ class EditorMenuControllerImpl;
 
 class ReadWriteCardController;
 
+using OptInFeatures = crosapi::mojom::MagicBoostController::OptInFeatures;
+
 // `ReadWriteCardsManagerImpl` provides supported UI controller to given context
 // menu params. It could be either QuickAnswersController or
 // EditorMenuController, or nullptr.
@@ -59,9 +61,26 @@ class ReadWriteCardsManagerImpl : public ReadWriteCardsManager {
                              editor_menu::FetchControllersCallback callback,
                              editor_menu::EditorMode editor_mode);
 
+  // Get the controllers that should be fetched into `FetchController`.
   std::vector<base::WeakPtr<chromeos::ReadWriteCardController>> GetControllers(
       const content::ContextMenuParams& params,
-      std::optional<editor_menu::EditorMode> editor_mode);
+      editor_menu::EditorMode editor_mode);
+
+  // Helper function to get the Mahi and/or Quick Answers controllers that need
+  // to be fetched.
+  std::vector<base::WeakPtr<chromeos::ReadWriteCardController>>
+  GetQuickAnswersAndMahiControllers(const content::ContextMenuParams& params);
+
+  // Whether we should show Quick Answers or Mahi card, depending on the given
+  // context menu params.
+  bool ShouldShowQuickAnswers(const content::ContextMenuParams& params);
+  bool ShouldShowMahi(const content::ContextMenuParams& params);
+
+  // Gets the opt-in features that Magic Boost should opt-in. Returns a nullopt
+  // if we should not initiate an opt-in flow.
+  std::optional<OptInFeatures> GetMagicBoostOptInFeatures(
+      const content::ContextMenuParams& params,
+      editor_menu::EditorMode editor_mode);
 
   chromeos::ReadWriteCardsUiController ui_controller_;
 

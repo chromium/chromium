@@ -67,15 +67,16 @@ void ReadWriteCardsManagerImpl::FetchController(
     std::move(callback).Run({});
     return;
   }
-  if (editor_menu_controller_ && params.is_editable) {
-    editor_menu_controller_->SetBrowserContext(context);
-    editor_menu_controller_->GetEditorMode(base::BindOnce(
-        &ReadWriteCardsManagerImpl::OnGetEditorModeResult,
-        weak_factory_.GetWeakPtr(), params, std::move(callback)));
+
+  if (!editor_menu_controller_) {
+    std::move(callback).Run(GetQuickAnswersAndMahiControllers(params));
     return;
   }
 
-  std::move(callback).Run(GetControllers(params, /*editor_mode=*/std::nullopt));
+  editor_menu_controller_->SetBrowserContext(context);
+  editor_menu_controller_->GetEditorMode(
+      base::BindOnce(&ReadWriteCardsManagerImpl::OnGetEditorModeResult,
+                     weak_factory_.GetWeakPtr(), params, std::move(callback)));
 }
 
 void ReadWriteCardsManagerImpl::SetContextMenuBounds(
@@ -93,48 +94,19 @@ void ReadWriteCardsManagerImpl::OnGetEditorModeResult(
 std::vector<base::WeakPtr<chromeos::ReadWriteCardController>>
 ReadWriteCardsManagerImpl::GetControllers(
     const content::ContextMenuParams& params,
-    std::optional<editor_menu::EditorMode> editor_mode) {
-  // Display Quick Answers card if it is eligible and there's selected text.
-  const bool should_show_qa = QuickAnswersState::IsEligible() &&
-                              !params.selection_text.empty() &&
-                              quick_answers_controller_;
-  const bool should_show_mahi =
-      chromeos::features::IsMahiEnabled() && mahi_menu_controller_ &&
-      mahi_menu_controller_->IsFocusedPageDistillable();
+    editor_menu::EditorMode editor_mode) {
+  const bool should_show_editor_menu =
+      editor_menu_controller_ && params.is_editable;
+  auto opt_in_features = GetMagicBoostOptInFeatures(params, editor_mode);
 
-  std::optional<HMRConsentStatus> hmr_consent_status;
-  if (chromeos::features::IsMagicBoostEnabled()) {
-    hmr_consent_status = MagicBoostState::Get()->hmr_consent_status();
-  }
-
-  // Check if we should go through Magic Boost opt-in flow.
-  const bool should_opt_in_orca_with_magic_boost =
-      editor_mode == editor_menu::EditorMode::kPromoCard;
-  const bool should_opt_in_hmr_with_magic_boost =
-      !editor_mode && (should_show_mahi || should_show_qa) &&
-      hmr_consent_status == HMRConsentStatus::kUnset;
-
-  if (magic_boost_card_controller_ && (should_opt_in_hmr_with_magic_boost ||
-                                       should_opt_in_orca_with_magic_boost)) {
+  if (opt_in_features) {
     // Show Editor Panel after completing the opt-in flow for Orca.
     magic_boost_card_controller_->set_transition_action(
-        should_opt_in_orca_with_magic_boost
-            ? crosapi::mojom::MagicBoostController::TransitionAction::
-                  kShowEditorPanel
-            : crosapi::mojom::MagicBoostController::TransitionAction::
-                  kDoNothing);
-
-    // Set the features that triggers the magic boost feature (the opt in card
-    // and the disclaimer view). If it should opt in orca, then the features are
-    // `OptInFeatures::kOrcaAndHmr`.
-    OptInFeatures opt_in_features;
-    if (should_opt_in_orca_with_magic_boost) {
-      opt_in_features = OptInFeatures::kOrcaAndHmr;
-    } else {
-      CHECK(should_opt_in_hmr_with_magic_boost);
-      opt_in_features = OptInFeatures::kHmrOnly;
-    }
-    magic_boost_card_controller_->SetOptInFeature(opt_in_features);
+        should_show_editor_menu ? crosapi::mojom::MagicBoostController::
+                                      TransitionAction::kShowEditorPanel
+                                : crosapi::mojom::MagicBoostController::
+                                      TransitionAction::kDoNothing);
+    magic_boost_card_controller_->SetOptInFeature(opt_in_features.value());
 
     return {magic_boost_card_controller_->GetWeakPtr()};
   }
@@ -142,9 +114,9 @@ ReadWriteCardsManagerImpl::GetControllers(
   // If Magic Boost is not enabled, each feature (besides Mahi which only uses
   // Magic Boost) will have its own opt-in flow, provided within each individual
   // controller.
-  if (editor_mode) {
+  if (should_show_editor_menu) {
     // Use editor menu if available.
-    if (editor_mode.value() != editor_menu::EditorMode::kBlocked) {
+    if (editor_mode != editor_menu::EditorMode::kBlocked) {
       return {editor_menu_controller_->GetWeakPtr()};
     }
 
@@ -152,6 +124,11 @@ ReadWriteCardsManagerImpl::GetControllers(
   }
 
   // Otherwise, use Quick Answers and Mahi if available.
+
+  std::optional<HMRConsentStatus> hmr_consent_status;
+  if (chromeos::features::IsMagicBoostEnabled()) {
+    hmr_consent_status = MagicBoostState::Get()->hmr_consent_status();
+  }
 
   // Return no controller if consent_status is `kDeclined` (users explicitly
   // decline in the opt-in flow), or `kUnset` (both Quick Answers and Mahi is
@@ -166,20 +143,79 @@ ReadWriteCardsManagerImpl::GetControllers(
           hmr_consent_status == HMRConsentStatus::kPending);
   }
 
+  return GetQuickAnswersAndMahiControllers(params);
+}
+
+std::vector<base::WeakPtr<chromeos::ReadWriteCardController>>
+ReadWriteCardsManagerImpl::GetQuickAnswersAndMahiControllers(
+    const content::ContextMenuParams& params) {
   std::vector<base::WeakPtr<chromeos::ReadWriteCardController>> controllers;
 
-  if (should_show_qa) {
+  if (ShouldShowQuickAnswers(params)) {
     controllers.emplace_back(quick_answers_controller_->GetWeakPtr());
   }
 
   if (mahi_menu_controller_) {
     mahi_menu_controller_->RecordPageDistillable();
-    if (should_show_mahi) {
+    if (ShouldShowMahi(params)) {
       controllers.emplace_back(mahi_menu_controller_->GetWeakPtr());
     }
   }
 
   return controllers;
+}
+
+bool ReadWriteCardsManagerImpl::ShouldShowQuickAnswers(
+    const content::ContextMenuParams& params) {
+  // Display Quick Answers card if it is eligible and there's selected text.
+  return QuickAnswersState::IsEligible() && !params.selection_text.empty() &&
+         quick_answers_controller_;
+}
+
+bool ReadWriteCardsManagerImpl::ShouldShowMahi(
+    const content::ContextMenuParams& params) {
+  return chromeos::features::IsMahiEnabled() && mahi_menu_controller_ &&
+         mahi_menu_controller_->IsFocusedPageDistillable();
+}
+
+std::optional<OptInFeatures>
+ReadWriteCardsManagerImpl::GetMagicBoostOptInFeatures(
+    const content::ContextMenuParams& params,
+    editor_menu::EditorMode editor_mode) {
+  if (!magic_boost_card_controller_) {
+    return std::nullopt;
+  }
+
+  // Check if we should go through Magic Boost opt-in flow when we should show
+  // Editor card.
+  const bool should_show_editor_menu =
+      editor_menu_controller_ && params.is_editable;
+  const bool should_opt_in_orca =
+      editor_mode == editor_menu::EditorMode::kPromoCard;
+
+  if (should_show_editor_menu) {
+    if (should_opt_in_orca) {
+      // We should opt in both Orca and HMR if we are opting-in Orca.
+      return OptInFeatures::kOrcaAndHmr;
+    }
+
+    return std::nullopt;
+  }
+
+  // Check if we should go through Magic Boost opt-in flow when we should show
+  // Quick Answers and/or Mahi card.
+  std::optional<HMRConsentStatus> hmr_consent_status;
+  if (chromeos::features::IsMagicBoostEnabled()) {
+    hmr_consent_status = MagicBoostState::Get()->hmr_consent_status();
+  }
+
+  if ((ShouldShowQuickAnswers(params) || ShouldShowMahi(params)) &&
+      hmr_consent_status == HMRConsentStatus::kUnset) {
+    return should_opt_in_orca ? OptInFeatures::kOrcaAndHmr
+                              : OptInFeatures::kHmrOnly;
+  }
+
+  return std::nullopt;
 }
 
 }  // namespace chromeos

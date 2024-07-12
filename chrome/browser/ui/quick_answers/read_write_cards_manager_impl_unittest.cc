@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_manager.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_controller_impl.h"
+#include "chrome/browser/ui/views/editor_menu/utils/editor_types.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_controller.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
@@ -94,8 +95,15 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase,
 
   void OnGetEditorModeResult(editor_menu::FetchControllersCallback callback,
                              editor_menu::EditorMode editor_mode) {
-    manager_->OnGetEditorModeResult(content::ContextMenuParams(),
-                                    std::move(callback), editor_mode);
+    content::ContextMenuParams params;
+    params.is_editable = true;
+    manager_->OnGetEditorModeResult(params, std::move(callback), editor_mode);
+  }
+
+  std::vector<base::WeakPtr<chromeos::ReadWriteCardController>> GetControllers(
+      content::ContextMenuParams params,
+      editor_menu::EditorMode editor_mode = editor_menu::EditorMode::kWrite) {
+    return manager_->GetControllers(params, editor_mode);
   }
 
   QuickAnswersControllerImpl* quick_answers_controller() {
@@ -150,35 +158,23 @@ TEST_P(ReadWriteCardsManagerImplTest, MahiNotDistillable) {
     mahi_menu_controller()->set_is_distillable_for_testing(false);
   }
 
-  TestingProfile profile;
-
   content::ContextMenuParams params;
 
   // Mahi controller should not be fetched when the page is not distillable.
-  manager_->FetchController(
-      params, &profile,
-      base::BindOnce(
-          &ExpectControllersEqual,
-          "Wrong quick answers/mahi controller is fetched when no text is "
-          "selected and Mahi is enabled",
-          std::vector<ReadWriteCardController*>{}));
+  EXPECT_TRUE(GetControllers(params).empty())
+      << "Wrong quick answers/mahi controller is fetched when no text is "
+         "selected and Mahi is enabled";
 
-  // When Mahi is enabled and text is selected, both Mahi and quick answers
-  // controller should be fetched.
   params.selection_text = u"text";
-  manager_->FetchController(
-      params, &profile,
-      base::BindOnce(
-          &ExpectControllersEqual,
-          "Wrong quick answers/mahi controller is fetched when text is "
-          "selected and Mahi is enabled",
-          std::vector<ReadWriteCardController*>{quick_answers_controller()}));
+  ExpectControllersEqual(
+      "Wrong quick answers/mahi controller is fetched when text is "
+      "selected and Mahi is enabled",
+      std::vector<ReadWriteCardController*>{quick_answers_controller()},
+      GetControllers(params));
 }
 
 TEST_P(ReadWriteCardsManagerImplTest, QuickAnswersAndMahiControllersApproved) {
   QuickAnswersState::Get()->SetEligibilityForTesting(true);
-
-  TestingProfile profile;
 
   // Test these behaviors when Magic Boost consent is approved.
   magic_boost_state_->AsyncWriteConsentStatus(HMRConsentStatus::kApproved);
@@ -189,48 +185,39 @@ TEST_P(ReadWriteCardsManagerImplTest, QuickAnswersAndMahiControllersApproved) {
 
     // When Mahi is enabled and no text is selected, Mahi controller should be
     // fetched.
-    manager_->FetchController(
-        params, &profile,
-        base::BindOnce(
-            &ExpectControllersEqual,
-            "Wrong quick answers/mahi controller is fetched when no text is "
-            "selected and Mahi is enabled",
-            std::vector<ReadWriteCardController*>{mahi_menu_controller()}));
+    ExpectControllersEqual(
+        "Wrong quick answers/mahi controller is fetched when no text is "
+        "selected and Mahi is enabled",
+        std::vector<ReadWriteCardController*>{mahi_menu_controller()},
+        GetControllers(params));
 
     // When Mahi is enabled and text is selected, both Mahi and quick answers
     // controller should be fetched.
     params.selection_text = u"text";
-    manager_->FetchController(
-        params, &profile,
-        base::BindOnce(
-            &ExpectControllersEqual,
-            "Wrong quick answers/mahi controller is fetched when text is "
-            "selected and Mahi is enabled",
-            std::vector<ReadWriteCardController*>{quick_answers_controller(),
-                                                  mahi_menu_controller()}));
+    ExpectControllersEqual(
+        "Wrong quick answers/mahi controller is fetched when text is "
+        "selected and Mahi is enabled",
+        std::vector<ReadWriteCardController*>{quick_answers_controller(),
+                                              mahi_menu_controller()},
+        GetControllers(params));
     return;
   }
 
   // When Mahi is disabled and no text is selected, no controller should be
   // fetched.
-  manager_->FetchController(
-      params, &profile,
-      base::BindOnce(
-          &ExpectControllersEqual,
-          "Wrong quick answers/mahi controller is fetched when no text is "
-          "selected and Mahi is disabled",
-          std::vector<ReadWriteCardController*>{}));
+  EXPECT_TRUE(GetControllers(params).empty())
+      << "Wrong quick answers/mahi controller is fetched when no text is "
+         "selected and Mahi is disabled";
 
   // When Mahi is disabled and text is selected, quick answers controller
   // should be fetched.
   params.selection_text = u"text";
-  manager_->FetchController(
-      params, &profile,
-      base::BindOnce(
-          &ExpectControllersEqual,
-          "Wrong quick answers/mahi controller is fetched when text is "
-          "selected and Mahi is disabled",
-          std::vector<ReadWriteCardController*>{quick_answers_controller()}));
+
+  ExpectControllersEqual(
+      "Wrong quick answers/mahi controller is fetched when text is "
+      "selected and Mahi is disabled",
+      std::vector<ReadWriteCardController*>{quick_answers_controller()},
+      GetControllers(params));
 }
 
 TEST_P(ReadWriteCardsManagerImplTest, QuickAnswersAndMahiControllersDeclined) {
@@ -247,47 +234,31 @@ TEST_P(ReadWriteCardsManagerImplTest, QuickAnswersAndMahiControllersDeclined) {
 
     // When Mahi is enabled and Magic Boost consent is declined, no controller
     // should be fetched.
-    manager_->FetchController(
-        params, &profile,
-        base::BindOnce(
-            &ExpectControllersEqual,
-            "Wrong quick answers/mahi controller is fetched when no text is "
-            "selected and Mahi is enabled",
-            std::vector<ReadWriteCardController*>{}));
+    EXPECT_TRUE(GetControllers(params).empty())
+        << "Wrong quick answers/mahi controller is fetched when no text is "
+           "selected and Mahi is enabled, and consent is declined";
 
-    // When Mahi is enabled and text is selected, both Mahi and quick answers
-    // controller should be fetched.
     params.selection_text = u"text";
-    manager_->FetchController(
-        params, &profile,
-        base::BindOnce(
-            &ExpectControllersEqual,
-            "Wrong quick answers/mahi controller is fetched when text is "
-            "selected and Mahi is enabled",
-            std::vector<ReadWriteCardController*>{}));
+    EXPECT_TRUE(GetControllers(params).empty())
+        << "Wrong quick answers/mahi controller is fetched when text is "
+           "selected and Mahi is enabled, and consent is declined";
     return;
   }
 
   // When Mahi is disabled and no text is selected, no controller should be
   // fetched.
-  manager_->FetchController(
-      params, &profile,
-      base::BindOnce(
-          &ExpectControllersEqual,
-          "Wrong quick answers/mahi controller is fetched when no text is "
-          "selected and Mahi is disabled",
-          std::vector<ReadWriteCardController*>{}));
+  EXPECT_TRUE(GetControllers(params).empty())
+      << "Wrong quick answers/mahi controller is fetched when no text is "
+         "selected and Mahi is disabled";
 
   // When Mahi is disabled and text is selected, quick answers controller
   // should be fetched.
   params.selection_text = u"text";
-  manager_->FetchController(
-      params, &profile,
-      base::BindOnce(
-          &ExpectControllersEqual,
-          "Wrong quick answers/mahi controller is fetched when text is "
-          "selected and Mahi is disabled",
-          std::vector<ReadWriteCardController*>{quick_answers_controller()}));
+  ExpectControllersEqual(
+      "Wrong quick answers/mahi controller is fetched when text is "
+      "selected and Mahi is disabled",
+      std::vector<ReadWriteCardController*>{quick_answers_controller()},
+      GetControllers(params));
 }
 
 TEST_P(ReadWriteCardsManagerImplTest,
@@ -296,7 +267,6 @@ TEST_P(ReadWriteCardsManagerImplTest,
 
   magic_boost_state_->AsyncWriteConsentStatus(HMRConsentStatus::kUnset);
 
-  TestingProfile profile;
   content::ContextMenuParams params;
 
   // When Mahi is enabled and consent status is unset, the opt in card
@@ -304,63 +274,84 @@ TEST_P(ReadWriteCardsManagerImplTest,
   if (IsMahiEnabled()) {
     mahi_menu_controller()->set_is_distillable_for_testing(true);
 
-    manager_->FetchController(
-        params, &profile,
-        base::BindOnce(
-            &ExpectControllersEqual,
-            "Wrong quick answers/mahi controller is fetched when "
-            "consent status is unset on unselected text and Mahi is enabled",
-            std::vector<ReadWriteCardController*>{
-                magic_boost_card_controller()}));
+    ExpectControllersEqual(
+        "Wrong quick answers/mahi controller is fetched when "
+        "consent status is unset on unselected text and Mahi is enabled",
+        std::vector<ReadWriteCardController*>{magic_boost_card_controller()},
+        GetControllers(params));
 
+    EXPECT_EQ(crosapi::mojom::MagicBoostController::OptInFeatures::kHmrOnly,
+              magic_boost_card_controller()->GetOptInFeatures());
+    EXPECT_EQ(
+        crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
+        magic_boost_card_controller()->transition_action_for_test());
+
+    // When editor mode is kPromoCard, Magic Boost should opt in both Hmr and
+    // Orca.
+    ExpectControllersEqual(
+        "",
+        std::vector<ReadWriteCardController*>{magic_boost_card_controller()},
+        GetControllers(params, editor_menu::EditorMode::kPromoCard));
+
+    EXPECT_EQ(crosapi::mojom::MagicBoostController::OptInFeatures::kOrcaAndHmr,
+              magic_boost_card_controller()->GetOptInFeatures());
     EXPECT_EQ(
         crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
         magic_boost_card_controller()->transition_action_for_test());
     return;
   }
 
-  manager_->FetchController(
-      params, &profile,
-      base::BindOnce(
-          &ExpectControllersEqual,
-          "Wrong quick answers/mahi controller is fetched when consent status "
-          "is unset on unselected text and Mahi is disabled",
-          std::vector<ReadWriteCardController*>{}));
+  EXPECT_TRUE(GetControllers(params).empty())
+      << "Wrong quick answers/mahi controller is fetched when consent status "
+         "is unset on unselected text and Mahi is disabled";
 }
 
 TEST_P(ReadWriteCardsManagerImplTest,
        MagicBoostOptInQuickAnswerAndMahiSelectedText) {
   QuickAnswersState::Get()->SetEligibilityForTesting(true);
 
-  TestingProfile profile;
   content::ContextMenuParams params;
   params.selection_text = u"text";
 
   if (IsMahiEnabled()) {
     mahi_menu_controller()->set_is_distillable_for_testing(true);
 
-    manager_->FetchController(
-        params, &profile,
-        base::BindOnce(
-            &ExpectControllersEqual,
-            "Wrong quick answers/mahi controller is fetched when "
-            "consent status is unset on selected text and Mahi is enabled",
-            std::vector<ReadWriteCardController*>{
-                magic_boost_card_controller()}));
+    ExpectControllersEqual(
+        "Wrong quick answers/mahi controller is fetched when "
+        "consent status is unset on selected text and Mahi is enabled",
+        std::vector<ReadWriteCardController*>{magic_boost_card_controller()},
+        GetControllers(params));
 
+    EXPECT_EQ(crosapi::mojom::MagicBoostController::OptInFeatures::kHmrOnly,
+              magic_boost_card_controller()->GetOptInFeatures());
     EXPECT_EQ(
         crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
         magic_boost_card_controller()->transition_action_for_test());
+
+    // When editor mode is kPromoCard, Magic Boost should opt in both Hmr and
+    // Orca.
+    auto controllers =
+        GetControllers(params, editor_menu::EditorMode::kPromoCard);
+
+    ExpectControllersEqual(
+        "",
+        std::vector<ReadWriteCardController*>{magic_boost_card_controller()},
+        controllers);
+
+    EXPECT_EQ(crosapi::mojom::MagicBoostController::OptInFeatures::kOrcaAndHmr,
+              magic_boost_card_controller()->GetOptInFeatures());
+    EXPECT_EQ(
+        crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
+        magic_boost_card_controller()->transition_action_for_test());
+
     return;
   }
 
-  manager_->FetchController(
-      params, &profile,
-      base::BindOnce(
-          &ExpectControllersEqual,
-          "Wrong quick answers/mahi controller is fetched when consent status "
-          "is unset on selected text and Mahi is disabled",
-          std::vector<ReadWriteCardController*>{quick_answers_controller()}));
+  ExpectControllersEqual(
+      "Wrong quick answers/mahi controller is fetched when consent status "
+      "is unset on selected text and Mahi is disabled",
+      std::vector<ReadWriteCardController*>{quick_answers_controller()},
+      GetControllers(params));
 }
 
 // Tests that the appropriate controller is returned given the editor mode
@@ -393,6 +384,9 @@ TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorModeResultPromoCard) {
       editor_menu::EditorMode::kPromoCard);
 
   if (IsMahiEnabled()) {
+    // Should show opt-in for both Hmr and Orca.
+    EXPECT_EQ(crosapi::mojom::MagicBoostController::OptInFeatures::kOrcaAndHmr,
+              magic_boost_card_controller()->GetOptInFeatures());
     EXPECT_EQ(crosapi::mojom::MagicBoostController::TransitionAction::
                   kShowEditorPanel,
               magic_boost_card_controller()->transition_action_for_test());
