@@ -202,27 +202,19 @@ class GPU_EXPORT GpuControlList {
     Version os_version;
     uint32_t vendor_id;
     size_t device_size;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #global-scope
+    // RAW_PTR_EXCLUSION: since these pointers only ever point to other
+    // globals, and `Conditions` itself is used to construct globals, using
+    // raw_ptr would add additional (unnecessary) complexity with
+    // `NoDestructor`.
     RAW_PTR_EXCLUSION const Device* devices;
     MultiGpuCategory multi_gpu_category;
     MultiGpuStyle multi_gpu_style;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #global-scope
     RAW_PTR_EXCLUSION const DriverInfo* driver_info;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #global-scope
     RAW_PTR_EXCLUSION const GLStrings* gl_strings;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #global-scope
     RAW_PTR_EXCLUSION const MachineModelInfo* machine_model_info;
     size_t intel_gpu_series_list_size;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #global-scope
     RAW_PTR_EXCLUSION const IntelGpuSeriesType* intel_gpu_series_list;
     Version intel_gpu_generation;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #global-scope
     RAW_PTR_EXCLUSION const More* more;
 
     bool Contains(OsType os_type,
