@@ -74,8 +74,8 @@ class GLOzoneEGLFlatland : public GLOzoneEGL {
   }
 };
 
-fuchsia::sysmem::AllocatorHandle ConnectSysmemAllocator() {
-  fuchsia::sysmem::AllocatorHandle allocator;
+fuchsia::sysmem2::AllocatorHandle ConnectSysmemAllocator() {
+  fuchsia::sysmem2::AllocatorHandle allocator;
   base::ComponentContextForProcess()->svc()->Connect(allocator.NewRequest());
   return allocator;
 }

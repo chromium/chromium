@@ -52,7 +52,7 @@ class FlatlandSysmemBufferCollection
   // participants.
   // If |register_with_flatland_allocator| is true, |token_handle| gets
   // duplicated and registered with the Flatland Allocator.
-  bool Initialize(fuchsia::sysmem::Allocator_Sync* sysmem_allocator,
+  bool Initialize(fuchsia::sysmem2::Allocator_Sync* sysmem_allocator,
                   fuchsia::ui::composition::Allocator* flatland_allocator,
                   FlatlandSurfaceFactory* flatland_surface_factory,
                   zx::eventpair handle,
@@ -83,10 +83,10 @@ class FlatlandSysmemBufferCollection
                      VkDeviceSize* mem_allocation_size);
 
   zx_koid_t id() const { return id_; }
-  size_t num_buffers() const { return buffers_info_.buffer_count; }
+  size_t num_buffers() const { return buffers_info_.buffers().size(); }
   gfx::BufferFormat format() const { return format_; }
   size_t buffer_size() const {
-    return buffers_info_.settings.buffer_settings.size_bytes;
+    return buffers_info_.settings().buffer_settings().size_bytes();
   }
 
   // Returns a duplicate of |flatland_import_token_| so Images can be created.
@@ -102,9 +102,9 @@ class FlatlandSysmemBufferCollection
   ~FlatlandSysmemBufferCollection() override;
 
   bool InitializeInternal(
-      fuchsia::sysmem::Allocator_Sync* sysmem_allocator,
+      fuchsia::sysmem2::Allocator_Sync* sysmem_allocator,
       fuchsia::ui::composition::Allocator* flatland_allocator,
-      fuchsia::sysmem::BufferCollectionTokenSyncPtr collection_token,
+      fuchsia::sysmem2::BufferCollectionTokenSyncPtr collection_token,
       bool register_with_flatland_allocator,
       size_t min_buffer_count);
 
@@ -133,8 +133,8 @@ class FlatlandSysmemBufferCollection
   gfx::BufferFormat format_ = gfx::BufferFormat::RGBA_8888;
   gfx::BufferUsage usage_ = gfx::BufferUsage::GPU_READ_CPU_READ_WRITE;
 
-  fuchsia::sysmem::BufferCollectionSyncPtr collection_;
-  fuchsia::sysmem::BufferCollectionInfo_2 buffers_info_;
+  fuchsia::sysmem2::BufferCollectionSyncPtr collection_;
+  fuchsia::sysmem2::BufferCollectionInfo buffers_info_;
   fuchsia::ui::composition::BufferCollectionImportToken flatland_import_token_;
 
   // Vulkan device for which the collection was initialized.

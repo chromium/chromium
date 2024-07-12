@@ -85,8 +85,8 @@ Matcher<FakeGraph> IsSurfaceGraph(
                 Field("view_token", &FakeView::view_token, view_token_koid))));
 }
 
-fuchsia::sysmem::AllocatorSyncPtr ConnectSysmemAllocator() {
-  fuchsia::sysmem::AllocatorSyncPtr allocator;
+fuchsia::sysmem2::AllocatorSyncPtr ConnectSysmemAllocator() {
+  fuchsia::sysmem2::AllocatorSyncPtr allocator;
   base::ComponentContextForProcess()->svc()->Connect(allocator.NewRequest());
   return allocator;
 }
@@ -123,53 +123,63 @@ class FlatlandSurfaceCanvasTest : public ::testing::Test {
     task_environment_.RunUntilIdle();
     ASSERT_EQ(fake_flatland_.graph_bindings().buffer_collections.size(), 1U);
 
-    fuchsia::sysmem::BufferCollectionSyncPtr buffer_collection;
-    sysmem_allocator_->BindSharedCollection(
-        std::move(fake_flatland_.graph_bindings()
-                      .buffer_collections.begin()
-                      ->second.sysmem_token),
-        buffer_collection.NewRequest());
+    fuchsia::sysmem2::BufferCollectionSyncPtr buffer_collection;
+    sysmem_allocator_->BindSharedCollection(std::move(
+        fuchsia::sysmem2::AllocatorBindSharedCollectionRequest{}
+            .set_token(fuchsia::sysmem2::BufferCollectionTokenHandle(
+                fake_flatland_.graph_bindings()
+                    .buffer_collections.begin()
+                    ->second.sysmem_token.TakeChannel()))
+            .set_buffer_collection_request(buffer_collection.NewRequest())));
 
-    fuchsia::sysmem::BufferCollectionConstraints constraints;
-    constraints.usage.cpu = fuchsia::sysmem::cpuUsageRead;
+    fuchsia::sysmem2::BufferCollectionConstraints constraints;
+    constraints.mutable_usage()->set_cpu(fuchsia::sysmem2::CPU_USAGE_READ);
 
-    constraints.has_buffer_memory_constraints = true;
-    constraints.buffer_memory_constraints.cpu_domain_supported = true;
+    auto& memory_constraints = *constraints.mutable_buffer_memory_constraints();
+    memory_constraints.set_cpu_domain_supported(true);
 
     buffer_collection->SetConstraints(
-        /*has_constraints=*/true, std::move(constraints));
+        std::move(fuchsia::sysmem2::BufferCollectionSetConstraintsRequest{}
+                      .set_constraints(std::move(constraints))));
 
-    int32_t wait_status;
-    fuchsia::sysmem::BufferCollectionInfo_2 buffer_info;
+    fuchsia::sysmem2::BufferCollection_WaitForAllBuffersAllocated_Result
+        wait_result;
     zx_status_t status =
-        buffer_collection->WaitForBuffersAllocated(&wait_status, &buffer_info);
+        buffer_collection->WaitForAllBuffersAllocated(&wait_result);
     ASSERT_EQ(status, ZX_OK);
+    ASSERT_TRUE(wait_result.is_response());
+    auto buffer_info =
+        std::move(*wait_result.response().mutable_buffer_collection_info());
 
-    buffer_collection->Close();
+    buffer_collection->Release();
 
-    EXPECT_GE(buffer_info.settings.image_format_constraints.min_coded_width,
-              kImageSize);
-    EXPECT_GE(buffer_info.settings.image_format_constraints.min_coded_height,
-              kImageSize);
+    // sysmem always fills out settings(), image_format_constraints(), min_size().
+    EXPECT_GE(
+        buffer_info.settings().image_format_constraints().min_size().width,
+        kImageSize);
+    EXPECT_GE(
+        buffer_info.settings().image_format_constraints().min_size().height,
+        kImageSize);
 
-    for (size_t i = 0; i < buffer_info.buffer_count; ++i) {
+    // sysmem always fills out buffers()
+    for (size_t i = 0; i < buffer_info.buffers().size(); ++i) {
       auto memory_region = base::ReadOnlySharedMemoryRegion::Deserialize(
           base::subtle::PlatformSharedMemoryRegion::Take(
-              std::move(buffer_info.buffers[i].vmo),
+              std::move(*buffer_info.mutable_buffers()->at(i).mutable_vmo()),
               base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly,
-              buffer_info.settings.buffer_settings.size_bytes,
+              buffer_info.settings().buffer_settings().size_bytes(),
               base::UnguessableToken::Create()));
       auto mapping = memory_region.Map();
       ASSERT_TRUE(mapping.IsValid());
       frames_.push_back(FrameBuffer{.mapping = std::move(mapping)});
     }
 
-    const fuchsia::sysmem::ImageFormatConstraints& format =
-        buffer_info.settings.image_format_constraints;
+    const fuchsia::sysmem2::ImageFormatConstraints& format =
+        buffer_info.settings().image_format_constraints();
     image_stride_ =
-        RoundUp(std::max(static_cast<size_t>(format.min_bytes_per_row),
+        RoundUp(std::max(static_cast<size_t>(format.min_bytes_per_row()),
                          kImageSize * 4U),
-                format.bytes_per_row_divisor);
+                format.bytes_per_row_divisor());
   }
 
   void PresentFrame(SkRect dirty_rect = SkRect()) {
@@ -208,7 +218,7 @@ class FlatlandSurfaceCanvasTest : public ::testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 
-  fuchsia::sysmem::AllocatorSyncPtr sysmem_allocator_;
+  fuchsia::sysmem2::AllocatorSyncPtr sysmem_allocator_;
   scenic::FakeFlatland fake_flatland_;
 
   base::TestComponentContextForProcess test_context_;

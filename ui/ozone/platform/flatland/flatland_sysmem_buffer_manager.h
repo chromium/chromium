@@ -38,7 +38,7 @@ class FlatlandSysmemBufferManager {
 
   // Initializes the buffer manager with a connection to the Sysmem service and
   // Flatland Allocator.
-  void Initialize(fuchsia::sysmem::AllocatorHandle sysmem_allocator,
+  void Initialize(fuchsia::sysmem2::AllocatorHandle sysmem_allocator,
                   fuchsia::ui::composition::AllocatorHandle flatland_allocator);
 
   // Disconnects from the sysmem service. After disconnecting, it's safe to call
@@ -69,7 +69,7 @@ class FlatlandSysmemBufferManager {
   scoped_refptr<FlatlandSysmemBufferCollection> GetCollectionByHandle(
       const zx::eventpair& handle);
 
-  fuchsia::sysmem::Allocator_Sync* sysmem_allocator() {
+  fuchsia::sysmem2::Allocator_Sync* sysmem_allocator() {
     return sysmem_allocator_.get();
   }
 
@@ -84,7 +84,7 @@ class FlatlandSysmemBufferManager {
   void OnCollectionReleased(zx_koid_t id);
 
   FlatlandSurfaceFactory* const flatland_surface_factory_;
-  fuchsia::sysmem::AllocatorSyncPtr sysmem_allocator_;
+  fuchsia::sysmem2::AllocatorSyncPtr sysmem_allocator_;
   fuchsia::ui::composition::AllocatorPtr flatland_allocator_;
 
   base::small_map<

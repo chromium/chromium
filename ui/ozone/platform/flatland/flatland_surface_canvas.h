@@ -24,7 +24,7 @@ namespace ui {
 class FlatlandSurfaceCanvas : public SurfaceOzoneCanvas {
  public:
   FlatlandSurfaceCanvas(
-      fuchsia::sysmem::Allocator_Sync* sysmem_allocator,
+      fuchsia::sysmem2::Allocator_Sync* sysmem_allocator,
       fuchsia::ui::composition::Allocator* flatland_allocator);
 
   FlatlandSurfaceCanvas(const FlatlandSurfaceCanvas&) = delete;
@@ -50,7 +50,7 @@ class FlatlandSurfaceCanvas : public SurfaceOzoneCanvas {
     ~Frame();
 
     // Sets the `vmo` to use for this frame.
-    void InitializeBuffer(fuchsia::sysmem::VmoBuffer vmo,
+    void InitializeBuffer(fuchsia::sysmem2::VmoBuffer vmo,
                           gfx::Size size,
                           size_t stride);
 
@@ -85,7 +85,7 @@ class FlatlandSurfaceCanvas : public SurfaceOzoneCanvas {
 
   void OnFlatlandError(fuchsia::ui::composition::FlatlandError error);
 
-  fuchsia::sysmem::Allocator_Sync* const sysmem_allocator_;
+  fuchsia::sysmem2::Allocator_Sync* const sysmem_allocator_;
   fuchsia::ui::composition::Allocator* const flatland_allocator_;
 
   FlatlandConnection flatland_;
@@ -102,7 +102,7 @@ class FlatlandSurfaceCanvas : public SurfaceOzoneCanvas {
   fuchsia::ui::composition::TransformId root_transform_id_;
 
   // Pending buffer collection for the buffers.
-  fuchsia::sysmem::BufferCollectionSyncPtr buffer_collection_;
+  fuchsia::sysmem2::BufferCollectionSyncPtr buffer_collection_;
   fuchsia::ui::composition::BufferCollectionImportToken import_token_;
 
   base::WeakPtr<VSyncProviderImpl> vsync_provider_;

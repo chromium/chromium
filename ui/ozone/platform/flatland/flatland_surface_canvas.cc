@@ -4,7 +4,7 @@
 
 #include "ui/ozone/platform/flatland/flatland_surface_canvas.h"
 
-#include <fuchsia/sysmem/cpp/fidl.h>
+#include <fuchsia/sysmem2/cpp/fidl.h>
 #include <fuchsia/ui/composition/cpp/fidl.h>
 
 #include "base/fuchsia/fuchsia_logging.h"
@@ -86,14 +86,14 @@ class FlatlandSurfaceCanvas::VSyncProviderImpl : public gfx::VSyncProvider {
 };
 
 void FlatlandSurfaceCanvas::Frame::InitializeBuffer(
-    fuchsia::sysmem::VmoBuffer vmo,
+    fuchsia::sysmem2::VmoBuffer vmo,
     gfx::Size size,
     size_t stride) {
   size_t buffer_size = stride * size.height();
   base::WritableSharedMemoryRegion memory_region =
       base::WritableSharedMemoryRegion::Deserialize(
           base::subtle::PlatformSharedMemoryRegion::Take(
-              std::move(vmo.vmo),
+              std::move(*vmo.mutable_vmo()),
               base::subtle::PlatformSharedMemoryRegion::Mode::kWritable,
               buffer_size, base::UnguessableToken::Create()));
   memory_mapping = memory_region.Map();
@@ -133,7 +133,7 @@ void FlatlandSurfaceCanvas::Frame::CopyDirtyRegionFrom(const Frame& frame) {
 }
 
 FlatlandSurfaceCanvas::FlatlandSurfaceCanvas(
-    fuchsia::sysmem::Allocator_Sync* sysmem_allocator,
+    fuchsia::sysmem2::Allocator_Sync* sysmem_allocator,
     fuchsia::ui::composition::Allocator* flatland_allocator)
     : sysmem_allocator_(sysmem_allocator),
       flatland_allocator_(flatland_allocator),
@@ -180,14 +180,19 @@ void FlatlandSurfaceCanvas::ResizeCanvas(const gfx::Size& viewport_size,
   viewport_size_ = viewport_size;
   viewport_size_.SetToMax(gfx::Size(1, 1));
 
-  fuchsia::sysmem::BufferCollectionTokenSyncPtr collection_token;
-  sysmem_allocator_->AllocateSharedCollection(collection_token.NewRequest());
+  fuchsia::sysmem2::BufferCollectionTokenSyncPtr collection_token;
+  sysmem_allocator_->AllocateSharedCollection(
+      std::move(fuchsia::sysmem2::AllocatorAllocateSharedCollectionRequest{}
+                    .set_token_request(collection_token.NewRequest())));
 
-  fuchsia::sysmem::BufferCollectionTokenSyncPtr collection_token_for_flatland;
-  collection_token->Duplicate(ZX_RIGHT_SAME_RIGHTS,
-                              collection_token_for_flatland.NewRequest());
+  fuchsia::sysmem2::BufferCollectionTokenSyncPtr collection_token_for_flatland;
+  collection_token->Duplicate(std::move(
+      fuchsia::sysmem2::BufferCollectionTokenDuplicateRequest{}
+          .set_rights_attenuation_mask(ZX_RIGHT_SAME_RIGHTS)
+          .set_token_request(collection_token_for_flatland.NewRequest())));
 
-  collection_token->Sync();
+  fuchsia::sysmem2::Node_Sync_Result sync_result;
+  collection_token->Sync(&sync_result);
 
   fuchsia::ui::composition::BufferCollectionExportToken export_token;
   zx_status_t status =
@@ -196,7 +201,8 @@ void FlatlandSurfaceCanvas::ResizeCanvas(const gfx::Size& viewport_size,
 
   fuchsia::ui::composition::RegisterBufferCollectionArgs args;
   args.set_export_token(std::move(export_token));
-  args.set_buffer_collection_token(std::move(collection_token_for_flatland));
+  args.set_buffer_collection_token(fuchsia::sysmem::BufferCollectionTokenHandle(
+      collection_token_for_flatland.Unbind().TakeChannel()));
   args.set_usage(
       fuchsia::ui::composition::RegisterBufferCollectionUsage::DEFAULT);
 
@@ -209,51 +215,60 @@ void FlatlandSurfaceCanvas::ResizeCanvas(const gfx::Size& viewport_size,
         }
       });
 
-  sysmem_allocator_->BindSharedCollection(std::move(collection_token),
-                                          buffer_collection_.NewRequest());
+  sysmem_allocator_->BindSharedCollection(std::move(
+      fuchsia::sysmem2::AllocatorBindSharedCollectionRequest{}
+          .set_token(std::move(collection_token))
+          .set_buffer_collection_request(buffer_collection_.NewRequest())));
 
-  fuchsia::sysmem::BufferCollectionConstraints constraints;
-  constraints.usage.cpu =
-      fuchsia::sysmem::cpuUsageRead | fuchsia::sysmem::cpuUsageWrite;
-  constraints.min_buffer_count = kNumBuffers;
+  fuchsia::sysmem2::BufferCollectionConstraints constraints;
+  constraints.mutable_usage()->set_cpu(fuchsia::sysmem2::CPU_USAGE_READ |
+                                       fuchsia::sysmem2::CPU_USAGE_WRITE);
+  constraints.set_min_buffer_count(kNumBuffers);
 
-  constraints.has_buffer_memory_constraints = true;
-  constraints.buffer_memory_constraints.ram_domain_supported = true;
-  constraints.buffer_memory_constraints.cpu_domain_supported = true;
+  auto& memory_constraints = *constraints.mutable_buffer_memory_constraints();
+  memory_constraints.set_ram_domain_supported(true);
+  memory_constraints.set_cpu_domain_supported(true);
 
-  constraints.image_format_constraints_count = 1;
-  auto& image_constraints = constraints.image_format_constraints[0];
-  image_constraints.color_spaces_count = 1;
-  image_constraints.color_space[0] = fuchsia::sysmem::ColorSpace{
-      .type = fuchsia::sysmem::ColorSpaceType::SRGB};
-  image_constraints.pixel_format.type =
-      fuchsia::sysmem::PixelFormatType::BGRA32;
-  image_constraints.pixel_format.has_format_modifier = true;
-  image_constraints.pixel_format.format_modifier.value =
-      fuchsia::sysmem::FORMAT_MODIFIER_LINEAR;
-  image_constraints.min_coded_width = viewport_size_.width();
-  image_constraints.min_coded_height = viewport_size_.height();
+  auto& image_constraints =
+      constraints.mutable_image_format_constraints()->emplace_back();
+  image_constraints.mutable_color_spaces()->emplace_back(
+      fuchsia::images2::ColorSpace::SRGB);
+  image_constraints.set_pixel_format(fuchsia::images2::PixelFormat::B8G8R8A8);
+  image_constraints.set_pixel_format_modifier(
+      fuchsia::images2::PixelFormatModifier::LINEAR);
+  image_constraints.set_min_size(
+      fuchsia::math::SizeU{static_cast<uint32_t>(viewport_size_.width()),
+                           static_cast<uint32_t>(viewport_size_.height())});
 
-  buffer_collection_->SetConstraints(/*has_constraints=*/true,
-                                     std::move(constraints));
+  buffer_collection_->SetConstraints(std::move(
+      fuchsia::sysmem2::BufferCollectionSetConstraintsRequest{}.set_constraints(
+          std::move(constraints))));
 }
 
 void FlatlandSurfaceCanvas::FinalizeBufferAllocation() {
-  int32_t wait_status;
-  fuchsia::sysmem::BufferCollectionInfo_2 buffer_info;
+  fuchsia::sysmem2::BufferCollection_WaitForAllBuffersAllocated_Result
+      wait_result;
   zx_status_t status =
-      buffer_collection_->WaitForBuffersAllocated(&wait_status, &buffer_info);
-  ZX_LOG_IF(FATAL, status != ZX_OK, status) << "Sysmem connection failed.";
-
-  if (wait_status != ZX_OK) {
-    ZX_LOG(WARNING, wait_status) << "WaitForBuffersAllocated";
+      buffer_collection_->WaitForAllBuffersAllocated(&wait_result);
+  ZX_LOG_IF(FATAL, status != ZX_OK, status)
+      << "Sysmem connection failed (status).";
+  if (!wait_result.is_response()) {
+    if (wait_result.is_framework_err()) {
+      LOG(ERROR) << "WaitForBuffersAllocated (framework_err): "
+          << fidl::ToUnderlying(wait_result.framework_err());
+    } else {
+      LOG(ERROR) << "WaitForBuffersAllocated (err): "
+          << static_cast<uint32_t>(wait_result.err());
+    }
     return;
   }
+  auto buffer_info =
+      std::move(*wait_result.response().mutable_buffer_collection_info());
 
-  buffer_collection_->Close();
+  buffer_collection_->Release();
   buffer_collection_.Unbind();
 
-  CHECK_GE(buffer_info.buffer_count, kNumBuffers);
+  CHECK_GE(buffer_info.buffers().size(), kNumBuffers);
   DCHECK(import_token_.value.is_valid());
 
   for (size_t i = 0; i < kNumBuffers; ++i) {
@@ -277,14 +292,14 @@ void FlatlandSurfaceCanvas::FinalizeBufferAllocation() {
   }
   import_token_.value.reset();
 
-  const fuchsia::sysmem::ImageFormatConstraints& format =
-      buffer_info.settings.image_format_constraints;
+  const fuchsia::sysmem2::ImageFormatConstraints& format =
+      buffer_info.settings().image_format_constraints();
   size_t stride =
-      RoundUp(std::max(format.min_bytes_per_row, viewport_size_.width() * 4U),
-              format.bytes_per_row_divisor);
+      RoundUp(std::max(format.min_bytes_per_row(), viewport_size_.width() * 4U),
+              format.bytes_per_row_divisor());
 
   for (size_t i = 0; i < kNumBuffers; ++i) {
-    frames_[i].InitializeBuffer(std::move(buffer_info.buffers[i]),
+    frames_[i].InitializeBuffer(std::move(buffer_info.mutable_buffers()->at(i)),
                                 viewport_size_, stride);
   }
 }

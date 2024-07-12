@@ -124,21 +124,21 @@ VkImageFormatConstraintsInfoFUCHSIA GetDefaultImageFormatConstraintsInfo(
 
   static const VkSysmemColorSpaceFUCHSIA kSrgbColorSpace = {
       VK_STRUCTURE_TYPE_SYSMEM_COLOR_SPACE_FUCHSIA, nullptr,
-      static_cast<uint32_t>(fuchsia::sysmem::ColorSpaceType::SRGB)};
+      static_cast<uint32_t>(fuchsia::images2::ColorSpace::SRGB)};
 
   static const VkSysmemColorSpaceFUCHSIA kYuvDefaultColorSpaces[] = {
       {VK_STRUCTURE_TYPE_SYSMEM_COLOR_SPACE_FUCHSIA, nullptr,
-       static_cast<uint32_t>(fuchsia::sysmem::ColorSpaceType::REC709)},
+       static_cast<uint32_t>(fuchsia::images2::ColorSpace::REC709)},
       {VK_STRUCTURE_TYPE_SYSMEM_COLOR_SPACE_FUCHSIA, nullptr,
-       static_cast<uint32_t>(fuchsia::sysmem::ColorSpaceType::REC601_NTSC)},
-      {VK_STRUCTURE_TYPE_SYSMEM_COLOR_SPACE_FUCHSIA, nullptr,
-       static_cast<uint32_t>(
-           fuchsia::sysmem::ColorSpaceType::REC601_NTSC_FULL_RANGE)},
-      {VK_STRUCTURE_TYPE_SYSMEM_COLOR_SPACE_FUCHSIA, nullptr,
-       static_cast<uint32_t>(fuchsia::sysmem::ColorSpaceType::REC601_PAL)},
+       static_cast<uint32_t>(fuchsia::images2::ColorSpace::REC601_NTSC)},
       {VK_STRUCTURE_TYPE_SYSMEM_COLOR_SPACE_FUCHSIA, nullptr,
        static_cast<uint32_t>(
-           fuchsia::sysmem::ColorSpaceType::REC601_PAL_FULL_RANGE)},
+           fuchsia::images2::ColorSpace::REC601_NTSC_FULL_RANGE)},
+      {VK_STRUCTURE_TYPE_SYSMEM_COLOR_SPACE_FUCHSIA, nullptr,
+       static_cast<uint32_t>(fuchsia::images2::ColorSpace::REC601_PAL)},
+      {VK_STRUCTURE_TYPE_SYSMEM_COLOR_SPACE_FUCHSIA, nullptr,
+       static_cast<uint32_t>(
+           fuchsia::images2::ColorSpace::REC601_PAL_FULL_RANGE)},
   };
 
   bool is_yuv = IsYuvVkFormat(create_info.format);
@@ -243,7 +243,7 @@ bool FlatlandSysmemBufferCollection::IsNativePixmapConfigSupported(
 FlatlandSysmemBufferCollection::FlatlandSysmemBufferCollection() = default;
 
 bool FlatlandSysmemBufferCollection::Initialize(
-    fuchsia::sysmem::Allocator_Sync* sysmem_allocator,
+    fuchsia::sysmem2::Allocator_Sync* sysmem_allocator,
     fuchsia::ui::composition::Allocator* flatland_allocator,
     FlatlandSurfaceFactory* flatland_surface_factory,
     zx::eventpair handle,
@@ -289,12 +289,13 @@ bool FlatlandSysmemBufferCollection::Initialize(
   vk_device_ = vk_device;
   is_protected_ = false;
 
-  fuchsia::sysmem::BufferCollectionTokenSyncPtr collection_token;
+  fuchsia::sysmem2::BufferCollectionTokenSyncPtr collection_token;
   if (sysmem_token) {
     collection_token.Bind(std::move(sysmem_token));
   } else {
     zx_status_t status = sysmem_allocator->AllocateSharedCollection(
-        collection_token.NewRequest());
+        std::move(fuchsia::sysmem2::AllocatorAllocateSharedCollectionRequest{}
+                      .set_token_request(collection_token.NewRequest())));
     if (status != ZX_OK) {
       ZX_DLOG(ERROR, status)
           << "fuchsia.sysmem.Allocator.AllocateSharedCollection()";
@@ -328,33 +329,35 @@ FlatlandSysmemBufferCollection::CreateNativePixmap(
   CHECK_LT(handle.buffer_index, num_buffers());
 
   DCHECK_EQ(base::GetRelatedKoid(handle.buffer_collection_handle).value(), id_);
+  // sysmem always fills out settings(), buffer_settings(), coherency_domain()
   handle.ram_coherency =
-      buffers_info_.settings.buffer_settings.coherency_domain ==
-      fuchsia::sysmem::CoherencyDomain::RAM;
+      buffers_info_.settings().buffer_settings().coherency_domain() ==
+      fuchsia::sysmem2::CoherencyDomain::RAM;
 
   // `handle.planes` need to be filled in only for mappable buffers.
   if (!is_mappable())
     return new FlatlandSysmemNativePixmap(this, std::move(handle), size);
 
   zx::vmo main_plane_vmo;
-  DCHECK(buffers_info_.buffers[handle.buffer_index].vmo.is_valid());
-  zx_status_t status = buffers_info_.buffers[handle.buffer_index].vmo.duplicate(
-      ZX_RIGHT_SAME_RIGHTS, &main_plane_vmo);
+  DCHECK(buffers_info_.buffers()[handle.buffer_index].vmo().is_valid());
+  zx_status_t status =
+      buffers_info_.buffers()[handle.buffer_index].vmo().duplicate(
+          ZX_RIGHT_SAME_RIGHTS, &main_plane_vmo);
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "zx_handle_duplicate";
     return nullptr;
   }
 
-  const fuchsia::sysmem::ImageFormatConstraints& format =
-      buffers_info_.settings.image_format_constraints;
+  const fuchsia::sysmem2::ImageFormatConstraints& format =
+      buffers_info_.settings().image_format_constraints();
 
   // The logic should match LogicalBufferCollection::Allocate().
   size_t stride =
-      RoundUp(std::max(static_cast<size_t>(format.min_bytes_per_row),
+      RoundUp(std::max(static_cast<size_t>(format.min_bytes_per_row()),
                        size.width() * GetBytesPerPixel(format_)),
-              format.bytes_per_row_divisor);
+              format.bytes_per_row_divisor());
   size_t plane_offset =
-      buffers_info_.buffers[handle.buffer_index].vmo_usable_start;
+      buffers_info_.buffers()[handle.buffer_index].vmo_usable_start();
   size_t plane_size = stride * size.height();
   handle.planes.emplace_back(stride, plane_offset, plane_size,
                              std::move(main_plane_vmo));
@@ -494,58 +497,65 @@ FlatlandSysmemBufferCollection::~FlatlandSysmemBufferCollection() {
   }
 
   if (collection_)
-    collection_->Close();
+    collection_->Release();
 }
 
 bool FlatlandSysmemBufferCollection::InitializeInternal(
-    fuchsia::sysmem::Allocator_Sync* sysmem_allocator,
+    fuchsia::sysmem2::Allocator_Sync* sysmem_allocator,
     fuchsia::ui::composition::Allocator* flatland_allocator,
-    fuchsia::sysmem::BufferCollectionTokenSyncPtr collection_token,
+    fuchsia::sysmem2::BufferCollectionTokenSyncPtr collection_token,
     bool register_with_flatland_allocator,
     size_t min_buffer_count) {
-  fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>
+  fidl::InterfaceHandle<fuchsia::sysmem2::BufferCollectionToken>
       collection_token_for_vulkan;
-  collection_token->Duplicate(ZX_RIGHT_SAME_RIGHTS,
-                              collection_token_for_vulkan.NewRequest());
+  collection_token->Duplicate(std::move(
+      fuchsia::sysmem2::BufferCollectionTokenDuplicateRequest{}
+          .set_rights_attenuation_mask(ZX_RIGHT_SAME_RIGHTS)
+          .set_token_request(collection_token_for_vulkan.NewRequest())));
 
-  fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>
+  fidl::InterfaceHandle<fuchsia::sysmem2::BufferCollectionToken>
       collection_token_for_flatland;
   if (register_with_flatland_allocator) {
-    collection_token->Duplicate(ZX_RIGHT_SAME_RIGHTS,
-                                collection_token_for_flatland.NewRequest());
+    collection_token->Duplicate(std::move(
+        fuchsia::sysmem2::BufferCollectionTokenDuplicateRequest{}
+            .set_rights_attenuation_mask(ZX_RIGHT_SAME_RIGHTS)
+            .set_token_request(collection_token_for_flatland.NewRequest())));
   }
 
-  zx_status_t status = collection_token->Sync();
+  fuchsia::sysmem2::Node_Sync_Result sync_result;
+  zx_status_t status = collection_token->Sync(&sync_result);
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "fuchsia.sysmem.BufferCollectionToken.Sync()";
     return false;
   }
 
-  status = sysmem_allocator->BindSharedCollection(std::move(collection_token),
-                                                  collection_.NewRequest());
+  status = sysmem_allocator->BindSharedCollection(
+      std::move(fuchsia::sysmem2::AllocatorBindSharedCollectionRequest{}
+                    .set_token(std::move(collection_token))
+                    .set_buffer_collection_request(collection_.NewRequest())));
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "fuchsia.sysmem.Allocator.BindSharedCollection()";
     return false;
   }
 
   // Set |min_buffer_count| constraints.
-  fuchsia::sysmem::BufferCollectionConstraints constraints;
+  fuchsia::sysmem2::BufferCollectionConstraints constraints;
   if (is_mappable()) {
-    constraints.usage.cpu =
-        fuchsia::sysmem::cpuUsageRead | fuchsia::sysmem::cpuUsageWrite;
+    constraints.mutable_usage()->set_cpu(fuchsia::sysmem2::CPU_USAGE_READ |
+                                         fuchsia::sysmem2::CPU_USAGE_WRITE);
 
-    constraints.has_buffer_memory_constraints = true;
-    constraints.buffer_memory_constraints.ram_domain_supported = true;
-    constraints.buffer_memory_constraints.cpu_domain_supported = true;
+    auto& memory_constraints = *constraints.mutable_buffer_memory_constraints();
+    memory_constraints.set_ram_domain_supported(true);
+    memory_constraints.set_cpu_domain_supported(true);
   } else {
-    constraints.usage.none = fuchsia::sysmem::noneUsage;
+    constraints.mutable_usage()->set_none(fuchsia::sysmem2::NONE_USAGE);
   }
 
-  constraints.min_buffer_count = min_buffer_count;
-  constraints.image_format_constraints_count = 0;
+  constraints.set_min_buffer_count(min_buffer_count);
 
-  status = collection_->SetConstraints(/*has_constraints=*/true,
-                                       std::move(constraints));
+  status = collection_->SetConstraints(std::move(
+      fuchsia::sysmem2::BufferCollectionSetConstraintsRequest{}.set_constraints(
+          std::move(constraints))));
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status)
         << "fuchsia.sysmem.BufferCollection.SetConstraints()";
@@ -561,7 +571,9 @@ bool FlatlandSysmemBufferCollection::InitializeInternal(
 
     fuchsia::ui::composition::RegisterBufferCollectionArgs args;
     args.set_export_token(std::move(export_token));
-    args.set_buffer_collection_token(std::move(collection_token_for_flatland));
+    args.set_buffer_collection_token(
+        fuchsia::sysmem::BufferCollectionTokenHandle(
+            collection_token_for_flatland.TakeChannel()));
     args.set_usage(
         fuchsia::ui::composition::RegisterBufferCollectionUsage::DEFAULT);
     flatland_allocator->RegisterBufferCollection(
@@ -608,24 +620,34 @@ bool FlatlandSysmemBufferCollection::InitializeInternal(
     return false;
   }
 
-  zx_status_t wait_status;
-  status = collection_->WaitForBuffersAllocated(&wait_status, &buffers_info_);
+  fuchsia::sysmem2::BufferCollection_WaitForAllBuffersAllocated_Result
+      wait_result;
+  status = collection_->WaitForAllBuffersAllocated(&wait_result);
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "fuchsia.sysmem.BufferCollection failed";
     return false;
   }
-
-  if (wait_status != ZX_OK) {
-    ZX_DLOG(ERROR, status) << "fuchsia.sysmem.BufferCollection::"
-                              "WaitForBuffersAllocated() failed.";
+  if (!wait_result.is_response()) {
+    if (wait_result.is_framework_err()) {
+      LOG(ERROR) << "fuchsia.sysmem.BufferCollection::WaitForBuffersAllocated()"
+          " failed (framework_err): "
+          << fidl::ToUnderlying(wait_result.framework_err());
+    } else {
+      LOG(ERROR) << "fuchsia.sysmem.BufferCollection::WaitForBuffersAllocated()"
+          " failed (err): " << static_cast<uint32_t>(wait_result.err());
+    }
     return false;
   }
+  buffers_info_ =
+      std::move(*wait_result.response().mutable_buffer_collection_info());
 
-  DCHECK_GE(buffers_info_.buffer_count, min_buffer_count);
-  DCHECK(buffers_info_.settings.has_image_format_constraints);
+  // sysmem always fills out buffers(), settings(), image_format_constraints(),
+  // size_bytes(), is_secure()
+  DCHECK_GE(buffers_info_.buffers().size(), min_buffer_count);
+  DCHECK(buffers_info_.settings().has_image_format_constraints());
 
-  buffer_size_ = buffers_info_.settings.buffer_settings.size_bytes;
-  is_protected_ = buffers_info_.settings.buffer_settings.is_secure;
+  buffer_size_ = buffers_info_.settings().buffer_settings().size_bytes();
+  is_protected_ = buffers_info_.settings().buffer_settings().is_secure();
 
   handle_watch_ =
       std::make_unique<base::MessagePumpForIO::ZxHandleWatchController>(
