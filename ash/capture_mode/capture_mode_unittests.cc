@@ -9,6 +9,7 @@
 
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/magnifier_glass.h"
+#include "ash/annotator/annotation_tray.h"
 #include "ash/annotator/annotations_overlay_controller.h"
 #include "ash/annotator/annotator_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
@@ -39,7 +40,6 @@
 #include "ash/display/output_protection_delegate.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/display/window_tree_host_manager.h"
-#include "ash/projector/projector_annotation_tray.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/projector_metrics.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
@@ -6060,8 +6060,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
   auto* root_window = Shell::GetPrimaryRootWindow();
   auto* status_area_widget =
       RootWindowController::ForWindow(root_window)->GetStatusAreaWidget();
-  ProjectorAnnotationTray* annotations_tray =
-      status_area_widget->projector_annotation_tray();
+  AnnotationTray* annotations_tray = status_area_widget->annotation_tray();
   annotations_tray->ShowBubble();
   EXPECT_TRUE(annotations_tray->GetBubbleView());
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PROJECTOR_PROJECTOR_ANNOTATION_TRAY_H_
-#define ASH_PROJECTOR_PROJECTOR_ANNOTATION_TRAY_H_
+#ifndef ASH_ANNOTATOR_ANNOTATION_TRAY_H_
+#define ASH_ANNOTATOR_ANNOTATION_TRAY_H_
 
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
@@ -28,23 +28,23 @@ class HoverHighlightView;
 class TrayBubbleWrapper;
 
 // Pen colors.
-constexpr SkColor kProjectorMagentaPenColor = SkColorSetRGB(0xFF, 0x00, 0xE5);
-constexpr SkColor kProjectorRedPenColor = SkColorSetRGB(0xE9, 0x42, 0x35);
-constexpr SkColor kProjectorYellowPenColor = SkColorSetRGB(0xFB, 0xF1, 0x04);
-constexpr SkColor kProjectorBluePenColor = SkColorSetRGB(0x42, 0x85, 0xF4);
-constexpr SkColor kProjectorDefaultPenColor = kProjectorMagentaPenColor;
+// TODO(b/352729094): Consolidate the pen vs. marker terminology.
+constexpr SkColor kAnnotatorMagentaPenColor = SkColorSetRGB(0xFF, 0x00, 0xE5);
+constexpr SkColor kAnnotatorRedPenColor = SkColorSetRGB(0xE9, 0x42, 0x35);
+constexpr SkColor kAnnotatorYellowPenColor = SkColorSetRGB(0xFB, 0xF1, 0x04);
+constexpr SkColor kAnnotatorBluePenColor = SkColorSetRGB(0x42, 0x85, 0xF4);
+constexpr SkColor kAnnotatorDefaultPenColor = kAnnotatorMagentaPenColor;
 
-// Status area tray which allows you to access the annotation tools for
-// Projector.
-class ProjectorAnnotationTray : public TrayBackgroundView,
+// Status area tray which allows you to access the annotation tools.
+class AnnotationTray : public TrayBackgroundView,
                                 public SessionObserver {
-  METADATA_HEADER(ProjectorAnnotationTray, TrayBackgroundView)
+  METADATA_HEADER(AnnotationTray, TrayBackgroundView)
 
  public:
-  explicit ProjectorAnnotationTray(Shelf* shelf);
-  ProjectorAnnotationTray(const ProjectorAnnotationTray&) = delete;
-  ProjectorAnnotationTray& operator=(const ProjectorAnnotationTray&) = delete;
-  ~ProjectorAnnotationTray() override;
+  explicit AnnotationTray(Shelf* shelf);
+  AnnotationTray(const AnnotationTray&) = delete;
+  AnnotationTray& operator=(const AnnotationTray&) = delete;
+  ~AnnotationTray() override;
 
   // TrayBackgroundView:
   void OnGestureEvent(ui::GestureEvent* event) override;
@@ -99,7 +99,7 @@ class ProjectorAnnotationTray : public TrayBackgroundView,
   std::unique_ptr<TrayBubbleWrapper> bubble_;
 
   // The last selected pen color.
-  SkColor current_pen_color_ = kProjectorDefaultPenColor;
+  SkColor current_pen_color_ = kAnnotatorDefaultPenColor;
 
   base::ScopedObservation<SessionControllerImpl, SessionObserver>
       session_observer_{this};
@@ -107,4 +107,4 @@ class ProjectorAnnotationTray : public TrayBackgroundView,
 
 }  // namespace ash
 
-#endif  // ASH_PROJECTOR_PROJECTOR_ANNOTATION_TRAY_H_
+#endif  // ASH_ANNOTATOR_ANNOTATION_TRAY_H_

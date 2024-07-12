@@ -16,6 +16,7 @@ enum class ASH_PUBLIC_EXPORT AnnotatorToolType {
   kPen,
   kHighlighter,
   kEraser,
+  kToolNone,
   // TODO(b/196245932) Add support for laser pointer after confirming we are
   // implementing it inside the annotator.
 };

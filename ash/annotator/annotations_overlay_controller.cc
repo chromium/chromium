@@ -5,11 +5,11 @@
 #include "ash/annotator/annotations_overlay_controller.h"
 
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
+#include "ash/annotator/annotation_tray.h"
 #include "ash/annotator/annotator_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/stop_recording_button_tray.h"
-#include "ash/projector/projector_annotation_tray.h"
 #include "ash/public/cpp/annotator/annotations_overlay_view.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
@@ -132,8 +132,7 @@ class OverlayTargeter : public aura::WindowTargeter {
         return nullptr;
       }
 
-      ProjectorAnnotationTray* annotations =
-          status_area_widget->projector_annotation_tray();
+      AnnotationTray* annotations = status_area_widget->annotation_tray();
       if (annotations && annotations->visible_preferred()) {
         // Let events over the projector shelf pod to go through.
         if (annotations->GetBoundsInScreen().Contains(screen_location))

@@ -7,9 +7,9 @@
 #include <memory>
 #include <string_view>
 
+#include "ash/annotator/annotation_tray.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/projector/projector_annotation_tray.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -185,12 +185,11 @@ TEST_F(StatusAreaInternalsHandlerTest, ToggleTrayButtons) {
           base::BindRepeating(&mojom::status_area_internals::PageHandler::
                                   ToggleVideoConferenceTray,
                               base::Unretained(handler_remote().get()))},
-      // Projector Annotation Tray
+      // Annotation Tray
       ToggleTrayTestParam{
-          "Projector Annotation Tray",
-          GetStatusAreaWidget()->projector_annotation_tray(),
+          "Annotation Tray", GetStatusAreaWidget()->annotation_tray(),
           base::BindRepeating(
-              &mojom::status_area_internals::PageHandler::ToggleProjectorTray,
+              &mojom::status_area_internals::PageHandler::ToggleAnnotationTray,
               base::Unretained(handler_remote().get()))}};
 
   // Test that when triggering the correct `toggle_function` from the test web

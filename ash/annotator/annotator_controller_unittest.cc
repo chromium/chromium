@@ -4,9 +4,9 @@
 
 #include "ash/annotator/annotator_controller.h"
 
+#include "ash/annotator/annotation_tray.h"
 #include "ash/annotator/annotator_metrics.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/projector/projector_annotation_tray.h"
 #include "ash/projector/projector_metrics.h"
 #include "ash/public/cpp/annotator/annotator_tool.h"
 #include "ash/root_window_controller.h"
@@ -65,7 +65,7 @@ class AnnotatorControllerTest : public AshTestBase {
 TEST_F(AnnotatorControllerTest, SetAnnotatorTool) {
   base::HistogramTester histogram_tester;
   AnnotatorTool tool;
-  tool.color = kProjectorDefaultPenColor;
+  tool.color = kAnnotatorDefaultPenColor;
   EXPECT_CALL(client_, SetTool(tool));
 
   annotator_controller()->SetAnnotatorTool(tool);
@@ -75,13 +75,13 @@ TEST_F(AnnotatorControllerTest, SetAnnotatorTool) {
 }
 
 TEST_F(AnnotatorControllerTest, RegisterAndUnregisterView) {
-  auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
-                                        ->GetStatusAreaWidget()
-                                        ->projector_annotation_tray();
+  auto* annotation_tray = Shell::GetPrimaryRootWindowController()
+                              ->GetStatusAreaWidget()
+                              ->annotation_tray();
   annotator_controller()->RegisterView(Shell::GetPrimaryRootWindow());
-  EXPECT_TRUE(projector_annotation_tray->visible_preferred());
+  EXPECT_TRUE(annotation_tray->visible_preferred());
   annotator_controller()->UnregisterView(Shell::GetPrimaryRootWindow());
-  EXPECT_FALSE(projector_annotation_tray->visible_preferred());
+  EXPECT_FALSE(annotation_tray->visible_preferred());
 }
 
 TEST_F(AnnotatorControllerTest, RegisterAndUnregisterViewMultipleDisplays) {
@@ -90,10 +90,10 @@ TEST_F(AnnotatorControllerTest, RegisterAndUnregisterViewMultipleDisplays) {
   ASSERT_EQ(2u, roots.size());
   auto* primary_display_tray = Shell::GetPrimaryRootWindowController()
                                    ->GetStatusAreaWidget()
-                                   ->projector_annotation_tray();
+                                   ->annotation_tray();
   auto* external_display_tray = RootWindowController::ForWindow(roots[1])
                                     ->GetStatusAreaWidget()
-                                    ->projector_annotation_tray();
+                                    ->annotation_tray();
 
   // Show tray on primary root window.
   annotator_controller()->RegisterView(Shell::GetPrimaryRootWindow());
@@ -114,11 +114,11 @@ TEST_F(AnnotatorControllerTest, RegisterAndUnregisterViewMultipleDisplays) {
 TEST_F(AnnotatorControllerTest, UnregisterViewWhenAnnotatorIsEnabled) {
   base::HistogramTester histogram_tester;
 
-  auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
-                                        ->GetStatusAreaWidget()
-                                        ->projector_annotation_tray();
+  auto* annotation_tray = Shell::GetPrimaryRootWindowController()
+                              ->GetStatusAreaWidget()
+                              ->annotation_tray();
   annotator_controller()->RegisterView(Shell::GetPrimaryRootWindow());
-  EXPECT_TRUE(projector_annotation_tray->visible_preferred());
+  EXPECT_TRUE(annotation_tray->visible_preferred());
 
   annotator_controller()->CreateAnnotationOverlayForWindow(
       Shell::GetPrimaryRootWindow(), std::nullopt);
@@ -126,7 +126,7 @@ TEST_F(AnnotatorControllerTest, UnregisterViewWhenAnnotatorIsEnabled) {
   EXPECT_TRUE(annotator_controller()->is_annotator_enabled());
 
   annotator_controller()->UnregisterView(Shell::GetPrimaryRootWindow());
-  EXPECT_FALSE(projector_annotation_tray->visible_preferred());
+  EXPECT_FALSE(annotation_tray->visible_preferred());
 }
 
 TEST_F(AnnotatorControllerTest, EnableAnnotator) {
@@ -144,11 +144,11 @@ TEST_F(AnnotatorControllerTest, EnableAnnotator) {
 TEST_F(AnnotatorControllerTest, DisableAnnotator) {
   base::HistogramTester histogram_tester;
 
-  auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
-                                        ->GetStatusAreaWidget()
-                                        ->projector_annotation_tray();
+  auto* annotation_tray = Shell::GetPrimaryRootWindowController()
+                              ->GetStatusAreaWidget()
+                              ->annotation_tray();
   annotator_controller()->RegisterView(Shell::GetPrimaryRootWindow());
-  EXPECT_TRUE(projector_annotation_tray->visible_preferred());
+  EXPECT_TRUE(annotation_tray->visible_preferred());
 
   annotator_controller()->CreateAnnotationOverlayForWindow(
       Shell::GetPrimaryRootWindow(), std::nullopt);
@@ -156,7 +156,7 @@ TEST_F(AnnotatorControllerTest, DisableAnnotator) {
   EXPECT_TRUE(annotator_controller()->is_annotator_enabled());
 
   annotator_controller()->DisableAnnotator();
-  EXPECT_FALSE(projector_annotation_tray->visible_preferred());
+  EXPECT_FALSE(annotation_tray->visible_preferred());
   EXPECT_FALSE(annotator_controller()->is_annotator_enabled());
 }
 
@@ -194,9 +194,9 @@ TEST_F(AnnotatorControllerTest, ToggleMarkerWithKeyboardShortcut) {
 }
 
 TEST_F(AnnotatorControllerTest, SetAnnotatorToolAndStorePref) {
-  auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
-                                        ->GetStatusAreaWidget()
-                                        ->projector_annotation_tray();
+  auto* annotation_tray = Shell::GetPrimaryRootWindowController()
+                              ->GetStatusAreaWidget()
+                              ->annotation_tray();
   // Assert that the initial pref is unset.
   PrefService* pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
@@ -209,12 +209,12 @@ TEST_F(AnnotatorControllerTest, SetAnnotatorToolAndStorePref) {
       Shell::GetPrimaryRootWindow(), std::nullopt);
   annotator_controller()->OnCanvasInitialized(true);
   // Assert that the icon image for the annotator is set.
-  ASSERT_EQ(projector_annotation_tray->tray_container()->children().size(), 1u);
+  ASSERT_EQ(annotation_tray->tray_container()->children().size(), 1u);
   const views::ImageView* image_view = static_cast<views::ImageView*>(
-      projector_annotation_tray->tray_container()->children()[0]);
+      annotation_tray->tray_container()->children()[0]);
   EXPECT_FALSE(image_view->GetImageModel().IsEmpty());
 
-  LeftClickOn(projector_annotation_tray);
+  LeftClickOn(annotation_tray);
   EXPECT_TRUE(annotator_controller()->is_annotator_enabled());
 
   annotator_controller()->DisableAnnotator();
@@ -222,23 +222,22 @@ TEST_F(AnnotatorControllerTest, SetAnnotatorToolAndStorePref) {
   // Check that the last used color is stored in the pref.
   EXPECT_EQ(
       pref_service->GetUint64(prefs::kProjectorAnnotatorLastUsedMarkerColor),
-      kProjectorDefaultPenColor);
+      kAnnotatorDefaultPenColor);
 }
 
-// Tests that long pressing the ProjectorAnnotationTray shows a bubble.
+// Tests that long pressing the AnnotationTray shows a bubble.
 TEST_F(AnnotatorControllerTest, LongPressShowsBubble) {
   annotator_controller()->RegisterView(Shell::GetPrimaryRootWindow());
   annotator_controller()->CreateAnnotationOverlayForWindow(
       Shell::GetPrimaryRootWindow(), std::nullopt);
   annotator_controller()->OnCanvasInitialized(true);
 
-  auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
-                                        ->GetStatusAreaWidget()
-                                        ->projector_annotation_tray();
+  auto* annotation_tray = Shell::GetPrimaryRootWindowController()
+                              ->GetStatusAreaWidget()
+                              ->annotation_tray();
 
   // Long press the tray item, it should show a bubble.
-  gfx::Point location =
-      projector_annotation_tray->GetBoundsInScreen().CenterPoint();
+  gfx::Point location = annotation_tray->GetBoundsInScreen().CenterPoint();
 
   // Temporarily reconfigure gestures so that the long press takes 2
   // milliseconds.
@@ -269,10 +268,10 @@ TEST_F(AnnotatorControllerTest, LongPressShowsBubble) {
 
   event_generator->ReleaseTouch();
 
-  EXPECT_TRUE(projector_annotation_tray->GetBubbleWidget());
+  EXPECT_TRUE(annotation_tray->GetBubbleWidget());
 }
 
-// Tests that tapping the ProjectorAnnotationTray enables annotation.
+// Tests that tapping the AnnotationTray enables annotation.
 TEST_F(AnnotatorControllerTest, TapEnabledAnnotation) {
   annotator_controller()->RegisterView(Shell::GetPrimaryRootWindow());
   annotator_controller()->CreateAnnotationOverlayForWindow(
@@ -281,28 +280,28 @@ TEST_F(AnnotatorControllerTest, TapEnabledAnnotation) {
 
   GestureTapOn(Shell::GetPrimaryRootWindowController()
                    ->GetStatusAreaWidget()
-                   ->projector_annotation_tray());
+                   ->annotation_tray());
 
   EXPECT_TRUE(annotator_controller()->is_annotator_enabled());
 }
 
 TEST_F(AnnotatorControllerTest, OnCanvasInitialized) {
-  auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
-                                        ->GetStatusAreaWidget()
-                                        ->projector_annotation_tray();
+  auto* annotation_tray = Shell::GetPrimaryRootWindowController()
+                              ->GetStatusAreaWidget()
+                              ->annotation_tray();
   annotator_controller()->RegisterView(Shell::GetPrimaryRootWindow());
 
-  EXPECT_FALSE(projector_annotation_tray->GetEnabled());
+  EXPECT_FALSE(annotation_tray->GetEnabled());
 
   annotator_controller()->CreateAnnotationOverlayForWindow(
       Shell::GetPrimaryRootWindow(), std::nullopt);
   annotator_controller()->OnCanvasInitialized(/*success=*/true);
   EXPECT_TRUE(annotator_controller()->GetAnnotatorAvailability());
-  EXPECT_TRUE(projector_annotation_tray->GetEnabled());
+  EXPECT_TRUE(annotation_tray->GetEnabled());
 
   annotator_controller()->OnCanvasInitialized(/*success=*/false);
   EXPECT_FALSE(annotator_controller()->GetAnnotatorAvailability());
-  EXPECT_FALSE(projector_annotation_tray->GetEnabled());
+  EXPECT_FALSE(annotation_tray->GetEnabled());
 }
 
 TEST_F(AnnotatorControllerTest, ToggleAnnotationTray) {

@@ -72,11 +72,11 @@ export class StatusAreaInternalsElement extends PolymerElement {
     pageHandler.toggleVideoConferenceTray(toggled);
   }
 
-  onProjectorToggled(e: CustomEvent<boolean>) {
+  onAnnotatorToggled(e: CustomEvent<boolean>) {
     e.stopPropagation();
 
     const toggled = e.detail;
-    pageHandler.toggleProjectorTray(toggled);
+    pageHandler.toggleAnnotationTray(toggled);
   }
 
   onChildUserToggled(e: CustomEvent<boolean>) {

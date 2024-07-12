@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/projector/projector_annotation_tray.h"
+#include "ash/annotator/annotation_tray.h"
 
 #include "ash/annotator/annotator_controller.h"
 #include "ash/constants/ash_pref_names.h"
@@ -58,36 +58,34 @@ constexpr int kColorButtonColorViewSize = 16;
 constexpr int kColorButtonViewRadius = 28;
 
 constexpr SkColor kPenColors[] = {
-    kProjectorMagentaPenColor, kProjectorBluePenColor, kProjectorYellowPenColor,
-    kProjectorRedPenColor};
-
-// TODO(b/201664243): Use AnnotatorToolType.
-enum ProjectorTool { kToolNone, kToolPen };
+    kAnnotatorMagentaPenColor, kAnnotatorBluePenColor, kAnnotatorYellowPenColor,
+    kAnnotatorRedPenColor};
 
 bool IsAnnotatorEnabled() {
   auto* controller = Shell::Get()->annotator_controller();
-  // `controller` may not be available yet as the `ProjectorAnnotationTray`
+  // `controller` may not be available yet as the `AnnotationTray`
   // is created before it.
   return controller && controller->is_annotator_enabled();
 }
 
-ProjectorTool GetCurrentTool() {
-  return IsAnnotatorEnabled() ? kToolPen : kToolNone;
+AnnotatorToolType GetCurrentTool() {
+  return IsAnnotatorEnabled() ?
+    AnnotatorToolType::kMarker : AnnotatorToolType::kToolNone;
 }
 
-const gfx::VectorIcon& GetIconForTool(ProjectorTool tool, SkColor color) {
-  switch (tool) {
-    case kToolNone:
-      return kPaletteTrayIconProjectorIcon;
-    case kToolPen:
-      switch (color) {
-        case kProjectorMagentaPenColor:
+const gfx::VectorIcon& GetIconForTool(AnnotatorToolType tool, SkColor color) {
+  if(tool == AnnotatorToolType::kToolNone){
+     return kPaletteTrayIconProjectorIcon;
+  }
+  if(tool == AnnotatorToolType::kMarker){
+    switch (color) {
+        case kAnnotatorMagentaPenColor:
           return kPaletteTrayIconProjectorMagentaIcon;
-        case kProjectorBluePenColor:
+        case kAnnotatorBluePenColor:
           return kPaletteTrayIconProjectorBlueIcon;
-        case kProjectorRedPenColor:
+        case kAnnotatorRedPenColor:
           return kPaletteTrayIconProjectorRedIcon;
-        case kProjectorYellowPenColor:
+        case kAnnotatorYellowPenColor:
           return kPaletteTrayIconProjectorYellowIcon;
       }
   }
@@ -98,13 +96,13 @@ const gfx::VectorIcon& GetIconForTool(ProjectorTool tool, SkColor color) {
 
 }  // namespace
 
-ProjectorAnnotationTray::ProjectorAnnotationTray(Shelf* shelf)
+AnnotationTray::AnnotationTray(Shelf* shelf)
     : TrayBackgroundView(shelf,
                          TrayBackgroundViewCatalogName::kProjectorAnnotation),
       image_view_(
           tray_container()->AddChildView(std::make_unique<views::ImageView>())),
       pen_view_(nullptr) {
-  SetCallback(base::BindRepeating(&ProjectorAnnotationTray::OnTrayButtonPressed,
+  SetCallback(base::BindRepeating(&AnnotationTray::OnTrayButtonPressed,
                                   base::Unretained(this)));
 
   // Right click should show the bubble. In tablet mode, long press is
@@ -123,9 +121,9 @@ ProjectorAnnotationTray::ProjectorAnnotationTray(Shelf* shelf)
   session_observer_.Observe(Shell::Get()->session_controller());
 }
 
-ProjectorAnnotationTray::~ProjectorAnnotationTray() = default;
+AnnotationTray::~AnnotationTray() = default;
 
-void ProjectorAnnotationTray::OnGestureEvent(ui::GestureEvent* event) {
+void AnnotationTray::OnGestureEvent(ui::GestureEvent* event) {
   // Long Press typically is used to show a contextual menu, but because in
   // tablet mode tapping the pod is used to toggle a feature, long press is the
   // only available way to show the bubble.
@@ -139,18 +137,18 @@ void ProjectorAnnotationTray::OnGestureEvent(ui::GestureEvent* event) {
   ShowBubble();
 }
 
-void ProjectorAnnotationTray::ClickedOutsideBubble(
+void AnnotationTray::ClickedOutsideBubble(
     const ui::LocatedEvent& event) {
   CloseBubble();
 }
 
-void ProjectorAnnotationTray::UpdateTrayItemColor(bool is_active) {
+void AnnotationTray::UpdateTrayItemColor(bool is_active) {
   SetIconImage(is_active);
 }
 
-std::u16string ProjectorAnnotationTray::GetAccessibleNameForTray() {
+std::u16string AnnotationTray::GetAccessibleNameForTray() {
   std::u16string enabled_state = l10n_util::GetStringUTF16(
-      GetCurrentTool() == kToolNone
+      GetCurrentTool() == AnnotatorToolType::kToolNone
           ? IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_OFF_STATE
           : IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_ON_STATE);
   return l10n_util::GetStringFUTF16(
@@ -158,15 +156,15 @@ std::u16string ProjectorAnnotationTray::GetAccessibleNameForTray() {
       enabled_state);
 }
 
-void ProjectorAnnotationTray::HandleLocaleChange() {}
+void AnnotationTray::HandleLocaleChange() {}
 
-void ProjectorAnnotationTray::HideBubbleWithView(
+void AnnotationTray::HideBubbleWithView(
     const TrayBubbleView* bubble_view) {
   if (bubble_->bubble_view() == bubble_view)
     CloseBubble();
 }
 
-void ProjectorAnnotationTray::CloseBubble() {
+void AnnotationTray::CloseBubble() {
   pen_view_ = nullptr;
   bubble_.reset();
   // Annotator can be enabled after closing the bubble so set the activity state
@@ -175,7 +173,7 @@ void ProjectorAnnotationTray::CloseBubble() {
   shelf()->UpdateAutoHideState();
 }
 
-void ProjectorAnnotationTray::ShowBubble() {
+void AnnotationTray::ShowBubble() {
   if (bubble_)
     return;
 
@@ -205,7 +203,7 @@ void ProjectorAnnotationTray::ShowBubble() {
     for (SkColor color : kPenColors) {
       auto* color_button = marker_view_container->AddChildView(
           std::make_unique<ProjectorColorButton>(
-              base::BindRepeating(&ProjectorAnnotationTray::OnPenColorPressed,
+              base::BindRepeating(&AnnotationTray::OnPenColorPressed,
                                   base::Unretained(this), color),
               color, kColorButtonColorViewSize, kColorButtonViewRadius,
               l10n_util::GetStringUTF16(GetAccessibleNameForColor(color))));
@@ -219,31 +217,31 @@ void ProjectorAnnotationTray::ShowBubble() {
   SetIsActive(true);
 }
 
-TrayBubbleView* ProjectorAnnotationTray::GetBubbleView() {
+TrayBubbleView* AnnotationTray::GetBubbleView() {
   return bubble_ ? bubble_->bubble_view() : nullptr;
 }
 
-views::Widget* ProjectorAnnotationTray::GetBubbleWidget() const {
+views::Widget* AnnotationTray::GetBubbleWidget() const {
   return bubble_ ? bubble_->GetBubbleWidget() : nullptr;
 }
 
-void ProjectorAnnotationTray::OnThemeChanged() {
+void AnnotationTray::OnThemeChanged() {
   TrayBackgroundView::OnThemeChanged();
   UpdateIcon();
 }
 
-void ProjectorAnnotationTray::HideBubble(const TrayBubbleView* bubble_view) {
+void AnnotationTray::HideBubble(const TrayBubbleView* bubble_view) {
   CloseBubble();
 }
 
-void ProjectorAnnotationTray::OnActiveUserPrefServiceChanged(
+void AnnotationTray::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   const uint64_t color =
       pref_service->GetUint64(prefs::kProjectorAnnotatorLastUsedMarkerColor);
-  current_pen_color_ = !color ? kProjectorDefaultPenColor : color;
+  current_pen_color_ = !color ? kAnnotatorDefaultPenColor : color;
 }
 
-void ProjectorAnnotationTray::HideAnnotationTray() {
+void AnnotationTray::HideAnnotationTray() {
   SetVisiblePreferred(false);
   UpdateIcon();
   PrefService* pref_service =
@@ -253,7 +251,7 @@ void ProjectorAnnotationTray::HideAnnotationTray() {
   ResetTray();
 }
 
-void ProjectorAnnotationTray::OnTrayButtonPressed(const ui::Event& event) {
+void AnnotationTray::OnTrayButtonPressed(const ui::Event& event) {
   // NOTE: Long press not supported via the `views::Button` callback, it
   // is handled via OnGestureEvent override.
   if (event.IsMouseEvent() && event.AsMouseEvent()->IsRightMouseButton()) {
@@ -264,7 +262,7 @@ void ProjectorAnnotationTray::OnTrayButtonPressed(const ui::Event& event) {
   ToggleAnnotator();
 }
 
-void ProjectorAnnotationTray::SetTrayEnabled(bool enabled) {
+void AnnotationTray::SetTrayEnabled(bool enabled) {
   SetEnabled(enabled);
   if (enabled)
     return;
@@ -280,8 +278,8 @@ void ProjectorAnnotationTray::SetTrayEnabled(bool enabled) {
       IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_UNAVAILABLE));
 }
 
-void ProjectorAnnotationTray::ToggleAnnotator() {
-  if (GetCurrentTool() == kToolNone) {
+void AnnotationTray::ToggleAnnotator() {
+  if (GetCurrentTool() == AnnotatorToolType::kToolNone) {
     EnableAnnotatorWithPenColor();
   } else {
     DeactivateActiveTool();
@@ -292,7 +290,7 @@ void ProjectorAnnotationTray::ToggleAnnotator() {
   UpdateIcon();
 }
 
-void ProjectorAnnotationTray::EnableAnnotatorWithPenColor() {
+void AnnotationTray::EnableAnnotatorWithPenColor() {
   auto* controller = Shell::Get()->annotator_controller();
   DCHECK(controller);
   AnnotatorTool tool;
@@ -301,13 +299,13 @@ void ProjectorAnnotationTray::EnableAnnotatorWithPenColor() {
   controller->EnableAnnotatorTool();
 }
 
-void ProjectorAnnotationTray::DeactivateActiveTool() {
+void AnnotationTray::DeactivateActiveTool() {
   auto* controller = Shell::Get()->annotator_controller();
   DCHECK(controller);
   controller->ResetTools();
 }
 
-void ProjectorAnnotationTray::UpdateIcon() {
+void AnnotationTray::UpdateIcon() {
   bool annotator_toggled = false;
   if (is_active() != IsAnnotatorEnabled()) {
     SetIsActive(IsAnnotatorEnabled());
@@ -327,43 +325,43 @@ void ProjectorAnnotationTray::UpdateIcon() {
   image_view_->SetTooltipText(GetTooltip());
 }
 
-void ProjectorAnnotationTray::OnPenColorPressed(SkColor color) {
+void AnnotationTray::OnPenColorPressed(SkColor color) {
   current_pen_color_ = color;
   EnableAnnotatorWithPenColor();
   CloseBubble();
   UpdateIcon();
 }
 
-int ProjectorAnnotationTray::GetAccessibleNameForColor(SkColor color) {
+int AnnotationTray::GetAccessibleNameForColor(SkColor color) {
   switch (color) {
-    case kProjectorRedPenColor:
+    case kAnnotatorRedPenColor:
       return IDS_RED_COLOR_BUTTON;
-    case kProjectorBluePenColor:
+    case kAnnotatorBluePenColor:
       return IDS_BLUE_COLOR_BUTTON;
-    case kProjectorYellowPenColor:
+    case kAnnotatorYellowPenColor:
       return IDS_YELLOW_COLOR_BUTTON;
-    case kProjectorMagentaPenColor:
+    case kAnnotatorMagentaPenColor:
       return IDS_MAGENTA_COLOR_BUTTON;
   }
   NOTREACHED_IN_MIGRATION();
   return IDS_RED_COLOR_BUTTON;
 }
 
-void ProjectorAnnotationTray::ResetTray() {
+void AnnotationTray::ResetTray() {
   // Disable the tray icon. It is enabled once the ink canvas is initialized.
   SetEnabled(false);
 }
 
-std::u16string ProjectorAnnotationTray::GetTooltip() {
+std::u16string AnnotationTray::GetTooltip() {
   std::u16string enabled_state = l10n_util::GetStringUTF16(
-      GetCurrentTool() == kToolNone
+      GetCurrentTool() == AnnotatorToolType::kToolNone
           ? IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_OFF_STATE
           : IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_ON_STATE);
   return l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_TOOLTIP, enabled_state);
 }
 
-void ProjectorAnnotationTray::SetIconImage(bool is_active) {
+void AnnotationTray::SetIconImage(bool is_active) {
   DCHECK(chromeos::features::IsJellyEnabled());
   image_view_->SetImage(ui::ImageModel::FromVectorIcon(
       GetIconForTool(GetCurrentTool(), current_pen_color_),
@@ -371,7 +369,7 @@ void ProjectorAnnotationTray::SetIconImage(bool is_active) {
                 : cros_tokens::kCrosSysOnSurface));
 }
 
-BEGIN_METADATA(ProjectorAnnotationTray)
+BEGIN_METADATA(AnnotationTray)
 END_METADATA
 
 }  // namespace ash

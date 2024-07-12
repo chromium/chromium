@@ -7,12 +7,12 @@
 #include <memory>
 #include <string>
 
+#include "ash/annotator/annotation_tray.h"
 #include "ash/capture_mode/stop_recording_button_tray.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
-#include "ash/projector/projector_annotation_tray.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/drag_handle.h"
@@ -108,8 +108,7 @@ void StatusAreaWidget::Initialize() {
   stop_recording_button_tray_ =
       AddTrayButton(std::make_unique<StopRecordingButtonTray>(shelf_));
 
-  projector_annotation_tray_ =
-      AddTrayButton(std::make_unique<ProjectorAnnotationTray>(shelf_));
+  annotation_tray_ = AddTrayButton(std::make_unique<AnnotationTray>(shelf_));
 
   palette_tray_ = AddTrayButton(std::make_unique<PaletteTray>(shelf_));
 
@@ -480,12 +479,11 @@ void StatusAreaWidget::CalculateButtonVisibilityForCollapsedState() {
 }
 
 void StatusAreaWidget::EnsureTrayOrder() {
-  if (projector_annotation_tray_) {
-    status_area_widget_delegate_->ReorderChildView(projector_annotation_tray_,
-                                                   1);
+  if (annotation_tray_) {
+    status_area_widget_delegate_->ReorderChildView(annotation_tray_, 1);
   }
-  status_area_widget_delegate_->ReorderChildView(
-      stop_recording_button_tray_, projector_annotation_tray_ ? 2 : 1);
+  status_area_widget_delegate_->ReorderChildView(stop_recording_button_tray_,
+                                                 annotation_tray_ ? 2 : 1);
 }
 
 StatusAreaWidget::CollapseState StatusAreaWidget::CalculateCollapseState()

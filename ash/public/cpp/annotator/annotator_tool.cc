@@ -30,6 +30,8 @@ std::string AnnotatorTool::GetToolString() const {
       return "highlighter";
     case AnnotatorToolType::kEraser:
       return "eraser";
+    case AnnotatorToolType::kToolNone:
+      return "";
   }
 }
 

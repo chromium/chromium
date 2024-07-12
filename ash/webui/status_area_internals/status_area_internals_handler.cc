@@ -96,7 +96,7 @@ void StatusAreaInternalsHandler::ToggleVideoConferenceTray(bool visible) {
   VideoConferenceTrayController::Get()->UpdateWithMediaState(state);
 }
 
-void StatusAreaInternalsHandler::ToggleProjectorTray(bool visible) {
+void StatusAreaInternalsHandler::ToggleAnnotationTray(bool visible) {
   auto* root_window_controller = Shell::Get()->GetPrimaryRootWindowController();
   DCHECK(root_window_controller);
   DCHECK(root_window_controller->GetStatusAreaWidget());

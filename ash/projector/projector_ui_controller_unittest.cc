@@ -7,9 +7,9 @@
 #include <memory>
 #include <string>
 
+#include "ash/annotator/annotation_tray.h"
 #include "ash/annotator/annotator_controller.h"
 #include "ash/constants/ash_features.h"
-#include "ash/projector/projector_annotation_tray.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/projector_metrics.h"
 #include "ash/public/cpp/test/mock_projector_client.h"
@@ -85,13 +85,13 @@ class ProjectorUiControllerTest : public AshTestBase {
 };
 
 TEST_F(ProjectorUiControllerTest, ShowAndHideTray) {
-  auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
-                                        ->GetStatusAreaWidget()
-                                        ->projector_annotation_tray();
+  auto* annotation_tray = Shell::GetPrimaryRootWindowController()
+                              ->GetStatusAreaWidget()
+                              ->annotation_tray();
   controller_->ShowAnnotationTray(Shell::GetPrimaryRootWindow());
-  EXPECT_TRUE(projector_annotation_tray->visible_preferred());
+  EXPECT_TRUE(annotation_tray->visible_preferred());
   controller_->HideAnnotationTray();
-  EXPECT_FALSE(projector_annotation_tray->visible_preferred());
+  EXPECT_FALSE(annotation_tray->visible_preferred());
 }
 
 TEST_F(ProjectorUiControllerTest, ShowAndHideTrayMultipleDisplays) {
@@ -100,10 +100,10 @@ TEST_F(ProjectorUiControllerTest, ShowAndHideTrayMultipleDisplays) {
   ASSERT_EQ(2u, roots.size());
   auto* primary_display_tray = Shell::GetPrimaryRootWindowController()
                                    ->GetStatusAreaWidget()
-                                   ->projector_annotation_tray();
+                                   ->annotation_tray();
   auto* external_display_tray = RootWindowController::ForWindow(roots[1])
                                     ->GetStatusAreaWidget()
-                                    ->projector_annotation_tray();
+                                    ->annotation_tray();
 
   // Show tray on primary root window.
   controller_->ShowAnnotationTray(Shell::GetPrimaryRootWindow());
@@ -123,11 +123,11 @@ TEST_F(ProjectorUiControllerTest, ShowAndHideTrayMultipleDisplays) {
 TEST_F(ProjectorUiControllerTest, HideTrayWhenAnnotatorIsEnabled) {
   base::HistogramTester histogram_tester;
 
-  auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
-                                        ->GetStatusAreaWidget()
-                                        ->projector_annotation_tray();
+  auto* annotation_tray = Shell::GetPrimaryRootWindowController()
+                              ->GetStatusAreaWidget()
+                              ->annotation_tray();
   controller_->ShowAnnotationTray(Shell::GetPrimaryRootWindow());
-  EXPECT_TRUE(projector_annotation_tray->visible_preferred());
+  EXPECT_TRUE(annotation_tray->visible_preferred());
 
   Shell::Get()->annotator_controller()->CreateAnnotationOverlayForWindow(
       Shell::GetPrimaryRootWindow(), std::nullopt);
@@ -135,7 +135,7 @@ TEST_F(ProjectorUiControllerTest, HideTrayWhenAnnotatorIsEnabled) {
   EXPECT_TRUE(Shell::Get()->annotator_controller()->is_annotator_enabled());
 
   controller_->HideAnnotationTray();
-  EXPECT_FALSE(projector_annotation_tray->visible_preferred());
+  EXPECT_FALSE(annotation_tray->visible_preferred());
   EXPECT_FALSE(Shell::Get()->annotator_controller()->is_annotator_enabled());
 
   histogram_tester.ExpectUniqueSample(kProjectorToolbarHistogramName,
@@ -143,19 +143,19 @@ TEST_F(ProjectorUiControllerTest, HideTrayWhenAnnotatorIsEnabled) {
                                       /*count=*/1);
 }
 
-// Tests that right clicking the ProjectorAnnotationTray shows a bubble.
+// Tests that right clicking the AnnotationTray shows a bubble.
 // Disabled for being flaky. crbug.com/1418409
 TEST_F(ProjectorUiControllerTest, DISABLED_RightClickShowsBubble) {
   controller_->ShowAnnotationTray(Shell::GetPrimaryRootWindow());
   Shell::Get()->annotator_controller()->OnCanvasInitialized(true);
 
-  auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
-                                        ->GetStatusAreaWidget()
-                                        ->projector_annotation_tray();
+  auto* annotation_tray = Shell::GetPrimaryRootWindowController()
+                              ->GetStatusAreaWidget()
+                              ->annotation_tray();
 
   // Right click the tray item, it should show a bubble.
-  RightClickOn(projector_annotation_tray);
-  EXPECT_TRUE(projector_annotation_tray->GetBubbleWidget());
+  RightClickOn(annotation_tray);
+  EXPECT_TRUE(annotation_tray->GetBubbleWidget());
 }
 
 TEST_F(ProjectorUiControllerTest, ShowFailureNotification) {

@@ -38,7 +38,7 @@ class StatusAreaInternalsHandler
   void ToggleVirtualKeyboardTray(bool visible) override;
   void ToggleDictationTray(bool visible) override;
   void ToggleVideoConferenceTray(bool visible) override;
-  void ToggleProjectorTray(bool visible) override;
+  void ToggleAnnotationTray(bool visible) override;
   void SetIsInUserChildSession(bool in_child_session) override;
   void TriggerPrivacyIndicators(const std::string& app_id,
                                 const std::string& app_name,

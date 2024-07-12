@@ -4,10 +4,10 @@
 
 #include "ash/annotator/annotator_controller.h"
 
+#include "ash/annotator/annotation_tray.h"
 #include "ash/annotator/annotations_overlay_controller.h"
 #include "ash/annotator/annotator_metrics.h"
 #include "ash/capture_mode/capture_mode_controller.h"
-#include "ash/projector/projector_annotation_tray.h"
 #include "ash/projector/projector_metrics.h"
 #include "ash/public/cpp/annotator/annotations_overlay_view.h"
 #include "ash/public/cpp/annotator/annotator_tool.h"
@@ -21,21 +21,20 @@
 namespace ash {
 namespace {
 AnnotatorMarkerColor GetMarkerColorForMetrics(SkColor color) {
-  // TODO(b/342104047): Rename colors to remove projector from the name.
   switch (color) {
-    case kProjectorMagentaPenColor:
+    case kAnnotatorMagentaPenColor:
       return AnnotatorMarkerColor::kMagenta;
-    case kProjectorBluePenColor:
+    case kAnnotatorBluePenColor:
       return AnnotatorMarkerColor::kBlue;
-    case kProjectorRedPenColor:
+    case kAnnotatorRedPenColor:
       return AnnotatorMarkerColor::kRed;
-    case kProjectorYellowPenColor:
+    case kAnnotatorYellowPenColor:
       return AnnotatorMarkerColor::kYellow;
   }
   return AnnotatorMarkerColor::kMaxValue;
 }
 
-ProjectorAnnotationTray* GetAnnotationTrayForRoot(aura::Window* root) {
+AnnotationTray* GetAnnotationTrayForRoot(aura::Window* root) {
   // It may happen that root is nullptr. This may happen in the event that
   // the annotation tray is hidden before the canvas finishes its
   // initialization.
@@ -57,16 +56,15 @@ ProjectorAnnotationTray* GetAnnotationTrayForRoot(aura::Window* root) {
     return nullptr;
   }
 
-  auto* projector_annotation_tray =
-      root_window_controller->GetStatusAreaWidget()
-          ->projector_annotation_tray();
-  DCHECK(projector_annotation_tray);
-  return projector_annotation_tray;
+  auto* annotation_tray =
+      root_window_controller->GetStatusAreaWidget()->annotation_tray();
+  DCHECK(annotation_tray);
+  return annotation_tray;
 }
 
-void SetProjectorAnnotationTrayVisibility(aura::Window* root, bool visible) {
-  if (auto* projector_annotation_tray = GetAnnotationTrayForRoot(root)) {
-    projector_annotation_tray->SetVisiblePreferred(visible);
+void SetAnnotationTrayVisibility(aura::Window* root, bool visible) {
+  if (auto* annotation_tray = GetAnnotationTrayForRoot(root)) {
+    annotation_tray->SetVisiblePreferred(visible);
   }
 }
 }  // namespace
@@ -97,14 +95,13 @@ void AnnotatorController::ResetTools() {
 void AnnotatorController::RegisterView(aura::Window* current_root) {
   current_root_ = current_root;
   // Show the tray icon.
-  SetProjectorAnnotationTrayVisibility(current_root_, /*visible=*/true);
+  SetAnnotationTrayVisibility(current_root_, /*visible=*/true);
 }
 
 void AnnotatorController::UnregisterView(aura::Window* window) {
   DCHECK_EQ(current_root_, window);
-  if (auto* projector_annotation_tray =
-          GetAnnotationTrayForRoot(current_root_)) {
-    projector_annotation_tray->HideAnnotationTray();
+  if (auto* annotation_tray = GetAnnotationTrayForRoot(current_root_)) {
+    annotation_tray->HideAnnotationTray();
   }
   current_root_ = nullptr;
 }
@@ -152,9 +149,8 @@ void AnnotatorController::OnCanvasInitialized(bool success) {
 }
 
 void AnnotatorController::ToggleAnnotationTray() {
-  if (auto* projector_annotation_tray =
-          GetAnnotationTrayForRoot(current_root_)) {
-    projector_annotation_tray->ToggleAnnotator();
+  if (auto* annotation_tray = GetAnnotationTrayForRoot(current_root_)) {
+    annotation_tray->ToggleAnnotator();
   }
 }
 
@@ -166,9 +162,8 @@ void AnnotatorController::OnUndoRedoAvailabilityChanged(bool undo_available,
 }
 
 void AnnotatorController::UpdateTrayEnabledState() {
-  if (auto* projector_annotation_tray =
-          GetAnnotationTrayForRoot(current_root_)) {
-    projector_annotation_tray->SetTrayEnabled(GetAnnotatorAvailability());
+  if (auto* annotation_tray = GetAnnotationTrayForRoot(current_root_)) {
+    annotation_tray->SetTrayEnabled(GetAnnotatorAvailability());
   }
 }
 

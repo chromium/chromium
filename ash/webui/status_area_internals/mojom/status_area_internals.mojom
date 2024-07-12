@@ -26,8 +26,8 @@ interface PageHandler {
   // Toggles the visibility of the video conference tray.
   ToggleVideoConferenceTray(bool visible);
 
-  // Toggles the visibility of the projector tray.
-  ToggleProjectorTray(bool visible);
+  // Toggles the visibility of the annotation tray.
+  ToggleAnnotationTray(bool visible);
 
   // Sets whether user is in a child session or not.
   SetIsInUserChildSession(bool in_child_session);
