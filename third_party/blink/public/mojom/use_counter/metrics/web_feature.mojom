@@ -3795,7 +3795,7 @@ enum WebFeature {
   kServiceWorkerFetchHandlerModifiedAfterInitialization = 4453,
   // The items above roughly this point are available in the M111 branch.
 
-  kOptionLabelInQuirksMode = 4454,
+  kOBSOLETE_OptionLabelInQuirksMode = 4454,
   kParseFromStringIncludeShadows = 4455,
   kWebAppManifestScopeExtensions = 4456,
   kOBSOLETE_ServiceWorkerBypassFetchHandlerForMainResourceByOriginTrial = 4457,
