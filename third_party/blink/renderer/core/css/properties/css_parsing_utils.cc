@@ -175,26 +175,27 @@ CSSValue* ConsumeBaseline(CSSParserTokenStream& stream) {
 }
 
 std::optional<cssvalue::CSSLinearStop> ConsumeLinearStop(
-    CSSParserTokenRange& range,
+    CSSParserTokenStream& stream,
     const CSSParserContext& context) {
   std::optional<double> number;
   std::optional<double> length_a;
   std::optional<double> length_b;
-  while (!range.AtEnd()) {
-    if (range.Peek().GetType() == kCommaToken) {
+  while (!stream.AtEnd()) {
+    if (stream.Peek().GetType() == kCommaToken) {
       break;
     }
     CSSPrimitiveValue* value =
-        ConsumeNumber(range, context, CSSPrimitiveValue::ValueRange::kAll);
+        ConsumeNumber(stream, context, CSSPrimitiveValue::ValueRange::kAll);
     if (!number.has_value() && value && value->IsNumber()) {
       number = value->GetDoubleValue();
       continue;
     }
-    value = ConsumePercent(range, context, CSSPrimitiveValue::ValueRange::kAll);
+    value =
+        ConsumePercent(stream, context, CSSPrimitiveValue::ValueRange::kAll);
     if (!length_a.has_value() && value && value->IsPercentage()) {
       length_a = value->GetDoubleValue();
       value =
-          ConsumePercent(range, context, CSSPrimitiveValue::ValueRange::kAll);
+          ConsumePercent(stream, context, CSSPrimitiveValue::ValueRange::kAll);
       if (value && value->IsPercentage()) {
         length_b = value->GetDoubleValue();
       }
@@ -210,175 +211,193 @@ std::optional<cssvalue::CSSLinearStop> ConsumeLinearStop(
 
 CSSValue* ConsumeLinear(CSSParserTokenStream& stream,
                         const CSSParserContext& context) {
+  CSSValue* result;
+
   // https://w3c.github.io/csswg-drafts/css-easing/#linear-easing-function-parsing
   DCHECK_EQ(stream.Peek().FunctionId(), CSSValueID::kLinear);
-  CSSParserSavePoint savepoint(stream);
-  CSSParserTokenRange args = ConsumeFunction(stream);
-  Vector<cssvalue::CSSLinearStop> stop_list{};
-  std::optional<cssvalue::CSSLinearStop> linear_stop;
-  do {
-    linear_stop = ConsumeLinearStop(args, context);
-    if (!linear_stop.has_value()) {
+  {
+    CSSParserTokenStream::RestoringBlockGuard guard(stream);
+    Vector<cssvalue::CSSLinearStop> stop_list{};
+    std::optional<cssvalue::CSSLinearStop> linear_stop;
+    do {
+      linear_stop = ConsumeLinearStop(stream, context);
+      if (!linear_stop.has_value()) {
+        return nullptr;
+      }
+      stop_list.emplace_back(linear_stop.value());
+    } while (ConsumeCommaIncludingWhitespace(stream));
+    if (!stream.AtEnd()) {
       return nullptr;
     }
-    stop_list.emplace_back(linear_stop.value());
-  } while (ConsumeCommaIncludingWhitespace(args));
-  if (!args.AtEnd()) {
-    return nullptr;
-  }
-  // 1. Let function be a new linear easing function.
-  // 2. Let largestInput be negative infinity.
-  // 3. If there are less than two items in stopList, then return failure.
-  if (stop_list.size() < 2) {
-    return nullptr;
-  }
-  // 4. For each stop in stopList:
-  double largest_input = std::numeric_limits<double>::lowest();
-  Vector<gfx::LinearEasingPoint> points{};
-  for (wtf_size_t i = 0; i < stop_list.size(); ++i) {
-    const auto& stop = stop_list[i];
-    // 4.1. Let point be a new linear easing point with its output set
-    // to stop’s <number> as a number.
-    gfx::LinearEasingPoint point{std::numeric_limits<double>::quiet_NaN(),
-                                 stop.number};
-    // 4.2. Append point to function’s points.
-    points.emplace_back(point);
-    // 4.3. If stop has a <linear-stop-length>, then:
-    if (stop.length_a.has_value()) {
-      // 4.3.1. Set point’s input to whichever is greater:
-      // stop’s <linear-stop-length>'s first <percentage> as a number,
-      // or largestInput.
-      points.back().input = std::max(largest_input, stop.length_a.value());
-      // 4.3.2. Set largestInput to point’s input.
-      largest_input = points.back().input;
-      // 4.3.3. If stop’s <linear-stop-length> has a second <percentage>, then:
-      if (stop.length_b.has_value()) {
-        // 4.3.3.1. Let extraPoint be a new linear easing point with its output
-        // set to stop’s <number> as a number.
-        gfx::LinearEasingPoint extra_point{
-            // 4.3.3.3. Set extraPoint’s input to whichever is greater:
-            // stop’s <linear-stop-length>'s second <percentage>
-            // as a number, or largestInput.
-            std::max(largest_input, stop.length_b.value()), stop.number};
-        // 4.3.3.2. Append extraPoint to function’s points.
-        points.emplace_back(extra_point);
-        // 4.3.3.4. Set largestInput to extraPoint’s input.
-        largest_input = extra_point.input;
-      }
-      // 4.4. Otherwise, if stop is the first item in stopList, then:
-    } else if (i == 0) {
-      // 4.4.1. Set point’s input to 0.
-      points.back().input = 0;
-      // 4.4.2. Set largestInput to 0.
-      largest_input = 0;
-      // 4.5. Otherwise, if stop is the last item in stopList,
-      // then set point’s input to whichever is greater: 1 or largestInput.
-    } else if (i == stop_list.size() - 1) {
-      points.back().input = std::max(100., largest_input);
+    // 1. Let function be a new linear easing function.
+    // 2. Let largestInput be negative infinity.
+    // 3. If there are less than two items in stopList, then return failure.
+    if (stop_list.size() < 2) {
+      return nullptr;
     }
-  }
-  // 5. For runs of items in function’s points that have a null input, assign a
-  // number to the input by linearly interpolating between the closest previous
-  // and next points that have a non-null input.
-  wtf_size_t upper_index = 0;
-  for (wtf_size_t i = 1; i < points.size(); ++i) {
-    if (std::isnan(points[i].input)) {
-      if (i > upper_index) {
-        const auto* it = std::find_if(
-            std::next(points.begin(), i + 1), points.end(),
-            [](const auto& point) { return !std::isnan(point.input); });
-        upper_index = static_cast<wtf_size_t>(it - points.begin());
+    // 4. For each stop in stopList:
+    double largest_input = std::numeric_limits<double>::lowest();
+    Vector<gfx::LinearEasingPoint> points{};
+    for (wtf_size_t i = 0; i < stop_list.size(); ++i) {
+      const auto& stop = stop_list[i];
+      // 4.1. Let point be a new linear easing point with its output set
+      // to stop’s <number> as a number.
+      gfx::LinearEasingPoint point{std::numeric_limits<double>::quiet_NaN(),
+                                   stop.number};
+      // 4.2. Append point to function’s points.
+      points.emplace_back(point);
+      // 4.3. If stop has a <linear-stop-length>, then:
+      if (stop.length_a.has_value()) {
+        // 4.3.1. Set point’s input to whichever is greater:
+        // stop’s <linear-stop-length>'s first <percentage> as a number,
+        // or largestInput.
+        points.back().input = std::max(largest_input, stop.length_a.value());
+        // 4.3.2. Set largestInput to point’s input.
+        largest_input = points.back().input;
+        // 4.3.3. If stop’s <linear-stop-length> has a second <percentage>,
+        // then:
+        if (stop.length_b.has_value()) {
+          // 4.3.3.1. Let extraPoint be a new linear easing point with its
+          // output set to stop’s <number> as a number.
+          gfx::LinearEasingPoint extra_point{
+              // 4.3.3.3. Set extraPoint’s input to whichever is greater:
+              // stop’s <linear-stop-length>'s second <percentage>
+              // as a number, or largestInput.
+              std::max(largest_input, stop.length_b.value()), stop.number};
+          // 4.3.3.2. Append extraPoint to function’s points.
+          points.emplace_back(extra_point);
+          // 4.3.3.4. Set largestInput to extraPoint’s input.
+          largest_input = extra_point.input;
+        }
+        // 4.4. Otherwise, if stop is the first item in stopList, then:
+      } else if (i == 0) {
+        // 4.4.1. Set point’s input to 0.
+        points.back().input = 0;
+        // 4.4.2. Set largestInput to 0.
+        largest_input = 0;
+        // 4.5. Otherwise, if stop is the last item in stopList,
+        // then set point’s input to whichever is greater: 1 or largestInput.
+      } else if (i == stop_list.size() - 1) {
+        points.back().input = std::max(100., largest_input);
       }
-      points[i].input = points[i - 1].input +
-                        (points[upper_index].input - points[i - 1].input) /
-                            (upper_index - (i - 1));
     }
+    // 5. For runs of items in function’s points that have a null input, assign
+    // a number to the input by linearly interpolating between the closest
+    // previous and next points that have a non-null input.
+    wtf_size_t upper_index = 0;
+    for (wtf_size_t i = 1; i < points.size(); ++i) {
+      if (std::isnan(points[i].input)) {
+        if (i > upper_index) {
+          const auto* it = std::find_if(
+              std::next(points.begin(), i + 1), points.end(),
+              [](const auto& point) { return !std::isnan(point.input); });
+          upper_index = static_cast<wtf_size_t>(it - points.begin());
+        }
+        points[i].input = points[i - 1].input +
+                          (points[upper_index].input - points[i - 1].input) /
+                              (upper_index - (i - 1));
+      }
+    }
+    guard.Release();
+    result = MakeGarbageCollected<cssvalue::CSSLinearTimingFunctionValue>(
+        std::move(points));
   }
-  savepoint.Release();
+  stream.ConsumeWhitespace();
+
   // 6. Return function.
-  return MakeGarbageCollected<cssvalue::CSSLinearTimingFunctionValue>(
-      std::move(points));
+  return result;
 }
 
 CSSValue* ConsumeSteps(CSSParserTokenStream& stream,
                        const CSSParserContext& context) {
+  CSSValue* result;
+
   DCHECK_EQ(stream.Peek().FunctionId(), CSSValueID::kSteps);
-  CSSParserSavePoint savepoint(stream);
-  CSSParserTokenRange args = ConsumeFunction(stream);
+  {
+    CSSParserTokenStream::RestoringBlockGuard guard(stream);
 
-  CSSPrimitiveValue* steps = ConsumePositiveInteger(args, context);
-  if (!steps) {
-    return nullptr;
-  }
-
-  StepsTimingFunction::StepPosition position =
-      StepsTimingFunction::StepPosition::END;
-  if (ConsumeCommaIncludingWhitespace(args)) {
-    switch (args.ConsumeIncludingWhitespace().Id()) {
-      case CSSValueID::kStart:
-        position = StepsTimingFunction::StepPosition::START;
-        break;
-
-      case CSSValueID::kEnd:
-        position = StepsTimingFunction::StepPosition::END;
-        break;
-
-      case CSSValueID::kJumpBoth:
-        position = StepsTimingFunction::StepPosition::JUMP_BOTH;
-        break;
-
-      case CSSValueID::kJumpEnd:
-        position = StepsTimingFunction::StepPosition::JUMP_END;
-        break;
-
-      case CSSValueID::kJumpNone:
-        position = StepsTimingFunction::StepPosition::JUMP_NONE;
-        break;
-
-      case CSSValueID::kJumpStart:
-        position = StepsTimingFunction::StepPosition::JUMP_START;
-        break;
-
-      default:
-        return nullptr;
+    CSSPrimitiveValue* steps = ConsumePositiveInteger(stream, context);
+    if (!steps) {
+      return nullptr;
     }
-  }
 
-  if (!args.AtEnd()) {
-    return nullptr;
-  }
+    StepsTimingFunction::StepPosition position =
+        StepsTimingFunction::StepPosition::END;
+    if (ConsumeCommaIncludingWhitespace(stream)) {
+      switch (stream.ConsumeIncludingWhitespace().Id()) {
+        case CSSValueID::kStart:
+          position = StepsTimingFunction::StepPosition::START;
+          break;
 
-  // Steps(n, jump-none) requires n >= 2.
-  if (position == StepsTimingFunction::StepPosition::JUMP_NONE &&
-      steps->GetIntValue() < 2) {
-    return nullptr;
-  }
+        case CSSValueID::kEnd:
+          position = StepsTimingFunction::StepPosition::END;
+          break;
 
-  savepoint.Release();
-  return MakeGarbageCollected<cssvalue::CSSStepsTimingFunctionValue>(
-      steps->GetIntValue(), position);
+        case CSSValueID::kJumpBoth:
+          position = StepsTimingFunction::StepPosition::JUMP_BOTH;
+          break;
+
+        case CSSValueID::kJumpEnd:
+          position = StepsTimingFunction::StepPosition::JUMP_END;
+          break;
+
+        case CSSValueID::kJumpNone:
+          position = StepsTimingFunction::StepPosition::JUMP_NONE;
+          break;
+
+        case CSSValueID::kJumpStart:
+          position = StepsTimingFunction::StepPosition::JUMP_START;
+          break;
+
+        default:
+          return nullptr;
+      }
+    }
+
+    if (!stream.AtEnd()) {
+      return nullptr;
+    }
+
+    // Steps(n, jump-none) requires n >= 2.
+    if (position == StepsTimingFunction::StepPosition::JUMP_NONE &&
+        steps->GetIntValue() < 2) {
+      return nullptr;
+    }
+
+    guard.Release();
+    result = MakeGarbageCollected<cssvalue::CSSStepsTimingFunctionValue>(
+        steps->GetIntValue(), position);
+  }
+  stream.ConsumeWhitespace();
+  return result;
 }
 
 CSSValue* ConsumeCubicBezier(CSSParserTokenStream& stream,
                              const CSSParserContext& context) {
   DCHECK_EQ(stream.Peek().FunctionId(), CSSValueID::kCubicBezier);
-  CSSParserSavePoint savepoint(stream);
-  CSSParserTokenRange args = ConsumeFunction(stream);
+  CSSValue* result = nullptr;
+  {
+    CSSParserTokenStream::RestoringBlockGuard guard(stream);
 
-  double x1, y1, x2, y2;
-  if (ConsumeNumberRaw(args, context, x1) && x1 >= 0 && x1 <= 1 &&
-      ConsumeCommaIncludingWhitespace(args) &&
-      ConsumeNumberRaw(args, context, y1) &&
-      ConsumeCommaIncludingWhitespace(args) &&
-      ConsumeNumberRaw(args, context, x2) && x2 >= 0 && x2 <= 1 &&
-      ConsumeCommaIncludingWhitespace(args) &&
-      ConsumeNumberRaw(args, context, y2) && args.AtEnd()) {
-    savepoint.Release();
-    return MakeGarbageCollected<cssvalue::CSSCubicBezierTimingFunctionValue>(
-        x1, y1, x2, y2);
+    double x1, y1, x2, y2;
+    if (ConsumeNumberRaw(stream, context, x1) && x1 >= 0 && x1 <= 1 &&
+        ConsumeCommaIncludingWhitespace(stream) &&
+        ConsumeNumberRaw(stream, context, y1) &&
+        ConsumeCommaIncludingWhitespace(stream) &&
+        ConsumeNumberRaw(stream, context, x2) && x2 >= 0 && x2 <= 1 &&
+        ConsumeCommaIncludingWhitespace(stream) &&
+        ConsumeNumberRaw(stream, context, y2) && stream.AtEnd()) {
+      guard.Release();
+      result =
+          MakeGarbageCollected<cssvalue::CSSCubicBezierTimingFunctionValue>(
+              x1, y1, x2, y2);
+    }
+  }
+  if (result) {
+    stream.ConsumeWhitespace();
   }
 
-  return nullptr;
+  return result;
 }
 
 CSSIdentifierValue* ConsumeBorderImageRepeatKeyword(
