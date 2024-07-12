@@ -1909,6 +1909,8 @@ static_library("browser") {
     sources += [
       "accessibility/embedded_a11y_extension_loader.cc",
       "accessibility/embedded_a11y_extension_loader.h",
+      "component_updater/iwa_key_distribution_component_installer.cc",
+      "component_updater/iwa_key_distribution_component_installer.h",
       "picture_in_picture/auto_pip_setting_helper.cc",
       "picture_in_picture/auto_pip_setting_helper.h",
       "picture_in_picture/auto_pip_setting_overlay_view.cc",

@@ -37,6 +37,14 @@ UpdateKeyDistributionInfo(
     const std::string& web_bundle_id,
     std::optional<base::span<const uint8_t>> expected_key);
 
+// Writes `kr_proto` into `DIR_COMPONENT_USER/IwaKeyDistribution/{version}` and
+// triggers the registration process with the component updater. The directory
+// is deleted once IwaKeyDistributionInfoProvider has processed the update
+// (regardless of the outcome).
+base::expected<void, IwaKeyDistributionInfoProvider::ComponentUpdateError>
+InstallIwaKeyDistributionComponent(const base::Version& version,
+                                   const IwaKeyDistribution& kr_proto);
+
 }  // namespace web_app::test
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_KEY_DISTRIBUTION_TEST_UTILS_H_

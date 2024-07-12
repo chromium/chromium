@@ -71,6 +71,7 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
 #include "chrome/browser/component_updater/zxcvbn_data_component_installer.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "media/base/media_switches.h"
@@ -198,6 +199,7 @@ void RegisterComponentsForUpdate() {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+  RegisterIwaKeyDistributionComponent(cus);
   RegisterZxcvbnDataComponent(cus);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
