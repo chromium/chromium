@@ -84,6 +84,7 @@
 <translation id="1413240736185167732">Misluk – Filter het misluk</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">orgidee</translation>
+<translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">Ek het 'n sleutelpaar</translation>
 <translation id="1423591390236870726"><ph name="KEY_NAME" />-sleutel is nie gedruk nie</translation>
 <translation id="1432110487435300883">Vir ’n benaderde resultaat, deel die <ph name="CATEGORY_TEXT" />-waarde deur <ph name="CONVERSION_RATE" /></translation>
@@ -768,8 +769,10 @@
 <translation id="5180712487038406644">Uitdrukkingsvol</translation>
 <translation id="5190187232518914472">Herleef jou gunstelingherinneringe. Gaan na <ph name="LINK_BEGIN" />Google Foto's<ph name="LINK_END" /> toe om albums by te voeg of te wysig.</translation>
 <translation id="5212593641110061691">Ponieformaat</translation>
+<translation id="5220549459260334974"><ph name="PROGRESS_PERCENTAGE" />% afgelaai</translation>
 <translation id="5222676887888702881">Meld af</translation>
 <translation id="522307662484862935">Moenie e-posadres insluit nie</translation>
+<translation id="5226879510707344687">Voer transkripsie uit</translation>
 <translation id="5227902338748591677">Donkertema-skedule</translation>
 <translation id="5229344016299762883">Verlaat volskerm</translation>
 <translation id="5234764350956374838">Verwerp</translation>
@@ -960,6 +963,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6283581480003247988">blou en pers</translation>
 <translation id="6284632978374966585">Skakel donkertema aan</translation>
+<translation id="6285260286443238386">Voer opname uit</translation>
 <translation id="628726841779494414">Bestuur jou drukkers in drukkerinstellings</translation>
 <translation id="6292095526077353682">Wys sluimerskerm terwyl die battery laai vir</translation>
 <translation id="629550705077076970">sleutelbord verdowwing</translation>
@@ -994,6 +998,7 @@
 <translation id="6417265370957905582">Google Assistent</translation>
 <translation id="6419454453018688975">Skakel stelselliggingtoegang aan</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">Swak (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Gaan na rekeninginstellings</translation>
 <translation id="6462978824459367242">Voeg APN By-knoppie is nou geaktiveer</translation>
@@ -1464,6 +1469,7 @@ Jy kan dit enige tyd in Instellings afskakel.</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> se <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918813738569491921">soutklip</translation>
 <translation id="8919837981463578619">Misluk – Laai ontbreek</translation>
+<translation id="8924154518905976972">Voer oudio uit</translation>
 <translation id="8928727111548978589">Misluk – Papier is op</translation>
 <translation id="8930521118335213258">Eweknie</translation>
 <translation id="8930622219860340959">Draadloos</translation>

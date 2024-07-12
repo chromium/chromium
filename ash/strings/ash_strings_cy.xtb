@@ -13,6 +13,7 @@
 <translation id="1036672894875463507">Eich Google Assistant ydw i, yma i'ch helpu drwy gydol y dydd!
 Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1037492556044956303">Ychwanegwyd <ph name="DEVICE_NAME" /></translation>
+<translation id="1038106730571050514">Dangos awgrymiadau</translation>
 <translation id="1047017786576569492">rhannol</translation>
 <translation id="1052916631016577720">Sganio Eitemau</translation>
 <translation id="1056775291175587022">Dim rhwydweithiau</translation>
@@ -136,6 +137,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1447907279406111651">Nawr ⋅ Yn gorffen am <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Poethfannau eich dyfais</translation>
 <translation id="1455242230282523554">Dangos y gosodiadau iaith</translation>
+<translation id="1459693405370120464">Tywydd</translation>
 <translation id="1460620680449458626">Mae'r sain wedi'i ddistewi.</translation>
 <translation id="14648076227129703">Mae hyn yn caniatáu mynediad camera ar gyfer <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, a phob ap a gwefan gyda chaniatâd y camera</translation>
 <translation id="1467432559032391204">Wedi gadael</translation>
@@ -876,6 +878,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="4269883910223712419">Gall gweinyddwr y ddyfais hon:</translation>
 <translation id="4274537685965975248">Mae'r llwybr byr bysellfwrdd Ctrl + Alt + Saeth i lawr wedi newid. I ddefnyddio'r fysell End, pwysywch y fysell <ph name="LAUNCHER_KEY_NAME" /> + Saeth dde.</translation>
 <translation id="4275283744500212192">Agor yr opsiynau cynllun ffenestr</translation>
+<translation id="4275663329226226506">Cyfryngau</translation>
 <translation id="4279490309300973883">Adlewyrchu</translation>
 <translation id="4280601795273309128">Daeth diweddariadau diogelwch i ben. Uwchraddio'ch dyfais.</translation>
 <translation id="4283888303416325161">Rhowch gyfrinair i gael rhagor o ddiogelwch</translation>
@@ -1258,6 +1261,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="558849140439112033">Llusgwch i ddewis ardal i'w thynnu</translation>
 <translation id="5590609058453685222">Mae ysgogiad distewi ymlaen. Byddwch yn cael gwybod os byddwch yn siarad tra byddwch wedi'ch distewi.</translation>
 <translation id="5592745162308462420">fn</translation>
+<translation id="5593564924968945303">Porwr Chrome</translation>
 <translation id="5596627076506792578">Rhagor o ddewisiadau</translation>
 <translation id="5599242528220103262">Mae llwybr byr bysellfwrdd wedi'i ddiffodd</translation>
 <translation id="5600415762228455511">Mae ffocysu ymlaen, <ph name="REMAINING_TIME" /> ar ôl, wrthi'n ffocysu ar: <ph name="TASK_NAME" /></translation>
@@ -1354,6 +1358,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="5916664084637901428">Ymlaen</translation>
 <translation id="5920710855273935292">Mae'r meic wedi'i ddistewi.</translation>
 <translation id="5928083197428724029">Mae angen diweddariad gan <ph name="MANAGER" /></translation>
+<translation id="5939518447894949180">Ailosod</translation>
 <translation id="5946788582095584774">Mae <ph name="FEATURE_NAME" /> wedi'i droi ymlaen.</translation>
 <translation id="5947494881799873997">Dychwelyd</translation>
 <translation id="595202126637698455">Mae olrhain perfformiad wedi'i alluogi</translation>

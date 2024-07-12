@@ -51,6 +51,7 @@
 <translation id="2879583609344924966"><ph name="CAMERA" /> est branchée.</translation>
 <translation id="3067436040345934772">Panoramique vers la droite</translation>
 <translation id="3081586908890909590">Passer au mode vidéo</translation>
+<translation id="3091480460059548935">Détection de texte dans l'aperçu</translation>
 <translation id="313467653172006084">30 i/s</translation>
 <translation id="3157038259444425153">Vous pouvez désormais copier directement du texte figurant dans votre photo</translation>
 <translation id="3158534262962737808">Se joindre à « <ph name="WIFINAME" /> »</translation>
@@ -141,6 +142,7 @@ Si vos commentaires portaient sur la qualité de l'image ou de la vidéo, veuill
 <translation id="7337660886763914220">Erreurs de système de fichiers.</translation>
 <translation id="7450541714075000668">Texte copié</translation>
 <translation id="7488619942230388918">Enregistrer une vidéo en mode GIF</translation>
+<translation id="7527714402753141485">Affiche le texte et le bouton pour le copier</translation>
 <translation id="7557677699350329807">Passer à l'appareil photo suivant</translation>
 <translation id="7607002721634913082">Interrompu</translation>
 <translation id="7608223098072244877">4 par 4</translation>

@@ -13,6 +13,7 @@
 <translation id="1036672894875463507">Sou a sua Assistente Google e estou aqui para ajudar ao longo do seu dia!
 Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> adicionado</translation>
+<translation id="1038106730571050514">Mostre as sugestões</translation>
 <translation id="1047017786576569492">parcial</translation>
 <translation id="1052916631016577720">Análise de itens</translation>
 <translation id="1056775291175587022">Nenhuma rede</translation>
@@ -136,6 +137,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1447907279406111651">Agora · Termina à(s) <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">As zonas Wi-Fi do seu dispositivo</translation>
 <translation id="1455242230282523554">Mostrar definições de idioma</translation>
+<translation id="1459693405370120464">Meteorologia</translation>
 <translation id="1460620680449458626">O volume está desativado.</translation>
 <translation id="14648076227129703">Isto permite o acesso à câmara para a app <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e para todas as apps e Websites com a autorização da câmara</translation>
 <translation id="1467432559032391204">Esquerda</translation>
@@ -804,6 +806,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="4002066346123236978">Título</translation>
 <translation id="40062176907008878">Escrita manual</translation>
 <translation id="4011112806063830608">O modo Não incomodar está ativado.</translation>
+<translation id="4015144849380506405">Pausar/retomar teclas do rato quando a opção está ativada</translation>
 <translation id="4017989525502048489">Ponteiro de laser</translation>
 <translation id="401993194061514265">Marcador indisponível. Reabra o Screencast.</translation>
 <translation id="4021716437419160885">Deslocar para baixo</translation>
@@ -876,6 +879,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4269883910223712419">O administrador deste dispositivo pode:</translation>
 <translation id="4274537685965975248">O atalho de teclado Ctrl + Alt + seta para baixo foi alterado. Para utilizar a tecla Fim, prima a tecla <ph name="LAUNCHER_KEY_NAME" /> + seta para a direita.</translation>
 <translation id="4275283744500212192">Abra as opções do esquema de janelas</translation>
+<translation id="4275663329226226506">Multimédia</translation>
 <translation id="4279490309300973883">Espelhamento</translation>
 <translation id="4280601795273309128">As atualizações de segurança terminaram. Atualize o dispositivo.</translation>
 <translation id="4283888303416325161">Introduzir palavra-passe para uma maior segurança</translation>
@@ -1160,6 +1164,7 @@ Também pode usar o atalho de teclado. Primeiro, realce o texto e, em seguida, p
 <translation id="5253783950165989294">Ligado a um dispositivo denominado <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
 <translation id="5258528442992323769">Nenhum espaço de trabalho guardado</translation>
 <translation id="5260676007519551770">Secretária 4</translation>
+<translation id="5270547718570958938">Calendário Google</translation>
 <translation id="5277869901083657836">Ativar/desativar ferramentas da caneta stylus</translation>
 <translation id="5278086053818066789">Ativar/desativar o ChromeVox (feedback de voz)</translation>
 <translation id="5283099933536931082">A app <ph name="APP_ITEM_TITLE" /> solicita a sua atenção.</translation>
@@ -1258,6 +1263,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="558849140439112033">Arraste para selecionar uma área a capturar.</translation>
 <translation id="5590609058453685222">A chamada de atenção sobre a desativação do som está ativada. Vai receber uma notificação se falar enquanto estiver com o som desativado.</translation>
 <translation id="5592745162308462420">fn</translation>
+<translation id="5593564924968945303">Navegador Chrome</translation>
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="5599242528220103262">O atalho de teclado está desativado</translation>
 <translation id="5600415762228455511">O Modo sem distrações está ativado, falta(m) <ph name="REMAINING_TIME" />, com foco em: <ph name="TASK_NAME" /></translation>
@@ -1354,6 +1360,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="5916664084637901428">Ativado</translation>
 <translation id="5920710855273935292">O som do microfone está desativado.</translation>
 <translation id="5928083197428724029">Atualização exigida por <ph name="MANAGER" /></translation>
+<translation id="5939518447894949180">Repor</translation>
 <translation id="5946788582095584774">A funcionalidade <ph name="FEATURE_NAME" /> está ativada.</translation>
 <translation id="5947494881799873997">Reverter</translation>
 <translation id="595202126637698455">Rastreio do desempenho ativado</translation>

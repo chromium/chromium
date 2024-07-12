@@ -13,6 +13,7 @@
 <translation id="1036672894875463507">I'm your Google Assistant, here to help you throughout your day!
 Here are some things that you can try to get started.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> added</translation>
+<translation id="1038106730571050514">Show suggestions</translation>
 <translation id="1047017786576569492">partial</translation>
 <translation id="1052916631016577720">Item scan</translation>
 <translation id="1056775291175587022">No networks</translation>
@@ -136,6 +137,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1447907279406111651">Now · Ends at <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Your device hotspots</translation>
 <translation id="1455242230282523554">Show language settings</translation>
+<translation id="1459693405370120464">Weather</translation>
 <translation id="1460620680449458626">Volume is muted.</translation>
 <translation id="14648076227129703">This allows camera access for <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> and all apps and websites with the camera permission</translation>
 <translation id="1467432559032391204">Left</translation>
@@ -876,6 +878,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="4269883910223712419">The admin of this device has the ability to:</translation>
 <translation id="4274537685965975248">The Ctrl + Alt + Down Arrow keyboard shortcut has changed. To use the End key, press the <ph name="LAUNCHER_KEY_NAME" /> key + Right Arrow.</translation>
 <translation id="4275283744500212192">Open window layout options</translation>
+<translation id="4275663329226226506">Media</translation>
 <translation id="4279490309300973883">Mirroring</translation>
 <translation id="4280601795273309128">Security updates ended. Upgrade your device.</translation>
 <translation id="4283888303416325161">Enter password for more security</translation>
@@ -1160,6 +1163,7 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
 <translation id="5253783950165989294">Connected to a device named <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% battery</translation>
 <translation id="5258528442992323769">No saved desks</translation>
 <translation id="5260676007519551770">Desk 4</translation>
+<translation id="5270547718570958938">Google Calendar</translation>
 <translation id="5277869901083657836">Toggle stylus tools</translation>
 <translation id="5278086053818066789">Turn on/off ChromeVox (spoken feedback)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> requests your attention.</translation>
@@ -1258,6 +1262,7 @@ No devices connected.</translation>
 <translation id="558849140439112033">Drag to select an area to capture</translation>
 <translation id="5590609058453685222">Mute nudge is on. You'll get notified if you talk while muted.</translation>
 <translation id="5592745162308462420">fn</translation>
+<translation id="5593564924968945303">Chrome Browser</translation>
 <translation id="5596627076506792578">More options</translation>
 <translation id="5599242528220103262">Keyboard shortcut is off</translation>
 <translation id="5600415762228455511">Focus is on, <ph name="REMAINING_TIME" /> left, focusing on: <ph name="TASK_NAME" /></translation>
@@ -1354,6 +1359,7 @@ No devices connected.</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5920710855273935292">Mic is muted.</translation>
 <translation id="5928083197428724029">Update required by <ph name="MANAGER" /></translation>
+<translation id="5939518447894949180">Reset</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> is on.</translation>
 <translation id="5947494881799873997">Revert</translation>
 <translation id="595202126637698455">Performance tracing enabled</translation>

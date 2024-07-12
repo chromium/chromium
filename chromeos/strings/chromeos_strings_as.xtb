@@ -84,6 +84,7 @@
 <translation id="1413240736185167732">বিফল হৈছে - ফিল্টাৰ বিফল হৈছে</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">অৰ্কিড</translation>
+<translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">মোৰ এটা কী পেয়াৰ আছে</translation>
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> কীটো টিপা নাই</translation>
 <translation id="1432110487435300883">এটা আনুমানিক ফলাফলৰ বাবে, <ph name="CATEGORY_TEXT" />ৰ মানটোক <ph name="CONVERSION_RATE" />ৰে হৰণ কৰক</translation>
@@ -771,6 +772,7 @@
 <translation id="5220549459260334974"><ph name="PROGRESS_PERCENTAGE" />% ডাউনল’ড কৰা হ‘ল</translation>
 <translation id="5222676887888702881">ছাইন আউট কৰক</translation>
 <translation id="522307662484862935">ইমেইল ঠিকনা অন্তৰ্ভুক্ত নকৰিব</translation>
+<translation id="5226879510707344687">ট্ৰেন্সক্ৰিপ্ট ৰপ্তানি কৰক</translation>
 <translation id="5227902338748591677">গাঢ় ৰঙৰ থীম সময়সূচী</translation>
 <translation id="5229344016299762883">পূৰ্ণ স্ক্ৰীনৰ পৰা বাহিৰ হওক</translation>
 <translation id="5234764350956374838">অগ্ৰাহ্য কৰক</translation>
@@ -961,6 +963,7 @@
 <translation id="6280912520669706465">এআৰচি</translation>
 <translation id="6283581480003247988">নীলা আৰু বেঙুনীয়া</translation>
 <translation id="6284632978374966585">গাঢ় ৰঙৰ থীম অন কৰক</translation>
+<translation id="6285260286443238386">ৰেকৰ্ডিং ৰপ্তানি কৰক</translation>
 <translation id="628726841779494414">প্ৰিণ্টাৰৰ ছেটিঙত আপোনাৰ প্ৰিণ্টাৰ পৰিচালনা কৰক</translation>
 <translation id="6292095526077353682">চাৰ্জ কৰি থকাৰ সময়ত, ইয়াৰ বাবে স্ক্ৰীন ছেভাৰ দেখুৱাওক</translation>
 <translation id="629550705077076970">কীব’ৰ্ড ডিমিং</translation>
@@ -995,6 +998,7 @@
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6419454453018688975">ছিষ্টেমৰ অৱস্থানৰ এক্সেছ অন কৰক</translation>
 <translation id="6423239382391657905">VPN খোলক</translation>
+<translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">দুৰ্বল (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">একাউণ্টৰ ছেটিঙলৈ যাওক</translation>
 <translation id="6462978824459367242">এতিয়া APN যোগ কৰাৰ বুটামটো এতিয়া সক্ষম কৰা হৈছে</translation>
@@ -1465,6 +1469,7 @@
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />ৰ <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918813738569491921">লুণীয়া শিল</translation>
 <translation id="8919837981463578619">বিফল হৈছে - ট্ৰে’ উপলব্ধ নহয়</translation>
+<translation id="8924154518905976972">অডিঅ’ ৰপ্তানি কৰক</translation>
 <translation id="8928727111548978589">বিফল হৈছে - কাগজ শেষ হৈছে</translation>
 <translation id="8930521118335213258">পীয়েৰ</translation>
 <translation id="8930622219860340959">বেতাঁৰ</translation>

@@ -772,7 +772,7 @@
 <translation id="5220549459260334974">preuzeto: <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="5222676887888702881">Odjava</translation>
 <translation id="522307662484862935">Nemoj uključiti adresu e-pošte</translation>
-<translation id="5226879510707344687">Izvoz prijepisa</translation>
+<translation id="5226879510707344687">Izvezi transkript</translation>
 <translation id="5227902338748591677">Raspored tamne teme</translation>
 <translation id="5229344016299762883">Izlaz iz prikaza preko cijelog ekrana</translation>
 <translation id="5234764350956374838">Odbaci</translation>
@@ -963,7 +963,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6283581480003247988">plavo-ljubičasta</translation>
 <translation id="6284632978374966585">Uključi tamnu temu</translation>
-<translation id="6285260286443238386">Izvoz snimke</translation>
+<translation id="6285260286443238386">Izvezi snimak</translation>
 <translation id="628726841779494414">Upravljajte štampačima u postavkama štampača</translation>
 <translation id="6292095526077353682">Prilikom punjenja prikazuj čuvar ekrana</translation>
 <translation id="629550705077076970">zatamnjenje tastature</translation>
@@ -1469,7 +1469,7 @@ Ovo možete bilo kada isključiti u Postavkama.</translation>
 <translation id="8918637186205009138">Uređaj <ph name="DEVICE_TYPE" /> koji koristi <ph name="GIVEN_NAME" /></translation>
 <translation id="8918813738569491921">slani kamen</translation>
 <translation id="8919837981463578619">Nije uspjelo – nedostaje ladica</translation>
-<translation id="8924154518905976972">Izvoz zvuka</translation>
+<translation id="8924154518905976972">Izvezi zvuk</translation>
 <translation id="8928727111548978589">Nije uspjelo – nema papira</translation>
 <translation id="8930521118335213258">Ista kategorija</translation>
 <translation id="8930622219860340959">Bežično</translation>

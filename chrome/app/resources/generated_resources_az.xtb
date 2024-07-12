@@ -2979,7 +2979,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3132277757485842847">Telefonunuzla bağlantını itirdik. Telefonunuzun yaxınlıqda olduğuna, kiliddən çıxarılmış olduğuna, Bluetooth və Wi-Fi'ın aktiv olduğuna əmin olun.</translation>
 <translation id="3132896062549112541">Qayda</translation>
 <translation id="3132996321662585180">Gündəlik yeniləyin</translation>
-<translation id="3133184011320864289">Chrome-un tab qrupları təklif etməsi və tabları nizamlı saxlaması üçün sinxronlaşdırmanı aktiv edin</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> təcrübəsi üçün təcrübə vəziyyətini seçin. Təcrübə təsviri: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3137969841538672700">Sürüşdürərək axtarın</translation>
 <translation id="3139925690611372679">Defolt sarı avatar</translation>
@@ -9563,7 +9562,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8052218774860457016">Brauzer sinxronlaşdırmasını idarə edin</translation>
 <translation id="8053278772142718589">PKCS #12 Fayl</translation>
 <translation id="8053390638574070785">Bu səhifəni yenidən yükləyin</translation>
-<translation id="8053629544194355894">Chrome-un tab qrupları təklif etməsi üçün sinxronlaşdırmanı aktiv edin</translation>
 <translation id="8054500940978949009">İcazə verilib. <ph name="LINK_BEGIN" />Sistem mikrofon girişini<ph name="LINK_END" /> yandırın.</translation>
 <translation id="8054517699425078995">Bu fayl növü cihazınızı zədələyə bilər. <ph name="FILE_NAME" /> faylını yenə də saxlamaq istəyirsiniz?</translation>
 <translation id="8054563304616131773">Lütfən, düzgün e-poçt ünvanı daxil edin.</translation>
@@ -9805,6 +9803,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" /> üçün parol yadda saxlanılsın?</translation>
 <translation id="8230326817897075865">Silin: <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="8230446983261649357">Saytlara şəkilləri göstərmək icazəsi verməyin</translation>
+<translation id="823226567613548870"><ph name="BRAND" /> datasını silin</translation>
 <translation id="8233028084277069927">İndi açın</translation>
 <translation id="8234795456569844941">Bu problemin həll edilməsində mühəndislərimizə yardım edin. Profil xəta mesajını əldə etmədən öncə nə baş verdiyini bizə deyin:</translation>
 <translation id="8235418492073272647">Səhifə <ph name="DEVICE_NAME" /> cihazından paylaşılıb</translation>
@@ -9902,7 +9901,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8293206222192510085">Əlfəcin əlavə edin</translation>
 <translation id="8294431847097064396">Mənbə</translation>
 <translation id="8294476140219241086">Tab nizamlayıcı</translation>
-<translation id="8294895455164415895">Chrome-un tab qrupları təklif etməsi üçün ayarları açın</translation>
 <translation id="8295449579927246485">Canlı Tərcümə</translation>
 <translation id="8295450130892483256">Microsoft 365-i quraşdırın</translation>
 <translation id="8297292446125062288">HID ayarları</translation>
@@ -10066,7 +10064,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">tam ekran</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> və daha <ph name="COUNT" /> üçün icazə verilib</translation>
-<translation id="8412682423093430245">Chrome-un tab qrupları təklif etməsi və tabları nizamlı saxlaması üçün Ayarlarda Tarixçə sinxronlaşdırmanı aktiv edin</translation>
 <translation id="8413795581997394485">Təhlükəli sayt, endirmə və artırmalardan qoruyur. Sayta daxil olduqda Chrome IP ünvanını gizlədən məxfilik serveri vasitəsilə URL-in qarışıq bir hissəsini Google-a göndərir. Sayt şübhəli nəsə edərsə, tam URL və kiçik səhifə kontenti nümunələri də göndərilir.</translation>
 <translation id="8413956290606243087">ChromeOS üçün daxili ekran oxuyucusu olan ChromeVox'u aktiv etmək istəyirsiniz?</translation>
 <translation id="8414249071344507766">Xatirələr iki günlük gizlədilib</translation>
@@ -10099,7 +10096,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="843173223122814223">Sİ ilə arxa fon yaradın</translation>
 <translation id="8433186206711564395">Şəbəkə ayarları</translation>
 <translation id="8434480141477525001">NaCl Debaq Portu</translation>
-<translation id="8436054240208929121">Chrome-un tab qrupları təklif etməsi və tabları nizamlı saxlaması üçün daxil olun və sinxronlaşdırmanı aktiv edin</translation>
 <translation id="8437209419043462667">ABŞ</translation>
 <translation id="8438566539970814960">Axtarış və brauzer fəaliyyətini təkmilləşdirin</translation>
 <translation id="8439506636278576865">Bu dildə səhifə tərcümələri təklif edin</translation>

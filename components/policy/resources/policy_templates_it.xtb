@@ -463,6 +463,30 @@ Se il criterio viene disattivato o se non viene configurato, gli elementi da avv
 <translation id="1372511977715560169">Controlla l'attivazione della funzionalità <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> in <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="1372618949173323717">Viene disattivato JavaScript</translation>
 <translation id="1376119291123231789">Attiva modalità di ricarica avanzata della batteria</translation>
+<translation id="1376299650477150211">Consente di impostare un elenco di pattern URL per i siti che specifica i siti per i quali
+le ottimizzazioni JavaScript avanzate sono disattivate.
+
+Se le ottimizzazioni di JavaScript vengono disattivate, <ph name="PRODUCT_NAME" /> potrebbe eseguire il rendering dei contenuti web più lentamente.
+
+Per informazioni dettagliate sui pattern URL validi, visita la pagina
+https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.
+
+Le eccezioni relative ai criteri di ottimizzazione di JavaScript verranno applicate soltanto sito
+per sito (eTLD+1). Un criterio impostato soltanto per sottodominio.sito.com non verrà
+applicato correttamente a sito.com o a sottodominio.sito.com, perché entrambi sono equivalenti
+allo stesso dominio eTLD+1 (sito.com) per il quale non esiste alcun criterio. In questo caso, il criterio
+deve essere impostato per sito.com per essere applicato correttamente sia a sito.com sia a sottodominio.sito.com.
+
+Questo criterio viene applicato frame per frame e non si basa esclusivamente
+sull'URL di origine di primo livello, quindi, ad esempio, se sito-uno.com è presente nell'elenco del criterio <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />, ma carica un frame
+che contiene sito-due.com, sito-uno.com avrà disattivato le ottimizzazioni di JavaScript,
+ma sito-due.com utilizzerà il criterio di <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, se configurato, o le ottimizzazioni di JavaScript
+saranno attivate per impostazione predefinita. Le voci della lista bloccata hanno una priorità maggiore rispetto alle voci della lista consentita,
+che a loro volta hanno la priorità sul valore predefinito configurato.
+
+Se il criterio non viene configurato per un sito, il criterio di <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> viene applicato al sito, se configurato, altrimenti
+l'ottimizzazione di JavaScript viene attivata per il sito.</translation>
 <translation id="1376765488559847650">Cloud Upload</translation>
 <translation id="1379689277107868399">Se il criterio viene impostato su NonChiedere o se non viene configurato, <ph name="PRODUCT_NAME" /> non chiede automaticamente all'utente di eseguire nuovamente l'autenticazione sul browser.
 
@@ -1071,6 +1095,7 @@ Questo criterio non ha effetto se l'opzione per mantenere i dati di navigazione 
       Se viene attivato il criterio <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" />, saranno consentiti anche gli utenti Family Link oltre agli account definiti in questo criterio.</translation>
 <translation id="18186215616223740">Quando si accede a documenti Office gestiti da <ph name="BASIC_EDITOR_NAME" />, forzane il download</translation>
 <translation id="1819272352048746487">Attiva o disattiva diverse funzionalità per la tastiera sullo schermo</translation>
+<translation id="1820974289087266512">La funzionalità Generatore codice QR è disabilitata.</translation>
 <translation id="1822163547472114648">Impostazioni per Crea temi con l'IA</translation>
 <translation id="1823974945066396306">Consente di definire l'elenco di utenti autorizzati ad accedere al dispositivo. Le voci sono nel formato <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, ad esempio <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />. Per autorizzare utenti arbitrari su un dominio, le voci devono essere nel formato <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
 
@@ -2845,6 +2870,13 @@ Se viene impostato su Disabled, la promozione di valutazione dell'App Store non 
 <translation id="3177537290334203187">Usa il comportamento predefinito quando determini se i siti web possono effettuare richieste agli endpoint di rete.</translation>
 <translation id="3177802893484440532">Richiedi controlli OCSP/CRL online per i trust anchor</translation>
 <translation id="3179533009079100620">Mostra Selettore profilo</translation>
+<translation id="3180633260411794645">Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti che non possono eseguire JavaScript.
+
+      Se il criterio non viene configurato, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
+
+      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.
+
+      Tieni presente che questo criterio blocca JavaScript in base alla corrispondenza dell'origine del documento di primo livello (di solito l'URL della pagina visualizzato anche nella barra degli indirizzi) a uno dei due pattern. Pertanto, questo criterio non è adatto per mitigare gli attacchi alla catena di fornitura web. Ad esempio, se fornisci il pattern "https://[*.]foo.com/", non impedirai a una pagina ospitata su https://example.com, ad esempio, di eseguire uno script caricato da https://www.foo.com/example.js. Inoltre, l'inserimento del pattern "https://example.com/" non impedisce a un documento di https://example.com di eseguire script se non è il documento di primo livello, ma è incorporato come frame secondario in una pagina ospitata su un'altra origine, come https://www.bar.com.</translation>
 <translation id="3180671894201217988">Se il criterio viene impostato su Attivato o se non viene configurato, i software di terze parti non possono inserire codice eseguibile nei processi di <ph name="PRODUCT_NAME" />.
 
       Se il criterio viene impostato su Disattivato, questi software possono inserire tale codice nei processi di <ph name="PRODUCT_NAME" />.</translation>
@@ -5073,6 +5105,28 @@ La configurazione del criterio consente di controllare la presentazione dei cont
       Se questo criterio viene impostato su vero, l'utente può creare e usare profili secondari e utilizzare la modalità ospite.
 
       Nota: se questo criterio viene impostato su vero, ma il criterio <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" /> viene impostato su falso, l'utente non può creare profili secondari. Lo stesso vale per <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" /> e la modalità ospite.</translation>
+<translation id="4958911425563967203">Consente di impostare un elenco di pattern URL per i siti che specifica i siti per i quali
+le ottimizzazioni JavaScript avanzate sono attivate.
+
+Per informazioni dettagliate sui pattern URL di siti validi, visita la pagina
+https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.
+
+Le eccezioni relative ai criteri di ottimizzazione di JavaScript verranno applicate soltanto sito
+per sito (eTLD+1). Un criterio impostato soltanto per sottodominio.sito.com non verrà
+applicato correttamente a sito.com o a sottodominio.sito.com, perché entrambi sono equivalenti
+allo stesso dominio eTLD+1 (sito.com) per il quale non esiste alcun criterio. In questo caso, il criterio
+deve essere impostato per sito.com per essere applicato correttamente sia a sito.com sia a sottodominio.sito.com.
+
+Questo criterio viene applicato frame per frame e non si basa esclusivamente
+sull'URL di origine di primo livello, quindi, ad esempio, se sito-uno.com è presente nell'elenco del criterio <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" />, ma carica un frame
+che contiene sito-due.com, sito-uno.com avrà disattivato le ottimizzazioni di JavaScript,
+ma sito-due.com utilizzerà il criterio di <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, se configurato, o le ottimizzazioni di JavaScript
+saranno attivate per impostazione predefinita. Le voci della lista bloccata hanno una priorità maggiore rispetto alle voci della lista consentita,
+che a loro volta hanno la priorità sul valore predefinito configurato.
+
+Se il criterio non viene configurato per un sito, il criterio di <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> viene applicato al sito, se configurato, altrimenti
+l'ottimizzazione di JavaScript viene attivata per il sito.</translation>
 <translation id="4960597185231686653">Un flag booleano che indica se la tastiera sullo schermo può offrire la funzionalità di input vocale.</translation>
 <translation id="4970046075219007744">Consenti alle app web di richiedere all'utente l'accesso ai tipi di file tramite l'API File Handling</translation>
 <translation id="4970855112942626932">Disattiva accesso al browser</translation>
@@ -5269,6 +5323,11 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
           Se attivi questa impostazione, <ph name="PRODUCT_NAME" /> ignora tutte le opzioni relative al proxy specificate dalla riga di comando.
 
           Se questa norma non è impostata, gli utenti potranno scegliere le impostazioni proxy autonomamente.</translation>
+<translation id="5169461017653366056">Questo criterio attiva la funzionalità Generatore codice QR in <ph name="PRODUCT_NAME" />.
+
+Se il criterio viene attivato o se non viene configurato, la funzionalità Generatore codice QR viene attivata.
+
+Se il criterio viene disattivato, la funzionalità Generatore codice QR viene disabilitata.</translation>
 <translation id="5170018694841697392">Non viene forzato l'uso di SafeSearch nella Ricerca Google</translation>
 <translation id="5172841243186654432">A meno che il criterio <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> non sia impostato per ripristinare in modo permanente gli URL delle sessioni precedenti, l'impostazione di <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> ti consente di creare un elenco di pattern URL che specificano i siti che possono o meno impostare i cookie per una sessione.
 
@@ -7817,6 +7876,7 @@ Se impostato su "read-only" o se non viene impostato, i file locali rimangono in
 
        Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="6988791975283483023">Disattiva Wi-Fi</translation>
+<translation id="6990546578776912554">Specifica i domini da escludere dalla risoluzione tramite DNS over HTTPS</translation>
 <translation id="6990736882800900101">Consenti a tutti i popup aperti con una destinazione <ph name="BLANK_PAGE_NAME" /> di interagire con la pagina che ha richiesto l'apertura del popup se la pagina di apertura non disattiva esplicitamente questa interazione </translation>
 <translation id="6991623831629598930">Utilizza il valore predefinito per l'accordo chiave post-quantistico Kyber per TLS</translation>
 <translation id="6992943675460798920">Consenti agli utenti di acquisire screenshot e registrazioni video</translation>
@@ -8447,6 +8507,7 @@ Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph n
 
       Se non viene configurato, la schermata introduttiva di <ph name="FEATURE_NAME" /> verrà ignorata per gli utenti gestiti a livello aziendale e mostrata per gli utenti non gestiti.</translation>
 <translation id="7469554574977894907">Attiva suggerimenti di ricerca</translation>
+<translation id="7472547030234093862">Specifica i domini da risolvere tramite DNS over HTTPS</translation>
 <translation id="747275827471712187">Ripristina il comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedente per i cookie su questi siti</translation>
 <translation id="747517124419659622">Consenti la ricerca nella cronologia basata sull'AI senza migliorare i modelli di AI</translation>
 <translation id="7476030153540156377">Scegli se attivare o meno la funzionalità di protezione IP di <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
@@ -10532,6 +10593,7 @@ ma che possono essere usati come suggerimenti per la creazione di percorsi. I ce
 <translation id="9113058104383612727">Attiva gli strumenti per la risoluzione dei problemi relativi a Kiosk</translation>
 <translation id="9113065986946552397">I risultati di una pulizia eseguita da Chrome Software Cleaner vengono sempre condivisi con Google</translation>
 <translation id="9113262510565261950">Timeout di inattività della schermata di accesso del salvaschermo del dispositivo.</translation>
+<translation id="911448529868608648">Attiva Generatore codice QR</translation>
 <translation id="911605919007170833">Segnala stato di sicurezza</translation>
 <translation id="9117826695152538214">Se il criterio è impostato su True, i tasti permanenti rimangono attivati. Se il criterio è impostato su False, i tasti permanenti rimangono disattivati.
 
@@ -10604,6 +10666,7 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="9142561920976791097">Verrà utilizzato il nuovo comportamento per l'esecuzione di eventi sui controlli dei moduli disattivati.</translation>
 <translation id="91459503271584213">Avvia direttamente gli host di messaggistica nativi eseguibili su Windows</translation>
 <translation id="9148720248753722892">Non consentire i certificati con firma SHA-1</translation>
+<translation id="9149075762533142978">La funzionalità Generatore codice QR è attiva.</translation>
 <translation id="9149678135092892302">Disattiva la generazione di report sulle informazioni di versione</translation>
 <translation id="9150416707757015439">Questa norma è obsoleta. Utilizza IncognitoModeAvailability. Consente di attivare la modalità di navigazione in incognito in <ph name="PRODUCT_NAME" />. Se questa impostazione viene attivata o non viene configurata, gli utenti potranno aprire le pagine web in modalità di navigazione in incognito. Se l'impostazione viene disattivata, gli utenti non potranno aprire le pagine web in modalità di navigazione in incognito. Se questa norma non viene impostata, l'impostazione verrà attivata e gli utenti potranno utilizzare la modalità di navigazione in incognito.</translation>
 <translation id="9152473318295429890">Attiva i suggerimenti contestuali delle pagine web correlate</translation>

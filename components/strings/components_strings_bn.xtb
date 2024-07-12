@@ -653,6 +653,7 @@
 <translation id="2168151236314517198">অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী এই কন্টেন্ট প্রিন্ট করার সুবিধা ব্লক করা হয়েছে</translation>
 <translation id="2170417331417184438">কার্ড শুধু ডিভাইসেই সেভ করা হয়</translation>
 <translation id="2172089022819052306">যানবাহন মেরামত ও রক্ষণাবেক্ষণ</translation>
+<translation id="2174875517416416684">ট্রানজ্যাকশন হতে পারেনি। আপনার অ্যাকাউন্ট থেকে কোনও টাকা কাটা হয়নি।</translation>
 <translation id="2175630235841878061">১০০এমবি সাইজের বেশি বড় ফাইল ডাউনলোড করার জন্য উপলভ্য নেই</translation>
 <translation id="2176974405772725904">অ্যাকাউন্টে ঠিকানা সেভ করুন</translation>
 <translation id="2178665390943006934">'Chrome আপডেট করুন' বোতাম, আপনার Chrome সেটিংস থেকে Chrome আপডেট করতে এটি চালু করুন</translation>
@@ -1162,6 +1163,7 @@
 <translation id="3209034400446768650">পৃষ্ঠাটির মাধ্যমে টাকা চার্জ করা হতে পারে</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" />-এ আপনার অ্যাক্টিভিটি মনিটর করা হচ্ছে</translation>
 <translation id="3215092763954878852">WebAuthn ব্যবহার করা যায়নি</translation>
+<translation id="3215311088819828484">ফলাফল আপডেট করা হয়েছে</translation>
 <translation id="3216313131063488104">ব্লুজ</translation>
 <translation id="3218181027817787318">রিলেটিভ</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{এখনই আপডেট করতে হবে}=2{আগামীকালের মধ্যে আপডেট করতে হবে}one{# দিনের মধ্যে আপডেট করতে হবে}other{# দিনের মধ্যে আপডেট করতে হবে}}</translation>
@@ -3392,6 +3394,7 @@
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> মিমি)</translation>
 <translation id="7450577240311017924">'সিঙ্ক করা ম্যানেজ করুন' বোতাম, Chrome সেটিংসে আপনি কী তথ্য সিঙ্ক করবেন তা ম্যানেজ করতে এটি চালু করুন</translation>
 <translation id="7451311239929941790">এই সমস্যা সম্পর্কে <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" />।</translation>
+<translation id="745208957946308667">Dino গেম, খেলার জন্য স্পেস প্রেস করুন</translation>
 <translation id="7454377933424667109">ক্লাউড অ্যাকাউন্ট</translation>
 <translation id="7455133967321480974">বিশ্বব্যাপী ডিফল্ট ব্যবহার করুন (অবরোধ করুন)</translation>
 <translation id="7455452752247248289">এন্টারপ্রাইজ প্রযুক্তি</translation>
@@ -4044,6 +4047,7 @@
 <translation id="8676424191133491403">কোনও দেরি হয়নি</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, উত্তর, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" />-এ ওয়েবপৃষ্ঠাটি লোড করা যায়নি কারণ:</translation>
+<translation id="8682297334444610648">Dino গেম, খেলার জন্য ট্যাপ করুন</translation>
 <translation id="8686424632716064939">কম্পিউটার নিরাপত্তা</translation>
 <translation id="8687278439622293018"><ph name="ENTRY_VOICEOVER" /> এন্ট্রি মুছে দেওয়া হয়েছে</translation>
 <translation id="8687429322371626002">আপনার ডিভাইস ও অ্যাকাউন্ট <ph name="MANAGER" />-এর মাধ্যমে ম্যানেজ করা হয়।</translation>

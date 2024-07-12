@@ -2996,7 +2996,6 @@
 <translation id="3132277757485842847">Зв'язок із телефоном утрачено. Переконайтеся, що ваш телефон поблизу й розблокований, а Bluetooth і Wi-Fi увімкнено.</translation>
 <translation id="3132896062549112541">Правило</translation>
 <translation id="3132996321662585180">Оновлювати щодня</translation>
-<translation id="3133184011320864289">Увімкніть синхронізацію, щоб дозволити Chrome упорядковувати вкладки й пропонувати для них групи</translation>
 <translation id="3134393957315651797">Виберіть статус експерименту "<ph name="EXPERIMENT_NAME" />". Опис експерименту: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3137969841538672700">Перетягніть, щоб вибрати область для пошуку</translation>
 <translation id="3139925690611372679">Стандартний жовтий аватар</translation>
@@ -9587,7 +9586,6 @@
 <translation id="8052218774860457016">Керування синхронізацією веб-переглядача</translation>
 <translation id="8053278772142718589">Файли PKCS #12</translation>
 <translation id="8053390638574070785">Перезавантажити цю сторінку</translation>
-<translation id="8053629544194355894">Увімкнути синхронізацію, щоб дозволити Chrome пропонувати групи вкладок</translation>
 <translation id="8054500940978949009">Дозволено. Надайте <ph name="LINK_BEGIN" />доступ до системного мікрофона<ph name="LINK_END" />.</translation>
 <translation id="8054517699425078995">Цей тип файлу може зашкодити вашому пристрою. Усе одно зберегти <ph name="FILE_NAME" />?</translation>
 <translation id="8054563304616131773">Введіть дійсну електронну адресу</translation>
@@ -9829,6 +9827,7 @@
 <translation id="8230134520748321204">Зберегти пароль для <ph name="ORIGIN" />?</translation>
 <translation id="8230326817897075865">Видалити <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="8230446983261649357">Заборонити сайтам показувати зображення</translation>
+<translation id="823226567613548870">видалити ваші дані в сервісі <ph name="BRAND" /></translation>
 <translation id="8233028084277069927">Відкрити зараз</translation>
 <translation id="8234795456569844941">Допоможіть нашим розробникам вирішити цю проблему. Опишіть, що сталося перед тим, як з’явилося повідомлення про помилку профілю.</translation>
 <translation id="8235418492073272647">Сторінка, надіслана з пристрою "<ph name="DEVICE_NAME" />"</translation>
@@ -9926,7 +9925,6 @@
 <translation id="8293206222192510085">Додати закладку</translation>
 <translation id="8294431847097064396">Джерело</translation>
 <translation id="8294476140219241086">Упорядкування вкладок</translation>
-<translation id="8294895455164415895">Відкрити налаштування, щоб дозволити Chrome пропонувати групи вкладок</translation>
 <translation id="8295449579927246485">Миттєвий переклад</translation>
 <translation id="8295450130892483256">Установіть Microsoft 365</translation>
 <translation id="8297292446125062288">Налаштування HID</translation>
@@ -10090,7 +10088,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">на весь екран</translation>
 <translation id="8412136526970428322">Дозволено: <ph name="PERMISSION" /> і ще <ph name="COUNT" /></translation>
-<translation id="8412682423093430245">Увімкніть синхронізацію історії в налаштуваннях, щоб дозволити Chrome упорядковувати вкладки й пропонувати для них групи</translation>
 <translation id="8413795581997394485">Захищає від відомих небезпечних веб-сайтів, завантажень і розширень. Коли ви відвідуєте сайт, Chrome надсилає в Google обфусковану частину URL-адреси через сервер конфіденційності, який приховує вашу IP-адресу. Якщо на сайті виявлено підозрілу поведінку, Chrome також надсилає повні URL-адреси й уривки контенту сторінки.</translation>
 <translation id="8413956290606243087">Активувати ChromeVox, вбудовану програму зчитування з екрана для ОС Chrome?</translation>
 <translation id="8414249071344507766">Спогади приховано на два дні</translation>
@@ -10123,7 +10120,6 @@
 <translation id="843173223122814223">Створюйте фони за допомогою ШІ</translation>
 <translation id="8433186206711564395">Налаштування мережі</translation>
 <translation id="8434480141477525001">Порт налагодження NaCl</translation>
-<translation id="8436054240208929121">Увійдіть в обліковий запис і ввімкніть синхронізацію, щоб дозволити Chrome упорядковувати вкладки й пропонувати для них групи</translation>
 <translation id="8437209419043462667">Американська</translation>
 <translation id="8438566539970814960">Покращувати пошук і вебперегляд</translation>
 <translation id="8439506636278576865">Пропонувати переклад сторінок цією мовою</translation>

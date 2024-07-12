@@ -84,6 +84,7 @@
 <translation id="1413240736185167732">Gagal - Filter gagal</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">bunga anggrek</translation>
+<translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">Saya memiliki pasangan kunci</translation>
 <translation id="1423591390236870726">Tombol <ph name="KEY_NAME" /> tidak ditekan</translation>
 <translation id="1432110487435300883">Untuk mendapatkan perkiraan hasil, bagi nilai <ph name="CATEGORY_TEXT" /> dengan <ph name="CONVERSION_RATE" /></translation>
@@ -771,6 +772,7 @@
 <translation id="5220549459260334974"><ph name="PROGRESS_PERCENTAGE" />% didownload</translation>
 <translation id="5222676887888702881">Logout</translation>
 <translation id="522307662484862935">Jangan sertakan alamat email</translation>
+<translation id="5226879510707344687">Ekspor transkrip</translation>
 <translation id="5227902338748591677">Jadwal tema gelap</translation>
 <translation id="5229344016299762883">Keluar dari layar penuh</translation>
 <translation id="5234764350956374838">Tutup</translation>
@@ -961,6 +963,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6283581480003247988">biru dan ungu</translation>
 <translation id="6284632978374966585">Aktifkan tema gelap</translation>
+<translation id="6285260286443238386">Ekspor rekaman</translation>
 <translation id="628726841779494414">Kelola printer Anda di setelan printer</translation>
 <translation id="6292095526077353682">Saat mengisi daya, tampilkan screensaver selama</translation>
 <translation id="629550705077076970">peredupan keyboard</translation>
@@ -995,6 +998,7 @@
 <translation id="6417265370957905582">Asisten Google</translation>
 <translation id="6419454453018688975">Aktifkan akses lokasi sistem</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">Lemah (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Buka setelan akun</translation>
 <translation id="6462978824459367242">Tombol Tambahkan APN kini diaktifkan</translation>
@@ -1465,6 +1469,7 @@ Anda dapat menonaktifkannya kapan saja di Setelan.</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> <ph name="GIVEN_NAME" /></translation>
 <translation id="8918813738569491921">salt rock</translation>
 <translation id="8919837981463578619">Gagal - Tidak ada baki</translation>
+<translation id="8924154518905976972">Ekspor audio</translation>
 <translation id="8928727111548978589">Gagal - Kertas habis</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Nirkabel</translation>

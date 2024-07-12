@@ -1129,7 +1129,7 @@
 <translation id="1804195280859010019">आपको Google Search के साइड पैनल जैसी सुविधाओं में ज़्यादा काम की जानकारी या सुझाव मिलेंगे</translation>
 <translation id="180441032496361123"><ph name="SEARCH_ENGINE_NAME" /> को चालू करने के लिए क्लिक करें</translation>
 <translation id="1805738995123446102">बैकग्राउंड टैब आपके माइक्रोफ़ोन का इस्तेमाल कर रहा है</translation>
-<translation id="1805822111539868586">व्यू का निरीक्षण करें</translation>
+<translation id="1805822111539868586">व्यू की जांच करें</translation>
 <translation id="1805888043020974594">प्रिंट सर्वर</translation>
 <translation id="1805967612549112634">पिन की पुष्टि करें</translation>
 <translation id="1806335016774576568">किसी दूसरे खुले हुए ऐप्लिकेशन पर स्विच करें</translation>
@@ -1469,7 +1469,7 @@
 <translation id="2041246176170574368">सुरक्षा से जुड़े अपडेट मिलने की सुविधा जल्द बंद होने वाली है. नए Chromebook पर, 50 डॉलर या उससे ज़्यादा की बचत करें.</translation>
 <translation id="2042279886444479655">ऐक्टिव प्रोफ़ाइलें</translation>
 <translation id="2044014337866019681">पक्का करें कि आप सत्र को अनलॉक करने के लिए, <ph name="ACCOUNT" /> की पुष्टि कर रहे हैं.</translation>
-<translation id="204497730941176055">माइक्रोसॉफ्ट प्रमाणपत्र टेम्पलेट नाम</translation>
+<translation id="204497730941176055">माइक्रोसॉफ्ट प्रमाणपत्र टेंप्लेट नाम</translation>
 <translation id="2045211794962848221">आपको यह मैसेज दोबारा नहीं दिखेगा</translation>
 <translation id="2045838962742066664">शॉर्टहैंड टाइपिंग</translation>
 <translation id="204622017488417136">आपके डिवाइस को Chrome के इसे पहले इंस्‍टॉल किए गए वर्शन पर वापस ले जाया जाएगा. सभी उपयोगकर्ता खाते और स्‍थानीय डेटा हटा दिइ जाएंगे. इसे पहले जैसा नहीं किया जा सकता.</translation>
@@ -2994,7 +2994,6 @@
 <translation id="3132277757485842847">डिवाइस आपके फ़ोन से बार-बार डिसकनेक्ट हो रहा है. पक्का करें कि आपका फ़ोन आस-पास है और अनलॉक है. साथ ही, यह भी कि उस पर ब्लूटूथ और वाई-फ़ाई चालू हैं.</translation>
 <translation id="3132896062549112541">नियम</translation>
 <translation id="3132996321662585180">हर रोज़ रीफ्रेश करें</translation>
-<translation id="3133184011320864289">Chrome को टैब ग्रुप के सुझाव देने और अपने टैब व्यवस्थित रखने की अनुमति देने के लिए, सिंक करने की सुविधा चालू करें</translation>
 <translation id="3134393957315651797">एक्सपेरिमेंट <ph name="EXPERIMENT_NAME" /> के लिए, एक्सपेरिमेंट की स्थिति चुनें. एक्सपेरिमेंट का ब्यौरा: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3137969841538672700">खोजने के लिए खींचें और छोड़ें</translation>
 <translation id="3139925690611372679">डिफ़ॉल्ट पीला अवतार</translation>
@@ -3774,7 +3773,7 @@
 <translation id="3726334084188857295"><ph name="SITE_ETLD_PLUS_ONE" /> • <ph name="LAST_USED" /></translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">उपलब्ध वाई-फ़ाई नेटवर्क</translation>
-<translation id="3727187387656390258">पॉपअप का निरीक्षण करें</translation>
+<translation id="3727187387656390258">पॉपअप की जांच करें</translation>
 <translation id="372722114124766626">बस एक बार</translation>
 <translation id="3727332897090187514">कोई नोट नहीं जोड़ा गया है</translation>
 <translation id="3727473233247516571">बैक/फ़ॉरवर्ड कैश मेमोरी का सबफ़्रेम: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -6068,7 +6067,7 @@
 <translation id="5434065355175441495">PKCS #1 RSA सुरक्षित करने का तरीका</translation>
 <translation id="5435274640623994081">इयरकॉन में लॉग इन करना चालू करें</translation>
 <translation id="5435779377906857208"><ph name="HOST" /> को, हमेशा अपनी जगह की जानकारी को ऐक्सेस करने की अनुमति दें</translation>
-<translation id="5436492226391861498">प्रॉक्सी टनेल की प्रतीक्षा कर रहा है...</translation>
+<translation id="5436492226391861498">प्रॉक्सी टनल का इंतज़ार किया जा रहा है...</translation>
 <translation id="5436510242972373446">खोजें <ph name="SITE_NAME" />:</translation>
 <translation id="5436575196282187764">Google Photos में सेव की गई आपकी यादें</translation>
 <translation id="5440425659852470030">साइड पैनल बंद करें</translation>
@@ -6993,7 +6992,7 @@
 <translation id="6125479973208104919">दुर्भाग्यवश, आपको इस <ph name="DEVICE_TYPE" /> में अपना खाता फिर से जोड़ना होगा.</translation>
 <translation id="6126601353087978360">कृपया अपना फ़ीडबैक (सुझाव, शिकायत या राय) यहां दर्ज करें:</translation>
 <translation id="6127292407256937949">आवाज़ चालू है. आवाज़ बंद करें.</translation>
-<translation id="6129691635767514872">चुना गया डेटा Chrome और सिंक किए गए सभी डिवाइस से हटा दिया गया है. हो सकता है कि आपके Google खाते में खोजों और <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> पर अन्य Google सेवाओं की गतिविधि जैसे अन्य प्रकार के ब्राउज़िंग इतिहास मौजूद हों.</translation>
+<translation id="6129691635767514872">चुना गया डेटा Chrome और सिंक किए गए सभी डिवाइस से हटा दिया गया है. हो सकता है कि आपके Google खाते में खोजों और <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> पर अन्य Google सेवाओं की गतिविधि जैसा अन्य तरह का ब्राउज़िंग इतिहास मौजूद हो.</translation>
 <translation id="6129938384427316298">Netscape प्रमाणपत्र टिप्पणी</translation>
 <translation id="6129953537138746214">Space</translation>
 <translation id="6130692320435119637">वाई-फ़ाई जोड़ें</translation>
@@ -8086,7 +8085,7 @@
 <translation id="6950627417367801484">ऐप्लिकेशन बहाल करें</translation>
 <translation id="6954910832698269894">अपने पिछले Chromebook से ऐप्लिकेशन, सेटिंग, वाई-फ़ाई नेटवर्क, और वॉलपेपर को वापस लाने के लिए, डिवाइस सिंक करने की सुविधा चालू करें. सेटिंग &gt; खाते में जाकर, कभी भी बदलाव किया जा सकता है.</translation>
 <translation id="6954936693361896459">इसके बजाय, इस टैब को कास्ट करें</translation>
-<translation id="6955446738988643816">पॉपअप का निरीक्षण करें</translation>
+<translation id="6955446738988643816">पॉपअप की जांच करें</translation>
 <translation id="6955535239952325894">यह सेटिंग, प्रबंधित किए गए ब्राउज़र पर काम नहीं करती है</translation>
 <translation id="6955698182324067397">ChromeOS की डीबग करने वाली सुविधाएं चालू करने पर, एसएसएचडी डीमन का सेट अप हो जाएगा और यूएसबी ड्राइव से बूट करना चालू हो जाएगा.</translation>
 <translation id="6955893174999506273">एक और स्विच असाइन करें</translation>
@@ -9582,7 +9581,6 @@
 <translation id="8052218774860457016">ब्राउज़र से डेटा सिंक करने की सुविधा को मैनेज करें</translation>
 <translation id="8053278772142718589">PKCS #12 फ़ाइलें</translation>
 <translation id="8053390638574070785">यह पेज फिर से लोड करें</translation>
-<translation id="8053629544194355894">Chrome को टैब ग्रुप के सुझाव देने की अनुमति देने के लिए, सिंक करने की सुविधा चालू करें</translation>
 <translation id="8054500940978949009">अनुमति है. <ph name="LINK_BEGIN" />सिस्टम का माइक्रोफ़ोन ऐक्सेस करने<ph name="LINK_END" /> की अनुमति दें.</translation>
 <translation id="8054517699425078995">इस प्रकार की फ़ाइल आपके डिवाइस को हानि पहुंचा सकती है. क्‍या आप <ph name="FILE_NAME" /> को किसी भी तरह रखना चाहते हैं?</translation>
 <translation id="8054563304616131773">कृपया मान्य ईमेल पता डालें</translation>
@@ -9824,6 +9822,7 @@
 <translation id="8230134520748321204"><ph name="ORIGIN" /> के लिए पासवर्ड सेव करें?</translation>
 <translation id="8230326817897075865"><ph name="CREDENTIAL_TYPE" /> को मिटाएं</translation>
 <translation id="8230446983261649357">साइटों को इमेज दिखाने की अनुमति न दें</translation>
+<translation id="823226567613548870">अपने <ph name="BRAND" /> का डेटा मिटाएं</translation>
 <translation id="8233028084277069927">अब खोलें</translation>
 <translation id="8234795456569844941">कृपया इस समस्या को ठीक करने में हमारे इंजीनियरों की मदद करें. हमें बताएं कि प्रोफ़ाइल से जुड़ी गड़बड़ी का मैसेज मिलने से ठीक पहले क्या हुआ था:</translation>
 <translation id="8235418492073272647"><ph name="DEVICE_NAME" /> से शेयर किया गया पेज</translation>
@@ -9921,7 +9920,6 @@
 <translation id="8293206222192510085">बुकमार्क जोड़ें</translation>
 <translation id="8294431847097064396">स्रोत</translation>
 <translation id="8294476140219241086">टैब व्यवस्थित करने की सुविधा</translation>
-<translation id="8294895455164415895">Chrome को टैब ग्रुप के सुझाव देने की अनुमति देने के लिए सेटिंग खोलें</translation>
 <translation id="8295449579927246485">लाइव ट्रांसलेट</translation>
 <translation id="8295450130892483256">Microsoft 365 इंस्टॉल करें</translation>
 <translation id="8297292446125062288">एचआईडी की सेटिंग</translation>
@@ -10085,7 +10083,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">फ़ुलस्क्रीन पर देखने की सुविधा देने वाला बटन</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> के साथ-साथ <ph name="COUNT" /> और सेटिंग की अनुमति दी गई</translation>
-<translation id="8412682423093430245">Chrome को टैब ग्रुप के सुझाव देने और अपने टैब व्यवस्थित रखने की अनुमति देने के लिए, 'सेटिंग' में जाकर इतिहास को सिंक करने की सुविधा चालू करें</translation>
 <translation id="8413795581997394485">यह मोड, खतरनाक या नुकसान पहुंचाने वाली साइटों, डाउनलोड, और एक्सटेंशन से सुरक्षित रखता है. जब उपयोगकर्ता किसी साइट पर जाता है, तो Chrome निजी सर्वर के ज़रिए Google को उस साइट के यूआरएल का अस्पष्ट हिस्सा भेजता है. यह सर्वर, आपके आईपी पते को छिपा देता है. अगर साइट पर कुछ संदिग्ध गतिविधि मिलती है, तो साइट का पूरा यूआरएल और पेज का कुछ कॉन्टेंट भी भेजा जाता है.</translation>
 <translation id="8413956290606243087">क्या आपको ChromeOS में पहले से मौजूद ChromeVox स्क्रीनरीडर को चालू करना है?</translation>
 <translation id="8414249071344507766">दो दिनों के लिए यादों को छिपा दिया गया है</translation>
@@ -10118,7 +10115,6 @@
 <translation id="843173223122814223">एआई की मदद से बैकग्राउंड बनाएं</translation>
 <translation id="8433186206711564395">नेटवर्क सेटिंग</translation>
 <translation id="8434480141477525001">NaCl डीबग पोर्ट</translation>
-<translation id="8436054240208929121">Chrome को टैब ग्रुप के सुझाव देने और अपने टैब व्यवस्थित रखने की अनुमति देने के लिए, साइन इन करें और सिंक करने की सुविधा चालू करें</translation>
 <translation id="8437209419043462667">यूएस</translation>
 <translation id="8438566539970814960">खोजों और ब्राउज़िंग को बेहतर बनाएं</translation>
 <translation id="8439506636278576865">इस भाषा में पृष्ठों का अनुवाद करने का ऑफ़र दें</translation>

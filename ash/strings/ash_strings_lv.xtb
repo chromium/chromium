@@ -13,6 +13,7 @@
 <translation id="1036672894875463507">Esmu jūsu Google asistents, un mans uzdevums ir padarīt jūsu ikdienu ērtāku!
 Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1037492556044956303">Ierīce <ph name="DEVICE_NAME" /> ir pievienota</translation>
+<translation id="1038106730571050514">Rādīt ieteikumus</translation>
 <translation id="1047017786576569492">daļējs</translation>
 <translation id="1052916631016577720">Vienumu meklēšana</translation>
 <translation id="1056775291175587022">Nav tīklu</translation>
@@ -136,6 +137,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1447907279406111651">Pašlaik notiek · Beigsies: <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Jūsu ierīču tīklāji</translation>
 <translation id="1455242230282523554">Rādīt valodas iestatījumus</translation>
+<translation id="1459693405370120464">Laikapstākļi</translation>
 <translation id="1460620680449458626">Skaņa ir izslēgta.</translation>
 <translation id="14648076227129703">Atļauj piekļuvi kamerai lietotnei <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> un visām lietotnēm un vietnēm, kurām ir kameras atļauja.</translation>
 <translation id="1467432559032391204">Pa kreisi</translation>
@@ -876,6 +878,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="4269883910223712419">Ierīces administrators var veikt šādas darbības:</translation>
 <translation id="4274537685965975248">Šie īsinājumtaustiņi ir mainījušies: Ctrl + Alt + lejupvērstais bulttaustiņš. Lai izmantotu beigvietas taustiņu, nospiediet šos taustiņus: <ph name="LAUNCHER_KEY_NAME" /> + labā bultiņa.</translation>
 <translation id="4275283744500212192">Atvērt logu izkārtojuma opcijas</translation>
+<translation id="4275663329226226506">Multivide</translation>
 <translation id="4279490309300973883">Spoguļošana</translation>
 <translation id="4280601795273309128">Drošības atjauninājumi ir pabeigti. Jauniniet savu ierīci.</translation>
 <translation id="4283888303416325161">Papildu drošībai ievadiet paroli</translation>
@@ -1160,6 +1163,7 @@ Varat arī izmantot īsinājumtaustiņus. Vispirms atzīmējiet tekstu un pēc t
 <translation id="5253783950165989294">Izveidots savienojums ar ierīci “<ph name="DEVICE_NAME" />”, akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">Nav saglabātu darbvietu</translation>
 <translation id="5260676007519551770">4. galds</translation>
+<translation id="5270547718570958938">Google kalendārs</translation>
 <translation id="5277869901083657836">Pārslēgt skārienekrāna pildspalvas rīkus</translation>
 <translation id="5278086053818066789">Ieslēgt/izslēgt ChromeVox (balss komentārus)</translation>
 <translation id="5283099933536931082">Lietotne <ph name="APP_ITEM_TITLE" /> aicina pievērst tai uzmanību.</translation>
@@ -1258,6 +1262,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="558849140439112033">Velciet, lai atlasītu apgabalu, kura saturs jātver</translation>
 <translation id="5590609058453685222">Atgādinājums par izslēgtu mikrofonu ir ieslēgts. Ja runāsiet, kad ir izslēgts mikrofons, tiks parādīts paziņojums.</translation>
 <translation id="5592745162308462420">fn</translation>
+<translation id="5593564924968945303">Pārlūks Chrome</translation>
 <translation id="5596627076506792578">Citas opcijas</translation>
 <translation id="5599242528220103262">Īsinājumtaustiņi ir izslēgti</translation>
 <translation id="5600415762228455511">Fokusa režīms ir ieslēgts, atlikušais laiks: <ph name="REMAINING_TIME" />, fokusa režīma uzdevums: <ph name="TASK_NAME" /></translation>
@@ -1354,6 +1359,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="5916664084637901428">Iesl.</translation>
 <translation id="5920710855273935292">Mikrofons ir izslēgts.</translation>
 <translation id="5928083197428724029">Atjaunināšanu pieprasa <ph name="MANAGER" /></translation>
+<translation id="5939518447894949180">Atiestatīt</translation>
 <translation id="5946788582095584774">Funkcija <ph name="FEATURE_NAME" /> ir ieslēgta.</translation>
 <translation id="5947494881799873997">Atjaunot</translation>
 <translation id="595202126637698455">Veiktspējas izsekošana ir iespējota</translation>

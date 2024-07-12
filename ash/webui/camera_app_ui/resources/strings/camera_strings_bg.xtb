@@ -51,6 +51,7 @@
 <translation id="2879583609344924966">Устройството <ph name="CAMERA" /> е свързано.</translation>
 <translation id="3067436040345934772">Панорамно придвижване надясно</translation>
 <translation id="3081586908890909590">Превключване към режима за запис на видеоклипове</translation>
+<translation id="3091480460059548935">Разпознаване на текст във визуализацията</translation>
 <translation id="313467653172006084">30 кдр/сек</translation>
 <translation id="3157038259444425153">Вече можете да копирате текст директно от снимката</translation>
 <translation id="3158534262962737808">Присъединяване към <ph name="WIFINAME" /></translation>
@@ -141,6 +142,7 @@
 <translation id="7337660886763914220">Грешки във файловата система.</translation>
 <translation id="7450541714075000668">Текстът е копиран</translation>
 <translation id="7488619942230388918">Записване на GIF</translation>
+<translation id="7527714402753141485">Показва текст и бутон за копиране</translation>
 <translation id="7557677699350329807">Превключване към следващата камера</translation>
 <translation id="7607002721634913082">На пауза</translation>
 <translation id="7608223098072244877">4 на 4</translation>

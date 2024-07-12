@@ -13,6 +13,7 @@
 <translation id="1036672894875463507">Би танд өдрийн турш туслахад бэлэн Google Туслах тань байна!
 Эхлүүлэхийн тулд та эдгээр зүйлээс хийж үзэх боломжтой.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" />-г нэмсэн</translation>
+<translation id="1038106730571050514">Зөвлөмжүүдийг харуулах</translation>
 <translation id="1047017786576569492">хэсэгчилсэн</translation>
 <translation id="1052916631016577720">Зүйл скан хийх</translation>
 <translation id="1056775291175587022">Сүлжээ алга</translation>
@@ -136,6 +137,7 @@
 <translation id="1447907279406111651">Одоо · <ph name="END_TIME" />-д дуусна</translation>
 <translation id="1448963928642384376">Таны төхөөрөмжийн сүлжээний цэгүүд</translation>
 <translation id="1455242230282523554">Хэлний тохиргоог харуулах</translation>
+<translation id="1459693405370120464">Цаг агаар</translation>
 <translation id="1460620680449458626">Дууг хаасан.</translation>
 <translation id="14648076227129703">Энэ нь <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> болон камерын зөвшөөрөлтэй бүх апп болон вебсайтад камерын хандалтыг зөвшөөрнө</translation>
 <translation id="1467432559032391204">Зүүн</translation>
@@ -877,6 +879,7 @@
 <translation id="4269883910223712419">Энэ төхөөрөмжийн админ дараах зүйлсийг хийх боломжтой:</translation>
 <translation id="4274537685965975248">Ctrl + Alt + Доош сумны товчлуурын шууд холбоосыг өөрчилсөн байна. End товчлуурыг ашиглахын тулд <ph name="LAUNCHER_KEY_NAME" /> товчлуур + Баруун сумыг дарна уу.</translation>
 <translation id="4275283744500212192">Цонхны бүдүүвчийн сонголтыг нээх</translation>
+<translation id="4275663329226226506">Медиа</translation>
 <translation id="4279490309300973883">Толин тусгал үүсгэх</translation>
 <translation id="4280601795273309128">Аюулгүй байдлын шинэчлэлт дууссан. Төхөөрөмжөө сайжруулна уу.</translation>
 <translation id="4283888303416325161">Нэмэлт аюулгүй байдлын үүднээс нууц үг оруулна уу</translation>
@@ -1161,6 +1164,7 @@
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> нэртэй төхөөрөмжид холбогдсон, <ph name="BATTERY_PERCENTAGE" />% батарей</translation>
 <translation id="5258528442992323769">Хадгалсан дэлгэц байхгүй</translation>
 <translation id="5260676007519551770">Дэлгэц 4</translation>
+<translation id="5270547718570958938">Google-ийн календарь</translation>
 <translation id="5277869901083657836">Мэдрэгч үзгийн хэрэгслийг асаах/унтраах</translation>
 <translation id="5278086053818066789">ChromeVox-г асаах/унтраах (яриагаар өгөх санал)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> танаас анхаарал тавихыг хүсэж байна.</translation>
@@ -1259,6 +1263,7 @@
 <translation id="558849140439112033">Зураг авах хэсгийг сонгохын тулд чирнэ үү</translation>
 <translation id="5590609058453685222">Дуу хаалттай тухай мэдэгдэл асаалттай байна. Та дууг нь хаасан үед яривал танд мэдэгдэнэ.</translation>
 <translation id="5592745162308462420">fn</translation>
+<translation id="5593564924968945303">Chrome хөтөч</translation>
 <translation id="5596627076506792578">Бусад сонголт</translation>
 <translation id="5599242528220103262">Товчлуурын шууд холбоос унтраалттай байна</translation>
 <translation id="5600415762228455511">Төвлөрөх горим асаалттай байна. <ph name="REMAINING_TIME" /> үлдсэн, дараах ажилд төвлөрч байна: <ph name="TASK_NAME" /></translation>
@@ -1355,6 +1360,7 @@
 <translation id="5916664084637901428">Асаах</translation>
 <translation id="5920710855273935292">Микрофоны дууг хаасан.</translation>
 <translation id="5928083197428724029"><ph name="MANAGER" />-с шинэчлэхийг шаардаж байна</translation>
+<translation id="5939518447894949180">Дахин сэргээх</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> асаалттай байна.</translation>
 <translation id="5947494881799873997">Буцаах</translation>
 <translation id="595202126637698455">Гүйцэтгэлийн ажиглалтыг идэвхжүүлсэн</translation>

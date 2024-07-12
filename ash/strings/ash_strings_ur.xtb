@@ -13,6 +13,7 @@
 <translation id="1036672894875463507">‏آپ کی پورے دن مدد کرنے کے لیے میں آپ کی Google اسسٹنٹ ہوں!
 یہاں کچھ چیزیں ہیں جنہیں آپ شروع کرنے کے لیے آزما سکتے ہیں۔</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> کو شامل کیا گیا</translation>
+<translation id="1038106730571050514">تجاویز دکھائیں</translation>
 <translation id="1047017786576569492">جزوی</translation>
 <translation id="1052916631016577720">آئٹم اسکین کریں</translation>
 <translation id="1056775291175587022">نیٹ ورک نہیں</translation>
@@ -136,6 +137,7 @@
 <translation id="1447907279406111651">ابھی ⋅ <ph name="END_TIME" /> بجے ختم ہو جائے گا</translation>
 <translation id="1448963928642384376">آپ کے آلہ کے ہاٹ اسپاٹس</translation>
 <translation id="1455242230282523554">زبان کی ترتیبات دکھائیں</translation>
+<translation id="1459693405370120464">موسم</translation>
 <translation id="1460620680449458626">والیوم خاموش کیا ہوا ہے۔</translation>
 <translation id="14648076227129703">اس سے کیمرے کی اجازت کے ساتھ <ph name="APP1_NAME" />، <ph name="APP2_NAME" /> اور تمام ایپس اور ویب سائٹس کو کیمرے تک رسائی کی اجازت ملتی ہے</translation>
 <translation id="1467432559032391204">بائیں</translation>
@@ -876,6 +878,7 @@
 <translation id="4269883910223712419">اس آلہ کا منتظم یہ کام کر سکتا ہے:</translation>
 <translation id="4274537685965975248">‏Ctrl + Alt + 'نیچے تیر کا نشان' کی بورڈ شارٹ کٹ تبدیل ہو گیا ہے۔ End کلید کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + 'دائیں تیر کا نشان' کو دبائیں۔</translation>
 <translation id="4275283744500212192">ونڈو لے آؤٹ کے اختیارات کھولیں</translation>
+<translation id="4275663329226226506">میڈیا</translation>
 <translation id="4279490309300973883">مررنگ</translation>
 <translation id="4280601795273309128">سیکیورٹی اپ ڈیٹس ختم ہو گئیں۔ اپنے آلے کو اپ گریڈ کریں۔</translation>
 <translation id="4283888303416325161">مزید سیکیورٹی کے لیے پاس ورڈ درج کریں</translation>
@@ -1258,6 +1261,7 @@
 <translation id="558849140439112033">کیپچر کرنے کے لئے کسی علاقے کو منتخب کرنے کیلئے گھسیٹیں</translation>
 <translation id="5590609058453685222">'یاد دہانی خاموش کریں' آن ہے۔ اگر آپ خاموش وضع میں رہتے ہوئے بات کرتے ہیں تو آپ کو مطلع کر دیا جائے گا۔</translation>
 <translation id="5592745162308462420">fn</translation>
+<translation id="5593564924968945303">‏Chrome براؤزر</translation>
 <translation id="5596627076506792578">مزید اختیارات</translation>
 <translation id="5599242528220103262">کی بورڈ شارٹ کٹ آف ہے</translation>
 <translation id="5600415762228455511">فوکس آن ہے، <ph name="REMAINING_TIME" /> باقی ہے، اس پر فوکس کیا جا رہا ہے: <ph name="TASK_NAME" /></translation>
@@ -1354,6 +1358,7 @@
 <translation id="5916664084637901428">آن</translation>
 <translation id="5920710855273935292">مائیک خاموش کیا ہوا ہے۔</translation>
 <translation id="5928083197428724029"><ph name="MANAGER" /> کو اپ ڈیٹ درکار ہے</translation>
+<translation id="5939518447894949180">دوبارہ ترتیب دیں</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> آن ہے۔</translation>
 <translation id="5947494881799873997">واپس لوٹیں</translation>
 <translation id="595202126637698455">کارکردگی کی ٹریسنگ فعال کر دی گئی</translation>

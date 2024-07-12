@@ -13,6 +13,7 @@
 <translation id="1036672894875463507">Jsem váš Asistent Google a můžu vám celý den pomáhat!
 Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1037492556044956303">Bylo přidáno zařízení <ph name="DEVICE_NAME" /></translation>
+<translation id="1038106730571050514">Zobrazit návrhy</translation>
 <translation id="1047017786576569492">částečný</translation>
 <translation id="1052916631016577720">Hledání položek</translation>
 <translation id="1056775291175587022">Žádné sítě</translation>
@@ -136,6 +137,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1447907279406111651">Teď ⋅ Končí <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Hotspoty vašich zařízení</translation>
 <translation id="1455242230282523554">Zobrazit jazykové nastavení</translation>
+<translation id="1459693405370120464">Počasí</translation>
 <translation id="1460620680449458626">Zvuk je vypnutý.</translation>
 <translation id="14648076227129703">Umožňuje přístup k fotoaparátu aplikacím <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> a všem aplikacím a webům s příslušným oprávněním</translation>
 <translation id="1467432559032391204">Doleva</translation>
@@ -876,6 +878,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4269883910223712419">Administrátor zařízení má následující možnosti:</translation>
 <translation id="4274537685965975248">Klávesová zkratka Ctrl + Alt + šipka dolů se změnila. Pokud chcete použít klávesu End, stiskněte <ph name="LAUNCHER_KEY_NAME" /> + šipku vpravo.</translation>
 <translation id="4275283744500212192">Otevřít možnosti rozvržení okna</translation>
+<translation id="4275663329226226506">Média</translation>
 <translation id="4279490309300973883">Zrcadlení</translation>
 <translation id="4280601795273309128">Aktualizace zabezpečení skončily. Upgradujte své zařízení.</translation>
 <translation id="4283888303416325161">Pro lepší zabezpečení zadejte heslo</translation>
@@ -1160,6 +1163,7 @@ Můžete také použít klávesovou zkratku. Nejdříve zvýrazněte text a pak
 <translation id="5253783950165989294">Připojeno k zařízení <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" /> % baterie</translation>
 <translation id="5258528442992323769">Žádné uložené plochy</translation>
 <translation id="5260676007519551770">Plocha 4</translation>
+<translation id="5270547718570958938">Kalendář Google</translation>
 <translation id="5277869901083657836">Přepnout nástroje dotykového pera</translation>
 <translation id="5278086053818066789">Zapnout/vypnout funkci ChromeVox (hlasovou odezvu)</translation>
 <translation id="5283099933536931082">Aplikace <ph name="APP_ITEM_TITLE" /> vyžaduje vaši pozornost.</translation>
@@ -1258,6 +1262,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="558849140439112033">Přetažením vyberte oblast, kterou chcete zachytit</translation>
 <translation id="5590609058453685222">Upozornění na vypnutý mikrofon jsou zapnutá. Pokud budete mluvit s vypnutým zvukem, zobrazí se vám oznámení.</translation>
 <translation id="5592745162308462420">fn</translation>
+<translation id="5593564924968945303">Prohlížeč Chrome</translation>
 <translation id="5596627076506792578">Další možnosti</translation>
 <translation id="5599242528220103262">Klávesová zkratka je vypnutá</translation>
 <translation id="5600415762228455511">Soustředění je zapnuté, zbývající čas: <ph name="REMAINING_TIME" />, úkol: <ph name="TASK_NAME" /></translation>
@@ -1354,6 +1359,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="5916664084637901428">Zapnuto</translation>
 <translation id="5920710855273935292">Mikrofon je ztlumen.</translation>
 <translation id="5928083197428724029"><ph name="MANAGER" /> vyžaduje aktualizaci</translation>
+<translation id="5939518447894949180">Resetovat</translation>
 <translation id="5946788582095584774">Funkce <ph name="FEATURE_NAME" /> je zapnutá.</translation>
 <translation id="5947494881799873997">Vrátit zpět</translation>
 <translation id="595202126637698455">Sledování výkonu aktivováno</translation>

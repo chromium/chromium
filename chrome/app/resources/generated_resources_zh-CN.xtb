@@ -2972,7 +2972,6 @@
 <translation id="3132277757485842847">我们无法保持与您手机的连接。请确保您的手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi。</translation>
 <translation id="3132896062549112541">规则</translation>
 <translation id="3132996321662585180">每日刷新</translation>
-<translation id="3133184011320864289">开启同步功能，以便 Chrome 提供标签页分组建议并使标签页井然有序</translation>
 <translation id="3134393957315651797">请为实验“<ph name="EXPERIMENT_NAME" />”选择实验状态。实验说明：<ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3137969841538672700">拖动即可搜索</translation>
 <translation id="3139925690611372679">默认的黄色头像</translation>
@@ -9555,7 +9554,6 @@
 <translation id="8052218774860457016">管理浏览器同步</translation>
 <translation id="8053278772142718589">PKCS #12 文件</translation>
 <translation id="8053390638574070785">重新加载此页</translation>
-<translation id="8053629544194355894">开启同步功能后即可让 Chrome 提供标签页分组建议</translation>
 <translation id="8054500940978949009">已允许。请开启<ph name="LINK_BEGIN" />系统麦克风使用权<ph name="LINK_END" />。</translation>
 <translation id="8054517699425078995">此类型的文件可能会危害您的设备。仍要保留 <ph name="FILE_NAME" /> 吗？</translation>
 <translation id="8054563304616131773">请输入有效的电子邮件地址</translation>
@@ -9894,7 +9892,6 @@
 <translation id="8293206222192510085">添加书签</translation>
 <translation id="8294431847097064396">来源</translation>
 <translation id="8294476140219241086">标签页整理工具</translation>
-<translation id="8294895455164415895">打开设置，让 Chrome 提供标签页分组建议</translation>
 <translation id="8295449579927246485">实时翻译</translation>
 <translation id="8295450130892483256">安装 Microsoft 365</translation>
 <translation id="8297292446125062288">HID 设置</translation>
@@ -10058,7 +10055,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">全屏</translation>
 <translation id="8412136526970428322">授予了“<ph name="PERMISSION" />”权限和另外 <ph name="COUNT" /> 项权限</translation>
-<translation id="8412682423093430245">在“设置”中开启历史记录同步功能，以便 Chrome 提供标签页分组建议并使标签页井然有序</translation>
 <translation id="8413795581997394485">防范已知危险的网站、下载内容和扩展程序。当您访问某个网站时，Chrome 会通过可隐藏 IP 地址的隐私保护服务器将经过混淆处理的网址片段发送给 Google。如果网站有可疑行为，系统也会发送完整网址和少量网页内容。</translation>
 <translation id="8413956290606243087">您想为 Chrome 操作系统启用 ChromeVox（内置屏幕阅读器）吗？</translation>
 <translation id="8414249071344507766">回忆已设为隐藏两天</translation>
@@ -10091,7 +10087,6 @@
 <translation id="843173223122814223">利用 AI 创建背景</translation>
 <translation id="8433186206711564395">网络设置</translation>
 <translation id="8434480141477525001">NaCl调试端口</translation>
-<translation id="8436054240208929121">登录账号并开启同步功能，以便 Chrome 提供标签页分组建议并使标签页井然有序</translation>
 <translation id="8437209419043462667">美国英语</translation>
 <translation id="8438566539970814960">改善搜索和浏览体验</translation>
 <translation id="8439506636278576865">询问是否翻译此语言的网页</translation>

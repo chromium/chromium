@@ -13,6 +13,7 @@
 <translation id="1036672894875463507">Ek is jou Google Assistent en ek is hier om jou deur die loop van jou dag te help!
 Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> is bygevoeg</translation>
+<translation id="1038106730571050514">Wys voorstelle</translation>
 <translation id="1047017786576569492">gedeeltelik</translation>
 <translation id="1052916631016577720">Itemskandering</translation>
 <translation id="1056775291175587022">Geen netwerke nie</translation>
@@ -136,6 +137,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1447907279406111651">Nou ⋅ Eindig om <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Jou toestel se warmkolle</translation>
 <translation id="1455242230282523554">Wys taalinstellings</translation>
+<translation id="1459693405370120464">Weer</translation>
 <translation id="1460620680449458626">Volume is gedemp.</translation>
 <translation id="14648076227129703">Dit gee kameratoegang vir <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> en alle apps en webwerwe met die kameratoestemming</translation>
 <translation id="1467432559032391204">Links</translation>
@@ -877,6 +879,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="4269883910223712419">Hierdie toestel se administrateur kan</translation>
 <translation id="4274537685965975248">Die kortpadsleutel Ctrl + Alt + afpyl het verander. Om die End-sleutel te gebruik moet jy die <ph name="LAUNCHER_KEY_NAME" />-sleutel + regspyl druk.</translation>
 <translation id="4275283744500212192">Maak vensteruitlegopsies oop</translation>
+<translation id="4275663329226226506">Media</translation>
 <translation id="4279490309300973883">Weerspieëling</translation>
 <translation id="4280601795273309128">Sekuriteitopdaterings het geëindig. Gradeer jou toestel op.</translation>
 <translation id="4283888303416325161">Voer wagwoord in vir meer sekuriteit</translation>
@@ -1161,6 +1164,7 @@ Jy kan ook die kortpadsleutels gebruik. Merk eers die teks en druk dan <ph name=
 <translation id="5253783950165989294">Gekoppel aan 'n toestel genaamd <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% battery</translation>
 <translation id="5258528442992323769">Geen gestoorde lessenaars nie</translation>
 <translation id="5260676007519551770">Lessenaar 4</translation>
+<translation id="5270547718570958938">Google Kalender</translation>
 <translation id="5277869901083657836">Wissel stilusnutsgoed</translation>
 <translation id="5278086053818066789">Skakel ChromeVox aan/af (gesproke terugvoer)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> vereis jou aandag.</translation>
@@ -1259,6 +1263,7 @@ Geen toestelle is gekoppel nie.</translation>
 <translation id="558849140439112033">Sleep om 'n area te kies om vas te vang</translation>
 <translation id="5590609058453685222">Dempdrukkie is aan. Jy sal ingelig word as jy praat terwyl dit gedemp is.</translation>
 <translation id="5592745162308462420">fn</translation>
+<translation id="5593564924968945303">Chrome-blaaier</translation>
 <translation id="5596627076506792578">Meer opsies</translation>
 <translation id="5599242528220103262">Kortpadsleutels is af</translation>
 <translation id="5600415762228455511">Fokus is aan, <ph name="REMAINING_TIME" /> oor, fokus tans op: <ph name="TASK_NAME" /></translation>
@@ -1355,6 +1360,7 @@ Geen toestelle is gekoppel nie.</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5920710855273935292">Mikrofoon is gedemp.</translation>
 <translation id="5928083197428724029">Opdatering word deur <ph name="MANAGER" /> vereis</translation>
+<translation id="5939518447894949180">Stel terug</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> is aan.</translation>
 <translation id="5947494881799873997">Stel terug</translation>
 <translation id="595202126637698455">Prestasie-nasporing geaktiveer</translation>

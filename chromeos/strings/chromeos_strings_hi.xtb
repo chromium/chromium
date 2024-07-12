@@ -84,6 +84,7 @@
 <translation id="1413240736185167732">प्रिंट नहीं हो पाया - फ़िल्टर में कोई गड़बड़ी हुई</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">ऑर्किड</translation>
+<translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">मेरे पास कुंजी का जोड़ा है</translation>
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> नहीं दबाया गया</translation>
 <translation id="1432110487435300883">अनुमानित नतीजा पाने के लिए, <ph name="CATEGORY_TEXT" /> वैल्यू को <ph name="CONVERSION_RATE" /> से विभाजित करें</translation>
@@ -768,8 +769,10 @@
 <translation id="5180712487038406644">एक्सप्रेसिव</translation>
 <translation id="5190187232518914472">अपनी पसंदीदा यादें ताज़ा करें. एल्बम जोड़ने या उनमें बदलाव करने के लिए, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> पर जाएं.</translation>
 <translation id="5212593641110061691">टैबलॉइड</translation>
+<translation id="5220549459260334974"><ph name="PROGRESS_PERCENTAGE" />% डाउनलोड हो गया है</translation>
 <translation id="5222676887888702881">साइन आउट करें</translation>
 <translation id="522307662484862935">ईमेल पता शामिल न करें</translation>
+<translation id="5226879510707344687">ट्रांसक्रिप्ट को एक्सपोर्ट करें</translation>
 <translation id="5227902338748591677">गहरे रंग वाली थीम शेड्यूल करें</translation>
 <translation id="5229344016299762883">फ़ुलस्क्रीन मोड से बाहर निकलें</translation>
 <translation id="5234764350956374838">खारिज करें</translation>
@@ -960,6 +963,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6283581480003247988">नीला और बैंगनी</translation>
 <translation id="6284632978374966585">गहरे रंग वाली थीम चालू करें</translation>
+<translation id="6285260286443238386">रिकॉर्डिंग को एक्सपोर्ट करें</translation>
 <translation id="628726841779494414">प्रिंटर की सेटिंग में जाकर, अपने प्रिंटर मैनेज करें</translation>
 <translation id="6292095526077353682">चार्ज करते समय, स्क्रीन सेवर इतने समय तक दिखाएं</translation>
 <translation id="629550705077076970">कीबोर्ड की रोशनी कम करें</translation>
@@ -994,6 +998,7 @@
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6419454453018688975">सिस्टम की जगह की जानकारी देने वाली सुविधा चालू करें</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">सिग्नल कमज़ोर है (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">खाता सेटिंग पर जाएं</translation>
 <translation id="6462978824459367242">'एपीएन जोड़ें' बटन अब चालू है</translation>
@@ -1464,6 +1469,7 @@
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> का <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918813738569491921">साल्ट रॉक</translation>
 <translation id="8919837981463578619">प्रिंट नहीं हो पाया - ट्रे मौजूद नहीं है</translation>
+<translation id="8924154518905976972">ऑडियो को एक्सपोर्ट करें</translation>
 <translation id="8928727111548978589">प्रिंट नहीं हो पाया - काग़ज़ खत्म हो गया</translation>
 <translation id="8930521118335213258">पीयर</translation>
 <translation id="8930622219860340959">वायरलेस</translation>

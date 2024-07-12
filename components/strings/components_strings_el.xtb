@@ -651,6 +651,7 @@
 <translation id="2168151236314517198">Η εκτύπωση αυτού του περιεχομένου έχει αποκλειστεί από την πολιτική διαχειριστή.</translation>
 <translation id="2170417331417184438">Η κάρτα αποθηκεύτηκε μόνο στη συσκευή</translation>
 <translation id="2172089022819052306">Επισκευή και συντήρηση οχημάτων</translation>
+<translation id="2174875517416416684">Η συναλλαγή σας δεν ολοκληρώθηκε. Δεν πραγματοποιήθηκε καμία ανάληψη χρημάτων από τον λογαριασμό σας.</translation>
 <translation id="2175630235841878061">Τα αρχεία άνω των 100 MB δεν είναι διαθέσιμα για λήψη</translation>
 <translation id="2176974405772725904">Αποθήκευση διεύθυνσης στον λογαριασμό</translation>
 <translation id="2178665390943006934">Κουμπί Ενημέρωση Chrome, ενεργοποιήστε το για να ενημερώσετε το Chrome από τις ρυθμίσεις του Chrome</translation>
@@ -1160,6 +1161,7 @@
 <translation id="3209034400446768650">Η σελίδα ενδέχεται να σας χρεώσει</translation>
 <translation id="3212581601480735796">Η δραστηριότητά σας στο <ph name="HOSTNAME" /> παρακολουθείται</translation>
 <translation id="3215092763954878852">Δεν ήταν δυνατή η χρήση του WebAuthn</translation>
+<translation id="3215311088819828484">Το αποτέλεσμα ενημερώθηκε</translation>
 <translation id="3216313131063488104">Μπλουζ</translation>
 <translation id="3218181027817787318">Σχετική</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Απαιτείται ενημέρωση τώρα}=2{Απαιτείται ενημέρωση έως αύριο}other{Απαιτείται ενημέρωση εντός # ημερών}}</translation>
@@ -3392,6 +3394,7 @@
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> χλστ.)</translation>
 <translation id="7450577240311017924">Κουμπί Διαχείριση συγχρονισμού, ενεργοποιήστε το για να διαχειριστείτε τις πληροφορίες που συγχρονίζετε από τις ρυθμίσεις του Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Να μάθετε περισσότερα<ph name="END_LINK" /> σχετικά με αυτό το πρόβλημα.</translation>
+<translation id="745208957946308667">Παιχνίδι με δεινόσαυρο. Πατήστε το πλήκτρο διαστήματος για να παίξετε</translation>
 <translation id="7454377933424667109">Λογαριασμός cloud</translation>
 <translation id="7455133967321480974">Χρήση καθολικής προεπιλεγμένης ρύθμισης (Αποκλεισμός)</translation>
 <translation id="7455452752247248289">Τεχνολογία επιχειρήσεων</translation>
@@ -4045,6 +4048,7 @@
 <translation id="8676424191133491403">Χωρίς καθυστέρηση</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, απάντηση, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Η φόρτωση της ιστοσελίδας στη διεύθυνση <ph name="PAGE" /> δεν ήταν δυνατή επειδή:</translation>
+<translation id="8682297334444610648">Παιχνίδι με δεινόσαυρο. Πατήστε για να παίξετε</translation>
 <translation id="8686424632716064939">Ασφάλεια υπολογιστών</translation>
 <translation id="8687278439622293018">Η καταχώριση <ph name="ENTRY_VOICEOVER" /> διαγράφηκε</translation>
 <translation id="8687429322371626002">Η διαχείριση της συσκευής και του λογαριασμού γίνεται από τον τομέα <ph name="MANAGER" />.</translation>

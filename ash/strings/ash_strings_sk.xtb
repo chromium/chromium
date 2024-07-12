@@ -13,6 +13,7 @@
 <translation id="1036672894875463507">Som váš Asistent Google, vždy pripravený pomôcť!
 Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1037492556044956303">Pridali ste zariadenie <ph name="DEVICE_NAME" /></translation>
+<translation id="1038106730571050514">Zobraziť návrhy</translation>
 <translation id="1047017786576569492">čiastočná</translation>
 <translation id="1052916631016577720">Naskenovanie položky</translation>
 <translation id="1056775291175587022">Žiadne siete</translation>
@@ -136,6 +137,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1447907279406111651">Teraz · Končí sa <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Hotspoty vášho zariadenia</translation>
 <translation id="1455242230282523554">Zobraziť nastavenia jazyka</translation>
+<translation id="1459693405370120464">Počasie</translation>
 <translation id="1460620680449458626">Zvuk je vypnutý.</translation>
 <translation id="14648076227129703">Týmto povolíte prístup ku kamere aplikáciám <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> a všetkým aplikáciám a webom s povolením používať kameru</translation>
 <translation id="1467432559032391204">Doľava</translation>
@@ -876,6 +878,7 @@ Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translat
 <translation id="4269883910223712419">Správca tohto zariadenia môže:</translation>
 <translation id="4274537685965975248">Klávesová skratka Ctrl + Alt + šípka nadol bola zmenená. Ak chcete použiť kláves End, stlačte klávesy <ph name="LAUNCHER_KEY_NAME" /> + šípka doprava.</translation>
 <translation id="4275283744500212192">Otvoriť možnosti rozloženia okna</translation>
+<translation id="4275663329226226506">Médiá</translation>
 <translation id="4279490309300973883">Zrkadlenie</translation>
 <translation id="4280601795273309128">Bezpečnostné aktualizácie už nie sú k dispozícii. Inovujte zariadenie.</translation>
 <translation id="4283888303416325161">Zadajte heslo, zvýšite tým zabezpečenie</translation>
@@ -1160,6 +1163,7 @@ Môžete použiť aj klávesovú skratku. Najprv zvýraznite text, potom stlačt
 <translation id="5253783950165989294">Pripojené k zariadeniu <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" /> % batéria</translation>
 <translation id="5258528442992323769">Žiadne uložené plochy</translation>
 <translation id="5260676007519551770">4. plocha</translation>
+<translation id="5270547718570958938">Kalendár Google</translation>
 <translation id="5277869901083657836">Prepnúť nástroje pre dotykové pero</translation>
 <translation id="5278086053818066789">Zapnutie alebo vypnutie čítačky ChromeVox (hovorená spätná väzba)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> vyžaduje vašu pozornosť.</translation>
@@ -1258,6 +1262,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="558849140439112033">Presunutím vyberte oblasť, ktorú chcete nasnímať</translation>
 <translation id="5590609058453685222">Upozornenia na vypnutý mikrofón je zapnuté. Ak budete hovoriť s vypnutým zvukom, dostanete upozornenie.</translation>
 <translation id="5592745162308462420">Fn</translation>
+<translation id="5593564924968945303">Prehliadač Chrome</translation>
 <translation id="5596627076506792578">Ďalšie možnosti</translation>
 <translation id="5599242528220103262">Klávesová skratka je vypnutá</translation>
 <translation id="5600415762228455511">Zameranie je zapnuté, zostávajúci čas je <ph name="REMAINING_TIME" />, zaostrené na <ph name="TASK_NAME" /></translation>
@@ -1354,6 +1359,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="5916664084637901428">Zapnuté</translation>
 <translation id="5920710855273935292">Mikrofón je vypnutý.</translation>
 <translation id="5928083197428724029"><ph name="MANAGER" /> vyžaduje aktualizáciu</translation>
+<translation id="5939518447894949180">Resetovať</translation>
 <translation id="5946788582095584774">Funkcia <ph name="FEATURE_NAME" /> je zapnutá.</translation>
 <translation id="5947494881799873997">Vrátiť</translation>
 <translation id="595202126637698455">Sledovanie výkonnosti je povolené</translation>

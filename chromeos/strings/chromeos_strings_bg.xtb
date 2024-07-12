@@ -84,6 +84,7 @@
 <translation id="1413240736185167732">Неуспешно – проблем с филтъра</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">Орхидея</translation>
+<translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">Имам двойка ключове</translation>
 <translation id="1423591390236870726">Клавишът <ph name="KEY_NAME" /> не е натиснат</translation>
 <translation id="1432110487435300883">За приблизителен резултат разделете стойността за <ph name="CATEGORY_TEXT" /> на <ph name="CONVERSION_RATE" /></translation>
@@ -771,6 +772,7 @@
 <translation id="5220549459260334974">Изтеглено: <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="5222676887888702881">Изход</translation>
 <translation id="522307662484862935">Без имейл адрес</translation>
+<translation id="5226879510707344687">Експортиране на преписа</translation>
 <translation id="5227902338748591677">График за тъмната тема</translation>
 <translation id="5229344016299762883">Изход от режима на цял екран</translation>
 <translation id="5234764350956374838">Отхвърляне</translation>
@@ -961,6 +963,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6283581480003247988">синьо и лилаво</translation>
 <translation id="6284632978374966585">Включване на тъмната тема</translation>
+<translation id="6285260286443238386">Експортиране на записа</translation>
 <translation id="628726841779494414">Управлявайте принтерите си от съответните настройки</translation>
 <translation id="6292095526077353682">При зареждане да се показва скрийнсейвър за</translation>
 <translation id="629550705077076970">затъмняване на клавиатурата</translation>
@@ -995,6 +998,7 @@
 <translation id="6417265370957905582">Google Асистент</translation>
 <translation id="6419454453018688975">Включване на достъпа до местоположението на ниво система</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">Слаба (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Към настройките на профила</translation>
 <translation id="6462978824459367242">Бутонът за добавяне на име на точката за достъп (APN) вече е активиран</translation>
@@ -1465,6 +1469,7 @@
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> на <ph name="GIVEN_NAME" /></translation>
 <translation id="8918813738569491921">каменна сол</translation>
 <translation id="8919837981463578619">Неуспешно – липсваща тава</translation>
+<translation id="8924154518905976972">Експортиране на аудиофайла</translation>
 <translation id="8928727111548978589">Неуспешно – няма хартия</translation>
 <translation id="8930521118335213258">Подобни свойства</translation>
 <translation id="8930622219860340959">Безжична</translation>

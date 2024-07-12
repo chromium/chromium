@@ -84,6 +84,7 @@
 <translation id="1413240736185167732">Nereușită – Filtru defect</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">orhidee</translation>
+<translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">Am o pereche de chei</translation>
 <translation id="1423591390236870726">Tasta <ph name="KEY_NAME" /> nu a fost apăsată</translation>
 <translation id="1432110487435300883">Pentru un rezultat aproximativ, împarte valoarea pentru <ph name="CATEGORY_TEXT" /> la <ph name="CONVERSION_RATE" /></translation>
@@ -771,6 +772,7 @@
 <translation id="5220549459260334974"><ph name="PROGRESS_PERCENTAGE" /> % descărcat</translation>
 <translation id="5222676887888702881">Deconectează-te</translation>
 <translation id="522307662484862935">Nu include adresa de e-mail</translation>
+<translation id="5226879510707344687">Exportă transcriere</translation>
 <translation id="5227902338748591677">Programul temei întunecate</translation>
 <translation id="5229344016299762883">Ieși din ecranul complet</translation>
 <translation id="5234764350956374838">Închide</translation>
@@ -961,6 +963,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6283581480003247988">albastru și violet</translation>
 <translation id="6284632978374966585">Activează tema întunecată</translation>
+<translation id="6285260286443238386">Exportă înregistrarea</translation>
 <translation id="628726841779494414">Gestionează imprimantele din setările pentru imprimantă</translation>
 <translation id="6292095526077353682">În timpul încărcării, afișează screensaverul</translation>
 <translation id="629550705077076970">reducerea luminozității tastaturii</translation>
@@ -995,6 +998,7 @@
 <translation id="6417265370957905582">Asistent Google</translation>
 <translation id="6419454453018688975">Activează accesul la locația sistemului</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">Slabă (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Accesează setările contului</translation>
 <translation id="6462978824459367242">Butonul Adaugă un APN este activat</translation>
@@ -1465,6 +1469,7 @@ Poți dezactiva oricând această opțiune în setări.</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> utilizatorului <ph name="GIVEN_NAME" /></translation>
 <translation id="8918813738569491921">bloc de sare gemă</translation>
 <translation id="8919837981463578619">Nereușită – Tavă lipsă</translation>
+<translation id="8924154518905976972">Exportă conținutul audio</translation>
 <translation id="8928727111548978589">Nereușită – Hârtie epuizată</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Wireless</translation>

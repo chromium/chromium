@@ -13,6 +13,7 @@
 <translation id="1036672894875463507">Ako ang iyong Google Assistant, narito ako para tulungan ka sa buong araw mo!
 Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1037492556044956303">Idinagdag ang <ph name="DEVICE_NAME" /></translation>
+<translation id="1038106730571050514">Ipakita ang mga suhestyon</translation>
 <translation id="1047017786576569492">hindi buo</translation>
 <translation id="1052916631016577720">Pag-scan ng Item</translation>
 <translation id="1056775291175587022">Walang network</translation>
@@ -136,6 +137,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1447907279406111651">Ngayon · Matatapos nang <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Mga hotspot ng iyong device</translation>
 <translation id="1455242230282523554">Ipakita ang mga setting ng wika</translation>
+<translation id="1459693405370120464">Lagay ng Panahon</translation>
 <translation id="1460620680449458626">Naka-mute ang volume.</translation>
 <translation id="14648076227129703">Pinapayagan nito ang access sa camera para sa <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, at lahat ng app at website na may pahintulot sa camera</translation>
 <translation id="1467432559032391204">Kaliwa</translation>
@@ -876,6 +878,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4269883910223712419">May kakayahan ang admin ng device na ito na:</translation>
 <translation id="4274537685965975248">Nagbago ang keyboard shortcut na Ctrl + Alt + Pababang Arrow. Para magamit ang End key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + Pakanang Arrow.</translation>
 <translation id="4275283744500212192">Buksan ang mga opsyon sa layout ng window</translation>
+<translation id="4275663329226226506">Media</translation>
 <translation id="4279490309300973883">Nagmi-mirror</translation>
 <translation id="4280601795273309128">Natapos na ang mga update sa seguridad. I-upgrade ang iyong device.</translation>
 <translation id="4283888303416325161">Ilagay ang password para sa higit pang seguridad</translation>
@@ -1160,6 +1163,7 @@ Puwede mo ring gamitin ang keyboard shortcut. Una, i-highlight ang text, at pagk
 <translation id="5253783950165989294">Nakakonekta sa isang device na may pangalang <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% baterya</translation>
 <translation id="5258528442992323769">Walang naka-save na desk</translation>
 <translation id="5260676007519551770">Desk 4</translation>
+<translation id="5270547718570958938">Google Calendar</translation>
 <translation id="5277869901083657836">I-toggle ang mga stylus tool</translation>
 <translation id="5278086053818066789">I-on/i-off ang ChromeVox (pasalitang feedback)</translation>
 <translation id="5283099933536931082">Hinihiling ng <ph name="APP_ITEM_TITLE" /> ang iyong atensyon.</translation>
@@ -1258,6 +1262,7 @@ Walang nakakonektang device.</translation>
 <translation id="558849140439112033">Mag-drag para pumili ng bahaging ika-capture</translation>
 <translation id="5590609058453685222">Naka-on ang nudge kapag naka-mute. Aabisuhan ka kung nagsasalita ka habang naka-mute.</translation>
 <translation id="5592745162308462420">fn</translation>
+<translation id="5593564924968945303">Chrome na browser</translation>
 <translation id="5596627076506792578">Higit pang opsyon</translation>
 <translation id="5599242528220103262">Naka-off ang keyboard shortcut</translation>
 <translation id="5600415762228455511">Naka-on ang Pag-focus, may <ph name="REMAINING_TIME" /> pa, nagfo-focus sa: <ph name="TASK_NAME" /></translation>
@@ -1354,6 +1359,7 @@ Walang nakakonektang device.</translation>
 <translation id="5916664084637901428">Naka-on</translation>
 <translation id="5920710855273935292">Naka-mute ang mikropono.</translation>
 <translation id="5928083197428724029">Nire-require ng <ph name="MANAGER" /> ang pag-update</translation>
+<translation id="5939518447894949180">I-reset</translation>
 <translation id="5946788582095584774">Naka-on ang <ph name="FEATURE_NAME" />.</translation>
 <translation id="5947494881799873997">I-revert</translation>
 <translation id="595202126637698455">Naka-enable ang pagte-trace sa pagganap</translation>

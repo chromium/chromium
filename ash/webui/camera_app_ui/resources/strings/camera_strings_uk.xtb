@@ -51,6 +51,7 @@
 <translation id="2879583609344924966">Камеру <ph name="CAMERA" /> підключено.</translation>
 <translation id="3067436040345934772">Перемістити вправо</translation>
 <translation id="3081586908890909590">Перейти в режим запису відео</translation>
+<translation id="3091480460059548935">Виявлення тексту в режимі попереднього перегляду</translation>
 <translation id="313467653172006084">30 кадрів/с</translation>
 <translation id="3157038259444425153">Тепер ви можете безпосередньо копіювати текст на фото</translation>
 <translation id="3158534262962737808">Підключитися до мережі "<ph name="WIFINAME" />"</translation>
@@ -141,6 +142,7 @@
 <translation id="7337660886763914220">Помилки файлової системи.</translation>
 <translation id="7450541714075000668">Текст скопійовано</translation>
 <translation id="7488619942230388918">Записати відео у форматі GIF</translation>
+<translation id="7527714402753141485">Показувати текст і кнопку копіювання</translation>
 <translation id="7557677699350329807">Перемкнутися на наступну камеру</translation>
 <translation id="7607002721634913082">Призупинено</translation>
 <translation id="7608223098072244877">4 на 4</translation>

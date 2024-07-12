@@ -13,6 +13,7 @@
 <translation id="1036672894875463507">Je suis votre Assistant Google, je suis là pour vous aider durant votre journée!
 Voici quelques exemples de choses que vous pouvez essayer pour commencer.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ajouté</translation>
+<translation id="1038106730571050514">Afficher les suggestions</translation>
 <translation id="1047017786576569492">Partielle</translation>
 <translation id="1052916631016577720">Numériser les éléments</translation>
 <translation id="1056775291175587022">Aucun réseau</translation>
@@ -136,6 +137,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1447907279406111651">Maintenant ⋅ Se termine à <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Points d'accès sans fil de votre appareil</translation>
 <translation id="1455242230282523554">Afficher les paramètres de langue</translation>
+<translation id="1459693405370120464">Météo</translation>
 <translation id="1460620680449458626">Le volume est désactivé.</translation>
 <translation id="14648076227129703">Cela donne à l'appareil photo l'accès à <ph name="APP1_NAME" />, à <ph name="APP2_NAME" /> et à toutes les applications et tous les sites Web disposant de l'autorisation pour l'appareil photo</translation>
 <translation id="1467432559032391204">À gauche</translation>
@@ -875,6 +877,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4269883910223712419">L'administrateur de cet appareil peut :</translation>
 <translation id="4274537685965975248">Le raccourci-clavier Ctrl+Alt+flèche vers le bas a changé. Pour utiliser la touche Fin, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" />+flèche vers la droite.</translation>
 <translation id="4275283744500212192">Ouvrir les options de mise en page des fenêtres</translation>
+<translation id="4275663329226226506">Médias</translation>
 <translation id="4279490309300973883">Mise en miroir</translation>
 <translation id="4280601795273309128">Les mises à jour de sécurité sont terminées. Améliorer votre appareil.</translation>
 <translation id="4283888303416325161">Entrez le mot de passe pour plus de sécurité</translation>
@@ -1159,6 +1162,7 @@ Vous pouvez également utiliser le raccourci-clavier. Tout d'abord, mettez le te
 <translation id="5253783950165989294">Connecté à un appareil nommé <ph name="DEVICE_NAME" />, dont le niveau de pile est à<ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="5258528442992323769">Aucun bureau enregistré</translation>
 <translation id="5260676007519551770">Bureau 4</translation>
+<translation id="5270547718570958938">Google Agenda</translation>
 <translation id="5277869901083657836">Basculer les outils du stylet</translation>
 <translation id="5278086053818066789">Activer/désactiver ChromeVox (rétroaction vocale)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> demande votre attention.</translation>
@@ -1257,6 +1261,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="558849140439112033">Faites glisser le curseur pour sélectionner une région à capturer</translation>
 <translation id="5590609058453685222">Le coup de coude de détection de la voix en sourdine est activé. Vous serez averti si vous parlez en sourdine.</translation>
 <translation id="5592745162308462420">fn</translation>
+<translation id="5593564924968945303">Navigateur Chrome</translation>
 <translation id="5596627076506792578">Autres options</translation>
 <translation id="5599242528220103262">Le raccourci-clavier est désactivé</translation>
 <translation id="5600415762228455511">Le mode Sans distractions est activé; il reste <ph name="REMAINING_TIME" />. Vous vous concentrer sur : <ph name="TASK_NAME" /></translation>
@@ -1353,6 +1358,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="5916664084637901428">Activé</translation>
 <translation id="5920710855273935292">Le microphone est désactivé.</translation>
 <translation id="5928083197428724029">Mise à jour requise par <ph name="MANAGER" /></translation>
+<translation id="5939518447894949180">Recommencer</translation>
 <translation id="5946788582095584774">La fonctionnalité <ph name="FEATURE_NAME" /> est activée.</translation>
 <translation id="5947494881799873997">Rétablir</translation>
 <translation id="595202126637698455">Suivi des performances activé</translation>

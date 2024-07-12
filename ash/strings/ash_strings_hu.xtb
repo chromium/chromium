@@ -13,6 +13,7 @@
 <translation id="1036672894875463507">Én vagyok az Ön Google Segédje, egész nap állok szolgálatára!
 Íme, kezdésként néhány kipróbálható lehetőség.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> hozzáadva</translation>
+<translation id="1038106730571050514">Javaslatok megjelenítése</translation>
 <translation id="1047017786576569492">részleges</translation>
 <translation id="1052916631016577720">Elemek keresése</translation>
 <translation id="1056775291175587022">Nincs hálózat</translation>
@@ -136,6 +137,7 @@
 <translation id="1447907279406111651">Most ⋅ Ekkor ér véget: <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Eszközhotspotok</translation>
 <translation id="1455242230282523554">Nyelvi beállítások megjelenítése</translation>
+<translation id="1459693405370120464">Időjárás</translation>
 <translation id="1460620680449458626">Hang némítva.</translation>
 <translation id="14648076227129703">Ezzel engedélyezi a kamerához való hozzáférést a(z) <ph name="APP1_NAME" />, a(z) <ph name="APP2_NAME" />, valamint a kamerahasználati engedéllyel rendelkező összes alkalmazás és webhely számára</translation>
 <translation id="1467432559032391204">Balra</translation>
@@ -877,6 +879,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4269883910223712419">Az eszköz rendszergazdája a következőket végezheti el:</translation>
 <translation id="4274537685965975248">A Ctrl + Alt + Lefelé nyíl billentyűparancs módosult. Az End billentyű használatához nyomja le a következő billentyűparancsot: <ph name="LAUNCHER_KEY_NAME" /> + Jobbra nyíl.</translation>
 <translation id="4275283744500212192">Ablakelrendezési beállítások megnyitása</translation>
+<translation id="4275663329226226506">Média</translation>
 <translation id="4279490309300973883">Tükrözés</translation>
 <translation id="4280601795273309128">A továbbiakban már nem érkeznek biztonsági frissítések. Váltson újabb eszközre.</translation>
 <translation id="4283888303416325161">A nagyobb biztonság érdekében adja meg a jelszót</translation>
@@ -1161,6 +1164,7 @@ Használhatja a billentyűparancsot is. Először jelölje ki a szöveget, majd 
 <translation id="5253783950165989294">Csatlakoztatva van a(z) <ph name="DEVICE_NAME" /> nevű eszközhöz, akkumulátor töltöttségi szintje: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">Nincsenek mentett asztalok</translation>
 <translation id="5260676007519551770">4. asztal</translation>
+<translation id="5270547718570958938">Google Naptár</translation>
 <translation id="5277869901083657836">Érintőceruza-eszközök ki- és bekapcsolása</translation>
 <translation id="5278086053818066789">A ChromeVox (hangos visszajelzés) be- vagy kikapcsolása</translation>
 <translation id="5283099933536931082">A(z) <ph name="APP_ITEM_TITLE" /> alkalmazás a figyelmét igényli.</translation>
@@ -1259,6 +1263,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="558849140439112033">Húzással jelölje ki a felvenni kívánt területet</translation>
 <translation id="5590609058453685222">A némításra emlékeztetés funkció be van kapcsolva. Értesítést kap, ha némított állapotban beszél.</translation>
 <translation id="5592745162308462420">fn</translation>
+<translation id="5593564924968945303">Chrome böngésző</translation>
 <translation id="5596627076506792578">További lehetőségek</translation>
 <translation id="5599242528220103262">A billentyűparancs ki van kapcsolva</translation>
 <translation id="5600415762228455511">Összpontosítási üzemmód bekapcsolva, <ph name="REMAINING_TIME" /> van hátra, összpontosítás a következő feladatra: <ph name="TASK_NAME" /></translation>
@@ -1355,6 +1360,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="5916664084637901428">Be</translation>
 <translation id="5920710855273935292">A mikrofon le van némítva.</translation>
 <translation id="5928083197428724029">A(z) <ph name="MANAGER" /> használatához frissítés szükséges</translation>
+<translation id="5939518447894949180">Visszaállítás</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> bekapcsolva.</translation>
 <translation id="5947494881799873997">Visszavonás</translation>
 <translation id="595202126637698455">Teljesítménykövetés engedélyezve</translation>

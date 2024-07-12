@@ -51,6 +51,7 @@
 <translation id="2879583609344924966"><ph name="CAMERA" /> 카메라가 연결되었습니다.</translation>
 <translation id="3067436040345934772">오른쪽으로 화면 이동</translation>
 <translation id="3081586908890909590">동영상 녹화 모드로 전환</translation>
+<translation id="3091480460059548935">미리보기에서 텍스트 감지</translation>
 <translation id="313467653172006084">30FPS</translation>
 <translation id="3157038259444425153">이제 사진의 텍스트를 직접 복사할 수 있습니다.</translation>
 <translation id="3158534262962737808">"<ph name="WIFINAME" />"에 참여</translation>
@@ -141,6 +142,7 @@
 <translation id="7337660886763914220">파일 시스템 오류가 발생했습니다.</translation>
 <translation id="7450541714075000668">텍스트 복사됨</translation>
 <translation id="7488619942230388918">GIF 동영상 녹화</translation>
+<translation id="7527714402753141485">텍스트와 복사 버튼 표시</translation>
 <translation id="7557677699350329807">다음 카메라로 전환</translation>
 <translation id="7607002721634913082">일시중지됨</translation>
 <translation id="7608223098072244877">4x4</translation>

@@ -13,6 +13,7 @@
 <translation id="1036672894875463507">நான் உங்கள் Google Assistant, உங்களுக்காக நாள் முழுவதும் உதவக் காத்திருக்கிறேன்!
 தொடங்குவதற்கு இங்குள்ள சிலவற்றை முயற்சிக்கலாம்.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> சேர்க்கப்பட்டது</translation>
+<translation id="1038106730571050514">பரிந்துரைகளைக் காட்டும்</translation>
 <translation id="1047017786576569492">பகுதியளவு</translation>
 <translation id="1052916631016577720">ஸ்கேன் செய்</translation>
 <translation id="1056775291175587022">நெட்வொர்க்குகள் இல்லை</translation>
@@ -136,6 +137,7 @@
 <translation id="1447907279406111651">இப்போதில் இருந்து <ph name="END_TIME" /> வரை</translation>
 <translation id="1448963928642384376">சாதனத்தின் ஹாட்ஸ்பாட்கள்</translation>
 <translation id="1455242230282523554">மொழி அமைப்புகளைக் காட்டும்</translation>
+<translation id="1459693405370120464">வானிலை</translation>
 <translation id="1460620680449458626">ஒலி முடக்கப்பட்டுள்ளது.</translation>
 <translation id="14648076227129703">கேமராவைப் பயன்படுத்த அனுமதி கேட்கும் <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ஆப்ஸுக்கும், ஆப்ஸ் மற்றும் இணையதளங்கள் அனைத்திற்கும் கேமராவிற்கான அணுகலை இது வழங்கும்</translation>
 <translation id="1467432559032391204">இடது</translation>
@@ -876,6 +878,7 @@
 <translation id="4269883910223712419">இந்தச் சாதனத்தின் நிர்வாகி இவற்றைச் செய்ய முடியும்:</translation>
 <translation id="4274537685965975248">இந்தக் கீபோர்டு ஷார்ட்கட் மாற்றப்பட்டுள்ளது: Ctrl + Alt + கீழ்நோக்கிய அம்புக்குறி. End பட்டனைப் பயன்படுத்த, <ph name="LAUNCHER_KEY_NAME" /> பட்டன் + வலது அம்புக்குறி பட்டனை அழுத்தவும்.</translation>
 <translation id="4275283744500212192">சாளரத் தளவமைப்பு விருப்பங்களைத் திறக்கும்</translation>
+<translation id="4275663329226226506">ஊடகம்</translation>
 <translation id="4279490309300973883">பிரதிபலிக்கிறது</translation>
 <translation id="4280601795273309128">பாதுகாப்புப் புதுப்பிப்புகள் முடிந்துவிட்டன. சாதனத்தை மேம்படுத்தவும்.</translation>
 <translation id="4283888303416325161">கூடுதல் பாதுகாப்பிற்கு, கடவுச்சொல்லை டைப் செய்யுங்கள்</translation>
@@ -1160,6 +1163,7 @@
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> என்ற சாதனத்துடன் இணைக்கப்பட்டுள்ளது. பேட்டரி: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">சேமிக்கப்பட்ட டெஸ்க்குகள் எதுவுமில்லை</translation>
 <translation id="5260676007519551770">மேசை 4</translation>
+<translation id="5270547718570958938">Google Calendar</translation>
 <translation id="5277869901083657836">ஸ்டைலஸ் கருவிகளைக் காட்டு/மறை</translation>
 <translation id="5278086053818066789">ChromeVoxஸை (பேச்சுவடிவ விளக்கம்) இயக்கு/முடக்கு</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> ஆப்ஸில் புதிய அறிவிப்புகள் உள்ளன.</translation>
@@ -1258,6 +1262,7 @@
 <translation id="558849140439112033">படமெடுப்பதற்கான பகுதியைத் தேர்ந்தெடுக்க இழுக்கவும்</translation>
 <translation id="5590609058453685222">மியூட் அறிவிப்பு இயக்கப்பட்டது. ஒலியடக்கப்பட்டிருக்கும்போது நீங்கள் பேசினால் அது குறித்த அறிவிப்பு காட்டப்படும்.</translation>
 <translation id="5592745162308462420">fn</translation>
+<translation id="5593564924968945303">Chrome உலாவியில்</translation>
 <translation id="5596627076506792578">கூடுதல் விருப்பங்கள்</translation>
 <translation id="5599242528220103262">கீபோர்டு ஷார்ட்கட் முடக்கப்பட்டுள்ளது</translation>
 <translation id="5600415762228455511">ஃபோகஸ் பயன்முறை இயக்கப்பட்டுள்ளது, <ph name="REMAINING_TIME" /> மீதமுள்ளது, இந்தப் பணியில் கவனம் செலுத்துகிறீர்கள்: <ph name="TASK_NAME" /></translation>
@@ -1354,6 +1359,7 @@
 <translation id="5916664084637901428">இயக்கு</translation>
 <translation id="5920710855273935292">மைக் ஒலியடக்கப்பட்டுள்ளது.</translation>
 <translation id="5928083197428724029"><ph name="MANAGER" />க்குப் புதுப்பிப்பு தேவை</translation>
+<translation id="5939518447894949180">மீட்டமை</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> இயக்கப்பட்டுள்ளது.</translation>
 <translation id="5947494881799873997">மாற்றியமை</translation>
 <translation id="595202126637698455">செயல்திறனைத் தடமறிதல் இயக்கப்பட்டுள்ளது</translation>

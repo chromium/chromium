@@ -2980,7 +2980,6 @@
 <translation id="3132277757485842847">Ձեր հեռախոսի հետ կապն ընդհատվել է։ Համոզվեք, որ այն մոտակայքում է, ապակողպված է, և որ Bluetooth-ն ու Wi-Fi-ը միացված են։</translation>
 <translation id="3132896062549112541">Կանոն</translation>
 <translation id="3132996321662585180">Թարմացնել ամեն օր</translation>
-<translation id="3133184011320864289">Միացրեք համաժամացումը, որպեսզի թույլատրեք Chrome-ին առաջարկել ներդիրների խմբեր և դասավորված պահել ձեր ներդիրները</translation>
 <translation id="3134393957315651797">Ընտրեք «<ph name="EXPERIMENT_NAME" />» փորձարկման կարգավիճակը։ Փորձարկման նկարագրությունը՝ <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3137969841538672700">Քաշեք որոնելու համար</translation>
 <translation id="3139925690611372679">Կանխադրված դեղին ավատար</translation>
@@ -9564,7 +9563,6 @@
 <translation id="8052218774860457016">Դիտարկիչի համաժամացման կառավարում</translation>
 <translation id="8053278772142718589">PKCS #12 ֆայլեր</translation>
 <translation id="8053390638574070785">Reload This Page</translation>
-<translation id="8053629544194355894">Միացնել համաժամացումը և Chrome-ին թույլատրել ներդիրների խմբեր առաջարկել</translation>
 <translation id="8054500940978949009">Թույլատրված է։ Միացրեք <ph name="LINK_BEGIN" />համակարգի խոսափողի հասանելիությունը<ph name="LINK_END" />։</translation>
 <translation id="8054517699425078995">Այս ֆայլը կարող է վնասել ձեր համակարգիչը: Ներբեռնե՞լ <ph name="FILE_NAME" />-ը:</translation>
 <translation id="8054563304616131773">Մուտքագրեք վավեր էլ․ հասցե</translation>
@@ -9903,7 +9901,6 @@
 <translation id="8293206222192510085">Էջանիշի հավելում</translation>
 <translation id="8294431847097064396">Աղբյուր</translation>
 <translation id="8294476140219241086">Ներդիրների դասավորում</translation>
-<translation id="8294895455164415895">Բացել կարգավորումները և Chrome-ին թույլատրել ներդիների խմբեր առաջարկել</translation>
 <translation id="8295449579927246485">Ակնթարթային թարգմանություն</translation>
 <translation id="8295450130892483256">Տեղադրեք Microsoft 365</translation>
 <translation id="8297292446125062288">HID կարգավորումներ</translation>
@@ -10067,7 +10064,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">լիաէկրան</translation>
 <translation id="8412136526970428322">Տրված թույլտվություններ՝ <ph name="PERMISSION" /> ու ևս <ph name="COUNT" /></translation>
-<translation id="8412682423093430245">Միացրեք պատմության համաժամացումը Կարգավորումներում, որպեսզի թույլատրեք Chrome-ին առաջարկել ներդիրների խմբեր և դասավորված պահել ձեր ներդիրները</translation>
 <translation id="8413795581997394485">Պաշտպանում է վտանգավոր կայքերից, ընդլայնումներից և ներբեռնումներից։ Երբ այցելում եք որևէ կայք, Chrome-ն ուղարկում է URL-ի քողարկված մասը Google-ին գաղտնիության սերվերի միջոցով, որը թաքցնում է ձեր IP հասցեն։ Եթե կայքը կասկածելի է թվում, Chrome-ը նաև ուղարկում է էջի բովանդակության ամբողջական URL-ները և հատվածները։</translation>
 <translation id="8413956290606243087">Ակտիվացնե՞լ ChromeVox-ը՝ էկրանի ներկառուցված ընթերցիչը ChromeOS-ի համար։</translation>
 <translation id="8414249071344507766">Հիշողությունները երկու օրով թաքցված են</translation>
@@ -10100,7 +10096,6 @@
 <translation id="843173223122814223">Ստեղծեք ֆոներ արհեստական բանականության օգնությամբ</translation>
 <translation id="8433186206711564395">Ցանցային կարգավորումներ</translation>
 <translation id="8434480141477525001">NaCl-ի վրիպազերծման միացք</translation>
-<translation id="8436054240208929121">Մուտք գործեք և միացրեք համաժամացումը, որպեսզի թույլատրեք Chrome-ին առաջարկել ներդիների խմբեր և դասավորված պահել ձեր ներդիրները</translation>
 <translation id="8437209419043462667">ԱՄՆ</translation>
 <translation id="8438566539970814960">Լավացնել որոնումն ու էջերի դիտումը</translation>
 <translation id="8439506636278576865">Առաջարկել թարգմանել էջերն այս լեզվով</translation>

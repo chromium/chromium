@@ -51,6 +51,7 @@
 <translation id="2879583609344924966">A <ph name="CAMERA" /> foi conectada.</translation>
 <translation id="3067436040345934772">Movimentar para a direita</translation>
 <translation id="3081586908890909590">Mudar para gravar vídeo</translation>
+<translation id="3091480460059548935">Detecção de texto na prévia</translation>
 <translation id="313467653172006084">30 QPS</translation>
 <translation id="3157038259444425153">Agora você pode copiar o texto da sua foto diretamente</translation>
 <translation id="3158534262962737808">Conectar-se a "<ph name="WIFINAME" />"</translation>
@@ -141,6 +142,7 @@ Caso seu feedback seja sobre a qualidade da imagem ou do vídeo, adicione uma fo
 <translation id="7337660886763914220">Erros no sistema de arquivos.</translation>
 <translation id="7450541714075000668">Texto copiado</translation>
 <translation id="7488619942230388918">Gravar um GIF</translation>
+<translation id="7527714402753141485">Mostra o texto e o botão para copiar</translation>
 <translation id="7557677699350329807">Mudar para a próxima câmera</translation>
 <translation id="7607002721634913082">Pausado</translation>
 <translation id="7608223098072244877">4 por 4</translation>

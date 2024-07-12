@@ -652,6 +652,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2168151236314517198">A impressão desse conteúdo está bloqueada pela política do administrador</translation>
 <translation id="2170417331417184438">Cartão salvo apenas no dispositivo</translation>
 <translation id="2172089022819052306">Reparo e manutenção de veículos</translation>
+<translation id="2174875517416416684">A transação não foi concluída. Nenhum saldo foi retirado da sua conta.</translation>
 <translation id="2175630235841878061">Arquivos com mais de 100 MB não estão disponíveis para download</translation>
 <translation id="2176974405772725904">Salvar endereço na conta</translation>
 <translation id="2178665390943006934">Botão "Atualizar o Chrome". Ative para atualizar o Chrome pelas configurações dele.</translation>
@@ -1161,6 +1162,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3209034400446768650">Esta página pode emitir cobranças em dinheiro</translation>
 <translation id="3212581601480735796">Sua atividade em <ph name="HOSTNAME" /> está sendo monitorada</translation>
 <translation id="3215092763954878852">Não foi possível usar WebAuthn</translation>
+<translation id="3215311088819828484">Resultado atualizado</translation>
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relativo</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{A atualização precisa ser feita agora}=2{A atualização precisa ser feita até amanhã}one{A atualização precisa ser feita em # dia}other{A atualização precisa ser feita em # dias}}</translation>
@@ -3392,6 +3394,7 @@ Mais detalhes:
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Botão "Gerenciar sincronização". Ative para gerenciar quais informações são sincronizadas nas configurações do Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Saber mais<ph name="END_LINK" /> sobre esse problema.</translation>
+<translation id="745208957946308667">Jogo do dinossauro. Pressione a barra de espaço para jogar.</translation>
 <translation id="7454377933424667109">Conta do Google Cloud</translation>
 <translation id="7455133967321480974">Usar padrão global (Bloquear)</translation>
 <translation id="7455452752247248289">Tecnologia empresarial</translation>
@@ -4045,6 +4048,7 @@ Mais detalhes:
 <translation id="8676424191133491403">Sem atraso</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, resposta, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Não foi possível carregar a página da Web no endereço <ph name="PAGE" /> porque:</translation>
+<translation id="8682297334444610648">Jogo do dinossauro. Toque para jogar.</translation>
 <translation id="8686424632716064939">Segurança de computadores</translation>
 <translation id="8687278439622293018">A entrada <ph name="ENTRY_VOICEOVER" /> foi excluída</translation>
 <translation id="8687429322371626002">Seu dispositivo e sua conta são gerenciados por <ph name="MANAGER" />.</translation>

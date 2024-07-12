@@ -13,6 +13,7 @@
 <translation id="1036672894875463507">Ngingumsizi wakho we-Google, ngilapha ukukusiza usuku lonke!
 Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> kungeziwe</translation>
+<translation id="1038106730571050514">Bonisa iziphakamiso</translation>
 <translation id="1047017786576569492">okuyingxenye</translation>
 <translation id="1052916631016577720">Iskeni sento</translation>
 <translation id="1056775291175587022">Akuna-network</translation>
@@ -136,6 +137,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1447907279406111651">Manje ⋅ Uphela ngo-<ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Ama-hotspot wedivayisi yakho</translation>
 <translation id="1455242230282523554">Bonisa izilungiselelo zolimi</translation>
+<translation id="1459693405370120464">Isimo sezulu</translation>
 <translation id="1460620680449458626">Ivolumu ithulisiwe.</translation>
 <translation id="14648076227129703">Lokhu kuvumela ukufinyelela kwekhamera ku-<ph name="APP1_NAME" />, <ph name="APP2_NAME" />, nakuwo wonke ama-app namawebhusayithi anemvume yekhamera</translation>
 <translation id="1467432559032391204">Kwesobunxele</translation>
@@ -876,6 +878,7 @@ Ezinye izakhi zikhawulelwe ukuze kwandiswe impilo yebhethri.</translation>
 <translation id="4269883910223712419">Umphathi wale divayisi unekhono lokwazi ukuthi:</translation>
 <translation id="4274537685965975248">Isifinyezo sekhibhodi sika-Ctrl + Alt + Umcibisholo Waphansi sishintshile. Ukuze usebenzise ukhiye we-End, cindezela ukhiye we-<ph name="LAUNCHER_KEY_NAME" /> + Umcibisholo Wangakwesokudla.</translation>
 <translation id="4275283744500212192">Vula okukhethwa kukho kwesakhiwo sewindi</translation>
+<translation id="4275663329226226506">Imidiya</translation>
 <translation id="4279490309300973883">Yenza isibuko</translation>
 <translation id="4280601795273309128">Izibuyekezo zokuphepha ziphelile. Thuthukisa idivayisi yakho.</translation>
 <translation id="4283888303416325161">Faka iphasiwedi ukwenza kuvikeleke nanakhulu</translation>
@@ -1160,6 +1163,7 @@ Ungaphinde futhi usebenzise isinqamuleli sekhibhodi. Okokuqala, gqamisa umbhalo,
 <translation id="5253783950165989294">Ixhunywe kudivayisi ebizwa ngokuthi i-<ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% ibhethri</translation>
 <translation id="5258528442992323769">Awekho amatafula alondoloziwe</translation>
 <translation id="5260676007519551770">Ifafula 4</translation>
+<translation id="5270547718570958938">Ikhalenda ye-Google</translation>
 <translation id="5277869901083657836">Guqula amathuluzi e-stylus</translation>
 <translation id="5278086053818066789">Vula/vala i-ChromeVox (impendulo ekhulunyiwe)</translation>
 <translation id="5283099933536931082">I-<ph name="APP_ITEM_TITLE" /> icela ukunakwa kwakho.</translation>
@@ -1258,6 +1262,7 @@ Awekho amadivayisi axhunyiwe.</translation>
 <translation id="558849140439112033">Hudula ukuze ukhethe indawo yokuthathwa</translation>
 <translation id="5590609058453685222">Isaziso sombhobho ocishile sivuliwe. Uzokwaziswa uma ukhuluma ngenkathi uthulisiwe.</translation>
 <translation id="5592745162308462420">fn</translation>
+<translation id="5593564924968945303">Ibhrawuza ye-Chrome</translation>
 <translation id="5596627076506792578">Izinketho eziningi</translation>
 <translation id="5599242528220103262">Isinqamuleli sekhibhodi sivaliwe</translation>
 <translation id="5600415762228455511">Ukugxilisa kuvuliwe, kusele <ph name="REMAINING_TIME" />, ukugxilisa kuvulwe: ku-<ph name="TASK_NAME" /></translation>
@@ -1354,6 +1359,7 @@ Awekho amadivayisi axhunyiwe.</translation>
 <translation id="5916664084637901428">Vuliwe</translation>
 <translation id="5920710855273935292">I-mic ithulisiwe.</translation>
 <translation id="5928083197428724029">Ukubuyekeza kudingwa ngu-<ph name="MANAGER" /></translation>
+<translation id="5939518447894949180">Setha kabusha</translation>
 <translation id="5946788582095584774">I-<ph name="FEATURE_NAME" /> ivuliwe.</translation>
 <translation id="5947494881799873997">Buyela</translation>
 <translation id="595202126637698455">Ukulandelela ukusebenza kunikwe amandla</translation>

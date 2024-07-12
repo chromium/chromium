@@ -13,6 +13,7 @@
 <translation id="1036672894875463507">Jag är Google-assistenten och jag kan hjälpa dig under hela dagen.
 Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> har lagts till</translation>
+<translation id="1038106730571050514">Visa förslag</translation>
 <translation id="1047017786576569492">partiell</translation>
 <translation id="1052916631016577720">Objektgenomsökning</translation>
 <translation id="1056775291175587022">Inga nätverk</translation>
@@ -136,6 +137,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1447907279406111651">Nu ⋅ Slutar kl. <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Enhetens surfzoner</translation>
 <translation id="1455242230282523554">Visa språkinställningar</translation>
+<translation id="1459693405370120464">Väder</translation>
 <translation id="1460620680449458626">Ljudet är av.</translation>
 <translation id="14648076227129703">Detta ger kameraåtkomst för <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> och alla appar och webbplatser med kamerabehörighet</translation>
 <translation id="1467432559032391204">Vänster</translation>
@@ -876,6 +878,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4269883910223712419">Enhetens administratör kan</translation>
 <translation id="4274537685965975248">Kortkommandot Ctrl + Alt + nedåtpil har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" />-tangenten + högerpil för att använda End-tangenten.</translation>
 <translation id="4275283744500212192">Öppna alternativ för fönsterlayout</translation>
+<translation id="4275663329226226506">Media</translation>
 <translation id="4279490309300973883">Spegling</translation>
 <translation id="4280601795273309128">Säkerhetsuppdateringar har avslutats. Uppgradera enheten.</translation>
 <translation id="4283888303416325161">Ange lösenordet för ökad säkerhet</translation>
@@ -1160,6 +1163,7 @@ Du kan även använda kortkommandot. Markera först text och tryck sedan på <ph
 <translation id="5253783950165989294">Ansluten till enheten <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" /> % batteri</translation>
 <translation id="5258528442992323769">Det finns inga sparade skrivbord</translation>
 <translation id="5260676007519551770">Skrivbord 4</translation>
+<translation id="5270547718570958938">Google Kalender</translation>
 <translation id="5277869901083657836">Aktivera eller inaktivera verktyg för e-penna</translation>
 <translation id="5278086053818066789">Aktivera/inaktivera ChromeVox (talad feedback)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> begär din uppmärksamhet.</translation>
@@ -1258,6 +1262,7 @@ Inga enheter är anslutna.</translation>
 <translation id="558849140439112033">Välj område att ta en bild av genom att dra</translation>
 <translation id="5590609058453685222">Påminnelse om att mikrofonen är avstängd är aktiverat. Du får en avisering om du pratar när ljudet är av.</translation>
 <translation id="5592745162308462420">fn</translation>
+<translation id="5593564924968945303">Webbläsaren Chrome</translation>
 <translation id="5596627076506792578">Fler alternativ</translation>
 <translation id="5599242528220103262">Kortkommandot har inaktiverats</translation>
 <translation id="5600415762228455511">Fokus är på, <ph name="REMAINING_TIME" /> kvar, med fokus på: <ph name="TASK_NAME" /></translation>
@@ -1354,6 +1359,7 @@ Inga enheter är anslutna.</translation>
 <translation id="5916664084637901428">På</translation>
 <translation id="5920710855273935292">Mikrofonen är av.</translation>
 <translation id="5928083197428724029">Uppdatering krävs av <ph name="MANAGER" /></translation>
+<translation id="5939518447894949180">Återställ</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> är på.</translation>
 <translation id="5947494881799873997">Återgå</translation>
 <translation id="595202126637698455">Resultatspårning aktiverat</translation>

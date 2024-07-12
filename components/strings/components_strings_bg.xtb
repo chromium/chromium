@@ -651,6 +651,7 @@
 <translation id="2168151236314517198">Отпечатването на това съдържание е блокирано чрез администраторско правило</translation>
 <translation id="2170417331417184438">Картата е запазена само на устройството</translation>
 <translation id="2172089022819052306">Ремонт и поддръжка на превозни средства</translation>
+<translation id="2174875517416416684">Транзакцията ви не бе успешна. Не са изтеглени средства от профила ви.</translation>
 <translation id="2175630235841878061">Файловете над 100 MB не са налице за изтегляне</translation>
 <translation id="2176974405772725904">Запазване на адреса в профила</translation>
 <translation id="2178665390943006934">Бутон „Актуализиране на Chrome“. Активирайте, за да актуализирате Chrome от настройките</translation>
@@ -1160,6 +1161,7 @@
 <translation id="3209034400446768650">Страницата може да ви таксува</translation>
 <translation id="3212581601480735796">Активността ви в <ph name="HOSTNAME" /> се следи</translation>
 <translation id="3215092763954878852">WebAuthn не можа да се използва</translation>
+<translation id="3215311088819828484">Резултатът бе актуализиран</translation>
 <translation id="3216313131063488104">Блус</translation>
 <translation id="3218181027817787318">Относително</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Изисква се актуализация сега}=2{Изисква се актуализация до утре}other{Изисква се актуализация в рамките на # дни}}</translation>
@@ -3391,6 +3393,7 @@
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> мм)</translation>
 <translation id="7450577240311017924">Бутон „Управление на синхронизирането“. Активирайте, за да управлявате данните, които да се синхронизират, в настройките на Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /> за този проблем.</translation>
+<translation id="745208957946308667">Играта с динозавъра – натиснете интервал, за да играете</translation>
 <translation id="7454377933424667109">Профил в Cloud</translation>
 <translation id="7455133967321480974">Използване на глобалната стандартна стойност (блокиране)</translation>
 <translation id="7455452752247248289">Корпоративни технологии</translation>
@@ -4043,6 +4046,7 @@
 <translation id="8676424191133491403">Без забавяне</translation>
 <translation id="8680536109547170164">„<ph name="QUERY" />“, отговор: „<ph name="ANSWER" />“</translation>
 <translation id="8681531050781943054">Уеб страницата на адрес <ph name="PAGE" /> не можа да бъде заредена, защото:</translation>
+<translation id="8682297334444610648">Играта с динозавъра – докоснете, за да играете</translation>
 <translation id="8686424632716064939">Компютърна защита</translation>
 <translation id="8687278439622293018">Записът „<ph name="ENTRY_VOICEOVER" />“ бе изтрит</translation>
 <translation id="8687429322371626002">Устройството и профилът ви се управляват от <ph name="MANAGER" />.</translation>

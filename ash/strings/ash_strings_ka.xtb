@@ -13,6 +13,7 @@
 <translation id="1036672894875463507">მე ვარ თქვენი Google ასისტენტი და მთელი დღის განმავლობაში დაგეხმარებით!
 აი, რისი გაკეთება შეგიძლიათ დასაწყისისთვის.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> დამატებულია</translation>
+<translation id="1038106730571050514">შეთავაზებების ჩვენება</translation>
 <translation id="1047017786576569492">ნაწილობრივი</translation>
 <translation id="1052916631016577720">ერთეულის სკანირება</translation>
 <translation id="1056775291175587022">ქსელები არ არის</translation>
@@ -136,6 +137,7 @@
 <translation id="1447907279406111651">მიმდინარეობს ⋅ დასრულების დროა <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">თქვენი მოწყობილობის უსადენო ქსელები</translation>
 <translation id="1455242230282523554">ენის პარამეტრების ჩვენება</translation>
+<translation id="1459693405370120464">ამინდი</translation>
 <translation id="1460620680449458626">ხმა დადუმებულია.</translation>
 <translation id="14648076227129703"><ph name="APP1_NAME" />-ს, <ph name="APP2_NAME" />-ს, ასევე, ყველა აპსა და ვებსაიტს, რომლებსაც აქვს კამერის გამოყენების ნებართვა, მიენიჭება კამერაზე წვდომა</translation>
 <translation id="1467432559032391204">მარცხენა</translation>
@@ -804,6 +806,7 @@
 <translation id="4002066346123236978">სათაური</translation>
 <translation id="40062176907008878">ხელნაწერი</translation>
 <translation id="4011112806063830608">„არ შემაწუხოთ“ რეჟიმი ჩართულია.</translation>
+<translation id="4015144849380506405">მაუსის კლავიშების დაპაუზება/განახლება, როცა ის ჩართულია</translation>
 <translation id="4017989525502048489">ლაზერული მიმთითებელი</translation>
 <translation id="401993194061514265">მარკერი მიუწვდომელია. ხელახლა გახსენით Screencast.</translation>
 <translation id="4021716437419160885">ქვემოთ გადაადგილება</translation>
@@ -876,6 +879,7 @@
 <translation id="4269883910223712419">ამ მოწყობილობის ადმინისტრატორს შეუძლია:</translation>
 <translation id="4274537685965975248">კლავიატურის მალსახმობი „Ctrl + Alt + ქვემოთ მიმართული ისარი“ შეიცვალა. End კლავიშით სარგებლობისთვის დააჭირეთ კლავიშს <ph name="LAUNCHER_KEY_NAME" /> + მარჯვნივ მიმართულ ისარს.</translation>
 <translation id="4275283744500212192">ფანჯრის განლაგების ვარიანტების გახსნა</translation>
+<translation id="4275663329226226506">მედია</translation>
 <translation id="4279490309300973883">არეკვლა</translation>
 <translation id="4280601795273309128">უსაფრთხოების განახლებები აღარ მოგეწოდებათ. განაახლეთ თქვენი მოწყობილობა.</translation>
 <translation id="4283888303416325161">დამატებითი უსაფრთხოებისთვის შეიყვანეთ პაროლი</translation>
@@ -1160,6 +1164,7 @@
 <translation id="5253783950165989294">დაკავშირებულია მოწყობილობასთან, სახელად <ph name="DEVICE_NAME" />, ბატარეის დონეა <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">სამუშაო მაგიდები არ არის შენახული</translation>
 <translation id="5260676007519551770">დესკტოპი 4</translation>
+<translation id="5270547718570958938">Google კალენდარი</translation>
 <translation id="5277869901083657836">სტილუსის ხელსაწყოების გადართვა</translation>
 <translation id="5278086053818066789">ChromeVox-ის (გახმოვანებული უკუკავშირის) ჩართვა/გამორთვა</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> საჭიროებს ყურადღების მიქცევას.</translation>
@@ -1258,6 +1263,7 @@
 <translation id="558849140439112033">ჩავლებით გადაიტანეთ, აღსაბეჭდი არე რომ აირჩიოთ</translation>
 <translation id="5590609058453685222">დადუმების შეხსენება ჩართულია. თუ საუბრისას თქვენი ხმა არ ისმის, შეტყობინებას მიიღებთ.</translation>
 <translation id="5592745162308462420">Fn</translation>
+<translation id="5593564924968945303">Chrome ბრაუზერი</translation>
 <translation id="5596627076506792578">დამატებითი ვარიანტები</translation>
 <translation id="5599242528220103262">კლავიატურის მალსახმობი გამორთულია</translation>
 <translation id="5600415762228455511">ფოკუსირების რეჟიმი ჩართულია, დარჩენილია <ph name="REMAINING_TIME" />, ფოკუსირების ობიექტი: <ph name="TASK_NAME" /></translation>
@@ -1354,6 +1360,7 @@
 <translation id="5916664084637901428">ჩართვა</translation>
 <translation id="5920710855273935292">მიკროფონი დადუმებულია.</translation>
 <translation id="5928083197428724029"><ph name="MANAGER" />ითხოვს განახლებას</translation>
+<translation id="5939518447894949180">გადატვირთვა</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ჩართულია.</translation>
 <translation id="5947494881799873997">დაბრუნება</translation>
 <translation id="595202126637698455">ეფექტურობის ტრასირება ჩართულია</translation>

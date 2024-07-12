@@ -2992,7 +2992,6 @@
 <translation id="3132277757485842847">我們無法與您的手機維持連線狀態。請確認您的手機在附近並已解鎖，且已開啟藍牙和 Wi-Fi。</translation>
 <translation id="3132896062549112541">規則</translation>
 <translation id="3132996321662585180">每日重新整理</translation>
-<translation id="3133184011320864289">開啟同步功能，允許 Chrome 提供分頁群組建議及整理分頁</translation>
 <translation id="3134393957315651797">揀「<ph name="EXPERIMENT_NAME" />」嘅實驗狀態。實驗描述：<ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3137969841538672700">拖曳即可搜尋</translation>
 <translation id="3139925690611372679">預設黃色圖片</translation>
@@ -9569,7 +9568,6 @@
 <translation id="8052218774860457016">管理瀏覽器同步處理設</translation>
 <translation id="8053278772142718589">PKCS #12 檔案</translation>
 <translation id="8053390638574070785">重新載入這個網頁</translation>
-<translation id="8053629544194355894">打開同步功能就可以俾 Chrome 提供分頁群組建議</translation>
 <translation id="8054500940978949009">已允許。開啟<ph name="LINK_BEGIN" />系統麥克風存取權<ph name="LINK_END" />。</translation>
 <translation id="8054517699425078995">這種類型的檔案可能會損害您的裝置，您仍要保留 <ph name="FILE_NAME" /> 嗎？</translation>
 <translation id="8054563304616131773">請輸入有效的電郵地址</translation>
@@ -9811,6 +9809,7 @@
 <translation id="8230134520748321204">要儲存 <ph name="ORIGIN" /> 的密碼嗎？</translation>
 <translation id="8230326817897075865">刪除<ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="8230446983261649357">不允許網站顯示圖片</translation>
+<translation id="823226567613548870">刪除你的「<ph name="BRAND" />」資料</translation>
 <translation id="8233028084277069927">立即開啟</translation>
 <translation id="8234795456569844941">為協助我們的軟件工程師修正此問題，請說明您在收到設定檔錯誤訊息前發生的狀況：</translation>
 <translation id="8235418492073272647">透過「<ph name="DEVICE_NAME" />」分享的網頁</translation>
@@ -9908,7 +9907,6 @@
 <translation id="8293206222192510085">新增書籤</translation>
 <translation id="8294431847097064396">來源</translation>
 <translation id="8294476140219241086">分頁整理工具</translation>
-<translation id="8294895455164415895">打開設定就可以俾 Chrome 提供分頁群組建議</translation>
 <translation id="8295449579927246485">即時翻譯</translation>
 <translation id="8295450130892483256">安裝 Microsoft 365</translation>
 <translation id="8297292446125062288">HID 設定</translation>
@@ -10072,7 +10070,6 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">全螢幕</translation>
 <translation id="8412136526970428322">已允許<ph name="PERMISSION" />和其他 <ph name="COUNT" /> 個項目</translation>
-<translation id="8412682423093430245">在「設定」中開啟記錄同步功能，允許 Chrome 提供分頁群組建議及整理分頁</translation>
 <translation id="8413795581997394485">對已知的危險網站、下載檔案及擴充程式提供保護功能。瀏覽網站時，Chrome 會透過私隱伺服器隱藏你的 IP 位址，再傳送經編碼隱匿的部分網址傳送給 Google。如果網站有可疑行為，系統亦會傳送整個網址和部分網頁內容。</translation>
 <translation id="8413956290606243087">要啟用 Chrome OS 內置的螢幕閱讀器 ChromeVox 嗎？</translation>
 <translation id="8414249071344507766">回憶將會隱藏 2 天</translation>
@@ -10105,7 +10102,6 @@
 <translation id="843173223122814223">以 AI 製作背景</translation>
 <translation id="8433186206711564395">網絡設定</translation>
 <translation id="8434480141477525001">NaCl 偵錯連接埠</translation>
-<translation id="8436054240208929121">登入並開啟同步功能，允許 Chrome 提供分頁群組建議及整理分頁</translation>
 <translation id="8437209419043462667">美式鍵盤</translation>
 <translation id="8438566539970814960">改善搜尋和瀏覽體驗</translation>
 <translation id="8439506636278576865">翻譯這個語言的網頁</translation>

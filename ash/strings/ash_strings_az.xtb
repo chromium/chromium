@@ -13,6 +13,7 @@
 <translation id="1036672894875463507">Mən Google Assistentinizəm və gün boyu sizə kömək etmək üçün buradayam!
 Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> əlavə edildi</translation>
+<translation id="1038106730571050514">Təklifləri göstərin</translation>
 <translation id="1047017786576569492">qismən</translation>
 <translation id="1052916631016577720">Element ilə skanlama</translation>
 <translation id="1056775291175587022">Şəbəkə yoxdur</translation>
@@ -136,6 +137,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1447907279406111651">İndi · Başa çatacaq: <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Cihaz hotspotları</translation>
 <translation id="1455242230282523554">Dil ayarlarını göstərin</translation>
+<translation id="1459693405370120464">Hava</translation>
 <translation id="1460620680449458626">Səssizdədir.</translation>
 <translation id="14648076227129703">Kamera icazəsi olan <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> və bütün tətbiq və vebsaytlar üçün kameraya giriş icazəsi verir</translation>
 <translation id="1467432559032391204">Sol</translation>
@@ -876,6 +878,7 @@ Batareya istifadəsini uzatmaq üçün bəzi funksiyalar məhdudlaşdırılıb.<
 <translation id="4269883910223712419">Bu cihazın admini edə bilər:</translation>
 <translation id="4274537685965975248">Ctrl + Alt + Aşağı Ox klaviatura qısayolu dəyişib. Son düyməsindən istifadə etmək üçün <ph name="LAUNCHER_KEY_NAME" /> + Sağa Ox düyməsini basın.</translation>
 <translation id="4275283744500212192">Pəncərə düzəni seçimlərini açın</translation>
+<translation id="4275663329226226506">Media</translation>
 <translation id="4279490309300973883">Əks etdirilir</translation>
 <translation id="4280601795273309128">Təhlükəsizlik güncəllənmələri başa çatdı. Cihazı təkmilləşdirin.</translation>
 <translation id="4283888303416325161">Əlavə təhlükəsizlik üçün parol daxil edin</translation>
@@ -1258,6 +1261,7 @@ Cihaz qoşulmayıb.</translation>
 <translation id="558849140439112033">Çəkmək üçün sahə seçmək məqsədilə sürüşdürün</translation>
 <translation id="5590609058453685222">Qapalı mikrofon xəbərdarlığı aktivdir. Susdurulduqda danışsanız, bildiriş alacaqsınız.</translation>
 <translation id="5592745162308462420">fn</translation>
+<translation id="5593564924968945303">Chrome brauzeri</translation>
 <translation id="5596627076506792578">Əlavə seçimlər</translation>
 <translation id="5599242528220103262">Klaviatura qısayolu deaktivdir</translation>
 <translation id="5600415762228455511">Fokus yanılıdır, <ph name="REMAINING_TIME" /> qalıb, fokuslanır: <ph name="TASK_NAME" /></translation>
@@ -1354,6 +1358,7 @@ Cihaz qoşulmayıb.</translation>
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5920710855273935292">Mikrofon səssiz edilib.</translation>
 <translation id="5928083197428724029"><ph name="MANAGER" /> tərəfindən güncəllənmə tələb edilir</translation>
+<translation id="5939518447894949180">Sıfırlayın</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> aktivdir.</translation>
 <translation id="5947494881799873997">Geri dönün</translation>
 <translation id="595202126637698455">Fəaliyyət izləməsi aktiv edildi</translation>

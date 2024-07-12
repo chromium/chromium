@@ -13,6 +13,7 @@
 <translation id="1036672894875463507">To ja, Twój Asystent Google. Chętnie Ci pomogę.
 Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1037492556044956303">Dodano urządzenie <ph name="DEVICE_NAME" /></translation>
+<translation id="1038106730571050514">Pokaż sugestie</translation>
 <translation id="1047017786576569492">część</translation>
 <translation id="1052916631016577720">Skanowanie elementu</translation>
 <translation id="1056775291175587022">Brak sieci</translation>
@@ -136,6 +137,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1447907279406111651">Teraz · Zakończenie: <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Hotspoty Twojego urządzenia</translation>
 <translation id="1455242230282523554">Pokaż ustawienia języka</translation>
+<translation id="1459693405370120464">Pogoda</translation>
 <translation id="1460620680449458626">Dźwięk jest wyciszony.</translation>
 <translation id="14648076227129703">Spowoduje to przyznanie dostępu do aparatu aplikacjom <ph name="APP1_NAME" /> i <ph name="APP2_NAME" /> oraz wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z niego</translation>
 <translation id="1467432559032391204">W lewo</translation>
@@ -804,6 +806,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4002066346123236978">Tytuł</translation>
 <translation id="40062176907008878">Pismo odręczne</translation>
 <translation id="4011112806063830608">Tryb Nie przeszkadzać jest włączony.</translation>
+<translation id="4015144849380506405">Wstrzymaj/wznów klawisze myszy, gdy ta opcja jest włączona</translation>
 <translation id="4017989525502048489">Wskaźnik laserowy</translation>
 <translation id="401993194061514265">Pisak niedostępny. Otwórz ponownie Screencast.</translation>
 <translation id="4021716437419160885">Przewiń w dół</translation>
@@ -876,6 +879,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4269883910223712419">Administrator tego urządzenia może:</translation>
 <translation id="4274537685965975248">Skrót klawiszowy Ctrl + Alt + strzałka w dół został zmieniony. Aby użyć klawisza End, naciśnij klawisz <ph name="LAUNCHER_KEY_NAME" /> + strzałka w prawo.</translation>
 <translation id="4275283744500212192">Otwórz opcje układu okna</translation>
+<translation id="4275663329226226506">Multimedia</translation>
 <translation id="4279490309300973883">Odbicie lustrzane</translation>
 <translation id="4280601795273309128">Dobiegły końca aktualizacje zabezpieczeń. Zmień urządzenie na nowsze.</translation>
 <translation id="4283888303416325161">Dla większego bezpieczeństwa wpisz hasło</translation>
@@ -1160,6 +1164,7 @@ Możesz też użyć skrótu klawiszowego. Zaznacz tekst, a potem naciśnij <ph 
 <translation id="5253783950165989294">Połączono z urządzeniem o nazwie <ph name="DEVICE_NAME" />, bateria <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">Nie ma zapisanych biurek</translation>
 <translation id="5260676007519551770">Biurko 4</translation>
+<translation id="5270547718570958938">Kalendarz Google</translation>
 <translation id="5277869901083657836">Przełącz narzędzia rysika</translation>
 <translation id="5278086053818066789">Włącz lub wyłącz czytnik ChromeVox (komunikaty głosowe)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> wymaga Twojej reakcji.</translation>
@@ -1258,6 +1263,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="558849140439112033">Przeciągnij, by wybrać obszar, który chcesz przechwycić</translation>
 <translation id="5590609058453685222">Powiadomienie o wyciszeniu jest włączone. Powiadomimy Cię, gdy będziesz mówić, a mikrofon będzie wyciszony.</translation>
 <translation id="5592745162308462420">fn</translation>
+<translation id="5593564924968945303">Przeglądarka Chrome</translation>
 <translation id="5596627076506792578">Więcej opcji</translation>
 <translation id="5599242528220103262">Skrót klawiszowy jest wyłączony</translation>
 <translation id="5600415762228455511">Tryb skupienia jest włączony, zostało <ph name="REMAINING_TIME" />. Zadanie: <ph name="TASK_NAME" /></translation>
@@ -1354,6 +1360,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="5916664084637901428">Włączone</translation>
 <translation id="5920710855273935292">Mikrofon jest wyciszony.</translation>
 <translation id="5928083197428724029">Aktualizacja wymagana przez: <ph name="MANAGER" /></translation>
+<translation id="5939518447894949180">Resetuj</translation>
 <translation id="5946788582095584774">Funkcja <ph name="FEATURE_NAME" /> jest włączona.</translation>
 <translation id="5947494881799873997">Przywróć</translation>
 <translation id="595202126637698455">Śledzenie wydajności jest włączone</translation>

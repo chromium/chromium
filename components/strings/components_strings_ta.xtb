@@ -368,6 +368,7 @@
 <translation id="1650602712345345441">Chrome அமைப்புகளை நிர்வகிக்கலாம்</translation>
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">macOS Keychain உடன் Password Managerரைப் பயன்படுத்த, Chromiumமை மீண்டும் தொடங்கி Keychain அணுகலை வழங்கவும். மீண்டும் தொடங்கியதும் உங்கள் உலாவிப் பக்கங்கள் மீண்டும் திறக்கும்.</translation>
+<translation id="1652887625750064647">பொருத்தமான AI பரிந்துரை</translation>
 <translation id="1656024727720460136">சுலபமாகப் படிப்பதற்கு ஏற்றவகையில் Chrome இந்தப் பக்கத்தை எளிதாக்கியுள்ளது. பாதுகாப்பான இணைப்பின் மூலம் அசல் பக்கத்தை Chrome மீட்டெடுத்தது.</translation>
 <translation id="1656489000284462475">பிக்கப்</translation>
 <translation id="1658111267661135323">டிவி &amp; வீடியோ</translation>
@@ -1157,6 +1158,7 @@
 <translation id="3209034400446768650">இந்தப் பக்கத்திற்குச் சென்றால் கட்டணம் விதிக்கக்கூடும்</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> இல் உங்கள் செயல்பாடு கண்காணிக்கப்படுகிறது</translation>
 <translation id="3215092763954878852">WebAuthnனைப் பயன்படுத்த முடியவில்லை</translation>
+<translation id="3215311088819828484">முடிவு மாற்றப்பட்டது</translation>
 <translation id="3216313131063488104">ப்ளூஸ்</translation>
 <translation id="3218181027817787318">சார்புடையது</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{இப்போதே புதுப்பிக்க வேண்டும்}=2{நாளை புதுப்பிக்க வேண்டும்}other{# நாட்களுக்குள் புதுப்பிக்க வேண்டும்}}</translation>

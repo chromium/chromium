@@ -13,6 +13,7 @@
 <translation id="1036672894875463507">Saya Google Assistant anda. Saya sedia membantu anda sepanjang hari anda!
 Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ditambahkan</translation>
+<translation id="1038106730571050514">Tunjukkan cadangan</translation>
 <translation id="1047017786576569492">separa</translation>
 <translation id="1052916631016577720">Pengimbasan Item</translation>
 <translation id="1056775291175587022">0 rangkaian</translation>
@@ -136,6 +137,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1447907279406111651">Sekarang ⋅ Tamat pada <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Tempat liputan peranti anda</translation>
 <translation id="1455242230282523554">Tunjukkan tetapan bahasa</translation>
+<translation id="1459693405370120464">Cuaca</translation>
 <translation id="1460620680449458626">Kelantangan diredamkan.</translation>
 <translation id="14648076227129703">Ini membenarkan akses kamera untuk <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> dan semua apl serta laman web dengan kebenaran kamera</translation>
 <translation id="1467432559032391204">Kiri</translation>
@@ -876,6 +878,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4269883910223712419">Pentadbir peranti ini berkeupayaan untuk:</translation>
 <translation id="4274537685965975248">Pintasan papan kekunci Ctrl + Alt + Anak Panah ke Bawah telah berubah. Untuk menggunakan kekunci End, tekan kekunci <ph name="LAUNCHER_KEY_NAME" /> + Anak Panah ke Kanan.</translation>
 <translation id="4275283744500212192">Buka pilihan reka letak tetingkap</translation>
+<translation id="4275663329226226506">Media</translation>
 <translation id="4279490309300973883">Pencerminan</translation>
 <translation id="4280601795273309128">Kemaskinian keselamatan tamat. Tingkatkan peranti anda.</translation>
 <translation id="4283888303416325161">Masukkan kata laluan untuk meningkatkan keselamatan</translation>
@@ -1160,6 +1163,7 @@ Anda juga boleh menggunakan pintasan papan kekunci. Mula-mula, serlahkan teks, k
 <translation id="5253783950165989294">Disambungkan kepada peranti yang bernama <ph name="DEVICE_NAME" />, bateri <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">Tiada meja yang disimpan</translation>
 <translation id="5260676007519551770">Meja 4</translation>
+<translation id="5270547718570958938">Kalendar Google</translation>
 <translation id="5277869901083657836">Togol alatan stilus</translation>
 <translation id="5278086053818066789">Hidupkan/matikan ChromeVox (maklum balas yang dituturkan)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> meminta perhatian anda.</translation>
@@ -1258,6 +1262,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="558849140439112033">Seret untuk memilih kawasan yang hendak ditangkap</translation>
 <translation id="5590609058453685222">Sigung redam dihidupkan. Anda akan diberitahu jika anda bercakap semasa diredam.</translation>
 <translation id="5592745162308462420">fn</translation>
+<translation id="5593564924968945303">Penyemak imbas Chrome</translation>
 <translation id="5596627076506792578">Lagi pilihan</translation>
 <translation id="5599242528220103262">Pintasan papan kekunci dimatikan</translation>
 <translation id="5600415762228455511">Fokus dihidupkan, masa berbaki <ph name="REMAINING_TIME" /> lagi, memfokuskan pada: <ph name="TASK_NAME" /></translation>
@@ -1354,6 +1359,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="5916664084637901428">Hidupkan</translation>
 <translation id="5920710855273935292">Mikrofon diredamkan.</translation>
 <translation id="5928083197428724029">Kemaskinian diperlukan oleh <ph name="MANAGER" /></translation>
+<translation id="5939518447894949180">Tetapkan semula</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> dihidupkan.</translation>
 <translation id="5947494881799873997">Berbalik</translation>
 <translation id="595202126637698455">Penjejakan prestasi didayakan</translation>

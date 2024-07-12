@@ -84,6 +84,7 @@
 <translation id="1413240736185167732">Échec : problème de filtre</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">orchidée</translation>
+<translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">J'ai une biclé</translation>
 <translation id="1423591390236870726">Touche <ph name="KEY_NAME" /> non enfoncée</translation>
 <translation id="1432110487435300883">Pour obtenir un résultat approximatif, diviser la valeur <ph name="CATEGORY_TEXT" /> par <ph name="CONVERSION_RATE" /></translation>
@@ -768,8 +769,10 @@
 <translation id="5180712487038406644">Expressive</translation>
 <translation id="5190187232518914472">Revivez vos souvenirs préférés. Pour ajouter des albums ou modifier vos albums existants, accédez à <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloïd</translation>
+<translation id="5220549459260334974">Téléchargée à <ph name="PROGRESS_PERCENTAGE" /> %</translation>
 <translation id="5222676887888702881">Déconnexion</translation>
 <translation id="522307662484862935">Ne pas inclure l'adresse de courriel</translation>
+<translation id="5226879510707344687">Exporter la transcription</translation>
 <translation id="5227902338748591677">Programmation du thème sombre</translation>
 <translation id="5229344016299762883">Quitter le mode plein écran</translation>
 <translation id="5234764350956374838">Fermer</translation>
@@ -960,6 +963,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6283581480003247988">bleu et violet</translation>
 <translation id="6284632978374966585">Activer le thème sombre</translation>
+<translation id="6285260286443238386">Exporter l'enregistrement</translation>
 <translation id="628726841779494414">Gérez vos imprimantes dans les paramètres d'impression</translation>
 <translation id="6292095526077353682">Pendant le chargement, affichez l'écran de veille pour la période suivante :</translation>
 <translation id="629550705077076970">assombrissement du clavier</translation>
@@ -994,6 +998,7 @@
 <translation id="6417265370957905582">Assistant Google</translation>
 <translation id="6419454453018688975">Activer l'accès à la position du système</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">Faible (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Accéder aux paramètres du compte</translation>
 <translation id="6462978824459367242">Le bouton Ajouter un nom de point d'accès est maintenant activé</translation>
@@ -1464,6 +1469,7 @@ Vous pouvez la désactiver en tout temps dans les paramètres.</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
 <translation id="8918813738569491921">roche saline</translation>
 <translation id="8919837981463578619">Échec : bac manquant</translation>
+<translation id="8924154518905976972">Exporter le contenu audio</translation>
 <translation id="8928727111548978589">Échec : à court de papier</translation>
 <translation id="8930521118335213258">Application similaire</translation>
 <translation id="8930622219860340959">Sans fil</translation>

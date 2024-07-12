@@ -13,6 +13,7 @@
 <translation id="1036672894875463507">我是您的「Google 助理」，可協助您處理處理日常事務！
 如要開始使用，您可先嘗試以下幾種功能。</translation>
 <translation id="1037492556044956303">已新增 <ph name="DEVICE_NAME" /></translation>
+<translation id="1038106730571050514">顯示建議</translation>
 <translation id="1047017786576569492">局部</translation>
 <translation id="1052916631016577720">項目掃瞄</translation>
 <translation id="1056775291175587022">沒有網絡</translation>
@@ -136,6 +137,7 @@
 <translation id="1447907279406111651">正在進行 · 於<ph name="END_TIME" /> 結束</translation>
 <translation id="1448963928642384376">裝置熱點</translation>
 <translation id="1455242230282523554">顯示語言設定</translation>
+<translation id="1459693405370120464">天氣</translation>
 <translation id="1460620680449458626">音量校咗靜音。</translation>
 <translation id="14648076227129703">此操作會允許 <ph name="APP1_NAME" />、<ph name="APP2_NAME" /> 以及具備相機權限的所有應用程式和網站存取相機</translation>
 <translation id="1467432559032391204">向左</translation>
@@ -603,7 +605,7 @@
 <translation id="3306386552969601301">有 <ph name="DEVICECOUNT" /> 部裝置已連線至 <ph name="DEVICE_NAME" /> 熱點</translation>
 <translation id="3307642347673023554">已切換至手提電腦模式</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> 稍後仍可登入。</translation>
-<translation id="3321628682574733415">家長存取碼錯誤</translation>
+<translation id="3321628682574733415">家長驗證碼錯誤</translation>
 <translation id="332827762492701193">已隱藏通知</translation>
 <translation id="3333674550998107387">展開「<ph name="NOTIFICATION_TITLE" />」通知</translation>
 <translation id="3339826665088060472">螢幕截圖，用嚟擷取螢幕截圖同埋錄影螢幕嘅工具</translation>
@@ -876,6 +878,7 @@
 <translation id="4269883910223712419">此裝置的管理員擁有下列權限：</translation>
 <translation id="4274537685965975248">「Ctrl + Alt + 向下箭咀」的鍵盤快速鍵已變更。如要使用 End 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向右箭咀。</translation>
 <translation id="4275283744500212192">開啟視窗版面配置選項</translation>
+<translation id="4275663329226226506">媒體</translation>
 <translation id="4279490309300973883">鏡像</translation>
 <translation id="4280601795273309128">安全更新已結束，請升級裝置。</translation>
 <translation id="4283888303416325161">為安全起見，請輸入密碼</translation>
@@ -991,7 +994,7 @@
 <translation id="4673427585974421255">保持開啟</translation>
 <translation id="468293128311738995">手機應用程式</translation>
 <translation id="4690510401873698237">捷徑列喺螢幕個底度</translation>
-<translation id="4696813013609194136">使用家長存取碼解鎖裝置</translation>
+<translation id="4696813013609194136">使用家長驗證碼解鎖裝置</translation>
 <translation id="4697357603686181098">很抱歉，我們無法處理。請嘗試提出其他要求。</translation>
 <translation id="4702647871202761252">已停用私隱保護畫面</translation>
 <translation id="4706121060329443414">系統稍後將再次嘗試下載，目前會暫時將語音傳送給 Google 處理。</translation>
@@ -1159,6 +1162,7 @@
 <translation id="5253783950165989294">已連接名為「<ph name="DEVICE_NAME" />」的裝置，電量為 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">沒有已儲存的桌面</translation>
 <translation id="5260676007519551770">桌面 4</translation>
+<translation id="5270547718570958938">Google 日曆</translation>
 <translation id="5277869901083657836">切換觸控筆工具</translation>
 <translation id="5278086053818066789">開啟/關閉 ChromeVox (朗讀功能)</translation>
 <translation id="5283099933536931082">「<ph name="APP_ITEM_TITLE" />」有新嘅要求需要你處理。</translation>
@@ -1257,6 +1261,7 @@
 <translation id="558849140439112033">拖曳以選取要擷取的範圍</translation>
 <translation id="5590609058453685222">「略過自動提醒」功能已開啟。如果在靜音狀態下說話，系統會傳送通知給您。</translation>
 <translation id="5592745162308462420">fn</translation>
+<translation id="5593564924968945303">Chrome 瀏覽器</translation>
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="5599242528220103262">鍵盤快速鍵已關閉</translation>
 <translation id="5600415762228455511">開咗「專注模式」，宜家專心處理緊<ph name="TASK_NAME" />，淨返 <ph name="REMAINING_TIME" /></translation>
@@ -1337,7 +1342,7 @@
 <translation id="5864748620896638071">電量：<ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">正在收集網絡資料</translation>
 <translation id="5867606971598166637">系統管理員正在監控您的畫面</translation>
-<translation id="5876666360658629066">輸入家長存取碼</translation>
+<translation id="5876666360658629066">輸入家長驗證碼</translation>
 <translation id="5881540930187678962">稍後再設定 Phone Hub</translation>
 <translation id="588258955323874662">全螢幕</translation>
 <translation id="5887954372087850114">「<ph name="WINDOW_TITLE" />」視窗已指派給「<ph name="DESK_TITLE" />」，並取消指派給所有其他桌面</translation>
@@ -1353,6 +1358,7 @@
 <translation id="5916664084637901428">開啟</translation>
 <translation id="5920710855273935292">咪高風校咗靜音。</translation>
 <translation id="5928083197428724029">需要由 <ph name="MANAGER" /> 更新</translation>
+<translation id="5939518447894949180">重設</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" />功能已開啟。</translation>
 <translation id="5947494881799873997">還原</translation>
 <translation id="595202126637698455">效能追蹤已啟用</translation>

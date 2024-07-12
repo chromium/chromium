@@ -13,6 +13,7 @@
 <translation id="1036672894875463507">Soc el teu Assistent de Google i et puc ajudar al llarg del dia.
 A continuació t'indico algunes coses que pots provar per començar.</translation>
 <translation id="1037492556044956303">S'ha afegit <ph name="DEVICE_NAME" /></translation>
+<translation id="1038106730571050514">Mostra els suggeriments</translation>
 <translation id="1047017786576569492">parcial</translation>
 <translation id="1052916631016577720">Escaneig d'elements</translation>
 <translation id="1056775291175587022">Cap xarxa</translation>
@@ -136,6 +137,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1447907279406111651">Ara ⋅ Acaba a les <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Punts d'accés Wi‐Fi del teu dispositiu</translation>
 <translation id="1455242230282523554">Mostra la configuració d'idioma</translation>
+<translation id="1459693405370120464">Temps</translation>
 <translation id="1460620680449458626">El volum està silenciat.</translation>
 <translation id="14648076227129703">Permet l'accés a la càmera a <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> i a totes les aplicacions i llocs web amb permís per accedir a la càmera</translation>
 <translation id="1467432559032391204">Esquerra</translation>
@@ -876,6 +878,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4269883910223712419">L'administrador d'aquest dispositiu pot dur a terme les accions següents:</translation>
 <translation id="4274537685965975248">La tecla de drecera Ctrl+Alt+fletxa avall ha canviat. Per fer servir la tecla de fi, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+fletxa dreta.</translation>
 <translation id="4275283744500212192">Obre les opcions de disseny de la finestra</translation>
+<translation id="4275663329226226506">Multimèdia</translation>
 <translation id="4279490309300973883">S'està creant una rèplica</translation>
 <translation id="4280601795273309128">Les actualitzacions de seguretat han finalitzat. Actualitza el dispositiu.</translation>
 <translation id="4283888303416325161">Introdueix la contrasenya per augmentar la seguretat</translation>
@@ -1160,6 +1163,7 @@ També pots utilitzar les tecles de drecera. Primer, marca el text i, a continua
 <translation id="5253783950165989294">Connectat a un dispositiu anomenat <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
 <translation id="5258528442992323769">No s'ha desat cap escriptori</translation>
 <translation id="5260676007519551770">Escriptori 4</translation>
+<translation id="5270547718570958938">Google Calendar</translation>
 <translation id="5277869901083657836">Commuta les eines del llapis òptic</translation>
 <translation id="5278086053818066789">Activa/Desactiva ChromeVox (avisos de veu)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> sol·licita la teva atenció.</translation>
@@ -1258,6 +1262,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="558849140439112033">Arrossega per seleccionar l'àrea que vols capturar</translation>
 <translation id="5590609058453685222">La funció Toc de micròfon silenciat està activada. Si parles mentre el micròfon està silenciat, rebràs una notificació.</translation>
 <translation id="5592745162308462420">Fn</translation>
+<translation id="5593564924968945303">Navegador Chrome</translation>
 <translation id="5596627076506792578">Més opcions</translation>
 <translation id="5599242528220103262">La tecla de drecera està desactivada</translation>
 <translation id="5600415762228455511">El mode Sense distraccions està activat, amb <ph name="REMAINING_TIME" /> de temps restant. T'estàs concentrant en <ph name="TASK_NAME" />.</translation>
@@ -1354,6 +1359,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5920710855273935292">El micròfon està silenciat.</translation>
 <translation id="5928083197428724029">Actualització requerida per <ph name="MANAGER" /></translation>
+<translation id="5939518447894949180">Restableix</translation>
 <translation id="5946788582095584774">La funció <ph name="FEATURE_NAME" /> està activada.</translation>
 <translation id="5947494881799873997">Reverteix</translation>
 <translation id="595202126637698455">Traça del rendiment activada</translation>

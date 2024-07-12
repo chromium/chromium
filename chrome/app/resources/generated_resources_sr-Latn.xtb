@@ -1929,6 +1929,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="237828693408258535">Želite li da prevedete ovu stranicu?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Ovaj dodatak uskoro možda više neće biti podržan}one{Ovi dodaci možda uskoro više neće biti podržani}few{Ovi dodaci možda uskoro više neće biti podržani}other{Ovi dodaci možda uskoro više neće biti podržani}}</translation>
 <translation id="2378982052244864789">Izbor direktorijuma dodatka.</translation>
+<translation id="2379111564446699251">Da biste promenili raspored dugmad na traci s alatkama, prevucite ih</translation>
 <translation id="2379281330731083556">Štampaj pomoću sistemskog dijaloga... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Zbog toga će se možda prekinuti veza sa mobilnom mrežom na nekoliko minuta</translation>
 <translation id="2381499968174336913">Pregled deljene kartice</translation>
@@ -2978,7 +2979,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3132277757485842847">Nismo uspeli da održimo vezu sa telefonom. Uverite se da je telefon u blizini, da je otključan i da su Bluetooth i WiFi uključeni.</translation>
 <translation id="3132896062549112541">Pravilo</translation>
 <translation id="3132996321662585180">Osvežavaj dnevno</translation>
-<translation id="3133184011320864289">Uključite sinhronizaciju da biste omogućili Chrome-u da predlaže grupe kartica i organizuje kartice</translation>
 <translation id="3134393957315651797">Izaberite stanje za eksperiment <ph name="EXPERIMENT_NAME" />. Opis eksperimenta: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3137969841538672700">Prevucite da biste pretražili</translation>
 <translation id="3139925690611372679">Podrazumevani žuti avatar</translation>
@@ -3541,6 +3541,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3569614820047645079">Fajlovi na Mom disku se automatski sinhronizuju sa Chromebook-om, pa možete da im pristupate bez internet veze.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> može da pregleda datoteke i direktorijume u nastavku</translation>
 <translation id="3571734092741541777">Podesi</translation>
+<translation id="3572031449439748861">Dodaci (<ph name="NUM_EXTENSIONS" />) su isključeni</translation>
 <translation id="3575121482199441727">Dozvoli za ovaj sajt</translation>
 <translation id="3575224072358507281">Prikupljajte rezultate merenja IP adresa i mreža za Measurement Lab u skladu sa politikom privatnosti (measurementlab.net/privacy)</translation>
 <translation id="3577473026931028326">Došlo je do greške. Probajte ponovo.</translation>
@@ -9571,7 +9572,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8052218774860457016">Upravljajte sinhronizacijom pregledača</translation>
 <translation id="8053278772142718589">PKCS #12 datoteke</translation>
 <translation id="8053390638574070785">Ponovo učitaj ovu stranicu</translation>
-<translation id="8053629544194355894">Uključite sinhronizaciju da biste omogućili Chrome-u da predlaže grupe kartica</translation>
 <translation id="8054500940978949009">Dozvoljeno je. Uključite <ph name="LINK_BEGIN" />pristup sistemskom mikrofonu<ph name="LINK_END" />.</translation>
 <translation id="8054517699425078995">Ovaj tip datoteke može da naškodi uređaju. Želite li da ipak zadržite datoteku <ph name="FILE_NAME" />?</translation>
 <translation id="8054563304616131773">Unesite važeću imejl adresu</translation>
@@ -9911,7 +9911,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8293206222192510085">Dodavanje obeleživača</translation>
 <translation id="8294431847097064396">Izvor</translation>
 <translation id="8294476140219241086">Organizator kartica</translation>
-<translation id="8294895455164415895">Otvorite podešavanja da biste omogućili Chrome-u da predlaže grupe kartica</translation>
 <translation id="8295449579927246485">Prevod uživo</translation>
 <translation id="8295450130892483256">Instalirajte Microsoft 365</translation>
 <translation id="8297292446125062288">Podešavanja HID-a</translation>
@@ -10075,7 +10074,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">preko celog ekrana</translation>
 <translation id="8412136526970428322">Dozvoljeno je: <ph name="PERMISSION" /> i još <ph name="COUNT" /></translation>
-<translation id="8412682423093430245">Uključite sinhronizaciju istorije u Podešavanjima da biste omogućili Chrome-u da predlaže grupe kartica i organizuje kartice</translation>
 <translation id="8413795581997394485">Štiti vas od sajtova, preuzimanja i dodataka za koje se zna da su štetni. Kada posetite sajt, Chrome šalje maskirani deo URL-a Google-u preko servera za privatnost koji krije IP adresu. Ako sajt radi nešto sumnjivo, šalju se i celi URL-ovi i delovi sadržaja stranice.</translation>
 <translation id="8413956290606243087">Želite li da aktivirate ChromeVox, ugrađeni čitač ekrana za Chrome OS?</translation>
 <translation id="8414249071344507766">Uspomene su sakrivene na dva dana</translation>
@@ -10108,7 +10106,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="843173223122814223">Pravite pozadine pomoću veštačke inteligencije</translation>
 <translation id="8433186206711564395">Mrežna podešavanja</translation>
 <translation id="8434480141477525001">NaCl port za otklanjanje grešaka</translation>
-<translation id="8436054240208929121">Prijavite se i uključite sinhronizaciju da biste omogućili Chrome-u da predlaže grupe kartica i organizuje kartice</translation>
 <translation id="8437209419043462667">američka</translation>
 <translation id="8438566539970814960">Poboljšaj pretrage i pregledanje</translation>
 <translation id="8439506636278576865">Ponudi prevod stranica na ovom jeziku</translation>
@@ -10314,6 +10311,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8596540852772265699">Prilagođene datoteke</translation>
 <translation id="8597845839771543242">Format svojstva:</translation>
 <translation id="8598249292448297523">štampaj</translation>
+<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Upravljajte dodatkom}one{Upravljajte dodacima}few{Upravljajte dodacima}other{Upravljajte dodacima}}</translation>
 <translation id="8599681327221583254">Jedna ili više smernica nisu pravilno konfigurisane. Obratite se administratoru</translation>
 <translation id="8599864823732014237">Želite da preskočite registraciju za preduzeća?</translation>
 <translation id="8601206103050338563">TLS WWW potvrda identiteta klijenta</translation>
@@ -10714,6 +10712,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="887292602123626481">Saznajte više o podrazumevanim pretraživačima</translation>
 <translation id="8873075098103007382">Ostanite organizovani pomoću grupa kartica</translation>
 <translation id="8874341931345877644">Prebacujte na uređaj:</translation>
+<translation id="8874448314264883207">Dodatak <ph name="EXTENSION_NAME" /> je isključen</translation>
 <translation id="8874790741333031443">Probajte privremeno da dozvolite kolačiće treće strane, što znači slabiju zaštitu pregledanja, ali veću verovatnoću da će funkcije sajta raditi na očekivani način.</translation>
 <translation id="8875520811099717934">Nadogradnja Linux-a</translation>
 <translation id="8875736897340638404">Izaberite vidljivost</translation>
@@ -10772,6 +10771,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8918900204934259333">Aplikacija  se instalira…</translation>
 <translation id="891931289445130855">Izbriši podatke i dozvole</translation>
 <translation id="8920133120839850939">Izaberite karticu Još pokreta, pa uključite Listaj stranice da biste se kretali nazad i napred</translation>
+<translation id="8922348435910470639">Duplirana rezervacija</translation>
 <translation id="8922624386829239660">Pomeraj ekran kada miš dodiruje ivice ekrana</translation>
 <translation id="8923880975836399332">Tamnotirkizna</translation>
 <translation id="8925124370124776087">Naslovna traka je sada skrivena</translation>

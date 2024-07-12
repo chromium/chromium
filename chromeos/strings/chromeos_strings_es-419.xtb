@@ -84,6 +84,7 @@
 <translation id="1413240736185167732">Error: Problema en el filtro</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">orquídea</translation>
+<translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">Tengo un par de claves</translation>
 <translation id="1423591390236870726">La tecla <ph name="KEY_NAME" /> no se presionó</translation>
 <translation id="1432110487435300883">Para obtener un resultado aproximado, divide el valor de <ph name="CATEGORY_TEXT" /> por <ph name="CONVERSION_RATE" /></translation>
@@ -771,6 +772,7 @@
 <translation id="5220549459260334974">Se descargó el <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="5222676887888702881">Salir</translation>
 <translation id="522307662484862935">No incluir una dirección de correo electrónico</translation>
+<translation id="5226879510707344687">Exportar transcripción</translation>
 <translation id="5227902338748591677">Programación del tema oscuro</translation>
 <translation id="5229344016299762883">Salir de la pantalla completa</translation>
 <translation id="5234764350956374838">Descartar</translation>
@@ -961,6 +963,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6283581480003247988">azul y púrpura</translation>
 <translation id="6284632978374966585">Activar el tema oscuro</translation>
+<translation id="6285260286443238386">Exportar grabación</translation>
 <translation id="628726841779494414">Administra tus impresoras en la configuración de impresoras</translation>
 <translation id="6292095526077353682">Mientras se carga, mostrar el protector de pantalla por</translation>
 <translation id="629550705077076970">atenuación del teclado</translation>
@@ -995,6 +998,7 @@
 <translation id="6417265370957905582">Asistente de Google</translation>
 <translation id="6419454453018688975">Activar el acceso a la ubicación del sistema</translation>
 <translation id="6423239382391657905">VPN abierto</translation>
+<translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">Débil (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Ir a la configuración de la cuenta</translation>
 <translation id="6462978824459367242">Se habilitó el botón Agregar APN</translation>
@@ -1465,6 +1469,7 @@ Puedes desactivar esta opción en cualquier momento en Configuración.</translat
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
 <translation id="8918813738569491921">piedra de sal</translation>
 <translation id="8919837981463578619">Error: Falta la bandeja</translation>
+<translation id="8924154518905976972">Exportar audio</translation>
 <translation id="8928727111548978589">Error: No hay papel</translation>
 <translation id="8930521118335213258">Unidad</translation>
 <translation id="8930622219860340959">Inalámbrico</translation>

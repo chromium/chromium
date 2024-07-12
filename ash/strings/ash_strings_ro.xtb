@@ -13,6 +13,7 @@
 <translation id="1036672894875463507">Sunt Asistentul tău Google și îți stau la dispoziție pe toată durata zilei!
 Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1037492556044956303">S-a adăugat <ph name="DEVICE_NAME" /></translation>
+<translation id="1038106730571050514">Afișează sugestii</translation>
 <translation id="1047017786576569492">parțială</translation>
 <translation id="1052916631016577720">Scanarea elementelor</translation>
 <translation id="1056775291175587022">Nicio rețea</translation>
@@ -136,6 +137,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1447907279406111651">Acum ⋅ Se încheie la <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Hotspoturile dispozitivului</translation>
 <translation id="1455242230282523554">Arată setările pentru limbă</translation>
+<translation id="1459693405370120464">Meteo</translation>
 <translation id="1460620680449458626">Sunetul este dezactivat.</translation>
 <translation id="14648076227129703">Astfel, accesul la cameră este permis pentru <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> și toate aplicațiile și site-urile care au permisiunea adecvată</translation>
 <translation id="1467432559032391204">Stânga</translation>
@@ -876,6 +878,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4269883910223712419">Administratorul acestui dispozitiv poate:</translation>
 <translation id="4274537685965975248">Comanda rapidă de la tastatură Ctrl + Alt + săgeată în jos s-a schimbat. Pentru a folosi tasta End, apasă tasta <ph name="LAUNCHER_KEY_NAME" /> + săgeata spre dreapta.</translation>
 <translation id="4275283744500212192">Deschide opțiunile pentru aspectul ferestrei</translation>
+<translation id="4275663329226226506">Media</translation>
 <translation id="4279490309300973883">Oglindire</translation>
 <translation id="4280601795273309128">Actualizările de securitate s-au încheiat. Fă upgrade dispozitivului.</translation>
 <translation id="4283888303416325161">Introdu parola pentru mai multă siguranță</translation>
@@ -1160,6 +1163,7 @@ Poți folosi și comanda rapidă de la tastatură. Mai întâi, evidențiază te
 <translation id="5253783950165989294">S-a conectat la dispozitivul <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% baterie</translation>
 <translation id="5258528442992323769">Nu există desktopuri salvate</translation>
 <translation id="5260676007519551770">Desktop 4</translation>
+<translation id="5270547718570958938">Google Calendar</translation>
 <translation id="5277869901083657836">Activează / dezactivează instrumentele pentru creion</translation>
 <translation id="5278086053818066789">Activează / dezactivează ChromeVox (feedback rostit)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> are nevoie de atenție.</translation>
@@ -1258,6 +1262,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="558849140439112033">Trage pentru a selecta o zonă de capturat</translation>
 <translation id="5590609058453685222">Alerta de sunet dezactivat este activată. Vei primi o notificare dacă vorbești cu sunetul dezactivat.</translation>
 <translation id="5592745162308462420">fn</translation>
+<translation id="5593564924968945303">Browserul Chrome</translation>
 <translation id="5596627076506792578">Mai multe opțiuni</translation>
 <translation id="5599242528220103262">Comanda rapidă de la tastatură este dezactivată</translation>
 <translation id="5600415762228455511">Modul Focus este activat, timp rămas: <ph name="REMAINING_TIME" />, te concentrezi pe: <ph name="TASK_NAME" /></translation>
@@ -1354,6 +1359,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5920710855273935292">Microfonul este dezactivat.</translation>
 <translation id="5928083197428724029">Actualizare impusă de <ph name="MANAGER" /></translation>
+<translation id="5939518447894949180">Resetează</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> este activat.</translation>
 <translation id="5947494881799873997">Reveniți</translation>
 <translation id="595202126637698455">Urmărirea performanței este activată</translation>

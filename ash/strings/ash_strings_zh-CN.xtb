@@ -13,6 +13,7 @@
 <translation id="1036672894875463507">我是你的 Google 助理，可以帮你处理日常生活大小事！
 要开始体验，你不妨试一下这些功能。</translation>
 <translation id="1037492556044956303">已添加<ph name="DEVICE_NAME" /></translation>
+<translation id="1038106730571050514">显示搜索建议</translation>
 <translation id="1047017786576569492">局部</translation>
 <translation id="1052916631016577720">内容扫描</translation>
 <translation id="1056775291175587022">没有网络</translation>
@@ -136,6 +137,7 @@
 <translation id="1447907279406111651">进行中 · 结束时间：<ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">您的设备热点</translation>
 <translation id="1455242230282523554">显示语言设置</translation>
+<translation id="1459693405370120464">天气</translation>
 <translation id="1460620680449458626">当前处于静音状态。</translation>
 <translation id="14648076227129703">如果您开启摄像头，即意味着允许“<ph name="APP1_NAME" />”“<ph name="APP2_NAME" />”以及所有具有摄像头使用权限的应用和网站使用摄像头</translation>
 <translation id="1467432559032391204">向左</translation>
@@ -875,6 +877,7 @@
 <translation id="4269883910223712419">此设备的管理员能够：</translation>
 <translation id="4274537685965975248">键盘快捷键“Ctrl + Alt + 向下键”已更改。若要使用 End 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 向右键。</translation>
 <translation id="4275283744500212192">打开窗口布局选项</translation>
+<translation id="4275663329226226506">媒体</translation>
 <translation id="4279490309300973883">正在镜像</translation>
 <translation id="4280601795273309128">安全更新已终止。请升级您的设备。</translation>
 <translation id="4283888303416325161">请输入密码以增强安全性</translation>
@@ -1159,6 +1162,7 @@
 <translation id="5253783950165989294">已连接到一部名为“<ph name="DEVICE_NAME" />”的设备，它的电池电量为 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">尚未保存任何桌面</translation>
 <translation id="5260676007519551770">桌面 4</translation>
+<translation id="5270547718570958938">Google 日历</translation>
 <translation id="5277869901083657836">开启/关闭触控笔工具</translation>
 <translation id="5278086053818066789">开启/关闭 ChromeVox（语音反馈）</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" />中有需要您关注的新动态。</translation>
@@ -1256,6 +1260,7 @@
 <translation id="558849140439112033">拖动鼠标指针即可选择要截取的区域</translation>
 <translation id="5590609058453685222">静音提醒已开启。如果您在静音状态下说话，则会收到通知。</translation>
 <translation id="5592745162308462420">fn</translation>
+<translation id="5593564924968945303">Chrome 浏览器</translation>
 <translation id="5596627076506792578">更多选项</translation>
 <translation id="5599242528220103262">键盘快捷键处于停用状态</translation>
 <translation id="5600415762228455511">已开启专注模式，还剩 <ph name="REMAINING_TIME" />，正在专注于：<ph name="TASK_NAME" /></translation>
@@ -1352,6 +1357,7 @@
 <translation id="5916664084637901428">已启用</translation>
 <translation id="5920710855273935292">麦克风已静音。</translation>
 <translation id="5928083197428724029">根据 <ph name="MANAGER" /> 的要求更新</translation>
+<translation id="5939518447894949180">重置</translation>
 <translation id="5946788582095584774">“<ph name="FEATURE_NAME" />”功能已开启。</translation>
 <translation id="5947494881799873997">还原</translation>
 <translation id="595202126637698455">已启用性能跟踪</translation>

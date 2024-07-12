@@ -84,6 +84,7 @@
 <translation id="1413240736185167732">Nepodarilo sa – zlyhal filter</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">orchidea</translation>
+<translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">Mám pár kľúčov</translation>
 <translation id="1423591390236870726">Nebol stlačený kláves <ph name="KEY_NAME" /></translation>
 <translation id="1432110487435300883">Približný výsledok získate, keď hodnotu <ph name="CATEGORY_TEXT" /> vydelíte číslom <ph name="CONVERSION_RATE" /></translation>
@@ -771,6 +772,7 @@
 <translation id="5220549459260334974">Stiahnuté: <ph name="PROGRESS_PERCENTAGE" /> %</translation>
 <translation id="5222676887888702881">Odhlásiť sa</translation>
 <translation id="522307662484862935">Nezahŕňať e‑mailovú adresu</translation>
+<translation id="5226879510707344687">Export prepisu</translation>
 <translation id="5227902338748591677">Plán tmavého motívu</translation>
 <translation id="5229344016299762883">Ukončiť režim celej obrazovky</translation>
 <translation id="5234764350956374838">Ignorovať</translation>
@@ -961,6 +963,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6283581480003247988">modrá a purpurová</translation>
 <translation id="6284632978374966585">Zapnúť tmavý motív</translation>
+<translation id="6285260286443238386">Export nahrávky</translation>
 <translation id="628726841779494414">Spravujte tlačiarne v ich nastaveniach</translation>
 <translation id="6292095526077353682">Zobrazovať počas nabíjania šetrič obrazovky pre zariadenie</translation>
 <translation id="629550705077076970">stmavenie farieb klávesnice</translation>
@@ -995,6 +998,7 @@
 <translation id="6417265370957905582">Asistent Google</translation>
 <translation id="6419454453018688975">Zapnúť prístup k polohe systému</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">Slabé (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Prejsť do nastavení účtu</translation>
 <translation id="6462978824459367242">Tlačidlo Pridať názov prístupového bodu (APN) je teraz povolené</translation>
@@ -1465,6 +1469,7 @@ V nastaveniach to môžete kedykoľvek vypnúť.</translation>
 <translation id="8918637186205009138">Zariadenie <ph name="DEVICE_TYPE" /> používateľa <ph name="GIVEN_NAME" /></translation>
 <translation id="8918813738569491921">soľnou skalou</translation>
 <translation id="8919837981463578619">Nepodarilo sa – chýba zásobník</translation>
+<translation id="8924154518905976972">Export zvuku</translation>
 <translation id="8928727111548978589">Nepodarilo sa – minul sa papier</translation>
 <translation id="8930521118335213258">Podobná aplikácia</translation>
 <translation id="8930622219860340959">Bezdrôtové pripojenie</translation>

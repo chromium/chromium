@@ -13,6 +13,7 @@
 <translation id="1036672894875463507">Я ваш Google Ассистент. Я могу помогать вам в течение всего дня.
 Вот что вы можете сделать для начала.</translation>
 <translation id="1037492556044956303">Добавлено устройство <ph name="DEVICE_NAME" /></translation>
+<translation id="1038106730571050514">Показать подсказки</translation>
 <translation id="1047017786576569492">часть экрана</translation>
 <translation id="1052916631016577720">Сканирование</translation>
 <translation id="1056775291175587022">Нет сетей</translation>
@@ -136,6 +137,7 @@
 <translation id="1447907279406111651">Проходит сейчас · Окончание: <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Ваши устройства с точкой доступа</translation>
 <translation id="1455242230282523554">Показать языковые настройки</translation>
+<translation id="1459693405370120464">Погода</translation>
 <translation id="1460620680449458626">Сейчас звук выключен.</translation>
 <translation id="14648076227129703">Доступ к камере получат приложения "<ph name="APP1_NAME" />" и "<ph name="APP2_NAME" />", а также все приложения и сайты с разрешением "Камера".</translation>
 <translation id="1467432559032391204">Слева</translation>
@@ -876,6 +878,7 @@
 <translation id="4269883910223712419">Администратор этого устройства имеет возможность:</translation>
 <translation id="4274537685965975248">Функция сочетания клавиш Ctrl + Alt + Стрелка вниз изменилась. Чтобы выполнить действие клавиши End, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Стрелка вправо.</translation>
 <translation id="4275283744500212192">Открыть параметры макета страницы</translation>
+<translation id="4275663329226226506">Камера и микрофон </translation>
 <translation id="4279490309300973883">Отражение</translation>
 <translation id="4280601795273309128">Ваше устройство больше не будет получать обновления системы безопасности. Приобретите вместо него новое.</translation>
 <translation id="4283888303416325161">Для дополнительной безопасности введите пароль.</translation>
@@ -1160,6 +1163,7 @@
 <translation id="5253783950165989294">Установлено подключение к устройству "<ph name="DEVICE_NAME" />", заряд батареи – <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="5258528442992323769">Нет сохраненных рабочих столов.</translation>
 <translation id="5260676007519551770">Рабочий стол 4</translation>
+<translation id="5270547718570958938">Календарь Google</translation>
 <translation id="5277869901083657836">Показать или скрыть инструменты стилуса</translation>
 <translation id="5278086053818066789">Включить или отключить ChromeVox (озвучивание текста на экране)</translation>
 <translation id="5283099933536931082">Приложение "<ph name="APP_ITEM_TITLE" />" требует вашего внимания.</translation>
@@ -1258,6 +1262,7 @@
 <translation id="558849140439112033">Перетащите, чтобы выделить область для снимка</translation>
 <translation id="5590609058453685222">Функция "Напоминание включить микрофон" теперь работает. Если вы будете говорить с отключенным звуком микрофона, появится уведомление.</translation>
 <translation id="5592745162308462420">fn</translation>
+<translation id="5593564924968945303">Браузер Chrome</translation>
 <translation id="5596627076506792578">Ещё</translation>
 <translation id="5599242528220103262">Сочетание клавиш отключено</translation>
 <translation id="5600415762228455511">Режим концентрации внимания включен. Вы сфокусировались на задаче "<ph name="TASK_NAME" />". Оставшееся время: <ph name="REMAINING_TIME" />.</translation>
@@ -1354,6 +1359,7 @@
 <translation id="5916664084637901428">ВКЛ</translation>
 <translation id="5920710855273935292">Микрофон отключен.</translation>
 <translation id="5928083197428724029">По правилам, установленным <ph name="MANAGER" />, необходимо обновить ОС.</translation>
+<translation id="5939518447894949180">Сбросить</translation>
 <translation id="5946788582095584774">Функция "<ph name="FEATURE_NAME" />" включена</translation>
 <translation id="5947494881799873997">Отменить</translation>
 <translation id="595202126637698455">Включено отслеживание эффективности</translation>

@@ -84,6 +84,7 @@
 <translation id="1413240736185167732">Niepowodzenie – błąd filtra</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">storczyk</translation>
+<translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">Mam parę kluczy</translation>
 <translation id="1423591390236870726">Nie naciśnięto klawisza <ph name="KEY_NAME" /></translation>
 <translation id="1432110487435300883">Aby uzyskać wynik przybliżony, podziel <ph name="CATEGORY_TEXT" /> przez <ph name="CONVERSION_RATE" /></translation>
@@ -771,6 +772,7 @@
 <translation id="5220549459260334974">Pobrano <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="5222676887888702881">Wyloguj się</translation>
 <translation id="522307662484862935">Nie podawaj adresu e-mail</translation>
+<translation id="5226879510707344687">Eksportuj transkrypcję</translation>
 <translation id="5227902338748591677">Harmonogram ciemnego motywu</translation>
 <translation id="5229344016299762883">Zamknij tryb pełnego ekranu</translation>
 <translation id="5234764350956374838">Zamknij</translation>
@@ -961,6 +963,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6283581480003247988">niebieskich i fioletowych</translation>
 <translation id="6284632978374966585">Włącz ciemny motyw</translation>
+<translation id="6285260286443238386">Eksportuj nagranie</translation>
 <translation id="628726841779494414">Zarządzaj drukarkami w ustawieniach drukarek</translation>
 <translation id="6292095526077353682">Podczas ładowania pokazuj wygaszacz ekranu przez</translation>
 <translation id="629550705077076970">przyciemnianie klawiatury</translation>
@@ -995,6 +998,7 @@
 <translation id="6417265370957905582">Asystent Google</translation>
 <translation id="6419454453018688975">Włącz w systemie dostęp do lokalizacji</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">Słaba (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Otwórz ustawienia konta</translation>
 <translation id="6462978824459367242">Przycisk Dodaj APN jest teraz włączony</translation>
@@ -1033,6 +1037,7 @@
 <translation id="6595046262780525922">Włączyć transkrypcję i pobrać model transkrypcji?</translation>
 <translation id="6596816719288285829">Adres IP</translation>
 <translation id="6599673642868607614">Dziękujemy za przesłanie opinii. Zapozna się z nią nasz zespół, bo opinie pomagają nami ulepszać Chromebooka. Ze względu na dużą liczbę zgłoszeń nie będziemy mogli wysłać odpowiedzi.</translation>
+<translation id="660846213831377756">Klawisze myszy</translation>
 <translation id="6618744767048954150">W toku</translation>
 <translation id="6620487321149975369">Zadania drukowania będą widoczne w historii, dopóki ich nie usuniesz</translation>
 <translation id="6624819909909965616">Nie możesz przesłać pliku większego niż 10 MB</translation>
@@ -1462,6 +1467,7 @@ W każdej chwili możesz wyłączyć tę funkcję w Ustawieniach.</translation
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />: <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918813738569491921">sól kamienna</translation>
 <translation id="8919837981463578619">Niepowodzenie – nie znaleziono tacy</translation>
+<translation id="8924154518905976972">Eksportuj dźwięk</translation>
 <translation id="8928727111548978589">Niepowodzenie – brak papieru</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Sieć bezprzewodowa</translation>

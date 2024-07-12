@@ -13,6 +13,7 @@
 <translation id="1036672894875463507">Son o teu Asistente de Google e estou aquí para botarche unha man ao longo do día.
 Para comezar, podes probar o seguinte.</translation>
 <translation id="1037492556044956303">Engadiuse <ph name="DEVICE_NAME" /></translation>
+<translation id="1038106730571050514">Mostrar suxestións</translation>
 <translation id="1047017786576569492">parcial</translation>
 <translation id="1052916631016577720">Escanear elemento</translation>
 <translation id="1056775291175587022">Non se atoparon redes</translation>
@@ -136,6 +137,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1447907279406111651">Agora ⋅ Remata á/s <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">As zonas wifi do teu dispositivo</translation>
 <translation id="1455242230282523554">Mostrar a configuración do idioma</translation>
+<translation id="1459693405370120464">O tempo</translation>
 <translation id="1460620680449458626">O volume está silenciado.</translation>
 <translation id="14648076227129703">Desta forma, poderán acceder á cámara <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e todas as aplicacións e sitios web con permiso de acceso á cámara</translation>
 <translation id="1467432559032391204">Esquerda</translation>
@@ -877,6 +879,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="4269883910223712419">O administrador deste dispositivo pode facer o seguinte:</translation>
 <translation id="4274537685965975248">O atallo Control + Alt + Frecha abaixo cambiou. Para usar a tecla Fin, preme <ph name="LAUNCHER_KEY_NAME" /> + Frecha dereita.</translation>
 <translation id="4275283744500212192">Abre as opcións de deseño de ventá</translation>
+<translation id="4275663329226226506">Multimedia</translation>
 <translation id="4279490309300973883">Proxección</translation>
 <translation id="4280601795273309128">Deixaron de recibirse as actualizacións de seguranza. Actualiza o dispositivo.</translation>
 <translation id="4283888303416325161">Escribe o contrasinal como medida de seguranza adicional</translation>
@@ -1161,6 +1164,7 @@ Tamén podes usar o atallo de teclado. Primeiro, destaca o texto e, a continuaci
 <translation id="5253783950165989294">Conexión establecida cun dispositivo chamado "<ph name="DEVICE_NAME" />"; <ph name="BATTERY_PERCENTAGE" /> % de batería</translation>
 <translation id="5258528442992323769">Non hai escritorios gardados</translation>
 <translation id="5260676007519551770">Escritorio 4</translation>
+<translation id="5270547718570958938">Google Calendar</translation>
 <translation id="5277869901083657836">Activar ou desactivar ferramentas do lapis óptico</translation>
 <translation id="5278086053818066789">Activa ou desactiva ChromeVox (comentarios de voz)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> require a túa atención.</translation>
@@ -1259,6 +1263,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="558849140439112033">Arrastra para seleccionar a zona que queiras capturar</translation>
 <translation id="5590609058453685222">A función de aviso de micrófono silenciado está activada. Se falas cando o micrófono estea desactivado, recibirás unha notificación.</translation>
 <translation id="5592745162308462420">fn</translation>
+<translation id="5593564924968945303">Navegador de Chrome</translation>
 <translation id="5596627076506792578">Máis opcións</translation>
 <translation id="5599242528220103262">O atallo de teclado está desactivado</translation>
 <translation id="5600415762228455511">Modo Sen distraccións activado. Tempo restante: <ph name="REMAINING_TIME" />. Tarefa actual: <ph name="TASK_NAME" /></translation>
@@ -1355,6 +1360,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="5916664084637901428">Si</translation>
 <translation id="5920710855273935292">O micrófono está silenciado.</translation>
 <translation id="5928083197428724029">Para poder acceder a <ph name="MANAGER" />, é necesario cambiar a versión no dispositivo</translation>
+<translation id="5939518447894949180">Restablecer</translation>
 <translation id="5946788582095584774">A función <ph name="FEATURE_NAME" /> está activada.</translation>
 <translation id="5947494881799873997">Reverter</translation>
 <translation id="595202126637698455">Seguimento do rendemento activado</translation>
