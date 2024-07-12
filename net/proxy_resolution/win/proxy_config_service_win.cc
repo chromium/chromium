@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -130,7 +131,7 @@ void ProxyConfigServiceWin::OnObjectSignaled(base::win::RegKey* key) {
   // Figure out which registry key signalled this change.
   auto it = base::ranges::find(keys_to_watch_, key,
                                &std::unique_ptr<base::win::RegKey>::get);
-  DCHECK(it != keys_to_watch_.end());
+  CHECK(it != keys_to_watch_.end(), base::NotFatalUntil::M130);
 
   // Keep watching the registry key.
   if (!key->StartWatching(

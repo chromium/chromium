@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -106,7 +107,7 @@ void NetLog::RemoveObserver(NetLog::ThreadSafeObserver* observer) {
   DCHECK_EQ(this, observer->net_log_);
 
   auto it = base::ranges::find(observers_, observer);
-  DCHECK(it != observers_.end());
+  CHECK(it != observers_.end(), base::NotFatalUntil::M130);
   observers_.erase(it);
 
   observer->net_log_ = nullptr;
@@ -134,7 +135,7 @@ void NetLog::RemoveCaptureModeObserver(
   DCHECK(HasCaptureModeObserver(observer));
 
   auto it = base::ranges::find(capture_mode_observers_, observer);
-  DCHECK(it != capture_mode_observers_.end());
+  CHECK(it != capture_mode_observers_.end(), base::NotFatalUntil::M130);
   capture_mode_observers_.erase(it);
 
   observer->net_log_ = nullptr;

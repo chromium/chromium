@@ -12,6 +12,7 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/time/clock.h"
@@ -169,7 +170,7 @@ void ReportingCacheImpl::ClearReportsPending(
         reports) {
   for (const ReportingReport* report : reports) {
     auto it = reports_.find(report);
-    DCHECK(it != reports_.end());
+    CHECK(it != reports_.end(), base::NotFatalUntil::M130);
     if (it->get()->status == ReportingReport::Status::DOOMED ||
         it->get()->status == ReportingReport::Status::SUCCESS) {
       reports_.erase(it);
@@ -186,7 +187,7 @@ void ReportingCacheImpl::IncrementReportsAttempts(
         reports) {
   for (const ReportingReport* report : reports) {
     auto it = reports_.find(report);
-    DCHECK(it != reports_.end());
+    CHECK(it != reports_.end(), base::NotFatalUntil::M130);
     it->get()->attempts++;
     context_->NotifyReportUpdated(it->get());
   }
@@ -310,7 +311,7 @@ void ReportingCacheImpl::RemoveReports(
     bool delivery_success) {
   for (const ReportingReport* report : reports) {
     auto it = reports_.find(report);
-    DCHECK(it != reports_.end());
+    CHECK(it != reports_.end(), base::NotFatalUntil::M130);
 
     switch (it->get()->status) {
       case ReportingReport::Status::DOOMED:
@@ -969,7 +970,7 @@ IsolationInfo ReportingCacheImpl::GetIsolationInfoForEndpoint(
   }
   const auto it =
       isolation_info_.find(endpoint.group_key.reporting_source.value());
-  DCHECK(it != isolation_info_.end());
+  CHECK(it != isolation_info_.end(), base::NotFatalUntil::M130);
   return it->second;
 }
 

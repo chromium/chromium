@@ -28,6 +28,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/ranges/algorithm.h"
@@ -895,7 +896,7 @@ void HttpCache::DeletePendingOp(PendingOp* pending_op) {
 
   if (!key.empty()) {
     auto it = pending_ops_.find(key);
-    DCHECK(it != pending_ops_.end());
+    CHECK(it != pending_ops_.end(), base::NotFatalUntil::M130);
     pending_ops_.erase(it);
   } else {
     for (auto it = pending_ops_.begin(); it != pending_ops_.end(); ++it) {

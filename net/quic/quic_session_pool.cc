@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
@@ -596,7 +597,7 @@ int QuicSessionPool::RequestSession(
   }
   if (rv == OK) {
     auto it = active_sessions_.find(session_key);
-    DCHECK(it != active_sessions_.end());
+    CHECK(it != active_sessions_.end(), base::NotFatalUntil::M130);
     if (it == active_sessions_.end()) {
       return ERR_QUIC_PROTOCOL_ERROR;
     }

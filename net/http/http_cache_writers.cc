@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
@@ -191,7 +192,7 @@ void HttpCache::Writers::EraseTransaction(Transaction* transaction,
                                           int result) {
   // The transaction should be part of all_writers.
   auto it = all_writers_.find(transaction);
-  DCHECK(it != all_writers_.end());
+  CHECK(it != all_writers_.end(), base::NotFatalUntil::M130);
   EraseTransaction(it, result);
 }
 

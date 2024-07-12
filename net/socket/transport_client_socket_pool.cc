@@ -18,6 +18,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -1544,7 +1545,7 @@ std::unique_ptr<ConnectJob> TransportClientSocketPool::Group::RemoveUnboundJob(
 
   // Check that |job| is in the list.
   auto it = base::ranges::find(jobs_, job, &std::unique_ptr<ConnectJob>::get);
-  DCHECK(it != jobs_.end());
+  CHECK(it != jobs_.end(), base::NotFatalUntil::M130);
 
   // Check if |job| is in the unassigned jobs list. If so, remove it.
   auto it2 = base::ranges::find(unassigned_jobs_, job);

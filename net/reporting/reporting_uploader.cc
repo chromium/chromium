@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "net/base/elements_upload_data_stream.h"
@@ -258,7 +259,7 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
     // Grab Upload from map, and hold on to it in a local unique_ptr so it's
     // removed at the end of the method.
     auto it = uploads_.find(request);
-    DCHECK(it != uploads_.end());
+    CHECK(it != uploads_.end(), base::NotFatalUntil::M130);
     std::unique_ptr<PendingUpload> upload = std::move(it->second);
     uploads_.erase(it);
 
