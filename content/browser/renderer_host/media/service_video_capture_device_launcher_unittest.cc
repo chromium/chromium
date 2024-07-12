@@ -148,12 +148,13 @@ class ServiceVideoCaptureDeviceLauncherTest : public testing::Test {
       ServiceVideoCaptureDeviceLauncher::ConnectToDeviceFactoryCB>
       connect_to_device_factory_cb_;
   base::MockCallback<base::OnceClosure> release_connection_cb_;
-  // |service_connection_| needs to go below |release_connection_cb_|, because
-  // its destructor will call |release_connection_cb_|.
-  scoped_refptr<RefCountedVideoSourceProvider> service_connection_;
   bool launcher_has_connected_to_source_provider_;
   bool launcher_has_released_source_provider_;
   base::RunLoop wait_for_release_connection_cb_;
+  // Destroy `service_connection_` before everything else; destroying the
+  // `RefCountedVideoSourceProvider` can end up referencing other fields of the
+  // test fixture.
+  scoped_refptr<RefCountedVideoSourceProvider> service_connection_;
 };
 
 TEST_F(ServiceVideoCaptureDeviceLauncherTest, LaunchingDeviceSucceeds) {
