@@ -28,10 +28,6 @@ static_library("ash") {
   }
 
   sources = [
-    "audio/audio_survey_handler.cc",
-    "audio/audio_survey_handler.h",
-    "audio/cras_audio_handler_delegate_impl.cc",
-    "audio/cras_audio_handler_delegate_impl.h",
     "boot_times_recorder.cc",
     "boot_times_recorder.h",
     "boot_times_recorder_tab_helper.cc",
@@ -1405,6 +1401,7 @@ static_library("ash") {
     "//chrome/browser/ash/assistant",
     "//chrome/browser/ash/attestation",
     "//chrome/browser/ash/attestation:attestation_proto",
+    "//chrome/browser/ash/audio",
     "//chrome/browser/ash/authpolicy",
     "//chrome/browser/ash/base",
     "//chrome/browser/ash/bluetooth",
@@ -2223,7 +2220,6 @@ source_set("unit_tests") {
     "../ui/webui/ash/settings/services/metrics/settings_user_action_tracker_unittest.cc",
     "../ui/webui/ash/settings/services/settings_manager/os_settings_manager_unittest.cc",
     "../ui/webui/settings/about_handler_unittest.cc",
-    "audio/audio_survey_handler_unittest.cc",
     "camera_presence_notifier_unittest.cc",
     "concierge_helper_service_unittest.cc",
     "dbus_schedqos_state_handler_unittest.cc",
