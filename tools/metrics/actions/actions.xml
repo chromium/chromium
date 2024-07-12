@@ -2461,6 +2461,28 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Actions.CustomizeToolbarSidePanel.OpenedFromCustomizeChrome">
+  <owner>tbergquist@chromium.org</owner>
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the customize toolbar page in the customize chrome side panel
+    is opened by clicking on the link in the customize chrome side panel.
+  </description>
+</action>
+
+<action
+    name="Actions.CustomizeToolbarSidePanel.OpenedFromOutsideCustomizeChrome">
+  <owner>tbergquist@chromium.org</owner>
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the customize toolbar page in the customize chrome side panel
+    is opened from outside the side panel, for example from the settings page or
+    from the context menu of a pinned action.
+  </description>
+</action>
+
 <action name="Actions.PinnedToolbarButton.Pinned.ByContextMenu">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>

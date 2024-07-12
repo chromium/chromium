@@ -114,7 +114,10 @@ export class AppElement extends AppElementBase {
                     this.onWallpaperSearchSelect_();
                     return;
                   } else if (section === CustomizeChromeSection.kToolbar) {
-                    this.onToolbarCustomizationButtonClick_();
+                    this.openToolbarCustomizationPage();
+                    chrome.metricsPrivate.recordUserAction(
+                        'Actions.CustomizeToolbarSidePanel' +
+                        '.OpenedFromOutsideCustomizeChrome');
                     return;
                   }
                   const selector = SECTION_TO_SELECTOR[section];
@@ -230,6 +233,12 @@ export class AppElement extends AppElementBase {
   }
 
   protected onToolbarCustomizationButtonClick_() {
+    this.openToolbarCustomizationPage();
+    chrome.metricsPrivate.recordUserAction(
+        'Actions.CustomizeToolbarSidePanel.OpenedFromCustomizeChrome');
+  }
+
+  private openToolbarCustomizationPage() {
     this.page_ = CustomizeChromePage.TOOLBAR;
     const page = this.shadowRoot!.querySelector('customize-chrome-toolbar');
     assert(page);
