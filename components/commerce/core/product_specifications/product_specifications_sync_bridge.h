@@ -97,7 +97,8 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
   void UpdateSpecifics(
       const sync_pb::ProductComparisonSpecifics& new_specifics);
 
-  void DeleteSpecifics(const sync_pb::ProductComparisonSpecifics specifics);
+  void DeleteSpecifics(
+      const std::vector<sync_pb::ProductComparisonSpecifics> specifics);
 
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,
                       std::unique_ptr<syncer::ModelTypeStore> store);

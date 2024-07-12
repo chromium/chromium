@@ -201,7 +201,7 @@ void ProductSpecificationsSyncBridge::UpdateSpecifics(
 }
 
 void ProductSpecificationsSyncBridge::DeleteSpecifics(
-    const sync_pb::ProductComparisonSpecifics to_remove) {
+    const std::vector<sync_pb::ProductComparisonSpecifics> to_remove) {
   if (!change_processor()->IsTrackingMetadata()) {
     return;
   }
@@ -209,12 +209,14 @@ void ProductSpecificationsSyncBridge::DeleteSpecifics(
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
 
-  change_processor()->Delete(to_remove.uuid(),
-                             syncer::DeletionOrigin::Unspecified(),
-                             batch->GetMetadataChangeList());
+  for (auto& specifics : to_remove) {
+    change_processor()->Delete(specifics.uuid(),
+                               syncer::DeletionOrigin::Unspecified(),
+                               batch->GetMetadataChangeList());
 
-  entries_.erase(to_remove.uuid());
-  batch->DeleteData(to_remove.uuid());
+    entries_.erase(specifics.uuid());
+    batch->DeleteData(specifics.uuid());
+  }
 
   Commit(std::move(batch));
 }

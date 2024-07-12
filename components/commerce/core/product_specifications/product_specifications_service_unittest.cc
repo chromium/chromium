@@ -241,6 +241,33 @@ class ProductSpecificationsServiceTest : public testing::Test {
     return storage_key_to_specifics;
   }
 
+  void CheckProductSpecificationsExists(
+      const std::vector<ProductSpecificationsSet> query_sets) {
+    for (const auto& query_set : query_sets) {
+      EXPECT_TRUE(HasProductSpecifications(query_set))
+          << "Set " << query_set.name() << " not found\n";
+    }
+  }
+
+  void CheckProductSpecificationsAbsent(
+      const std::vector<ProductSpecificationsSet>& query_sets) {
+    for (const auto& query_set : query_sets) {
+      EXPECT_FALSE(HasProductSpecifications(query_set))
+          << "Set " << query_set.name() << " found\n";
+    }
+  }
+
+  bool HasProductSpecifications(const ProductSpecificationsSet& query_set) {
+    for (const auto& stored_set : service_->GetAllProductSpecifications()) {
+      if (query_set.uuid() == stored_set.uuid() &&
+          query_set.name() == stored_set.name() &&
+          query_set.urls() == stored_set.urls()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   syncer::ModelTypeStore* store() { return store_.get(); }
 
   std::map<std::string, sync_pb::ProductComparisonSpecifics> entries() {
@@ -626,6 +653,32 @@ TEST_F(ProductSpecificationsServiceTest,
       EXPECT_EQ(top_level.uuid(), item_specific.product_comparison_uuid());
     }
   }
+}
+
+TEST_F(ProductSpecificationsServiceTest, TestDeleteProductSpecsMultiSpecifics) {
+  EnableMultiSpecFlag();
+
+  std::vector<ProductSpecificationsSet> sets;
+  for (int i = 0; i < 3; i++) {
+    sets.push_back(
+        service()
+            ->AddProductSpecificationsSet(
+                base::StringPrintf("Set %d", i),
+                {GURL("https://a.example.com"), GURL("https://b.example.com")})
+            .value());
+  }
+  base::RunLoop().RunUntilIdle();
+  CheckProductSpecificationsExists(sets);
+
+  EXPECT_CALL(
+      *observer(),
+      OnProductSpecificationsSetRemoved(IsSetWithUuid(
+          base::Uuid::ParseLowercase(sets[1].uuid().AsLowercaseString()))))
+      .Times(1);
+  service()->DeleteProductSpecificationsSet(sets[1].uuid().AsLowercaseString());
+  base::RunLoop().RunUntilIdle();
+  CheckProductSpecificationsExists({sets[0], sets[2]});
+  CheckProductSpecificationsAbsent({sets[1]});
 }
 
 }  // namespace commerce

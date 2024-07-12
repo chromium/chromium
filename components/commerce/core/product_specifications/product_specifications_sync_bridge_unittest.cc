@@ -213,7 +213,8 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
     return bridge().AddSpecifics(specifics);
   }
 
-  void DeleteSpecifics(const sync_pb::ProductComparisonSpecifics& specifics) {
+  void DeleteSpecifics(
+      const std::vector<sync_pb::ProductComparisonSpecifics>& specifics) {
     bridge().DeleteSpecifics(specifics);
   }
 
@@ -528,7 +529,7 @@ TEST_F(ProductSpecificationsSyncBridgeTest, TestUpdate) {
 TEST_F(ProductSpecificationsSyncBridgeTest,
        TestDeleteProductSpecificationsSet) {
   VerifySpecificsExists(kInitCompareSpecifics[0]);
-  DeleteSpecifics(kInitCompareSpecifics[0]);
+  DeleteSpecifics({kInitCompareSpecifics[0]});
   base::RunLoop().RunUntilIdle();
   VerifySpecificsNonExistence(kInitCompareSpecifics[0]);
 }
@@ -540,12 +541,21 @@ TEST_F(ProductSpecificationsSyncBridgeTest,
   for (const auto& product_comparison_specifics : kInitCompareSpecifics) {
     VerifySpecificsExists(product_comparison_specifics);
   }
-  DeleteSpecifics(kInitCompareSpecifics[0]);
+  DeleteSpecifics({kInitCompareSpecifics[0]});
   // Delete operation should be ineffectual because we're not tracking metadata
   VerifyEntriesAndStoreSize(3);
   for (const auto& product_comparison_specifics : kInitCompareSpecifics) {
     VerifySpecificsExists(product_comparison_specifics);
   }
+}
+
+TEST_F(ProductSpecificationsSyncBridgeTest, TestDeleteMultiSpecifics) {
+  VerifySpecificsExists(kInitCompareSpecifics[0]);
+  VerifySpecificsExists(kInitCompareSpecifics[1]);
+  DeleteSpecifics({kInitCompareSpecifics[0], kInitCompareSpecifics[1]});
+  base::RunLoop().RunUntilIdle();
+  VerifySpecificsNonExistence(kInitCompareSpecifics[0]);
+  VerifySpecificsNonExistence(kInitCompareSpecifics[1]);
 }
 
 TEST_F(ProductSpecificationsSyncBridgeTest,

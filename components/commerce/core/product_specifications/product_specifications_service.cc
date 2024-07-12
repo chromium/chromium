@@ -14,6 +14,7 @@
 #include "base/hash/sha1.h"
 #include "base/time/time.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 #include "components/sync/protocol/product_comparison_specifics.pb.h"
 
@@ -283,14 +284,42 @@ ProductSpecificationsService::SetName(const base::Uuid& uuid,
 
 void ProductSpecificationsService::DeleteProductSpecificationsSet(
     const std::string& uuid) {
-  auto it = bridge_->entries().find(uuid);
-  if (it == bridge_->entries().end()) {
-    return;
+  if (base::FeatureList::IsEnabled(
+          commerce::kProductSpecificationsMultiSpecifics)) {
+    std::vector<sync_pb::ProductComparisonSpecifics> specifics_to_delete;
+
+    const sync_pb::ProductComparisonSpecifics* top_level = nullptr;
+    std::vector<GURL> urls;
+    for (auto& entry : bridge_->entries()) {
+      if (entry.second.has_product_comparison() &&
+          entry.second.uuid() == uuid) {
+        specifics_to_delete.push_back(entry.second);
+        top_level = &entry.second;
+      } else if (entry.second.has_product_comparison_item() &&
+                 entry.second.product_comparison_item()
+                         .product_comparison_uuid() == uuid) {
+        specifics_to_delete.push_back(entry.second);
+        urls.emplace_back(entry.second.product_comparison_item().url());
+      }
+    }
+    if (top_level) {
+      ProductSpecificationsSet set(
+          uuid, top_level->creation_time_unix_epoch_millis(),
+          top_level->update_time_unix_epoch_millis(), urls,
+          top_level->product_comparison().name());
+      NotifyProductSpecificationsRemoval(set);
+    }
+    bridge_->DeleteSpecifics(specifics_to_delete);
+  } else {
+    auto it = bridge_->entries().find(uuid);
+    if (it == bridge_->entries().end()) {
+      return;
+    }
+    sync_pb::ProductComparisonSpecifics to_remove = it->second;
+    bridge_->DeleteSpecifics({to_remove});
+    NotifyProductSpecificationsRemoval(
+        ProductSpecificationsSet::FromProto(to_remove));
   }
-  sync_pb::ProductComparisonSpecifics to_remove = it->second;
-  bridge_->DeleteSpecifics(to_remove);
-  NotifyProductSpecificationsRemoval(
-      ProductSpecificationsSet::FromProto(to_remove));
 }
 
 void ProductSpecificationsService::AddObserver(
