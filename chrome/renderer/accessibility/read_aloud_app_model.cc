@@ -223,17 +223,9 @@ a11y::ReadAloudCurrentGranularity ReadAloudAppModel::GetNextNodes(
         // Add the current node to the list of nodes to be returned, with a
         // text range from 0 to the start of the next sentence
         // (index_in_new_node);
-        ReadAloudTextSegment segment;
-        segment.id = anchor_node->id();
-        segment.text_start = 0;
-        segment.text_end = index_in_new_node;
-        current_granularity.AddSegment(segment);
-        int current_text_length = current_granularity.text.length();
-        current_granularity.text +=
-            anchor_node->GetTextContentUTF16().substr(0, index_in_new_node);
-        current_granularity.index_map.insert(
-            {{current_text_length, current_granularity.text.length()},
-             segment.id});
+        AddTextToCurrentGranularity(anchor_node, /* startIndex= */ 0,
+                                    /* end_index= */ index_in_new_node,
+                                    current_granularity);
         current_text_index_ = index_in_new_node;
         if (current_text_index_ != (int)base_text.length()) {
           // If we're in the middle of the node, there's no need to attempt
@@ -267,16 +259,9 @@ a11y::ReadAloudCurrentGranularity ReadAloudAppModel::GetNextNodes(
     // Add the current node to the list of nodes to be returned, with a
     // text range from the starting index (the end of the previous piece of
     // the sentence) to the start of the next sentence.
-    ReadAloudTextSegment segment;
-    segment.id = anchor_node->id();
-    segment.text_start = start_index;
-    segment.text_end = new_current_text_index;
-    current_granularity.AddSegment(segment);
-    int current_text_length = current_granularity.text.length();
-    current_granularity.text += anchor_node->GetTextContentUTF16().substr(
-        start_index, current_text_index_ - start_index);
-    current_granularity.index_map.insert(
-        {{current_text_length, current_granularity.text.length()}, segment.id});
+    AddTextToCurrentGranularity(anchor_node, start_index,
+                                /* end_index= */ current_text_index_,
+                                current_granularity);
 
     // After adding the most recent granularity segment, if we're not at the
     //  end of the node, the current nodes can be returned, as we know there's
@@ -286,6 +271,26 @@ a11y::ReadAloudCurrentGranularity ReadAloudAppModel::GetNextNodes(
     }
   }
   return current_granularity;
+}
+
+void ReadAloudAppModel::AddTextToCurrentGranularity(
+    ui::AXNode* anchor_node,
+    int start_index,
+    int end_index,
+    a11y::ReadAloudCurrentGranularity& current_granularity) {
+  ReadAloudTextSegment segment;
+  segment.id = anchor_node->id();
+  segment.text_start = start_index;
+  segment.text_end = end_index;
+  current_granularity.AddSegment(segment);
+
+  int current_text_length = current_granularity.text.length();
+
+  current_granularity.text += anchor_node->GetTextContentUTF16().substr(
+      start_index, end_index - start_index);
+
+  current_granularity.index_map.insert(
+      {{current_text_length, current_granularity.text.length()}, segment.id});
 }
 
 // Gets the next valid position from our current position within AXPosition

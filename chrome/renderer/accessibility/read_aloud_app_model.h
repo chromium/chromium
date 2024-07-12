@@ -162,6 +162,12 @@ class ReadAloudAppModel {
       bool is_docs,
       const std::set<ui::AXNodeID>* current_nodes) const;
 
+  void AddTextToCurrentGranularity(
+      ui::AXNode* anchor_node,
+      int start_index,
+      int end_index,
+      a11y::ReadAloudCurrentGranularity& current_granularity);
+
   // Whether Read Aloud speech is currently playing or not.
   bool speech_playing_ = false;
 
