@@ -35,6 +35,7 @@
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/strings/escape.h"
+#include "base/system/sys_info.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
@@ -394,6 +395,13 @@ void FontCache::MaybePreloadSystemFonts() {
   CHECK(IsMainThread());
 
   if (!base::FeatureList::IsEnabled(features::kPreloadSystemFonts)) {
+    return;
+  }
+
+  const int kPhysicalMemoryGB =
+      base::SysInfo::AmountOfPhysicalMemoryMB() / 1024;
+
+  if (kPhysicalMemoryGB < features::kPreloadSystemFontsRequiredMemoryGB.Get()) {
     return;
   }
 

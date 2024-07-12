@@ -1423,6 +1423,9 @@ const base::FeatureParam<std::string> kPreloadSystemFontsTargets{
 const base::FeatureParam<bool> kPreloadSystemFontsFromPage{
     &kPreloadSystemFonts, "preload_system_fonts_from_page", false};
 
+const base::FeatureParam<int> kPreloadSystemFontsRequiredMemoryGB{
+    &kPreloadSystemFonts, "preload_system_fonts_required_memory_gb", 4};
+
 BASE_FEATURE(kLCPPMultipleKey,
              "LCPPMultipleKey",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -916,6 +916,9 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kPreloadSystemFontsFromPage;
 
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kPreloadSystemFontsRequiredMemoryGB;
+
 // If enabled, LCPP learns with additional first-level-path key to origin.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPMultipleKey);
 
