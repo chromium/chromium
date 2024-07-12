@@ -593,6 +593,32 @@ class GSL_POINTER span {
     }
   }
 
+  // Bounds-checked copy from a span. The spans must be the exact same size or a
+  // hard CHECK() occurs. The spans are allowed to overlap.
+  //
+  // This is a non-std extension that is inspired by the Rust
+  // slice::copy_from_slice() method.
+  //
+  // If it's known the spans can not overlap, `copy_from_nonoverlapping()`
+  // provides an unsafe alternative that avoids intermediate copies.
+  //
+  // # Checks
+  // The function CHECKs that the `other` span has the same size as itself and
+  // will terminate otherwise.
+  //
+  // # Implementation note
+  // The parameter is taken as a template to avoid implicit conversion where
+  // span<T, N> can also be constructed from it. If the input is a fixed-length
+  // span then we want to use the other overload and reject sizes that don't
+  // match at compile time.
+  template <class R, size_t X = internal::ExtentV<R>>
+    requires(X == dynamic_extent && std::convertible_to<R, span<const T>>)
+  constexpr void copy_from(R other)
+    requires(!std::is_const_v<T>)
+  {
+    return copy_from(span<const T, N>(other));
+  }
+
   // Bounds-checked copy from a non-overlapping span. The spans must be the
   // exact same size for the method to be callable.
   //
@@ -631,6 +657,35 @@ class GSL_POINTER span {
     // the same type), so `data()` and `other.data()` both have at least
     // `N` elements.
     UNSAFE_BUFFERS(std::copy(other.data(), other.data() + N, data()));
+  }
+
+  // Bounds-checked copy from a non-overlapping span. The spans must be the
+  // exact same size or a hard CHECK() occurs. If the two spans overlap,
+  // Undefined Behaviour may occur.
+  //
+  // This is a non-std extension that is inspired by the Rust
+  // slice::copy_from_slice() method.
+  //
+  // # Checks
+  // The function CHECKs that the `other` span has the same size as itself and
+  // will terminate otherwise.
+  //
+  // # Safety
+  // The `other` span must not overlap with `this` or Undefined Behaviour may
+  // occur.
+  //
+  // # Implementation note
+  // The parameter is taken as a template to avoid implicit conversion where
+  // span<T, N> can also be constructed from it. If the input is a fixed-length
+  // span then we want to use the other overload and reject sizes that don't
+  // match at compile time.
+  template <class R, size_t X = internal::ExtentV<R>>
+    requires(X == dynamic_extent && std::convertible_to<R, span<const T>>)
+  UNSAFE_BUFFER_USAGE constexpr void copy_from_nonoverlapping(R other)
+    requires(!std::is_const_v<T>)
+  {
+    // SAFETY: The caller must ensure the spans do not overlap.
+    UNSAFE_BUFFERS(copy_from_nonoverlapping(span<const T, N>(other)));
   }
 
   // Implicit conversion from std::span<T, N> to base::span<T, N>.

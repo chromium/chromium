@@ -2204,6 +2204,7 @@ TEST(SpanTest, CopyFrom) {
   EXPECT_THAT(vec, ElementsAre(4, 5, 6));
 
   // Test too small destinations.
+  EXPECT_DEATH_IF_SUPPORTED(empty_static_span.copy_from(dynamic_span), "");
   EXPECT_DEATH_IF_SUPPORTED(empty_dynamic_span.copy_from(static_span), "");
   EXPECT_DEATH_IF_SUPPORTED(empty_dynamic_span.copy_from(dynamic_span), "");
   EXPECT_DEATH_IF_SUPPORTED(dynamic_span.last(2u).copy_from(static_span), "");
@@ -2328,10 +2329,8 @@ TEST(SpanTest, CopyFromNonoverlapping) {
   span<int> dynamic_span = base::make_span(vec);
 
   // Handle empty cases gracefully.
-  // Dynamic size to static size requires an explicit conversion.
   UNSAFE_BUFFERS({
-    empty_static_span.copy_from_nonoverlapping(
-        make_span<0u>(empty_dynamic_span));
+    empty_static_span.copy_from_nonoverlapping(empty_dynamic_span);
     empty_dynamic_span.copy_from_nonoverlapping(empty_static_span);
     static_span.first(empty_static_span.size())
         .copy_from_nonoverlapping(empty_static_span);
@@ -2341,6 +2340,8 @@ TEST(SpanTest, CopyFromNonoverlapping) {
     EXPECT_THAT(vec, ElementsAre(4, 5, 6));
 
     // Test too small destinations.
+    EXPECT_DEATH_IF_SUPPORTED(
+        empty_static_span.copy_from_nonoverlapping(dynamic_span), "");
     EXPECT_DEATH_IF_SUPPORTED(
         empty_dynamic_span.copy_from_nonoverlapping(static_span), "");
     EXPECT_DEATH_IF_SUPPORTED(
@@ -2372,8 +2373,7 @@ TEST(SpanTest, CopyFromConversion) {
   span<int> dynamic_span = base::make_span(vec);
 
   std::vector convert_from = {7, 8, 9};
-  // Dynamic size to static size requires an explicit conversion.
-  static_span.copy_from(make_span<3u>(convert_from));
+  static_span.copy_from(convert_from);
   dynamic_span.copy_from(convert_from);
   EXPECT_THAT(static_span, ElementsAre(7, 8, 9));
   EXPECT_THAT(dynamic_span, ElementsAre(7, 8, 9));

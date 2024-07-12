@@ -188,9 +188,15 @@ void FromVolatileArrayDisallowed() {
 void FixedSizeCopyTooSmall() {
   const int src[] = {1, 2, 3};
   int dst[2];
-  base::span(dst).copy_from(base::make_span(src));  // expected-error@*:* {{no viable conversion}}
+  base::span(dst).copy_from(base::span(src));  // expected-error@*:* {{no matching member function}}
 
-  base::span(dst).copy_from(src);  // expected-error@*:* {{no viable conversion}}
+  base::span(dst).copy_from(src);  // expected-error@*:* {{no matching member function}}
+}
+
+void FixedSizeCopyFromNonSpan() {
+  int dst[2];
+  // The copy_from() template overload is not selected.
+  base::span(dst).copy_from(5);  // expected-error@*:* {{no matching member function for call to 'copy_from'}}
 }
 
 void FixedSizeSplitAtOutOfBounds() {
