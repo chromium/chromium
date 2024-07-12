@@ -79,6 +79,28 @@ export enum VoiceClientSideStatusCode {
 const NATURAL_STRING_IDENTIFIER = '(Natural)';
 const ESPEAK_STRING_IDENTIFIER = 'eSpeak';
 
+
+// Helper for filtering the voice list broken into a separate method
+// that doesn't modify instance data to simplify testing.
+export function getFilteredVoiceList(possibleVoices: SpeechSynthesisVoice[]):
+    SpeechSynthesisVoice[] {
+  let availableVoices = possibleVoices;
+  if (availableVoices.some(({localService}) => localService)) {
+    availableVoices = availableVoices.filter(({localService}) => localService);
+  }
+  // Filter out Android voices on ChromeOS. Android Speech Recognition
+  // voices are technically network voices, but for some reason, some
+  // voices are marked as localService voices, so filtering localService
+  // doesn't filter them out. Since they can cause unexpected behavior
+  // in Read Aloud, go ahead and filter them out. To avoid causing any
+  // unexpected behavior outside of ChromeOS, just filter them on ChromeOS.
+  if (chrome.readingMode.isChromeOsAsh) {
+    availableVoices = availableVoices.filter(
+        ({name}) => !name.toLowerCase().includes('android'));
+  }
+  return availableVoices;
+}
+
 export function isNatural(voice: SpeechSynthesisVoice) {
   return voice.name.includes(NATURAL_STRING_IDENTIFIER);
 }

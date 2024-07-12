@@ -23,7 +23,7 @@ import {getCurrentSpeechRate, minOverflowLengthToScroll, playFromSelectionTimeou
 import {ReadAnythingLogger, TimeFrom, TimeTo} from './read_anything_logger.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 import type {VoicePackStatus} from './voice_language_util.js';
-import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, doesLanguageHaveNaturalVoices, getVoicePackConvertedLangIfExists, isEspeak, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, isWaitingForInstallLocally, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
+import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, doesLanguageHaveNaturalVoices, getFilteredVoiceList, getVoicePackConvertedLangIfExists, isEspeak, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, isWaitingForInstallLocally, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
 
 const ReadAnythingElementBase = WebUiListenerMixin(PolymerElement);
 
@@ -1182,24 +1182,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   private getVoices_(refresh: boolean = false): SpeechSynthesisVoice[] {
     if (!this.availableVoices_ || refresh) {
-      let availableVoices = this.synth.getVoices();
-      if (availableVoices.some(({localService}) => localService)) {
-        availableVoices =
-            availableVoices.filter(({localService}) => localService);
-      }
-      // Filter out Android voices on ChromeOS. Android Speech Recognition
-      // voices are technically network voices, but for some reason, some
-      // voices are marked as localService voices, so filtering localService
-      // doesn't filter them out. Since they can cause unexpected behavior
-      // in Read Aloud, go ahead and filter them out. To avoid causing any
-      // unexpected behavior outside of ChromeOS, just filter them on ChromeOS.
-      if (chrome.readingMode.isChromeOsAsh) {
-        availableVoices = availableVoices.filter(
-            ({name}) => !name.toLowerCase().includes('android'));
-      }
-      this.availableVoices_ = availableVoices;
+      this.availableVoices_ = getFilteredVoiceList(this.synth.getVoices());
       this.availableLangs_ =
-          [...new Set(availableVoices.map(({lang}) => lang))];
+          [...new Set(this.availableVoices_.map(({lang}) => lang))];
 
       this.populateDisplayNamesForLocaleCodes();
     }

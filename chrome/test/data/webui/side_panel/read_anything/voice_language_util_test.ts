@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, mojoVoicePackStatusToVoicePackStatusEnum, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, getFilteredVoiceList, mojoVoicePackStatusToVoicePackStatusEnum, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertDeepEquals, assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 
@@ -188,5 +188,56 @@ suite('voice and language utils', () => {
             /* storedLanguagesPref= */[],
             /* availableLangs= */[],
             /* langOfDefaultVoice= */ undefined));
+  });
+
+  test('getFilteredVoiceList filters remote voices', () => {
+    const voice1 = {
+      default: true,
+      name: 'Eitan',
+      lang: 'en-us',
+      localService: false,
+      voiceURI: '',
+    };
+    const voice2 = {
+      default: false,
+      name: 'Lauren',
+      lang: 'en-us',
+      localService: true,
+      voiceURI: '',
+    };
+    let possibleVoices: SpeechSynthesisVoice[] = [voice1];
+
+    // Remote voices not filtered out with just one voice.
+    assertDeepEquals([voice1], getFilteredVoiceList(possibleVoices));
+
+    possibleVoices = [voice1, voice2];
+    // Remote voices filtered out when a local voice exists
+    assertDeepEquals([voice2], getFilteredVoiceList(possibleVoices));
+  });
+
+  test('getFilteredVoiceList filters Android voices', () => {
+    const voice1 = {
+      default: false,
+      name: 'Xiang',
+      lang: 'en-us',
+      localService: true,
+      voiceURI: '',
+    };
+    const voice2 = {
+      default: true,
+      name: 'Kristi (Android)',
+      lang: 'en-us',
+      localService: true,
+      voiceURI: '',
+    };
+
+    // Android voices should be filtered out only on ChromeOS Ash.
+    const possibleVoices: SpeechSynthesisVoice[] = [voice1, voice2];
+
+    if (chrome.readingMode.isChromeOsAsh) {
+      assertDeepEquals([voice1], getFilteredVoiceList(possibleVoices));
+    } else {
+      assertDeepEquals([voice1, voice2], getFilteredVoiceList(possibleVoices));
+    }
   });
 });
