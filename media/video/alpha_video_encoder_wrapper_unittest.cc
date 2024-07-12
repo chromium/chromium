@@ -265,8 +265,8 @@ TEST_P(AlphaVideoEncoderWrapperTest, EncodeAndDecode) {
   VideoEncoder::OutputCB encoder_output_cb = base::BindLambdaForTesting(
       [&, this](VideoEncoderOutput output,
                 std::optional<VideoEncoder::CodecDescription> desc) {
-        auto buffer =
-            DecoderBuffer::FromArray(std::move(output.data), output.size);
+        auto buffer = DecoderBuffer::FromArray(
+            std::move(output.data).take_first(output.size));
         buffer->set_timestamp(output.timestamp);
         buffer->set_is_key_frame(output.key_frame);
         EXPECT_FALSE(output.alpha_data.empty());

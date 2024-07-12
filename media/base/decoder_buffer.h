@@ -92,8 +92,7 @@ class MEDIA_EXPORT DecoderBuffer
   // as byte array. The buffer's |is_key_frame_| will default to false.
   //
   // Ownership of |data| is transferred to the buffer.
-  static scoped_refptr<DecoderBuffer> FromArray(base::HeapArray<uint8_t> data,
-                                                size_t size);
+  static scoped_refptr<DecoderBuffer> FromArray(base::HeapArray<uint8_t> data);
 
   // Create a DecoderBuffer where data() of |size| bytes resides within the
   // memory referred to by |region| at non-negative offset |offset|. The
@@ -276,7 +275,7 @@ class MEDIA_EXPORT DecoderBuffer
   // default to false.
   explicit DecoderBuffer(base::span<const uint8_t> data);
 
-  DecoderBuffer(base::HeapArray<uint8_t> data, size_t size);
+  DecoderBuffer(base::HeapArray<uint8_t> data);
 
   DecoderBuffer(base::ReadOnlySharedMemoryMapping mapping, size_t size);
 

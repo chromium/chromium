@@ -55,11 +55,8 @@ TEST(DecoderBufferTest, CopyFrom) {
 TEST(DecoderBufferTest, FromArray) {
   const uint8_t kData[] = "hello";
   const size_t kDataSize = std::size(kData);
-  auto ptr = base::HeapArray<uint8_t>::Uninit(kDataSize);
-  memcpy(ptr.data(), kData, kDataSize);
-
-  scoped_refptr<DecoderBuffer> buffer(
-      DecoderBuffer::FromArray(std::move(ptr), kDataSize));
+  auto ptr = base::HeapArray<uint8_t>::CopiedFrom(kData);
+  auto buffer = DecoderBuffer::FromArray(std::move(ptr));
   ASSERT_TRUE(buffer.get());
   EXPECT_EQ(buffer->size(), kDataSize);
   EXPECT_EQ(base::span(*buffer), base::span(kData));

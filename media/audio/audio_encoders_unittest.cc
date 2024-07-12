@@ -1021,7 +1021,7 @@ TEST_P(AACAudioEncoderTest, FullCycleEncodeDecode) {
       EXPECT_EQ(status, DecoderStatus::Codes::kOk);
     };
     scoped_refptr<DecoderBuffer> decoder_buffer = DecoderBuffer::FromArray(
-        std::move(output.encoded_data), output.encoded_data_size);
+        std::move(output.encoded_data).take_first(output.encoded_data_size));
     decoder_->Decode(decoder_buffer, base::BindLambdaForTesting(decode_cb));
   };
 
@@ -1063,7 +1063,7 @@ TEST_P(AACAudioEncoderTest, FullCycleEncodeDecode_BitrateMode) {
         EXPECT_EQ(status, DecoderStatus::Codes::kOk);
       };
       scoped_refptr<DecoderBuffer> decoder_buffer = DecoderBuffer::FromArray(
-          std::move(output.encoded_data), output.encoded_data_size);
+          std::move(output.encoded_data).take_first(output.encoded_data_size));
       decoder_->Decode(decoder_buffer, base::BindLambdaForTesting(decode_cb));
     };
 

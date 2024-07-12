@@ -126,8 +126,7 @@ bool AppendVP9SuperFrameIndex(scoped_refptr<DecoderBuffer>& buffer) {
   }
 
   DVLOG(3) << "DecoderBuffer is overwritten";
-  buffer =
-      DecoderBuffer::FromArray(std::move(vp9_superframe), vp9_superframe_size);
+  buffer = DecoderBuffer::FromArray(std::move(vp9_superframe));
 
   return true;
 }

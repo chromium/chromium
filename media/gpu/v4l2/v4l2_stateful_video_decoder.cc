@@ -173,7 +173,7 @@ scoped_refptr<media::DecoderBuffer> ReassembleFragments(
   }
 
   auto reassembled_frame =
-      media::DecoderBuffer::FromArray(std::move(temp_buffer), frame_size);
+      media::DecoderBuffer::FromArray(std::move(temp_buffer));
   // Use the last fragment's timestamp as the |reassembled_frame|'s' timestamp.
   reassembled_frame->set_timestamp(fragments.back()->timestamp());
 

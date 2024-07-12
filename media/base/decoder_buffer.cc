@@ -28,8 +28,8 @@ DecoderBuffer::DecoderBuffer(base::span<const uint8_t> data)
   data_.copy_from(data);
 }
 
-DecoderBuffer::DecoderBuffer(base::HeapArray<uint8_t> data, size_t size)
-    : data_(std::move(data)), size_(size) {}
+DecoderBuffer::DecoderBuffer(base::HeapArray<uint8_t> data)
+    : data_(std::move(data)), size_(data_.size()) {}
 
 DecoderBuffer::DecoderBuffer(base::ReadOnlySharedMemoryMapping mapping,
                              size_t size)
@@ -61,9 +61,8 @@ scoped_refptr<DecoderBuffer> DecoderBuffer::CopyFrom(
 
 // static
 scoped_refptr<DecoderBuffer> DecoderBuffer::FromArray(
-    base::HeapArray<uint8_t> data,
-    size_t size) {
-  return base::WrapRefCounted(new DecoderBuffer(std::move(data), size));
+    base::HeapArray<uint8_t> data) {
+  return base::WrapRefCounted(new DecoderBuffer(std::move(data)));
 }
 
 // static

@@ -1380,8 +1380,8 @@ void VideoEncoder::CallOutputCallback(
     return;
   }
 
-  auto buffer =
-      media::DecoderBuffer::FromArray(std::move(output.data), output.size);
+  auto buffer = media::DecoderBuffer::FromArray(
+      std::move(output.data).take_first(output.size));
   buffer->set_timestamp(output.timestamp);
   buffer->set_is_key_frame(output.key_frame);
 
