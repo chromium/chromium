@@ -294,7 +294,11 @@ CanvasResourceSharedBitmap::~CanvasResourceSharedBitmap() {
   if (!OnDestroy()) {
     return;
   }
-  TearDown();
+  CanvasResourceDispatcher* resource_dispatcher =
+      Provider() ? Provider()->ResourceDispatcher() : nullptr;
+  if (resource_dispatcher && !shared_bitmap_id_.IsZero()) {
+    resource_dispatcher->DidDeleteSharedBitmap(shared_bitmap_id_);
+  }
 }
 
 bool CanvasResourceSharedBitmap::IsValid() const {
@@ -335,13 +339,6 @@ scoped_refptr<CanvasResourceSharedBitmap> CanvasResourceSharedBitmap::Create(
   auto resource = AdoptRef(new CanvasResourceSharedBitmap(
       info, std::move(provider), filter_quality));
   return resource->IsValid() ? resource : nullptr;
-}
-
-void CanvasResourceSharedBitmap::TearDown() {
-  CanvasResourceDispatcher* resource_dispatcher =
-      Provider() ? Provider()->ResourceDispatcher() : nullptr;
-  if (resource_dispatcher && !shared_bitmap_id_.IsZero())
-    resource_dispatcher->DidDeleteSharedBitmap(shared_bitmap_id_);
 }
 
 bool CanvasResourceSharedBitmap::PrepareUnacceleratedTransferableResource(
@@ -542,10 +539,7 @@ CanvasResourceSharedImage::~CanvasResourceSharedImage() {
   if (!OnDestroy()) {
     return;
   }
-  TearDown();
-}
 
-void CanvasResourceSharedImage::TearDown() {
   DCHECK(!is_cross_thread());
 
   // The context deletes all shared images on destruction which means no
@@ -831,7 +825,9 @@ ExternalCanvasResource::~ExternalCanvasResource() {
   if (!OnDestroy()) {
     return;
   }
-  TearDown();
+  if (release_callback_) {
+    std::move(release_callback_).Run(GetSyncToken(), resource_is_lost_);
+  }
 }
 
 bool ExternalCanvasResource::IsValid() const {
@@ -870,11 +866,6 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
       std::move(release_callback),
       /*supports_display_compositing=*/true,
       transferable_resource_.is_overlay_candidate);
-}
-
-void ExternalCanvasResource::TearDown() {
-  if (release_callback_)
-    std::move(release_callback_).Run(GetSyncToken(), resource_is_lost_);
 }
 
 bool ExternalCanvasResource::HasGpuMailbox() const {
@@ -964,7 +955,31 @@ CanvasResourceSwapChain::~CanvasResourceSwapChain() {
   if (!OnDestroy()) {
     return;
   }
-  TearDown();
+
+  // The context deletes all shared images on destruction which means no
+  // cleanup is needed if the context was lost.
+  if (!context_provider_wrapper_) {
+    return;
+  }
+
+  if (!use_oop_rasterization_) {
+    auto* raster_interface =
+        context_provider_wrapper_->ContextProvider()->RasterInterface();
+    DCHECK(raster_interface);
+    raster_interface->EndSharedImageAccessDirectCHROMIUM(
+        back_buffer_texture_id_);
+    raster_interface->DeleteGpuRasterTexture(back_buffer_texture_id_);
+  }
+
+  // No synchronization is needed here because the GL SharedImageRepresentation
+  // will keep the backing alive on the service until the textures are deleted.
+  auto* sii =
+      context_provider_wrapper_->ContextProvider()->SharedImageInterface();
+  DCHECK(sii);
+  sii->DestroySharedImage(gpu::SyncToken(),
+                          std::move(front_buffer_shared_image_));
+  sii->DestroySharedImage(gpu::SyncToken(),
+                          std::move(back_buffer_shared_image_));
 }
 
 bool CanvasResourceSwapChain::IsValid() const {
@@ -998,32 +1013,6 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
       owning_thread_ref_, owning_thread_task_runner_,
       std::move(release_callback), /*supports_display_compositing=*/true,
       /*is_overlay_candidate=*/true);
-}
-
-void CanvasResourceSwapChain::TearDown() {
-  // The context deletes all shared images on destruction which means no
-  // cleanup is needed if the context was lost.
-  if (!context_provider_wrapper_)
-    return;
-
-  if (!use_oop_rasterization_) {
-    auto* raster_interface =
-        context_provider_wrapper_->ContextProvider()->RasterInterface();
-    DCHECK(raster_interface);
-    raster_interface->EndSharedImageAccessDirectCHROMIUM(
-        back_buffer_texture_id_);
-    raster_interface->DeleteGpuRasterTexture(back_buffer_texture_id_);
-  }
-
-  // No synchronization is needed here because the GL SharedImageRepresentation
-  // will keep the backing alive on the service until the textures are deleted.
-  auto* sii =
-      context_provider_wrapper_->ContextProvider()->SharedImageInterface();
-  DCHECK(sii);
-  sii->DestroySharedImage(gpu::SyncToken(),
-                          std::move(front_buffer_shared_image_));
-  sii->DestroySharedImage(gpu::SyncToken(),
-                          std::move(back_buffer_shared_image_));
 }
 
 scoped_refptr<gpu::ClientSharedImage>
