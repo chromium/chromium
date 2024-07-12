@@ -200,6 +200,18 @@ class TRIVIAL_ABI GSL_OWNER HeapArray {
     return make_span(leaked, dropped.size_);
   }
 
+  // Allows construction of a smaller HeapArray from an existing HeapArray w/o
+  // reallocations or copies. Note: The original allocation is preserved, so
+  // CopiedFrom() should be preferred for significant size reductions.
+  base::HeapArray<T> take_first(size_t reduced_size) && {
+    CHECK_LE(reduced_size, size_);
+    size_ = 0u;
+    if (!reduced_size) {
+      data_.reset();
+    }
+    return base::HeapArray(std::move(data_), reduced_size);
+  }
+
   // Delete the memory previously obtained from leak(). Argument is a pointer
   // rather than a span to facilitate use by callers that have lost track of
   // size information, as may happen when being passed through a C-style

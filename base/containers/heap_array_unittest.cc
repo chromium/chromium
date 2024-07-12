@@ -16,6 +16,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -284,6 +285,30 @@ TEST(HeapArray, Leak) {
   EXPECT_EQ(count, 0u);
   CStyleInvoker(HeapArray<DestructCounter>::DeleteLeakedData, leaked.data());
   EXPECT_EQ(count, 2u);
+}
+
+TEST(HeapArray, TakeFirst) {
+  auto that = HeapArray<uint32_t>::WithSize(2u);
+  auto* that_data = that.data();
+  auto smaller_that = std::move(that).take_first(1u);
+  EXPECT_EQ(smaller_that.size(), 1u);
+  EXPECT_EQ(that_data, smaller_that.data());
+  EXPECT_EQ(that.size(), 0u);
+  EXPECT_EQ(that.data(), nullptr);
+}
+
+TEST(HeapArray, TakeFirstWithZeroSize) {
+  auto that = HeapArray<uint32_t>::WithSize(2u);
+  auto smaller_that = std::move(that).take_first(0u);
+  EXPECT_EQ(smaller_that.size(), 0u);
+  EXPECT_EQ(smaller_that.data(), nullptr);
+  EXPECT_EQ(that.size(), 0u);
+  EXPECT_EQ(that.data(), nullptr);
+}
+
+TEST(HeapArrayDeathTest, TakeFirstWithOverSize) {
+  auto that = HeapArray<uint32_t>::WithSize(2u);
+  EXPECT_CHECK_DEATH(std::move(that).take_first(3u));
 }
 
 }  // namespace base
