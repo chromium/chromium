@@ -388,8 +388,9 @@ if (!enterKey) {
 ## Polymer
 
 ***note
-Lit is now recommended (over Polymer) for any new WebUI development. The
-guide below still applies for the many existing Polymer UIs in the codebase.
+Lit is now recommended (over Polymer) for any new WebUI development. See
+the Lit section below for additional detail on when to use Lit vs Polymer. The
+guide below still applies for any new or existing Polymer code.
 ***
 
 Also see the [Google Polymer Style Guide](http://go/polymer-style).
@@ -523,8 +524,18 @@ https://www.polymer-project.org/2.0/docs/devguide/templates#dom-if):
   * You may copy the SVG code from [iron-icons files](https://github.com/PolymerElements/iron-icons/blob/master/iron-icons.js).
 
 ## Lit
-Lit is now recommended (over Polymer) for new WebUI development. Guidance on
-Lit use in Chromium can be found in a [dedicated doc](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui_using_lit.md).
+Lit is now recommended (over Polymer) for new WebUI development. Lit should
+generally be used for any new WebUI pages and any new custom elements being
+added to existing pages, with the following exceptions:
+
+* New custom elements that need to be a direct parent of an `iron-list` can
+  use Polymer while a Lit-based alternative is developed.
+* New custom elements in the Settings, Print Preview, and Password Manager UIs
+  that need to interact with those pages `prefs` and `model` mechanisms can
+  use Polymer, since these mechanisms rely heavily on subproperty observation
+  and are unlikely to be migrated to Lit in the near future.
+
+Further guidance on Lit use in Chromium can be found in a [dedicated doc](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui_using_lit.md).
 
 ## Grit processing
 
