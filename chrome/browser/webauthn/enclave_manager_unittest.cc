@@ -509,6 +509,10 @@ TEST_F(EnclaveManagerTest, Basic) {
   ASSERT_TRUE(manager_.is_loaded());
   ASSERT_TRUE(manager_.is_registered());
   ASSERT_FALSE(manager_.is_ready());
+  EXPECT_TRUE(manager_.local_state_for_testing()
+                  .users()
+                  .find(gaia_id_)
+                  ->second.identity_key_is_software_backed());
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   ASSERT_FALSE(manager_.has_pending_keys());

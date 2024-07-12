@@ -65,6 +65,9 @@ message EnclaveLocalState {
     bytes wrapped_identity_private_key = 1;
     // If non-empty, this contains a valid SubjectPublicKeyInfo.
     bytes identity_public_key = 2;
+    // True if `wrapped_identity_private_key` is not hardware bound and is thus
+    // registered at the enclave as a "sw" key.
+    bool identity_key_is_software_backed = 15;
     // This is currently SHA-256(identity_public_key) but need not be.
     bytes device_id = 5;
 

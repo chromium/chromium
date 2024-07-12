@@ -1721,6 +1721,8 @@ class EnclaveManager::StateMachine {
       user_->set_identity_public_key(spki_str);
       user_->set_wrapped_identity_private_key(
           VecToString(manager_->identity_key_->key().GetWrappedKey()));
+      user_->set_identity_key_is_software_backed(
+          !manager_->identity_key_->key().IsHardwareBacked());
       user_->set_device_id(VecToString(device_id));
       state_dirty = true;
     }
