@@ -49,6 +49,9 @@ enum class UserSelectableType;
 // to simulate identity removal from the device.
 + (void)forgetFakeIdentity:(FakeSystemIdentity*)fakeIdentity;
 
+// Returns YES if the identity was added to the fake identity service.
++ (BOOL)isIdentityAdded:(FakeSystemIdentity*)fakeIdentity;
+
 // Returns the gaia ID of the signed-in account.
 // If there is no signed-in account returns an empty string.
 + (NSString*)primaryAccountGaiaID;
@@ -66,14 +69,17 @@ enum class UserSelectableType;
 // Signs in with the fake identity and access point Settings.
 // Adds the fake-identity to the identity manager if necessary.
 // Call `[SigninEarlGrey signinWithFakeIdentity:identity]` instead.
+// `fakeIdentity` is added if it was not added yet.
 + (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity;
 
 // TODO(crbug.com/40066949): Remove all tests invoking this when deleting the
 // MaybeMigrateSyncingUserToSignedIn() call on //ios (not right after launching
 // kMigrateSyncingUserToSignedIn).
+// `fakeIdentity` is added if it was not added yet.
 + (void)signinAndEnableLegacySyncFeature:(FakeSystemIdentity*)identity;
 
 // Signs in with `identity` without history sync consent.
+// `fakeIdentity` is added if it was not added yet.
 + (void)signInWithoutHistorySyncWithFakeIdentity:(FakeSystemIdentity*)identity;
 
 // Triggers the reauth dialog. This is done by sending ShowSigninCommand to

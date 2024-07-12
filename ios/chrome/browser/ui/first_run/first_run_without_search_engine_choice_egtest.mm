@@ -445,9 +445,10 @@ id<GREYMatcher> ManageUMALinkMatcher() {
 - (void)testForceSigninByPolicy {
   // Configure the policy to force sign-in.
   [self relaunchAppWithBrowserSigninMode:BrowserSigninMode::kForced];
-  // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  GREYAssertTrue([SigninEarlGrey isIdentityAdded:fakeIdentity],
+                 @"Identity not added by kSignInAtStartup flag, in "
+                 @"`relaunchAppWithBrowserSigninMode:`, during the relaunch.");
   // Verify 2 steps FRE with forced sign-in policy.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentSigninForcedByPolicy];
@@ -478,9 +479,10 @@ id<GREYMatcher> ManageUMALinkMatcher() {
 - (void)testForceSigninByPolicyWithoutSync {
   // Configure the policy to force sign-in.
   [self relaunchAppWithBrowserSigninMode:BrowserSigninMode::kForced];
-  // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  GREYAssertTrue([SigninEarlGrey isIdentityAdded:fakeIdentity],
+                 @"Identity not added by kSignInAtStartup flag, in "
+                 @"`relaunchAppWithBrowserSigninMode:`, during the relaunch.");
   // Verify 2 steps FRE with forced sign-in policy.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentSigninForcedByPolicy];
@@ -515,9 +517,11 @@ id<GREYMatcher> ManageUMALinkMatcher() {
 - (void)testSyncDisabledByPolicy {
   [self relaunchAppWithPolicyKey:policy::key::kSyncDisabled
                   xmlPolicyValue:"<true/>"];
-  // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  GREYAssertTrue(
+      [SigninEarlGrey isIdentityAdded:fakeIdentity],
+      @"Identity not added by kSignInAtStartup flag, in "
+      @"`relaunchAppWithPolicyKey:xmlPolicyValue:`, during the relaunch.");
   // Verify 2 steps FRE with forced sign-in policy.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentSigninWithSyncDisabledPolicy];
@@ -544,9 +548,11 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   // Configure the policy to force sign-in.
   [self relaunchAppWithPolicyKey:policy::key::kIncognitoModeAvailability
                   xmlPolicyValue:"<integer>1</integer>"];
-  // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  GREYAssertTrue(
+      [SigninEarlGrey isIdentityAdded:fakeIdentity],
+      @"Identity not added by kSignInAtStartup flag, in "
+      @"`relaunchAppWithPolicyKey:xmlPolicyValue:`, during the relaunch.");
   // Verify 2 steps FRE with forced sign-in policy.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentSigninWithPolicy];
@@ -570,9 +576,11 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   // Configure the policy to disable UMA.
   [self relaunchAppWithPolicyKey:policy::key::kMetricsReportingEnabled
                   xmlPolicyValue:"<false/>"];
-  // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  GREYAssertTrue(
+      [SigninEarlGrey isIdentityAdded:fakeIdentity],
+      @"Identity not added by kSignInAtStartup flag, in "
+      @"`relaunchAppWithPolicyKey:xmlPolicyValue:`, during the relaunch.");
   // Verify 2 steps FRE with no UMA footer.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentSigninWithUMAReportingDisabledPolicy];
@@ -1082,9 +1090,11 @@ id<GREYMatcher> ManageUMALinkMatcher() {
 - (void)testHistorySyncSkipIfSyncDisabled {
   [self relaunchAppWithPolicyKey:policy::key::kSyncDisabled
                   xmlPolicyValue:"<true/>"];
-  // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  GREYAssertTrue(
+      [SigninEarlGrey isIdentityAdded:fakeIdentity],
+      @"Identity not added by kSignInAtStartup flag, in "
+      @"`relaunchAppWithPolicyKey:xmlPolicyValue:`, during the relaunch.");
   // Verify that the first run screen is present.
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
@@ -1122,9 +1132,11 @@ id<GREYMatcher> ManageUMALinkMatcher() {
 - (void)testHistorySyncSkipIfTabsSyncDisabled {
   [self relaunchAppWithPolicyKey:policy::key::kSyncTypesListDisabled
                   xmlPolicyValue:"<array><string>tabs</string></array>"];
-  // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  GREYAssertTrue(
+      [SigninEarlGrey isIdentityAdded:fakeIdentity],
+      @"Identity not added by kSignInAtStartup flag, in "
+      @"`relaunchAppWithPolicyKey:xmlPolicyValue:`, during the relaunch.");
   // Verify that the first run screen is present.
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
@@ -1162,9 +1174,11 @@ id<GREYMatcher> ManageUMALinkMatcher() {
 - (void)testHistorySyncShownIfBookmarksSyncDisabled {
   [self relaunchAppWithPolicyKey:policy::key::kSyncTypesListDisabled
                   xmlPolicyValue:"<array><string>bookmarks</string></array>"];
-  // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  GREYAssertTrue(
+      [SigninEarlGrey isIdentityAdded:fakeIdentity],
+      @"Identity not added by kSignInAtStartup flag, in "
+      @"`relaunchAppWithPolicyKey:xmlPolicyValue:`, during the relaunch.");
   // Verify that the first run screen is present.
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(

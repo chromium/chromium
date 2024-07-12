@@ -70,6 +70,7 @@ FakeSystemIdentityManager* FakeSystemIdentityManager::FromSystemIdentityManager(
 
 void FakeSystemIdentityManager::AddIdentity(id<SystemIdentity> identity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(![storage_ containsIdentity:identity]);
   [storage_ addIdentity:identity];
   FireIdentityListChanged(/*notify_user*/ false);
 
@@ -86,6 +87,7 @@ void FakeSystemIdentityManager::AddIdentity(id<SystemIdentity> identity) {
 void FakeSystemIdentityManager::AddIdentityWithUnknownCapabilities(
     id<SystemIdentity> identity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(![storage_ containsIdentity:identity]);
   [storage_ addIdentity:identity];
   FireIdentityListChanged(/*notify_user*/ false);
 }
@@ -94,6 +96,7 @@ void FakeSystemIdentityManager::AddIdentityWithCapabilities(
     id<SystemIdentity> identity,
     NSDictionary<NSString*, NSNumber*>* capabilities) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(![storage_ containsIdentity:identity]);
   [storage_ addIdentity:identity];
   AccountCapabilitiesTestMutator* mutator =
       GetPendingCapabilitiesMutator(identity);
@@ -151,6 +154,10 @@ void FakeSystemIdentityManager::WaitForServiceCallbacksToComplete() {
     resume_closure_ = run_loop.QuitClosure();
     run_loop.Run();
   }
+}
+
+bool FakeSystemIdentityManager::ContainsIdentity(id<SystemIdentity> identity) {
+  return [storage_ containsIdentity:identity];
 }
 
 id<RefreshAccessTokenError>

@@ -39,15 +39,17 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
       SystemIdentityManager* manager);
 
   // Adds `identity` to the available idendities.
-  // Does nothing if the identity is already in the manager.
+  // DCHECK failure will be triggered if the identity was already added.
   void AddIdentity(id<SystemIdentity> identity);
 
   // Adds `identity` to the available idendities without setting up
   // capabilities.
+  // DCHECK failure will be triggered if the identity was already added.
   void AddIdentityWithUnknownCapabilities(id<SystemIdentity> identity);
 
   // Adds `identity` and set the capabilities before firing the list changed
   // notification.
+  // DCHECK failure will be triggered if the identity was already added.
   void AddIdentityWithCapabilities(
       id<SystemIdentity> identity,
       NSDictionary<NSString*, NSNumber*>* capabilities);
@@ -70,6 +72,9 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
 
   // Waits until all asynchronous callbacks have been completed.
   void WaitForServiceCallbacksToComplete();
+
+  // Returns YES if the identity was already added.
+  bool ContainsIdentity(id<SystemIdentity> identity);
 
   // Simulates a failure next time the access token for `identity` would be
   // fetched and return the error that would be sent to the observers. The

@@ -22,6 +22,7 @@ typedef NS_ENUM(NSInteger, SignOutConfirmationChoice) {
 
 // Calls
 // +[SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableHistorySync:NO].
+// `fakeIdentity` is added if it was not added yet.
 + (void)signinWithFakeIdentity:(FakeSystemIdentity*)fakeIdentity;
 
 // Signs the account for `fakeIdentity` into Chrome through the Settings screen,
@@ -29,6 +30,7 @@ typedef NS_ENUM(NSInteger, SignOutConfirmationChoice) {
 // tests should not require it).
 // There will be a GREYAssert if the tools menus is open when calling this
 // method or if the account is not successfully signed in.
+// `fakeIdentity` is added if it was not added yet.
 + (void)signinWithFakeIdentity:(FakeSystemIdentity*)fakeIdentity
              enableHistorySync:(BOOL)enableHistorySync;
 

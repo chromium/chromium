@@ -97,7 +97,10 @@ void MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(
 
 + (void)signinWithFakeIdentity:(FakeSystemIdentity*)fakeIdentity
              enableHistorySync:(BOOL)enableHistorySync {
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  if (![SigninEarlGrey isIdentityAdded:fakeIdentity]) {
+    // For convenience, add the identity, if it was not added yet.
+    [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  }
   // TODO(crbug.com/335592853): There's no good reason why the with-history vs
   // without-history flows should be completely different, unify them.
   if (!enableHistorySync) {

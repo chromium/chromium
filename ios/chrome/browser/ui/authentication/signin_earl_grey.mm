@@ -53,6 +53,10 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   [SigninEarlGreyAppInterface forgetFakeIdentity:fakeIdentity];
 }
 
+- (BOOL)isIdentityAdded:(FakeSystemIdentity*)fakeIdentity {
+  return [SigninEarlGreyAppInterface isIdentityAdded:fakeIdentity];
+}
+
 - (NSString*)primaryAccountGaiaID {
   return [SigninEarlGreyAppInterface primaryAccountGaiaID];
 }

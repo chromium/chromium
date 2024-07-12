@@ -80,6 +80,13 @@
   systemIdentityManager->ForgetIdentity(fakeIdentity, base::DoNothing());
 }
 
++ (BOOL)isIdentityAdded:(FakeSystemIdentity*)fakeIdentity {
+  FakeSystemIdentityManager* systemIdentityManager =
+      FakeSystemIdentityManager::FromSystemIdentityManager(
+          GetApplicationContext()->GetSystemIdentityManager());
+  return systemIdentityManager->ContainsIdentity(fakeIdentity);
+}
+
 + (NSString*)primaryAccountGaiaID {
   ChromeBrowserState* browserState =
       chrome_test_util::GetOriginalBrowserState();
@@ -118,7 +125,10 @@
 }
 
 + (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity {
-  [self addFakeIdentity:identity withUnknownCapabilities:NO];
+  if (![self isIdentityAdded:identity]) {
+    // For convenience, add the identity, if it was not added yet.
+    [self addFakeIdentity:identity withUnknownCapabilities:NO];
+  }
   ChromeBrowserState* browserState =
       chrome_test_util::GetOriginalBrowserState();
   AuthenticationService* authenticationService =
