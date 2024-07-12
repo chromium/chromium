@@ -314,7 +314,7 @@ VideoToolboxH265Accelerator::Status VideoToolboxH265Accelerator::SubmitDecode(
   for (const auto& nalu_data : combined_nalu_data) {
     // Write length header.
     std::array<uint8_t, kNALUHeaderLength> header =
-        base::numerics::U32ToBigEndian(static_cast<uint32_t>(nalu_data.size()));
+        base::U32ToBigEndian(static_cast<uint32_t>(nalu_data.size()));
     status = CMBlockBufferReplaceDataBytes(header.data(), data.get(), offset,
                                            header.size());
     if (status != noErr) {

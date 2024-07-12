@@ -420,7 +420,7 @@ VpxVideoDecoder::AlphaDecodeStatus VpxVideoDecoder::DecodeAlphaPlane(
   }
 
   // First 8 bytes of side data is |side_data_id| in big endian.
-  const uint64_t side_data_id = base::numerics::U64FromBigEndian(
+  const uint64_t side_data_id = base::U64FromBigEndian(
       base::span(buffer->side_data()->alpha_data).first<8u>());
   if (side_data_id != 1) {
     return kAlphaPlaneProcessed;

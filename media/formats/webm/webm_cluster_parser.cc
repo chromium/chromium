@@ -373,7 +373,7 @@ bool WebMClusterParser::OnBinary(int id, const uint8_t* data_ptr, int size) {
       return true;
 
     case kWebMIdBlockAdditional: {
-      uint64_t block_add_id = base::numerics::ByteSwap(block_add_id_);
+      uint64_t block_add_id = base::ByteSwap(block_add_id_);
       if (block_additional_data_) {
         // TODO(vigneshv): Technically, more than 1 BlockAdditional is allowed
         // as per matroska spec. But for now we don't have a use case to
@@ -404,7 +404,7 @@ bool WebMClusterParser::OnBinary(int id, const uint8_t* data_ptr, int size) {
       // place them at the back of the array, in the LSB positions.
       uint8_t bytes[8u] = {};
       base::span(bytes).last(data.size()).copy_from(data);
-      discard_padding_ = base::numerics::I64FromBigEndian(bytes);
+      discard_padding_ = base::I64FromBigEndian(bytes);
       return true;
     }
     case kWebMIdReferenceBlock: {

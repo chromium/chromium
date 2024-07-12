@@ -51,7 +51,7 @@ void H26xAnnexBBitstreamBuilder::FlushReg() {
   reg_ <<= (kRegBitSize - bits_in_reg);
 
   // Convert to MSB and append as such to the stream.
-  std::array<uint8_t, 8> reg_be = base::numerics::U64ToBigEndian(reg_);
+  std::array<uint8_t, 8> reg_be = base::U64ToBigEndian(reg_);
 
   if (insert_emulation_prevention_bytes_ && in_nalu_) {
     // The EPB only works on complete bytes being flushed.

@@ -167,8 +167,8 @@ std::string IncrementIV(const std::string& iv, uint32_t by) {
   std::array<uint8_t, 16u> bytes;
   base::span(bytes).copy_from(base::as_byte_span(iv).first<16u>());
   auto counter_bytes = base::span(bytes).last<8u>();
-  counter_bytes.copy_from(base::numerics::U64ToBigEndian(
-      base::numerics::U64FromBigEndian(counter_bytes) + by));
+  counter_bytes.copy_from(
+      base::U64ToBigEndian(base::U64FromBigEndian(counter_bytes) + by));
   return std::string(bytes.begin(), bytes.end());
 }
 

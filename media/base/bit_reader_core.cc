@@ -167,7 +167,7 @@ bool BitReaderCore::Refill(int min_nbits) {
   base::span(bytes)
       .first(byte_stream_window.size())
       .copy_from(byte_stream_window);
-  reg_next_ = base::numerics::U64FromBigEndian(bytes);
+  reg_next_ = base::U64FromBigEndian(bytes);
   nbits_next_ = base::checked_cast<int>(byte_stream_window.size() * 8u);
 
   // Transfer from the next to the current register.

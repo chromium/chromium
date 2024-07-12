@@ -75,8 +75,8 @@ IvfFrameHeader GetIvfFrameHeader(base::span<const uint8_t> data) {
   LOG_ASSERT(data.size_bytes() == 12u);
   IvfFrameHeader frame_header;
   auto [frame_size, timestamp] = data.first<12u>().split_at<4u>();
-  frame_header.frame_size = base::numerics::U32FromLittleEndian(frame_size);
-  frame_header.timestamp = base::numerics::U64FromLittleEndian(timestamp);
+  frame_header.frame_size = base::U32FromLittleEndian(frame_size);
+  frame_header.timestamp = base::U64FromLittleEndian(timestamp);
   return frame_header;
 }
 

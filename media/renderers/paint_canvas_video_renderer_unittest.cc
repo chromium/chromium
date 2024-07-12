@@ -411,8 +411,7 @@ uint32_t MaybeConvertABGRToARGB(uint32_t abgr) {
     SK_A32_SHIFT == 24
   return abgr;
 #else
-  return (base::numerics::ByteSwap(abgr & 0x00FFFFFF) >> 8) |
-         (abgr & 0xFF000000);
+  return (base::ByteSwap(abgr & 0x00FFFFFF) >> 8) | (abgr & 0xFF000000);
 #endif
 }
 

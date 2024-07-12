@@ -86,14 +86,14 @@ void CopyNalsToAnnexB(base::span<const char> buffer,
   while (!buffer.empty()) {
     NalSizeType nal_size;
     if constexpr (sizeof(NalSizeType) == 1u) {
-      nal_size = base::numerics::U8FromBigEndian(
-          base::as_bytes(buffer).template first<1u>());
+      nal_size =
+          base::U8FromBigEndian(base::as_bytes(buffer).template first<1u>());
     } else if constexpr (sizeof(NalSizeType) == 2u) {
-      nal_size = base::numerics::U16FromBigEndian(
-          base::as_bytes(buffer).template first<2u>());
+      nal_size =
+          base::U16FromBigEndian(base::as_bytes(buffer).template first<2u>());
     } else {
-      nal_size = base::numerics::U32FromBigEndian(
-          base::as_bytes(buffer).template first<4u>());
+      nal_size =
+          base::U32FromBigEndian(base::as_bytes(buffer).template first<4u>());
     }
 
     auto [nals_buf, remain] =
