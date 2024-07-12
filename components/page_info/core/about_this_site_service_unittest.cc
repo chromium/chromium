@@ -15,6 +15,7 @@
 #include "components/page_info/core/about_this_site_validation.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url_service.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -113,10 +114,8 @@ class AboutThisSiteServiceTest : public ::testing::TestWithParam<bool> {
       tab_helper_mock_ = std::make_unique<testing::StrictMock<MockTabHelper>>();
     }
 
-    template_url_service_ = std::make_unique<TemplateURLService>(nullptr, 0);
-
     service_ = std::make_unique<testing::StrictMock<MockAboutThisSiteService>>(
-        template_url_service_.get());
+        search_engines_test_environment_.template_url_service());
     SetOptimizationGuideAllowed(true);
   }
 
@@ -126,11 +125,13 @@ class AboutThisSiteServiceTest : public ::testing::TestWithParam<bool> {
   }
 
   MockTabHelper* tab_helper() { return tab_helper_mock_.get(); }
-  TemplateURLService* templateService() { return template_url_service_.get(); }
+  TemplateURLService* templateService() {
+    return search_engines_test_environment_.template_url_service();
+  }
   MockAboutThisSiteService* service() { return service_.get(); }
 
  private:
-  std::unique_ptr<TemplateURLService> template_url_service_;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<MockAboutThisSiteService> service_;
   std::unique_ptr<MockTabHelper> tab_helper_mock_;
 };

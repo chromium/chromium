@@ -75,6 +75,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/search_engines:search_engines",
+    "//components/search_engines:test_support",
     "//services/metrics/public/cpp:metrics_cpp",
     "//testing/gtest",
     "//url:url",

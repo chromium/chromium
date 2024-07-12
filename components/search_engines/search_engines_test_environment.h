@@ -8,13 +8,10 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 
-namespace sync_preferences {
-class TestingPrefServiceSyncable;
-}
-
-class TestingPrefServiceSimple;
 class TemplateURLService;
 
 namespace search_engines {
@@ -42,14 +39,17 @@ class SearchEnginesTestEnvironment {
 
   ~SearchEnginesTestEnvironment();
 
-  PrefService& pref_service();
-  PrefService& local_state();
+  sync_preferences::TestingPrefServiceSyncable& pref_service();
+  sync_preferences::TestingPrefServiceSyncable& pref_service() const;
+
+  TestingPrefServiceSimple& local_state();
 
   SearchEngineChoiceService& search_engine_choice_service();
 
   // Guaranteed to be non-null unless `ReleaseTemplateURLService` has been
   // called.
   TemplateURLService* template_url_service();
+  const TemplateURLService* template_url_service() const;
 
   [[nodiscard]] std::unique_ptr<TemplateURLService> ReleaseTemplateURLService();
 

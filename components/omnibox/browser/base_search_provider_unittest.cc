@@ -27,6 +27,7 @@
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_client.h"
@@ -115,25 +116,16 @@ class TestBaseSearchProvider : public BaseSearchProvider {
 class BaseSearchProviderTestFixture {
  protected:
   void SetUp() {
-    auto template_url_service = std::make_unique<TemplateURLService>(
-        /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr,
-        std::make_unique<SearchTermsData>(),
-        /*web_data_service=*/nullptr,
-        std::unique_ptr<TemplateURLServiceClient>(), base::RepeatingClosure()
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-                                                         ,
-        /*for_lacros_main_profile=*/false
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    );
-
     client_ = std::make_unique<MockAutocompleteProviderClient>();
-    client_->set_template_url_service(std::move(template_url_service));
+    client_->set_template_url_service(
+        search_engines_test_environment_.ReleaseTemplateURLService());
 
     provider_ = new NiceMock<TestBaseSearchProvider>(
         AutocompleteProvider::TYPE_SEARCH, client_.get());
   }
 
   base::test::TaskEnvironment task_environment_;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<MockAutocompleteProviderClient> client_;
   scoped_refptr<NiceMock<TestBaseSearchProvider>> provider_;
 };

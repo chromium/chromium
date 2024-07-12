@@ -7,11 +7,9 @@
 #include <utility>
 
 #include "components/metrics/metrics_pref_names.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_test_util.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
 
 namespace search_engines {
 
@@ -46,11 +44,17 @@ SearchEnginesTestEnvironment::SearchEnginesTestEnvironment(const Deps& deps) {
       pref_service_, search_engine_choice_service_.get());
 }
 
-PrefService& SearchEnginesTestEnvironment::pref_service() {
+sync_preferences::TestingPrefServiceSyncable&
+SearchEnginesTestEnvironment::pref_service() {
   return *pref_service_;
 }
 
-PrefService& SearchEnginesTestEnvironment::local_state() {
+sync_preferences::TestingPrefServiceSyncable&
+SearchEnginesTestEnvironment::pref_service() const {
+  return *pref_service_;
+}
+
+TestingPrefServiceSimple& SearchEnginesTestEnvironment::local_state() {
   return *local_state_;
 }
 
@@ -60,6 +64,11 @@ SearchEnginesTestEnvironment::search_engine_choice_service() {
 }
 
 TemplateURLService* SearchEnginesTestEnvironment::template_url_service() {
+  return template_url_service_.get();
+}
+
+const TemplateURLService* SearchEnginesTestEnvironment::template_url_service()
+    const {
   return template_url_service_.get();
 }
 

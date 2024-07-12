@@ -30,6 +30,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/image_fetcher/core/image_decoder.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -346,9 +347,7 @@ class SigninHelper {
 class LogoServiceImplTest : public ::testing::Test {
  protected:
   LogoServiceImplTest()
-      : template_url_service_(/*prefs=*/nullptr,
-                              /*search_engine_choice_service=*/nullptr),
-        logo_cache_(new NiceMock<MockLogoCache>()),
+      : logo_cache_(new NiceMock<MockLogoCache>()),
         shared_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)),
@@ -366,7 +365,7 @@ class LogoServiceImplTest : public ::testing::Test {
         base::Time::FromMillisecondsSinceUnixEpoch(INT64_C(1388686828000)));
     logo_service_ = std::make_unique<LogoServiceImpl>(
         base::FilePath(), signin_helper_.identity_manager(),
-        &template_url_service_, std::make_unique<FakeImageDecoder>(),
+        &template_url_service(), std::make_unique<FakeImageDecoder>(),
         shared_factory_,
         base::BindRepeating(&LogoServiceImplTest::use_gray_background,
                             base::Unretained(this)));
@@ -417,8 +416,15 @@ class LogoServiceImplTest : public ::testing::Test {
 
   bool use_gray_background() const { return use_gray_background_; }
 
+  TemplateURLService& template_url_service() {
+    return *search_engines_test_environment_.template_url_service();
+  }
+  const TemplateURLService& template_url_service() const {
+    return *search_engines_test_environment_.template_url_service();
+  }
+
   base::test::TaskEnvironment task_environment_;
-  TemplateURLService template_url_service_;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   base::SimpleTestClock test_clock_;
   raw_ptr<NiceMock<MockLogoCache>, AcrossTasksDanglingUntriaged> logo_cache_;
 
@@ -477,7 +483,7 @@ void LogoServiceImplTest::SetServerResponseWhenFingerprint(
 }
 
 const GURL& LogoServiceImplTest::DoodleURL() const {
-  return template_url_service_.GetDefaultSearchProvider()->doodle_url();
+  return template_url_service().GetDefaultSearchProvider()->doodle_url();
 }
 
 void LogoServiceImplTest::GetLogo(LogoCallbacks callbacks) {
@@ -513,9 +519,9 @@ void LogoServiceImplTest::AddSearchEngine(std::string_view keyword,
   search_url.doodle_url = doodle_url;
 
   TemplateURL* template_url =
-      template_url_service_.Add(std::make_unique<TemplateURL>(search_url));
+      template_url_service().Add(std::make_unique<TemplateURL>(search_url));
   if (make_default) {
-    template_url_service_.SetUserSelectedDefaultSearchProvider(template_url);
+    template_url_service().SetUserSelectedDefaultSearchProvider(template_url);
   }
 }
 

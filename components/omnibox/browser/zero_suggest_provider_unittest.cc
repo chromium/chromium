@@ -29,6 +29,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/entropy_provider.h"
@@ -51,15 +52,12 @@ constexpr int kCacheSize = 10;
 
 class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
  public:
-  FakeAutocompleteProviderClient()
-      : template_url_service_(std::make_unique<TemplateURLService>(
-            /*prefs=*/nullptr,
-            /*search_engine_choice_service=*/nullptr)),
-        pref_service_(new TestingPrefServiceSimple()) {
-    ZeroSuggestProvider::RegisterProfilePrefs(pref_service_->registry());
+  FakeAutocompleteProviderClient() {
+    ZeroSuggestProvider::RegisterProfilePrefs(
+        search_engines_test_environment_.pref_service().registry());
     zero_suggest_cache_service_ = std::make_unique<ZeroSuggestCacheService>(
-        std::make_unique<TestSchemeClassifier>(), pref_service_.get(),
-        kCacheSize);
+        std::make_unique<TestSchemeClassifier>(),
+        &search_engines_test_environment_.pref_service(), kCacheSize);
   }
   FakeAutocompleteProviderClient(const FakeAutocompleteProviderClient&) =
       delete;
@@ -69,14 +67,16 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   bool SearchSuggestEnabled() const override { return true; }
 
   TemplateURLService* GetTemplateURLService() override {
-    return template_url_service_.get();
+    return search_engines_test_environment_.template_url_service();
   }
 
-  TemplateURLService* GetTemplateURLService() const override {
-    return template_url_service_.get();
+  const TemplateURLService* GetTemplateURLService() const override {
+    return search_engines_test_environment_.template_url_service();
   }
 
-  PrefService* GetPrefs() const override { return pref_service_.get(); }
+  PrefService* GetPrefs() const override {
+    return &search_engines_test_environment_.pref_service();
+  }
 
   ZeroSuggestCacheService* GetZeroSuggestCacheService() override {
     return zero_suggest_cache_service_.get();
@@ -113,9 +113,8 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   }
 
  private:
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   bool is_personalized_url_data_collection_active_;
-  std::unique_ptr<TemplateURLService> template_url_service_;
-  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<ZeroSuggestCacheService> zero_suggest_cache_service_;
   TestSchemeClassifier scheme_classifier_;
 };
