@@ -126,12 +126,6 @@ void HideEndingMomentNudge() {
   }
 }
 
-// Helper to return an empty string reference.
-const std::string& EmptyString() {
-  const static std::string empty;
-  return empty;
-}
-
 }  // namespace
 
 FocusModeController::FocusModeController(
@@ -197,32 +191,6 @@ void FocusModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // Pref only set via policy.
   registry->RegisterStringPref(prefs::kFocusModeSoundsEnabled,
                                focus_mode_util::kFocusModeSoundsEnabled);
-}
-
-const std::string& FocusModeController::selected_task_list_id() const {
-  const FocusModeTask* selected_task = tasks_model_.selected_task();
-  if (!selected_task) {
-    return EmptyString();
-  }
-  return selected_task->task_id.list_id;
-}
-
-const std::string& FocusModeController::selected_task_id() const {
-  const FocusModeTask* selected_task = tasks_model_.selected_task();
-  if (!selected_task) {
-    return EmptyString();
-  }
-
-  return selected_task->task_id.id;
-}
-
-const std::string& FocusModeController::selected_task_title() const {
-  const FocusModeTask* selected_task = tasks_model_.selected_task();
-  if (!selected_task) {
-    return EmptyString();
-  }
-
-  return selected_task->title;
 }
 
 void FocusModeController::AddObserver(Observer* observer) {
@@ -497,7 +465,7 @@ bool FocusModeController::HasSelectedTask() const {
   return !!tasks_model_.selected_task();
 }
 
-void FocusModeController::CompleteTask(bool update) {
+void FocusModeController::CompleteTask() {
   const FocusModeTask* selected_task = tasks_model_.selected_task();
   if (!selected_task) {
     return;

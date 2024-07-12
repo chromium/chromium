@@ -66,7 +66,7 @@ class ASH_EXPORT FocusModeTaskView : public views::BoxLayoutView,
   // Called when `radio_button_` is pressed to mark a task as completed.
   // `update` is used to determine if we need to update the tasks provider (i.e.
   // we don't if the task is already marked as completed).
-  void OnCompleteTask(bool update);
+  void OnCompleteTask();
 
   // Called when `deselect_button_` is pressed to remove a selected task.
   void OnDeselectButtonPressed();

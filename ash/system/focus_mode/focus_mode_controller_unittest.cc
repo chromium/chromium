@@ -295,10 +295,7 @@ TEST_F(FocusModeControllerMultiUserTest, TasksFlow) {
   EXPECT_FALSE(controller->HasSelectedTask());
 
   // Select a task, and verify that the task data is accurate.
-  controller->SetSelectedTask(task);
-  EXPECT_TRUE(controller->HasSelectedTask());
-  EXPECT_EQ(task_id, controller->selected_task_id());
-  EXPECT_EQ(title, controller->selected_task_title());
+  controller->tasks_model().SetSelectedTask(task);
 
   controller->ToggleFocusMode();
   EXPECT_TRUE(controller->in_focus_session());

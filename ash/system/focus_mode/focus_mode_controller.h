@@ -105,16 +105,6 @@ class ASH_EXPORT FocusModeController
     return current_session_;
   }
 
-  // These methods are DEPRECATED. Please go through the `tasks_model()` for all
-  // Task data.
-  // TODO(b/345781039): Remove these when callers are migrated.
-  const std::string& selected_task_list_id() const;
-  const std::string& selected_task_id() const;
-  const std::string& selected_task_title() const;
-
-  // TODO: REMOVE THIS
-  FocusModeTasksProvider& tasks_provider() { return tasks_provider_; }
-
   FocusModeTasksModel& tasks_model() { return tasks_model_; }
   FocusModeSoundsController* focus_mode_sounds_controller() const {
     return focus_mode_sounds_controller_.get();
@@ -199,10 +189,8 @@ class ASH_EXPORT FocusModeController
   // Returns whether there is a currently selected task.
   bool HasSelectedTask() const;
 
-  // Marks the task as completed, and also clears the selected task data.
-  // Updates the tasks provider if `update` is `true`. For example, if the task
-  // has been completed outside of focus mode, `update` should be `false`.
-  void CompleteTask(bool update = true);
+  // Marks the task as completed in the model.
+  void CompleteTask();
 
   // Shows the ending moment nudge that is anchored to the focus mode tray. Only
   // show if there isn't already showing and if there is no tray bubble open.

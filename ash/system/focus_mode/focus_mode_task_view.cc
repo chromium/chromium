@@ -220,10 +220,9 @@ FocusModeTaskView::FocusModeTaskView(bool is_network_connected)
       views::BoxLayout::Orientation::kHorizontal);
   textfield_container_->SetProperty(views::kBoxLayoutFlexKey,
                                     views::BoxLayoutFlexSpecification());
-  radio_button_ =
-      textfield_container_->AddChildView(std::make_unique<views::ImageButton>(
-          base::BindRepeating(&FocusModeTaskView::OnCompleteTask,
-                              base::Unretained(this), /*update=*/true)));
+  radio_button_ = textfield_container_->AddChildView(
+      std::make_unique<views::ImageButton>(base::BindRepeating(
+          &FocusModeTaskView::OnCompleteTask, base::Unretained(this))));
   const std::u16string radio_text = l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_VIEW_RADIO_BUTTON);
   radio_button_->GetViewAccessibility().SetName(radio_text);
@@ -463,8 +462,8 @@ void FocusModeTaskView::PaintFocusRingAndUpdateStyle() {
   textfield_->UpdateElideBehavior(is_active);
 }
 
-void FocusModeTaskView::OnCompleteTask(bool update) {
-  FocusModeController::Get()->CompleteTask(update);
+void FocusModeTaskView::OnCompleteTask() {
+  FocusModeController::Get()->CompleteTask();
 }
 
 void FocusModeTaskView::OnDeselectButtonPressed() {
