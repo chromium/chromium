@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_TAB_GROUP_SYNC_DELEGATE_DESKTOP_H_
 #define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_TAB_GROUP_SYNC_DELEGATE_DESKTOP_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/tab_group_sync_delegate.h"
 #include "components/saved_tab_groups/types.h"
@@ -34,6 +37,7 @@ class TabGroupSyncDelegateDesktop : public TabGroupSyncDelegate {
 
  private:
   raw_ptr<TabGroupSyncService> service_;
+  std::unique_ptr<TabGroupServiceWrapper> wrapper_service_;
 };
 
 }  // namespace tab_groups

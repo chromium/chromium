@@ -4,13 +4,18 @@
 
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_delegate_desktop.h"
 
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
 #include "components/saved_tab_groups/tab_group_sync_service.h"
 
 namespace tab_groups {
 
 TabGroupSyncDelegateDesktop::TabGroupSyncDelegateDesktop(
     TabGroupSyncService* service)
-    : service_(service) {}
+    : wrapper_service_(std::make_unique<TabGroupServiceWrapper>(
+          service,
+          /*saved_tab_group_keyed_service=*/nullptr)) {}
 
 TabGroupSyncDelegateDesktop::~TabGroupSyncDelegateDesktop() = default;
 
