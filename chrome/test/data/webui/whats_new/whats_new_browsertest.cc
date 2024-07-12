@@ -12,7 +12,9 @@
 class WhatsNewBrowserTest : public WebUIMochaBrowserTest {
  protected:
   WhatsNewBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(whats_new::kForceEnabled);
+    scoped_feature_list_.InitWithFeatures(
+        {whats_new::kForceEnabled},
+        {user_education::features::kWhatsNewVersion2});
     set_test_loader_host(chrome::kChromeUIWhatsNewHost);
   }
 
