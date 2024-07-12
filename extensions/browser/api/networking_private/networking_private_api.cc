@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/networking_private/networking_private_api.h"
 
 #include <memory>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
@@ -86,22 +82,19 @@ std::vector<std::string> FilterProperties(base::Value::Dict& properties,
     return std::vector<std::string>();
   }
 
-  const char* const* filter = nullptr;
-  size_t filter_size = 0;
+  base::span<const char* const> filters;
   if (type == PropertiesType::GET) {
-    filter = kPrivatePropertyPathsForGet;
-    filter_size = std::size(kPrivatePropertyPathsForGet);
+    filters = kPrivatePropertyPathsForGet;
   } else {
-    filter = kPrivatePropertyPathsForSet;
-    filter_size = std::size(kPrivatePropertyPathsForSet);
+    filters = kPrivatePropertyPathsForSet;
   }
 
   std::vector<std::string> removed_properties;
-  for (size_t i = 0; i < filter_size; ++i) {
+  for (const char* filter : filters) {
     // networkingPrivate uses sub dictionaries for Shill properties with a
     // '.' separator, so we use `RemoveByDottedPath` here, not `Remove`.
-    if (properties.RemoveByDottedPath(filter[i])) {
-      removed_properties.push_back(filter[i]);
+    if (properties.RemoveByDottedPath(filter)) {
+      removed_properties.push_back(filter);
     }
   }
   return removed_properties;

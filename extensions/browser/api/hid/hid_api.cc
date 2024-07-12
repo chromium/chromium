@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/hid/hid_api.h"
 
 #include <stdint.h>
@@ -15,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "extensions/browser/api/api_resource_manager.h"
@@ -234,11 +230,8 @@ bool HidSendFunction::ReadParameters() {
 }
 
 void HidSendFunction::StartWork(device::mojom::HidConnection* connection) {
-  auto* data = reinterpret_cast<const uint8_t*>(parameters_->data.data());
-  std::vector<uint8_t> buffer(data, data + parameters_->data.size());
-
   connection->Write(
-      static_cast<uint8_t>(parameters_->report_id), buffer,
+      static_cast<uint8_t>(parameters_->report_id), parameters_->data,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(&HidSendFunction::OnFinished, this), false));
 }
@@ -297,11 +290,8 @@ bool HidSendFeatureReportFunction::ReadParameters() {
 
 void HidSendFeatureReportFunction::StartWork(
     device::mojom::HidConnection* connection) {
-  auto* data = reinterpret_cast<const uint8_t*>(parameters_->data.data());
-  std::vector<uint8_t> buffer(data, data + parameters_->data.size());
-
   connection->SendFeatureReport(
-      static_cast<uint8_t>(parameters_->report_id), buffer,
+      static_cast<uint8_t>(parameters_->report_id), parameters_->data,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(&HidSendFeatureReportFunction::OnFinished, this),
           false));

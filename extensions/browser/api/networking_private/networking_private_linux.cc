@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/networking_private/networking_private_linux.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -832,17 +828,13 @@ bool NetworkingPrivateLinux::GetAccessPointInfo(
       return false;
     }
 
-    const uint8_t* ssid_bytes = nullptr;
-    size_t ssid_length = 0;
-    if (!variant_reader.PopArrayOfBytes(&ssid_bytes, &ssid_length)) {
+    std::string ssidUTF8;
+    if (!variant_reader.PopString(&ssidUTF8)) {
       LOG(ERROR) << "Unexpected response for " << access_point_path.value()
                  << ": " << response->ToString();
       return false;
     }
-
-    std::string ssidUTF8(ssid_bytes, ssid_bytes + ssid_length);
     std::u16string ssid = base::UTF8ToUTF16(ssidUTF8);
-
     access_point_info->Set(kAccessPointInfoName, ssid);
   }
 

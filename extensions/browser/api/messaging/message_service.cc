@@ -16,11 +16,13 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
+#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
@@ -498,13 +500,16 @@ void MessageService::OpenChannelToExtension(
     // rejected without showing a prompt. See http://crbug.com/442497
     EventRouter* event_router = EventRouter::Get(context);
     const char* const events[] = {
-        "runtime.onConnectExternal", "runtime.onConnectNative",
-        "runtime.onMessageExternal", "extension.onRequestExternal", nullptr};
-    bool has_event_listener = false;
-    for (const char* const* event = events; *event; event++) {
-      has_event_listener |=
-          event_router->ExtensionHasEventListener(target_extension_id, *event);
-    }
+        "runtime.onConnectExternal",
+        "runtime.onConnectNative",
+        "runtime.onMessageExternal",
+        "extension.onRequestExternal",
+    };
+    const bool has_event_listener =
+        base::ranges::any_of(events, [&](const char* event) {
+          return event_router->ExtensionHasEventListener(target_extension_id,
+                                                         event);
+        });
     if (!has_event_listener) {
       OnOpenChannelAllowed(std::move(params), false);
       return;
