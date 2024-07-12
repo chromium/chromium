@@ -249,6 +249,16 @@ async def test_browsingContext_beforeUnloadPromptOpened_capabilityRespected(
         if 'beforeUnload' in capabilities['unhandledPromptBehavior']:
             expected_handler = capabilities['unhandledPromptBehavior'][
                 'beforeUnload']
+        elif 'default' in capabilities['unhandledPromptBehavior']:
+            expected_handler = capabilities['unhandledPromptBehavior'][
+                'default']
+        if isinstance(capabilities['unhandledPromptBehavior'], str):
+            if capabilities[
+                    'unhandledPromptBehavior'] == 'dismiss' or capabilities[
+                        'unhandledPromptBehavior'] == 'dismiss and notify':
+                expected_handler = 'dismiss'
+            elif capabilities['unhandledPromptBehavior'] == 'ignore':
+                expected_handler = 'ignore'
 
     resp = await read_JSON_message(websocket)
     assert resp == {
