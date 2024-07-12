@@ -1414,6 +1414,78 @@ TEST_P(UnusedSitePermissionsServiceTest,
   }
 }
 
+// Before M127, revoked permissions are stored in HCMS as integer values.
+// Starting from M128, they are storing with their string values. This tests
+// checks if the code works as expected if the client is rolled back from M128
+// or higher, to M127 where this CL is back-merged.
+TEST_P(UnusedSitePermissionsServiceTest, RollingBackFromM128OrHigher) {
+  // Set up revoked permissions in HCSM with their string values.
+  content_settings::ContentSettingConstraints constraint(clock()->Now());
+  constraint.set_lifetime(
+      content_settings::features::
+          kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get());
+
+  auto* website_setting_registry =
+      content_settings::WebsiteSettingsRegistry::GetInstance();
+
+  // `REVOKED_UNUSED_SITE_PERMISSIONS` stores base::Value::Dict with two keys:
+  // (1) key for a string list of revoked permission types
+  // (2) key for a dictionary, which key is a string permission type, mapped
+  // to its revoked permission data in base::Value (i.e. {"foo": "bar"})
+  // {
+  //  "revoked": [geolocation, file-system-access-chooser-data, ... ],
+  //  "revoked-chooser-permissions": {"file-system-access-chooser-data":
+  //  {"foo": "bar"}}
+  // }
+  // Set some revoked permissions for url1 with interger values. All should be
+  // counted as revoked permission.
+  auto dict_with_int_values =
+      base::Value::Dict()
+          .Set(permissions::kRevokedKey,
+               base::Value::List()
+                   .Append(static_cast<int32_t>(geolocation_type))
+                   .Append(static_cast<int32_t>(chooser_type)))
+          .Set(permissions::kRevokedChooserPermissionsKey,
+               base::Value::Dict().Set(
+                   base::NumberToString(static_cast<int32_t>(chooser_type)),
+                   base::Value(base::Value::Dict().Set("foo", "bar"))));
+
+  hcsm()->SetWebsiteSettingDefaultScope(
+      GURL(url1), GURL(url1), revoked_unused_site_type,
+      base::Value(dict_with_int_values.Clone()), constraint);
+
+  std::unique_ptr<UnusedSitePermissionsService::UnusedSitePermissionsResult>
+      result = service()->GetRevokedPermissions();
+  // All permissions should be counted as revoked permissions, since their
+  // integer values are used.
+  EXPECT_EQ(1U, result->GetRevokedPermissions().size());
+  EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), GURL(url1)).size(), 2u);
+
+  // Set some revoked permissions for url2 with string values.
+  auto dict_with_str_values =
+      base::Value::Dict()
+          .Set(permissions::kRevokedKey,
+               base::Value::List()
+                   .Append(
+                       website_setting_registry->Get(geolocation_type)->name())
+                   .Append(website_setting_registry->Get(chooser_type)->name()))
+          .Set(permissions::kRevokedChooserPermissionsKey,
+               base::Value::Dict().Set(
+                   website_setting_registry->Get(chooser_type)->name(),
+                   base::Value(base::Value::Dict().Set("foo", "bar"))));
+
+  hcsm()->SetWebsiteSettingDefaultScope(
+      GURL(url2), GURL(url2), revoked_unused_site_type,
+      base::Value(dict_with_str_values.Clone()), constraint);
+
+  // Since the string values are not supported in M127 milestone, the revoked
+  // permissions should be ignored.
+  result = service()->GetRevokedPermissions();
+  EXPECT_EQ(1U, result->GetRevokedPermissions().size());
+  EXPECT_TRUE(IsUrlInRevokedSettings(result->GetRevokedPermissions(), url1));
+  EXPECT_FALSE(IsUrlInRevokedSettings(result->GetRevokedPermissions(), url2));
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     UnusedSitePermissionsServiceTest,

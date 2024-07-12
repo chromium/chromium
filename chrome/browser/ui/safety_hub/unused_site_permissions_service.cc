@@ -646,6 +646,11 @@ UnusedSitePermissionsService::GetRevokedPermissions() {
         stored_value.GetDict().FindList(permissions::kRevokedKey);
     CHECK(type_list);
     for (base::Value& type : type_list->Clone()) {
+      if (!type.is_int()) {
+        // If the type is not integer, then HSCM does not store the revoked
+        // permissions in correct format. Ignore those permissions.
+        continue;
+      }
       permissions_data.permission_types.insert(
           static_cast<ContentSettingsType>(type.GetInt()));
     }
@@ -679,8 +684,9 @@ UnusedSitePermissionsService::GetRevokedPermissions() {
       permissions_data.abusive_revocation_constraints.set_lifetime(
           revoked_permissions.metadata.lifetime());
     }
-
-    result->AddRevokedPermission(permissions_data);
+    if (!permissions_data.permission_types.empty()) {
+      result->AddRevokedPermission(permissions_data);
+    }
   }
 
   ContentSettingsForOneType revoked_abusive_notification_settings =
