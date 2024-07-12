@@ -324,6 +324,27 @@ IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewTrackingProtectionUiPixelTest,
   ShowAndVerifyUi();
 }
 
+IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewTrackingProtectionUiPixelTest,
+                       InvokeUi_EnforcedByCookieSetting) {
+  protections_on_ = false;
+  enforcement_ = CookieControlsEnforcement::kEnforcedByCookieSetting;
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewTrackingProtectionUiPixelTest,
+                       InvokeUi_EnforcedByPolicy) {
+  protections_on_ = false;
+  enforcement_ = CookieControlsEnforcement::kEnforcedByPolicy;
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewTrackingProtectionUiPixelTest,
+                       InvokeUi_EnforcedByExtension) {
+  protections_on_ = false;
+  enforcement_ = CookieControlsEnforcement::kEnforcedByExtension;
+  ShowAndVerifyUi();
+}
+
 INSTANTIATE_TEST_SUITE_P(
     /*no prefix*/,
     CookieControlsBubbleViewTrackingProtectionUiPixelTest,

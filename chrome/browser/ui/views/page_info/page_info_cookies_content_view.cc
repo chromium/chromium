@@ -317,8 +317,7 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
         PageInfoViewFactory::GetImageModel(
             CookieControlsUtil::GetEnforcedIcon(cookie_info.enforcement)));
     third_party_cookies_enforced_icon_->SetTooltipText(
-        l10n_util::GetStringUTF16(CookieControlsUtil::GetEnforcedTooltipTextId(
-            cookie_info.enforcement)));
+        CookieControlsUtil::GetEnforcedTooltip(cookie_info.enforcement));
   }
 }
 

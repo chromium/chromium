@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/controls/text_with_controls_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/content_settings/browser/ui/cookie_controls_util.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/tracking_protection_feature.h"
@@ -27,11 +28,13 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/vector_icons.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
 
 using FeatureType = ::content_settings::TrackingProtectionFeatureType;
+using Util = ::content_settings::CookieControlsUtil;
 
 constexpr int kMaxBubbleWidth = 1000;
 
@@ -104,6 +107,21 @@ std::u16string GetStatusString(
       return {};
   }
 }
+
+std::u16string GetManagedSectionTitle(CookieControlsEnforcement enforcement) {
+  switch (enforcement) {
+    case CookieControlsEnforcement::kEnforcedByCookieSetting:
+      return l10n_util::GetStringUTF16(
+          IDS_TRACKING_PROTECTION_BUBBLE_PERMANENT_ALLOWED_TITLE);
+    case CookieControlsEnforcement::kEnforcedByExtension:
+    case CookieControlsEnforcement::kEnforcedByPolicy:
+    case CookieControlsEnforcement::kEnforcedByTpcdGrant:
+      return l10n_util::GetStringUTF16(
+          IDS_TRACKING_PROTECTION_BUBBLE_MANAGED_PROTECTIONS_LABEL);
+    case CookieControlsEnforcement::kNoEnforcement:
+      NOTREACHED_NORETURN();
+  }
+}
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CookieControlsContentView, kTitle);
@@ -165,7 +183,6 @@ void CookieControlsContentView::SetToggleIcon(const gfx::VectorIcon& icon) {
 
 void CookieControlsContentView::SetToggleVisible(bool visible) {
   toggle_button_->SetVisible(visible);
-  PreferredSizeChanged();
 }
 
 void CookieControlsContentView::SetCookiesLabel(const std::u16string& label) {
@@ -208,7 +225,6 @@ void CookieControlsContentView::SetFeedbackSectionVisibility(bool visible) {
   } else {
     feedback_section_->SetVisible(false);
   }
-  PreferredSizeChanged();
 }
 
 void CookieControlsContentView::AddDescriptionRow() {
@@ -266,7 +282,11 @@ void CookieControlsContentView::AddFeatureRow(
     default:
       return;
   }
-
+  if (feature.enforcement != CookieControlsEnforcement::kNoEnforcement) {
+    // Ensure that managed rows are always below the managed section title.
+    ReorderChildView(row, children().size());
+    row->SetEnforcedIcon(feature.enforcement);
+  }
   row->SetTitle(GetFeatureLabel(feature.feature_type));
   label->SetProperty(views::kElementIdentifierKey,
                      GetFeatureIdentifier(feature.feature_type));
@@ -297,6 +317,47 @@ void CookieControlsContentView::AddToggleRow() {
       IDS_COOKIE_CONTROLS_BUBBLE_THIRD_PARTY_COOKIES_LABEL));
   toggle_button_->SetVisible(true);
   toggle_button_->SetProperty(views::kElementIdentifierKey, kToggleButton);
+}
+
+void CookieControlsContentView::SetManagedSeparatorVisible(bool visible) {
+  CHECK(managed_separator_);
+  managed_separator_->SetVisible(visible);
+}
+
+void CookieControlsContentView::SetManagedSectionVisible(bool visible) {
+  CHECK(managed_section_);
+  managed_section_->SetVisible(visible);
+}
+
+void CookieControlsContentView::AddManagedSectionForEnforcement(
+    CookieControlsEnforcement enforcement) {
+  CHECK(enforcement != CookieControlsEnforcement::kNoEnforcement);
+  if (!managed_separator_) {
+    managed_separator_ = AddChildView(CreatePaddedSeparator());
+  }
+  if (!managed_section_) {
+    managed_section_ = AddChildView(std::make_unique<views::View>());
+  }
+
+  managed_section_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
+  auto* provider = ChromeLayoutProvider::Get();
+  const int vertical_margin =
+      provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
+  const int side_margin =
+      provider->GetInsetsMetric(views::INSETS_DIALOG).left();
+
+  managed_section_->SetProperty(views::kMarginsKey,
+                                gfx::Insets::VH(vertical_margin, side_margin));
+
+  if (!managed_title_) {
+    managed_title_ =
+        managed_section_->AddChildView(std::make_unique<views::Label>());
+  }
+  managed_title_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
+  managed_title_->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
+  managed_title_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  managed_title_->SetText(GetManagedSectionTitle(enforcement));
 }
 
 void CookieControlsContentView::AddFeedbackSection() {
@@ -339,7 +400,6 @@ void CookieControlsContentView::UpdateContentLabels(
     title_->SetText(title);
     description_->SetText(description);
   }
-  PreferredSizeChanged();
 }
 
 void CookieControlsContentView::SetContentLabelsVisible(bool visible) {
@@ -349,10 +409,13 @@ void CookieControlsContentView::SetContentLabelsVisible(bool visible) {
   } else {
     label_wrapper_->SetVisible(visible);
   }
-  PreferredSizeChanged();
 }
 
 CookieControlsContentView::~CookieControlsContentView() = default;
+
+void CookieControlsContentView::PreferredSizeChanged() {
+  views::View::PreferredSizeChanged();
+}
 
 gfx::Size CookieControlsContentView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {

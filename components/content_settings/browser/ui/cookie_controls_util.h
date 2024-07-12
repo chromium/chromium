@@ -22,7 +22,9 @@ class CookieControlsUtil {
 
   static const gfx::VectorIcon& GetEnforcedIcon(
       CookieControlsEnforcement enforcement);
-  static int GetEnforcedTooltipTextId(CookieControlsEnforcement enforcement);
+
+  static std::u16string GetEnforcedTooltip(
+      CookieControlsEnforcement enforcement);
 };
 
 }  // namespace content_settings

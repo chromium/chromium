@@ -68,7 +68,8 @@ int TextWithControlsView::GetFirstLineHeight() {
 }
 
 void TextWithControlsView::SetVisible(bool visible) {
-  labels_wrapper_->SetVisible(visible);
+  views::View::SetVisible(visible);
+  PreferredSizeChanged();
 }
 
 views::Label* TextWithControlsView::AddSecondaryLabel(std::u16string text) {

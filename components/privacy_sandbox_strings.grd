@@ -349,6 +349,7 @@
       <message name="IDS_TRACKING_PROTECTION_FINGERPRINTING_PROTECTION_LEARN_MORE" desc="" formatter_data="android_java" translateable="false">
         Learn <ph name="BEGIN_LINK">&lt;link&gt;</ph>how limiting digital fingerprinting works<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
+      <!-- User Bypass -->
       <message name="IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE" desc="The subtitle label for the third-party cookies item in User Bypass when 3PC are allowed." translateable="false">
         Allowed
       </message>
@@ -358,7 +359,9 @@
       <message name="IDS_TRACKING_PROTECTION_BUBBLE_3PC_LIMITED_SUBTITLE" desc="The subtitle label for the third-party cookies item in User Bypass when 3PC are limited (i.e. blocked with mitigations)." translateable="false">
         Limited
       </message>
-
+      <message name="IDS_TRACKING_PROTECTION_BUBBLE_MANAGED_PROTECTIONS_LABEL" desc="The title label for the section in User Bypass containing managed Tracking Protection features." translateable="false">
+        Managed protections
+      </message>
       <!-- Tracking Protection WebUI -->
       <!-- General -->
       <message name="IDS_SETTINGS_TRACKING_PROTECTION_DEFAULT_HEADER" desc="Header for text describing the default Tracking Protection settings state." translateable="false">

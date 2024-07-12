@@ -208,12 +208,12 @@ void CookieControlsBubbleViewController::FillViewForThirdPartyCookies(
       bubble_view_->GetContentView()->SetEnforcedIcon(
           content_settings::CookieControlsUtil::GetEnforcedIcon(
               cookies_feature.enforcement),
-          l10n_util::GetStringUTF16(
-              content_settings::CookieControlsUtil::GetEnforcedTooltipTextId(
-                  cookies_feature.enforcement))),
+          content_settings::CookieControlsUtil::GetEnforcedTooltip(
+              cookies_feature.enforcement)),
           bubble_view_->GetContentView()->SetEnforcedIconVisible(true);
       break;
   }
+  bubble_view_->GetContentView()->PreferredSizeChanged();
 }
 
 std::u16string CookieControlsBubbleViewController::GetStatusLabel(
@@ -271,15 +271,46 @@ void CookieControlsBubbleViewController::FillViewForTrackingProtection(
     ApplyThirdPartyCookiesAllowedState(enforcement, expiration);
   }
 
-  // Fill feature rows
+  std::vector<content_settings::TrackingProtectionFeature> managed_features;
+
+  // TODO(http://b/344856056): Only show user bypass when the toggle is visible
+  // (the user can control protections). Remove this variable once the UB
+  // visibility is updated.
+  bool show_toggle;
+
+  // Handle enforced and unenforced feature states separately
   std::vector<TrackingProtectionFeature>::iterator it;
   for (it = features.begin(); it != features.end(); it++) {
+    if (it->enforcement == CookieControlsEnforcement::kNoEnforcement) {
+      show_toggle = true;
+      bubble_view_->GetContentView()->AddFeatureRow(*it, protections_on_);
+    } else {
+      managed_features.push_back(*it);
+    }
+  }
+
+  if (managed_features.size() > 0) {
+    // TODO(http://b/352066532): Support multiple enforcements in managed
+    // section.
+    bubble_view_->GetContentView()->AddManagedSectionForEnforcement(
+        enforcement);
+    bubble_view_->GetContentView()->SetManagedSeparatorVisible(show_toggle);
+  }
+  // Fill managed feature rows
+  for (it = managed_features.begin(); it != managed_features.end(); it++) {
     bubble_view_->GetContentView()->AddFeatureRow(*it, protections_on_);
   }
+
+  // If there are features the user can control, display toggle.
+  bubble_view_->GetContentView()->SetToggleVisible(show_toggle);
+  bubble_view_->GetContentView()->SetContentLabelsVisible(show_toggle);
+
   // Show the feedback link if the user disabled protections
   bubble_view_->GetContentView()->SetFeedbackSectionVisibility(
       !protections_on_ &&
       enforcement == CookieControlsEnforcement::kNoEnforcement);
+
+  bubble_view_->GetContentView()->PreferredSizeChanged();
 }
 
 void CookieControlsBubbleViewController::
