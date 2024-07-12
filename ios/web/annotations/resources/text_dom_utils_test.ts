@@ -91,12 +91,13 @@ class TestDomUtils extends TestSuite {
 
     loadHead(
         '<meta name="format-detection" ' +
-        'content="telephone=no ,email= yes, date=no">' +
+        'content="telephone=no ,email= yes, date=no, unit=no">' +
         '<meta name="format-detection" content="Address=NO">');
     expectEq(true, noFormatDetectionTypes().has('telephone'));
     expectEq(false, noFormatDetectionTypes().has('email'));
     expectEq(true, noFormatDetectionTypes().has('date'));
     expectEq(true, noFormatDetectionTypes().has('address'));
+    expectEq(true, noFormatDetectionTypes().has('unit'));
   }
 }
 

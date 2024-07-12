@@ -36,6 +36,8 @@ class AnnotationsTextObserver : public base::CheckedObserver {
   //   <meta name="format-detection" content="address=no">
   // String 'wkNoDate': true if the page header contains webkit's:
   //   <meta name="format-detection" content="date=no">
+  // String 'wkNoUnits': true if the page header contains webkit's:
+  //   <meta name="format-detection" content="unit=no">
   // Note all type=equal pairs can be also be comma separated in a single
   // content attribute in a meta tag. The check is case insensitive but the
   // metadata is guaranteed lowercase.

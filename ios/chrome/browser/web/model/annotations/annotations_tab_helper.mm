@@ -129,6 +129,10 @@ void AnnotationsTabHelper::OnTextExtracted(web::WebState* web_state,
   if (has_no_date && has_no_date.value()) {
     handled_types = handled_types & ~NSTextCheckingTypeDate;
   }
+  std::optional<bool> has_no_unit = metadata.FindBool("wkNoUnit");
+  if (has_no_unit && has_no_unit.value()) {
+    handled_types = handled_types & ~TCTextCheckingTypeMeasurement;
+  }
 
   // Keep latest copy.
   metadata_ = std::make_unique<base::Value::Dict>(metadata.Clone());

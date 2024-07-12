@@ -53,6 +53,7 @@ function textChunkConsumer(chunk: TextChunk): void {
       wkNoEmail: disabledTypes.has('email'),
       wkNoAddress: disabledTypes.has('address'),
       wkNoDate: disabledTypes.has('date'),
+      wkNoUnit: disabledTypes.has('unit'),
     },
   });
 }

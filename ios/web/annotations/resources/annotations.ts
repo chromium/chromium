@@ -226,6 +226,7 @@ function extractText(maxChars: number, seqId: number): void {
       wkNoEmail: disabledTypes.has('email'),
       wkNoAddress: disabledTypes.has('address'),
       wkNoDate: disabledTypes.has('date'),
+      wkNoUnit: disabledTypes.has('unit'),
     },
   });
 }
