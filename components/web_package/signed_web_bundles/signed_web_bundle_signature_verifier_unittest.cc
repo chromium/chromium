@@ -33,6 +33,7 @@
 #include "components/web_package/signed_web_bundles/ecdsa_p256_public_key.h"
 #include "components/web_package/signed_web_bundles/ecdsa_p256_sha256_signature.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
+#include "components/web_package/signed_web_bundles/identity_validator.h"
 #include "components/web_package/signed_web_bundles/integrity_block_attributes.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
@@ -93,6 +94,9 @@ class SignedWebBundleSignatureVerifierGoToolTest
           std::pair<base::FilePath,
                     std::optional<SignedWebBundleSignatureVerifier::Error>>,
           uint64_t>> {
+ public:
+  void SetUp() override { IdentityValidator::CreateInstanceForTesting(); }
+
  protected:
   base::FilePath GetTestFilePath(const base::FilePath& path) {
     base::FilePath test_data_dir;
@@ -129,8 +133,7 @@ TEST_P(SignedWebBundleSignatureVerifierGoToolTest, VerifySimpleWebBundle) {
       base::File(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   ASSERT_TRUE(file.IsValid());
 
-  SignedWebBundleSignatureVerifier signature_verifier(
-      /*kr_info_provider=*/nullptr);
+  SignedWebBundleSignatureVerifier signature_verifier;
   signature_verifier.SetWebBundleChunkSizeForTesting(std::get<1>(GetParam()));
 
   auto result =
@@ -185,7 +188,10 @@ INSTANTIATE_TEST_SUITE_P(
 
 class SignedWebBundleSignatureVerifierTestBase : public ::testing::Test {
  protected:
-  void SetUp() override { EXPECT_TRUE(temp_dir.CreateUniqueTempDir()); }
+  void SetUp() override {
+    EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
+    IdentityValidator::CreateInstanceForTesting();
+  }
 
   std::tuple<std::vector<uint8_t>, cbor::Value, size_t> CreateSignedWebBundle(
       const std::vector<WebBundleSigner::KeyPair>& key_pairs) {
@@ -245,28 +251,27 @@ TEST_P(SignedWebBundleSignatureVerifierTest, VerifySignatures) {
   const auto& signatures = parsed_integrity_block.signature_stack().entries();
   ASSERT_EQ(signatures.size(), key_pairs.size());
 
-  std::vector<test::PublicKey> inferred_public_keys =
+  std::vector<PublicKey> inferred_public_keys =
       base::ToVector(signatures, [](const auto& signature) {
         return absl::visit(
-            base::Overloaded{[](const auto& signature_info) -> test::PublicKey {
+            base::Overloaded{[](const auto& signature_info) -> PublicKey {
                                return signature_info.public_key();
                              },
                              [](const SignedWebBundleSignatureInfoUnknown&)
-                                 -> test::PublicKey { NOTREACHED_NORETURN(); }},
+                                 -> PublicKey { NOTREACHED_NORETURN(); }},
             signature.signature_info());
       });
-  std::vector<test::PublicKey> expected_public_keys =
+  std::vector<PublicKey> expected_public_keys =
       base::ToVector(key_pairs, [](const auto& key_pair) {
         return absl::visit(
-            [](const auto& key_pair) -> test::PublicKey {
+            [](const auto& key_pair) -> PublicKey {
               return key_pair.public_key;
             },
             key_pair);
       });
   EXPECT_EQ(inferred_public_keys, expected_public_keys);
 
-  SignedWebBundleSignatureVerifier signature_verifier(
-      /*kr_info_provider=*/nullptr);
+  SignedWebBundleSignatureVerifier signature_verifier;
   auto result =
       test::VerifySignatures(signature_verifier, file, parsed_integrity_block);
   auto expected_error = std::get<1>(GetParam());

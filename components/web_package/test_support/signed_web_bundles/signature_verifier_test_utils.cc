@@ -46,8 +46,7 @@ mojom::SignatureInfoPtr CreateSignatureInfo(
 FakeSignatureVerifier::FakeSignatureVerifier(
     std::optional<SignedWebBundleSignatureVerifier::Error> error,
     base::RepeatingClosure on_verify_signatures)
-    : SignedWebBundleSignatureVerifier(/*kr_info_provider=*/nullptr),
-      error_(std::move(error)),
+    : error_(std::move(error)),
       on_verify_signatures_(std::move(on_verify_signatures)) {}
 
 FakeSignatureVerifier::~FakeSignatureVerifier() = default;

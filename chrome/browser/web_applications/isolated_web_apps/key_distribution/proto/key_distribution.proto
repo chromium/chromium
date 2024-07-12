@@ -1,0 +1,15 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+import "key_rotation.proto";
+
+package web_app;
+
+// This message is the main payload of the IWA Key Distribution Component.
+message IwaKeyDistribution {
+  // Data about key rotations.
+  optional IwaKeyRotations key_rotation_data = 1;
+}

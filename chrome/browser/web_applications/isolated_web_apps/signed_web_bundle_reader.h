@@ -17,7 +17,6 @@
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_rotation/iwa_key_rotation_info_provider.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
@@ -110,10 +109,9 @@ class SignedWebBundleReader {
   static std::unique_ptr<SignedWebBundleReader> Create(
       const base::FilePath& web_bundle_path,
       const std::optional<GURL>& base_url,
-      std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>
-          signature_verifier =
-              std::make_unique<web_package::SignedWebBundleSignatureVerifier>(
-                  IwaKeyRotationInfoProvider::GetInstance()));
+      std::unique_ptr<
+          web_package::SignedWebBundleSignatureVerifier> signature_verifier =
+          std::make_unique<web_package::SignedWebBundleSignatureVerifier>());
 
   // Starts reading the Signed Web Bundle. This will invoke
   // `integrity_block_result_callback` after reading the integrity block, which

@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/key_rotation/iwa_key_rotation_info_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 
 #include "base/base64.h"
 #include "base/containers/extend.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/version.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_rotation/proto/key_rotation.pb.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/key_rotation/test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_identity_validator.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "components/web_package/test_support/signed_web_bundles/signature_verifier_test_utils.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
@@ -35,82 +37,72 @@ using testing::IsEmpty;
 using testing::Property;
 using testing::VariantWith;
 
-using ComponentUpdateError = IwaKeyRotationInfoProvider::ComponentUpdateError;
+using ComponentUpdateError =
+    IwaKeyDistributionInfoProvider::ComponentUpdateError;
 
 constexpr std::array<uint8_t, 4> kExpectedKey = {0x00, 0x00, 0x00, 0x00};
 constexpr char kWebBundleId[] =
     "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac";
 
-IwaKeyRotations CreateValidData() {
-  IwaKeyRotations kr_proto;
+IwaKeyDistribution CreateValidData() {
+  IwaKeyDistribution key_distribution;
 
+  IwaKeyRotations key_rotations;
   IwaKeyRotations::KeyRotationInfo kr_info;
-  kr_info.set_expected_key(base::Base64Encode(kExpectedKey));
-  kr_proto.mutable_key_rotations()->emplace(kWebBundleId, std::move(kr_info));
 
-  return kr_proto;
+  kr_info.set_expected_key(base::Base64Encode(kExpectedKey));
+  key_rotations.mutable_key_rotations()->emplace(kWebBundleId,
+                                                 std::move(kr_info));
+  *key_distribution.mutable_key_rotation_data() = std::move(key_rotations);
+
+  return key_distribution;
 }
 
 }  // namespace
 
-class IwaIwaKeyRotationInfoProviderTest : public testing::Test {
+class IwaIwaKeyDistributionInfoProviderTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(IwaIwaKeyRotationInfoProviderTest, LoadComponent) {
-  EXPECT_THAT(
-      test::UpdateKeyRotationInfo(base::Version("1.0.0"), CreateValidData()),
-      HasValue());
-
-  EXPECT_THAT(IwaKeyRotationInfoProvider::GetInstance()->GetExpectedSigningKey(
-                  kWebBundleId),
-              VariantWith<IwaKeyRotationInfoProvider::ExpectedKey>(
-                  Property(&IwaKeyRotationInfoProvider::ExpectedKey::value,
-                           Eq(base::make_span(std::begin(kExpectedKey),
-                                              std::end(kExpectedKey))))));
-}
-
-TEST_F(IwaIwaKeyRotationInfoProviderTest, LoadComponentWithDisabledKey) {
-  IwaKeyRotations kr_proto;
-  kr_proto.mutable_key_rotations()->emplace(kWebBundleId,
-                                            IwaKeyRotations::KeyRotationInfo());
-  EXPECT_THAT(test::UpdateKeyRotationInfo(base::Version("1.0.0"), kr_proto),
+TEST_F(IwaIwaKeyDistributionInfoProviderTest, LoadComponent) {
+  EXPECT_THAT(test::UpdateKeyDistributionInfo(base::Version("1.0.0"),
+                                              CreateValidData()),
               HasValue());
-
-  EXPECT_THAT(IwaKeyRotationInfoProvider::GetInstance()->GetExpectedSigningKey(
-                  kWebBundleId),
-              VariantWith<IwaKeyRotationInfoProvider::KeyDisabledTag>(_));
 }
 
-TEST_F(IwaIwaKeyRotationInfoProviderTest, LoadComponentAndThenStaleComponent) {
+TEST_F(IwaIwaKeyDistributionInfoProviderTest,
+       LoadComponentAndThenStaleComponent) {
   auto data = CreateValidData();
-  EXPECT_THAT(test::UpdateKeyRotationInfo(base::Version("1.0.0"), data),
+  EXPECT_THAT(test::UpdateKeyDistributionInfo(base::Version("1.0.0"), data),
               HasValue());
-  EXPECT_THAT(test::UpdateKeyRotationInfo(base::Version("0.9.0"), data),
+  EXPECT_THAT(test::UpdateKeyDistributionInfo(base::Version("0.9.0"), data),
               ErrorIs(Eq(ComponentUpdateError::kStaleVersion)));
 }
 
-TEST_F(IwaIwaKeyRotationInfoProviderTest, LoadComponentWrongPath) {
+TEST_F(IwaIwaKeyDistributionInfoProviderTest, LoadComponentWrongPath) {
   EXPECT_THAT(
-      test::UpdateKeyRotationInfo(base::Version("1.0.0"), base::FilePath()),
+      test::UpdateKeyDistributionInfo(base::Version("1.0.0"), base::FilePath()),
       ErrorIs(Eq(ComponentUpdateError::kFileNotFound)));
 }
 
-TEST_F(IwaIwaKeyRotationInfoProviderTest, LoadComponentFaultyData) {
+TEST_F(IwaIwaKeyDistributionInfoProviderTest, LoadComponentFaultyData) {
   base::ScopedTempDir component_install_dir;
   CHECK(component_install_dir.CreateUniqueTempDir());
   auto path = component_install_dir.GetPath().AppendASCII("krc");
   CHECK(base::WriteFile(path, "not_a_proto"));
 
-  EXPECT_THAT(test::UpdateKeyRotationInfo(base::Version("1.0.0"), path),
+  EXPECT_THAT(test::UpdateKeyDistributionInfo(base::Version("1.0.0"), path),
               ErrorIs(Eq(ComponentUpdateError::kProtoParsingFailure)));
 }
 
-class SignedWebBundleSignatureVerifierWithKeyRotationTest
+class SignedWebBundleSignatureVerifierWithKeyDistributionTest
     : public testing::Test {
  public:
-  void SetUp() override { EXPECT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+  void SetUp() override {
+    EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
+    IwaIdentityValidator::CreateSingleton();
+  }
 
   std::pair<std::vector<uint8_t>, cbor::Value> CreateSignedWebBundle(
       const std::vector<web_package::WebBundleSigner::KeyPair>& key_pairs,
@@ -142,8 +134,8 @@ class SignedWebBundleSignatureVerifierWithKeyRotationTest
   base::ScopedTempDir temp_dir_;
 };
 
-TEST_F(SignedWebBundleSignatureVerifierWithKeyRotationTest,
-       VerifySignaturesWithKeyRotation) {
+TEST_F(SignedWebBundleSignatureVerifierWithKeyDistributionTest,
+       VerifySignaturesWithKeyDistribution) {
   using Error = web_package::SignedWebBundleSignatureVerifier::Error;
 
   auto key_pairs = std::vector<web_package::WebBundleSigner::KeyPair>{
@@ -166,8 +158,7 @@ TEST_F(SignedWebBundleSignatureVerifierWithKeyRotationTest,
   EXPECT_EQ(parsed_integrity_block.attributes().web_bundle_id(),
             ib_attributes.web_bundle_id);
 
-  web_package::SignedWebBundleSignatureVerifier signature_verifier(
-      IwaKeyRotationInfoProvider::GetInstance());
+  web_package::SignedWebBundleSignatureVerifier signature_verifier;
   EXPECT_THAT(web_package::test::VerifySignatures(signature_verifier, file,
                                                   parsed_integrity_block),
               ErrorIs(FieldsAre(
@@ -181,8 +172,8 @@ TEST_F(SignedWebBundleSignatureVerifierWithKeyRotationTest,
         return key_pair.public_key.bytes();
       },
       key_pairs[0]);
-  EXPECT_THAT(test::UpdateKeyRotationInfo(base::Version("1.0.0"), kWebBundleId,
-                                          expected_key),
+  EXPECT_THAT(test::UpdateKeyDistributionInfo(base::Version("1.0.0"),
+                                              kWebBundleId, expected_key),
               HasValue());
 
   EXPECT_THAT(web_package::test::VerifySignatures(signature_verifier, file,
@@ -191,9 +182,10 @@ TEST_F(SignedWebBundleSignatureVerifierWithKeyRotationTest,
 
   auto random_key =
       web_package::WebBundleSigner::Ed25519KeyPair::CreateRandom();
-  EXPECT_THAT(test::UpdateKeyRotationInfo(base::Version("1.0.1"), kWebBundleId,
-                                          random_key.public_key.bytes()),
-              HasValue());
+  EXPECT_THAT(
+      test::UpdateKeyDistributionInfo(base::Version("1.0.1"), kWebBundleId,
+                                      random_key.public_key.bytes()),
+      HasValue());
 
   EXPECT_THAT(
       web_package::test::VerifySignatures(signature_verifier, file,
@@ -203,9 +195,10 @@ TEST_F(SignedWebBundleSignatureVerifierWithKeyRotationTest,
                             "Rotated key for Web Bundle ID <%s> doesn't match",
                             kWebBundleId)))));
 
-  EXPECT_THAT(test::UpdateKeyRotationInfo(base::Version("1.0.2"), kWebBundleId,
-                                          std::nullopt),
-              HasValue());
+  EXPECT_THAT(
+      test::UpdateKeyDistributionInfo(base::Version("1.0.2"), kWebBundleId,
+                                      /*expected_key=*/std::nullopt),
+      HasValue());
 
   EXPECT_THAT(
       web_package::test::VerifySignatures(signature_verifier, file,

@@ -11,6 +11,7 @@
 #include "components/cbor/values.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
+#include "components/web_package/signed_web_bundles/types.h"
 
 namespace web_package::test {
 
@@ -32,8 +33,6 @@ class FakeSignatureVerifier : public SignedWebBundleSignatureVerifier {
   std::optional<SignedWebBundleSignatureVerifier::Error> error_;
   base::RepeatingClosure on_verify_signatures_;
 };
-
-using PublicKey = absl::variant<Ed25519PublicKey, EcdsaP256PublicKey>;
 
 mojom::BundleIntegrityBlockSignatureStackEntryPtr MakeSignatureStackEntry(
     const PublicKey& public_key,

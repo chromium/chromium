@@ -12,9 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
-#include "components/web_package/signed_web_bundles/key_rotation/key_rotation_info_provider.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace web_package {
@@ -33,10 +31,8 @@ class SignedWebBundleSignatureVerifier {
     static Error ForInvalidSignature(const std::string& message) {
       return {.type = Type::kSignatureInvalidError, .message = message};
     }
-    static Error ForWebBundleIdError(const char* format,
-                                     const std::string& web_bundle_id) {
-      return {.type = Type::kWebBundleIdError,
-              .message = base::StringPrintf(format, web_bundle_id.c_str())};
+    static Error ForWebBundleIdError(const std::string& message) {
+      return {.type = Type::kWebBundleIdError, .message = message};
     }
 
     enum class Type {
@@ -47,8 +43,7 @@ class SignedWebBundleSignatureVerifier {
     std::string message;
   };
 
-  // Embedder-supplied key rotation info provider. Might be nullptr.
-  explicit SignedWebBundleSignatureVerifier(KeyRotationInfoProvider*);
+  SignedWebBundleSignatureVerifier();
 
   // Changes the chunk size in which the Signed Web Bundle is read for
   // calculating its SHA512 hash. Higher values use more RAM, but may
@@ -100,9 +95,6 @@ class SignedWebBundleSignatureVerifier {
   // The chunk size in which the Signed Web Bundle is read for calculating its
   // SHA512 hash. Default is ~10mb.
   uint64_t web_bundle_chunk_size_ = 10 * 1000 * 1000;
-
-  // Embedder-supplied key rotation info provider. Might be nullptr.
-  raw_ptr<KeyRotationInfoProvider> kr_info_provider_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

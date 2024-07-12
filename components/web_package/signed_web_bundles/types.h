@@ -10,8 +10,14 @@
 
 #include "base/containers/flat_map.h"
 #include "components/cbor/values.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace web_package {
+
+class Ed25519PublicKey;
+class EcdsaP256PublicKey;
+
+using PublicKey = absl::variant<Ed25519PublicKey, EcdsaP256PublicKey>;
 
 using BinaryData = std::vector<uint8_t>;
 

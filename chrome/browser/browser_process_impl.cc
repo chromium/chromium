@@ -184,6 +184,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/usb/usb_system_tray_icon.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_identity_validator.h"
 #include "chrome/browser/webapps/webapps_client_desktop.h"
 #include "components/gcm_driver/gcm_client_factory.h"
 #include "components/gcm_driver/gcm_desktop_utils.h"
@@ -354,6 +355,10 @@ void BrowserProcessImpl::Init() {
   webapps::WebappsClientAndroid::CreateSingleton();
 #else
   webapps::WebappsClientDesktop::CreateSingleton();
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  web_app::IwaIdentityValidator::CreateSingleton();
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -5,6 +5,9 @@
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
-  sources = [ "key_rotation.proto" ]
+  sources = [
+    "key_distribution.proto",
+    "key_rotation.proto",
+  ]
   cc_generator_options = "lite=true:"
 }
