@@ -59,6 +59,10 @@ cr-url-list-item:hover + hr {
   opacity: 0;
 }
 
+.time {
+  margin-inline-start: 16px;
+}
+
 .footer {
   display: flex;
   align-items: center;
@@ -112,7 +116,7 @@ a {
             description="[[item.urlForDisplay]]"
             on-click="onResultClick_" on-auxclick="onResultClick_"
             as-anchor as-anchor-target="_blank" always-show-suffix>
-          <span slot="suffix">[[item.relativeTime]]</span>
+          <span class="time" slot="suffix">[[item.relativeTime]]</span>
           <cr-icon-button slot="suffix" iron-icon="cr:more-vert"
               on-click="onMoreActionsClick_">
           </cr-icon-button>
