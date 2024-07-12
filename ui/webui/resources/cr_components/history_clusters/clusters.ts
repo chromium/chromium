@@ -9,7 +9,6 @@ import '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 import '//resources/polymer/v3_0/iron-list/iron-list.js';
-import '//resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 
 import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
@@ -21,7 +20,6 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import type {IronListElement} from '//resources/polymer/v3_0/iron-list/iron-list.js';
-import type {IronScrollThresholdElement} from '//resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
@@ -56,7 +54,6 @@ export interface HistoryClustersElement {
     clusters: IronListElement,
     confirmationDialog: CrLazyRenderElement<CrDialogElement>,
     confirmationToast: CrLazyRenderElement<CrToastElement>,
-    scrollThreshold: IronScrollThresholdElement,
   };
 }
 
@@ -152,6 +149,7 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
   private callbackRouter_: PageCallbackRouter;
   private headerText_: string;
   private inSidePanel_: boolean;
+  private scrollListener_: EventListener = () => this.onScroll_();
   private onClustersQueryResultListenerId_: number|null = null;
   private onClusterImageUpdatedListenerId_: number|null = null;
   private onVisitsRemovedListenerId_: number|null = null;
@@ -161,6 +159,7 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
   private placeholderText_: string;
   private result_: QueryResult;
   private showSpinner_: boolean;
+  private scrollTimeout_: number|null = null;
   private visitsToBeRemoved_: URLVisit[];
 
   //============================================================================
@@ -300,8 +299,6 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
    * Called when the scrollable area has been scrolled nearly to the bottom.
    */
   private onScrolledToBottom_() {
-    this.$.scrollThreshold.clearTriggers();
-
     if (this.shadowRoot!.querySelector(':focus-visible')) {
       // If some element of ours is keyboard-focused, don't automatically load
       // more clusters. It loses the user's position and messes up screen
@@ -461,8 +458,32 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
     }));
   }
 
-  private onScrollTargetChanged_() {
+  private onScrollTargetChanged_(_new: HTMLElement, oldTarget?: HTMLElement) {
     this.notifyResize();
+
+    if (oldTarget) {
+      oldTarget.removeEventListener('scroll', this.scrollListener_);
+    }
+    if (this.scrollTarget) {
+      this.scrollTarget.addEventListener('scroll', this.scrollListener_);
+    }
+  }
+
+  private onScroll_() {
+    // Debounce by 200ms.
+    if (this.scrollTimeout_) {
+      clearTimeout(this.scrollTimeout_);
+    }
+    this.scrollTimeout_ = setTimeout(() => this.onScrollTimeout_(), 200);
+  }
+
+  private onScrollTimeout_() {
+    this.scrollTimeout_ = null;
+    const lowerScroll =
+        this.scrollTarget.offsetHeight - this.scrollTarget.scrollTop;
+    if (lowerScroll < 500) {
+      this.onScrolledToBottom_();
+    }
   }
 
   private computeIsEmpty_() {

@@ -290,7 +290,6 @@ suite('history-clusters', () => {
     clustersElement.scrollTarget = document.body;
 
     assertEquals(document.body, clustersElement.$.clusters.scrollTarget);
-    assertEquals(document.body, clustersElement.$.scrollThreshold.scrollTarget);
   });
 
   test('sets scroll offset', async () => {
