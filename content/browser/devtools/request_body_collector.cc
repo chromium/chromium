@@ -28,13 +28,12 @@ class RequestBodyCollector::BodyReader : public mojo::DataPipeDrainer::Client {
       : collector_(collector), data_pipe_getter_(std::move(data_pipe_getter)) {
     data_pipe_getter_.set_disconnect_handler(
         base::BindOnce(&BodyReader::OnFailure, base::Unretained(this)));
-    mojo::ScopedDataPipeProducerHandle producer;
-    mojo::ScopedDataPipeConsumerHandle consumer;
-    MojoResult result = CreateDataPipe(/*options=*/nullptr, producer, consumer);
+    mojo::ScopedDataPipeProducerHandle pipe_producer;
+    MojoResult result =
+        CreateDataPipe(/*options=*/nullptr, pipe_producer, pipe_consumer_);
     CHECK_EQ(MOJO_RESULT_OK, result);
-    pipe_drainer_.emplace(this, std::move(consumer));
     data_pipe_getter_->Read(
-        std::move(producer),
+        std::move(pipe_producer),
         base::BindOnce(&BodyReader::OnReadStarted, base::Unretained(this)));
   }
 
@@ -68,11 +67,13 @@ class RequestBodyCollector::BodyReader : public mojo::DataPipeDrainer::Client {
     }
     expected_size_ = base::checked_cast<size_t>(size);
     bytes_.reserve(expected_size_);
+    pipe_drainer_.emplace(this, std::move(pipe_consumer_));
   }
 
   const raw_ref<RequestBodyCollector> collector_;
   mojo::Remote<network::mojom::DataPipeGetter> data_pipe_getter_;
   size_t expected_size_ = 0;
+  mojo::ScopedDataPipeConsumerHandle pipe_consumer_;
   std::optional<mojo::DataPipeDrainer> pipe_drainer_;
   std::vector<uint8_t> bytes_;
 };
