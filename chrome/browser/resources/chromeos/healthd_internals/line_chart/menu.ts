@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/polymer/v3_0/iron-location/iron-location.js';
-import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
+import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 
+import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MENU_TEXT_COLOR_DARK, MENU_TEXT_COLOR_LIGHT} from './configs.js';
@@ -23,7 +23,7 @@ function createElementWithClassName(
 
 export interface HealthdInternalsLineChartMenuElement {
   $: {
-    buttonContainer: HTMLElement,
+    dataButtonsContainer: HTMLElement,
   };
 }
 
@@ -47,7 +47,7 @@ export class HealthdInternalsLineChartMenuElement extends PolymerElement {
   private dataSeries: DataSeries[] = [];
 
   getWidth(): number {
-    return this.$.buttonContainer.offsetWidth;
+    return this.$.dataButtonsContainer.offsetWidth;
   }
 
   /**
@@ -59,9 +59,9 @@ export class HealthdInternalsLineChartMenuElement extends PolymerElement {
       return;
     }
     const button: HTMLElement = this.createButton(dataSeries);
-    this.displayedButtons.push(button);
-    this.$.buttonContainer.appendChild(button);
+    this.$.dataButtonsContainer.appendChild(button);
     this.dataSeries.push(dataSeries);
+    this.displayedButtons.push(button);
 
     this.fireMenuButtonsUpdatedEvent();
   }
@@ -82,9 +82,7 @@ export class HealthdInternalsLineChartMenuElement extends PolymerElement {
         createElementWithClassName('div', 'line-chart-menu-button');
     button.appendChild(buttonInner);
     this.setupButtonOnClickHandler(button, dataSeries);
-
-    const visible: boolean = dataSeries.getVisible();
-    this.updateButtonStyle(button, dataSeries, visible);
+    this.updateButtonStyle(button, dataSeries);
     return button;
   }
 
@@ -94,25 +92,41 @@ export class HealthdInternalsLineChartMenuElement extends PolymerElement {
   private setupButtonOnClickHandler(
       button: HTMLElement, dataSeries: DataSeries) {
     button.addEventListener('click', () => {
-      const newVisible: boolean = !dataSeries.getVisible();
-      dataSeries.setVisible(newVisible);
-      this.updateButtonStyle(button, dataSeries, newVisible);
+      dataSeries.setVisible(!dataSeries.getVisible());
+      this.updateButtonStyle(button, dataSeries);
       this.fireMenuButtonsUpdatedEvent();
     });
   }
 
   /**
-   * Update the button style with the visibility of data series.
+   * Update the button style with the visibility and color from data series.
    */
-  private updateButtonStyle(
-      button: HTMLElement, dataSeries: DataSeries, visible: boolean) {
-    if (visible) {
+  private updateButtonStyle(button: HTMLElement, dataSeries: DataSeries) {
+    if (dataSeries.getVisible()) {
       button.style.backgroundColor = dataSeries.getColor();
       button.style.color = MENU_TEXT_COLOR_LIGHT;
     } else {
       button.style.backgroundColor = MENU_TEXT_COLOR_LIGHT;
       button.style.color = MENU_TEXT_COLOR_DARK;
     }
+  }
+
+  private onEnableAllButtonClick() {
+    assert(this.dataSeries.length === this.displayedButtons.length);
+    for (let i: number = 0; i < this.dataSeries.length; ++i) {
+      this.dataSeries[i].setVisible(true);
+      this.updateButtonStyle(this.displayedButtons[i], this.dataSeries[i]);
+    }
+    this.fireMenuButtonsUpdatedEvent();
+  }
+
+  private onDisableAllButtonClicked() {
+    assert(this.dataSeries.length === this.displayedButtons.length);
+    for (let i: number = 0; i < this.dataSeries.length; ++i) {
+      this.dataSeries[i].setVisible(false);
+      this.updateButtonStyle(this.displayedButtons[i], this.dataSeries[i]);
+    }
+    this.fireMenuButtonsUpdatedEvent();
   }
 }
 

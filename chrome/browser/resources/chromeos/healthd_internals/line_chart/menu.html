@@ -1,8 +1,25 @@
 <style include="healthd-internals-shared">
-  #buttonContainer {
+  #menu {
     display: flex;
     flex-direction: column;
     height: 100%;
+  }
+
+  #actionButtonsContainer{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  cr-button {
+    width: 100%;
+  }
+
+  #dataButtonsContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: auto;
   }
 
   .line-chart-menu-button {
@@ -21,4 +38,14 @@
     width: 100%;
   }
 </style>
-<div id="buttonContainer"></div>
+<div id="menu">
+  <div id="actionButtonsContainer">
+    <cr-button class="action-button" on-click="onEnableAllButtonClick">
+      Enable All
+    </cr-button>
+    <cr-button class="cancel-button" on-click="onDisableAllButtonClicked">
+      Disable All
+    </cr-button>
+  </div>
+  <div id="dataButtonsContainer"></div>
+</div>
