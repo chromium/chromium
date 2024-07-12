@@ -77,9 +77,10 @@ class InProcessBrowserTestMixin {
   //   SetUpInProcessBrowserTestFixture
   //   CreatedBrowserMainParts
   //   SetUpOnMainThread
+  //   PostRunTestOnMainThread
   //   TearDownOnMainThread
   //   TearDownInProcessBrowserTestFixture
-  // TearDown
+  //   TearDown
   //
   // SetUp is the function which calls SetUpCommandLine,
   // SetUpDefaultCommandLine, etc.
@@ -91,6 +92,7 @@ class InProcessBrowserTestMixin {
   virtual void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts);
   virtual void SetUpOnMainThread();
+  virtual void PostRunTestOnMainThread();
   virtual void TearDownOnMainThread();
   virtual void TearDownInProcessBrowserTestFixture();
   virtual void TearDown();
@@ -112,6 +114,7 @@ class InProcessBrowserTestMixinHost final {
   void SetUpInProcessBrowserTestFixture();
   void CreatedBrowserMainParts(content::BrowserMainParts* browser_main_parts);
   void SetUpOnMainThread();
+  void PostRunTestOnMainThread();
   void TearDownOnMainThread();
   void TearDownInProcessBrowserTestFixture();
   void TearDown();
@@ -144,6 +147,7 @@ class MixinBasedInProcessBrowserTest : public InProcessBrowserTest {
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override;
   void SetUpOnMainThread() override;
+  void PostRunTestOnMainThread() override;
   void TearDownOnMainThread() override;
   void TearDownInProcessBrowserTestFixture() override;
   void TearDown() override;

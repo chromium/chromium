@@ -10587,6 +10587,8 @@ if (!is_android) {
       "../browser/ui/views/web_apps/web_app_link_capturing_test_utils.h",
       "../browser/ui/web_applications/test/web_app_navigation_browsertest.cc",
       "../browser/ui/web_applications/test/web_app_navigation_browsertest.h",
+      "../browser/ui/web_applications/test/web_app_picture_in_picture_mixin_test_base.cc",
+      "../browser/ui/web_applications/test/web_app_picture_in_picture_mixin_test_base.h",
       "../browser/ui/webui/signin/login_ui_test_utils.cc",
       "../browser/ui/webui/signin/login_ui_test_utils.h",
       "../browser/web_applications/test/profile_test_helper.cc",
