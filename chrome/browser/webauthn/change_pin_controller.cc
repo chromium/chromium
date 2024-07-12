@@ -30,6 +30,6 @@ ChangePinController* ChangePinController::ForWebContents(
   if (instance_for_testing_) {
     return instance_for_testing_;
   }
-  ChangePinControllerImpl::CreateForWebContents(web_contents);
-  return ChangePinControllerImpl::FromWebContents(web_contents);
+  return ChangePinControllerImpl::GetOrCreateForCurrentDocument(
+      web_contents->GetPrimaryMainFrame());
 }

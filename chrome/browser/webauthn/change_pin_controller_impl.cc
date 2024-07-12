@@ -26,19 +26,18 @@
 using Step = AuthenticatorRequestDialogModel::Step;
 
 ChangePinControllerImpl::ChangePinControllerImpl(
-    content::WebContents* web_contents)
-    : content::WebContentsUserData<ChangePinControllerImpl>(*web_contents),
+    content::RenderFrameHost* render_frame_host)
+    : content::DocumentUserData<ChangePinControllerImpl>(render_frame_host),
       enclave_enabled_(
           base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)) {
   if (!enclave_enabled_) {
     return;
   }
   Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+      Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
   enclave_manager_ =
       EnclaveManagerFactory::GetAsEnclaveManagerForProfile(profile);
-  model_ = std::make_unique<AuthenticatorRequestDialogModel>(
-      web_contents->GetPrimaryMainFrame());
+  model_ = std::make_unique<AuthenticatorRequestDialogModel>(render_frame_host);
   model_observation_.Observe(model_.get());
 }
 
@@ -129,4 +128,4 @@ void ChangePinControllerImpl::OnGpmPinChanged(bool success) {
   RecordHistogram(ChangePinEvent::kCompletedSuccessfully);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ChangePinControllerImpl);
+DOCUMENT_USER_DATA_KEY_IMPL(ChangePinControllerImpl);

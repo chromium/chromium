@@ -14,10 +14,10 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/change_pin_controller.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "content/public/browser/document_user_data.h"
 
 namespace content {
-class WebContents;
+class RenderFrameHost;
 }  // namespace content
 
 struct AuthenticatorRequestDialogModel;
@@ -65,7 +65,7 @@ class EnclaveManager;
 // the view.
 class ChangePinControllerImpl
     : public ChangePinController,
-      public content::WebContentsUserData<ChangePinControllerImpl>,
+      public content::DocumentUserData<ChangePinControllerImpl>,
       public AuthenticatorRequestDialogModel::Observer {
  public:
   enum class ChangePinEvent {
@@ -102,9 +102,9 @@ class ChangePinControllerImpl
   static void RecordHistogram(ChangePinEvent event);
 
  private:
-  explicit ChangePinControllerImpl(content::WebContents* web_contents);
-  friend class content::WebContentsUserData<ChangePinControllerImpl>;
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  explicit ChangePinControllerImpl(content::RenderFrameHost* render_frame_host);
+  friend class content::DocumentUserData<ChangePinControllerImpl>;
+  DOCUMENT_USER_DATA_KEY_DECL();
 
   void OnGpmPinChanged(bool success);
   void Reset(bool success);
