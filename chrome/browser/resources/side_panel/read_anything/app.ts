@@ -1340,7 +1340,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // don't flash off and on.
     if (chrome.readingMode.linksEnabled && pausedFromButton) {
       this.updateLinks();
-      this.highlightNodes(chrome.readingMode.getCurrentText());
+      this.highlightCurrentGranularity(chrome.readingMode.getCurrentText());
     }
   }
 
@@ -1434,7 +1434,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         // Now that links are toggled, ensure that the new nodes are also
         // highlighted.
         if (!playedFromSelection) {
-          this.highlightNodes(chrome.readingMode.getCurrentText());
+          this.highlightCurrentGranularity(chrome.readingMode.getCurrentText());
         }
       }
 
@@ -1444,7 +1444,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // after a pause.
       if (!playedFromSelection &&
           !container.querySelector('.' + currentReadHighlightClass)) {
-        this.highlightNodes(chrome.readingMode.getCurrentText());
+        this.highlightCurrentGranularity(chrome.readingMode.getCurrentText());
       }
 
       return;
@@ -1566,7 +1566,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     let startOfSelectionIsInCurrentText = currentTextIds.includes(nodeId) &&
         chrome.readingMode.getCurrentTextEndIndex(nodeId) > offset;
     while (hasCurrentText && !startOfSelectionIsInCurrentText) {
-      this.highlightNodes(currentTextIds, /*scrollIntoView=*/ false);
+      this.highlightCurrentGranularity(
+          currentTextIds, /*scrollIntoView=*/ false);
       chrome.readingMode.movePositionToNextGranularity();
       currentTextIds = chrome.readingMode.getCurrentText();
       hasCurrentText = currentTextIds.length > 0;
@@ -1634,14 +1635,20 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       this.playText(utteranceText);
     }
 
+    this.highlightCurrentGranularity(axNodeIds);
+    return true;
+  }
+
+  // Highlights or rehighlights the current granularity, sentence or word.
+  highlightCurrentGranularity(
+      axNodeIds: number[], scrollIntoView: boolean = true) {
     if (this.wordBoundaryState.mode ===
             WordBoundaryMode.BOUNDARIES_NOT_SUPPORTED ||
         !this.shouldUseWordHighlighting()) {
-      this.highlightNodes(axNodeIds);
+      this.highlightCurrentSentence(axNodeIds, scrollIntoView);
     } else {
-      this.highlightNodesForWordBoundary();
+      this.highlightCurrentWord();
     }
-    return true;
   }
 
   // Gets the accessible text boundary for the given string.
@@ -1767,7 +1774,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         // Only update the highlighting with word highlights if they should be
         // used.
         if (this.shouldUseWordHighlighting()) {
-          this.highlightNodesForWordBoundary();
+          this.highlightCurrentWord();
         }
       }
     });
@@ -1871,7 +1878,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   // TODO(b/301131238): Verify all edge cases.
-  highlightNodesForWordBoundary() {
+  highlightCurrentWord() {
     // Word highlights can be called quite frequently which can create some
     // misordering, so just make sure we've cleared the previous word highlight
     // before showing the next one.
@@ -1899,7 +1906,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.scrollHighlightIntoView();
   }
 
-  highlightNodes(nextTextIds: number[], scrollIntoView: boolean = true) {
+  highlightCurrentSentence(
+      nextTextIds: number[], scrollIntoView: boolean = true) {
     if (nextTextIds.length === 0) {
       return;
     }

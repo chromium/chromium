@@ -71,13 +71,13 @@ suite('UpdateContentSelectionWithHighlights', () => {
     let i = 0;
     while (textNodeIds[i]! !== id) {
       fakeTree.highlightNode(textNodeIds[i]!);
-      app.highlightNodes([textNodeIds[i]!]);
+      app.highlightCurrentGranularity([textNodeIds[i]!]);
       i++;
     }
 
     // highlight given node
     fakeTree.highlightNode(id);
-    app.highlightNodes([id]);
+    app.highlightCurrentGranularity([id]);
   }
 
   function setReadingHighlight(
@@ -86,7 +86,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
     let i = 0;
     while (fromId !== textNodeIds[i]!) {
       fakeTree.highlightNode(textNodeIds[i]!);
-      app.highlightNodes([textNodeIds[i]!]);
+      app.highlightCurrentGranularity([textNodeIds[i]!]);
       i++;
     }
 
@@ -96,7 +96,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
     if (toId !== fromId) {
       nodeIds.push(toId);
     }
-    app.highlightNodes(nodeIds);
+    app.highlightCurrentGranularity(nodeIds);
   }
 
   suite('main panel selection is correct when selecting in the app: ', () => {

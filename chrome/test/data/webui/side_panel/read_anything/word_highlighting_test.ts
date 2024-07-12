@@ -150,17 +150,17 @@ suite('WordHighlighting', () => {
   });
 
   test('on speaking from selection, word boundary state reset', async () => {
-    const anchorIndex = 2;
-    const focusIndex = 3;
+    const anchorIndex = 1;
+    const focusIndex = 2;
     const anchorOffset = 0;
     const focusOffset = 1;
     app.playSpeech();
-    app.updateBoundary(4);
+    app.updateBoundary(2);
     app.stopSpeech(PauseActionSource.BUTTON_CLICK);
 
     // Update the selection directly on the document.
     const spans = app.$.container.querySelectorAll('span');
-    assertTrue(spans.length > 3);
+    assertEquals(spans.length, 3);
     const anchor = spans[anchorIndex]!;
     const focus = spans[focusIndex]!;
     const range = document.createRange();
