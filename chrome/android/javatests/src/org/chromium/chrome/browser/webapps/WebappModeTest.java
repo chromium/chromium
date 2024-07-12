@@ -16,12 +16,12 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -37,15 +37,10 @@ import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabCreationState;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.MultiActivityTestRule;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestHelper;
-
-import java.util.concurrent.TimeoutException;
 
 /**
  * Tests that WebappActivities are launched correctly.
@@ -59,6 +54,8 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class WebappModeTest {
+    @Rule public MultiActivityTestRule mTestRule = new MultiActivityTestRule();
+
     private static final String WEBAPP_1_ID = "webapp_id_1";
     private static final String WEBAPP_1_URL =
             UrlUtils.encodeHtmlDataUri(
@@ -150,36 +147,6 @@ public class WebappModeTest {
                                 storage.updateFromWebappIntentDataProvider(intentDataProvider);
                             }
                         });
-    }
-
-    private static void waitForFullLoad(ChromeActivity activity, String expectedTitle)
-            throws TimeoutException {
-        waitForTabCreation(activity);
-
-        ChromeApplicationTestUtils.assertWaitForPageScaleFactorMatch(activity, 0.5f);
-        final Tab tab = activity.getActivityTab();
-        assert tab != null;
-
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            ChromeTabUtils.isLoadingAndRenderingDone(tab), Matchers.is(true));
-                    Criteria.checkThat(tab.getTitle(), Matchers.is(expectedTitle));
-                });
-    }
-
-    private static void waitForTabCreation(ChromeActivity activity) throws TimeoutException {
-        final CallbackHelper newTabCreatorHelper = new CallbackHelper();
-        activity.getTabModelSelector()
-                .addObserver(
-                        new TabModelSelectorObserver() {
-                            @Override
-                            public void onNewTabCreated(
-                                    Tab tab, @TabCreationState int creationState) {
-                                newTabCreatorHelper.notifyCalled();
-                            }
-                        });
-        newTabCreatorHelper.waitForCallback(0);
     }
 
     /** Tests that WebappActivities are started properly. */
@@ -288,7 +255,7 @@ public class WebappModeTest {
                 });
         ChromeActivity chromeActivity =
                 (ChromeActivity) ApplicationStatus.getLastTrackedFocusedActivity();
-        waitForFullLoad(chromeActivity, WEBAPP_1_TITLE);
+        mTestRule.waitForFullLoad(chromeActivity, WEBAPP_1_TITLE);
 
         // Firing a correct Intent should start a WebappActivity instance instead of the browser.
         fireWebappIntent(WEBAPP_2_ID, WEBAPP_2_URL, WEBAPP_2_TITLE, WEBAPP_ICON, true);

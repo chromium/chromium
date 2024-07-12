@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.S
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,6 +94,8 @@ public class SearchWidgetProviderTest {
 
     @Before
     public void setUp() {
+        ChromeApplicationTestUtils.setUp();
+
         mContext = new TestContext();
         mDelegate = new TestDelegate(mContext);
         SearchWidgetProvider.setActivityDelegateForTest(mDelegate);

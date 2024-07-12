@@ -74,6 +74,7 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.I
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.MultiActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
@@ -105,6 +106,8 @@ import java.util.concurrent.Callable;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "Test start up behaviors.")
 public class SearchActivityTest {
+    private static final String TEST_PNG_IMAGE_FILE_EXTENSION = ".png";
+
     private static class TestDelegate extends SearchActivityDelegate
             implements DefaultSearchEnginePromoDialogObserver {
         public final CallbackHelper shouldDelayNativeInitializationCallback = new CallbackHelper();
@@ -179,6 +182,7 @@ public class SearchActivityTest {
         }
     }
 
+    public @Rule MultiActivityTestRule mTestRule = new MultiActivityTestRule();
     public @Rule ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
     // Needed for CT connection cleanup.
