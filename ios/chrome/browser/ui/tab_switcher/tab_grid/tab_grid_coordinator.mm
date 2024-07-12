@@ -1501,6 +1501,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       << "You should not be able to delete a tab group outside the Tab Groups "
          "experiment.";
   if (incognito) {
+    CHECK(!IsTabGroupSyncEnabled());
     [self.incognitoTabsMediator deleteTabGroup:group];
     return;
   }
@@ -1512,7 +1513,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to close a tab group outside the Tab Groups "
          "experiment.";
-  CHECK(!incognito);
+  if (incognito) {
+    [self.incognitoTabsMediator closeTabGroup:group];
+    return;
+  }
 
   [self.regularTabsMediator closeTabGroup:group];
 }

@@ -394,13 +394,11 @@ constexpr CGFloat kSpace = 8;
                 }]];
 
   if (IsTabGroupSyncEnabled()) {
-    // TODO(crbug.com/352297050): Don't show "Close group" when signed, not
-    // synced or incognito.
     [menuElements addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
                     [weakSelf closeGroup];
                   }]];
   }
-
+  // TODO(crbug.com/352297050): Don't show "Delete group" when in incognito.
   [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
                   [weakSelf deleteGroup];
                 }]];

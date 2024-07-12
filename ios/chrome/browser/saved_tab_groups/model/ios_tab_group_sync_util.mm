@@ -82,7 +82,8 @@ LocalTabInfo GetLocalTabInfo(WebStateList* web_state_list,
 void CloseTabGroupLocally(const TabGroup* tab_group,
                           WebStateList* web_state_list,
                           TabGroupSyncService* sync_service) {
-  if (sync_service->GetGroup(tab_group->tab_group_id())) {
+  // `sync_service` is nullptr in incognito.
+  if (sync_service && sync_service->GetGroup(tab_group->tab_group_id())) {
     sync_service->RemoveLocalTabGroupMapping(tab_group->tab_group_id());
   }
   CloseAllWebStatesInGroup(*web_state_list, tab_group,
