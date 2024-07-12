@@ -16,8 +16,8 @@
 #define CRASHPAD_UTIL_POSIX_SYMBOLIC_CONSTANTS_POSIX_H_
 
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "util/misc/symbolic_constants_common.h"
 
 namespace crashpad {
@@ -39,7 +39,7 @@ std::string SignalToString(int signal, SymbolicConstantToStringOptions options);
 //!
 //! \return `true` on success, `false` if \a string could not be converted as
 //!     requested.
-bool StringToSignal(const base::StringPiece& string,
+bool StringToSignal(std::string_view string,
                     StringToSymbolicConstantOptions options,
                     int* signal);
 

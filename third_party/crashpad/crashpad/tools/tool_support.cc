@@ -16,10 +16,10 @@
 
 #include <stdio.h>
 
+#include <string_view>
 #include <vector>
 
 #include "base/containers/heap_array.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "package.h"
@@ -92,7 +92,7 @@ int ToolSupport::Wmain(int argc, wchar_t* argv[], int (*entry)(int, char* [])) {
 
 // static
 base::FilePath::StringType ToolSupport::CommandLineArgumentToFilePathStringType(
-    const base::StringPiece& path) {
+    std::string_view path) {
 #if BUILDFLAG(IS_POSIX)
   return std::string(path.data(), path.size());
 #elif BUILDFLAG(IS_WIN)

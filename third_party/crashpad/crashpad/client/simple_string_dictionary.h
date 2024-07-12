@@ -19,10 +19,10 @@
 #include <sys/types.h>
 
 #include <algorithm>
+#include <string_view>
 #include <type_traits>
 
 #include "base/check_op.h"
-#include "base/strings/string_piece.h"
 #include "util/misc/implicit_cast.h"
 
 namespace crashpad {
@@ -133,10 +133,10 @@ class TSimpleStringDictionary {
   //!
   //! \return The corresponding value for \a key, or if \a key is not found,
   //!     `nullptr`.
-  const char* GetValueForKey(base::StringPiece key) const {
+  const char* GetValueForKey(std::string_view key) const {
     DCHECK(key.data());
     DCHECK(key.size());
-    DCHECK_EQ(key.find('\0', 0), base::StringPiece::npos);
+    DCHECK_EQ(key.find('\0', 0), std::string_view::npos);
     if (!key.data() || !key.size()) {
       return nullptr;
     }
@@ -159,7 +159,7 @@ class TSimpleStringDictionary {
   //!     string. It must not contain embedded `NUL`s.
   //! \param[in] value The value to store. If `nullptr`, \a key is removed from
   //!     the map. Must not contain embedded `NUL`s.
-  void SetKeyValue(base::StringPiece key, base::StringPiece value) {
+  void SetKeyValue(std::string_view key, std::string_view value) {
     if (!value.data()) {
       RemoveKey(key);
       return;
@@ -167,7 +167,7 @@ class TSimpleStringDictionary {
 
     DCHECK(key.data());
     DCHECK(key.size());
-    DCHECK_EQ(key.find('\0', 0), base::StringPiece::npos);
+    DCHECK_EQ(key.find('\0', 0), std::string_view::npos);
     if (!key.data() || !key.size()) {
       return;
     }
@@ -179,7 +179,7 @@ class TSimpleStringDictionary {
     }
 
     // |value| must not contain embedded NULs.
-    DCHECK_EQ(value.find('\0', 0), base::StringPiece::npos);
+    DCHECK_EQ(value.find('\0', 0), std::string_view::npos);
 
     Entry* entry = GetEntryForKey(key);
 
@@ -219,10 +219,10 @@ class TSimpleStringDictionary {
   //!
   //! \param[in] key The key of the entry to remove. This must not be `nullptr`,
   //!     nor an empty string. It must not contain embedded `NUL`s.
-  void RemoveKey(base::StringPiece key) {
+  void RemoveKey(std::string_view key) {
     DCHECK(key.data());
     DCHECK(key.size());
-    DCHECK_EQ(key.find('\0', 0), base::StringPiece::npos);
+    DCHECK_EQ(key.find('\0', 0), std::string_view::npos);
     if (!key.data() || !key.size()) {
       return;
     }
@@ -237,7 +237,7 @@ class TSimpleStringDictionary {
   }
 
  private:
-  static void SetFromStringPiece(base::StringPiece src,
+  static void SetFromStringPiece(std::string_view src,
                                  char* dst,
                                  size_t dst_size) {
     size_t copy_len = std::min(dst_size - 1, src.size());
@@ -245,7 +245,7 @@ class TSimpleStringDictionary {
     dst[copy_len] = '\0';
   }
 
-  static bool EntryKeyEquals(base::StringPiece key, const Entry& entry) {
+  static bool EntryKeyEquals(std::string_view key, const Entry& entry) {
     if (key.size() >= KeySize)
       return false;
 
@@ -258,7 +258,7 @@ class TSimpleStringDictionary {
     return strncmp(key.data(), entry.key, key.size()) == 0;
   }
 
-  const Entry* GetConstEntryForKey(base::StringPiece key) const {
+  const Entry* GetConstEntryForKey(std::string_view key) const {
     for (size_t i = 0; i < num_entries; ++i) {
       if (EntryKeyEquals(key, entries_[i])) {
         return &entries_[i];
@@ -267,7 +267,7 @@ class TSimpleStringDictionary {
     return nullptr;
   }
 
-  Entry* GetEntryForKey(base::StringPiece key) {
+  Entry* GetEntryForKey(std::string_view key) {
     return const_cast<Entry*>(GetConstEntryForKey(key));
   }
 

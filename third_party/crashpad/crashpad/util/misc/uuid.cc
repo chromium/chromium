@@ -68,7 +68,7 @@ void UUID::InitializeFromBytes(const uint8_t* bytes_ptr) {
   std::ranges::copy(bytes.subspan<10u, 6u>(), data_5);
 }
 
-bool UUID::InitializeFromString(const base::StringPiece& string) {
+bool UUID::InitializeFromString(std::string_view string) {
   if (string.length() != 36)
     return false;
 
@@ -98,7 +98,7 @@ bool UUID::InitializeFromString(const base::StringPiece& string) {
 }
 
 #if BUILDFLAG(IS_WIN)
-bool UUID::InitializeFromString(const std::wstring_view& string) {
+bool UUID::InitializeFromString(std::wstring_view string) {
   return InitializeFromString(base::WideToUTF8(string));
 }
 #endif

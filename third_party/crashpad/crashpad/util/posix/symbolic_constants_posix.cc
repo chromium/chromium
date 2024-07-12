@@ -19,6 +19,7 @@
 #include <sys/types.h>
 
 #include <iterator>
+#include <string_view>
 
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -170,14 +171,14 @@ std::string SignalToString(int signal,
   return base::StringPrintf("%s%s", kSigPrefix, signal_name);
 }
 
-bool StringToSignal(const base::StringPiece& string,
+bool StringToSignal(std::string_view string,
                     StringToSymbolicConstantOptions options,
                     int* signal) {
   if ((options & kAllowFullName) || (options & kAllowShortName)) {
     bool can_match_full =
         (options & kAllowFullName) &&
         string.substr(0, strlen(kSigPrefix)).compare(kSigPrefix) == 0;
-    base::StringPiece short_string =
+    std::string_view short_string =
         can_match_full ? string.substr(strlen(kSigPrefix)) : string;
     for (int index = 0; index < implicit_cast<int>(std::size(kSignalNames));
          ++index) {
