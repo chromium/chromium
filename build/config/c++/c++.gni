@@ -41,11 +41,8 @@ declare_args() {
 
   # Use Clang header modules for libc++.
   # This is experimental only (see crbug.com/543704).
-  # This currently uses implicit modules, which are created on-the-fly when
-  # Clang doesn't see them in the module cache. This doesn't work with remote
-  # execution.
-  # Performance is worse than without modules when Chrome Clang plugins are on
-  # and worse when the module cache isn't warm.
+  # For details on the current state of modules in Chromium see
+  # https://chromium.googlesource.com/chromium/src/+/main/docs/modules.md
   use_libcxx_modules = false
 }
 
