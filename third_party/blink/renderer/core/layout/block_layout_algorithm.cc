@@ -1454,7 +1454,8 @@ void BlockLayoutAlgorithm::HandleOutOfFlowPositioned(
   container_builder_.AddOutOfFlowChildCandidate(
       child, static_offset, LogicalStaticPosition::kInlineStart,
       LogicalStaticPosition::kBlockStart,
-      line_clamp_data_.ShouldHideForPaint());
+      line_clamp_data_.ShouldHideForPaint(BfcBlockOffset() +
+                                          static_offset.block_offset));
 }
 
 void BlockLayoutAlgorithm::HandleFloat(

@@ -67,18 +67,32 @@ struct BlockLineClampData {
 
   std::optional<int> LinesUntilClamp() const { return data.LinesUntilClamp(); }
 
-  bool IsPastClampPoint() const {
+  bool IsPastClampPoint(
+      std::optional<LayoutUnit> zero_size_bfc_offset = std::nullopt) const {
     if (data.state == LineClampData::kClampByBfcOffset) {
-      return previous_inflow_position_when_clamped.has_value();
+      // We don't rely on the BFC offset most of the time, because we might be
+      // before or at the clamp offset but after the clamp point, due to
+      // previous children, or due to not yet having the current line's height.
+      // We instead check whether we've reached a clamp point. However,
+      // block-level boxes that don't increase the container size, such as
+      // abspos, could still before the clamp point, and so we do check their
+      // BFC offset.
+      if (!zero_size_bfc_offset.has_value() || has_content_after_clamp) {
+        return previous_inflow_position_when_clamped.has_value();
+      }
     }
-    return data.IsPastClampPoint(LayoutUnit());
+    return data.IsPastClampPoint(zero_size_bfc_offset.value_or(LayoutUnit()));
   }
 
-  bool ShouldHideForPaint() const {
+  bool ShouldHideForPaint(
+      std::optional<LayoutUnit> zero_size_bfc_offset = std::nullopt) const {
     if (data.state == LineClampData::kClampByBfcOffset) {
-      return previous_inflow_position_when_clamped.has_value();
+      // Same reasoning as in `IsPastClampPoint`.
+      if (!zero_size_bfc_offset.has_value() || has_content_after_clamp) {
+        return previous_inflow_position_when_clamped.has_value();
+      }
     }
-    return data.ShouldHideForPaint(LayoutUnit());
+    return data.ShouldHideForPaint(zero_size_bfc_offset.value_or(LayoutUnit()));
   }
 
   bool ShouldRelayoutWithNoForcedTruncate() const {
