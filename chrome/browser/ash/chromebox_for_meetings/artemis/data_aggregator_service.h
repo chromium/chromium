@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_ARTEMIS_DATA_AGGREGATOR_SERVICE_H_
 #define CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_ARTEMIS_DATA_AGGREGATOR_SERVICE_H_
 
+#include "base/time/time.h"
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/command_source.h"
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/log_source.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_observer.h"
@@ -16,6 +17,7 @@
 #include "chromeos/services/chromebox_for_meetings/public/proto/transport_payload.pb.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "net/base/backoff_entry.h"
 
 namespace ash::cfm {
 
@@ -88,14 +90,12 @@ class DataAggregatorService : public CfmObserver,
   void StoreDeviceId(chromeos::cfm::mojom::PolicyInfoPtr policy_info);
   void StartFetchTimer();
   void FetchFromAllSourcesAndEnqueue();
-  void EnqueueData(const std::string& source_name,
-                   const std::vector<std::string>& serialized_entries);
-  void WrapEntriesInTransportPayload(
+  void AppendEntriesToActivePayload(
       const std::string& source_name,
-      const std::vector<std::string>& serialized_entries,
-      proto::TransportPayload* transport_payload);
-  void HandleEnqueueResponse(const std::string& source_name,
-                             chromeos::cfm::mojom::LoggerStatusPtr status);
+      const std::vector<std::string>& serialized_entries);
+  bool IsPayloadReadyForUpload() const;
+  void EnqueueTransportPayload();
+  void HandleEnqueueResponse(chromeos::cfm::mojom::LoggerStatusPtr status);
 
   chromeos::cfm::ServiceAdaptor service_adaptor_;
   mojo::ReceiverSet<mojom::DataAggregator> receivers_;
@@ -113,8 +113,22 @@ class DataAggregatorService : public CfmObserver,
   // Remote endpoint for CfmDeviceInfoService
   mojo::Remote<chromeos::cfm::mojom::MeetDevicesInfo> device_info_remote_;
 
-  // Unique device ID for the CfM that is permanent across provisioning.
-  std::string device_id_;
+  // The current payload that is to be eventually Enqueue()'d to the
+  // CfmLogger. This will collect data until certain conditions are met
+  // (see IsPayloadReadyForUpload() method for details).
+  proto::TransportPayload active_transport_payload_;
+
+  // Used to track the time since we last pushed a payload to the wire.
+  // Will be used as a timeout of sorts for the next push.
+  base::TimeTicks last_upload_time_;
+
+  // Set to true between when we call Enqueue() and when we get a
+  // successful callback response.
+  bool enqueue_in_progress_ = false;
+
+  // A backoff retry timer that automatically adjusts itself if
+  // the initial enqueue fails, to avoid a DoS.
+  net::BackoffEntry enqueue_retry_backoff_;
 
   // Must be the last class member.
   base::WeakPtrFactory<DataAggregatorService> weak_ptr_factory_{this};

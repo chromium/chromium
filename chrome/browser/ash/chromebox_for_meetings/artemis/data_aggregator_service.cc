@@ -25,8 +25,21 @@ static DataAggregatorService* g_data_aggregator_service = nullptr;
 constexpr base::TimeDelta kFetchFrequency = base::Minutes(1);
 constexpr size_t kDefaultLogBatchSize = 500;  // lines
 
+constexpr size_t kPayloadMaxSizeBytes = 500000;  // 500Kb
+constexpr base::TimeDelta kPayloadEnqueueTimeout = base::Minutes(10);
+
 constexpr base::TimeDelta kServiceAdaptorRetryDelay = base::Seconds(1);
 constexpr size_t kServiceAdaptorRetryMaxTries = 5;
+
+constexpr net::BackoffEntry::Policy kEnqueueRetryBackoffPolicy = {
+    0,          // Number of initial errors to ignore.
+    1000,       // Initial delay in ms.
+    2.0,        // Factor by which the waiting time will be multiplied.
+    0.2,        // Fuzzing percentage.
+    60 * 1000,  // Maximum delay in ms.
+    -1,         // Never discard the entry.
+    true,       // Use initial delay.
+};
 
 // List of commands that should be polled frequently. Any commands
 // being watched by watchdogs should be here.
@@ -186,7 +199,8 @@ void DataAggregatorService::AddLocalCommandSource(
             mojo::MakeSelfOwnedReceiver(std::move(source),
                                         std::move(pending_receiver));
           },
-          remote.BindNewPipeAndPassReceiver(), device_id_, command, poll_freq));
+          remote.BindNewPipeAndPassReceiver(),
+          active_transport_payload_.permanent_id(), command, poll_freq));
 
   remote.set_disconnect_handler(
       base::BindOnce(&DataAggregatorService::OnLocalCommandDisconnect,
@@ -227,7 +241,8 @@ void DataAggregatorService::AddLocalLogSource(const std::string& filepath) {
             mojo::MakeSelfOwnedReceiver(std::move(source),
                                         std::move(pending_receiver));
           },
-          remote.BindNewPipeAndPassReceiver(), device_id_, filepath));
+          remote.BindNewPipeAndPassReceiver(),
+          active_transport_payload_.permanent_id(), filepath));
 
   remote.set_disconnect_handler(
       base::BindOnce(&DataAggregatorService::OnLocalLogDisconnect,
@@ -293,6 +308,7 @@ void DataAggregatorService::OnRequestBindUploadService(
           << " for interface: " << interface_name;
 
   if (success) {
+    last_upload_time_ = base::TimeTicks::Now();
     InitializeDeviceInfoEndpoint(/*num_tries=*/0);
     return;
   }
@@ -368,10 +384,13 @@ void DataAggregatorService::StoreDeviceId(
   // Only start collecting data if we have a device_id. Without a proper
   // ID, we can't upload logs to cloud logging, so the data is useless.
   if (policy_info->device_id.has_value()) {
-    device_id_ = policy_info->device_id.value();
-    VLOG(4) << "Assigning device ID " << device_id_;
+    active_transport_payload_.set_permanent_id(policy_info->device_id.value());
+    VLOG(4) << "Assigning device ID " << policy_info->device_id.value();
     InitializeLocalSources();
     StartFetchTimer();
+  } else {
+    LOG(ERROR)
+        << "Unable to determine device ID! Cloud logging will be disabled.";
   }
 }
 
@@ -386,19 +405,24 @@ void DataAggregatorService::StartFetchTimer() {
 void DataAggregatorService::FetchFromAllSourcesAndEnqueue() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // Wait for enqueue callback to fire before fetching more data.
+  if (enqueue_in_progress_) {
+    return;
+  }
+
   for (const auto& data_source : data_source_map_) {
     std::string source_name = data_source.first;
     const auto& source_remote = data_source.second;
 
-    auto enqueue_callback =
-        base::BindOnce(&DataAggregatorService::EnqueueData,
+    auto append_callback =
+        base::BindOnce(&DataAggregatorService::AppendEntriesToActivePayload,
                        weak_ptr_factory_.GetWeakPtr(), std::move(source_name));
 
-    source_remote->Fetch(std::move(enqueue_callback));
+    source_remote->Fetch(std::move(append_callback));
   }
 }
 
-void DataAggregatorService::EnqueueData(
+void DataAggregatorService::AppendEntriesToActivePayload(
     const std::string& source_name,
     const std::vector<std::string>& serialized_entries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -408,38 +432,32 @@ void DataAggregatorService::EnqueueData(
   }
 
   if (VLOG_IS_ON(4)) {
-    VLOG(4) << "Enqueuing the following entries: ";
+    VLOG(4) << "Appending the following entries: ";
     for (auto& entry : serialized_entries) {
       VLOG(4) << entry;
     }
   }
 
-  // TODO(b/340913913): each data source will produce one TransportPayload
-  // per call to Fetch(). We should instead combine the logs of multiple
-  // sources into a single payload to reduce QPS.
-  proto::TransportPayload transport_payload;
-  WrapEntriesInTransportPayload(source_name, serialized_entries,
-                                &transport_payload);
-
-  auto enqueue_success_callback =
-      base::BindOnce(&DataAggregatorService::HandleEnqueueResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(source_name));
-
-  // TODO(b/339455254): have each data source specify a priority instead
-  // of assuming kLow for every enqueue.
-  uploader_remote_->Enqueue(transport_payload.SerializeAsString(),
-                            chromeos::cfm::mojom::EnqueuePriority::kLow,
-                            std::move(enqueue_success_callback));
-}
-
-void DataAggregatorService::WrapEntriesInTransportPayload(
-    const std::string& source_name,
-    const std::vector<std::string>& serialized_entries,
-    proto::TransportPayload* transport_payload) {
   // TODO(b/336777241): use different payloads for different source types.
   // Using LogPayload for everything at this time.
-  proto::LogPayload* log_payload = transport_payload->mutable_log_payload();
-  proto::LogSet* log_set = log_payload->add_log_sets();
+  proto::LogPayload* log_payload =
+      active_transport_payload_.mutable_log_payload();
+  proto::LogSet* log_set = nullptr;
+
+  // First check if we already have a LogSet for this data source.
+  for (auto& set : *(log_payload->mutable_log_sets())) {
+    if (set.log_source() == source_name) {
+      log_set = &set;
+      break;
+    }
+  }
+
+  // If the current payload doesn't contain a LogSet for this data
+  // source yet, create a new one.
+  if (log_set == nullptr) {
+    log_set = log_payload->add_log_sets();
+  }
+
   google::protobuf::RepeatedPtrField<proto::LogEntry>* entries =
       log_set->mutable_entries();
 
@@ -455,37 +473,93 @@ void DataAggregatorService::WrapEntriesInTransportPayload(
     }
   }
 
+  if (IsPayloadReadyForUpload()) {
+    EnqueueTransportPayload();
+  }
+}
+
+bool DataAggregatorService::IsPayloadReadyForUpload() const {
+  // Flush the payload to the wire if it exceeds our max size.
+  if (active_transport_payload_.ByteSizeLong() >= kPayloadMaxSizeBytes) {
+    VLOG(4) << "Payload reached maximum size; pushing to wire";
+    return true;
+  }
+
+  // Use a timeout to force flush to the wire. This ensures that we're
+  // always uploading data, even in the event of a data "stall", where
+  // a small amount of data is available for an extended period of time.
+  if ((base::TimeTicks::Now() - last_upload_time_) >= kPayloadEnqueueTimeout) {
+    VLOG(4) << "Payload timeout reached; force pushing";
+    return true;
+  }
+
+  return false;
+}
+
+void DataAggregatorService::EnqueueTransportPayload() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   auto timestamp =
       (base::Time::Now() - base::Time::UnixEpoch()).InMilliseconds();
 
-  transport_payload->set_collection_timestamp_ms(timestamp);
-  transport_payload->set_permanent_id(device_id_);
+  active_transport_payload_.set_collection_timestamp_ms(timestamp);
+
+  auto enqueue_success_callback =
+      base::BindOnce(&DataAggregatorService::HandleEnqueueResponse,
+                     weak_ptr_factory_.GetWeakPtr());
+
+  enqueue_in_progress_ = true;
+
+  // TODO(b/339455254): have each data source specify a priority instead
+  // of assuming kLow for every enqueue.
+  uploader_remote_->Enqueue(active_transport_payload_.SerializeAsString(),
+                            chromeos::cfm::mojom::EnqueuePriority::kLow,
+                            std::move(enqueue_success_callback));
 }
 
 void DataAggregatorService::HandleEnqueueResponse(
-    const std::string& source_name,
     chromeos::cfm::mojom::LoggerStatusPtr status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (status->code != chromeos::cfm::mojom::LoggerErrorCode::kOk) {
-    LOG(ERROR) << "Recent enqueue for source '" << source_name
-               << "' failed with error code: " << status->code
-               << ". Trying again in " << kFetchFrequency;
+    enqueue_retry_backoff_.InformOfRequest(/*succeeded=*/false);
+    auto retry_delay = enqueue_retry_backoff_.GetTimeUntilRelease();
+
+    LOG(ERROR) << "Recent enqueue failed with error code: " << status->code
+               << ". Trying again in " << retry_delay;
+
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&DataAggregatorService::EnqueueTransportPayload,
+                       weak_ptr_factory_.GetWeakPtr()),
+        retry_delay);
     return;
   }
 
-  CHECK(data_source_map_.count(source_name) != 0)
-      << "Enqueued records for data source " << source_name
-      << ", but it no longer exists?";
+  enqueue_retry_backoff_.Reset();
 
-  // If the enqueue succeeded, tell the data source so it can
-  // update its internal pointers. Note that for non-incremental
-  // sources this will likely just be a no-op.
-  data_source_map_[source_name]->Flush();
+  // If the enqueue succeeded, Flush() all of the affected data sources so they
+  // can update their internal pointers. Note that for non-incremental sources
+  // this will likely just be a no-op.
+  proto::LogPayload* log_payload =
+      active_transport_payload_.mutable_log_payload();
+  google::protobuf::RepeatedPtrField<proto::LogSet>* log_sets =
+      log_payload->mutable_log_sets();
+
+  for (const auto& log_set : *log_sets) {
+    const auto& data_source = log_set.log_source();
+    data_source_map_[data_source]->Flush();
+  }
+
+  // Clean up.
+  enqueue_in_progress_ = false;
+  last_upload_time_ = base::TimeTicks::Now();
+  active_transport_payload_.clear_log_payload();
 }
 
 DataAggregatorService::DataAggregatorService()
-    : service_adaptor_(mojom::DataAggregator::Name_, this) {
+    : service_adaptor_(mojom::DataAggregator::Name_, this),
+      enqueue_retry_backoff_(&kEnqueueRetryBackoffPolicy) {
   CfmHotlineClient::Get()->AddObserver(this);
 
   DETACH_FROM_SEQUENCE(sequence_checker_);
