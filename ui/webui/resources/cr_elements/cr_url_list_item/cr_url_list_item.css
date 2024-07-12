@@ -89,11 +89,11 @@
   border-radius: 4px;
   display: flex;
   flex-shrink: 0;
-  height: 40px;
+  height: var(--cr-url-list-item-container-height, 40px);
   justify-content: center;
-  margin-inline-end: 16px;
+  margin-inline-end: var(--cr-url-list-item-icon-margin-end, 16px);
   overflow: hidden;
-  width: 40px;
+  width: var(--cr-url-list-item-container-width, 40px);
 }
 
 :host([size=compact]) #iconContainer {
@@ -269,17 +269,13 @@
   flex-direction: row;
 }
 
-:host([size=medium]) .metadata {
-  gap: 3px;
-}
-
 :host([size=compact]) .metadata,
 :host([size=medium]) .metadata {
-  gap: 4px;
+  gap: var(--cr-url-list-item-metadata-gap, 4px);
 }
 
 :host([size=large]) .metadata {
-  gap: 2px;
+  gap: var(--cr-url-list-item-metadata-gap, 2px);
 }
 
 .title {
