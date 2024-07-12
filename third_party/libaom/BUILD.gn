@@ -61,8 +61,8 @@ if (is_nacl) {
 
 libaom_include_dirs = [
   "source/config",
-  platform_include_dir,
   "source/libaom",
+  platform_include_dir,
 ]
 
 # Private configuration used in building libaom.
@@ -73,6 +73,10 @@ config("libaom_config") {
 # This config is applied to targets that depend on libaom.
 config("libaom_public_config") {
   include_dirs = [
+    # libaom_public_config does not have "source/config" (which gives access to
+    # the private header config/aom_version.h) because code outside the libaom
+    # library should use the aom_codec_version*() functions and macros declared
+    # in the public header aom_codec.h.
     "source/libaom",
     platform_include_dir,
   ]
