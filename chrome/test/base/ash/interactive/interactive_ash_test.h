@@ -201,6 +201,12 @@ class InteractiveAshTest
       const WebContentsInteractionTestUtil::DeepQuery& query,
       bool is_checked);
 
+  // Clears the text value of an input element identified by `query` in
+  // the DOM of an instrumented WebUI identified by `element_id` .
+  ui::test::internal::InteractiveTestPrivate::MultiStep ClearInputFieldValue(
+      const ui::ElementIdentifier& element_id,
+      const WebContentsInteractionTestUtil::DeepQuery& query);
+
   // Waits for an element to render by using `getBoundingClientRect()` to verify
   // the element is visible and ready for interactions. Helps to prevent
   // `element_bounds.IsEmpty()` flakes.

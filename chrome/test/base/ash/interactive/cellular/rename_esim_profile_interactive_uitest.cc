@@ -6,6 +6,7 @@
 
 #include "chrome/test/base/ash/interactive/cellular/cellular_util.h"
 #include "chrome/test/base/ash/interactive/cellular/esim_interactive_uitest_base.h"
+#include "chrome/test/base/ash/interactive/cellular/esim_name_observer.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/base/ash/interactive/settings/interactive_uitest_elements.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -13,14 +14,14 @@
 namespace ash {
 namespace {
 
-const char kNewProfileNickname[] = "newName";
+const char kNewProfileNickname[] = "awesomeName";
 
 using RenameEsimProfileInteractiveUiTest = EsimInteractiveUiTestBase;
 
 // Reanable when flaky test is fixed. See b/350066292.
-IN_PROC_BROWSER_TEST_F(RenameEsimProfileInteractiveUiTest,
-                       DISABLED_RenamEsimProfile) {
+IN_PROC_BROWSER_TEST_F(RenameEsimProfileInteractiveUiTest, RenameEsimProfile) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOSSettingsId);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(EsimNameObserver, kNameChangedService);
 
   ui::ElementContext context =
       LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
@@ -28,6 +29,10 @@ IN_PROC_BROWSER_TEST_F(RenameEsimProfileInteractiveUiTest,
   // Run the following steps with the OS Settings context set as the default.
   RunTestSequenceInContext(
       context,
+
+      ObserveState(kNameChangedService,
+                   std::make_unique<EsimNameObserver>(
+                       dbus::ObjectPath(esim_info().profile_path()))),
 
       Log("Navigating to the internet page"),
 
@@ -39,6 +44,11 @@ IN_PROC_BROWSER_TEST_F(RenameEsimProfileInteractiveUiTest,
 
       WaitForElementExists(kOSSettingsId,
                            ash::settings::NetworkMoreDetailsMenuButton()),
+
+      Log("Checking initial Network name"),
+
+      WaitForState(kNameChangedService, esim_info().nickname()),
+
       ClickElement(kOSSettingsId,
                    ash::settings::NetworkMoreDetailsMenuButton()),
       WaitForElementExists(
@@ -57,21 +67,29 @@ IN_PROC_BROWSER_TEST_F(RenameEsimProfileInteractiveUiTest,
           ash::settings::cellular::CellularSubpageMenuRenameDialogInputField()),
 
       // Clear current eSIM name in input field.
-      ExecuteJsAt(
+      ClearInputFieldValue(
           kOSSettingsId,
-          ash::settings::cellular::CellularSubpageMenuRenameDialogInputField(),
-          "el => el.value = ''"),
-      SendTextAsKeyEvents(kOSSettingsId, kNewProfileNickname), FlushEvents(),
+          ash::settings::cellular::CellularSubpageMenuRenameDialogInputField()),
+      ClickElement(
+          kOSSettingsId,
+          ash::settings::cellular::CellularSubpageMenuRenameDialogInputField()),
+      SendTextAsKeyEvents(kOSSettingsId, kNewProfileNickname),
       ClickElement(
           kOSSettingsId,
           ash::settings::cellular::CellularSubpageMenuRenameDialogDoneButton()),
-      FlushEvents(),
+
+      Log("Checking Network name is set to the expected value"),
+
+      WaitForState(kNameChangedService, kNewProfileNickname),
+
+      Log("Checking Network name in OS Settings UI is set to the expected "
+          "value"),
       WaitForElementDoesNotExist(
           kOSSettingsId,
           ash::settings::cellular::CellularSubpageMenuRenameDialog()),
-      WaitForElementTextContains(kOSSettingsId,
-                                 settings::SettingsSubpageTitle(),
-                                 /*text=*/kNewProfileNickname),
+      WaitForElementTextContains(
+          kOSSettingsId, settings::cellular::CellularDetailsSubpageTitle(),
+          /*text=*/kNewProfileNickname),
 
       Log("Test complete"));
 }

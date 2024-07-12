@@ -113,7 +113,7 @@ WebContentsInteractionTestUtil::DeepQuery CellularSubpagePsimListTitle();
 // The cellular network details subpage title.
 WebContentsInteractionTestUtil::DeepQuery CellularDetailsSubpageTitle();
 
-// The auto connect togle in cellular network details subpage.
+// The auto connect toggle in cellular network details subpage.
 WebContentsInteractionTestUtil::DeepQuery
 CellularDetailsSubpageAutoConnectToggle();
 

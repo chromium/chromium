@@ -49,11 +49,14 @@ source_set("test_support") {
   sources = [
     "cellular_util.cc",
     "cellular_util.h",
+    "esim_name_observer.cc",
+    "esim_name_observer.h",
     "wait_for_service_connected_observer.cc",
     "wait_for_service_connected_observer.h",
   ]
 
   deps = [
+    "//chromeos/ash/components/dbus/hermes",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/network:network",
     "//dbus",

@@ -461,6 +461,23 @@ InteractiveAshTest::WaitForToggleState(
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::ClearInputFieldValue(
+    const ui::ElementIdentifier& element_id,
+    const WebContentsInteractionTestUtil::DeepQuery& query) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kInputElementText);
+  StateChange input_element_change;
+  input_element_change.event = kInputElementText;
+  input_element_change.where = query;
+  input_element_change.type = StateChange::Type::kExistsAndConditionTrue;
+  input_element_change.test_function = "(el) => { return el.value === ''; }";
+
+  return Steps(MoveMouseTo(element_id, query), ClickMouse(),
+               CheckJsResultAt(element_id, query,
+                               "(el) => {el.value = ''; return true;}"),
+               WaitForStateChange(element_id, input_element_change));
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::WaitForElementToRender(
     const ui::ElementIdentifier& element_id,
     const DeepQuery& query) {
