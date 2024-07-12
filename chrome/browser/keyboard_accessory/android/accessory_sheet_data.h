@@ -90,7 +90,7 @@ class UserInfo final {
   const std::vector<AccessorySheetField>& fields() const { return fields_; }
   const std::string& origin() const { return origin_; }
   IsExactMatch is_exact_match() const { return is_exact_match_; }
-  const GURL icon_url() const { return icon_url_; }
+  const GURL& icon_url() const { return icon_url_; }
 
   bool operator==(const UserInfo&) const = default;
 
@@ -140,9 +140,9 @@ class PasskeySection final {
 
   ~PasskeySection();
 
-  const std::string display_name() const { return display_name_; }
+  const std::string& display_name() const { return display_name_; }
 
-  const std::vector<uint8_t> passkey_id() const { return passkey_id_; }
+  const std::vector<uint8_t>& passkey_id() const { return passkey_id_; }
 
   bool operator==(const PasskeySection&) const = default;
 
@@ -167,9 +167,9 @@ class PromoCodeInfo final {
 
   ~PromoCodeInfo();
 
-  const AccessorySheetField promo_code() const { return promo_code_; }
+  const AccessorySheetField& promo_code() const { return promo_code_; }
 
-  const std::u16string details_text() const { return details_text_; }
+  const std::u16string& details_text() const { return details_text_; }
 
   bool operator==(const PromoCodeInfo&) const = default;
 
@@ -194,7 +194,7 @@ class IbanInfo final {
 
   ~IbanInfo();
 
-  const AccessorySheetField value() const { return value_; }
+  const AccessorySheetField& value() const { return value_; }
 
   bool operator==(const IbanInfo&) const = default;
 
