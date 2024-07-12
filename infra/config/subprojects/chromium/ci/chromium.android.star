@@ -4,10 +4,10 @@
 """Definitions of builders in the chromium.android builder group."""
 
 load("//lib/args.star", "args")
+load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/builders.star", "builders", "gardener_rotations", "os", "siso")
-load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
@@ -1183,11 +1183,8 @@ ci.builder(
 )
 
 # Compiles with Android Mainline Clang
-# TODO: crbug.com/41484811 - remove "triggered_by" and "schedule".
 ci.builder(
     name = "android-cronet-mainline-clang-riscv64-dbg",
-    schedule = "triggered",
-    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1226,11 +1223,8 @@ ci.builder(
 )
 
 # Compiles with Android Mainline Clang
-# TODO: crbug.com/41484811 - remove "triggered_by" and "schedule".
 ci.builder(
     name = "android-cronet-mainline-clang-riscv64-rel",
-    schedule = "triggered",
-    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
