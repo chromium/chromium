@@ -456,6 +456,8 @@ inline constexpr char kUMAStateDeterminationTotalDuration[] =
     "Enterprise.StateDetermination.TotalDuration";
 inline constexpr char kUMAStateDeterminationStatus[] =
     "Enterprise.StateDetermination.Status";
+inline constexpr char kUMAStateDeterminationIsInitialByState[] =
+    "Enterprise.StateDetermination.IsInitialByState";
 
 // Suffixes added to kUMAStateDeterminationTotalDurationByState.
 inline constexpr char kUMASuffixConnectionError[] = ".ConnectionError";

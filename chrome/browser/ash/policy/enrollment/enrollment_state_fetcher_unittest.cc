@@ -1518,6 +1518,34 @@ TEST_P(EnrollmentStateFetcherTestP, UmaHistogramsCounts) {
   histograms.ExpectUniqueSample(
       kUMAStateDeterminationStateRequestNetworkErrorCode, net::OK, 1);
   histograms.ExpectUniqueSample(kUMAStateDeterminationStateReturned, true, 1);
+  histograms.ExpectUniqueSample(
+      base::StrCat(
+          {kUMAStateDeterminationIsInitialByState, kUMASuffixNoEnrollment}),
+      true, 1);
+}
+
+TEST_P(EnrollmentStateFetcherTestP, UmaHistogramsCountsOnReEnrollmentDisabled) {
+  base::HistogramTester histograms;
+  ExpectOwnershipCheck();
+  ExpectOprfRequest();
+  ExpectQueryRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
+  em::DeviceManagementResponse response;
+  auto* state_response = response.mutable_device_state_retrieval_response();
+  state_response->set_restore_mode(
+      em::DeviceStateRetrievalResponse::RESTORE_MODE_DISABLED);
+  state_response->mutable_disabled_state()->set_message(kTestDisabledMessage);
+  EXPECT_CALL(job_creation_handler_,
+              OnJobCreation(JobWithStateRequest(
+                  GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
+      .WillOnce(fake_dm_service_->SendJobOKAsync(response));
+
+  std::ignore = FetchEnrollmentState();
+
+  histograms.ExpectUniqueSample(
+      base::StrCat(
+          {kUMAStateDeterminationIsInitialByState, kUMASuffixDisabled}),
+      false, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(EnrollmentStateFetcherTestSuite,

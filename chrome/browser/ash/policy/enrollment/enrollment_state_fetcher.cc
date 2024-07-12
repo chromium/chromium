@@ -721,6 +721,10 @@ class EnrollmentState {
                                                                  : "no")
             << " packaged license.";
 
+    base::UmaHistogramBoolean(
+        base::StrCat({kUMAStateDeterminationIsInitialByState,
+                      AutoEnrollmentStateToUmaSuffix(result.state)}),
+        true);
     return std::move(completion_callback).Run(std::move(result));
   }
 
@@ -752,6 +756,10 @@ class EnrollmentState {
     }
 
     VLOG(1) << "Received restore mode " << mode;
+    base::UmaHistogramBoolean(
+        base::StrCat({kUMAStateDeterminationIsInitialByState,
+                      AutoEnrollmentStateToUmaSuffix(result.state)}),
+        false);
     return std::move(completion_callback).Run(std::move(result));
   }
 

@@ -3004,6 +3004,19 @@ chromium-metrics-reviews@google.com.
   <summary>Captures situations when state determination is enabled.</summary>
 </histogram>
 
+<histogram name="Enterprise.StateDetermination.IsInitialByState.{State}"
+    enum="Boolean" expires_after="2024-12-01">
+  <owner>sergiyb@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    Tracks whether state {State} returned by the server was initial (true), i.e.
+    device is not enrolled into any domain because it is brand new or has been
+    deprovisioned, or secondary (false), i.e. device is already managed and
+    needs to retrieve its state because it has been powerwashed.
+  </summary>
+  <token key="State" variants="AutoEnrollmentStates"/>
+</histogram>
+
 <histogram
     name="Enterprise.StateDetermination.KillSwitchFetch.NetworkErrorCode"
     enum="NetErrorCodes" expires_after="2024-12-01">
