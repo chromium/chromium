@@ -21,13 +21,14 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
-import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.filters.MediumTest;
 
@@ -44,6 +45,8 @@ import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
+import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 
 import java.util.Arrays;
 
@@ -296,5 +299,39 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
 
         // Check that secondary button is NOT displayed.
         onView(withId(R.id.account_selection_add_account_btn)).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
+    public void testLoadingDialogBackDismissesAndCallsCallback() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showLoadingDialog(
+                            EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_2, RpContext.SIGN_IN);
+                });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+
+        Espresso.pressBack();
+
+        waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
+        verify(mMockBridge, never()).onAccountSelected(any(), any());
+    }
+
+    @Test
+    @MediumTest
+    public void testLoadingDialogSwipeDismissesAndCallsCallback() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showLoadingDialog(
+                            EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_2, RpContext.SIGN_IN);
+                });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+        BottomSheetTestSupport sheetSupport = new BottomSheetTestSupport(mBottomSheetController);
+        runOnUiThreadBlocking(
+                () -> {
+                    sheetSupport.suppressSheet(BottomSheetController.StateChangeReason.SWIPE);
+                });
+        waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.SWIPE);
+        verify(mMockBridge, never()).onAccountSelected(any(), any());
     }
 }

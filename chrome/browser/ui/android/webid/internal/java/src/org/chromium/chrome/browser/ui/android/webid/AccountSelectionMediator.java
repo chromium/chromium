@@ -332,6 +332,8 @@ class AccountSelectionMediator {
                 return SheetType.SIGN_IN_TO_IDP_STATIC;
             case SIGN_IN_ERROR:
                 return SheetType.SIGN_IN_ERROR;
+            case LOADING:
+                return SheetType.LOADING;
         }
         assert false; // NOTREACHED
         return SheetType.ACCOUNT_SELECTION;
@@ -487,6 +489,16 @@ class AccountSelectionMediator {
         showBrandIcon(idpMetadata);
     }
 
+    void showLoadingDialog(
+            String rpForDisplay, String idpForDisplay, @RpContext.EnumType int rpContext) {
+        mRpForDisplay = rpForDisplay;
+        mIdpForDisplay = idpForDisplay;
+        mRpContext = rpContext;
+        mHeaderType = HeaderProperties.HeaderType.LOADING;
+        updateSheet(/* accounts= */ null, /* areAccountsClickable= */ false);
+        setComponentShowTime(SystemClock.elapsedRealtime());
+    }
+
     void showUrl(Context context, @IdentityRequestDialogLinkType int linkType, GURL url) {
         switch (linkType) {
             case IdentityRequestDialogLinkType.TERMS_OF_SERVICE:
@@ -616,6 +628,7 @@ class AccountSelectionMediator {
         mModel.set(
                 ItemProperties.ADD_ACCOUNT_BUTTON,
                 supportsAddAccount && isSingleAccountChooser ? createAddAccountBtnItem() : null);
+        mModel.set(ItemProperties.SPINNER_ENABLED, mHeaderType == HeaderType.LOADING);
 
         mBottomSheetContent.computeAndUpdateAccountListHeight();
         // When a user opens a page that invokes the FedCM API in a new tab, the tab will be hidden

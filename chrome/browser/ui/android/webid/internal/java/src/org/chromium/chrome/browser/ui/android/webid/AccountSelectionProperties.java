@@ -64,7 +64,8 @@ class AccountSelectionProperties {
             VERIFY,
             VERIFY_AUTO_REAUTHN,
             SIGN_IN_TO_IDP_STATIC,
-            SIGN_IN_ERROR
+            SIGN_IN_ERROR,
+            LOADING
         }
 
         static final ReadableObjectPropertyKey<Runnable> CLOSE_ON_CLICK_LISTENER =
@@ -214,6 +215,8 @@ class AccountSelectionProperties {
                 new WritableObjectPropertyKey<>("error_text");
         static final WritableObjectPropertyKey<PropertyModel> ADD_ACCOUNT_BUTTON =
                 new WritableObjectPropertyKey<>("add_account_btn");
+        static final WritableObjectPropertyKey<Boolean> SPINNER_ENABLED =
+                new WritableObjectPropertyKey<>();
 
         static final PropertyKey[] ALL_KEYS = {
             CONTINUE_BUTTON,
@@ -221,7 +224,8 @@ class AccountSelectionProperties {
             HEADER,
             IDP_SIGNIN,
             ERROR_TEXT,
-            ADD_ACCOUNT_BUTTON
+            ADD_ACCOUNT_BUTTON,
+            SPINNER_ENABLED
         };
 
         private ItemProperties() {}

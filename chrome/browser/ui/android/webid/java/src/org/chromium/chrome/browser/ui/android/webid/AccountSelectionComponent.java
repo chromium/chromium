@@ -122,6 +122,17 @@ public interface AccountSelectionComponent {
             IdentityCredentialTokenError error);
 
     /**
+     * Displays a dialog with a spinner to indicate that contents are loading.
+     *
+     * @param rpForDisplay is the formatted RP URL to display in the FedCM prompt.
+     * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
+     * @param rpContext is an enum representing the desired text to be used in the title of the
+     *     FedCM prompt: "signin", "continue", etc.
+     */
+    void showLoadingDialog(
+            String rpForDisplay, String idpForDisplay, @RpContext.EnumType int rpContext);
+
+    /**
      * Closes the outstanding bottom sheet or the popup, depending on what this object corresponds
      * to.
      */

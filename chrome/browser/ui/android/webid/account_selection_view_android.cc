@@ -241,7 +241,10 @@ bool AccountSelectionViewAndroid::ShowLoadingDialog(
     delegate_->OnDismiss(DismissReason::kOther);
     return false;
   }
-  // TODO(crbug.com/327273595): Add button flow loading dialog on Android.
+  JNIEnv* env = AttachCurrentThread();
+  Java_AccountSelectionBridge_showLoadingDialog(env, java_object_internal_,
+                                                rp_for_display, idp_for_display,
+                                                static_cast<jint>(rp_context));
   return true;
 }
 

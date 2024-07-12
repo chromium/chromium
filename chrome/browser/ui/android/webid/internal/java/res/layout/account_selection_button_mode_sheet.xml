@@ -19,15 +19,25 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="@dimen/account_selection_button_mode_sheet_drag_handlebar_padding"
+        android:layout_marginStart="@dimen/account_selection_button_mode_sheet_drag_handlebar_padding"
+        android:layout_marginTop="@dimen/account_selection_button_mode_sheet_drag_handlebar_padding"
+        android:layout_marginBottom="@dimen/account_selection_button_mode_sheet_drag_handlebar_padding"
         android:importantForAccessibility="no"
         app:srcCompat="@drawable/drag_handlebar" />
 
     <include layout="@layout/account_selection_button_mode_header_item"
         android:id="@+id/header_view_item" />
+
+    <org.chromium.ui.widget.LoadingView
+        android:id="@+id/spinner"
+        android:layout_width="@dimen/account_selection_button_mode_sheet_spinner_size"
+        android:layout_height="@dimen/account_selection_button_mode_sheet_spinner_size"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/account_selection_button_mode_sheet_spinner_top_margin"
+        android:layout_marginBottom="@dimen/account_selection_button_mode_sheet_spinner_bottom_margin"
+        android:visibility="gone" />
+
     <FrameLayout
         android:id="@+id/sheet_item_list_container"
         android:layout_width="match_parent"

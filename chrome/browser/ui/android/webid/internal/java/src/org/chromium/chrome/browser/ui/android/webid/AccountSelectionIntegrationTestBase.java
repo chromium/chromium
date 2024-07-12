@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.ui.android.webid;
 
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
+
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
 import android.graphics.Color;
@@ -13,6 +16,8 @@ import org.junit.Rule;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
@@ -98,5 +103,11 @@ public class AccountSelectionIntegrationTestBase {
     @SheetState
     int getBottomSheetState() {
         return mBottomSheetController.getSheetState();
+    }
+
+    public static <T> T waitForEvent(T mock) {
+        return verify(
+                mock,
+                timeout(ScalableTimeout.scaleTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)));
     }
 }

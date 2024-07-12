@@ -234,6 +234,12 @@ public class AccountSelectionCoordinator
     }
 
     @Override
+    public void showLoadingDialog(
+            String rpForDisplay, String idpForDisplay, @RpContext.EnumType int rpContext) {
+        mMediator.showLoadingDialog(rpForDisplay, idpForDisplay, rpContext);
+    }
+
+    @Override
     public void close() {
         if (mOpenerDelegate == null) {
             // Close the bottom sheet.

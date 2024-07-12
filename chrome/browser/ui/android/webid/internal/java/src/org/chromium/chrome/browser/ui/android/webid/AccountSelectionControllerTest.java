@@ -827,6 +827,37 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         verify(mMockBottomSheetController, times(1)).requestShowContent(mBottomSheetContent, true);
     }
 
+    @Test
+    public void testShowLoadingDialog() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showLoadingDialog(mTestEtldPlusOne, mTestEtldPlusOne1, RpContext.SIGN_IN);
+        assertEquals(0, mSheetAccountItems.size());
+        assertEquals(HeaderType.LOADING, mModel.get(ItemProperties.HEADER).get(TYPE));
+        verify(mMockDelegate, never()).onAccountsDisplayed();
+
+        // For loading dialog, we expect header + spinner.
+        assertEquals(2, countAllItems());
+        assertTrue(containsItemOfType(mModel, ItemProperties.SPINNER_ENABLED));
+        assertTrue(mModel.get(ItemProperties.SPINNER_ENABLED));
+
+        // Switching to accounts dialog should disable the spinner.
+        mMediator.showAccounts(
+                mTestEtldPlusOne,
+                mTestEtldPlusOne2,
+                Arrays.asList(mAnaAccount, mBobAccount),
+                mIdpMetadata,
+                mClientIdMetadata,
+                /* isAutoReauthn= */ false,
+                RpContext.SIGN_IN,
+                /* requestPermission= */ true);
+        assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
+
+        // For accounts dialog, we expect header + two accounts.
+        assertEquals(3, countAllItems());
+        assertTrue(containsItemOfType(mModel, ItemProperties.SPINNER_ENABLED));
+        assertFalse(mModel.get(ItemProperties.SPINNER_ENABLED));
+    }
+
     private void pressBack() {
         if (mBottomSheetContent.handleBackPress()) return;
 
@@ -837,6 +868,9 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         int count = 0;
         for (PropertyKey key : mModel.getAllProperties()) {
             if (containsItemOfType(mModel, key)) {
+                // Do not increase count if spinner is disabled.
+                if (key == ItemProperties.SPINNER_ENABLED
+                        && !mModel.get(ItemProperties.SPINNER_ENABLED)) continue;
                 count += 1;
             }
         }

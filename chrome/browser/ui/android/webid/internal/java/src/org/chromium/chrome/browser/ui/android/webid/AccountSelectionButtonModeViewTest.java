@@ -131,6 +131,24 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
         assertFalse(mBottomSheetContent.hasCustomScrimLifecycle());
     }
 
+    @Test
+    public void testLoadingSpinnerShown() {
+        mModel.set(ItemProperties.SPINNER_ENABLED, true);
+
+        assertEquals(View.VISIBLE, mContentView.getVisibility());
+        View spinner = mContentView.findViewById(R.id.spinner);
+        assertTrue(spinner.isShown());
+    }
+
+    @Test
+    public void testLoadingSpinnerHidden() {
+        mModel.set(ItemProperties.SPINNER_ENABLED, false);
+
+        assertEquals(View.VISIBLE, mContentView.getVisibility());
+        View spinner = mContentView.findViewById(R.id.spinner);
+        assertFalse(spinner.isShown());
+    }
+
     private PropertyModel buildAddAccountButton() {
         AddAccountButtonProperties.Properties properties =
                 new AddAccountButtonProperties.Properties();

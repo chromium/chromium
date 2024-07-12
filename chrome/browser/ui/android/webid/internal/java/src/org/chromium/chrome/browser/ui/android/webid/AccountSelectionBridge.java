@@ -174,6 +174,23 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
                 rpForDisplay, idpForDisplay, idpMetadata, rpContext, error);
     }
 
+    /**
+     * Shows a bottomsheet prompting the user to sign-in to an RP with an IDP with a spinner to
+     * indicate that contents are loading.
+     *
+     * @param rpForDisplay is the formatted RP URL to display in the FedCM prompt.
+     * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
+     * @param rpContext is a {@link String} representing the desired text to be used in the title of
+     *     the FedCM prompt: "signin", "continue", etc.
+     */
+    @CalledByNative
+    private void showLoadingDialog(
+            @JniType("std::string") String rpForDisplay,
+            @JniType("std::string") String idpForDisplay,
+            @RpContext.EnumType int rpContext) {
+        mAccountSelectionComponent.showLoadingDialog(rpForDisplay, idpForDisplay, rpContext);
+    }
+
     @CalledByNative
     private @JniType("std::string") String getTitle() {
         return mAccountSelectionComponent.getTitle();

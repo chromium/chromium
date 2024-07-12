@@ -20,6 +20,8 @@ found in the LICENSE file.
       android:layout_height="@dimen/account_selection_button_mode_sheet_icon_size"
       android:layout_gravity="center_horizontal"
       android:layout_marginBottom="8dp"
+      android:visibility="gone"
+      android:focusable="false"
       android:importantForAccessibility="no" />
 
   <androidx.appcompat.widget.DialogTitle

@@ -557,13 +557,21 @@ class AccountSelectionViewBinder {
 
     /**
      * Called whenever non-account views are bound to the bottom sheet.
+     *
      * @param model The model containing the data for the view.
      * @param view The view to be bound.
      * @param key The key of the property to be bound.
      */
     static void bindContentView(PropertyModel model, View view, PropertyKey key) {
-        PropertyModel itemModel = model.get((WritableObjectPropertyKey<PropertyModel>) key);
         View itemView = null;
+        if (key == ItemProperties.SPINNER_ENABLED) {
+            itemView = view.findViewById(R.id.spinner);
+            if (itemView == null) return;
+            itemView.setVisibility(
+                    model.get(ItemProperties.SPINNER_ENABLED) ? View.VISIBLE : View.GONE);
+            return;
+        }
+        PropertyModel itemModel = model.get((WritableObjectPropertyKey<PropertyModel>) key);
         ViewBinder<PropertyModel, View, PropertyKey> itemBinder = null;
         if (key == ItemProperties.HEADER) {
             itemView = view.findViewById(R.id.header_view_item);
