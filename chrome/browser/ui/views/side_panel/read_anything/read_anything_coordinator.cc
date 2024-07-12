@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/accessibility/reading/distillable_pages.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -40,38 +41,14 @@
 
 namespace {
 
-// Get the list of distillable URLs defined by the experiment parameter.
-// When ReadAnythingCoordinator observes a tab change, page load complete, or
-// primary page change, it compares the active url against this list of urls
-// to see whether the active page is considered "distillable". This information
-// is then passed on to observers which are gated behind the IPH experiment.
-// The list of URLs will be associated as a param of the experiment to ensure
-// that the variation groups that have the experiment enabled also have the list
-// of urls as a param.
-std::vector<std::string> GetDistillableURLs() {
-  if (base::FeatureList::IsEnabled(
-          feature_engagement::kIPHReadingModeSidePanelFeature)) {
-    return base::SplitString(
-        base::GetFieldTrialParamValueByFeature(
-            feature_engagement::kIPHReadingModeSidePanelFeature,
-            "distillable_urls"),
-        ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  }
-  return std::vector<std::string>();
-}
-
-base::TimeDelta GetDelaySeconds() {
-  // TODO(francisjp): Pull this value from variation.
-  return base::Seconds(2);
-}
+base::TimeDelta kDelaySeconds = base::Seconds(2);
 
 }  // namespace
 
 ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
     : BrowserUserData<ReadAnythingCoordinator>(*browser),
-      distillable_urls_(GetDistillableURLs()),
       delay_timer_(FROM_HERE,
-                   GetDelaySeconds(),
+                   kDelaySeconds,
                    base::BindRepeating(
                        &ReadAnythingCoordinator::OnTabChangeDelayComplete,
                        base::Unretained(this))) {
@@ -308,10 +285,10 @@ bool ReadAnythingCoordinator::IsActivePageDistillable() const {
 
   auto url = web_contents->GetLastCommittedURL();
 
-  for (auto distillable : distillable_urls_) {
-    // If the url's domain is found in distillable urls AND the url has a
+  for (const std::string& distillable_domain : a11y::GetDistillableDomains()) {
+    // If the url's domain is found in distillable domains AND the url has a
     // filename (i.e. it is not a home page or sub-home page), show the promo.
-    if (url.DomainIs(distillable) && !url.ExtractFileName().empty()) {
+    if (url.DomainIs(distillable_domain) && !url.ExtractFileName().empty()) {
       return true;
     }
   }

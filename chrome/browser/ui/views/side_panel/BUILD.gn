@@ -158,6 +158,7 @@ source_set("side_panel") {
     "//chrome/common",
     "//chrome/common:constants",
     "//chrome/common/extensions/api",
+    "//components/accessibility:reading",
     "//components/download/content/factory",
     "//components/download/content/public",
     "//components/favicon_base",

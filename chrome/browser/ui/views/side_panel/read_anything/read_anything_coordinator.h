@@ -113,8 +113,6 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
 
   std::string default_language_code_;
 
-  const base::flat_set<std::string> distillable_urls_;
-
   base::ObserverList<Observer> observers_;
 
   bool post_tab_change_delay_complete_ = true;
