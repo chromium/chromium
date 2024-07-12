@@ -109,6 +109,7 @@ static_library("crostini") {
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/guest_os/virtual_machines",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings",
     "//chrome/common",
     "//chrome/common:chrome_features",
