@@ -202,13 +202,6 @@ void MenuItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       break;
   }
 
-  char16_t mnemonic = GetMnemonic();
-  if (mnemonic != '\0') {
-    node_data->AddStringAttribute(
-        ax::mojom::StringAttribute::kKeyShortcuts,
-        base::UTF16ToUTF8(std::u16string(1, mnemonic)));
-  }
-
   if (IsTraversableByKeyboard()) {
     node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
                                 IsSelected());
@@ -493,6 +486,7 @@ void MenuItemView::SetSubmenuId(ui::ElementIdentifier id) {
 void MenuItemView::SetTitle(const std::u16string& title) {
   title_ = title;
   invalidate_dimensions();  // Triggers preferred size recalculation.
+  UpdateAccessibleKeyShortcuts();
 }
 
 void MenuItemView::SetSecondaryTitle(const std::u16string& secondary_title) {
@@ -896,6 +890,7 @@ MenuItemView::MenuItemView(MenuItemView* parent,
   if (parent && type != Type::kEmpty && root_delegate)
     SetEnabled(root_delegate->IsCommandEnabled(command));
   SetLayoutManager(std::make_unique<DelegatingLayoutManager>(this));
+  UpdateAccessibleKeyShortcuts();
 }
 
 void MenuItemView::PrepareForRun(bool has_mnemonics, bool show_mnemonics) {
@@ -911,6 +906,12 @@ void MenuItemView::PrepareForRun(bool has_mnemonics, bool show_mnemonics) {
   show_mnemonics_ = has_mnemonics && show_mnemonics;
 
   UpdateEmptyMenusAndMetrics();
+
+  // Update accessible key shortcuts for all menu items when root's
+  // `has_mnemonics_` changes.
+  for (MenuItemView* item : GetSubmenu()->GetMenuItems()) {
+    item->UpdateAccessibleKeyShortcuts();
+  }
 }
 
 int MenuItemView::GetDrawStringFlags() const {
@@ -1521,6 +1522,16 @@ int MenuItemView::GetVerticalMargin() const {
   return (controller && controller->use_ash_system_ui_layout())
              ? config.ash_item_vertical_margin
              : config.item_vertical_margin;
+}
+
+void MenuItemView::UpdateAccessibleKeyShortcuts() {
+  char16_t mnemonic = GetMnemonic();
+  if (mnemonic != '\0') {
+    GetViewAccessibility().SetKeyShortcuts(
+        base::UTF16ToUTF8(std::u16string(1, mnemonic)));
+  } else {
+    GetViewAccessibility().RemoveKeyShortcuts();
+  }
 }
 
 BEGIN_METADATA(MenuItemView)

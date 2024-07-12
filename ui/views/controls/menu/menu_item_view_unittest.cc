@@ -21,6 +21,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/submenu_view.h"
@@ -178,6 +179,68 @@ TEST_F(MenuItemViewUnitTest, NotifiesSelectedChanged) {
   // Verify we are notified when the MenuItemView becomes deselected.
   menu_item_view->SetSelected(false);
   EXPECT_FALSE(is_selected);
+}
+
+TEST_F(MenuItemViewUnitTest, AccessibleKeyShortcutsTest) {
+  views::TestMenuItemView root_menu;
+
+  // Append MenuItemViews.
+  views::MenuItemView* item1 = root_menu.AppendMenuItem(1, u"&Item 1");
+  views::MenuItemView* item2 = root_menu.AppendMenuItem(2, u"It&em 2");
+  ui::AXNodeData data1, data2;
+
+  if (MenuConfig::instance().use_mnemonics) {
+    item1->GetViewAccessibility().GetAccessibleNodeData(&data1);
+    item2->GetViewAccessibility().GetAccessibleNodeData(&data2);
+    EXPECT_FALSE(
+        data1.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
+    EXPECT_FALSE(
+        data2.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
+
+    root_menu.set_has_mnemonics(true);
+    data1 = ui::AXNodeData();
+    data2 = ui::AXNodeData();
+    item1->GetViewAccessibility().GetAccessibleNodeData(&data1);
+    item2->GetViewAccessibility().GetAccessibleNodeData(&data2);
+    EXPECT_EQ("i", data1.GetStringAttribute(
+                       ax::mojom::StringAttribute::kKeyShortcuts));
+    EXPECT_EQ("e", data2.GetStringAttribute(
+                       ax::mojom::StringAttribute::kKeyShortcuts));
+
+    item1->set_may_have_mnemonics(false);
+    data1 = ui::AXNodeData();
+    item1->GetViewAccessibility().GetAccessibleNodeData(&data1);
+    EXPECT_FALSE(
+        data1.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
+
+    root_menu.set_has_mnemonics(false);
+    item1->set_may_have_mnemonics(true);
+    data1 = ui::AXNodeData();
+    data2 = ui::AXNodeData();
+    item1->GetViewAccessibility().GetAccessibleNodeData(&data1);
+    item2->GetViewAccessibility().GetAccessibleNodeData(&data2);
+    EXPECT_FALSE(
+        data1.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
+    EXPECT_FALSE(
+        data2.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
+  } else {
+    item1->GetViewAccessibility().GetAccessibleNodeData(&data1);
+    item2->GetViewAccessibility().GetAccessibleNodeData(&data2);
+    EXPECT_FALSE(
+        data1.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
+    EXPECT_FALSE(
+        data2.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
+
+    root_menu.set_has_mnemonics(true);
+    data1 = ui::AXNodeData();
+    data2 = ui::AXNodeData();
+    item1->GetViewAccessibility().GetAccessibleNodeData(&data1);
+    item2->GetViewAccessibility().GetAccessibleNodeData(&data2);
+    EXPECT_FALSE(
+        data1.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
+    EXPECT_FALSE(
+        data2.HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts));
+  }
 }
 
 class TouchableMenuItemViewTest : public ViewsTestBase {

@@ -316,6 +316,7 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
 
   void set_may_have_mnemonics(bool may_have_mnemonics) {
     may_have_mnemonics_ = may_have_mnemonics;
+    UpdateAccessibleKeyShortcuts();
   }
   bool may_have_mnemonics() const { return may_have_mnemonics_; }
 
@@ -589,6 +590,8 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   // Returns the corresponding margin from the `MenuConfig` if
   // `vertical_margin_` is not set.
   int GetVerticalMargin() const;
+
+  void UpdateAccessibleKeyShortcuts();
 
   // The delegate. This is only valid for the root menu item. You shouldn't
   // use this directly, instead use GetDelegate() which walks the tree as
