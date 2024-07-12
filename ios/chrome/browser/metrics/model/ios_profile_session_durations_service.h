@@ -18,6 +18,10 @@ namespace signin {
 class IdentityManager;
 }
 
+namespace signin_metrics {
+enum class SingleProfileSigninStatus;
+}
+
 namespace syncer {
 class SyncService;
 class SyncSessionDurationsMetricsRecorder;
@@ -54,7 +58,7 @@ class IOSProfileSessionDurationsService : public KeyedService {
   virtual void OnSessionEnded(base::TimeDelta session_length);
   virtual bool IsSessionActive();
 
-  bool IsSignedIn() const;
+  signin_metrics::SingleProfileSigninStatus GetSigninStatus() const;
   bool IsSyncing() const;
 
  protected:

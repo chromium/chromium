@@ -692,10 +692,12 @@ chromium-metrics-reviews@google.com.
     profiles are ignored because the user cannot sign-in into them.
 
     Being signed into the browser means, for example, the user sees their Google
-    account on the New Tab Page and in the toolbar at the top of the browser. It
-    does NOT mean the user has a currently-valid token; they may need to refresh
-    their credentials. As a concrete example, it means the user may not get
-    personalized results and suggestions when using google.com.
+    account on the New Tab Page and in the toolbar at the top of the browser.
+
+    A signed in user may have a currently invalid token; they are in
+    authentication error state and need to refresh their credentials. As a
+    concrete example, it means the user may not get personalized results and
+    suggestions when using google.com.
 
     On desktop, when Chrome is running and there are no profiles with open
     browser windows (this can happen on Mac), this histogram will report

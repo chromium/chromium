@@ -292,10 +292,12 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, EnableSync) {
   {
     base::HistogramTester ht;
     metrics_recorder.OnSessionStarted(base::TimeTicks::Now());
+    SCOPED_TRACE("OnSessionStarted");
     SignIn(signin::ConsentLevel::kSync);
-    // The initial state of the record was: sync_status = OFF, acount_status=OFF
+    // The initial state of the record was:
+    // 0. sync_status = OFF, signin_status=kSignedOut
     // When sync gets initialized, 2 things happen:
-    // 1. account_status=ON. => Log NotOptedInToSyncWithoutAccount
+    // 1. signin_status=kSignedIn => Log NotOptedInToSyncWithoutAccount
     // 2. sync_status=ON => Log NotOptedInToSyncWithAccount
     ExpectOneSession(ht, {"NotOptedInToSyncWithoutAccount"});
     ExpectOneSession(ht, {"NotOptedInToSyncWithAccount"});
@@ -306,6 +308,7 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, EnableSync) {
   {
     base::HistogramTester ht;
     metrics_recorder.OnSessionEnded(kSessionTime);
+    SCOPED_TRACE("OnSessionEnded");
     ExpectOneSession(ht, {"OptedInToSyncWithAccount"});
     ExpectNoSession(
         ht, {"NotOptedInToSyncWithoutAccount", "NotOptedInToSyncWithoutAccount",

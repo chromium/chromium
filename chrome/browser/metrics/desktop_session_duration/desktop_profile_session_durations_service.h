@@ -15,6 +15,9 @@
 namespace signin {
 class IdentityManager;
 }
+namespace signin_metrics {
+enum class SingleProfileSigninStatus;
+}
 namespace syncer {
 class SyncService;
 }
@@ -42,7 +45,7 @@ class DesktopProfileSessionDurationsService
 
   ~DesktopProfileSessionDurationsService() override;
 
-  bool IsSignedIn() const;
+  signin_metrics::SingleProfileSigninStatus GetSigninStatus() const;
   bool IsSyncing() const;
 
   // DesktopSessionDurationtracker::Observer:

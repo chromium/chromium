@@ -36,7 +36,7 @@ IOSChromeSigninAndSyncStatusMetricsProvider::GetStatusOfAllProfiles() const {
         IOSProfileSessionDurationsServiceFactory::GetForBrowserState(
             browser_state);
     signin_metrics::UpdateProfilesStatusBasedOnSignInAndSyncStatus(
-        profiles_status, session_duration->IsSignedIn(),
+        profiles_status, session_duration->GetSigninStatus(),
         session_duration->IsSyncing());
   }
   return profiles_status;

@@ -14,6 +14,11 @@
 namespace signin {
 class IdentityManager;
 }
+
+namespace signin_metrics {
+enum class SingleProfileSigninStatus;
+}
+
 namespace syncer {
 class SyncService;
 }
@@ -50,7 +55,7 @@ class AndroidSessionDurationsService : public KeyedService {
   AndroidSessionDurationsService& operator=(
       const AndroidSessionDurationsService&) = delete;
 
-  bool IsSignedIn() const;
+  signin_metrics::SingleProfileSigninStatus GetSigninStatus() const;
   bool IsSyncing() const;
 
   // KeyedService:

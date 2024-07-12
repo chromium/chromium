@@ -60,7 +60,7 @@ ChromeSigninAndSyncStatusMetricsProvider::GetStatusOfAllProfiles() const {
       continue;
     }
     UpdateProfilesStatusBasedOnSignInAndSyncStatus(
-        profiles_status, session_duration->IsSignedIn(),
+        profiles_status, session_duration->GetSigninStatus(),
         session_duration->IsSyncing());
   }
   return profiles_status;

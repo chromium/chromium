@@ -23,6 +23,8 @@ class SyncSessionDurationsMetricsRecorder
     : public syncer::SyncServiceObserver,
       public signin::IdentityManager::Observer {
  public:
+  enum class SigninStatus { kSignedIn, kSignedInWithError, kSignedOut };
+
   // Callers must ensure that the parameters outlive this object.
   SyncSessionDurationsMetricsRecorder(
       SyncService* sync_service,
@@ -36,14 +38,7 @@ class SyncSessionDurationsMetricsRecorder
   ~SyncSessionDurationsMetricsRecorder() override;
 
   // Returns whether the user is signed in.
-  // Note: this is not the same thing as |account_status_|.
-  // |account_status_| says OFF (kind of like saying "no, not signed-in") if the
-  // account is in an error state.  IsSignedIn() does not; it will return
-  // true for accounts that are signed-in in yet an error state.
-  // The most common reason this happens is if a syncing user signs out
-  // of the content area.  They will be put in an error state; this
-  // function will return true.
-  bool IsSignedIn() const;
+  SigninStatus GetSigninStatus() const;
 
   // Returns whether the user is syncing.
   // Note: this is not the same as |sync_status_|.
@@ -81,24 +76,24 @@ class SyncSessionDurationsMetricsRecorder
   // out of UNKNOWN, it can alternate between OFF and ON.
   enum class FeatureState { UNKNOWN, OFF, ON };
 
-  static constexpr int GetFeatureStates(FeatureState feature1,
-                                        FeatureState feature2);
+  // Helper function for pattern matching on the product of two enums.
+  static constexpr int GetFeatureStates(SigninStatus signin_status,
+                                        FeatureState sync_status);
 
   void LogSigninDuration(base::TimeDelta session_length);
 
   void LogSyncAndAccountDuration(base::TimeDelta session_length);
 
   bool ShouldLogUpdate(FeatureState new_sync_status,
-                       FeatureState new_account_status);
+                       SigninStatus new_signin_status);
 
   void UpdateSyncAndAccountStatus(FeatureState new_sync_status,
-                                  FeatureState new_account_status);
+                                  SigninStatus new_signin_status);
 
   void HandleSyncAndAccountChange();
 
-  // Returns |FeatureState::ON| iff there is a primary account with a valid
-  // refresh token in the identity manager.
-  FeatureState DeterminePrimaryAccountStatus() const;
+  // Determines the signin status.
+  SigninStatus DetermineSigninStatus() const;
 
   // Determines the sync status.
   FeatureState DetermineSyncStatus() const;
@@ -118,14 +113,17 @@ class SyncSessionDurationsMetricsRecorder
   // is absent if there's no active session.
   std::unique_ptr<base::ElapsedTimer> total_session_timer_;
 
-  FeatureState signin_status_ = FeatureState::UNKNOWN;
+  // Whether there is a signed in account in Gaia cookies.
+  FeatureState cookie_signin_status_ = FeatureState::UNKNOWN;
   // Tracks the elapsed active session time in the current signin status. The
   // timer is absent if there's no active session.
   std::unique_ptr<base::ElapsedTimer> signin_session_timer_;
 
-  // Whether or not Chrome curently has a valid refresh token for an account.
-  FeatureState account_status_ = FeatureState::UNKNOWN;
-  // Whether or not sync is currently active.
+  // Whether Chrome currently has a primary account and whether its token is
+  // valid.
+  SigninStatus signin_status_ = SigninStatus::kSignedOut;
+  // Whether or not sync is currently active. Sync is considered to be ON even
+  // when paused.
   FeatureState sync_status_ = FeatureState::UNKNOWN;
   // Tracks the elapsed active session time in the current sync and account
   // status. The timer is absent if there's no active session.

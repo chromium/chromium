@@ -8,6 +8,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/android/metrics/android_session_durations_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/signin/core/browser/signin_status_metrics_provider_helpers.h"
+#include "components/sync/service/sync_session_durations_metrics_recorder.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/android/metrics/jni_headers/AndroidSessionDurationsServiceState_jni.h"
@@ -127,8 +129,17 @@ void AndroidSessionDurationsService::InitializeForIncognitoProfile() {
   OnAppEnterForeground(base::TimeTicks::Now());
 }
 
-bool AndroidSessionDurationsService::IsSignedIn() const {
-  return sync_session_metrics_recorder_->IsSignedIn();
+signin_metrics::SingleProfileSigninStatus
+AndroidSessionDurationsService::GetSigninStatus() const {
+  switch (sync_session_metrics_recorder_->GetSigninStatus()) {
+    case syncer::SyncSessionDurationsMetricsRecorder::SigninStatus::kSignedIn:
+      return signin_metrics::SingleProfileSigninStatus::kSignedIn;
+    case syncer::SyncSessionDurationsMetricsRecorder::SigninStatus::
+        kSignedInWithError:
+      return signin_metrics::SingleProfileSigninStatus::kSignedInWithError;
+    case syncer::SyncSessionDurationsMetricsRecorder::SigninStatus::kSignedOut:
+      return signin_metrics::SingleProfileSigninStatus::kSignedOut;
+  }
 }
 
 bool AndroidSessionDurationsService::IsSyncing() const {

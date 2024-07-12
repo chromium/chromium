@@ -29991,10 +29991,11 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <enum name="ProfileSignInStatus">
-  <int value="0" label="All profiles signed-in"/>
+  <int value="0" label="All profiles signed-in without auth error"/>
   <int value="1" label="No profiles signed-in"/>
-  <int value="2" label="Mixed sign-in status"/>
-  <int value="3" label="Unknown sign-in status"/>
+  <int value="2" label="Mixed sign-in status or mixed auth error status"/>
+  <int value="3" label="Unknown sign-in status (no loaded profiles)"/>
+  <int value="4" label="All profiles signed-in with auth error"/>
 </enum>
 
 <enum name="ProfileSyncStatus">
@@ -30002,6 +30003,7 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="No profiles syncing"/>
   <int value="2" label="Mixed syncing status"/>
   <int value="3" label="Unknown syncing status"/>
+  <int value="4" label="All profiles in sync error (not used)"/>
 </enum>
 
 <enum name="PromoFailure">
