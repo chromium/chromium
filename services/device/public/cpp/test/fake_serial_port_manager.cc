@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/not_fatal_until.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -108,7 +109,7 @@ void FakeSerialPortManager::AddPort(mojom::SerialPortInfoPtr port) {
 
 void FakeSerialPortManager::RemovePort(base::UnguessableToken token) {
   auto it = ports_.find(token);
-  DCHECK(it != ports_.end());
+  CHECK(it != ports_.end(), base::NotFatalUntil::M130);
   mojom::SerialPortInfoPtr info = std::move(it->second);
   ports_.erase(it);
   info->connected = false;

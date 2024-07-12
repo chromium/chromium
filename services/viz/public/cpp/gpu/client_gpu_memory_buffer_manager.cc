@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
@@ -97,7 +98,7 @@ void ClientGpuMemoryBufferManager::OnGpuMemoryBufferAllocatedOnThread(
     base::WaitableEvent* wait,
     gfx::GpuMemoryBufferHandle handle) {
   auto it = pending_allocation_waiters_.find(wait);
-  DCHECK(it != pending_allocation_waiters_.end());
+  CHECK(it != pending_allocation_waiters_.end(), base::NotFatalUntil::M130);
   pending_allocation_waiters_.erase(it);
 
   *ret_handle = std::move(handle);

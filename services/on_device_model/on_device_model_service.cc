@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/uuid.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -469,7 +470,7 @@ void OnDeviceModelService::DeleteModel(
     return;
   }
   auto it = models_.find(model.get());
-  DCHECK(it != models_.end());
+  CHECK(it != models_.end(), base::NotFatalUntil::M130);
   models_.erase(it);
 }
 

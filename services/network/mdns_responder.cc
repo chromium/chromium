@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
@@ -919,7 +920,7 @@ bool MdnsResponderManager::Send(scoped_refptr<net::IOBufferWithSize> buf,
 
 void MdnsResponderManager::OnMojoConnectionError(MdnsResponder* responder) {
   auto it = responders_.find(responder);
-  DCHECK(it != responders_.end());
+  CHECK(it != responders_.end(), base::NotFatalUntil::M130);
   responders_.erase(it);
 }
 
@@ -999,7 +1000,7 @@ void MdnsResponderManager::OnSocketHandlerReadError(uint16_t socket_handler_id,
   // We should not remove the socket handler for a non-fatal error.
   DCHECK(IsFatalError(result));
   auto it = socket_handler_by_id_.find(socket_handler_id);
-  DCHECK(it != socket_handler_by_id_.end());
+  CHECK(it != socket_handler_by_id_.end(), base::NotFatalUntil::M130);
   // It is safe to remove the handler in error since the handler has exited the
   // read loop and is done with |OnRead|.
   socket_handler_by_id_.erase(it);

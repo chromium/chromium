@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/checked_math.h"
 
 namespace network {
@@ -191,10 +192,10 @@ uint64_t WebBundleChunkedBuffer::ReadData(uint64_t offset,
   if (length == 0)
     return 0;
   ChunkVector::const_iterator it = FindChunk(offset);
-  DCHECK(it != chunks_.end());
+  CHECK(it != chunks_.end(), base::NotFatalUntil::M130);
   uint64_t written = 0;
   while (length > written) {
-    DCHECK(it != chunks_.end());
+    CHECK(it != chunks_.end(), base::NotFatalUntil::M130);
     uint64_t offset_in_chunk = offset + written - it->start_pos();
     uint64_t length_in_chunk =
         std::min(it->size() - offset_in_chunk, length - written);

@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_request_args.h"
@@ -487,7 +488,7 @@ void CoordinatorImpl::OnOSMemoryDumpForVMRegions(uint64_t dump_guid,
 
   QueuedVmRegionRequest* request = request_it->second.get();
   auto it = request->pending_responses.find(process_id);
-  DCHECK(it != request->pending_responses.end());
+  CHECK(it != request->pending_responses.end(), base::NotFatalUntil::M130);
   request->pending_responses.erase(it);
   request->responses[process_id].os_dumps = std::move(os_dumps);
 

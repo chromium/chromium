@@ -27,6 +27,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -1078,7 +1079,7 @@ void NetworkService::DestroyNetworkContexts() {
 void NetworkService::OnNetworkContextConnectionClosed(
     NetworkContext* network_context) {
   auto it = owned_network_contexts_.find(network_context);
-  DCHECK(it != owned_network_contexts_.end());
+  CHECK(it != owned_network_contexts_.end(), base::NotFatalUntil::M130);
   owned_network_contexts_.erase(it);
 }
 

@@ -27,6 +27,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
@@ -996,7 +997,7 @@ void NetworkContext::OnRCMDisconnect(
     const network::RestrictedCookieManager* rcm) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = restricted_cookie_managers_.find(rcm);
-  DCHECK(it != restricted_cookie_managers_.end());
+  CHECK(it != restricted_cookie_managers_.end(), base::NotFatalUntil::M130);
   restricted_cookie_managers_.erase(it);
 }
 
@@ -1108,7 +1109,7 @@ void NetworkContext::SetBlockTrustTokens(bool block) {
 void NetworkContext::OnProxyLookupComplete(
     ProxyLookupRequest* proxy_lookup_request) {
   auto it = proxy_lookup_requests_.find(proxy_lookup_request);
-  DCHECK(it != proxy_lookup_requests_.end());
+  CHECK(it != proxy_lookup_requests_.end(), base::NotFatalUntil::M130);
   proxy_lookup_requests_.erase(it);
 }
 
@@ -1122,7 +1123,7 @@ void NetworkContext::DestroyURLLoaderFactory(
     return;
   }
   auto it = url_loader_factories_.find(url_loader_factory);
-  DCHECK(it != url_loader_factories_.end());
+  CHECK(it != url_loader_factories_.end(), base::NotFatalUntil::M130);
   url_loader_factories_.erase(it);
 }
 
@@ -1139,7 +1140,7 @@ void NetworkContext::LoaderCreated(uint32_t process_id) {
 
 void NetworkContext::LoaderDestroyed(uint32_t process_id) {
   auto it = loader_count_per_process_.find(process_id);
-  DCHECK(it != loader_count_per_process_.end());
+  CHECK(it != loader_count_per_process_.end(), base::NotFatalUntil::M130);
   it->second -= 1;
   if (it->second == 0)
     loader_count_per_process_.erase(it);

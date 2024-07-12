@@ -23,6 +23,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -724,7 +725,7 @@ UsbDeviceHandleWin::Interface* UsbDeviceHandleWin::GetFirstInterfaceForFunction(
         return interface;
 
       auto it = interfaces_.find(interface->first_interface);
-      DCHECK(it != interfaces_.end());
+      CHECK(it != interfaces_.end(), base::NotFatalUntil::M130);
       return &it->second;
     }
   }
@@ -820,7 +821,7 @@ void UsbDeviceHandleWin::OnSetAlternateInterfaceSetting(int interface_number,
                                                         ResultCallback callback,
                                                         bool result) {
   auto it = interfaces_.find(interface_number);
-  DCHECK(it != interfaces_.end());
+  CHECK(it != interfaces_.end(), base::NotFatalUntil::M130);
   Interface& interface = it->second;
 
   if (!result) {
@@ -873,7 +874,7 @@ void UsbDeviceHandleWin::OnClearHalt(int interface_number,
                                      ResultCallback callback,
                                      bool result) {
   auto it = interfaces_.find(interface_number);
-  DCHECK(it != interfaces_.end());
+  CHECK(it != interfaces_.end(), base::NotFatalUntil::M130);
   ReleaseInterfaceReference(&it->second);
 
   std::move(callback).Run(result);
@@ -1011,7 +1012,7 @@ std::unique_ptr<UsbDeviceHandleWin::Request> UsbDeviceHandleWin::UnlinkRequest(
     UsbDeviceHandleWin::Request* request_ptr) {
   auto it = base::ranges::find(requests_, request_ptr,
                                &std::unique_ptr<Request>::get);
-  DCHECK(it != requests_.end());
+  CHECK(it != requests_.end(), base::NotFatalUntil::M130);
   std::unique_ptr<Request> request = std::move(*it);
   requests_.erase(it);
   return request;
@@ -1107,7 +1108,7 @@ void UsbDeviceHandleWin::TransferComplete(
 
   DCHECK_NE(request->interface_number(), -1);
   auto it = interfaces_.find(request->interface_number());
-  DCHECK(it != interfaces_.end());
+  CHECK(it != interfaces_.end(), base::NotFatalUntil::M130);
   ReleaseInterfaceReference(&it->second);
 
   std::move(callback).Run(status, std::move(buffer), bytes_transferred);

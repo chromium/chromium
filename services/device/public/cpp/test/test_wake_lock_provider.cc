@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -182,7 +183,7 @@ TestWakeLockProvider::WakeLockDataPerType&
 TestWakeLockProvider::GetWakeLockDataPerType(mojom::WakeLockType type) const {
   auto it = wake_lock_store_.find(type);
   // An entry for |type| should always be created in the constructor.
-  DCHECK(it != wake_lock_store_.end());
+  CHECK(it != wake_lock_store_.end(), base::NotFatalUntil::M130);
   return *(it->second);
 }
 

@@ -11,6 +11,7 @@
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/win/object_watcher.h"
@@ -317,7 +318,7 @@ std::unique_ptr<PendingHidTransfer> HidConnectionWin::UnlinkTransfer(
     PendingHidTransfer* transfer) {
   auto it = base::ranges::find(transfers_, transfer,
                                &std::unique_ptr<PendingHidTransfer>::get);
-  DCHECK(it != transfers_.end());
+  CHECK(it != transfers_.end(), base::NotFatalUntil::M130);
   std::unique_ptr<PendingHidTransfer> saved_transfer = std::move(*it);
   transfers_.erase(it);
   return saved_transfer;
