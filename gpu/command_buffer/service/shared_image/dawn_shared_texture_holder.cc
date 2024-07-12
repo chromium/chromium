@@ -132,10 +132,16 @@ void DawnSharedTextureHolder::EraseDataIfDeviceLost() {
   // importantly ensures that a new SharedTextureMemory instance will be
   // created if another Device occupies the same memory as a previously-used,
   // now-lost Device.
+  std::vector<WGPUDevice> devices_to_erase;
   for (auto& [wgpu_device, shared_texture_data] : shared_texture_data_cache_) {
-    if (shared_texture_data.memory.IsDeviceLost()) {
-      shared_texture_data_cache_.erase(wgpu_device);
+    if (!shared_texture_data.memory.IsDeviceLost()) {
+      continue;
     }
+    devices_to_erase.push_back(wgpu_device);
+  }
+
+  for (const auto& wgpu_device : devices_to_erase) {
+    shared_texture_data_cache_.erase(wgpu_device);
   }
 }
 
