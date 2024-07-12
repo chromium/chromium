@@ -38,20 +38,21 @@ enum class URLVisitAggregatesTransformType {
 // The options that may be specified when fetching URL visit data.
 struct FetchOptions {
   // Type of result URLVisitAggregate, note that each visit can match multiple
-  // types. If any of the types match, then the URL will be returned.
+  // types. If any of the types match, then the URL will be returned. Entries
+  // should not be renumbered and numeric values should never be reused.
   enum class URLType {
-    kUnknown,
+    kUnknown = 0,
     // The visit has an active local tab.
-    kActiveLocalTab,
+    kActiveLocalTab = 1,
     // The visit has an active remote tab, based on the latest sync.
-    kActiveRemoteTab,
+    kActiveRemoteTab = 2,
     // The visit is recorded in history, is not from remote client.
-    kLocalVisit,
+    kLocalVisit = 3,
     // The visit is recorded in history, is from a remote client.
-    kRemoteVisit,
+    kRemoteVisit = 4,
     // The visit is local and registered with app ID from an Android CCT
     // (Android only).
-    kCCTVisit,
+    kCCTVisit = 5,
     kMaxValue = kCCTVisit,
   };
   using URLTypeSet =

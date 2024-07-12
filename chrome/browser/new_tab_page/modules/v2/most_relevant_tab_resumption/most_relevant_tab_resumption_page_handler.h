@@ -9,6 +9,7 @@
 
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -81,6 +82,9 @@ class MostRelevantTabResumptionPageHandler
 
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
+
+  // The result types to request for when fetching URL visit aggregate data.
+  visited_url_ranking::FetchOptions::URLTypeSet result_url_types_;
 
   mojo::Receiver<ntp::most_relevant_tab_resumption::mojom::PageHandler>
       page_handler_;

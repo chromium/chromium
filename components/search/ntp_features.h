@@ -99,7 +99,6 @@ BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleFetchClustersUntilExhausted);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleIncludeSyncedVisits);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleEnableContentClustering);
 BASE_DECLARE_FEATURE(kNtpMostRelevantTabResumptionModule);
-BASE_DECLARE_FEATURE(kNtpMostRelevantTabResumptionModuleLocal);
 BASE_DECLARE_FEATURE(kNtpMostRelevantTabResumptionModuleDeviceIcon);
 BASE_DECLARE_FEATURE(kNtpTabResumptionModule);
 BASE_DECLARE_FEATURE(kNtpTabResumptionModuleCategories);
@@ -221,6 +220,9 @@ extern const char kNtpRealboxWidthBehaviorParam[];
 extern const char kNtpTabResumptionModuleCategoriesBlocklistParam[];
 extern const char kNtpMostRelevantTabResumptionModuleDataParam[];
 extern const char kNtpTabResumptionModuleDataParam[];
+// Parameter determining what types result types to request when fetching URL
+// visit aggregate data.
+extern const char kNtpTabResumptionModuleResultTypesParam[];
 // Parameter determining the recency of tabs in the Tab Resumption module.
 extern const char kNtpTabResumptionModuleTimeLimitParam[];
 extern const char kNtpTabResumptionModuleVisibilityThresholdDataParam[];

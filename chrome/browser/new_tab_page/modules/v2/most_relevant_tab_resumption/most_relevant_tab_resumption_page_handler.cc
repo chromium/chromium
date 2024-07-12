@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom.h"
@@ -124,6 +125,31 @@ URLVisitAggregate::Tab CreateSampleURLVisitAggregateTab(
                URLVisit::Source::kLocal),
       "Sample Session Tag", "Test Session");
 }
+
+// Return the desired fetch result types as specified via feature params or the
+// defaults if not specified.
+FetchOptions::URLTypeSet GetFetchResultURLTypes() {
+  auto url_type_entries = base::SplitString(
+      base::GetFieldTrialParamValueByFeature(
+          ntp_features::kNtpMostRelevantTabResumptionModule,
+          ntp_features::kNtpTabResumptionModuleResultTypesParam),
+      ",:;", base::WhitespaceHandling::TRIM_WHITESPACE,
+      base::SplitResult::SPLIT_WANT_NONEMPTY);
+  if (url_type_entries.empty()) {
+    return {FetchOptions::URLType::kActiveRemoteTab,
+            FetchOptions::URLType::kRemoteVisit};
+  }
+
+  FetchOptions::URLTypeSet result_url_types = {};
+  for (const auto& url_type_entry : url_type_entries) {
+    int url_type;
+    if (base::StringToInt(url_type_entry, &url_type)) {
+      result_url_types.Put(static_cast<FetchOptions::URLType>(url_type));
+    }
+  }
+
+  return result_url_types;
+}
 }  // namespace
 
 MostRelevantTabResumptionPageHandler::MostRelevantTabResumptionPageHandler(
@@ -132,6 +158,7 @@ MostRelevantTabResumptionPageHandler::MostRelevantTabResumptionPageHandler(
     content::WebContents* web_contents)
     : profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
       web_contents_(web_contents),
+      result_url_types_(GetFetchResultURLTypes()),
       page_handler_(this, std::move(pending_page_handler)) {
   DCHECK(profile_);
   DCHECK(web_contents_);
@@ -160,15 +187,8 @@ void MostRelevantTabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
     return;
   }
 
-  FetchOptions::URLTypeSet remote_types = {
-      FetchOptions::URLType::kActiveRemoteTab,
-      FetchOptions::URLType::kRemoteVisit};
   FetchOptions fetch_options =
-      base::FeatureList::IsEnabled(
-          ntp_features::kNtpMostRelevantTabResumptionModuleLocal)
-          ? FetchOptions::CreateDefaultFetchOptionsForTabResumption()
-          : FetchOptions::CreateFetchOptionsForTabResumption(remote_types);
-
+      FetchOptions::CreateFetchOptionsForTabResumption(result_url_types_);
   // Filter certain content categories, generally for use cases where a device
   // and profile may be shared by multiple family members.
   fetch_options.transforms.insert(
