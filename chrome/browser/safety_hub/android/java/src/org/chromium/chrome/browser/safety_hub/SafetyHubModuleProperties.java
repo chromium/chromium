@@ -32,23 +32,24 @@ public class SafetyHubModuleProperties {
 
     /**
      * Values used in "for" loop below - should start from 0 and can't have gaps, lowest value is
-     * additionally used for starting loop.
+     * additionally used for starting loop. Order reflects the way modules should be ordered if they
+     * have the same state.
      */
     @IntDef({
-        ModuleOption.ACCOUNT_PASSWORDS,
         ModuleOption.UPDATE_CHECK,
+        ModuleOption.ACCOUNT_PASSWORDS,
+        ModuleOption.SAFE_BROWSING,
         ModuleOption.UNUSED_PERMISSIONS,
         ModuleOption.NOTIFICATION_REVIEW,
-        ModuleOption.SAFE_BROWSING,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ModuleOption {
-        int ACCOUNT_PASSWORDS = 0;
-        int UPDATE_CHECK = 1;
-        int UNUSED_PERMISSIONS = 2;
-        int NOTIFICATION_REVIEW = 3;
-        int SAFE_BROWSING = 4;
-        int OPTION_FIRST = ACCOUNT_PASSWORDS;
+        int UPDATE_CHECK = 0;
+        int ACCOUNT_PASSWORDS = 1;
+        int SAFE_BROWSING = 2;
+        int UNUSED_PERMISSIONS = 3;
+        int NOTIFICATION_REVIEW = 4;
+        int OPTION_FIRST = UPDATE_CHECK;
         int NUM_ENTRIES = 5;
     }
 

@@ -95,11 +95,12 @@ public class SafetyHubModuleViewBinder {
 
     private static void updateSafeBrowsingModule(
             SafetyHubExpandablePreference preference, PropertyModel model) {
+        @SafetyHubModuleProperties.ModuleOption
+        int option = SafetyHubModuleProperties.ModuleOption.SAFE_BROWSING;
         @SafeBrowsingState
         int safeBrowsingState = model.get(SafetyHubModuleProperties.SAFE_BROWSING_STATE);
         boolean managed = model.get(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY);
-        @SafetyHubModuleProperties.ModuleState
-        int state = getModuleState(model, SafetyHubModuleProperties.ModuleOption.SAFE_BROWSING);
+        @SafetyHubModuleProperties.ModuleState int state = getModuleState(model, option);
         String title;
         String summary;
         String primaryButtonText = null;
@@ -194,14 +195,16 @@ public class SafetyHubModuleViewBinder {
         preference.setExpanded(expanded);
 
         preference.setIcon(getIconForModuleState(preference.getContext(), state, managed));
+        preference.setOrder(getOrderForModuleState(option, state, managed));
     }
 
     private static void updatePasswordCheckModule(
             SafetyHubExpandablePreference preference, PropertyModel model) {
+        @SafetyHubModuleProperties.ModuleOption
+        int option = SafetyHubModuleProperties.ModuleOption.ACCOUNT_PASSWORDS;
         int compromisedPasswordsCount =
                 model.get(SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT);
-        @SafetyHubModuleProperties.ModuleState
-        int state = getModuleState(model, SafetyHubModuleProperties.ModuleOption.ACCOUNT_PASSWORDS);
+        @SafetyHubModuleProperties.ModuleState int state = getModuleState(model, option);
         String title;
         String primaryButtonText = null;
         String secondaryButtonText = null;
@@ -242,14 +245,16 @@ public class SafetyHubModuleViewBinder {
         preference.setExpanded(expanded);
 
         preference.setIcon(getIconForModuleState(preference.getContext(), state, false));
+        preference.setOrder(getOrderForModuleState(option, state, false));
     }
 
     private static void updateUpdateCheckModule(
             SafetyHubExpandablePreference preference, PropertyModel model) {
+        @SafetyHubModuleProperties.ModuleOption
+        int option = SafetyHubModuleProperties.ModuleOption.UPDATE_CHECK;
         UpdateStatusProvider.UpdateStatus updateStatus =
                 model.get(SafetyHubModuleProperties.UPDATE_STATUS);
-        @SafetyHubModuleProperties.ModuleState
-        int state = getModuleState(model, SafetyHubModuleProperties.ModuleOption.UPDATE_CHECK);
+        @SafetyHubModuleProperties.ModuleState int state = getModuleState(model, option);
         String title;
         String summary = null;
         String primaryButtonText = null;
@@ -308,15 +313,16 @@ public class SafetyHubModuleViewBinder {
         preference.setExpanded(expanded);
 
         preference.setIcon(getIconForModuleState(preference.getContext(), state, false));
+        preference.setOrder(getOrderForModuleState(option, state, false));
     }
 
     private static void updatePermissionsModule(
             SafetyHubExpandablePreference preference, PropertyModel model) {
+        @SafetyHubModuleProperties.ModuleOption
+        int option = SafetyHubModuleProperties.ModuleOption.UNUSED_PERMISSIONS;
         int sitesWithUnusedPermissionsCount =
                 model.get(SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT);
-        @SafetyHubModuleProperties.ModuleState
-        int state =
-                getModuleState(model, SafetyHubModuleProperties.ModuleOption.UNUSED_PERMISSIONS);
+        @SafetyHubModuleProperties.ModuleState int state = getModuleState(model, option);
         String title;
         String primaryButtonText = null;
         String secondaryButtonText;
@@ -357,15 +363,16 @@ public class SafetyHubModuleViewBinder {
         preference.setExpanded(expanded);
 
         preference.setIcon(getIconForModuleState(preference.getContext(), state, false));
+        preference.setOrder(getOrderForModuleState(option, state, false));
     }
 
     private static void updateNotificationsReviewModule(
             SafetyHubExpandablePreference preference, PropertyModel model) {
+        @SafetyHubModuleProperties.ModuleOption
+        int option = SafetyHubModuleProperties.ModuleOption.NOTIFICATION_REVIEW;
         int notificationPermissionsForReviewCount =
                 model.get(SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT);
-        @SafetyHubModuleProperties.ModuleState
-        int state =
-                getModuleState(model, SafetyHubModuleProperties.ModuleOption.NOTIFICATION_REVIEW);
+        @SafetyHubModuleProperties.ModuleState int state = getModuleState(model, option);
         String title;
         String primaryButtonText = null;
         String secondaryButtonText;
@@ -413,6 +420,7 @@ public class SafetyHubModuleViewBinder {
         preference.setExpanded(expanded);
 
         preference.setIcon(getIconForModuleState(preference.getContext(), state, false));
+        preference.setOrder(getOrderForModuleState(option, state, false));
     }
 
     private static void updateBrowserStateModule(CardPreference preference, PropertyModel model) {
@@ -456,6 +464,25 @@ public class SafetyHubModuleViewBinder {
                                 R.color.default_icon_color_secondary_tint_list)
                         : SettingsUtils.getTintedIcon(
                                 context, R.drawable.ic_error, R.color.default_red);
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    private static int getOrderForModuleState(
+            @SafetyHubModuleProperties.ModuleOption int option,
+            @SafetyHubModuleProperties.ModuleState int state,
+            boolean managed) {
+        // Modules in warning state that are not controlled by policy should appear first in the
+        // list. Safe or info states should always have less priority than warning states. If
+        // multiple modules have the same state, fallback to the order in {@link
+        // SafetyHubModuleProperties.ModuleOption}.
+        switch (state) {
+            case SafetyHubModuleProperties.ModuleState.SAFE:
+            case SafetyHubModuleProperties.ModuleState.INFO:
+                return option + SafetyHubModuleProperties.ModuleOption.NUM_ENTRIES;
+            case SafetyHubModuleProperties.ModuleState.WARNING:
+                return option + (managed ? SafetyHubModuleProperties.ModuleOption.NUM_ENTRIES : 0);
             default:
                 throw new IllegalArgumentException();
         }

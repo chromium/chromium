@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
+import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -27,6 +29,11 @@ import org.chromium.components.browser_ui.settings.CardPreference;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
@@ -502,5 +509,139 @@ public class SafetyHubModuleViewBinderTest {
                 notificationPermissionsForReviewCount);
 
         assertTrue(mBrowserStatePreference.isVisible());
+    }
+
+    @Test
+    public void testModuleOrder_NoWarningState() {
+        @SafeBrowsingState int safeBrowsingState = SafeBrowsingState.STANDARD_PROTECTION;
+        UpdateStatusProvider.UpdateStatus updateStatus = new UpdateStatusProvider.UpdateStatus();
+        updateStatus.updateState = UpdateStatusProvider.UpdateState.NONE;
+        updateStatus.latestVersion = "1.1.1.1";
+        int compromisedPasswordsCount = 0;
+        int sitesWithUnusedPermissionsCount = 3;
+        int notificationPermissionsForReviewCount = 0;
+
+        mSafeBrowsingPropertyModel.set(
+                SafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
+        mUpdateCheckPropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
+        mPermissionsPropertyModel.set(
+                SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
+                sitesWithUnusedPermissionsCount);
+        mNotificationsReviewPropertyModel.set(
+                SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
+                notificationPermissionsForReviewCount);
+
+        List<Integer> actualOrder =
+                Arrays.asList(
+                        mUpdateCheckPreference.getOrder(),
+                        mPasswordCheckPreference.getOrder(),
+                        mSafeBrowsingPreference.getOrder(),
+                        mPermissionsPreference.getOrder(),
+                        mNotificationsReviewPreference.getOrder());
+        Collections.sort(actualOrder);
+
+        // Verify that there are no duplicate orders.
+        assertEquals(actualOrder.size(), new HashSet<>(actualOrder).size());
+        // Verify the actual order of modules reflects the expected order.
+        assertThat(
+                actualOrder,
+                contains(
+                        mUpdateCheckPreference.getOrder(),
+                        mPasswordCheckPreference.getOrder(),
+                        mSafeBrowsingPreference.getOrder(),
+                        mPermissionsPreference.getOrder(),
+                        mNotificationsReviewPreference.getOrder()));
+    }
+
+    @Test
+    public void testModuleOrder_OneWarningState() {
+        @SafeBrowsingState int safeBrowsingState = SafeBrowsingState.NO_SAFE_BROWSING;
+        UpdateStatusProvider.UpdateStatus updateStatus = new UpdateStatusProvider.UpdateStatus();
+        updateStatus.updateState = UpdateStatusProvider.UpdateState.NONE;
+        updateStatus.latestVersion = "1.1.1.1";
+        int compromisedPasswordsCount = 5;
+        int sitesWithUnusedPermissionsCount = 3;
+        int notificationPermissionsForReviewCount = 5;
+
+        // Managed warning state should follow the same order as info state.
+        mSafeBrowsingPropertyModel.set(
+                SafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
+        mSafeBrowsingPropertyModel.set(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
+
+        mUpdateCheckPropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
+        mPermissionsPropertyModel.set(
+                SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
+                sitesWithUnusedPermissionsCount);
+        mNotificationsReviewPropertyModel.set(
+                SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
+                notificationPermissionsForReviewCount);
+
+        List<Integer> actualOrder =
+                Arrays.asList(
+                        mUpdateCheckPreference.getOrder(),
+                        mPasswordCheckPreference.getOrder(),
+                        mSafeBrowsingPreference.getOrder(),
+                        mPermissionsPreference.getOrder(),
+                        mNotificationsReviewPreference.getOrder());
+        Collections.sort(actualOrder);
+
+        // Verify that there are no duplicate orders.
+        assertEquals(actualOrder.size(), new HashSet<>(actualOrder).size());
+        // Verify the actual order of modules reflects the expected order.
+        assertThat(
+                actualOrder,
+                contains(
+                        mPasswordCheckPreference.getOrder(),
+                        mUpdateCheckPreference.getOrder(),
+                        mSafeBrowsingPreference.getOrder(),
+                        mPermissionsPreference.getOrder(),
+                        mNotificationsReviewPreference.getOrder()));
+    }
+
+    @Test
+    public void testModuleOrder_MultipleWarningState() {
+        @SafeBrowsingState int safeBrowsingState = SafeBrowsingState.NO_SAFE_BROWSING;
+        UpdateStatusProvider.UpdateStatus updateStatus = new UpdateStatusProvider.UpdateStatus();
+        updateStatus.updateState = UpdateStatusProvider.UpdateState.UPDATE_AVAILABLE;
+        int compromisedPasswordsCount = 5;
+        int sitesWithUnusedPermissionsCount = 3;
+        int notificationPermissionsForReviewCount = 5;
+
+        mSafeBrowsingPropertyModel.set(
+                SafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
+        mUpdateCheckPropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
+        mPermissionsPropertyModel.set(
+                SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
+                sitesWithUnusedPermissionsCount);
+        mNotificationsReviewPropertyModel.set(
+                SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
+                notificationPermissionsForReviewCount);
+
+        List<Integer> actualOrder =
+                Arrays.asList(
+                        mUpdateCheckPreference.getOrder(),
+                        mPasswordCheckPreference.getOrder(),
+                        mSafeBrowsingPreference.getOrder(),
+                        mPermissionsPreference.getOrder(),
+                        mNotificationsReviewPreference.getOrder());
+        Collections.sort(actualOrder);
+
+        // Verify that there are no duplicate orders.
+        assertEquals(actualOrder.size(), new HashSet<>(actualOrder).size());
+        // Verify the actual order of modules reflects the expected order.
+        assertThat(
+                actualOrder,
+                contains(
+                        mUpdateCheckPreference.getOrder(),
+                        mPasswordCheckPreference.getOrder(),
+                        mSafeBrowsingPreference.getOrder(),
+                        mPermissionsPreference.getOrder(),
+                        mNotificationsReviewPreference.getOrder()));
     }
 }

@@ -529,6 +529,7 @@ public final class SafetyHubTest {
         clickOnExpandButtonNextToText(permissionsTitle);
 
         // Click on the secondary button and verify that the site settings page is opened.
+        scrollToExpandedPreference(permissionsTitle);
         clickOnSecondaryButtonNextToText(permissionsTitle);
         onViewWaiting(withText(R.string.prefs_site_settings)).check(matches(isDisplayed()));
     }
@@ -600,6 +601,7 @@ public final class SafetyHubTest {
         clickOnExpandButtonNextToText(notificationsTitle);
 
         // Click on the secondary button and verify that notifications site settings page is opened.
+        scrollToExpandedPreference(notificationsTitle);
         clickOnSecondaryButtonNextToText(notificationsTitle);
         onViewWaiting(
                         allOf(
