@@ -96,11 +96,13 @@ FetchOptions FetchOptions::CreateFetchOptionsForTabResumption(
         URLVisitAggregatesTransformType::kHistoryVisibilityScoreFilter);
   }
 
+#if !BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(
           features::kVisitedURLRankingSegmentationMetricsData)) {
     transforms.push_back(
         URLVisitAggregatesTransformType::kSegmentationMetricsData);
   }
+#endif
 
   std::map<Fetcher, FetchSources> fetcher_sources;
   // Always useful for signals.

@@ -7555,9 +7555,13 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "TabResumption_Random",
+                    "params": {
+                        "use_random_score": "true"
+                    },
                     "enable_features": [
-                        "NtpMostRelevantTabResumptionModule"
+                        "NtpMostRelevantTabResumptionModule",
+                        "SegmentationPlatformURLVisitResumptionRanker"
                     ]
                 }
             ]
