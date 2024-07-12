@@ -48,6 +48,10 @@ class PasswordGenerationPopupViewViews : public autofill::PopupBaseView,
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
 
+  // Helper function to update the expanded and collapsed accessible states of
+  // the view.
+  void UpdateExpandedCollapsedAccessibleState() const;
+
   // Sub view that displays the actual generated password.
   raw_ptr<GeneratedPasswordBox> password_view_ = nullptr;
 

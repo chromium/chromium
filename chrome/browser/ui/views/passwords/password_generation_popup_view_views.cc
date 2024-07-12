@@ -529,6 +529,7 @@ PasswordGenerationPopupViewViews::PasswordGenerationPopupViewViews(
     views::Widget* parent_widget)
     : PopupBaseView(controller, parent_widget), controller_(controller) {
   CreateLayoutAndChildren();
+  UpdateExpandedCollapsedAccessibleState();
 }
 
 PasswordGenerationPopupViewViews::~PasswordGenerationPopupViewViews() = default;
@@ -540,6 +541,14 @@ bool PasswordGenerationPopupViewViews::Show() {
 void PasswordGenerationPopupViewViews::Hide() {
   // The controller is no longer valid after it hides us.
   controller_ = nullptr;
+  // Update of accessibility state is done in Hide() only as the
+  // accessibility state depends on the validity of the controller, since here
+  // we are explicitly setting the value of controller as null there is need to
+  // explicitly update the accessible state as well. Show() is getting
+  // called during the creation of the view only and hence controller will
+  // always be non null there, so there is no need to update the accessible
+  // state there.
+  UpdateExpandedCollapsedAccessibleState();
   if (password_view_) {
     password_view_->reset_controller();
   }
@@ -694,12 +703,18 @@ void PasswordGenerationPopupViewViews::GetAccessibleNodeData(
   node_data->role = ax::mojom::Role::kListBox;
 
   if (!controller_) {
-    node_data->AddState(ax::mojom::State::kCollapsed);
     node_data->AddState(ax::mojom::State::kInvisible);
     return;
   }
+}
 
-  node_data->AddState(ax::mojom::State::kExpanded);
+void PasswordGenerationPopupViewViews::UpdateExpandedCollapsedAccessibleState()
+    const {
+  if (controller_) {
+    GetViewAccessibility().SetIsExpanded();
+  } else {
+    GetViewAccessibility().SetIsCollapsed();
+  }
 }
 
 gfx::Size PasswordGenerationPopupViewViews::CalculatePreferredSize(
