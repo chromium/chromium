@@ -41,6 +41,7 @@ static_library("vm") {
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos",
     "//chrome/browser/profiles:profile",
     "//chrome/common",

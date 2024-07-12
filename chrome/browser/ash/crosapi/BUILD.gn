@@ -369,6 +369,7 @@ static_library("crosapi") {
     "//chrome/browser/ash/printing/print_management",
     "//chrome/browser/ash/printing/print_preview",
     "//chrome/browser/ash/privacy_hub",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/remote_apps",
     "//chrome/browser/ash/smart_reader",
     "//chrome/browser/ash/sync",

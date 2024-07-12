@@ -74,6 +74,7 @@ static_library("plugin_vm") {
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/guest_os/virtual_machines",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",
     "//chrome/common:chrome_features",
     "//chromeos/ash/components/dbus/cicerone",

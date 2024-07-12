@@ -61,6 +61,7 @@ static_library("system_logs") {
     "//ash/keyboard/ui",
     "//chrome/app:generated_resources",
     "//chrome/browser/ash/net/network_health",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper:browser_context_helper",

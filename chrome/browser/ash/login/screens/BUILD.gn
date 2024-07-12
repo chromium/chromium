@@ -258,6 +258,7 @@ static_library("screens") {
     "//chrome/browser/ash/multidevice_setup",
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/privacy_hub",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",
     "//chrome/common",

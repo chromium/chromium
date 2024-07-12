@@ -14,6 +14,7 @@ static_library("assistant") {
 
   deps = [
     "//ash/public/cpp",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",
     "//chromeos/ash/services/assistant/public/cpp",
     "//components/language/core/browser",

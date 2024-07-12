@@ -485,6 +485,7 @@ source_set("chromeos") {
       "//chrome/browser/ash/printing/history",
       "//chrome/browser/ash/printing/print_management",
       "//chrome/browser/ash/printing/print_preview",
+      "//chrome/browser/ash/profiles",
       "//chrome/browser/ash/system_web_apps/apps",
       "//chrome/browser/ash/system_web_apps/apps/help_app",
       "//chrome/browser/ash/video_conference",

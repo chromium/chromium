@@ -33,6 +33,7 @@ static_library("policy") {
     "//chrome/browser/ash/arc/enterprise/cert_store",
     "//chrome/browser/ash/arc/intent_helper",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
     "//chromeos/ash/components/system",

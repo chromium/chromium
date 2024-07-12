@@ -31,6 +31,7 @@ static_library("key_permissions") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/platform_keys",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/components/kcer:chaps_proto",

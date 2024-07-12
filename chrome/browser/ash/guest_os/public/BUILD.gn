@@ -33,6 +33,7 @@ static_library("public") {
     "//chrome/browser/ash/borealis",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/guest_os/infra",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/dbus:vm_applications_apps_proto",

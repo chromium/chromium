@@ -41,6 +41,7 @@ static_library("accessibility") {
     "//chrome/browser:resources_grit",
     "//chrome/browser/ash/accessibility/service",
     "//chrome/browser/ash/policy/enrollment",
+    "//chrome/browser/ash/profiles",
     "//chrome/common",
     "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",

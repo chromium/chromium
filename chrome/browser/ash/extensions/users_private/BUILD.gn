@@ -21,6 +21,7 @@ static_library("users_private") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/ownership",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/settings",

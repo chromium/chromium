@@ -67,6 +67,7 @@ static_library("signin") {
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/lock/online_reauth",
     "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",
     "//chrome/common",
@@ -90,6 +91,7 @@ static_library("signin") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/profiles",
   ]
 }
 

@@ -45,6 +45,7 @@ static_library("lock") {
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/login/ui",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",

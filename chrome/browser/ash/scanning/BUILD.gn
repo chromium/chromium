@@ -54,6 +54,7 @@ static_library("scanning") {
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/web_applications",
     "//chromeos/ash/components/dbus",
     "//chromeos/constants",

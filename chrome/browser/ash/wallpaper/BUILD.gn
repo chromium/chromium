@@ -18,6 +18,7 @@ static_library("wallpaper") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/profiles",
     "//chromeos/ash/components/drivefs",
     "//chromeos/ash/components/drivefs/mojom",
     "//google_apis/common",

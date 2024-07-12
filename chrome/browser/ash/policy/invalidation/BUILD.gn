@@ -19,6 +19,7 @@ static_library("invalidation") {
   deps = [
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//components/gcm_driver/instance_id",
     "//components/invalidation/impl",

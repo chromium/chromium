@@ -42,6 +42,7 @@ static_library("users") {
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/login/users/default_user_image",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/extensions",
     "//chrome/browser/policy:onc",
     "//chrome/common:chrome_features",

@@ -51,6 +51,7 @@ static_library("net") {
     "//chrome/browser/ash/net/dns_over_https",
     "//chrome/browser/ash/notifications",
     "//chrome/browser/ash/platform_keys",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync",

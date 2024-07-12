@@ -22,6 +22,7 @@ static_library("bluetooth") {
     "//ash/components/arc",
     "//ash/constants",
     "//base",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//components/arc",
     "//components/arc/common:arc_intent_helper_constants",

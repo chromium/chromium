@@ -18,6 +18,7 @@ static_library("login_screen_ui") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/ash/login/ui/login_screen_extension_ui",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/install_attributes",

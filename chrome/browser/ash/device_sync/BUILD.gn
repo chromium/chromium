@@ -16,6 +16,7 @@ static_library("device_sync") {
     "//base",
     "//chrome/browser/ash/attestation",
     "//chrome/browser/ash/cryptauth",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",
     "//chromeos/ash/components/multidevice:stub_multidevice_util",
     "//chromeos/ash/services/device_sync",

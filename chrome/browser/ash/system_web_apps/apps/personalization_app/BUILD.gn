@@ -90,6 +90,7 @@ static_library("personalization_app") {
     "//chrome/browser/ash/login/users/avatar",
     "//chrome/browser/ash/login/users/default_user_image",
     "//chrome/browser/ash/privacy_hub",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/ash/wallpaper",
     "//chrome/browser/web_applications",

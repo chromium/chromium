@@ -43,6 +43,7 @@ static_library("avatar") {
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/login/users/default_user_image",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",
@@ -63,6 +64,8 @@ static_library("avatar") {
     "//ui/chromeos/strings",
     "//ui/gfx/codec",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/profiles" ]
 }
 
 static_library("test_support") {

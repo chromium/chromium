@@ -48,6 +48,7 @@ static_library("cert_provisioning") {
     "//chrome/browser/ash/platform_keys/key_permissions",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/invalidation",
+    "//chrome/browser/ash/profiles",
     "//chrome/common:constants",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/attestation",

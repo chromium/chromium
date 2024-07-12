@@ -30,6 +30,7 @@ static_library("enterprise") {
   deps = [
     ":managed_printer_proto",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",
     "//chrome/common:constants",
     "//chromeos/ash/components/settings",

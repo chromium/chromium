@@ -15,6 +15,7 @@ static_library("diagnostics") {
   deps = [
     "//ash",
     "//base",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",
     "//components/user_manager",
   ]

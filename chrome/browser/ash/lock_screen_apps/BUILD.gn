@@ -35,6 +35,7 @@ static_library("lock_screen_apps") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/common",

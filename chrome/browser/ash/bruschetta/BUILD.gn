@@ -61,6 +61,7 @@ static_library("bruschetta") {
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/guest_os/virtual_machines",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",
     "//chromeos/ash/components/dbus/attestation",
     "//chromeos/ash/components/dbus/dlcservice",

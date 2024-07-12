@@ -43,6 +43,7 @@ static_library("attestation") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/platform_keys/key_permissions",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",
     "//chrome/common:constants",
     "//chromeos/ash/components/attestation",

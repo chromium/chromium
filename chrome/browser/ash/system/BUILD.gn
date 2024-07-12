@@ -60,6 +60,7 @@ static_library("system") {
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/policy/enrollment",
+    "//chrome/browser/ash/profiles",
     "//chrome/common:constants",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/system",

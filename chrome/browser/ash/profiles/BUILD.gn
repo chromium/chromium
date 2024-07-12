@@ -16,14 +16,9 @@ static_library("profiles") {
     "signin_profile_handler.h",
   ]
 
-  public_deps = [ "//chrome/browser/ash/login/signin" ]
-
   deps = [
     "//ash/constants",
     "//chrome/browser:browser_process",
-    "//chrome/browser/ash/login",
-    "//chrome/browser/ash/login/users/avatar",
-    "//chrome/browser/ash/system",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/profiles",
     "//chrome/common:non_code_constants",
@@ -33,11 +28,5 @@ static_library("profiles") {
     "//components/user_manager",
     "//content/public/browser",
     "//extensions/browser",
-  ]
-
-  allow_circular_includes_from = [
-    "//chrome/browser/ash/login/signin",
-    "//chrome/browser/ash/login/users/avatar",
-    "//chrome/browser/ash/system",
   ]
 }

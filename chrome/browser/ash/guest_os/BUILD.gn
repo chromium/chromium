@@ -77,6 +77,7 @@ static_library("guest_os") {
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/plugin_vm",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/smb_client",
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/icon_transcoder",

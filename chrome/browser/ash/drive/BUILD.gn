@@ -45,6 +45,7 @@ static_library("drive") {
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/policy/dlp",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/ash/wallpaper",
     "//chrome/browser/chromeos/drivefs",

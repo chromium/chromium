@@ -45,6 +45,7 @@ static_library("system_web_apps") {
     "//build:chromeos_buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/login/demo_mode",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/ash/system_web_apps/apps/camera_app",
     "//chrome/browser/ash/system_web_apps/apps/help_app",

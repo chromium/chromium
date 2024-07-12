@@ -25,6 +25,7 @@ static_library("release_notes") {
     "//ash/resources/vector_icons",
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common:channel_info",
     "//chrome/common:constants",

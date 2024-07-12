@@ -54,6 +54,7 @@ static_library("saml") {
     "//ash/constants",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/profiles",
     "//chrome/common:chrome_features",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/login/auth/public:authpublic",

@@ -24,6 +24,7 @@ static_library("early_prefs") {
 
   deps = [
     "//ash/constants",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",

@@ -18,6 +18,7 @@ static_library("bluetooth") {
     "hats_bluetooth_revamp_trigger_impl.h",
   ]
   deps = [
+    "//chrome/browser/ash/profiles",
     "//chromeos/ash/components/dbus/upstart",
     "//components/device_event_log",
     "//components/session_manager/core",

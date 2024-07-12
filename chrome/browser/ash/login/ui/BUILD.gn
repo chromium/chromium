@@ -99,6 +99,7 @@ static_library("ui") {
     "//chrome/browser/ash/net",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/enrollment",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",

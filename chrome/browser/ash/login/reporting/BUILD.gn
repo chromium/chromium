@@ -26,6 +26,7 @@ static_library("reporting") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/profiles",
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//chromeos/ash/components/settings",
     "//components/policy/core/common",

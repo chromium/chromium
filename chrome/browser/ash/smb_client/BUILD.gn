@@ -53,6 +53,7 @@ static_library("smb_client") {
     "//base",
     "//chrome/app:generated_resources",
     "//chrome/browser/ash/kerberos",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/smb_client/discovery",
     "//chrome/browser/profiles:profile",
     "//chrome/common",

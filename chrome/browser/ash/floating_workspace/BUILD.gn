@@ -28,6 +28,7 @@ static_library("floating_workspace") {
     "//chrome/app/vector_icons",
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync",
     "//chromeos/ash/components/browser_context_helper",
