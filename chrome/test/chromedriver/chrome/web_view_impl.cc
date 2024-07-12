@@ -1827,7 +1827,7 @@ Status WebViewImpl::CallAsyncFunctionInternal(
   base::Value* value = result_info->Find("value");
   if (!value) {
     return Status{kJavaScriptError,
-                  "no value field in Reuntime.callFunctionOn result"};
+                  "no value field in Runtime.callFunctionOn result"};
   }
   *result = base::Value::ToUniquePtrValue(value->Clone());
   return Status(kOk);
