@@ -395,7 +395,8 @@ public class SafetyHubModuleViewBinderTest {
                 mActivity.getString(R.string.safety_hub_safe_browsing_off_summary_managed);
         assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
         assertEquals(expectedManagedSummary, mSafeBrowsingPreference.getSummary().toString());
-        assertEquals(OK_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
+        assertEquals(
+                WARNING_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
         assertNull(mSafeBrowsingPreference.getPrimaryButtonText());
         assertNull(mSafeBrowsingPreference.getSecondaryButtonText());
         assertFalse(mSafeBrowsingPreference.isExpanded());

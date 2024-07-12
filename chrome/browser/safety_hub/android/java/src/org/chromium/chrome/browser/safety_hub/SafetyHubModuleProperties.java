@@ -6,12 +6,43 @@ package org.chromium.chrome.browser.safety_hub;
 
 import android.view.View;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** List of properties to designate information about module in Safety Hub. */
 public class SafetyHubModuleProperties {
+    @IntDef({ModuleState.WARNING, ModuleState.INFO, ModuleState.SAFE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ModuleState {
+        int WARNING = 0;
+        int INFO = 1;
+        int SAFE = 2;
+        int MAX_VALUE = SAFE;
+    }
+
+    @IntDef({
+        ModuleOption.ACCOUNT_PASSWORDS,
+        ModuleOption.UPDATE_CHECK,
+        ModuleOption.UNUSED_PERMISSIONS,
+        ModuleOption.NOTIFICATION_REVIEW,
+        ModuleOption.SAFE_BROWSING,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ModuleOption {
+        int ACCOUNT_PASSWORDS = 0;
+        int UPDATE_CHECK = 1;
+        int UNUSED_PERMISSIONS = 2;
+        int NOTIFICATION_REVIEW = 3;
+        int SAFE_BROWSING = 4;
+        int NUM_ENTRIES = 5;
+    }
+
     public static final PropertyModel.WritableBooleanPropertyKey IS_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IS_CONTROLLED_BY_POLICY =
