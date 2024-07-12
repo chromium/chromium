@@ -31,6 +31,8 @@ import android.webkit.WebViewProvider;
 
 import androidx.annotation.RequiresApi;
 
+import com.android.webview.chromium.SharedStatics.ApiCall;
+
 import org.chromium.android_webview.ApkType;
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserMainParts;
@@ -57,6 +59,7 @@ import org.chromium.base.PackageUtils;
 import org.chromium.base.PathUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.version_info.VersionConstants;
@@ -738,7 +741,11 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     @Override
     public GeolocationPermissions getGeolocationPermissions() {
-        return mAwInit.getDefaultGeolocationPermissions();
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.GET_GEOLOCATION_PERMISSIONS")) {
+            SharedStatics.recordStaticApiCall(ApiCall.GET_GEOLOCATION_PERMISSIONS);
+            return mAwInit.getDefaultGeolocationPermissions();
+        }
     }
 
     @Override

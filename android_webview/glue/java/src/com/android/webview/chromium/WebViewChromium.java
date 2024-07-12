@@ -139,6 +139,7 @@ class WebViewChromium
 
     // Used to record the UMA histogram WebView.WebViewApiCall. Since these values are persisted to
     // logs, they should never be renumbered or reused.
+    // LINT.IfChange(ApiCall)
     @IntDef({
         ApiCall.ADD_JAVASCRIPT_INTERFACE,
         ApiCall.AUTOFILL,
@@ -370,6 +371,11 @@ class WebViewChromium
         ApiCall.WEB_ICON_DATABASE_REMOVE_ALL_ICONS,
         ApiCall.WEB_ICON_DATABASE_REQUEST_ICON_FOR_PAGE_URL,
         ApiCall.WEB_ICON_DATABASE_RETAIN_ICON_FOR_PAGE_URL,
+        ApiCall.GEOLOCATION_PERMISSIONS_ALLOW,
+        ApiCall.GEOLOCATION_PERMISSIONS_CLEAR,
+        ApiCall.GEOLOCATION_PERMISSIONS_CLEAR_ALL,
+        ApiCall.GEOLOCATION_PERMISSIONS_GET_ALLOWED,
+        ApiCall.GEOLOCATION_PERMISSIONS_GET_ORIGINS
     })
     @interface ApiCall {
         int ADD_JAVASCRIPT_INTERFACE = 0;
@@ -602,8 +608,15 @@ class WebViewChromium
         int WEB_ICON_DATABASE_REMOVE_ALL_ICONS = 227;
         int WEB_ICON_DATABASE_REQUEST_ICON_FOR_PAGE_URL = 228;
         int WEB_ICON_DATABASE_RETAIN_ICON_FOR_PAGE_URL = 229;
-        int COUNT = 230;
+        int GEOLOCATION_PERMISSIONS_ALLOW = 230;
+        int GEOLOCATION_PERMISSIONS_CLEAR = 231;
+        int GEOLOCATION_PERMISSIONS_CLEAR_ALL = 232;
+        int GEOLOCATION_PERMISSIONS_GET_ALLOWED = 233;
+        int GEOLOCATION_PERMISSIONS_GET_ORIGINS = 234;
+        int COUNT = 235;
     }
+
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:WebViewApiCall)
 
     public static void recordWebViewApiCall(@ApiCall int sample) {
         RecordHistogram.recordEnumeratedHistogram("Android.WebView.ApiCall", sample, ApiCall.COUNT);

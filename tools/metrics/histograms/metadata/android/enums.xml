@@ -1635,6 +1635,8 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="WebViewApiCall">
+<!-- LINT.IfChange(WebViewApiCall) -->
+
   <int value="0" label="WebView.addJavascriptInterface"/>
   <int value="1" label="WebView.autofill"/>
   <int value="2" label="WebView.canGoBack"/>
@@ -1867,9 +1869,18 @@ chromium-metrics-reviews@google.com.
   <int value="227" label="WebIconDatabase.removeAllIcons"/>
   <int value="228" label="WebIconDatabase.requestIconForPageUrl"/>
   <int value="229" label="WebIconDatabase.retainIconForPageUrl"/>
+  <int value="230" label="GeolocationPermissions.allow"/>
+  <int value="231" label="GeolocationPermissions.clear"/>
+  <int value="232" label="GeolocationPermissions.clearAll"/>
+  <int value="233" label="GeolocationPermissions.getAllowed"/>
+  <int value="234" label="GeolocationPermissions.getOrigins"/>
+<!-- LINT.ThenChange(/android_webview/glue/java/src/com/android/webview/chromium/WebViewChromium.java:ApiCall) -->
+
 </enum>
 
 <enum name="WebViewApiCallStatic">
+<!-- LINT.IfChange(WebViewApiCallStatic) -->
+
   <int value="0" label="WebView.findAddress"/>
   <int value="1" label="WebView.getDefaultUserAgent"/>
   <int value="2" label="WebView.setWebContentsDebuggingEnabled"/>
@@ -1881,6 +1892,9 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="WebView.setSafeBrowsingAllowlist"/>
   <int value="9" label="WebView.isMultiProcessEnabled"/>
   <int value="10" label="WebView.getVariationsHeader"/>
+  <int value="11" label="GeoLocationPermissions.getInstance"/>
+<!-- LINT.ThenChange(/android_webview/glue/java/src/com/android/webview/chromium/SharedStatics.java:ApiCall) -->
+
 </enum>
 
 <enum name="WebViewApiCallSystem">
