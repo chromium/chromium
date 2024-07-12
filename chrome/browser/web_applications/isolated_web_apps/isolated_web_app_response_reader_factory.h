@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
+#include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
@@ -78,11 +79,13 @@ class IsolatedWebAppResponseReaderFactory {
 
  private:
   void OnIntegrityBlockRead(
+      std::unique_ptr<SignedWebBundleReader> reader,
+      const base::FilePath& web_bundle_path,
       const web_package::SignedWebBundleId& web_bundle_id,
       Flags flags,
-      const web_package::SignedWebBundleIntegrityBlock integrity_block,
-      base::OnceCallback<
-          void(SignedWebBundleReader::SignatureVerificationAction)> callback);
+      Callback callback,
+      base::expected<web_package::SignedWebBundleIntegrityBlock,
+                     UnusableSwbnFileError> result);
 
   void OnIntegrityBlockAndMetadataRead(
       std::unique_ptr<SignedWebBundleReader> reader,

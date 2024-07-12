@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "net/base/net_errors.h"
@@ -27,10 +28,6 @@
 
 namespace network {
 struct ResourceRequest;
-}
-
-namespace web_package {
-class SignedWebBundleIntegrityBlock;
 }
 
 namespace mojo {
@@ -75,7 +72,7 @@ class SignedWebBundleReader {
       kContinueAndSkipSignatureVerification,
     };
 
-    static SignatureVerificationAction Abort(const std::string& abort_message);
+    static SignatureVerificationAction Abort(UnusableSwbnFileError error);
     static SignatureVerificationAction ContinueAndVerifySignatures();
     static SignatureVerificationAction ContinueAndSkipSignatureVerification();
 
@@ -85,19 +82,19 @@ class SignedWebBundleReader {
     Type type() { return type_; }
 
     // Will CHECK if `type()` != `Type::kAbort`.
-    std::string abort_message() { return *abort_message_; }
+    UnusableSwbnFileError error() { return *error_; }
 
    private:
     SignatureVerificationAction(Type type,
-                                std::optional<std::string> abort_message);
+                                std::optional<UnusableSwbnFileError> error);
 
     const Type type_;
-    const std::optional<std::string> abort_message_;
+    const std::optional<UnusableSwbnFileError> error_;
   };
 
   using IntegrityBlockReadResultCallback = base::OnceCallback<void(
-      web_package::SignedWebBundleIntegrityBlock integrity_block,
-      base::OnceCallback<void(SignatureVerificationAction)> callback)>;
+      base::expected<web_package::SignedWebBundleIntegrityBlock,
+                     UnusableSwbnFileError>)>;
 
   using ReadErrorCallback = base::OnceCallback<void(
       base::expected<void, UnusableSwbnFileError> status)>;
@@ -121,9 +118,11 @@ class SignedWebBundleReader {
   // `read_error_callback` will be called once reading integrity block and
   // metadata has either succeeded, was aborted, or failed.
   // Will CHECK if `GetState()` != `kUninitialized`.
-  void StartReading(
-      IntegrityBlockReadResultCallback integrity_block_result_callback,
-      ReadErrorCallback read_error_callback);
+  void ReadIntegrityBlock(
+      IntegrityBlockReadResultCallback integrity_block_result_callback);
+
+  void ProceedWithAction(SignatureVerificationAction action,
+                         ReadErrorCallback callback);
 
   // Closes all the closable resources that the reader is using.
   void Close(base::OnceClosure callback);
@@ -211,22 +210,14 @@ class SignedWebBundleReader {
 
   void OnFileOpened(
       IntegrityBlockReadResultCallback integrity_block_result_callback,
-      ReadErrorCallback read_error_callback,
       base::File file);
 
   void OnIntegrityBlockParsed(
       IntegrityBlockReadResultCallback integrity_block_result_callback,
-      ReadErrorCallback read_error_callback,
       web_package::mojom::BundleIntegrityBlockPtr integrity_block,
       web_package::mojom::BundleIntegrityBlockParseErrorPtr error);
 
-  void OnShouldContinueParsingAfterIntegrityBlock(
-      web_package::SignedWebBundleIntegrityBlock integrity_block,
-      ReadErrorCallback callback,
-      SignatureVerificationAction action);
-
   void OnFileLengthRead(
-      web_package::SignedWebBundleIntegrityBlock integrity_block,
       ReadErrorCallback callback,
       base::expected<uint64_t, base::File::Error> file_length);
 
@@ -278,7 +269,7 @@ class SignedWebBundleReader {
       signature_verifier_;
 
   // Integrity Block
-  std::optional<uint64_t> integrity_block_size_in_bytes_;
+  std::optional<web_package::SignedWebBundleIntegrityBlock> integrity_block_;
 
   // Metadata
   std::optional<GURL> primary_url_;

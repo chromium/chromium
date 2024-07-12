@@ -15,6 +15,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/uma_logging.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
@@ -62,13 +63,10 @@ void IsolatedWebAppResponseReaderFactory::CreateResponseReader(
       web_bundle_path, std::move(base_url), std::move(signature_verifier));
 
   SignedWebBundleReader& reader_ref = *reader.get();
-  reader_ref.StartReading(
-      base::BindOnce(&IsolatedWebAppResponseReaderFactory::OnIntegrityBlockRead,
-                     weak_ptr_factory_.GetWeakPtr(), web_bundle_id, flags),
-      base::BindOnce(
-          &IsolatedWebAppResponseReaderFactory::OnIntegrityBlockAndMetadataRead,
-          weak_ptr_factory_.GetWeakPtr(), std::move(reader), web_bundle_path,
-          web_bundle_id, flags, std::move(callback)));
+  reader_ref.ReadIntegrityBlock(base::BindOnce(
+      &IsolatedWebAppResponseReaderFactory::OnIntegrityBlockRead,
+      weak_ptr_factory_.GetWeakPtr(), std::move(reader), web_bundle_path,
+      web_bundle_id, flags, std::move(callback)));
 }
 
 // static
@@ -98,35 +96,56 @@ std::string IsolatedWebAppResponseReaderFactory::ErrorToString(
 }
 
 void IsolatedWebAppResponseReaderFactory::OnIntegrityBlockRead(
+    std::unique_ptr<SignedWebBundleReader> reader,
+    const base::FilePath& web_bundle_path,
     const web_package::SignedWebBundleId& web_bundle_id,
     Flags flags,
-    const web_package::SignedWebBundleIntegrityBlock integrity_block,
-    base::OnceCallback<void(SignedWebBundleReader::SignatureVerificationAction)>
-        integrity_callback) {
+    Callback callback,
+    base::expected<web_package::SignedWebBundleIntegrityBlock,
+                   UnusableSwbnFileError> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto validation_result = validator_->ValidateIntegrityBlock(
-      web_bundle_id, integrity_block, flags.Has(Flag::kDevModeBundle),
-      trust_checker_);
+  auto* reader_ptr = reader.get();
+  auto proceed_callback = base::BindOnce(
+      &IsolatedWebAppResponseReaderFactory::OnIntegrityBlockAndMetadataRead,
+      weak_ptr_factory_.GetWeakPtr(), std::move(reader), web_bundle_path,
+      web_bundle_id, flags, std::move(callback));
 
-  if (!validation_result.has_value()) {
-    // Aborting parsing will trigger a call to `OnIntegrityBlockAndMetadataRead`
-    // with a `SignedWebBundleReader::AbortedByCaller` error.
-    std::move(integrity_callback)
-        .Run(SignedWebBundleReader::SignatureVerificationAction::Abort(
-            validation_result.error()));
-    return;
-  }
+  ASSIGN_OR_RETURN(
+      auto integrity_block, std::move(result),
+      [&](UnusableSwbnFileError error) {
+        // Aborting parsing will trigger a call to
+        // `OnIntegrityBlockAndMetadataRead` with a
+        // `SignedWebBundleReader::AbortedByCaller` error.
+        reader_ptr->ProceedWithAction(
+            SignedWebBundleReader::SignatureVerificationAction::Abort(
+                std::move(error)),
+            std::move(proceed_callback));
+      });
 
-  if (flags.Has(Flag::kSkipSignatureVerification)) {
-    std::move(integrity_callback)
-        .Run(SignedWebBundleReader::SignatureVerificationAction::
-                 ContinueAndSkipSignatureVerification());
-  } else {
-    std::move(integrity_callback)
-        .Run(SignedWebBundleReader::SignatureVerificationAction::
-                 ContinueAndVerifySignatures());
-  }
+  RETURN_IF_ERROR(
+      validator_->ValidateIntegrityBlock(web_bundle_id, integrity_block,
+                                         flags.Has(Flag::kDevModeBundle),
+                                         trust_checker_),
+      [&](std::string error) {
+        // Aborting parsing will trigger a call to
+        // `OnIntegrityBlockAndMetadataRead` with a
+        // `SignedWebBundleReader::AbortedByCaller` error.
+        reader_ptr->ProceedWithAction(
+            SignedWebBundleReader::SignatureVerificationAction::Abort(
+                UnusableSwbnFileError(UnusableSwbnFileError::Error::
+                                          kIntegrityBlockValidationError,
+                                      std::move(error))),
+            std::move(proceed_callback));
+      });
+
+  reader_ptr->ProceedWithAction(
+      flags.Has(Flag::kSkipSignatureVerification)
+          ? SignedWebBundleReader::SignatureVerificationAction::
+                ContinueAndSkipSignatureVerification()
+          : SignedWebBundleReader::SignatureVerificationAction::
+                ContinueAndVerifySignatures(),
+      std::move(proceed_callback));
 }
 
 void IsolatedWebAppResponseReaderFactory::OnIntegrityBlockAndMetadataRead(

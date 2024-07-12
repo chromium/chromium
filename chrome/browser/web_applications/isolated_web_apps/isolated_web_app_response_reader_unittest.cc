@@ -8,6 +8,7 @@
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -68,17 +69,17 @@ class IsolatedWebAppResponseReaderTest : public ::testing::Test {
   base::expected<void, UnusableSwbnFileError> ReadIntegrityBlockAndMetadata(
       SignedWebBundleReader& reader) {
     base::test::TestFuture<base::expected<void, UnusableSwbnFileError>> future;
-    reader.StartReading(
-        base::BindOnce(
-            [](web_package::SignedWebBundleIntegrityBlock integrity_block,
-               base::OnceCallback<void(
-                   SignedWebBundleReader::SignatureVerificationAction)>
-                   callback) {
-              std::move(callback).Run(
-                  SignedWebBundleReader::SignatureVerificationAction::
-                      ContinueAndVerifySignatures());
-            }),
-        future.GetCallback());
+    reader.ReadIntegrityBlock(base::BindLambdaForTesting(
+        [&](base::expected<web_package::SignedWebBundleIntegrityBlock,
+                           UnusableSwbnFileError> integrity_block) {
+          reader.ProceedWithAction(
+              integrity_block.has_value()
+                  ? SignedWebBundleReader::SignatureVerificationAction::
+                        ContinueAndVerifySignatures()
+                  : SignedWebBundleReader::SignatureVerificationAction::Abort(
+                        integrity_block.error()),
+              future.GetCallback());
+        }));
     return future.Take();
   }
 
