@@ -70,12 +70,12 @@
 #include "ash/wm/overview/scoped_overview_hide_windows.h"
 #include "ash/wm/overview/scoped_overview_wallpaper_clipper.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
-#include "ash/wm/splitview/faster_split_view.h"
-#include "ash/wm/splitview/faster_split_view_old.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_overview_session.h"
+#include "ash/wm/splitview/split_view_setup_view.h"
+#include "ash/wm/splitview/split_view_setup_view_old.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_restore/informed_restore_contents_view.h"
@@ -923,7 +923,7 @@ void OverviewGrid::PositionWindows(
 
   UpdateSaveDeskButtons();
   // Needed to include the toast when we init the grid.
-  UpdateFasterSplitViewWidget();
+  UpdateSplitViewSetupViewWidget();
 
   // This is a no-op if the feature ContinuousOverviewScrollAnimation is not
   // enabled. Once windows are placed at their final positions, clear transforms
@@ -2572,16 +2572,16 @@ OverviewGrid::GetSaveDeskButtonContainer() const {
              : nullptr;
 }
 
-FasterSplitViewOld* OverviewGrid::GetFasterSplitViewOld() {
+SplitViewSetupViewOld* OverviewGrid::GetSplitViewSetupViewOld() {
   return faster_splitview_widget_
-             ? views::AsViewClass<FasterSplitViewOld>(
+             ? views::AsViewClass<SplitViewSetupViewOld>(
                    faster_splitview_widget_->GetContentsView())
              : nullptr;
 }
 
-const FasterSplitView* OverviewGrid::GetFasterSplitView() const {
+const SplitViewSetupView* OverviewGrid::GetSplitViewSetupView() const {
   return faster_splitview_widget_
-             ? views::AsViewClass<FasterSplitView>(
+             ? views::AsViewClass<SplitViewSetupView>(
                    faster_splitview_widget_->GetContentsView())
              : nullptr;
 }
@@ -2726,7 +2726,7 @@ void OverviewGrid::OnSplitViewStateChanged(
   } else {
     DestroyBirchBarWidget();
     RefreshDesksWidgets(/*visible=*/false);
-    UpdateFasterSplitViewWidget();
+    UpdateSplitViewSetupViewWidget();
   }
 
   // Update the cannot snap warnings and adjust the grid bounds.
@@ -3458,15 +3458,15 @@ void OverviewGrid::OnSettingsButtonPressed() {
   Shell::Get()->shell_delegate()->OpenMultitaskingSettings();
 }
 
-void OverviewGrid::UpdateFasterSplitViewWidget() {
+void OverviewGrid::UpdateSplitViewSetupViewWidget() {
   if (!SplitViewController::Get(root_window_)->InClamshellSplitViewMode()) {
     // If we weren't started by faster splitview, don't show the widget.
-    if (auto* faster_split_view = GetFasterSplitViewOld()) {
+    if (auto* split_view_setup_view = GetSplitViewSetupViewOld()) {
       auto* focus_cycler_old = overview_session_->focus_cycler_old();
       focus_cycler_old->OnViewDestroyingOrDisabling(
-          faster_split_view->GetToast());
+          split_view_setup_view->GetToast());
       focus_cycler_old->OnViewDestroyingOrDisabling(
-          faster_split_view->settings_button());
+          split_view_setup_view->settings_button());
     }
     faster_splitview_widget_.reset();
     return;
@@ -3480,7 +3480,7 @@ void OverviewGrid::UpdateFasterSplitViewWidget() {
                              ? views::Widget::InitParams::Activatable::kYes
                              : views::Widget::InitParams::Activatable::kNo;
     params.parent = desks_util::GetActiveDeskContainerForRoot(root_window_);
-    params.name = "FasterSplitViewWidget";
+    params.name = "SplitViewSetupViewWidget";
     params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
     params.init_properties_container.SetProperty(kOverviewUiKey, true);
     faster_splitview_widget_ =
@@ -3488,14 +3488,14 @@ void OverviewGrid::UpdateFasterSplitViewWidget() {
     faster_splitview_widget_->GetLayer()->SetFillsBoundsOpaquely(false);
     if (features::IsOverviewNewFocusEnabled()) {
       faster_splitview_widget_->SetContentsView(
-          std::make_unique<FasterSplitView>(
+          std::make_unique<SplitViewSetupView>(
               base::BindRepeating(&OverviewGrid::OnSkipButtonPressed,
                                   weak_ptr_factory_.GetWeakPtr()),
               base::BindRepeating(&OverviewGrid::OnSettingsButtonPressed,
                                   weak_ptr_factory_.GetWeakPtr())));
     } else {
       faster_splitview_widget_->SetContentsView(
-          std::make_unique<FasterSplitViewOld>(
+          std::make_unique<SplitViewSetupViewOld>(
               base::BindRepeating(&OverviewGrid::OnSkipButtonPressed,
                                   weak_ptr_factory_.GetWeakPtr()),
               base::BindRepeating(&OverviewGrid::OnSettingsButtonPressed,

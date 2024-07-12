@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/splitview/faster_split_view.h"
+#include "ash/wm/splitview/split_view_setup_view.h"
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -27,15 +27,15 @@ namespace {
 constexpr int kSettingsButtonSpacingDp = 8;
 
 // -----------------------------------------------------------------------------
-// FasterSplitViewSettingsButton:
+// SplitViewSetupViewSettingsButton:
 
 // Settings button in the faster split screen setup that can deep link to the
 // window snap preference section upon clicking.
-class FasterSplitViewSettingsButton : public IconButton {
-  METADATA_HEADER(FasterSplitViewSettingsButton, IconButton)
+class SplitViewSetupViewSettingsButton : public IconButton {
+  METADATA_HEADER(SplitViewSetupViewSettingsButton, IconButton)
 
  public:
-  explicit FasterSplitViewSettingsButton(
+  explicit SplitViewSetupViewSettingsButton(
       base::RepeatingClosure settings_callback)
       : IconButton(std::move(settings_callback),
                    IconButton::Type::kLarge,
@@ -57,10 +57,10 @@ class FasterSplitViewSettingsButton : public IconButton {
     StyleUtil::SetUpFocusRingForView(this, kWindowMiniViewFocusRingHaloInset);
   }
 
-  FasterSplitViewSettingsButton(const FasterSplitViewSettingsButton&) = delete;
-  FasterSplitViewSettingsButton& operator=(
-      const FasterSplitViewSettingsButton&) = delete;
-  ~FasterSplitViewSettingsButton() override = default;
+  SplitViewSetupViewSettingsButton(const SplitViewSetupViewSettingsButton&) = delete;
+  SplitViewSetupViewSettingsButton& operator=(
+      const SplitViewSetupViewSettingsButton&) = delete;
+  ~SplitViewSetupViewSettingsButton() override = default;
 
   // views::View:
   void AddedToWidget() override {
@@ -81,15 +81,15 @@ class FasterSplitViewSettingsButton : public IconButton {
   std::unique_ptr<SystemShadow> shadow_;
 };
 
-BEGIN_METADATA(FasterSplitViewSettingsButton)
+BEGIN_METADATA(SplitViewSetupViewSettingsButton)
 END_METADATA
 
 }  // namespace
 
 // -----------------------------------------------------------------------------
-// FasterSplitView:
+// SplitViewSetupView:
 
-FasterSplitView::FasterSplitView(base::RepeatingClosure skip_callback,
+SplitViewSetupView::SplitViewSetupView(base::RepeatingClosure skip_callback,
                                  base::RepeatingClosure settings_callback) {
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetBetweenChildSpacing(kSettingsButtonSpacingDp);
@@ -107,14 +107,14 @@ FasterSplitView::FasterSplitView(base::RepeatingClosure skip_callback,
   dismiss_button->SetID(kDismissButtonIDForTest);
 
   auto* settings_button =
-      AddChildView(std::make_unique<FasterSplitViewSettingsButton>(
+      AddChildView(std::make_unique<SplitViewSetupViewSettingsButton>(
           std::move(settings_callback)));
   settings_button->SetID(kSettingsButtonIDForTest);
 }
 
-FasterSplitView::~FasterSplitView() = default;
+SplitViewSetupView::~SplitViewSetupView() = default;
 
-BEGIN_METADATA(FasterSplitView)
+BEGIN_METADATA(SplitViewSetupView)
 END_METADATA
 
 }  // namespace ash

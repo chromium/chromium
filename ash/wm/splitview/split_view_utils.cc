@@ -1012,7 +1012,7 @@ float GetAutoSnapRatio(aura::Window* to_be_snapped_window,
   return chromeos::kDefaultSnapRatio;
 }
 
-bool ShouldConsiderWindowForFasterSplitView(
+bool ShouldConsiderWindowForSplitViewSetupView(
     aura::Window* window,
     WindowSnapActionSource snap_action_source) {
   if (!OverviewController::Get()->CanEnterOverview() ||
@@ -1048,7 +1048,7 @@ bool CanStartSplitViewOverviewSessionInClamshell(
     return false;
   }
 
-  return ShouldConsiderWindowForFasterSplitView(window, snap_action_source);
+  return ShouldConsiderWindowForSplitViewSetupView(window, snap_action_source);
 }
 
 bool IsSnapGroupEnabledInClamshellMode() {

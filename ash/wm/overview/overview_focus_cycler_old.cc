@@ -28,7 +28,7 @@
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
-#include "ash/wm/splitview/faster_split_view_old.h"
+#include "ash/wm/splitview/split_view_setup_view_old.h"
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -285,9 +285,9 @@ std::vector<OverviewFocusableView*> OverviewFocusCyclerOld::GetTraversableViews(
 
     // UI elements in faster split screen partial overview will be traversed
     // right after the overview items.
-    if (auto* faster_split_view = grid->GetFasterSplitViewOld()) {
-      traversable_views.push_back(faster_split_view->GetToast());
-      traversable_views.push_back(faster_split_view->settings_button());
+    if (auto* split_view_setup_view = grid->GetSplitViewSetupViewOld()) {
+      traversable_views.push_back(split_view_setup_view->GetToast());
+      traversable_views.push_back(split_view_setup_view->settings_button());
     }
 
     AddDesksBarTraversableViews(grid.get(), traversable_views);

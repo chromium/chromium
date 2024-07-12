@@ -332,7 +332,7 @@ float GetAutoSnapRatio(aura::Window* to_be_snapped_window,
 // Returns true if the given `window` can be considered as the candidate for
 // faster split screen set up. Returns false otherwise. `snap_action_source` is
 // used to filter out some unwanted snap sources.
-bool ShouldConsiderWindowForFasterSplitView(
+bool ShouldConsiderWindowForSplitViewSetupView(
     aura::Window* window,
     WindowSnapActionSource snap_action_source);
 

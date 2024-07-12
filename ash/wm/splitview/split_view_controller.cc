@@ -705,8 +705,8 @@ void SplitViewController::OnSnapEvent(
   // `SplitViewController`. Otherwise, the window should be managed by
   // `WindowState`.
   if (!InTabletMode() &&
-      !(in_overview ||
-        ShouldConsiderWindowForFasterSplitView(window, snap_action_source))) {
+      !(in_overview || ShouldConsiderWindowForSplitViewSetupView(
+                           window, snap_action_source))) {
     return;
   }
 

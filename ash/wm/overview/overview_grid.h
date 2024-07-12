@@ -42,8 +42,6 @@ class PresentationTimeRecorder;
 
 namespace ash {
 
-class FasterSplitView;
-class FasterSplitViewOld;
 class OverviewDeskBarView;
 class OverviewDropTarget;
 class OverviewGridEventHandler;
@@ -55,6 +53,8 @@ class SavedDeskLibraryView;
 class ScopedOverviewHideWindows;
 class ScopedOverviewWallpaperClipper;
 class SplitViewController;
+class SplitViewSetupView;
+class SplitViewSetupViewOld;
 class WindowOcclusionCalculator;
 
 // An instance of this class is created during the initialization of an overview
@@ -423,8 +423,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   const SavedDeskSaveDeskButtonContainer* GetSaveDeskButtonContainer() const;
 
   // TODO(http://b/325335020): Remove this.
-  FasterSplitViewOld* GetFasterSplitViewOld();
-  const FasterSplitView* GetFasterSplitView() const;
+  SplitViewSetupViewOld* GetSplitViewSetupViewOld();
+  const SplitViewSetupView* GetSplitViewSetupView() const;
 
   // Gets the cropping area of the wallpaper in screen coordinates.
   gfx::Rect GetWallpaperClipBounds() const;
@@ -671,7 +671,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // Updates the visibility of `faster_splitview_widget_`. The widget will
   // only be shown if faster splitview setup is in session.
-  void UpdateFasterSplitViewWidget();
+  void UpdateSplitViewSetupViewWidget();
 
   // Updates the visibility of `feedback_widget_`. The widget is located in the
   // bottom left corner of the grid, and contains a `PillButton` that opens up a

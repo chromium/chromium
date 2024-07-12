@@ -11496,6 +11496,7 @@ TEST_F(OakTest, HideDesksWidgetInPartialOverview) {
 TEST_F(OakTest, NoWindowsWidget) {
   UpdateDisplay("800x600,800x600");
   const aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
 
   // Enter full overview with no windows. Test we show the no windows widget.
   ToggleOverview();
@@ -11509,23 +11510,36 @@ TEST_F(OakTest, NoWindowsWidget) {
   ToggleOverview();
   ASSERT_TRUE(IsInOverviewSession());
   // TODO(b/313505530): Determine whether to show the widget.
-  EXPECT_FALSE(GetOverviewGridForRoot(root_windows[0])->no_windows_widget());
-  EXPECT_FALSE(GetOverviewGridForRoot(root_windows[1])->no_windows_widget());
+  auto* grid0 = GetOverviewGridForRoot(root_windows[0]);
+  auto* grid1 = GetOverviewGridForRoot(root_windows[1]);
+  EXPECT_FALSE(grid0->no_windows_widget());
+  EXPECT_FALSE(grid1->no_windows_widget());
+  ASSERT_TRUE(grid0->desks_widget()->IsVisible());
+  ASSERT_TRUE(grid1->desks_widget()->IsVisible());
 
   // Start dragging. Test we don't show the widget.
   auto* event_generator = GetEventGenerator();
   auto* overview_item = GetOverviewItemForWindow(w1.get());
   DragItemToPoint(overview_item, gfx::Point(0, 0), event_generator,
                   /*by_touch_gestures=*/false, /*drop=*/false);
-  EXPECT_FALSE(GetOverviewGridForRoot(root_windows[0])->no_windows_widget());
-  EXPECT_FALSE(GetOverviewGridForRoot(root_windows[1])->no_windows_widget());
+  EXPECT_FALSE(grid0->no_windows_widget());
+  EXPECT_FALSE(grid1->no_windows_widget());
 
   // Release the drag. Test we don't show the widget.
   event_generator->ReleaseLeftButton();
   ASSERT_EQ(WindowStateType::kPrimarySnapped,
             WindowState::Get(w1.get())->GetStateType());
-  EXPECT_FALSE(GetOverviewGridForRoot(root_windows[0])->no_windows_widget());
-  EXPECT_FALSE(GetOverviewGridForRoot(root_windows[1])->no_windows_widget());
+  EXPECT_FALSE(grid0->no_windows_widget());
+  EXPECT_FALSE(grid1->no_windows_widget());
+
+  // Test the split view UI is on display 1 but not display 2, with no toast on
+  // display 2.
+  VerifySplitViewOverviewSession(w1.get());
+  if (ash::features::IsOverviewNewFocusEnabled()) {
+    EXPECT_FALSE(grid1->GetSplitViewSetupView());
+  } else {
+    EXPECT_FALSE(grid1->GetSplitViewSetupViewOld());
+  }
 }
 
 // Tests that the wallpaper view layer clips correctly with animation upon

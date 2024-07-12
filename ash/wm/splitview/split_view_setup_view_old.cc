@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/splitview/faster_split_view_old.h"
+#include "ash/wm/splitview/split_view_setup_view_old.h"
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -33,12 +33,12 @@ constexpr int kSettingsButtonSpacingDp = 8;
 }  // namespace
 
 // A toast in faster splitscreen setup. Contains a dialog and skip button.
-class FasterSplitViewOldToast : public SystemToastView,
+class SplitViewSetupViewOldToast : public SystemToastView,
                                 public OverviewFocusableView {
-  METADATA_HEADER(FasterSplitViewOldToast, SystemToastView)
+  METADATA_HEADER(SplitViewSetupViewOldToast, SystemToastView)
 
  public:
-  explicit FasterSplitViewOldToast(base::RepeatingClosure skip_callback)
+  explicit SplitViewSetupViewOldToast(base::RepeatingClosure skip_callback)
       : SystemToastView(/*text=*/l10n_util::GetStringUTF16(
                             IDS_ASH_OVERVIEW_FASTER_SPLITSCREEN_TOAST),
                         /*dismiss_text=*/
@@ -48,9 +48,9 @@ class FasterSplitViewOldToast : public SystemToastView,
     dismiss_button()->SetTooltipText(l10n_util::GetStringUTF16(
         IDS_ASH_OVERVIEW_FASTER_SPLITSCREEN_TOAST_DISMISS_WINDOW_SUGGESTIONS));
   }
-  FasterSplitViewOldToast(const FasterSplitViewOldToast&) = delete;
-  FasterSplitViewOldToast& operator=(const FasterSplitViewOldToast&) = delete;
-  ~FasterSplitViewOldToast() override = default;
+  SplitViewSetupViewOldToast(const SplitViewSetupViewOldToast&) = delete;
+  SplitViewSetupViewOldToast& operator=(const SplitViewSetupViewOldToast&) = delete;
+  ~SplitViewSetupViewOldToast() override = default;
 
   // OverviewFocusableView:
   views::View* GetView() override { return dismiss_button(); }
@@ -69,10 +69,10 @@ class FasterSplitViewOldToast : public SystemToastView,
   void OnFocusableViewBlurred() override { ToggleButtonA11yFocus(); }
 };
 
-BEGIN_METADATA(FasterSplitViewOldToast)
+BEGIN_METADATA(SplitViewSetupViewOldToast)
 END_METADATA
 
-FasterSplitViewOldSettingsButton::FasterSplitViewOldSettingsButton(
+SplitViewSetupViewOldSettingsButton::SplitViewSetupViewOldSettingsButton(
     base::RepeatingClosure settings_callback)
     : IconButton(std::move(settings_callback),
                  IconButton::Type::kLarge,
@@ -87,50 +87,50 @@ FasterSplitViewOldSettingsButton::FasterSplitViewOldSettingsButton(
   focus_ring->SetHasFocusPredicate(
       base::BindRepeating([](const views::View* view) {
         const auto* v =
-            views::AsViewClass<FasterSplitViewOldSettingsButton>(view);
+            views::AsViewClass<SplitViewSetupViewOldSettingsButton>(view);
         CHECK(v);
         return v->is_focused();
       }));
 }
 
-FasterSplitViewOldSettingsButton::~FasterSplitViewOldSettingsButton() = default;
+SplitViewSetupViewOldSettingsButton::~SplitViewSetupViewOldSettingsButton() = default;
 
-views::View* FasterSplitViewOldSettingsButton::GetView() {
+views::View* SplitViewSetupViewOldSettingsButton::GetView() {
   return this;
 }
 
-void FasterSplitViewOldSettingsButton::MaybeActivateFocusedView() {
+void SplitViewSetupViewOldSettingsButton::MaybeActivateFocusedView() {
   // Destroys `this`.
   button_controller()->NotifyClick();
 }
 
-void FasterSplitViewOldSettingsButton::MaybeCloseFocusedView(
+void SplitViewSetupViewOldSettingsButton::MaybeCloseFocusedView(
     bool primary_action) {}
 
-void FasterSplitViewOldSettingsButton::MaybeSwapFocusedView(bool right) {}
+void SplitViewSetupViewOldSettingsButton::MaybeSwapFocusedView(bool right) {}
 
-void FasterSplitViewOldSettingsButton::OnFocusableViewFocused() {
+void SplitViewSetupViewOldSettingsButton::OnFocusableViewFocused() {
   views::FocusRing::Get(this)->SchedulePaint();
 }
 
-void FasterSplitViewOldSettingsButton::OnFocusableViewBlurred() {
+void SplitViewSetupViewOldSettingsButton::OnFocusableViewBlurred() {
   views::FocusRing::Get(this)->SchedulePaint();
 }
 
-BEGIN_METADATA(FasterSplitViewOldSettingsButton)
+BEGIN_METADATA(SplitViewSetupViewOldSettingsButton)
 END_METADATA
 
-FasterSplitViewOld::FasterSplitViewOld(
+SplitViewSetupViewOld::SplitViewSetupViewOld(
     base::RepeatingClosure skip_callback,
     base::RepeatingClosure settings_callback) {
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetBetweenChildSpacing(kSettingsButtonSpacingDp);
 
   toast_ = AddChildView(
-      std::make_unique<FasterSplitViewOldToast>(std::move(skip_callback)));
+      std::make_unique<SplitViewSetupViewOldToast>(std::move(skip_callback)));
 
   settings_button_ =
-      AddChildView(std::make_unique<FasterSplitViewOldSettingsButton>(
+      AddChildView(std::make_unique<SplitViewSetupViewOldSettingsButton>(
           std::move(settings_callback)));
 
   const int toast_height = settings_button_->GetPreferredSize().height();
@@ -140,15 +140,15 @@ FasterSplitViewOld::FasterSplitViewOld(
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
 }
 
-OverviewFocusableView* FasterSplitViewOld::GetToast() {
+OverviewFocusableView* SplitViewSetupViewOld::GetToast() {
   return static_cast<OverviewFocusableView*>(toast_);
 }
 
-views::LabelButton* FasterSplitViewOld::GetDismissButton() {
+views::LabelButton* SplitViewSetupViewOld::GetDismissButton() {
   return toast_->dismiss_button();
 }
 
-BEGIN_METADATA(FasterSplitViewOld)
+BEGIN_METADATA(SplitViewSetupViewOld)
 END_METADATA
 
 }  // namespace ash

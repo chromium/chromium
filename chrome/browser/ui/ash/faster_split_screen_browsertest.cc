@@ -14,9 +14,9 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
-#include "ash/wm/splitview/faster_split_view.h"
-#include "ash/wm/splitview/faster_split_view_old.h"
 #include "ash/wm/splitview/split_view_constants.h"
+#include "ash/wm/splitview/split_view_setup_view.h"
+#include "ash/wm/splitview/split_view_setup_view_old.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/test/scoped_feature_list.h"
@@ -124,15 +124,15 @@ IN_PROC_BROWSER_TEST_F(FasterSplitScreenWithNewSettingsBrowserTest,
 
   views::Button* settings_button = nullptr;
   if (ash::features::IsOverviewNewFocusEnabled()) {
-    auto* faster_split_view = overview_grid->GetFasterSplitView();
-    ASSERT_TRUE(faster_split_view);
+    auto* split_view_setup_view = overview_grid->GetSplitViewSetupView();
+    ASSERT_TRUE(split_view_setup_view);
     settings_button = const_cast<views::Button*>(
-        views::AsViewClass<views::Button>(faster_split_view->GetViewByID(
-            ash::FasterSplitView::kSettingsButtonIDForTest)));
+        views::AsViewClass<views::Button>(split_view_setup_view->GetViewByID(
+            ash::SplitViewSetupView::kSettingsButtonIDForTest)));
   } else {
-    auto* faster_split_view = overview_grid->GetFasterSplitViewOld();
-    ASSERT_TRUE(faster_split_view);
-    settings_button = faster_split_view->settings_button();
+    auto* split_view_setup_view = overview_grid->GetSplitViewSetupViewOld();
+    ASSERT_TRUE(split_view_setup_view);
+    settings_button = split_view_setup_view->settings_button();
   }
   ASSERT_TRUE(settings_button);
 
@@ -196,15 +196,15 @@ IN_PROC_BROWSER_TEST_F(FasterSplitScreenWithOldSettingsBrowserTest,
           window->GetRootWindow());
   views::Button* settings_button = nullptr;
   if (ash::features::IsOverviewNewFocusEnabled()) {
-    auto* faster_split_view = overview_grid->GetFasterSplitView();
-    ASSERT_TRUE(faster_split_view);
+    auto* split_view_setup_view = overview_grid->GetSplitViewSetupView();
+    ASSERT_TRUE(split_view_setup_view);
     settings_button = const_cast<views::Button*>(
-        views::AsViewClass<views::Button>(faster_split_view->GetViewByID(
-            ash::FasterSplitView::kSettingsButtonIDForTest)));
+        views::AsViewClass<views::Button>(split_view_setup_view->GetViewByID(
+            ash::SplitViewSetupView::kSettingsButtonIDForTest)));
   } else {
-    auto* faster_split_view = overview_grid->GetFasterSplitViewOld();
-    ASSERT_TRUE(faster_split_view);
-    settings_button = faster_split_view->settings_button();
+    auto* split_view_setup_view = overview_grid->GetSplitViewSetupViewOld();
+    ASSERT_TRUE(split_view_setup_view);
+    settings_button = split_view_setup_view->settings_button();
   }
   ASSERT_TRUE(settings_button);
 
