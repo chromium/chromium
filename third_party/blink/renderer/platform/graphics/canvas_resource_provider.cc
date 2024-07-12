@@ -898,7 +898,7 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
     }
     WillDraw();
     RasterRecordOOP(last_recording, initial_needs_clear_,
-                    resource_->GetBackBufferMailbox());
+                    resource_->GetBackBufferClientSharedImage()->mailbox());
     initial_needs_clear_ = false;
   }
 
@@ -919,9 +919,9 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
       return false;
 
     WillDraw();
-    RasterInterface()->WritePixels(resource_->GetBackBufferMailbox(), x, y,
-                                   GetBackingTextureTarget(),
-                                   SkPixmap(orig_info, pixels, row_bytes));
+    RasterInterface()->WritePixels(
+        resource_->GetBackBufferClientSharedImage()->mailbox(), x, y,
+        GetBackingTextureTarget(), SkPixmap(orig_info, pixels, row_bytes));
     return true;
   }
 

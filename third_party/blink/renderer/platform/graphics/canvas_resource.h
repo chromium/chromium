@@ -553,11 +553,6 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
     CHECK(back_buffer_shared_image_);
     return back_buffer_shared_image_;
   }
-  const gpu::Mailbox& GetBackBufferMailbox() {
-    CHECK(back_buffer_shared_image_);
-    return back_buffer_shared_image_->mailbox();
-  }
-
   void PresentSwapChain();
   bool UsesClientSharedImage() override { return true; }
   scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage(
