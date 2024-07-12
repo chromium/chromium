@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/memory/ref_counted.h"
+#include "base/observer_list_types.h"
 #include "base/values.h"
 #include "components/prefs/prefs_export.h"
 
@@ -22,15 +23,12 @@
 class COMPONENTS_PREFS_EXPORT PrefStore : public base::RefCounted<PrefStore> {
  public:
   // Observer interface for monitoring PrefStore.
-  class COMPONENTS_PREFS_EXPORT Observer {
+  class COMPONENTS_PREFS_EXPORT Observer : public base::CheckedObserver {
    public:
     // Called when the value for the given `key` in the store changes.
     virtual void OnPrefValueChanged(std::string_view key) {}
     // Notification about the PrefStore being fully initialized.
     virtual void OnInitializationCompleted(bool succeeded) {}
-
-   protected:
-    virtual ~Observer() = default;
   };
 
   PrefStore() = default;

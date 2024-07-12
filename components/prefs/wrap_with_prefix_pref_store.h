@@ -86,7 +86,7 @@ class COMPONENTS_PREFS_EXPORT WrapWithPrefixPrefStore
   scoped_refptr<PersistentPrefStore> target_pref_store_;
   const std::string dotted_prefix_;
 
-  base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
+  base::ObserverList<PrefStore::Observer, true> observers_;
 
   // Optional so we can differentiate `nullopt` from `nullptr`.
   std::optional<std::unique_ptr<PersistentPrefStore::ReadErrorDelegate>>

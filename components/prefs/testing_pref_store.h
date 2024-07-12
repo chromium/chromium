@@ -130,7 +130,7 @@ class TestingPrefStore : public PersistentPrefStore {
 
   // Optional so we can differentiate `nullopt` from `nullptr`.
   std::optional<std::unique_ptr<ReadErrorDelegate>> error_delegate_;
-  base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
+  base::ObserverList<PrefStore::Observer, true> observers_;
 };
 
 #endif  // COMPONENTS_PREFS_TESTING_PREF_STORE_H_

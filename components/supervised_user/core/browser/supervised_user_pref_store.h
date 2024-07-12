@@ -62,7 +62,7 @@ class SupervisedUserPrefStore : public PrefStore {
 
   std::unique_ptr<PrefValueMap> prefs_;
 
-  base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
+  base::ObserverList<PrefStore::Observer, true> observers_;
 };
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_PREF_STORE_H_

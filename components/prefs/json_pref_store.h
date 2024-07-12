@@ -201,7 +201,7 @@ class COMPONENTS_PREFS_EXPORT JsonPrefStore final
   base::ImportantFileWriter writer_;
 
   std::unique_ptr<PrefFilter> pref_filter_;
-  base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
+  base::ObserverList<PrefStore::Observer, true> observers_;
 
   // Optional so we can differentiate `nullopt` from `nullptr`.
   std::optional<std::unique_ptr<ReadErrorDelegate>> error_delegate_;

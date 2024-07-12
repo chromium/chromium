@@ -48,7 +48,7 @@ class COMPONENTS_PREFS_EXPORT DefaultPrefStore : public PrefStore {
 
   PrefValueMap prefs_;
 
-  base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
+  base::ObserverList<PrefStore::Observer, true> observers_;
 };
 
 #endif  // COMPONENTS_PREFS_DEFAULT_PREF_STORE_H_

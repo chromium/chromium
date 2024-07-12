@@ -219,7 +219,7 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
 
   bool is_history_sync_enabled_ = false;
 
-  base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
+  base::ObserverList<PrefStore::Observer, true> observers_;
 
   const scoped_refptr<PrefModelAssociatorClient> pref_model_associator_client_;
 };

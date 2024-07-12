@@ -125,7 +125,7 @@ class COMPONENTS_PREFS_EXPORT SegregatedPrefStore : public PersistentPrefStore {
   // Optional so we can differentiate `nullopt` from `nullptr`.
   std::optional<std::unique_ptr<PersistentPrefStore::ReadErrorDelegate>>
       read_error_delegate_;
-  base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
+  base::ObserverList<PrefStore::Observer, true> observers_;
   UnderlyingPrefStoreObserver default_observer_;
   UnderlyingPrefStoreObserver selected_observer_;
 };
