@@ -328,10 +328,10 @@ public class AllPasswordsBottomSheetViewTest {
     }
 
     private ChipView getCredentialName(View parent) {
-        return ((ChipView) parent.findViewById(R.id.suggestion_text));
+        return parent.findViewById(R.id.suggestion_text);
     }
 
     private ChipView getCredentialPassword(View parent) {
-        return ((ChipView) parent.findViewById(R.id.password_text));
+        return parent.findViewById(R.id.password_text);
     }
 }

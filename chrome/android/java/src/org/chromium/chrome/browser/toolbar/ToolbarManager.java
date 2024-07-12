@@ -827,8 +827,7 @@ public class ToolbarManager
             toolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);
             mLocationBar = locationBarCoordinator;
             if (isTablet && ChromeFeatureList.sDragDropIntoOmnibox.isEnabled()) {
-                ViewStub targetViewStub =
-                        ((ViewStub) mActivity.findViewById(R.id.target_view_stub));
+                ViewStub targetViewStub = mActivity.findViewById(R.id.target_view_stub);
                 assert targetViewStub != null;
                 mToolbarDragDropCoordinator =
                         new ToolbarDragDropCoordinator(

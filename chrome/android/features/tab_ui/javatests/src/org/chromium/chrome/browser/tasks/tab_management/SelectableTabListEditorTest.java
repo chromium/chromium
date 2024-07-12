@@ -743,9 +743,7 @@ public class SelectableTabListEditorTest {
                 ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             TabListRecyclerView recyclerView =
-                                    ((TabListRecyclerView)
-                                            mTabListEditorLayout.findViewById(
-                                                    R.id.tab_list_recycler_view));
+                                    mTabListEditorLayout.findViewById(R.id.tab_list_recycler_view);
                             recyclerView.scrollToPosition(4);
                             return recyclerView;
                         });
@@ -1358,8 +1356,7 @@ public class SelectableTabListEditorTest {
         TabListRecyclerView tabListRecyclerView =
                 ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
-                            return ((TabListRecyclerView)
-                                    mTabListEditorLayout.findViewById(R.id.tab_list_recycler_view));
+                            return mTabListEditorLayout.findViewById(R.id.tab_list_recycler_view);
                         });
         TabUiTestHelper.waitForThumbnailsToFetch(tabListRecyclerView);
 
@@ -1400,8 +1397,7 @@ public class SelectableTabListEditorTest {
         TabListRecyclerView tabListRecyclerView =
                 ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
-                            return ((TabListRecyclerView)
-                                    mTabListEditorLayout.findViewById(R.id.tab_list_recycler_view));
+                            return mTabListEditorLayout.findViewById(R.id.tab_list_recycler_view);
                         });
         TabUiTestHelper.waitForThumbnailsToFetch(tabListRecyclerView);
 
@@ -1442,8 +1438,7 @@ public class SelectableTabListEditorTest {
         TabListRecyclerView tabListRecyclerView =
                 ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
-                            return ((TabListRecyclerView)
-                                    mTabListEditorLayout.findViewById(R.id.tab_list_recycler_view));
+                            return mTabListEditorLayout.findViewById(R.id.tab_list_recycler_view);
                         });
         TabUiTestHelper.waitForThumbnailsToFetch(tabListRecyclerView);
 
@@ -1484,8 +1479,7 @@ public class SelectableTabListEditorTest {
         TabListRecyclerView tabListRecyclerView =
                 ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
-                            return ((TabListRecyclerView)
-                                    mTabListEditorLayout.findViewById(R.id.tab_list_recycler_view));
+                            return mTabListEditorLayout.findViewById(R.id.tab_list_recycler_view);
                         });
         TabUiTestHelper.waitForThumbnailsToFetch(tabListRecyclerView);
 
@@ -1526,8 +1520,7 @@ public class SelectableTabListEditorTest {
         TabListRecyclerView tabListRecyclerView =
                 ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
-                            return ((TabListRecyclerView)
-                                    mTabListEditorLayout.findViewById(R.id.tab_list_recycler_view));
+                            return mTabListEditorLayout.findViewById(R.id.tab_list_recycler_view);
                         });
         TabUiTestHelper.waitForThumbnailsToFetch(tabListRecyclerView);
 
@@ -1576,8 +1569,7 @@ public class SelectableTabListEditorTest {
         TabListRecyclerView tabListRecyclerView =
                 ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
-                            return ((TabListRecyclerView)
-                                    mTabListEditorLayout.findViewById(R.id.tab_list_recycler_view));
+                            return mTabListEditorLayout.findViewById(R.id.tab_list_recycler_view);
                         });
         TabUiTestHelper.waitForThumbnailsToFetch(tabListRecyclerView);
 

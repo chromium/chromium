@@ -835,8 +835,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             }
             TraceEvent.end("setContentView(R.layout.main)");
             if (getControlContainerLayoutId() != ActivityUtils.NO_RESOURCE_ID) {
-                ViewStub toolbarContainerStub =
-                        ((ViewStub) findViewById(R.id.control_container_stub));
+                ViewStub toolbarContainerStub = findViewById(R.id.control_container_stub);
 
                 toolbarContainerStub.setLayoutResource(getControlContainerLayoutId());
                 TraceEvent.begin("toolbarContainerStub.inflate");
