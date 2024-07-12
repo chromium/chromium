@@ -80,7 +80,7 @@ namespace {
 
 // Helpers --------------------------------------------------------------------
 
-constexpr int kMenuWidth = 290;
+constexpr int kMenuWidth = 328;
 constexpr int kMaxImageSize = ProfileMenuViewBase::kIdentityImageSize;
 constexpr int kDefaultMargin = 8;
 constexpr int kAccountCardMargin = 4;
