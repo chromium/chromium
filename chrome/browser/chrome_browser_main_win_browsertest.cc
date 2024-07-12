@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chrome_browser_main_win.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -50,3 +52,35 @@ IN_PROC_BROWSER_TEST_F(ChromeBrowserMainWinTest, ShortcutsAreMigratedOnce) {
           prefs::kShortcutMigrationVersion);
   EXPECT_EQ(last_version_migrated, "86.0.4231.0");
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+class OsUpdaterEnabledTest : public ChromeBrowserMainWinTest,
+                             public ::testing::WithParamInterface<bool> {
+ protected:
+  OsUpdaterEnabledTest() = default;
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam()) {
+      enabled_features.emplace_back(features::kRegisterOsUpdateHandlerWin);
+    } else {
+      disabled_features.emplace_back(features::kRegisterOsUpdateHandlerWin);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, OsUpdaterEnabledTest, ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(OsUpdaterEnabledTest, OsUpdateHelper) {
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(g_browser_process->local_state()->GetBoolean(
+                prefs::kOsUpdateHandlerEnabled),
+            GetParam());
+}
+
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

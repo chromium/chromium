@@ -660,6 +660,14 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
         }
       }));
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // os_update_handler is a separate process, so mirror the status of the
+  // feature to the local state on its behalf.
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kOsUpdateHandlerEnabled,
+      base::FeatureList::IsEnabled(features::kRegisterOsUpdateHandlerWin));
+#endif  // GOOGLE_CHROME_BRANDING
+
   base::ImportantFileWriterCleaner::GetInstance().Start();
 }
 

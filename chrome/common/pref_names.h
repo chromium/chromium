@@ -3181,6 +3181,10 @@ inline constexpr char kUiAutomationProviderEnabled[] =
 // enabled. Controlled by QRCodeGeneratorEnabled policy.
 inline constexpr char kQRCodeGeneratorEnabled[] = "qr_code_generator_enabled";
 
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+inline constexpr char kOsUpdateHandlerEnabled[] = "os_update_handler_enabled";
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 // *************** SERVICE PREFS ***************
 // These are attached to the service process.
 
