@@ -88,6 +88,17 @@ bool PopulateLedLitUpRoutineArguments(
   return true;
 }
 
+// Populates a `TelemetryDiagnosticRoutineArgumentPtr` object from a
+// `CreateCameraFrameAnalysisRoutineArguments` instance. Returns whether `out`
+// was successfully populated.
+bool PopulateCameraFrameAnalysisRoutineArguments(
+    const cx_diag::CreateCameraFrameAnalysisRoutineArguments& cx_args,
+    crosapi::TelemetryDiagnosticRoutineArgumentPtr& out) {
+  out = crosapi::TelemetryDiagnosticRoutineArgument::NewCameraFrameAnalysis(
+      crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineArgument::New());
+  return true;
+}
+
 // Populates a `TelemetryDiagnosticRoutineInquiryReplyPtr` object from a
 // `CheckLedLitUpStateReply` instance. Returns whether `out` was successfully
 // populated.
@@ -407,6 +418,12 @@ ConvertRoutineArgumentsUnion(
   if (extension_union.led_lit_up) {
     if (result || !PopulateLedLitUpRoutineArguments(
                       extension_union.led_lit_up.value(), result)) {
+      return std::nullopt;
+    }
+  }
+  if (extension_union.camera_frame_analysis) {
+    if (result || !PopulateCameraFrameAnalysisRoutineArguments(
+                      extension_union.camera_frame_analysis.value(), result)) {
       return std::nullopt;
     }
   }

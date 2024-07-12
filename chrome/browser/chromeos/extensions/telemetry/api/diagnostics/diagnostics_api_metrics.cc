@@ -28,6 +28,9 @@ DiagnosticRoutineCategoryHistogramValue ConvertToHistogramValue(
     case crosapi::mojom::TelemetryDiagnosticRoutineArgument::Tag::
         kNetworkBandwidth:
       return DiagnosticRoutineCategoryHistogramValue::kNetworkBandwidth;
+    case crosapi::mojom::TelemetryDiagnosticRoutineArgument::Tag::
+        kCameraFrameAnalysis:
+      return DiagnosticRoutineCategoryHistogramValue::kCameraFrameAnalysis;
   }
 }
 

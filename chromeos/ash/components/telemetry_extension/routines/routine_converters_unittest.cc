@@ -105,6 +105,16 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
 }
 
 TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertCameraFrameAnalysisRoutineArgumentPtr) {
+  auto input =
+      crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineArgument::New();
+
+  auto result = ConvertRoutinePtr(std::move(input));
+
+  ASSERT_TRUE(result);
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest,
      ConvertUnrecognizedRoutineInquiryReplyPtr) {
   auto input =
       crosapi::TelemetryDiagnosticRoutineInquiryReply::NewUnrecognizedReply(
@@ -372,6 +382,25 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
 }
 
 TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertTelemetryDiagnosticCameraFrameAnalysisRoutineDetailPtr) {
+  auto input = healthd::CameraFrameAnalysisRoutineDetail::New();
+  input->issue = healthd::CameraFrameAnalysisRoutineDetail::Issue::kNone;
+  input->privacy_shutter_open_test = healthd::CameraSubtestResult::kPassed;
+  input->lens_not_dirty_test = healthd::CameraSubtestResult::kFailed;
+
+  auto result = ConvertRoutinePtr(std::move(input));
+
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->issue,
+            crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::
+                Issue::kNone);
+  EXPECT_EQ(result->privacy_shutter_open_test,
+            crosapi::TelemetryDiagnosticCameraSubtestResult::kPassed);
+  EXPECT_EQ(result->lens_not_dirty_test,
+            crosapi::TelemetryDiagnosticCameraSubtestResult::kFailed);
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest,
      ConvertTelemetryDiagnosticRoutineDetailPtr) {
   EXPECT_EQ(
       ConvertRoutinePtr(healthd::RoutineDetail::NewUnrecognizedArgument(true)),
@@ -392,6 +421,12 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
           healthd::NetworkBandwidthRoutineDetail::New())),
       crosapi::TelemetryDiagnosticRoutineDetail::NewNetworkBandwidth(
           crosapi::TelemetryDiagnosticNetworkBandwidthRoutineDetail::New()));
+
+  EXPECT_EQ(
+      ConvertRoutinePtr(healthd::RoutineDetail::NewCameraFrameAnalysis(
+          healthd::CameraFrameAnalysisRoutineDetail::New())),
+      crosapi::TelemetryDiagnosticRoutineDetail::NewCameraFrameAnalysis(
+          crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::New()));
 
   EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineDetail::NewAudioDriver(
                 healthd::AudioDriverRoutineDetail::New())),
@@ -430,11 +465,6 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
 
   EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineDetail::NewSensitiveSensor(
                 healthd::SensitiveSensorRoutineDetail::New())),
-            crosapi::TelemetryDiagnosticRoutineDetail::NewUnrecognizedArgument(
-                false));
-
-  EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineDetail::NewCameraFrameAnalysis(
-                healthd::CameraFrameAnalysisRoutineDetail::New())),
             crosapi::TelemetryDiagnosticRoutineDetail::NewUnrecognizedArgument(
                 false));
 }
@@ -534,6 +564,43 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
             crosapi::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo::
                 Type::kDownload);
   EXPECT_EQ(result->speed_kbps, 100.0);
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertTelemetryDiagnosticCameraFrameAnalysisRoutineDetailIssue) {
+  EXPECT_EQ(
+      Convert(
+          healthd::CameraFrameAnalysisRoutineDetail::Issue::kUnmappedEnumField),
+      crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::Issue::
+          kUnmappedEnumField);
+  EXPECT_EQ(Convert(healthd::CameraFrameAnalysisRoutineDetail::Issue::kNone),
+            crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::
+                Issue::kNone);
+  EXPECT_EQ(Convert(healthd::CameraFrameAnalysisRoutineDetail::Issue::
+                        kCameraServiceNotAvailable),
+            crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::
+                Issue::kCameraServiceNotAvailable);
+  EXPECT_EQ(Convert(healthd::CameraFrameAnalysisRoutineDetail::Issue::
+                        kBlockedByPrivacyShutter),
+            crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::
+                Issue::kBlockedByPrivacyShutter);
+  EXPECT_EQ(
+      Convert(healthd::CameraFrameAnalysisRoutineDetail::Issue::kLensAreDirty),
+      crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::Issue::
+          kLensAreDirty);
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertTelemetryDiagnosticCameraSubtestResult) {
+  EXPECT_EQ(
+      Convert(healthd::CameraSubtestResult::kUnmappedEnumField),
+      crosapi::TelemetryDiagnosticCameraSubtestResult::kUnmappedEnumField);
+  EXPECT_EQ(Convert(healthd::CameraSubtestResult::kNotRun),
+            crosapi::TelemetryDiagnosticCameraSubtestResult::kNotRun);
+  EXPECT_EQ(Convert(healthd::CameraSubtestResult::kPassed),
+            crosapi::TelemetryDiagnosticCameraSubtestResult::kPassed);
+  EXPECT_EQ(Convert(healthd::CameraSubtestResult::kFailed),
+            crosapi::TelemetryDiagnosticCameraSubtestResult::kFailed);
 }
 
 }  // namespace ash::converters

@@ -34,6 +34,10 @@ crosapi::mojom::TelemetryDiagnosticNetworkBandwidthRoutineDetailPtr
 UncheckedConvertPtr(
     cros_healthd::mojom::NetworkBandwidthRoutineDetailPtr input);
 
+crosapi::mojom::TelemetryDiagnosticCameraFrameAnalysisRoutineDetailPtr
+UncheckedConvertPtr(
+    cros_healthd::mojom::CameraFrameAnalysisRoutineDetailPtr input);
+
 crosapi::mojom::TelemetryDiagnosticRoutineStateInitializedPtr
 UncheckedConvertPtr(cros_healthd::mojom::RoutineStateInitializedPtr input);
 
@@ -96,6 +100,10 @@ cros_healthd::mojom::NetworkBandwidthRoutineArgumentPtr UncheckedConvertPtr(
     crosapi::mojom::TelemetryDiagnosticNetworkBandwidthRoutineArgumentPtr
         input);
 
+cros_healthd::mojom::CameraFrameAnalysisRoutineArgumentPtr UncheckedConvertPtr(
+    crosapi::mojom::TelemetryDiagnosticCameraFrameAnalysisRoutineArgumentPtr
+        input);
+
 }  // namespace unchecked
 
 cros_healthd::mojom::LedName Convert(
@@ -118,6 +126,12 @@ crosapi::mojom::TelemetryDiagnosticRoutineStateWaiting::Reason Convert(
 
 crosapi::mojom::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo::Type
 Convert(cros_healthd::mojom::NetworkBandwidthRoutineRunningInfo::Type input);
+
+crosapi::mojom::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::Issue
+Convert(cros_healthd::mojom::CameraFrameAnalysisRoutineDetail::Issue input);
+
+crosapi::mojom::TelemetryDiagnosticCameraSubtestResult Convert(
+    cros_healthd::mojom::CameraSubtestResult input);
 
 template <class InputT,
           class OutputT = decltype(Convert(std::declval<InputT>())),

@@ -125,13 +125,10 @@ TEST(TelemetryExtensionConvertersTest,
   EXPECT_EQ(Convert(cros_healthd::mojom::Exception::Reason::kUnsupported),
             crosapi::mojom::TelemetryExtensionException::Reason::kUnsupported);
 
-  // TODO(b/342286051): update the converter when `kCameraFrontendNotOpened`
-  // is added to crosapi.
-  EXPECT_EQ(crosapi::mojom::TelemetryExtensionException::Reason::kUnsupported,
-            crosapi::mojom::TelemetryExtensionException::Reason::kMaxValue);
   EXPECT_EQ(
       Convert(cros_healthd::mojom::Exception::Reason::kCameraFrontendNotOpened),
-      crosapi::mojom::TelemetryExtensionException::Reason::kUnmappedEnumField);
+      crosapi::mojom::TelemetryExtensionException::Reason::
+          kCameraFrontendNotOpened);
 }
 
 }  // namespace ash::converters

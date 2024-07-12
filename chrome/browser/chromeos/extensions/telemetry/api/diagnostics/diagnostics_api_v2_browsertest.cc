@@ -1330,6 +1330,33 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
   )");
 }
 
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionDiagnosticsApiV2BrowserTest,
+    CreateCameraFrameAnalysisRoutineWithoutFeatureFlagUnrecognized) {
+  base::test::TestFuture<void> routine_created_future;
+  fake_service().SetOnCreateRoutineCalled(
+      routine_created_future.GetRepeatingCallback());
+
+  OpenAppUiAndMakeItSecure();
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function createRoutine() {
+        const result = await chrome.os.diagnostics.createRoutine({
+          cameraFrameAnalysis: {},
+        });
+
+        chrome.test.assertTrue(result !== undefined);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+
+  EXPECT_TRUE(routine_created_future.Wait());
+  EXPECT_TRUE(fake_service().GetCreatedRoutineControlForRoutineType(
+      crosapi::TelemetryDiagnosticRoutineArgument::Tag::kUnrecognizedArgument));
+}
+
 class NoExtraPermissionTelemetryExtensionDiagnosticsApiV2BrowserTest
     : public TelemetryExtensionDiagnosticsApiV2BrowserTest {
  public:
@@ -1379,6 +1406,56 @@ IN_PROC_BROWSER_TEST_F(
       }
     ]);
   )");
+}
+
+class PendingApprovalTelemetryExtensionDiagnosticsApiV2BrowserTest
+    : public TelemetryExtensionDiagnosticsApiV2BrowserTest {
+ public:
+  PendingApprovalTelemetryExtensionDiagnosticsApiV2BrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kTelemetryExtensionPendingApprovalApi);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PendingApprovalTelemetryExtensionDiagnosticsApiV2BrowserTest,
+    CreateCameraFrameAnalysisRoutineSuccess) {
+  base::test::TestFuture<void> routine_created_future;
+  fake_service().SetOnCreateRoutineCalled(
+      routine_created_future.GetRepeatingCallback());
+
+  OpenAppUiAndMakeItSecure();
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+       async function createRoutine() {
+        let resolver;
+        // Set later once the routine was created.
+        var uuid = new Promise((resolve) => {
+          resolver = resolve;
+        });
+
+        chrome.os.diagnostics.onRoutineInitialized.addListener(
+          async (status) => {
+          chrome.test.assertEq(status.uuid, await uuid);
+          chrome.test.succeed();
+        });
+
+        const response = await chrome.os.diagnostics.createRoutine({
+          cameraFrameAnalysis: {},
+        });
+        chrome.test.assertTrue(response !== undefined);
+        resolver(response.uuid);
+      }
+    ]);
+  )");
+
+  EXPECT_TRUE(routine_created_future.Wait());
+  EXPECT_TRUE(fake_service().GetCreatedRoutineControlForRoutineType(
+      crosapi::TelemetryDiagnosticRoutineArgument::Tag::kCameraFrameAnalysis));
 }
 
 }  // namespace chromeos

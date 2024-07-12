@@ -254,7 +254,10 @@ namespace os.diagnostics {
     unsupported,
     // The corresponding App UI was closed and thus stopped the routine
     // execution.
-    app_ui_closed
+    app_ui_closed,
+    // Raises this if a camera frontend needs to be opened but it is actually
+    // not opened.
+    camera_frontend_not_opened
   };
 
   dictionary ExceptionInfo {
@@ -458,6 +461,45 @@ namespace os.diagnostics {
     LedColor color;
   };
 
+  // The routine checks the frames captured by camera. The frontend should
+  // ensure the camera is opened during the execution of the routine.
+  dictionary CreateCameraFrameAnalysisRoutineArguments {
+  };
+
+  enum CameraFrameAnalysisIssue {
+    // No issue.
+    no_issue,
+    // The camera service is not available.
+    camera_service_not_available,
+    // The len is blocked by the privacy shutter.
+    blocked_by_privacy_shutter,
+    // The frames are blurred. Lens might be dirty.
+    lens_are_dirty
+  };
+
+  enum CameraSubtestResult {
+    // The subtest was not run, possibly because the subtest was not enabled in
+    // the routine parameter or the subtest was not available on the device.
+    not_run,
+    // The subtest was passed.
+    passed,
+    // The subtest was failed.
+    failed
+  };
+
+  dictionary CameraFrameAnalysisRoutineFinishedDetail {
+    // The issue caught by the routine. See the fields for each subtest for
+    // their details.
+    CameraFrameAnalysisIssue issue;
+    // The result is `failed` if the len is blocked by the privacy shutter. To
+    // mitigate the issue, users are suggested to open the privacy shutter to
+    // unveil the len.
+    CameraSubtestResult privacyShutterOpenTest;
+    // The result is `failed` if the frames are blurred. To mitigate the issue,
+    // users are suggested to clean the lens.
+    CameraSubtestResult lensNotDirtyTest;
+  };
+
   // This is a union type. Exactly one field should be set.
   [ignoreAdditionalProperties] dictionary CreateRoutineArgumentsUnion {
     CreateMemoryRoutineArguments? memory;
@@ -465,6 +507,7 @@ namespace os.diagnostics {
     CreateFanRoutineArguments? fan;
     CreateNetworkBandwidthRoutineArguments? networkBandwidth;
     CreateLedLitUpRoutineArguments? ledLitUp;
+    CreateCameraFrameAnalysisRoutineArguments? cameraFrameAnalysis;
   };
 
   // This is a union type. Exactly one field should be set.
@@ -472,6 +515,7 @@ namespace os.diagnostics {
     MemoryRoutineFinishedDetail? memory;
     FanRoutineFinishedDetail? fan;
     NetworkBandwidthRoutineFinishedDetail? networkBandwidth;
+    CameraFrameAnalysisRoutineFinishedDetail? cameraFrameAnalysis;
   };
 
   dictionary RoutineFinishedInfo {

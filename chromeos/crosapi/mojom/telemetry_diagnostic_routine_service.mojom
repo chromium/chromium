@@ -134,9 +134,16 @@ struct TelemetryDiagnosticLedLitUpRoutineArgument {
 [Stable]
 struct TelemetryDiagnosticNetworkBandwidthRoutineArgument {};
 
+// This routine checks the frames captured by camera. The frontend should ensure
+// the camera is opened during the execution of the routine.
+//
+// NextMinVersion: 1, NextIndex: 0
+[Stable]
+struct TelemetryDiagnosticCameraFrameAnalysisRoutineArgument {};
+
 // Argument types for the possible routines the routine control API can create.
 //
-// NextMinVersion: 6, NextIndex: 6
+// NextMinVersion: 7, NextIndex: 7
 [Stable, Extensible]
 union TelemetryDiagnosticRoutineArgument {
   // Default field is required by extensible unions for backward compatibility.
@@ -153,6 +160,9 @@ union TelemetryDiagnosticRoutineArgument {
   // Arguments to create a network bandwidth routine.
   [MinVersion=5]
   TelemetryDiagnosticNetworkBandwidthRoutineArgument network_bandwidth@5;
+  // Arguments to create a camera framee analysis routine.
+  [MinVersion=6]
+  TelemetryDiagnosticCameraFrameAnalysisRoutineArgument camera_frame_analysis@6;
 };
 
 // Routine has been initialized but not yet started.
@@ -435,9 +445,57 @@ struct TelemetryDiagnosticNetworkBandwidthRoutineDetail {
   double upload_speed_kbps@1;
 };
 
+// All possible results for subtests of camera routines.
+//
+// NextMinVersion: 1, NextIndex: 4
+[Stable, Extensible]
+enum TelemetryDiagnosticCameraSubtestResult {
+  // The default value is for backward compatibility, should not be used.
+  [Default] kUnmappedEnumField = 0,
+  // The subtest was not run, possibly because the subtest was not enabled in
+  // the routine parameter or the subtest was not available on the device.
+  kNotRun = 1,
+  // The subtest was passed.
+  kPassed = 2,
+  // The subtest was failed.
+  kFailed = 3,
+};
+
+// Details regarding camera frame analysis routine.
+//
+// NextMinVersion: 1, NextIndex: 3
+[Stable]
+struct TelemetryDiagnosticCameraFrameAnalysisRoutineDetail {
+  // The first issue caught by the routine. See the fields for each subtest for
+  // their details.
+  //
+  // NextMinVersion: 1, NextIndex: 5
+  [Stable, Extensible]
+  enum Issue {
+    // For mojo backward compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    // No issue.
+    kNone = 1,
+    // The camera service is not available.
+    kCameraServiceNotAvailable = 2,
+    // The len is blocked by the privacy shutter.
+    kBlockedByPrivacyShutter = 3,
+    // The frames are blurred. Lens might be dirty.
+    kLensAreDirty = 4,
+  };
+  Issue issue@0;
+  // The result is `kFailed` if the len is blocked by the privacy shutter. To
+  // mitigate the issue, users are suggested to open the privacy shutter to
+  // unveil the len.
+  TelemetryDiagnosticCameraSubtestResult privacy_shutter_open_test@1;
+  // The result is `kFailed` if the frames are blurred. To mitigate the issue,
+  // users are suggested to clean the lens.
+  TelemetryDiagnosticCameraSubtestResult lens_not_dirty_test@2;
+};
+
 // Details about a finished routine.
 //
-// NextMinVersion: 5, NextIndex: 5
+// NextMinVersion: 6, NextIndex: 6
 [Stable, Extensible]
 union TelemetryDiagnosticRoutineDetail {
   // Default field is required by extensible unions for backward compatibility.
@@ -452,6 +510,9 @@ union TelemetryDiagnosticRoutineDetail {
   // Details of a completed network bandwidth routine.
   [MinVersion=4]
   TelemetryDiagnosticNetworkBandwidthRoutineDetail network_bandwidth@4;
+  // Details of a completed camera frame analysis routine.
+  [MinVersion=5]
+  TelemetryDiagnosticCameraFrameAnalysisRoutineDetail camera_frame_analysis@5;
 };
 
 // Information about a finished routine.

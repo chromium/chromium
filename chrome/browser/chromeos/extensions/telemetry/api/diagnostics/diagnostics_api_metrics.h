@@ -20,7 +20,8 @@ enum class DiagnosticRoutineCategoryHistogramValue {
   kFan = 3,
   kLedLitUp = 4,
   kNetworkBandwidth = 5,
-  kMaxValue = kNetworkBandwidth,
+  kCameraFrameAnalysis = 6,
+  kMaxValue = kCameraFrameAnalysis,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/chromeos/enums.xml)
 

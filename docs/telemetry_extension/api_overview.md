@@ -264,6 +264,7 @@ extension-event based interface in M119. The interface is described in
 | unexpected |
 | unsupported |
 | app_ui_closed |
+| camera_frontend_not_opened |
 
 ### Enum MemtesterTestItemEnum
 | Property Name |
@@ -357,6 +358,7 @@ This is a [union type](#Dictionary_based-union-types). Exactly one field is set.
 ------------ | ------- | ----------- |
 | memory | MemoryRoutineFinishedDetail | Extra detail for a finished memory routine  |
 | fan | FanRoutineFinishedDetail | Extra detail for a finished fan routine |
+| cameraFrameAnalysis | CameraFrameAnalysisRoutineFinishedDetail | Extra detail for a finished camera frame analysis routine |
 
 ### MemtesterResult
 | Property Name | Type | Description |
@@ -494,6 +496,35 @@ The routine proceeds with the following steps:
 | name | LedName | The LED to be lit up |
 | color | LedColor | The color to be lit up |
 
+### CreateCameraFrameAnalysisRoutineArguments
+The routine checks the frames captured by camera. The frontend should ensure the
+camera is opened during the execution of the routine.
+
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+
+### Enum CameraFrameAnalysisIssue
+| Property Name |
+------------ |
+| no_issue |
+| camera_service_not_available |
+| blocked_by_privacy_shutter |
+| lens_are_dirty |
+
+### Enum CameraSubtestResult
+| Property Name |
+------------ |
+| not_run |
+| passed |
+| failed |
+
+### CameraFrameAnalysisRoutineFinishedDetail
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| issue | CameraFrameAnalysisIssue | The issue caught by the routine. See the fields for each subtest for their details. |
+| privacyShutterOpenTest | CameraSubtestResult | The result is `failed` if the len is blocked by the privacy shutter. To mitigate the issue, users are suggested to open the privacy shutter to unveil the len. |
+| lensNotDirtyTest | CameraSubtestResult | The result is `failed` if the frames are blurred. To mitigate the issue, users are suggested to clean the lens. |
+
 ### CreateRoutineArgumentsUnion
 This is a [union type](#Dictionary_based-union-types). Exactly one field is set.
 
@@ -504,6 +535,7 @@ This is a [union type](#Dictionary_based-union-types). Exactly one field is set.
 | fan | CreateFanRoutineArguments | M125 | Arguments to create a fan routine | None |
 | networkBandwidth | CreateNetworkBandwidthRoutineArguments | M125 | Arguments to create a network bandwidth routine | `os.diagnostics.network_info_mlab` |
 | ledLitUp | CreateLedLitUpRoutineArguments | M125 | Arguments to create a LED lit up routine | None |
+| cameraFrameAnalysis | CreateCameraFrameAnalysisRoutineArguments | (not released) | Arguments to create a camera frame analysis routine | None |
 
 ### CreateRoutineResponse
 | Property Name | Type | Description |

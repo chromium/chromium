@@ -54,6 +54,16 @@ UncheckedConvertPtr(healthd::NetworkBandwidthRoutineDetailPtr input) {
   return detail;
 }
 
+crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetailPtr
+UncheckedConvertPtr(healthd::CameraFrameAnalysisRoutineDetailPtr input) {
+  auto detail =
+      crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::New();
+  detail->issue = Convert(input->issue);
+  detail->privacy_shutter_open_test = Convert(input->privacy_shutter_open_test);
+  detail->lens_not_dirty_test = Convert(input->lens_not_dirty_test);
+  return detail;
+}
+
 crosapi::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfoPtr
 UncheckedConvertPtr(healthd::NetworkBandwidthRoutineRunningInfoPtr input) {
   return crosapi::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo::New(
@@ -132,6 +142,9 @@ crosapi::TelemetryDiagnosticRoutineDetailPtr UncheckedConvertPtr(
     case healthd::RoutineDetail::Tag::kNetworkBandwidth:
       return crosapi::TelemetryDiagnosticRoutineDetail::NewNetworkBandwidth(
           ConvertRoutinePtr(std::move(input->get_network_bandwidth())));
+    case healthd::RoutineDetail::Tag::kCameraFrameAnalysis:
+      return crosapi::TelemetryDiagnosticRoutineDetail::NewCameraFrameAnalysis(
+          ConvertRoutinePtr(std::move(input->get_camera_frame_analysis())));
     // The following routines have not been added to crosapi yet.
     case healthd::RoutineDetail::Tag::kAudioDriver:
     case healthd::RoutineDetail::Tag::kUfsLifetime:
@@ -141,7 +154,6 @@ crosapi::TelemetryDiagnosticRoutineDetailPtr UncheckedConvertPtr(
     case healthd::RoutineDetail::Tag::kBluetoothPairing:
     case healthd::RoutineDetail::Tag::kCameraAvailability:
     case healthd::RoutineDetail::Tag::kSensitiveSensor:
-    case healthd::RoutineDetail::Tag::kCameraFrameAnalysis:
       // The actual value of unrecognizedArgument should not be used. Assign an
       // arbitrary value to it.
       return crosapi::TelemetryDiagnosticRoutineDetail::NewUnrecognizedArgument(
@@ -206,6 +218,9 @@ healthd::RoutineArgumentPtr UncheckedConvertPtr(
     case crosapi::TelemetryDiagnosticRoutineArgument::Tag::kNetworkBandwidth:
       return healthd::RoutineArgument::NewNetworkBandwidth(
           ConvertRoutinePtr(std::move(input->get_network_bandwidth())));
+    case crosapi::TelemetryDiagnosticRoutineArgument::Tag::kCameraFrameAnalysis:
+      return healthd::RoutineArgument::NewCameraFrameAnalysis(
+          ConvertRoutinePtr(std::move(input->get_camera_frame_analysis())));
   }
 }
 
@@ -260,6 +275,11 @@ healthd::CheckLedLitUpStateReplyPtr UncheckedConvertPtr(
 healthd::NetworkBandwidthRoutineArgumentPtr UncheckedConvertPtr(
     crosapi::TelemetryDiagnosticNetworkBandwidthRoutineArgumentPtr input) {
   return healthd::NetworkBandwidthRoutineArgument::New();
+}
+
+healthd::CameraFrameAnalysisRoutineArgumentPtr UncheckedConvertPtr(
+    crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineArgumentPtr input) {
+  return healthd::CameraFrameAnalysisRoutineArgument::New();
 }
 
 healthd::RoutineInquiryReplyPtr UncheckedConvertPtr(
@@ -427,6 +447,46 @@ crosapi::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo::Type Convert(
     case healthd::NetworkBandwidthRoutineRunningInfo::Type::kUpload:
       return crosapi::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo::
           Type::kUpload;
+  }
+  NOTREACHED_NORETURN();
+}
+
+crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::Issue Convert(
+    healthd::CameraFrameAnalysisRoutineDetail::Issue input) {
+  switch (input) {
+    case healthd::CameraFrameAnalysisRoutineDetail::Issue::kUnmappedEnumField:
+      return crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::
+          Issue::kUnmappedEnumField;
+    case healthd::CameraFrameAnalysisRoutineDetail::Issue::kNone:
+      return crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::
+          Issue::kNone;
+    case healthd::CameraFrameAnalysisRoutineDetail::Issue::
+        kCameraServiceNotAvailable:
+      return crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::
+          Issue::kCameraServiceNotAvailable;
+    case healthd::CameraFrameAnalysisRoutineDetail::Issue::
+        kBlockedByPrivacyShutter:
+      return crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::
+          Issue::kBlockedByPrivacyShutter;
+    case healthd::CameraFrameAnalysisRoutineDetail::Issue::kLensAreDirty:
+      return crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::
+          Issue::kLensAreDirty;
+  }
+  NOTREACHED_NORETURN();
+}
+
+crosapi::TelemetryDiagnosticCameraSubtestResult Convert(
+    healthd::CameraSubtestResult input) {
+  switch (input) {
+    case healthd::CameraSubtestResult::kUnmappedEnumField:
+      return crosapi::TelemetryDiagnosticCameraSubtestResult::
+          kUnmappedEnumField;
+    case healthd::CameraSubtestResult::kNotRun:
+      return crosapi::TelemetryDiagnosticCameraSubtestResult::kNotRun;
+    case healthd::CameraSubtestResult::kPassed:
+      return crosapi::TelemetryDiagnosticCameraSubtestResult::kPassed;
+    case healthd::CameraSubtestResult::kFailed:
+      return crosapi::TelemetryDiagnosticCameraSubtestResult::kFailed;
   }
   NOTREACHED_NORETURN();
 }

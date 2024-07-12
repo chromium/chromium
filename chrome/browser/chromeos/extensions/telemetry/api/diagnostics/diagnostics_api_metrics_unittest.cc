@@ -21,7 +21,8 @@ constexpr std::pair<RoutineTag, HistogramValue> kAllRoutineCategories[] = {
     {RoutineTag::kVolumeButton, HistogramValue::kVolumeButton},
     {RoutineTag::kFan, HistogramValue::kFan},
     {RoutineTag::kLedLitUp, HistogramValue::kLedLitUp},
-    {RoutineTag::kNetworkBandwidth, HistogramValue::kNetworkBandwidth}};
+    {RoutineTag::kNetworkBandwidth, HistogramValue::kNetworkBandwidth},
+    {RoutineTag::kCameraFrameAnalysis, HistogramValue::kCameraFrameAnalysis}};
 
 static_assert(
     std::size(kAllRoutineCategories) ==

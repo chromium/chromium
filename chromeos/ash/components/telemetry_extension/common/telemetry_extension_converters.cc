@@ -74,10 +74,8 @@ crosapi::mojom::TelemetryExtensionException::Reason Convert(
     case cros_healthd::mojom::Exception::Reason::kUnsupported:
       return crosapi::mojom::TelemetryExtensionException::Reason::kUnsupported;
     case cros_healthd::mojom::Exception::Reason::kCameraFrontendNotOpened:
-      // TODO(b/342286051): update the converter when `kCameraFrontendNotOpened`
-      // is added to crosapi.
       return crosapi::mojom::TelemetryExtensionException::Reason::
-          kUnmappedEnumField;
+          kCameraFrontendNotOpened;
   }
   NOTREACHED_NORETURN();
 }

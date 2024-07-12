@@ -1872,6 +1872,7 @@ https://chromium.googlesource.com/chromiumos/platform2/+/main/secagentd/proto/se
   <int value="3" label="Fan"/>
   <int value="4" label="LedLitUp"/>
   <int value="5" label="kNetworkBandwidth"/>
+  <int value="6" label="kCameraFrameAnalysis"/>
 </enum>
 
 <enum name="UmaInitParamsResult">

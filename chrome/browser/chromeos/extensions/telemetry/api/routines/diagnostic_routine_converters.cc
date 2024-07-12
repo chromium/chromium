@@ -43,6 +43,10 @@ std::optional<cx_diag::RoutineFinishedDetailUnion> ConvertRoutineDetailUnionPtr(
       detail.network_bandwidth =
           ConvertPtr(std::move(input->get_network_bandwidth()));
       return detail;
+    case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kCameraFrameAnalysis:
+      detail.camera_frame_analysis =
+          ConvertPtr(std::move(input->get_camera_frame_analysis()));
+      return detail;
   }
 }
 
@@ -234,6 +238,15 @@ cx_diag::NetworkBandwidthRoutineFinishedDetail UncheckedConvertPtr(
   return result;
 }
 
+cx_diag::CameraFrameAnalysisRoutineFinishedDetail UncheckedConvertPtr(
+    crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetailPtr input) {
+  cx_diag::CameraFrameAnalysisRoutineFinishedDetail result;
+  result.issue = Convert(input->issue);
+  result.privacy_shutter_open_test = Convert(input->privacy_shutter_open_test);
+  result.lens_not_dirty_test = Convert(input->lens_not_dirty_test);
+  return result;
+}
+
 cx_diag::RoutineFinishedInfo UncheckedConvertPtr(
     crosapi::TelemetryDiagnosticRoutineStateFinishedPtr input,
     base::Uuid uuid,
@@ -259,6 +272,8 @@ cx_diag::ExceptionReason Convert(
       return cx_diag::ExceptionReason::kUnexpected;
     case crosapi::TelemetryExtensionException::Reason::kUnsupported:
       return cx_diag::ExceptionReason::kUnsupported;
+    case crosapi::TelemetryExtensionException::Reason::kCameraFrontendNotOpened:
+      return cx_diag::ExceptionReason::kCameraFrontendNotOpened;
   }
   NOTREACHED_IN_MIGRATION();
 }
@@ -355,6 +370,43 @@ cx_diag::NetworkBandwidthRoutineRunningType Convert(
     case crosapi::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo::Type::
         kUpload:
       return cx_diag::NetworkBandwidthRoutineRunningType::kUpload;
+  }
+  NOTREACHED_NORETURN();
+}
+
+cx_diag::CameraFrameAnalysisIssue Convert(
+    crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::Issue input) {
+  switch (input) {
+    case crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::Issue::
+        kUnmappedEnumField:
+      return cx_diag::CameraFrameAnalysisIssue::kNone;
+    case crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::Issue::
+        kNone:
+      return cx_diag::CameraFrameAnalysisIssue::kNoIssue;
+    case crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::Issue::
+        kCameraServiceNotAvailable:
+      return cx_diag::CameraFrameAnalysisIssue::kCameraServiceNotAvailable;
+    case crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::Issue::
+        kBlockedByPrivacyShutter:
+      return cx_diag::CameraFrameAnalysisIssue::kBlockedByPrivacyShutter;
+    case crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::Issue::
+        kLensAreDirty:
+      return cx_diag::CameraFrameAnalysisIssue::kLensAreDirty;
+  }
+  NOTREACHED_NORETURN();
+}
+
+cx_diag::CameraSubtestResult Convert(
+    crosapi::TelemetryDiagnosticCameraSubtestResult input) {
+  switch (input) {
+    case crosapi::TelemetryDiagnosticCameraSubtestResult::kUnmappedEnumField:
+      return cx_diag::CameraSubtestResult::kNone;
+    case crosapi::TelemetryDiagnosticCameraSubtestResult::kNotRun:
+      return cx_diag::CameraSubtestResult::kNotRun;
+    case crosapi::TelemetryDiagnosticCameraSubtestResult::kPassed:
+      return cx_diag::CameraSubtestResult::kPassed;
+    case crosapi::TelemetryDiagnosticCameraSubtestResult::kFailed:
+      return cx_diag::CameraSubtestResult::kFailed;
   }
   NOTREACHED_NORETURN();
 }

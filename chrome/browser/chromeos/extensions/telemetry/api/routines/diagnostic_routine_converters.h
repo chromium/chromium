@@ -80,6 +80,11 @@ api::os_diagnostics::FanRoutineFinishedDetail UncheckedConvertPtr(
 api::os_diagnostics::NetworkBandwidthRoutineFinishedDetail UncheckedConvertPtr(
     crosapi::mojom::TelemetryDiagnosticNetworkBandwidthRoutineDetailPtr input);
 
+api::os_diagnostics::CameraFrameAnalysisRoutineFinishedDetail
+UncheckedConvertPtr(
+    crosapi::mojom::TelemetryDiagnosticCameraFrameAnalysisRoutineDetailPtr
+        input);
+
 api::os_diagnostics::RoutineFinishedInfo UncheckedConvertPtr(
     crosapi::mojom::TelemetryDiagnosticRoutineStateFinishedPtr input,
     base::Uuid uuid,
@@ -102,6 +107,13 @@ api::os_diagnostics::HardwarePresenceStatus Convert(
 api::os_diagnostics::NetworkBandwidthRoutineRunningType Convert(
     crosapi::mojom::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo::Type
         input);
+
+api::os_diagnostics::CameraFrameAnalysisIssue Convert(
+    crosapi::mojom::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::Issue
+        input);
+
+api::os_diagnostics::CameraSubtestResult Convert(
+    crosapi::mojom::TelemetryDiagnosticCameraSubtestResult input);
 
 template <class InputT,
           class OutputT = decltype(Convert(std::declval<InputT>())),
