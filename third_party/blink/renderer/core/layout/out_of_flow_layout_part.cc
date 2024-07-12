@@ -2088,7 +2088,8 @@ OutOfFlowLayoutPart::TryCalculateOffset(
       SetupSpaceBuilderForFragmentation(
           GetConstraintSpace(), node_info.node,
           /*fragmentainer_offset_delta=*/LayoutUnit(),
-          /*requires_content_before_breaking=*/false, &builder);
+          GetConstraintSpace().FragmentainerBlockSize(),
+          /*is_resuming_past_block_end_edge=*/false, &builder);
     }
     return builder.ToConstraintSpace();
   })();
@@ -2428,8 +2429,17 @@ const LayoutResult* OutOfFlowLayoutPart::GenerateFragment(
       builder.DisableMonolithicOverflowPropagation();
       is_repeatable = true;
     } else {
+      // Note that we pass the pristine size of the fragmentainer here, which
+      // means that we're not going to make room for any cloned borders that
+      // might exist in the containing block chain of the OOF. This is
+      // reasonable in a way, since they are out of flow after all, but, then
+      // again, it's not really defined how out of flow positioned descendants
+      // should behave when contained by something with cloned box decorations.
+      //
+      // See https://github.com/w3c/csswg-drafts/issues/10553
       SetupSpaceBuilderForFragmentation(
           *fragmentainer_constraint_space, node, block_offset,
+          fragmentainer_constraint_space->FragmentainerBlockSize(),
           node_info.requires_content_before_breaking, &builder);
 
       // Out-of-flow positioned elements whose containing block is inside
@@ -2455,6 +2465,7 @@ const LayoutResult* OutOfFlowLayoutPart::GenerateFragment(
   } else if (container_builder_->IsInitialColumnBalancingPass()) {
     SetupSpaceBuilderForFragmentation(
         GetConstraintSpace(), node, block_offset,
+        GetConstraintSpace().FragmentainerBlockSize(),
         /*requires_content_before_breaking=*/false, &builder);
   }
   ConstraintSpace space = builder.ToConstraintSpace();

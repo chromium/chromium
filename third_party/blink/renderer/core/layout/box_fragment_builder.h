@@ -84,15 +84,6 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     }
   }
 
-  void AdjustBorderScrollbarPaddingForFragmentation(
-      const BlockBreakToken* break_token) {
-    if (LIKELY(!break_token))
-      return;
-    if (break_token->IsBreakBefore())
-      return;
-    border_scrollbar_padding_.block_start = LayoutUnit();
-  }
-
   const FragmentGeometry& InitialFragmentGeometry() const {
     DCHECK(initial_fragment_geometry_);
     return *initial_fragment_geometry_;
@@ -172,17 +163,46 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     DCHECK(initial_fragment_geometry_);
     return initial_fragment_geometry_->border_box_size;
   }
+
+  // Get border+padding for each box side.
+  //
+  // This value is node-specific (not for an individual fragment), and is used
+  // to resolve the final box size, but is not used to position descendants.
+  // This distinction matters for block fragmentation. Resolving the final box
+  // size means the "stitched" box size (sum of the block-size of all
+  // fragments). If box decorations are to be cloned, it must be reflected in
+  // this value, meaning that computed border+padding is multiplied by the
+  // number of fragments (so that e.g. a <div style="padding:20px;
+  // height:100px;"> split into two fragments get a stitched border-box size of
+  // 180px).
   const BoxStrut& BorderPadding() const {
     DCHECK(initial_fragment_geometry_);
     return border_padding_;
   }
+
+  // Get border+padding+scrollbar for each box side.
+  //
+  // This value is fragment-specific, and is used to position descendants and to
+  // calculate the intrinsic block-size, but not to resolve the final box
+  // size. This distinction matters for block fragmentation. When box
+  // decorations are to be sliced (i.e. not cloned), the block-start
+  // border+padding size is truncated to 0 after fragmentation breaks, and this
+  // will be reflected here, so that we don't make room for block-start
+  // border+padding at the beginning of each fragment (only the first).
   const BoxStrut& BorderScrollbarPadding() const {
     DCHECK(initial_fragment_geometry_);
     return border_scrollbar_padding_;
   }
+
   LayoutUnit OriginalBorderScrollbarPaddingBlockStart() const {
     return original_border_scrollbar_padding_block_start_;
   }
+
+  void ClearBorderScrollbarPaddingBlockStart() {
+    border_scrollbar_padding_.block_start = LayoutUnit();
+  }
+  void UpdateBorderPaddingForClonedBoxDecorations();
+
   // The child available-size is subtly different from the content-box size of
   // an element. For an anonymous-block the child available-size is equal to
   // its non-anonymous parent (similar to percentages).
@@ -278,6 +298,13 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
 
   // Specify whether this will be the first fragment generated for the node.
   void SetIsFirstForNode(bool is_first) { is_first_for_node_ = is_first; }
+
+  bool ShouldCloneBoxEndDecorations() const {
+    return should_clone_box_end_decorations_;
+  }
+  void SetShouldCloneBoxEndDecorations(bool b) {
+    should_clone_box_end_decorations_ = b;
+  }
 
   void SetIsMonolithic(bool b) { is_monolithic_ = b; }
 
@@ -650,6 +677,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   bool is_block_size_for_fragmentation_clamped_ = false;
   bool is_monolithic_ = true;
   bool is_first_for_node_ = true;
+  bool should_clone_box_end_decorations_ = false;
   bool did_break_self_ = false;
   bool has_inflow_child_break_inside_ = false;
   bool has_forced_break_ = false;

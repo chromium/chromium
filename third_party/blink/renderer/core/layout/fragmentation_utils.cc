@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -297,6 +298,7 @@ LogicalOffset GetFragmentainerProgression(const BoxFragmentBuilder& builder,
 void SetupSpaceBuilderForFragmentation(const ConstraintSpace& parent_space,
                                        const LayoutInputNode& child,
                                        LayoutUnit fragmentainer_offset_delta,
+                                       LayoutUnit fragmentainer_block_size,
                                        bool requires_content_before_breaking,
                                        ConstraintSpaceBuilder* builder) {
   DCHECK(parent_space.HasBlockFragmentation());
@@ -313,7 +315,7 @@ void SetupSpaceBuilderForFragmentation(const ConstraintSpace& parent_space,
     return;
   }
 
-  builder->SetFragmentainerBlockSize(parent_space.FragmentainerBlockSize());
+  builder->SetFragmentainerBlockSize(fragmentainer_block_size);
   LayoutUnit fragmentainer_offset =
       parent_space.FragmentainerOffset() + fragmentainer_offset_delta;
   builder->SetFragmentainerOffset(fragmentainer_offset);
@@ -357,9 +359,31 @@ void SetupSpaceBuilderForFragmentation(
     const LayoutInputNode& child,
     LayoutUnit fragmentainer_offset_delta,
     ConstraintSpaceBuilder* builder) {
+  const ConstraintSpace& parent_space =
+      parent_fragment_builder.GetConstraintSpace();
+  LayoutUnit fragmentainer_block_size = parent_space.FragmentainerBlockSize();
+  if (parent_fragment_builder.ShouldCloneBoxEndDecorations() &&
+      parent_space.HasKnownFragmentainerBlockSize()) {
+    // Having cloned box decorations on a parent effectively shrinks the
+    // fragmentainer space available to descendants.
+    fragmentainer_block_size -=
+        parent_fragment_builder.BorderScrollbarPadding().BlockSum();
+
+    // Adjust the fragmentainer offset, so that any child inside that's at the
+    // block-start content edge is seen as offset 0, which helps the
+    // fragmentainer machinery to not insert a break right after another break,
+    // before there has been some content progress. This fragmentainer offset
+    // isn't used to position things in layout, but only to determine whether
+    // we're at the beginning of a fragmentainer, and by the layout cache (so
+    // that we miss if a fragmented box got its offset changed), so adjusting it
+    // like this should be fine.
+    fragmentainer_offset_delta -=
+        parent_fragment_builder.BorderScrollbarPadding().block_start;
+  }
+
   return SetupSpaceBuilderForFragmentation(
       parent_fragment_builder.GetConstraintSpace(), child,
-      fragmentainer_offset_delta,
+      fragmentainer_offset_delta, fragmentainer_block_size,
       parent_fragment_builder.RequiresContentBeforeBreaking(), builder);
 }
 
@@ -403,6 +427,23 @@ void SetupFragmentBuilderForFragmentation(
     builder->SetIsFirstForNode(false);
   }
 
+  // If box decorations are to be cloned, both block-start and block-end should
+  // obviosuly be present in every fragment, but whether block-end decorations
+  // count as being cloned or not depends on whether the fragment currently
+  // being built is known to be the last fragment. If it is, block-end box
+  // decorations will behave as normally, so that child content may overflow it.
+  bool clone_box_start_decorations =
+      node.Style().BoxDecorationBreak() == EBoxDecorationBreak::kClone &&
+      (!previous_break_token || !previous_break_token->IsAtBlockEnd());
+  bool clone_box_end_decorations = clone_box_start_decorations;
+
+  if (clone_box_start_decorations) {
+    // Include border/padding from previous fragments. When resolving the
+    // block-size for this fragment, we need the total space used by
+    // decorations.
+    builder->UpdateBorderPaddingForClonedBoxDecorations();
+  }
+
   if (space.HasBlockFragmentation() && !space.IsAnonymous() &&
       !space.IsInitialColumnBalancingPass()) {
     bool requires_content_before_breaking =
@@ -438,16 +479,31 @@ void SetupFragmentBuilderForFragmentation(
 
         if (max_block_size - previously_consumed_block_size <= space_left) {
           builder->SetIsKnownToFitInFragmentainer(true);
+          clone_box_end_decorations = false;
           if (builder->MustStayInCurrentFragmentainer())
             requires_content_before_breaking = true;
         }
       }
     }
+
+    if (clone_box_end_decorations) {
+      builder->SetShouldCloneBoxEndDecorations(true);
+    }
+
     builder->SetRequiresContentBeforeBreaking(requires_content_before_breaking);
   }
   builder->SetSequenceNumber(sequence_number);
 
-  builder->AdjustBorderScrollbarPaddingForFragmentation(previous_break_token);
+  if (IsBreakInside(previous_break_token) && !clone_box_start_decorations) {
+    // When resuming after a fragmentation break in the slicing box decoration
+    // break model, block-start border and padding are omitted. Don't omit it
+    // here for tables, though. The table box (which contains the border) might
+    // not start in the first fragment, if there are preceding captions, so the
+    // table algorithm needs to handle this logic on its own.
+    if (!node.IsTable()) {
+      builder->ClearBorderScrollbarPaddingBlockStart();
+    }
+  }
 
   if (builder->IsInitialColumnBalancingPass()) {
     const BoxStrut& unbreakable = builder->BorderScrollbarPadding();
@@ -462,7 +518,8 @@ bool ShouldIncludeBlockEndBorderPadding(const BoxFragmentBuilder& builder) {
     // Past the block-end, and therefore past block-end border+padding.
     return false;
   }
-  if (!builder.ShouldBreakInside() || builder.IsKnownToFitInFragmentainer()) {
+  if (!builder.ShouldBreakInside() || builder.IsKnownToFitInFragmentainer() ||
+      builder.ShouldCloneBoxEndDecorations()) {
     return true;
   }
 
@@ -479,7 +536,8 @@ BreakStatus FinishFragmentation(LayoutUnit trailing_border_padding,
                                 BoxFragmentBuilder* builder) {
   const BlockNode& node = builder->Node();
   const ConstraintSpace& space = builder->GetConstraintSpace();
-  LayoutUnit space_left = FragmentainerSpaceLeft(*builder);
+  LayoutUnit space_left = FragmentainerSpaceLeft(
+      *builder, /*include_cloned_block_end_decorations=*/true);
   const BlockBreakToken* previous_break_token = builder->PreviousBreakToken();
   LayoutUnit previously_consumed_block_size;
   if (previous_break_token && !previous_break_token->IsBreakBefore())
@@ -571,7 +629,9 @@ BreakStatus FinishFragmentation(LayoutUnit trailing_border_padding,
     LayoutUnit subtractable_border_padding;
     if ((desired_block_size > trailing_border_padding && !node.IsTableCell()) ||
         (previous_break_token && previous_break_token->MonolithicOverflow())) {
-      subtractable_border_padding = trailing_border_padding;
+      if (!builder->ShouldCloneBoxEndDecorations() || node.IsTable()) {
+        subtractable_border_padding = trailing_border_padding;
+      }
     }
 
     LayoutUnit modified_intrinsic_block_size = std::max(
@@ -588,15 +648,21 @@ BreakStatus FinishFragmentation(LayoutUnit trailing_border_padding,
   }
 
   LogicalBoxSides sides;
-  // If this isn't the first fragment, omit the block-start border.
-  if (previously_consumed_block_size)
+  // If this isn't the first fragment, omit the block-start border, if in the
+  // slicing box decoration break model.
+  if (previously_consumed_block_size &&
+      (node.Style().BoxDecorationBreak() == EBoxDecorationBreak::kSlice ||
+       is_past_end)) {
     sides.block_start = false;
+  }
   // If this isn't the last fragment with same-flow content, omit the block-end
   // border. If something overflows the node, we'll keep on creating empty
   // fragments to contain the overflow (which establishes a parallel flow), but
   // those fragments should make no room (nor paint) block-end border/paddding.
-  if (builder->DidBreakSelf() || is_past_end)
+  if ((builder->DidBreakSelf() && !builder->ShouldCloneBoxEndDecorations()) ||
+      is_past_end) {
     sides.block_end = false;
+  }
   builder->SetSidesToInclude(sides);
 
   builder->SetConsumedBlockSize(previously_consumed_block_size +
@@ -688,9 +754,11 @@ BreakStatus FinishFragmentation(LayoutUnit trailing_border_padding,
                                     std::max(final_block_size, space_left));
     } else {
       // If we're not at the end, it means that block-end border and shadow
-      // should be omitted.
-      sides.block_end = false;
-      builder->SetSidesToInclude(sides);
+      // should be omitted, unless box decorations are to be cloned.
+      if (!builder->ShouldCloneBoxEndDecorations()) {
+        sides.block_end = false;
+        builder->SetSidesToInclude(sides);
+      }
     }
 
     return BreakStatus::kContinue;

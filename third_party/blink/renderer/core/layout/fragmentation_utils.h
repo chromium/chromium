@@ -139,6 +139,17 @@ BreakAppeal CalculateBreakAppealInside(
 inline LayoutUnit ClampedToValidFragmentainerCapacity(LayoutUnit length) {
   return std::max(length, LayoutUnit(1));
 }
+inline LayoutUnit ClampedToValidFragmentainerCapacity(
+    const BoxFragmentBuilder& builder,
+    LayoutUnit length,
+    bool include_cloned_block_end_decorations) {
+  LayoutUnit minimum(1);
+  if (builder.ShouldCloneBoxEndDecorations() &&
+      include_cloned_block_end_decorations) {
+    minimum += builder.BorderScrollbarPadding().BlockSum();
+  }
+  return std::max(length, minimum);
+}
 
 // Return the logical size of the specified fragmentainer, with
 // clamping block_size.
@@ -151,11 +162,21 @@ LogicalSize FragmentainerLogicalCapacity(
 // than 0 (even if the final fragentainer size may very well be 0). The spec
 // says that fragmentainers have to accept at least 1px of content. See
 // https://www.w3.org/TR/css-break-3/#breaking-rules
-inline LayoutUnit FragmentainerCapacity(const BoxFragmentBuilder& builder) {
+inline LayoutUnit FragmentainerCapacity(
+    const BoxFragmentBuilder& builder,
+    bool include_cloned_block_end_decorations = false) {
   const ConstraintSpace& space = builder.GetConstraintSpace();
   if (!space.HasKnownFragmentainerBlockSize())
     return kIndefiniteSize;
-  return ClampedToValidFragmentainerCapacity(space.FragmentainerBlockSize());
+  LayoutUnit size = space.FragmentainerBlockSize();
+  if (builder.ShouldCloneBoxEndDecorations() &&
+      !include_cloned_block_end_decorations) {
+    // Having cloned box decorations effectively shrinks the fragmentainer space
+    // available to children.
+    size -= builder.BorderScrollbarPadding().block_end;
+  }
+  return ClampedToValidFragmentainerCapacity(
+      builder, size, include_cloned_block_end_decorations);
 }
 
 inline LayoutUnit FragmentainerSpaceLeft(const ConstraintSpace& space,
@@ -171,11 +192,21 @@ inline LayoutUnit FragmentainerSpaceLeft(const ConstraintSpace& space,
 // instead. If available space is negative, zero is returned. In the case of
 // initial column balancing, the size is unknown, in which case kIndefiniteSize
 // is returned.
-inline LayoutUnit FragmentainerSpaceLeft(const BoxFragmentBuilder& builder) {
+//
+// This function is most commonly used to figure out space available to children
+// of a builder, but if it's used to figure out the space available the fragment
+// itself, `include_cloned_block_end_decorations` may be set, so that any cloned
+// box decorations are included. Such box decorations will otherwise be
+// subtracted, since children should steer clear of them.
+inline LayoutUnit FragmentainerSpaceLeft(
+    const BoxFragmentBuilder& builder,
+    bool include_cloned_block_end_decorations = false) {
   const ConstraintSpace& space = builder.GetConstraintSpace();
   if (!space.HasKnownFragmentainerBlockSize())
     return kIndefiniteSize;
-  return FragmentainerSpaceLeft(space, FragmentainerCapacity(builder));
+  return FragmentainerSpaceLeft(
+      space,
+      FragmentainerCapacity(builder, include_cloned_block_end_decorations));
 }
 
 // Return the border edge block-offset from the block-start of the fragmentainer
@@ -191,10 +222,12 @@ inline LayoutUnit FragmentainerOffsetAtBfc(const ConstraintSpace& space) {
 // column balancing pass (when fragmentainer block-size is unknown), and without
 // any clamping of negative values.
 inline LayoutUnit UnclampedFragmentainerSpaceLeft(
-    const BoxFragmentBuilder& builder) {
+    const BoxFragmentBuilder& builder,
+    bool include_cloned_block_end_decorations = false) {
   const ConstraintSpace& space = builder.GetConstraintSpace();
   DCHECK(space.HasKnownFragmentainerBlockSize());
-  return FragmentainerCapacity(builder) - space.FragmentainerOffset();
+  return FragmentainerCapacity(builder, include_cloned_block_end_decorations) -
+         space.FragmentainerOffset();
 }
 
 // Adjust margins to take fragmentation into account. Leading/trailing block
@@ -238,6 +271,7 @@ LogicalOffset GetFragmentainerProgression(const BoxFragmentBuilder&,
 void SetupSpaceBuilderForFragmentation(const ConstraintSpace& parent_space,
                                        const LayoutInputNode& child,
                                        LayoutUnit fragmentainer_offset_delta,
+                                       LayoutUnit fragmentainer_block_size,
                                        bool requires_content_before_breaking,
                                        ConstraintSpaceBuilder*);
 void SetupSpaceBuilderForFragmentation(

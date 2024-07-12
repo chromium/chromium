@@ -24,6 +24,19 @@
 
 namespace blink {
 
+void BoxFragmentBuilder::UpdateBorderPaddingForClonedBoxDecorations() {
+  const BlockBreakToken* break_token = PreviousBreakToken();
+  if (!IsBreakInside(break_token)) {
+    return;
+  }
+  // BorderPadding() is used for resolving the box size, and it needs to include
+  // the border/padding space taken up by this new fragment (to be created),
+  // plus all preceding ones.
+  int fragment_count_including_this = break_token->SequenceNumber() + 2;
+  border_padding_.block_start *= fragment_count_including_this;
+  border_padding_.block_end *= fragment_count_including_this;
+}
+
 const LayoutResult& BoxFragmentBuilder::LayoutResultForPropagation(
     const LayoutResult& layout_result) const {
   if (layout_result.Status() != LayoutResult::kSuccess) {

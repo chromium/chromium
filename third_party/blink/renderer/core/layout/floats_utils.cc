@@ -81,6 +81,7 @@ ConstraintSpace CreateConstraintSpaceForFloat(
 
     SetupSpaceBuilderForFragmentation(
         parent_space, unpositioned_float.node, *origin_block_offset,
+        unpositioned_float.fragmentainer_block_size,
         /*requires_content_before_breaking=*/false, &builder);
 
     // For other node types, what matters is whether the block-start border edge

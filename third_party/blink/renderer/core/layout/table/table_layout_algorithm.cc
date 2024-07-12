@@ -82,6 +82,7 @@ ConstraintSpace CreateCaptionConstraintSpace(
   if (block_offset && table_constraint_space.HasBlockFragmentation()) {
     SetupSpaceBuilderForFragmentation(
         table_constraint_space, caption, *block_offset,
+        table_constraint_space.FragmentainerBlockSize(),
         /*requires_content_before_breaking=*/false, &builder);
   }
 
@@ -556,6 +557,12 @@ LayoutUnit TableLayoutAlgorithm::ComputeCaptionBlockSize() {
 }
 
 const LayoutResult* TableLayoutAlgorithm::Layout() {
+  if (is_known_to_be_last_table_box_) {
+    // This is the last table box fragment. Shouldn't make room for cloned
+    // block-end box decorations.
+    container_builder_.SetShouldCloneBoxEndDecorations(false);
+  }
+
   const bool is_fixed_layout = Style().IsFixedTableLayout();
   const LogicalSize border_spacing = Style().TableBorderSpacing();
   TableGroupedChildren grouped_children(Node());
@@ -934,8 +941,14 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
           incoming_table_break_data->consumed_table_box_block_size;
       is_past_table_box = incoming_table_break_data->is_past_table_box;
       if (incoming_table_break_data->has_entered_table_box) {
-        border_padding_sides_to_include.block_start = false;
-
+        // The block-start border won't be in this fragment when resuming in the
+        // slicing box decoration break model (and also not in the cloning
+        // model, if we're already past the table box (and just dealing with
+        // bottom captions, essentially)).
+        if (Style().BoxDecorationBreak() == EBoxDecorationBreak::kSlice ||
+            is_past_table_box) {
+          border_padding_sides_to_include.block_start = false;
+        }
         border_spacing_before_first_section = LayoutUnit();
       }
       if (is_past_table_box)
@@ -948,7 +961,7 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
       CreateConstraintSpaceData(Style(), column_locations, sections, rows,
                                 cell_block_constraints, border_spacing);
 
-  const BoxStrut border_padding = container_builder_.BorderPadding();
+  const BoxStrut border_padding = container_builder_.BorderScrollbarPadding();
   const bool has_collapsed_borders = table_borders.IsCollapsed();
 
   // The current layout position.
@@ -1436,17 +1449,11 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
     }
   }
 
-  if (!is_past_table_box) {
-    // If we broke inside a section, the block-end border/padding shouldn't be
-    // added to this fragment.
-    if (broke_inside) {
-      border_padding_sides_to_include.block_end = false;
-    } else if (!table_box_extent) {
-      // We're not past the table box, we didn't break inside, but there was no
-      // section to kick off "table box" extent calculation. Do it now.
-      table_box_extent =
-          BeginTableBoxLayout(child_block_offset, BlockStartBorderPadding());
-    }
+  if (!table_box_extent && !is_past_table_box && !broke_inside) {
+    // We're not past the table box, we didn't break inside, but there was no
+    // section to kick off "table box" extent calculation. Do it now.
+    table_box_extent =
+        BeginTableBoxLayout(child_block_offset, BlockStartBorderPadding());
   }
 
   bool table_box_will_continue =
@@ -1563,8 +1570,11 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
 
   if (!table_box_extent)
     border_padding_sides_to_include.block_start = false;
-  if (!is_past_table_box)
+  if (!is_past_table_box &&
+      (!container_builder_.ShouldCloneBoxEndDecorations() ||
+       !table_box_extent)) {
     border_padding_sides_to_include.block_end = false;
+  }
 
   // Add all the bottom captions.
   if (!relayout_captions) {
@@ -1685,12 +1695,24 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
 
   container_builder_.HandleOofsAndSpecialDescendants();
 
-  if (has_repeated_header && has_entered_table_box &&
-      !table_box_will_continue && !is_known_to_be_last_table_box_) {
-    // We have already laid out the header in a repeatable manner (with an
-    // outgoing "repeat" break token). However, we managed to finish the table
-    // box in this fragment, so it shouldn't repeat anymore. We now need to
-    // re-layout, with this in mind.
+  if ((has_repeated_header ||
+       container_builder_.ShouldCloneBoxEndDecorations()) &&
+      has_entered_table_box && !table_box_will_continue &&
+      !is_known_to_be_last_table_box_) {
+    // The table's border box ends in this fragment. We started off without
+    // knowing this (unlike for all other box types, we cannot know this
+    // up-front for tables). There are two things that may have become incorrect
+    // because of this, so that we need to relayout with the new information in
+    // mind:
+    //
+    // 1. Repeated table headers. We have already laid out the header in a
+    // repeatable manner, with an outgoing "repeat" break token, but it's not
+    // going to repeat anymore, so the break token needs to go away.
+    //
+    // 2. Cloned block-end box decorations. Cloned block-end box decorations
+    // reduce available fragmentainer space available, to prevent child content
+    // from overlapping with this area. Since the border box ends here, we
+    // shouldn't have reserved space for this.
     return container_builder_.Abort(LayoutResult::kNeedsRelayoutAsLastTableBox);
   }
 

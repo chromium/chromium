@@ -744,6 +744,7 @@ const LayoutResult* ComputeOofBlockDimensions(
         // initial column balancing pass.
         SetupSpaceBuilderForFragmentation(
             space, node, /*fragmentainer_offset_delta=*/LayoutUnit(),
+            space.FragmentainerBlockSize(),
             /*requires_content_before_breaking=*/false, &builder);
       }
       result = node.Layout(builder.ToConstraintSpace());
