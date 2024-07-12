@@ -158,7 +158,8 @@ DropData* WebContentsViewIOS::GetDropData() const {
 }
 
 gfx::Rect WebContentsViewIOS::GetViewBounds() const {
-  return gfx::Rect();
+  return gfx::Rect(ui_view_->view_.contentSize.width,
+                   ui_view_->view_.contentSize.height);
 }
 
 void WebContentsViewIOS::GotFocus(RenderWidgetHostImpl* render_widget_host) {
