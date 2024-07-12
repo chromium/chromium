@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_LENS_LENS_OVERLAY_PERMISSION_UTILS_H_
-#define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_PERMISSION_UTILS_H_
+#ifndef COMPONENTS_LENS_LENS_OVERLAY_PERMISSION_UTILS_H_
+#define COMPONENTS_LENS_LENS_OVERLAY_PERMISSION_UTILS_H_
 
 class PrefService;
 
@@ -55,4 +55,4 @@ bool CanSharePageTitleWithLensOverlay(syncer::SyncService* sync_service);
 
 }  // namespace lens
 
-#endif  // CHROME_BROWSER_UI_LENS_LENS_OVERLAY_PERMISSION_UTILS_H_
+#endif  // COMPONENTS_LENS_LENS_OVERLAY_PERMISSION_UTILS_H_

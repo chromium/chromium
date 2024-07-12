@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/lens/lens_overlay_permission_utils.h"
+#include "components/lens/lens_overlay_permission_utils.h"
 
 #include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service.h"

@@ -40,6 +40,7 @@ source_set("lens") {
   public_deps = [
     ":lens_internal",
     "//chrome/browser/ui/views/side_panel",
+    "//components/lens:enterprise_policy",
   ]
   deps = [
     "//base",
@@ -101,17 +102,13 @@ source_set("lens") {
 source_set("lens_internal") {
   # The public interface is intentionally minimal. There should be a small
   # number of entry points and publicly used headers.
-  public = [
-    "lens_overlay_invocation_source.h",
-    "lens_overlay_permission_utils.h",
-  ]
+  public = [ "lens_overlay_invocation_source.h" ]
   friend = [ ":*" ]
   sources = [
     "lens_overlay_colors.h",
     "lens_overlay_dismissal_source.h",
     "lens_overlay_image_helper.cc",
     "lens_overlay_image_helper.h",
-    "lens_overlay_permission_utils.cc",
     "lens_overlay_proto_converter.cc",
     "lens_overlay_proto_converter.h",
     "lens_overlay_query_controller.cc",
@@ -146,6 +143,7 @@ source_set("lens_internal") {
     "//components/constrained_window",
     "//components/endpoint_fetcher",
     "//components/language/core/common",
+    "//components/lens:enterprise_policy",
     "//components/lens:features",
     "//components/lens/proto/server:proto",
     "//components/metrics_services_manager:metrics_services_manager",
