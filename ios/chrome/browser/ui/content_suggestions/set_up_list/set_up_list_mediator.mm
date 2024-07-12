@@ -245,7 +245,6 @@ bool DefaultBrowserPromoCompleted() {
 
 - (NSArray<SetUpListConfig*>*)setUpListConfigs {
   if (!_setUpListConfigs) {
-    NSArray<SetUpListItemViewData*>* items = [self setUpListItems];
     if ([self allItemsComplete]) {
       SetUpListConfig* config = [[SetUpListConfig alloc] init];
       config.setUpListConsumerSource = self;
@@ -253,9 +252,8 @@ bool DefaultBrowserPromoCompleted() {
       config.setUpListItems = @[ [self allSetItem] ];
       _setUpListConfigs = @[ config ];
     } else {
-      BOOL shouldShowCompactedSetUpListModule =
-          set_up_list_utils::ShouldShowCompactedSetUpListModule();
-      if (shouldShowCompactedSetUpListModule) {
+      NSArray<SetUpListItemViewData*>* items = [self setUpListItems];
+      if (set_up_list_utils::ShouldShowCompactedSetUpListModule()) {
         SetUpListConfig* config = [[SetUpListConfig alloc] init];
         config.shouldShowCompactModule = YES;
         config.shouldShowSeeMore = YES;
@@ -285,6 +283,14 @@ bool DefaultBrowserPromoCompleted() {
           [configs addObject:config];
         }
         _setUpListConfigs = configs;
+      }
+    }
+
+    // Record "ItemDisplayed" histogram for each item.
+    for (SetUpListConfig* config in _setUpListConfigs) {
+      for (SetUpListItemViewData* item in config.setUpListItems) {
+        [self.contentSuggestionsMetricsRecorder
+            recordSetUpListItemShown:item.type];
       }
     }
   }
