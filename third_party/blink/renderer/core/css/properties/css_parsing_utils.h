@@ -620,18 +620,15 @@ bool IsSupportedKeywordTech(CSSValueID keyword);
 bool IsSupportedKeywordFormat(CSSValueID keyword);
 
 CSSValue* ConsumeGridLine(CSSParserTokenStream&, const CSSParserContext&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeGridTrackList(T&, const CSSParserContext&, TrackListType);
+CSSValue* ConsumeGridTrackList(CSSParserTokenStream&,
+                               const CSSParserContext&,
+                               TrackListType);
 bool ParseGridTemplateAreasRow(const WTF::String& grid_row_names,
                                NamedGridAreaMap&,
                                const wtf_size_t row_count,
                                wtf_size_t& column_count);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeGridTemplatesRowsOrColumns(T&, const CSSParserContext&);
+CSSValue* ConsumeGridTemplatesRowsOrColumns(CSSParserTokenStream&,
+                                            const CSSParserContext&);
 bool ConsumeGridItemPositionShorthand(bool important,
                                       CSSParserTokenStream&,
                                       const CSSParserContext&,
