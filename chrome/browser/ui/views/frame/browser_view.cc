@@ -2085,6 +2085,15 @@ void BrowserView::FullscreenStateChanged() {
   if (AppUsesWindowControlsOverlay()) {
     UpdateWindowControlsOverlayEnabled();
   }
+
+  // In mac fullscreen the toolbar view is hosted in the overlay widget that has
+  // a higher z-order level. This overlay widget should be used for anchoring
+  // secondary UIs, otherwise they will be covered by the toolbar.
+  views::Widget* widget_for_anchoring =
+      UsesImmersiveFullscreenMode() && IsFullscreen() ? overlay_widget_.get()
+                                                      : nullptr;
+  contents_container()->SetProperty(views::kWidgetForAnchoringKey,
+                                    widget_for_anchoring);
 #endif  // BUILDFLAG(IS_MAC)
 
   browser_->WindowFullscreenStateChanged();

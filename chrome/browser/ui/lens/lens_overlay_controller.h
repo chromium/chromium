@@ -77,6 +77,8 @@ class VariationsClient;
 class PrefService;
 class Profile;
 
+extern void* kLensOverlayPreselectionWidgetIdentifier;
+
 // Manages all state associated with the lens overlay.
 // This class is not thread safe. It should only be used from the browser
 // thread.

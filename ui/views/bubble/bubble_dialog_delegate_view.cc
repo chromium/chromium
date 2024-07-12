@@ -744,9 +744,6 @@ gfx::Rect BubbleDialogDelegate::GetAnchorRect() const {
   // translation into account, so undo that here. Without this, features which
   // apply transforms on windows such as ChromeOS overview mode will see bubbles
   // offset.
-  // TODO(sammiequon): Investigate if we can remove |anchor_widget_| and just
-  // replace its calls with anchor_view->GetWidget().
-  DCHECK_EQ(anchor_widget_, anchor_view->GetWidget());
   if (anchor_widget_) {
     gfx::Transform transform =
         anchor_widget_->GetNativeWindow()->layer()->GetTargetTransform();
@@ -1013,7 +1010,10 @@ void BubbleDialogDelegate::SetAnchorView(View* anchor_view) {
       anchor_widget_ = nullptr;
     }
     if (anchor_view) {
-      anchor_widget_ = anchor_view->GetWidget();
+      anchor_widget_ = anchor_view->GetProperty(kWidgetForAnchoringKey);
+      if (!anchor_widget_) {
+        anchor_widget_ = anchor_view->GetWidget();
+      }
       if (anchor_widget_) {
         const bool visible = GetWidget() && GetWidget()->IsVisible();
         UpdateHighlightedButton(visible);
