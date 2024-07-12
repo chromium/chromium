@@ -17,6 +17,10 @@ import java.lang.annotation.RetentionPolicy;
 
 /** List of properties to designate information about module in Safety Hub. */
 public class SafetyHubModuleProperties {
+    /**
+     * Order reflects state severity. Lowest being the most severe state and highest being the
+     * safest state.
+     */
     @IntDef({ModuleState.WARNING, ModuleState.INFO, ModuleState.SAFE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ModuleState {
@@ -26,6 +30,10 @@ public class SafetyHubModuleProperties {
         int MAX_VALUE = SAFE;
     }
 
+    /**
+     * Values used in "for" loop below - should start from 0 and can't have gaps, lowest value is
+     * additionally used for starting loop.
+     */
     @IntDef({
         ModuleOption.ACCOUNT_PASSWORDS,
         ModuleOption.UPDATE_CHECK,
@@ -40,6 +48,7 @@ public class SafetyHubModuleProperties {
         int UNUSED_PERMISSIONS = 2;
         int NOTIFICATION_REVIEW = 3;
         int SAFE_BROWSING = 4;
+        int OPTION_FIRST = ACCOUNT_PASSWORDS;
         int NUM_ENTRIES = 5;
     }
 
@@ -95,4 +104,12 @@ public class SafetyHubModuleProperties {
     public static final PropertyKey[] SAFE_BROWSING_MODULE_KEYS =
             PropertyModel.concatKeys(
                     COMMON_SAFETY_HUB_MODULE_KEYS, new PropertyKey[] {SAFE_BROWSING_STATE});
+
+    public static final PropertyKey[] BROWSER_STATE_MODULE_KEYS = {
+        COMPROMISED_PASSWORDS_COUNT,
+        UPDATE_STATUS,
+        SITES_WITH_UNUSED_PERMISSIONS_COUNT,
+        NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
+        SAFE_BROWSING_STATE
+    };
 }

@@ -8,6 +8,11 @@ found in the LICENSE file.
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <org.chromium.components.browser_ui.settings.CardPreference
+        android:key="browser_state_indicator"
+        app:allowDividerBelow="false"
+        app:isPreferenceVisible="false"/>
+
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="safety_hub_description"
         android:summary="@string/safety_hub_description"

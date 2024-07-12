@@ -15,9 +15,11 @@ import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.settings.CardPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
@@ -48,6 +50,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     private static final String PREF_UNUSED_PERMISSIONS = "permissions";
     private static final String PREF_NOTIFICATIONS_REVIEW = "notifications_review";
     private static final String PREF_SAFE_BROWSING = "safe_browsing";
+    private static final String PREF_BROWSER_STATE_INDICATOR = "browser_state_indicator";
     private static final String PREF_SAFETY_TIPS_SAFETY_TOOLS = "safety_tips_safety_tools";
     private static final String PREF_SAFETY_TIPS_INCOGNITO = "safety_tips_incognito";
     private static final String PREF_SAFETY_TIPS_SAFE_BROWSING = "safety_tips_safe_browsing";
@@ -68,6 +71,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     private NotificationPermissionReviewBridge mNotificationPermissionReviewBridge;
     private PropertyModel mNotificationsModel;
     private PropertyModel mSafeBrowsingPropertyModel;
+    private PropertyModel mBrowserStateModule;
     private CustomTabIntentHelper mCustomTabIntentHelper;
 
     @Override
@@ -85,6 +89,39 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         setUpNotificationsReviewModule();
         setUpSafeBrowsingModule();
         setUpSafetyTipsModule();
+        setUpBrowserStateModule();
+    }
+
+    private void setUpBrowserStateModule() {
+        CardPreference browserStatePreference = findPreference(PREF_BROWSER_STATE_INDICATOR);
+        int compromisedPasswordsCount =
+                UserPrefs.get(getProfile()).getInteger(Pref.BREACHED_CREDENTIALS_COUNT);
+        int sitesWithUnusedPermissionsCount =
+                mUnusedSitePermissionsBridge.getRevokedPermissions().length;
+        int notificationPermissionsForReviewCount =
+                mNotificationPermissionReviewBridge.getNotificationPermissions().size();
+
+        mBrowserStateModule =
+                new PropertyModel.Builder(SafetyHubModuleProperties.BROWSER_STATE_MODULE_KEYS)
+                        .with(SafetyHubModuleProperties.UPDATE_STATUS, mDelegate.getUpdateStatus())
+                        .with(
+                                SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
+                                compromisedPasswordsCount)
+                        .with(
+                                SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
+                                notificationPermissionsForReviewCount)
+                        .with(
+                                SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
+                                sitesWithUnusedPermissionsCount)
+                        .with(
+                                SafetyHubModuleProperties.SAFE_BROWSING_STATE,
+                                mDelegate.getSafeBrowsingState())
+                        .build();
+
+        PropertyModelChangeProcessor.create(
+                mBrowserStateModule,
+                browserStatePreference,
+                SafetyHubModuleViewBinder::bindBrowserStateProperties);
     }
 
     private void setUpAccountPasswordCheckModule() {
@@ -333,6 +370,9 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         mPermissionsModel.set(
                 SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
                 sitesWithUnusedPermissionsCount);
+        mBrowserStateModule.set(
+                SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
+                sitesWithUnusedPermissionsCount);
     }
 
     private void updateNotificationsReviewPreference() {
@@ -341,13 +381,17 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         mNotificationsModel.set(
                 SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
                 notificationPermissionsForReviewCount);
+        mBrowserStateModule.set(
+                SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
+                notificationPermissionsForReviewCount);
     }
 
     private void updateSafeBrowsingPreference() {
+        @SafeBrowsingState int state = mDelegate.getSafeBrowsingState();
         mSafeBrowsingPropertyModel.set(
                 SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY,
                 mDelegate.isSafeBrowsingManaged());
-        mSafeBrowsingPropertyModel.set(
-                SafetyHubModuleProperties.SAFE_BROWSING_STATE, mDelegate.getSafeBrowsingState());
+        mSafeBrowsingPropertyModel.set(SafetyHubModuleProperties.SAFE_BROWSING_STATE, state);
+        mBrowserStateModule.set(SafetyHubModuleProperties.SAFE_BROWSING_STATE, state);
     }
 }

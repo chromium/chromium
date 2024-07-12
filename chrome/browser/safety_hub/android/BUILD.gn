@@ -113,6 +113,7 @@ robolectric_library("junit") {
     "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
     "//components/background_task_scheduler:factory_java",
     "//components/background_task_scheduler:public_java",
+    "//components/browser_ui/settings/android:java",
     "//components/prefs/android:java",
     "//components/sync/android:sync_java",
     "//components/user_prefs/android:java",

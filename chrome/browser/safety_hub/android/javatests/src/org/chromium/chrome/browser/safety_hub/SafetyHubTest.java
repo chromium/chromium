@@ -241,7 +241,7 @@ public final class SafetyHubTest {
                         .getActivity()
                         .getResources()
                         .getQuantityString(R.plurals.safety_hub_permissions_warning_title, 2, 2);
-        scrollToPreference(withText(permissionsTitle));
+        scrollToExpandedPreference(permissionsTitle);
         onView(withText(permissionsTitle)).check(matches(isDisplayed()));
 
         // Module should be expanded initially since it's in a warning state.
@@ -333,7 +333,7 @@ public final class SafetyHubTest {
                         .getResources()
                         .getQuantityString(
                                 R.plurals.safety_hub_notifications_review_warning_title, 2, 2);
-        scrollToPreference(withText(notificationsTitle));
+        scrollToExpandedPreference(notificationsTitle);
         onView(withText(notificationsTitle)).check(matches(isDisplayed()));
 
         // Module should be expanded initially since it's in a warning state.
@@ -399,6 +399,7 @@ public final class SafetyHubTest {
         clickOnExpandButtonNextToText(safeBrowsingTitle);
 
         // Click on the secondary button and verity that the Safe Browsing settings is opened.
+        scrollToExpandedPreference(safeBrowsingTitle);
         clickOnSecondaryButtonNextToText(safeBrowsingTitle);
         onViewWaiting(withText(R.string.prefs_safe_browsing_title)).check(matches(isDisplayed()));
     }
@@ -418,7 +419,7 @@ public final class SafetyHubTest {
         // Verify the update check module is displaying the "Update available" state.
         String updateCheckTitle =
                 safetyHubFragment.getString(R.string.safety_check_updates_outdated);
-        scrollToPreference(withText(updateCheckTitle));
+        scrollToExpandedPreference(updateCheckTitle);
         onView(withText(updateCheckTitle)).check(matches(isDisplayed()));
 
         // Module should be expanded initially since it's in a warning state.
@@ -483,7 +484,7 @@ public final class SafetyHubTest {
                         .getActivity()
                         .getResources()
                         .getQuantityString(R.plurals.safety_hub_permissions_warning_title, 2, 2);
-        scrollToPreference(withText(permissionsTitle));
+        scrollToExpandedPreference(permissionsTitle);
         onView(withText(permissionsTitle)).check(matches(isDisplayed()));
 
         // Module should be expanded initially since it's in a warning state.
@@ -550,7 +551,7 @@ public final class SafetyHubTest {
                         .getQuantityString(
                                 R.plurals.safety_hub_notifications_review_warning_title, 2, 2);
 
-        scrollToPreference(withText(notificationsTitle));
+        scrollToExpandedPreference(notificationsTitle);
         onView(withText(notificationsTitle)).check(matches(isDisplayed()));
 
         // Module should be expanded initially since it's in a warning state.
@@ -768,6 +769,23 @@ public final class SafetyHubTest {
     private void scrollToPreference(Matcher<View> matcher) {
         onView(withId(R.id.recycler_view))
                 .perform(RecyclerViewActions.scrollTo(hasDescendant(matcher)));
+    }
+
+    private void scrollToExpandedPreference(String text) {
+        onView(withId(R.id.recycler_view))
+                .perform(
+                        RecyclerViewActions.scrollTo(
+                                hasDescendant(
+                                        anyOf(
+                                                allOf(
+                                                        withId(R.id.buttons_container),
+                                                        hasSibling(
+                                                                withChild(
+                                                                        withChild(
+                                                                                withText(text))))),
+                                                allOf(
+                                                        withId(android.R.id.summary),
+                                                        hasSibling(withText(text)))))));
     }
 
     private void scrollToLastPosition() {

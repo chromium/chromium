@@ -8,8 +8,11 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import androidx.appcompat.content.res.AppCompatResources;
+
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
+import org.chromium.components.browser_ui.settings.CardPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -75,6 +78,18 @@ public class SafetyHubModuleViewBinder {
         if (SafetyHubModuleProperties.SAFE_BROWSING_STATE == propertyKey
                 || SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY == propertyKey) {
             updateSafeBrowsingModule(preference, model);
+        }
+    }
+
+    public static void bindBrowserStateProperties(
+            PropertyModel model, CardPreference preference, PropertyKey propertyKey) {
+        if (SafetyHubModuleProperties.SAFE_BROWSING_STATE == propertyKey
+                || SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT
+                        == propertyKey
+                || SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT == propertyKey
+                || SafetyHubModuleProperties.UPDATE_STATUS == propertyKey
+                || SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT == propertyKey) {
+            updateBrowserStateModule(preference, model);
         }
     }
 
@@ -398,6 +413,28 @@ public class SafetyHubModuleViewBinder {
         preference.setExpanded(expanded);
 
         preference.setIcon(getIconForModuleState(preference.getContext(), state, false));
+    }
+
+    private static void updateBrowserStateModule(CardPreference preference, PropertyModel model) {
+        for (@SafetyHubModuleProperties.ModuleOption
+                int i = SafetyHubModuleProperties.ModuleOption.OPTION_FIRST;
+                i < SafetyHubModuleProperties.ModuleOption.NUM_ENTRIES;
+                i++) {
+            if (getModuleState(model, i) < SafetyHubModuleProperties.ModuleState.INFO) {
+                preference.setVisible(false);
+                return;
+            }
+        }
+
+        preference.setTitle(R.string.safety_hub_safe_browser_state_title);
+        preference.setSummary(
+                preference.getContext().getString(R.string.safety_hub_checked_recently));
+        preference.setIconDrawable(
+                AppCompatResources.getDrawable(
+                        preference.getContext(), R.drawable.ic_check_circle_filled_green_24dp));
+        preference.setShouldCenterIcon(true);
+        preference.setCloseIconVisibility(View.GONE);
+        preference.setVisible(true);
     }
 
     private static Drawable getIconForModuleState(
