@@ -217,7 +217,7 @@ content::RenderFrame* ExtensionFrameHelper::GetBackgroundPageFrame(
                            extension_misc::kUnknownTabId, extension_id)) {
       blink::WebLocalFrame* web_frame = helper->render_frame()->GetWebFrame();
       // Check if this is the outermost main frame (do not return embedded
-      // main frames like portals or fenced frames).
+      // main frames like fenced frames).
       if (web_frame->IsOutermostMainFrame())
         return helper->render_frame();
     }

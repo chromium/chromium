@@ -460,7 +460,7 @@ class CC_EXPORT LayerTreeImpl {
   // top-level frames we store this value in page_scale_factor_, but for
   // cross-process subframes it's stored in external_page_scale_factor_, so
   // that it only affects raster scale. These cases are mutually exclusive,
-  // except for a page hosted in a <portal>, so only one of the values should
+  // except for a page hosted in a GuestView, so only one of the values should
   // ever vary from 1.f.
   float page_scale_factor_for_scroll() const {
     DCHECK(external_page_scale_factor_ == 1.f ||

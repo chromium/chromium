@@ -1923,9 +1923,9 @@ void PictureLayerImpl::UpdateIdealScales() {
   // does, but doesn't affect any geometry calculations. In a normal main frame,
   // fenced frame, or OOPIF, only one of current or external page scale factor
   // is ever used but not both. The only exception to this is a main frame in a
-  // portal or a guest view. In these cases we may have a
-  // current_page_scale_factor (e.g. due to a viewport <meta> tag) as well as an
-  // external_page_scale_factor coming from the page scale of its embedder page.
+  // a guest view. In these cases we may have a current_page_scale_factor (e.g.
+  // due to a viewport <meta> tag) as well as an external_page_scale_factor
+  // coming from the page scale of its embedder page.
   float external_page_scale_factor =
       layer_tree_impl() ? layer_tree_impl()->external_page_scale_factor() : 1.f;
   DCHECK(!layer_tree_impl() ||

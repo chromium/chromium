@@ -27,7 +27,7 @@ enum RequestDestination {
   kEmpty = 0,
   kAudio = 1,
   kAudioWorklet = 2,
-  // kDocument is for a main resource request in a main frame, or a Portal.
+  // kDocument is for a main resource request in a main frame.
   kDocument = 3,
   kEmbed = 4,
   kFont = 5,
