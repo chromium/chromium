@@ -6,6 +6,8 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 import {convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, getFilteredVoiceList, mojoVoicePackStatusToVoicePackStatusEnum, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertDeepEquals, assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
+import {createSpeechSynthesisVoice} from './common.js';
+
 
 suite('voice and language utils', () => {
   test('mojoVoicePackStatusToVoicePackStatusEnum', () => {
@@ -238,6 +240,32 @@ suite('voice and language utils', () => {
       assertDeepEquals([voice1], getFilteredVoiceList(possibleVoices));
     } else {
       assertDeepEquals([voice1, voice2], getFilteredVoiceList(possibleVoices));
+    }
+  });
+
+  test('getFilteredVoiceList filters eSpeak voices', () => {
+    const voice1 = createSpeechSynthesisVoice(
+        {default: true, name: 'eSpeak Yu', localService: true, lang: 'en-us'});
+    const voice2 = createSpeechSynthesisVoice(
+        {default: true, name: 'eSpeak Kristi', localService: true, lang: 'cy'});
+    const voice3 = createSpeechSynthesisVoice({
+      default: true,
+      name: 'eSpeak Lauren',
+      localService: true,
+      lang: 'en-cb',
+    });
+
+    const possibleVoices: SpeechSynthesisVoice[] = [voice1, voice2, voice3];
+
+    if (chrome.readingMode.isChromeOsAsh) {
+      // Welsh isn't a Google TTS locale, so the Welsh eSpeak voice should be
+      // kept, but the English eSpeak voices should be filtered out because
+      // Google TTS voices in English (even if in a different locale) exist.
+      assertDeepEquals([voice2], getFilteredVoiceList(possibleVoices));
+    } else {
+      // eSpeak voices should be filtered out only on ChromeOS Ash.
+      assertDeepEquals(
+          [voice1, voice2, voice3], getFilteredVoiceList(possibleVoices));
     }
   });
 });

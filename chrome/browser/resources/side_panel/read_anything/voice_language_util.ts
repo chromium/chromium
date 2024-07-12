@@ -79,7 +79,6 @@ export enum VoiceClientSideStatusCode {
 const NATURAL_STRING_IDENTIFIER = '(Natural)';
 const ESPEAK_STRING_IDENTIFIER = 'eSpeak';
 
-
 // Helper for filtering the voice list broken into a separate method
 // that doesn't modify instance data to simplify testing.
 export function getFilteredVoiceList(possibleVoices: SpeechSynthesisVoice[]):
@@ -98,6 +97,15 @@ export function getFilteredVoiceList(possibleVoices: SpeechSynthesisVoice[]):
     availableVoices = availableVoices.filter(
         ({name}) => !name.toLowerCase().includes('android'));
   }
+  // Filter out espeak voices if there exists a Google voice in the same
+  // locale.
+  if (chrome.readingMode.isChromeOsAsh) {
+    availableVoices = availableVoices.filter(
+        voice => !isEspeak(voice) ||
+            convertLangOrLocaleToExactVoicePackLocale(voice.lang) ===
+                undefined);
+  }
+
   return availableVoices;
 }
 
