@@ -47,6 +47,8 @@ class TrustedVaultClientBackend : public KeyedService {
   ~TrustedVaultClientBackend() override;
 
   // Adds/removes observers.
+  // TODO(crbug.com/343007092): Need to update observer APIs to add security
+  // domain parameter.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
@@ -60,7 +62,11 @@ class TrustedVaultClientBackend : public KeyedService {
   // Asynchronously fetches the shared keys for `identity` and invokes
   // `callback` with the fetched keys.
   virtual void FetchKeys(id<SystemIdentity> identity,
-                         KeyFetchedCallback callback) = 0;
+                         NSString* security_domain,
+                         KeyFetchedCallback completion);
+  // DEPRECATED, please use the method above.
+  virtual void FetchKeys(id<SystemIdentity> identity,
+                         KeyFetchedCallback callback);
 
   // Invoked when the result of FetchKeys() contains keys that are not
   // up-to-date. During the execution, before `callback` is invoked, the
@@ -68,21 +74,35 @@ class TrustedVaultClientBackend : public KeyedService {
   // may or may not treat existing keys as stale (only guaranteed upon
   // completion of MarkLocalKeysAsStale()).
   virtual void MarkLocalKeysAsStale(id<SystemIdentity> identity,
-                                    base::OnceClosure callback) = 0;
+                                    NSString* security_domain,
+                                    base::OnceClosure completion);
+  // DEPRECATED, please use the method above.
+  virtual void MarkLocalKeysAsStale(id<SystemIdentity> identity,
+                                    base::OnceClosure callback);
 
   // Returns whether recoverability of the keys is degraded and user action is
   // required to add a new method.
   virtual void GetDegradedRecoverabilityStatus(
       id<SystemIdentity> identity,
-      base::OnceCallback<void(bool)> callback) = 0;
+      NSString* security_domain,
+      base::OnceCallback<void(bool)> completion);
+  // DEPRECATED, please use the method above.
+  virtual void GetDegradedRecoverabilityStatus(
+      id<SystemIdentity> identity,
+      base::OnceCallback<void(bool)> callback);
 
   // Presents the trusted vault key reauthentication UI for `identity` for the
   // purpose of extending the set of keys returned via FetchKeys(). Once the
   // reauth is done and the UI is dismissed, `callback` is called. `callback` is
   // not called if the reauthentication is canceled.
   virtual void Reauthentication(id<SystemIdentity> identity,
+                                NSString* security_domain,
                                 UIViewController* presenting_view_controller,
-                                CompletionBlock callback) = 0;
+                                CompletionBlock completion);
+  // DEPRECATED, please use the method above.
+  virtual void Reauthentication(id<SystemIdentity> identity,
+                                UIViewController* presenting_view_controller,
+                                CompletionBlock callback);
 
   // Presents the trusted vault key reauthentication UI for `identity` for the
   // purpose of improving recoverability as returned via
@@ -91,8 +111,14 @@ class TrustedVaultClientBackend : public KeyedService {
   // reauthentication is canceled.
   virtual void FixDegradedRecoverability(
       id<SystemIdentity> identity,
+      NSString* security_domain,
       UIViewController* presenting_view_controller,
-      CompletionBlock callback) = 0;
+      CompletionBlock completion);
+  // DEPRECATED, please use the method above.
+  virtual void FixDegradedRecoverability(
+      id<SystemIdentity> identity,
+      UIViewController* presenting_view_controller,
+      CompletionBlock callback);
 
   // Cancels the presented trusted vault reauthentication UI, triggered via
   // either Reauthentication() or via
@@ -104,7 +130,11 @@ class TrustedVaultClientBackend : public KeyedService {
   // Clears local data belonging to `identity`, such as shared keys. This
   // excludes the physical client's key pair, which remains unchanged.
   virtual void ClearLocalData(id<SystemIdentity> identity,
-                              base::OnceCallback<void(bool)> callback) = 0;
+                              NSString* security_domain,
+                              base::OnceCallback<void(bool)> completion);
+  // DEPRECATED, please use the method above.
+  virtual void ClearLocalData(id<SystemIdentity> identity,
+                              base::OnceCallback<void(bool)> callback);
 
   // Returns the member public key used to enroll the local device.
   virtual void GetPublicKeyForIdentity(id<SystemIdentity> identity,

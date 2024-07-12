@@ -74,29 +74,33 @@ void FakeTrustedVaultClientBackend::
 }
 
 void FakeTrustedVaultClientBackend::FetchKeys(id<SystemIdentity> identity,
-                                              KeyFetchedCallback callback) {
+                                              NSString* security_domain,
+                                              KeyFetchedCallback completion) {
   // Do nothing.
 }
 
 void FakeTrustedVaultClientBackend::MarkLocalKeysAsStale(
     id<SystemIdentity> identity,
-    base::OnceClosure callback) {
+    NSString* security_domain,
+    base::OnceClosure completion) {
   // Do nothing.
 }
 
 void FakeTrustedVaultClientBackend::GetDegradedRecoverabilityStatus(
     id<SystemIdentity> identity,
-    base::OnceCallback<void(bool)> callback) {
+    NSString* security_domain,
+    base::OnceCallback<void(bool)> completion) {
   // Do nothing.
 }
 
 void FakeTrustedVaultClientBackend::Reauthentication(
     id<SystemIdentity> identity,
+    NSString* security_domain,
     UIViewController* presenting_view_controller,
-    CompletionBlock callback) {
+    CompletionBlock completion) {
   DCHECK(!view_controller_);
   view_controller_ = [[FakeTrustedVaultClientBackendViewController alloc]
-      initWithCompletion:callback];
+      initWithCompletion:completion];
   [presenting_view_controller presentViewController:view_controller_
                                            animated:YES
                                          completion:nil];
@@ -104,29 +108,31 @@ void FakeTrustedVaultClientBackend::Reauthentication(
 
 void FakeTrustedVaultClientBackend::FixDegradedRecoverability(
     id<SystemIdentity> identity,
+    NSString* security_domain,
     UIViewController* presenting_view_controller,
-    CompletionBlock callback) {
+    CompletionBlock completion) {
   // Do nothing.
 }
 
 void FakeTrustedVaultClientBackend::CancelDialog(BOOL animated,
-                                                 ProceduralBlock callback) {
+                                                 ProceduralBlock completion) {
   DCHECK(view_controller_);
   [view_controller_.presentingViewController
       dismissViewControllerAnimated:animated
-                         completion:callback];
+                         completion:completion];
   view_controller_ = nil;
 }
 
 void FakeTrustedVaultClientBackend::ClearLocalData(
     id<SystemIdentity> identity,
-    base::OnceCallback<void(bool)> callback) {
+    NSString* security_domain,
+    base::OnceCallback<void(bool)> completion) {
   // Do nothing.
 }
 
 void FakeTrustedVaultClientBackend::GetPublicKeyForIdentity(
     id<SystemIdentity> identity,
-    GetPublicKeyCallback callback) {
+    GetPublicKeyCallback completion) {
   // Do nothing.
 }
 

@@ -23,23 +23,29 @@ class ChromiumTrustedVaultClientBackend final
   void SetDeviceRegistrationPublicKeyVerifierForUMA(
       VerifierCallback verifier) final;
   void FetchKeys(id<SystemIdentity> identity,
-                 KeyFetchedCallback callback) final;
+                 NSString* security_domain,
+                 KeyFetchedCallback completion) final;
   void MarkLocalKeysAsStale(id<SystemIdentity> identity,
-                            base::OnceClosure callback) final;
+                            NSString* security_domain,
+                            base::OnceClosure completion) final;
   void GetDegradedRecoverabilityStatus(
       id<SystemIdentity> identity,
-      base::OnceCallback<void(bool)> callback) final;
+      NSString* security_domain,
+      base::OnceCallback<void(bool)> completion) final;
   void Reauthentication(id<SystemIdentity> identity,
+                        NSString* security_domain,
                         UIViewController* presenting_view_controller,
-                        CompletionBlock callback) final;
+                        CompletionBlock completion) final;
   void FixDegradedRecoverability(id<SystemIdentity> identity,
+                                 NSString* security_domain,
                                  UIViewController* presenting_view_controller,
-                                 CompletionBlock callback) final;
-  void CancelDialog(BOOL animated, ProceduralBlock callback) final;
+                                 CompletionBlock completion) final;
+  void CancelDialog(BOOL animated, ProceduralBlock completion) final;
   void ClearLocalData(id<SystemIdentity> identity,
-                      base::OnceCallback<void(bool)> callback) final;
+                      NSString* security_domain,
+                      base::OnceCallback<void(bool)> completion) final;
   void GetPublicKeyForIdentity(id<SystemIdentity> identity,
-                               GetPublicKeyCallback callback) final;
+                               GetPublicKeyCallback completion) final;
 };
 
 void ChromiumTrustedVaultClientBackend::AddObserver(Observer* observer) {
@@ -55,34 +61,40 @@ void ChromiumTrustedVaultClientBackend::
   // Do nothing.
 }
 
-void ChromiumTrustedVaultClientBackend::FetchKeys(id<SystemIdentity> identity,
-                                                  KeyFetchedCallback callback) {
+void ChromiumTrustedVaultClientBackend::FetchKeys(
+    id<SystemIdentity> identity,
+    NSString* security_domain,
+    KeyFetchedCallback completion) {
   NOTREACHED_IN_MIGRATION();
 }
 
 void ChromiumTrustedVaultClientBackend::MarkLocalKeysAsStale(
     id<SystemIdentity> identity,
-    base::OnceClosure callback) {
+    NSString* security_domain,
+    base::OnceClosure completion) {
   NOTREACHED_IN_MIGRATION();
 }
 
 void ChromiumTrustedVaultClientBackend::GetDegradedRecoverabilityStatus(
     id<SystemIdentity> identity,
-    base::OnceCallback<void(bool)> callback) {
+    NSString* security_domain,
+    base::OnceCallback<void(bool)> completion) {
   NOTREACHED_IN_MIGRATION();
 }
 
 void ChromiumTrustedVaultClientBackend::Reauthentication(
     id<SystemIdentity> identity,
+    NSString* security_domain,
     UIViewController* presenting_view_controller,
-    CompletionBlock callback) {
+    CompletionBlock completion) {
   NOTREACHED_IN_MIGRATION();
 }
 
 void ChromiumTrustedVaultClientBackend::FixDegradedRecoverability(
     id<SystemIdentity> identity,
+    NSString* security_domain,
     UIViewController* presenting_view_controller,
-    CompletionBlock callback) {
+    CompletionBlock completion) {
   NOTREACHED_IN_MIGRATION();
 }
 
@@ -93,13 +105,14 @@ void ChromiumTrustedVaultClientBackend::CancelDialog(BOOL animated,
 
 void ChromiumTrustedVaultClientBackend::ClearLocalData(
     id<SystemIdentity> identity,
-    base::OnceCallback<void(bool)> callback) {
+    NSString* security_domain,
+    base::OnceCallback<void(bool)> completion) {
   // Do nothing.
 }
 
 void ChromiumTrustedVaultClientBackend::GetPublicKeyForIdentity(
     id<SystemIdentity> identity,
-    GetPublicKeyCallback callback) {
+    GetPublicKeyCallback completion) {
   NOTREACHED_IN_MIGRATION();
 }
 

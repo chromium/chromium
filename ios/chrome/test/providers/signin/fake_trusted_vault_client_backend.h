@@ -21,23 +21,29 @@ class FakeTrustedVaultClientBackend final : public TrustedVaultClientBackend {
   void SetDeviceRegistrationPublicKeyVerifierForUMA(
       VerifierCallback verifier) final;
   void FetchKeys(id<SystemIdentity> identity,
-                 KeyFetchedCallback callback) final;
+                 NSString* security_domain,
+                 KeyFetchedCallback completion) final;
   void MarkLocalKeysAsStale(id<SystemIdentity> identity,
-                            base::OnceClosure callback) final;
+                            NSString* security_domain,
+                            base::OnceClosure completion) final;
   void GetDegradedRecoverabilityStatus(
       id<SystemIdentity> identity,
-      base::OnceCallback<void(bool)> callback) final;
+      NSString* security_domain,
+      base::OnceCallback<void(bool)> completion) final;
   void Reauthentication(id<SystemIdentity> identity,
+                        NSString* security_domain,
                         UIViewController* presenting_view_controller,
-                        CompletionBlock callback) final;
+                        CompletionBlock completion) final;
   void FixDegradedRecoverability(id<SystemIdentity> identity,
+                                 NSString* security_domain,
                                  UIViewController* presenting_view_controller,
-                                 CompletionBlock callback) final;
+                                 CompletionBlock completion) final;
   void CancelDialog(BOOL animated, ProceduralBlock callback) final;
   void ClearLocalData(id<SystemIdentity> identity,
-                      base::OnceCallback<void(bool)> callback) final;
+                      NSString* security_domain,
+                      base::OnceCallback<void(bool)> completion) final;
   void GetPublicKeyForIdentity(id<SystemIdentity> identity,
-                               GetPublicKeyCallback callback) final;
+                               GetPublicKeyCallback completion) final;
 
   // Simulates user cancelling the reauth dialog.
   void SimulateUserCancel();
