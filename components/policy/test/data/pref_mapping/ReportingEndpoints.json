@@ -1,0 +1,20 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "android"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "enterprise_reporting.reporting_endpoints",
+      "default_value": {},
+      "values_to_test": [
+        {
+          "endpoint-1": "https://example.com",
+          "reporting-endpoint": "https://reporting.example/cookie-issues"
+        }
+      ]
+    }
+  }
+]

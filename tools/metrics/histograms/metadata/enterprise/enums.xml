@@ -2150,6 +2150,7 @@ chromium-metrics-reviews@google.com.
   <int value="1284" label="SystemShortcutBehavior"/>
   <int value="1285" label="DeletingUndecryptablePasswordsEnabled"/>
   <int value="1286" label="StandardizedBrowserZoomEnabled"/>
+  <int value="1287" label="ReportingEndpoints"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

@@ -2279,6 +2279,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #endif
 
   registry->RegisterIntegerPref(prefs::kLensOverlayStartCount, 0);
+
+  registry->RegisterDictionaryPref(prefs::kReportingEndpoints);
 }
 
 void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
