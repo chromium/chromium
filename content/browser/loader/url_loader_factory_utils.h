@@ -36,6 +36,12 @@ CONTENT_EXPORT const Interceptor& GetTestingInterceptor();
 // TODO(crbug.com/40947547): Document when the interception occurs.
 CONTENT_EXPORT void SetInterceptorForTesting(const Interceptor& interceptor);
 
+// Only accessed on the IO thread.
+// Basically the same as `!!GetTestingInterceptor()`, and introduced to avoid
+// possible race conditions between UI/IO threads.
+CONTENT_EXPORT bool HasInterceptorOnIOThreadForTesting();
+CONTENT_EXPORT void SetHasInterceptorOnIOThreadForTesting(bool has_interceptor);
+
 // A parameter object for `ContentBrowserClient::WillCreateURLLoaderFactory()`.
 class CONTENT_EXPORT ContentClientParams final {
   STACK_ALLOCATED();

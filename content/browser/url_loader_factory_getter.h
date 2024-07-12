@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
@@ -19,8 +18,6 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace content {
-
-class StoragePartitionImpl;
 
 // SharedURLLoaderFactory that caches and reuses a URLLoaderFactory remote
 // created by its `CreateCallback`, and re-create and reconnect if the cached
@@ -85,25 +82,22 @@ class CONTENT_EXPORT ReconnectableURLLoaderFactory
 // Holds on to URLLoaderFactory for a given StoragePartition and allows code
 // running on the IO thread to access them. Note these are the factories used by
 // the browser process for frame requests.
-class URLLoaderFactoryGetter
+class URLLoaderFactoryGetter final
     : public base::RefCountedThreadSafe<URLLoaderFactoryGetter,
                                         BrowserThread::DeleteOnIOThread> {
  public:
-  CONTENT_EXPORT URLLoaderFactoryGetter();
+  // Initializes this object on the UI thread. Similar to
+  // `ReconnectableURLLoaderFactory`, this caches and reuses a URLLoaderFactory
+  // remote created by its `CreateCallback`, and re-create and reconnect if the
+  // cached remote is disconnected. The callback is called on the UI thread.
+  explicit CONTENT_EXPORT URLLoaderFactoryGetter(
+      ReconnectableURLLoaderFactory::CreateCallback
+          create_url_loader_factory_callback);
 
   URLLoaderFactoryGetter(const URLLoaderFactoryGetter&) = delete;
   URLLoaderFactoryGetter& operator=(const URLLoaderFactoryGetter&) = delete;
 
-  // Initializes this object on the UI thread. The |partition| is used to
-  // initialize the URLLoaderFactories for the network service, and
-  // ServiceWorkers, and will be cached to recover from connection error.
-  // After Initialize(), you can get URLLoaderFactories from this
-  // getter.
-  void Initialize(StoragePartitionImpl* partition);
-
-  // Clear the cached pointer to |StoragePartitionImpl| on the UI thread. Should
-  // be called when the partition is going away.
-  void OnStoragePartitionDestroyed();
+  void Initialize();
 
   // Called on the UI thread to create a PendingSharedURLLoaderFactory that
   // holds a reference to this URLLoaderFactoryGetter, which can be used on IO
@@ -113,26 +107,8 @@ class URLLoaderFactoryGetter
   CONTENT_EXPORT std::unique_ptr<network::PendingSharedURLLoaderFactory>
   GetPendingNetworkFactory();
 
-  // Overrides the network URLLoaderFactory for subsequent requests. Passing a
-  // null pointer will restore the default behavior.
-  CONTENT_EXPORT void SetNetworkFactoryForTesting(
-      network::mojom::URLLoaderFactory* test_factory);
-
-  CONTENT_EXPORT mojo::Remote<network::mojom::URLLoaderFactory>*
-  original_network_factory_for_testing() {
-    return &network_factory_;
-  }
-
-  // When this global function is set, if GetURLLoaderFactory is called and
-  // |test_factory_| is null, then the callback will be run. This method must be
-  // called either on the IO thread or before threads start. This callback is
-  // run on the IO thread.
-  using GetNetworkFactoryCallback = base::RepeatingCallback<void(
-      scoped_refptr<URLLoaderFactoryGetter> url_loader_factory_getter)>;
-  CONTENT_EXPORT static void SetGetNetworkFactoryCallbackForTesting(
-      const GetNetworkFactoryCallback& get_network_factory_callback);
-
-  // Call |network_factory_.FlushForTesting()| on IO thread. For test use only.
+  // Call |url_loader_factory_.FlushForTesting()| on IO thread. For test use
+  // only.
   CONTENT_EXPORT void FlushNetworkInterfaceOnIOThreadForTesting();
 
  private:
@@ -146,7 +122,8 @@ class URLLoaderFactoryGetter
   void InitializeOnIOThread(
       mojo::PendingRemote<network::mojom::URLLoaderFactory> network_factory);
 
-  // Moves |network_factory| to |network_factory_| and sets up an error handler.
+  // Moves |network_factory| to |url_loader_factory_| and sets up an error
+  // handler.
   void ReinitializeOnIOThread(
       mojo::Remote<network::mojom::URLLoaderFactory> network_factory);
 
@@ -159,18 +136,17 @@ class URLLoaderFactoryGetter
   // The pointer shouldn't be cached.
   network::mojom::URLLoaderFactory* GetURLLoaderFactory();
 
-  // Call |network_factory_.FlushForTesting()|. For test use only. When the
+  // Call |url_loader_factory_.FlushForTesting()|. For test use only. When the
   // flush is complete, |callback| will be called.
   void FlushNetworkInterfaceForTesting(base::OnceClosure callback);
 
   // Only accessed on IO thread.
-  mojo::Remote<network::mojom::URLLoaderFactory> network_factory_;
-  raw_ptr<network::mojom::URLLoaderFactory> test_factory_ = nullptr;
+  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
+  bool is_test_url_loader_factory_ = false;
 
-  // Used to re-create |network_factory_| when connection error happens. Can
-  // only be accessed on UI thread. Must be cleared by |StoragePartitionImpl|
-  // when it's going away.
-  raw_ptr<StoragePartitionImpl> partition_ = nullptr;
+  // Only accessed on UI thread.
+  const ReconnectableURLLoaderFactory::CreateCallback
+      create_url_loader_factory_callback_;
 };
 
 }  // namespace content

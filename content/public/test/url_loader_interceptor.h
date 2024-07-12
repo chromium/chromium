@@ -177,7 +177,6 @@ class URLLoaderInterceptor {
  private:
   class IOState;
   class Interceptor;
-  class URLLoaderFactoryGetterWrapper;
   class Wrapper;
 
   // Adds `this` as an interceptor when a `URLLoaderFactory` is about to be

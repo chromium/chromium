@@ -1130,10 +1130,6 @@ StoragePartitionImpl::~StoragePartitionImpl() {
 #endif
   browser_context_ = nullptr;
 
-  if (url_loader_factory_getter_) {
-    url_loader_factory_getter_->OnStoragePartitionDestroyed();
-  }
-
   scoped_refptr<storage::DatabaseTracker> database_tracker(
       GetDatabaseTracker());
   if (database_tracker) {
@@ -1391,8 +1387,11 @@ void StoragePartitionImpl::Initialize(
         std::make_unique<CookieDeprecationLabelManagerImpl>(browser_context_);
   }
 
-  url_loader_factory_getter_ = new URLLoaderFactoryGetter();
-  url_loader_factory_getter_->Initialize(this);
+  url_loader_factory_getter_ = base::MakeRefCounted<
+      URLLoaderFactoryGetter>(base::BindRepeating(
+      &StoragePartitionImpl::CreateURLLoaderFactoryForBrowserProcessInternal,
+      GetWeakPtr()));
+  url_loader_factory_getter_->Initialize();
 
   service_worker_context_->Init(path, quota_manager_proxy.get(),
                                 browser_context_->GetSpecialStoragePolicy(),
@@ -3086,7 +3085,7 @@ void StoragePartitionImpl::ResetURLLoaderFactories() {
   if (shared_url_loader_factory_for_browser_process_) {
     shared_url_loader_factory_for_browser_process_->Reset();
   }
-  url_loader_factory_getter_->Initialize(this);
+  url_loader_factory_getter_->Initialize();
 }
 
 void StoragePartitionImpl::ClearBluetoothAllowedDevicesMapForTesting() {

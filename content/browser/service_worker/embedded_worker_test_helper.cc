@@ -13,6 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_future.h"
 #include "components/services/storage/service_worker/service_worker_storage_control_impl.h"
+#include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
@@ -20,11 +21,36 @@
 #include "content/public/test/policy_container_utils.h"
 #include "content/public/test/test_browser_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 
 namespace content {
+
+namespace {
+
+void CreateURLLoaderFactory(
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory) {
+  network::URLLoaderFactoryBuilder factory_builder;
+  if (url_loader_factory::GetTestingInterceptor()) {
+    url_loader_factory::GetTestingInterceptor().Run(
+        network::mojom::kBrowserProcessId, factory_builder);
+  }
+
+  // Requests are expected to be intercepted by
+  // `url_loader_factory::GetTestingInterceptor()` and not to reach
+  // `terminal_factory` here. So `terminal_factory` is not bound to an actual
+  // receiver.
+  mojo::PendingReceiver<network::mojom::URLLoaderFactory> terminal_factory;
+
+  *out_factory =
+      std::move(factory_builder)
+          .Finish<mojo::PendingRemote<network::mojom::URLLoaderFactory>>(
+              terminal_factory.InitWithNewPipeAndPassRemote());
+}
+
+}  // namespace
 
 EmbeddedWorkerTestHelper::EmbeddedWorkerTestHelper(
     const base::FilePath& user_data_directory)
@@ -76,8 +102,8 @@ EmbeddedWorkerTestHelper::EmbeddedWorkerTestHelper(
       next_thread_id_(0),
       mock_render_process_id_(render_process_host_->GetID()),
       new_mock_render_process_id_(new_render_process_host_->GetID()),
-      url_loader_factory_getter_(
-          base::MakeRefCounted<URLLoaderFactoryGetter>()) {
+      url_loader_factory_getter_(base::MakeRefCounted<URLLoaderFactoryGetter>(
+          base::BindRepeating(&CreateURLLoaderFactory))) {
   wrapper_->SetStorageControlBinderForTest(base::BindRepeating(
       &EmbeddedWorkerTestHelper::BindStorageControl, base::Unretained(this)));
   wrapper_->InitInternal(quota_manager_proxy_.get(),
