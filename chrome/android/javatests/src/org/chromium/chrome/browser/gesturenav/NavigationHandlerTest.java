@@ -120,7 +120,10 @@ public class NavigationHandlerTest {
                                 Matchers.is(toUrl)));
         Assert.assertEquals(
                 "Didn't navigate back", toUrl, ChromeTabUtils.getUrlStringOnUiThread(currentTab()));
-        Assert.assertEquals("Detected a wrong direction.", mNavigationHandler.fromLeftSide(), edge);
+        Assert.assertEquals(
+                "Detected a wrong direction.",
+                mNavigationHandler.getInitiatingEdge() == BackGestureEventSwipeEdge.LEFT,
+                edge);
     }
 
     @Test
@@ -223,7 +226,8 @@ public class NavigationHandlerTest {
                 UrlConstants.NTP_URL,
                 ChromeTabUtils.getUrlStringOnUiThread(currentTab()));
         Assert.assertTrue(
-                "The gesture should start from the left side.", mNavigationHandler.fromLeftSide());
+                "The gesture should start from the left side.",
+                mNavigationHandler.getInitiatingEdge() == BackGestureEventSwipeEdge.LEFT);
     }
 
     @Test

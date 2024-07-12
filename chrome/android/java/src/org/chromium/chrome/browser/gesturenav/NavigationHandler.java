@@ -92,6 +92,7 @@ class NavigationHandler implements TouchEventObserver {
 
     private float mInitialX;
     private float mInitialY;
+    private @BackGestureEventSwipeEdge int mInitiatingEdge;
 
     private boolean mBackGestureForTabHistoryInProgress;
     private boolean mStartNavDuringOngoingGesture;
@@ -229,6 +230,7 @@ class NavigationHandler implements TouchEventObserver {
 
         mInitialX = x;
         mInitialY = y;
+        mInitiatingEdge = initiatingEdge;
 
         // TODO(crbug.com/331778964): This will soon account for UI writing direction.
         boolean forward = initiatingEdge == BackGestureEventSwipeEdge.RIGHT;
@@ -244,7 +246,7 @@ class NavigationHandler implements TouchEventObserver {
                 if (ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)) {
                     mTabOnBackGestureHandler = TabOnBackGestureHandler.from(mTab);
                     mTabOnBackGestureHandler.onBackStarted(
-                            x, y, getProgress(), getBackDirection(), forward);
+                            x, y, getProgress(), mInitiatingEdge, forward);
                 }
                 BackPressMetrics.recordNavStatusOnGestureStart(
                         mTab.getWebContents().hasUncommittedNavigationInPrimaryMainFrame(),
@@ -365,7 +367,7 @@ class NavigationHandler implements TouchEventObserver {
         }
         if (mTabOnBackGestureHandler != null) {
             mTabOnBackGestureHandler.onBackProgressed(
-                    getTouchX(), getTouchY(), getProgress(), getBackDirection());
+                    getTouchX(), getTouchY(), getProgress(), mInitiatingEdge);
         }
     }
 
@@ -392,15 +394,11 @@ class NavigationHandler implements TouchEventObserver {
     }
 
     /**
-     * @return Whether the current gesture origins from the left side.
+     * @return Which edge the current gesture was initiated from.
      */
-    boolean fromLeftSide() {
-        return mInitialX < mEdgeWidthPx;
-    }
-
     @BackGestureEventSwipeEdge
-    int getBackDirection() {
-        return fromLeftSide() ? BackGestureEventSwipeEdge.LEFT : BackGestureEventSwipeEdge.RIGHT;
+    int getInitiatingEdge() {
+        return mInitiatingEdge;
     }
 
     /**
