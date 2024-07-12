@@ -1479,3 +1479,5 @@ crbug.com/349647498 [ Mac10.15 ] virtual/threaded/external/wpt/css/css-backgroun
 
 crbug.com/349639998 virtual/attribution-reporting-aggregatable-debug/external/wpt/attribution-reporting/aggregatable-debug/simple-source-aggregatable-debug-report.sub.https.html [ Slow ]
 crbug.com/349639998 virtual/attribution-reporting-aggregatable-debug/external/wpt/attribution-reporting/aggregatable-debug/simple-trigger-aggregatable-debug-report.sub.https.html [ Slow ]
+
+crbug.com/352643600 [ Mac10.15 ] external/wpt/dom/events/scrolling/scrollend-event-fired-to-window.html [ Slow ]
