@@ -20,7 +20,10 @@
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_util.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.h"
 #include "chrome/browser/new_tab_page/modules/test_support.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/history_context.h"
 #include "components/history/core/browser/history_types.h"
@@ -75,6 +78,9 @@ class HistoryClustersModuleServiceTest : public testing::Test {
     profile_builder.AddTestingFactory(
         HistoryServiceFactory::GetInstance(),
         HistoryServiceFactory::GetDefaultFactory());
+    profile_builder.AddTestingFactory(
+        search_engines::SearchEngineChoiceServiceFactory::GetInstance(),
+        search_engines::SearchEngineChoiceServiceFactory::GetDefaultFactory());
     testing_profile_ = profile_builder.Build();
 
     test_history_clusters_service_ =
@@ -82,7 +88,10 @@ class HistoryClustersModuleServiceTest : public testing::Test {
     mock_cart_service_ =
         std::make_unique<MockCartService>(testing_profile_.get());
     template_url_service_ = std::make_unique<TemplateURLService>(
-        kTemplateURLData, std::size(kTemplateURLData));
+        testing_profile_->GetPrefs(),
+        search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+            testing_profile_.get()),
+        kTemplateURLData);
     history_clusters_module_service_ =
         std::make_unique<HistoryClustersModuleService>(
             test_history_clusters_service_.get(),
@@ -129,6 +138,7 @@ class HistoryClustersModuleServiceTest : public testing::Test {
   }
 
  private:
+  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> testing_profile_;
   std::unique_ptr<history_clusters::TestHistoryClustersService>

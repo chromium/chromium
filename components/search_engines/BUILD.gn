@@ -165,6 +165,8 @@ source_set("search_engine_type") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "search_engines_test_environment.cc",
+    "search_engines_test_environment.h",
     "search_engines_test_util.cc",
     "search_engines_test_util.h",
     "template_url_service_test_util.cc",

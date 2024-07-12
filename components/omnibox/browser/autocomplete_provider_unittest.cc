@@ -41,6 +41,7 @@
 #include "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/search_engines_switches.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_client.h"
@@ -419,7 +420,9 @@ class AutocompleteProviderTest : public testing::Test {
     experiment_stats_v2s.push_back(experiment_stat_v2);
   }
 
-  TestingPrefServiceSimple* GetPrefs() { return &pref_service_; }
+  PrefService* GetPrefs() {
+    return &search_engines_test_environment_.pref_service();
+  }
 
   // Resets the controller with the given |type|. |type| is a bitmap containing
   // AutocompleteProvider::Type values that will (potentially, depending on
@@ -427,8 +430,9 @@ class AutocompleteProviderTest : public testing::Test {
   void ResetControllerWithType(int type);
 
   base::test::TaskEnvironment task_environment_;
-  TestingPrefServiceSimple pref_service_;
   TestAutocompleteControllerObserver autocomplete_controller_observer_;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
+
   std::unique_ptr<AutocompleteController> controller_;
   // Owned by |controller_|.
   raw_ptr<MockAutocompleteProviderClient> client_;
@@ -444,7 +448,7 @@ class AutocompleteProviderTest : public testing::Test {
 AutocompleteProviderTest::AutocompleteProviderTest()
     : client_(new MockAutocompleteProviderClient()) {
   client_->set_template_url_service(
-      std::make_unique<TemplateURLService>(nullptr, 0));
+      search_engines_test_environment_.ReleaseTemplateURLService());
 }
 
 AutocompleteProviderTest::~AutocompleteProviderTest() {
@@ -942,7 +946,8 @@ TEST_F(AutocompleteProviderTest, SuggestionGroups) {
 
     // AutocompleteResult::SetSuggestionGroupHidden() does nothing for unknown
     // suggestion group IDs.
-    result_.SetSuggestionGroupHidden(GetPrefs(), kBadGroupId, /*hidden=*/true);
+    result_.SetSuggestionGroupHidden(GetPrefs(), kBadGroupId,
+                                     /*hidden=*/true);
     EXPECT_FALSE(result_.IsSuggestionGroupHidden(GetPrefs(), kBadGroupId));
 
     // AutocompleteResult::GetSectionForSuggestionGroup() returns

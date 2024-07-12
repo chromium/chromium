@@ -4,12 +4,22 @@
 
 #include "chrome/browser/autocomplete/tab_matcher_desktop.h"
 
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/search_engines/template_url_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using TabMatcherDesktopTest = BrowserWithTestWindowTest;
+class TabMatcherDesktopTest : public BrowserWithTestWindowTest {
+ public:
+  void SetUp() override {
+    BrowserWithTestWindowTest::SetUp();
+    search_engines::SearchEngineChoiceServiceFactory::GetInstance()
+        ->SetTestingFactory(profile(),
+                            search_engines::SearchEngineChoiceServiceFactory::
+                                GetDefaultFactory());
+  }
+};
 
 const TemplateURLService::Initializer kServiceInitializers[] = {
     {"kwa", "a.chromium.org/?a={searchTerms}", "ca"},
@@ -17,7 +27,11 @@ const TemplateURLService::Initializer kServiceInitializers[] = {
 };
 
 TEST_F(TabMatcherDesktopTest, IsTabOpenWithURLNeverReturnsActiveTab) {
-  TemplateURLService service(kServiceInitializers, 2);
+  TemplateURLService service(
+      profile()->GetPrefs(),
+      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+          profile()),
+      kServiceInitializers);
   TabMatcherDesktop matcher(&service, profile());
 
   GURL foo("http://foo.chromium.org");
@@ -48,7 +62,11 @@ TEST_F(TabMatcherDesktopTest, GetOpenTabsOnlyWithinProfile) {
   AddTab(browser(), GURL("http://active.chromium.org"));
   AddTab(other_browser.get(), GURL("http://baz.chromium.org"));
 
-  TemplateURLService service(kServiceInitializers, 2);
+  TemplateURLService service(
+      profile()->GetPrefs(),
+      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+          profile()),
+      kServiceInitializers);
   TabMatcherDesktop matcher(&service, profile());
 
   const auto tabs = matcher.GetOpenTabs();
@@ -60,7 +78,11 @@ TEST_F(TabMatcherDesktopTest, GetOpenTabsOnlyWithinProfile) {
 }
 
 TEST_F(TabMatcherDesktopTest, IsTabOpenUsesCanonicalSearchURL) {
-  TemplateURLService turl_service(kServiceInitializers, 2);
+  TemplateURLService turl_service(
+      profile()->GetPrefs(),
+      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+          profile()),
+      kServiceInitializers);
   TabMatcherDesktop matcher(&turl_service, profile());
 
   TemplateURLData data;

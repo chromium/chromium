@@ -17,6 +17,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
@@ -50,10 +51,9 @@ void KeywordExtensionsDelegateImplTest::SetUp() {
 }
 
 void KeywordExtensionsDelegateImplTest::RunTest(bool incognito) {
-  std::unique_ptr<TemplateURLService> empty_model(new TemplateURLService(
-      /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr));
+  search_engines::SearchEnginesTestEnvironment test_environment;
   MockAutocompleteProviderClient client;
-  client.set_template_url_service(std::move(empty_model));
+  client.set_template_url_service(test_environment.ReleaseTemplateURLService());
   scoped_refptr<KeywordProvider> keyword_provider =
       new KeywordProvider(&client, nullptr);
 
