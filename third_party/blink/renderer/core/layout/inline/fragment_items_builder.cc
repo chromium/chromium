@@ -156,6 +156,15 @@ void FragmentItemsBuilder::AddLine(const PhysicalLineBoxFragment& line_fragment,
     if (!annotation_line->FirstInFlowChild()) {
       continue;
     }
+
+    // If the line is hidden (e.g. because of line-clamp), annotations on that
+    // line should be hidden as well.
+    if (line_fragment.IsHiddenForPaint()) {
+      for (auto& item : *annotation_line.line_items) {
+        item.is_hidden_for_paint = true;
+      }
+    }
+
     LogicalOffset line_offset = annotation_line->FirstInFlowChild()->Offset();
     LayoutUnit line_inline_size =
         annotation_line->LastInFlowChild()->rect.InlineEndOffset() -
