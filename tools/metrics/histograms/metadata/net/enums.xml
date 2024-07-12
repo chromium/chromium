@@ -2193,6 +2193,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="206" label="QUIC_INVALID_CHARACTER_IN_FIELD_VALUE"/>
 </enum>
 
+<enum name="QuicFindMatchingIpSessionResult">
+  <int value="0" label="MATCHING_IP_SESSION_FOUND"/>
+  <int value="1" label="CAN_POOL_BUT_DIFFERENT_IP"/>
+  <int value="2" label="CANNOT_POOL_WITH_EXISTING_SESSIONS"/>
+</enum>
+
 <enum name="QuicHandshakeFailureReason">
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="BLACK_HOLE"/>

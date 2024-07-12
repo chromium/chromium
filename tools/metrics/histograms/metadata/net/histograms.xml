@@ -3302,6 +3302,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.QuicSession.FindMatchingIpSessionResult{ServerType}"
+    enum="QuicFindMatchingIpSessionResult" expires_after="2025-07-01">
+  <owner>fayang@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Result of finding matching IP session when DNS resolution finishes.
+  </summary>
+  <token key="ServerType">
+    <variant name="" summary="all QUIC servers"/>
+    <variant name="Google" summary="Google servers"/>
+  </token>
+</histogram>
+
 <histogram name="Net.QuicSession.GapBetweenWriteErrorAndNetworkDisconnection"
     units="ms" expires_after="2024-04-03">
   <owner>dschinazi@chromium.org</owner>

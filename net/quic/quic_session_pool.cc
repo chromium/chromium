@@ -42,6 +42,7 @@
 #include "net/base/session_usage.h"
 #include "net/base/trace_constants.h"
 #include "net/base/tracing.h"
+#include "net/base/url_util.h"
 #include "net/cert/cert_verifier.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -95,6 +96,13 @@ enum InitialRttEstimateSource {
   INITIAL_RTT_SOURCE_MAX,
 };
 
+enum FindMatchingIpSessionResult {
+  MATCHING_IP_SESSION_FOUND,
+  CAN_POOL_BUT_DIFFERENT_IP,
+  CANNOT_POOL_WITH_EXISTING_SESSIONS,
+  FIND_MATCHING_IP_SESSION_RESULT_MAX
+};
+
 std::string QuicPlatformNotificationToString(
     QuicPlatformNotification notification) {
   switch (notification) {
@@ -132,6 +140,17 @@ const char* AllActiveSessionsGoingAwayReasonToString(
 void HistogramCreateSessionFailure(enum CreateSessionFailure error) {
   UMA_HISTOGRAM_ENUMERATION("Net.QuicSession.CreationError", error,
                             CREATION_ERROR_MAX);
+}
+
+void HistogramFindMatchingIpSessionResult(FindMatchingIpSessionResult result,
+                                          std::string_view host) {
+  UMA_HISTOGRAM_ENUMERATION("Net.QuicSession.FindMatchingIpSessionResult",
+                            result, FIND_MATCHING_IP_SESSION_RESULT_MAX);
+  if (IsGoogleHost(host) && !host.ends_with(".googlevideo.com")) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Net.QuicSession.FindMatchingIpSessionResultGoogle", result,
+        FIND_MATCHING_IP_SESSION_RESULT_MAX);
+  }
 }
 
 void SetInitialRttEstimate(base::TimeDelta estimate,
@@ -1210,9 +1229,31 @@ bool QuicSessionPool::HasMatchingIpSession(
       }
 
       MapSessionToAliasKey(session, key, std::move(dns_aliases));
-
+      HistogramFindMatchingIpSessionResult(MATCHING_IP_SESSION_FOUND,
+                                           server_id.host());
       return true;
     }
+  }
+
+  bool can_pool = false;
+  static constexpr uint32_t kMaxLoopCount = 200;
+  uint32_t loop_count = 0;
+  for (const auto& entry : active_sessions_) {
+    ++loop_count;
+    if (loop_count >= kMaxLoopCount) {
+      break;
+    }
+    if (entry.second->CanPool(server_id.host(), key.session_key())) {
+      can_pool = true;
+      break;
+    }
+  }
+  if (can_pool) {
+    HistogramFindMatchingIpSessionResult(CAN_POOL_BUT_DIFFERENT_IP,
+                                         server_id.host());
+  } else {
+    HistogramFindMatchingIpSessionResult(CANNOT_POOL_WITH_EXISTING_SESSIONS,
+                                         server_id.host());
   }
   return false;
 }
