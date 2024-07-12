@@ -7,11 +7,15 @@
 #import "base/check.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/form_input_accessory_view_handler.h"
 #import "ios/chrome/browser/passwords/ui_bundled/password_suggestion_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -112,6 +116,8 @@ constexpr CGFloat preferredCornerRadius = 20;
 
 - (void)confirmationAlertSecondaryAction {
   [self handleDecision:NO];
+  [self incrementDismissCount];
+  [self disableBottomSheet];
   [self.delegate closePasswordSuggestion];
 }
 
@@ -125,6 +131,8 @@ constexpr CGFloat preferredCornerRadius = 20;
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   [self handleDecision:NO];
+  [self incrementDismissCount];
+  [self disableBottomSheet];
   [self.delegate closePasswordSuggestion];
 }
 
@@ -148,6 +156,9 @@ constexpr CGFloat preferredCornerRadius = 20;
 }
 
 - (void)handleDecision:(BOOL)accept {
+  if (accept) {
+    [self resetPasswordGenerationBottomSheetDismissCount];
+  }
   if (self.decisionHandler) {
     self.decisionHandler(accept);
   }
@@ -161,14 +172,24 @@ constexpr CGFloat preferredCornerRadius = 20;
   [self onCloseKeyboardWithIdentifier:activeWebStateIdentifier];
 }
 
+- (web::WebState*)activeWebState {
+  if (!self.browser) {
+    return nullptr;
+  }
+  web::WebState* activeWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  if (!activeWebState) {
+    return nullptr;
+  }
+  return activeWebState;
+}
+
 // Helper method which closes the keyboard.
 - (void)onCloseKeyboardWithIdentifier:(NSString*)identifier {
-  Browser* browser = self.browser;
-  if (!browser)
+  web::WebState* webState = [self activeWebState];
+  if (!webState) {
     return;
-  web::WebState* webState = browser->GetWebStateList()->GetActiveWebState();
-  if (!webState)
-    return;
+  }
   // Note that it may have changed between the moment the
   // block was created and its invocation. So check whether
   // the WebState identifier is the same.
@@ -189,6 +210,78 @@ constexpr CGFloat preferredCornerRadius = 20;
   NSString* mainFrameID = base::SysUTF8ToNSString(mainFrame->GetFrameId());
   [handler setLastFocusFormActivityWebFrameID:mainFrameID];
   [handler closeKeyboardWithoutButtonPress];
+}
+
+// Increments the password generation bottom sheet dismiss count
+// preference.
+- (void)incrementDismissCount {
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::
+              kIOSProactivePasswordGenerationBottomSheet)) {
+    return;
+  }
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  if (!browserState) {
+    return;
+  }
+  PrefService* prefService = browserState->GetPrefs();
+  if (prefService) {
+    const int currentDismissCount = prefService->GetInteger(
+        prefs::kIosPasswordGenerationBottomSheetDismissCount);
+    if (currentDismissCount <
+        AutofillBottomSheetTabHelper::
+            kPasswordGenerationBottomSheetMaxDismissCount) {
+      prefService->SetInteger(
+          prefs::kIosPasswordGenerationBottomSheetDismissCount,
+          currentDismissCount + 1);
+    }
+  }
+}
+
+// Disables the proactive password generation bottom sheet for the current tab
+// session by detaching the listeners.
+- (void)disableBottomSheet {
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::
+              kIOSProactivePasswordGenerationBottomSheet)) {
+    return;
+  }
+
+  web::WebState* webState = [self activeWebState];
+  if (!webState) {
+    return;
+  }
+  AutofillBottomSheetTabHelper* tabHelper =
+      AutofillBottomSheetTabHelper::FromWebState(webState);
+  if (!tabHelper) {
+    return;
+  }
+
+  tabHelper->DetachPasswordGenerationListenersForAllFrames();
+}
+
+// Resets the proactive password generation bottom sheet dismiss count to 0 when
+// a generated password suggestion is accepted.
+- (void)resetPasswordGenerationBottomSheetDismissCount {
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::
+              kIOSProactivePasswordGenerationBottomSheet)) {
+    return;
+  }
+  web::WebState* webState = [self activeWebState];
+  if (!webState) {
+    return;
+  }
+  ChromeBrowserState* browserState =
+      ChromeBrowserState::FromBrowserState(webState->GetBrowserState());
+  if (!browserState) {
+    return;
+  }
+  PrefService* prefService = browserState->GetPrefs();
+  if (prefService) {
+    prefService->SetInteger(
+        prefs::kIosPasswordGenerationBottomSheetDismissCount, 0);
+  }
 }
 
 @end
