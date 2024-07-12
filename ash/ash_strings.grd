@@ -8356,6 +8356,9 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_BIRCH_CALENDAR_JOIN_BUTTON" desc="Button label for joining a meeting associated with a calendar event">
         Join
       </message>
+      <message name="IDS_ASH_BIRCH_CALENDAR_JOIN_BUTTON_TOOLTIP" desc="Tooltip for the join button of a calendar event">
+        Join with Google Meet
+      </message>
       <message name="IDS_ASH_BIRCH_RECENT_TAB_SUBTITLE_YESTERDAY" desc="Subtitle for the suggestion chip with recent tabs from other devices shared yesterday">
         Yesterday
       </message>

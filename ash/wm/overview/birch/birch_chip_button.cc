@@ -14,6 +14,7 @@
 #include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "ash/wm/overview/birch/birch_chip_context_menu_model.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/events/types/event_type.h"
@@ -170,8 +171,6 @@ BirchChipButton::BirchChipButton()
   // Build up the chip's contents.
   views::Builder<BirchChipButtonBase>(this)
       .SetLayoutManager(std::move(flex_layout))
-      // TODO(zxdan): verbalize all the contents in following changes.
-      .SetAccessibleName(u"Birch Chip")
       .AddChildren(
           // Icon.
           views::Builder<views::ImageView>().CopyAddressTo(&icon_).SetProperty(
@@ -222,11 +221,15 @@ void BirchChipButton::Init(BirchItem* item) {
                             base::Unretained(item_)),
         *item_->secondary_action(), PillButton::Type::kSecondaryWithoutIcon));
     button->SetProperty(views::kMarginsKey, gfx::Insets::VH(0, 16));
+    button->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CALENDAR_JOIN_BUTTON_TOOLTIP));
   }
 
   StylizeIconForItemType(icon_, item_->GetType());
   item_->LoadIcon(base::BindOnce(&BirchChipButton::SetIconImage,
                                  weak_factory_.GetWeakPtr()));
+
+  SetAccessibleName(item_->title() + u" " + item_->subtitle());
 }
 
 const BirchItem* BirchChipButton::GetItem() const {
