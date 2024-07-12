@@ -98,8 +98,6 @@ const base::FeatureParam<int> kLensOverlayHorizontalTextMargin{
     &kLensOverlay, "text-horizontal-margin", 4};
 const base::FeatureParam<bool> kLensOverlaySearchBubble{&kLensOverlay,
                                                         "search-bubble", false};
-const base::FeatureParam<bool> kLensOverlayPreciseHighlight{
-    &kLensOverlay, "enable-precise-highlight", true};
 const base::FeatureParam<bool> kLensOverlayEnableShimmer{
     &kLensOverlay, "enable-shimmer", true};
 const base::FeatureParam<bool> kLensOverlayEnableShimmerSparkles{
@@ -444,10 +442,6 @@ int GetLensOverlayHorizontalTextMargin() {
 
 bool IsLensOverlaySearchBubbleEnabled() {
   return kLensOverlaySearchBubble.Get();
-}
-
-bool IsLensOverlayPreciseHighlightEnabled() {
-  return kLensOverlayPreciseHighlight.Get();
 }
 
 bool IsLensOverlayShimmerEnabled() {

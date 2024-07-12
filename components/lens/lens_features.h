@@ -346,11 +346,6 @@ extern int GetLensOverlayHorizontalTextMargin();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlaySearchBubbleEnabled();
 
-// Returns whether to use segmentation mask polygons for object highlighting on
-// the Lens overlay.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsLensOverlayPreciseHighlightEnabled();
-
 // Returns whether to render the Lens overlay shimmer.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayShimmerEnabled();
