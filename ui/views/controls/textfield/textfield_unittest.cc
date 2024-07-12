@@ -5170,6 +5170,28 @@ TEST_F(TextfieldTest, ChangeTextDirectionAndLayoutAlignmentTest) {
   EXPECT_EQ(textfield_->GetHorizontalAlignment(), gfx::ALIGN_TO_HEAD);
 }
 
+TEST_F(TextfieldTest, AccessibilityTextDirection) {
+  InitTextfield();
+  ui::AXNodeData node_data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kTextDirection),
+            static_cast<int32_t>(ax::mojom::WritingDirection::kLtr));
+
+  textfield_->ChangeTextDirectionAndLayoutAlignment(
+      base::i18n::TextDirection::RIGHT_TO_LEFT);
+  node_data = ui::AXNodeData();  // Reset the node data.
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kTextDirection),
+            static_cast<int32_t>(ax::mojom::WritingDirection::kRtl));
+
+  textfield_->ChangeTextDirectionAndLayoutAlignment(
+      base::i18n::TextDirection::LEFT_TO_RIGHT);
+  node_data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kTextDirection),
+            static_cast<int32_t>(ax::mojom::WritingDirection::kLtr));
+}
+
 TEST_F(TextfieldTest, TextChangedCallbackTest) {
   InitTextfield();
 

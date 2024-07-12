@@ -267,6 +267,7 @@ Textfield::Textfield()
   // accessibility since a plain text field should always be a leaf node in the
   // accessibility trees of all the platforms we support.
   GetViewAccessibility().SetIsLeaf(true);
+  UpdateAccessibilityTextDirection();
 }
 
 Textfield::~Textfield() {
@@ -1042,11 +1043,6 @@ void Textfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (GetEnabled()) {
     node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kActivate);
   }
-  node_data->AddIntAttribute(
-      ax::mojom::IntAttribute::kTextDirection,
-      static_cast<int32_t>(GetTextDirection() == base::i18n::RIGHT_TO_LEFT
-                               ? ax::mojom::WritingDirection::kRtl
-                               : ax::mojom::WritingDirection::kLtr));
   if (text_input_type_ == ui::TEXT_INPUT_TYPE_PASSWORD) {
     node_data->SetValue(std::u16string(
         GetText().size(), gfx::RenderText::kPasswordReplacementChar));
@@ -1854,6 +1850,7 @@ bool Textfield::ChangeTextDirectionAndLayoutAlignment(
   if (!dir_from_text && GetHorizontalAlignment() != gfx::ALIGN_CENTER)
     SetHorizontalAlignment(default_rtl ? gfx::ALIGN_RIGHT : gfx::ALIGN_LEFT);
   SchedulePaint();
+  UpdateAccessibilityTextDirection();
   return true;
 }
 
@@ -2702,6 +2699,7 @@ void Textfield::UpdateAfterChange(
       controller_->ContentsChanged(this, GetText());
     NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
   }
+  UpdateAccessibilityTextDirection();
   if (cursor_changed) {
     UpdateCursorViewPosition();
     UpdateCursorVisibility();
@@ -2712,6 +2710,13 @@ void Textfield::UpdateAfterChange(
     OnCaretBoundsChanged();
   if (anything_changed)
     SchedulePaint();
+}
+
+void Textfield::UpdateAccessibilityTextDirection() {
+  GetViewAccessibility().SetTextDirection(
+      static_cast<int32_t>(GetTextDirection() == base::i18n::RIGHT_TO_LEFT
+                               ? ax::mojom::WritingDirection::kRtl
+                               : ax::mojom::WritingDirection::kLtr));
 }
 
 void Textfield::UpdateCursorVisibility() {

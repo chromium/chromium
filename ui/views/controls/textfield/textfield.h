@@ -610,6 +610,8 @@ class VIEWS_EXPORT Textfield : public View,
       bool cursor_changed,
       std::optional<bool> notify_caret_bounds_changed = std::nullopt);
 
+  void UpdateAccessibilityTextDirection();
+
   // Updates cursor visibility and blinks the cursor if needed.
   void ShowCursor();
 
