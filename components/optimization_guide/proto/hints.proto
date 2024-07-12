@@ -143,7 +143,7 @@ message GetHintsResponse {
 // enum in enums.xml and optimization/histograms.xml for metric recording.
 enum OptimizationType {
   // Values for obsolete optimizations.
-  reserved 11, 12, 16, 29, 58;
+  reserved 11, 12, 16, 29;
 
   TYPE_UNSPECIFIED = 0;
   // This optimization blocks JavaScript on the page.
@@ -229,7 +229,8 @@ enum OptimizationType {
   // compose.
   COMPOSE = 35;
   // This optimization provides information about whether a merchant can be
-  // triggered with PIX bottom sheet.
+  // triggered with PIX bottom sheet. This allowlist uses page pattern matching
+  // to perform regex match against entire URLs.
   PIX_PAYMENT_MERCHANT_ALLOWLIST = 36;
   // The below optimizations provide information for merchant URLs that are
   // eligible for credit card category benefits. These URLs are shared and apply
@@ -259,6 +260,10 @@ enum OptimizationType {
   // This optimization provides information about whether a merchant is
   // opted-out of Mastercard virtual cards for a URL.
   VCN_MERCHANT_OPT_OUT_MASTERCARD = 57;
+  // This optimization provides information about merchants origins for which
+  // PIX payments should be triggered. This allowlist contains a list of origins
+  // and uses a bloom filter for matching.
+  PIX_MERCHANT_ORIGINS_ALLOWLIST = 58;
   // This optimization provides information for whether a page is eligible for
   // history embeddings.
   HISTORY_EMBEDDINGS = 59;

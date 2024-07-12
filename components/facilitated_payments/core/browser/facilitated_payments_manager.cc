@@ -91,9 +91,35 @@ void FacilitatedPaymentsManager::
   }
 }
 
+void FacilitatedPaymentsManager::OnPixCodeCopiedToClipboard(
+    const GURL& render_frame_host_url,
+    const std::string& pix_code) {
+  // Check whether the domain for the render_frame_host_url is allowlisted.
+  auto decision = optimization_guide_decider_->CanApplyOptimization(
+      render_frame_host_url,
+      optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST,
+      /*optimization_metadata=*/nullptr);
+  if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
+    // The merchant is not part of the allowlist, ignore the copy event.
+    return;
+  }
+  if (valid_pix_code_detected_) {
+    // A valid Pix code has already been detected previously. This can happen
+    // because a Pix code would've already been found via DOM search.
+    return;
+  }
+  initiate_payment_request_details_->merchant_payment_page_url_ =
+      render_frame_host_url;
+  // Trigger Pix code validation.
+  utility_process_validator_.ValidatePixCode(
+      pix_code, base::BindOnce(&FacilitatedPaymentsManager::OnPixCodeValidated,
+                               weak_ptr_factory_.GetWeakPtr(), pix_code));
+}
+
 void FacilitatedPaymentsManager::RegisterPixAllowlist() const {
   optimization_guide_decider_->RegisterOptimizationTypes(
-      {optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST});
+      {optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST,
+       optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST});
 }
 
 optimization_guide::OptimizationGuideDecision
@@ -127,6 +153,11 @@ void FacilitatedPaymentsManager::TriggerPixCodeDetection() {
 
 void FacilitatedPaymentsManager::ProcessPixCodeDetectionResult(
     mojom::PixCodeDetectionResult result, const std::string& pix_code) {
+  if (valid_pix_code_detected_) {
+    // A valid Pix code has already been detected previously. This can happen
+    // because a Pix code would've already been found via copy event.
+    return;
+  }
   // If a PIX code was not found, re-trigger PIX code detection after a short
   // duration to allow async content to load completely.
   if (result == mojom::PixCodeDetectionResult::kPixCodeNotFound &&
@@ -168,7 +199,7 @@ void FacilitatedPaymentsManager::OnPixCodeValidated(
     Reset();
     return;
   }
-
+  valid_pix_code_detected_ = true;
   // If a valid PIX code is found, and the user has Google wallet linked PIX
   // accounts, verify that the payments API is available, and then show the PIX
   // payment prompt.

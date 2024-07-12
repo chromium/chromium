@@ -67,6 +67,13 @@ class FacilitatedPaymentsManager {
       ukm::SourceId ukm_source_id,
       int attempt_number = 1);
 
+  // Checks whether the `render_frame_host_url` is allowlisted and validates the
+  // `pix_code` before trigger the Pix payments flow. Note: If the Pix payment
+  // flow has already been triggered by the other code detection methods like
+  // DOM search then this method is a no-op.
+  void OnPixCodeCopiedToClipboard(const GURL& render_frame_host_url,
+                                  const std::string& pix_code);
+
  private:
   // Defined here so they can be accessed by the tests.
   static constexpr base::TimeDelta kOptimizationGuideDeciderWaitTime =
@@ -82,16 +89,16 @@ class FacilitatedPaymentsManager {
                            RegisterPixAllowlist);
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerTest,
-      CheckAllowlistResultUnknown_PixCodeDetectionNotTriggered);
+      DOMSearch_CheckAllowlistResultUnknown_PixCodeDetectionNotTriggered);
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerTest,
-      CheckAllowlistResultShortDelay_UrlInAllowlist_PixCodeDetectionTriggered);
+      DOMSearch_CheckAllowlistResultShortDelay_UrlInAllowlist_PixCodeDetectionTriggered);
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerTest,
-      CheckAllowlistResultShortDelay_UrlNotInAllowlist_PixCodeDetectionNotTriggered);
+      DOMSearch_CheckAllowlistResultShortDelay_UrlNotInAllowlist_PixCodeDetectionNotTriggered);
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerTest,
-      CheckAllowlistResultLongDelay_UrlInAllowlist_PixCodeDetectionNotTriggered);
+      DOMSearch_CheckAllowlistResultLongDelay_UrlInAllowlist_PixCodeDetectionNotTriggered);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            NoPixCode_PixCodeNotFoundLoggedAfterMaxAttempts);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
@@ -148,6 +155,17 @@ class FacilitatedPaymentsManager {
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerWithPixPaymentsDisabledTest,
       ValidPixCodeDetectionResult_HasPixAccounts_ApiClientNotTriggered);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+                           CopyTrigger_UrlInAllowlist_PixValidationTriggered);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      CopyTrigger_UrlNotInAllowlist_PixValidationNotTriggered);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      CopyTriggerHappenedBeforeDOMSearch_ApiClientIsAvailableCalledOnlyOnce);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      DOMSearchHappenedBeforeCopyTrigger_ApiClientIsAvailableCalledOnlyOnce);
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
       ValidPixCodeDetectionResult_HasPixAccounts_ApiClientTriggered);
@@ -339,6 +357,13 @@ class FacilitatedPaymentsManager {
   // creates a new instance.
   std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>
       initiate_payment_request_details_;
+
+  // Flag to help determine whether a valid Pix code has already been detected
+  // and acted upon. This is required as there are mupltiple ways of detecting a
+  // Pix code (DOM Search or Copy trigger) and it is expected that if the
+  // process of showing the FOP selector is triggered by one of the triggers,
+  // the following trigger should simply be ignored.
+  bool valid_pix_code_detected_ = false;
 
   // Informs whether this instance was created in a test.
   bool is_test_ = false;

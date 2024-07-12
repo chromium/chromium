@@ -127,6 +127,12 @@ bool PixCodeValidator::IsValidPixCode(std::string_view code) {
   return contains_pix_code_indicator;
 }
 
+// static
+bool PixCodeValidator::ContainsPixIdentifier(std::string_view code) {
+  return base::ToLowerASCII(code).find(kPixCodeIndicatorLowercase) !=
+         std::string::npos;
+}
+
 void PixCodeValidator::ValidatePixCode(
     const std::string& input_text,
     base::OnceCallback<void(std::optional<bool>)> callback) {

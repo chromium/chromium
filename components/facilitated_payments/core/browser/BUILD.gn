@@ -29,7 +29,7 @@ static_library("browser") {
     "//components/facilitated_payments/core/features",
     "//components/facilitated_payments/core/metrics",
     "//components/facilitated_payments/core/mojom:facilitated_payments_agent_mojom",
-    "//components/facilitated_payments/core/util:util",
+    "//components/facilitated_payments/core/util",
     "//components/optimization_guide/core",
     "//components/signin/public/identity_manager",
     "//services/data_decoder/public/cpp",

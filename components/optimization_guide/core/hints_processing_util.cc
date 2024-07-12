@@ -119,6 +119,8 @@ std::string GetStringNameForOptimizationType(
       return "VcnMerchantOptOutDiscover";
     case proto::OptimizationType::VCN_MERCHANT_OPT_OUT_MASTERCARD:
       return "VcnMerchantOptOutMastercard";
+    case proto::OptimizationType::PIX_MERCHANT_ORIGINS_ALLOWLIST:
+      return "PixMerchantOriginsAllowlist";
     case proto::OptimizationType::HISTORY_EMBEDDINGS:
       return "HistoryEmbeddings";
   }

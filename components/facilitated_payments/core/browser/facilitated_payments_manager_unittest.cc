@@ -346,7 +346,8 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
 TEST_F(FacilitatedPaymentsManagerTest, RegisterPixAllowlist) {
   EXPECT_CALL(*optimization_guide_decider_,
               RegisterOptimizationTypes(testing::ElementsAre(
-                  optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST)))
+                  optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST,
+                  optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST)))
       .Times(1);
 
   manager_->RegisterPixAllowlist();
@@ -354,7 +355,7 @@ TEST_F(FacilitatedPaymentsManagerTest, RegisterPixAllowlist) {
 
 // Test that the PIX code detection is triggered for webpages in the allowlist.
 TEST_F(FacilitatedPaymentsManagerTest,
-       UrlInAllowlist_PixCodeDetectionTriggered) {
+       DOMSearch_UrlInAllowlist_PixCodeDetectionTriggered) {
   GURL url("https://example.com/");
   SetAllowlistDecision(optimization_guide::OptimizationGuideDecision::kTrue);
 
@@ -379,7 +380,7 @@ TEST_F(FacilitatedPaymentsManagerTest,
 // Test that the PIX code detection is not triggered for webpages not in the
 // allowlist.
 TEST_F(FacilitatedPaymentsManagerTest,
-       UrlNotInAllowlist_PixCodeDetectionNotTriggered) {
+       DOMSearch_UrlNotInAllowlist_PixCodeDetectionNotTriggered) {
   GURL url("https://example.com/");
   SetAllowlistDecision(optimization_guide::OptimizationGuideDecision::kFalse);
 
@@ -405,7 +406,7 @@ TEST_F(FacilitatedPaymentsManagerTest,
 // `kMaxAttemptsForAllowlistCheck` attempts, PIX code detection is not
 // triggered.
 TEST_F(FacilitatedPaymentsManagerTest,
-       CheckAllowlistResultUnknown_PixCodeDetectionNotTriggered) {
+       DOMSearch_CheckAllowlistResultUnknown_PixCodeDetectionNotTriggered) {
   GURL url("https://example.com/");
 
   // The default decision is kUnknown.
@@ -434,7 +435,7 @@ TEST_F(FacilitatedPaymentsManagerTest,
 // and make decision.
 TEST_F(
     FacilitatedPaymentsManagerTest,
-    CheckAllowlistResultShortDelay_UrlInAllowlist_PixCodeDetectionTriggered) {
+    DOMSearch_CheckAllowlistResultShortDelay_UrlInAllowlist_PixCodeDetectionTriggered) {
   GURL url("https://example.com/");
 
   // Simulate that the allowlist checking infra gets ready after 1.6s and
@@ -469,7 +470,7 @@ TEST_F(
 // and make decision.
 TEST_F(
     FacilitatedPaymentsManagerTest,
-    CheckAllowlistResultShortDelay_UrlNotInAllowlist_PixCodeDetectionNotTriggered) {
+    DOMSearch_CheckAllowlistResultShortDelay_UrlNotInAllowlist_PixCodeDetectionNotTriggered) {
   GURL url("https://example.com/");
 
   // Simulate that the allowlist checking infra gets ready after 1.6s and
@@ -506,7 +507,7 @@ TEST_F(
 // decision.
 TEST_F(
     FacilitatedPaymentsManagerTest,
-    CheckAllowlistResultLongDelay_UrlInAllowlist_PixCodeDetectionNotTriggered) {
+    DOMSearch_CheckAllowlistResultLongDelay_UrlInAllowlist_PixCodeDetectionNotTriggered) {
   GURL url("https://example.com/");
 
   // Simulate that the allowlist checking infra gets ready after 3.6s and
@@ -1117,6 +1118,133 @@ class FacilitatedPaymentsManagerWithPixPaymentsEnabledTest
 
   ~FacilitatedPaymentsManagerWithPixPaymentsEnabledTest() override = default;
 };
+
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       CopyTrigger_UrlInAllowlist_PixValidationTriggered) {
+  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+  GURL url("https://example.com/");
+  // Mock allowlist check result.
+  SetAllowlistDecision(optimization_guide::OptimizationGuideDecision::kTrue);
+  EXPECT_CALL(
+      *optimization_guide_decider_,
+      CanApplyOptimization(
+          testing::Eq(url),
+          testing::Eq(
+              optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST),
+          testing::Matcher<optimization_guide::OptimizationMetadata*>(
+              testing::Eq(nullptr))))
+      .Times(1)
+      .WillOnce(testing::ReturnPointee(&allowlist_result_));
+  // If Pix validation is run, then IsAvailable should get called once.
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
+
+  manager_->OnPixCodeCopiedToClipboard(
+      url, "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F");
+
+  // The DataDecoder (utility process) validates the PIX code string
+  // asynchronously.
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       CopyTrigger_UrlNotInAllowlist_PixValidationNotTriggered) {
+  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+  GURL url("https://example.com/");
+  // Mock allowlist check result.
+  SetAllowlistDecision(optimization_guide::OptimizationGuideDecision::kFalse);
+  EXPECT_CALL(
+      *optimization_guide_decider_,
+      CanApplyOptimization(
+          testing::Eq(url),
+          testing::Eq(
+              optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST),
+          testing::Matcher<optimization_guide::OptimizationMetadata*>(
+              testing::Eq(nullptr))))
+      .Times(1)
+      .WillOnce(testing::ReturnPointee(&allowlist_result_));
+
+  // If Pix validation is not run, then IsAvailable shouldn't get called.
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
+
+  manager_->OnPixCodeCopiedToClipboard(
+      url, "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F");
+  // The DataDecoder (utility process) validates the PIX code string
+  // asynchronously.
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       CopyTriggerHappenedBeforeDOMSearch_ApiClientIsAvailableCalledOnlyOnce) {
+  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+  GURL url("https://example.com/");
+  // Mock allowlist check result. This is only called for the copy trigger. The
+  // DOM Search method `ProcessPixCodeDetectionResult` already assumes that the
+  // URL is in the allowlist.
+  SetAllowlistDecision(optimization_guide::OptimizationGuideDecision::kTrue);
+  EXPECT_CALL(*optimization_guide_decider_,
+              CanApplyOptimization(
+                  testing::Eq(url), testing::_,
+                  testing::Matcher<optimization_guide::OptimizationMetadata*>(
+                      testing::Eq(nullptr))))
+      .WillOnce(testing::ReturnPointee(&allowlist_result_));
+
+  // Pix code is found via copy trigger. This should trigger the Pix code
+  // validation which can be verified with the IsAvailable call.
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
+  std::string pix_code =
+      "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F";
+  manager_->OnPixCodeCopiedToClipboard(url, pix_code);
+  // The DataDecoder (utility process) validates the PIX code string
+  // asynchronously.
+  task_environment_.RunUntilIdle();
+
+  // Pix code is found again via DOM Search. However, since Pix code validation
+  // was already run above, it should not be run again. This can be verified
+  // with IsAvailable not being called again.
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
+  manager_->ProcessPixCodeDetectionResult(
+      mojom::PixCodeDetectionResult::kValidPixCodeFound, pix_code);
+
+  // The DataDecoder (utility process) validates the PIX code string
+  // asynchronously.
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       DOMSearchHappenedBeforeCopyTrigger_ApiClientIsAvailableCalledOnlyOnce) {
+  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+  GURL url("https://example.com/");
+  // Mock allowlist check result. This is only called for the copy trigger. The
+  // DOM Search method `ProcessPixCodeDetectionResult` already assumes that the
+  // URL is in the allowlist.
+  SetAllowlistDecision(optimization_guide::OptimizationGuideDecision::kTrue);
+  EXPECT_CALL(*optimization_guide_decider_,
+              CanApplyOptimization(
+                  testing::Eq(url), testing::_,
+                  testing::Matcher<optimization_guide::OptimizationMetadata*>(
+                      testing::Eq(nullptr))))
+      .WillOnce(testing::ReturnPointee(&allowlist_result_));
+
+  // Pix code is found again via DOM Search. This should trigger the Pix code
+  // validation which can be verified with the IsAvailable call.
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
+  std::string pix_code =
+      "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F";
+  manager_->ProcessPixCodeDetectionResult(
+      mojom::PixCodeDetectionResult::kValidPixCodeFound, pix_code);
+  // The DataDecoder (utility process) validates the PIX code string
+  // asynchronously.
+  task_environment_.RunUntilIdle();
+
+  // Pix code is found again via copy trigger. However, since Pix code
+  // validation was already run above, it should not be run again. This can be
+  // verified with IsAvailable not being called again.
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
+  manager_->OnPixCodeCopiedToClipboard(url, pix_code);
+  // The DataDecoder (utility process) validates the PIX code string
+  // asynchronously.
+  task_environment_.RunUntilIdle();
+}
 
 // If a valid PIX code is detected, and the user has PIX accounts, the manager
 // checks whether the facilitated payment API is available.

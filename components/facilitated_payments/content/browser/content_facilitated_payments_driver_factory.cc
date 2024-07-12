@@ -91,7 +91,8 @@ void ContentFacilitatedPaymentsDriverFactory::OnTextCopiedToClipboard(
 
   auto& driver = GetOrCreateForFrame(render_frame_host);
 
-  driver.OnTextCopiedToClipboard(copied_text);
+  driver.OnTextCopiedToClipboard(render_frame_host->GetLastCommittedURL(),
+                                 copied_text);
 }
 
 ContentFacilitatedPaymentsDriver&

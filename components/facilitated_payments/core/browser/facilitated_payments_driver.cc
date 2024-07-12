@@ -6,7 +6,10 @@
 
 #include <utility>
 
+#include "base/strings/utf_string_conversions.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_manager.h"
+#include "components/facilitated_payments/core/features/features.h"
+#include "components/facilitated_payments/core/util/pix_code_validator.h"
 
 namespace payments::facilitated {
 
@@ -27,8 +30,18 @@ void FacilitatedPaymentsDriver::OnContentLoadedInThePrimaryMainFrame(
 }
 
 void FacilitatedPaymentsDriver::OnTextCopiedToClipboard(
+    const GURL& render_frame_host_url,
     const std::u16string& copied_text) {
-  // TODO(siashah): Notify the manager of the copied text.
+  if (!base::FeatureList::IsEnabled(kEnablePixDetectionOnCopyEvent)) {
+    return;
+  }
+
+  if (!PixCodeValidator::ContainsPixIdentifier(
+          base::UTF16ToUTF8(copied_text))) {
+    return;
+  }
+  manager_->OnPixCodeCopiedToClipboard(render_frame_host_url,
+                                       base::UTF16ToUTF8(copied_text));
 }
 
 }  // namespace payments::facilitated

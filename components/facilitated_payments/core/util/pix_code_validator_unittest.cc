@@ -4,6 +4,7 @@
 
 #include "components/facilitated_payments/core/util/pix_code_validator.h"
 
+#include "base/strings/strcat.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace payments::facilitated {
@@ -110,6 +111,24 @@ TEST(PixCodeValidatorTest, NoPixCodeIndicator) {
   // 261801020063041D3D does not contain the Pix code indicator
   // 0014br.gov.bcb.pix .
   EXPECT_FALSE(PixCodeValidator::IsValidPixCode("000201261801020063041D3D"));
+}
+
+TEST(PixCodeValidatorTest, ContainsPixCodeIdentifier) {
+  std::string pixCodeIndicatorLowercase = "0014br.gov.bcb.pix";
+  EXPECT_TRUE(PixCodeValidator::ContainsPixIdentifier(
+      base::StrCat({"0002012637", pixCodeIndicatorLowercase,
+                    "2514www.example.com64041D3D"})));
+}
+
+TEST(PixCodeValidatorTest, ContainsPixCodeIdentifier_MixedCase) {
+  std::string pixCodeIndicatorLowercase = "0014BR.GoV.Bcb.PIX";
+  EXPECT_TRUE(PixCodeValidator::ContainsPixIdentifier(
+      base::StrCat({"0002012637", pixCodeIndicatorLowercase,
+                    "2514www.example.com64041D3D"})));
+}
+
+TEST(PixCodeValidatorTest, DoesNotContainsPixCodeIdentifier) {
+  EXPECT_FALSE(PixCodeValidator::ContainsPixIdentifier("example.com64041D3D"));
 }
 
 }  // namespace

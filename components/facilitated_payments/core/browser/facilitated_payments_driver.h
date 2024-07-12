@@ -50,7 +50,8 @@ class FacilitatedPaymentsDriver {
 
   // Inform the `FacilitatedPaymentsManager` about `copied_text` being copied to
   // the clipboard. It is invoked only for the primary main frame.
-  virtual void OnTextCopiedToClipboard(const std::u16string& copied_text);
+  virtual void OnTextCopiedToClipboard(const GURL& render_frame_host_url,
+                                       const std::u16string& copied_text);
 
  private:
   std::unique_ptr<FacilitatedPaymentsManager> manager_;

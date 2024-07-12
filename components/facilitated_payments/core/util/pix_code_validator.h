@@ -34,6 +34,9 @@ class PixCodeValidator : public mojom::PixCodeValidator {
   // This function does not validate the value of the CRC16.
   static bool IsValidPixCode(std::string_view code);
 
+  // Returns true if the input `code` contains the Pix code indicator.
+  static bool ContainsPixIdentifier(std::string_view code);
+
  private:
   // mojom::PixValidator implementation:
   void ValidatePixCode(
