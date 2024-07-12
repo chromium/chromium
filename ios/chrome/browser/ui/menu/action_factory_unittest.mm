@@ -368,7 +368,10 @@ TEST_F(ActionFactoryTest, CloseAllTabsAction) {
   UIImage* expectedImage =
       DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize);
   NSString* expectedTitle =
-      l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABS);
+      IsTabGroupSyncEnabled()
+          ? l10n_util::GetNSString(
+                IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABSANDGROUPS)
+          : l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABS);
 
   UIAction* action = [factory actionToCloseAllTabsWithBlock:^{
   }];

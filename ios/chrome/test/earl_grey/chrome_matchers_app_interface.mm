@@ -1573,9 +1573,11 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)tabGridEditMenuCloseAllButton {
+  int ID = IsTabGroupSyncEnabled()
+               ? IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABSANDGROUPS
+               : IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABS;
   return grey_allOf(
-      [ChromeMatchersAppInterface contextMenuItemWithAccessibilityLabelID:
-                                      (IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABS)],
+      [ChromeMatchersAppInterface contextMenuItemWithAccessibilityLabelID:ID],
       grey_sufficientlyVisible(), nil);
 }
 

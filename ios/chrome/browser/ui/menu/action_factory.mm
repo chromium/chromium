@@ -298,12 +298,13 @@
 - (UIAction*)actionToCloseAllTabsWithBlock:(ProceduralBlock)block {
   UIImage* image =
       DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize);
-  UIAction* action =
-      [self actionWithTitle:l10n_util::GetNSString(
-                                IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABS)
-                      image:image
-                       type:MenuActionType::CloseAllTabs
-                      block:block];
+  int titleID = IsTabGroupSyncEnabled()
+                    ? IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABSANDGROUPS
+                    : IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABS;
+  UIAction* action = [self actionWithTitle:l10n_util::GetNSString(titleID)
+                                     image:image
+                                      type:MenuActionType::CloseAllTabs
+                                     block:block];
   action.attributes = UIMenuElementAttributesDestructive;
   return action;
 }

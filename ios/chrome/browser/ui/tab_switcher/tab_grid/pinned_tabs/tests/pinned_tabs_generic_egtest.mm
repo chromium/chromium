@@ -497,8 +497,8 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
       performAction:grey_tap()];
 
   // Tap on "Close All Tabs" menu action.
-  [[EarlGrey selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
-                                          IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABS)]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridEditMenuCloseAllButton()]
       performAction:grey_tap()];
 
   // Verify regular tabs are not present.

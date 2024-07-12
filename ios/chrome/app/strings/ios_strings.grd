@@ -992,6 +992,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABS" desc="The iOS context menu item for closing all the tabs in the grid. [iOS only]">
         Close All Tabs
       </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABSANDGROUPS" desc="The iOS context menu item for closing all the tabs and the groups in the grid. [iOS only]">
+        Close All Tabs and Groups
+      </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_CLOSEOTHERTABS" desc="The iOS context menu item for closing all the tabs except the currently selected one.">
         Close Other Tabs
       </message>
