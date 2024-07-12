@@ -12,6 +12,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries_impl.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
@@ -238,4 +240,9 @@ static void JNI_PrivacySandboxBridge_RecordActivityType(
   GetPrivacySandboxService(j_profile)->RecordActivityType(
       static_cast<PrivacySandboxService::PrivacySandboxStorageActivityType>(
           activity_type));
+}
+
+static jboolean JNI_PrivacySandboxBridge_IsConsentCountry(JNIEnv* env) {
+  PrivacySandboxCountriesImpl instance;
+  return instance.IsConsentCountry();
 }

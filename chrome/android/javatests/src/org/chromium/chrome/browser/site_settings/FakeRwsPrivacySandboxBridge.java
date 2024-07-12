@@ -116,4 +116,9 @@ public class FakeRwsPrivacySandboxBridge implements PrivacySandboxBridge.Natives
 
     @Override
     public void recordActivityType(Profile profile, int activityType) {}
+
+    @Override
+    public boolean isConsentCountry() {
+        return false;
+    }
 }

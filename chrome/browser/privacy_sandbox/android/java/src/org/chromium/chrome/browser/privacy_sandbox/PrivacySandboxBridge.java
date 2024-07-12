@@ -132,6 +132,10 @@ public class PrivacySandboxBridge {
         PrivacySandboxBridgeJni.get().recordActivityType(mProfile, activityType);
     }
 
+    public boolean isConsentCountry() {
+        return PrivacySandboxBridgeJni.get().isConsentCountry();
+    }
+
     @NativeMethods
     public interface Natives {
         boolean isPrivacySandboxRestricted(Profile profile);
@@ -179,5 +183,7 @@ public class PrivacySandboxBridge {
         void setAllPrivacySandboxAllowedForTesting(Profile profile); // IN-TEST
 
         void recordActivityType(Profile profile, int activityType);
+
+        boolean isConsentCountry();
     }
 }
