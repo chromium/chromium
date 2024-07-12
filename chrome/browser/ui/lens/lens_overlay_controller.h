@@ -33,6 +33,7 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/sessions/core/session_id.h"
 #include "components/viz/common/frame_timing_details.h"
+#include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -87,7 +88,8 @@ class LensOverlayController : public LensSearchboxClient,
                               public SidePanelViewStateObserver,
                               public views::ViewObserver,
                               public views::WidgetObserver,
-                              public OmniboxTabHelper::Observer {
+                              public OmniboxTabHelper::Observer,
+                              public content::RenderProcessHostObserver {
  public:
   // Observer of LensOverlayController events.
   class Observer : public base::CheckedObserver {
@@ -658,6 +660,11 @@ class LensOverlayController : public LensSearchboxClient,
   void OnSidePanelDidOpen() override;
   void OnSidePanelCloseInterrupted() override;
   void OnSidePanelDidClose() override;
+
+  // content::RenderProcessHostObserver:
+  void RenderProcessExited(
+      content::RenderProcessHost* host,
+      const content::ChildProcessTerminationInfo& info) override;
 
   // Called when the associated tab enters the foreground.
   void TabForegrounded(tabs::TabInterface* tab);
