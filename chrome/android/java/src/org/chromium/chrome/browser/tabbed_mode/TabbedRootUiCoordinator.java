@@ -664,7 +664,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             getBottomSheetController(),
                             true));
         }
-
         SupplierUtils.waitForAll(
                 mCallbackController.makeCancelable(
                         () -> {
@@ -799,8 +798,84 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         .getColor(R.color.omnibox_focused_fading_background_color));
     }
 
-    // Private class methods
+    // Package Private class methods
+    void recordPrivacySandboxActivityType(Profile profile) {
+        // Records the current ActivityType using a PrivacySandbox Bridge
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_ACTIVITY_TYPE_STORAGE)) {
+            int privacySandboxStorageActivityType =
+                    ActivityTypeMapper.toPrivacySandboxStorageActivityType(ActivityType.TABBED);
 
+            PrivacySandboxBridge privacySandboxBridge = new PrivacySandboxBridge(profile);
+            privacySandboxBridge.recordActivityType(privacySandboxStorageActivityType);
+        }
+    }
+
+    boolean maybeTriggerPSDialogSuppression(Profile profile) {
+        // Handles whether the PS Dialog should be suppressed, logs whether it was suppressed and
+        // returns whether a promo was triggered
+        Tab tab = mActivityTabProvider.get();
+
+        boolean isTabLaunchedFromExternalApp =
+                tab != null && tab.getLaunchType() == TabLaunchType.FROM_EXTERNAL_APP;
+        boolean shouldSuppressPSDialogForExternalAppLaunches =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4,
+                        "suppress-dialog-for-external-app-launches",
+                        true);
+        boolean shouldSuppressPSDialog =
+                isTabLaunchedFromExternalApp && shouldSuppressPSDialogForExternalAppLaunches;
+
+        String histogramName =
+                "Startup.Android.PrivacySandbox.DialogNotShownDueToTabLaunchedFromExternalApp";
+        RecordHistogram.recordBooleanHistogram(histogramName, shouldSuppressPSDialog);
+
+        if (!shouldSuppressPSDialog) {
+            return PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
+                    mActivity, new SettingsLauncherImpl(), profile);
+        }
+
+        return false;
+    }
+
+    boolean maybeTriggerTrackingProtectionNoticeAndOnboarding(
+            Profile profile, boolean wasPromoTriggered) {
+        // Handles whether the Tracking Protection notices and onboarding controllers should be
+        // shown (independent of each other), and returns the updated value of wasPromoTriggered
+        if (!wasPromoTriggered
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.TRACKING_PROTECTION_FULL_ONBOARDING_MOBILE_TRIGGER)) {
+            wasPromoTriggered =
+                    TrackingProtectionOnboardingController.maybeCreate(
+                            mActivity,
+                            new TrackingProtectionBridge(profile),
+                            mActivityTabProvider,
+                            mMessageDispatcher,
+                            new SettingsLauncherImpl());
+        }
+
+        if (!wasPromoTriggered && TrackingProtectionNoticeController.shouldShowNotice(profile)) {
+            TrackingProtectionNoticeController.create(
+                    mActivity,
+                    profile,
+                    mActivityTabProvider,
+                    mMessageDispatcher,
+                    new SettingsLauncherImpl());
+            // Promo will be triggered eventually. We don't want for this promo to clash with other
+            // promos in the same run.
+            return true;
+        }
+        return wasPromoTriggered;
+    }
+
+    boolean initializePrivacySandbox(Profile profile) {
+        // Initializes Privacy Sandbox related logic
+        recordPrivacySandboxActivityType(profile);
+        boolean wasPromoTriggered = maybeTriggerPSDialogSuppression(profile);
+        // TODO(b/350704805): Cleanup - keep wasPromoTriggered out of the nested function calls
+        return maybeTriggerTrackingProtectionNoticeAndOnboarding(profile, wasPromoTriggered);
+    }
+
+    // Private class methods
     private void initializeIPH(Profile profile, boolean intentWithEffect) {
         if (mActivity == null) return;
         mToolbarButtonInProductHelpController =
@@ -830,61 +905,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         getToolbarManager().getMenuButtonView(),
                         mAppMenuCoordinator.getAppMenuHandler());
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_ACTIVITY_TYPE_STORAGE)) {
-            int privacySandboxStorageActivityType =
-                    ActivityTypeMapper.toPrivacySandboxStorageActivityType(ActivityType.TABBED);
-
-            PrivacySandboxBridge privacySandboxBridge = new PrivacySandboxBridge(profile);
-            privacySandboxBridge.recordActivityType(privacySandboxStorageActivityType);
-        }
-
-        boolean didTriggerPromo = false;
-
-        String histogramName =
-                "Startup.Android.PrivacySandbox.DialogNotShownDueToTabLaunchedFromExternalApp";
-        Tab tab = mActivityTabProvider.get();
-        boolean isTabLaunchedFromExternalApp =
-                tab != null && tab.getLaunchType() == TabLaunchType.FROM_EXTERNAL_APP;
-        boolean shouldSuppressPSDialogForExternalAppLaunches =
-                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4,
-                        "suppress-dialog-for-external-app-launches",
-                        true);
-        boolean shouldSuppressPSDialog =
-                isTabLaunchedFromExternalApp && shouldSuppressPSDialogForExternalAppLaunches;
-
-        if (!shouldSuppressPSDialog) {
-            didTriggerPromo =
-                    PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
-                            mActivity,
-                            new SettingsLauncherImpl(),
-                            mTabModelSelectorSupplier.get().getCurrentModel().getProfile());
-        }
-        RecordHistogram.recordBooleanHistogram(histogramName, shouldSuppressPSDialog);
-
-        if (!didTriggerPromo
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.TRACKING_PROTECTION_FULL_ONBOARDING_MOBILE_TRIGGER)) {
-            didTriggerPromo =
-                    TrackingProtectionOnboardingController.maybeCreate(
-                            mActivity,
-                            new TrackingProtectionBridge(profile),
-                            mActivityTabProvider,
-                            mMessageDispatcher,
-                            new SettingsLauncherImpl());
-        }
-
-        if (!didTriggerPromo && TrackingProtectionNoticeController.shouldShowNotice(profile)) {
-            TrackingProtectionNoticeController.create(
-                    mActivity,
-                    profile,
-                    mActivityTabProvider,
-                    mMessageDispatcher,
-                    new SettingsLauncherImpl());
-            // Promo will be triggered eventually. We don't want for this promo to clash with other
-            // promos in the same run.
-            didTriggerPromo = true;
-        }
+        boolean didTriggerPromo = initializePrivacySandbox(profile);
 
         if (!didTriggerPromo) {
             Supplier<RationaleDelegate> rationaleUIDelegateSupplier;
@@ -972,6 +993,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mAddToHomescreenMostVisitedTileObserver =
                 new AddToHomescreenMostVisitedTileClickObserver(
                         mActivityTabProvider, mAddToHomescreenIPHController);
+
+        Tab tab = mActivityTabProvider.get();
 
         if (!didTriggerPromo
                 && ChromeFeatureList.isEnabled(
