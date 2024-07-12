@@ -25,7 +25,7 @@ BrowserAccessibilityWin::BrowserAccessibilityWin(
     : BrowserAccessibility(manager, node) {
   ui::win::CreateATLModuleIfNeeded();
   HRESULT hr = CComObject<BrowserAccessibilityComWin>::CreateInstance(
-      &browser_accessibility_com_);
+      &browser_accessibility_com_.AsEphemeralRawAddr());
   DCHECK(SUCCEEDED(hr));
   browser_accessibility_com_->AddRef();
   browser_accessibility_com_->Init(this);
@@ -33,8 +33,7 @@ BrowserAccessibilityWin::BrowserAccessibilityWin(
 
 BrowserAccessibilityWin::~BrowserAccessibilityWin() {
   if (browser_accessibility_com_) {
-    browser_accessibility_com_->Destroy();
-    browser_accessibility_com_ = nullptr;
+    browser_accessibility_com_.ExtractAsDangling()->Destroy();
   }
 }
 

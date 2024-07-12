@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/win/atl.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_com_win.h"
@@ -61,10 +61,7 @@ class CONTENT_EXPORT BrowserAccessibilityWin : public BrowserAccessibility {
   friend class BrowserAccessibility;  // Needs access to our constructor.
 
  private:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION CComObject<BrowserAccessibilityComWin>*
-      browser_accessibility_com_;
+  raw_ptr<CComObject<BrowserAccessibilityComWin>> browser_accessibility_com_;
 };
 
 CONTENT_EXPORT BrowserAccessibilityWin* ToBrowserAccessibilityWin(
