@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.6.0...chromium-bidi-v0.6.1) (2024-07-12)
+
+
+### Features
+
+* include vendor-prefixed additional request data ([#2406](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2406)) ([76bce85](https://github.com/GoogleChromeLabs/chromium-bidi/commit/76bce8552ddf45633181ce2af1050fe46de55e65))
+* include vendor-prefixed security details ([#2405](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2405)) ([414fa88](https://github.com/GoogleChromeLabs/chromium-bidi/commit/414fa88f2c50ea53f4d714e9fc8d2951f858f5cf))
+
+
+### Bug Fixes
+
+* default `beforeUnload` behavior is `accept` ([#2397](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2397)) ([0d79f4b](https://github.com/GoogleChromeLabs/chromium-bidi/commit/0d79f4b606c305d9ae2602204cb34952976ff86c))
+* restore OOPiF state ([#2381](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2381)) ([3e9855c](https://github.com/GoogleChromeLabs/chromium-bidi/commit/3e9855c5a57b3c72745407906d081c0e57f042e9))
+* the capability to ignore cert errors should be browser-wide  ([#2369](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2369)) ([6db665b](https://github.com/GoogleChromeLabs/chromium-bidi/commit/6db665b2a989f93b5fa3d2b3881ba16fd5248442))
+
 ## [0.6.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.24...chromium-bidi-v0.6.0) (2024-06-28)
 
 
