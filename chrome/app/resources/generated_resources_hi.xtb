@@ -1114,7 +1114,7 @@
 <translation id="1803545009660609783">फिर से सिखाएं</translation>
 <translation id="1804195280859010019">आपको Google Search के साइड पैनल जैसी सुविधाओं में ज़्यादा काम की जानकारी या सुझाव मिलेंगे</translation>
 <translation id="1805738995123446102">बैकग्राउंड टैब आपके माइक्रोफ़ोन का इस्तेमाल कर रहा है</translation>
-<translation id="1805822111539868586">व्यू का निरीक्षण करें</translation>
+<translation id="1805822111539868586">व्यू की जांच करें</translation>
 <translation id="1805888043020974594">प्रिंट सर्वर</translation>
 <translation id="1805967612549112634">पिन की पुष्टि करें</translation>
 <translation id="1806335016774576568">किसी दूसरे खुले हुए ऐप्लिकेशन पर स्विच करें</translation>
@@ -1454,7 +1454,7 @@
 <translation id="2041246176170574368">सुरक्षा से जुड़े अपडेट मिलने की सुविधा जल्द बंद होने वाली है. नए Chromebook पर, 50 डॉलर या उससे ज़्यादा की बचत करें.</translation>
 <translation id="2042279886444479655">ऐक्टिव प्रोफ़ाइलें</translation>
 <translation id="2044014337866019681">पक्का करें कि आप सत्र को अनलॉक करने के लिए, <ph name="ACCOUNT" /> की पुष्टि कर रहे हैं.</translation>
-<translation id="204497730941176055">माइक्रोसॉफ्ट प्रमाणपत्र टेम्पलेट नाम</translation>
+<translation id="204497730941176055">माइक्रोसॉफ्ट प्रमाणपत्र टेंप्लेट नाम</translation>
 <translation id="2045211794962848221">आपको यह मैसेज दोबारा नहीं दिखेगा</translation>
 <translation id="2045838962742066664">शॉर्टहैंड टाइपिंग</translation>
 <translation id="204622017488417136">आपके डिवाइस को Chrome के इसे पहले इंस्‍टॉल किए गए वर्शन पर वापस ले जाया जाएगा. सभी उपयोगकर्ता खाते और स्‍थानीय डेटा हटा दिइ जाएंगे. इसे पहले जैसा नहीं किया जा सकता.</translation>
@@ -3721,7 +3721,7 @@
 <translation id="3724897774652282549">फ़ॉर्म भरें</translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">उपलब्ध वाई-फ़ाई नेटवर्क</translation>
-<translation id="3727187387656390258">पॉपअप का निरीक्षण करें</translation>
+<translation id="3727187387656390258">पॉपअप की जांच करें</translation>
 <translation id="372722114124766626">बस एक बार</translation>
 <translation id="3727332897090187514">कोई नोट नहीं जोड़ा गया है</translation>
 <translation id="3727473233247516571">बैक/फ़ॉरवर्ड कैश मेमोरी का सबफ़्रेम: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -5963,7 +5963,7 @@
 <translation id="5434065355175441495">PKCS #1 RSA सुरक्षित करने का तरीका</translation>
 <translation id="5435274640623994081">इयरकॉन में लॉग इन करना चालू करें</translation>
 <translation id="5435779377906857208"><ph name="HOST" /> को, हमेशा अपनी जगह की जानकारी को ऐक्सेस करने की अनुमति दें</translation>
-<translation id="5436492226391861498">प्रॉक्सी टनेल की प्रतीक्षा कर रहा है...</translation>
+<translation id="5436492226391861498">प्रॉक्सी टनल का इंतज़ार किया जा रहा है...</translation>
 <translation id="5436510242972373446">खोजें <ph name="SITE_NAME" />:</translation>
 <translation id="5436575196282187764">Google Photos में सेव की गई आपकी यादें</translation>
 <translation id="5440425659852470030">साइड पैनल बंद करें</translation>
@@ -6877,7 +6877,7 @@
 <translation id="6125479973208104919">दुर्भाग्यवश, आपको इस <ph name="DEVICE_TYPE" /> में अपना खाता फिर से जोड़ना होगा.</translation>
 <translation id="6126601353087978360">कृपया अपना फ़ीडबैक (सुझाव, शिकायत या राय) यहां दर्ज करें:</translation>
 <translation id="6127292407256937949">आवाज़ चालू है. आवाज़ बंद करें.</translation>
-<translation id="6129691635767514872">चुना गया डेटा Chrome और सिंक किए गए सभी डिवाइस से हटा दिया गया है. हो सकता है कि आपके Google खाते में खोजों और <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> पर अन्य Google सेवाओं की गतिविधि जैसे अन्य प्रकार के ब्राउज़िंग इतिहास मौजूद हों.</translation>
+<translation id="6129691635767514872">चुना गया डेटा Chrome और सिंक किए गए सभी डिवाइस से हटा दिया गया है. हो सकता है कि आपके Google खाते में खोजों और <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> पर अन्य Google सेवाओं की गतिविधि जैसा अन्य तरह का ब्राउज़िंग इतिहास मौजूद हो.</translation>
 <translation id="6129938384427316298">Netscape प्रमाणपत्र टिप्पणी</translation>
 <translation id="6129953537138746214">Space</translation>
 <translation id="6130692320435119637">वाई-फ़ाई जोड़ें</translation>
@@ -7948,7 +7948,7 @@
 <translation id="6950627417367801484">ऐप्लिकेशन बहाल करें</translation>
 <translation id="6954910832698269894">अपने पिछले Chromebook से ऐप्लिकेशन, सेटिंग, वाई-फ़ाई नेटवर्क, और वॉलपेपर को वापस लाने के लिए, डिवाइस सिंक करने की सुविधा चालू करें. सेटिंग &gt; खाते में जाकर, कभी भी बदलाव किया जा सकता है.</translation>
 <translation id="6954936693361896459">इसके बजाय, इस टैब को कास्ट करें</translation>
-<translation id="6955446738988643816">पॉपअप का निरीक्षण करें</translation>
+<translation id="6955446738988643816">पॉपअप की जांच करें</translation>
 <translation id="6955535239952325894">यह सेटिंग, प्रबंधित किए गए ब्राउज़र पर काम नहीं करती है</translation>
 <translation id="6955698182324067397">ChromeOS की डीबग करने वाली सुविधाएं चालू करने पर, एसएसएचडी डीमन का सेट अप हो जाएगा और यूएसबी ड्राइव से बूट करना चालू हो जाएगा.</translation>
 <translation id="6955893174999506273">एक और स्विच असाइन करें</translation>
@@ -8279,7 +8279,7 @@
 <translation id="721490496276866468">पासवर्ड इंपोर्ट करें</translation>
 <translation id="7218514093816577632">पक्का करें कि आपके <ph name="DEVICE_NAME" /> पर सूचनाएं पाने की सुविधा चालू हो.</translation>
 <translation id="7219254577985949841">क्या आपको साइट डेटा मिटाना है?</translation>
-<translation id="7219473482981809164">हमें ऐसी कई प्रोफ़ाइलें मिली हैं जिन्हें डाउनलोड करना है. आगे बढ़ने से पहले, वह प्रोफ़ाइल चुनें जिसे आप डाउनलोड करना चाहते हैं.</translation>
+<translation id="7219473482981809164">हमें ऐसी कई प्रोफ़ाइलें मिली हैं जिन्हें डाउनलोड किया जा सकता है. आगे बढ़ने से पहले वे प्रोफ़ाइलें चुनें जिन्हें आपको डाउनलोड करना है.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{कोई कमज़ोर पासवर्ड नहीं मिला}=1{1 कमज़ोर पासवर्ड मिला}one{{NUM_WEAK} कमज़ोर पासवर्ड मिला}other{{NUM_WEAK} कमज़ोर पासवर्ड मिले}}</translation>
 <translation id="7220019174139618249">पासवर्ड "<ph name="FOLDER" />" में निर्यात नहीं किए जा सकते</translation>
 <translation id="722099540765702221">चार्जिंग का स्रोत</translation>

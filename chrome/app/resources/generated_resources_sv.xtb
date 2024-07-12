@@ -2110,7 +2110,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2501173422421700905">Certifikatet är avstängt</translation>
 <translation id="2501278716633472235">Föregående</translation>
 <translation id="2501797496290880632">Ange en genväg</translation>
-<translation id="2501920221385095727">Tröga tangenter</translation>
+<translation id="2501920221385095727">Låstangentsläge</translation>
 <translation id="2502441965851148920">Automatiska uppdateringar har aktiverats. Manuella uppdateringar har inaktiverats av administratören.</translation>
 <translation id="2502719318159902502">Fullständig åtkomst</translation>
 <translation id="2504801073028762184">Säkerhetsrekommendationer</translation>
@@ -4088,7 +4088,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="397703832102027365">Slutför ...</translation>
 <translation id="3977145907578671392">Vissa webbplatsers funktioner kanske inte fungerar i inkognitoläge</translation>
 <translation id="3977886311744775419">Automatiska uppdateringar laddas inte ned med den här nätverkstypen, men du kan söka efter uppdateringar manuellt.</translation>
-<translation id="3978325380690188371">Tröga tangenter är inte tillgängligt när ChromeVox är aktiverat</translation>
+<translation id="3978325380690188371">Låstangentsläget är inte tillgängligt när ChromeVox är aktiverat</translation>
 <translation id="3979395879372752341">Ett nytt tillägg har lagts till (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Aktivera <ph name="NETWORKDEVICE" /></translation>
 <translation id="3981058120448670012">Enheter i närheten kan se <ph name="DEVICE_NAME" /> i <ph name="REMAINING_TIME" /> …</translation>

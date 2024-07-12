@@ -630,7 +630,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="429074084062258019">{count,plural, =1{Ajouter l'onglet à un groupe}one{Ajouter l'onglet à un groupe}other{Ajouter les onglets à un groupe}}</translation>
 <translation id="4293080268407233932">Rechercher</translation>
 <translation id="4302248187517737842">Aucun nom d'utilisateur ••••••••</translation>
-<translation id="4302415908542657649">Partage des mots de passe…</translation>
+<translation id="4302415908542657649">Partage du mot de passe…</translation>
 <translation id="4304713468139749426">Gestionnaire de mots de passe</translation>
 <translation id="430793432425771671">Tout synchroniser</translation>
 <translation id="4309403553630140242">Appuyez deux fois pour obtenir plus d'informations</translation>
@@ -718,7 +718,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4744428388659507035">Pour accéder à vos favoris sur tous vos appareils, activez "Favoris" dans les paramètres.</translation>
 <translation id="4746926359847517643">Vous pouvez toujours les récupérer dans l'historique.</translation>
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, Uniquement sur cet appareil, <ph name="URL" /></translation>
-<translation id="4751645464639803239">Nouv. onglet nav. privée</translation>
+<translation id="4751645464639803239">Nouvel onglet de navigation privée</translation>
 <translation id="4766112107778026136">Discover et Suivi</translation>
 <translation id="47677902929517676">Pour enregistrer les mots de passe dans votre compte, vous devez d'abord définir un code secret sur votre appareil.</translation>
 <translation id="4775879719735953715">Navigateur par défaut</translation>
@@ -1366,7 +1366,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="792357691529995513">Aucun problème détecté</translation>
 <translation id="7930998711684428189">Il vous avertit en cas de divulgation de mots de passe suite à une violation des données.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
-<translation id="7939128259257418052">Export mots de passe…</translation>
+<translation id="7939128259257418052">Exporter mots de passe…</translation>
 <translation id="7939856641500914040">Supprimer les données de navigation…</translation>
 <translation id="794799177247607889">Arrêter la journalisation</translation>
 <translation id="7959441099968534758">ACCÉDER AU FLUX</translation>

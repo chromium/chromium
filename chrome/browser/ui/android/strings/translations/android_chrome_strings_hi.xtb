@@ -121,7 +121,7 @@
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> की मदद से, <ph name="SITE_ETLD_PLUS_ONE" /> का इस्तेमाल करें</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 चयनित आइटम निकालें}one{# चयनित आइटम निकालें}other{# चयनित आइटम निकालें}}</translation>
 <translation id="1641113438599504367">सुरक्षित ब्राउज़िंग</translation>
-<translation id="164269334534774161">आप <ph name="CREATION_TIME" /> से इस पेज की ऑफ़लाइन कॉपी देख रहे हैं</translation>
+<translation id="164269334534774161">इस पेज की <ph name="CREATION_TIME" /> वाली ऑफ़लाइन कॉपी देखी जा रही है</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1657932388559784161">पेज की अहम जानकारी वाली बॉटम शीट बंद है</translation>
 <translation id="1670399744444387456">बुनियादी विकल्प</translation>
@@ -507,7 +507,7 @@
 <translation id="3636940436873918441">पसंदीदा भाषाएं</translation>
 <translation id="3637744895182738742">अगर आपको अपना लंबा पासवर्ड याद नहीं है या आपको यह सेटिंग बदलनी है, तो <ph name="BEGIN_LINK" />अपने खाते से Chrome का डेटा मिटाएं<ph name="END_LINK" />.</translation>
 <translation id="368329460027487650">साइन आउट किया गया. इस बटन पर टैप करने से, साइन इन करने के विकल्प मिलते हैं.</translation>
-<translation id="3687645719033307815">आप इस पेज की झलक देख रहे हैं</translation>
+<translation id="3687645719033307815">इस पेज की झलक देखी जा रही है</translation>
 <translation id="3690369331356918524">अगर डेटा का गलत इस्तेमाल होने पर आपके पासवर्ड बिना अनुमति के सार्वजनिक हो जाते हैं, तो आपको चेतावनी मिलती है</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> डाउनलोड नहीं हो सकी क्योंकि स्टोर करने की जगह नहीं मिली.</translation>
 <translation id="3697705478071004188">साइट के मुताबिक क्रम से लगाएं</translation>
@@ -862,7 +862,7 @@
 <translation id="544776284582297024">टैब खोलने और एक ही समय में अलग-अलग पेजों पर जाने के लिए, 'टैब खोलें' बटन पर टैप करें</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> के साथ</translation>
 <translation id="5458366071038729214">यहां आपको वे साइटें दिखेंगी जिन्हें आप फ़ॉलो करते हैं</translation>
-<translation id="5468068603361015296">क्या आप फिर भी <ph name="FILE_NAME" /> को डाउनलोड करना चाहते हैं?</translation>
+<translation id="5468068603361015296">क्या आपको फिर भी <ph name="FILE_NAME" /> को डाउनलोड करना है?</translation>
 <translation id="548278423535722844">मैप ऐप्लिकेशन में खोलें</translation>
 <translation id="5486841595534124508">पेज इनसाइट हब के लिए निजता नोटिस का लोगो, जो 'मेरी गतिविधि' वाले पेज पर रीडायरेक्ट करता है.</translation>
 <translation id="5492637351392383067">डिवाइस पर पासवर्ड एन्क्रिप्ट (सुरक्षित) करना</translation>
@@ -1123,7 +1123,7 @@
 <translation id="670498945988402717">कल जांच की गई</translation>
 <translation id="6710213216561001401">पिछला</translation>
 <translation id="671481426037969117"><ph name="FQDN" /> इस्तेमाल करने का समय खत्म हो गया. यह कल फिर से शुरू होगा.</translation>
-<translation id="6715020873764921614">क्या आप फिर भी <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) को डाउनलोड करना चाहते हैं?</translation>
+<translation id="6715020873764921614">क्या आपको फिर भी <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) को डाउनलोड करना है?</translation>
 <translation id="6719634564325948108">क्यूआर कोड की मदद से कनेक्ट करें?</translation>
 <translation id="6723740634201835758">अपने Google खाते में</translation>
 <translation id="6734310707649923383">अपने विज़िट किए हुए पेजों को देखा जा सकता है या उन्हें अपने इतिहास से मिटाया जा सकता है</translation>
