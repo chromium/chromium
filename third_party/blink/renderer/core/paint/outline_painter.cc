@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
 
 #include <optional>
@@ -383,8 +378,8 @@ class RoundedEdgePathIterator {
   // The edge will drawn with a clip to remove the first half of the starting
   // arc and the second half of the ending arc.
   void GenerateEdgeStrokePath(SkPath& edge_stroke_path,
-                              const SkPoint starting_arc_points[],
-                              const SkPoint ending_arc_points[]) {
+                              base::span<const SkPoint> starting_arc_points,
+                              base::span<const SkPoint> ending_arc_points) {
     SkPoint line_start = starting_arc_points[2];
     SkPoint line_end = ending_arc_points[0];
     if (starting_arc_points[0] == line_start) {

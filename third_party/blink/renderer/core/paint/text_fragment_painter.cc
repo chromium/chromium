@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/paint/text_fragment_painter.h"
 
 #include "third_party/blink/renderer/core/editing/editor.h"
@@ -151,7 +146,7 @@ PhysicalDirection GetDisclosureOrientation(const ComputedStyle& style,
   return is_open ? direction_mode.BlockEnd() : direction_mode.InlineEnd();
 }
 
-Path CreatePath(const gfx::PointF* path) {
+Path CreatePath(base::span<const gfx::PointF, 4> path) {
   Path result;
   result.MoveTo(gfx::PointF(path[0].x(), path[0].y()));
   for (int i = 1; i < 4; ++i) {

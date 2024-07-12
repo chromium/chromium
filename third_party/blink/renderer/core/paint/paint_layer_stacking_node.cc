@@ -42,11 +42,6 @@
  * version of this file under any of the LGPL, the MPL or the GPL.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/paint/paint_layer_stacking_node.h"
 
 #include <algorithm>
@@ -131,7 +126,7 @@ struct PaintLayerStackingNode::HighestLayers {
         // |highest_layers_order| doesn't have duplicate elements, std::remove
         // will find at most one element at a time. So we don't shrink it and
         // just update the value of the |new_end|.
-        DCHECK(new_end + 1 == highest_layers_order.end());
+        DCHECK(std::next(new_end) == highest_layers_order.end());
         *new_end = type;
       } else {
         highest_layers_order.push_back(type);
