@@ -58,3 +58,13 @@ static jboolean JNI_TrackingProtectionBridge_IsOffboarded(JNIEnv* env,
   // crbug/344565466.
   return false;
 }
+
+static jboolean JNI_TrackingProtectionBridge_ShouldRunUILogic(JNIEnv* env,
+                                                              Profile* profile,
+                                                              jint surface) {
+  return TrackingProtectionOnboardingFactory::GetForProfile(profile)
+      ->ShouldRunUILogic(
+          static_cast<
+              privacy_sandbox::TrackingProtectionOnboarding::SurfaceType>(
+              surface));
+}

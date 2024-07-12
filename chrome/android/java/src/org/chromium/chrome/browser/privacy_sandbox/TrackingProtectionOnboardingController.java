@@ -47,23 +47,20 @@ public class TrackingProtectionOnboardingController {
      * @param activityTabProvider Provides the currently active tab.
      * @param messageDispatcher The message dispatcher for enqueuing messages.
      * @param settingsLauncher The settings launcher for opening tracking protection settings.
-     * @param onboardingType The {@link TrackingProtectionOnboardingType} determining the onboarding
-     *     version for Tracking Protection logic.
      */
-    private TrackingProtectionOnboardingController(
+    TrackingProtectionOnboardingController(
             Context context,
             TrackingProtectionBridge trackingProtectionBridge,
             ActivityTabProvider activityTabProvider,
             MessageDispatcher messageDispatcher,
-            SettingsLauncher settingsLauncher,
-            TrackingProtectionOnboardingType onboardingType) {
+            SettingsLauncher settingsLauncher) {
         mActivityTabProvider = activityTabProvider;
         mContext = context;
         mTrackingProtectionBridge = trackingProtectionBridge;
         mMessageDispatcher = messageDispatcher;
         mSettingsLauncher = settingsLauncher;
 
-        createActivityTabTabObserver(tab -> maybeOnboard(tab, onboardingType));
+        createActivityTabTabObserver(tab -> maybeOnboard(tab));
     }
 
     /**
@@ -76,20 +73,23 @@ public class TrackingProtectionOnboardingController {
      * @param settingsLauncher The settings launcher for opening tracking protection settings.
      * @return A new instance of TrackingProtectionNoticeController.
      */
-    public static TrackingProtectionOnboardingController create(
+    public static boolean maybeCreate(
             Context context,
             TrackingProtectionBridge trackingProtectionBridge,
             ActivityTabProvider activityTabProvider,
             MessageDispatcher messageDispatcher,
-            SettingsLauncher settingsLauncher,
-            TrackingProtectionOnboardingType onboardingType) {
-        return new TrackingProtectionOnboardingController(
+            SettingsLauncher settingsLauncher) {
+        if (!trackingProtectionBridge.shouldRunUILogic(SurfaceType.BR_APP)) {
+            return false;
+        }
+        new TrackingProtectionOnboardingController(
                 context,
                 trackingProtectionBridge,
                 activityTabProvider,
                 messageDispatcher,
-                settingsLauncher,
-                onboardingType);
+                settingsLauncher);
+
+        return true;
     }
 
     /**
@@ -97,7 +97,14 @@ public class TrackingProtectionOnboardingController {
      *
      * @param tab The tab on which the notice might be shown.
      */
-    public void maybeOnboard(Tab tab, TrackingProtectionOnboardingType onboardingType) {
+    public void maybeOnboard(Tab tab) {
+        if (tab == null || tab.isIncognitoBranded()) return;
+
+        if (!isSecure(tab)) {
+            return;
+        }
+
+        TrackingProtectionOnboardingType onboardingType = getTrackingProtectionOnboardingType();
         if (onboardingType == TrackingProtectionOnboardingType.MODE_B) {
             maybeOnboardModeB(tab);
         } else if (onboardingType == TrackingProtectionOnboardingType.TP_FULL_LAUNCH) {
@@ -105,9 +112,40 @@ public class TrackingProtectionOnboardingController {
         }
     }
 
+    private boolean isSecure(Tab tab) {
+        int securityLevel = SecurityStateModel.getSecurityLevelForWebContents(tab.getWebContents());
+
+        if (securityLevel != ConnectionSecurityLevel.SECURE) {
+            logForSecurityLevel(securityLevel);
+            return false;
+        }
+        return true;
+    }
+
+    private TrackingProtectionOnboardingType getTrackingProtectionOnboardingType() {
+        @NoticeType
+        int requiredNotice = mTrackingProtectionBridge.getRequiredNotice(SurfaceType.BR_APP);
+
+        switch (requiredNotice) {
+            case NoticeType.MODE_B_ONBOARDING, NoticeType.MODE_B_SILENT_ONBOARDING -> {
+                return TrackingProtectionOnboardingType.MODE_B;
+            }
+            case NoticeType.FULL3PCD_ONBOARDING,
+                    NoticeType.FULL3PCD_ONBOARDING_WITH_IPP,
+                    NoticeType.FULL3PCD_SILENT_ONBOARDING,
+                    NoticeType.FULL3PCD_SILENT_ONBOARDING_WITH_IPP -> {
+                return TrackingProtectionOnboardingType.TP_FULL_LAUNCH;
+            }
+            default -> {
+                return TrackingProtectionOnboardingType.UNKNOWN;
+            }
+        }
+    }
+
     // TODO(b/341968245): Add proper logic once b/341975190 is finished.
     private void maybeOnboardFullLaunch() {
         try {
+            if (!shouldShowNotice(mTrackingProtectionBridge)) return;
             TrackingProtectionOnboardingView onboardingView = getTrackingProtectionOnboardingView();
             onboardingView.showNotice(
                     (b) -> {}, (i) -> {}, () -> PrimaryActionClickBehavior.DISMISS_IMMEDIATELY);
@@ -118,17 +156,7 @@ public class TrackingProtectionOnboardingController {
 
     private void maybeOnboardModeB(Tab tab) {
         try {
-            if (tab == null || tab.isIncognito()) return;
             if (!shouldShowNotice(mTrackingProtectionBridge)) return;
-
-            int securityLevel =
-                    SecurityStateModel.getSecurityLevelForWebContents(tab.getWebContents());
-
-            if (securityLevel != ConnectionSecurityLevel.SECURE) {
-                logForSecurityLevel(securityLevel);
-                return;
-            }
-
             TrackingProtectionModeBOnboardingView trackingProtectionModeBOnboardingView =
                     getTrackingProtectionModeBOnboardingView();
 
@@ -206,8 +234,10 @@ public class TrackingProtectionOnboardingController {
         return shouldShowNotice(new TrackingProtectionBridge(profile));
     }
 
-    private static boolean shouldShowNotice(TrackingProtectionBridge trackingProtectionBridge) {
-        return trackingProtectionBridge.getRequiredNotice(SurfaceType.BR_APP) != NoticeType.NONE;
+    static boolean shouldShowNotice(TrackingProtectionBridge trackingProtectionBridge) {
+        return trackingProtectionBridge.shouldRunUILogic(SurfaceType.BR_APP)
+                && trackingProtectionBridge.getRequiredNotice(SurfaceType.BR_APP)
+                        != NoticeType.NONE;
     }
 
     private @NoticeType int getNoticeType() {

@@ -10,5 +10,8 @@ public enum TrackingProtectionOnboardingType {
     MODE_B,
 
     /** Full launch onboarding type for tracking protection. */
-    TP_FULL_LAUNCH;
+    TP_FULL_LAUNCH,
+
+    /** Unknown onboarding type. */
+    UNKNOWN;
 }

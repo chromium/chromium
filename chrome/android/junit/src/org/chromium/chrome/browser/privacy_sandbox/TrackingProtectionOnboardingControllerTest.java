@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -59,16 +61,14 @@ public class TrackingProtectionOnboardingControllerTest {
         when(mTab.isIncognito()).thenReturn(false); // Assume non-incognito tab
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mActivityTabProvider.get()).thenReturn(mTab);
-        when(mTrackingProtectionBridge.getRequiredNotice(SurfaceType.BR_APP))
-                .thenReturn(NoticeType.MODE_B_ONBOARDING);
+        when(mTrackingProtectionBridge.shouldRunUILogic(anyInt())).thenReturn(true);
         mController =
-                TrackingProtectionOnboardingController.create(
+                new TrackingProtectionOnboardingController(
                         mContext,
                         mTrackingProtectionBridge,
                         mActivityTabProvider,
                         mMessageDispatcher,
-                        mSettingsLauncher,
-                        TrackingProtectionOnboardingType.MODE_B);
+                        mSettingsLauncher);
         mController.setTrackingProtectionModeBOnboardingView(
                 mTrackingProtectionModeBOnboardingView);
 
@@ -78,8 +78,12 @@ public class TrackingProtectionOnboardingControllerTest {
     @Test
     public void testMaybeOnboardFullOnboardingType_ShowsNotice() {
         mController.setTrackingProtectionOnboardingView(mTrackingProtectionOnboardingView);
+        when(mSecurityStateModelNatives.getSecurityLevelForWebContents(any()))
+                .thenReturn(ConnectionSecurityLevel.SECURE);
+        when(mTrackingProtectionBridge.getRequiredNotice(anyInt()))
+                .thenReturn(NoticeType.FULL3PCD_ONBOARDING);
 
-        mController.maybeOnboard(mTab, TrackingProtectionOnboardingType.TP_FULL_LAUNCH);
+        mController.maybeOnboard(mTab);
         verify(mTrackingProtectionOnboardingView).showNotice(any(), any(), any());
     }
 
@@ -87,7 +91,9 @@ public class TrackingProtectionOnboardingControllerTest {
     public void testMaybeOnboard_ShowsNotice() {
         when(mSecurityStateModelNatives.getSecurityLevelForWebContents(any()))
                 .thenReturn(ConnectionSecurityLevel.SECURE);
-        mController.maybeOnboard(mTab, TrackingProtectionOnboardingType.MODE_B);
+        when(mTrackingProtectionBridge.getRequiredNotice(anyInt()))
+                .thenReturn(NoticeType.MODE_B_ONBOARDING);
+        mController.maybeOnboard(mTab);
         verify(mTrackingProtectionModeBOnboardingView).showNotice(any(), any(), any());
     }
 
@@ -95,7 +101,9 @@ public class TrackingProtectionOnboardingControllerTest {
     public void testMaybeOnboard_NotSecureConnection_DoesNotShowNotice() {
         when(mSecurityStateModelNatives.getSecurityLevelForWebContents(any()))
                 .thenReturn(ConnectionSecurityLevel.NONE);
-        mController.maybeOnboard(mTab, TrackingProtectionOnboardingType.MODE_B);
+        when(mTrackingProtectionBridge.getRequiredNotice(anyInt()))
+                .thenReturn(NoticeType.MODE_B_ONBOARDING);
+        mController.maybeOnboard(mTab);
         verify(mTrackingProtectionModeBOnboardingView, never()).showNotice(any(), any(), any());
     }
 
@@ -103,11 +111,53 @@ public class TrackingProtectionOnboardingControllerTest {
     public void testMaybeOnboard_SilentOnboarding_NoNotice() {
         when(mSecurityStateModelNatives.getSecurityLevelForWebContents(any()))
                 .thenReturn(ConnectionSecurityLevel.SECURE);
-        when(mTrackingProtectionBridge.getRequiredNotice(SurfaceType.BR_APP))
+        when(mTrackingProtectionBridge.getRequiredNotice(anyInt()))
                 .thenReturn(NoticeType.MODE_B_SILENT_ONBOARDING);
-        mController.maybeOnboard(mTab, TrackingProtectionOnboardingType.MODE_B);
+        mController.maybeOnboard(mTab);
         verify(mTrackingProtectionBridge)
                 .noticeShown(SurfaceType.BR_APP, NoticeType.MODE_B_SILENT_ONBOARDING);
         verify(mTrackingProtectionModeBOnboardingView, never()).showNotice(any(), any(), any());
+    }
+
+    @Test
+    public void testMaybeOnboardFullLaunchOnboardinType_NoNoticeWithoutApproval() {
+        mController.setTrackingProtectionOnboardingView(mTrackingProtectionOnboardingView);
+        when(mTrackingProtectionBridge.shouldRunUILogic(anyInt())).thenReturn(false);
+        when(mSecurityStateModelNatives.getSecurityLevelForWebContents(any()))
+                .thenReturn(ConnectionSecurityLevel.SECURE);
+        when(mTrackingProtectionBridge.getRequiredNotice(anyInt()))
+                .thenReturn(NoticeType.FULL3PCD_ONBOARDING);
+
+        assertFalse(
+                TrackingProtectionOnboardingController.shouldShowNotice(mTrackingProtectionBridge));
+        mController.maybeOnboard(mTab);
+        verify(mTrackingProtectionModeBOnboardingView, never()).showNotice(any(), any(), any());
+        verify(mTrackingProtectionOnboardingView, never()).showNotice(any(), any(), any());
+    }
+
+    @Test
+    public void testMaybeOnboardModeBLaunchOnboardinType_NoNoticeWithoutApproval() {
+        when(mTrackingProtectionBridge.shouldRunUILogic(anyInt())).thenReturn(false);
+        when(mSecurityStateModelNatives.getSecurityLevelForWebContents(any()))
+                .thenReturn(ConnectionSecurityLevel.SECURE);
+        when(mTrackingProtectionBridge.getRequiredNotice(anyInt()))
+                .thenReturn(NoticeType.MODE_B_ONBOARDING);
+
+        assertFalse(
+                TrackingProtectionOnboardingController.shouldShowNotice(mTrackingProtectionBridge));
+        mController.maybeOnboard(mTab);
+        verify(mTrackingProtectionModeBOnboardingView, never()).showNotice(any(), any(), any());
+    }
+
+    @Test
+    public void testUnknownOnboardingType_NoNotice() {
+        mController.setTrackingProtectionOnboardingView(mTrackingProtectionOnboardingView);
+        when(mSecurityStateModelNatives.getSecurityLevelForWebContents(any()))
+                .thenReturn(ConnectionSecurityLevel.SECURE);
+        when(mTrackingProtectionBridge.getRequiredNotice(anyInt())).thenReturn(-1);
+
+        mController.maybeOnboard(mTab);
+        verify(mTrackingProtectionModeBOnboardingView, never()).showNotice(any(), any(), any());
+        verify(mTrackingProtectionOnboardingView, never()).showNotice(any(), any(), any());
     }
 }
