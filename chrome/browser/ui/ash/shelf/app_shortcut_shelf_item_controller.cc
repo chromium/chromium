@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -126,7 +127,8 @@ class AppMatcher {
     DCHECK(profile);
     if (web_app::WebAppProvider* provider =
             web_app::WebAppProvider::GetForLocalAppsUnchecked(profile)) {
-      if (provider->registrar_unsafe().IsLocallyInstalled(app_id)) {
+      if (provider->registrar_unsafe().IsInstallState(
+              app_id, {web_app::proto::INSTALLED_WITH_OS_INTEGRATION})) {
         registrar_ = &provider->registrar_unsafe();
       }
     }
@@ -618,7 +620,8 @@ bool AppShortcutShelfItemController::IsWindowedWebApp() {
           web_app::WebAppProvider::GetForLocalAppsUnchecked(
               ChromeShelfController::instance()->profile())) {
     web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
-    if (registrar.IsLocallyInstalled(app_id())) {
+    if (registrar.IsInstallState(
+            app_id(), {web_app::proto::INSTALLED_WITH_OS_INTEGRATION})) {
       return registrar.GetAppUserDisplayMode(app_id()) !=
              web_app::mojom::UserDisplayMode::kBrowser;
     }

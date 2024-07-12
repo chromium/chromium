@@ -211,6 +211,7 @@ include_rules = [
   "+chrome/browser/web_applications/commands/web_app_icon_diagnostic_command.h",
   "+chrome/browser/web_applications/external_install_options.h",
   "+chrome/browser/web_applications/externally_managed_app_manager.h",
+  "+chrome/browser/web_applications/proto/web_app_install_state.pb.h",
   "+chrome/browser/web_applications/locks/app_lock.h",
   "+chrome/browser/web_applications/mojom/user_display_mode.mojom.h",
   "+chrome/browser/web_applications/os_integration/os_integration_manager.h",
