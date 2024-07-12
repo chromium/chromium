@@ -65,14 +65,8 @@ import java.util.function.BooleanSupplier;
 public class TopToolbarCoordinator implements Toolbar {
     /** Observes toolbar URL expansion progress change. */
     public interface UrlExpansionObserver {
-        /**
-         * Notified when toolbar URL expansion progress fraction changes.
-         *
-         * @param fraction The toolbar expansion progress. 0 indicates that the URL bar is not
-         *                   expanded. 1 indicates that the URL bar is expanded to the maximum
-         *                   width.
-         */
-        void onUrlExpansionProgressChanged(float fraction);
+        /** Notified when toolbar URL expansion progress fraction changes. */
+        void onUrlExpansionProgressChanged();
     }
 
     /** Observes toolbar color change. */

@@ -16,7 +16,6 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -87,8 +86,7 @@ public class StatusBarColorController
     private final @ColorInt int mIncognitoActiveOmniboxColor;
     private final @ColorInt int mStandardScrolledOmniboxColor;
     private final @ColorInt int mIncognitoScrolledOmniboxColor;
-    private final boolean mIsSurfacePolishEnabled;
-    private final @ColorInt int mPolishedHomeSurfaceBgColor;
+    private final @ColorInt int mBackgroundColorForNtp;
     private boolean mToolbarColorChanged;
     private @ColorInt int mToolbarColor;
 
@@ -103,7 +101,6 @@ public class StatusBarColorController
     private @ColorInt int mScrimColor = ScrimProperties.INVALID_COLOR;
     private float mStatusBarScrimFraction;
 
-    private float mToolbarUrlExpansionPercentage;
     private boolean mShouldUpdateStatusBarColorForNtp;
     private @ColorInt int mStatusIndicatorColor;
     private @ColorInt int mStatusBarColorWithoutStatusIndicator;
@@ -158,14 +155,13 @@ public class StatusBarColorController
         mWindow = window;
         mIsTablet = isTablet;
         mStatusBarColorProvider = statusBarColorProvider;
-        mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
         mAllowToolbarColorOnTablets = false;
 
         mStandardPrimaryBgColor = ChromeColors.getPrimaryBackgroundColor(context, false);
         mIncognitoPrimaryBgColor = ChromeColors.getPrimaryBackgroundColor(context, true);
         mStandardDefaultThemeColor = ChromeColors.getDefaultThemeColor(context, false);
         mIncognitoDefaultThemeColor = ChromeColors.getDefaultThemeColor(context, true);
-        mPolishedHomeSurfaceBgColor =
+        mBackgroundColorForNtp =
                 ChromeColors.getSurfaceColor(
                         context, R.dimen.home_surface_background_color_elevation);
         mStatusIndicatorColor = UNDEFINED_STATUS_BAR_COLOR;
@@ -287,8 +283,7 @@ public class StatusBarColorController
 
     // TopToolbarCoordinator.UrlExpansionObserver implementation.
     @Override
-    public void onUrlExpansionProgressChanged(float fraction) {
-        mToolbarUrlExpansionPercentage = fraction;
+    public void onUrlExpansionProgressChanged() {
         if (mShouldUpdateStatusBarColorForNtp) updateStatusBarColor();
     }
 
@@ -449,18 +444,9 @@ public class StatusBarColorController
             return mToolbarColor;
         }
 
-        // Return status bar color in standard NewTabPage. If location bar is not shown in NTP, we
-        // use the tab theme color regardless of the URL expansion percentage.
-        if (isLocationBarShownInNtp()) {
-            if (mIsSurfacePolishEnabled) {
-                return mPolishedHomeSurfaceBgColor;
-            }
-            return ColorUtils.getColorWithOverlay(
-                    mTopUiThemeColor.getBackgroundColor(mCurrentTab),
-                    mTopUiThemeColor.getThemeColor(),
-                    mToolbarUrlExpansionPercentage);
-        } else if (mIsSurfacePolishEnabled && isStandardNtp()) {
-            return mPolishedHomeSurfaceBgColor;
+        // Return New Tab Page background color in New Tab Page.
+        if (isStandardNtp()) {
+            return mBackgroundColorForNtp;
         }
 
         // Return status bar color to match the toolbar.
@@ -558,14 +544,5 @@ public class StatusBarColorController
      */
     private boolean isStandardNtp() {
         return mCurrentTab != null && mCurrentTab.getNativePage() instanceof NewTabPage;
-    }
-
-    /**
-     * @return Whether or not the fake location bar is shown on the current NTP.
-     */
-    private boolean isLocationBarShownInNtp() {
-        if (!isStandardNtp()) return false;
-        final NewTabPage newTabPage = (NewTabPage) mCurrentTab.getNativePage();
-        return newTabPage != null && newTabPage.isLocationBarShownInNtp();
     }
 }

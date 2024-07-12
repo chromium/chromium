@@ -1017,7 +1017,7 @@ public class ToolbarPhone extends ToolbarLayout
     private void updateUrlExpansionFraction() {
         mUrlExpansionFraction = Math.max(mNtpSearchBoxScrollFraction, mUrlFocusChangeFraction);
         for (UrlExpansionObserver observer : mUrlExpansionObservers) {
-            observer.onUrlExpansionProgressChanged(mUrlExpansionFraction);
+            observer.onUrlExpansionProgressChanged();
         }
         assert mUrlExpansionFraction >= 0;
         assert mUrlExpansionFraction <= 1;
