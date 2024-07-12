@@ -550,6 +550,34 @@ void ViewAccessibility::ClearSetSize() {
   data_.RemoveIntAttribute(ax::mojom::IntAttribute::kSetSize);
 }
 
+void ViewAccessibility::SetScrollX(int scroll_x) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kScrollX, scroll_x);
+}
+
+void ViewAccessibility::SetScrollXMin(int scroll_x_min) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kScrollXMin, scroll_x_min);
+}
+
+void ViewAccessibility::SetScrollXMax(int scroll_x_max) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kScrollXMax, scroll_x_max);
+}
+
+void ViewAccessibility::SetScrollY(int scroll_y) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kScrollY, scroll_y);
+}
+
+void ViewAccessibility::SetScrollYMin(int scroll_y_min) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kScrollYMin, scroll_y_min);
+}
+
+void ViewAccessibility::SetScrollYMax(int scroll_y_max) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kScrollYMax, scroll_y_max);
+}
+
+void ViewAccessibility::SetIsScrollable(bool is_scrollable) {
+  data_.AddBoolAttribute(ax::mojom::BoolAttribute::kScrollable, is_scrollable);
+}
+
 void ViewAccessibility::SetActiveDescendant(views::View& view) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
                         view.GetViewAccessibility().GetUniqueId());

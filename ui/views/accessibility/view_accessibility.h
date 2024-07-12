@@ -260,6 +260,14 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void ClearPosInSet();
   void ClearSetSize();
 
+  void SetScrollX(int scroll_x);
+  void SetScrollXMin(int scroll_x_min);
+  void SetScrollXMax(int scroll_x_max);
+  void SetScrollY(int scroll_y);
+  void SetScrollYMin(int scroll_y_min);
+  void SetScrollYMax(int scroll_y_max);
+  void SetIsScrollable(bool scrollable);
+
   void SetActiveDescendant(views::View& view);
   void ClearActiveDescendant();
 
