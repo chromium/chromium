@@ -42,7 +42,7 @@ std::string GetStorageKeyFromSpecifics(const UserConsentSpecifics& specifics) {
   // TODO(skym): Until we force |event_time_usec| to never conflict, this has
   // the potential for errors.
   std::string key(8u, char{0});
-  base::as_writable_byte_span(key).copy_from(base::numerics::U64ToBigEndian(
+  base::as_writable_byte_span(key).copy_from(base::U64ToBigEndian(
       base::checked_cast<uint64_t>(specifics.client_consent_time_usec())));
   return key;
 }

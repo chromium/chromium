@@ -131,7 +131,7 @@ uint64_t HistorySyncMetadataDatabase::StorageKeyToMicrosSinceWindowsEpoch(
   // TODO(danakj): This method could receive a span<const char, 8u> (or
   // span<const uint8_t, 8u>) instead of checking this size at runtime.
   DCHECK_EQ(storage_key.size(), sizeof(uint64_t));
-  return base::numerics::U64FromBigEndian(
+  return base::U64FromBigEndian(
       base::as_byte_span(storage_key).first<sizeof(uint64_t)>());
 }
 
@@ -139,7 +139,7 @@ uint64_t HistorySyncMetadataDatabase::StorageKeyToMicrosSinceWindowsEpoch(
 std::string HistorySyncMetadataDatabase::StorageKeyFromMicrosSinceWindowsEpoch(
     uint64_t micros) {
   std::array<uint8_t, sizeof(uint64_t)> storage_key =
-      base::numerics::U64ToBigEndian(micros);
+      base::U64ToBigEndian(micros);
   return std::string(storage_key.begin(), storage_key.end());
 }
 

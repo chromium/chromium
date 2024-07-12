@@ -92,36 +92,35 @@ std::string EncodePageHeader(const BitmapImage& image,
   uint32_t bits_per_pixel = num_colors * kBitsPerColor;
 
   header.subspan<kHeaderCupsDuplex, 4u>().copy_from(
-      base::numerics::U32ToBigEndian(pwg_header_info.duplex ? 1 : 0));
+      base::U32ToBigEndian(pwg_header_info.duplex ? 1 : 0));
   header.subspan<kHeaderCupsHwResolutionHorizontal, 4u>().copy_from(
-      base::numerics::U32ToBigEndian(pwg_header_info.dpi.width()));
+      base::U32ToBigEndian(pwg_header_info.dpi.width()));
   header.subspan<kHeaderCupsHwResolutionVertical, 4u>().copy_from(
-      base::numerics::U32ToBigEndian(pwg_header_info.dpi.height()));
+      base::U32ToBigEndian(pwg_header_info.dpi.height()));
   header.subspan<kHeaderCupsTumble, 4u>().copy_from(
-      base::numerics::U32ToBigEndian(pwg_header_info.tumble ? 1 : 0));
+      base::U32ToBigEndian(pwg_header_info.tumble ? 1 : 0));
   header.subspan<kHeaderCupsWidth, 4u>().copy_from(
-      base::numerics::U32ToBigEndian(image.size().width()));
+      base::U32ToBigEndian(image.size().width()));
   header.subspan<kHeaderCupsHeight, 4u>().copy_from(
-      base::numerics::U32ToBigEndian(image.size().height()));
+      base::U32ToBigEndian(image.size().height()));
   header.subspan<kHeaderCupsBitsPerColor, 4u>().copy_from(
-      base::numerics::U32ToBigEndian(kBitsPerColor));
+      base::U32ToBigEndian(kBitsPerColor));
   header.subspan<kHeaderCupsBitsPerPixel, 4u>().copy_from(
-      base::numerics::U32ToBigEndian(bits_per_pixel));
+      base::U32ToBigEndian(bits_per_pixel));
   header.subspan<kHeaderCupsBytesPerLine, 4u>().copy_from(
-      base::numerics::U32ToBigEndian(
-          (bits_per_pixel * image.size().width() + 7) / 8));
+      base::U32ToBigEndian((bits_per_pixel * image.size().width() + 7) / 8));
   header.subspan<kHeaderCupsColorOrder, 4u>().copy_from(
-      base::numerics::U32ToBigEndian(kColorOrder));
+      base::U32ToBigEndian(kColorOrder));
   header.subspan<kHeaderCupsColorSpace, 4u>().copy_from(
-      base::numerics::U32ToBigEndian(pwg_header_info.color_space));
+      base::U32ToBigEndian(pwg_header_info.color_space));
   header.subspan<kHeaderCupsNumColors, 4u>().copy_from(
-      base::numerics::U32ToBigEndian(num_colors));
+      base::U32ToBigEndian(num_colors));
   header.subspan<kHeaderPwgCrossFeedTransform, 4u>().copy_from(
-      base::numerics::U32ToBigEndian(pwg_header_info.flipx ? -1 : 1));
+      base::U32ToBigEndian(pwg_header_info.flipx ? -1 : 1));
   header.subspan<kHeaderPwgFeedTransform, 4u>().copy_from(
-      base::numerics::U32ToBigEndian(pwg_header_info.flipy ? -1 : 1));
+      base::U32ToBigEndian(pwg_header_info.flipy ? -1 : 1));
   header.subspan<kHeaderPwgTotalPageCount, 4u>().copy_from(
-      base::numerics::U32ToBigEndian(pwg_header_info.total_pages));
+      base::U32ToBigEndian(pwg_header_info.total_pages));
   return std::string(header.begin(), header.end());
 }
 

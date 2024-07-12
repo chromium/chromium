@@ -121,7 +121,7 @@ ChunkedByteBuffer::Chunk::~Chunk() {}
 
 size_t ChunkedByteBuffer::Chunk::ExpectedContentLength() const {
   DCHECK_EQ(header.size(), kHeaderLength);
-  return base::numerics::U32FromBigEndian(base::span(header).first<4>());
+  return base::U32FromBigEndian(base::span(header).first<4>());
 }
 
 }  // namespace speech

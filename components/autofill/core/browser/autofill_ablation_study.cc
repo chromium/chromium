@@ -40,7 +40,7 @@ constexpr size_t kSeedLengthInBytes = 8;
 
 // Converts the 8-byte prefix of an MD5 hash into a uint64_t value.
 inline uint64_t DigestToUInt64(const base::MD5Digest& digest) {
-  return base::numerics::U64FromBigEndian(base::span(digest.a).first<8u>());
+  return base::U64FromBigEndian(base::span(digest.a).first<8u>());
 }
 
 // Returns the ablation seed from prefs and creates one if that has not happened

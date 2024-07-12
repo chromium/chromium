@@ -143,8 +143,7 @@ std::vector<uint8_t> WebBundleBuilder::CreateTopLevel() {
 
   std::vector<uint8_t> bundle = Encode(cbor::Value(toplevel_array));
   // Overwrite the dummy bytestring with the actual size.
-  base::span(bundle).last(8u).copy_from(
-      base::numerics::U64ToBigEndian(bundle.size()));
+  base::span(bundle).last(8u).copy_from(base::U64ToBigEndian(bundle.size()));
   return bundle;
 }
 

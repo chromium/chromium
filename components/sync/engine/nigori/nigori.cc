@@ -47,8 +47,7 @@ class NigoriStream {
   // Append the big-endian representation of the length of |value| with 32 bits,
   // followed by |value| itself to the stream.
   NigoriStream& operator<<(const std::string& value) {
-    stream_ << base::as_string_view(
-        base::numerics::U32ToBigEndian(value.size()));
+    stream_ << base::as_string_view(base::U32ToBigEndian(value.size()));
     stream_ << value;
     return *this;
   }
@@ -57,9 +56,8 @@ class NigoriStream {
   // followed by the big-endian representation of the value of |type|, with 32
   // bits, to the stream.
   NigoriStream& operator<<(const Nigori::Type type) {
-    stream_ << base::as_string_view(
-        base::numerics::U32ToBigEndian(sizeof(uint32_t)));
-    stream_ << base::as_string_view(base::numerics::U32ToBigEndian(type));
+    stream_ << base::as_string_view(base::U32ToBigEndian(sizeof(uint32_t)));
+    stream_ << base::as_string_view(base::U32ToBigEndian(type));
     return *this;
   }
 

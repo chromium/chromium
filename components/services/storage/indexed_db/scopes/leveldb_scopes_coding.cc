@@ -21,7 +21,7 @@ void EncodeBigEndianFixed64(uint64_t number, std::string* output) {
   output->resize(output->size() + sizeof(uint64_t));
   base::as_writable_byte_span(*output)
       .subspan(start_index)
-      .copy_from(base::numerics::U64ToBigEndian(number));
+      .copy_from(base::U64ToBigEndian(number));
 }
 
 std::string_view MakeStringView(base::span<const uint8_t> bytes) {
@@ -104,7 +104,7 @@ std::string KeyToDebugString(base::span<const uint8_t> key_without_prefix) {
         result << "<Invalid Seq Num>";
         break;
       }
-      seq_num = base::numerics::U64FromBigEndian(
+      seq_num = base::U64FromBigEndian(
           base::as_byte_span(key_after_type).first<8u>());
       result << seq_num;
       break;

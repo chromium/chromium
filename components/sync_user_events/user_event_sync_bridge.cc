@@ -36,13 +36,12 @@ std::string GetStorageKeyFromSpecifics(const UserEventSpecifics& specifics) {
   // TODO(skym): Until we force |event_time_usec| to never conflict, this has
   // the potential for errors.
   std::array<uint8_t, 8> key =
-      base::numerics::U64ToBigEndian(specifics.event_time_usec());
+      base::U64ToBigEndian(specifics.event_time_usec());
   return std::string(key.begin(), key.end());
 }
 
 int64_t GetEventTimeFromStorageKey(const std::string& storage_key) {
-  return base::numerics::U64FromBigEndian(
-      base::as_byte_span(storage_key).first<8u>());
+  return base::U64FromBigEndian(base::as_byte_span(storage_key).first<8u>());
 }
 
 std::unique_ptr<EntityData> MoveToEntityData(

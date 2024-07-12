@@ -36,14 +36,14 @@ void MessageFramer::MessageHeader::SetMessageSize(size_t size) {
 // if bit-for-bit compatible.
 void MessageFramer::MessageHeader::PrependToString(std::string* str) {
   std::array<uint8_t, sizeof(message_size)> bytes =
-      base::numerics::U32ToBigEndian(message_size);
+      base::U32ToBigEndian(message_size);
   str->insert(str->begin(), bytes.begin(), bytes.end());
 }
 
 void MessageFramer::MessageHeader::Deserialize(base::span<const uint8_t> data,
                                                MessageHeader* header) {
-  header->message_size = base::numerics::U32FromBigEndian(
-      data.first<sizeof(header->message_size)>());
+  header->message_size =
+      base::U32FromBigEndian(data.first<sizeof(header->message_size)>());
 }
 
 // static

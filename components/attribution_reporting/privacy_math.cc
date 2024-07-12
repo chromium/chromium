@@ -91,8 +91,7 @@ base::CheckedNumeric<uint32_t> GetNumStatesRecursive(TriggerSpecs::Iterator it,
       base::checked_cast<uint8_t>(max_reports_per_type),  //
   };
 
-  base::CheckedNumeric<uint32_t>& cached =
-      map[base::numerics::U32FromNativeEndian(key)];
+  base::CheckedNumeric<uint32_t>& cached = map[base::U32FromNativeEndian(key)];
   if (!cached.IsValid() || cached.ValueOrDie() != 0) {
     return cached;
   }

@@ -396,13 +396,12 @@ void GCMEncryptionProvider::EncryptMessageWithKey(
   // Construct encryption header.
   uint32_t rs = record_size;
   std::string rs_str(sizeof(rs), 0u);
-  base::as_writable_byte_span(rs_str).copy_from(
-      base::numerics::U32ToBigEndian(rs));
+  base::as_writable_byte_span(rs_str).copy_from(base::U32ToBigEndian(rs));
 
   uint8_t key_length = sender_public_key.size();
   std::string key_length_str(sizeof(key_length), 0u);
   base::as_writable_byte_span(key_length_str)
-      .copy_from(base::numerics::U8ToBigEndian(key_length));
+      .copy_from(base::U8ToBigEndian(key_length));
 
   std::string payload = base::StrCat(
       {salt, rs_str, key_length_str, sender_public_key, ciphertext});

@@ -101,11 +101,11 @@ class WebPushEncryptionDraft03
     info += "P-256";
     info += '\x00';
 
-    info += base::as_string_view(base::numerics::U16ToBigEndian(
+    info += base::as_string_view(base::U16ToBigEndian(
         base::checked_cast<uint16_t>(recipient_public_key.size())));
     info += recipient_public_key;
 
-    info += base::as_string_view(base::numerics::U16ToBigEndian(
+    info += base::as_string_view(base::U16ToBigEndian(
         base::checked_cast<uint16_t>(sender_public_key.size())));
     info += sender_public_key;
 

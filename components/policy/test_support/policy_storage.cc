@@ -116,7 +116,7 @@ std::vector<std::string> PolicyStorage::GetMatchingSerialHashes(
     uint64_t hash = 0UL;
     uint8_t hash_bytes[sizeof(hash)];
     crypto::SHA256HashString(serial, hash_bytes, sizeof(hash));
-    hash = base::numerics::U64FromBigEndian(hash_bytes);
+    hash = base::U64FromBigEndian(hash_bytes);
     if (hash % modulus == remainder) {
       hashes.emplace_back(reinterpret_cast<const char*>(hash_bytes),
                           sizeof(hash));

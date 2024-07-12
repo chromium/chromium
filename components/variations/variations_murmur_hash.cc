@@ -28,8 +28,7 @@ std::vector<uint32_t> VariationsMurmurHash::StringToLE32(
   std::vector<uint32_t> words(total_words, 0u);
   // Copy the words that are fully present in the `data` buffer.
   for (size_t i = 0u; i < full_words; ++i) {
-    words[i] =
-        base::numerics::U32FromLittleEndian(data.subspan(4u * i).first<4u>());
+    words[i] = base::U32FromLittleEndian(data.subspan(4u * i).first<4u>());
   }
   // Copy the last partial-word from the end of the `data` buffer, padding
   // the tail (MSBs) with 0.
@@ -37,7 +36,7 @@ std::vector<uint32_t> VariationsMurmurHash::StringToLE32(
     const size_t rem = data_size % 4u;
     std::array<uint8_t, 4u> bytes = {};
     base::span(bytes).first(rem).copy_from(data.last(rem));
-    words[full_words] = base::numerics::U32FromLittleEndian(bytes);
+    words[full_words] = base::U32FromLittleEndian(bytes);
   }
   return words;
 }

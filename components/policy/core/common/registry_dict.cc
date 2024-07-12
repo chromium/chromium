@@ -276,8 +276,8 @@ void RegistryDict::ReadRegistry(HKEY hive, const std::wstring& root) {
                              it.ValueSize()))
                   .first<sizeof(DWORD)>();
           DWORD dword_value = it.Type() == REG_DWORD_BIG_ENDIAN
-                                  ? base::numerics::U32FromBigEndian(value)
-                                  : base::numerics::U32FromLittleEndian(value);
+                                  ? base::U32FromBigEndian(value)
+                                  : base::U32FromLittleEndian(value);
           SetValue(name, base::Value(static_cast<int>(dword_value)));
           continue;
         }

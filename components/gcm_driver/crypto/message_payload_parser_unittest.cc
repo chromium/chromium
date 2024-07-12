@@ -87,8 +87,7 @@ TEST(MessagePayloadParserTest, MinimumRecordSize) {
   auto record_size_span = base::as_writable_byte_span(message).subspan(
       16u /* salt */, sizeof(uint32_t));
   const uint32_t invalid_record_size = 11u;
-  record_size_span.copy_from(
-      base::numerics::U32ToBigEndian(invalid_record_size));
+  record_size_span.copy_from(base::U32ToBigEndian(invalid_record_size));
 
   MessagePayloadParser parser(message);
   EXPECT_FALSE(parser.IsValid());
@@ -102,7 +101,7 @@ TEST(MessagePayloadParserTest, InvalidPublicKeyLength) {
   auto pubkey_span = base::as_writable_byte_span(message).subspan(
       16u /* salt */ + 4u /* rs */, sizeof(uint8_t));
   uint8_t invalid_public_key_size = 42;
-  pubkey_span.copy_from(base::numerics::U8ToBigEndian(invalid_public_key_size));
+  pubkey_span.copy_from(base::U8ToBigEndian(invalid_public_key_size));
 
   MessagePayloadParser parser(message);
   EXPECT_FALSE(parser.IsValid());
