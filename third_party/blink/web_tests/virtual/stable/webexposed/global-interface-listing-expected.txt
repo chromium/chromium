@@ -2114,6 +2114,7 @@ interface Element : Node
     getter clientLeft
     getter clientTop
     getter clientWidth
+    getter currentCSSZoom
     getter elementTiming
     getter firstElementChild
     getter id
