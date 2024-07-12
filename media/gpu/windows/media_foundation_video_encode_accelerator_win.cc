@@ -20,12 +20,14 @@
 #include "base/features.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/native_library.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_variant.h"
+#include "base/win/win_util.h"
 #include "build/build_config.h"
 #include "gpu/ipc/common/dxgi_helpers.h"
 #include "media/base/bitstream_buffer.h"
@@ -354,6 +356,96 @@ bool IsIntelHybridAV1Encoder(IMFActivate* activate) {
   return false;
 }
 
+using MFTEnum2Type = decltype(&MFTEnum2);
+MFTEnum2Type GetMFTEnum2Function() {
+  static const MFTEnum2Type kMFTEnum2Func = []() {
+    auto mf_dll = base::LoadSystemLibrary(L"mfplat.dll");
+    return mf_dll ? reinterpret_cast<MFTEnum2Type>(
+                        base::GetFunctionPointerFromNativeLibrary(mf_dll,
+                                                                  "MFTEnum2"))
+                  : nullptr;
+  }();
+  return kMFTEnum2Func;
+}
+
+// If MFTEnum2 is unavailable, this uses MFTEnumEx and doesn't fill any
+// adapter information if there are more than one adapters.
+std::vector<IMFActivate*> EnumerateHardwareEncodersLegacy(VideoCodec codec) {
+  std::vector<IMFActivate*> encoders;
+
+  uint32_t flags = MFT_ENUM_FLAG_HARDWARE | MFT_ENUM_FLAG_SORTANDFILTER;
+  MFT_REGISTER_TYPE_INFO input_info;
+  input_info.guidMajorType = MFMediaType_Video;
+  input_info.guidSubtype = MFVideoFormat_NV12;
+  MFT_REGISTER_TYPE_INFO output_info;
+  output_info.guidMajorType = MFMediaType_Video;
+  output_info.guidSubtype = VideoCodecToMFSubtype(codec);
+
+  Microsoft::WRL::ComPtr<IDXGIFactory1> factory;
+  auto hr = CreateDXGIFactory1(IID_PPV_ARGS(&factory));
+  if (FAILED(hr)) {
+    DVLOG(2) << "Failed to create DXGI Factory";
+    return encoders;
+  }
+
+  LUID single_adapter_luid{0, 0};
+  int num_adapters = 0;
+
+  Microsoft::WRL::ComPtr<IDXGIAdapter> temp_adapter;
+  for (UINT adapter_idx = 0;
+       SUCCEEDED(factory->EnumAdapters(adapter_idx, &temp_adapter));
+       adapter_idx++) {
+    ++num_adapters;
+
+    DXGI_ADAPTER_DESC desc;
+    hr = temp_adapter->GetDesc(&desc);
+    if (FAILED(hr)) {
+      continue;
+    }
+
+    if (desc.VendorId == 0x1414) {
+      // Skip MS software adapters.
+      --num_adapters;
+    } else {
+      single_adapter_luid = desc.AdapterLuid;
+    }
+  }
+
+  IMFActivate** pp_activates = nullptr;
+  uint32_t count = 0;
+  hr = MFTEnumEx(MFT_CATEGORY_VIDEO_ENCODER, flags, &input_info, &output_info,
+                 &pp_activates, &count);
+
+  if (FAILED(hr)) {
+    // Log to VLOG since errors are expected as part of
+    // GetSupportedProfiles().
+    DVLOG(2) << "Failed to enumerate hardware encoders for "
+             << GetCodecName(codec) << " : " << PrintHr(hr);
+    return encoders;
+  }
+
+  for (UINT32 i = 0; i < count; i++) {
+    if (codec == VideoCodec::kAV1 && IsIntelHybridAV1Encoder(pp_activates[i])) {
+      continue;
+    }
+
+    // We can still infer the MFT's adapter LUID if there's only one adapter
+    // in the system.
+    if (num_adapters == 1) {
+      pp_activates[i]->SetBlob(MFT_ENUM_ADAPTER_LUID,
+                               reinterpret_cast<BYTE*>(&single_adapter_luid),
+                               sizeof(LUID));
+    }
+    encoders.push_back(pp_activates[i]);
+  }
+
+  if (pp_activates) {
+    CoTaskMemFree(pp_activates);
+  }
+
+  return encoders;
+}
+
 std::vector<IMFActivate*> EnumerateHardwareEncoders(VideoCodec codec) {
   std::vector<IMFActivate*> encoders;
   if (!InitializeMediaFoundation()) {
@@ -367,6 +459,12 @@ std::vector<IMFActivate*> EnumerateHardwareEncoders(VideoCodec codec) {
     return encoders;
   }
 #endif
+
+  MFTEnum2Type mftenum2_func = GetMFTEnum2Function();
+  if (!mftenum2_func) {
+    return EnumerateHardwareEncodersLegacy(codec);
+  }
+
   uint32_t flags = MFT_ENUM_FLAG_HARDWARE | MFT_ENUM_FLAG_SORTANDFILTER;
   MFT_REGISTER_TYPE_INFO input_info;
   input_info.guidMajorType = MFMediaType_Video;
@@ -395,16 +493,17 @@ std::vector<IMFActivate*> EnumerateHardwareEncoders(VideoCodec codec) {
 
     Microsoft::WRL::ComPtr<IMFAttributes> attributes;
     hr = MFCreateAttributes(&attributes, 1);
-    if (FAILED(hr = attributes->SetBlob(MFT_ENUM_ADAPTER_LUID,
-                                        (BYTE*)&desc.AdapterLuid,
-                                        sizeof(LUID)))) {
+    if (FAILED(hr = attributes->SetBlob(
+                   MFT_ENUM_ADAPTER_LUID,
+                   reinterpret_cast<BYTE*>(&desc.AdapterLuid), sizeof(LUID)))) {
       continue;
     }
 
     IMFActivate** pp_activates = nullptr;
     uint32_t count = 0;
-    hr = MFTEnum2(MFT_CATEGORY_VIDEO_ENCODER, flags, &input_info, &output_info,
-                  attributes.Get(), &pp_activates, &count);
+    // MFTEnum2() function call.
+    hr = mftenum2_func(MFT_CATEGORY_VIDEO_ENCODER, flags, &input_info,
+                       &output_info, attributes.Get(), &pp_activates, &count);
 
     if (FAILED(hr)) {
       // Log to VLOG since errors are expected as part of
@@ -424,7 +523,8 @@ std::vector<IMFActivate*> EnumerateHardwareEncoders(VideoCodec codec) {
       // if SetBlob fails, the IMFActivate won't have a valid adapter LUID
       // which will fail the check for preferred adapter LUID, so the
       // MFDXGIDeviceManager will not be set for MFT, which is a safe option.
-      pp_activates[i]->SetBlob(MFT_ENUM_ADAPTER_LUID, (BYTE*)&desc.AdapterLuid,
+      pp_activates[i]->SetBlob(MFT_ENUM_ADAPTER_LUID,
+                               reinterpret_cast<BYTE*>(&desc.AdapterLuid),
                                sizeof(LUID));
       encoders.push_back(pp_activates[i]);
     }
@@ -851,7 +951,8 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
 
     LUID mft_luid{0, 0};
     UINT32 out_size = 0;
-    activate_->GetBlob(MFT_ENUM_ADAPTER_LUID, (BYTE*)&mft_luid, sizeof(LUID),
+    activate_->GetBlob(MFT_ENUM_ADAPTER_LUID,
+                       reinterpret_cast<BYTE*>(&mft_luid), sizeof(LUID),
                        &out_size);
 
     hr = E_FAIL;
