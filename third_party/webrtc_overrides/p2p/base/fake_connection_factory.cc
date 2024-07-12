@@ -4,6 +4,8 @@
 
 #include "third_party/webrtc_overrides/p2p/base/fake_connection_factory.h"
 
+#include <string_view>
+
 #include "third_party/webrtc/p2p/base/basic_packet_socket_factory.h"
 #include "third_party/webrtc/p2p/base/fake_port_allocator.h"
 #include "third_party/webrtc/p2p/base/port.h"

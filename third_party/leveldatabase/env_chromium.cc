@@ -855,7 +855,7 @@ Status ChromiumEnv::RemoveDir(const std::string& name) {
 
 Status ChromiumEnv::GetFileSize(const std::string& fname, uint64_t* size) {
   Status s;
-  absl::optional<base::File::Info> info =
+  std::optional<base::File::Info> info =
       filesystem_->GetFileInfo(base::FilePath::FromUTF8Unsafe(fname));
   if (!info) {
     *size = 0;
@@ -1502,7 +1502,7 @@ leveldb::Slice MakeSlice(std::string_view s) {
 
 leveldb::Slice MakeSlice(base::span<const uint8_t> s) {
   return MakeSlice(
-      base::StringPiece(reinterpret_cast<const char*>(s.data()), s.size()));
+      std::string_view(reinterpret_cast<const char*>(s.data()), s.size()));
 }
 
 }  // namespace leveldb_env

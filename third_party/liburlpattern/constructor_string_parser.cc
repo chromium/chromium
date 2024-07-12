@@ -4,6 +4,7 @@
 
 #include "third_party/liburlpattern/constructor_string_parser.h"
 
+#include <string_view>
 #include <vector>
 
 #include "third_party/abseil-cpp/absl/base/macros.h"
@@ -11,7 +12,7 @@
 namespace liburlpattern {
 
 ConstructorStringParser::ConstructorStringParser(
-    absl::string_view constructor_string,
+    std::string_view constructor_string,
     const StringParserOptions& options)
     : input_(constructor_string), options_(options) {}
 
@@ -512,7 +513,7 @@ bool ConstructorStringParser::IsIPv6Close() const {
   return IsNonSpecialPatternChar(token_index_, "]");
 }
 
-absl::string_view ConstructorStringParser::MakeComponentString() const {
+std::string_view ConstructorStringParser::MakeComponentString() const {
   ABSL_ASSERT(token_index_ < token_list_.size());
   const auto& token = token_list_[token_index_];
 

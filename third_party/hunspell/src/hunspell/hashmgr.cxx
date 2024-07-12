@@ -206,7 +206,7 @@ struct hentry* HashMgr::lookup(const char* word) const {
   int affix_ids[hunspell::BDict::MAX_AFFIXES_PER_WORD];
   int affix_count = bdict_reader->FindWord(word, affix_ids);
   if (affix_count == 0) { // look for custom added word
-    std::map<base::StringPiece, int>::const_iterator iter = 
+    std::map<std::string_view, int>::const_iterator iter = 
       custom_word_to_affix_id_map_.find(word);
     if (iter != custom_word_to_affix_id_map_.end()) {
       affix_count = 1;
@@ -377,12 +377,12 @@ int HashMgr::add_word(const std::string& in_word,
   delete desc_copy;
   delete word_copy;
 #else
-  std::map<base::StringPiece, int>::iterator iter =
+  std::map<std::string_view, int>::iterator iter =
       custom_word_to_affix_id_map_.find(in_word);
   if (iter == custom_word_to_affix_id_map_.end()) {  // word needs to be added
     std::string* new_string_word = new std::string(in_word);
     pointer_to_strings_.push_back(new_string_word);
-    base::StringPiece sp(*(new_string_word));
+    std::string_view sp(*(new_string_word));
     custom_word_to_affix_id_map_[sp] = 0; // no affixes for custom words
     return 1;
   }
@@ -448,7 +448,7 @@ int HashMgr::get_clen_and_captype(const std::string& word, int* captype) {
 // remove word (personal dictionary function for standalone applications)
 int HashMgr::remove(const std::string& word) {
 #ifdef HUNSPELL_CHROME_CLIENT
-  std::map<base::StringPiece, int>::iterator iter =
+  std::map<std::string_view, int>::iterator iter =
       custom_word_to_affix_id_map_.find(word);
   if (iter != custom_word_to_affix_id_map_.end())
       custom_word_to_affix_id_map_.erase(iter);

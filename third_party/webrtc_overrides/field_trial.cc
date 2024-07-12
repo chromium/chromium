@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/metrics/field_trial.h"
-
 #include <string_view>
+
+#include "base/metrics/field_trial.h"
 
 // Define webrtc::field_trial::FindFullName to provide webrtc with a field trial
 // implementation.

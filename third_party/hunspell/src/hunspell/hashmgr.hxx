@@ -84,8 +84,8 @@
 
 #ifdef HUNSPELL_CHROME_CLIENT
 #include <map>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "third_party/hunspell/google/bdict_reader.h"
 #endif
 
@@ -95,7 +95,7 @@ class HashMgr {
 #ifdef HUNSPELL_CHROME_CLIENT
   // Not owned by this class, owned by the Hunspell object.
   hunspell::BDictReader* bdict_reader;
-  std::map<base::StringPiece, int> custom_word_to_affix_id_map_;
+  std::map<std::string_view, int> custom_word_to_affix_id_map_;
   std::vector<std::string*> pointer_to_strings_;
 #endif
   int tablesize;

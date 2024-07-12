@@ -3,12 +3,16 @@
 // found in the LICENSE file or at https://opensource.org/licenses/MIT.
 
 #include "third_party/liburlpattern/pattern.h"
+
+#include <optional>
+#include <string_view>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/liburlpattern/parse.h"
 
 namespace {
 
-absl::StatusOr<std::string> PassThrough(absl::string_view input) {
+absl::StatusOr<std::string> PassThrough(std::string_view input) {
   return std::string(input);
 }
 
@@ -16,8 +20,8 @@ absl::StatusOr<std::string> PassThrough(absl::string_view input) {
 
 namespace liburlpattern {
 
-void RunRegexTest(absl::string_view input,
-                  absl::string_view expected_regex,
+void RunRegexTest(std::string_view input,
+                  std::string_view expected_regex,
                   std::vector<std::string> expected_name_list,
                   Options options = Options()) {
   auto result = Parse(input, PassThrough, options);
@@ -196,8 +200,8 @@ TEST(PatternRegexTest, EndsWithNoEndNameWithPrefixAndOneOrMoreModifier) {
                {"bar"}, {.end = false, .ends_with = "#"});
 }
 
-void RunPatternStringTest(absl::string_view input,
-                          absl::string_view expected_pattern_string) {
+void RunPatternStringTest(std::string_view input,
+                          std::string_view expected_pattern_string) {
   auto result = Parse(input, PassThrough);
   ASSERT_TRUE(result.ok());
   auto& pattern = result.value();
@@ -444,13 +448,13 @@ TEST(PatternStringTest, CaseFromFuzzer) {
 }
 
 struct DirectMatchCase {
-  absl::string_view input;
+  std::string_view input;
   bool expected_match = true;
-  std::vector<std::pair<absl::string_view, absl::optional<absl::string_view>>>
+  std::vector<std::pair<std::string_view, std::optional<std::string_view>>>
       expected_groups;
 };
 
-void RunDirectMatchTest(absl::string_view input,
+void RunDirectMatchTest(std::string_view input,
                         std::vector<DirectMatchCase> case_list) {
   auto result =
       Parse(input, PassThrough,
@@ -459,7 +463,7 @@ void RunDirectMatchTest(absl::string_view input,
   auto& pattern = result.value();
   EXPECT_TRUE(pattern.CanDirectMatch());
   for (const auto& c : case_list) {
-    std::vector<std::pair<absl::string_view, absl::optional<absl::string_view>>>
+    std::vector<std::pair<std::string_view, std::optional<std::string_view>>>
         matched_groups;
     EXPECT_EQ(c.expected_match, pattern.DirectMatch(c.input, &matched_groups));
     ASSERT_EQ(c.expected_groups.size(), matched_groups.size());
@@ -469,7 +473,7 @@ void RunDirectMatchTest(absl::string_view input,
   }
 }
 
-void RunDirectMatchUnsupportedTest(absl::string_view input,
+void RunDirectMatchUnsupportedTest(std::string_view input,
                                    Options options = {.sensitive = true,
                                                       .strict = true,
                                                       .end = true,

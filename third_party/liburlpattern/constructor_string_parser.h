@@ -6,10 +6,11 @@
 #define THIRD_PARTY_LIBURLPATTERN_CONSTRUCTOR_STRING_PARSER_H_
 
 #include <functional>
+#include <optional>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
-#include "third_party/abseil-cpp/absl/strings/string_view.h"
 #include "third_party/liburlpattern/tokenize.h"
 
 namespace liburlpattern {
@@ -25,23 +26,23 @@ namespace liburlpattern {
 class COMPONENT_EXPORT(LIBURLPATTERN) ConstructorStringParser {
  public:
   struct Result {
-    absl::optional<absl::string_view> protocol;
-    absl::optional<absl::string_view> username;
-    absl::optional<absl::string_view> password;
-    absl::optional<absl::string_view> hostname;
-    absl::optional<absl::string_view> port;
-    absl::optional<absl::string_view> pathname;
-    absl::optional<absl::string_view> search;
-    absl::optional<absl::string_view> hash;
+    std::optional<std::string_view> protocol;
+    std::optional<std::string_view> username;
+    std::optional<std::string_view> password;
+    std::optional<std::string_view> hostname;
+    std::optional<std::string_view> port;
+    std::optional<std::string_view> pathname;
+    std::optional<std::string_view> search;
+    std::optional<std::string_view> hash;
   };
   struct StringParserOptions {
     // This enables the behavior proposed in WICG/urlpattern#179.
     bool more_wildcards = true;
   };
   using ProtocolCheckCallback =
-      std::function<absl::StatusOr<bool>(absl::string_view)>;
+      std::function<absl::StatusOr<bool>(std::string_view)>;
 
-  ConstructorStringParser(absl::string_view constructor_string,
+  ConstructorStringParser(std::string_view constructor_string,
                           const StringParserOptions& options);
 
   // Attempt to parse the input string used to construct the Parser object.
@@ -156,12 +157,12 @@ class COMPONENT_EXPORT(LIBURLPATTERN) ConstructorStringParser {
   bool IsIPv6Open() const;
   bool IsIPv6Close() const;
 
-  // This method returns a absl::string_view consisting of the tokens between
+  // This method returns a std::string_view consisting of the tokens between
   // `component_start_` and the current `token_index_`.
-  absl::string_view MakeComponentString() const;
+  std::string_view MakeComponentString() const;
 
   // The input UTF-8 string to the parser.
-  const absl::string_view input_;
+  const std::string_view input_;
   const StringParserOptions options_;
 
   // The list of Tokens produced by calling `Tokenize()` on `input_`.

@@ -5,6 +5,9 @@
 
 #include "third_party/liburlpattern/pattern.h"
 
+#include <optional>
+#include <string_view>
+
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/icu/source/common/unicode/utf8.h"
@@ -301,7 +304,7 @@ std::string Pattern::GenerateRegexString(
 
     // Compute the Part regex value.  For kSegmentWildcard and kFullWildcard
     // types we must convert the type enum back to the defined regex value.
-    absl::string_view regex_value = part.value;
+    std::string_view regex_value = part.value;
     if (part.type == PartType::kSegmentWildcard)
       regex_value = segment_wildcard_regex_;
     else if (part.type == PartType::kFullWildcard)
@@ -471,9 +474,9 @@ bool Pattern::CanDirectMatch() const {
 }
 
 bool Pattern::DirectMatch(
-    absl::string_view input,
+    std::string_view input,
     std::vector<
-        std::pair<absl::string_view, absl::optional<absl::string_view>>>*
+        std::pair<std::string_view, std::optional<std::string_view>>>*
         group_list_out) const {
   ABSL_ASSERT(CanDirectMatch());
 
@@ -518,7 +521,7 @@ size_t Pattern::RegexStringLength() const {
       continue;
     }
 
-    absl::string_view regex_value = part.value;
+    std::string_view regex_value = part.value;
     if (part.type == PartType::kSegmentWildcard)
       regex_value = segment_wildcard_regex_;
     else if (part.type == PartType::kFullWildcard)
