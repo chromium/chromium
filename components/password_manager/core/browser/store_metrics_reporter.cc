@@ -822,8 +822,8 @@ void StoreMetricsReporter::OnBackgroundMetricsReportingCompleted(
   prefs_->ClearPref(prefs::kPasswordRemovalReasonForAccount);
   prefs_->ClearPref(prefs::kPasswordRemovalReasonForProfile);
 
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, std::move(done_callback_));
+  // `done_callback_` may delete `this` object.
+  std::move(done_callback_).Run();
 }
 
 }  // namespace password_manager
