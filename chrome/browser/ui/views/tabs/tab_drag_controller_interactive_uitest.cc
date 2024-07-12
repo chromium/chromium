@@ -563,6 +563,15 @@ class DetachToBrowserTabDragControllerTest
  public:
   DetachToBrowserTabDragControllerTest() {
     std::vector<base::test::FeatureRef> enabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {
+        features::kWebUITabStrip};
+
+#if BUILDFLAG(IS_WIN)
+    // Disable NativeWinOcclusion to avoid it interfering with test for dragging
+    // over occluded browser window.
+    disabled_features.push_back(features::kCalculateNativeWinOcclusion);
+#endif  // BUILDFLAG(IS_WIN)
+
     if (std::get<0>(GetParam())) {
       enabled_features.push_back(tabs::kSplitTabStrip);
     }
@@ -572,18 +581,13 @@ class DetachToBrowserTabDragControllerTest
 #if !BUILDFLAG(IS_CHROMEOS)
     if (std::get<3>(GetParam())) {
       enabled_features.push_back(features::kAllowWindowDragUsingSystemDragDrop);
+    } else {
+      // We need to explicitly disable it to override potential field trials.
+      disabled_features.push_back(
+          features::kAllowWindowDragUsingSystemDragDrop);
     }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/enabled_features,
-        /*disabled_features=*/{
-            features::kWebUITabStrip,
-#if BUILDFLAG(IS_WIN)
-            // Disable NativeWinOcclusion to avoid it interfering with test
-            // for dragging over occluded browser window.
-            features::kCalculateNativeWinOcclusion,
-#endif  // BUILDFLAG(IS_WIN)
-        });
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
   DetachToBrowserTabDragControllerTest(
       const DetachToBrowserTabDragControllerTest&) = delete;
@@ -2413,14 +2417,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
 // Selects 1 tab out of 4, drags it out and closes the new browser window while
 // dragging.
-// TODO(crbug.com/350621332): Failing on Linux Tests (Wayland).
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_DeleteTabsWhileDetached DISABLED_DeleteTabsWhileDetached
-#else
-#define MAYBE_DeleteTabsWhileDetached DeleteTabsWhileDetached
-#endif
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       MAYBE_DeleteTabsWhileDetached) {
+                       DeleteTabsWhileDetached) {
   AddTabsAndResetBrowser(browser(), 3);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   EXPECT_EQ("0 1 2 3", IDString(browser()->tab_strip_model()));
