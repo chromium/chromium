@@ -654,6 +654,46 @@ TEST_F(ComboboxTest, ShowViaAccessibleAction) {
   EXPECT_EQ(1, menu_show_count_);  // No change.
 }
 
+TEST_F(ComboboxTest, ExpandedCollapsedAccessibleState) {
+  InitCombobox(nullptr);
+
+  // Initially the combobox will be collapsed by default.
+  ui::AXNodeData node_data;
+  combobox()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kCollapsed));
+
+  // Pressing space shows the menu, which sets the expanded state.
+  combobox()->OnKeyPressed(
+      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE, ui::EF_NONE));
+  node_data = ui::AXNodeData();
+  combobox()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
+
+  // Closing the menu with the test api sets the collapsed state.
+  ComboboxTestApi(combobox()).CloseMenu();
+  node_data = ui::AXNodeData();
+  combobox()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kCollapsed));
+
+  // Pressing space again reopens the menu and sets the expanded state.
+  combobox()->OnKeyPressed(
+      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE, ui::EF_NONE));
+  node_data = ui::AXNodeData();
+  combobox()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
+
+  // Changing the model closes the menu and sets the collapsed state.
+  model_->set_item_count(0);
+  node_data = ui::AXNodeData();
+  combobox()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kCollapsed));
+}
+
 TEST_F(ComboboxTest, NotifyOnClickWithMouse) {
   InitCombobox(nullptr);
 

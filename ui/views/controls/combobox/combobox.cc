@@ -172,6 +172,7 @@ Combobox::Combobox(ui::ComboboxModel* model) {
                                                 GetCornerRadius());
 
   GetViewAccessibility().SetProperties(ax::mojom::Role::kComboBoxSelect);
+  UpdateExpandedCollapsedAccessibleState();
 }
 
 Combobox::~Combobox() {
@@ -493,11 +494,6 @@ void Combobox::OnBlur() {
 
 void Combobox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   View::GetAccessibleNodeData(node_data);
-  if (menu_runner_) {
-    node_data->AddState(ax::mojom::State::kExpanded);
-  } else {
-    node_data->AddState(ax::mojom::State::kCollapsed);
-  }
 
   if (GetEnabled()) {
     node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kOpen);
@@ -531,6 +527,7 @@ void Combobox::OnComboboxModelChanged(ui::ComboboxModel* model) {
 
   if (IsMenuRunning()) {
     menu_runner_.reset();
+    UpdateExpandedCollapsedAccessibleState();
   }
 
   // If the selection is no longer valid (or the model is empty), restore the
@@ -695,7 +692,7 @@ void Combobox::ShowDropDownMenu(ui::MenuSourceType source_type) {
   }
   menu_runner_->RunMenuAt(GetWidget(), nullptr, bounds,
                           MenuAnchorPosition::kTopLeft, source_type);
-  NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
+  UpdateExpandedCollapsedAccessibleState();
 }
 
 void Combobox::OnMenuClosed(Button::ButtonState original_button_state) {
@@ -707,7 +704,7 @@ void Combobox::OnMenuClosed(Button::ButtonState original_button_state) {
   menu_runner_.reset();
   arrow_button_->SetState(original_button_state);
   closed_time_ = base::TimeTicks::Now();
-  NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
+  UpdateExpandedCollapsedAccessibleState();
 }
 
 void Combobox::MenuSelectionAt(size_t index) {
@@ -791,6 +788,14 @@ const gfx::FontList& Combobox::GetForegroundFontList() const {
     return TypographyProvider::Get().GetFont(kContext, *foreground_text_style_);
   }
   return GetFontList();
+}
+
+void Combobox::UpdateExpandedCollapsedAccessibleState() const {
+  if (menu_runner_) {
+    GetViewAccessibility().SetIsExpanded();
+  } else {
+    GetViewAccessibility().SetIsCollapsed();
+  }
 }
 
 BEGIN_METADATA(Combobox)

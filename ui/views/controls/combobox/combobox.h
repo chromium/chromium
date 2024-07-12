@@ -203,6 +203,9 @@ class VIEWS_EXPORT Combobox : public View,
 
   const gfx::FontList& GetForegroundFontList() const;
 
+  // Sets the expanded/collapsed accessible state of the view.
+  void UpdateExpandedCollapsedAccessibleState() const;
+
   // Optionally used to tie the lifetime of the model to this combobox. See
   // constructor.
   std::unique_ptr<ui::ComboboxModel> owned_model_;

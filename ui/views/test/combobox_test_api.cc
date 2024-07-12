@@ -63,4 +63,8 @@ ui::MenuModel* ComboboxTestApi::menu_model() {
   return combobox_->menu_model_.get();
 }
 
+void ComboboxTestApi::CloseMenu() {
+  return combobox_->OnMenuClosed(views::Button::ButtonState::STATE_NORMAL);
+}
+
 }  // namespace views::test
