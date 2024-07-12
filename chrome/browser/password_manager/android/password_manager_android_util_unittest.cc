@@ -1316,6 +1316,49 @@ TEST_F(PasswordManagerAndroidUtilTest,
   histogram_tester.ExpectUniqueSample(kRemovalStatusAccountMetric, true, 1);
 }
 
+TEST_F(
+    PasswordManagerAndroidUtilTest,
+    SetUsesSplitStoresAndUPMForLocal_NoLoginDataFilesCreatedForDeactivatedAccountUsers) {
+  // This test simulated a case when the GMS Core version was manually
+  // downgraded after UPM activation.
+  base::test::ScopedFeatureList enable_local_upm_with_high_min_version;
+  enable_local_upm_with_high_min_version.InitWithFeaturesAndParameters(
+      {{password_manager::features::
+            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
+        {{min_gms_version_param_name(),
+          base::ToString(std::numeric_limits<int>::max())}}},
+       {password_manager::features::kClearLoginDatabaseForAllMigratedUPMUsers,
+        {}}},
+      {});
+  // In this test UPM should get deactivated because of the low GMS Core version
+  // so the check for the UPM version has to be active.
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+      switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
+
+  // The initial state of the test is that the user is activated for UPM with
+  // split stores and the login data files were deleted.
+  pref_service()->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
+                             static_cast<int>(kOn));
+  pref_service()->SetBoolean(
+      password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
+
+  base::FilePath profile_db_path = login_db_directory().Append(
+      password_manager::kLoginDataForProfileFileName);
+  base::FilePath account_db_path = login_db_directory().Append(
+      password_manager::kLoginDataForAccountFileName);
+
+  base::DeleteFile(profile_db_path);
+  base::DeleteFile(account_db_path);
+
+  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
+
+  // The user was deactivated and there are still no login data files.
+  EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
+            static_cast<int>(kOff));
+  EXPECT_FALSE(PathExists(profile_db_path));
+  EXPECT_FALSE(PathExists(account_db_path));
+}
+
 // Integration test for UsesSplitStoresAndUPMForLocal(), which emulates restarts
 // by creating and destroying TestingProfiles. This doesn't exercise any of the
 // Java layers.

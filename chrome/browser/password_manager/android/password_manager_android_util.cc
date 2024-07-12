@@ -270,9 +270,10 @@ void MaybeActivateSplitStoresAndLocalUpm(
       // Move the "profile" login DB to the "account" path, the latter is the
       // synced one after activation. We could rely on a redownload instead, but
       // a) this is a safety net, and b)it spares traffic.
+      base::FilePath profile_db_path = login_db_directory.Append(
+          password_manager::kLoginDataForProfileFileName);
       if (!base::ReplaceFile(
-              login_db_directory.Append(
-                  password_manager::kLoginDataForProfileFileName),
+              profile_db_path,
               login_db_directory.Append(
                   password_manager::kLoginDataForAccountFileName),
               /*error=*/nullptr)) {
@@ -437,6 +438,7 @@ void MaybeDeactivateSplitStoresAndLocalUpm(
       login_db_directory.Append(password_manager::kLoginDataForAccountFileName);
   if (GetSplitStoresAndLocalUpmPrefValue(pref_service) == kOn &&
       IsPasswordSyncEnabled(pref_service) &&
+      base::PathExists(account_db_path) &&
       !base::ReplaceFile(account_db_path, profile_db_path, /*error=*/nullptr)) {
     return;
   }
