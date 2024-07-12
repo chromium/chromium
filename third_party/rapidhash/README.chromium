@@ -12,4 +12,5 @@ Description:
 A fast hash function. Used in StringHasher.
 
 Local Modifications:
-Removed some parts we don't use that are under other licenses.
+Removed some files we don't use that are under other licenses.
+Changed to Google C++ formatting, see patches/0001-clang-format.patch.
