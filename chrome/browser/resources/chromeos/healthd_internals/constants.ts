@@ -7,11 +7,6 @@
  */
 
 /**
- * The data update period in milliseconds.
- */
-export const UPDATE_PERIOD: number = 1000;
-
-/**
  * The color set used for drawing line chart.
  */
 export const LINE_CHART_COLOR_SET: string[] = [

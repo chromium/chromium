@@ -29,6 +29,15 @@ export class HealthdInternalsSettingsDialogElement extends PolymerElement {
     return getTemplate();
   }
 
+  static get properties() {
+    return {
+      dataPollingCycle: {
+        type: Number,
+        observer: 'onDataPollingCycleChanged',
+      },
+    };
+  }
+
   override connectedCallback() {
     super.connectedCallback();
 
@@ -70,6 +79,11 @@ export class HealthdInternalsSettingsDialogElement extends PolymerElement {
     this.dataRetentionDuration =
         this.$.dataRetentionDurationSlider.getTickValue();
     this.$.dialog.close();
+  }
+
+  private onDataPollingCycleChanged() {
+    this.dispatchEvent(new CustomEvent(
+        'polling-cycle-updated', {bubbles: true, composed: true}));
   }
 }
 

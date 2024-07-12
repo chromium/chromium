@@ -20,7 +20,7 @@ import {CrRouter} from '//resources/js/cr_router.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {PagePath, UPDATE_PERIOD} from './constants.js';
+import {PagePath} from './constants.js';
 import {HealthdApiTelemetryResult} from './externs.js';
 import type {HealthdInternalsBatteryChartElement} from './pages/battery_chart.js';
 import type {HealthdInternalsThermalChartElement} from './pages/thermal_chart.js';
@@ -68,7 +68,11 @@ export class HealthdInternalsAppElement extends PolymerElement {
 
     const router = CrRouter.getInstance();
     this.updateSelectedIndex(router.getPath());
-    this.startFetchDataRequests();
+    this.setupFetchDataRequests();
+
+    this.$.settingsDialog.addEventListener('polling-cycle-updated', () => {
+      this.setupFetchDataRequests();
+    });
   }
 
   private updateSelectedIndex(newPath: string) {
@@ -94,6 +98,9 @@ export class HealthdInternalsAppElement extends PolymerElement {
   private currentPath: PagePath;
   private selectedIndex: number;
 
+  // The interval ID used for cancelling the running intervals.
+  private fetchDataInternalId: number|undefined = undefined;
+
   // Handle path changes caused by popstate events (back/forward navigation).
   private currentPathChanged(newPath: PagePath, oldPath: PagePath) {
     this.updateSelectedIndex(newPath);
@@ -115,7 +122,11 @@ export class HealthdInternalsAppElement extends PolymerElement {
   }
 
   // Set up periodic fetch data requests to the backend to get required info.
-  private startFetchDataRequests() {
+  private setupFetchDataRequests() {
+    if (this.fetchDataInternalId !== undefined) {
+      clearInterval(this.fetchDataInternalId);
+      this.fetchDataInternalId = undefined;
+    }
     const fetchData = () => {
       sendWithPromise('getHealthdTelemetryInfo')
           .then((data: HealthdApiTelemetryResult) => {
@@ -123,7 +134,8 @@ export class HealthdInternalsAppElement extends PolymerElement {
           });
     };
     fetchData();
-    setInterval(fetchData, UPDATE_PERIOD);
+    this.fetchDataInternalId = setInterval(
+        fetchData, this.$.settingsDialog.getHealthdDataPollingCycle() * 1000);
   }
 
   private handleHealthdTelemetryInfo(data: HealthdApiTelemetryResult) {
