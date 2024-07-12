@@ -295,7 +295,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 - (NSArray<BookmarksHomeViewController*>*)cachedViewControllerStack {
   // This method is only designed to be called for the view controller
   // associated with the root node.
-  CHECK(AreAllAvailableBookmarkModelsLoaded(self.browserState));
+  CHECK(_bookmarkModel->loaded());
   DCHECK([self isDisplayingBookmarkRoot]);
 
   NSMutableArray<BookmarksHomeViewController*>* stack = [NSMutableArray array];
@@ -406,7 +406,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
   self.searchTerm = @"";
 
-  if (AreAllAvailableBookmarkModelsLoaded(self.browserState)) {
+  if (_bookmarkModel->loaded()) {
     [self loadBookmarkViews];
   } else {
     [self showLoadingSpinnerBackground];
@@ -426,7 +426,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   self.navigationController.interactivePopGestureRecognizer.delegate = self;
 
   // Hide the toolbar if we're displaying the root node.
-  if (AreAllAvailableBookmarkModelsLoaded(self.browserState) &&
+  if (_bookmarkModel->loaded() &&
       (![self isDisplayingBookmarkRoot] ||
        self.mediator.currentlyShowingSearchResults)) {
     self.navigationController.toolbarHidden = NO;
@@ -545,7 +545,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
   [self editExternalBookmarkIfSet];
 
-  DCHECK(AreAllAvailableBookmarkModelsLoaded(self.browserState));
+  DCHECK(_bookmarkModel->loaded());
   DCHECK([self isViewLoaded]);
 }
 
@@ -1266,9 +1266,6 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 #pragma mark - BookmarkModelBridgeObserver
 
 - (void)bookmarkModelLoaded {
-  if (!AreAllAvailableBookmarkModelsLoaded(self.browserState)) {
-    return;
-  }
   DCHECK(!self.displayedFolderNode);
   self.displayedFolderNode = _bookmarkModel->root_node();
 

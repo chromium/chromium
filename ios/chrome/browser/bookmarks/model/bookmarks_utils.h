@@ -9,10 +9,7 @@
 #include <set>
 #include <vector>
 
-#include "base/location.h"
-
 enum class BookmarkStorageType;
-class ChromeBrowserState;
 class PrefService;
 
 namespace bookmarks {
@@ -36,19 +33,6 @@ enum class DefaultBookmarkFolderOutcomeForMetrics {
 // Used in the preference kIosBookmarkLastUsedFolderReceivingBookmarks.
 // It means that the user has not set a folder for bookmarks explicitly.
 extern const int64_t kLastUsedBookmarkFolderNone;
-
-// Checks whether all available bookmark models are loaded.
-// Return true if the bookmarks model are loaded, false otherwise.
-// TODO(crbug.com/346918509): Inline this trivial helper function.
-[[nodiscard]] bool AreAllAvailableBookmarkModelsLoaded(
-    ChromeBrowserState* browser_state);
-
-// Removes all user bookmarks and clears bookmark-related pref. Requires
-// bookmark model to be loaded.
-// Return true if the bookmarks were successfully removed and false otherwise.
-// TODO(crbug.com/346918509): Inline this trivial helper function.
-[[nodiscard]] bool RemoveAllUserBookmarksIOS(ChromeBrowserState* browser_state,
-                                             const base::Location& location);
 
 // Returns the permanent bookmark folders that match `type`.
 // `model` must not be null and must be loaded. The returned list follows the

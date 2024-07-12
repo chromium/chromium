@@ -151,7 +151,8 @@ bool IsABookmarkNodeSectionForIdentifier(
   if ((self = [super init])) {
     DCHECK(browser);
     CHECK(displayedNode);
-    CHECK(AreAllAvailableBookmarkModelsLoaded(browser->GetBrowserState()));
+    CHECK(bookmarkModel);
+    CHECK(bookmarkModel->loaded());
 
     _browser = browser->AsWeakPtr();
     _bookmarkModel = bookmarkModel->AsWeakPtr();
@@ -321,9 +322,7 @@ bool IsABookmarkNodeSectionForIdentifier(
   bookmarks::QueryFields query;
   query.word_phrase_query.reset(new std::u16string);
   *query.word_phrase_query = base::SysNSStringToUTF16(searchText);
-  // Total count of search result for both models.
-  int totalSearchResultCount = [self populateNodeItemWithQuery:query];
-  if (totalSearchResultCount) {
+  if ([self populateNodeItemWithQuery:query]) {
     [self updateTableViewBackground];
     return;
   }

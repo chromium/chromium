@@ -217,7 +217,7 @@ enum class PresentedState {
 }
 
 - (void)createBookmarkURL:(const GURL&)URL title:(NSString*)title {
-  if (!AreAllAvailableBookmarkModelsLoaded(_browserState.get())) {
+  if (!_bookmarkModel->loaded()) {
     return;
   }
 
@@ -240,7 +240,7 @@ enum class PresentedState {
 }
 
 - (void)presentBookmarkEditorForURL:(const GURL&)URL {
-  if (!AreAllAvailableBookmarkModelsLoaded(_browserState.get())) {
+  if (!_bookmarkModel->loaded()) {
     return;
   }
 
@@ -584,7 +584,7 @@ enum class PresentedState {
 }
 
 - (void)bulkCreateBookmarksWithURLs:(NSArray<NSURL*>*)URLs {
-  if (!AreAllAvailableBookmarkModelsLoaded(_browserState.get())) {
+  if (!_bookmarkModel->loaded()) {
     return;
   }
 
@@ -604,7 +604,7 @@ enum class PresentedState {
   DCHECK(URLWithTitle) << [self description];
   NSString* title = URLWithTitle.title;
   GURL URL = URLWithTitle.URL;
-  if (!AreAllAvailableBookmarkModelsLoaded(_browserState.get())) {
+  if (!_bookmarkModel->loaded()) {
     return;
   }
 
@@ -620,7 +620,7 @@ enum class PresentedState {
 - (void)bookmarkWithFolderChooser:(NSArray<URLWithTitle*>*)URLs {
   DCHECK(URLs.count > 0) << "URLs are missing " << [self description];
 
-  if (!AreAllAvailableBookmarkModelsLoaded(_browserState.get())) {
+  if (!_bookmarkModel->loaded()) {
     return;
   }
 
@@ -629,7 +629,7 @@ enum class PresentedState {
 }
 
 - (void)openToExternalBookmark:(GURL)URL {
-  if (!AreAllAvailableBookmarkModelsLoaded(_browserState.get())) {
+  if (!_bookmarkModel->loaded()) {
     return;
   }
 
@@ -763,7 +763,7 @@ enum class PresentedState {
   self.bookmarkBrowser.snackbarCommandsHandler = self.snackbarCommandsHandler;
 
   NSArray<BookmarksHomeViewController*>* replacementViewControllers = nil;
-  if (AreAllAvailableBookmarkModelsLoaded(_browserState.get())) {
+  if (_bookmarkModel->loaded()) {
     // Set the root node if the model has been loaded. If the model has not been
     // loaded yet, the root node will be set in BookmarksHomeViewController
     // after the model is finished loading.

@@ -88,16 +88,21 @@ const bookmarks::BookmarkNode* GetMobileNodeWithType(
 #pragma mark - Public Interface
 
 + (NSError*)clearBookmarks {
+  NSError* bookmarkModelLoadedError =
+      [BookmarkEarlGreyAppInterface waitForBookmarkModelLoaded];
+  if (bookmarkModelLoadedError) {
+    return bookmarkModelLoadedError;
+  }
+
   bookmarks::BookmarkModel* bookmarkModel = GetBookmarkModel();
   ChromeBrowserState* browserState =
       chrome_test_util::GetOriginalBrowserState();
   [BookmarkPathCache
       clearBookmarkTopMostRowCacheWithPrefService:browserState->GetPrefs()];
-  BOOL removeSucceeded = RemoveAllUserBookmarksIOS(browserState, FROM_HERE);
-  if (!removeSucceeded) {
-    return testing::NSErrorWithLocalizedDescription(
-        @"Failed to remove some user boomkark");
-  }
+
+  bookmarkModel->RemoveAllUserBookmarks(FROM_HERE);
+  ResetLastUsedBookmarkFolder(browserState->GetPrefs());
+
   // Checking whether managed bookmarks remain, in which case return false.
   if (bookmarkModel->HasBookmarks()) {
     return testing::NSErrorWithLocalizedDescription(
@@ -119,10 +124,10 @@ const bookmarks::BookmarkNode* GetMobileNodeWithType(
                                       fourthURL:(NSString*)fourthURL
                                       inStorage:
                                           (BookmarkStorageType)storageType {
-  NSError* bookmarkModelsLoadedError =
+  NSError* bookmarkModelLoadedError =
       [BookmarkEarlGreyAppInterface waitForBookmarkModelLoaded];
-  if (bookmarkModelsLoadedError) {
-    return bookmarkModelsLoadedError;
+  if (bookmarkModelLoadedError) {
+    return bookmarkModelLoadedError;
   }
   bookmarks::BookmarkModel* bookmarkModel = GetBookmarkModel();
 

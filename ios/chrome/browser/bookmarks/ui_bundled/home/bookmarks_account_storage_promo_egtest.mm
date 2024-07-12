@@ -159,12 +159,12 @@ using chrome_test_util::SecondarySignInButton;
                                         consent:signin::ConsentLevel::kSignin];
 }
 
-// Tests that the account model is not shown on sign-out.
-- (void)testAccountModelNotShownOnSignout {
+// Tests that account bookmarks are not shown on sign-out.
+- (void)testAccountBookmarksNotShownOnSignout {
   // Sign-in with `fakeIdentity1`.
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
-  // Add bookmarks to account model.
+  // Add account bookmarks.
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kAccount];
 
@@ -188,12 +188,12 @@ using chrome_test_util::SecondarySignInButton;
       verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
 }
 
-// Tests that only the account model is not shown on sign-out.
-- (void)testOnlyAccountModelNotShownOnSignout {
+// Tests that only account bookmarks are not shown on sign-out.
+- (void)testOnlyAccountBookmarksNotShownOnSignout {
   // Sign-in with `fakeIdentity1`.
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
-  // Add bookmarks to local and account models.
+  // Add local and account bookmarks to the model.
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGrey
@@ -225,7 +225,7 @@ using chrome_test_util::SecondarySignInButton;
       selectElementWithMatcher:grey_accessibilityLabel(@"Mobile Bookmarks")]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Verify that the account model is not shown.
+  // Verify that account bookmarks are not shown.
   [[EarlGrey selectElementWithMatcher:
                  grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
                                 IDS_IOS_BOOKMARKS_ACCOUNT_SECTION_TITLE)),

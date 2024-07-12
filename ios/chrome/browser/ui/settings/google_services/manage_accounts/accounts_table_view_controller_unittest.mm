@@ -212,7 +212,7 @@ TEST_F(AccountsTableViewControllerTest, DontHoldPassphraseError) {
   EXPECT_EQ(2, NumberOfSections());
 }
 
-// Tests that when eligible the account model doesn't have the Account Storage
+// Tests that when eligible account bookmarks don't have the Account Storage
 // error when there is no error.
 TEST_F(AccountsTableViewControllerTest,
        DontHoldPassphraseErrorWhenEligibleNoError) {

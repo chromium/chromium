@@ -35,8 +35,7 @@ enum class BookmarkStorageType;
                                                  inStorage:(BookmarkStorageType)
                                                                storageType;
 
-// Waits for both LocalOrSyncable and Account (if available) bookmark models to
-// be loaded.
+// Waits for BookmarkModel to be loaded.
 + (NSError*)waitForBookmarkModelLoaded;
 
 // Flush any pending bookmarks writes to disk now. This is useful before

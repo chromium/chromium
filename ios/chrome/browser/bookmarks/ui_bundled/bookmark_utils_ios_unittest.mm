@@ -100,7 +100,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, CreateOrUpdateWithinStorage) {
 // TODO(crbug.com/40268591): Add tests that call `UpdateBookmark` with the
 // account storage.
 
-TEST_F(BookmarkIOSUtilsUnitTest, CreateOrUpdateBetweenModels) {
+TEST_F(BookmarkIOSUtilsUnitTest, CreateOrUpdateBetweenStorages) {
   const BookmarkNode* local_mobile_node = bookmark_model_->mobile_node();
   const BookmarkNode* node = AddBookmark(local_mobile_node, u"a");
   const BookmarkNode* account_mobile_node =
@@ -152,13 +152,13 @@ TEST_F(BookmarkIOSUtilsUnitTest, MoveNodesInLocalOrSyncableModel) {
   ASSERT_NO_FATAL_FAILURE(TestMovingBookmarks(local_mobile_node));
 }
 
-TEST_F(BookmarkIOSUtilsUnitTest, MoveNodesInAccountModel) {
+TEST_F(BookmarkIOSUtilsUnitTest, MoveAccountNodes) {
   const BookmarkNode* account_mobile_node =
       bookmark_model_->account_mobile_node();
   ASSERT_NO_FATAL_FAILURE(TestMovingBookmarks(account_mobile_node));
 }
 
-TEST_F(BookmarkIOSUtilsUnitTest, MoveNodesBetweenModels) {
+TEST_F(BookmarkIOSUtilsUnitTest, MoveNodesBetweenStorages) {
   const BookmarkNode* local_mobile_node = bookmark_model_->mobile_node();
   const BookmarkNode* f1 = AddFolder(local_mobile_node, u"f1");
   AddBookmark(local_mobile_node, u"a");

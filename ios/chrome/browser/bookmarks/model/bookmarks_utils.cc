@@ -29,28 +29,6 @@ void LogDefaultBookmarkFolderOutcome(
 
 const int64_t kLastUsedBookmarkFolderNone = -1;
 
-bool AreAllAvailableBookmarkModelsLoaded(ChromeBrowserState* browser_state) {
-  bookmarks::BookmarkModel* model =
-      ios::BookmarkModelFactory::GetForBrowserState(browser_state);
-  CHECK(model);
-  return model->loaded();
-}
-
-bool RemoveAllUserBookmarksIOS(ChromeBrowserState* browser_state,
-                               const base::Location& location) {
-  bookmarks::BookmarkModel* bookmark_model =
-      ios::BookmarkModelFactory::GetForBrowserState(browser_state);
-
-  if (!bookmark_model->loaded()) {
-    return false;
-  }
-
-  bookmark_model->RemoveAllUserBookmarks(location);
-
-  ResetLastUsedBookmarkFolder(browser_state->GetPrefs());
-  return true;
-}
-
 std::vector<const bookmarks::BookmarkNode*> PrimaryPermanentNodes(
     const bookmarks::BookmarkModel* model,
     BookmarkStorageType type) {

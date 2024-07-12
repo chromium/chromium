@@ -657,7 +657,7 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
       @"Invalid metric count.");
 
   // TODO(crbug.com/40065376): Verify that the bookmarks have been moved to the
-  // account model and the local bookmark model is empty.
+  // account storage and the local storage is empty.
 }
 
 // Tests that upon completing the batch upload flow, there are no separate

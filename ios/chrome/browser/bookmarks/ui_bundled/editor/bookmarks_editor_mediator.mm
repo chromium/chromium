@@ -249,8 +249,6 @@
 
   // When launched from the star button, removing the current bookmark
   // removes all matching nodes.
-  // TODO(crbug.com/346918509): Clarify if this should remove the matching
-  // bookmarks from both BookmarkModel instances.
   std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
       nodesVector = _bookmarkModel->GetNodesByURL([self bookmark]->url());
   std::set<const bookmarks::BookmarkNode*> nodes(nodesVector.begin(),

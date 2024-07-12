@@ -75,7 +75,7 @@ typedef NS_ENUM(NSInteger, BookmarksHomeBackgroundStyle) {
 // Called when this folder is deleted.
 - (void)closeThisFolder;
 
-// Called when the account model is deleted.
+// Called when all account bookmarks are deleted (e.g. signout).
 - (void)displayRoot;
 
 @end

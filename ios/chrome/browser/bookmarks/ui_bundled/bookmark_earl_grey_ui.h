@@ -70,7 +70,7 @@ id<GREYMatcher> ContextBarCenterButtonWithLabel(NSString* label);
 id<GREYMatcher> ContextBarTrailingButtonWithLabel(NSString* label);
 
 // Matcher for tappable bookmark node. The second method must be used if the
-// folder appear in both models.
+// folder appear in both storage types.
 id<GREYMatcher> TappableBookmarkNodeWithLabel(NSString* label);
 id<GREYMatcher> TappableBookmarkNodeWithLabel(
     NSString* label,

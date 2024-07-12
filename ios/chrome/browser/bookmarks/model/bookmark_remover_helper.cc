@@ -23,7 +23,7 @@ BookmarkRemoverHelper::BookmarkRemoverHelper(ChromeBrowserState* browser_state)
 BookmarkRemoverHelper::~BookmarkRemoverHelper() = default;
 
 void BookmarkRemoverHelper::BookmarkModelChanged() {
-  // Nothing to do here, we only care about all bookmark models being loaded.
+  // Nothing to do here, we only care about the bookmark model being loaded.
 }
 
 void BookmarkRemoverHelper::BookmarkModelLoaded(bool ids_reassigned) {
