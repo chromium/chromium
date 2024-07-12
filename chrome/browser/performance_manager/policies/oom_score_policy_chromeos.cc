@@ -46,6 +46,10 @@ void OomScorePolicyChromeOS::OnBeforePageNodeRemoved(
   HandlePageNodeEventsThrottled();
 }
 
+void OomScorePolicyChromeOS::OnIsFocusedChanged(const PageNode* page_node) {
+  HandlePageNodeEventsThrottled();
+}
+
 void OomScorePolicyChromeOS::OnIsVisibleChanged(const PageNode* page_node) {
   HandlePageNodeEventsThrottled();
 }

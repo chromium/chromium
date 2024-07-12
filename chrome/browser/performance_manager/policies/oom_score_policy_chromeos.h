@@ -37,6 +37,7 @@ class OomScorePolicyChromeOS : public GraphOwned,
   // PageNode::ObserverDefaultImpl:
   void OnPageNodeAdded(const PageNode* page_node) override;
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
+  void OnIsFocusedChanged(const PageNode* page_node) override;
   void OnIsVisibleChanged(const PageNode* page_node) override;
   void OnTypeChanged(const PageNode* page_node,
                      PageType previous_type) override;
