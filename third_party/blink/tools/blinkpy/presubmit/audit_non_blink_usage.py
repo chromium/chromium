@@ -35,18 +35,8 @@ _DISALLOW_CONTINUATION_DATA_ = (
 
 _CONFIG = [
     {
-        'paths': ['third_party/blink/renderer/'],
+        'paths': ['third_party/blink/'],
         'allowed': [
-            # TODO(dcheng): Should these be in a more specific config?
-            'gfx::ColorSpace',
-            'gfx::CubicBezier',
-            'gfx::HDRMetadata',
-            'gfx::HdrMetadataExtendedRange',
-            'gfx::ICCProfile',
-
-            # For fast cos/sin functions
-            'gfx::SinCosDegrees',
-
             # absl
             'absl::Cleanup',
             'absl::MakeInt128',
@@ -175,9 +165,6 @@ _CONFIG = [
             'logging::GetVlogLevel',
             'logging::SetLogItems',
 
-            # //base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h
-            'partition_alloc::internal::kAlignment',
-
             # //base/task/bind_post_task.h
             'base::BindPostTask',
 
@@ -202,7 +189,8 @@ _CONFIG = [
             'base::SplitOnceCallback',
 
             # //base/functional/callback.h is allowed, but you need to use
-            # WTF::Bind or WTF::BindRepeating to create callbacks in Blink.
+            # WTF::Bind or WTF::BindRepeating to create callbacks in
+            # //third_party/blink/renderer.
             'base::BarrierCallback',
             'base::BarrierClosure',
             'base::NullCallback',
@@ -329,14 +317,6 @@ _CONFIG = [
             'base::features::.+',
             'features::.+',
 
-            # PartitionAlloc
-            'base::PartitionFree',
-            'base::PartitionAllocZeroFill',
-            'base::PartitionAllocReturnNull',
-
-            # For TaskObserver.
-            'base::PendingTask',
-
             # Time
             'base::Clock',
             'base::DefaultClock',
@@ -346,6 +326,43 @@ _CONFIG = [
 
             # State transition checking
             'base::StateTransitions',
+
+        ]
+    },
+    {
+        'paths': ['third_party/blink/common/'],
+        'allowed': [
+            # By definition, files in common are expected to use STL types.
+            'std::.+',
+
+            # Blink code shouldn't need to be qualified with the Blink namespace,
+            # but there are exceptions, e.g. traits for Mojo.
+            'blink::.+',
+        ],
+    },
+    {
+        'paths': ['third_party/blink/renderer/'],
+        'allowed': [
+            # TODO(dcheng): Should these be in a more specific config?
+            'gfx::ColorSpace',
+            'gfx::CubicBezier',
+            'gfx::HDRMetadata',
+            'gfx::HdrMetadataExtendedRange',
+            'gfx::ICCProfile',
+
+            # For fast cos/sin functions
+            'gfx::SinCosDegrees',
+
+            # //base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h
+            'partition_alloc::internal::kAlignment',
+
+            # PartitionAlloc
+            'base::PartitionFree',
+            'base::PartitionAllocZeroFill',
+            'base::PartitionAllocReturnNull',
+
+            # For TaskObserver.
+            'base::PendingTask',
 
             # cc painting and raster types.
             'cc::CategorizedWorkerPool',
@@ -632,8 +649,9 @@ _CONFIG = [
             'protocol::.+',
 
             # Blink code shouldn't need to be qualified with the Blink namespace,
-            # but there are exceptions.
+            # but there are exceptions, e.g. traits for Mojo.
             'blink::.+',
+
             # Assume that identifiers where the first qualifier is internal are
             # nested in the blink namespace.
             'internal::.+',
@@ -1114,16 +1132,6 @@ _CONFIG = [
             'third_party/blink/public/',
         ],
         'allowed': [
-            'base::FeatureParam',
-            'base::OnceCallback',
-            'base::OnceClosure',
-            'base::RepeatingCallback',
-            'base::RepeatingClosure',
-            'base::Time'
-            'base::TimeDelta',
-            'base::TimeTicks',
-            'base::(numerics::)?((I|U)(8|16|32|64)|(Float|Double))(To|From)(Big|Little|Native)Endian',
-
             'gfx::Point',
             'gfx::PointF',
             'gfx::Rect',
@@ -1140,6 +1148,16 @@ _CONFIG = [
             # types are generally allowed for interop with non-Blink code, as
             # containers like WTF::Vector are not exposed outside Blink.
             'std::.+',
+        ],
+    },
+    {
+        'paths': [
+            'third_party/blink/public/common',
+        ],
+        'allowed': [
+            # Blink code shouldn't need to be qualified with the Blink namespace,
+            # but there are exceptions, e.g. traits for Mojo.
+            'blink::.+',
         ],
     },
     {
@@ -1489,7 +1507,6 @@ _CONFIG = [
             'third_party/blink/renderer/modules/mediarecorder/',
         ],
         'allowed': [
-            'std::data',
             # TODO(crbug.com/960665): Remove base::queue once it is replaced with a WTF equivalent.
             'base::queue',
             'base::ClampMul',
