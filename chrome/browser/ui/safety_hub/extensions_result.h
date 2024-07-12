@@ -8,11 +8,12 @@
 #include <memory>
 
 #include "base/values.h"
-#include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/browser/extension_registry_observer.h"
+
+class Profile;
 
 class SafetyHubExtensionsResult : public SafetyHubService::Result {
  public:
@@ -35,7 +36,6 @@ class SafetyHubExtensionsResult : public SafetyHubService::Result {
   // parameter only_unpublished_extensions indicates whether only extensions
   // that have been unpublished for a long time should be considered.
   static std::optional<std::unique_ptr<SafetyHubService::Result>> GetResult(
-      const extensions::CWSInfoService* extension_info_service,
       Profile* profile,
       bool only_unpublished_extensions);
 
@@ -43,10 +43,8 @@ class SafetyHubExtensionsResult : public SafetyHubService::Result {
   unsigned int GetNumTriggeringExtensions() const;
 
   // Updates the `triggering_extensions_` if an extension is kept.
-  void OnExtensionPrefsUpdated(
-      const std::string& extension_id,
-      Profile* profile,
-      const extensions::CWSInfoService* extension_info_service);
+  void OnExtensionPrefsUpdated(const std::string& extension_id,
+                               Profile* profile);
 
   // Updates the `triggering_extensions_` if an extension is uninstalled.
   void OnExtensionUninstalled(content::BrowserContext* browser_context,

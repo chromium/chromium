@@ -139,6 +139,16 @@ std::unique_ptr<testing::NiceMock<MockCWSInfoService>> GetMockCWSInfoService(
   return mock_cws_info_service;
 }
 
+std::unique_ptr<testing::NiceMock<MockCWSInfoService>>
+GetMockCWSInfoServiceNoTriggers(Profile* profile) {
+  // Ensure that the mock CWSInfo service returns the needed information.
+  std::unique_ptr<testing::NiceMock<MockCWSInfoService>> mock_cws_info_service(
+      new testing::NiceMock<MockCWSInfoService>(profile));
+  ON_CALL(*mock_cws_info_service, GetCWSInfo)
+      .WillByDefault(testing::Return(cws_info_no_trigger));
+  return mock_cws_info_service;
+}
+
 void AddExtension(const std::string& name,
                   extensions::mojom::ManifestLocation location,
                   Profile* profile,
@@ -168,7 +178,7 @@ void CreateMockExtensions(Profile* profile) {
   AddExtension("TestExtension7", ManifestLocation::kInternal, profile,
                "https://example.com");
   // Extensions installed by policies will be ignored by Safety Hub. So
-  // extension 7 will not trigger the handler.
+  // extension 8 will not trigger the handler.
   AddExtension("TestExtension8", ManifestLocation::kExternalPolicyDownload,
                profile);
 }
@@ -212,7 +222,8 @@ void RemoveExtension(const std::string& name,
 void AcknowledgeSafetyCheckExtensions(const std::string& name,
                                       Profile* profile) {
   extensions::ExtensionPrefs::Get(profile)->UpdateExtensionPref(
-      name, "ack_safety_check_warning", base::Value(true));
+      name, "ack_safety_check_warning_reason",
+      /* Malware Acknowledged */ base::Value(3));
 }
 
 BulkLeakCheckService* CreateAndUseBulkLeakCheckService(

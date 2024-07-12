@@ -254,6 +254,15 @@ class SafetyHubHandlerTest : public testing::Test {
     safety_hub_test_util::CreateMockExtensions(profile());
   }
 
+  void CreatMockCWSInfoService() {
+    extensions::CWSInfoServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating([](content::BrowserContext* context)
+                                           -> std::unique_ptr<KeyedService> {
+          return safety_hub_test_util::GetMockCWSInfoServiceNoTriggers(
+              Profile::FromBrowserContext(context));
+        }));
+  }
+
   void AddTriggeringExtension() {
     handler_->SetTriggeringExtensionForTesting("Test");
   }
@@ -1302,6 +1311,7 @@ TEST_F(SafetyHubHandlerTest, ExtensionPrefAndInitialization) {
   // the `web_ui()` has recorded no events
   AddExtensionsForReview();
   EXPECT_EQ(5, handler()->GetNumberOfExtensionsThatNeedReview());
+  CreatMockCWSInfoService();
   EXPECT_EQ(0u, web_ui()->call_data().size());
   // After `AcknowledgeSafetyCheckExtensions` one event should have been fired.
   safety_hub_test_util::AcknowledgeSafetyCheckExtensions(

@@ -202,28 +202,30 @@ namespace ExtensionSafetyCheckUtils {
 
 developer::SafetyCheckWarningReason GetSafetyCheckWarningReason(
     const Extension& extension,
-    Profile* profile) {
+    Profile* profile,
+    bool unpublished_only) {
   CWSInfoService* cws_info_service =
       CWSInfoService::Get(Profile::FromBrowserContext(profile));
   BitMapBlocklistState blocklist_state =
       blocklist_prefs::GetExtensionBlocklistState(extension.id(),
                                                   ExtensionPrefs::Get(profile));
-  return GetSafetyCheckWarningReasonHelper(cws_info_service, blocklist_state,
-                                           profile, extension);
+  return GetSafetyCheckWarningReasonHelper(
+      cws_info_service, blocklist_state, profile, extension, unpublished_only);
 }
 
 developer::SafetyCheckWarningReason GetSafetyCheckWarningReasonHelper(
     CWSInfoServiceInterface* cws_info_service,
     BitMapBlocklistState blocklist_state,
     Profile* profile,
-    const Extension& extension) {
+    const Extension& extension,
+    bool unpublished_only) {
   developer::SafetyCheckWarningReason top_warning_reason =
       developer::SafetyCheckWarningReason::kNone;
   bool is_extension = extension.is_extension() || extension.is_shared_module();
   bool is_non_visible_extension =
       extensions::Manifest::IsPolicyLocation(extension.location()) ||
       extensions::Manifest::IsComponentLocation(extension.location());
-  // We  will not show warnings on Chrome apps or extensions that are not
+  // We will not show warnings on Chrome apps or extensions that are not
   // visible to the user.
   if (!is_extension || is_non_visible_extension) {
     return top_warning_reason;
@@ -238,23 +240,29 @@ developer::SafetyCheckWarningReason GetSafetyCheckWarningReasonHelper(
     cws_info = cws_info_service->GetCWSInfo(extension);
     valid_cws_info = cws_info.has_value() && cws_info->is_present;
   }
-
-  if (SafetyCheckShouldShowMalware(blocklist_state, cws_info)) {
-    top_warning_reason = developer::SafetyCheckWarningReason::kMalware;
-  } else if (SafetyCheckShouldShowPolicyViolation(blocklist_state, cws_info)) {
-    top_warning_reason = developer::SafetyCheckWarningReason::kPolicy;
-  } else if (SafetyCheckShouldShowPotentiallyUnwanted(blocklist_state)) {
-    top_warning_reason = developer::SafetyCheckWarningReason::kUnwanted;
-  } else if (valid_cws_info && cws_info->unpublished_long_ago) {
-    top_warning_reason = developer::SafetyCheckWarningReason::kUnpublished;
-
-  } else if (SafetyCheckShouldShowNoPrivacyPractice(cws_info)) {
-    top_warning_reason =
-        developer::SafetyCheckWarningReason::kNoPrivacyPractice;
-
-  } else if (SafetyCheckShouldShowOffstoreExtension(extension, profile,
+  if (unpublished_only) {
+    if (valid_cws_info && cws_info->unpublished_long_ago) {
+      top_warning_reason = developer::SafetyCheckWarningReason::kUnpublished;
+    }
+  } else {
+    if (SafetyCheckShouldShowMalware(blocklist_state, cws_info)) {
+      top_warning_reason = developer::SafetyCheckWarningReason::kMalware;
+    } else if (SafetyCheckShouldShowPolicyViolation(blocklist_state,
                                                     cws_info)) {
-    top_warning_reason = developer::SafetyCheckWarningReason::kOffstore;
+      top_warning_reason = developer::SafetyCheckWarningReason::kPolicy;
+    } else if (SafetyCheckShouldShowPotentiallyUnwanted(blocklist_state)) {
+      top_warning_reason = developer::SafetyCheckWarningReason::kUnwanted;
+    } else if (valid_cws_info && cws_info->unpublished_long_ago) {
+      top_warning_reason = developer::SafetyCheckWarningReason::kUnpublished;
+
+    } else if (SafetyCheckShouldShowNoPrivacyPractice(cws_info)) {
+      top_warning_reason =
+          developer::SafetyCheckWarningReason::kNoPrivacyPractice;
+
+    } else if (SafetyCheckShouldShowOffstoreExtension(extension, profile,
+                                                      cws_info)) {
+      top_warning_reason = developer::SafetyCheckWarningReason::kOffstore;
+    }
   }
 
   // TODO(crbug.com/325469212) Remove after migration is deemed complete.

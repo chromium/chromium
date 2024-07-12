@@ -22,14 +22,16 @@ namespace ExtensionSafetyCheckUtils {
 // Returns the Safety Hub warning reason for an extension.
 api::developer_private::SafetyCheckWarningReason GetSafetyCheckWarningReason(
     const Extension& extension,
-    Profile* profile);
+    Profile* profile,
+    bool unpublished_only = false);
 
 // A helper function to `GetSafetyCheckWarningReason` to simplify testing.
 api::developer_private::SafetyCheckWarningReason
 GetSafetyCheckWarningReasonHelper(CWSInfoServiceInterface* cws_info_service,
                                   BitMapBlocklistState blocklist_state,
                                   Profile* profile,
-                                  const Extension& extension);
+                                  const Extension& extension,
+                                  bool unpublished_only = false);
 
 // Returns the display strings related to a Safety Hub Warning reason.
 api::developer_private::SafetyCheckStrings GetSafetyCheckWarningStrings(

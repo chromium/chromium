@@ -69,13 +69,10 @@ SafetyHubMenuNotificationServiceFactory::BuildServiceInstanceForBrowserContext(
       profile->GetPrefs(), unused_site_permissions_service,
       notification_permission_review_service, profile);
 #else
-  extensions::CWSInfoService* extension_info_service =
-      extensions::CWSInfoService::Get(profile);
   PasswordStatusCheckService* password_check_service =
       PasswordStatusCheckServiceFactory::GetForProfile(profile);
   return std::make_unique<SafetyHubMenuNotificationService>(
       profile->GetPrefs(), unused_site_permissions_service,
-      notification_permission_review_service, extension_info_service,
-      password_check_service, profile);
+      notification_permission_review_service, password_check_service, profile);
 #endif  // BUILDFLAG(IS_ANDROID)
 }

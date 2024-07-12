@@ -13,6 +13,8 @@
 #include "base/values.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/extensions/cws_info_service_factory.h"
+#include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/ui/safety_hub/menu_notification.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
@@ -466,6 +468,15 @@ class SafetyHubMenuNotificationServiceDesktopOnlyTest
     return *password_store_;
   }
 
+  void CreateMockCWSInfoService() {
+    extensions::CWSInfoServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating([](content::BrowserContext* context)
+                                           -> std::unique_ptr<KeyedService> {
+          return safety_hub_test_util::GetMockCWSInfoService(
+              Profile::FromBrowserContext(context));
+        }));
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   scoped_refptr<password_manager::TestPasswordStore> password_store_;
@@ -476,16 +487,15 @@ TEST_F(SafetyHubMenuNotificationServiceDesktopOnlyTest,
   // Create mock extensions that should result in two violations that are shown
   // in the menu notification.
   safety_hub_test_util::CreateMockExtensions(profile());
-  // The mock CWS info service ensures that the correct extension properties are
-  // provided.
-  std::unique_ptr<testing::NiceMock<safety_hub_test_util::MockCWSInfoService>>
-      cws_info_service = safety_hub_test_util::GetMockCWSInfoService(profile());
+  // Create a mock CWS info service that will return the information that
+  // matches the mock extensions.
+  CreateMockCWSInfoService();
   // Create a menu notification service with the mocked CWS info service.
   std::unique_ptr<SafetyHubMenuNotificationService> mocked_service =
       std::make_unique<SafetyHubMenuNotificationService>(
           prefs(), unused_site_permissions_service(),
-          notification_permissions_service(), cws_info_service.get(),
-          password_status_check_service(), profile());
+          notification_permissions_service(), password_status_check_service(),
+          profile());
   std::optional<MenuNotificationEntry> notification =
       mocked_service->GetNotificationToShow();
   EXPECT_TRUE(notification.has_value());

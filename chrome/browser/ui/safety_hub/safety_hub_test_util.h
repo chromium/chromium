@@ -52,6 +52,11 @@ std::unique_ptr<testing::NiceMock<MockCWSInfoService>> GetMockCWSInfoService(
     Profile* profile,
     bool with_calls = true);
 
+// Creates a mock service that returns mock results for the CWS info service.
+// Each call will respond with a extension having no triggers.
+std::unique_ptr<testing::NiceMock<MockCWSInfoService>>
+GetMockCWSInfoServiceNoTriggers(Profile* profile);
+
 // Adds a testing extension with |name| and |location| to |profile|.
 void AddExtension(
     const std::string& name,
@@ -73,7 +78,8 @@ void RemoveExtension(const std::string& name,
                      extensions::mojom::ManifestLocation location,
                      Profile* profile);
 
-// Add the `ack_safety_check_warning` pref to an extension.
+// Add the `ack_safety_check_warning_reason` pref to an extension. This
+// will remove it from the Safety Hub.
 void AcknowledgeSafetyCheckExtensions(const std::string& name,
                                       Profile* profile);
 

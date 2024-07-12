@@ -47,7 +47,6 @@ SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
     UnusedSitePermissionsService* unused_site_permissions_service,
     NotificationPermissionsReviewService* notification_permissions_service,
 #if !BUILDFLAG(IS_ANDROID)
-    extensions::CWSInfoService* extension_info_service,
     PasswordStatusCheckService* password_check_service,
 #endif  // BUILDFLAG(IS_ANDROID)
     Profile* profile) {
@@ -94,7 +93,6 @@ SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
   SetInfoElement(safety_hub::SafetyHubModuleType::EXTENSIONS,
                  MenuNotificationPriority::LOW, base::Days(10),
                  base::BindRepeating(&SafetyHubExtensionsResult::GetResult,
-                                     base::Unretained(extension_info_service),
                                      profile, true),
                  stored_notifications);
 

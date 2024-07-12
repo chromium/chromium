@@ -779,8 +779,7 @@ void SafetyHubHandler::SendNotificationPermissionReviewList() {
 
 void SafetyHubHandler::InitSafetyHubExtensionResults() {
   std::optional<std::unique_ptr<SafetyHubService::Result>> sh_result =
-      SafetyHubExtensionsResult::GetResult(
-          extensions::CWSInfoService::Get(profile_), profile_, false);
+      SafetyHubExtensionsResult::GetResult(profile_, false);
   if (sh_result.has_value()) {
     extension_sh_result_ = std::make_unique<SafetyHubExtensionsResult>(
         *static_cast<SafetyHubExtensionsResult*>(sh_result->get()));
@@ -814,8 +813,7 @@ void SafetyHubHandler::OnExtensionPrefsUpdated(
     return;
   }
   int num_extension_need_review_before = GetNumberOfExtensionsThatNeedReview();
-  extension_sh_result_->OnExtensionPrefsUpdated(
-      extension_id, profile_, extensions::CWSInfoService::Get(profile_));
+  extension_sh_result_->OnExtensionPrefsUpdated(extension_id, profile_);
   int num_extension_need_review_after = GetNumberOfExtensionsThatNeedReview();
   UpdateNumberOfExtensionsThatNeedReview(num_extension_need_review_before,
                                          num_extension_need_review_after);

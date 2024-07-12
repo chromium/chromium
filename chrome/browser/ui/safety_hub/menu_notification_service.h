@@ -74,7 +74,6 @@ class SafetyHubMenuNotificationService : public KeyedService {
       UnusedSitePermissionsService* unused_site_permissions_service,
       NotificationPermissionsReviewService* notification_permissions_service,
 #if !BUILDFLAG(IS_ANDROID)
-      extensions::CWSInfoService* extension_info_service,
       PasswordStatusCheckService* password_check_service,
 #endif  // BUILDFLAG(IS_ANDROID)
       Profile* profile);

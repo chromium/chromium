@@ -156,11 +156,8 @@ SafetyHubCardState GetOverallState(Profile* profile) {
     }
   }
 
-  extensions::CWSInfoService* extension_info_service =
-      extensions::CWSInfoServiceFactory::GetForProfile(profile);
   std::optional<std::unique_ptr<SafetyHubService::Result>> opt_ext_result =
-      SafetyHubExtensionsResult::GetResult(extension_info_service, profile,
-                                           true);
+      SafetyHubExtensionsResult::GetResult(profile, true);
   if (opt_ext_result.has_value()) {
     auto* result =
         static_cast<SafetyHubExtensionsResult*>(opt_ext_result.value().get());
