@@ -356,6 +356,10 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void SetValue(const std::u16string& value);
   void RemoveValue();
 
+  void SetDefaultActionVerb(
+      const ax::mojom::DefaultActionVerb default_action_verb);
+  void RemoveDefaultActionVerb();
+
   void SetHierarchicalLevel(int hierarchical_level);
 
   // Updates the focusable state of the `data_` object.

@@ -799,6 +799,15 @@ void ViewAccessibility::RemoveValue() {
   NotifyEvent(ax::mojom::Event::kValueChanged, true);
 }
 
+void ViewAccessibility::SetDefaultActionVerb(
+    const ax::mojom::DefaultActionVerb default_action_verb) {
+  data_.SetDefaultActionVerb(default_action_verb);
+}
+
+void ViewAccessibility::RemoveDefaultActionVerb() {
+  data_.RemoveIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb);
+}
+
 void ViewAccessibility::UpdateFocusableState() {
   bool is_focusable = view_->GetFocusBehavior() != View::FocusBehavior::NEVER &&
                       GetIsEnabled() && view_->IsDrawn() &&
