@@ -4,8 +4,9 @@
 
 #include <string>
 
+#include "chrome/test/base/ash/interactive/cellular/cellular_util.h"
 #include "chrome/test/base/ash/interactive/cellular/esim_interactive_uitest_base.h"
-#include "chrome/test/base/ash/interactive/cellular/esim_util.h"
+#include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/base/ash/interactive/settings/interactive_uitest_elements.h"
 #include "ui/base/interaction/element_identifier.h"
 

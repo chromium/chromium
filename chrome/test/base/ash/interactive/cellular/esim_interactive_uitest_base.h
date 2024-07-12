@@ -5,7 +5,7 @@
 #ifndef CHROME_TEST_BASE_ASH_INTERACTIVE_CELLULAR_ESIM_INTERACTIVE_UITEST_BASE_H_
 #define CHROME_TEST_BASE_ASH_INTERACTIVE_CELLULAR_ESIM_INTERACTIVE_UITEST_BASE_H_
 
-#include "chrome/test/base/ash/interactive/cellular/esim_util.h"
+#include "chrome/test/base/ash/interactive/cellular/cellular_util.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 
 namespace ash {
@@ -17,12 +17,12 @@ class EsimInteractiveUiTestBase : public InteractiveAshTest {
   // InteractiveAshTest:
   void SetUpOnMainThread() override;
 
-  const EsimInfo& esim_info() { return esim_info_; }
+  const SimInfo& esim_info() { return esim_info_; }
   const EuiccInfo& euicc_info() { return euicc_info_; }
 
  private:
   const EuiccInfo euicc_info_ = EuiccInfo{/*id=*/0};
-  const EsimInfo esim_info_ = EsimInfo{/*id=*/0};
+  const SimInfo esim_info_ = SimInfo{/*id=*/0};
 };
 
 }  // namespace ash

@@ -144,6 +144,10 @@ WebContentsInteractionTestUtil::DeepQuery CellularNetworksList() {
          "cellular-networks-list";
 }
 
+WebContentsInteractionTestUtil::DeepQuery CellularSubpagePsimListTitle() {
+  return CellularNetworksList() + "div#pSimLabel";
+}
+
 WebContentsInteractionTestUtil::DeepQuery CellularDetailsSubpageTitle() {
   return InternetPage() + "os-settings-subpage" + "h1#subpageTitle";
 }

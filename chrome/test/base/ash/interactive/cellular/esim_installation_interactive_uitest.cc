@@ -6,7 +6,7 @@
 
 #include "base/time/time.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/ash/interactive/cellular/esim_util.h"
+#include "chrome/test/base/ash/interactive/cellular/cellular_util.h"
 #include "chrome/test/base/ash/interactive/cellular/wait_for_service_connected_observer.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/base/ash/interactive/settings/interactive_uitest_elements.h"
@@ -117,7 +117,7 @@ class EsimInstallationInteractiveUiTest : public InteractiveAshTest {
   }
 
   ui::test::internal::InteractiveTestPrivate::MultiStep PerformSmdsSteps(
-      const EsimInfo& esim_info) {
+      const SimInfo& esim_info) {
     return Steps(
         Log("Overriding the profile returned by the first SM-DS scan"),
 
@@ -161,7 +161,7 @@ class EsimInstallationInteractiveUiTest : public InteractiveAshTest {
   }
 
   ui::test::internal::InteractiveTestPrivate::MultiStep PerformSmdpSteps(
-      const EsimInfo& esim_info,
+      const SimInfo& esim_info,
       const std::string& activation_code) {
     return Steps(
         Log("Waiting to skip to manual entry"),
@@ -194,7 +194,7 @@ class EsimInstallationInteractiveUiTest : public InteractiveAshTest {
   }
 
   ui::test::internal::InteractiveTestPrivate::MultiStep FinishInstallationFlow(
-      const EsimInfo& esim_info,
+      const SimInfo& esim_info,
       const ui::test::StateIdentifier<WaitForServiceConnectedObserver>&
           state_identifier) {
     return Steps(
@@ -238,15 +238,15 @@ class EsimInstallationInteractiveUiTest : public InteractiveAshTest {
             /*text=*/esim_info.nickname()));
   }
 
-  const EsimInfo& esim_info0() const { return esim_info0_; }
-  const EsimInfo& esim_info1() const { return esim_info1_; }
+  const SimInfo& esim_info0() const { return esim_info0_; }
+  const SimInfo& esim_info1() const { return esim_info1_; }
   const std::string& activation_code0() const { return activation_code0_; }
   const std::string& activation_code1() const { return activation_code1_; }
 
  private:
   const EuiccInfo euicc_info_ = EuiccInfo(/*id=*/0);
-  const EsimInfo esim_info0_ = EsimInfo(/*id=*/0);
-  const EsimInfo esim_info1_ = EsimInfo(/*id=*/1);
+  const SimInfo esim_info0_ = SimInfo(/*id=*/0);
+  const SimInfo esim_info1_ = SimInfo(/*id=*/1);
   std::string activation_code0_;
   std::string activation_code1_;
 };

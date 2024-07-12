@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/base/ash/interactive/cellular/esim_util.h"
+#include "chrome/test/base/ash/interactive/cellular/cellular_util.h"
 
 #include "base/strings/stringprintf.h"
 
@@ -14,8 +14,9 @@ EuiccInfo::EuiccInfo(unsigned int id)
 
 EuiccInfo::~EuiccInfo() = default;
 
-EsimInfo::EsimInfo(unsigned int id)
-    : profile_path_(base::StringPrintf("/hermes/profile%u", id)),
+SimInfo::SimInfo(unsigned int id)
+    : guid_(base::StringPrintf("guid_%u", id)),
+      profile_path_(base::StringPrintf("/profile/path%u", id)),
       iccid_(base::StringPrintf("%018u", id)),
       name_(base::StringPrintf("Profile Name %u", id)),
       nickname_(base::StringPrintf("Profile Nickname %u", id)),
@@ -25,6 +26,6 @@ EsimInfo::EsimInfo(unsigned int id)
       service_path_(base::StringPrintf("service_path_for_%s", iccid_.c_str())) {
 }
 
-EsimInfo::~EsimInfo() = default;
+SimInfo::~SimInfo() = default;
 
 }  // namespace ash

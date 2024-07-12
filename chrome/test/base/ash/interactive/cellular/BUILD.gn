@@ -16,6 +16,7 @@ source_set("interactive_ui_tests") {
     "esim_interactive_uitest_base.cc",
     "esim_interactive_uitest_base.h",
     "esim_ui_elements_interactive_uitest.cc",
+    "psim_ui_elements_interactive_uitest.cc",
     "rename_esim_profile_interactive_uitest.cc",
     "toggle_cellular_interactive_uitest.cc",
   ]
@@ -32,6 +33,7 @@ source_set("interactive_ui_tests") {
     "//chromeos/ash/components/dbus/hermes:test_support",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:test_support",
     "//chromeos/strings:strings_grit",
     "//content/test:test_support",
     "//dbus",
@@ -45,8 +47,8 @@ source_set("test_support") {
   testonly = true
 
   sources = [
-    "esim_util.cc",
-    "esim_util.h",
+    "cellular_util.cc",
+    "cellular_util.h",
     "wait_for_service_connected_observer.cc",
     "wait_for_service_connected_observer.h",
   ]

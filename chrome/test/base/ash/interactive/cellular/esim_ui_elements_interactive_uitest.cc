@@ -4,7 +4,7 @@
 
 #include <string>
 
-#include "chrome/test/base/ash/interactive/cellular/esim_util.h"
+#include "chrome/test/base/ash/interactive/cellular/cellular_util.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/base/ash/interactive/settings/interactive_uitest_elements.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
@@ -59,11 +59,11 @@ class EsimUiElementsUiTest : public InteractiveAshTest {
         base::DoNothing());
   }
 
-  const EsimInfo& esim_info() { return esim_info_; }
+  const SimInfo& esim_info() { return esim_info_; }
 
  private:
   const EuiccInfo euicc_info_{/*id=*/0};
-  const EsimInfo esim_info_{/*id=*/0};
+  const SimInfo esim_info_{/*id=*/0};
 };
 
 IN_PROC_BROWSER_TEST_F(EsimUiElementsUiTest, OsSettingsDetailsPage) {

@@ -107,6 +107,9 @@ WebContentsInteractionTestUtil::DeepQuery MobileDataToggle();
 // The cellular networks list page.
 WebContentsInteractionTestUtil::DeepQuery CellularNetworksList();
 
+// The cellular networks subpage pSIM networks list title.
+WebContentsInteractionTestUtil::DeepQuery CellularSubpagePsimListTitle();
+
 // The cellular network details subpage title.
 WebContentsInteractionTestUtil::DeepQuery CellularDetailsSubpageTitle();
 

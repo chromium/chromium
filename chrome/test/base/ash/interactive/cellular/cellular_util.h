@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_TEST_BASE_ASH_INTERACTIVE_CELLULAR_ESIM_UTIL_H_
-#define CHROME_TEST_BASE_ASH_INTERACTIVE_CELLULAR_ESIM_UTIL_H_
+#ifndef CHROME_TEST_BASE_ASH_INTERACTIVE_CELLULAR_CELLULAR_UTIL_H_
+#define CHROME_TEST_BASE_ASH_INTERACTIVE_CELLULAR_CELLULAR_UTIL_H_
 
 #include <string>
 
@@ -29,14 +29,15 @@ class EuiccInfo {
   const std::string eid_;
 };
 
-// Helper class to simplify the definition of eSIM profile constants.
-class EsimInfo {
+// Helper class to simplify the definition of SIM profile constants.
+class SimInfo {
  public:
   // The `id` parameter is used when generating values for each of the different
-  // eSIM properties below.
-  explicit EsimInfo(unsigned int id);
-  ~EsimInfo();
+  // SIM properties below.
+  explicit SimInfo(unsigned int id);
+  ~SimInfo();
 
+  const std::string& guid() const { return name_; }
   const std::string& profile_path() const { return profile_path_; }
   const std::string& iccid() const { return iccid_; }
   const std::string& name() const { return name_; }
@@ -45,6 +46,7 @@ class EsimInfo {
   const std::string& service_path() const { return service_path_; }
 
  private:
+  const std::string guid_;
   const std::string profile_path_;
   const std::string iccid_;
   const std::string name_;
@@ -55,4 +57,4 @@ class EsimInfo {
 
 }  // namespace ash
 
-#endif  // CHROME_TEST_BASE_ASH_INTERACTIVE_CELLULAR_ESIM_UTIL_H_
+#endif  // CHROME_TEST_BASE_ASH_INTERACTIVE_CELLULAR_CELLULAR_UTIL_H_
