@@ -102,7 +102,7 @@ EmbeddedWorkerTestHelper::EmbeddedWorkerTestHelper(
       next_thread_id_(0),
       mock_render_process_id_(render_process_host_->GetID()),
       new_mock_render_process_id_(new_render_process_host_->GetID()),
-      url_loader_factory_getter_(base::MakeRefCounted<URLLoaderFactoryGetter>(
+      url_loader_factory_(base::MakeRefCounted<ReconnectableURLLoaderFactory>(
           base::BindRepeating(&CreateURLLoaderFactory))) {
   wrapper_->SetStorageControlBinderForTest(base::BindRepeating(
       &EmbeddedWorkerTestHelper::BindStorageControl, base::Unretained(this)));
@@ -237,8 +237,7 @@ EmbeddedWorkerTestHelper::CreateMainScriptResponse() {
 
 scoped_refptr<network::SharedURLLoaderFactory>
 EmbeddedWorkerTestHelper::GetNetworkFactory() {
-  return network::SharedURLLoaderFactory::Create(
-      url_loader_factory_getter_->GetPendingNetworkFactory());
+  return network::SharedURLLoaderFactory::Create(url_loader_factory_->Clone());
 }
 
 void EmbeddedWorkerTestHelper::PopulateScriptCacheMap(

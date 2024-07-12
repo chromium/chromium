@@ -257,7 +257,7 @@ class EmbeddedWorkerTestHelper {
   int mock_render_process_id_;
   int new_mock_render_process_id_;
 
-  scoped_refptr<URLLoaderFactoryGetter> url_loader_factory_getter_;
+  scoped_refptr<ReconnectableURLLoaderFactory> url_loader_factory_;
 
   // Mojo endpoints.
   std::vector<mojo::Remote<blink::mojom::ControllerServiceWorker>> controllers_;
