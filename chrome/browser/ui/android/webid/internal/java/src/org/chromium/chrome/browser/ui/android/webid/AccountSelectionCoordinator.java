@@ -195,8 +195,7 @@ public class AccountSelectionCoordinator
 
     @Override
     public void showAccounts(
-            String topFrameEtldPlusOne,
-            String iframeEtldPlusOne,
+            String rpEtldPlusOne,
             String idpEtldPlusOne,
             List<Account> accounts,
             IdentityProviderMetadata idpMetadata,
@@ -205,8 +204,7 @@ public class AccountSelectionCoordinator
             @RpContext.EnumType int rpContext,
             boolean requestPermission) {
         mMediator.showAccounts(
-                topFrameEtldPlusOne,
-                iframeEtldPlusOne,
+                rpEtldPlusOne,
                 idpEtldPlusOne,
                 accounts,
                 idpMetadata,
@@ -218,25 +216,21 @@ public class AccountSelectionCoordinator
 
     @Override
     public void showFailureDialog(
-            String topFrameForDisplay,
-            String iframeForDisplay,
+            String rpForDisplay,
             String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
             @RpContext.EnumType int rpContext) {
-        mMediator.showFailureDialog(
-                topFrameForDisplay, iframeForDisplay, idpForDisplay, idpMetadata, rpContext);
+        mMediator.showFailureDialog(rpForDisplay, idpForDisplay, idpMetadata, rpContext);
     }
 
     @Override
     public void showErrorDialog(
-            String topFrameForDisplay,
-            String iframeForDisplay,
+            String rpForDisplay,
             String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
             @RpContext.EnumType int rpContext,
             IdentityCredentialTokenError error) {
-        mMediator.showErrorDialog(
-                topFrameForDisplay, iframeForDisplay, idpForDisplay, idpMetadata, rpContext, error);
+        mMediator.showErrorDialog(rpForDisplay, idpForDisplay, idpMetadata, rpContext, error);
     }
 
     @Override

@@ -106,7 +106,7 @@ BEGIN_METADATA(BackgroundImageView)
 END_METADATA
 
 AccountSelectionModalView::AccountSelectionModalView(
-    const std::u16string& top_frame_for_display,
+    const std::u16string& rp_for_display,
     const std::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context,
     content::WebContents* web_contents,
@@ -116,7 +116,8 @@ AccountSelectionModalView::AccountSelectionModalView(
     : AccountSelectionViewBase(web_contents,
                                observer,
                                widget_observer,
-                               std::move(url_loader_factory)) {
+                               std::move(url_loader_factory),
+                               rp_for_display) {
   SetModalType(ui::MODAL_TYPE_CHILD);
   SetOwnedByWidget(true);
   set_fixed_width(kDialogWidth);
@@ -127,9 +128,7 @@ AccountSelectionModalView::AccountSelectionModalView(
       kBetweenChildSpacing));
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
-  title_ = webid::GetTitle(top_frame_for_display,
-                           /*iframe_for_display=*/std::nullopt, idp_title,
-                           rp_context);
+  title_ = webid::GetTitle(rp_for_display_, idp_title, rp_context);
 }
 
 AccountSelectionModalView::~AccountSelectionModalView() = default;
@@ -533,8 +532,6 @@ AccountSelectionModalView::CreateSingleAccountChooser(
 }
 
 void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
-    const std::u16string& top_frame_for_display,
-    const std::optional<std::u16string>& iframe_for_display,
     const content::IdentityRequestAccount& account,
     const IdentityProviderDisplayData& idp_display_data,
     bool show_back_button) {
@@ -571,8 +568,6 @@ void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
 }
 
 void AccountSelectionModalView::ShowFailureDialog(
-    const std::u16string& top_frame_for_display,
-    const std::optional<std::u16string>& iframe_for_display,
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata) {
   NOTREACHED_IN_MIGRATION()
@@ -580,8 +575,6 @@ void AccountSelectionModalView::ShowFailureDialog(
 }
 
 void AccountSelectionModalView::ShowErrorDialog(
-    const std::u16string& top_frame_for_display,
-    const std::optional<std::u16string>& iframe_for_display,
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata,
     const std::optional<TokenError>& error) {
@@ -599,7 +592,6 @@ void AccountSelectionModalView::ShowLoadingDialog() {
 }
 
 void AccountSelectionModalView::ShowRequestPermissionDialog(
-    const std::u16string& top_frame_for_display,
     const content::IdentityRequestAccount& account,
     const IdentityProviderDisplayData& idp_display_data) {
   RemoveNonHeaderChildViews();
@@ -697,12 +689,6 @@ void AccountSelectionModalView::CloseDialog() {
 
 std::string AccountSelectionModalView::GetDialogTitle() const {
   return base::UTF16ToUTF8(title_label_->GetText());
-}
-
-std::optional<std::string> AccountSelectionModalView::GetDialogSubtitle()
-    const {
-  // We do not support showing iframe domain at this point in time.
-  return std::nullopt;
 }
 
 std::u16string AccountSelectionModalView::GetQueuedAnnouncementForTesting() {

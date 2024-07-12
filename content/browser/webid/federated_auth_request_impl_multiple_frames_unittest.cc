@@ -144,8 +144,7 @@ class TestDialogController
  public:
   struct State {
     bool did_show_accounts_dialog{false};
-    std::string top_frame_for_display;
-    std::optional<std::string> iframe_for_display;
+    std::string rp_for_display;
   };
 
   enum class AccountsDialogAction {
@@ -163,8 +162,7 @@ class TestDialogController
   TestDialogController& operator=(TestDialogController&) = delete;
 
   bool ShowAccountsDialog(
-      const std::string& top_frame_for_display,
-      const std::optional<std::string>& iframe_for_display,
+      const std::string& rp_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode,
@@ -175,8 +173,7 @@ class TestDialogController
       IdentityRequestDialogController::AccountsDisplayedCallback
           accounts_displayed_callback) override {
     state_->did_show_accounts_dialog = true;
-    state_->top_frame_for_display = top_frame_for_display;
-    state_->iframe_for_display = iframe_for_display;
+    state_->rp_for_display = rp_for_display;
     if (accounts_dialog_action_ == AccountsDialogAction::kSelectAccount) {
       std::move(on_selected)
           .Run(GURL(kProviderUrlFull), kAccountId, /*is_sign_in=*/true);
@@ -375,8 +372,7 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest, SameOriginIframe) {
   DoRequestTokenAndWait(iframe_request_remote, iframe_callback_helper);
   EXPECT_EQ(RequestTokenStatus::kSuccess, iframe_callback_helper.status());
   EXPECT_TRUE(iframe_dialog_state.did_show_accounts_dialog);
-  EXPECT_EQ("top-frame.example", iframe_dialog_state.top_frame_for_display);
-  EXPECT_EQ(std::nullopt, iframe_dialog_state.iframe_for_display);
+  EXPECT_EQ("top-frame.example", iframe_dialog_state.rp_for_display);
 }
 
 // Test that only top frame URL is available for display when FedCM is called
@@ -401,8 +397,7 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest, SameSiteIframe) {
   DoRequestTokenAndWait(iframe_request_remote, iframe_callback_helper);
   EXPECT_EQ(RequestTokenStatus::kSuccess, iframe_callback_helper.status());
   EXPECT_TRUE(iframe_dialog_state.did_show_accounts_dialog);
-  EXPECT_EQ("top-frame.example", iframe_dialog_state.top_frame_for_display);
-  EXPECT_EQ(std::nullopt, iframe_dialog_state.iframe_for_display);
+  EXPECT_EQ("top-frame.example", iframe_dialog_state.rp_for_display);
 }
 
 // Test that both top frame and iframe URLs are available for display when FedCM
@@ -426,7 +421,7 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest, CrossSiteIframe) {
   DoRequestTokenAndWait(iframe_request_remote, iframe_callback_helper);
   EXPECT_EQ(RequestTokenStatus::kSuccess, iframe_callback_helper.status());
   EXPECT_TRUE(iframe_dialog_state.did_show_accounts_dialog);
-  EXPECT_EQ("top-frame.example", iframe_dialog_state.top_frame_for_display);
+  EXPECT_EQ("top-frame.example", iframe_dialog_state.rp_for_display);
 }
 
 // Tests that preventSilentAccess UKM is not recorded if the embedder does not

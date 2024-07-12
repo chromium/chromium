@@ -179,7 +179,8 @@ class AccountSelectionViewBase {
       content::WebContents* web_contents,
       AccountSelectionViewBase::Observer* observer,
       views::WidgetObserver* widget_observer,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::u16string rp_for_display);
   AccountSelectionViewBase();
   virtual ~AccountSelectionViewBase();
 
@@ -202,30 +203,23 @@ class AccountSelectionViewBase {
   // account confirmation dialog after the user picks one of multiple accounts.
   // On button mode, used for the user to pick the single account.
   virtual void ShowSingleAccountConfirmDialog(
-      const std::u16string& top_frame_for_display,
-      const std::optional<std::u16string>& iframe_for_display,
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_data,
       bool show_back_button) = 0;
 
   // Updates the FedCM dialog to show the "failure" sheet.
   virtual void ShowFailureDialog(
-      const std::u16string& top_frame_for_display,
-      const std::optional<std::u16string>& iframe_for_display,
       const std::u16string& idp_for_display,
       const content::IdentityProviderMetadata& idp_metadata) = 0;
 
   // Updates the FedCM dialog to show the "error" sheet.
   virtual void ShowErrorDialog(
-      const std::u16string& top_frame_for_display,
-      const std::optional<std::u16string>& iframe_for_display,
       const std::u16string& idp_for_display,
       const content::IdentityProviderMetadata& idp_metadata,
       const std::optional<TokenError>& error) = 0;
 
   // Updates the FedCM dialog to show the "request permission" sheet.
   virtual void ShowRequestPermissionDialog(
-      const std::u16string& top_frame_for_display,
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_display_data) = 0;
 
@@ -243,9 +237,6 @@ class AccountSelectionViewBase {
 
   // Gets the title of the dialog.
   virtual std::string GetDialogTitle() const = 0;
-
-  // Gets the subtitle of the dialog, if available.
-  virtual std::optional<std::string> GetDialogSubtitle() const = 0;
 
   // Retrieves the dialog widget used to control the dialog, if available. This
   // method is virtual for testing purposes.
@@ -313,6 +304,9 @@ class AccountSelectionViewBase {
   // Observes events on AccountSelectionBubbleView.
   // Dangling when running Chromedriver's run_py_tests.py test suite.
   raw_ptr<Observer, DanglingUntriaged> observer_{nullptr};
+
+  // The description of the RP to be used in the dialog.
+  std::u16string rp_for_display_;
 
   // Used to ensure that callbacks are not run if the AccountSelectionViewBase
   // is destroyed.

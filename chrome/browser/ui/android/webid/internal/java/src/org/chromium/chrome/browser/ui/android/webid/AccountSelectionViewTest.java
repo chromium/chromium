@@ -429,10 +429,10 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
     }
 
     private PropertyModel buildErrorItem(
-            String idpEtldPlusOne, String topFrameEtldPlusOne, IdentityCredentialTokenError error) {
+            String idpEtldPlusOne, String rpEtldPlusOne, IdentityCredentialTokenError error) {
         ErrorProperties.Properties properties = new ErrorProperties.Properties();
         properties.mIdpForDisplay = idpEtldPlusOne;
-        properties.mTopFrameForDisplay = topFrameEtldPlusOne;
+        properties.mRpForDisplay = rpEtldPlusOne;
         properties.mError = error;
 
         return new PropertyModel.Builder(ErrorProperties.ALL_KEYS)

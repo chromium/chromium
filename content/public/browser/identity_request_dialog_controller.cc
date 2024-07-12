@@ -60,8 +60,7 @@ void IdentityRequestDialogController::SetIsInterceptionEnabled(bool enabled) {
 }
 
 bool IdentityRequestDialogController::ShowAccountsDialog(
-    const std::string& top_frame_for_display,
-    const std::optional<std::string>& iframe_for_display,
+    const std::string& rp_for_display,
     const std::vector<IdentityProviderData>& identity_provider_data,
     IdentityRequestAccount::SignInMode sign_in_mode,
     blink::mojom::RpMode rp_mode,
@@ -78,8 +77,7 @@ bool IdentityRequestDialogController::ShowAccountsDialog(
 }
 
 bool IdentityRequestDialogController::ShowFailureDialog(
-    const std::string& top_frame_for_display,
-    const std::optional<std::string>& iframe_for_display,
+    const std::string& rp_for_display,
     const std::string& idp_for_display,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
@@ -94,8 +92,7 @@ bool IdentityRequestDialogController::ShowFailureDialog(
 }
 
 bool IdentityRequestDialogController::ShowErrorDialog(
-    const std::string& top_frame_for_display,
-    const std::optional<std::string>& iframe_for_display,
+    const std::string& rp_for_display,
     const std::string& idp_for_display,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
@@ -111,7 +108,7 @@ bool IdentityRequestDialogController::ShowErrorDialog(
 }
 
 bool IdentityRequestDialogController::ShowLoadingDialog(
-    const std::string& top_frame_for_display,
+    const std::string& rp_for_display,
     const std::string& idp_for_display,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,

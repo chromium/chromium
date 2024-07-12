@@ -70,7 +70,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                 () -> {
                     mAccountSelection.showAccounts(
                             EXAMPLE_ETLD_PLUS_ONE,
-                            TEST_ETLD_PLUS_ONE_1,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(BOB),
                             IDP_METADATA_WITH_ADD_ACCOUNT,
@@ -94,7 +93,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                             public Void answer(InvocationOnMock invocation) {
                                 mAccountSelection.showAccounts(
                                         EXAMPLE_ETLD_PLUS_ONE,
-                                        TEST_ETLD_PLUS_ONE_1,
                                         TEST_ETLD_PLUS_ONE_2,
                                         Arrays.asList(ANA),
                                         IDP_METADATA_WITH_ADD_ACCOUNT,
@@ -139,7 +137,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                 () -> {
                     mAccountSelection.showAccounts(
                             EXAMPLE_ETLD_PLUS_ONE,
-                            TEST_ETLD_PLUS_ONE_1,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(BOB),
                             IDP_METADATA_WITH_ADD_ACCOUNT,
@@ -199,7 +196,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                 () -> {
                     mAccountSelection.showAccounts(
                             EXAMPLE_ETLD_PLUS_ONE,
-                            TEST_ETLD_PLUS_ONE_1,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(ANA),
                             IDP_METADATA_WITH_ADD_ACCOUNT,
@@ -237,7 +233,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                 () -> {
                     mAccountSelection.showAccounts(
                             EXAMPLE_ETLD_PLUS_ONE,
-                            TEST_ETLD_PLUS_ONE_1,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(BOB),
                             IDP_METADATA_WITH_ADD_ACCOUNT,
@@ -271,7 +266,6 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                 () -> {
                     mAccountSelection.showAccounts(
                             EXAMPLE_ETLD_PLUS_ONE,
-                            TEST_ETLD_PLUS_ONE_1,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(BOB, ANA),
                             IDP_METADATA_WITH_ADD_ACCOUNT,

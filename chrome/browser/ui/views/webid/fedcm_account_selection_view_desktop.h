@@ -68,28 +68,25 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // AccountSelectionView:
   bool Show(
-      const std::string& top_frame_etld_plus_one,
-      const std::optional<std::string>& iframe_etld_plus_one,
+      const std::string& rp_for_display,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
       Account::SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode,
-      const std::optional<content::IdentityProviderData>& new_account_idp)
+      const std::optional<content::IdentityProviderData>& new_accounts_idp)
       override;
   bool ShowFailureDialog(
-      const std::string& top_frame_etld_plus_one,
-      const std::optional<std::string>& iframe_etld_plus_one,
+      const std::string& rp_for_display,
       const std::string& idp_etld_plus_one,
       blink::mojom::RpContext rp_context,
       blink::mojom::RpMode rp_mode,
       const content::IdentityProviderMetadata& idp_metadata) override;
-  bool ShowErrorDialog(const std::string& top_frame_etld_plus_one,
-                       const std::optional<std::string>& iframe_etld_plus_one,
+  bool ShowErrorDialog(const std::string& rp_for_display,
                        const std::string& idp_etld_plus_one,
                        blink::mojom::RpContext rp_context,
                        blink::mojom::RpMode rp_mode,
                        const content::IdentityProviderMetadata& idp_metadata,
                        const std::optional<TokenError>& error) override;
-  bool ShowLoadingDialog(const std::string& top_frame_etld_plus_one,
+  bool ShowLoadingDialog(const std::string& rp_for_display,
                          const std::string& idp_etld_plus_one,
                          blink::mojom::RpContext rp_context,
                          blink::mojom::RpMode rp_mode) override;
@@ -139,8 +136,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // return nullptr if there is no browser or tab strip model. Virtual for
   // testing purposes.
   virtual AccountSelectionViewBase* CreateAccountSelectionView(
-      const std::u16string& top_frame_etld_plus_one,
-      const std::optional<std::u16string>& iframe_etld_plus_one,
+      const std::u16string& rp_for_display,
       const std::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
       blink::mojom::RpMode rp_mode,
@@ -329,11 +325,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // vector so it is easy to pass to CreateMultipleAccountChooser in case there
   // are multiple accounts, but it is size 0 when there are no new accounts and
   // size 1 when there are new accounts.
-  std::vector<IdentityProviderDisplayData> new_account_idp_display_data_;
+  std::vector<IdentityProviderDisplayData> new_accounts_idp_display_data_;
 
-  std::u16string top_frame_for_display_;
-
-  std::optional<std::u16string> iframe_for_display_;
+  std::u16string rp_for_display_;
 
   State state_{State::MULTI_ACCOUNT_PICKER};
 

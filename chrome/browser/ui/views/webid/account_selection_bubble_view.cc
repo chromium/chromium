@@ -129,7 +129,7 @@ END_METADATA
 
 std::pair<std::u16string, std::u16string> GetErrorDialogText(
     const std::optional<TokenError>& error,
-    const std::u16string& top_frame_for_display,
+    const std::u16string& rp_for_display,
     const std::u16string& idp_for_display) {
   std::string code = error ? error->code : "";
   GURL url = error ? error->url : GURL();
@@ -139,14 +139,14 @@ std::pair<std::u16string, std::u16string> GetErrorDialogText(
 
   if (code == kInvalidRequest) {
     summary = l10n_util::GetStringFUTF16(
-        IDS_SIGNIN_INVALID_REQUEST_ERROR_DIALOG_SUMMARY, top_frame_for_display,
+        IDS_SIGNIN_INVALID_REQUEST_ERROR_DIALOG_SUMMARY, rp_for_display,
         idp_for_display);
     description = l10n_util::GetStringUTF16(
         IDS_SIGNIN_INVALID_REQUEST_ERROR_DIALOG_DESCRIPTION);
   } else if (code == kUnauthorizedClient) {
     summary = l10n_util::GetStringFUTF16(
-        IDS_SIGNIN_UNAUTHORIZED_CLIENT_ERROR_DIALOG_SUMMARY,
-        top_frame_for_display, idp_for_display);
+        IDS_SIGNIN_UNAUTHORIZED_CLIENT_ERROR_DIALOG_SUMMARY, rp_for_display,
+        idp_for_display);
     description = l10n_util::GetStringUTF16(
         IDS_SIGNIN_UNAUTHORIZED_CLIENT_ERROR_DIALOG_DESCRIPTION);
   } else if (code == kAccessDenied) {
@@ -163,7 +163,7 @@ std::pair<std::u16string, std::u16string> GetErrorDialogText(
   } else if (code == kServerError) {
     summary = l10n_util::GetStringUTF16(IDS_SIGNIN_SERVER_ERROR_DIALOG_SUMMARY);
     description = l10n_util::GetStringFUTF16(
-        IDS_SIGNIN_SERVER_ERROR_DIALOG_DESCRIPTION, top_frame_for_display);
+        IDS_SIGNIN_SERVER_ERROR_DIALOG_DESCRIPTION, rp_for_display);
     // Extra description is not needed for kServerError.
     return {summary, description};
   } else {
@@ -181,7 +181,7 @@ std::pair<std::u16string, std::u16string> GetErrorDialogText(
                    code == kTemporarilyUnavailable
                        ? IDS_SIGNIN_ERROR_DIALOG_TRY_OTHER_WAYS_RETRY_PROMPT
                        : IDS_SIGNIN_ERROR_DIALOG_TRY_OTHER_WAYS_PROMPT,
-                   top_frame_for_display);
+                   rp_for_display);
     return {summary, description};
   }
 
@@ -222,8 +222,7 @@ std::u16string BuildStringFromIDPs(
 }  // namespace
 
 AccountSelectionBubbleView::AccountSelectionBubbleView(
-    const std::u16string& top_frame_for_display,
-    const std::optional<std::u16string>& iframe_for_display,
+    const std::u16string& rp_for_display,
     const std::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context,
     content::WebContents* web_contents,
@@ -242,9 +241,8 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
       AccountSelectionViewBase(web_contents,
                                observer,
                                widget_observer,
-                               std::move(url_loader_factory)),
-      top_frame_for_display_(top_frame_for_display),
-      iframe_for_display_(iframe_for_display),
+                               std::move(url_loader_factory),
+                               rp_for_display),
       rp_context_(rp_context) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_fixed_width(kBubbleWidth);
@@ -267,15 +265,8 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
       idp_title.has_value() ||
       base::FeatureList::IsEnabled(features::kFedCmMultipleIdentityProviders));
 
-  title_ = webid::GetTitle(top_frame_for_display_, iframe_for_display_,
-                           idp_title, rp_context);
-  accessible_title_ = webid::GetAccessibleTitle(
-      top_frame_for_display_, iframe_for_display_, idp_title, rp_context_);
-  SetAccessibleTitle(accessible_title_);
-
-  if (iframe_for_display.has_value()) {
-    subtitle_ = webid::GetSubtitle(top_frame_for_display_);
-  }
+  title_ = webid::GetTitle(rp_for_display_, idp_title, rp_context);
+  SetAccessibleTitle(title_);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
@@ -313,14 +304,13 @@ void AccountSelectionBubbleView::ShowMultiAccountPicker(
   // Therefore, it is fine to pass the first one into UpdateHeader().
   DCHECK(idp_display_data_list.size() == 1u || !header_icon_view_);
   std::u16string title =
-      webid::GetTitle(top_frame_for_display_, iframe_for_display_,
+      webid::GetTitle(rp_for_display_,
                       idp_display_data_list.size() > 1u
                           ? std::nullopt
                           : std::make_optional<std::u16string>(
                                 idp_display_data_list[0].idp_etld_plus_one),
                       rp_context_);
-  UpdateHeader(idp_display_data_list[0].idp_metadata, title, subtitle_,
-               show_back_button);
+  UpdateHeader(idp_display_data_list[0].idp_metadata, title, show_back_button);
 
   RemoveNonHeaderChildViews();
   AddChildView(std::make_unique<views::Separator>());
@@ -340,7 +330,7 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
     const IdentityProviderDisplayData& idp_display_data,
     const std::u16string& title) {
   UpdateHeader(idp_display_data.idp_metadata, title,
-               /*subpage_subtitle=*/u"", /*show_back_button=*/false);
+               /*show_back_button=*/false);
 
   RemoveNonHeaderChildViews();
   views::ProgressBar* const progress_bar =
@@ -371,16 +361,12 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
 }
 
 void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
-    const std::u16string& top_frame_for_display,
-    const std::optional<std::u16string>& iframe_for_display,
     const content::IdentityRequestAccount& account,
     const IdentityProviderDisplayData& idp_display_data,
     bool show_back_button) {
-  std::u16string title =
-      webid::GetTitle(top_frame_for_display, iframe_for_display,
-                      idp_display_data.idp_etld_plus_one, rp_context_);
-  UpdateHeader(idp_display_data.idp_metadata, title, subtitle_,
-               show_back_button);
+  std::u16string title = webid::GetTitle(
+      rp_for_display_, idp_display_data.idp_etld_plus_one, rp_context_);
+  UpdateHeader(idp_display_data.idp_metadata, title, show_back_button);
 
   RemoveNonHeaderChildViews();
   AddChildView(std::make_unique<views::Separator>());
@@ -396,13 +382,11 @@ void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
 }
 
 void AccountSelectionBubbleView::ShowFailureDialog(
-    const std::u16string& top_frame_for_display,
-    const std::optional<std::u16string>& iframe_for_display,
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata) {
-  std::u16string title = webid::GetTitle(
-      top_frame_for_display, iframe_for_display, idp_for_display, rp_context_);
-  UpdateHeader(idp_metadata, title, subtitle_,
+  std::u16string title =
+      webid::GetTitle(rp_for_display_, idp_for_display, rp_context_);
+  UpdateHeader(idp_metadata, title,
                /*show_back_button=*/false);
 
   RemoveNonHeaderChildViews();
@@ -447,14 +431,12 @@ void AccountSelectionBubbleView::ShowFailureDialog(
 }
 
 void AccountSelectionBubbleView::ShowErrorDialog(
-    const std::u16string& top_frame_for_display,
-    const std::optional<std::u16string>& iframe_for_display,
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata,
     const std::optional<TokenError>& error) {
-  std::u16string title = webid::GetTitle(
-      top_frame_for_display, iframe_for_display, idp_for_display, rp_context_);
-  UpdateHeader(idp_metadata, title, subtitle_,
+  std::u16string title =
+      webid::GetTitle(rp_for_display_, idp_for_display, rp_context_);
+  UpdateHeader(idp_metadata, title,
                /*show_back_button=*/false);
 
   RemoveNonHeaderChildViews();
@@ -467,7 +449,7 @@ void AccountSelectionBubbleView::ShowErrorDialog(
   std::u16string summary_text;
   std::u16string description_text;
   std::tie(summary_text, description_text) =
-      GetErrorDialogText(error, top_frame_for_display, idp_for_display);
+      GetErrorDialogText(error, rp_for_display_, idp_for_display);
 
   // Add error summary.
   views::Label* const summary =
@@ -533,7 +515,6 @@ void AccountSelectionBubbleView::ShowLoadingDialog() {
 }
 
 void AccountSelectionBubbleView::ShowRequestPermissionDialog(
-    const std::u16string& top_frame_for_display,
     const content::IdentityRequestAccount& account,
     const IdentityProviderDisplayData& idp_display_data) {
   NOTREACHED_IN_MIGRATION()
@@ -547,7 +528,7 @@ void AccountSelectionBubbleView::ShowSingleReturningAccountDialog(
   DCHECK(idp_data_list.size() > 1u);
   // Since there are multiple IDPs, then the content::IdentityProviderMetadata
   // passed will be unused since there will be no `header_icon_view_`.
-  UpdateHeader(content::IdentityProviderMetadata(), title_, subtitle_,
+  UpdateHeader(content::IdentityProviderMetadata(), title_,
                /*show_back_button=*/false);
 
   RemoveNonHeaderChildViews();
@@ -580,15 +561,6 @@ std::string AccountSelectionBubbleView::GetDialogTitle() const {
   // We cannot just return title_ because it is not always set
   // (e.g. by ShowFailureDialog).
   return base::UTF16ToUTF8(title_label_->GetText());
-}
-
-std::optional<std::string> AccountSelectionBubbleView::GetDialogSubtitle()
-    const {
-  if (!subtitle_label_) {
-    return std::nullopt;
-  }
-
-  return base::UTF16ToUTF8(subtitle_label_->GetText());
 }
 
 void AccountSelectionBubbleView::UpdateDialogPosition() {
@@ -716,29 +688,7 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
           base::Unretained(observer_)));
   close_button->SetVisible(true);
   header->AddChildView(std::move(close_button));
-
-  if (subtitle_.empty()) {
-    return header;
-  }
-
-  // Add the subtitle.
-  auto header_with_subtitle = std::make_unique<views::View>();
-  header_with_subtitle->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
-  header_with_subtitle->AddChildView(std::move(header));
-  subtitle_label_ =
-      header_with_subtitle->AddChildView(std::make_unique<views::Label>(
-          subtitle_, views::style::CONTEXT_DIALOG_BODY_TEXT,
-          views::style::STYLE_SECONDARY));
-  SetLabelProperties(subtitle_label_);
-  int leftPadding = 2 * kLeftRightPadding;
-  if (has_idp_icon) {
-    leftPadding += kBubbleIdpIconSize;
-  }
-  subtitle_label_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-      -kTopBottomPadding, leftPadding, kTopBottomPadding, kLeftRightPadding)));
-
-  return header_with_subtitle;
+  return header;
 }
 
 std::unique_ptr<views::View>
@@ -1052,8 +1002,7 @@ AccountSelectionBubbleView::CreateUseOtherAccountButton(
 
 void AccountSelectionBubbleView::UpdateHeader(
     const content::IdentityProviderMetadata& idp_metadata,
-    const std::u16string subpage_title,
-    const std::u16string subpage_subtitle,
+    const std::u16string title,
     bool show_back_button) {
   back_button_->SetVisible(show_back_button);
   if (header_icon_view_) {
@@ -1067,16 +1016,7 @@ void AccountSelectionBubbleView::UpdateHeader(
       ConfigureBrandImageView(header_icon_view_, idp_metadata.brand_icon_url);
     }
   }
-  title_label_->SetText(subpage_title);
-
-  if (subtitle_label_) {
-    if (subpage_subtitle.empty()) {
-      delete subtitle_label_;
-      subtitle_label_ = nullptr;
-      return;
-    }
-    subtitle_label_->SetText(subpage_subtitle);
-  }
+  title_label_->SetText(title);
 }
 
 void AccountSelectionBubbleView::RemoveNonHeaderChildViews() {

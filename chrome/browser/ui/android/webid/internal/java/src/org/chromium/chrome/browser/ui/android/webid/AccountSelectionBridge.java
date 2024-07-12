@@ -98,8 +98,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     /**
      * Shows the accounts in a bottom sheet UI allowing user to select one.
      *
-     * @param topFrameForDisplay is the formatted RP top frame URL to display in the FedCM prompt.
-     * @param iframeForDisplay is the formatted RP iframe URL to display in the FedCM prompt.
+     * @param rpForDisplay is the formatted RP URL to display in the FedCM prompt.
      * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
      * @param accounts is the list of accounts to be shown.
      * @param idpMetadata is the metadata of the IDP.
@@ -112,8 +111,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      */
     @CalledByNative
     private void showAccounts(
-            @JniType("std::string") String topFrameForDisplay,
-            @JniType("std::string") String iframeForDisplay,
+            @JniType("std::string") String rpForDisplay,
             @JniType("std::string") String idpForDisplay,
             Account[] accounts,
             IdentityProviderMetadata idpMetadata,
@@ -123,8 +121,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
             boolean requestPermission) {
         assert accounts != null && accounts.length > 0;
         mAccountSelectionComponent.showAccounts(
-                topFrameForDisplay,
-                iframeForDisplay,
+                rpForDisplay,
                 idpForDisplay,
                 Arrays.asList(accounts),
                 idpMetadata,
@@ -138,8 +135,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      * Shows a bottomsheet prompting the user to sign in to an IDP for the purpose of federated
      * login when the IDP sign-in status is signin but no accounts are received from the fetch.
      *
-     * @param topFrameForDisplay is the formatted RP top frame URL to display in the FedCM prompt.
-     * @param iframeForDisplay is the formatted RP iframe URL to display in the FedCM prompt.
+     * @param rpForDisplay is the formatted RP URL to display in the FedCM prompt.
      * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
      * @param idpMetadata is the metadata of the IDP.
      * @param rpContext is an enum representing the desired text to be used in the title of the
@@ -147,21 +143,19 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      */
     @CalledByNative
     private void showFailureDialog(
-            @JniType("std::string") String topFrameForDisplay,
-            @JniType("std::string") String iframeForDisplay,
+            @JniType("std::string") String rpForDisplay,
             @JniType("std::string") String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
             @RpContext.EnumType int rpContext) {
         mAccountSelectionComponent.showFailureDialog(
-                topFrameForDisplay, iframeForDisplay, idpForDisplay, idpMetadata, rpContext);
+                rpForDisplay, idpForDisplay, idpMetadata, rpContext);
     }
 
     /**
      * Shows a bottomsheet detailing the error that has occurred in the user's attempt to sign-in
      * through federated login.
      *
-     * @param topFrameForDisplay is the formatted RP top frame URL to display in the FedCM prompt.
-     * @param iframeForDisplay is the formatted RP iframe URL to display in the FedCM prompt.
+     * @param rpForDisplay is the formatted RP URL to display in the FedCM prompt.
      * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
      * @param idpMetadata is the metadata of the IDP.
      * @param rpContext is a {@link String} representing the desired text to be used in the title of
@@ -171,14 +165,13 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      */
     @CalledByNative
     private void showErrorDialog(
-            @JniType("std::string") String topFrameForDisplay,
-            @JniType("std::string") String iframeForDisplay,
+            @JniType("std::string") String rpForDisplay,
             @JniType("std::string") String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
             @RpContext.EnumType int rpContext,
             IdentityCredentialTokenError error) {
         mAccountSelectionComponent.showErrorDialog(
-                topFrameForDisplay, iframeForDisplay, idpForDisplay, idpMetadata, rpContext, error);
+                rpForDisplay, idpForDisplay, idpMetadata, rpContext, error);
     }
 
     @CalledByNative

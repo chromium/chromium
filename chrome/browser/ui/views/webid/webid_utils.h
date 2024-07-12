@@ -12,16 +12,9 @@
 
 namespace webid {
 int SelectSingleIdpTitleResourceId(blink::mojom::RpContext rp_context);
-std::u16string GetTitle(const std::u16string& top_frame_for_display,
-                        const std::optional<std::u16string>& iframe_for_display,
+std::u16string GetTitle(const std::u16string& rp_for_display,
                         const std::optional<std::u16string>& idp_title,
                         blink::mojom::RpContext rp_context);
-std::u16string GetSubtitle(const std::u16string& top_frame_for_display);
-std::u16string GetAccessibleTitle(
-    const std::u16string& top_frame_for_display,
-    const std::optional<std::u16string>& iframe_for_display,
-    const std::optional<std::u16string>& idp_title,
-    blink::mojom::RpContext rp_context);
 
 // Sends an accessibility event to make an announcement of the passed in
 // `announcement` if available, otherwise the text in the currently focused

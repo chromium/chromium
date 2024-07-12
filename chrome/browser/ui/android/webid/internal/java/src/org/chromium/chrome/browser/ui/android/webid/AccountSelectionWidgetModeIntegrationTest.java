@@ -53,7 +53,6 @@ public class AccountSelectionWidgetModeIntegrationTest extends AccountSelectionI
                 () -> {
                     mAccountSelection.showAccounts(
                             EXAMPLE_ETLD_PLUS_ONE,
-                            TEST_ETLD_PLUS_ONE_1,
                             TEST_ETLD_PLUS_ONE_2,
                             Arrays.asList(BOB),
                             IDP_METADATA_WITH_ADD_ACCOUNT,

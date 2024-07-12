@@ -417,30 +417,6 @@ std::string GetTopFrameOriginForDisplay(const url::Origin& top_frame_origin) {
   return FormatOriginForDisplay(top_frame_origin);
 }
 
-std::optional<std::string> GetIframeOriginForDisplay(
-    const url::Origin& top_frame_origin,
-    const url::Origin& iframe_origin,
-    CompleteRequestWithErrorCallback callback) {
-  // TOOD(crbug.com/1448566): clean up the logic to allow 3 domains.
-  bool exclude_iframe = true;
-  std::optional<std::string> iframe_for_display = std::nullopt;
-
-  if (!exclude_iframe) {
-    iframe_for_display = FormatOriginForDisplay(iframe_origin);
-
-    // TODO(crbug.com/40259453): Decide what to do if we want to include iframe
-    // domain in the dialog but iframe_for_display is opaque.
-    if (iframe_origin.opaque()) {
-      std::move(callback).Run(FederatedAuthRequestResult::kError,
-                              /*token_status=*/std::nullopt,
-                              /*token_error=*/std::nullopt,
-                              /*should_delay_callback=*/false);
-    }
-  }
-
-  return iframe_for_display;
-}
-
 bool IsFrameActive(RenderFrameHost* frame) {
   return frame && frame->IsActive();
 }
@@ -1767,11 +1743,6 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
     request_dialog_controller_->SetIsInterceptionEnabled(intercept);
   }
 
-  std::optional<std::string> iframe_for_display = GetIframeOriginForDisplay(
-      GetEmbeddingOrigin(), origin(),
-      base::BindOnce(&FederatedAuthRequestImpl::CompleteRequestWithError,
-                     weak_ptr_factory_.GetWeakPtr()));
-
   // TODO(crbug.com/40245853): Handle UI where some IDPs are successful and some
   // IDPs are failing in the multi IDP case.
   // Note that ShowAccountsDialog() may result in the request being completed
@@ -1779,7 +1750,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // so invocations after this method should assume that the members may have
   // been cleaned up.
   if (!request_dialog_controller_->ShowAccountsDialog(
-          GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
+          GetTopFrameOriginForDisplay(GetEmbeddingOrigin()),
           idp_data_for_display_,
           identity_selection_type_ == kExplicit ? SignInMode::kExplicit
                                                 : SignInMode::kAuto,
@@ -1923,11 +1894,6 @@ void FederatedAuthRequestImpl::ShowSingleIdpFailureDialog() {
   CHECK(idp_info->data.has_value());
   idp_data_for_display_ = {*idp_info->data};
 
-  std::optional<std::string> iframe_for_display = GetIframeOriginForDisplay(
-      GetEmbeddingOrigin(), origin(),
-      base::BindOnce(&FederatedAuthRequestImpl::CompleteRequestWithError,
-                     weak_ptr_factory_.GetWeakPtr()));
-
   // If IdP login status mismatch dialog is already visible, calling
   // ShowFailureDialog() a 2nd time should notify the user that login
   // failed.
@@ -1943,7 +1909,7 @@ void FederatedAuthRequestImpl::ShowSingleIdpFailureDialog() {
                    !idp_info->metadata.requested_label.empty();
 
   if (!request_dialog_controller_->ShowFailureDialog(
-          GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
+          GetTopFrameOriginForDisplay(GetEmbeddingOrigin()),
           FormatOriginForDisplay(idp_origin), idp_info->rp_context, rp_mode_,
           idp_info->metadata,
           base::BindOnce(&FederatedAuthRequestImpl::OnDismissFailureDialog,
@@ -2514,11 +2480,6 @@ void FederatedAuthRequestImpl::ShowErrorDialog(
     std::optional<TokenError> token_error) {
   CHECK(idp_infos_.find(idp_config_url) != idp_infos_.end());
 
-  std::optional<std::string> iframe_for_display = GetIframeOriginForDisplay(
-      GetEmbeddingOrigin(), origin(),
-      base::BindOnce(&FederatedAuthRequestImpl::CompleteRequestWithError,
-                     weak_ptr_factory_.GetWeakPtr()));
-
   dialog_type_ = kError;
   config_url_ = idp_config_url;
   token_request_status_ = status;
@@ -2526,7 +2487,7 @@ void FederatedAuthRequestImpl::ShowErrorDialog(
 
   // TODO(crbug.com/40282657): Refactor IdentityCredentialTokenError
   if (!request_dialog_controller_->ShowErrorDialog(
-          GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
+          GetTopFrameOriginForDisplay(GetEmbeddingOrigin()),
           FormatOriginForDisplay(url::Origin::Create(idp_config_url)),
           idp_infos_[idp_config_url]->rp_context, rp_mode_,
           idp_infos_[idp_config_url]->metadata, token_error,

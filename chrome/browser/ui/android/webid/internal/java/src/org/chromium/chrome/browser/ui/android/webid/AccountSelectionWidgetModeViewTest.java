@@ -57,8 +57,7 @@ public class AccountSelectionWidgetModeViewTest extends AccountSelectionJUnitTes
                     ItemProperties.HEADER,
                     new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                             .with(HeaderProperties.TYPE, HeaderType.SIGN_IN)
-                            .with(HeaderProperties.TOP_FRAME_FOR_DISPLAY, "example.org")
-                            .with(HeaderProperties.IFRAME_FOR_DISPLAY, "iframe-example.org")
+                            .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
                             .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                             .with(HeaderProperties.RP_CONTEXT, rpContext.mValue)
                             .with(HeaderProperties.RP_MODE, RpMode.WIDGET)
@@ -68,7 +67,7 @@ public class AccountSelectionWidgetModeViewTest extends AccountSelectionJUnitTes
 
             assertEquals(
                     "Incorrect title",
-                    mResources.getString(rpContext.mTitleId, "iframe-example.org", "idp.org"),
+                    mResources.getString(rpContext.mTitleId, "example.org", "idp.org"),
                     title.getText().toString());
         }
     }
@@ -79,7 +78,7 @@ public class AccountSelectionWidgetModeViewTest extends AccountSelectionJUnitTes
                 ItemProperties.HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                         .with(HeaderProperties.TYPE, HeaderType.VERIFY)
-                        .with(HeaderProperties.TOP_FRAME_FOR_DISPLAY, "example.org")
+                        .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
                         .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                         .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)
                         .with(HeaderProperties.RP_MODE, RpMode.WIDGET)
@@ -101,7 +100,7 @@ public class AccountSelectionWidgetModeViewTest extends AccountSelectionJUnitTes
                 ItemProperties.HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                         .with(HeaderProperties.TYPE, HeaderType.VERIFY_AUTO_REAUTHN)
-                        .with(HeaderProperties.TOP_FRAME_FOR_DISPLAY, "example.org")
+                        .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
                         .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                         .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)
                         .with(HeaderProperties.RP_MODE, RpMode.WIDGET)

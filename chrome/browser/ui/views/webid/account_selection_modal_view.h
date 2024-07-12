@@ -26,7 +26,7 @@ class AccountSelectionModalView : public views::DialogDelegateView,
 
  public:
   AccountSelectionModalView(
-      const std::u16string& top_frame_for_display,
+      const std::u16string& rp_for_display,
       const std::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
       content::WebContents* web_contents,
@@ -50,28 +50,21 @@ class AccountSelectionModalView : public views::DialogDelegateView,
                           const std::u16string& title) override;
 
   void ShowSingleAccountConfirmDialog(
-      const std::u16string& top_frame_for_display,
-      const std::optional<std::u16string>& iframe_for_display,
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_display_data,
       bool show_back_button) override;
 
   void ShowFailureDialog(
-      const std::u16string& top_frame_for_display,
-      const std::optional<std::u16string>& iframe_for_display,
       const std::u16string& idp_for_display,
       const content::IdentityProviderMetadata& idp_metadata) override;
 
   void ShowErrorDialog(
-      const std::u16string& top_frame_for_display,
-      const std::optional<std::u16string>& iframe_for_display,
       const std::u16string& idp_for_display,
       const content::IdentityProviderMetadata& idp_metadata,
       const std::optional<content::IdentityCredentialTokenError>& error)
       override;
 
   void ShowRequestPermissionDialog(
-      const std::u16string& top_frame_for_display,
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_display_data) override;
 
@@ -85,7 +78,6 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   void UpdateDialogPosition() override;
 
   std::string GetDialogTitle() const override;
-  std::optional<std::string> GetDialogSubtitle() const override;
 
   // views::DialogDelegateView:
   views::View* GetInitiallyFocusedView() override;

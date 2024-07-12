@@ -22,8 +22,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.ACCOUNT;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IDP_BRAND_ICON;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IDP_FOR_DISPLAY;
-import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IFRAME_FOR_DISPLAY;
-import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.TOP_FRAME_FOR_DISPLAY;
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.RP_FOR_DISPLAY;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.TYPE;
 
 import android.graphics.Bitmap;
@@ -108,7 +107,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
 
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne1,
                 mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount),
                 mIdpMetadata,
@@ -119,8 +117,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
 
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
         assertEquals(HeaderType.SIGN_IN, headerModel.get(TYPE));
-        assertEquals(mTestEtldPlusOne, headerModel.get(TOP_FRAME_FOR_DISPLAY));
-        assertEquals(mTestEtldPlusOne1, headerModel.get(IFRAME_FOR_DISPLAY));
+        assertEquals(mTestEtldPlusOne, headerModel.get(RP_FOR_DISPLAY));
         assertEquals(mTestEtldPlusOne2, headerModel.get(IDP_FOR_DISPLAY));
         assertNotNull(headerModel.get(IDP_BRAND_ICON));
     }
@@ -142,7 +139,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
 
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne1,
                 mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount),
                 mIdpMetadata,
@@ -173,7 +169,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                         /* supportsAddAccount= */ false);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne1,
                 mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount),
                 idpMetadataNoBrandIconUrl,
@@ -193,7 +188,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
     public void testShowAccountSignUpHeader() {
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne1,
                 mTestEtldPlusOne2,
                 Arrays.asList(mNewUserAccount),
                 mIdpMetadata,
@@ -210,7 +204,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
     public void testShowAccountsFormatPslOrigins() {
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne1,
                 mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount, mBobAccount),
                 mIdpMetadata,
@@ -226,7 +219,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
     public void testClearsAccountListWhenShowingAgain() {
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne1,
                 mTestEtldPlusOne2,
                 Collections.singletonList(mAnaAccount),
                 mIdpMetadata,
@@ -242,7 +234,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         // Showing the sheet a second time should replace all changed accounts.
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne1,
                 mTestEtldPlusOne2,
                 Collections.singletonList(mBobAccount),
                 mIdpMetadata,
@@ -261,7 +252,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne1,
                 mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount, mCarlAccount, mBobAccount),
                 mIdpMetadata,
@@ -279,7 +269,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne1,
                 mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount),
                 mIdpMetadata,
@@ -310,7 +299,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne1,
                 mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount, mCarlAccount),
                 mIdpMetadata,
@@ -339,7 +327,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne1,
                 mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount),
                 mIdpMetadata,
@@ -357,7 +344,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne1,
                 mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount, mBobAccount),
                 mIdpMetadata,
@@ -375,7 +361,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne1,
                 mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount, mBobAccount),
                 mIdpMetadata,
@@ -395,7 +380,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne1,
                 mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount, mNewUserAccount),
                 mIdpMetadata,
@@ -417,7 +401,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne1,
                 mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount, mNewUserAccount),
                 mIdpMetadata,
@@ -443,7 +426,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne1,
                 mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount, mNewUserAccount),
                 mIdpMetadata,
@@ -463,7 +445,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne1,
                 mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount),
                 mIdpMetadata,
@@ -484,7 +465,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne1,
                 mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount),
                 mIdpMetadata,
@@ -507,7 +487,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
     public void testShowDataSharingConsentForSingleNewAccount() {
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne1,
                 mTestEtldPlusOne2,
                 Arrays.asList(mNewUserAccount),
                 mIdpMetadata,
@@ -542,7 +521,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
     public void testNewUserWithoutRequestPermission() {
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne1,
                 mTestEtldPlusOne2,
                 Arrays.asList(mNewUserAccount),
                 mIdpMetadata,
@@ -561,7 +539,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne1,
                 mTestEtldPlusOne2,
                 Arrays.asList(mNewUserAccount, mBobAccount),
                 mIdpMetadata,
@@ -583,7 +560,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                     .thenReturn(true);
             mMediator.showAccounts(
                     mTestEtldPlusOne,
-                    mTestEtldPlusOne1,
                     mTestEtldPlusOne2,
                     Arrays.asList(mNewUserAccount),
                     mIdpMetadata,
@@ -607,7 +583,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
             // showVerifySheet is called in showAccounts when isAutoReauthn is true
             mMediator.showAccounts(
                     mTestEtldPlusOne,
-                    mTestEtldPlusOne1,
                     mTestEtldPlusOne2,
                     Arrays.asList(mAnaAccount),
                     mIdpMetadata,
@@ -630,11 +605,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
             when(mMockBottomSheetController.requestShowContent(any(), anyBoolean()))
                     .thenReturn(true);
             mMediator.showFailureDialog(
-                    mTestEtldPlusOne,
-                    mTestEtldPlusOne1,
-                    mTestEtldPlusOne2,
-                    mIdpMetadata,
-                    rpContext);
+                    mTestEtldPlusOne, mTestEtldPlusOne2, mIdpMetadata, rpContext);
             assertEquals(0, mSheetAccountItems.size());
             assertEquals(
                     HeaderType.SIGN_IN_TO_IDP_STATIC, mModel.get(ItemProperties.HEADER).get(TYPE));
@@ -670,7 +641,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                     .thenReturn(true);
             mMediator.showErrorDialog(
                     mTestEtldPlusOne,
-                    mTestEtldPlusOne1,
                     mTestEtldPlusOne2,
                     mIdpMetadata,
                     rpContext,
@@ -687,10 +657,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                     mModel.get(ItemProperties.ERROR_TEXT).get(ErrorProperties.PROPERTIES);
             assertEquals(
                     "Incorrect provider ETLD+1", mTestEtldPlusOne2, errorProperties.mIdpForDisplay);
-            assertEquals(
-                    "Incorrect top frame ETLD+1",
-                    mTestEtldPlusOne,
-                    errorProperties.mTopFrameForDisplay);
+            assertEquals("Incorrect RP ETLD+1", mTestEtldPlusOne, errorProperties.mRpForDisplay);
             assertEquals("Incorrect token error", mTokenErrorEmptyUrl, errorProperties.mError);
 
             assertNotNull(
@@ -721,12 +688,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
             when(mMockBottomSheetController.requestShowContent(any(), anyBoolean()))
                     .thenReturn(true);
             mMediator.showErrorDialog(
-                    mTestEtldPlusOne,
-                    mTestEtldPlusOne1,
-                    mTestEtldPlusOne2,
-                    mIdpMetadata,
-                    rpContext,
-                    mTokenError);
+                    mTestEtldPlusOne, mTestEtldPlusOne2, mIdpMetadata, rpContext, mTokenError);
             assertEquals(0, mSheetAccountItems.size());
             assertEquals(HeaderType.SIGN_IN_ERROR, mModel.get(ItemProperties.HEADER).get(TYPE));
             verify(mMockDelegate, never()).onAccountsDisplayed();
@@ -739,10 +701,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                     mModel.get(ItemProperties.ERROR_TEXT).get(ErrorProperties.PROPERTIES);
             assertEquals(
                     "Incorrect provider ETLD+1", mTestEtldPlusOne2, errorProperties.mIdpForDisplay);
-            assertEquals(
-                    "Incorrect top frame ETLD+1",
-                    mTestEtldPlusOne,
-                    errorProperties.mTopFrameForDisplay);
+            assertEquals("Incorrect RP ETLD+1", mTestEtldPlusOne, errorProperties.mRpForDisplay);
             assertEquals("Incorrect token error", mTokenError, errorProperties.mError);
 
             assertNotNull(
@@ -772,7 +731,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne1,
                 mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount),
                 mIdpMetadata,
@@ -794,7 +752,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne1,
                 mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount),
                 mIdpMetadata,
@@ -814,7 +771,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne1,
                 mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount),
                 mIdpMetadata,
@@ -833,7 +789,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne1,
                 mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount),
                 mIdpMetadata,
@@ -860,7 +815,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                mTestEtldPlusOne1,
                 mTestEtldPlusOne2,
                 Arrays.asList(mAnaAccount),
                 mIdpMetadata,

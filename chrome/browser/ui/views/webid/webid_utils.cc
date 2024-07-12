@@ -25,13 +25,10 @@ int SelectSingleIdpTitleResourceId(blink::mojom::RpContext rp_context) {
 
 // Returns the title to be shown in the dialog. This does not include the
 // subtitle. For screen reader purposes, GetAccessibleTitle() is used instead.
-std::u16string GetTitle(const std::u16string& top_frame_for_display,
-                        const std::optional<std::u16string>& iframe_for_display,
+std::u16string GetTitle(const std::u16string& rp_for_display,
                         const std::optional<std::u16string>& idp_title,
                         blink::mojom::RpContext rp_context) {
-  std::u16string frame_in_title = iframe_for_display.has_value()
-                                      ? iframe_for_display.value()
-                                      : top_frame_for_display;
+  std::u16string frame_in_title = rp_for_display;
   return idp_title.has_value()
              ? l10n_util::GetStringFUTF16(
                    SelectSingleIdpTitleResourceId(rp_context), frame_in_title,
@@ -39,24 +36,6 @@ std::u16string GetTitle(const std::u16string& top_frame_for_display,
              : l10n_util::GetStringFUTF16(
                    IDS_MULTI_IDP_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT,
                    frame_in_title);
-}
-
-std::u16string GetSubtitle(const std::u16string& top_frame_for_display) {
-  return l10n_util::GetStringFUTF16(IDS_ACCOUNT_SELECTION_SHEET_SUBTITLE,
-                                    top_frame_for_display);
-}
-
-// Returns the title combined with the subtitle for screen reader purposes.
-std::u16string GetAccessibleTitle(
-    const std::u16string& top_frame_for_display,
-    const std::optional<std::u16string>& iframe_for_display,
-    const std::optional<std::u16string>& idp_title,
-    blink::mojom::RpContext rp_context) {
-  std::u16string title = GetTitle(top_frame_for_display, iframe_for_display,
-                                  idp_title, rp_context);
-  return iframe_for_display.has_value()
-             ? title + u" " + GetSubtitle(top_frame_for_display)
-             : title;
 }
 
 void SendAccessibilityEvent(views::Widget* widget,

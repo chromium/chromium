@@ -35,8 +35,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
 
  public:
   AccountSelectionBubbleView(
-      const std::u16string& top_frame_for_display,
-      const std::optional<std::u16string>& iframe_for_display,
+      const std::u16string& rp_for_display,
       const std::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
       content::WebContents* web_contents,
@@ -57,26 +56,19 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
                           const std::u16string& title) override;
 
   void ShowSingleAccountConfirmDialog(
-      const std::u16string& top_frame_for_display,
-      const std::optional<std::u16string>& iframe_for_display,
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_display_data,
       bool show_back_button) override;
 
   void ShowFailureDialog(
-      const std::u16string& top_frame_for_display,
-      const std::optional<std::u16string>& iframe_for_display,
       const std::u16string& idp_for_display,
       const content::IdentityProviderMetadata& idp_metadata) override;
 
-  void ShowErrorDialog(const std::u16string& top_frame_for_display,
-                       const std::optional<std::u16string>& iframe_for_display,
-                       const std::u16string& idp_for_display,
+  void ShowErrorDialog(const std::u16string& idp_for_display,
                        const content::IdentityProviderMetadata& idp_metadata,
                        const std::optional<TokenError>& error) override;
 
   void ShowRequestPermissionDialog(
-      const std::u16string& top_frame_for_display,
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_display_data) override;
 
@@ -92,7 +84,6 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   void OnAnchorBoundsChanged() override;
 
   std::string GetDialogTitle() const override;
-  std::optional<std::string> GetDialogSubtitle() const override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AccountSelectionBubbleViewTest,
@@ -157,8 +148,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // button visibiltiy. `idp_metadata` is not null when we need to set a header
   // image based on the IDP.
   void UpdateHeader(const content::IdentityProviderMetadata& idp_metadata,
-                    const std::u16string subpage_title,
-                    const std::u16string subpage_subtitle,
+                    const std::u16string title,
                     bool show_back_button);
 
   // Removes all children except for `header_view_`.
@@ -170,18 +160,8 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
       const std::vector<std::u16string> mismatch_idps,
       const std::vector<std::u16string> non_mismatch_idps);
 
-  // The accessible title.
-  std::u16string accessible_title_;
-
   // The initial title for the dialog.
   std::u16string title_;
-
-  // The initial subtitle for the dialog.
-  std::u16string subtitle_;
-
-  // The descriptions of the frames to be used in the dialog.
-  std::u16string top_frame_for_display_;
-  std::optional<std::u16string> iframe_for_display_;
 
   // The relying party context to show in the title.
   blink::mojom::RpContext rp_context_;
@@ -201,10 +181,6 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
 
   // View containing the bubble title.
   raw_ptr<views::Label> title_label_ = nullptr;
-
-  // View containing the bubble subtitle, which is empty if the iframe domain
-  // does not need to be displayed.
-  raw_ptr<views::Label> subtitle_label_ = nullptr;
 
   // View containing the continue button.
   raw_ptr<views::MdTextButton> continue_button_ = nullptr;

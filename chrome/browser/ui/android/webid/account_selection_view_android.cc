@@ -139,8 +139,7 @@ AccountSelectionViewAndroid::~AccountSelectionViewAndroid() {
 }
 
 bool AccountSelectionViewAndroid::Show(
-    const std::string& top_frame_for_display,
-    const std::optional<std::string>& iframe_for_display,
+    const std::string& rp_for_display,
     const std::vector<content::IdentityProviderData>& identity_provider_data,
     Account::SignInMode sign_in_mode,
     blink::mojom::RpMode rp_mode,
@@ -170,8 +169,7 @@ bool AccountSelectionViewAndroid::Show(
 
   // TODO(crbug.com/41490360): Use `new_account_idp` on Android.
   Java_AccountSelectionBridge_showAccounts(
-      env, java_object_internal_, top_frame_for_display,
-      iframe_for_display.value_or(""),
+      env, java_object_internal_, rp_for_display,
       identity_provider_data[0].idp_for_display, accounts_obj, idp_metadata_obj,
       client_id_metadata_obj, sign_in_mode == Account::SignInMode::kAuto,
       static_cast<jint>(identity_provider_data[0].rp_context),
@@ -180,8 +178,7 @@ bool AccountSelectionViewAndroid::Show(
 }
 
 bool AccountSelectionViewAndroid::ShowFailureDialog(
-    const std::string& top_frame_for_display,
-    const std::optional<std::string>& iframe_for_display,
+    const std::string& rp_for_display,
     const std::string& idp_for_display,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
@@ -201,15 +198,13 @@ bool AccountSelectionViewAndroid::ShowFailureDialog(
   ScopedJavaLocalRef<jobject> idp_metadata_obj =
       ConvertToJavaIdentityProviderMetadata(env, idp_metadata);
   Java_AccountSelectionBridge_showFailureDialog(
-      env, java_object_internal_, top_frame_for_display,
-      iframe_for_display.value_or(""), idp_for_display, idp_metadata_obj,
-      static_cast<jint>(rp_context));
+      env, java_object_internal_, rp_for_display, idp_for_display,
+      idp_metadata_obj, static_cast<jint>(rp_context));
   return true;
 }
 
 bool AccountSelectionViewAndroid::ShowErrorDialog(
-    const std::string& top_frame_for_display,
-    const std::optional<std::string>& iframe_for_display,
+    const std::string& rp_for_display,
     const std::string& idp_for_display,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
@@ -228,15 +223,14 @@ bool AccountSelectionViewAndroid::ShowErrorDialog(
   ScopedJavaLocalRef<jobject> idp_metadata_obj =
       ConvertToJavaIdentityProviderMetadata(env, idp_metadata);
   Java_AccountSelectionBridge_showErrorDialog(
-      env, java_object_internal_, top_frame_for_display,
-      iframe_for_display.value_or(""), idp_for_display, idp_metadata_obj,
-      static_cast<jint>(rp_context),
+      env, java_object_internal_, rp_for_display, idp_for_display,
+      idp_metadata_obj, static_cast<jint>(rp_context),
       ConvertToJavaIdentityCredentialTokenError(env, error));
   return true;
 }
 
 bool AccountSelectionViewAndroid::ShowLoadingDialog(
-    const std::string& top_frame_for_display,
+    const std::string& rp_for_display,
     const std::string& idp_for_display,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode) {

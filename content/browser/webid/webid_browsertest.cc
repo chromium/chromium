@@ -527,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, RegisterIdP) {
           test_browser_client_->GetIdentityRequestDialogControllerForTests());
 
   // Expects the account chooser to be opened. Selects the first account.
-  EXPECT_CALL(*controller, RequestIdPRegistrationPermision(_, _))
+  EXPECT_CALL(*controller, RequestIdPRegistrationPermision)
       .WillOnce(::testing::WithArg<1>(
           [](base::OnceCallback<void(bool accepted)> callback) {
             std::move(callback).Run(true);
@@ -582,7 +582,7 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, UnregisterIdP) {
           test_browser_client_->GetIdentityRequestDialogControllerForTests());
 
   // Expects the account chooser to be opened. Selects the first account.
-  EXPECT_CALL(*controller, RequestIdPRegistrationPermision(_, _))
+  EXPECT_CALL(*controller, RequestIdPRegistrationPermision)
       .WillOnce(::testing::WithArg<1>(
           [](base::OnceCallback<void(bool accepted)> callback) {
             std::move(callback).Run(true);
@@ -622,7 +622,7 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, UseRegistry) {
           test_browser_client_->GetIdentityRequestDialogControllerForTests());
 
   // Expects the account chooser to be opened. Selects the first account.
-  EXPECT_CALL(*controller, RequestIdPRegistrationPermision(_, _))
+  EXPECT_CALL(*controller, RequestIdPRegistrationPermision)
       .WillOnce(::testing::WithArg<1>(
           [](base::OnceCallback<void(bool accepted)> callback) {
             std::move(callback).Run(true);
@@ -688,7 +688,7 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, RegistryWithTypeNoMatch) {
       static_cast<MockIdentityRequestDialogController*>(
           test_browser_client_->GetIdentityRequestDialogControllerForTests());
 
-  EXPECT_CALL(*controller, RequestIdPRegistrationPermision(_, _))
+  EXPECT_CALL(*controller, RequestIdPRegistrationPermision)
       .WillOnce(::testing::WithArg<1>(
           [](base::OnceCallback<void(bool accepted)> callback) {
             std::move(callback).Run(true);
@@ -760,7 +760,7 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, RegistryWithTypeMatch) {
       static_cast<MockIdentityRequestDialogController*>(
           test_browser_client_->GetIdentityRequestDialogControllerForTests());
 
-  EXPECT_CALL(*controller, RequestIdPRegistrationPermision(_, _))
+  EXPECT_CALL(*controller, RequestIdPRegistrationPermision)
       .WillOnce(::testing::WithArg<1>(
           [](base::OnceCallback<void(bool accepted)> callback) {
             std::move(callback).Run(true);
@@ -819,7 +819,7 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, MultipleRegisteredIdps) {
   MockIdentityRequestDialogController* controller =
       static_cast<MockIdentityRequestDialogController*>(
           test_browser_client_->GetIdentityRequestDialogControllerForTests());
-  EXPECT_CALL(*controller, RequestIdPRegistrationPermision(_, _))
+  EXPECT_CALL(*controller, RequestIdPRegistrationPermision)
       .WillOnce(::testing::WithArg<1>(
           [](base::OnceCallback<void(bool accepted)> callback) {
             std::move(callback).Run(true);
@@ -852,7 +852,7 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, MultipleRegisteredIdps) {
 
   controller = static_cast<MockIdentityRequestDialogController*>(
       test_browser_client_->GetIdentityRequestDialogControllerForTests());
-  EXPECT_CALL(*controller, RequestIdPRegistrationPermision(_, _))
+  EXPECT_CALL(*controller, RequestIdPRegistrationPermision)
       .WillOnce(::testing::WithArg<1>(
           [](base::OnceCallback<void(bool accepted)> callback) {
             std::move(callback).Run(true);
@@ -1296,7 +1296,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
       static_cast<MockDigitalIdentityProvider*>(
           test_browser_client_->GetDigitalIdentityProviderForTests());
 
-  EXPECT_CALL(*digital_identity_provider, Request(_, _, _, _))
+  EXPECT_CALL(*digital_identity_provider, Request)
       .WillOnce(WithArg<3>(
           [&](DigitalIdentityProvider::DigitalIdentityCallback callback) {
             EXPECT_EQ(
@@ -1319,7 +1319,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
       static_cast<MockDigitalIdentityProvider*>(
           test_browser_client_->GetDigitalIdentityProviderForTests());
 
-  EXPECT_CALL(*digital_identity_provider, Request(_, _, _, _))
+  EXPECT_CALL(*digital_identity_provider, Request)
       .WillOnce(WithArg<3>(
           [&](DigitalIdentityProvider::DigitalIdentityCallback callback) {
             std::move(callback).Run(base::unexpected(
@@ -1342,7 +1342,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
       static_cast<MockDigitalIdentityProvider*>(
           test_browser_client_->GetDigitalIdentityProviderForTests());
 
-  EXPECT_CALL(*digital_identity_provider, Request(_, _, _, _))
+  EXPECT_CALL(*digital_identity_provider, Request)
       .WillOnce(WithArg<3>(
           [](DigitalIdentityProvider::DigitalIdentityCallback callback) {
             std::move(callback).Run("test-mdoc");
@@ -1529,8 +1529,8 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
           test_browser_client_->GetIdentityRequestDialogControllerForTests());
 
   // Expects the account chooser to be opened. Selects the first account.
-  EXPECT_CALL(*controller, ShowAccountsDialog(_, _, _, _, _, _, _, _, _, _))
-      .WillOnce(::testing::WithArg<6>([&config_url](auto on_selected) {
+  EXPECT_CALL(*controller, ShowAccountsDialog)
+      .WillOnce(::testing::WithArg<5>([&config_url](auto on_selected) {
         std::move(on_selected)
             .Run(config_url,
                  /* account_id=*/"not_real_account",
@@ -1539,7 +1539,7 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
       }));
 
   base::RunLoop run_loop;
-  EXPECT_CALL(*controller, ShowModalDialog(_, _))
+  EXPECT_CALL(*controller, ShowModalDialog)
       .WillOnce(::testing::WithArg<0>(
           [&config_url, continue_on, &modal, &run_loop](const GURL& url) {
             // Expect that the relative continue_on url will be resolved

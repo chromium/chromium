@@ -30,7 +30,6 @@ using DismissReason = content::IdentityRequestDialogController::DismissReason;
 namespace {
 
 constexpr char kTopFrameEtldPlusOne[] = "top-frame-example.com";
-constexpr char kIframeEtldPlusOne[] = "iframe-example.com";
 constexpr char kIdpEtldPlusOne[] = "idp-example.com";
 constexpr char kConfigUrl[] = "https://idp-example.com/fedcm.json";
 constexpr char kLoginUrl[] = "https://idp-example.com/login";
@@ -82,8 +81,6 @@ class TestAccountSelectionView : public AccountSelectionViewBase {
   }
 
   void ShowSingleAccountConfirmDialog(
-      const std::u16string& top_frame_for_display,
-      const std::optional<std::u16string>& iframe_for_display,
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_data,
       bool show_back_button) override {
@@ -93,8 +90,6 @@ class TestAccountSelectionView : public AccountSelectionViewBase {
   }
 
   void ShowFailureDialog(
-      const std::u16string& top_frame_for_display,
-      const std::optional<std::u16string>& iframe_for_display,
       const std::u16string& idp_for_display,
       const content::IdentityProviderMetadata& idp_metadata) override {
     sheet_type_ = SheetType::kFailure;
@@ -102,9 +97,7 @@ class TestAccountSelectionView : public AccountSelectionViewBase {
     show_back_button_ = false;
   }
 
-  void ShowErrorDialog(const std::u16string& top_frame_for_display,
-                       const std::optional<std::u16string>& iframe_for_display,
-                       const std::u16string& idp_for_display,
+  void ShowErrorDialog(const std::u16string& idp_for_display,
                        const content::IdentityProviderMetadata& idp_metadata,
                        const std::optional<TokenError>& error) override {
     sheet_type_ = SheetType::kError;
@@ -113,7 +106,6 @@ class TestAccountSelectionView : public AccountSelectionViewBase {
   }
 
   void ShowRequestPermissionDialog(
-      const std::u16string& top_frame_for_display,
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_display_data) override {
     show_back_button_ = true;
@@ -142,9 +134,6 @@ class TestAccountSelectionView : public AccountSelectionViewBase {
   }
 
   std::string GetDialogTitle() const override { return std::string(); }
-  std::optional<std::string> GetDialogSubtitle() const override {
-    return std::nullopt;
-  }
 
   void InitDialogWidget() override {}
   void CloseDialog() override {}
@@ -214,8 +203,7 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
 
  protected:
   AccountSelectionViewBase* CreateAccountSelectionView(
-      const std::u16string& top_frame_etld_plus_one,
-      const std::optional<std::u16string>& iframe_etld_plus_one,
+      const std::u16string& rp_for_display,
       const std::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
       blink::mojom::RpMode rp_mode,
@@ -402,7 +390,6 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
             content::IdentityProviderMetadata idp_metadata =
                 content::IdentityProviderMetadata()) {
     controller.Show(kTopFrameEtldPlusOne,
-                    std::make_optional<std::string>(kIframeEtldPlusOne),
                     {{kIdpEtldPlusOne, accounts, idp_metadata,
                       content::ClientMetadata(GURL(), GURL(), GURL()),
                       blink::mojom::RpContext::kSignIn, request_permission,
@@ -415,8 +402,8 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
       blink::mojom::RpMode rp_mode = blink::mojom::RpMode::kWidget) {
     auto controller = std::make_unique<TestFedCmAccountSelectionView>(
         delegate_.get(), account_selection_view_.get());
-    controller->ShowFailureDialog(kTopFrameEtldPlusOne, kIframeEtldPlusOne,
-                                  kIdpEtldPlusOne, rp_context, rp_mode,
+    controller->ShowFailureDialog(kTopFrameEtldPlusOne, kIdpEtldPlusOne,
+                                  rp_context, rp_mode,
                                   content::IdentityProviderMetadata());
     EXPECT_EQ(TestAccountSelectionView::SheetType::kFailure,
               account_selection_view_->sheet_type_);
@@ -429,8 +416,8 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     auto controller = std::make_unique<TestFedCmAccountSelectionView>(
         delegate_.get(), account_selection_view_.get());
     controller->ShowErrorDialog(
-        kTopFrameEtldPlusOne, kIframeEtldPlusOne, kIdpEtldPlusOne, rp_context,
-        rp_mode, content::IdentityProviderMetadata(), /*error=*/std::nullopt);
+        kTopFrameEtldPlusOne, kIdpEtldPlusOne, rp_context, rp_mode,
+        content::IdentityProviderMetadata(), /*error=*/std::nullopt);
     EXPECT_EQ(TestAccountSelectionView::SheetType::kError,
               account_selection_view_->sheet_type_);
     return controller;
@@ -472,10 +459,8 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
           blink::mojom::RpContext::kSignIn, idp.request_permission,
           idp.has_login_status_mismatch);
     }
-    controller->Show(kTopFrameEtldPlusOne,
-                     std::make_optional<std::string>(kIframeEtldPlusOne),
-                     idp_data, sign_in_mode, rp_mode,
-                     /*new_account_idp=*/std::nullopt);
+    controller->Show(kTopFrameEtldPlusOne, idp_data, sign_in_mode, rp_mode,
+                     /*new_accounts_idp=*/std::nullopt);
     return controller;
   }
 
@@ -1235,9 +1220,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   // Emulate another mismatch so we need to show the mismatch dialog again.
   controller->ShowFailureDialog(
-      kTopFrameEtldPlusOne, kIframeEtldPlusOne, kIdpEtldPlusOne,
-      blink::mojom::RpContext::kSignIn, blink::mojom::RpMode::kWidget,
-      content::IdentityProviderMetadata());
+      kTopFrameEtldPlusOne, kIdpEtldPlusOne, blink::mojom::RpContext::kSignIn,
+      blink::mojom::RpMode::kWidget, content::IdentityProviderMetadata());
 
   // Mismatch dialog is visible again.
   EXPECT_TRUE(dialog_widget_->IsVisible());
@@ -2463,9 +2447,9 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   EXPECT_CALL(*controller, MaybeResetAccountSelectionView).Times(1);
   controller->ShowErrorDialog(
-      kTopFrameEtldPlusOne, kIframeEtldPlusOne, kIdpEtldPlusOne,
-      blink::mojom::RpContext::kSignIn, blink::mojom::RpMode::kButton,
-      content::IdentityProviderMetadata(), /*error=*/std::nullopt);
+      kTopFrameEtldPlusOne, kIdpEtldPlusOne, blink::mojom::RpContext::kSignIn,
+      blink::mojom::RpMode::kButton, content::IdentityProviderMetadata(),
+      /*error=*/std::nullopt);
 }
 
 // Tests that for button flows, going from a loading dialog to an accounts

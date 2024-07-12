@@ -91,13 +91,12 @@ void FedCmAccountSelectionView::ShowDialogWidget() {
 }
 
 bool FedCmAccountSelectionView::Show(
-    const std::string& top_frame_etld_plus_one,
-    const std::optional<std::string>& iframe_etld_plus_one,
+    const std::string& rp_for_display,
     const std::vector<content::IdentityProviderData>&
         identity_provider_data_list,
     Account::SignInMode sign_in_mode,
     blink::mojom::RpMode rp_mode,
-    const std::optional<content::IdentityProviderData>& new_account_idp) {
+    const std::optional<content::IdentityProviderData>& new_accounts_idp) {
   // If IDP sign-in pop-up is open, we delay the showing of the accounts dialog
   // until the pop-up is destroyed.
   if (IsIdpSigninPopupOpen()) {
@@ -105,11 +104,10 @@ bool FedCmAccountSelectionView::Show(
         PopupWindowResult::kAccountsReceivedAndPopupNotClosedByIdp;
     // We need to use ShowNoReturn() here because it is not allowed to bind
     // WeakPtrs to methods with return values.
-    show_accounts_dialog_callback_ =
-        base::BindOnce(base::IgnoreResult(&FedCmAccountSelectionView::Show),
-                       weak_ptr_factory_.GetWeakPtr(), top_frame_etld_plus_one,
-                       iframe_etld_plus_one, identity_provider_data_list,
-                       sign_in_mode, rp_mode, new_account_idp);
+    show_accounts_dialog_callback_ = base::BindOnce(
+        base::IgnoreResult(&FedCmAccountSelectionView::Show),
+        weak_ptr_factory_.GetWeakPtr(), rp_for_display,
+        identity_provider_data_list, sign_in_mode, rp_mode, new_accounts_idp);
     // This is considered successful since we are intentionally delaying showing
     // the UI.
     return true;
@@ -160,11 +158,7 @@ bool FedCmAccountSelectionView::Show(
           ? std::make_optional<std::u16string>(
                 idp_display_data_list_[0].idp_etld_plus_one)
           : std::nullopt;
-  top_frame_for_display_ = base::UTF8ToUTF16(top_frame_etld_plus_one);
-  iframe_for_display_ = iframe_etld_plus_one
-                            ? std::make_optional<std::u16string>(
-                                  base::UTF8ToUTF16(*iframe_etld_plus_one))
-                            : std::nullopt;
+  rp_for_display_ = base::UTF8ToUTF16(rp_for_display);
 
   // If a modal dialog was created previously but there is no modal support for
   // this type of dialog, reset account_selection_view_ to create a bubble
@@ -179,8 +173,7 @@ bool FedCmAccountSelectionView::Show(
   bool create_view = !account_selection_view_;
   if (create_view) {
     account_selection_view_ = CreateAccountSelectionView(
-        top_frame_for_display_, iframe_for_display_, idp_title, rp_context,
-        rp_mode, has_modal_support);
+        rp_for_display_, idp_title, rp_context, rp_mode, has_modal_support);
 
     if (!account_selection_view_) {
       delegate_->OnDismiss(DismissReason::kOther);
@@ -204,17 +197,17 @@ bool FedCmAccountSelectionView::Show(
                             idp_display_data_list_[0])) {
       return false;
     }
-  } else if (new_account_idp) {
+  } else if (new_accounts_idp) {
     // When we just logged in to an account that is not a single returning
     // account: on the modal, we'd show all the accounts and on the bubble, we'd
     // show only the new accounts.
-    new_account_idp_display_data_ = {IdentityProviderDisplayData(
-        base::UTF8ToUTF16(new_account_idp->idp_for_display),
-        new_account_idp->idp_metadata, new_account_idp->client_metadata,
-        new_account_idp->accounts, new_account_idp->request_permission,
-        new_account_idp->has_login_status_mismatch)};
+    new_accounts_idp_display_data_ = {IdentityProviderDisplayData(
+        base::UTF8ToUTF16(new_accounts_idp->idp_for_display),
+        new_accounts_idp->idp_metadata, new_accounts_idp->client_metadata,
+        new_accounts_idp->accounts, new_accounts_idp->request_permission,
+        new_accounts_idp->has_login_status_mismatch)};
     const IdentityProviderDisplayData& new_idp_data =
-        new_account_idp_display_data_[0];
+        new_accounts_idp_display_data_[0];
 
     if (GetDialogType() == DialogType::MODAL) {
       // TODO(crbug.com/342194490): Consider case when there's more than one
@@ -254,20 +247,19 @@ bool FedCmAccountSelectionView::Show(
       } else {
         state_ = State::REQUEST_PERMISSION;
         account_selection_view_->ShowRequestPermissionDialog(
-            top_frame_for_display_, new_idp_data.accounts[0], new_idp_data);
+            new_idp_data.accounts[0], new_idp_data);
       }
     } else {
       if (new_idp_data.accounts.size() == 1u) {
         state_ = State::SINGLE_ACCOUNT_PICKER;
         account_selection_view_->ShowSingleAccountConfirmDialog(
-            top_frame_for_display_, iframe_for_display_,
             new_idp_data.accounts[0], new_idp_data,
             /*show_back_button=*/accounts_or_mismatches_size > 1u ||
                 supports_add_account);
       } else {
         state_ = State::NEWLY_LOGGED_IN_ACCOUNT_PICKER;
         account_selection_view_->ShowMultiAccountPicker(
-            new_account_idp_display_data_,
+            new_accounts_idp_display_data_,
             /*show_back_button=*/accounts_or_mismatches_size >
                 new_idp_data.accounts.size());
       }
@@ -277,7 +269,6 @@ bool FedCmAccountSelectionView::Show(
     if (GetDialogType() == DialogType::MODAL) {
       state_ = State::SINGLE_ACCOUNT_PICKER;
       account_selection_view_->ShowSingleAccountConfirmDialog(
-          top_frame_for_display_, iframe_for_display_,
           idp_display_data_list_[0].accounts[0], idp_display_data_list_[0],
           /*show_back_button=*/false);
     } else if (supports_add_account) {
@@ -289,7 +280,6 @@ bool FedCmAccountSelectionView::Show(
     } else {
       state_ = State::SINGLE_ACCOUNT_PICKER;
       account_selection_view_->ShowSingleAccountConfirmDialog(
-          top_frame_for_display_, iframe_for_display_,
           idp_display_data_list_[0].accounts[0], idp_display_data_list_[0],
           /*show_back_button=*/false);
     }
@@ -368,8 +358,7 @@ void FedCmAccountSelectionView::OnAccountsDisplayed() {
 }
 
 bool FedCmAccountSelectionView::ShowFailureDialog(
-    const std::string& top_frame_etld_plus_one,
-    const std::optional<std::string>& iframe_etld_plus_one,
+    const std::string& rp_for_display,
     const std::string& idp_etld_plus_one,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
@@ -392,16 +381,11 @@ bool FedCmAccountSelectionView::ShowFailureDialog(
   }
 
   bool create_view = !account_selection_view_;
-  top_frame_for_display_ = base::UTF8ToUTF16(top_frame_etld_plus_one);
-  iframe_for_display_ = iframe_etld_plus_one
-                            ? std::make_optional<std::u16string>(
-                                  base::UTF8ToUTF16(*iframe_etld_plus_one))
-                            : std::nullopt;
+  rp_for_display_ = base::UTF8ToUTF16(rp_for_display);
   if (create_view) {
-    account_selection_view_ =
-        CreateAccountSelectionView(top_frame_for_display_, iframe_for_display_,
-                                   base::UTF8ToUTF16(idp_etld_plus_one),
-                                   rp_context, rp_mode, has_modal_support);
+    account_selection_view_ = CreateAccountSelectionView(
+        rp_for_display_, base::UTF8ToUTF16(idp_etld_plus_one), rp_context,
+        rp_mode, has_modal_support);
 
     if (!account_selection_view_) {
       delegate_->OnDismiss(DismissReason::kOther);
@@ -410,7 +394,6 @@ bool FedCmAccountSelectionView::ShowFailureDialog(
   }
 
   account_selection_view_->ShowFailureDialog(
-      top_frame_for_display_, iframe_for_display_,
       base::UTF8ToUTF16(idp_etld_plus_one), idp_metadata);
 
   if (!GetDialogWidget()) {
@@ -439,8 +422,7 @@ bool FedCmAccountSelectionView::ShowFailureDialog(
 }
 
 bool FedCmAccountSelectionView::ShowErrorDialog(
-    const std::string& top_frame_etld_plus_one,
-    const std::optional<std::string>& iframe_etld_plus_one,
+    const std::string& rp_for_display,
     const std::string& idp_etld_plus_one,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
@@ -448,10 +430,6 @@ bool FedCmAccountSelectionView::ShowErrorDialog(
     const std::optional<TokenError>& error) {
   state_ = State::SIGN_IN_ERROR;
   notify_delegate_of_dismiss_ = true;
-  std::optional<std::u16string> iframe_etld_plus_one_u16 =
-      iframe_etld_plus_one ? std::make_optional<std::u16string>(
-                                 base::UTF8ToUTF16(*iframe_etld_plus_one))
-                           : std::nullopt;
 
   // TODO(crbug.com/41491333): Support modal dialogs for all types of FedCM
   // dialogs. This boolean is used to fall back to the bubble dialog where
@@ -470,10 +448,9 @@ bool FedCmAccountSelectionView::ShowErrorDialog(
 
   bool create_view = !account_selection_view_;
   if (create_view) {
-    account_selection_view_ =
-        CreateAccountSelectionView(top_frame_for_display_, iframe_for_display_,
-                                   base::UTF8ToUTF16(idp_etld_plus_one),
-                                   rp_context, rp_mode, has_modal_support);
+    account_selection_view_ = CreateAccountSelectionView(
+        rp_for_display_, base::UTF8ToUTF16(idp_etld_plus_one), rp_context,
+        rp_mode, has_modal_support);
 
     if (!account_selection_view_) {
       delegate_->OnDismiss(DismissReason::kOther);
@@ -482,7 +459,6 @@ bool FedCmAccountSelectionView::ShowErrorDialog(
   }
 
   account_selection_view_->ShowErrorDialog(
-      base::UTF8ToUTF16(top_frame_etld_plus_one), iframe_etld_plus_one_u16,
       base::UTF8ToUTF16(idp_etld_plus_one), idp_metadata, error);
 
   if (!GetDialogWidget()) {
@@ -508,7 +484,7 @@ bool FedCmAccountSelectionView::ShowErrorDialog(
 }
 
 bool FedCmAccountSelectionView::ShowLoadingDialog(
-    const std::string& top_frame_etld_plus_one,
+    const std::string& rp_for_display,
     const std::string& idp_etld_plus_one,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode) {
@@ -520,9 +496,8 @@ bool FedCmAccountSelectionView::ShowLoadingDialog(
   bool create_view = !account_selection_view_;
   if (create_view) {
     account_selection_view_ = CreateAccountSelectionView(
-        base::UTF8ToUTF16(top_frame_etld_plus_one),
-        /*iframe_etld_plus_one=*/std::nullopt,
-        base::UTF8ToUTF16(idp_etld_plus_one), rp_context, rp_mode,
+        base::UTF8ToUTF16(rp_for_display), base::UTF8ToUTF16(idp_etld_plus_one),
+        rp_context, rp_mode,
         /*has_modal_support=*/true);
 
     if (!account_selection_view_) {
@@ -578,7 +553,7 @@ std::string FedCmAccountSelectionView::GetTitle() const {
 }
 
 std::optional<std::string> FedCmAccountSelectionView::GetSubtitle() const {
-  return account_selection_view_->GetDialogSubtitle();
+  return std::nullopt;
 }
 
 void FedCmAccountSelectionView::OnVisibilityChanged(
@@ -635,8 +610,7 @@ void FedCmAccountSelectionView::SetIdpSigninPopupWindowForTesting(
 }
 
 AccountSelectionViewBase* FedCmAccountSelectionView::CreateAccountSelectionView(
-    const std::u16string& top_frame_etld_plus_one,
-    const std::optional<std::u16string>& iframe_etld_plus_one,
+    const std::u16string& rp_for_display,
     const std::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
@@ -657,7 +631,7 @@ AccountSelectionViewBase* FedCmAccountSelectionView::CreateAccountSelectionView(
   if (rp_mode == blink::mojom::RpMode::kButton && has_modal_support) {
     dialog_type_ = DialogType::MODAL;
     return new AccountSelectionModalView(
-        top_frame_etld_plus_one, idp_title, rp_context, web_contents,
+        rp_for_display, idp_title, rp_context, web_contents,
         SystemNetworkContextManager::GetInstance()->GetSharedURLLoaderFactory(),
         this, this);
   }
@@ -667,8 +641,7 @@ AccountSelectionViewBase* FedCmAccountSelectionView::CreateAccountSelectionView(
   views::View* anchor_view = browser_view->contents_web_view();
 
   return new AccountSelectionBubbleView(
-      top_frame_etld_plus_one, iframe_etld_plus_one, idp_title, rp_context,
-      web_contents, anchor_view,
+      rp_for_display, idp_title, rp_context, web_contents, anchor_view,
       SystemNetworkContextManager::GetInstance()->GetSharedURLLoaderFactory(),
       this, this);
 }
@@ -715,8 +688,8 @@ void FedCmAccountSelectionView::OnAccountSelected(
   // we'd request permission through the request permission dialog.
   if (GetDialogType() == DialogType::MODAL) {
     state_ = State::REQUEST_PERMISSION;
-    account_selection_view_->ShowRequestPermissionDialog(
-        top_frame_for_display_, account, idp_display_data);
+    account_selection_view_->ShowRequestPermissionDialog(account,
+                                                         idp_display_data);
     return;
   }
 
@@ -725,7 +698,7 @@ void FedCmAccountSelectionView::OnAccountSelected(
   // so we'd request permission through a single account dialog.
   state_ = State::SINGLE_ACCOUNT_PICKER;
   account_selection_view_->ShowSingleAccountConfirmDialog(
-      top_frame_for_display_, iframe_for_display_, account, idp_display_data,
+      account, idp_display_data,
       /*show_back_button=*/true);
 }
 
@@ -748,7 +721,6 @@ void FedCmAccountSelectionView::OnBackButtonClicked() {
       idp_display_data_list_[0].accounts.size() == 1u) {
     state_ = State::SINGLE_ACCOUNT_PICKER;
     account_selection_view_->ShowSingleAccountConfirmDialog(
-        top_frame_for_display_, iframe_for_display_,
         idp_display_data_list_[0].accounts[0], idp_display_data_list_[0],
         /*show_back_button=*/false);
     return;

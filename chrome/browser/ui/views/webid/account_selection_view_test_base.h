@@ -11,18 +11,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/view.h"
 
-const std::u16string kTopFrameETLDPlusOne = u"top-frame-example.com";
-const std::u16string kIframeETLDPlusOne = u"iframe-example.com";
+const std::u16string kRpETLDPlusOne = u"rp-example.com";
 const std::u16string kIdpETLDPlusOne = u"idp-example.com";
 const std::u16string kSecondIdpETLDPlusOne = u"idp2.com";
 const std::u16string kTitleSignIn =
-    u"Sign in to top-frame-example.com with idp-example.com";
-const std::u16string kTitleSignInWithoutIdp =
-    u"Sign in to top-frame-example.com";
+    u"Sign in to rp-example.com with idp-example.com";
+const std::u16string kTitleSignInWithoutIdp = u"Sign in to rp-example.com";
 const std::u16string kTitleSigningIn = u"Verifying…";
 const std::u16string kTitleSigningInWithAutoReauthn = u"Signing you in…";
 const std::u16string kTitleRequestPermission =
-    u"Confirm you want to sign in to top-frame-example.com with "
+    u"Confirm you want to sign in to rp-example.com with "
     u"idp-example.com";
 const std::u16string kBodySignIn = u"Choose an account to continue";
 

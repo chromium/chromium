@@ -354,7 +354,7 @@ class AccountSelectionViewBinder {
         String code = properties.mError.getCode();
         GURL url = properties.mError.getUrl();
         String idpForDisplay = properties.mIdpForDisplay;
-        String topFrameForDisplay = properties.mTopFrameForDisplay;
+        String rpForDisplay = properties.mRpForDisplay;
         Context context = view.getContext();
 
         String summary;
@@ -364,14 +364,14 @@ class AccountSelectionViewBinder {
             summary = context.getString(R.string.signin_server_error_dialog_summary);
             description =
                     context.getString(
-                            R.string.signin_server_error_dialog_description, topFrameForDisplay);
+                            R.string.signin_server_error_dialog_description, rpForDisplay);
             // Server errors do not need extra description to be displayed.
             return new ErrorText(summary, description);
         } else if (INVALID_REQUEST.equals(code)) {
             summary =
                     context.getString(
                             R.string.signin_invalid_request_error_dialog_summary,
-                            topFrameForDisplay,
+                            rpForDisplay,
                             idpForDisplay);
             description =
                     context.getString(R.string.signin_invalid_request_error_dialog_description);
@@ -379,7 +379,7 @@ class AccountSelectionViewBinder {
             summary =
                     context.getString(
                             R.string.signin_unauthorized_client_error_dialog_summary,
-                            topFrameForDisplay,
+                            rpForDisplay,
                             idpForDisplay);
             description =
                     context.getString(R.string.signin_unauthorized_client_error_dialog_description);
@@ -416,7 +416,7 @@ class AccountSelectionViewBinder {
                             TEMPORARILY_UNAVAILABLE.equals(code)
                                     ? R.string.signin_error_dialog_try_other_ways_retry_prompt
                                     : R.string.signin_error_dialog_try_other_ways_prompt,
-                            topFrameForDisplay);
+                            rpForDisplay);
             return new ErrorText(summary, description);
         }
 
@@ -605,13 +605,13 @@ class AccountSelectionViewBinder {
 
     /**
      * Called whenever a header is bound to this view.
+     *
      * @param model The model containing the data for the view.
      * @param view The view to be bound.
      * @param key The key of the property to be bound.
      */
     static void bindHeaderView(PropertyModel model, View view, PropertyKey key) {
-        if (key == HeaderProperties.TOP_FRAME_FOR_DISPLAY
-                || key == HeaderProperties.IFRAME_FOR_DISPLAY
+        if (key == HeaderProperties.RP_FOR_DISPLAY
                 || key == HeaderProperties.IDP_FOR_DISPLAY
                 || key == HeaderProperties.TYPE
                 || key == HeaderProperties.RP_CONTEXT
@@ -621,29 +621,23 @@ class AccountSelectionViewBinder {
             TextView headerSubtitleText = view.findViewById(R.id.header_subtitle);
             HeaderProperties.HeaderType headerType = model.get(HeaderProperties.TYPE);
 
-            String rpUrlForDisplayInTitle;
             String subtitle =
                     computeHeaderSubtitle(
-                            resources,
-                            headerType,
-                            model.get(HeaderProperties.TOP_FRAME_FOR_DISPLAY),
-                            model.get(HeaderProperties.IFRAME_FOR_DISPLAY),
+                            model.get(HeaderProperties.RP_FOR_DISPLAY),
                             model.get(HeaderProperties.RP_MODE));
             if (!subtitle.isEmpty()) {
                 headerTitleText.setPadding(
                         /* left= */ 0, /* top= */ 12, /* right= */ 0, /* bottom= */ 0);
                 headerSubtitleText.setText(subtitle);
-                rpUrlForDisplayInTitle = model.get(HeaderProperties.IFRAME_FOR_DISPLAY);
             } else {
                 headerSubtitleText.setVisibility(View.GONE);
-                rpUrlForDisplayInTitle = model.get(HeaderProperties.TOP_FRAME_FOR_DISPLAY);
             }
 
             String title =
                     computeHeaderTitle(
                             resources,
                             headerType,
-                            rpUrlForDisplayInTitle,
+                            model.get(HeaderProperties.RP_FOR_DISPLAY),
                             model.get(HeaderProperties.IDP_FOR_DISPLAY),
                             model.get(HeaderProperties.RP_CONTEXT),
                             model.get(HeaderProperties.RP_MODE));
@@ -768,23 +762,12 @@ class AccountSelectionViewBinder {
         return String.format(resources.getString(titleStringId), rpUrl, idpUrl);
     }
 
-    private static String computeHeaderSubtitle(
-            Resources resources,
-            HeaderProperties.HeaderType type,
-            String topFrameUrl,
-            String iframeUrl,
-            @RpMode.EnumType int rpMode) {
+    private static String computeHeaderSubtitle(String rpUrl, @RpMode.EnumType int rpMode) {
         if (rpMode == RpMode.BUTTON) {
-            return topFrameUrl;
-        }
-
-        if (type == HeaderProperties.HeaderType.VERIFY
-                || type == HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN
-                || iframeUrl.isEmpty()) {
+            return rpUrl;
+        } else {
             return "";
         }
-        @StringRes int subtitleStringId = R.string.account_selection_sheet_subtitle_explicit;
-        return String.format(resources.getString(subtitleStringId), topFrameUrl);
     }
 
     private AccountSelectionViewBinder() {}

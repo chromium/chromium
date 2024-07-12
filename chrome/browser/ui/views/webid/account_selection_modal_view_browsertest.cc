@@ -46,8 +46,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     }
 
     dialog_ = new AccountSelectionModalView(
-        kTopFrameETLDPlusOne, kIdpETLDPlusOne,
-        blink::mojom::RpContext::kSignIn,
+        kRpETLDPlusOne, kIdpETLDPlusOne, blink::mojom::RpContext::kSignIn,
         browser()->tab_strip_model()->GetActiveWebContents(),
         shared_url_loader_factory(), /*observer=*/nullptr,
         /*widget_observer=*/nullptr);
@@ -67,16 +66,14 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
       const content::IdentityRequestAccount& account,
       const content::IdentityProviderMetadata& idp_metadata,
       const std::string& terms_of_service_url,
-      bool show_auto_reauthn_checkbox = false,
-      bool exclude_iframe = true) {
+      bool show_auto_reauthn_checkbox = false) {
     CreateAccountSelectionModal();
     IdentityProviderDisplayData idp_data(
         kIdpETLDPlusOne, idp_metadata,
         CreateTestClientMetadata(terms_of_service_url), {account},
         /*request_permission=*/true, /*has_login_status_mismatch=*/false);
-    dialog_->ShowSingleAccountConfirmDialog(
-        kTopFrameETLDPlusOne, /*iframe_for_display=*/std::nullopt, account,
-        idp_data, show_back_button);
+    dialog_->ShowSingleAccountConfirmDialog(account, idp_data,
+                                            show_back_button);
   }
 
   void CreateAndShowMultiAccountPicker(
@@ -105,8 +102,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
         kIdpETLDPlusOne, idp_metadata,
         CreateTestClientMetadata(terms_of_service_url), {account},
         /*request_permission=*/true, /*has_login_status_mismatch=*/false);
-    dialog_->ShowRequestPermissionDialog(kTopFrameETLDPlusOne, account,
-                                         idp_data);
+    dialog_->ShowRequestPermissionDialog(account, idp_data);
   }
 
   void CreateAndShowVerifyingSheet() {

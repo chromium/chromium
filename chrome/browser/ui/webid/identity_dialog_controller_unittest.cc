@@ -97,8 +97,7 @@ class MockAccountSelectionView : public AccountSelectionView {
   MOCK_METHOD(
       bool,
       Show,
-      (const std::string& top_frame_for_display,
-       const std::optional<std::string>& iframe_for_display,
+      (const std::string& rp_for_display,
        const std::vector<content::IdentityProviderData>& identity_provider_data,
        Account::SignInMode sign_in_mode,
        blink::mojom::RpMode rp_mode,
@@ -107,8 +106,7 @@ class MockAccountSelectionView : public AccountSelectionView {
 
   MOCK_METHOD(bool,
               ShowFailureDialog,
-              (const std::string& top_frame_for_display,
-               const std::optional<std::string>& iframe_for_display,
+              (const std::string& rp_for_display,
                const std::string& idp_for_display,
                blink::mojom::RpContext rp_context,
                blink::mojom::RpMode rp_mode,
@@ -117,8 +115,7 @@ class MockAccountSelectionView : public AccountSelectionView {
 
   MOCK_METHOD(bool,
               ShowErrorDialog,
-              (const std::string& top_frame_for_display,
-               const std::optional<std::string>& iframe_for_display,
+              (const std::string& rp_for_display,
                const std::string& idp_for_display,
                blink::mojom::RpContext rp_context,
                blink::mojom::RpMode rp_mode,
@@ -128,7 +125,7 @@ class MockAccountSelectionView : public AccountSelectionView {
 
   MOCK_METHOD(bool,
               ShowLoadingDialog,
-              (const std::string& top_frame_for_display,
+              (const std::string& rp_for_display,
                const std::string& idp_for_display,
                blink::mojom::RpContext rp_context,
                blink::mojom::RpMode rp_mode),
@@ -235,7 +232,7 @@ TEST_F(IdentityDialogControllerTest, OnAccountSelectedButtonCallsDismiss) {
 
   // Show button mode accounts dialog.
   controller.ShowAccountsDialog(
-      kTopFrameEtldPlusOne, /*iframe_for_display=*/std::nullopt, {idp_data},
+      kTopFrameEtldPlusOne, {idp_data},
       content::IdentityRequestAccount::SignInMode::kExplicit,
       blink::mojom::RpMode::kButton, /*new_account_idp=*/std::nullopt,
       /*on_selected=*/base::DoNothing(), /*on_add_account=*/base::DoNothing(),
@@ -264,7 +261,7 @@ TEST_F(IdentityDialogControllerTest, OnAccountSelectedWidgetResetsDismiss) {
 
   // Show widget mode accounts dialog.
   controller.ShowAccountsDialog(
-      kTopFrameEtldPlusOne, /*iframe_for_display=*/std::nullopt, {idp_data},
+      kTopFrameEtldPlusOne, {idp_data},
       content::IdentityRequestAccount::SignInMode::kExplicit,
       blink::mojom::RpMode::kWidget, /*new_account_idp=*/std::nullopt,
       /*on_selected=*/base::DoNothing(), /*on_add_account=*/base::DoNothing(),

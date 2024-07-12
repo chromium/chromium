@@ -27,7 +27,6 @@ import org.chromium.url.JUnitTestGURLs;
 /** Common test fixtures for AccountSelectionIntegration Android Javatests. */
 public class AccountSelectionIntegrationTestBase {
     protected static final String EXAMPLE_ETLD_PLUS_ONE = "example.com";
-    protected static final String TEST_ETLD_PLUS_ONE_1 = "one.com";
     protected static final String TEST_ETLD_PLUS_ONE_2 = "two.com";
     protected static final GURL TEST_PROFILE_PIC = JUnitTestGURLs.URL_1_WITH_PATH;
     protected static final GURL TEST_URL = JUnitTestGURLs.URL_1;

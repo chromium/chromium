@@ -115,8 +115,7 @@ class AccountSelectionMediator {
     public static final long POTENTIALLY_UNINTENDED_INPUT_THRESHOLD = 500;
 
     private HeaderType mHeaderType;
-    private String mTopFrameForDisplay;
-    private String mIframeForDisplay;
+    private String mRpForDisplay;
     private String mIdpForDisplay;
     private IdentityProviderMetadata mIdpMetadata;
     private Bitmap mBrandIcon;
@@ -282,8 +281,7 @@ class AccountSelectionMediator {
     private void handleBackPress() {
         mSelectedAccount = null;
         showAccountsInternal(
-                mTopFrameForDisplay,
-                mIframeForDisplay,
+                mRpForDisplay,
                 mIdpForDisplay,
                 mAccounts,
                 mIdpMetadata,
@@ -295,8 +293,7 @@ class AccountSelectionMediator {
 
     private PropertyModel createHeaderItem(
             HeaderType headerType,
-            String topFrameForDisplay,
-            String iframeForDisplay,
+            String rpForDisplay,
             String idpForDisplay,
             @RpContext.EnumType int rpContext) {
         Runnable closeOnClickRunnable =
@@ -316,8 +313,7 @@ class AccountSelectionMediator {
                 .with(HeaderProperties.IDP_BRAND_ICON, mBrandIcon)
                 .with(HeaderProperties.CLOSE_ON_CLICK_LISTENER, closeOnClickRunnable)
                 .with(HeaderProperties.IDP_FOR_DISPLAY, idpForDisplay)
-                .with(HeaderProperties.TOP_FRAME_FOR_DISPLAY, topFrameForDisplay)
-                .with(HeaderProperties.IFRAME_FOR_DISPLAY, iframeForDisplay)
+                .with(HeaderProperties.RP_FOR_DISPLAY, rpForDisplay)
                 .with(HeaderProperties.TYPE, headerType)
                 .with(HeaderProperties.RP_CONTEXT, rpContext)
                 .with(HeaderProperties.RP_MODE, mRpMode)
@@ -431,8 +427,7 @@ class AccountSelectionMediator {
     }
 
     void showAccounts(
-            String topFrameForDisplay,
-            String iframeForDisplay,
+            String rpForDisplay,
             String idpForDisplay,
             List<Account> accounts,
             IdentityProviderMetadata idpMetadata,
@@ -446,8 +441,7 @@ class AccountSelectionMediator {
             mSelectedAccount = accounts.get(0);
         }
         showAccountsInternal(
-                topFrameForDisplay,
-                iframeForDisplay,
+                rpForDisplay,
                 idpForDisplay,
                 accounts,
                 idpMetadata,
@@ -460,14 +454,12 @@ class AccountSelectionMediator {
     }
 
     void showFailureDialog(
-            String topFrameForDisplay,
-            String iframeForDisplay,
+            String rpForDisplay,
             String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
             @RpContext.EnumType int rpContext) {
         showPlaceholderIcon(idpMetadata);
-        mTopFrameForDisplay = topFrameForDisplay;
-        mIframeForDisplay = iframeForDisplay;
+        mRpForDisplay = rpForDisplay;
         mIdpForDisplay = idpForDisplay;
         mIdpMetadata = idpMetadata;
         mRpContext = rpContext;
@@ -478,15 +470,13 @@ class AccountSelectionMediator {
     }
 
     void showErrorDialog(
-            String topFrameForDisplay,
-            String iframeForDisplay,
+            String rpForDisplay,
             String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
             @RpContext.EnumType int rpContext,
             IdentityCredentialTokenError error) {
         showPlaceholderIcon(idpMetadata);
-        mTopFrameForDisplay = topFrameForDisplay;
-        mIframeForDisplay = iframeForDisplay;
+        mRpForDisplay = rpForDisplay;
         mIdpForDisplay = idpForDisplay;
         mIdpMetadata = idpMetadata;
         mRpContext = rpContext;
@@ -527,8 +517,7 @@ class AccountSelectionMediator {
     }
 
     private void showAccountsInternal(
-            String topFrameForDisplay,
-            String iframeForDisplay,
+            String rpForDisplay,
             String idpForDisplay,
             List<Account> accounts,
             IdentityProviderMetadata idpMetadata,
@@ -536,8 +525,7 @@ class AccountSelectionMediator {
             boolean isAutoReauthn,
             @RpContext.EnumType int rpContext,
             boolean requestPermission) {
-        mTopFrameForDisplay = topFrameForDisplay;
-        mIframeForDisplay = iframeForDisplay;
+        mRpForDisplay = rpForDisplay;
         mIdpForDisplay = idpForDisplay;
         mAccounts = accounts;
         mIdpMetadata = idpMetadata;
@@ -622,7 +610,7 @@ class AccountSelectionMediator {
         mModel.set(
                 ItemProperties.ERROR_TEXT,
                 mHeaderType == HeaderType.SIGN_IN_ERROR
-                        ? createErrorTextItem(mIdpForDisplay, mTopFrameForDisplay, mError)
+                        ? createErrorTextItem(mIdpForDisplay, mRpForDisplay, mError)
                         : null);
         // For multiple account choosers, the add account button is added as an account row.
         mModel.set(
@@ -638,12 +626,7 @@ class AccountSelectionMediator {
 
     private void updateHeader() {
         PropertyModel headerModel =
-                createHeaderItem(
-                        mHeaderType,
-                        mTopFrameForDisplay,
-                        mIframeForDisplay,
-                        mIdpForDisplay,
-                        mRpContext);
+                createHeaderItem(mHeaderType, mRpForDisplay, mIdpForDisplay, mRpContext);
         mModel.set(ItemProperties.HEADER, headerModel);
     }
 
@@ -746,8 +729,7 @@ class AccountSelectionMediator {
         mSelectedAccount = selectedAccount;
         if (oldSelectedAccount == null && !mSelectedAccount.isSignIn() && mRequestPermission) {
             showAccountsInternal(
-                    mTopFrameForDisplay,
-                    mIframeForDisplay,
+                    mRpForDisplay,
                     mIdpForDisplay,
                     mAccounts,
                     mIdpMetadata,
@@ -840,10 +822,10 @@ class AccountSelectionMediator {
     }
 
     private PropertyModel createErrorTextItem(
-            String idpForDisplay, String topFrameForDisplay, IdentityCredentialTokenError error) {
+            String idpForDisplay, String rpForDisplay, IdentityCredentialTokenError error) {
         ErrorProperties.Properties properties = new ErrorProperties.Properties();
         properties.mIdpForDisplay = idpForDisplay;
-        properties.mTopFrameForDisplay = topFrameForDisplay;
+        properties.mRpForDisplay = rpForDisplay;
         properties.mError = error;
         properties.mMoreDetailsClickRunnable =
                 !error.getUrl().isEmpty() ? this::onMoreDetails : null;

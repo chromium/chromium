@@ -71,10 +71,8 @@ class AccountSelectionProperties {
                 new ReadableObjectPropertyKey<>("close_on_click_listener");
         static final ReadableObjectPropertyKey<String> IDP_FOR_DISPLAY =
                 new ReadableObjectPropertyKey<>("idp_for_display");
-        static final ReadableObjectPropertyKey<String> TOP_FRAME_FOR_DISPLAY =
-                new ReadableObjectPropertyKey<>("top_frame_for_display");
-        static final ReadableObjectPropertyKey<String> IFRAME_FOR_DISPLAY =
-                new ReadableObjectPropertyKey<>("iframe_for_display");
+        static final ReadableObjectPropertyKey<String> RP_FOR_DISPLAY =
+                new ReadableObjectPropertyKey<>("rp_for_display");
         static final ReadableObjectPropertyKey<Bitmap> IDP_BRAND_ICON =
                 new ReadableObjectPropertyKey<>("brand_icon");
         static final ReadableObjectPropertyKey<HeaderType> TYPE =
@@ -86,8 +84,7 @@ class AccountSelectionProperties {
         static final PropertyKey[] ALL_KEYS = {
             CLOSE_ON_CLICK_LISTENER,
             IDP_FOR_DISPLAY,
-            TOP_FRAME_FOR_DISPLAY,
-            IFRAME_FOR_DISPLAY,
+            RP_FOR_DISPLAY,
             IDP_BRAND_ICON,
             TYPE,
             RP_CONTEXT,
@@ -190,7 +187,7 @@ class AccountSelectionProperties {
     static class ErrorProperties {
         static class Properties {
             public String mIdpForDisplay;
-            public String mTopFrameForDisplay;
+            public String mRpForDisplay;
             public IdentityCredentialTokenError mError;
             public Runnable mMoreDetailsClickRunnable;
         }
