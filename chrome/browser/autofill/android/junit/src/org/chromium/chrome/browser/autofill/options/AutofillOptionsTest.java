@@ -19,6 +19,7 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus.ANDROID_AUTOFILL_SERVICE_IS_GOOGLE;
 import static org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus.AVAILABLE;
+import static org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus.NOT_ALLOWED_BY_POLICY;
 import static org.chromium.chrome.browser.autofill.AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_THIRD_PARTY_TOGGLE_CHANGED;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_AUTOFILL_ENABLED;
@@ -58,6 +59,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.AutofillFeatures;
+import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -139,6 +141,7 @@ public class AutofillOptionsTest {
 
         assertTrue(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
         assertTrue(getRadioButtonComponent().isEnabled());
+        assertFalse(getHint().isShown());
     }
 
     @Test
@@ -157,6 +160,7 @@ public class AutofillOptionsTest {
         // On construction (assuming Awg is set), the setting is turned off and can't change.
         assertFalse(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
         assertFalse(getRadioButtonComponent().isEnabled());
+        assertTrue(getHint().isShown());
 
         // On resume, check again whether AwG isn't used anymore — e.g. coming back from Settings.
         setAutofillAvailabilityToUseForTesting(AVAILABLE);
@@ -165,6 +169,25 @@ public class AutofillOptionsTest {
 
         assertTrue(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
         assertTrue(getRadioButtonComponent().isEnabled());
+        assertFalse(getHint().isShown());
+    }
+
+    @Test
+    @SmallTest
+    public void optionDisabledByPolicy() {
+        setAutofillAvailabilityToUseForTesting(NOT_ALLOWED_BY_POLICY);
+        doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
+
+        // Toggling on resume is to align with prefs and shouldn't trigger restart/dialogs.
+        AutofillOptionsCoordinator autofillOptions =
+                new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail);
+        PropertyModel model = autofillOptions.initializeNow();
+
+        // On construction (assuming Awg is set), the setting is turned off and can't change.
+        assertFalse(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
+        assertTrue(model.get(THIRD_PARTY_TOGGLE_IS_READ_ONLY));
+        assertFalse(getRadioButtonComponent().isEnabled());
+        assertTrue(getHint().isShown());
     }
 
     @Test
@@ -182,6 +205,7 @@ public class AutofillOptionsTest {
         // On construction (assuming Awg is set), the setting is turned off but may change.
         assertFalse(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
         assertTrue(getRadioButtonComponent().isEnabled());
+        assertFalse(getHint().isShown());
     }
 
     @Test
@@ -199,6 +223,7 @@ public class AutofillOptionsTest {
         assertTrue(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
         assertFalse(model.get(THIRD_PARTY_TOGGLE_IS_READ_ONLY));
         assertTrue(getRadioButtonComponent().isEnabled());
+        assertFalse(getHint().isShown());
     }
 
     @Test
@@ -436,6 +461,11 @@ public class AutofillOptionsTest {
     private RadioButtonGroupThirdPartyPreference getRadioButtonComponent() {
         assertNotNull(mFragment);
         return mFragment.getThirdPartyFillingOption();
+    }
+
+    private TextMessagePreference getHint() {
+        assertNotNull(mFragment);
+        return mFragment.getHint();
     }
 
     private void addFeatureOverrideForAwG() {

@@ -14,4 +14,9 @@ found in the LICENSE file.
         android:order="1"
         android:selectable="false" />
 
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="third_party_toggle_hint"
+        android:order="2"
+        android:summary="@string/autofill_options_hint_policy"
+        app:allowDividerBelow="false" />
 </PreferenceScreen>

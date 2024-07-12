@@ -14,6 +14,7 @@ import androidx.annotation.IntDef;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.settings.TextMessagePreference;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -24,7 +25,7 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
     // this argument is part of the AutofillOptionsReferrer enum containing all entry points.
     public static final String AUTOFILL_OPTIONS_REFERRER = "autofill-options-referrer";
     public static final String PREF_AUTOFILL_THIRD_PARTY_FILLING = "autofill_third_party_filling";
-
+    public static final String PREF_THIRD_PARTY_TOGGLE_HINT = "third_party_toggle_hint";
     private @AutofillOptionsReferrer int mReferrer;
 
     // Represents different referrers when navigating to the Autofill Options page.
@@ -57,6 +58,12 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
                 findPreference(PREF_AUTOFILL_THIRD_PARTY_FILLING);
         assert thirdPartyFillingSwitch != null;
         return thirdPartyFillingSwitch;
+    }
+
+    TextMessagePreference getHint() {
+        TextMessagePreference hint = findPreference(PREF_THIRD_PARTY_TOGGLE_HINT);
+        assert hint != null;
+        return hint;
     }
 
     @Override
