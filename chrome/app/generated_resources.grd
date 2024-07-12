@@ -8307,36 +8307,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_SHOPPING_TASKS_LOWER" desc="Name of the shopping tasks module in lowercase shown in various UIs.">
         shopping suggestions
       </message>
-      <message name="IDS_NTP_MODULES_RECIPE_INFO" desc="Text shown in the body of the info dialog of the recipe module.">
-        You’re seeing suggested recipes based on your recent Search activity for recipes.
-        <ph name="BREAK">&lt;br&gt;</ph>
-        <ph name="BREAK">&lt;br&gt;</ph>
-        You can manage settings from the card menu or see more options in Customize Chrome.
-      </message>
-      <message name="IDS_NTP_MODULES_RECIPE_EXTENDED_INFO" desc="Text shown in the body of the info dialog of the recipe module for Recipes V1.1.">
-        You’re seeing recipes based on your recent Search activity for recipes.
-        <ph name="BREAK">&lt;br&gt;</ph>
-        <ph name="BREAK">&lt;br&gt;</ph>
-        You can manage settings from the card menu or see more options in Customize Chrome.
-      </message>
-      <message name="IDS_NTP_MODULES_RECIPE_TASKS_SENTENCE" desc="Name of the recipe tasks module in sentence case shown in various UIs.">
-        Recipe ideas
-      </message>
-      <message name="IDS_NTP_MODULES_RECIPE_TASKS_LOWER" desc="Name of the recipe tasks module in lowercase shown in various UIs.">
-        recipe ideas
-      </message>
-      <message name="IDS_NTP_MODULES_RECIPE_TASKS_LOWER_THESE" desc="Name of the recipe tasks module in lowercase shown in various UIs.">
-        these recipe ideas
-      </message>
-      <message name="IDS_NTP_MODULES_RECIPE_VIEWED_TASKS_SENTENCE" desc="Name of the historical version of the recipe tasks module in sentence case shown in various UIs.">
-        Recently viewed recipes
-      </message>
-      <message name="IDS_NTP_MODULES_RECIPE_VIEWED_TASKS_LOWER" desc="Name of the historical version of the recipe tasks module in lowercase shown in various UIs.">
-        recently viewed recipes
-      </message>
-      <message name="IDS_NTP_MODULES_RECIPE_VIEWED_TASKS_LOWER_THESE" desc="Name of the historical veresion of the recipe tasks module in lowercase shown in various UIs.">
-        these recently viewed recipes
-      </message>
       <message name="IDS_NTP_MODULES_CART_SENTENCE" desc="Name of the chrome cart module in sentence case shown in various UIs.">
         Your carts
       </message>
@@ -8541,9 +8511,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_MODULES_SHOPPING_TASKS_RELATED" desc="Text shown in a tag on a shopping task module product indicating that it is related to a previous search.">
         Related to your search
-      </message>
-      <message name="IDS_NTP_MODULES_RECIPE_TASKS_RECOMMENDED" desc="Text shown in a tag on a recipe task module recipe indicating that it is recommended.">
-        Recommended
       </message>
       <message name="IDS_NTP_MODULES_CART_WARM_WELCOME" desc="Text shown in the module header when module shows for the first couple of times. This is served as welcome message and user education.">
         Find what you added to shopping carts and check out when you're ready
