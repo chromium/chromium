@@ -277,23 +277,11 @@ void TestVDAVideoDecoder::PictureReady(const Picture& picture) {
   // Wrap the video frame in another frame that calls ReusePictureBufferTask()
   // upon destruction. When the renderer and video frame processors are done
   // using the video frame, the associated picture buffer will automatically be
-  // flagged for reuse. WrapVideoFrame() is not supported for texture-based
-  // video frames (see http://crbug/362521) so we work around this by creating a
-  // new video frame using the same mailbox.
+  // flagged for reuse.
   if (!picture.visible_rect().IsEmpty()) {
-    if (!video_frame->HasTextures()) {
-      wrapped_video_frame = VideoFrame::WrapVideoFrame(
-          video_frame, video_frame->format(), picture.visible_rect(),
-          picture.visible_rect().size());
-    } else {
-      gpu::MailboxHolder mailbox_holders[media::VideoFrame::kMaxPlanes];
-      mailbox_holders[0] = video_frame->mailbox_holder(0);
-      wrapped_video_frame = VideoFrame::WrapNativeTextures(
-          video_frame->format(), mailbox_holders,
-          VideoFrame::ReleaseMailboxCB(), video_frame->coded_size(),
-          picture.visible_rect(), picture.visible_rect().size(),
-          video_frame->timestamp());
-    }
+    wrapped_video_frame = VideoFrame::WrapVideoFrame(
+        video_frame, video_frame->format(), picture.visible_rect(),
+        picture.visible_rect().size());
   } else {
     // This occurs in bitstream buffer in webrtc scenario. WrapNativeTexture()
     // fails if visible_rect() is empty. Although the client of
