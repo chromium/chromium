@@ -23586,55 +23586,6 @@
             ]
         }
     ],
-    "V8MemoryReducer": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "V8MemoryReducer2GCs",
-                    "params": {
-                        "V8MemoryReducerGCCount": "2"
-                    },
-                    "enable_features": [
-                        "V8MemoryReducer"
-                    ]
-                },
-                {
-                    "name": "V8MemoryReducer1GC",
-                    "params": {
-                        "V8MemoryReducerGCCount": "1"
-                    },
-                    "enable_features": [
-                        "V8MemoryReducer"
-                    ]
-                },
-                {
-                    "name": "V8MemoryReducer3GCs",
-                    "params": {
-                        "V8MemoryReducerGCCount": "3"
-                    },
-                    "enable_features": [
-                        "V8MemoryReducer"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "V8MemoryReducer"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8SideStepTransitions": [
         {
             "platforms": [
