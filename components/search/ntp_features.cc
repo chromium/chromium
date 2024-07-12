@@ -47,6 +47,7 @@ BASE_FEATURE(kCustomizeChromeSidePanelExtensionsCard,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, shows wallpaper search within the Customize Chrome Side Panel.
+// This is a kill switch. Keep indefinitely.
 BASE_FEATURE(kCustomizeChromeWallpaperSearch,
              "CustomizeChromeWallpaperSearch",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -111,6 +112,7 @@ BASE_FEATURE(kRealboxUseGoogleGIcon,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, alpha NTP backgrounds will show in Customize Chrome.
+// This is a development switch. Keep indefinitely.
 BASE_FEATURE(kNtpAlphaBackgroundCollections,
              "NtpAlphaBackgroundCollections",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -133,12 +135,14 @@ BASE_FEATURE(kNtpChromeCartModule,
 
 #if !defined(OFFICIAL_BUILD)
 // If enabled, dummy modules will be shown.
+// This is a development switch. Keep indefinitely.
 BASE_FEATURE(kNtpDummyModules,
              "NtpDummyModules",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // If enabled, Google Drive module will be shown.
+// This is a kill switch. Keep indefinitely.
 BASE_FEATURE(kNtpDriveModule,
              "NtpDriveModule",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -164,9 +168,11 @@ BASE_FEATURE(kNtpHandleMostVisitedNavigationExplicitly,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, logo will be shown.
+// This is a kill switch. Keep indefinitely.
 BASE_FEATURE(kNtpLogo, "NtpLogo", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, middle slot promo will be shown.
+// This is a kill switch. Keep indefinitely.
 BASE_FEATURE(kNtpMiddleSlotPromo,
              "NtpMiddleSlotPromo",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -178,6 +184,7 @@ BASE_FEATURE(kNtpMiddleSlotPromoDismissal,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Dummy feature to set param "NtpModulesLoadTimeoutMillisecondsParam".
+// This is used for an emergency Finch param. Keep indefinitely.
 BASE_FEATURE(kNtpModulesLoadTimeoutMilliseconds,
              "NtpModulesLoadTimeoutMilliseconds",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -188,16 +195,19 @@ BASE_FEATURE(kNtpWideModules,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Dummy feature to set param "NtpModulesOrderParam".
+// This is used for an emergency Finch param. Keep indefinitely.
 BASE_FEATURE(kNtpModulesOrder,
              "NtpModulesOrder",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Dummy feature to set param "NtpModulesMaxColumnCountParam".
+// This is used for an emergency Finch param. Keep indefinitely.
 BASE_FEATURE(kNtpModulesMaxColumnCount,
              "NtpModulesMaxColumnCount",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Dummy feature to set param "NtpModulesLoadedWithOtherModulesMaxInstanceCount"
+// This is used for an emergency Finch param. Keep indefinitely.
 BASE_FEATURE(kNtpModulesLoadedWithOtherModulesMaxInstanceCount,
              "NtpModulesLoadedWithOtherModulesMaxInstanceCount",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -235,6 +245,7 @@ BASE_FEATURE(kNtpMostVisitedReflowOnOverflow,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, OneGoogleBar will be shown.
+// This is a kill switch. Keep indefinitely.
 BASE_FEATURE(kNtpOneGoogleBar,
              "NtpOneGoogleBar",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -292,6 +303,7 @@ BASE_FEATURE(kNtpSharepointModule,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, shortcuts will be shown.
+// This is a kill switch. Keep indefinitely.
 BASE_FEATURE(kNtpShortcuts, "NtpShortcuts", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the History clusters module will be shown.
