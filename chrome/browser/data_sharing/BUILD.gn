@@ -93,7 +93,10 @@ if (is_android) {
       "//url:url_java",
     ]
     if (defined(enable_data_sharing_internal) && enable_data_sharing_internal) {
-      jar_excluded_patterns = [ "*/DataSharingUIDelegateImpl.class" ]
+      jar_excluded_patterns = [
+        "*/DataSharingSDKDelegateImpl.class",
+        "*/DataSharingUIDelegateImpl.class",
+      ]
     }
   }
 
