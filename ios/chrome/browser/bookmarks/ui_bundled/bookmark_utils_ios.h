@@ -35,39 +35,8 @@ class SyncService;
 
 namespace bookmark_utils_ios {
 
-// This class holds a node id.
-struct BookmarkNodeReference {
-  explicit BookmarkNodeReference(int64_t node_id);
-  BookmarkNodeReference(const BookmarkNodeReference&);
-  ~BookmarkNodeReference();
-
-  // This operator is needed to be used `BookmarkNodeReference` in a std::set.
-  bool operator<(const BookmarkNodeReference reference) const;
-  BookmarkNodeReference& operator=(const BookmarkNodeReference& other) = delete;
-
-  // Node id for the BookmarkNode.
-  int64_t node_id;
-};
-
 typedef std::vector<const bookmarks::BookmarkNode*> NodeVector;
 typedef std::set<const bookmarks::BookmarkNode*> NodeSet;
-typedef std::set<BookmarkNodeReference> NodeReferenceSet;
-
-// Converts a set of BookmarkNode into a set of BookmarkNodeReference.
-NodeReferenceSet FindNodeReferenceByNodes(const NodeSet& nodes);
-
-// Converts a BookmarkNodeReference into a BookmarkNode. This function might
-// returns `nullptr` if the bookmark node doesn't exist anymore. `model` must
-// not be null.
-const bookmarks::BookmarkNode* FindNodeByNodeReference(
-    const bookmarks::BookmarkModel* model,
-    BookmarkNodeReference reference);
-
-// Converts a set of BookmarkNodeReference into a set of BookmarkNode. This
-// function might return fewer BookmarkNodeReference objects than BookmarkNode
-// if the nodes don't exist anymore. `model` must not be null.
-NodeSet FindNodesByNodeReferences(const bookmarks::BookmarkModel* model,
-                                  const NodeReferenceSet& references);
 
 // Finds bookmark node passed in `id`, in the `model`. Returns null if the
 // node is found but not a folder.

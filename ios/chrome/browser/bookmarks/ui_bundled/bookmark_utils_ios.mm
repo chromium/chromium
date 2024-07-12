@@ -79,47 +79,6 @@ void RemoveBookmarksRecursive(const std::set<const BookmarkNode*>& bookmarks,
 
 }  // namespace
 
-BookmarkNodeReference::BookmarkNodeReference(int64_t node_id)
-    : node_id(node_id) {}
-
-BookmarkNodeReference::BookmarkNodeReference(
-    const BookmarkNodeReference& other) = default;
-
-BookmarkNodeReference::~BookmarkNodeReference() = default;
-
-bool BookmarkNodeReference::operator<(
-    const BookmarkNodeReference reference) const {
-  return node_id < reference.node_id;
-}
-
-NodeReferenceSet FindNodeReferenceByNodes(const NodeSet& nodes) {
-  NodeReferenceSet references;
-  for (const BookmarkNode* node : nodes) {
-    references.emplace(node->id());
-  }
-  return references;
-}
-
-const BookmarkNode* FindNodeByNodeReference(
-    const bookmarks::BookmarkModel* model,
-    BookmarkNodeReference reference) {
-  CHECK(model);
-  return bookmarks::GetBookmarkNodeByID(model, reference.node_id);
-}
-
-NodeSet FindNodesByNodeReferences(const bookmarks::BookmarkModel* model,
-                                  const NodeReferenceSet& references) {
-  CHECK(model);
-  NodeSet nodes;
-  for (BookmarkNodeReference reference : references) {
-    const BookmarkNode* node = FindNodeByNodeReference(model, reference);
-    if (node) {
-      nodes.insert(node);
-    }
-  }
-  return nodes;
-}
-
 const BookmarkNode* FindFolderById(const bookmarks::BookmarkModel* model,
                                    int64_t id) {
   CHECK(model);
