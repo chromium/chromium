@@ -45,7 +45,6 @@ import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchW
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
 
@@ -75,7 +74,6 @@ public class QuickActionSearchWidgetProviderDelegateTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        ChromeApplicationTestUtils.setUp();
         mContext =
                 InstrumentationRegistry.getInstrumentation()
                         .getTargetContext()

@@ -109,7 +109,7 @@ public class UpdateMenuItemHelperTest {
     @Before
     public void setUp() {
         // This test explicitly tests for the menu item, so turn it on.
-        VersionNumberGetter.setEnableUpdateDetection(true);
+        VersionNumberGetter.setEnableUpdateDetectionForTesting(true);
     }
 
     /**

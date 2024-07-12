@@ -94,7 +94,6 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     @Override
     protected void before() throws Throwable {
         super.before();
-        ChromeApplicationTestUtils.setUp();
         // Instrumentation infrastructure and tests often access variables from the
         // instrumentation thread for asserts. See crbug.com/1173814 for more
         // details.

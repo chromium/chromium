@@ -483,7 +483,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         }
     }
 
-    private void onBeforeTestClass() {
+    protected void onBeforeTestClass() {
         Class<?> testClass = getTestClass().getJavaClass();
         ResettersForTesting.beforeClassHooksWillExecute();
         BaseChromiumAndroidJUnitRunner.sInMemorySharedPreferencesContext.resetSharedPreferences();
