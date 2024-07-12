@@ -253,6 +253,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/web/model:page_placeholder",
     "//ios/chrome/browser/web/model:tab_helper_delegates",
     "//ios/chrome/browser/web/model/annotations",
+    "//ios/chrome/browser/web/model/choose_file",
     "//ios/chrome/browser/web/model/font_size",
     "//ios/chrome/browser/web/model/print",
     "//ios/chrome/browser/web_state_list/model",

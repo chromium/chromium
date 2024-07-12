@@ -130,6 +130,7 @@
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/country_code_picker_commands.h"
+#import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/feed_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
@@ -241,6 +242,7 @@
 #import "ios/chrome/browser/view_source/model/view_source_browser_agent.h"
 #import "ios/chrome/browser/voice/ui_bundled/text_to_speech_playback_controller.h"
 #import "ios/chrome/browser/voice/ui_bundled/text_to_speech_playback_controller_factory.h"
+#import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/browser/web/model/font_size/font_size_tab_helper.h"
 #import "ios/chrome/browser/web/model/page_placeholder_browser_agent.h"
 #import "ios/chrome/browser/web/model/page_placeholder_tab_helper.h"
@@ -296,6 +298,7 @@ enum class ToolbarKind {
     CountryCodePickerCommands,
     DefaultBrowserGenericPromoCommands,
     DefaultPromoNonModalPresentationDelegate,
+    DriveFilePickerCommands,
     EnterprisePromptCoordinatorDelegate,
     FormInputAccessoryCoordinatorNavigator,
     MiniMapCommands,
@@ -719,6 +722,7 @@ enum class ToolbarKind {
                            dismissOmnibox:(BOOL)dismissOmnibox {
   [self stopSaveToPhotos];
   [self hideSaveToDrive];
+  [self hideDriveFilePicker];
 
   [self.passKitCoordinator stop];
 
@@ -920,6 +924,7 @@ enum class ToolbarKind {
     @protocol(ContextualPanelEntrypointIPHCommands),
     @protocol(ContextualSheetCommands),
     @protocol(DefaultBrowserPromoNonModalCommands),
+    @protocol(DriveFilePickerCommands),
     @protocol(FeedCommands),
     @protocol(PromosManagerCommands),
     @protocol(FindInPageCommands),
@@ -2263,6 +2268,27 @@ enum class ToolbarKind {
 - (void)hidePromo {
   [self.defaultBrowserGenericPromoCoordinator stop];
   self.defaultBrowserGenericPromoCoordinator = nil;
+}
+
+#pragma mark - DriveFilePickerCommands
+
+- (void)showDriveFilePicker {
+  web::WebState* activeWebState = self.activeWebState;
+  if (!activeWebState || activeWebState->IsBeingDestroyed()) {
+    // If there is no active WebState or it is being destroyed, do nothing.
+    return;
+  }
+  ChooseFileTabHelper* tab_helper =
+      ChooseFileTabHelper::GetOrCreateForWebState(activeWebState);
+  if (!tab_helper->IsChoosingFiles()) {
+    return;
+  }
+  // TODO(crbug.com/344812548): Show the Drive file picker.
+  tab_helper->StopChoosingFiles();
+}
+
+- (void)hideDriveFilePicker {
+  // TODO(crbug.com/344812548): Hide the Drive file picker.
 }
 
 #pragma mark - FeedCommands
