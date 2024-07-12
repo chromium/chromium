@@ -107,7 +107,6 @@ public class SafetyHubModuleViewBinder {
         String secondaryButtonText = null;
         View.OnClickListener primaryButtonListener = null;
         View.OnClickListener secondaryButtonListener = null;
-        boolean expanded = false;
 
         switch (safeBrowsingState) {
             case SafeBrowsingState.STANDARD_PROTECTION:
@@ -182,7 +181,6 @@ public class SafetyHubModuleViewBinder {
                             preference.getContext().getString(R.string.safety_hub_turn_on_button);
                     primaryButtonListener =
                             model.get(SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
-                    expanded = true;
                 }
         }
 
@@ -192,8 +190,8 @@ public class SafetyHubModuleViewBinder {
         preference.setSecondaryButtonText(secondaryButtonText);
         preference.setPrimaryButtonClickListener(primaryButtonListener);
         preference.setSecondaryButtonClickListener(secondaryButtonListener);
-        preference.setExpanded(expanded);
 
+        preference.setExpanded(shouldExpandModule(state, managed));
         preference.setIcon(getIconForModuleState(preference.getContext(), state, managed));
         preference.setOrder(getOrderForModuleState(option, state, managed));
     }
@@ -210,7 +208,6 @@ public class SafetyHubModuleViewBinder {
         String secondaryButtonText = null;
         View.OnClickListener primaryButtonListener = null;
         View.OnClickListener secondaryButtonListener = null;
-        boolean expanded = false;
 
         if (compromisedPasswordsCount > 0) {
             title =
@@ -227,7 +224,6 @@ public class SafetyHubModuleViewBinder {
                             .getContext()
                             .getString(R.string.safety_hub_passwords_navigation_button);
             primaryButtonListener = model.get(SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
-            expanded = true;
         } else {
             title = preference.getContext().getString(R.string.safety_check_passwords_safe);
             secondaryButtonText =
@@ -242,8 +238,8 @@ public class SafetyHubModuleViewBinder {
         preference.setSecondaryButtonText(secondaryButtonText);
         preference.setPrimaryButtonClickListener(primaryButtonListener);
         preference.setSecondaryButtonClickListener(secondaryButtonListener);
-        preference.setExpanded(expanded);
 
+        preference.setExpanded(shouldExpandModule(state, false));
         preference.setIcon(getIconForModuleState(preference.getContext(), state, false));
         preference.setOrder(getOrderForModuleState(option, state, false));
     }
@@ -261,7 +257,6 @@ public class SafetyHubModuleViewBinder {
         String secondaryButtonText = null;
         View.OnClickListener primaryButtonListener = null;
         View.OnClickListener secondaryButtonListener = null;
-        boolean expanded = false;
 
         if (updateStatus == null) {
             title = preference.getContext().getString(R.string.safety_check_updates_updated);
@@ -277,7 +272,6 @@ public class SafetyHubModuleViewBinder {
                                     .getContext()
                                     .getString(R.string.menu_update_unsupported_summary_default);
                     summary = updateStatus.latestUnsupportedVersion;
-                    expanded = true;
                     break;
                 case UpdateStatusProvider.UpdateState.UPDATE_AVAILABLE:
                     title =
@@ -287,7 +281,6 @@ public class SafetyHubModuleViewBinder {
                     primaryButtonText = preference.getContext().getString(R.string.menu_update);
                     primaryButtonListener =
                             model.get(SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
-                    expanded = true;
                     break;
                 default:
                     title =
@@ -310,8 +303,8 @@ public class SafetyHubModuleViewBinder {
         preference.setSecondaryButtonText(secondaryButtonText);
         preference.setPrimaryButtonClickListener(primaryButtonListener);
         preference.setSecondaryButtonClickListener(secondaryButtonListener);
-        preference.setExpanded(expanded);
 
+        preference.setExpanded(shouldExpandModule(state, false));
         preference.setIcon(getIconForModuleState(preference.getContext(), state, false));
         preference.setOrder(getOrderForModuleState(option, state, false));
     }
@@ -328,7 +321,6 @@ public class SafetyHubModuleViewBinder {
         String secondaryButtonText;
         View.OnClickListener primaryButtonListener = null;
         View.OnClickListener secondaryButtonListener = null;
-        boolean expanded = false;
 
         if (sitesWithUnusedPermissionsCount > 0) {
             title =
@@ -346,7 +338,6 @@ public class SafetyHubModuleViewBinder {
             primaryButtonListener = model.get(SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
             secondaryButtonListener =
                     model.get(SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER);
-            expanded = true;
         } else {
             title = preference.getContext().getString(R.string.safety_hub_permissions_ok_title);
             secondaryButtonText =
@@ -360,8 +351,8 @@ public class SafetyHubModuleViewBinder {
         preference.setSecondaryButtonText(secondaryButtonText);
         preference.setPrimaryButtonClickListener(primaryButtonListener);
         preference.setSecondaryButtonClickListener(secondaryButtonListener);
-        preference.setExpanded(expanded);
 
+        preference.setExpanded(shouldExpandModule(state, false));
         preference.setIcon(getIconForModuleState(preference.getContext(), state, false));
         preference.setOrder(getOrderForModuleState(option, state, false));
     }
@@ -378,7 +369,6 @@ public class SafetyHubModuleViewBinder {
         String secondaryButtonText;
         View.OnClickListener primaryButtonListener = null;
         View.OnClickListener secondaryButtonListener = null;
-        boolean expanded = false;
 
         if (notificationPermissionsForReviewCount > 0) {
             title =
@@ -398,7 +388,6 @@ public class SafetyHubModuleViewBinder {
             primaryButtonListener = model.get(SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
             secondaryButtonListener =
                     model.get(SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER);
-            expanded = true;
         } else {
             title =
                     preference
@@ -417,8 +406,8 @@ public class SafetyHubModuleViewBinder {
         preference.setSecondaryButtonText(secondaryButtonText);
         preference.setPrimaryButtonClickListener(primaryButtonListener);
         preference.setSecondaryButtonClickListener(secondaryButtonListener);
-        preference.setExpanded(expanded);
 
+        preference.setExpanded(shouldExpandModule(state, false));
         preference.setIcon(getIconForModuleState(preference.getContext(), state, false));
         preference.setOrder(getOrderForModuleState(option, state, false));
     }
@@ -464,6 +453,19 @@ public class SafetyHubModuleViewBinder {
                                 R.color.default_icon_color_secondary_tint_list)
                         : SettingsUtils.getTintedIcon(
                                 context, R.drawable.ic_error, R.color.default_red);
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    private static boolean shouldExpandModule(
+            @SafetyHubModuleProperties.ModuleState int state, boolean managed) {
+        switch (state) {
+            case SafetyHubModuleProperties.ModuleState.SAFE:
+            case SafetyHubModuleProperties.ModuleState.INFO:
+                return false;
+            case SafetyHubModuleProperties.ModuleState.WARNING:
+                return !managed;
             default:
                 throw new IllegalArgumentException();
         }

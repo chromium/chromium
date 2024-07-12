@@ -38,9 +38,9 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class SafetyHubModuleViewBinderTest {
-    private static final @DrawableRes int OK_ICON = R.drawable.ic_checkmark_24dp;
-    private static final @DrawableRes int ERROR_ICON = R.drawable.ic_error;
-    private static final @DrawableRes int WARNING_ICON = R.drawable.btn_info;
+    private static final @DrawableRes int SAFE_ICON = R.drawable.ic_checkmark_24dp;
+    private static final @DrawableRes int WARNING_ICON = R.drawable.ic_error;
+    private static final @DrawableRes int INFO_ICON = R.drawable.btn_info;
     private Activity mActivity;
     private PropertyModel mPasswordCheckPropertyModel;
     private SafetyHubExpandablePreference mPasswordCheckPreference;
@@ -134,7 +134,7 @@ public class SafetyHubModuleViewBinderTest {
                 mActivity.getString(R.string.safety_hub_passwords_navigation_button);
 
         assertEquals(expectedTitle, mPasswordCheckPreference.getTitle().toString());
-        assertEquals(OK_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
+        assertEquals(SAFE_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
         assertNull(mPasswordCheckPreference.getPrimaryButtonText());
         assertEquals(
                 expectedSecondaryButtonText, mPasswordCheckPreference.getSecondaryButtonText());
@@ -159,7 +159,7 @@ public class SafetyHubModuleViewBinderTest {
 
         assertEquals(expectedTitle, mPasswordCheckPreference.getTitle().toString());
         assertEquals(
-                ERROR_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
+                WARNING_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
         assertEquals(expectedPrimaryButtonText, mPasswordCheckPreference.getPrimaryButtonText());
         assertNull(mPasswordCheckPreference.getSecondaryButtonText());
         assertTrue(mPasswordCheckPreference.isExpanded());
@@ -180,7 +180,7 @@ public class SafetyHubModuleViewBinderTest {
 
         assertEquals(expectedTitle, mUpdateCheckPreference.getTitle().toString());
         assertEquals(expectedSummary, mUpdateCheckPreference.getSummary().toString());
-        assertEquals(OK_ICON, shadowOf(mUpdateCheckPreference.getIcon()).getCreatedFromResId());
+        assertEquals(SAFE_ICON, shadowOf(mUpdateCheckPreference.getIcon()).getCreatedFromResId());
         assertNull(mUpdateCheckPreference.getPrimaryButtonText());
         assertEquals(expectedSecondaryButtonText, mUpdateCheckPreference.getSecondaryButtonText());
         assertFalse(mUpdateCheckPreference.isExpanded());
@@ -197,7 +197,8 @@ public class SafetyHubModuleViewBinderTest {
         String expectedPrimaryButtonText = mActivity.getString(R.string.menu_update);
 
         assertEquals(expectedTitle, mUpdateCheckPreference.getTitle().toString());
-        assertEquals(ERROR_ICON, shadowOf(mUpdateCheckPreference.getIcon()).getCreatedFromResId());
+        assertEquals(
+                WARNING_ICON, shadowOf(mUpdateCheckPreference.getIcon()).getCreatedFromResId());
         assertEquals(expectedPrimaryButtonText, mUpdateCheckPreference.getPrimaryButtonText());
         assertNull(mUpdateCheckPreference.getSecondaryButtonText());
         assertTrue(mUpdateCheckPreference.isExpanded());
@@ -217,7 +218,8 @@ public class SafetyHubModuleViewBinderTest {
 
         assertEquals(expectedTitle, mUpdateCheckPreference.getTitle().toString());
         assertEquals(expectedSummary, mUpdateCheckPreference.getSummary().toString());
-        assertEquals(ERROR_ICON, shadowOf(mUpdateCheckPreference.getIcon()).getCreatedFromResId());
+        assertEquals(
+                WARNING_ICON, shadowOf(mUpdateCheckPreference.getIcon()).getCreatedFromResId());
         assertTrue(mUpdateCheckPreference.isExpanded());
     }
 
@@ -231,7 +233,7 @@ public class SafetyHubModuleViewBinderTest {
 
         assertEquals(expectedTitle, mUpdateCheckPreference.getTitle().toString());
         assertNull(mUpdateCheckPreference.getSummary());
-        assertEquals(OK_ICON, shadowOf(mUpdateCheckPreference.getIcon()).getCreatedFromResId());
+        assertEquals(SAFE_ICON, shadowOf(mUpdateCheckPreference.getIcon()).getCreatedFromResId());
         assertNull(mUpdateCheckPreference.getPrimaryButtonText());
         assertEquals(expectedSecondaryButtonText, mUpdateCheckPreference.getSecondaryButtonText());
         assertFalse(mUpdateCheckPreference.isExpanded());
@@ -248,7 +250,7 @@ public class SafetyHubModuleViewBinderTest {
 
         assertEquals(expectedTitle, mPermissionsPreference.getTitle().toString());
         assertNull(mPermissionsPreference.getSummary());
-        assertEquals(OK_ICON, shadowOf(mPermissionsPreference.getIcon()).getCreatedFromResId());
+        assertEquals(SAFE_ICON, shadowOf(mPermissionsPreference.getIcon()).getCreatedFromResId());
         assertNull(mPermissionsPreference.getPrimaryButtonText());
         assertEquals(expectedSecondaryButtonText, mPermissionsPreference.getSecondaryButtonText());
         assertFalse(mPermissionsPreference.isExpanded());
@@ -273,11 +275,10 @@ public class SafetyHubModuleViewBinderTest {
 
         assertEquals(expectedTitle, mPermissionsPreference.getTitle().toString());
         assertNull(mPermissionsPreference.getSummary());
-        assertEquals(
-                WARNING_ICON, shadowOf(mPermissionsPreference.getIcon()).getCreatedFromResId());
+        assertEquals(INFO_ICON, shadowOf(mPermissionsPreference.getIcon()).getCreatedFromResId());
         assertEquals(expectedPrimaryButtonText, mPermissionsPreference.getPrimaryButtonText());
         assertEquals(expectedSecondaryButtonText, mPermissionsPreference.getSecondaryButtonText());
-        assertTrue(mPermissionsPreference.isExpanded());
+        assertFalse(mPermissionsPreference.isExpanded());
     }
 
     @Test
@@ -293,7 +294,8 @@ public class SafetyHubModuleViewBinderTest {
         assertEquals(expectedTitle, mNotificationsReviewPreference.getTitle().toString());
         assertNull(mNotificationsReviewPreference.getSummary());
         assertEquals(
-                OK_ICON, shadowOf(mNotificationsReviewPreference.getIcon()).getCreatedFromResId());
+                SAFE_ICON,
+                shadowOf(mNotificationsReviewPreference.getIcon()).getCreatedFromResId());
         assertNull(mNotificationsReviewPreference.getPrimaryButtonText());
         assertEquals(
                 expectedSecondaryButtonText,
@@ -322,14 +324,14 @@ public class SafetyHubModuleViewBinderTest {
         assertEquals(expectedTitle, mNotificationsReviewPreference.getTitle().toString());
         assertNull(mNotificationsReviewPreference.getSummary());
         assertEquals(
-                WARNING_ICON,
+                INFO_ICON,
                 shadowOf(mNotificationsReviewPreference.getIcon()).getCreatedFromResId());
         assertEquals(
                 expectedPrimaryButtonText, mNotificationsReviewPreference.getPrimaryButtonText());
         assertEquals(
                 expectedSecondaryButtonText,
                 mNotificationsReviewPreference.getSecondaryButtonText());
-        assertTrue(mNotificationsReviewPreference.isExpanded());
+        assertFalse(mNotificationsReviewPreference.isExpanded());
     }
 
     @Test
@@ -345,7 +347,7 @@ public class SafetyHubModuleViewBinderTest {
 
         assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
         assertEquals(expectedSummary, mSafeBrowsingPreference.getSummary().toString());
-        assertEquals(OK_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
+        assertEquals(SAFE_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
         assertNull(mSafeBrowsingPreference.getPrimaryButtonText());
         assertEquals(expectedSecondaryButtonText, mSafeBrowsingPreference.getSecondaryButtonText());
         assertFalse(mSafeBrowsingPreference.isExpanded());
@@ -355,7 +357,7 @@ public class SafetyHubModuleViewBinderTest {
                 mActivity.getString(R.string.safety_hub_safe_browsing_on_summary_managed);
         assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
         assertEquals(expectedManagedSummary, mSafeBrowsingPreference.getSummary().toString());
-        assertEquals(OK_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
+        assertEquals(SAFE_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
         assertNull(mSafeBrowsingPreference.getPrimaryButtonText());
         assertNull(mSafeBrowsingPreference.getSecondaryButtonText());
         assertFalse(mSafeBrowsingPreference.isExpanded());
@@ -376,7 +378,7 @@ public class SafetyHubModuleViewBinderTest {
 
         assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
         assertEquals(expectedSummary, mSafeBrowsingPreference.getSummary().toString());
-        assertEquals(OK_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
+        assertEquals(SAFE_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
         assertNull(mSafeBrowsingPreference.getPrimaryButtonText());
         assertEquals(expectedSecondaryButtonText, mSafeBrowsingPreference.getSecondaryButtonText());
         assertFalse(mSafeBrowsingPreference.isExpanded());
@@ -386,7 +388,7 @@ public class SafetyHubModuleViewBinderTest {
                 mActivity.getString(R.string.safety_hub_safe_browsing_enhanced_summary_managed);
         assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
         assertEquals(expectedManagedSummary, mSafeBrowsingPreference.getSummary().toString());
-        assertEquals(OK_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
+        assertEquals(SAFE_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
         assertNull(mSafeBrowsingPreference.getPrimaryButtonText());
         assertNull(mSafeBrowsingPreference.getSecondaryButtonText());
         assertFalse(mSafeBrowsingPreference.isExpanded());
@@ -405,7 +407,8 @@ public class SafetyHubModuleViewBinderTest {
 
         assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
         assertEquals(expectedSummary, mSafeBrowsingPreference.getSummary().toString());
-        assertEquals(ERROR_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
+        assertEquals(
+                WARNING_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
         assertEquals(expectedPrimaryButtonText, mSafeBrowsingPreference.getPrimaryButtonText());
         assertNull(mSafeBrowsingPreference.getSecondaryButtonText());
         assertTrue(mSafeBrowsingPreference.isExpanded());
@@ -415,8 +418,7 @@ public class SafetyHubModuleViewBinderTest {
                 mActivity.getString(R.string.safety_hub_safe_browsing_off_summary_managed);
         assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
         assertEquals(expectedManagedSummary, mSafeBrowsingPreference.getSummary().toString());
-        assertEquals(
-                WARNING_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
+        assertEquals(INFO_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
         assertNull(mSafeBrowsingPreference.getPrimaryButtonText());
         assertNull(mSafeBrowsingPreference.getSecondaryButtonText());
         assertFalse(mSafeBrowsingPreference.isExpanded());

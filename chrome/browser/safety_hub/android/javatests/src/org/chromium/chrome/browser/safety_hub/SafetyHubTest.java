@@ -235,19 +235,21 @@ public final class SafetyHubTest {
                 new PermissionsData[] {PERMISSIONS_DATA_1, PERMISSIONS_DATA_2});
         mSafetyHubFragmentTestRule.startSettingsActivity();
 
-        // Verify the permissions module is displaying the warning state.
+        // Verify the permissions module is displaying the info state.
         String permissionsTitle =
                 mSafetyHubFragmentTestRule
                         .getActivity()
                         .getResources()
                         .getQuantityString(R.plurals.safety_hub_permissions_warning_title, 2, 2);
-        scrollToExpandedPreference(permissionsTitle);
+        scrollToPreference(withText(permissionsTitle));
         onView(withText(permissionsTitle)).check(matches(isDisplayed()));
 
-        // Module should be expanded initially since it's in a warning state.
-        verifyButtonsNextToTextVisibility(permissionsTitle, true);
+        // Module should be collapsed initially since it's in an info state.
+        verifyButtonsNextToTextVisibility(permissionsTitle, false);
+        clickOnExpandButtonNextToText(permissionsTitle);
 
         // Open the permissions subpage.
+        scrollToExpandedPreference(permissionsTitle);
         clickOnSecondaryButtonNextToText(permissionsTitle);
 
         // Verify that 2 sites are displayed.
@@ -262,7 +264,7 @@ public final class SafetyHubTest {
         onViewWaiting(withText(R.string.safety_hub_permissions_ok_title))
                 .check(matches(isDisplayed()));
 
-        // Click on the snackbar action button and verify that the warning is displayed
+        // Click on the snackbar action button and verify that the info state is displayed
         // again.
         onViewWaiting(withText(R.string.undo)).perform(click());
         onViewWaiting(withText(permissionsTitle)).check(matches(isDisplayed()));
@@ -326,20 +328,22 @@ public final class SafetyHubTest {
                 });
         mSafetyHubFragmentTestRule.startSettingsActivity();
 
-        // Verify the notifications module is displaying the warning state.
+        // Verify the notifications module is displaying the info state.
         String notificationsTitle =
                 mSafetyHubFragmentTestRule
                         .getActivity()
                         .getResources()
                         .getQuantityString(
                                 R.plurals.safety_hub_notifications_review_warning_title, 2, 2);
-        scrollToExpandedPreference(notificationsTitle);
+        scrollToPreference(withText(notificationsTitle));
         onView(withText(notificationsTitle)).check(matches(isDisplayed()));
 
-        // Module should be expanded initially since it's in a warning state.
-        verifyButtonsNextToTextVisibility(notificationsTitle, true);
+        // Module should be collapsed initially since it's in an info state.
+        verifyButtonsNextToTextVisibility(notificationsTitle, false);
+        clickOnExpandButtonNextToText(notificationsTitle);
 
         // Open the notifications subpage.
+        scrollToExpandedPreference(notificationsTitle);
         clickOnSecondaryButtonNextToText(notificationsTitle);
 
         // Verify that 2 sites are displayed.
@@ -356,7 +360,7 @@ public final class SafetyHubTest {
         onViewWaiting(withText(R.string.safety_hub_notifications_review_ok_title))
                 .check(matches(isDisplayed()));
 
-        // Click on the snackbar action button and verify that the warning is displayed
+        // Click on the snackbar action button and verify that the info state is displayed
         // again.
         onViewWaiting(withText(R.string.undo)).perform(click());
         onViewWaiting(withText(notificationsTitle)).check(matches(isDisplayed()));
@@ -478,24 +482,26 @@ public final class SafetyHubTest {
         mSafetyHubFragmentTestRule.startSettingsActivity();
         SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
 
-        // Verify the permissions module is displaying the warning state.
+        // Verify the permissions module is displaying the info state.
         String permissionsTitle =
                 mSafetyHubFragmentTestRule
                         .getActivity()
                         .getResources()
                         .getQuantityString(R.plurals.safety_hub_permissions_warning_title, 2, 2);
-        scrollToExpandedPreference(permissionsTitle);
+        scrollToPreference(withText(permissionsTitle));
         onView(withText(permissionsTitle)).check(matches(isDisplayed()));
 
-        // Module should be expanded initially since it's in a warning state.
-        verifyButtonsNextToTextVisibility(permissionsTitle, true);
+        // Module should be collapsed initially since it's in an info state.
+        verifyButtonsNextToTextVisibility(permissionsTitle, false);
+        clickOnExpandButtonNextToText(permissionsTitle);
 
         // Click on the Got it button and verify the permissions module has changed to a safe state.
+        scrollToExpandedPreference(permissionsTitle);
         clickOnPrimaryButtonNextToText(permissionsTitle);
         onViewWaiting(withText(R.string.safety_hub_permissions_ok_title))
                 .check(matches(isDisplayed()));
 
-        // Click on the snackbar action button and verify that the warning is displayed
+        // Click on the snackbar action button and verify that the info state is displayed
         // again.
         onViewWaiting(withText(R.string.undo)).perform(click());
         onViewWaiting(withText(permissionsTitle)).check(matches(isDisplayed()));
@@ -545,27 +551,29 @@ public final class SafetyHubTest {
         mSafetyHubFragmentTestRule.startSettingsActivity();
         SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
 
-        // Verify the notifications module is displaying the warning state.
+        // Verify the notifications module is displaying the info state.
         String notificationsTitle =
                 safetyHubFragment
                         .getResources()
                         .getQuantityString(
                                 R.plurals.safety_hub_notifications_review_warning_title, 2, 2);
 
-        scrollToExpandedPreference(notificationsTitle);
+        scrollToPreference(withText(notificationsTitle));
         onView(withText(notificationsTitle)).check(matches(isDisplayed()));
 
-        // Module should be expanded initially since it's in a warning state.
-        verifyButtonsNextToTextVisibility(notificationsTitle, true);
+        // Module should be collapsed initially since it's in a info state.
+        verifyButtonsNextToTextVisibility(notificationsTitle, false);
+        clickOnExpandButtonNextToText(notificationsTitle);
 
         // Click on the reset all button and verify the notification module has changed to a
         // safe state.
+        scrollToExpandedPreference(notificationsTitle);
         clickOnPrimaryButtonNextToText(notificationsTitle);
         onViewWaiting(withText(R.string.safety_hub_notifications_review_ok_title))
                 .check(matches(isDisplayed()));
 
         // Click on the snackbar action button and verify that the notifications are allowed again
-        // and the warning is displayed.
+        // and the info state is displayed.
         onViewWaiting(withText(R.string.undo)).perform(click());
         onViewWaiting(withText(notificationsTitle)).check(matches(isDisplayed()));
 
