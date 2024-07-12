@@ -45,8 +45,7 @@ FontFormatCheck::COLRVersion determineCOLRVersion(
     if (colr_data.size() < 2u) {
       return FontFormatCheck::COLRVersion::kNoCOLR;
     }
-    uint16_t colr_version =
-        base::numerics::U16FromBigEndian(colr_data.first<2u>());
+    uint16_t colr_version = base::U16FromBigEndian(colr_data.first<2u>());
 
     if (colr_version == 0)
       return FontFormatCheck::COLRVersion::kCOLRV0;

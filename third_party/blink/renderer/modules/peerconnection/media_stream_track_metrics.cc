@@ -234,7 +234,7 @@ uint64_t MediaStreamTrackMetrics::MakeUniqueIdImpl(uint64_t pc_id,
   base::MD5Final(&digest, &ctx);
 
   static_assert(sizeof(digest.a) > sizeof(uint64_t), "need a bigger digest");
-  return base::numerics::U64FromLittleEndian(base::span(digest.a).first<8u>());
+  return base::U64FromLittleEndian(base::span(digest.a).first<8u>());
 }
 
 uint64_t MediaStreamTrackMetrics::MakeUniqueId(const std::string& track_id,

@@ -1122,6 +1122,7 @@ _CONFIG = [
             'base::Time'
             'base::TimeDelta',
             'base::TimeTicks',
+            'base::(numerics::)?((I|U)(8|16|32|64)|(Float|Double))(To|From)(Big|Little|Native)Endian',
 
             'gfx::Point',
             'gfx::PointF',

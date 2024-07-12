@@ -38,29 +38,29 @@ namespace open_type {
 
 struct Int16 {
   DISALLOW_NEW();
-  Int16(int16_t u) : v(base::numerics::ByteSwap(u)) {}
-  operator int16_t() const { return base::numerics::ByteSwap(v); }
+  Int16(int16_t u) : v(base::ByteSwap(u)) {}
+  operator int16_t() const { return base::ByteSwap(v); }
   int16_t v;  // in BigEndian
 };
 
 struct UInt16 {
   DISALLOW_NEW();
-  UInt16(uint16_t u) : v(base::numerics::ByteSwap(u)) {}
-  operator uint16_t() const { return base::numerics::ByteSwap(v); }
+  UInt16(uint16_t u) : v(base::ByteSwap(u)) {}
+  operator uint16_t() const { return base::ByteSwap(v); }
   uint16_t v;  // in BigEndian
 };
 
 struct Int32 {
   DISALLOW_NEW();
-  Int32(int32_t u) : v(base::numerics::ByteSwap(u)) {}
-  operator int32_t() const { return base::numerics::ByteSwap(v); }
+  Int32(int32_t u) : v(base::ByteSwap(u)) {}
+  operator int32_t() const { return base::ByteSwap(v); }
   int32_t v;  // in BigEndian
 };
 
 struct UInt32 {
   DISALLOW_NEW();
-  UInt32(uint32_t u) : v(base::numerics::ByteSwap(u)) {}
-  operator uint32_t() const { return base::numerics::ByteSwap(v); }
+  UInt32(uint32_t u) : v(base::ByteSwap(u)) {}
+  operator uint32_t() const { return base::ByteSwap(v); }
   uint32_t v;  // in BigEndian
 };
 

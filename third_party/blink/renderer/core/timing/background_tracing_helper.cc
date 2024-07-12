@@ -283,7 +283,7 @@ size_t BackgroundTracingHelper::GetSequenceNumberPos(std::string_view string) {
 uint32_t BackgroundTracingHelper::MD5Hash32(std::string_view string) {
   base::MD5Digest digest;
   base::MD5Sum(base::as_byte_span(string), &digest);
-  return base::numerics::U32FromBigEndian(base::span(digest.a).first<4u>());
+  return base::U32FromBigEndian(base::span(digest.a).first<4u>());
 }
 
 // static

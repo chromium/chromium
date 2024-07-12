@@ -70,7 +70,7 @@ constexpr int64_t DigestOfObjectRepresentation(T in)
     std::array<uint8_t, 8u> bytes = {};
     base::span(bytes).template first<sizeof(T)>().copy_from(
         base::byte_span_from_ref(in));
-    return static_cast<int64_t>(base::numerics::U64FromNativeEndian(bytes));
+    return static_cast<int64_t>(base::U64FromNativeEndian(bytes));
   }
 }
 
