@@ -209,18 +209,13 @@ class BASE_EXPORT StackSamplingProfiler {
 
   const SamplingParams params_;
 
-  // Receives the sampling data and builds a profile. The ownership of this
-  // object will be transferred to the sampling thread when thread sampling
-  // starts.
-  std::unique_ptr<ProfileBuilder> profile_builder_;
-
   // Stack sampler which stops the thread and collects stack frames. The
   // ownership of this object will be transferred to the sampling thread when
   // thread sampling starts.
   std::unique_ptr<StackSampler> sampler_;
 
   // This starts "signaled", is reset when sampling begins, and is signaled
-  // when that sampling is complete and the profile_builder_'s
+  // when that sampling is complete and the profile builder's
   // OnProfileCompleted function has executed.
   WaitableEvent profiling_inactive_;
 

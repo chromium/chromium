@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/native_library.h"
 #include "base/profiler/frame.h"
+#include "base/profiler/module_cache.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/profiler/stack_sampling_profiler.h"
 #include "base/synchronization/waitable_event.h"
@@ -23,7 +24,6 @@
 namespace base {
 
 class Unwinder;
-class ModuleCache;
 
 // A thread to target for profiling that will run the supplied closure.
 class TargetThread : public PlatformThread::Delegate {

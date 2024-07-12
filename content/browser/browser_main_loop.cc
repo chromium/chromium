@@ -1235,6 +1235,7 @@ void BrowserMainLoop::ShutdownThreadsAndCleanUp() {
     background_tracing_manager_.reset();
   }
 
+  GetContentClient()->browser()->ThreadPoolWillTerminate();
   {
     TRACE_EVENT0("shutdown", "BrowserMainLoop::Subsystem:ThreadPool");
     base::ThreadPoolInstance::Get()->Shutdown();

@@ -364,6 +364,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   // because of the user closing the browser or the OS is shutting down.
   virtual bool IsShuttingDown();
 
+  // Indicating that the thread pool will terminate shortly.
+  virtual void ThreadPoolWillTerminate();
+
   // If content creates the WebContentsView implementation, it will ask the
   // embedder to return an (optional) delegate to customize it.
   virtual std::unique_ptr<WebContentsViewDelegate> GetWebContentsViewDelegate(

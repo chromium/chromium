@@ -572,6 +572,8 @@ component("base") {
     "profiler/stack_sampler.h",
     "profiler/stack_sampling_profiler.cc",
     "profiler/stack_sampling_profiler.h",
+    "profiler/stack_unwind_data.cc",
+    "profiler/stack_unwind_data.h",
     "profiler/suspendable_thread_delegate.h",
     "profiler/thread_delegate.h",
     "profiler/unwinder.cc",

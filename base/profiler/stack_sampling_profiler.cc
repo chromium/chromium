@@ -22,6 +22,7 @@
 #include "base/profiler/profiler_buildflags.h"
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/stack_sampler.h"
+#include "base/profiler/stack_unwind_data.h"
 #include "base/profiler/unwinder.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
@@ -123,13 +124,11 @@ class StackSamplingProfiler::SamplingThread : public Thread {
     CollectionContext(PlatformThreadId thread_id,
                       const SamplingParams& params,
                       WaitableEvent* finished,
-                      std::unique_ptr<StackSampler> sampler,
-                      std::unique_ptr<ProfileBuilder> profile_builder)
+                      std::unique_ptr<StackSampler> sampler)
         : collection_id(next_collection_id.GetNext()),
           thread_id(thread_id),
           params(params),
           finished(finished),
-          profile_builder(std::move(profile_builder)),
           sampler(std::move(sampler)) {}
     ~CollectionContext() = default;
 
@@ -142,9 +141,6 @@ class StackSamplingProfiler::SamplingThread : public Thread {
     const raw_ptr<WaitableEvent>
         finished;  // Signaled when all sampling complete.
 
-    // Receives the sampling data and builds a CallStackProfile.
-    std::unique_ptr<ProfileBuilder> profile_builder;
-
     // Platform-specific module that does the actual sampling.
     std::unique_ptr<StackSampler> sampler;
 
@@ -156,6 +152,9 @@ class StackSamplingProfiler::SamplingThread : public Thread {
 
     // Counter that indicates the current sample position along the acquisition.
     int sample_count = 0;
+
+    // Whether stop has been requested.
+    bool stopping = false;
 
     // Sequence number for generating new collection ids.
     static AtomicSequenceNumber next_collection_id;
@@ -254,6 +253,7 @@ class StackSamplingProfiler::SamplingThread : public Thread {
                               int64_t value,
                               std::optional<PlatformThreadId> thread_id);
   void RemoveCollectionTask(int collection_id);
+  void ScheduleCollectionStop(int collection_id);
   void RecordSampleTask(int collection_id);
   void ShutdownTask(int add_events);
 
@@ -461,7 +461,7 @@ void StackSamplingProfiler::SamplingThread::Remove(int collection_id) {
   // runner above and the call below. In that case, however, everything has
   // stopped so there's no need to try to stop it.
   task_runner->PostTask(FROM_HERE,
-                        BindOnce(&SamplingThread::RemoveCollectionTask,
+                        BindOnce(&SamplingThread::ScheduleCollectionStop,
                                  Unretained(this), collection_id));
 }
 
@@ -551,8 +551,10 @@ void StackSamplingProfiler::SamplingThread::FinishCollection(
                                collection->profile_start_time +
                                collection->params.sampling_interval;
 
-  collection->profile_builder->OnProfileCompleted(
-      profile_duration, collection->params.sampling_interval);
+  collection->sampler->GetStackUnwindData()
+      ->profile_builder()
+      ->OnProfileCompleted(profile_duration,
+                           collection->params.sampling_interval);
 
   // Signal that this collection is finished.
   WaitableEvent* collection_finished = collection->finished;
@@ -611,8 +613,9 @@ void StackSamplingProfiler::SamplingThread::ApplyMetadataToPastSamplesTask(
   for (auto& id_collection_pair : active_collections_) {
     if (thread_id && id_collection_pair.second->thread_id != thread_id)
       continue;
-    id_collection_pair.second->profile_builder->ApplyMetadataRetrospectively(
-        period_start, period_end, item);
+    id_collection_pair.second->sampler->GetStackUnwindData()
+        ->profile_builder()
+        ->ApplyMetadataRetrospectively(period_start, period_end, item);
   }
 }
 
@@ -627,7 +630,9 @@ void StackSamplingProfiler::SamplingThread::AddProfileMetadataTask(
     if (thread_id && id_collection_pair.second->thread_id != thread_id) {
       continue;
     }
-    id_collection_pair.second->profile_builder->AddProfileMetadata(item);
+    id_collection_pair.second->sampler->GetStackUnwindData()
+        ->profile_builder()
+        ->AddProfileMetadata(item);
   }
 }
 
@@ -674,6 +679,21 @@ void StackSamplingProfiler::SamplingThread::RemoveCollectionTask(
   FinishCollection(std::move(collection));
 }
 
+void StackSamplingProfiler::SamplingThread::ScheduleCollectionStop(
+    int collection_id) {
+  DCHECK_EQ(GetThreadId(), PlatformThread::CurrentId());
+
+  auto found = active_collections_.find(collection_id);
+  if (found == active_collections_.end()) {
+    return;
+  }
+
+  CollectionContext* collection = found->second.get();
+  collection->stopping = true;
+  collection->sampler->Stop(BindOnce(&SamplingThread::RemoveCollectionTask,
+                                     Unretained(this), collection_id));
+}
+
 void StackSamplingProfiler::SamplingThread::RecordSampleTask(
     int collection_id) {
   DCHECK_EQ(GetThreadId(), PlatformThread::CurrentId());
@@ -681,10 +701,17 @@ void StackSamplingProfiler::SamplingThread::RecordSampleTask(
   auto found = active_collections_.find(collection_id);
 
   // The task won't be found if it has been stopped.
-  if (found == active_collections_.end())
+  if (found == active_collections_.end()) {
     return;
+  }
 
   CollectionContext* collection = found->second.get();
+
+  // If we are in the process of stopping just don't collect a stack
+  // trace as that would cause further jobs to be scheduled.
+  if (collection->stopping) {
+    return;
+  }
 
   // If this is the first sample, the collection params need to be filled.
   if (collection->sample_count == 0) {
@@ -692,13 +719,17 @@ void StackSamplingProfiler::SamplingThread::RecordSampleTask(
     collection->next_sample_time = TimeTicks::Now();
   }
 
+  bool more_collections_remaining =
+      ++collection->sample_count < collection->params.samples_per_profile;
   // Record a single sample.
-  collection->sampler->RecordStackFrames(stack_buffer_.get(),
-                                         collection->profile_builder.get(),
-                                         collection->thread_id);
-
+  collection->sampler->RecordStackFrames(
+      stack_buffer_.get(), collection->thread_id,
+      more_collections_remaining
+          ? DoNothing()
+          : BindOnce(&SamplingThread::RemoveCollectionTask, Unretained(this),
+                     collection_id));
   // Schedule the next sample recording if there is one.
-  if (++collection->sample_count < collection->params.samples_per_profile) {
+  if (more_collections_remaining) {
     collection->next_sample_time = GetNextSampleTimeImpl(
         collection->next_sample_time, collection->params.sampling_interval,
         TimeTicks::Now());
@@ -710,15 +741,6 @@ void StackSamplingProfiler::SamplingThread::RecordSampleTask(
     DCHECK(success);
     return;
   }
-
-  // Take ownership of |collection| and remove it from the map.
-  std::unique_ptr<CollectionContext> owned_collection =
-      std::move(found->second);
-  size_t count = active_collections_.erase(collection_id);
-  DCHECK_EQ(1U, count);
-
-  // All capturing has completed so finish the collection.
-  FinishCollection(std::move(owned_collection));
 }
 
 void StackSamplingProfiler::SamplingThread::ShutdownTask(int add_events) {
@@ -837,19 +859,18 @@ StackSamplingProfiler::StackSamplingProfiler(
     StackSamplerTestDelegate* test_delegate)
     : thread_token_(thread_token),
       params_(params),
-      profile_builder_(std::move(profile_builder)),
-      sampler_(StackSampler::Create(thread_token,
-                                    profile_builder_->GetModuleCache(),
-                                    std::move(core_unwinders_factory),
-                                    std::move(record_sample_callback),
-                                    test_delegate)),
+      sampler_(StackSampler::Create(
+          thread_token,
+          std::make_unique<StackUnwindData>(std::move(profile_builder)),
+          std::move(core_unwinders_factory),
+          std::move(record_sample_callback),
+          test_delegate)),
       // The event starts "signaled" so code knows it's safe to start thread
       // and "manual" so that it can be waited in multiple places.
       profiling_inactive_(kResetPolicy, WaitableEvent::InitialState::SIGNALED),
       profiler_id_(kNullProfilerId) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cpu_profiler"),
                "StackSamplingProfiler::StackSamplingProfiler");
-  DCHECK(profile_builder_);
 }
 
 StackSamplingProfiler::~StackSamplingProfiler() {
@@ -879,14 +900,11 @@ void StackSamplingProfiler::Start() {
                "StackSamplingProfiler::Start");
 
   // Multiple calls to Start() for a single StackSamplingProfiler object is not
-  // allowed. If profile_builder_ is nullptr, then Start() has been called
-  // already.
-  DCHECK(profile_builder_);
-
-  // |sampler_| will be null if sampling isn't supported on the current
-  // platform.
-  if (!sampler_)
+  // allowed. If `sampler_` is nullptr, then Start() has been called already or
+  // sampling isn't supported on the current platform.
+  if (!sampler_) {
     return;
+  }
 
   // The IsSignaled() check below requires that the WaitableEvent be manually
   // reset, to avoid signaling the event in IsSignaled() itself.
@@ -903,8 +921,8 @@ void StackSamplingProfiler::Start() {
   DCHECK_EQ(kNullProfilerId, profiler_id_);
   profiler_id_ = SamplingThread::GetInstance()->Add(
       std::make_unique<SamplingThread::CollectionContext>(
-          thread_token_.id, params_, &profiling_inactive_, std::move(sampler_),
-          std::move(profile_builder_)));
+          thread_token_.id, params_, &profiling_inactive_,
+          std::move(sampler_)));
   DCHECK_NE(kNullProfilerId, profiler_id_);
 
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cpu_profiler"),

@@ -56,6 +56,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/crash_keys.h"
 #include "chrome/common/logging_chrome.h"
+#include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
 #include "chrome/common/profiler/process_type.h"
 #include "chrome/common/profiler/unwind_util.h"
 #include "chrome/common/url_constants.h"
@@ -1090,6 +1091,17 @@ bool ChromeMainDelegate::ShouldInitializeMojo(InvokedIn invoked_in) {
   return ShouldCreateFeatureList(invoked_in);
 }
 
+void ChromeMainDelegate::CreateThreadPool(std::string_view name) {
+  base::ThreadPoolInstance::Create(name);
+// `ChromeMainDelegateAndroid::PreSandboxStartup` creates the profiler a little
+// later.
+#if !BUILDFLAG(IS_ANDROID)
+  // Start the sampling profiler as early as possible - namely, once the thread
+  // pool has been created.
+  sampling_profiler_ = std::make_unique<MainThreadStackSamplingProfiler>();
+#endif
+}
+
 void ChromeMainDelegate::CommonEarlyInitialization(InvokedIn invoked_in) {
   const base::CommandLine* const command_line =
       base::CommandLine::ForCurrentProcess();
@@ -1902,6 +1914,12 @@ content::ContentBrowserClient*
 ChromeMainDelegate::CreateContentBrowserClient() {
   chrome_content_browser_client_ =
       std::make_unique<ChromeContentBrowserClient>();
+#if !BUILDFLAG(IS_ANDROID)
+  // Android does this in `ChromeMainDelegateAndroid::PreSandboxStartup`.
+  CHECK(sampling_profiler_);
+  chrome_content_browser_client_->SetSamplingProfiler(
+      std::move(sampling_profiler_));
+#endif
   return chrome_content_browser_client_.get();
 }
 

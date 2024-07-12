@@ -125,7 +125,7 @@ class CallStackProfileBuilder : public base::ProfileBuilder {
 
   unsigned int last_work_id_ = std::numeric_limits<unsigned int>::max();
   bool is_continued_work_ = false;
-  const raw_ptr<const WorkIdRecorder> work_id_recorder_;
+  raw_ptr<const WorkIdRecorder> work_id_recorder_;
 
   // The SampledProfile protobuf message which contains the collected stack
   // samples.

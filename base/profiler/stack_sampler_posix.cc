@@ -39,7 +39,7 @@ std::vector<std::unique_ptr<Unwinder>> CreateUnwinders() {
 
 std::unique_ptr<StackSampler> StackSampler::Create(
     SamplingProfilerThreadToken thread_token,
-    ModuleCache* module_cache,
+    std::unique_ptr<StackUnwindData> stack_unwind_data,
     UnwindersFactory core_unwinders_factory,
     RepeatingClosure record_sample_callback,
     StackSamplerTestDelegate* test_delegate) {
@@ -49,7 +49,7 @@ std::unique_ptr<StackSampler> StackSampler::Create(
   return base::WrapUnique(
       new StackSampler(std::make_unique<StackCopierSignal>(
                            ThreadDelegatePosix::Create(thread_token)),
-                       BindOnce(&CreateUnwinders), module_cache,
+                       std::move(stack_unwind_data), BindOnce(&CreateUnwinders),
                        std::move(record_sample_callback), test_delegate));
 #else
   return nullptr;
