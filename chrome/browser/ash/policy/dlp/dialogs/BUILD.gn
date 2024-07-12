@@ -35,5 +35,12 @@ static_library("dialogs") {
     "//ui/gfx/geometry",
     "//ui/views",
     "//url",
+
+    # TODO: Use //chrome/browser instead after fixing cyclic dependency.
+    "//components/enterprise/common/proto:connectors_proto",
+    "//components/services/quarantine/public/mojom",
+    "//components/services/storage/public/mojom",
+    "//content/common:buildflags",
+    "//content/public/common:interfaces",
   ]
 }
