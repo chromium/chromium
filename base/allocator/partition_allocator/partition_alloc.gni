@@ -240,9 +240,6 @@ declare_args() {
   use_full_mte = false
 }
 
-# *Scan is currently only used by Chromium, and supports only 64-bit.
-use_starscan = build_with_chromium && has_64_bit_pointers
-
 stack_scan_supported =
     current_cpu == "x64" || current_cpu == "x86" || current_cpu == "arm" ||
     current_cpu == "arm64" || current_cpu == "riscv64"
@@ -272,7 +269,6 @@ if (!use_partition_alloc ||
   backup_ref_ptr_poison_oob_ptr = false
   backup_ref_ptr_extra_oob_checks = false
   enable_backup_ref_ptr_instance_tracer = false
-  use_starscan = false
   use_full_mte = false
 }
 

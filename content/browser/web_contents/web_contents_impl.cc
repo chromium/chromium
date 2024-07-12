@@ -239,11 +239,6 @@
 #include "ui/wm/core/window_util.h"
 #endif
 
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_BUILDFLAG(USE_STARSCAN)
-#include "base/allocator/partition_allocator/src/partition_alloc/starscan/pcscan.h"
-#include "content/browser/starscan_load_observer.h"
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
@@ -1222,15 +1217,6 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
   if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
     SharedStorageBudgetCharger::CreateForWebContents(this);
   }
-
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_BUILDFLAG(USE_STARSCAN)
-  // TODO(crbug.com/40190798): Remove or move to another place after finishing
-  // the PCScan experiment.
-  if (partition_alloc::internal::PCScan::IsInitialized()) {
-    star_scan_load_observer_ = std::make_unique<StarScanLoadObserver>(this);
-  }
-#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // PA_BUILDFLAG(USE_STARSCAN)
 }
 
 WebContentsImpl::~WebContentsImpl() {

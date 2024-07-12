@@ -75,10 +75,6 @@
 #include "partition_alloc/thread_cache.h"
 #include "partition_alloc/thread_isolation/thread_isolation.h"
 
-#if PA_BUILDFLAG(USE_STARSCAN)
-#include "partition_alloc/starscan/pcscan.h"
-#endif
-
 namespace partition_alloc::internal {
 
 // We want this size to be big enough that we have time to start up other
@@ -211,9 +207,6 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   using FreeListEntry = internal::PartitionFreelistEntry;
   using SuperPageExtentEntry = internal::PartitionSuperPageExtentEntry;
   using DirectMapExtent = internal::PartitionDirectMapExtent;
-#if PA_BUILDFLAG(USE_STARSCAN)
-  using PCScan = internal::PCScan;
-#endif
 
   enum class QuarantineMode : uint8_t {
     kAlwaysDisabled,
@@ -1468,9 +1461,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
     return;
   }
 
-  // Almost all calls to FreeNoNooks() will end up writing to |*object|, the
-  // only cases where we don't would be delayed free() in PCScan, but |*object|
-  // can be cold in cache.
+  // Almost all calls to FreeNoNooks() will end up writing to |*object|.
   PA_PREFETCH_FOR_WRITE(object);
 
   // On Android, malloc() interception is more fragile than on other
@@ -1549,22 +1540,6 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
     }
   }
 
-#if PA_BUILDFLAG(USE_STARSCAN)
-  // TODO(bikineev): Change the condition to PA_LIKELY once PCScan is enabled by
-  // default.
-  if (PA_UNLIKELY(ShouldQuarantine(object))) {
-    // PCScan safepoint. Call before potentially scheduling scanning task.
-    PCScan::JoinScanIfNeeded();
-    if (PA_LIKELY(internal::IsManagedByNormalBuckets(
-            slot_start.untagged_slot_start))) {
-      PCScan::MoveToQuarantine(object, GetSlotUsableSize(slot_span),
-                               slot_start.untagged_slot_start,
-                               slot_span->bucket->slot_size);
-      return;
-    }
-  }
-#endif  // PA_BUILDFLAG(USE_STARSCAN)
-
   FreeNoHooksImmediate(object, slot_span, slot_start.untagged_slot_start);
 }
 
@@ -1606,17 +1581,6 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
     internal::PartitionCookieCheckValue(static_cast<unsigned char*>(object) +
                                         GetSlotUsableSize(slot_span));
   }
-
-#if PA_BUILDFLAG(USE_STARSCAN)
-  // TODO(bikineev): Change the condition to PA_LIKELY once PCScan is enabled by
-  // default.
-  if (PA_UNLIKELY(IsQuarantineEnabled())) {
-    if (PA_LIKELY(internal::IsManagedByNormalBuckets(slot_start))) {
-      // Mark the state in the state bitmap as freed.
-      internal::StateBitmapFromAddr(slot_start)->Free(slot_start);
-    }
-  }
-#endif  // PA_BUILDFLAG(USE_STARSCAN)
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   if (PA_LIKELY(brp_enabled())) {
@@ -2169,16 +2133,6 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternalNoHooks(
   uintptr_t slot_start = 0;
   size_t slot_size = 0;
 
-#if PA_BUILDFLAG(USE_STARSCAN)
-  const bool is_quarantine_enabled = IsQuarantineEnabled();
-  // PCScan safepoint. Call before trying to allocate from cache.
-  // TODO(bikineev): Change the condition to PA_LIKELY once PCScan is enabled by
-  // default.
-  if (PA_UNLIKELY(is_quarantine_enabled)) {
-    PCScan::JoinScanIfNeeded();
-  }
-#endif  // PA_BUILDFLAG(USE_STARSCAN)
-
   auto* thread_cache = GetOrCreateThreadCache();
 
   // Don't use thread cache if higher order alignment is requested, because the
@@ -2313,17 +2267,6 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternalNoHooks(
 #endif
   }
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-
-#if PA_BUILDFLAG(USE_STARSCAN)
-  // TODO(bikineev): Change the condition to PA_LIKELY once PCScan is enabled by
-  // default.
-  if (PA_UNLIKELY(is_quarantine_enabled)) {
-    if (PA_LIKELY(internal::IsManagedByNormalBuckets(slot_start))) {
-      // Mark the corresponding bits in the state bitmap as allocated.
-      internal::StateBitmapFromAddr(slot_start)->Allocate(slot_start);
-    }
-  }
-#endif  // PA_BUILDFLAG(USE_STARSCAN)
 
   return object;
 }

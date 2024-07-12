@@ -33,10 +33,6 @@
 #include "partition_alloc/partition_alloc_base/mac/mac_util.h"
 #endif
 
-#if PA_BUILDFLAG(USE_STARSCAN)
-#include "partition_alloc/starscan/pcscan.h"
-#endif
-
 #if !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 #include "partition_alloc/address_pool_manager_bitmap.h"
 #endif
@@ -1186,14 +1182,7 @@ void PartitionRoot::Init(PartitionOptions opts) {
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 #endif  // PA_CONFIG(EXTRAS_REQUIRED)
 
-    settings.quarantine_mode =
-#if PA_BUILDFLAG(USE_STARSCAN)
-        (opts.star_scan_quarantine == PartitionOptions::kDisallowed
-             ? QuarantineMode::kAlwaysDisabled
-             : QuarantineMode::kDisabledByDefault);
-#else
-        QuarantineMode::kAlwaysDisabled;
-#endif  // PA_BUILDFLAG(USE_STARSCAN)
+    settings.quarantine_mode = QuarantineMode::kAlwaysDisabled;
 
     // We mark the sentinel slot span as free to make sure it is skipped by our
     // logic to find a new active slot span.
@@ -1514,16 +1503,6 @@ void PartitionRoot::PurgeMemory(int flags) {
         internal::PartitionRootLock(this)};
     local_purge_next_bucket_index = purge_next_bucket_index;
     local_purge_generation = purge_generation;
-
-#if PA_BUILDFLAG(USE_STARSCAN)
-    // Avoid purging if there is PCScan task currently scheduled. Since pcscan
-    // takes snapshot of all allocated pages, decommitting pages here (even
-    // under the lock) is racy.
-    // TODO(bikineev): Consider rescheduling the purging after PCScan.
-    if (PCScan::IsInProgress()) {
-      return;
-    }
-#endif  // PA_BUILDFLAG(USE_STARSCAN)
 
     if (flags & PurgeFlags::kDecommitEmptySlotSpans) {
       DecommitEmptySlotSpans();

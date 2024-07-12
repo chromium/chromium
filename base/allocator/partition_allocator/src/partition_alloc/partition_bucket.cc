@@ -36,10 +36,6 @@
 #include "partition_alloc/reservation_offset_table.h"
 #include "partition_alloc/tagging.h"
 
-#if PA_BUILDFLAG(USE_STARSCAN)
-#include "partition_alloc/starscan/pcscan.h"
-#endif
-
 namespace partition_alloc::internal {
 
 namespace {
@@ -789,19 +785,7 @@ PartitionBucket::InitializeSuperPage(PartitionRoot* root,
   uintptr_t state_bitmap =
       super_page + PartitionPageSize() +
       (is_direct_mapped() ? 0 : ReservedFreeSlotBitmapSize());
-#if PA_BUILDFLAG(USE_STARSCAN)
-  PA_DCHECK(SuperPageStateBitmapAddr(super_page) == state_bitmap);
-  const size_t state_bitmap_reservation_size =
-      root->IsQuarantineAllowed() ? ReservedStateBitmapSize() : 0;
-  const size_t state_bitmap_size_to_commit =
-      root->IsQuarantineAllowed() ? CommittedStateBitmapSize() : 0;
-  PA_DCHECK(state_bitmap_reservation_size % PartitionPageSize() == 0);
-  PA_DCHECK(state_bitmap_size_to_commit % SystemPageSize() == 0);
-  PA_DCHECK(state_bitmap_size_to_commit <= state_bitmap_reservation_size);
-  uintptr_t payload = state_bitmap + state_bitmap_reservation_size;
-#else
   uintptr_t payload = state_bitmap;
-#endif  // PA_BUILDFLAG(USE_STARSCAN)
 
   root->next_partition_page = payload;
   root->next_partition_page_end = root->next_super_page - PartitionPageSize();
@@ -883,24 +867,6 @@ PartitionBucket::InitializeSuperPage(PartitionRoot* root,
     PA_DCHECK(payload > SuperPagesBeginFromExtent(current_extent) &&
               payload < SuperPagesEndFromExtent(current_extent));
   }
-
-  // If PCScan is used, commit the state bitmap. Otherwise, leave it uncommitted
-  // and let PartitionRoot::RegisterScannableRoot() commit it when needed. Make
-  // sure to register the super-page after it has been fully initialized.
-  // Otherwise, the concurrent scanner may try to access |extent->root| which
-  // could be not initialized yet.
-#if PA_BUILDFLAG(USE_STARSCAN)
-  if (root->IsQuarantineEnabled()) {
-    {
-      ScopedSyscallTimer timer{root};
-      RecommitSystemPages(state_bitmap, state_bitmap_size_to_commit,
-                          root->PageAccessibilityWithThreadIsolationIfEnabled(
-                              PageAccessibilityConfiguration::kReadWrite),
-                          PageAccessibilityDisposition::kRequireUpdate);
-    }
-    PCScan::RegisterNewSuperPage(root, super_page);
-  }
-#endif  // PA_BUILDFLAG(USE_STARSCAN)
 
 #if PA_BUILDFLAG(USE_FREESLOT_BITMAP)
   // Commit the pages for freeslot bitmap.

@@ -110,7 +110,6 @@ class WTF_EXPORT Partitions {
   static bool InitializeOnce();
 
   static bool initialized_;
-  static bool scan_is_enabled_;
   // See Allocator.md for a description of these partitions.
   static partition_alloc::PartitionRoot* fast_malloc_root_;
   static partition_alloc::PartitionRoot* array_buffer_root_;

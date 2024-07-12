@@ -19,10 +19,6 @@
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/partition_stats.h"
 
-#if PA_BUILDFLAG(USE_STARSCAN)
-#include "partition_alloc/starscan/pcscan.h"
-#endif
-
 namespace partition_alloc {
 
 void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {

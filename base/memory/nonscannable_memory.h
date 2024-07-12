@@ -9,21 +9,16 @@
 
 #include "base/base_export.h"
 
-// This file contains allocation/deallocation functions for memory that doesn't
-// need to be scanned by PCScan. Such memory should only contain "data" objects,
-// i.e. objects that don't have pointers/references to other objects. An example
-// would be strings or socket/IPC/file buffers. Use with caution.
+// TODO(https://crbug.com/351126352): Remove this header.
+// This file contains utility functions for PCScan algorithm.
+// As PCScan being removed from the repository, all functions here
+// just forward requests to the default allocator.
+// Do not introduce new use of these functions.
+
 namespace base {
 
-// Allocate/free non-scannable, but still quarantinable memory.
 BASE_EXPORT void* AllocNonScannable(size_t size);
 BASE_EXPORT void FreeNonScannable(void* ptr);
-
-// Allocate/free non-scannable and non-quarantinable memory. These functions
-// behave as normal, *Scan-unaware allocation functions. This can be useful for
-// allocations that are guaranteed to be safe by the user, i.e. allocations that
-// cannot be referenced from outside and cannot contain dangling references
-// themselves.
 BASE_EXPORT void* AllocNonQuarantinable(size_t size);
 BASE_EXPORT void FreeNonQuarantinable(void* ptr);
 

@@ -60,14 +60,6 @@
 #include "partition_alloc/stack/stack.h"
 #include "partition_alloc/thread_cache.h"
 
-#if PA_BUILDFLAG(USE_STARSCAN)
-#include "partition_alloc/shim/nonscannable_allocator.h"
-#include "partition_alloc/starscan/pcscan.h"
-#include "partition_alloc/starscan/pcscan_scheduling.h"
-#include "partition_alloc/starscan/stats_collector.h"
-#include "partition_alloc/starscan/stats_reporter.h"
-#endif  // PA_BUILDFLAG(USE_STARSCAN)
-
 #if BUILDFLAG(IS_ANDROID)
 #include "base/system/sys_info.h"
 #endif
@@ -120,128 +112,9 @@ constexpr base::TimeDelta kFirstPAPurgeOrReclaimDelay = base::Minutes(1);
 namespace switches {
 [[maybe_unused]] constexpr char kRendererProcess[] = "renderer";
 constexpr char kZygoteProcess[] = "zygote";
-#if PA_BUILDFLAG(USE_STARSCAN)
-constexpr char kGpuProcess[] = "gpu-process";
-constexpr char kUtilityProcess[] = "utility";
-#endif
 }  // namespace switches
 
-#if PA_BUILDFLAG(USE_STARSCAN)
-
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-constexpr const char* ScannerIdToTracingString(
-    partition_alloc::internal::StatsCollector::ScannerId id) {
-  switch (id) {
-    case partition_alloc::internal::StatsCollector::ScannerId::kClear:
-      return "PCScan.Scanner.Clear";
-    case partition_alloc::internal::StatsCollector::ScannerId::kScan:
-      return "PCScan.Scanner.Scan";
-    case partition_alloc::internal::StatsCollector::ScannerId::kSweep:
-      return "PCScan.Scanner.Sweep";
-    case partition_alloc::internal::StatsCollector::ScannerId::kOverall:
-      return "PCScan.Scanner";
-    case partition_alloc::internal::StatsCollector::ScannerId::kNumIds:
-      __builtin_unreachable();
-  }
-}
-
-constexpr const char* MutatorIdToTracingString(
-    partition_alloc::internal::StatsCollector::MutatorId id) {
-  switch (id) {
-    case partition_alloc::internal::StatsCollector::MutatorId::kClear:
-      return "PCScan.Mutator.Clear";
-    case partition_alloc::internal::StatsCollector::MutatorId::kScanStack:
-      return "PCScan.Mutator.ScanStack";
-    case partition_alloc::internal::StatsCollector::MutatorId::kScan:
-      return "PCScan.Mutator.Scan";
-    case partition_alloc::internal::StatsCollector::MutatorId::kOverall:
-      return "PCScan.Mutator";
-    case partition_alloc::internal::StatsCollector::MutatorId::kNumIds:
-      __builtin_unreachable();
-  }
-}
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
-
-// Inject TRACE_EVENT_BEGIN/END, TRACE_COUNTER1, and UmaHistogramTimes.
-class StatsReporterImpl final : public partition_alloc::StatsReporter {
- public:
-  void ReportTraceEvent(
-      partition_alloc::internal::StatsCollector::ScannerId id,
-      [[maybe_unused]] partition_alloc::internal::base::PlatformThreadId tid,
-      int64_t start_time_ticks_internal_value,
-      int64_t end_time_ticks_internal_value) override {
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-    // TRACE_EVENT_* macros below drop most parameters when tracing is
-    // disabled at compile time.
-    const char* tracing_id = ScannerIdToTracingString(id);
-    const TimeTicks start_time =
-        TimeTicks::FromInternalValue(start_time_ticks_internal_value);
-    const TimeTicks end_time =
-        TimeTicks::FromInternalValue(end_time_ticks_internal_value);
-    TRACE_EVENT_BEGIN(kTraceCategory, perfetto::StaticString(tracing_id),
-                      perfetto::ThreadTrack::ForThread(tid), start_time);
-    TRACE_EVENT_END(kTraceCategory, perfetto::ThreadTrack::ForThread(tid),
-                    end_time);
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
-  }
-
-  void ReportTraceEvent(
-      partition_alloc::internal::StatsCollector::MutatorId id,
-      [[maybe_unused]] partition_alloc::internal::base::PlatformThreadId tid,
-      int64_t start_time_ticks_internal_value,
-      int64_t end_time_ticks_internal_value) override {
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-    // TRACE_EVENT_* macros below drop most parameters when tracing is
-    // disabled at compile time.
-    const char* tracing_id = MutatorIdToTracingString(id);
-    const TimeTicks start_time =
-        TimeTicks::FromInternalValue(start_time_ticks_internal_value);
-    const TimeTicks end_time =
-        TimeTicks::FromInternalValue(end_time_ticks_internal_value);
-    TRACE_EVENT_BEGIN(kTraceCategory, perfetto::StaticString(tracing_id),
-                      perfetto::ThreadTrack::ForThread(tid), start_time);
-    TRACE_EVENT_END(kTraceCategory, perfetto::ThreadTrack::ForThread(tid),
-                    end_time);
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
-  }
-
-  void ReportSurvivedQuarantineSize(size_t survived_size) override {
-    TRACE_COUNTER1(kTraceCategory, "PCScan.SurvivedQuarantineSize",
-                   survived_size);
-  }
-
-  void ReportSurvivedQuarantinePercent(double survived_rate) override {
-    // Multiply by 1000 since TRACE_COUNTER1 expects integer. In catapult,
-    // divide back.
-    // TODO(bikineev): Remove after switching to perfetto.
-    TRACE_COUNTER1(kTraceCategory, "PCScan.SurvivedQuarantinePercent",
-                   1000 * survived_rate);
-  }
-
-  void ReportStats(const char* stats_name, int64_t sample_in_usec) override {
-    TimeDelta sample = Microseconds(sample_in_usec);
-    UmaHistogramTimes(stats_name, sample);
-  }
-
- private:
-  static constexpr char kTraceCategory[] = "partition_alloc";
-};
-
-#endif  // PA_BUILDFLAG(USE_STARSCAN)
-
 }  // namespace
-
-#if PA_BUILDFLAG(USE_STARSCAN)
-void RegisterPCScanStatsReporter() {
-  static StatsReporterImpl s_reporter;
-  static bool registered = false;
-
-  DCHECK(!registered);
-
-  partition_alloc::internal::PCScan::RegisterStatsReporter(&s_reporter);
-  registered = true;
-}
-#endif  // PA_BUILDFLAG(USE_STARSCAN)
 
 namespace {
 
@@ -855,96 +728,6 @@ void InstallUnretainedDanglingRawPtrChecks() {
   }
 }
 
-namespace {
-
-#if PA_BUILDFLAG(USE_STARSCAN)
-void SetProcessNameForPCScan(const std::string& process_type) {
-  const char* name = [&process_type] {
-    if (process_type.empty()) {
-      // Empty means browser process.
-      return "Browser";
-    }
-    if (process_type == switches::kRendererProcess) {
-      return "Renderer";
-    }
-    if (process_type == switches::kGpuProcess) {
-      return "Gpu";
-    }
-    if (process_type == switches::kUtilityProcess) {
-      return "Utility";
-    }
-    return static_cast<const char*>(nullptr);
-  }();
-
-  if (name) {
-    partition_alloc::internal::PCScan::SetProcessName(name);
-  }
-}
-
-bool EnablePCScanForMallocPartitionsIfNeeded() {
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  partition_alloc::internal::base::PlatformThread::SetThreadNameHook(
-      &base::PlatformThread::SetName);
-
-  using Config = partition_alloc::internal::PCScan::InitConfig;
-  DCHECK(base::FeatureList::GetInstance());
-  if (base::FeatureList::IsEnabled(base::features::kPartitionAllocPCScan)) {
-    allocator_shim::EnablePCScan({Config::WantedWriteProtectionMode::kEnabled,
-                                  Config::SafepointMode::kEnabled});
-    base::allocator::RegisterPCScanStatsReporter();
-    return true;
-  }
-#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  return false;
-}
-
-bool EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded() {
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  using Config = partition_alloc::internal::PCScan::InitConfig;
-  DCHECK(base::FeatureList::GetInstance());
-  if (base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocPCScanBrowserOnly)) {
-    const Config::WantedWriteProtectionMode wp_mode =
-        base::FeatureList::IsEnabled(base::features::kPartitionAllocDCScan)
-            ? Config::WantedWriteProtectionMode::kEnabled
-            : Config::WantedWriteProtectionMode::kDisabled;
-#if !PA_CONFIG(STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
-    CHECK_EQ(Config::WantedWriteProtectionMode::kDisabled, wp_mode)
-        << "DCScan is currently only supported on Linux based systems";
-#endif
-    allocator_shim::EnablePCScan({wp_mode, Config::SafepointMode::kEnabled});
-    base::allocator::RegisterPCScanStatsReporter();
-    return true;
-  }
-#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  return false;
-}
-
-bool EnablePCScanForMallocPartitionsInRendererProcessIfNeeded() {
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  using Config = partition_alloc::internal::PCScan::InitConfig;
-  DCHECK(base::FeatureList::GetInstance());
-  if (base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocPCScanRendererOnly)) {
-    const Config::WantedWriteProtectionMode wp_mode =
-        base::FeatureList::IsEnabled(base::features::kPartitionAllocDCScan)
-            ? Config::WantedWriteProtectionMode::kEnabled
-            : Config::WantedWriteProtectionMode::kDisabled;
-#if !PA_CONFIG(STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
-    CHECK_EQ(Config::WantedWriteProtectionMode::kDisabled, wp_mode)
-        << "DCScan is currently only supported on Linux based systems";
-#endif
-    allocator_shim::EnablePCScan({wp_mode, Config::SafepointMode::kDisabled});
-    base::allocator::RegisterPCScanStatsReporter();
-    return true;
-  }
-#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  return false;
-}
-#endif  // PA_BUILDFLAG(USE_STARSCAN)
-
-}  // namespace
-
 void ReconfigurePartitionForKnownProcess(const std::string& process_type) {
   DCHECK_NE(process_type, switches::kZygoteProcess);
   // TODO(keishi): Move the code to enable BRP back here after Finch
@@ -1279,62 +1062,12 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   // 100 is a reasonable cap for this value.
   UmaHistogramCounts100("Memory.PartitionAlloc.PartitionRoot.ExtrasSize",
                         int(extras_size));
-#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-  // If BRP is not enabled, check if any of PCScan flags is enabled.
-  [[maybe_unused]] bool scan_enabled = false;
-#if PA_BUILDFLAG(USE_STARSCAN)
-  if (!brp_config.enable_brp) {
-    scan_enabled = EnablePCScanForMallocPartitionsIfNeeded();
-    // No specified process type means this is the Browser process.
-    if (process_type.empty()) {
-      scan_enabled = scan_enabled ||
-                     EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded();
-    }
-    if (process_type == switches::kRendererProcess) {
-      scan_enabled = scan_enabled ||
-                     EnablePCScanForMallocPartitionsInRendererProcessIfNeeded();
-    }
-    if (scan_enabled) {
-      if (base::FeatureList::IsEnabled(
-              base::features::kPartitionAllocPCScanStackScanning)) {
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-        partition_alloc::internal::PCScan::EnableStackScanning();
-#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-      }
-      if (base::FeatureList::IsEnabled(
-              base::features::kPartitionAllocPCScanImmediateFreeing)) {
-        partition_alloc::internal::PCScan::EnableImmediateFreeing();
-      }
-      if (base::FeatureList::IsEnabled(
-              base::features::kPartitionAllocPCScanEagerClearing)) {
-        partition_alloc::internal::PCScan::SetClearType(
-            partition_alloc::internal::PCScan::ClearType::kEager);
-      }
-      SetProcessNameForPCScan(process_type);
-    }
-  }
-#endif  // PA_BUILDFLAG(USE_STARSCAN)
-
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   partition_alloc::internal::StackTopRegistry::Get().NotifyThreadCreated(
       partition_alloc::internal::GetStackTop());
 
-#if PA_BUILDFLAG(USE_STARSCAN)
-  // Non-quarantinable partition is dealing with hot V8's zone allocations.
-  // In case PCScan is enabled in Renderer, enable thread cache on this
-  // partition. At the same time, thread cache on the main(malloc) partition
-  // must be disabled, because only one partition can have it on.
-  if (scan_enabled && process_type == switches::kRendererProcess) {
-    allocator_shim::NonQuarantinableAllocator::Instance()
-        .root()
-        ->EnableThreadCacheIfSupported();
-  } else
-#endif  // PA_BUILDFLAG(USE_STARSCAN)
-  {
-    allocator_shim::internal::PartitionAllocMalloc::Allocator()
-        ->EnableThreadCacheIfSupported();
-  }
+  allocator_shim::internal::PartitionAllocMalloc::Allocator()
+      ->EnableThreadCacheIfSupported();
 
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocLargeEmptySlotSpanRing)) {
@@ -1435,20 +1168,6 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
   }
 #endif  // PA_CONFIG(THREAD_CACHE_SUPPORTED) &&
         // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-
-#if PA_BUILDFLAG(USE_STARSCAN)
-  if (base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocPCScanMUAwareScheduler)) {
-    // Assign PCScan a task-based scheduling backend.
-    static base::NoDestructor<
-        partition_alloc::internal::MUAwareTaskBasedBackend>
-        mu_aware_task_based_backend{
-            partition_alloc::internal::PCScan::scheduler(),
-            &partition_alloc::internal::PCScan::PerformDelayedScan};
-    partition_alloc::internal::PCScan::scheduler().SetNewSchedulingBackend(
-        *mu_aware_task_based_backend.get());
-  }
-#endif  // PA_BUILDFLAG(USE_STARSCAN)
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   base::allocator::StartMemoryReclaimer(

@@ -20,10 +20,6 @@
 
 namespace base::allocator {
 
-#if PA_BUILDFLAG(USE_STARSCAN)
-BASE_EXPORT void RegisterPCScanStatsReporter();
-#endif
-
 // Starts a periodic timer on the current thread to purge all thread caches.
 BASE_EXPORT void StartThreadCachePeriodicPurge();
 

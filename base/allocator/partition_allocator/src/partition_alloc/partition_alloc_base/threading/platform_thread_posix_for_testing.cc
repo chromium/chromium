@@ -26,9 +26,8 @@
 #include <sys/resource.h>
 #endif
 
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_BUILDFLAG(USE_STARSCAN)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "partition_alloc/stack/stack.h"
-#include "partition_alloc/starscan/pcscan.h"
 #endif
 
 namespace partition_alloc::internal::base {
@@ -52,14 +51,14 @@ void* ThreadFunc(void* params) {
 
     delegate = thread_params->delegate;
 
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_BUILDFLAG(USE_STARSCAN)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     StackTopRegistry::Get().NotifyThreadCreated();
 #endif
   }
 
   delegate->ThreadMain();
 
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_BUILDFLAG(USE_STARSCAN)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   StackTopRegistry::Get().NotifyThreadDestroyed();
 #endif
 

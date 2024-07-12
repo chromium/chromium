@@ -162,7 +162,6 @@ pa_buildflag_header("buildflags") {
     "USE_RAW_PTR_ASAN_UNOWNED_IMPL=$use_raw_ptr_asan_unowned_impl",
     "USE_RAW_PTR_BACKUP_REF_IMPL=$use_raw_ptr_backup_ref_impl",
     "USE_RAW_PTR_HOOKABLE_IMPL=$use_raw_ptr_hookable_impl",
-    "USE_STARSCAN=$use_starscan",
     "DCHECKS_ARE_ON=$dchecks_are_on",
     "EXPENSIVE_DCHECKS_ARE_ON=$enable_expensive_dchecks",
     "DCHECK_IS_CONFIGURABLE=$dcheck_is_configurable",
@@ -427,29 +426,6 @@ if (is_clang_or_gcc) {
       "thread_isolation/thread_isolation.h",
       "yield_processor.h",
     ]
-
-    if (use_starscan) {
-      sources += [
-        "starscan/logging.h",
-        "starscan/pcscan.cc",
-        "starscan/pcscan.h",
-        "starscan/pcscan_internal.cc",
-        "starscan/pcscan_internal.h",
-        "starscan/pcscan_scheduling.cc",
-        "starscan/pcscan_scheduling.h",
-        "starscan/raceful_worklist.h",
-        "starscan/scan_loop.h",
-        "starscan/snapshot.cc",
-        "starscan/snapshot.h",
-        "starscan/starscan_fwd.h",
-        "starscan/state_bitmap.h",
-        "starscan/stats_collector.cc",
-        "starscan/stats_collector.h",
-        "starscan/stats_reporter.h",
-        "starscan/write_protector.cc",
-        "starscan/write_protector.h",
-      ]
-    }
 
     defines = []
     if (is_win) {
@@ -780,14 +756,10 @@ if (is_clang_or_gcc) {
       "shim/allocator_shim_dispatch_to_noop_on_free.h",
     ]
     if (use_partition_alloc) {
-      shim_sources += [
-        "shim/allocator_shim_default_dispatch_to_partition_alloc.cc",
-        "shim/nonscannable_allocator.cc",
-      ]
-      shim_headers += [
-        "shim/allocator_shim_default_dispatch_to_partition_alloc.h",
-        "shim/nonscannable_allocator.h",
-      ]
+      shim_sources +=
+          [ "shim/allocator_shim_default_dispatch_to_partition_alloc.cc" ]
+      shim_headers +=
+          [ "shim/allocator_shim_default_dispatch_to_partition_alloc.h" ]
     }
     if (is_android) {
       shim_headers += [
@@ -942,16 +914,6 @@ if (build_with_chromium) {
         "thread_cache_unittest.cc",
         "use_death_tests.h",
       ]
-
-      if (use_starscan) {
-        sources += [
-          "stack/stack_unittest.cc",
-          "starscan/pcscan_scheduling_unittest.cc",
-          "starscan/pcscan_unittest.cc",
-          "starscan/scan_loop_unittest.cc",
-          "starscan/state_bitmap_unittest.cc",
-        ]
-      }
     }
 
     if (is_fuchsia) {

@@ -71,25 +71,7 @@ const base::FeatureParam<DanglingPtrType> kDanglingPtrTypeParam{
     &kDanglingPtrTypeOption,
 };
 
-#if PA_BUILDFLAG(USE_STARSCAN)
-// If enabled, PCScan is turned on by default for all partitions that don't
-// disable it explicitly.
-BASE_FEATURE(kPartitionAllocPCScan,
-             "PartitionAllocPCScan",
-             FEATURE_DISABLED_BY_DEFAULT);
-#endif  // PA_BUILDFLAG(USE_STARSCAN)
-
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-// If enabled, PCScan is turned on only for the browser's malloc partition.
-BASE_FEATURE(kPartitionAllocPCScanBrowserOnly,
-             "PartitionAllocPCScanBrowserOnly",
-             FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, PCScan is turned on only for the renderer's malloc partition.
-BASE_FEATURE(kPartitionAllocPCScanRendererOnly,
-             "PartitionAllocPCScanRendererOnly",
-             FEATURE_DISABLED_BY_DEFAULT);
-
 // Use a larger maximum thread cache cacheable bucket size.
 BASE_FEATURE(kPartitionAllocLargeThreadCacheSize,
              "PartitionAllocLargeThreadCacheSize",
@@ -264,37 +246,6 @@ const base::FeatureParam<TimeDelta> kPartitionAllocMemoryReclaimerInterval = {
 // frame, similar to the limit that is already done for backgrounded renderers.
 BASE_FEATURE(kLowerPAMemoryLimitForNonMainRenderers,
              "LowerPAMemoryLimitForNonMainRenderers",
-             FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, switches PCScan scheduling to a mutator-aware scheduler. Does not
-// affect whether PCScan is enabled itself.
-BASE_FEATURE(kPartitionAllocPCScanMUAwareScheduler,
-             "PartitionAllocPCScanMUAwareScheduler",
-             FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, PCScan frees unconditionally all quarantined objects.
-// This is a performance testing feature.
-BASE_FEATURE(kPartitionAllocPCScanImmediateFreeing,
-             "PartitionAllocPCScanImmediateFreeing",
-             FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, PCScan clears eagerly (synchronously) on free().
-BASE_FEATURE(kPartitionAllocPCScanEagerClearing,
-             "PartitionAllocPCScanEagerClearing",
-             FEATURE_DISABLED_BY_DEFAULT);
-
-// In addition to heap, scan also the stack of the current mutator.
-BASE_FEATURE(kPartitionAllocPCScanStackScanning,
-             "PartitionAllocPCScanStackScanning",
-#if PA_BUILDFLAG(STACK_SCAN_SUPPORTED)
-             FEATURE_ENABLED_BY_DEFAULT
-#else
-             FEATURE_DISABLED_BY_DEFAULT
-#endif  // PA_BUILDFLAG(STACK_SCAN_SUPPORTED)
-);
-
-BASE_FEATURE(kPartitionAllocDCScan,
-             "PartitionAllocDCScan",
              FEATURE_DISABLED_BY_DEFAULT);
 
 // Whether to straighten free lists for larger slot spans in PurgeMemory() ->

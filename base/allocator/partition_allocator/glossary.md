@@ -169,7 +169,7 @@ tracking a non-contiguous set of allocations using a bitmap.
 The usable area of a super page in which slot spans
 reside. While generally this means "everything between the first
 and last guard partition pages in a super page," the presence of
-other metadata (e.g. StarScan bitmaps) can bump the starting offset
+other metadata can bump the starting offset
 forward. While this term is entrenched in the code, the team
 considers it suboptimal and is actively looking for a replacement.
 

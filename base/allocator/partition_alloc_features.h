@@ -59,13 +59,7 @@ enum class DanglingPtrType {
 extern const BASE_EXPORT base::FeatureParam<DanglingPtrType>
     kDanglingPtrTypeParam;
 
-#if PA_BUILDFLAG(USE_STARSCAN)
-BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScan);
-#endif
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanBrowserOnly);
-BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanRendererOnly);
-
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocLargeThreadCacheSize);
 BASE_EXPORT int GetPartitionAllocLargeThreadCacheSizeValue();
 BASE_EXPORT int GetPartitionAllocLargeThreadCacheSizeValueForLowRAMAndroid();
@@ -162,11 +156,6 @@ extern const BASE_EXPORT base::FeatureParam<BucketDistributionMode>
     kPartitionAllocBucketDistributionParam;
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kLowerPAMemoryLimitForNonMainRenderers);
-BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanMUAwareScheduler);
-BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanStackScanning);
-BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocDCScan);
-BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanImmediateFreeing);
-BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanEagerClearing);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocUseDenserDistribution);
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocMemoryReclaimer);

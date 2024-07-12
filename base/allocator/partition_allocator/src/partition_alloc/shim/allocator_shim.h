@@ -17,10 +17,6 @@
 #include "partition_alloc/shim/allocator_dispatch.h"
 #include "partition_alloc/tagging.h"
 
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_BUILDFLAG(USE_STARSCAN)
-#include "partition_alloc/starscan/pcscan.h"
-#endif
-
 namespace allocator_shim {
 
 // Allocator Shim API. Allows to:
@@ -169,10 +165,6 @@ PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) uint32_t GetMainPartitionRootExtrasSize();
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) void AdjustDefaultAllocatorForForeground();
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) void AdjustDefaultAllocatorForBackground();
 
-#if PA_BUILDFLAG(USE_STARSCAN)
-PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
-void EnablePCScan(partition_alloc::internal::PCScan::InitConfig);
-#endif
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 }  // namespace allocator_shim

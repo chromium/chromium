@@ -28,20 +28,11 @@
 #include "partition_alloc/partition_superpage_extent_entry.h"
 #include "partition_alloc/reservation_offset_table.h"
 
-#if PA_BUILDFLAG(USE_STARSCAN)
-#include "partition_alloc/starscan/state_bitmap.h"
-#endif
-
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
 #include "partition_alloc/tagging.h"
 #endif
 
 namespace partition_alloc::internal {
-
-#if PA_BUILDFLAG(USE_STARSCAN)
-using AllocationStateMap =
-    StateBitmap<kSuperPageSize, kSuperPageAlignment, kAlignment>;
-#endif
 
 // Metadata of the slot span.
 //
@@ -369,46 +360,10 @@ PA_ALWAYS_INLINE PartitionSuperPageExtentEntry* PartitionSuperPageToExtent(
       PartitionSuperPageToMetadataArea(super_page));
 }
 
-#if PA_BUILDFLAG(USE_STARSCAN)
-
-// Size that should be reserved for state bitmap (if present) inside a super
-// page. Elements of a super page are partition-page-aligned, hence the returned
-// size is a multiple of partition page size.
-PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
-ReservedStateBitmapSize() {
-  return base::bits::AlignUp(sizeof(AllocationStateMap), PartitionPageSize());
-}
-
-// Size that should be committed for state bitmap (if present) inside a super
-// page. It is a multiple of system page size.
-PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
-CommittedStateBitmapSize() {
-  return base::bits::AlignUp(sizeof(AllocationStateMap), SystemPageSize());
-}
-
-// Returns the address/pointer to the state bitmap in the super page. It's the
-// caller's responsibility to ensure that the bitmaps even exist.
-PA_ALWAYS_INLINE uintptr_t SuperPageStateBitmapAddr(uintptr_t super_page) {
-  PA_DCHECK(!(super_page % kSuperPageAlignment));
-  return super_page + PartitionPageSize() +
-         (IsManagedByNormalBuckets(super_page) ? ReservedFreeSlotBitmapSize()
-                                               : 0);
-}
-
-PA_ALWAYS_INLINE AllocationStateMap* SuperPageStateBitmap(
-    uintptr_t super_page) {
-  return reinterpret_cast<AllocationStateMap*>(
-      SuperPageStateBitmapAddr(super_page));
-}
-
-#else  // PA_BUILDFLAG(USE_STARSCAN)
-
 PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 ReservedStateBitmapSize() {
   return 0ull;
 }
-
-#endif  // PA_BUILDFLAG(USE_STARSCAN)
 
 PA_ALWAYS_INLINE uintptr_t
 SuperPagePayloadStartOffset(bool is_managed_by_normal_buckets,
@@ -767,16 +722,6 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::Reset() {
 
   next_slot_span = nullptr;
 }
-
-#if PA_BUILDFLAG(USE_STARSCAN)
-// Returns the state bitmap from an address within a normal-bucket super page.
-// It's the caller's responsibility to ensure that the bitmap exists.
-PA_ALWAYS_INLINE AllocationStateMap* StateBitmapFromAddr(uintptr_t address) {
-  PA_DCHECK(IsManagedByNormalBuckets(address));
-  uintptr_t super_page = address & kSuperPageBaseMask;
-  return SuperPageStateBitmap(super_page);
-}
-#endif  // PA_BUILDFLAG(USE_STARSCAN)
 
 // Iterates over all slot spans in a super-page. |Callback| must return true if
 // early return is needed.

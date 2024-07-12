@@ -35,13 +35,6 @@ static_assert(sizeof(void*) == 8, "");
 static_assert(sizeof(void*) != 8, "");
 #endif  // PA_CONFIG(HAS_64_BITS_POINTERS)
 
-#if PA_BUILDFLAG(HAS_64_BIT_POINTERS) && \
-    (defined(__ARM_NEON) || defined(__ARM_NEON__)) && defined(__ARM_FP)
-#define PA_CONFIG_STARSCAN_NEON_SUPPORTED() 1
-#else
-#define PA_CONFIG_STARSCAN_NEON_SUPPORTED() 0
-#endif
-
 #if PA_BUILDFLAG(HAS_64_BIT_POINTERS) && PA_BUILDFLAG(IS_IOS)
 // Allow PA to select an alternate pool size at run-time before initialization,
 // rather than using a single constexpr value.
@@ -54,43 +47,6 @@ static_assert(sizeof(void*) != 8, "");
 #else
 #define PA_CONFIG_DYNAMICALLY_SELECT_POOL_SIZE() 0
 #endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS) && PA_BUILDFLAG(IS_IOS)
-
-#if PA_BUILDFLAG(HAS_64_BIT_POINTERS) && \
-    (PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_ANDROID))
-#include <linux/version.h>
-// TODO(bikineev): Enable for ChromeOS.
-#define PA_CONFIG_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED() \
-  (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0))
-#else
-#define PA_CONFIG_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED() 0
-#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS) &&
-        // (PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_ANDROID))
-
-#if PA_BUILDFLAG(USE_STARSCAN)
-// Use card table to avoid races for PCScan configuration without safepoints.
-// The card table provides the guaranteee that for a marked card the underling
-// super-page is fully initialized.
-#define PA_CONFIG_STARSCAN_USE_CARD_TABLE() 1
-#else
-// The card table is permanently disabled for 32-bit.
-#define PA_CONFIG_STARSCAN_USE_CARD_TABLE() 0
-#endif  // PA_BUILDFLAG(USE_STARSCAN)
-
-// Use batched freeing when sweeping pages. This builds up a freelist in the
-// scanner thread and appends to the slot-span's freelist only once.
-#define PA_CONFIG_STARSCAN_BATCHED_FREE() 1
-
-// TODO(bikineev): Temporarily disable inlining in *Scan to get clearer
-// stacktraces.
-#define PA_CONFIG_STARSCAN_NOINLINE_SCAN_FUNCTIONS() 1
-
-// TODO(bikineev): Temporarily disable *Scan in MemoryReclaimer as it seems to
-// cause significant jank.
-#define PA_CONFIG_STARSCAN_ENABLE_STARSCAN_ON_RECLAIM() 0
-
-// Double free detection comes with expensive cmpxchg (with the loop around it).
-// We currently disable it to improve the runtime.
-#define PA_CONFIG_STARSCAN_EAGER_DOUBLE_FREE_DETECTION_ENABLED() 0
 
 // POSIX is not only UNIX, e.g. macOS and other OSes. We do use Linux-specific
 // features such as futex(2).

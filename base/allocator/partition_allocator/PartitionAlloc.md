@@ -119,7 +119,7 @@ partition page that holds metadata (32B struct per partition page).
   of each super page).
 * In some configurations, PartitionAlloc stores more metadata than can
   fit in the one system page at the front. These are the bitmaps for
-  StarScan and `MTECheckedPtr<T>`, and they are relegated to the head of
+  `MTECheckedPtr<T>`, and they are relegated to the head of
   what would otherwise be usable space for slot spans. One, both, or
   none of these bitmaps may be present, depending on build
   configuration, runtime configuration, and type of allocation.

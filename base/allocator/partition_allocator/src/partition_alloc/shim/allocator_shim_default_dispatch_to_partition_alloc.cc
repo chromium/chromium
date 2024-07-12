@@ -26,7 +26,6 @@
 #include "partition_alloc/partition_stats.h"
 #include "partition_alloc/shim/allocator_dispatch.h"
 #include "partition_alloc/shim/allocator_shim_internals.h"
-#include "partition_alloc/shim/nonscannable_allocator.h"
 
 #if PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
 #include <malloc.h>
@@ -644,22 +643,6 @@ uint32_t GetMainPartitionRootExtrasSize() {
 #endif  // PA_CONFIG(EXTRAS_REQUIRED)
 }
 
-#if PA_BUILDFLAG(USE_STARSCAN)
-void EnablePCScan(partition_alloc::internal::PCScan::InitConfig config) {
-  partition_alloc::internal::PCScan::Initialize(config);
-
-  PA_CHECK(AllocatorConfigurationFinalized());
-  partition_alloc::internal::PCScan::RegisterScannableRoot(Allocator());
-  if (OriginalAllocator() != nullptr) {
-    partition_alloc::internal::PCScan::RegisterScannableRoot(
-        OriginalAllocator());
-  }
-
-  allocator_shim::NonScannableAllocator::Instance().NotifyPCScanEnabled();
-  allocator_shim::NonQuarantinableAllocator::Instance().NotifyPCScanEnabled();
-}
-#endif  // PA_BUILDFLAG(USE_STARSCAN)
-
 void AdjustDefaultAllocatorForForeground() {
   Allocator()->AdjustForForeground();
 }
@@ -737,22 +720,6 @@ SHIM_ALWAYS_EXPORT int mallopt(int cmd, int value) __THROW {
 SHIM_ALWAYS_EXPORT struct mallinfo mallinfo(void) __THROW {
   partition_alloc::SimplePartitionStatsDumper allocator_dumper;
   Allocator()->DumpStats("malloc", true, &allocator_dumper);
-  // TODO(bartekn): Dump OriginalAllocator() into "malloc" as well.
-  // Dump stats for nonscannable and nonquarantinable allocators.
-  auto& nonscannable_allocator =
-      allocator_shim::NonScannableAllocator::Instance();
-  partition_alloc::SimplePartitionStatsDumper nonscannable_allocator_dumper;
-  if (auto* nonscannable_root = nonscannable_allocator.root()) {
-    nonscannable_root->DumpStats("malloc", true,
-                                 &nonscannable_allocator_dumper);
-  }
-  auto& nonquarantinable_allocator =
-      allocator_shim::NonQuarantinableAllocator::Instance();
-  partition_alloc::SimplePartitionStatsDumper nonquarantinable_allocator_dumper;
-  if (auto* nonquarantinable_root = nonquarantinable_allocator.root()) {
-    nonquarantinable_root->DumpStats("malloc", true,
-                                     &nonquarantinable_allocator_dumper);
-  }
 
   struct mallinfo info = {};
   info.arena = 0;  // Memory *not* allocated with mmap().
@@ -760,21 +727,15 @@ SHIM_ALWAYS_EXPORT struct mallinfo mallinfo(void) __THROW {
   // Memory allocated with mmap(), aka virtual size.
   info.hblks =
       partition_alloc::internal::base::checked_cast<decltype(info.hblks)>(
-          allocator_dumper.stats().total_mmapped_bytes +
-          nonscannable_allocator_dumper.stats().total_mmapped_bytes +
-          nonquarantinable_allocator_dumper.stats().total_mmapped_bytes);
+          allocator_dumper.stats().total_mmapped_bytes);
   // Resident bytes.
   info.hblkhd =
       partition_alloc::internal::base::checked_cast<decltype(info.hblkhd)>(
-          allocator_dumper.stats().total_resident_bytes +
-          nonscannable_allocator_dumper.stats().total_resident_bytes +
-          nonquarantinable_allocator_dumper.stats().total_resident_bytes);
+          allocator_dumper.stats().total_resident_bytes);
   // Allocated bytes.
   info.uordblks =
       partition_alloc::internal::base::checked_cast<decltype(info.uordblks)>(
-          allocator_dumper.stats().total_active_bytes +
-          nonscannable_allocator_dumper.stats().total_active_bytes +
-          nonquarantinable_allocator_dumper.stats().total_active_bytes);
+          allocator_dumper.stats().total_active_bytes);
 
   return info;
 }

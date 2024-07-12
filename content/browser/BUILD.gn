@@ -2362,13 +2362,6 @@ source_set("browser") {
     "worker_host/worker_script_loader_factory.h",
   ]
 
-  if (use_starscan) {
-    sources += [
-      "starscan_load_observer.cc",
-      "starscan_load_observer.h",
-    ]
-  }
-
   # TODO(crbug.com/40226169): Remove `permissions_common`.
   # DO NOT add unrelated entries to this block.
   deps += [ "//components/permissions:permissions_common" ]

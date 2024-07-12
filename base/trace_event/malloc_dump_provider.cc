@@ -25,7 +25,6 @@
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_bucket_lookup.h"
-#include "partition_alloc/shim/nonscannable_allocator.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include <malloc/malloc.h>
@@ -138,14 +137,6 @@ void ReportPartitionAllocStats(ProcessMemoryDump* pmd,
     original_allocator->DumpStats("original", is_light_dump,
                                   &partition_stats_dumper);
   }
-  auto& nonscannable_allocator =
-      allocator_shim::NonScannableAllocator::Instance();
-  if (auto* root = nonscannable_allocator.root())
-    root->DumpStats("nonscannable", is_light_dump, &partition_stats_dumper);
-  auto& nonquarantinable_allocator =
-      allocator_shim::NonQuarantinableAllocator::Instance();
-  if (auto* root = nonquarantinable_allocator.root())
-    root->DumpStats("nonquarantinable", is_light_dump, &partition_stats_dumper);
 
   *total_virtual_size += partition_stats_dumper.total_resident_bytes();
   *resident_size += partition_stats_dumper.total_resident_bytes();

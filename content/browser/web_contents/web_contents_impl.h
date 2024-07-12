@@ -96,10 +96,6 @@
 #include "content/public/browser/android/child_process_importance.h"
 #endif
 
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_BUILDFLAG(USE_STARSCAN)
-#include "content/browser/starscan_load_observer.h"
-#endif
-
 namespace base {
 class FilePath;
 }  // namespace base
@@ -2487,12 +2483,6 @@ class CONTENT_EXPORT WebContentsImpl
   // It is used when the page has not loaded enough to know a background
   // color or if the page does not set a background color.
   std::optional<SkColor> page_base_background_color_;
-
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_BUILDFLAG(USE_STARSCAN)
-  // TODO(crbug.com/40190798): Remove/reevaluate after the PCScan experiment is
-  // finished.
-  std::unique_ptr<StarScanLoadObserver> star_scan_load_observer_;
-#endif
 
   // Stores WebContents::CreateParams::creator_location.
   base::Location creator_location_;

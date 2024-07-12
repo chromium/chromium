@@ -276,16 +276,6 @@ void PartitionAddressSpace::Init() {
   PA_DCHECK(!IsInCorePools(setup_.brp_pool_base_address_ + brp_pool_size));
 #endif  // PA_BUILDFLAG(GLUE_CORE_POOLS)
 
-#if PA_CONFIG(STARSCAN_USE_CARD_TABLE)
-  // Reserve memory for PCScan quarantine card table.
-  uintptr_t requested_address = setup_.regular_pool_base_address_;
-  uintptr_t actual_address = AddressPoolManager::GetInstance().Reserve(
-      kRegularPoolHandle, requested_address, kSuperPageSize);
-  PA_CHECK(requested_address == actual_address)
-      << "QuarantineCardTable is required to be allocated at the beginning of "
-         "the regular pool";
-#endif  // PA_CONFIG(STARSCAN_USE_CARD_TABLE)
-
 #if PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
   CompressedPointerBaseGlobal::SetBase(setup_.regular_pool_base_address_);
 #endif  // PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
