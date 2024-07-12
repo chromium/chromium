@@ -146,7 +146,11 @@ class PlusAddressServiceTest : public ::testing::Test {
       const auto& matcher) {
     base::MockCallback<PlusAddressService::GetSuggestionsCallback> callback;
     int calls = 0;
-    ON_CALL(callback, Run(matcher)).WillByDefault([&] { ++calls; });
+    ON_CALL(callback, Run)
+        .WillByDefault([&](std::vector<autofill::Suggestion> suggestions) {
+          EXPECT_THAT(suggestions, matcher);
+          ++calls;
+        });
     service().GetSuggestions(origin, is_off_the_record, focused_form_type,
                              focused_field_value, trigger_source,
                              callback.Get());
@@ -1422,6 +1426,22 @@ class PlusAddressAffiliationsTest : public PlusAddressServiceTest {
     InitService();
   }
 
+  testing::AssertionResult ExpectServiceToReturnAffiliatedPlusProfiles(
+      const url::Origin& origin,
+      const auto& matcher) {
+    base::MockCallback<PlusAddressService::GetPlusProfilesCallback> callback;
+    int calls = 0;
+    ON_CALL(callback, Run)
+        .WillByDefault([&](std::vector<PlusProfile> plus_profiles) {
+          EXPECT_THAT(plus_profiles, matcher);
+          ++calls;
+        });
+    service().GetAffiliatedPlusProfiles(origin, callback.Get());
+    return calls == 1
+               ? testing::AssertionSuccess()
+               : (testing::AssertionFailure() << "Error fetching suggestions.");
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -1537,6 +1557,64 @@ TEST_F(PlusAddressAffiliationsTest, GetEmptyAffiliatedSuggestionMatches) {
       AutofillSuggestionTriggerSource::kFormControlElementClicked,
       // There are no PLS, group or exact matches.
       IsSingleCreatePlusAddressSuggestion()));
+}
+
+// Verifies that affiliated plus profiles are returned.
+TEST_F(PlusAddressAffiliationsTest, GetAffiliatedPSLProfiles) {
+  PlusProfile profile1 = test::CreatePlusProfileWithFacet(
+      FacetURI::FromCanonicalSpec("https://one.foo.example.com"));
+  PlusProfile profile2 = test::CreatePlusProfileWithFacet(
+      FacetURI::FromCanonicalSpec("https://two.foo.example.com"));
+  PlusProfile profile3 = test::CreatePlusProfileWithFacet(
+      FacetURI::FromCanonicalSpec("https://bar.example.com"));
+
+  service().SavePlusProfile(profile1);
+  service().SavePlusProfile(profile2);
+  service().SavePlusProfile(profile3);
+  ASSERT_THAT(service().GetPlusProfiles(),
+              UnorderedElementsAre(profile1, profile2, profile3));
+
+  EXPECT_CALL(*mock_affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(std::vector<std::string>{"example.com"}));
+
+  // Empty affiliation group.
+  affiliations::GroupedFacets group;
+  EXPECT_CALL(*mock_affiliation_service(), GetGroupingInfo)
+      .WillOnce(
+          RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
+
+  // Request the same URL as the `profile1.facet`.
+  const url::Origin origin = url::Origin::Create(
+      GURL(absl::get<FacetURI>(profile1.facet).canonical_spec()));
+
+  // Note that `profile3` is not a PSL match due to the PSL extensions list.
+  ExpectServiceToReturnAffiliatedPlusProfiles(
+      origin, UnorderedElementsAre(profile1, profile2));
+}
+
+// Verifies that the service returns profiles from affiliated domains even if
+// the requested domain doesn't have an affiliated plus address.
+TEST_F(PlusAddressAffiliationsTest,
+       AffiliatedProfilesForDomainWithNoPlusAddresses) {
+  PlusProfile group_profile = test::CreatePlusProfileWithFacet(
+      FacetURI::FromCanonicalSpec("https://group.affiliated.com"));
+
+  service().SavePlusProfile(group_profile);
+  ASSERT_THAT(service().GetPlusProfiles(), UnorderedElementsAre(group_profile));
+
+  EXPECT_CALL(*mock_affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
+
+  // Prepares the `group_profile` facet to be returned as part of the
+  // affiliation group.
+  affiliations::GroupedFacets group;
+  group.facets.emplace_back(absl::get<FacetURI>(group_profile.facet));
+
+  const url::Origin origin =
+      url::Origin::Create(GURL("https://bar.example.com"));
+
+  ExpectServiceToReturnAffiliatedPlusProfiles(
+      origin, UnorderedElementsAre(group_profile));
 }
 
 }  // namespace plus_addresses

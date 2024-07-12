@@ -158,6 +158,15 @@ std::optional<std::string> PlusAddressService::GetPlusAddress(
   return profile ? std::make_optional(profile->plus_address) : std::nullopt;
 }
 
+void PlusAddressService::GetAffiliatedPlusProfiles(
+    const url::Origin& origin,
+    GetPlusProfilesCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  plus_address_match_helper_.GetAffiliatedPlusProfiles(OriginToFacet(origin),
+                                                       std::move(callback));
+}
+
 base::span<const PlusProfile> PlusAddressService::GetPlusProfiles() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return plus_address_cache_.GetPlusProfiles();

@@ -65,6 +65,9 @@ class PlusAddressService : public KeyedService,
     virtual void OnPlusAddressServiceShutdown() = 0;
   };
 
+  // Callback to return the list of plus profiles.
+  using GetPlusProfilesCallback =
+      base::OnceCallback<void(std::vector<PlusProfile>)>;
   // The number of `HTTP_FORBIDDEN` responses that the user may receive before
   // `this` is disabled for this session. If a user makes a single successful
   // call, this limit no longer applies.
@@ -126,6 +129,11 @@ class PlusAddressService : public KeyedService,
   // Same as `GetPlusAddress()`, but returns the entire profile.
   std::optional<PlusProfile> GetPlusProfile(
       const PlusProfile::facet_t& facet) const;
+
+  // Returns a list of plus profiles for the `origin` and all affiliated
+  // domains.
+  void GetAffiliatedPlusProfiles(const url::Origin& origin,
+                                 GetPlusProfilesCallback callback);
 
   // Returns all the cached plus profiles. There are no server requests
   // triggered by this method, only the cached responses are returned.
