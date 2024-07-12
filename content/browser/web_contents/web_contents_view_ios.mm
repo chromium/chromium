@@ -93,7 +93,11 @@ gfx::Rect WebContentsViewIOS::GetContainerBounds() const {
 
 void WebContentsViewIOS::OnCapturerCountChanged() {}
 
-void WebContentsViewIOS::FullscreenStateChanged(bool is_fullscreen) {}
+void WebContentsViewIOS::FullscreenStateChanged(bool is_fullscreen) {
+  if (is_fullscreen && popup_menu_helper_) {
+    popup_menu_helper_->CloseMenu();
+  }
+}
 
 void WebContentsViewIOS::UpdateWindowControlsOverlay(
     const gfx::Rect& bounding_rect) {}
