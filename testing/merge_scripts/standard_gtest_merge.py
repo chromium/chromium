@@ -42,7 +42,7 @@ def merge_shard_results(summary_json, jsons_to_merge):
   # summary.json is produced by swarming client itself. We are mostly interested
   # in the number of shards.
   try:
-    with open(summary_json) as f:
+    with open(summary_json, encoding="utf-8") as f:
       summary = json.load(f)
   except (IOError, ValueError):
     emit_warning(
@@ -156,7 +156,7 @@ def load_shard_json(index, task_id, jsons_to_merge):
             file=sys.stderr)
       return (None, 'shard %s test output exceeded the size limit' % index)
 
-    with open(path) as f:
+    with open(path, encoding="utf-8") as f:
       return (json.load(f), None)
   except (IOError, ValueError, OSError) as e:
     print('Missing or invalid gtest JSON file: %s' % path, file=sys.stderr)
@@ -180,7 +180,7 @@ def merge_list_of_dicts(left, right):
 def standard_gtest_merge(output_json, summary_json, jsons_to_merge):
 
   output = merge_shard_results(summary_json, jsons_to_merge)
-  with open(output_json, 'w') as f:
+  with open(output_json, 'w', encoding="utf-8") as f:
     json.dump(output, f)
 
   return 0
