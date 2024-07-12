@@ -70,7 +70,7 @@ CanvasResource::~CanvasResource() {
 #endif
 }
 
-void CanvasResource::OnDestroy() {
+bool CanvasResource::OnDestroy() {
 #if DCHECK_IS_ON()
   did_call_on_destroy_ = true;
 #endif
@@ -82,13 +82,13 @@ void CanvasResource::OnDestroy() {
     // done and any resources tied to the context may be leaked. As such, this
     // case should arise only when the owning thread and its associated context
     // were torn down before this resource could be deleted.
-    return;
+    return false;
   }
 
   if (provider_) {
     provider_->OnDestroyResource();
   }
-  TearDown();
+  return true;
 }
 
 void CanvasResource::Release() {
@@ -291,7 +291,10 @@ CanvasResourceSharedBitmap::CanvasResourceSharedBitmap(
 }
 
 CanvasResourceSharedBitmap::~CanvasResourceSharedBitmap() {
-  OnDestroy();
+  if (!OnDestroy()) {
+    return;
+  }
+  TearDown();
 }
 
 bool CanvasResourceSharedBitmap::IsValid() const {
@@ -536,7 +539,10 @@ GrBackendTexture CanvasResourceSharedImage::CreateGrTexture() const {
 }
 
 CanvasResourceSharedImage::~CanvasResourceSharedImage() {
-  OnDestroy();
+  if (!OnDestroy()) {
+    return;
+  }
+  TearDown();
 }
 
 void CanvasResourceSharedImage::TearDown() {
@@ -822,7 +828,10 @@ scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
 }
 
 ExternalCanvasResource::~ExternalCanvasResource() {
-  OnDestroy();
+  if (!OnDestroy()) {
+    return;
+  }
+  TearDown();
 }
 
 bool ExternalCanvasResource::IsValid() const {
@@ -952,7 +961,10 @@ scoped_refptr<CanvasResourceSwapChain> CanvasResourceSwapChain::Create(
 }
 
 CanvasResourceSwapChain::~CanvasResourceSwapChain() {
-  OnDestroy();
+  if (!OnDestroy()) {
+    return;
+  }
+  TearDown();
 }
 
 bool CanvasResourceSwapChain::IsValid() const {

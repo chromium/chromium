@@ -220,11 +220,6 @@ class PLATFORM_EXPORT CanvasResource
   // for direct scanout by the display.
   virtual bool IsOverlayCandidate() const { return false; }
 
-  // Destroys the backing memory and any other references to it kept alive by
-  // this object. This must be called from the same thread where the resource
-  // was created.
-  virtual void TearDown() = 0;
-
   gpu::InterfaceBase* InterfaceBase() const;
   gpu::gles2::GLES2Interface* ContextGL() const;
   gpu::raster::RasterInterface* RasterInterface() const;
@@ -262,7 +257,10 @@ class PLATFORM_EXPORT CanvasResource
     return false;
   }
   const SkColorInfo& GetSkColorInfo() const { return info_; }
-  void OnDestroy();
+
+  // Should be called from subclasses' destructors. Returns whether it is
+  // possible to do GPU context-related teardown.
+  bool OnDestroy();
   CanvasResourceProvider* Provider() { return provider_.get(); }
   base::WeakPtr<CanvasResourceProvider> WeakProvider() { return provider_; }
 
@@ -301,7 +299,7 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
   void NotifyResourceLost() override;
 
  private:
-  void TearDown() override;
+  void TearDown();
 
   CanvasResourceSharedBitmap(const SkImageInfo&,
                              base::WeakPtr<CanvasResourceProvider>,
@@ -379,8 +377,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   // to create an instance of this class) returns null if the ClientSI couldn't
   // be created.
   // * The pointer is not cleared until TearDown(), which is only called from
-  // OnDestroy(), which itself is only called from the destructor of this
-  // class.
+  // * the destructor of this class.
   gpu::ClientSharedImage* client_shared_image() const {
     return owning_thread_data_.client_shared_image.get();
   }
@@ -413,7 +410,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
       const gpu::SyncToken& sync_token,
       bool is_lost);
 
-  void TearDown() override;
+  void TearDown();
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const override;
   const gpu::SyncToken GetSyncToken() override;
@@ -497,7 +494,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   }
 
  private:
-  void TearDown() override;
+  void TearDown();
   bool IsOverlayCandidate() const final {
     return transferable_resource_.is_overlay_candidate;
   }
@@ -559,7 +556,7 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
       MailboxSyncMode) override;
 
  private:
-  void TearDown() override;
+  void TearDown();
   bool IsOverlayCandidate() const final { return true; }
   bool HasGpuMailbox() const;
   const gpu::SyncToken GetSyncToken() override;
