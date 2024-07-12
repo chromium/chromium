@@ -975,7 +975,7 @@ def RunTestsCommand(args, result_sink_client=None):
   command = args.command
 
   ProcessCommonOptions(args)
-  logging.info('command: %s', ' '.join(sys.argv))
+  logging.info('command: %s', shlex.join(sys.argv))
   if args.enable_platform_mode or command in _DEFAULT_PLATFORM_MODE_TESTS:
     return RunTestsInPlatformMode(args, result_sink_client)
 
