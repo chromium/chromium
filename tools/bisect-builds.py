@@ -413,6 +413,16 @@ OFFICIAL_BACKUP_BUILDS = {
     }
 }
 
+PLATFORM_ARCH_TO_ARCHIVE_MAPPING = {
+    ('linux', 'x64'): 'linux64',
+    ('mac', 'x64'): 'mac64',
+    ('mac', 'x86'): 'mac',
+    ('mac', 'arm'): 'mac-arm',
+    ('win', 'x64'): 'win64',
+    ('win', 'x86'): 'win',
+    ('win', 'arm'): 'win-arm64',
+}
+
 # Set only during initialization.
 is_verbose = False
 
@@ -2014,6 +2024,29 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
   return parser
 
 
+def _DetectArchive():
+  """Detect the buildbot archive to use based on local environment."""
+  os_name = None
+  plat = sys.platform
+  if plat.startswith('linux'):
+    os_name = 'linux'
+  elif plat in ('win32', 'cygwin'):
+    os_name = 'win'
+  elif plat == 'darwin':
+    os_name = 'mac'
+
+  arch = None
+  machine = platform.machine().lower()
+  if machine.startswith(('arm', 'aarch')):
+    arch = 'arm'
+  elif machine in ('amd64', 'x86_64'):
+    arch = 'x64'
+  elif machine in ('i386', 'i686', 'i86pc', 'x86'):
+    arch = 'x86'
+
+  return PLATFORM_ARCH_TO_ARCHIVE_MAPPING.get((os_name, arch), None)
+
+
 def ParseCommandLine(args=None):
   """Parses the command line for bisect options."""
   official_choices = list(PATH_CONTEXT['official'].keys())
@@ -2024,9 +2057,14 @@ def ParseCommandLine(args=None):
     UpdateScript()
 
   if opts.archive is None:
-    print('Error: Missing required parameter: --archive')
-    parser.print_help()
-    sys.exit(1)
+    archive = _DetectArchive()
+    if archive:
+      print('The buildbot archive (-a/--archive) detected as:', archive)
+      opts.archive = archive
+    else:
+      print('Error: Missing required parameter: --archive')
+      parser.print_help()
+      sys.exit(1)
 
   if opts.signed and not opts.archive.startswith('android-'):
     print('Signed bisection is only supported for Android platform.')
