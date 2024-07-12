@@ -148,15 +148,15 @@ suite('ManualRegionSelection', function() {
     assertEquals(
         1,
         metrics.count(
-            'Lens.Overlay.Overlay.UserAction', UserAction.kRegionSelection));
+            'Lens.Overlay.Overlay.UserAction', UserAction.kTapRegionSelection));
     assertEquals(
         1,
         metrics.count(
             'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
-            UserAction.kRegionSelection));
+            UserAction.kTapRegionSelection));
     const action = await testBrowserProxy.handler.whenCalled(
         'recordUkmLensOverlayInteraction');
-    assertEquals(UserAction.kRegionSelection, action);
+    assertEquals(UserAction.kTapRegionSelection, action);
   }
 
   test('ClickShowsRegion', async () => {

@@ -61,9 +61,10 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="My Activity action"/>
   <int value="7" label="Learn more action"/>
   <int value="8" label="Send feedback action"/>
+  <int value="9" label="Tap region selection"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/lens/core/lens.mojom:UserAction) -->
+<!-- LINT.ThenChange(//chrome/browser/lens/core/mojom/lens.mojom:UserAction) -->
 
 <!-- LINT.IfChange(LensPermissionBubbleUserAction) -->
 
