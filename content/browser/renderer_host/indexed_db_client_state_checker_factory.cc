@@ -209,16 +209,24 @@ IndexedDBClientStateCheckerFactory::InitializePendingRemote(
     BucketContext& bucket_context) {
   mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
       client_state_checker_remote;
-  if (RenderFrameHost* rfh = RenderFrameHost::FromID(
-          bucket_context.GetAssociatedRenderFrameHostId())) {
+  if (GlobalRenderFrameHostId rfh_id =
+          bucket_context.GetAssociatedRenderFrameHostId()) {
+    RenderFrameHost* rfh = RenderFrameHost::FromID(rfh_id);
+    if (!rfh) {
+      // The rare case of the `RenderFrameHost` being null for a valid ID can
+      // happen when the client is a dedicated worker and it has outlived the
+      // parent RFH. See code comment on `DedicatedWorkerHost`.
+      // Don't bind the remote in this case.
+      return {std::move(client_state_checker_remote),
+              base::UnguessableToken::Null()};
+    }
     auto* checker =
         DocumentIndexedDBClientStateChecker::GetOrCreateForCurrentDocument(rfh);
     checker->Bind(client_state_checker_remote.InitWithNewPipeAndPassReceiver());
     return {std::move(client_state_checker_remote), checker->token()};
   }
 
-  // If the `rfh` is null, it means there is actually no valid
-  // `RenderFrameHost` associated with the client. We should use a default
+  // If there is no `RenderFrameHost` associated with the client, use a default
   // checker instance for it.
   // See comments from `NoDocumentIndexedDBClientStateChecker`.
   mojo::MakeSelfOwnedReceiver(

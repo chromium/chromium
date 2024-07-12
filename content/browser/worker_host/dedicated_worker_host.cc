@@ -1095,6 +1095,9 @@ GlobalRenderFrameHostId DedicatedWorkerHost::GetAssociatedRenderFrameHostId()
 }
 
 base::UnguessableToken DedicatedWorkerHost::GetDevToolsToken() const {
+  // This method is expected to be called only when PlzDedicatedWorker is
+  // enabled. See code comments on `WorkerDevToolsManager`.
+  CHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
   return DedicatedWorkerDevToolsAgentHost::GetFor(this)
       ->devtools_worker_token();
 }

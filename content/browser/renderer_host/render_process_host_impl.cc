@@ -1793,6 +1793,11 @@ void RenderProcessHostImpl::BindIndexedDB(
   auto [state_checker, token] =
       IndexedDBClientStateCheckerFactory::InitializePendingRemote(
           bucket_context);
+  if (!state_checker) {
+    // The client is not in a valid state to use IndexedDB.
+    return;
+  }
+
   storage_partition_impl_->BindIndexedDB(
       storage::BucketLocator::ForDefaultBucket(storage_key),
       std::move(state_checker), token, std::move(receiver));

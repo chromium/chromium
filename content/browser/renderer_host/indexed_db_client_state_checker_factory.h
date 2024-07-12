@@ -25,9 +25,11 @@ class CONTENT_EXPORT IndexedDBClientStateCheckerFactory {
 
   // Factory method that creates and returns a client state checker and a token
   // that serves as a unique identifier for the `RenderFrameHost` associated
-  // with `bucket_context`. This method is called on the browser UI thread and
-  // the objects it returns are suitable for use from other (privileged) threads
-  // or processes.
+  // with `bucket_context`. Callers must check the validity of the returned
+  // `PendingRemote` before consuming it since it will be bound only if
+  // `bucket_context` is in a valid state. This method is called on the browser
+  // UI thread and the objects it returns are suitable for use from other
+  // (privileged) threads or processes.
   // TODO (crbug.com/349019967): Return a strongly-typed token from Blink's
   // tokens.h here instead of a custom, generated token.
   static std::tuple<
