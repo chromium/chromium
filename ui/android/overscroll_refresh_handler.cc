@@ -7,7 +7,9 @@
 #include "base/android/jni_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
+#include "ui/android/overscroll_refresh.h"
 #include "ui/android/ui_android_jni_headers/OverscrollRefreshHandler_jni.h"
+#include "ui/events/back_gesture_event.h"
 
 using base::android::AttachCurrentThread;
 
@@ -21,13 +23,18 @@ OverscrollRefreshHandler::OverscrollRefreshHandler(
 
 OverscrollRefreshHandler::~OverscrollRefreshHandler() {}
 
-bool OverscrollRefreshHandler::PullStart(OverscrollAction type,
-                                         float startx,
-                                         float starty,
-                                         bool navigate_forward) {
+bool OverscrollRefreshHandler::PullStart(
+    OverscrollAction type,
+    float startx,
+    float starty,
+    std::optional<BackGestureEventSwipeEdge> initiating_edge) {
+  CHECK_EQ(type == OverscrollAction::HISTORY_NAVIGATION,
+           initiating_edge.has_value());
   return Java_OverscrollRefreshHandler_start(
       AttachCurrentThread(), j_overscroll_refresh_handler_, type, startx,
-      starty, navigate_forward);
+      starty,
+      static_cast<int>(initiating_edge ? initiating_edge.value()
+                                       : BackGestureEventSwipeEdge::RIGHT));
 }
 
 void OverscrollRefreshHandler::PullUpdate(float x_delta, float y_delta) {

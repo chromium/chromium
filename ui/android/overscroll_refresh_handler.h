@@ -8,6 +8,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "ui/android/overscroll_refresh.h"
 #include "ui/android/ui_android_export.h"
+#include "ui/events/back_gesture_event.h"
 
 namespace ui {
 
@@ -24,10 +25,11 @@ class UI_ANDROID_EXPORT OverscrollRefreshHandler {
   // Signals the start of an overscrolling pull. Returns whether the handler
   // will consume the overscroll gesture, in which case it will receive the
   // remaining pull updates.
-  virtual bool PullStart(OverscrollAction type,
-                         float startx,
-                         float starty,
-                         bool navigate_forward);
+  virtual bool PullStart(
+      OverscrollAction type,
+      float startx,
+      float starty,
+      std::optional<BackGestureEventSwipeEdge> initiating_edge);
 
   // Signals a pull update, where |x_delta| and |y_delta| are in device pixels.
   virtual void PullUpdate(float x_delta, float y_delta);

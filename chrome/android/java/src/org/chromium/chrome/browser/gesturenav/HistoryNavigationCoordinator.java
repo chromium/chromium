@@ -21,6 +21,7 @@ import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.InsetObserver;
+import org.chromium.ui.base.BackGestureEventSwipeEdge;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -240,18 +241,19 @@ public class HistoryNavigationCoordinator
     /**
      * Makes UI visible when an edge swipe is made big enough to trigger it.
      *
-     * @param forward {@code true} for forward navigation, or {@code false} for back.
+     * @param initiatingEdge The edge of the screen from which navigation UI is being initiated.
      * @param x X coordinate of the current position.
      * @param y Y coordinate of the current position.
      * @return {@code true} if the navigation can be triggered.
      */
-    public boolean triggerUi(boolean forward, float x, float y) {
-        return mNavigationHandler != null && mNavigationHandler.triggerUi(forward, x, y);
+    public boolean triggerUi(@BackGestureEventSwipeEdge int initiatingEdge, float x, float y) {
+        return mNavigationHandler != null && mNavigationHandler.triggerUi(initiatingEdge, x, y);
     }
 
     /**
-     * Processes a motion event releasing the finger off the screen and possibly
-     * initializing the navigation.
+     * Processes a motion event releasing the finger off the screen and possibly initializing the
+     * navigation.
+     *
      * @param allowNav {@code true} if release action is supposed to trigger navigation.
      */
     public void release(boolean allowNav) {

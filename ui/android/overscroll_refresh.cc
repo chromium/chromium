@@ -7,9 +7,11 @@
 #include <ostream>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/notreached.h"
 #include "cc/input/overscroll_behavior.h"
 #include "ui/android/overscroll_refresh_handler.h"
+#include "ui/events/back_gesture_event.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace ui {
@@ -75,7 +77,7 @@ void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior) {
   bool in_y_direction = std::abs(ydelta) > std::abs(xdelta);
   bool in_x_direction = std::abs(ydelta) * kWeightAngle30 < std::abs(xdelta);
   OverscrollAction type = OverscrollAction::NONE;
-  bool navigate_forward = false;
+  std::optional<BackGestureEventSwipeEdge> overscroll_edge;
   if (ydelta > 0 && in_y_direction) {
     // Pull-to-refresh. Check overscroll-behavior-y
     if (behavior.y != cc::OverscrollBehavior::Type::kAuto) {
@@ -92,13 +94,17 @@ void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior) {
       return;
     }
     type = OverscrollAction::HISTORY_NAVIGATION;
-    navigate_forward = xdelta < 0;
+    overscroll_edge = xdelta < 0 ? BackGestureEventSwipeEdge::RIGHT
+                                 : BackGestureEventSwipeEdge::LEFT;
   }
+
+  CHECK_EQ(overscroll_edge.has_value(),
+           type == OverscrollAction::HISTORY_NAVIGATION);
 
   if (type != OverscrollAction::NONE) {
     scroll_consumption_state_ =
         handler_->PullStart(type, scroll_begin_x_, scroll_begin_y_,
-                            navigate_forward)
+                            overscroll_edge)
             ? ENABLED
             : DISABLED;
   }

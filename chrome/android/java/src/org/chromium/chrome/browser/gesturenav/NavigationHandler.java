@@ -198,7 +198,12 @@ class NavigationHandler implements TouchEventObserver {
 
         if (mState == GestureState.STARTED) {
             if (shouldTriggerUi(startX, distanceX, distanceY)) {
-                triggerUi(distanceX > 0, endX, endY);
+                triggerUi(
+                        distanceX > 0
+                                ? BackGestureEventSwipeEdge.RIGHT
+                                : BackGestureEventSwipeEdge.LEFT,
+                        endX,
+                        endY);
             }
             if (!isActive()) mState = GestureState.NONE;
         }
@@ -217,10 +222,13 @@ class NavigationHandler implements TouchEventObserver {
     }
 
     /**
-     * @see {@link HistoryNavigationCoordinator#triggerUi(boolean, float, float)}
+     * @see {@link HistoryNavigationCoordinator#triggerUi(int, float, float)}
      */
-    boolean triggerUi(boolean forward, float x, float y) {
+    boolean triggerUi(@BackGestureEventSwipeEdge int initiatingEdge, float x, float y) {
         if (!isValidState()) return false;
+
+        // TODO(crbug.com/331778964): This will soon account for UI writing direction.
+        boolean forward = initiatingEdge == BackGestureEventSwipeEdge.RIGHT;
 
         mModel.set(DIRECTION, forward);
         boolean navigable = canNavigate(forward);
@@ -323,7 +331,8 @@ class NavigationHandler implements TouchEventObserver {
         if (mState == GestureState.DRAGGED) {
             mModel.set(ACTION, GestureAction.RELEASE_BUBBLE);
         }
-        mPullOffsetX = mPullOffsetY = 0.f;
+        mPullOffsetX = 0.f;
+        mPullOffsetY = 0.f;
         if (mTabOnBackGestureHandler != null) {
             if (allowNav && mWillNavigateSupplier.get()) {
                 mTabOnBackGestureHandler.onBackInvoked();
@@ -342,7 +351,8 @@ class NavigationHandler implements TouchEventObserver {
             mModel.set(ACTION, GestureAction.RESET_BUBBLE);
         }
         mState = GestureState.NONE;
-        mPullOffsetX = mPullOffsetY = 0.f;
+        mPullOffsetX = 0.f;
+        mPullOffsetY = 0.f;
     }
 
     /**

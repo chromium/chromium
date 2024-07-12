@@ -31,11 +31,12 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
 import org.chromium.ui.OverscrollAction;
 import org.chromium.ui.OverscrollRefreshHandler;
+import org.chromium.ui.base.BackGestureEventSwipeEdge;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * An overscroll handler implemented in terms a modified version of the Android
- * compat library's SwipeRefreshLayout effect.
+ * An overscroll handler implemented in terms a modified version of the Android compat library's
+ * SwipeRefreshLayout effect.
  */
 public class SwipeRefreshHandler extends TabWebContentsUserData
         implements OverscrollRefreshHandler {
@@ -204,7 +205,10 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
 
     @Override
     public boolean start(
-            @OverscrollAction int type, float startX, float startY, boolean navigateForward) {
+            @OverscrollAction int type,
+            float startX,
+            float startY,
+            @BackGestureEventSwipeEdge int initiatingEdge) {
         mSwipeType = type;
         if (type == OverscrollAction.PULL_TO_REFRESH) {
             if (mSwipeRefreshLayout == null) initSwipeRefreshLayout(mTab.getContext());
@@ -214,7 +218,12 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
             if (mNavigationCoordinator != null) {
                 mNavigationCoordinator.startGesture();
                 boolean navigable =
-                        mNavigationCoordinator.triggerUi(navigateForward, startX, startY);
+                        mNavigationCoordinator.triggerUi(initiatingEdge, startX, startY);
+                // TODO(crbug.com/331778964): This assumes right is forward which will soon depend
+                // on UI language. It's used to also handle cases where we're going forward past the
+                // latest session history entry but we can make triggerUi return that information
+                // rather than computing it separately here.
+                boolean navigateForward = initiatingEdge == BackGestureEventSwipeEdge.RIGHT;
                 boolean showGlow = navigateForward && !mTab.canGoForward();
                 return showGlow || navigable;
             }

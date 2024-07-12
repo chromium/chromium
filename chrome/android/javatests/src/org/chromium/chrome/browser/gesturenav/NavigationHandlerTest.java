@@ -54,6 +54,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.BackGestureEventSwipeEdge;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.ui.test.util.UiRestriction;
@@ -259,7 +260,7 @@ public class NavigationHandlerTest {
                 () -> {
                     // Right swipe on a rendered page to initiate overscroll glow.
                     mNavigationHandler.onDown();
-                    mNavigationHandler.triggerUi(true, 0, 0);
+                    mNavigationHandler.triggerUi(BackGestureEventSwipeEdge.RIGHT, 0, 0);
 
                     // Test that a release without preceding pull requests works
                     // without crashes.
@@ -382,9 +383,9 @@ public class NavigationHandlerTest {
         // |triggerUi| can be invoked by SwipeRefreshHandler on the rendered
         // page. Make sure this won't crash after the handler(and also
         // handler action delegate) is destroyed.
-        Assert.assertFalse(
+        Assert.assertTrue(
                 TestThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> mNavigationHandler.triggerUi(LEFT_EDGE, 0, 0)));
+                        () -> mNavigationHandler.triggerUi(BackGestureEventSwipeEdge.LEFT, 0, 0)));
 
         // Just check we're still on the same URL.
         Assert.assertEquals(
@@ -405,7 +406,7 @@ public class NavigationHandlerTest {
         // page. Make sure this won't crash after the current tab is destroyed.
         Assert.assertFalse(
                 TestThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> mNavigationHandler.triggerUi(/* forward= */ false, 0, 0)));
+                        () -> mNavigationHandler.triggerUi(BackGestureEventSwipeEdge.LEFT, 0, 0)));
     }
 
     @Test
