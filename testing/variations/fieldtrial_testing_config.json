@@ -15135,6 +15135,27 @@
             ]
         }
     ],
+    "OptimizeParsingDataUrls": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20240711",
+                    "enable_features": [
+                        "OptimizeParsingDataUrls"
+                    ]
+                }
+            ]
+        }
+    ],
     "OptimizeStaticAnimationProperties": [
         {
             "platforms": [
