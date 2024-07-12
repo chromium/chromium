@@ -177,6 +177,7 @@ enum Setting {
   kQuickAnswersTranslation = 610,
   kQuickAnswersUnitConversion = 611,
   kMahiOnOff = 612,
+  kMagicBoostOnOff = 613,
 
   // Apps section.
   kManageAndroidPreferences = 700,

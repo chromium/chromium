@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -380,8 +381,25 @@ const char* SearchSection::GetSectionPath() const {
 
 bool SearchSection::LogMetric(mojom::Setting setting,
                               base::Value& value) const {
-  // Unimplemented.
-  return false;
+  switch (setting) {
+    case mojom::Setting::kMagicBoostOnOff:
+      base::UmaHistogramBoolean("ChromeOS.Settings.MagicBoost.Enabled",
+                                value.GetBool());
+      return true;
+
+    case mojom::Setting::kMahiOnOff:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.MagicBoost.HelpMeReadEnabled", value.GetBool());
+      return true;
+
+    case mojom::Setting::kShowOrca:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.MagicBoost.HelpMeWriteEnabled", value.GetBool());
+      return true;
+
+    default:
+      return false;
+  }
 }
 
 void SearchSection::RegisterHierarchy(HierarchyGenerator* generator) const {
@@ -390,7 +408,12 @@ void SearchSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   if (!IsQuickAnswersSupported()) {
     generator->RegisterTopLevelSetting(mojom::Setting::kPreferredSearchEngine);
   }
+
+  // TODO(b:337868408): Setting::kShowOrca is already registered in
+  // device/input_section.cc, therefore UMA emitted from search_secion fails to
+  // log it.
   generator->RegisterTopLevelSetting(mojom::Setting::kMahiOnOff);
+  generator->RegisterTopLevelSetting(mojom::Setting::kMagicBoostOnOff);
 
   // Search.
   generator->RegisterTopLevelSubpage(

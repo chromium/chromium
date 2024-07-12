@@ -82,6 +82,7 @@ export class SearchAndAssistantSettingsCardElement extends
         type: Object,
         value: () => new Set<Setting>([
           Setting.kPreferredSearchEngine,
+          Setting.kMagicBoostOnOff,
           Setting.kMahiOnOff,
           Setting.kShowOrca,
         ]),

@@ -214,6 +214,19 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
     setting: Setting.kRevenEnableHwDataUsage,
     type: PrefType.BOOLEAN,
   },
+  // os_search_page/search_and_assistant_settings_card.ts
+  'settings.magic_boost_enabled': {
+    setting: Setting.kMagicBoostOnOff,
+    type: PrefType.BOOLEAN,
+  },
+  'settings.mahi_enabled': {
+    setting: Setting.kMahiOnOff,
+    type: PrefType.BOOLEAN,
+  },
+  'assistive_input.orca_enabled': {
+    setting: Setting.kShowOrca,
+    type: PrefType.BOOLEAN,
+  },
 };
 
 // Converts a given settings pref to a pair of setting ID and setting change
