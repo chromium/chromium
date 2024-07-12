@@ -29,17 +29,19 @@ int WINAPI wWinMain(HINSTANCE /* instance */,
   updater::ProcessExitResult result =
       updater::WMain(reinterpret_cast<HMODULE>(&__ImageBase));
 
-  // If errors occur, display UI only when the metainstaller runs without
-  // command line arguments.
+  // If errors occur, display UI only for metainstaller errors, and also only
+  // when the metainstaller runs without command line arguments.
   if (result.exit_code != updater::SUCCESS_EXIT_CODE &&
       wcslen(command_line) == 0) {
-    base::FilePath exe_path;
-    base::PathService::Get(base::FILE_EXE, &exe_path);
-    ::MessageBoxEx(nullptr,
-                   updater::GetLocalizedMetainstallerErrorString(
-                       result.exit_code, result.windows_error)
-                       .c_str(),
-                   exe_path.BaseName().value().c_str(), 0, 0);
+    const std::wstring metainstaller_error_string =
+        updater::GetLocalizedMetainstallerErrorString(result.exit_code,
+                                                      result.windows_error);
+    if (!metainstaller_error_string.empty()) {
+      base::FilePath exe_path;
+      base::PathService::Get(base::FILE_EXE, &exe_path);
+      ::MessageBoxEx(nullptr, metainstaller_error_string.c_str(),
+                     exe_path.BaseName().value().c_str(), 0, 0);
+    }
   }
   return result.exit_code;
 }

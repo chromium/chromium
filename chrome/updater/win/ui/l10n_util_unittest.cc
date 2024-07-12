@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "chrome/updater/constants.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/installer/exit_code.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
@@ -189,7 +190,7 @@ TEST_P(UpdaterL10NUtilGetLocalizedStringF, TestCases) {
 }
 
 struct GetLocalizedMetainstallerErrorStringTestCase {
-  const ExitCode exit_code;
+  const DWORD exit_code;
   const DWORD windows_error;
   const std::wstring expected_string;
 };
@@ -287,6 +288,9 @@ INSTANTIATE_TEST_SUITE_P(
         {FAILED_TO_ELEVATE_METAINSTALLER, ERROR_CANCELLED,
          GetLocalizedStringF(IDS_FAILED_TO_ELEVATE_METAINSTALLER_BASE,
                              GetTextForSystemError(ERROR_CANCELLED))},
+
+        // This is an `updater.exe` error, not a metainstaller error.
+        {kErrorTagParsing, 0, {}},
     }));
 
 TEST_P(GetLocalizedMetainstallerErrorStringTest, TestCases) {

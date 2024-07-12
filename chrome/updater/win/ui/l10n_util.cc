@@ -110,7 +110,6 @@ std::wstring GetLocalizedMetainstallerErrorString(DWORD exit_code,
       return GetLocalizedStringF(IDS_FAILED_TO_ELEVATE_METAINSTALLER_BASE,
                                  GetTextForSystemError(windows_error));
     default:
-      NOTREACHED_IN_MIGRATION();
       return {};
   }
 #undef METAINSTALLER_ERROR_SWITCH_ENTRY
