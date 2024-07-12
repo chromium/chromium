@@ -317,6 +317,13 @@ the generic promo launch. -->
   <int value="3" label="Skipped Default Browser Settings For NTP"/>
 </enum>
 
+<enum name="IOSFilePickerInstallError">
+  <int value="0" label="The file picker was not found"/>
+  <int value="1" label="The file picker configuration was not found"/>
+  <int value="2" label="The file picker cannot submit the selection"/>
+  <int value="3" label="The file picker cannot present a sub menu"/>
+</enum>
+
 <enum name="IOSHomeActionType">
   <int value="0" label="Most Visited Tiles"/>
   <int value="1" label="Shortcuts"/>
