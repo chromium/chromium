@@ -27,9 +27,6 @@ typedef NS_ENUM(NSInteger, FeedLayoutUpdateType);
 - (void)handleFeedModelOfType:(FeedType)feedType
                 didEndUpdates:(FeedLayoutUpdateType)updateType;
 
-// TODO(crbug.com/348427964): Deprecated. Use method above.
-- (void)handleFeedModelDidEndUpdates:(FeedType)feedType;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_NEW_TAB_PAGE_COMMANDS_H_

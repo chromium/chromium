@@ -3425,11 +3425,6 @@ enum class ToolbarKind {
   [_NTPCoordinator updateFollowingFeedHasUnseenContent:hasUnseenContent];
 }
 
-- (void)handleFeedModelDidEndUpdates:(FeedType)feedType {
-  [self handleFeedModelOfType:feedType
-                didEndUpdates:FeedLayoutUpdateTypeUnknown];
-}
-
 - (void)handleFeedModelOfType:(FeedType)feedType
                 didEndUpdates:(FeedLayoutUpdateType)updateType {
   [_NTPCoordinator handleFeedModelOfType:feedType didEndUpdates:updateType];
