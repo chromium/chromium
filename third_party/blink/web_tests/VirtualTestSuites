@@ -814,7 +814,7 @@
     "bases": ["external/wpt/measure-memory"],
     "exclusive_tests": "ALL",
     "args": ["--enable-blink-features=MeasureMemory,ForceEagerMeasureMemory"],
-    "expires": "Jul 1, 2024"
+    "expires": "Jul 1, 2025"
   },
   {
     "prefix": "css-sign-related-functions-disabled",
