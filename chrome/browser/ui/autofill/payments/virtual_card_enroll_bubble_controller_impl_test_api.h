@@ -9,6 +9,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/android/autofill/autofill_vcn_enroll_bottom_sheet_bridge.h"
+#endif
 
 namespace autofill {
 

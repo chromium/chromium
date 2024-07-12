@@ -1066,6 +1066,8 @@ chromium-metrics-reviews@google.com.
   <int value="46" label="PromptHatsMicrophoneCustomInvitation"/>
   <int value="47" label="PromptHatsMicrophoneGenericInvitation"/>
   <int value="48" label="PermissionBlocked"/>
+  <int value="49" label="SaveCardFailure"/>
+  <int value="50" label="VirtualCardEnrollFailure"/>
 </enum>
 
 <enum name="MinimizeAppAndCloseTabType">

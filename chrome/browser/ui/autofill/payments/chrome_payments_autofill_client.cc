@@ -11,7 +11,6 @@
 #include "chrome/browser/autofill/merchant_promo_code_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_controller.h"
 #include "chrome/browser/ui/autofill/payments/iban_bubble_controller_impl.h"
@@ -60,6 +59,8 @@
 #include "chrome/browser/ui/android/autofill/card_expiration_date_fix_flow_view_android.h"
 #include "chrome/browser/ui/android/autofill/card_name_fix_flow_view_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/autofill/payments/autofill_message_controller.h"
+#include "chrome/browser/ui/autofill/payments/autofill_message_model.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_controller_android.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_view.h"
@@ -132,16 +133,6 @@ ChromePaymentsAutofillClient::GetOrCreateAutofillSaveIbanBottomSheetBridge() {
     }
   }
   return autofill_save_iban_bottom_sheet_bridge_.get();
-}
-
-AutofillSnackbarControllerImpl*
-ChromePaymentsAutofillClient::GetAutofillSnackbarController() {
-  if (!autofill_snackbar_controller_impl_) {
-    autofill_snackbar_controller_impl_ =
-        std::make_unique<AutofillSnackbarControllerImpl>(web_contents());
-  }
-
-  return autofill_snackbar_controller_impl_.get();
 }
 
 void ChromePaymentsAutofillClient::ConfirmAccountNameFixFlow(
@@ -346,14 +337,17 @@ void ChromePaymentsAutofillClient::CreditCardUploadCompleted(
 
   if (card_saved) {
     if (on_confirmation_closed_callback) {
-      GetAutofillSnackbarController()->ShowWithDurationAndCallback(
+      GetAutofillSnackbarController().ShowWithDurationAndCallback(
           AutofillSnackbarType::kSaveCardSuccess,
           kSaveCardConfirmationSnackbarDuration,
           std::move(on_confirmation_closed_callback));
     } else {
-      GetAutofillSnackbarController()->Show(
+      GetAutofillSnackbarController().Show(
           AutofillSnackbarType::kSaveCardSuccess);
     }
+  } else {
+    GetAutofillMessageController().Show(
+        AutofillMessageModel::CreateForSaveCardFailure());
   }
 #else  // !BUILDFLAG(IS_ANDROID)
   if (SaveCardBubbleControllerImpl* controller =
@@ -389,28 +383,40 @@ void ChromePaymentsAutofillClient::ShowVirtualCardEnrollDialog(
 
 void ChromePaymentsAutofillClient::VirtualCardEnrollCompleted(
     bool is_vcn_enrolled) {
-  if (base::FeatureList::IsEnabled(
+  if (!base::FeatureList::IsEnabled(
           features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
-    VirtualCardEnrollBubbleControllerImpl::CreateForWebContents(web_contents());
-    if (VirtualCardEnrollBubbleControllerImpl* controller =
-            VirtualCardEnrollBubbleControllerImpl::FromWebContents(
-                web_contents())) {
-      controller->ShowConfirmationBubbleView(is_vcn_enrolled);
-    }
+    return;
+  }
+
+  VirtualCardEnrollBubbleControllerImpl::CreateForWebContents(web_contents());
+  VirtualCardEnrollBubbleControllerImpl* controller =
+      VirtualCardEnrollBubbleControllerImpl::FromWebContents(web_contents());
+
+  if (controller) {
+    // Called by clank to close AutofillVCNEnrollBottomSheetBridge.
+    // TODO(crbug.com/350713949): Extract AutofillVCNEnrollBottomSheetBridge
+    // so the controller only needs to be called for desktop.
+    controller->ShowConfirmationBubbleView(is_vcn_enrolled);
+  }
 
 #if BUILDFLAG(IS_ANDROID)
-    if (is_vcn_enrolled) {
-      GetAutofillSnackbarController()->Show(
-          AutofillSnackbarType::kVirtualCardEnrollSuccess);
-    }
-#endif
+  if (is_vcn_enrolled) {
+    GetAutofillSnackbarController().Show(
+        AutofillSnackbarType::kVirtualCardEnrollSuccess);
+  } else if (controller) {
+    GetAutofillMessageController().Show(
+        AutofillMessageModel::CreateForVirtualCardEnrollFailure(
+            /*card_label=*/controller->GetUiModel()
+                .enrollment_fields()
+                .credit_card.NetworkAndLastFourDigits()));
   }
+#endif
 }
 
 void ChromePaymentsAutofillClient::OnVirtualCardDataAvailable(
     const VirtualCardManualFallbackBubbleOptions& options) {
 #if BUILDFLAG(IS_ANDROID)
-  GetAutofillSnackbarController()->Show(AutofillSnackbarType::kVirtualCard);
+  GetAutofillSnackbarController().Show(AutofillSnackbarType::kVirtualCard);
 #else
   VirtualCardManualFallbackBubbleControllerImpl::CreateForWebContents(
       web_contents());
@@ -672,7 +678,7 @@ IbanAccessManager* ChromePaymentsAutofillClient::GetIbanAccessManager() {
 
 void ChromePaymentsAutofillClient::ShowMandatoryReauthOptInConfirmation() {
 #if BUILDFLAG(IS_ANDROID)
-  GetAutofillSnackbarController()->Show(AutofillSnackbarType::kMandatoryReauth);
+  GetAutofillSnackbarController().Show(AutofillSnackbarType::kMandatoryReauth);
 #else
   MandatoryReauthBubbleControllerImpl::CreateForWebContents(web_contents());
   // TODO(crbug.com/4555994): Pass in the bubble type as a parameter so we
@@ -746,6 +752,28 @@ ChromePaymentsAutofillClient::GetMerchantPromoCodeManager() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
+AutofillSnackbarControllerImpl&
+ChromePaymentsAutofillClient::GetAutofillSnackbarController() {
+  if (!autofill_snackbar_controller_impl_) {
+    autofill_snackbar_controller_impl_ =
+        std::make_unique<AutofillSnackbarControllerImpl>(web_contents());
+  }
+
+  return *autofill_snackbar_controller_impl_;
+}
+
+AutofillMessageController&
+ChromePaymentsAutofillClient::GetAutofillMessageController() {
+  if (!autofill_message_controller_) {
+    autofill_message_controller_ =
+        std::make_unique<AutofillMessageController>(web_contents());
+  }
+
+  return *autofill_message_controller_;
+}
+#endif  // #if BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
 void ChromePaymentsAutofillClient::
     SetAutofillSaveCardBottomSheetBridgeForTesting(
         std::unique_ptr<AutofillSaveCardBottomSheetBridge>
@@ -760,7 +788,12 @@ void ChromePaymentsAutofillClient::SetAutofillSnackbarControllerImplForTesting(
   autofill_snackbar_controller_impl_ =
       std::move(autofill_snackbar_controller_impl);
 }
-#endif
+
+void ChromePaymentsAutofillClient::SetAutofillMessageControllerForTesting(
+    std::unique_ptr<AutofillMessageController> autofill_message_controller) {
+  autofill_message_controller_ = std::move(autofill_message_controller);
+}
+#endif  // #if BUILDFLAG(IS_ANDROID)
 
 std::u16string ChromePaymentsAutofillClient::GetAccountHolderName() const {
   if (!web_contents()) {

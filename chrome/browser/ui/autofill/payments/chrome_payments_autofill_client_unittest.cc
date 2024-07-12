@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
+#include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "content/public/browser/web_contents.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
+#include "chrome/browser/ui/autofill/payments/autofill_message_controller.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #include "ui/android/window_android.h"
@@ -63,6 +65,14 @@ class MockAutofillSnackbarControllerImpl
                base::TimeDelta,
                std::optional<base::OnceClosure>),
               (override));
+};
+
+class MockAutofillMessageController : public AutofillMessageController {
+ public:
+  explicit MockAutofillMessageController(content::WebContents* web_contents)
+      : AutofillMessageController(web_contents) {}
+
+  MOCK_METHOD(void, Show, (std::unique_ptr<AutofillMessageModel>), (override));
 };
 #else  //! BUILDFLAG(IS_ANDROID)
 class MockSaveCardBubbleController : public SaveCardBubbleControllerImpl {
@@ -159,6 +169,15 @@ class ChromePaymentsAutofillClientTest
         std::make_unique<MockAutofillSnackbarControllerImpl>(web_contents());
     MockAutofillSnackbarControllerImpl* pointer = mock.get();
     chrome_payments_client()->SetAutofillSnackbarControllerImplForTesting(
+        std::move(mock));
+    return pointer;
+  }
+
+  MockAutofillMessageController* InjectMockAutofillMessageController() {
+    std::unique_ptr<MockAutofillMessageController> mock =
+        std::make_unique<MockAutofillMessageController>(web_contents());
+    MockAutofillMessageController* pointer = mock.get();
+    chrome_payments_client()->SetAutofillMessageControllerForTesting(
         std::move(mock));
     return pointer;
   }
@@ -350,16 +369,20 @@ TEST_F(
   chrome_payments_client()->CreditCardUploadCompleted(true, std::nullopt);
 }
 
-TEST_F(ChromePaymentsAutofillClientTest,
-       CreditCardUploadCompletedFailure_CallsSaveCardBottomSheetBridge) {
+TEST_F(
+    ChromePaymentsAutofillClientTest,
+    CreditCardUploadCompletedFailure_CallsSaveCardBottomSheetBridgeAndAutofillMessageController) {
   MockAutofillSaveCardBottomSheetBridge* save_card_bridge =
       InjectMockAutofillSaveCardBottomSheetBridge();
-  MockAutofillSnackbarControllerImpl* snackbar_controller =
-      InjectMockAutofillSnackbarControllerImpl();
+  MockAutofillMessageController* message_controller =
+      InjectMockAutofillMessageController();
 
   EXPECT_CALL(*save_card_bridge, Hide);
-  EXPECT_CALL(*snackbar_controller, Show).Times(0);
-  EXPECT_CALL(*snackbar_controller, ShowWithDurationAndCallback).Times(0);
+  EXPECT_CALL(*message_controller, Show)
+      .WillOnce([](std::unique_ptr<AutofillMessageModel> model) {
+        EXPECT_EQ(model->GetType(),
+                  AutofillMessageModel::Type::kSaveCardFailure);
+      });
 
   chrome_payments_client()->CreditCardUploadCompleted(false, std::nullopt);
 }
@@ -376,11 +399,17 @@ TEST_F(ChromePaymentsAutofillClientTest,
 }
 
 TEST_F(ChromePaymentsAutofillClientTest,
-       VirtualCardEnrollFailure_DoesNotCallSnackbarController) {
-  MockAutofillSnackbarControllerImpl* snackbar_controller =
-      InjectMockAutofillSnackbarControllerImpl();
-
-  EXPECT_CALL(*snackbar_controller, Show).Times(0);
+       VirtualCardEnrollFailure_CallsAutofillMessageController) {
+  MockAutofillMessageController* message_controller =
+      InjectMockAutofillMessageController();
+  test_api(virtual_card_bubble_controller())
+      .SetUiModel(std::make_unique<VirtualCardEnrollUiModel>(
+          VirtualCardEnrollmentFields()));
+  EXPECT_CALL(*message_controller, Show)
+      .WillOnce([](std::unique_ptr<AutofillMessageModel> model) {
+        EXPECT_EQ(model->GetType(),
+                  AutofillMessageModel::Type::kVirtualCardEnrollFailure);
+      });
 
   chrome_payments_client()->VirtualCardEnrollCompleted(false);
 }

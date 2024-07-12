@@ -166,6 +166,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".SafetyTip"/>
   <variant name=".SaveAddressProfile"/>
   <variant name=".SaveCard"/>
+  <variant name=".SaveCardFailure"/>
   <variant name=".SavePassword"/>
   <variant name=".SendTabToSelf"/>
   <variant name=".SharedHighlighting"/>
@@ -175,6 +176,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".TrackingProtectionNotice"/>
   <variant name=".Translate"/>
   <variant name=".UpdatePassword"/>
+  <variant name=".VirtualCardEnrollFailure"/>
   <variant name=".VrServicesUpgrade"/>
 </variants>
 

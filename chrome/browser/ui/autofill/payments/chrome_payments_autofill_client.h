@@ -31,6 +31,9 @@ namespace autofill {
 class AutofillCvcSaveMessageDelegate;
 #endif  // BUILDFLAG(IS_ANDROID)
 class AutofillErrorDialogControllerImpl;
+#if BUILDFLAG(IS_ANDROID)
+class AutofillMessageController;
+#endif
 class AutofillOfferData;
 class AutofillSaveCardBottomSheetBridge;
 class AutofillSaveIbanBottomSheetBridge;
@@ -84,7 +87,6 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   GetOrCreateAutofillSaveCardBottomSheetBridge() override;
   AutofillSaveIbanBottomSheetBridge*
   GetOrCreateAutofillSaveIbanBottomSheetBridge();
-  AutofillSnackbarControllerImpl* GetAutofillSnackbarController();
   void ConfirmAccountNameFixFlow(
       base::OnceCallback<void(const std::u16string&)> callback) override;
   void ConfirmExpirationDateFixFlow(
@@ -183,6 +185,15 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
   MerchantPromoCodeManager* GetMerchantPromoCodeManager() override;
 
+#if BUILDFLAG(IS_ANDROID)
+  // The AutofillSnackbarController is used to show a snackbar notification
+  // on Android.
+  AutofillSnackbarControllerImpl& GetAutofillSnackbarController();
+  // The AutofillMessageController is used to show a message notification
+  // on Android.
+  AutofillMessageController& GetAutofillMessageController();
+#endif
+
   AutofillProgressDialogControllerImpl*
   AutofillProgressDialogControllerForTesting() {
     return autofill_progress_dialog_controller_.get();
@@ -205,6 +216,9 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   void SetAutofillSnackbarControllerImplForTesting(
       std::unique_ptr<AutofillSnackbarControllerImpl>
           autofill_snackbar_controller_impl);
+
+  void SetAutofillMessageControllerForTesting(
+      std::unique_ptr<AutofillMessageController> autofill_message_controller);
 #endif
 
  private:
@@ -222,6 +236,8 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
 
   std::unique_ptr<AutofillSnackbarControllerImpl>
       autofill_snackbar_controller_impl_;
+
+  std::unique_ptr<AutofillMessageController> autofill_message_controller_;
 
   CardNameFixFlowControllerImpl card_name_fix_flow_controller_;
 
