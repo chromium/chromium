@@ -76,6 +76,18 @@ class PhysicalToLogical {
     return ValueFor(writing_direction_.BlockEnd());
   }
 
+  Value LineOver() const {
+    return writing_direction_.IsHorizontal()
+               ? top_
+               : ValueFor(writing_direction_.LineOver());
+  }
+
+  Value LineUnder() const {
+    return writing_direction_.IsHorizontal()
+               ? bottom_
+               : ValueFor(writing_direction_.LineUnder());
+  }
+
  private:
   Value ValueFor(PhysicalDirection direction) const {
     switch (direction) {

@@ -232,17 +232,19 @@ void TextFieldInputType::HandleKeydownEventForSpinButton(KeyboardEvent& event) {
   if (GetElement().IsDisabledOrReadOnly())
     return;
   const AtomicString key(event.key());
-  bool is_horizontal =
+  const PhysicalToLogical<const AtomicString*> key_mapper(
       GetElement().GetComputedStyle()
-          ? GetElement().GetComputedStyle()->IsHorizontalWritingMode()
-          : true;
+          ? GetElement().GetComputedStyle()->GetWritingDirection()
+          : WritingDirectionMode(WritingMode::kHorizontalTb,
+                                 TextDirection::kLtr),
+      &keywords::kArrowUp, &keywords::kArrowRight, &keywords::kArrowDown,
+      &keywords::kArrowLeft);
+  const AtomicString* key_up = key_mapper.LineOver();
+  const AtomicString* key_down = key_mapper.LineUnder();
 
-  if ((is_horizontal && key == keywords::kArrowUp) ||
-      (!is_horizontal && key == keywords::kArrowRight)) {
+  if (key == *key_up) {
     SpinButtonStepUp();
-  } else if (((is_horizontal && key == keywords::kArrowDown) ||
-              (!is_horizontal && key == keywords::kArrowLeft)) &&
-             !event.altKey()) {
+  } else if (key == *key_down && !event.altKey()) {
     SpinButtonStepDown();
   } else {
     return;

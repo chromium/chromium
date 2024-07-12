@@ -53,6 +53,40 @@ PASS input.value is "5"
 Moving caret by pressing arrow keys:
 PASS input.value is "5"
 PASS input.value is "5"
+
+Test starts for <input type=number style="writing-mode: sideways-lr">
+Inserting "ab123cd":
+PASS input.value is "999"
+Press the up arrow key:
+PASS input.value is "1000"
+Press the down arrow key:
+PASS input.value is "999"
+Press the down and alt arrow key, should not decrement value:
+PASS input.value is "999"
+Disable input element:
+PASS input.value is "999"
+Read-only input element:
+PASS input.value is "999"
+Moving caret by pressing arrow keys:
+PASS input.value is "999"
+PASS input.value is "999"
+
+Test starts for <input type=number style="writing-mode: sideways-rl">
+Inserting "ab123cd":
+PASS input.value is "42"
+Press the up arrow key:
+PASS input.value is "43"
+Press the down arrow key:
+PASS input.value is "42"
+Press the down and alt arrow key, should not decrement value:
+PASS input.value is "42"
+Disable input element:
+PASS input.value is "42"
+Read-only input element:
+PASS input.value is "42"
+Moving caret by pressing arrow keys:
+PASS input.value is "42"
+PASS input.value is "42"
 PASS successfullyParsed is true
 
 TEST COMPLETE
