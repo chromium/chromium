@@ -311,7 +311,14 @@ void AppManagementPageHandlerBase::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.ShowInManagementChanged() || update.ReadinessChanged()) {
     if (update.ShowInManagement().value_or(false) &&
         update.Readiness() == apps::Readiness::kReady) {
-      page_->OnAppAdded(std::move(app));
+      if (update.PriorReadiness() ==
+          apps::Readiness::kDisabledByLocalSettings) {
+        // If the app is installed and was previously blocked by local settings,
+        // this should be treated as an app changed event.
+        page_->OnAppChanged(std::move(app));
+      } else {
+        page_->OnAppAdded(std::move(app));
+      }
     }
 
     if (!update.ShowInManagement().value_or(true) ||
