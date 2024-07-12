@@ -79,6 +79,23 @@ SearchifyBoundingBoxOrigin ProjectToBaseline(
           .theta = baseline_origin.theta};
 }
 
+// Returns the transformation matrix needed to move a word to where it is
+// positioned on the image.
+FS_MATRIX CalculateWordMoveMatrix(const SearchifyBoundingBoxOrigin& word_origin,
+                                  int word_bounding_box_width,
+                                  bool word_is_rtl) {
+  FS_MATRIX move_matrix(cosf(word_origin.theta), sinf(word_origin.theta),
+                        -sinf(word_origin.theta), cosf(word_origin.theta),
+                        word_origin.point.x(), word_origin.point.y());
+  if (word_is_rtl) {
+    move_matrix.a = -move_matrix.a;
+    move_matrix.b = -move_matrix.b;
+    move_matrix.e += cosf(word_origin.theta) * word_bounding_box_width;
+    move_matrix.f += sinf(word_origin.theta) * word_bounding_box_width;
+  }
+  return move_matrix;
+}
+
 void AddTextOnImage(FPDF_DOCUMENT document,
                     FPDF_PAGE page,
                     FPDF_FONT font,
@@ -180,16 +197,11 @@ void AddTextOnImage(FPDF_DOCUMENT document,
           ConvertToPdfOrigin(word->bounding_box, word->bounding_box_angle,
                              image_rendered_size.height());
       origin = ProjectToBaseline(origin, baseline_origin);
-      FS_MATRIX move_matrix(cosf(origin.theta), sinf(origin.theta),
-                            -sinf(origin.theta), cosf(origin.theta),
-                            origin.point.x(), origin.point.y());
-      if (word->direction ==
-          screen_ai::mojom::Direction::DIRECTION_RIGHT_TO_LEFT) {
-        move_matrix.a = -move_matrix.a;
-        move_matrix.b = -move_matrix.b;
-        move_matrix.e += cosf(origin.theta) * word->bounding_box.width();
-        move_matrix.f += sinf(origin.theta) * word->bounding_box.width();
-      }
+      const FS_MATRIX move_matrix = CalculateWordMoveMatrix(
+          ProjectToBaseline(origin, baseline_origin),
+          word->bounding_box.width(),
+          word->direction ==
+              screen_ai::mojom::Direction::DIRECTION_RIGHT_TO_LEFT);
       FPDFPageObj_Transform(text.get(), move_matrix.a, move_matrix.b,
                             move_matrix.c, move_matrix.d, move_matrix.e,
                             move_matrix.f);
@@ -294,6 +306,13 @@ SearchifyBoundingBoxOrigin ConvertToPdfOriginForTesting(
     float angle,
     float coordinate_system_height) {
   return ConvertToPdfOrigin(rect, angle, coordinate_system_height);
+}
+
+FS_MATRIX CalculateWordMoveMatrixForTesting(
+    const SearchifyBoundingBoxOrigin& origin,
+    int word_bounding_box_width,
+    bool word_is_rtl) {
+  return CalculateWordMoveMatrix(origin, word_bounding_box_width, word_is_rtl);
 }
 
 PdfiumProgressiveSearchifier::ScopedSdkInitializer::ScopedSdkInitializer() {

@@ -33,11 +33,15 @@ std::vector<uint8_t> PDFiumSearchify(
     base::RepeatingCallback<screen_ai::mojom::VisualAnnotationPtr(
         const SkBitmap& bitmap)> perform_ocr_callback);
 
-// Internal function exposed for testing.
+// Internal functions exposed for testing.
 SearchifyBoundingBoxOrigin ConvertToPdfOriginForTesting(
     const gfx::Rect& rect,
     float angle,
     float coordinate_system_height);
+FS_MATRIX CalculateWordMoveMatrixForTesting(
+    const SearchifyBoundingBoxOrigin& origin,
+    int word_bounding_box_width,
+    bool word_is_rtl);
 
 class PdfiumProgressiveSearchifier : public PdfProgressiveSearchifier {
  public:
