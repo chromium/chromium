@@ -26,7 +26,6 @@ class PreloadCheck {
     kBlocklistedUnknown,
     kDisallowedByPolicy,
     kWebglNotSupported,
-    kWindowShapeNotSupported,
   };
 
   using Errors = std::set<Error>;

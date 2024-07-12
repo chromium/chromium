@@ -4,8 +4,9 @@
 
 #include "extensions/browser/requirements_checker.h"
 
+#include <string>
+
 #include "base/functional/bind.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -45,19 +46,20 @@ void RequirementsChecker::Start(ResultCallback callback) {
 }
 
 std::u16string RequirementsChecker::GetErrorMessage() const {
-  // Join the error messages into one string.
-  std::vector<std::string> messages;
-  if (errors_.count(Error::kWebglNotSupported)) {
-    messages.push_back(
-        l10n_util::GetStringUTF8(IDS_EXTENSION_WEBGL_NOT_SUPPORTED));
+  if (errors_.empty()) {
+    return std::u16string();
   }
 
-  return base::UTF8ToUTF16(base::JoinString(messages, " "));
+  CHECK_EQ(errors_.size(), 1u);
+  CHECK(errors_.contains(Error::kWebglNotSupported));
+  return l10n_util::GetStringUTF16(IDS_EXTENSION_WEBGL_NOT_SUPPORTED);
 }
 
 void RequirementsChecker::VerifyWebGLAvailability(bool available) {
-  if (!available)
+  if (!available) {
     errors_.insert(Error::kWebglNotSupported);
+  }
+
   PostRunCallback();
 }
 
