@@ -157,6 +157,7 @@ void GPUDepthStencilStateAsWGPUDepthStencilState(
     GPUDevice* device,
     const GPUDepthStencilState* webgpu_desc,
     OwnedDepthStencilState* dawn_state,
+    wgpu::PrimitiveTopology topology,
     ExceptionState& exception_state) {
   DCHECK(webgpu_desc);
   DCHECK(dawn_state);
@@ -193,6 +194,31 @@ void GPUDepthStencilStateAsWGPUDepthStencilState(
   dawn_state->dawn_desc.depthBiasSlopeScale =
       webgpu_desc->depthBiasSlopeScale();
   dawn_state->dawn_desc.depthBiasClamp = webgpu_desc->depthBiasClamp();
+
+  // Setting depth bias for points or lines will be a validation error soon.
+  // TODO(crbug.com/352567424): Remove after deprecation period.
+  switch (topology) {
+    case wgpu::PrimitiveTopology::PointList:
+    case wgpu::PrimitiveTopology::LineList:
+    case wgpu::PrimitiveTopology::LineStrip:
+      if (dawn_state->dawn_desc.depthBias != 0 ||
+          dawn_state->dawn_desc.depthBiasSlopeScale != 0 ||
+          dawn_state->dawn_desc.depthBiasClamp != 0) {
+        // Warn about upcoming validation error and force the values to zero
+        // for now so that validation passes in Dawn.
+        device->AddConsoleWarning(
+            "Setting depthBias, depthBiasSlopeScale, or depthBiasClamp for "
+            "pipelines that use a line or point topology has no effect, "
+            "and will soon be a validation error.");
+
+        dawn_state->dawn_desc.depthBias = 0;
+        dawn_state->dawn_desc.depthBiasSlopeScale = 0.0f;
+        dawn_state->dawn_desc.depthBiasClamp = 0.0f;
+      }
+      break;
+    default:
+      break;
+  }
 }
 
 wgpu::MultisampleState AsDawnType(const GPUMultisampleState* webgpu_desc) {
@@ -379,7 +405,7 @@ void ConvertToDawnType(v8::Isolate* isolate,
   if (webgpu_desc->hasDepthStencil()) {
     GPUDepthStencilStateAsWGPUDepthStencilState(
         device, webgpu_desc->depthStencil(), &dawn_desc_info->depth_stencil,
-        exception_state);
+        dawn_desc_info->dawn_desc.primitive.topology, exception_state);
     dawn_desc_info->dawn_desc.depthStencil =
         &dawn_desc_info->depth_stencil.dawn_desc;
   }
