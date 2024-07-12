@@ -9,6 +9,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync/service/sync_service.h"
@@ -18,12 +20,16 @@ class Profile;
 
 namespace enterprise_signin {
 
-class EnterpriseSigninService : public KeyedService,
+class EnterpriseSigninService : public BrowserListObserver,
+                                public KeyedService,
                                 public syncer::SyncServiceObserver {
  public:
   explicit EnterpriseSigninService(Profile* profile);
 
   ~EnterpriseSigninService() override;
+
+  // BrowserListObserver:
+  void OnBrowserSetLastActive(Browser* browser) override;
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
@@ -35,8 +41,10 @@ class EnterpriseSigninService : public KeyedService,
   void OpenOrActivateGaiaReauthTab();
 
   raw_ptr<Profile> profile_;
+  base::ScopedObservation<BrowserList, BrowserListObserver>
+      browser_list_observation_{this};
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
-      observation_{this};
+      sync_service_observation_{this};
 
   PrefChangeRegistrar pref_change_registrar_;
 
