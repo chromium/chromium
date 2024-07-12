@@ -1477,9 +1477,6 @@ extern const char kOmniboxMlUrlScoringModelDescription[];
 extern const char kOmniboxMlUrlSearchBlendingName[];
 extern const char kOmniboxMlUrlSearchBlendingDescription[];
 
-extern const char kOmniboxMatchToolbarAndStatusBarColorName[];
-extern const char kOmniboxMatchToolbarAndStatusBarColorDescription[];
-
 extern const char kOmniboxMostVisitedTilesHorizontalRenderGroupName[];
 extern const char kOmniboxMostVisitedTilesHorizontalRenderGroupDescription[];
 

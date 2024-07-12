@@ -2514,12 +2514,6 @@ const char kOmniboxGroupingFrameworkDescription[] =
     "Enables an alternative grouping implementation for omnibox "
     "autocompletion.";
 
-const char kOmniboxMatchToolbarAndStatusBarColorName[] =
-    "Omnibox Omnibox Match Toolbar And Status Bar Color";
-const char kOmniboxMatchToolbarAndStatusBarColorDescription[] =
-    "When enabled, the color of the toolbar and the status bar will be "
-    "synchronized.";
-
 const char kOmniboxMostVisitedTilesHorizontalRenderGroupName[] =
     "Omnibox MV Tiles Horizontal Render Group";
 const char kOmniboxMostVisitedTilesHorizontalRenderGroupDescription[] =

@@ -6282,12 +6282,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"omnibox-match-toolbar-and-status-bar-color",
-     flag_descriptions::kOmniboxMatchToolbarAndStatusBarColorName,
-     flag_descriptions::kOmniboxMatchToolbarAndStatusBarColorDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(omnibox::kOmniboxMatchToolbarAndStatusBarColor)},
-
     {"omnibox-most-visited-tiles-horizontal-render-group",
      flag_descriptions::kOmniboxMostVisitedTilesHorizontalRenderGroupName,
      flag_descriptions::

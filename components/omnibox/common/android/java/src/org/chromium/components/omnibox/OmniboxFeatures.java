@@ -42,9 +42,6 @@ public class OmniboxFeatures {
     public static final CachedFlag sAnimateSuggestionsListAppearance =
             newFlag(OmniboxFeatureList.ANIMATE_SUGGESTIONS_LIST_APPEARANCE, false);
 
-    public static final CachedFlag sOmniboxMatchToolbarAndStatusBarColor =
-            newFlag(OmniboxFeatureList.OMNIBOX_MATCH_TOOLBAR_AND_STATUS_BAR_COLOR, false);
-
     public static final CachedFlag sTouchDownTriggerForPrefetch =
             newFlag(OmniboxFeatureList.OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH, false);
 
@@ -148,11 +145,6 @@ public class OmniboxFeatures {
     /** Retrieve list of FieldTrialParams that should be cached. */
     public static List<CachedFieldTrialParameter> getFieldTrialParamsToCache() {
         return sCachedParams;
-    }
-
-    /** Returns whether the toolbar and status bar color should be matched. */
-    public static boolean shouldMatchToolbarAndStatusBarColor() {
-        return sOmniboxMatchToolbarAndStatusBarColor.isEnabled();
     }
 
     /**

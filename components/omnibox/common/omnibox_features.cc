@@ -285,11 +285,6 @@ BASE_FEATURE(kNtpRealboxPedals,
              "NtpRealboxPedals",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Feature used to synchronize the toolbar's and status bar's color.
-BASE_FEATURE(kOmniboxMatchToolbarAndStatusBarColor,
-             "OmniboxMatchToolbarAndStatusBarColor",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, appends Query Tiles to the Omnibox ZPS on New Tab Page.
 BASE_FEATURE(kQueryTilesInZPSOnNTP,
              "OmniboxQueryTilesInZPSOnNTP",
@@ -582,7 +577,6 @@ static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
           &kQueryTilesInZPSOnNTP,
           &kAnimateSuggestionsListAppearance,
           &kGroupingFrameworkForNonZPS,
-          &kOmniboxMatchToolbarAndStatusBarColor,
           &kOmniboxTouchDownTriggerForPrefetch,
           &kOmniboxAsyncViewInflation,
           &kRichAutocompletion,

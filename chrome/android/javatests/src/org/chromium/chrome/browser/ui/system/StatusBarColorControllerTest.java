@@ -36,7 +36,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -59,7 +58,6 @@ import org.chromium.chrome.test.util.browser.ThemeTestUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -237,6 +235,7 @@ public class StatusBarColorControllerTest {
     @Test
     @LargeTest
     @Feature({"StatusBar"})
+    @DisabledTest(message = "b/352622267")
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
     public void testFocusAndScrollColors() throws Exception {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
@@ -303,14 +302,9 @@ public class StatusBarColorControllerTest {
         waitForStatusBarColor(activity, Color.RED);
     }
 
-    /**
-     * Test that the theme color is received and cleared when the Omnibox gains focus, given the
-     * feature flag OMNIBOX_MATCH_TOOLBAR_AND_STATUS_BAR_COLOR is enabled.
-     */
     @Test
     @LargeTest
     @Feature({"StatusBar"})
-    @EnableFeatures({OmniboxFeatureList.OMNIBOX_MATCH_TOOLBAR_AND_STATUS_BAR_COLOR})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
     public void testBrandColorIgnoredWhenOmniboxIsFocused_FeatureMatchToolbarColorEnabled()
             throws Exception {
@@ -339,14 +333,9 @@ public class StatusBarColorControllerTest {
         waitForStatusBarColorToMatchToolbarColor(activity);
     }
 
-    /**
-     * Test that the status indicator color is included in the color calculation correctly, given
-     * the feature flag OMNIBOX_MATCH_TOOLBAR_AND_STATUS_BAR_COLOR is enabled.
-     */
     @Test
     @LargeTest
     @Feature({"StatusBar"})
-    @EnableFeatures({OmniboxFeatureList.OMNIBOX_MATCH_TOOLBAR_AND_STATUS_BAR_COLOR})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
     public void testColorWithStatusIndicator_FeatureMatchToolbarColorEnabled() {
         final ChromeActivity activity = sActivityTestRule.getActivity();

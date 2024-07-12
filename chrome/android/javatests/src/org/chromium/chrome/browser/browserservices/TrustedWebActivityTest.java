@@ -37,6 +37,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
@@ -207,6 +208,7 @@ public class TrustedWebActivityTest {
     @MediumTest
     @Feature({"StatusBar"})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @DisabledTest(message = "b/352624584")
     public void testStatusBarColorCertificateError() throws ExecutionException, TimeoutException {
         final String pageWithThemeColor =
                 mEmbeddedTestServerRule

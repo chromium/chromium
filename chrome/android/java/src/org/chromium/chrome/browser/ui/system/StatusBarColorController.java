@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
@@ -123,9 +122,6 @@ public class StatusBarColorController
                         return;
                     }
                     mIsInOverviewMode = true;
-                    if (!OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
-                        updateStatusBarColor();
-                    }
                 }
 
                 @Override
@@ -299,15 +295,10 @@ public class StatusBarColorController
     // TopToolbarCoordinator.ToolbarColorObserver implementation.
     @Override
     public void onToolbarColorChanged(@ColorInt int color) {
-        boolean shouldUseToolbarColorOnPhone =
-                !mIsTablet && OmniboxFeatures.shouldMatchToolbarAndStatusBarColor();
         // Status bar color on tablets could change when the tab strip transition is enabled,
         // where it might be required for the status bar color to match the toolbar color when the
         // tab strip is hidden.
-        boolean shouldUseToolbarColorOnTablet = mIsTablet && mAllowToolbarColorOnTablets;
-        if (!shouldUseToolbarColorOnPhone && !shouldUseToolbarColorOnTablet) {
-            return;
-        }
+        if (mIsTablet && !mAllowToolbarColorOnTablets) return;
 
         // Set mToolbarColorChanged to true as an extra check to prevent rendering status bar with
         // default color if toolbar never changes, for example, in dark mode.
@@ -447,9 +438,7 @@ public class StatusBarColorController
         // The theme should be restored when Omnibox focus clears.
         if (mIsOmniboxFocused) {
             // If the flag is enabled, we will use the toolbar color.
-            if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor() && mToolbarColorChanged) {
-                return mToolbarColor;
-            }
+            if (mToolbarColorChanged) return mToolbarColor;
             return calculateDefaultStatusBarColor();
         }
 
@@ -457,10 +446,7 @@ public class StatusBarColorController
         if (mIsInOverviewMode) {
             // Toolbar will notify status bar color controller about the toolbar color during
             // overview animation.
-            if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
-                return mToolbarColor;
-            }
-            return mIsIncognitoBranded ? mIncognitoPrimaryBgColor : mStandardPrimaryBgColor;
+            return mToolbarColor;
         }
 
         // Return status bar color in standard NewTabPage. If location bar is not shown in NTP, we
@@ -479,9 +465,7 @@ public class StatusBarColorController
 
         // Return status bar color to match the toolbar.
         // If the flag is enabled, we will use the toolbar color.
-        if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor() && mToolbarColorChanged) {
-            return mToolbarColor;
-        }
+        if (mToolbarColorChanged) return mToolbarColor;
         return mTopUiThemeColor.getThemeColorOrFallback(
                 mCurrentTab, calculateDefaultStatusBarColor());
     }
