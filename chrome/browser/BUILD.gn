@@ -2661,7 +2661,6 @@ static_library("browser") {
     "//ui/snapshot",
     "//ui/strings",
     "//ui/surface",
-    "//ui/web_dialogs",
     "//ui/webui",
   ]
 
@@ -2679,6 +2678,7 @@ static_library("browser") {
       "//components/manta/proto",
       "//components/user_education/common",
       "//components/user_education/webui:webui",
+      "//ui/web_dialogs",
     ]
 
     allow_circular_includes_from += [

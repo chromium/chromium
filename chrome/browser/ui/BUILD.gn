@@ -757,7 +757,6 @@ static_library("ui") {
     "//ui/snapshot",
     "//ui/strings",
     "//ui/surface",
-    "//ui/web_dialogs",
     "//ui/webui",
     "//v8:v8_version",
   ]
@@ -2166,6 +2165,7 @@ static_library("ui") {
       "//ui/color:color_provider_key",
       "//ui/color/dynamic_color",
       "//ui/events",
+      "//ui/web_dialogs",
       "//ui/webui/resources/cr_components/app_management:mojo_bindings",
       "//ui/webui/resources/cr_components/commerce:mojo_bindings",
       "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
