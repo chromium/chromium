@@ -1,0 +1,14 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer ignored
+++++++++button name='3'
+++++++++++staticText name='3'
+++++++++++++inlineTextBox name='3'
+++++++++genericContainer ignored
+++++++++++button name='1'
+++++++++++++staticText name='1'
+++++++++++++++inlineTextBox name='1'
+++++++++++button name='2'
+++++++++++++staticText name='2'
+++++++++++++++inlineTextBox name='2'

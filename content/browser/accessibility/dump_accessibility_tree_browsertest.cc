@@ -106,6 +106,9 @@ void DumpAccessibilityTreeTest::SetUpCommandLine(
   // Enable aria-colindextext and aria-rowindextext.
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                   "AriaRowColIndexText");
+  // Enable CSSReadingFlow, used by AccessibilityCSSReadingFlow.
+  command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                  "CSSReadingFlow");
 }
 
 std::vector<std::string> DumpAccessibilityTreeTest::Dump(ui::AXMode mode) {
@@ -429,6 +432,35 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityCSSVisibilityToVisible) {
   RunCSSTest(FILE_PATH_LITERAL("visibility-to-visible.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSReadingFlow) {
+  RunCSSTest(FILE_PATH_LITERAL("reading-flow.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    DumpAccessibilityTreeTest,
+    AccessibilityCSSReadingFlowDisplayContentsMixedSiblings) {
+  RunCSSTest(
+      FILE_PATH_LITERAL("reading-flow-display-contents-mixed-siblings.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    DumpAccessibilityTreeTest,
+    AccessibilityCSSReadingFlowDisplayContentsUniformSiblings) {
+  RunCSSTest(
+      FILE_PATH_LITERAL("reading-flow-display-contents-uniform-siblings.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityCSSReadingFlowDisplayContentsShadowHost) {
+  RunCSSTest(
+      FILE_PATH_LITERAL("reading-flow-display-contents-shadow-host.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityCSSReadingFlowShadowDomSlot) {
+  RunCSSTest(FILE_PATH_LITERAL("reading-flow-shadow-dom-slot.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityA) {

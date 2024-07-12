@@ -5515,9 +5515,42 @@ void AXNodeObject::AddNodeChildren() {
   if (IsA<HTMLFrameElementBase>(GetNode()))
     return;
 
-  for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node_); child;
-       child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
-    AddNodeChild(child);
+  // If node is ReadingFlowContainer or if it is display contents and its layout
+  // parent is ReadingFlowContainer, then we should follow reading-flow order.
+  // In this case, the same list of children will be added as in the simple
+  // case using only LayoutTreeBuilderTraversal children, with no additions or
+  // removals, but in the order defined in CSS.
+  // TODO(crbug.com/346979043): If display: contents is a reading flow item,
+  // this order will be different from the reading flow in focus navigation.
+  Element* element = GetElement();
+  Element* closest_layout_parent =
+      element && element->HasDisplayContentsStyle()
+          ? LayoutTreeBuilderTraversal::LayoutParentElement(*element)
+          : element;
+  if (closest_layout_parent &&
+      closest_layout_parent->IsReadingFlowContainer()) {
+    HeapHashSet<Member<Node>> reading_flow_children;
+    for (Element* reading_item :
+         closest_layout_parent->GetLayoutBox()->ReadingFlowElements()) {
+      // Filter to only add node child if it is a direct child of current
+      // element.
+      if (LayoutTreeBuilderTraversal::Parent(*reading_item) == element) {
+        AddNodeChild(reading_item);
+        reading_flow_children.insert(reading_item);
+      }
+    }
+    // Add all non-reading order items at the end of the reading flow.
+    for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node_); child;
+         child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
+      if (!reading_flow_children.Contains(child)) {
+        AddNodeChild(child);
+      }
+    }
+  } else {
+    for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node_); child;
+         child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
+      AddNodeChild(child);
+    }
   }
 }
 

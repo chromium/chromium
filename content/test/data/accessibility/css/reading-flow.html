@@ -1,0 +1,27 @@
+<style>
+.wrapper {
+  display: flex;
+  reading-flow: flex-visual;
+}
+</style>
+
+<!--- Test reading flow for flex items re-ordered using CSS property order.
+Only direct children of wrapper are re-ordered.
+
+Expect order to be:
+(div 1) -> 1  -> 2  -> 3  -> 4  -> (div 5) -> 5.1 -> 5.2 -> 6
+-->
+
+<div class="wrapper">
+  <button style="order: 3">3</button>
+  <div style="order: 1">
+    <button>1</button>
+  </div>
+  <button style="order: 4">4</button>
+  <button style="order: 6">6</button>
+  <div style="order: 5">
+    <button style="order: 2">5.1</button>
+    <button style="order: 1">5.2</button>
+  </div>
+  <button style="order: 2">2</button>
+</div>
