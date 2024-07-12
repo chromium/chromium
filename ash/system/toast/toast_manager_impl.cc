@@ -119,11 +119,11 @@ void ToastManagerImpl::Show(ToastData data) {
   std::string_view id = data.id;
   DCHECK(!id.empty());
 
-  LOG(WARNING) << "Show toast called, toast id: " << id;
+  LOG(ERROR) << "Show toast called, toast id: " << id;
 
   // If `pause_counter_` is greater than 0, no toasts should be shown.
   if (pause_counter_ > 0) {
-    LOG(WARNING)
+    LOG(ERROR)
         << "Toast not shown, pause_counter_ is creater than 0, toast id: "
         << id;
     return;
@@ -132,7 +132,6 @@ void ToastManagerImpl::Show(ToastData data) {
   auto existing_toast = base::ranges::find(queue_, id, &ToastData::id);
 
   if (existing_toast != queue_.end()) {
-    LOG(WARNING) << "Updating queued toast, toast id: " << id;
     // Assigns given `data` to existing queued toast, but keeps the existing
     // toast's `time_created` value.
     const base::TimeTicks old_time_created = existing_toast->time_created;
@@ -140,7 +139,6 @@ void ToastManagerImpl::Show(ToastData data) {
     existing_toast->time_created = old_time_created;
   } else {
     if (IsToastShown(id)) {
-      LOG(WARNING) << "Replacing visible toast, toast id: " << id;
       // Replace the visible toast by adding the new toast data to the front of
       // the queue and hiding the visible toast. Once the visible toast finishes
       // hiding, the new toast will be displayed.
@@ -151,14 +149,11 @@ void ToastManagerImpl::Show(ToastData data) {
       return;
     }
 
-    LOG(WARNING) << "Pushing toast to end of queue, toast id: " << id;
     queue_.emplace_back(std::move(data));
   }
 
-  if (queue_.size() == 1 && !HasActiveToasts()) {
-    LOG(WARNING) << "Calling ShowLatest, toast id: " << id;
+  if (queue_.size() == 1 && !HasActiveToasts())
     ShowLatest();
-  }
 }
 
 void ToastManagerImpl::Cancel(std::string_view id) {
@@ -247,10 +242,8 @@ void ToastManagerImpl::CloseToast() {
   // Show the next toast if available.
   // Note that don't show during the lock state is changing, since we reshow
   // manually after the state is changed. See OnLockStateChanged.
-  if (!queue_.empty()) {
-    LOG(WARNING) << "Calling ShowLatest, toast queue is not empty";
+  if (!queue_.empty())
     ShowLatest();
-  }
 }
 
 void ToastManagerImpl::OnToastHoverStateChanged(bool is_hovering) {
@@ -283,7 +276,7 @@ void ToastManagerImpl::ShowLatest() {
   current_toast_data_ = std::move(*it);
   queue_.erase(it);
 
-  LOG(WARNING) << "Showing latest toast, toast id: " << current_toast_data_->id;
+  LOG(ERROR) << "Showing latest toast, toast id: " << current_toast_data_->id;
   serial_++;
 
   if (current_toast_data_->show_on_all_root_windows) {
