@@ -599,7 +599,7 @@ void InputDeviceSettingsNotificationController::
 void InputDeviceSettingsNotificationController::NotifyMouseFirstTimeConnected(
     const mojom::Mouse& mouse,
     const gfx::Image& device_image) {
-  if (!IsActiveUserSession()) {
+  if (!IsActiveUserSession() || !mouse.is_external) {
     return;
   }
 
@@ -823,7 +823,7 @@ void InputDeviceSettingsNotificationController::
 void InputDeviceSettingsNotificationController::
     NotifyKeyboardFirstTimeConnected(const mojom::Keyboard& keyboard,
                                      const gfx::Image& device_image) {
-  if (!IsActiveUserSession()) {
+  if (!IsActiveUserSession() || !keyboard.is_external) {
     return;
   }
 
@@ -850,7 +850,7 @@ void InputDeviceSettingsNotificationController::
 void InputDeviceSettingsNotificationController::
     NotifyTouchpadFirstTimeConnected(const mojom::Touchpad& touchpad,
                                      const gfx::Image& device_image) {
-  if (!IsActiveUserSession()) {
+  if (!IsActiveUserSession() || !touchpad.is_external) {
     return;
   }
 
@@ -906,7 +906,7 @@ void InputDeviceSettingsNotificationController::
 void InputDeviceSettingsNotificationController::
     NotifyPointingStickFirstTimeConnected(
         const mojom::PointingStick& pointing_stick) {
-  if (!IsActiveUserSession()) {
+  if (!IsActiveUserSession() || !pointing_stick.is_external) {
     return;
   }
 
