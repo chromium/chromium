@@ -105,8 +105,8 @@ export function isNatural(voice: SpeechSynthesisVoice) {
   return voice.name.includes(NATURAL_STRING_IDENTIFIER);
 }
 
-export function isEspeak(voice: SpeechSynthesisVoice) {
-  return voice.name.includes(ESPEAK_STRING_IDENTIFIER);
+export function isEspeak(voice: SpeechSynthesisVoice|undefined) {
+  return voice && voice.name.includes(ESPEAK_STRING_IDENTIFIER);
 }
 
 export function createInitialListOfEnabledLanguages(

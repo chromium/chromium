@@ -5,9 +5,10 @@
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BrowserProxy, PauseActionSource, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {setSimpleAxTreeWithText, suppressInnocuousErrors, waitForPlayFromSelection} from './common.js';
+import {createSpeechSynthesisVoice, emitEvent, setSimpleAxTreeWithText, suppressInnocuousErrors, waitForPlayFromSelection} from './common.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
 suite('WordHighlighting', () => {
@@ -183,5 +184,22 @@ suite('WordHighlighting', () => {
 
     // Verify that the word boundary state has been reset.
     assertEquals(WordBoundaryMode.NO_BOUNDARIES, app.wordBoundaryState.mode);
+  });
+
+  test('sentence highlight used with espeak voice', () => {
+    const selectedVoice =
+        createSpeechSynthesisVoice({lang: 'en', name: 'Kristi eSpeak'});
+    emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
+    flush();
+
+    const sentence = 'Hello, how are you!';
+
+    setSimpleAxTreeWithText(sentence);
+    app.updateBoundary(0);
+    app.playSpeech();
+    const currentHighlight =
+        app.$.container.querySelector('.current-read-highlight');
+    assertTrue(currentHighlight !== undefined);
+    assertEquals(sentence, currentHighlight!.textContent);
   });
 });

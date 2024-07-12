@@ -2040,9 +2040,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   private shouldUseWordHighlighting(): boolean {
     // Word highlighting should only be used for speech rates less than or
-    // equal to 1x speed.
+    // equal to 1x speed. It should be skipped on espeak voices, since espeak
+    // boundaries are different than Google TTS word boundaries.
     return chrome.readingMode.isAutomaticWordHighlightingEnabled &&
-        getCurrentSpeechRate() <= 1;
+        getCurrentSpeechRate() <= 1 && !isEspeak(this.selectedVoice_);
   }
 
   private onSelectVoice_(
