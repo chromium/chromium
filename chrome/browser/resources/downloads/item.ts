@@ -28,7 +28,7 @@ import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_b
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
@@ -297,8 +297,25 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   }
 
   private computeCompletelyOnDisk_(): boolean {
-    return this.data.state === State.kComplete &&
-        !this.data.fileExternallyRemoved;
+    if (this.data.fileExternallyRemoved) {
+      return false;
+    }
+    switch (this.data.state) {
+      case State.kComplete:
+        return true;
+      case State.kInProgress:
+      case State.kCancelled:
+      case State.kPaused:
+      case State.kDangerous:
+      case State.kInterrupted:
+      case State.kInsecure:
+      case State.kAsyncScanning:
+      case State.kPromptForScanning:
+      case State.kPromptForLocalPasswordScanning:
+        return false;
+      default:
+        assertNotReached('Unhandled State encountered');
+    }
   }
 
   private computeShouldLinkFilename_(): boolean {
@@ -306,8 +323,34 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       return false;
     }
 
-    return this.completelyOnDisk_ &&
-        this.data.dangerType !== DangerType.kDeepScannedFailed;
+    if (!this.completelyOnDisk_) {
+      return false;
+    }
+
+    switch (this.data.dangerType) {
+      case DangerType.kDeepScannedFailed:
+        return false;
+      case DangerType.kNoApplicableDangerType:
+      case DangerType.kDangerousFile:
+      case DangerType.kDangerousUrl:
+      case DangerType.kDangerousContent:
+      case DangerType.kCookieTheft:
+      case DangerType.kUncommonContent:
+      case DangerType.kDangerousHost:
+      case DangerType.kPotentiallyUnwanted:
+      case DangerType.kAsyncScanning:
+      case DangerType.kAsyncLocalPasswordScanning:
+      case DangerType.kBlockedPasswordProtected:
+      case DangerType.kBlockedTooLarge:
+      case DangerType.kSensitiveContentWarning:
+      case DangerType.kSensitiveContentBlock:
+      case DangerType.kDeepScannedSafe:
+      case DangerType.kDeepScannedOpenedDangerous:
+      case DangerType.kBlockedScanFailed:
+        return true;
+      default:
+        assertNotReached('Unhandled DangerType encountered');
+    }
   }
 
   private computeHasShowInFolderLink_(): boolean {
@@ -315,8 +358,34 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       return false;
     }
 
-    return this.data.dangerType !== DangerType.kDeepScannedFailed &&
-        this.computeCompletelyOnDisk_();
+    if (!this.computeCompletelyOnDisk_()) {
+      return false;
+    }
+
+    switch (this.data.dangerType) {
+      case DangerType.kDeepScannedFailed:
+        return false;
+      case DangerType.kNoApplicableDangerType:
+      case DangerType.kDangerousFile:
+      case DangerType.kDangerousUrl:
+      case DangerType.kDangerousContent:
+      case DangerType.kCookieTheft:
+      case DangerType.kUncommonContent:
+      case DangerType.kDangerousHost:
+      case DangerType.kPotentiallyUnwanted:
+      case DangerType.kAsyncScanning:
+      case DangerType.kAsyncLocalPasswordScanning:
+      case DangerType.kBlockedPasswordProtected:
+      case DangerType.kBlockedTooLarge:
+      case DangerType.kSensitiveContentWarning:
+      case DangerType.kSensitiveContentBlock:
+      case DangerType.kDeepScannedSafe:
+      case DangerType.kDeepScannedOpenedDangerous:
+      case DangerType.kBlockedScanFailed:
+        return true;
+      default:
+        assertNotReached('Unhandled DangerType encountered');
+    }
   }
 
   private computeControlledBy_(): string {
@@ -342,7 +411,54 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   }
 
   private computeSecondLineVisible_(): boolean {
-    return this.data && this.data.state === State.kAsyncScanning;
+    if (!this.data) {
+      return false;
+    }
+    switch (this.data.state) {
+      case State.kAsyncScanning:
+        return true;
+      case State.kInProgress:
+      case State.kCancelled:
+      case State.kComplete:
+      case State.kPaused:
+      case State.kDangerous:
+      case State.kInterrupted:
+      case State.kInsecure:
+      case State.kPromptForScanning:
+      case State.kPromptForLocalPasswordScanning:
+        return false;
+      default:
+        assertNotReached('Unhandled State encountered');
+    }
+  }
+
+  private isSuspiciousEnterpriseApVerdict_(
+      requestsApVerdicts: boolean, dangerType: DangerType): boolean {
+    switch (dangerType) {
+      case DangerType.kUncommonContent:
+        return requestsApVerdicts;
+      case DangerType.kSensitiveContentWarning:
+        return true;
+      case DangerType.kNoApplicableDangerType:
+      case DangerType.kDangerousFile:
+      case DangerType.kDangerousUrl:
+      case DangerType.kDangerousContent:
+      case DangerType.kCookieTheft:
+      case DangerType.kDangerousHost:
+      case DangerType.kPotentiallyUnwanted:
+      case DangerType.kAsyncScanning:
+      case DangerType.kAsyncLocalPasswordScanning:
+      case DangerType.kBlockedPasswordProtected:
+      case DangerType.kBlockedTooLarge:
+      case DangerType.kSensitiveContentBlock:
+      case DangerType.kDeepScannedFailed:
+      case DangerType.kDeepScannedSafe:
+      case DangerType.kDeepScannedOpenedDangerous:
+      case DangerType.kBlockedScanFailed:
+        return false;
+      default:
+        assertNotReached('Unhandled DangerType encountered');
+    }
   }
 
   private computeDisplayType_(): DisplayType {
@@ -351,62 +467,85 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       return DisplayType.NORMAL;
     }
 
-    if (this.data.isInsecure || this.data.state === State.kInsecure) {
+    if (this.data.isInsecure) {
       return DisplayType.INSECURE;
     }
 
-    if (this.data.state === State.kAsyncScanning ||
-        this.data.state === State.kPromptForScanning ||
-        this.data.state === State.kPromptForLocalPasswordScanning) {
-      return DisplayType.SUSPICIOUS;
+    switch (this.data.state) {
+      case State.kAsyncScanning:
+      case State.kPromptForScanning:
+      case State.kPromptForLocalPasswordScanning:
+        return DisplayType.SUSPICIOUS;
+      case State.kInsecure:
+        return DisplayType.INSECURE;
+      case State.kInProgress:
+      case State.kCancelled:
+      case State.kComplete:
+      case State.kPaused:
+      case State.kDangerous:
+      case State.kInterrupted:
+        break;
+      default:
+        assertNotReached('Unhandled State encountered');
     }
 
     // Enterprise AP verdicts.
-    if ((loadTimeData.getBoolean('requestsApVerdicts') &&
-         this.data.dangerType === DangerType.kUncommonContent) ||
-        this.data.dangerType === DangerType.kSensitiveContentWarning) {
+    if (this.isSuspiciousEnterpriseApVerdict_(
+            loadTimeData.getBoolean('requestsApVerdicts'),
+            this.data.dangerType)) {
       return DisplayType.SUSPICIOUS;
     }
 
-    // TODO(crbug.com/350780005): Make this and remaining switches in this file
-    // exhaustive by including cases for all enum values and adding assertNotReached
-    // at the end.
     switch (this.data.dangerType) {
       // Mimics logic in download_ui_model.cc for downloads with danger_type
       // DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE.
       case DangerType.kDangerousFile:
         return this.data.hasSafeBrowsingVerdict ? DisplayType.SUSPICIOUS :
                                                   DisplayType.UNVERIFIED;
-
       case DangerType.kDangerousUrl:
       case DangerType.kDangerousContent:
+      case DangerType.kCookieTheft:
       case DangerType.kDangerousHost:
       case DangerType.kPotentiallyUnwanted:
       case DangerType.kDeepScannedOpenedDangerous:
-      case DangerType.kCookieTheft:
         return DisplayType.DANGEROUS;
-
       case DangerType.kUncommonContent:
       case DangerType.kDeepScannedFailed:
         return DisplayType.SUSPICIOUS;
-
-      case DangerType.kSensitiveContentBlock:
-      case DangerType.kBlockedTooLarge:
+      case DangerType.kNoApplicableDangerType:
+      case DangerType.kAsyncScanning:
+      case DangerType.kAsyncLocalPasswordScanning:
+      case DangerType.kSensitiveContentWarning:
+      case DangerType.kDeepScannedSafe:
+      case DangerType.kBlockedScanFailed:
+        return DisplayType.NORMAL;
       case DangerType.kBlockedPasswordProtected:
+      case DangerType.kBlockedTooLarge:
+      case DangerType.kSensitiveContentBlock:
         return DisplayType.ERROR;
+      default:
+        assertNotReached('Unhandled DangerType encountered');
     }
-
-    return DisplayType.NORMAL;
   }
 
   private computeDeepScanControlText_(): string {
-    if (this.data.state === State.kPromptForScanning) {
-      return loadTimeData.getString('controlDeepScan');
-    } else if (this.data.state === State.kPromptForLocalPasswordScanning) {
-      return loadTimeData.getString('controlLocalPasswordScan');
+    switch (this.data.state) {
+      case State.kPromptForScanning:
+        return loadTimeData.getString('controlDeepScan');
+      case State.kPromptForLocalPasswordScanning:
+        return loadTimeData.getString('controlLocalPasswordScan');
+      case State.kInProgress:
+      case State.kCancelled:
+      case State.kComplete:
+      case State.kPaused:
+      case State.kDangerous:
+      case State.kInterrupted:
+      case State.kInsecure:
+      case State.kAsyncScanning:
+        return '';
+      default:
+        assertNotReached('Unhandled State encountered');
     }
-
-    return '';
   }
 
   private computeSaveDangerousLabel_(): string {
@@ -419,8 +558,12 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         return this.i18n('controlKeepUnverified');
       case DisplayType.INSECURE:
         return this.i18n('controlKeepInsecure');
+      case DisplayType.NORMAL:
+      case DisplayType.ERROR:
+        return '';
+      default:
+        assertNotReached('Unhandled DisplayType encountered');
     }
-    return '';
   }
 
   private computeDescription_(): string {
@@ -433,26 +576,41 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     switch (data.state) {
       case State.kComplete:
         switch (data.dangerType) {
-          case DangerType.kDeepScannedSafe:
-            return '';
           case DangerType.kDeepScannedOpenedDangerous:
             return loadTimeData.getString('deepScannedOpenedDangerousDesc');
           case DangerType.kDeepScannedFailed:
             return loadTimeData.getString('deepScannedFailedDesc');
+          case DangerType.kNoApplicableDangerType:
+          case DangerType.kDangerousFile:
+          case DangerType.kDangerousUrl:
+          case DangerType.kDangerousContent:
+          case DangerType.kCookieTheft:
+          case DangerType.kUncommonContent:
+          case DangerType.kDangerousHost:
+          case DangerType.kPotentiallyUnwanted:
+          case DangerType.kAsyncScanning:
+          case DangerType.kAsyncLocalPasswordScanning:
+          case DangerType.kBlockedPasswordProtected:
+          case DangerType.kBlockedTooLarge:
+          case DangerType.kSensitiveContentWarning:
+          case DangerType.kSensitiveContentBlock:
+          case DangerType.kDeepScannedSafe:
+          case DangerType.kBlockedScanFailed:
+            return '';
+          default:
+            assertNotReached('Unhandled DangerType encountered');
         }
-        break;
-
       case State.kInsecure:
         return loadTimeData.getString('insecureDownloadDesc');
-
       case State.kDangerous:
         switch (data.dangerType) {
+          case DangerType.kNoApplicableDangerType:
+            return '';
           case DangerType.kDangerousFile:
             return data.safeBrowsingState ===
                     SafeBrowsingState.kNoSafeBrowsing ?
                 loadTimeData.getString('noSafeBrowsingDesc') :
                 loadTimeData.getString('dangerFileDesc');
-
           case DangerType.kDangerousUrl:
           case DangerType.kDangerousContent:
           case DangerType.kDangerousHost:
@@ -470,6 +628,8 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
               case TailoredWarningType.kSuspiciousArchive:
               case TailoredWarningType.kNoApplicableTailoredWarningType:
                 return loadTimeData.getString('dangerDownloadDesc');
+              default:
+                assertNotReached('Unhandled TailoredWarningType encountered');
             }
           case DangerType.kUncommonContent:
             switch (data.tailoredWarningType) {
@@ -480,15 +640,27 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
               case TailoredWarningType.kCookieTheftWithAccountInfo:
               case TailoredWarningType.kNoApplicableTailoredWarningType:
                 return loadTimeData.getString('dangerUncommonDesc');
+              default:
+                assertNotReached('Unhandled TailoredWarningType encountered');
             }
           case DangerType.kPotentiallyUnwanted:
             return loadTimeData.getString('dangerSettingsDesc');
-
+          case DangerType.kAsyncScanning:
+          case DangerType.kAsyncLocalPasswordScanning:
+          case DangerType.kBlockedPasswordProtected:
+          case DangerType.kBlockedTooLarge:
+            return '';
           case DangerType.kSensitiveContentWarning:
             return loadTimeData.getString('sensitiveContentWarningDesc');
+          case DangerType.kSensitiveContentBlock:
+          case DangerType.kDeepScannedFailed:
+          case DangerType.kDeepScannedSafe:
+          case DangerType.kDeepScannedOpenedDangerous:
+          case DangerType.kBlockedScanFailed:
+            return '';
+          default:
+            assertNotReached('Unhandled DangerType encountered');
         }
-        break;
-
       case State.kAsyncScanning:
         return loadTimeData.getString('asyncScanningDownloadDesc');
       case State.kPromptForScanning:
@@ -498,19 +670,40 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       case State.kInProgress:
       case State.kPaused:  // Fallthrough.
         return data.progressStatusText;
-
       case State.kInterrupted:
         switch (data.dangerType) {
-          case DangerType.kSensitiveContentBlock:
-            return loadTimeData.getString('sensitiveContentBlockedDesc');
-          case DangerType.kBlockedTooLarge:
-            return loadTimeData.getString('blockedTooLargeDesc');
+          case DangerType.kNoApplicableDangerType:
+          case DangerType.kDangerousFile:
+          case DangerType.kDangerousUrl:
+          case DangerType.kDangerousContent:
+          case DangerType.kDangerousHost:
+          case DangerType.kCookieTheft:
+          case DangerType.kUncommonContent:
+          case DangerType.kPotentiallyUnwanted:
+          case DangerType.kAsyncScanning:
+          case DangerType.kAsyncLocalPasswordScanning:
+            return '';
           case DangerType.kBlockedPasswordProtected:
             return loadTimeData.getString('blockedPasswordProtectedDesc');
+          case DangerType.kBlockedTooLarge:
+            return loadTimeData.getString('blockedTooLargeDesc');
+          case DangerType.kSensitiveContentWarning:
+            return '';
+          case DangerType.kSensitiveContentBlock:
+            return loadTimeData.getString('sensitiveContentBlockedDesc');
+          case DangerType.kDeepScannedFailed:
+          case DangerType.kDeepScannedSafe:
+          case DangerType.kDeepScannedOpenedDangerous:
+          case DangerType.kBlockedScanFailed:
+            return '';
+          default:
+            assertNotReached('Unhandled DangerType encountered');
         }
+      case State.kCancelled:
+        return '';
+      default:
+        assertNotReached('Unhandled State encountered');
     }
-
-    return '';
   }
 
   private computeIconAriaHidden_(): string {
@@ -527,8 +720,12 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         return this.i18n('accessibleLabelUnverified');
       case DisplayType.SUSPICIOUS:
         return this.i18n('accessibleLabelSuspicious');
+      case DisplayType.NORMAL:
+      case DisplayType.ERROR:
+        return '';
+      default:
+        assertNotReached('Unhandled DisplayType encountered');
     }
-    return '';
   }
 
   private iconAndDescriptionColor_(): string {
@@ -540,8 +737,11 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       case DisplayType.UNVERIFIED:
       case DisplayType.SUSPICIOUS:
         return 'grey';
+      case DisplayType.NORMAL:
+        return '';
+      default:
+        assertNotReached('Unhandled DisplayType encountered');
     }
-    return '';
   }
 
   private computeIcon_(): string {
@@ -555,33 +755,60 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
           return 'cr:warning';
         case DisplayType.ERROR:
           return 'cr:error';
+        case DisplayType.NORMAL:
+          break;
+        default:
+          assertNotReached('Unhandled DisplayType encountered');
       }
 
       assert(this.displayType_ === DisplayType.NORMAL);
       const dangerType = this.data.dangerType as DangerType;
-      if ((loadTimeData.getBoolean('requestsApVerdicts') &&
-           dangerType === DangerType.kUncommonContent) ||
-          dangerType === DangerType.kSensitiveContentWarning) {
+      if (this.isSuspiciousEnterpriseApVerdict_(
+              loadTimeData.getBoolean('requestsApVerdicts'), dangerType)) {
         return 'cr:warning';
       }
 
-      if (dangerType === DangerType.kDeepScannedFailed) {
-        return 'cr:info';
+      switch (dangerType) {
+        case DangerType.kDeepScannedFailed:
+          return 'cr:info';
+        case DangerType.kSensitiveContentBlock:
+        case DangerType.kBlockedTooLarge:
+        case DangerType.kBlockedPasswordProtected:
+          return 'cr:error';
+        case DangerType.kNoApplicableDangerType:
+        case DangerType.kDangerousFile:
+        case DangerType.kDangerousUrl:
+        case DangerType.kDangerousContent:
+        case DangerType.kCookieTheft:
+        case DangerType.kUncommonContent:
+        case DangerType.kDangerousHost:
+        case DangerType.kPotentiallyUnwanted:
+        case DangerType.kAsyncScanning:
+        case DangerType.kAsyncLocalPasswordScanning:
+        case DangerType.kSensitiveContentWarning:
+        case DangerType.kDeepScannedSafe:
+        case DangerType.kDeepScannedOpenedDangerous:
+        case DangerType.kBlockedScanFailed:
+          break;
+        default:
+          assertNotReached('Unhandled DangerType encountered');
       }
 
-      const ERROR_TYPES = [
-        DangerType.kSensitiveContentBlock,
-        DangerType.kBlockedTooLarge,
-        DangerType.kBlockedPasswordProtected,
-      ];
-      if (ERROR_TYPES.includes(dangerType)) {
-        return 'cr:error';
-      }
-
-      if (this.data.state === State.kAsyncScanning ||
-          this.data.state === State.kPromptForScanning ||
-          this.data.state === State.kPromptForLocalPasswordScanning) {
-        return 'cr:warning';
+      switch (this.data.state) {
+        case State.kAsyncScanning:
+        case State.kPromptForScanning:
+        case State.kPromptForLocalPasswordScanning:
+          return 'cr:warning';
+        case State.kInProgress:
+        case State.kCancelled:
+        case State.kComplete:
+        case State.kPaused:
+        case State.kDangerous:
+        case State.kInterrupted:
+        case State.kInsecure:
+          break;
+        default:
+          assertNotReached('Unhandled State encountered');
       }
     }
     if (this.isDangerous_) {
@@ -607,27 +834,94 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   }
 
   private computeIsActive_(): boolean {
-    return this.data.state !== State.kCancelled &&
-        this.data.state !== State.kInterrupted &&
-        !this.data.fileExternallyRemoved;
+    if (this.data.fileExternallyRemoved) {
+      return false;
+    }
+    switch (this.data.state) {
+      case State.kCancelled:
+      case State.kInterrupted:
+        return false;
+      case State.kInProgress:
+      case State.kComplete:
+      case State.kPaused:
+      case State.kDangerous:
+      case State.kInsecure:
+      case State.kAsyncScanning:
+      case State.kPromptForScanning:
+      case State.kPromptForLocalPasswordScanning:
+        return true;
+      default:
+        assertNotReached('Unhandled State encountered');
+    }
   }
 
   private computeIsDangerous_(): boolean {
-    return this.data.state === State.kDangerous ||
-        this.data.state === State.kInsecure;
+    switch (this.data.state) {
+      case State.kDangerous:
+      case State.kInsecure:
+        return true;
+      case State.kInProgress:
+      case State.kCancelled:
+      case State.kComplete:
+      case State.kPaused:
+      case State.kInterrupted:
+      case State.kAsyncScanning:
+      case State.kPromptForScanning:
+      case State.kPromptForLocalPasswordScanning:
+        return false;
+      default:
+        assertNotReached('Unhandled State encountered');
+    }
   }
 
   private computeIsInProgress_(): boolean {
-    return this.data.state === State.kInProgress;
+    switch (this.data.state) {
+      case State.kInProgress:
+        return true;
+      case State.kCancelled:
+      case State.kComplete:
+      case State.kPaused:
+      case State.kDangerous:
+      case State.kInterrupted:
+      case State.kInsecure:
+      case State.kAsyncScanning:
+      case State.kPromptForScanning:
+      case State.kPromptForLocalPasswordScanning:
+        return false;
+      default:
+        assertNotReached('Unhandled State encountered');
+    }
   }
 
   private computeIsMalware_(): boolean {
-    return this.isDangerous_ &&
-        (this.data.dangerType === DangerType.kDangerousContent ||
-         this.data.dangerType === DangerType.kDangerousHost ||
-         this.data.dangerType === DangerType.kDangerousUrl ||
-         this.data.dangerType === DangerType.kPotentiallyUnwanted ||
-         this.data.dangerType === DangerType.kCookieTheft);
+    if (!this.isDangerous_) {
+      return false;
+    }
+
+    switch (this.data.dangerType) {
+      case DangerType.kDangerousUrl:
+      case DangerType.kDangerousContent:
+      case DangerType.kCookieTheft:
+      case DangerType.kDangerousHost:
+      case DangerType.kPotentiallyUnwanted:
+        return true;
+      case DangerType.kNoApplicableDangerType:
+      case DangerType.kDangerousFile:
+      case DangerType.kUncommonContent:
+      case DangerType.kAsyncScanning:
+      case DangerType.kAsyncLocalPasswordScanning:
+      case DangerType.kBlockedPasswordProtected:
+      case DangerType.kBlockedTooLarge:
+      case DangerType.kSensitiveContentWarning:
+      case DangerType.kSensitiveContentBlock:
+      case DangerType.kDeepScannedFailed:
+      case DangerType.kDeepScannedSafe:
+      case DangerType.kDeepScannedOpenedDangerous:
+      case DangerType.kBlockedScanFailed:
+        return false;
+      default:
+        assertNotReached('Unhandled DangerType encountered');
+    }
   }
 
   private computeIsReviewable_(): boolean {
@@ -663,27 +957,94 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   }
 
   private computeShowCancel_(): boolean {
-    return !!this.data &&
-        (this.data.state === State.kInProgress ||
-         this.data.state === State.kPaused);
+    if (!this.data) {
+      return false;
+    }
+    switch (this.data.state) {
+      case State.kInProgress:
+      case State.kPaused:
+        return true;
+      case State.kCancelled:
+      case State.kComplete:
+      case State.kDangerous:
+      case State.kInterrupted:
+      case State.kInsecure:
+      case State.kAsyncScanning:
+      case State.kPromptForScanning:
+      case State.kPromptForLocalPasswordScanning:
+        return false;
+      default:
+        assertNotReached('Unhandled State encountered');
+    }
   }
 
   private computeShowProgress_(): boolean {
-    if (this.data && this.data.state === State.kAsyncScanning) {
-      return true;
+    if (!this.data) {
+      return false;
     }
-    return this.showCancel_ && this.data.percent >= -1 &&
-        this.data.state !== State.kPromptForScanning &&
-        this.data.state !== State.kPromptForLocalPasswordScanning;
+    switch (this.data.state) {
+      case State.kInProgress:
+      case State.kCancelled:
+      case State.kComplete:
+      case State.kPaused:
+      case State.kDangerous:
+      case State.kInterrupted:
+      case State.kInsecure:
+        return this.showCancel_ && this.data.percent >= -1;
+      case State.kAsyncScanning:
+        return true;
+      case State.kPromptForScanning:
+      case State.kPromptForLocalPasswordScanning:
+        return false;
+      default:
+        assertNotReached('Unhandled State encountered');
+    }
   }
 
   private computeShowDeepScan_(): boolean {
-    return this.data.state === State.kPromptForScanning ||
-        this.data.state === State.kPromptForLocalPasswordScanning;
+    switch (this.data.state) {
+      case State.kPromptForScanning:
+      case State.kPromptForLocalPasswordScanning:
+        return true;
+      case State.kInProgress:
+      case State.kCancelled:
+      case State.kComplete:
+      case State.kPaused:
+      case State.kDangerous:
+      case State.kInterrupted:
+      case State.kInsecure:
+      case State.kAsyncScanning:
+        return false;
+      default:
+        assertNotReached('Unhandled State encountered');
+    }
   }
 
   private computeShowOpenAnyway_(): boolean {
-    return this.data.dangerType === DangerType.kDeepScannedFailed;
+    switch (this.data.dangerType) {
+      case DangerType.kDeepScannedFailed:
+        return true;
+      case DangerType.kNoApplicableDangerType:
+      case DangerType.kDangerousFile:
+      case DangerType.kDangerousUrl:
+      case DangerType.kDangerousContent:
+      case DangerType.kCookieTheft:
+      case DangerType.kUncommonContent:
+      case DangerType.kDangerousHost:
+      case DangerType.kPotentiallyUnwanted:
+      case DangerType.kAsyncScanning:
+      case DangerType.kAsyncLocalPasswordScanning:
+      case DangerType.kBlockedPasswordProtected:
+      case DangerType.kBlockedTooLarge:
+      case DangerType.kSensitiveContentWarning:
+      case DangerType.kSensitiveContentBlock:
+      case DangerType.kDeepScannedSafe:
+      case DangerType.kDeepScannedOpenedDangerous:
+      case DangerType.kBlockedScanFailed:
+        return false;
+      default:
+        assertNotReached('Unhandled DangerType encountered');
+    }
   }
 
   private computeShowActionMenu_(): boolean {
@@ -718,21 +1079,45 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     switch (this.data.state) {
       case State.kCancelled:
         return loadTimeData.getString('statusCancelled');
-
       case State.kInterrupted:
         return this.data.lastReasonText;
-
       case State.kComplete:
         return this.data.fileExternallyRemoved ?
             loadTimeData.getString('statusRemoved') :
             '';
+      case State.kInProgress:
+      case State.kPaused:
+      case State.kDangerous:
+      case State.kInsecure:
+      case State.kAsyncScanning:
+      case State.kPromptForScanning:
+      case State.kPromptForLocalPasswordScanning:
+        return '';
+      default:
+        assertNotReached('Unhandled State encountered');
     }
-
-    return '';
   }
 
   private isIndeterminate_(): boolean {
-    return this.data.state === State.kAsyncScanning || this.data.percent === -1;
+    if (this.data.percent === -1) {
+      return true;
+    }
+    switch (this.data.state) {
+      case State.kAsyncScanning:
+        return true;
+      case State.kInProgress:
+      case State.kCancelled:
+      case State.kComplete:
+      case State.kPaused:
+      case State.kDangerous:
+      case State.kInterrupted:
+      case State.kInsecure:
+      case State.kPromptForScanning:
+      case State.kPromptForLocalPasswordScanning:
+        return false;
+      default:
+        assertNotReached('Unhandled State encountered');
+    }
   }
 
   private observeControlledBy_() {
