@@ -222,7 +222,8 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
   const LayoutResult* layout_result = nullptr;
   BoxStrut fragment_margins;
   LayoutOpportunity opportunity;
-  LayoutUnit fragmentainer_block_size = FragmentainerCapacity(parent_space);
+  LayoutUnit fragmentainer_block_size =
+      unpositioned_float->fragmentainer_block_size;
   bool need_break_before = false;
 
   if (!is_fragmentable) {
@@ -359,7 +360,7 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
         LayoutUnit outer_block_end = fragmentainer_block_offset +
                                      float_fragment.BlockSize() +
                                      fragment_margins.block_end;
-        if (outer_block_end > FragmentainerCapacity(parent_space) &&
+        if (outer_block_end > fragmentainer_block_size &&
             !IsBreakInside(unpositioned_float->token)) {
           // Avoid breaking inside the block-end margin of a float. They are not
           // to collapse with the fragmentainer boundary, unlike margins on
@@ -395,9 +396,10 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
   if (need_break_before) {
     // Create a special exclusion past everything, so that the container(s) may
     // grow to encompass the floats, if appropriate.
-    BfcOffset past_everything(LayoutUnit(),
-                              FragmentainerSpaceLeft(parent_space) +
-                                  parent_space.ExpectedBfcBlockOffset());
+    BfcOffset past_everything(
+        LayoutUnit(),
+        FragmentainerSpaceLeft(parent_space, fragmentainer_block_size) +
+            parent_space.ExpectedBfcBlockOffset());
     const ExclusionArea* exclusion = ExclusionArea::Create(
         BfcRect(past_everything, past_everything), float_type,
         unpositioned_float->is_hidden_for_paint);

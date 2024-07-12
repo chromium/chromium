@@ -34,6 +34,7 @@ struct CORE_EXPORT UnpositionedFloat final {
                     const BfcOffset& origin_bfc_offset,
                     const ConstraintSpace& parent_space,
                     const ComputedStyle& parent_style,
+                    LayoutUnit fragmentainer_block_size,
                     bool is_hidden_for_paint)
       : node(node),
         token(token),
@@ -43,6 +44,7 @@ struct CORE_EXPORT UnpositionedFloat final {
         origin_bfc_offset(origin_bfc_offset),
         parent_space(parent_space),
         parent_style(parent_style),
+        fragmentainer_block_size(fragmentainer_block_size),
         is_hidden_for_paint(is_hidden_for_paint) {}
 
   BlockNode node;
@@ -54,6 +56,7 @@ struct CORE_EXPORT UnpositionedFloat final {
   const BfcOffset origin_bfc_offset;
   const ConstraintSpace& parent_space;
   const ComputedStyle& parent_style;
+  LayoutUnit fragmentainer_block_size;
   bool is_hidden_for_paint;
 
   // layout_result and margins are used as a cache when measuring the

@@ -2671,7 +2671,7 @@ void OutOfFlowLayoutPart::AddOOFToFragmentainer(
   if (column_balancing_info_) {
     LayoutUnit space_shortage = CalculateSpaceShortage(
         *fragmentainer_space, result, oof_offset.block_offset,
-        FragmentainerCapacity(*fragmentainer_space));
+        fragmentainer_space->FragmentainerBlockSize());
     column_balancing_info_->PropagateSpaceShortage(space_shortage);
     // We don't check the break appeal of the layout result to determine if
     // there is a violating break because OOFs aren't affected by the various

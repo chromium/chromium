@@ -147,7 +147,11 @@ class CORE_EXPORT LayoutAlgorithm {
   }
 
   LayoutUnit FragmentainerCapacity() const {
-    return ::blink::FragmentainerCapacity(GetConstraintSpace());
+    return ::blink::FragmentainerCapacity(container_builder_);
+  }
+
+  LayoutUnit FragmentainerSpaceLeft() const {
+    return ::blink::FragmentainerSpaceLeft(container_builder_);
   }
 
   BreakStatus BreakBeforeChildIfNeeded(LayoutInputNode child,

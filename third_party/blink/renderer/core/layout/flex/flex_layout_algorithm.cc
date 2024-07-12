@@ -1515,7 +1515,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
                                                   false);
   bool needs_earlier_break_in_column = false;
   LayoutResult::EStatus status = LayoutResult::kSuccess;
-  LayoutUnit fragmentainer_space = FragmentainerSpaceLeft(GetConstraintSpace());
+  LayoutUnit fragmentainer_space = FragmentainerSpaceLeft();
 
   HeapVector<FlexColumnBreakInfo> column_break_info;
   if (is_column_) {
@@ -2238,8 +2238,7 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizes(
 
 LayoutUnit FlexLayoutAlgorithm::FragmentainerSpaceAvailable(
     LayoutUnit block_offset) const {
-  return (FragmentainerSpaceLeft(GetConstraintSpace()) - block_offset)
-      .ClampNegativeToZero();
+  return (FragmentainerSpaceLeft() - block_offset).ClampNegativeToZero();
 }
 
 void FlexLayoutAlgorithm::ConsumeRemainingFragmentainerSpace(

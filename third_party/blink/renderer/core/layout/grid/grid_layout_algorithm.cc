@@ -3806,7 +3806,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     breakpoint_row_set_index = row_set_index;
   };
 
-  LayoutUnit fragmentainer_space = FragmentainerSpaceLeft(constraint_space);
+  LayoutUnit fragmentainer_space = FragmentainerSpaceLeft();
   base::span<const Member<const BreakToken>> child_break_tokens;
   if (GetBreakToken()) {
     child_break_tokens = GetBreakToken()->ChildBreakTokens();

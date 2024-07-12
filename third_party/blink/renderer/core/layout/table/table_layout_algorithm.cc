@@ -911,8 +911,7 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
   const TableBreakTokenData* incoming_table_break_data = nullptr;
   LogicalBoxSides border_padding_sides_to_include;
   const auto& constraint_space = GetConstraintSpace();
-  const LayoutUnit fragmentainer_space_at_start =
-      FragmentainerSpaceLeft(constraint_space);
+  const LayoutUnit fragmentainer_space_at_start = FragmentainerSpaceLeft();
   LayoutUnit previously_consumed_block_size;
   LayoutUnit previously_consumed_table_box_block_size;
 
@@ -1486,7 +1485,7 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
     if (has_entered_non_repeated_section) {
       adjusted_child_block_offset =
           std::min(adjusted_child_block_offset,
-                   UnclampedFragmentainerSpaceLeft(constraint_space) -
+                   UnclampedFragmentainerSpaceLeft(container_builder_) -
                        repeated_footer_block_size);
     }
 

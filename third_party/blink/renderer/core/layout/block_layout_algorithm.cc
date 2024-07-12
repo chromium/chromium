@@ -1133,7 +1133,7 @@ const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
 
       if (constraint_space.HasKnownFragmentainerBlockSize()) {
         LayoutUnit new_margin_strut_sum = AdjustedMarginAfterFinalChildFragment(
-            constraint_space, previous_inflow_position->logical_block_offset,
+            container_builder_, previous_inflow_position->logical_block_offset,
             margin_strut_sum);
         if (new_margin_strut_sum != margin_strut_sum) {
           container_builder_.SetIsTruncatedByFragmentationLine();
@@ -1500,7 +1500,7 @@ void BlockLayoutAlgorithm::HandleFloat(
   UnpositionedFloat unpositioned_float(
       child, child_break_token, ChildAvailableSize(), child_percentage_size_,
       replaced_child_percentage_size_, origin_bfc_offset, constraint_space,
-      Style(), line_clamp_data_.ShouldHideForPaint());
+      Style(), FragmentainerCapacity(), line_clamp_data_.ShouldHideForPaint());
 
   if (!container_builder_.BfcBlockOffset()) {
     container_builder_.AddAdjoiningObjectTypes(
@@ -2727,7 +2727,7 @@ void BlockLayoutAlgorithm::ConsumeRemainingFragmentainerSpace(
     // monolithic content).
     previous_inflow_position->logical_block_offset =
         std::max(previous_inflow_position->logical_block_offset,
-                 FragmentainerSpaceLeft(GetConstraintSpace()));
+                 FragmentainerSpaceLeft());
   }
 }
 

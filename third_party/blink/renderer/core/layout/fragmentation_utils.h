@@ -151,10 +151,18 @@ LogicalSize FragmentainerLogicalCapacity(
 // than 0 (even if the final fragentainer size may very well be 0). The spec
 // says that fragmentainers have to accept at least 1px of content. See
 // https://www.w3.org/TR/css-break-3/#breaking-rules
-inline LayoutUnit FragmentainerCapacity(const ConstraintSpace& space) {
+inline LayoutUnit FragmentainerCapacity(const BoxFragmentBuilder& builder) {
+  const ConstraintSpace& space = builder.GetConstraintSpace();
   if (!space.HasKnownFragmentainerBlockSize())
     return kIndefiniteSize;
   return ClampedToValidFragmentainerCapacity(space.FragmentainerBlockSize());
+}
+
+inline LayoutUnit FragmentainerSpaceLeft(const ConstraintSpace& space,
+                                         LayoutUnit fragmentainer_block_size) {
+  LayoutUnit available_space =
+      fragmentainer_block_size - space.FragmentainerOffset();
+  return available_space.ClampNegativeToZero();
 }
 
 // Return the block space that was available in the current fragmentainer at the
@@ -163,12 +171,11 @@ inline LayoutUnit FragmentainerCapacity(const ConstraintSpace& space) {
 // instead. If available space is negative, zero is returned. In the case of
 // initial column balancing, the size is unknown, in which case kIndefiniteSize
 // is returned.
-inline LayoutUnit FragmentainerSpaceLeft(const ConstraintSpace& space) {
+inline LayoutUnit FragmentainerSpaceLeft(const BoxFragmentBuilder& builder) {
+  const ConstraintSpace& space = builder.GetConstraintSpace();
   if (!space.HasKnownFragmentainerBlockSize())
     return kIndefiniteSize;
-  LayoutUnit available_space =
-      FragmentainerCapacity(space) - space.FragmentainerOffset();
-  return available_space.ClampNegativeToZero();
+  return FragmentainerSpaceLeft(space, FragmentainerCapacity(builder));
 }
 
 // Return the border edge block-offset from the block-start of the fragmentainer
@@ -184,9 +191,10 @@ inline LayoutUnit FragmentainerOffsetAtBfc(const ConstraintSpace& space) {
 // column balancing pass (when fragmentainer block-size is unknown), and without
 // any clamping of negative values.
 inline LayoutUnit UnclampedFragmentainerSpaceLeft(
-    const ConstraintSpace& space) {
+    const BoxFragmentBuilder& builder) {
+  const ConstraintSpace& space = builder.GetConstraintSpace();
   DCHECK(space.HasKnownFragmentainerBlockSize());
-  return FragmentainerCapacity(space) - space.FragmentainerOffset();
+  return FragmentainerCapacity(builder) - space.FragmentainerOffset();
 }
 
 // Adjust margins to take fragmentation into account. Leading/trailing block
@@ -502,10 +510,10 @@ ConstraintSpace CreateConstraintSpaceForMulticol(const BlockNode& multicol);
 // the block-offset where the margin should be applied (i.e. after the block-end
 // border edge of the last child fragment).
 inline LayoutUnit AdjustedMarginAfterFinalChildFragment(
-    const ConstraintSpace& space,
+    const BoxFragmentBuilder& builder,
     LayoutUnit block_offset,
     LayoutUnit block_end_margin) {
-  LayoutUnit space_left = FragmentainerSpaceLeft(space) - block_offset;
+  LayoutUnit space_left = FragmentainerSpaceLeft(builder) - block_offset;
   return std::min(block_end_margin, space_left.ClampNegativeToZero());
 }
 

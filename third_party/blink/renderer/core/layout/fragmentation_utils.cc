@@ -429,7 +429,7 @@ void SetupFragmentBuilderForFragmentation(
       // incorrectly seems to be enough to contain the remaining fragment when
       // subtracting previously consumed block-size from its max size.
       if (max_block_size != LayoutUnit::Max()) {
-        LayoutUnit space_left = FragmentainerSpaceLeft(space);
+        LayoutUnit space_left = FragmentainerSpaceLeft(*builder);
         LayoutUnit previously_consumed_block_size;
         if (previous_break_token) {
           previously_consumed_block_size =
@@ -479,7 +479,7 @@ BreakStatus FinishFragmentation(LayoutUnit trailing_border_padding,
                                 BoxFragmentBuilder* builder) {
   const BlockNode& node = builder->Node();
   const ConstraintSpace& space = builder->GetConstraintSpace();
-  LayoutUnit space_left = FragmentainerSpaceLeft(space);
+  LayoutUnit space_left = FragmentainerSpaceLeft(*builder);
   const BlockBreakToken* previous_break_token = builder->PreviousBreakToken();
   LayoutUnit previously_consumed_block_size;
   if (previous_break_token && !previous_break_token->IsBreakBefore())
@@ -625,7 +625,7 @@ BreakStatus FinishFragmentation(LayoutUnit trailing_border_padding,
     // fragmentainer as well. This only happens when printing monolithic
     // content.
     LayoutUnit remaining_overflow = previous_break_token->MonolithicOverflow() -
-                                    FragmentainerCapacity(space);
+                                    FragmentainerCapacity(*builder);
     if (remaining_overflow > LayoutUnit()) {
       builder->ReserveSpaceForMonolithicOverflow(remaining_overflow);
     }
@@ -750,7 +750,7 @@ BreakStatus FinishFragmentationForFragmentainer(BoxFragmentBuilder* builder) {
     // token. The fragment block-size itself will be based directly on the
     // fragmentainer size from the constraint space, though.
     LayoutUnit block_size = space.FragmentainerBlockSize();
-    LayoutUnit fragmentainer_capacity = FragmentainerCapacity(space);
+    LayoutUnit fragmentainer_capacity = FragmentainerCapacity(*builder);
     builder->SetFragmentBlockSize(block_size);
     consumed_block_size += fragmentainer_capacity;
     builder->SetConsumedBlockSize(consumed_block_size);
@@ -776,7 +776,7 @@ BreakStatus FinishFragmentationForFragmentainer(BoxFragmentBuilder* builder) {
       // Add pages as long as there's monolithic overflow that requires it.
       LayoutUnit remaining_overflow =
           previous_break_token->MonolithicOverflow() -
-          FragmentainerCapacity(space);
+          FragmentainerCapacity(*builder);
       if (remaining_overflow > LayoutUnit()) {
         builder->ReserveSpaceForMonolithicOverflow(remaining_overflow);
       }
