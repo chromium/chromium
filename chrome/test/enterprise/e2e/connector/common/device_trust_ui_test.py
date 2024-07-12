@@ -222,6 +222,7 @@ def main(argv):
           'Enterprise.DeviceTrust.Persistence.CreateKeyPair.Error',
           'Enterprise.DeviceTrust.RotateSigningKey.NoNonce.Status',
           'Enterprise.DeviceTrust.RotateSigningKey.NoNonce.UploadCode',
+          'Enterprise.DeviceTrust.RotateSigningKey.Tries',
           'Enterprise.DeviceTrust.ManagementService.Error',
           'Enterprise.DeviceTrust.Attestation.Result',
           'Enterprise.DeviceTrust.KeyRotationCommand.Error',

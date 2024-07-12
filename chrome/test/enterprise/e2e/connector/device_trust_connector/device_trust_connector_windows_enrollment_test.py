@@ -33,11 +33,11 @@ class DeviceTrustConnectorWindowsEnrollmentTest(ChromeEnterpriseTestCase):
 
   @before_all
   def setup(self):
+    self.EnableUITest(self.win_config['client'])
     self.InstallChrome(self.win_config['client'], system_level=True)
     self.InstallGoogleUpdater(self.win_config['client'])
     self.WakeGoogleUpdater(self.win_config['client'])
     self.AddFirewallExclusion(self.win_config['client'])
-    self.EnableUITest(self.win_config['client'])
 
   @test
   def test_device_trust_enrollment(self):
@@ -57,6 +57,23 @@ class DeviceTrustConnectorWindowsEnrollmentTest(ChromeEnterpriseTestCase):
     # Schedule to run device_trust_ui_test on GCP VM machines
     commonDir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     self.EnableHistogramSupport(self.win_config['client'], commonDir)
+
+    # Run the UI test once to ensure enrollment
+    self.RunUITest(
+        self.win_config['client'],
+        os.path.join(commonDir, 'common', 'device_trust_ui_test.py'),
+        timeout=600,
+        args=[
+            '--idp_matcher',
+            idp_matcher,
+            '--alsologtostderr',
+        ])
+
+    # Trigger Google Updater via Task Scheduler
+    self.RunGoogleUpdaterTaskSchedulerCommand(self.win_config['client'],
+                                              'Start-ScheduledTask')
+    self.WaitForUpdateCheck(self.win_config['client'])
+
     output = self.RunUITest(
         self.win_config['client'],
         os.path.join(commonDir, 'common', 'device_trust_ui_test.py'),
