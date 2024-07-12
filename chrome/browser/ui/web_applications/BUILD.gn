@@ -37,6 +37,7 @@ source_set("browser_tests") {
 
   sources = [
     "app_browser_controller_browsertest.cc",
+    "app_browser_document_picture_in_picture_browsertest.cc",
     "create_shortcut_browsertest.cc",
     "pwa_mixed_content_browsertest.cc",
     "status_bar_browsertest.cc",
