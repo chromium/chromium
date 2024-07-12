@@ -7,9 +7,9 @@ import {BrowserProxy} from '//resources/cr_components/color_change_listener/brow
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {ReadAnythingElement, WordBoundaryState} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {PauseActionSource, ToolbarEvent, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {createSpeechSynthesisVoice, emitEvent, suppressInnocuousErrors, waitForPlayFromSelection} from './common.js';
+import {createSpeechSynthesisVoice, emitEvent, suppressInnocuousErrors} from './common.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
 suite('WordBoundariesUsedForSpeech', () => {
@@ -151,15 +151,6 @@ suite('WordBoundariesUsedForSpeech', () => {
       assertEquals(1, state.previouslySpokenIndex);
       assertEquals(20, state.speechUtteranceStartIndex);
     });
-
-    test('sentence highlight used with fast rate', () => {
-      chrome.readingMode.onSpeechRateChange(2);
-      app.playSpeech();
-      const currentHighlight =
-          app.$.container.querySelector('.current-read-highlight');
-      assertTrue(currentHighlight !== undefined);
-      assertEquals('This is a link.', currentHighlight!.textContent);
-    });
   });
 
   test(
@@ -176,41 +167,4 @@ suite('WordBoundariesUsedForSpeech', () => {
         assertEquals(40, state.previouslySpokenIndex);
         assertEquals(0, state.speechUtteranceStartIndex);
       });
-
-  test('on speaking from selection, word boundary state reset', async () => {
-    const anchorId = 2;
-    const focusId = 3;
-    const anchorOffset = 0;
-    const focusOffset = 1;
-    app.playSpeech();
-    app.updateBoundary(4);
-    app.stopSpeech(PauseActionSource.BUTTON_CLICK);
-
-    // Update the selection directly on the document.
-    const spans = app.$.container.querySelectorAll('span');
-    const anchor = spans[anchorId];
-    const focus = spans[focusId];
-    const range = document.createRange();
-    range.setStart(anchor!, anchorOffset);
-    range.setEnd(focus!, focusOffset);
-    const selection = document.getSelection();
-    selection?.removeAllRanges();
-    selection?.addRange(range);
-
-    // Play from selection.
-    app.playSpeech();
-    await waitForPlayFromSelection();
-
-    const currentHighlight =
-        app.$.container.querySelector('.current-read-highlight');
-
-    // Verify that we're highlighting from the selected point.
-    assertTrue(!!currentHighlight);
-    assertTrue(!!currentHighlight.textContent);
-    assertStringContains(currentHighlight.textContent, 'This ');
-
-    // Verify that the word boundary state has been reset.
-    const state: WordBoundaryState = app.wordBoundaryState;
-    assertEquals(WordBoundaryMode.NO_BOUNDARIES, state.mode);
-  });
 });

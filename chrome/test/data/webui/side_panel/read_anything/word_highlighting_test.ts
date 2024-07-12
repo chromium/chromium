@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, PauseActionSource, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {setSimpleAxTreeWithText, suppressInnocuousErrors} from './common.js';
+import {setSimpleAxTreeWithText, suppressInnocuousErrors, waitForPlayFromSelection} from './common.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
 suite('WordHighlighting', () => {
@@ -146,5 +146,42 @@ suite('WordHighlighting', () => {
           app.$.container.querySelector('.current-read-highlight');
       assertFalse(!!currentHighlight);
     }
+  });
+
+  test('on speaking from selection, word boundary state reset', async () => {
+    const anchorIndex = 2;
+    const focusIndex = 3;
+    const anchorOffset = 0;
+    const focusOffset = 1;
+    app.playSpeech();
+    app.updateBoundary(4);
+    app.stopSpeech(PauseActionSource.BUTTON_CLICK);
+
+    // Update the selection directly on the document.
+    const spans = app.$.container.querySelectorAll('span');
+    assertTrue(spans.length > 3);
+    const anchor = spans[anchorIndex]!;
+    const focus = spans[focusIndex]!;
+    const range = document.createRange();
+    range.setStart(anchor, anchorOffset);
+    range.setEnd(focus, focusOffset);
+    const selection = document.getSelection();
+    assertTrue(!!selection);
+    selection.addRange(range);
+
+    // Play from selection.
+    app.playSpeech();
+    await waitForPlayFromSelection();
+
+    const currentHighlight =
+        app.$.container.querySelector('.current-read-highlight');
+
+    // Verify that we're highlighting from the selected point.
+    assertTrue(!!currentHighlight);
+    assertTrue(!!currentHighlight.textContent);
+    assertEquals('This ', currentHighlight.textContent);
+
+    // Verify that the word boundary state has been reset.
+    assertEquals(WordBoundaryMode.NO_BOUNDARIES, app.wordBoundaryState.mode);
   });
 });

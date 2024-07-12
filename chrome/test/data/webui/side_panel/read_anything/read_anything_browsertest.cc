@@ -226,9 +226,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest, ReadAloudHighlight) {
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest,
                        WordBoundariesUsedForSpeech) {
-  RunSidePanelTest(
-      "side_panel/read_anything/word_boundaries_used_for_speech_test.js",
-      "mocha.run()");
+  RunSidePanelTest("side_panel/read_anything/word_boundaries_test.js",
+                   "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest, Speech) {
@@ -267,4 +266,28 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudWordHighlightingMochaTest,
                        WordHighlighting) {
   RunSidePanelTest("side_panel/read_anything/word_highlighting_test.js",
                    "mocha.run()");
+}
+
+// TODO(b/301131238): Remove this test once the word highlighting flag is
+// removed.
+// Integration tests that need the actual Read Aloud flag enabled and the word
+// highlighting flag because they use the full C++ pipeline
+class ReadAnythingReadAloudWordHighlightingDisabledMochaTest
+    : public ReadAnythingMochaBrowserTest {
+ protected:
+  ReadAnythingReadAloudWordHighlightingDisabledMochaTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnythingReadAloud},
+        {features::kReadAnythingReadAloudAutomaticWordHighlighting});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudWordHighlightingDisabledMochaTest,
+                       WordHighlighting) {
+  RunSidePanelTest(
+      "side_panel/read_anything/word_highlighting_disabled_test.js",
+      "mocha.run()");
 }
