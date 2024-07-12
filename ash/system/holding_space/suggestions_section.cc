@@ -31,6 +31,7 @@
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
@@ -103,21 +104,11 @@ class Header : public views::Button {
   }
 
  private:
-  // views::Button:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    views::Button::GetAccessibleNodeData(node_data);
-
-    // Add expanded/collapsed state to `node_data`.
-    auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
-    node_data->AddState(holding_space_prefs::IsSuggestionsExpanded(prefs)
-                            ? ax::mojom::State::kExpanded
-                            : ax::mojom::State::kCollapsed);
-  }
-
   void OnPressed() {
     auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
     bool expanded = holding_space_prefs::IsSuggestionsExpanded(prefs);
     holding_space_prefs::SetSuggestionsExpanded(prefs, !expanded);
+    UpdateExpandedCollapsedAccessibleState(!expanded);
 
     holding_space_metrics::RecordSuggestionsAction(
         expanded ? holding_space_metrics::SuggestionsAction::kCollapse
@@ -127,15 +118,20 @@ class Header : public views::Button {
   void UpdateState() {
     // Chevron.
     auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
+    bool expanded = holding_space_prefs::IsSuggestionsExpanded(prefs);
     chevron_->SetImage(ui::ImageModel::FromVectorIcon(
-        holding_space_prefs::IsSuggestionsExpanded(prefs)
-            ? kChevronUpSmallIcon
-            : kChevronDownSmallIcon,
+        expanded ? kChevronUpSmallIcon : kChevronDownSmallIcon,
         kColorAshIconColorSecondary, kHoldingSpaceSectionChevronIconSize));
 
-    // Accessibility.
-    NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged,
-                             /*send_native_event=*/true);
+    UpdateExpandedCollapsedAccessibleState(expanded);
+  }
+
+  void UpdateExpandedCollapsedAccessibleState(bool expanded) const {
+    if (expanded) {
+      GetViewAccessibility().SetIsExpanded();
+    } else {
+      GetViewAccessibility().SetIsCollapsed();
+    }
   }
 
   // Owned by view hierarchy.

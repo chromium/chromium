@@ -71,6 +71,7 @@
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/skia_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/menu/menu_controller.h"
@@ -542,9 +543,14 @@ class HoldingSpaceTrayTest : public HoldingSpaceTrayTestBase {
     // The section header's accessibility data should indicate whether the
     // section is expanded or collapsed.
     ui::AXNodeData node_data;
-    header->GetAccessibleNodeData(&node_data);
-    EXPECT_TRUE(node_data.HasState(expanded ? ax::mojom::State::kExpanded
-                                            : ax::mojom::State::kCollapsed));
+    header->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    if (expanded) {
+      EXPECT_TRUE(node_data.HasState(ax::mojom::State::kExpanded));
+      EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
+    } else {
+      EXPECT_TRUE(node_data.HasState(ax::mojom::State::kCollapsed));
+      EXPECT_FALSE(node_data.HasState(ax::mojom::State::kExpanded));
+    }
 
     // The section header's chevron icon should indicate whether the section is
     // expanded or collapsed.
