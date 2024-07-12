@@ -560,4 +560,31 @@ suite('SeaPenTemplateQueryElementTest', function() {
     assertTrue(
         getSearchButtons().every(isVisible), 'buttons are visible again');
   });
+
+  test('hides Freeform navigation info if text input is disabled', async () => {
+    seaPenTemplateQueryElement = initElement(
+        SeaPenTemplateQueryElement,
+        {templateId: SeaPenTemplateId.kFlower.toString()});
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    assertFalse(
+        !!seaPenTemplateQueryElement.shadowRoot!.querySelector<HTMLElement>(
+            '#freeformInfo'),
+        'freeform navigation info is not shown');
+  });
+
+  test(
+      'displays Freeform navigation info if text input is enabled',
+      async () => {
+        loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
+        seaPenTemplateQueryElement = initElement(
+            SeaPenTemplateQueryElement,
+            {templateId: SeaPenTemplateId.kFlower.toString()});
+        await waitAfterNextRender(seaPenTemplateQueryElement);
+
+        assertTrue(
+            !!seaPenTemplateQueryElement.shadowRoot!.querySelector<HTMLElement>(
+                '#freeformInfo'),
+            'freeform navigation info displays');
+      });
 });

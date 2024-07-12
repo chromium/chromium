@@ -59,6 +59,8 @@ void AddSeaPenStrings(content::WebUIDataSource* source) {
       {"seaPenIntroductionContent", IDS_SEA_PEN_INTRODUCTION_DIALOG_CONTENT},
       {"seaPenIntroductionDialogCloseButton",
        IDS_SEA_PEN_INTRODUCTION_DIALOG_CLOSE_BUTTON},
+      {"seaPenFreeformNavigationDescription",
+       IDS_SEA_PEN_FREEFORM_NAVIGATION_DESCRIPTION},
 
       {"seaPenDismissError", IDS_PERSONALIZATION_APP_DISMISS},
       {"ariaLabelLoading", IDS_PERSONALIZATION_APP_ARIA_LABEL_LOADING},

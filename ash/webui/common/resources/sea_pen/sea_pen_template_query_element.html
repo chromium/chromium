@@ -85,6 +85,15 @@
     font: var(--cros-button-2-font);
     padding: 8px 32px 8px 16px;
   }
+
+  #freeformInfo {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    padding-bottom: 24px;
+    white-space: pre;
+  }
+
 </style>
 <div id="container" class="main">
   <template is="dom-if" if="[[seaPenUseExptTemplateEnabled_]]">
@@ -166,4 +175,9 @@
       </cr-button>
     </template>
   </div>
+  <template is="dom-if" if="[[shouldShowFreeformNavigationInfo_()]]">
+    <div id="freeformInfo"
+        inner-h-t-m-l="[[i18nAdvanced('seaPenFreeformNavigationDescription')]]">
+    </div>
+  </template>
 </div>
