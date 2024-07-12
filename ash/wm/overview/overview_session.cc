@@ -1704,6 +1704,11 @@ void OverviewSession::OnSnapGroupRemoving(SnapGroup* snap_group,
   aura::Window* window2 = snap_group->window2();
 
   OverviewItemBase* overview_group_item = GetOverviewItemForWindow(window1);
+  if (!overview_group_item) {
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+
   overview_grid->RemoveItem(overview_group_item, /*item_destroying=*/false,
                             /*reposition=*/false);
 
