@@ -4741,23 +4741,42 @@ of interesting buckets, such as "internal + external".
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
-    The success (true) or failure (false) of attempting to unregister the worker
-    for the extension. It is only emitted for extensions that have service
-    worker backgrounds or when a worker has been registered for the extension
-    via the web API (MV2).
+    The success (true) or failure (false) of attempting to unregister a worker
+    for an extension.
 
-    This can be emitted at two times when the worker is being unregistered: 1)
-    due to an update requiring the old worker to be unregistered or 2) due to
-    the extension being deactivated (due to disable, uninstall, or terminate)
+    This is emitted for two scenarios when a worker may be unregistered:
+
+    1. due to an extension update to potentially unregister the old worker or
+
+    2. due to the extension being deactivated (due to disable, uninstall, or
+    terminate)
+
+    #1 and #2 can both occur for an extension update.
+
+    #2 can occur independently outside of an extension update.
 
     {UnregistrationType}
   </summary>
   <token key="UnregistrationType">
     <variant name=""
         summary="This metric is emitted in the #1 (update) and #2 (deactivate
-                 extension) scenarios."/>
+                 extension) scenarios. Note: in the scenario of an extension
+                 update that has a worker (either as a background context or
+                 registered via the Web API) to a worker-based extension this
+                 metric may be double counted as true. This is because two
+                 unregistrations requests are submitted and both will
+                 succeed. This metric can also emit false expectedly when
+                 updating from an MV2 extension with no workers registered."/>
     <variant name="_AddExtension"
-        summary="This metric is only emitted in the #1 (update) scenario."/>
+        summary="This metric is only emitted in the #1 (update) scenario.
+                 Note: This metric can expectedly emit false when updating
+                 from an MV2 extension with no workers registered (either as
+                 a background context, or registered via the web API). This
+                 is because //extensions attempts to unregister a worker
+                 regardless to ensure that those registered via the web API
+                 (which //extensions doesn't track) are unregistered on
+                 update to prepare for the updated version's worker to be
+                 registered."/>
     <variant name="_DeactivateExtension"
         summary="This metric is only emitted in the #2 (deactivate extension)
                  scenario."/>
