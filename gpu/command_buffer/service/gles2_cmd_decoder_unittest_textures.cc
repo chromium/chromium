@@ -2921,10 +2921,10 @@ TEST_P(GLES2DecoderTest, CreateAndTexStorage2DSharedImageCHROMIUM) {
       GetSharedImageManager()->Register(
           std::make_unique<TestImageBacking>(
               mailbox, format, gfx::Size(10, 10), gfx::ColorSpace(),
-              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, 0,
+              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
               SharedImageUsageSet({SHARED_IMAGE_USAGE_GLES2_READ,
                                    SHARED_IMAGE_USAGE_GLES2_WRITE}),
-              kNewServiceId),
+              /*estimated_size=*/0, kNewServiceId),
           &memory_tracker);
 
   auto& cmd = *GetImmediateAs<
@@ -3075,8 +3075,9 @@ TEST_P(GLES2DecoderTest, BeginSharedImageAccessDirectCHROMIUMCantBeginAccess) {
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   auto shared_image_backing = std::make_unique<TestImageBacking>(
       mailbox, format, gfx::Size(10, 10), gfx::ColorSpace(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, 0,
-      SharedImageUsageSet({SHARED_IMAGE_USAGE_GLES2_READ}), kNewServiceId);
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+      SharedImageUsageSet({SHARED_IMAGE_USAGE_GLES2_READ}),
+      /*estimated_size=*/0, kNewServiceId);
   // Set the shared image to fail BeginAccess.
   shared_image_backing->set_can_access(false);
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
