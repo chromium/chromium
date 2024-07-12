@@ -21,6 +21,8 @@ build_webui("build") {
     "pages/battery_chart.ts",
     "pages/telemetry.ts",
     "pages/thermal_chart.ts",
+    "settings/config_slider.ts",
+    "settings/settings_dialog.ts",
   ]
 
   non_web_component_files = [

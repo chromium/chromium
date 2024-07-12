@@ -20,7 +20,16 @@
   #main {
     flex: 1;
   }
+
+  #settingsButtonContainer {
+    display: flex;
+    justify-content: center;
+  }
 </style>
+
+<healthd-internals-settings-dialog id="settingsDialog">
+</healthd-internals-settings-dialog>
+
 <div id="sidebar">
   <h1>Healthd Internals</h1>
   <cr-menu-selector id="selector"
@@ -33,6 +42,9 @@
       </a>
     </template>
   </cr-menu-selector>
+  <div id="settingsButtonContainer">
+    <cr-button on-click="openSettingsDialog">Settings</cr-button>
+  </div>
 </div>
 
 <iron-location path="{{currentPath}}"></iron-location>

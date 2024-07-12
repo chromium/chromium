@@ -3,14 +3,17 @@
 // found in the LICENSE file.
 
 
+import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 import '//resources/ash/common/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import '//resources/ash/common/cr_elements/cr_nav_menu_item_style.css.js';
+import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
 import '//resources/polymer/v3_0/iron-location/iron-location.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './healthd_internals_shared.css.js';
 import './pages/telemetry.js';
 import './pages/battery_chart.js';
 import './pages/thermal_chart.js';
+import './settings/settings_dialog.js';
 
 import {sendWithPromise} from '//resources/js/cr.js';
 import {CrRouter} from '//resources/js/cr_router.js';
@@ -21,6 +24,7 @@ import {PagePath, UPDATE_PERIOD} from './constants.js';
 import {HealthdApiTelemetryResult} from './externs.js';
 import type {HealthdInternalsBatteryChartElement} from './pages/battery_chart.js';
 import type {HealthdInternalsThermalChartElement} from './pages/thermal_chart.js';
+import type {HealthdInternalsSettingsDialogElement} from './settings/settings_dialog.js';
 
 // Interface of pages in chrome://healthd-internals.
 interface Page {
@@ -32,6 +36,7 @@ export interface HealthdInternalsAppElement {
   $: {
     batteryChart: HealthdInternalsBatteryChartElement,
     thermalChart: HealthdInternalsThermalChartElement,
+    settingsDialog: HealthdInternalsSettingsDialogElement,
   };
 }
 
@@ -125,6 +130,10 @@ export class HealthdInternalsAppElement extends PolymerElement {
     const timestamp: number = Date.now();
     this.$.batteryChart.updateBatteryData(data.battery, timestamp);
     this.$.thermalChart.updateThermalData(data.thermals, timestamp);
+  }
+
+  private openSettingsDialog() {
+    this.$.settingsDialog.openSettingsDialog();
   }
 }
 
