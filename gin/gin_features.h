@@ -49,6 +49,8 @@ GIN_EXPORT BASE_DECLARE_FEATURE(kV8Maglev);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8ConcurrentMaglevHighPriorityThreads);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8MemoryReducer);
 GIN_EXPORT extern const base::FeatureParam<int> kV8MemoryReducerGCCount;
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8ScavengerHigherCapacity);
+GIN_EXPORT extern const base::FeatureParam<int> kV8ScavengerMaxCapacity;
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8MinorMS);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8MegaDomIC);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8NoReclaimUnmodifiedWrappers);

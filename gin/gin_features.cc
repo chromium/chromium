@@ -124,6 +124,13 @@ const base::FeatureParam<int> kV8MemoryReducerGCCount{
 // Enables MinorMC young generation garbage collector.
 BASE_FEATURE(kV8MinorMS, ("V8MinorMS"), kFeatureDefaultStateControlledByV8);
 
+BASE_FEATURE(kV8ScavengerHigherCapacity,
+             "V8ScavengerHigherCapacity",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kV8ScavengerMaxCapacity{
+    &kV8ScavengerHigherCapacity, "V8ScavengerMaxCapacity", 16};
+
 // Enables Sparkplug compiler. Note that this only sets the V8 flag when
 // manually overridden; otherwise it defers to whatever the V8 default is.
 BASE_FEATURE(kV8Sparkplug, ("V8Sparkplug"), kFeatureDefaultStateControlledByV8);

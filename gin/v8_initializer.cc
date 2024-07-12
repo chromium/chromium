@@ -290,6 +290,10 @@ void SetFlags(IsolateHolder::ScriptMode mode,
                          "--cppheap-optimize-sweep-for-mutator",
                          "--no-cppheap-optimize-sweep-for-mutator");
   SetV8FlagsIfOverridden(features::kV8MinorMS, "--minor-ms", "--no-minor-ms");
+  if (base::FeatureList::IsEnabled(features::kV8ScavengerHigherCapacity)) {
+    SetV8FlagsFormatted("--scavenger-max-new-space-capacity-mb=%i",
+                        features::kV8ScavengerMaxCapacity.Get());
+  }
   SetV8FlagsIfOverridden(features::kV8Sparkplug, "--sparkplug",
                          "--no-sparkplug");
   SetV8FlagsIfOverridden(features::kV8Turbofan, "--turbofan", "--no-turbofan");
