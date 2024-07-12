@@ -95,14 +95,13 @@ enum ScrollButtonPositionType {
 }  // namespace
 
 TabStripScrollContainer::TabStripScrollContainer(
-    std::unique_ptr<TabStrip> tab_strip)
-    : tab_strip_(tab_strip.get()) {
+    std::unique_ptr<TabStrip> tab_strip) {
   SetLayoutManager(std::make_unique<views::FillLayout>())
       ->SetMinimumSizeEnabled(true);
 
   // TODO(crbug.com/40721975): ScrollView doesn't propagate changes to
   // the TabStrip's preferred size; observe that manually.
-  tab_strip->View::AddObserver(this);
+  tab_strip_observation_.Observe(tab_strip.get());
   tab_strip->SetAvailableWidthCallback(
       base::BindRepeating(&TabStripScrollContainer::GetTabStripAvailableWidth,
                           base::Unretained(this)));
@@ -119,16 +118,17 @@ TabStripScrollContainer::TabStripScrollContainer(
 
   overflow_indicator_strategy_ =
       TabStripScrollingOverflowIndicatorStrategy::CreateFromFeatureFlag(
-          scroll_view_, base::BindRepeating(&GetCurrentFrameColor, tab_strip_),
-          base::BindRepeating(&GetShadowColor, tab_strip_));
+          scroll_view_,
+          base::BindRepeating(&GetCurrentFrameColor, this->tab_strip()),
+          base::BindRepeating(&GetShadowColor, this->tab_strip()));
   overflow_indicator_strategy_->Init();
   // This base::Unretained is safe because the callback is called by the
   // layout manager, which is cleaned up before view children like
-  // |scroll_view| (which owns |tab_strip_|).
+  // |scroll_view| (which owns |tab_strip|).
   scroll_view->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(base::BindRepeating(
-          &TabScrollContainerFlexRule, base::Unretained(tab_strip_))));
+          &TabScrollContainerFlexRule, base::Unretained(this->tab_strip()))));
 
   on_contents_scrolled_subscription_ = scroll_view->AddContentsScrolledCallback(
       base::BindRepeating(&TabStripScrollContainer::OnContentsScrolledCallback,
@@ -202,13 +202,13 @@ TabStripScrollContainer::TabStripScrollContainer(
 TabStripScrollContainer::~TabStripScrollContainer() = default;
 
 void TabStripScrollContainer::OnViewPreferredSizeChanged(views::View* view) {
-  DCHECK_EQ(tab_strip_, view);
+  DCHECK_EQ(tab_strip(), view);
 
   PreferredSizeChanged();
 }
 
 void TabStripScrollContainer::OnContentsScrolledCallback() {
-  views::Widget* root_widget = tab_strip_->GetWidget();
+  views::Widget* root_widget = tab_strip()->GetWidget();
   std::set<raw_ptr<views::Widget, SetExperimental>> children_widgets;
   views::Widget::GetAllOwnedWidgets(root_widget->GetNativeView(),
                                     &children_widgets);
@@ -234,17 +234,17 @@ int TabStripScrollContainer::GetTabStripAvailableWidth() const {
 
 void TabStripScrollContainer::ScrollTowardsLeadingTab() {
   gfx::Rect visible_content = scroll_view_->GetVisibleRect();
-  tab_strip_->ScrollTowardsLeadingTabs(visible_content.width());
+  tab_strip()->ScrollTowardsLeadingTabs(visible_content.width());
 }
 
 void TabStripScrollContainer::ScrollTowardsTrailingTab() {
   gfx::Rect visible_content = scroll_view_->GetVisibleRect();
-  tab_strip_->ScrollTowardsTrailingTabs(visible_content.width());
+  tab_strip()->ScrollTowardsTrailingTabs(visible_content.width());
 }
 
 void TabStripScrollContainer::FrameColorsChanged() {
   SkColor foreground_enabled_color =
-      tab_strip_->GetTabForegroundColor(TabActive::kInactive);
+      tab_strip()->GetTabForegroundColor(TabActive::kInactive);
   // TODO(crbug.com/40879445): Get a disabled color that is lighter
   // and changes with the frame background color
   SkColor foreground_disabled_color =
@@ -309,7 +309,7 @@ bool TabStripScrollContainer::IsRectInWindowCaption(const gfx::Rect& rect) {
 
   if (scroll_view_->GetLocalBounds().Intersects(
           get_target_rect(scroll_view_))) {
-    return tab_strip_->IsRectInWindowCaption(get_target_rect(tab_strip_));
+    return tab_strip()->IsRectInWindowCaption(get_target_rect(tab_strip()));
   }
 
   return true;

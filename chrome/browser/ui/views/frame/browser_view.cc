@@ -1042,16 +1042,6 @@ BrowserView::~BrowserView() {
     global_registry->set_registry_for_active_window(nullptr);
   }
 
-  // The TabStrip attaches a listener to the model. Make sure we shut down the
-  // TabStrip first so that it can cleanly remove the listener.
-  //
-  // TODO(crbug.com/40280409): Is this actually necessary? It should be
-  // perfectly safe to destroy the TabStrip before the TabStripModel?
-  if (tabstrip_) {
-    auto tabstrip = tabstrip_.ExtractAsDangling();
-    tabstrip->parent()->RemoveChildViewT(tabstrip);
-  }
-
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
   // `watermark_view_` is a raw pointer to a child view, so it needs to be set
   // to null before `RemoveAllChildViews()` is called to avoid dangling.
