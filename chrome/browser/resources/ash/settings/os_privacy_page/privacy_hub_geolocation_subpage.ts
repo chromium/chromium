@@ -9,6 +9,7 @@
  */
 
 import './privacy_hub_app_permission_row.js';
+import 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button_style.css.js';
 import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
@@ -23,7 +24,8 @@ import {assertExhaustive, castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {isSecondaryUser} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
-import {DropdownMenuOptionList, SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
+import {SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
+import {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
 import {App, AppPermissionsHandlerInterface, AppPermissionsObserverReceiver} from '../mojom-webui/app_permission_handler.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {Route, Router, routes} from '../router.js';
@@ -79,33 +81,17 @@ export class SettingsPrivacyHubGeolocationSubpage extends
 
   static get properties() {
     return {
-      geolocationMapTargets_: {
+      geolocationAccessLevelPrefValues_: {
+        readOnly: true,
         type: Object,
-        value(this: SettingsPrivacyHubGeolocationSubpage) {
-          return [
-            {
-              value: GeolocationAccessLevel.ALLOWED,
-              name: this.i18n('geolocationAccessLevelAllowed'),
-            },
-            {
-              value: GeolocationAccessLevel.ONLY_ALLOWED_FOR_SYSTEM,
-              name: this.i18n('geolocationAccessLevelOnlyAllowedForSystem'),
-            },
-            {
-              value: GeolocationAccessLevel.DISALLOWED,
-              name: this.i18n('geolocationAccessLevelDisallowed'),
-            },
-          ];
+        value: {
+          DISALLOWED: GeolocationAccessLevel.DISALLOWED,
+          ALLOWED: GeolocationAccessLevel.ALLOWED,
+          ONLY_ALLOWED_FOR_SYSTEM:
+              GeolocationAccessLevel.ONLY_ALLOWED_FOR_SYSTEM,
         },
       },
-      /**
-       * Show the right description text for the selected geolocation mode.
-       */
-      geolocationModeDescriptionText_: {
-        type: TrustedHTML,
-        computed: 'computeGeolocationModeDescriptionText_(' +
-            'prefs.ash.user.geolocation_access_level.value)',
-      },
+
       /**
        * Apps with location permission defined.
        */
@@ -182,7 +168,8 @@ export class SettingsPrivacyHubGeolocationSubpage extends
     Setting.kGeolocationAdvanced,
   ]);
 
-  private geolocationMapTargets_: DropdownMenuOptionList;
+  private geolocationAccessLevel_: string;
+  private geolocationAccessLevelPrefValues_: {[key: string]: number};
   private geolocationModeDescriptionText_: string;
   private appList_: App[];
   private appPermissionsObserverReceiver_: AppPermissionsObserverReceiver|null;
@@ -193,6 +180,7 @@ export class SettingsPrivacyHubGeolocationSubpage extends
   private currentTimeZoneName_: string;
   private currentSunRiseTime_: string;
   private currentSunSetTime_: string;
+  private shouldShowManageGeolocationDialog_: boolean;
 
   constructor() {
     super();
@@ -223,6 +211,32 @@ export class SettingsPrivacyHubGeolocationSubpage extends
   override disconnectedCallback(): void {
     super.disconnectedCallback();
     this.appPermissionsObserverReceiver_!.$.close();
+  }
+
+  private showManageGeolocationDialog_(): void {
+    this.shouldShowManageGeolocationDialog_ = true;
+  }
+
+  private onCancelClicked_(): void {
+    const radioGroup: SettingsRadioGroupElement =
+        this.shadowRoot!.querySelector<SettingsRadioGroupElement>(
+            '#manageGeolocationRadioGroup')!;
+    radioGroup.resetToPrefValue();
+    this.shouldShowManageGeolocationDialog_ = false;
+  }
+
+  private onConfirmClicked_(): void {
+    // Reflect user choice to the underlying pref.
+    const radioGroup: SettingsRadioGroupElement =
+        this.shadowRoot!.querySelector<SettingsRadioGroupElement>(
+            '#manageGeolocationRadioGroup')!;
+    radioGroup.sendPrefChange();
+
+    // Record metrics.
+    this.recordMetric_();
+
+    // Dismiss the dialog.
+    this.shouldShowManageGeolocationDialog_ = false;
   }
 
   private settingControlledByPrimaryUserText_(): string {
@@ -334,7 +348,24 @@ export class SettingsPrivacyHubGeolocationSubpage extends
         PermissionType.kLocation);
   }
 
-  private computeGeolocationModeDescriptionText_(): TrustedHTML {
+  private computeGeolocationAccessLevelText_(): TrustedHTML {
+    const accessLevel: GeolocationAccessLevel =
+        this.getPref<GeolocationAccessLevel>(
+                'ash.user.geolocation_access_level')
+            .value;
+    switch (accessLevel) {
+      case GeolocationAccessLevel.ALLOWED:
+        return this.i18nAdvanced('geolocationAccessLevelAllowed');
+      case GeolocationAccessLevel.ONLY_ALLOWED_FOR_SYSTEM:
+        return this.i18nAdvanced('geolocationAccessLevelOnlyAllowedForSystem');
+      case GeolocationAccessLevel.DISALLOWED:
+        return this.i18nAdvanced('geolocationAccessLevelDisallowed');
+      default:
+        assertExhaustive(accessLevel);
+    }
+  }
+
+  private computeGeolocationAccessLevelDescriptionText_(): TrustedHTML {
     const accessLevel: GeolocationAccessLevel =
         this.getPref<GeolocationAccessLevel>(
                 'ash.user.geolocation_access_level')
@@ -353,7 +384,10 @@ export class SettingsPrivacyHubGeolocationSubpage extends
   }
 
   private recordMetric_(): void {
-    const accessLevel = this.$.geolocationDropdown.pref!.value;
+    const accessLevel: GeolocationAccessLevel =
+        this.getPref<GeolocationAccessLevel>(
+                'ash.user.geolocation_access_level')
+            .value;
 
     chrome.metricsPrivate.recordEnumerationValue(
         LOCATION_PERMISSION_CHANGE_FROM_SETTINGS_HISTOGRAM_NAME, accessLevel,
