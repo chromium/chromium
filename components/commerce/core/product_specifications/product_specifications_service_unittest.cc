@@ -681,4 +681,39 @@ TEST_F(ProductSpecificationsServiceTest, TestDeleteProductSpecsMultiSpecifics) {
   CheckProductSpecificationsAbsent({sets[1]});
 }
 
+TEST_F(ProductSpecificationsServiceTest, TestSetUrlsMultiSpecifics) {
+  EnableMultiSpecFlag();
+
+  std::vector<ProductSpecificationsSet> sets;
+  for (int i = 0; i <= 2; i++) {
+    sets.push_back(
+        service()
+            ->AddProductSpecificationsSet(
+                base::StringPrintf("Set %d", i),
+                {GURL("https://a.example.com"), GURL("https://b.example.com")})
+            .value());
+  }
+  base::RunLoop().RunUntilIdle();
+  CheckProductSpecificationsExists(sets);
+
+  std::vector<GURL> new_urls{GURL("https://x.example.com"),
+                             GURL("https://y.example.com"),
+                             GURL("https://z.example.com")};
+
+  const base::Uuid& uuid_to_modify = sets[1].uuid();
+  service()->SetUrls(uuid_to_modify, new_urls);
+  base::RunLoop().RunUntilIdle();
+
+  std::vector<ProductSpecificationsSet> all_sets =
+      service()->GetAllProductSpecifications();
+  const ProductSpecificationsSet* modified_set = nullptr;
+  for (const ProductSpecificationsSet& set : all_sets) {
+    if (set.uuid() == uuid_to_modify) {
+      modified_set = &set;
+    }
+  }
+  EXPECT_NE(nullptr, modified_set) << "Couldn't find modified set";
+  EXPECT_EQ(new_urls, modified_set->urls());
+}
+
 }  // namespace commerce
