@@ -24,6 +24,7 @@
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/window_restore/informed_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/containers/unique_ptr_adapters.h"
@@ -59,18 +60,27 @@ constexpr base::TimeDelta kOcclusionPauseDurationForEnd =
 
 constexpr base::TimeDelta kEnterExitPresentationMaxLatency = base::Seconds(2);
 
-// Returns the enter/exit type that should be used if kNormal enter/exit type
-// was originally requested - if the overview is expected to transition to/from
-// the home screen, the normal enter/exit mode is expected to be overridden by
-// either slide, or fade to home modes.
-// |enter| - Whether |original_type| is used for entering overview.
-// |windows| - The list of windows that are displayed in the overview UI.
-OverviewEnterExitType MaybeOverrideEnterExitTypeForHomeScreen(
+// Returns the enter/exit type that should be used if `kNormal` enter/exit type
+// was originally requested. Used in two cases:
+// 1) If the overview is expected to transition to/from the home screen, the
+// normal enter/exit mode is expected to be overridden by either slide, or fade
+// to home modes.
+// 2) If overview is an informed restore session, the normal enter/exit mode is
+// to overridden by `kInformedRestore`. `enter` - Whether `original_type` is
+// used for entering overview. `windows` - The list of windows that are
+// displayed in the overview UI.
+OverviewEnterExitType MaybeOverrideEnterExitType(
     OverviewEnterExitType original_type,
     bool enter,
     const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows) {
-  if (original_type != OverviewEnterExitType::kNormal)
+  if (original_type != OverviewEnterExitType::kNormal) {
     return original_type;
+  }
+
+  if (features::IsForestFeatureEnabled() &&
+      !!Shell::Get()->informed_restore_controller()->contents_data()) {
+    return OverviewEnterExitType::kInformedRestore;
+  }
 
   // Use normal type if home launcher is not available.
   if (!display::Screen::GetScreen()->InTabletMode()) {
@@ -407,9 +417,10 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     exit_pauser_ = PauseOcclusionTracker(occlusion_pause_duration_for_end_);
 
     // We may want to slide out the overview grid in some cases, even if not
-    // explicitly stated.
+    // explicitly stated. We may also want to enter a informed restore session
+    // in some cases, even if not explicitly stated.
     OverviewEnterExitType new_type =
-        MaybeOverrideEnterExitTypeForHomeScreen(type, /*enter=*/false, windows);
+        MaybeOverrideEnterExitType(type, /*enter=*/false, windows);
     overview_session_->set_enter_exit_overview_type(new_type);
 
     overview_session_->set_is_shutting_down(true);
@@ -534,7 +545,7 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     // We may want to slide in the overview grid in some cases, even if not
     // explicitly stated.
     OverviewEnterExitType new_type =
-        MaybeOverrideEnterExitTypeForHomeScreen(type, /*enter=*/true, windows);
+        MaybeOverrideEnterExitType(type, /*enter=*/true, windows);
     overview_session_->set_enter_exit_overview_type(new_type);
     for (auto& observer : observers_)
       observer.OnOverviewModeStarting();

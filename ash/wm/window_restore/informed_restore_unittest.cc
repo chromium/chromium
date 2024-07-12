@@ -13,8 +13,6 @@
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/ash_test_util.h"
-#include "ash/wm/desks/templates/saved_desk_test_helper.h"
-#include "ash/wm/desks/templates/saved_desk_test_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_grid_test_api.h"
@@ -793,6 +791,12 @@ TEST_F(InformedRestoreTest, NoDeskBar) {
   StartOverviewSession(MakeTestAppIds(1));
 
   // There should be no desk bar.
+  EXPECT_FALSE(
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_widget());
+
+  // Exit and reenter overview mode. There should still be no desk bar.
+  ToggleOverview();
+  ToggleOverview();
   EXPECT_FALSE(
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_widget());
 }
