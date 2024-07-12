@@ -1370,7 +1370,6 @@ chromium-metrics-reviews@google.com.
     <variant name="drive" summary="the Drive module"/>
     <variant name="history_clusters" summary="the History clusters module"/>
     <variant name="photos" summary="the Photos module"/>
-    <variant name="recipe_tasks" summary="the Recipe module"/>
     <variant name="shopping_tasks" summary="the Shopping Tasks module"/>
     <variant name="tab_resumption" summary="the Tab Resumption module"/>
   </token>
@@ -1707,54 +1706,6 @@ chromium-metrics-reviews@google.com.
     Histogram of the time, in milliseconds since navigation start, it took until
     a middle slot promo showed up on the NTP. Recorded on the local and WebUI
     NTP.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.RecipeTasks.RecipeClick" units="index"
-    expires_after="2024-04-28">
-  <owner>danpeng@google.com</owner>
-  <owner>tiborg@chromium.org</owner>
-  <owner>chrome-desktop-ntp@google.com</owner>
-  <summary>
-    Logged when a user clicked on a recipe in the recipe tasks module. The value
-    is equal to the index of the recipe.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.RecipeTasks.RecipesDownloadCount" units="recipes"
-    expires_after="2025-01-31">
-  <owner>romanarora@chromium.org</owner>
-  <owner>tiborg@chromium.org</owner>
-  <owner>chrome-desktop-ntp@google.com</owner>
-  <summary>
-    The number of recipe search links in the primary shopping task (top-ranked,
-    recipe, search journey). The recipe search links are rendered with a name,
-    image and URL. This metric is logged after the recipe tasks are successfuly
-    retrieved.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.RecipeTasks.RelatedSearchClick" units="index"
-    expires_after="2025-01-31">
-  <owner>romanarora@chromium.org</owner>
-  <owner>tiborg@chromium.org</owner>
-  <owner>chrome-desktop-ntp@google.com</owner>
-  <summary>
-    Logged when a user clicked on a related search pill in the recipe tasks
-    module. The value is equal to the index of the pill.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.RecipeTasks.RelatedSearchDownloadCount"
-    units="count" expires_after="2025-01-31">
-  <owner>romanarora@chromium.org</owner>
-  <owner>tiborg@chromium.org</owner>
-  <owner>chrome-desktop-ntp@google.com</owner>
-  <summary>
-    The number of related search links in the primary recipe task (top-ranked,
-    recipe, search journey). The related search links are rendered with a name
-    and URL. This metric is logged after the recipe tasks are successfuly
-    retrieved.
   </summary>
 </histogram>
 

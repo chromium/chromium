@@ -406,7 +406,7 @@ chromium-metrics-reviews@google.com.
     base::HistogramBase::Sample.
   </summary>
   <int value="-1996945391" label="chrome_cart"/>
-  <int value="-1985729288" label="recipe_tasks"/>
+  <int value="-1985729288" label="recipe_tasks (deprecated)"/>
   <int value="-1870686922" label="drive"/>
   <int value="-1810591528" label="shopping_tasks"/>
   <int value="-1690248410" label="photos"/>

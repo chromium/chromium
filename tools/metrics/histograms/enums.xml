@@ -20700,7 +20700,6 @@ from previous Chrome versions.
   <int value="-35002051" label="DefaultBucketUsesRelaxedDurability:enabled"/>
   <int value="-33240310" label="AppShimNotificationAttribution:enabled"/>
   <int value="-32712825" label="CrOSEnforceSystemAec:disabled"/>
-  <int value="-32385086" label="NtpRecipeTasksModule:disabled"/>
   <int value="-31444029" label="MediaInspectorLogging:disabled"/>
   <int value="-31053177" label="TerminalMultiProfile:enabled"/>
   <int value="-30997499" label="ForceReSyncDrive:disabled"/>
@@ -20854,7 +20853,6 @@ from previous Chrome versions.
   <int value="31776417" label="EnableIkev2Vpn:disabled"/>
   <int value="31848187" label="ViewsTaskManager:disabled"/>
   <int value="32057053" label="EnterpriseReportingInBrowser:disabled"/>
-  <int value="32242305" label="NtpRecipeTasksModule:enabled"/>
   <int value="32488630" label="EphemeralTab:enabled"/>
   <int value="32557641" label="HTTPAuthCommittedInterstitials:disabled"/>
   <int value="32701080" label="DropInputEventsBeforeFirstPaint:enabled"/>
