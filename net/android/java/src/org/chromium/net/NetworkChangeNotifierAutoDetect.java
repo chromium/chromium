@@ -759,18 +759,15 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
 
         /**
          * Should changes to connected network {@code network} be ignored?
+         *
          * @param network Network to possibly consider ignoring changes to.
          * @param capabilities {@code NetworkCapabilities} for {@code network} if known, otherwise
-         *         {@code null}.
+         *     {@code null}.
          * @return {@code true} when either: {@code network} is an inaccessible VPN, or has already
-         *         disconnected.
+         *     disconnected.
          */
         private boolean ignoreConnectedInaccessibleVpn(
                 Network network, NetworkCapabilities capabilities) {
-            // Fetch capabilities if not provided.
-            if (capabilities == null) {
-                capabilities = mConnectivityManagerDelegate.getNetworkCapabilities(network);
-            }
             // Ignore inaccessible VPNs as they don't apply to Chrome.
             return capabilities == null
                     || capabilities.hasTransport(TRANSPORT_VPN)
@@ -849,7 +846,9 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
         @Override
         public void onLosing(Network network, int maxMsToLive) {
             try (TraceEvent e = TraceEvent.scoped("NetworkChangeNotifierCallback::onLosing")) {
-                if (ignoreConnectedNetwork(network, null)) {
+                final NetworkCapabilities capabilities =
+                        mConnectivityManagerDelegate.getNetworkCapabilities(network);
+                if (ignoreConnectedNetwork(network, capabilities)) {
                     return;
                 }
                 final long netId = networkToNetId(network);

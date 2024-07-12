@@ -1042,6 +1042,8 @@ public class NetworkChangeNotifierTest {
         mConnectivityDelegate.addNetwork(102, TRANSPORT_VPN, false);
         NetworkChangeNotifierTestUtil.flushUiThreadTaskQueue();
         Assert.assertEquals(observer.mChanges.size(), 0);
+        networkCallback.onLosing(Helper.netIdToNetwork(102), 30);
+        Assert.assertEquals(observer.mChanges.size(), 0);
         // The disconnect will be ignored in
         // NetworkChangeNotifierDelegateAndroid::NotifyOfNetworkDisconnect() because no
         // connect event was witnessed, but it will be sent to {@code observer}
