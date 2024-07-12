@@ -95,6 +95,7 @@ class MockMigrationCoordinator : public MigrationCoordinator {
 
 }  // namespace
 
+// TODO(b/352539894): Add tests with some files to upload.
 class LocalFilesMigrationManagerTest : public policy::PolicyTest {
  public:
   LocalFilesMigrationManagerTest() {

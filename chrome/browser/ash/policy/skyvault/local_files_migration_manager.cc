@@ -9,13 +9,17 @@
 
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/policy/skyvault/migration_coordinator.h"
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
@@ -66,10 +70,28 @@ CloudProvider StringToCloudProvider(const std::string destination) {
 }
 
 // Returns a list of files under MyFiles.
-std::vector<base::FilePath> GetUrlsInMyFiles(Profile* profile) {
-  std::vector<base::FilePath> file_paths;
-  // TODO(b/350286841): List everything under MyFiles.
-  return file_paths;
+std::vector<base::FilePath> GetMyFilesContents(Profile* profile) {
+  base::FilePath my_files_path = GetMyFilesPath(profile);
+  std::vector<base::FilePath> files;
+
+  base::FileEnumerator enumerator(my_files_path,
+                                  /*recursive=*/true,
+                                  /*file_type=*/base::FileEnumerator::FILES |
+                                      base::FileEnumerator::DIRECTORIES);
+  for (base::FilePath path = enumerator.Next(); !path.empty();
+       path = enumerator.Next()) {
+    if (enumerator.GetInfo().IsDirectory()) {
+      // Do not move directories - this moves the contents too.
+      continue;
+    }
+    // Ignore hidden files.
+    // TODO(aidazolic): Also Play and Linux?
+    if (base::StartsWith(path.BaseName().value(), ".")) {
+      continue;
+    }
+    files.push_back(path);
+  }
+  return files;
 }
 
 }  // namespace
@@ -198,17 +220,17 @@ void LocalFilesMigrationManager::ScheduleMigrationAndInformUser() {
 
 void LocalFilesMigrationManager::SkipMigrationDelay() {
   scheduling_timer_->Stop();
-  StartMigration();
+  GetPathsToUpload();
 }
 
 void LocalFilesMigrationManager::OnTimeoutExpired() {
   // TODO(aidazolic): This could cause issues if the dialog doesn't close fast
   // enough, and the user clicks "Upload now" exactly then.
   notification_manager_->CloseDialog();
-  StartMigration();
+  GetPathsToUpload();
 }
 
-void LocalFilesMigrationManager::StartMigration() {
+void LocalFilesMigrationManager::GetPathsToUpload() {
   CHECK(!coordinator_->IsRunning());
   // Check policies again.
   if (local_user_files_allowed_ || !IsMigrationEnabled(cloud_provider_)) {
@@ -217,14 +239,28 @@ void LocalFilesMigrationManager::StartMigration() {
 
   Profile* profile = Profile::FromBrowserContext(context_);
   CHECK(profile);
-  // TODO(aidazolic): Add unique ID of the device.
-  coordinator_->Run(cloud_provider_, GetUrlsInMyFiles(profile),
-                    kDestinationDirName,
-                    base::BindOnce(&LocalFilesMigrationManager::OnMigrationDone,
-                                   weak_factory_.GetWeakPtr()));
 
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&GetMyFilesContents, profile),
+      base::BindOnce(&LocalFilesMigrationManager::StartMigration,
+                     weak_factory_.GetWeakPtr()));
   in_progress_ = true;
   notification_manager_->ShowMigrationProgressNotification(cloud_provider_);
+}
+
+void LocalFilesMigrationManager::StartMigration(
+    std::vector<base::FilePath> files) {
+  CHECK(!coordinator_->IsRunning());
+  // Check policies again.
+  if (local_user_files_allowed_ || !IsMigrationEnabled(cloud_provider_)) {
+    return;
+  }
+
+  // TODO(aidazolic): Add unique ID of the device.
+  coordinator_->Run(cloud_provider_, std::move(files), kDestinationDirName,
+                    base::BindOnce(&LocalFilesMigrationManager::OnMigrationDone,
+                                   weak_factory_.GetWeakPtr()));
 }
 
 void LocalFilesMigrationManager::OnMigrationDone(bool success) {

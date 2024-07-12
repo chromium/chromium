@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_SKYVAULT_ODFS_SKYVAULT_UPLOADER_H_
 #define CHROME_BROWSER_ASH_POLICY_SKYVAULT_ODFS_SKYVAULT_UPLOADER_H_
 
+#include <optional>
+
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
@@ -29,14 +32,18 @@ class OdfsSkyvaultUploader
     kMaxValue = kMigration,
   };
 
-  // Starts uploading the file specified at `file_system_url`.
-  // TODO(b/349097896): Pass the destination path.
+  // Starts uploading the file specified at `file_system_url` to OneDrive.
+  //
+  // If `target_path` isn't specified, uploads the 'example.txt' file to
+  // <ODFS ROOT>/example.txt. Otherwise, uploads it to
+  // <ODFS ROOT>/target_path/example.txt.
   static base::WeakPtr<OdfsSkyvaultUploader> Upload(
       Profile* profile,
       const base::FilePath& path,
       FileType file_type,
       base::RepeatingCallback<void(int64_t)> progress_callback,
-      base::OnceCallback<void(bool, storage::FileSystemURL)> upload_callback);
+      base::OnceCallback<void(bool, storage::FileSystemURL)> upload_callback,
+      std::optional<base::FilePath> target_path = std::nullopt);
 
   OdfsSkyvaultUploader(const OdfsSkyvaultUploader&) = delete;
   OdfsSkyvaultUploader& operator=(const OdfsSkyvaultUploader&) = delete;
@@ -47,12 +54,12 @@ class OdfsSkyvaultUploader
  private:
   friend base::RefCounted<OdfsSkyvaultUploader>;
 
-  OdfsSkyvaultUploader(
-      Profile* profile,
-      int64_t id,
-      const storage::FileSystemURL& file_system_url,
-      FileType file_type,
-      base::RepeatingCallback<void(int64_t)> progress_callback);
+  OdfsSkyvaultUploader(Profile* profile,
+                       int64_t id,
+                       const storage::FileSystemURL& file_system_url,
+                       FileType file_type,
+                       base::RepeatingCallback<void(int64_t)> progress_callback,
+                       std::optional<base::FilePath> target_path);
   ~OdfsSkyvaultUploader() override;
 
   // Starts the upload workflow.
@@ -89,6 +96,9 @@ class OdfsSkyvaultUploader
 
   // The url of the file to be uploaded.
   storage::FileSystemURL file_system_url_;
+
+  // Path to upload the file to. If empty, file is uploaded to the root folder.
+  std::optional<base::FilePath> target_path_;
 
   // The type of the file to be uploaded.
   FileType file_type_;

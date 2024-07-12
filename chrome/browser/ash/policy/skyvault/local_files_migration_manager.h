@@ -93,8 +93,11 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   // opened, and starts migration.
   void OnTimeoutExpired();
 
-  // Starts the migration process.
-  void StartMigration();
+  // Gathers all file paths that need to be uploaded.
+  void GetPathsToUpload();
+
+  // Starts the migration process by uploading `files` to `cloud_provider_`.
+  void StartMigration(std::vector<base::FilePath> files);
 
   // Handles the completion of the migration process (success or failure).
   void OnMigrationDone(bool success);

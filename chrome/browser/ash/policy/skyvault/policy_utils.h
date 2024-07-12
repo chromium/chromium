@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_SKYVAULT_POLICY_UTILS_H_
 #define CHROME_BROWSER_ASH_POLICY_SKYVAULT_POLICY_UTILS_H_
 
+#include "base/files/file_path.h"
+
 class Profile;
 
 namespace policy::local_user_files {
@@ -40,6 +42,9 @@ FileSaveDestination GetScreenCaptureDestination(Profile* profile);
 
 // Returns whether `download` should be saved to tmp/ directory.
 bool DownloadToTemp(Profile* profile);
+
+// Returns the path of MyFiles folder for `profile`.
+base::FilePath GetMyFilesPath(Profile* profile);
 
 }  // namespace policy::local_user_files
 

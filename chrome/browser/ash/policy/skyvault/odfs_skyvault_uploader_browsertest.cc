@@ -168,6 +168,29 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, SuccessfulUpload) {
   CheckPathExistsOnODFS(base::FilePath("/").AppendASCII(test_file_name));
 }
 
+IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, SuccessfulUploadWithTarget) {
+  SetUpMyFiles();
+  SetUpODFS();
+  const std::string test_file_name = "video_long.ogv";
+  base::FilePath source_file_path = CopyTestFile(test_file_name, my_files_dir_);
+  const std::string target_path = "ChromeOS Device";
+
+  // Start the upload workflow and end the test once the upload upload callback
+  // is run.
+  base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
+  base::test::TestFuture<bool, storage::FileSystemURL> upload_callback;
+  EXPECT_CALL(progress_callback, Run(/*bytes_transferred=*/230096));
+  OdfsSkyvaultUploader::Upload(
+      profile(), source_file_path, OdfsSkyvaultUploader::FileType::kMigration,
+      progress_callback.Get(), upload_callback.GetCallback(),
+      base::FilePath(target_path));
+  EXPECT_EQ(upload_callback.Get<bool>(), true);
+
+  // Check that the source file has been moved to OneDrive.
+  CheckPathExistsOnODFS(
+      base::FilePath("/").AppendASCII(target_path).AppendASCII(test_file_name));
+}
+
 IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, FailToUploadDueToMemoryError) {
   SetUpMyFiles();
   SetUpODFS();

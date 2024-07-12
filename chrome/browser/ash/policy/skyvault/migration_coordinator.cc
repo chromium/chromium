@@ -110,7 +110,11 @@ void OneDriveMigrationUploader::Run() {
   // TODO(aidazolic): Consider if we can start all jobs at the same time, or we
   // need chunking.
   for (const auto& file_path : files_) {
-    // TODO(b/349097896): Pass the destination path.
+    base::FilePath my_files_path = GetMyFilesPath(profile_);
+    // Append the file's path up to MyFiles to the base destination name.
+    base::FilePath target_path = base::FilePath(destination_dir_);
+    my_files_path.AppendRelativePath(file_path.DirName(), &target_path);
+
     auto uploader = ash::cloud_upload::OdfsSkyvaultUploader::Upload(
         profile_, file_path,
         ash::cloud_upload::OdfsSkyvaultUploader::FileType::kMigration,
@@ -118,7 +122,8 @@ void OneDriveMigrationUploader::Run() {
         /*progress_callback=*/base::DoNothing(),
         /*upload_callback=*/
         base::BindOnce(&OneDriveMigrationUploader::OnUploadDone,
-                       weak_ptr_factory_.GetWeakPtr(), file_path));
+                       weak_ptr_factory_.GetWeakPtr(), file_path),
+        target_path);
     uploaders_.insert({file_path, uploader});
   }
 }

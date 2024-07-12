@@ -49,10 +49,7 @@ base::FilePath GetTestFilePath(const std::string& file_name) {
 // providers.
 class MigrationCoordinatorTest : public InProcessBrowserTest {
  public:
-  MigrationCoordinatorTest() {
-    EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
-    my_files_dir_ = temp_dir_.GetPath().Append("myfiles");
-  }
+  MigrationCoordinatorTest() = default;
   MigrationCoordinatorTest(const MigrationCoordinatorTest&) = delete;
   MigrationCoordinatorTest& operator=(const MigrationCoordinatorTest&) = delete;
   ~MigrationCoordinatorTest() override = default;
@@ -64,6 +61,7 @@ class MigrationCoordinatorTest : public InProcessBrowserTest {
 
   // Creates mount point for My files and registers local filesystem.
   void SetUpMyFiles() {
+    my_files_dir_ = GetMyFilesPath(browser()->profile());
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       ASSERT_TRUE(base::CreateDirectory(my_files_dir_));
@@ -165,7 +163,6 @@ IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest, SuccessfulUpload) {
   /**
   - MyFiles
     - foo
-      - bar
       - video_long.ogv
     - text.txt
   */
@@ -177,25 +174,24 @@ IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest, SuccessfulUpload) {
 
   const std::string nested_file = "video_long.ogv";
   base::FilePath nested_file_path = CopyTestFile(nested_file, dir_path);
-  const std::string nested_dir = "bar";
-  base::FilePath nested_dir_path = CreateTestDir(nested_dir, dir_path);
 
   MigrationCoordinator coordinator(profile());
   base::test::TestFuture<bool> future;
-  // Only direct children of MyFiles have to be passed to the uploader.
-  coordinator.Run(CloudProvider::kOneDrive, {dir_path, file_path},
+  // Upload the files.
+  coordinator.Run(CloudProvider::kOneDrive, {file_path, nested_file_path},
                   kDestinationDir, future.GetCallback());
   ASSERT_TRUE(future.Get<bool>());
 
-  // Check that all the dirs and files have been moved to OneDrive.
-  CheckPathExistsOnODFS(base::FilePath("/").AppendASCII(file));
+  // Check that all files have been moved to OneDrive in the correct place.
   CheckPathExistsOnODFS(
-      base::FilePath("/").AppendASCII(dir).AppendASCII(nested_file));
-  CheckPathExistsOnODFS(
-      base::FilePath("/").AppendASCII(dir).AppendASCII(nested_dir));
+      base::FilePath("/").AppendASCII(kDestinationDir).AppendASCII(file));
+  CheckPathExistsOnODFS(base::FilePath("/")
+                            .AppendASCII(kDestinationDir)
+                            .AppendASCII(dir)
+                            .AppendASCII(nested_file));
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    CHECK(!base::PathExists(dir_path));
+    CHECK(!base::PathExists(dir_path.AppendASCII(nested_file)));
     CHECK(!base::PathExists(file_path));
   }
 }
