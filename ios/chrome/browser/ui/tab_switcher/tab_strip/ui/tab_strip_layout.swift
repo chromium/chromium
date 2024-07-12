@@ -78,9 +78,11 @@ class TabStripLayout: UICollectionViewFlowLayout {
       TabStripFeaturesUtils.isTabStripCloserNTBEnabled
         || TabStripFeaturesUtils.isTabStripCloserNTBDarkerBackgroundEnabled ? 8 : 0
 
+    // Compare with "width - 1" to avoid floating comparison issues.
     if contentSize.width >= collectionView.bounds.width - 1 {
-      // Compare with "width - 1" to avoid floating comparison issues.
-      offset = 0
+      // When the contentSize width is greater or equals to the collection view width, the
+      // offset should be reduced to allow spacing for the separators.
+      offset = 6
     }
 
     let updatedConstant =
