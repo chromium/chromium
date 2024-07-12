@@ -3108,6 +3108,13 @@ void StoragePartitionImpl::FlushNetworkInterfaceForTesting() {
   }
 }
 
+void StoragePartitionImpl::FlushNetworkInterfaceOnIOThreadForTesting() {
+  CHECK(initialized_);
+  CHECK(url_loader_factory_getter_);
+  url_loader_factory_getter_
+      ->FlushNetworkInterfaceOnIOThreadForTesting();  // IN-TEST
+}
+
 void StoragePartitionImpl::FlushCertVerifierInterfaceForTesting() {
   DCHECK(initialized_);
   DCHECK(cert_verifier_service_updater_);

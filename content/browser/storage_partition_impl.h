@@ -264,6 +264,10 @@ class CONTENT_EXPORT StoragePartitionImpl
   void OverrideDeleteStaleSessionOnlyCookiesDelayForTesting(
       const base::TimeDelta& delay) override;
 
+  // TODO(crbug.com/352651664): Consider merging to
+  // `FlushNetworkInterfaceForTesting()` if possible.
+  void FlushNetworkInterfaceOnIOThreadForTesting();
+
   base::WeakPtr<StoragePartitionImpl> GetWeakPtr();
   BackgroundFetchContext* GetBackgroundFetchContext();
   PaymentAppContextImpl* GetPaymentAppContext();

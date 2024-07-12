@@ -25,7 +25,6 @@
 #include "content/browser/service_worker/embedded_worker_instance.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/storage_partition_impl.h"
-#include "content/browser/url_loader_factory_getter.h"
 #include "content/browser/worker_host/test_shared_worker_service_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -72,9 +71,6 @@ namespace {
 
 const char kHostA[] = "a.test";
 const char kCookieName[] = "Cookie";
-
-using SharedURLLoaderFactoryGetterCallback =
-    base::OnceCallback<scoped_refptr<network::SharedURLLoaderFactory>()>;
 
 mojo::PendingRemote<network::mojom::NetworkContext> CreateNetworkContext() {
   mojo::PendingRemote<network::mojom::NetworkContext> network_context;
@@ -414,15 +410,14 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
             LoadBasicRequest(partition->GetNetworkContext(), GetTestURL()));
 }
 
-// Make sure |URLLoaderFactoryGetter| returns valid interface after crash.
+// Make sure `GetURLLoaderFactoryForBrowserProcessIOThread` returns valid
+// interface after crash.
 IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
-                       URLLoaderFactoryGetterGetNetworkFactory) {
+                       GetURLLoaderFactoryForBrowserProcessIOThread) {
   if (IsInProcessNetworkService())
     return;
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       browser_context()->GetDefaultStoragePartition());
-  scoped_refptr<URLLoaderFactoryGetter> url_loader_factory_getter =
-      partition->url_loader_factory_getter();
 
   auto factory_owner = IOThreadSharedURLLoaderFactoryOwner::Create(
       partition->GetURLLoaderFactoryForBrowserProcessIOThread());
@@ -433,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
   SimulateNetworkServiceCrash();
   // Flush the interface to make sure the error notification was received.
   partition->FlushNetworkInterfaceForTesting();
-  url_loader_factory_getter->FlushNetworkInterfaceOnIOThreadForTesting();
+  partition->FlushNetworkInterfaceOnIOThreadForTesting();
 
   // |GetURLLoaderFactoryForBrowserProcessIOThread| should be able to get a
   // valid new pointer after crash.
@@ -443,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
 }
 
 // Make sure the factory returned from
-// |URLLoaderFactoryGetter::GetNetworkFactory()| continues to work after
+// `GetURLLoaderFactoryForBrowserProcessIOThread` continues to work after
 // crashes.
 IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
                        BrowserIOSharedURLLoaderFactory) {
@@ -462,15 +457,14 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
   SimulateNetworkServiceCrash();
   // Flush the interface to make sure the error notification was received.
   partition->FlushNetworkInterfaceForTesting();
-  partition->url_loader_factory_getter()
-      ->FlushNetworkInterfaceOnIOThreadForTesting();
+  partition->FlushNetworkInterfaceOnIOThreadForTesting();
 
   // |shared_factory| should continue to work.
   EXPECT_EQ(net::OK, factory_owner->LoadBasicRequestOnIOThread(GetTestURL()));
 }
 
 // Make sure the factory returned from
-// |URLLoaderFactoryGetter::GetNetworkFactory()| doesn't crash if
+// `GetURLLoaderFactoryForBrowserProcessIOThread` doesn't crash if
 // it's called after the StoragePartition is deleted.
 IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
                        BrowserIOSharedFactoryAfterStoragePartitionGone) {
@@ -508,8 +502,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
   SimulateNetworkServiceCrash();
   // Flush the interface to make sure the error notification was received.
   partition->FlushNetworkInterfaceForTesting();
-  partition->url_loader_factory_getter()
-      ->FlushNetworkInterfaceOnIOThreadForTesting();
+  partition->FlushNetworkInterfaceOnIOThreadForTesting();
 
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
@@ -601,7 +594,6 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
   // Flush the interface to make sure the error notification was received.
   partition->FlushNetworkInterfaceForTesting();
   static_cast<StoragePartitionImpl*>(partition)
-      ->url_loader_factory_getter()
       ->FlushNetworkInterfaceOnIOThreadForTesting();
 
   auto factory_owner = IOThreadSharedURLLoaderFactoryOwner::Create(
@@ -626,7 +618,6 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, BrowserIOFactory) {
   // Flush the interface to make sure the error notification was received.
   partition->FlushNetworkInterfaceForTesting();
   static_cast<StoragePartitionImpl*>(partition)
-      ->url_loader_factory_getter()
       ->FlushNetworkInterfaceOnIOThreadForTesting();
 
   EXPECT_EQ(net::OK, factory_owner->LoadBasicRequestOnIOThread(GetTestURL()));
