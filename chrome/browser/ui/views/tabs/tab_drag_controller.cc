@@ -908,8 +908,9 @@ void TabDragController::RestoreFocus() {
     return;
   }
   views::View* old_focused_view = old_focused_view_tracker_->view();
-  if (!old_focused_view)
+  if (!old_focused_view || !old_focused_view->GetFocusManager()) {
     return;
+  }
   old_focused_view->GetFocusManager()->SetFocusedView(old_focused_view);
 }
 
