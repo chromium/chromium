@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/elements/ui_texture.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
@@ -31,8 +31,9 @@ class VectorIconTexture : public UiTexture {
 
  private:
   void Draw(SkCanvas* sk_canvas, const gfx::Size& texture_size) override {
-    if (icon_ == nullptr || icon_->is_empty())
+    if (icon_ == nullptr || icon_->is_empty()) {
       return;
+    }
     cc::SkiaPaintCanvas paint_canvas(sk_canvas);
     gfx::Canvas gfx_canvas(&paint_canvas, 1.0f);
 
@@ -47,9 +48,7 @@ class VectorIconTexture : public UiTexture {
   }
 
   gfx::SizeF size_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION const gfx::VectorIcon* icon_ = nullptr;
+  raw_ptr<const gfx::VectorIcon> icon_ = nullptr;
   SkColor color_ = SK_ColorWHITE;
 };
 

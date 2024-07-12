@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -54,8 +55,17 @@ class UiTexture {
  protected:
   template <typename T>
   void SetAndDirty(T* target, const T& value) {
-    if (*target != value)
+    if (*target != value) {
       set_dirty();
+    }
+    *target = value;
+  }
+
+  template <typename T>
+  void SetAndDirty(raw_ptr<const T>* target, const T* value) {
+    if (*target != value) {
+      set_dirty();
+    }
     *target = value;
   }
 
