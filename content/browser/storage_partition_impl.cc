@@ -1387,6 +1387,11 @@ void StoragePartitionImpl::Initialize(
         std::make_unique<CookieDeprecationLabelManagerImpl>(browser_context_);
   }
 
+  shared_url_loader_factory_for_browser_process_ = base::MakeRefCounted<
+      ReconnectableURLLoaderFactory>(base::BindRepeating(
+      &StoragePartitionImpl::CreateURLLoaderFactoryForBrowserProcessInternal,
+      GetWeakPtr()));
+
   url_loader_factory_getter_ = base::MakeRefCounted<
       URLLoaderFactoryGetter>(base::BindRepeating(
       &StoragePartitionImpl::CreateURLLoaderFactoryForBrowserProcessInternal,
@@ -1574,13 +1579,7 @@ StoragePartitionImpl::GetCertVerifierServiceUpdater() {
 
 scoped_refptr<network::SharedURLLoaderFactory>
 StoragePartitionImpl::GetURLLoaderFactoryForBrowserProcess() {
-  DCHECK(initialized_);
-  if (!shared_url_loader_factory_for_browser_process_) {
-    shared_url_loader_factory_for_browser_process_ = base::MakeRefCounted<
-        ReconnectableURLLoaderFactory>(base::BindRepeating(
-        &StoragePartitionImpl::CreateURLLoaderFactoryForBrowserProcessInternal,
-        GetWeakPtr()));
-  }
+  CHECK(shared_url_loader_factory_for_browser_process_);
   return shared_url_loader_factory_for_browser_process_;
 }
 
@@ -3080,11 +3079,9 @@ void StoragePartitionImpl::Flush() {
 }
 
 void StoragePartitionImpl::ResetURLLoaderFactories() {
-  DCHECK(initialized_);
+  CHECK(initialized_);
   GetNetworkContext()->ResetURLLoaderFactories();
-  if (shared_url_loader_factory_for_browser_process_) {
-    shared_url_loader_factory_for_browser_process_->Reset();
-  }
+  shared_url_loader_factory_for_browser_process_->Reset();
   url_loader_factory_getter_->Initialize();
 }
 
@@ -3102,13 +3099,10 @@ void StoragePartitionImpl::RemoveObserver(DataRemovalObserver* observer) {
 }
 
 void StoragePartitionImpl::FlushNetworkInterfaceForTesting() {
-  DCHECK(initialized_);
+  CHECK(initialized_);
   DCHECK(network_context_owner_->network_context);
   network_context_owner_->network_context.FlushForTesting();  // IN-TEST
-  if (shared_url_loader_factory_for_browser_process_) {
-    shared_url_loader_factory_for_browser_process_
-        ->FlushForTesting();  // IN-TEST
-  }
+  shared_url_loader_factory_for_browser_process_->FlushForTesting();  // IN-TEST
   if (cookie_manager_for_browser_process_) {
     cookie_manager_for_browser_process_.FlushForTesting();  // IN-TEST
   }

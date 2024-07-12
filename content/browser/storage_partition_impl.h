@@ -803,6 +803,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   mojo::Receiver<network::mojom::NetworkContextClient>
       network_context_client_receiver_{this};
 
+  // Always valid/non-null after `Initialize()`.
   scoped_refptr<ReconnectableURLLoaderFactory>
       shared_url_loader_factory_for_browser_process_;
 
