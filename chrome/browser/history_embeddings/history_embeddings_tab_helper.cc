@@ -64,7 +64,8 @@ void HistoryEmbeddingsTabHelper::DidFinishLoad(
     const GURL& validated_url) {
   if (!render_frame_host->IsInPrimaryMainFrame() ||
       !history_embeddings::IsHistoryEmbeddingEnabled() ||
-      !GetHistoryEmbeddingsService()) {
+      !GetHistoryEmbeddingsService() ||
+      !GetHistoryEmbeddingsService()->IsEligible(validated_url)) {
     return;
   }
 

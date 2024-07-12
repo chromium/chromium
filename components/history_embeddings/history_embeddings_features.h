@@ -93,6 +93,9 @@ extern const base::FeatureParam<bool> kRebuildEmbeddings;
 // to the minimum necessary for new passages, with no redundant recomputes.
 extern const base::FeatureParam<bool> kUseDatabaseBeforeEmbedder;
 
+// Whether to enable the URL filter to skip blocked URLs to improve performance.
+extern const base::FeatureParam<bool> kUseUrlFilter;
+
 bool IsHistoryEmbeddingEnabled();
 
 }  // namespace history_embeddings

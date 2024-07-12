@@ -28,6 +28,7 @@
 #include "components/history_embeddings/vector_database.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "content/public/browser/render_frame_host.h"
@@ -109,11 +110,15 @@ class HistoryEmbeddingsService : public KeyedService,
       page_content_annotations::PageContentAnnotationsService*
           page_content_annotations_service,
       optimization_guide::OptimizationGuideModelProvider* model_provider,
+      optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
       PassageEmbeddingsServiceController* service_controller,
       os_crypt_async::OSCryptAsync* os_crypt_async);
   HistoryEmbeddingsService(const HistoryEmbeddingsService&) = delete;
   HistoryEmbeddingsService& operator=(const HistoryEmbeddingsService&) = delete;
   ~HistoryEmbeddingsService() override;
+
+  // Identify if the given URL is eligible for history embeddings.
+  bool IsEligible(const GURL& url);
 
   // Initiate async passage extraction from given host's main frame.
   // When extraction completes, the passages will be stored in the database
@@ -287,6 +292,11 @@ class HistoryEmbeddingsService : public KeyedService,
   // capabilities are not supported.
   raw_ptr<page_content_annotations::PageContentAnnotationsService>
       page_content_annotations_service_;
+
+  // Used to determine whether a page should be excluded from history
+  // embeddings.
+  raw_ptr<optimization_guide::OptimizationGuideDecider>
+      optimization_guide_decider_;
 
   // Tracks the observed history service, for cleanup.
   base::ScopedObservation<history::HistoryService,

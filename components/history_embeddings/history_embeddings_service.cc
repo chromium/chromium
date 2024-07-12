@@ -148,11 +148,13 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
         page_content_annotations_service,
     optimization_guide::OptimizationGuideModelProvider*
         optimization_guide_model_provider,
+    optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
     PassageEmbeddingsServiceController* service_controller,
     os_crypt_async::OSCryptAsync* os_crypt_async)
     : os_crypt_async_(os_crypt_async),
       history_service_(history_service),
       page_content_annotations_service_(page_content_annotations_service),
+      optimization_guide_decider_(optimization_guide_decider),
       query_id_(0u),
       query_id_weak_ptr_factory_(&query_id_),
       weak_ptr_factory_(this) {
@@ -189,6 +191,11 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
     answerer_ = std::make_unique<MockAnswerer>();
   }
 
+  if (optimization_guide_decider_) {
+    optimization_guide_decider_->RegisterOptimizationTypes(
+        {optimization_guide::proto::HISTORY_EMBEDDINGS});
+  }
+
   storage_ = base::SequenceBound<Storage>(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
@@ -203,6 +210,24 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
 }
 
 HistoryEmbeddingsService::~HistoryEmbeddingsService() = default;
+
+bool HistoryEmbeddingsService::IsEligible(const GURL& url) {
+  bool eligible;
+  if (!kUseUrlFilter.Get() || !optimization_guide_decider_) {
+    eligible = true;
+  } else {
+    eligible = optimization_guide_decider_->CanApplyOptimization(
+                   url, optimization_guide::proto::HISTORY_EMBEDDINGS,
+                   /*optimization_metadata=*/nullptr) !=
+               optimization_guide::OptimizationGuideDecision::kFalse;
+  }
+
+  if (!eligible) {
+    callback_for_tests_.Run(UrlPassages(0, 0, base::Time()));
+  }
+
+  return eligible;
+}
 
 void HistoryEmbeddingsService::OnOsCryptAsyncReady(
     EmbedderMetadata metadata,

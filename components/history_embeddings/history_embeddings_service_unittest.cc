@@ -24,6 +24,7 @@
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/vector_database.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
+#include "components/optimization_guide/core/test_optimization_guide_decider.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
@@ -44,11 +45,13 @@ class HistoryEmbeddingsServicePublic : public HistoryEmbeddingsService {
           page_content_annotations_service,
       optimization_guide::OptimizationGuideModelProvider*
           optimization_guide_model_provider,
+      optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
       PassageEmbeddingsServiceController* service_controller,
       os_crypt_async::OSCryptAsync* os_crypt_async)
       : HistoryEmbeddingsService(history_service,
                                  page_content_annotations_service,
                                  optimization_guide_model_provider,
+                                 optimization_guide_decider,
                                  service_controller,
                                  os_crypt_async) {}
 
@@ -93,6 +96,7 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
     service_ = std::make_unique<HistoryEmbeddingsServicePublic>(
         history_service_.get(), page_content_annotations_service_.get(),
         optimization_guide_model_provider_.get(),
+        optimization_guide_decider_.get(),
         /*service_controller=*/nullptr, os_crypt_.get());
   }
 
@@ -174,6 +178,8 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
   std::unique_ptr<history::HistoryService> history_service_;
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
       optimization_guide_model_provider_;
+  std::unique_ptr<optimization_guide::TestOptimizationGuideDecider>
+      optimization_guide_decider_;
   std::unique_ptr<page_content_annotations::TestPageContentAnnotationsService>
       page_content_annotations_service_;
   page_content_annotations::TestPageContentAnnotator page_content_annotator_;

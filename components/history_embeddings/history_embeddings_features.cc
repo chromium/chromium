@@ -104,6 +104,10 @@ const base::FeatureParam<bool> kUseDatabaseBeforeEmbedder(
     "UseDatabaseBeforeEmbedder",
     true);
 
+const base::FeatureParam<bool> kUseUrlFilter(&kHistoryEmbeddings,
+                                             "UseUrlFilter",
+                                             false);
+
 bool IsHistoryEmbeddingEnabled() {
 #if BUILDFLAG(IS_CHROMEOS)
   return chromeos::features::IsFeatureManagementHistoryEmbeddingEnabled() &&

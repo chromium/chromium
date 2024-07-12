@@ -8,6 +8,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -81,6 +83,7 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
               {"UseMlEmbedder", "false"},
               {"SendQualityLog", "true"},
               {"ContentVisibilityThreshold", "0.01"},
+              {"UseUrlFilter", "false"},
           }},
          {page_content_annotations::features::kPageContentAnnotations, {{}}},
 #if BUILDFLAG(IS_CHROMEOS)
@@ -235,7 +238,8 @@ class HistoryEmbeddingsWithDatabaseCacheBrowserTest
         {{kHistoryEmbeddings,
           {{"UseMlEmbedder", "false"},
            {"SendQualityLog", "true"},
-           {"UseDatabaseBeforeEmbedder", "true"}}},
+           {"UseDatabaseBeforeEmbedder", "true"},
+           {"UseUrlFilter", "false"}}},
 #if BUILDFLAG(IS_CHROMEOS)
          {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}},
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -312,6 +316,87 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsWithDatabaseCacheBrowserTest,
       "History.Embeddings.DatabaseCachedPassageRatio", 0, 2);
   histogram_tester.ExpectBucketCount(
       "History.Embeddings.DatabaseCachedPassageRatio", 100, 1);
+}
+
+class HistoryEmbeddingsWithUrlFilterBrowserTest
+    : public HistoryEmbeddingsBrowserTest {
+  void InitializeFeatureList() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kHistoryEmbeddings,
+          {{"UseMlEmbedder", "false"},
+           {"SendQualityLog", "true"},
+           {"UseUrlFilter", "true"}}},
+#if BUILDFLAG(IS_CHROMEOS)
+         {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+         {page_content_annotations::features::kPageContentAnnotations, {{}}}},
+        /*disabled_features=*/{});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsWithUrlFilterBrowserTest,
+                       FilterUrlOnBlocklist) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  OverrideVisibilityScoresForTesting({
+      {"A a B C b a 2 D", 0.99},
+  });
+  const GURL url = embedded_test_server()->GetURL("/inner_text/test1.html");
+
+  base::test::TestFuture<UrlPassages> store_future;
+  callback_for_tests() = store_future.GetRepeatingCallback();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_TRUE(store_future.Wait());
+
+  base::HistogramTester histogram_tester;
+
+  // Search for the passage, should return empty result because of the filter.
+  base::test::TestFuture<SearchResult> search_future;
+  service()->Search("A B C D e f g", {}, 1, search_future.GetCallback());
+  SearchResult result = search_future.Take();
+  EXPECT_TRUE(result.scored_url_rows.empty());
+
+  histogram_tester.ExpectUniqueSample(
+      "History.Embeddings.QueryEmbeddingSucceeded", true, 1);
+  histogram_tester.ExpectUniqueSample("History.Embeddings.NumUrlsMatched", 0,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "History.Embeddings.NumMatchedUrlsVisible", 0, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsWithUrlFilterBrowserTest,
+                       DoesNotFilterUrlNotOnBlocklist) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  OverrideVisibilityScoresForTesting({
+      {"A a B C b a 2 D", 0.99},
+  });
+  const GURL url = embedded_test_server()->GetURL("/inner_text/test1.html");
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+      ->AddHintForTesting(url, optimization_guide::proto::HISTORY_EMBEDDINGS,
+                          std::nullopt);
+
+  base::test::TestFuture<UrlPassages> store_future;
+  callback_for_tests() = store_future.GetRepeatingCallback();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_TRUE(store_future.Wait());
+
+  base::HistogramTester histogram_tester;
+
+  // Search for the passage; should have valid result since the URL is allowed.
+  base::test::TestFuture<SearchResult> search_future;
+  service()->Search("A B C D e f g", {}, 1, search_future.GetCallback());
+  SearchResult result = search_future.Take();
+  EXPECT_EQ(result.scored_url_rows.size(), 1u);
+  EXPECT_EQ(result.scored_url_rows[0].scored_url.passage, "A a B C b a 2 D");
+  EXPECT_EQ(result.scored_url_rows[0].row.url(), url);
+
+  histogram_tester.ExpectUniqueSample(
+      "History.Embeddings.QueryEmbeddingSucceeded", true, 1);
+  histogram_tester.ExpectUniqueSample("History.Embeddings.NumUrlsMatched", 1,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "History.Embeddings.NumMatchedUrlsVisible", 1, 1);
 }
 
 }  // namespace history_embeddings
