@@ -17,5 +17,4 @@ found in the LICENSE file.
     <dimen name="button_group_button_inset">2dp</dimen>
     <dimen name="button_group_small_radius">8dp</dimen>
     <dimen name="button_group_large_radius">16dp</dimen>
-
 </resources>

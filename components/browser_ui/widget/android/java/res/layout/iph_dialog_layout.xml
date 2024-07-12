@@ -4,9 +4,9 @@ Copyright 2019 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<org.chromium.chrome.browser.tasks.tab_management.TabGridIphDialogView
+<org.chromium.components.browser_ui.widget.IphDialogView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/iph_dialog"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -14,13 +14,13 @@ found in the LICENSE file.
     android:orientation="vertical"
     android:clickable="true"
     android:focusable="true">
+    <!-- contentDescription is added at runtime. -->
     <ImageView
+        tools:ignore="ContentDescription"
         android:id="@+id/animation_drawable"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        app:srcCompat="@drawable/iph_drag_and_drop_animated_drawable"
-        android:contentDescription="@string/iph_drag_and_drop_content" />
+        android:layout_weight="1" />
     <TextView
         android:id="@+id/title"
         android:layout_width="match_parent"
@@ -29,7 +29,6 @@ found in the LICENSE file.
         android:layout_marginEnd="32dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
-        android:text="@string/iph_drag_and_drop_title"
         android:textAppearance="@style/TextAppearance.Headline.Primary" />
     <TextView
         android:id="@+id/description"
@@ -38,7 +37,6 @@ found in the LICENSE file.
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="16dp"
-        android:text="@string/iph_drag_and_drop_content"
         android:textAppearance="@style/TextAppearance.TextMedium.Primary"
         android:gravity="start" />
-</org.chromium.chrome.browser.tasks.tab_management.TabGridIphDialogView>
+</org.chromium.components.browser_ui.widget.IphDialogView>

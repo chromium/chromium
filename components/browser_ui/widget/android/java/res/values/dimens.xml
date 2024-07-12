@@ -30,6 +30,13 @@ found in the LICENSE file.
     <dimen name="promo_dialog_max_content_width">320dp</dimen>
     <dimen name="promo_dialog_min_scrollable_height">100dp</dimen>
 
+    <!-- IphDialog -->
+    <dimen name="iph_dialog_height">400dp</dimen>
+    <dimen name="iph_dialog_top_margin">24dp</dimen>
+    <dimen name="iph_dialog_text_top_margin_landscape">8dp</dimen>
+    <dimen name="iph_dialog_text_top_margin_portrait">16dp</dimen>
+    <dimen name="iph_dialog_text_side_margin">32dp</dimen>
+
     <!-- RadioButtonWithDescription -->
     <dimen name="radio_button_with_description_lateral_padding">16dp</dimen>
     <dimen name="radio_button_with_description_vertical_padding">10dp</dimen>

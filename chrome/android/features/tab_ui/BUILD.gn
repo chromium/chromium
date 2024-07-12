@@ -70,7 +70,6 @@ android_resources("java_resources") {
     "java/res/layout/data_sharing_bottom_sheet.xml",
     "java/res/layout/data_sharing_group_bar.xml",
     "java/res/layout/incognito_description_container_layout.xml",
-    "java/res/layout/iph_drag_and_drop_dialog_layout.xml",
     "java/res/layout/large_message_card_item.xml",
     "java/res/layout/price_card.xml",
     "java/res/layout/strip_tab_drag_shadow_view.xml",

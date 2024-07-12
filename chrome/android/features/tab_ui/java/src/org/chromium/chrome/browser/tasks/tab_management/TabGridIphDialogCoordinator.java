@@ -10,9 +10,11 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.IphDialogView;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -20,7 +22,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Coordinator for the IPH dialog in grid tab switcher. */
 class TabGridIphDialogCoordinator implements TabSwitcherIphController {
-    private final TabGridIphDialogView mIphDialogView;
+    private final IphDialogView mIphDialogView;
     private final PropertyModel mModel;
     private final ModalDialogManager mModalDialogManager;
     private final ViewTreeObserver.OnGlobalLayoutListener mRootViewLayoutListener;
@@ -31,9 +33,17 @@ class TabGridIphDialogCoordinator implements TabSwitcherIphController {
     TabGridIphDialogCoordinator(Context context, ModalDialogManager modalDialogManager) {
         try (TraceEvent e = TraceEvent.scoped("TabGridIphDialogCoordinator.constructor")) {
             mIphDialogView =
-                    (TabGridIphDialogView)
+                    (IphDialogView)
                             LayoutInflater.from(context)
-                                    .inflate(R.layout.iph_drag_and_drop_dialog_layout, null, false);
+                                    .inflate(R.layout.iph_dialog_layout, null, false);
+            mIphDialogView.setDrawable(
+                    AppCompatResources.getDrawable(
+                            context, R.drawable.iph_drag_and_drop_animated_drawable),
+                    context.getResources().getString(R.string.iph_drag_and_drop_content));
+            mIphDialogView.setTitle(
+                    context.getResources().getString(R.string.iph_drag_and_drop_title));
+            mIphDialogView.setDescription(
+                    context.getResources().getString(R.string.iph_drag_and_drop_content));
             mModalDialogManager = modalDialogManager;
 
             ModalDialogProperties.Controller dialogController =

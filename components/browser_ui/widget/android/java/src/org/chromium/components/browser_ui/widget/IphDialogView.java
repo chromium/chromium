@@ -1,8 +1,8 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management;
+package org.chromium.components.browser_ui.widget;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -19,10 +19,20 @@ import android.widget.TextView;
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
-import org.chromium.chrome.tab_ui.R;
-
-/** The view for TabGridIph related UIs. */
-public class TabGridIphDialogView extends LinearLayout {
+/**
+ * A common base dialog view for IPH. This dialog view is composed of 3 elements from top to bottom:
+ *
+ * <ol>
+ *   <li>An animatable drawable of educating users on how to use the feature.
+ *   <li>The title.
+ *   <li>The description of this feature.
+ * </ol>
+ *
+ * <p>These elements must be set before the animation is triggered.
+ *
+ * TODO(https://crbug.com/352614216): Merge into PromoDialog
+ */
+public class IphDialogView extends LinearLayout {
     private final int mDialogHeight;
     private final int mDialogTopMargin;
     private final int mDialogTextSideMargin;
@@ -30,6 +40,7 @@ public class TabGridIphDialogView extends LinearLayout {
     private final int mDialogTextTopMarginLandscape;
     private final Context mContext;
     private View mRootView;
+    private ImageView mIphImageView;
     private Drawable mIphDrawable;
     private Animatable mIphAnimation;
     private Animatable2Compat.AnimationCallback mAnimationCallback;
@@ -37,35 +48,27 @@ public class TabGridIphDialogView extends LinearLayout {
     private ViewGroup.MarginLayoutParams mDescriptionTextMarginParams;
     private int mParentViewHeight;
 
-    public TabGridIphDialogView(Context context, AttributeSet attrs) {
+    public IphDialogView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
-        mDialogHeight =
-                (int) mContext.getResources().getDimension(R.dimen.tab_grid_iph_dialog_height);
+        mDialogHeight = (int) mContext.getResources().getDimension(R.dimen.iph_dialog_height);
         mDialogTopMargin =
-                (int) mContext.getResources().getDimension(R.dimen.tab_grid_iph_dialog_top_margin);
+                (int) mContext.getResources().getDimension(R.dimen.iph_dialog_top_margin);
         mDialogTextSideMargin =
-                (int)
-                        mContext.getResources()
-                                .getDimension(R.dimen.tab_grid_iph_dialog_text_side_margin);
+                (int) mContext.getResources().getDimension(R.dimen.iph_dialog_text_side_margin);
         mDialogTextTopMarginPortrait =
                 (int)
                         mContext.getResources()
-                                .getDimension(R.dimen.tab_grid_iph_dialog_text_top_margin_portrait);
+                                .getDimension(R.dimen.iph_dialog_text_top_margin_portrait);
         mDialogTextTopMarginLandscape =
                 (int)
                         mContext.getResources()
-                                .getDimension(
-                                        R.dimen.tab_grid_iph_dialog_text_top_margin_landscape);
+                                .getDimension(R.dimen.iph_dialog_text_top_margin_landscape);
     }
 
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mIphDrawable = ((ImageView) findViewById(R.id.animation_drawable)).getDrawable();
-        mIphAnimation = (Animatable) mIphDrawable;
-        TextView iphDialogTitleText = findViewById(R.id.title);
-        TextView iphDialogDescriptionText = findViewById(R.id.description);
         mAnimationCallback =
                 new Animatable2Compat.AnimationCallback() {
                     @Override
@@ -74,22 +77,50 @@ public class TabGridIphDialogView extends LinearLayout {
                         handler.postDelayed(mIphAnimation::start, 1500);
                     }
                 };
+    }
+
+    /**
+     * @param drawable The promo drawable.
+     * @param contentDescription The content description of the drawable.
+     */
+    public void setDrawable(Drawable drawable, String contentDescription) {
+        mIphImageView = ((ImageView) findViewById(R.id.animation_drawable));
+        mIphImageView.setImageDrawable(drawable);
+        mIphDrawable = drawable;
+        mIphAnimation = (Animatable) mIphDrawable;
+    }
+
+    /**
+     * @param title The title shown in the dialog.
+     */
+    public void setTitle(String title) {
+        TextView iphDialogTitleText = findViewById(R.id.title);
+        iphDialogTitleText.setText(title);
         mTitleTextMarginParams =
                 (ViewGroup.MarginLayoutParams) iphDialogTitleText.getLayoutParams();
+    }
+
+    /**
+     * @param description The description shown below the title.
+     */
+    public void setDescription(String description) {
+        TextView iphDialogDescriptionText = findViewById(R.id.description);
+        iphDialogDescriptionText.setText(description);
         mDescriptionTextMarginParams =
                 (ViewGroup.MarginLayoutParams) iphDialogDescriptionText.getLayoutParams();
     }
 
     /**
      * Setup the root view of the dialog.
-     * @param rootView  The root view of the IPH dialog. Will be used to update the IPH view layout.
+     *
+     * @param rootView The root view of the IPH dialog. Will be used to update the IPH view layout.
      */
-    void setRootView(View rootView) {
+    public void setRootView(View rootView) {
         mRootView = rootView;
     }
 
     /** Stops the IPH animation. This is called when the IPH dialog hides. */
-    void stopIPHAnimation() {
+    public void stopIPHAnimation() {
         AnimatedVectorDrawableCompat.unregisterAnimationCallback(mIphDrawable, mAnimationCallback);
         mIphAnimation.stop();
     }
@@ -98,14 +129,14 @@ public class TabGridIphDialogView extends LinearLayout {
      * Update the IPH view layout and start playing IPH animation. This is called when the IPH
      * dialog shows.
      */
-    void startIPHAnimation() {
+    public void startIPHAnimation() {
         updateLayout();
         AnimatedVectorDrawableCompat.registerAnimationCallback(mIphDrawable, mAnimationCallback);
         mIphAnimation.start();
     }
 
     /** Update the IPH view layout based on the current size of the root view. */
-    void updateLayout() {
+    public void updateLayout() {
         if (mParentViewHeight == mRootView.getHeight()) return;
         mParentViewHeight = mRootView.getHeight();
         int orientation = mContext.getResources().getConfiguration().orientation;
