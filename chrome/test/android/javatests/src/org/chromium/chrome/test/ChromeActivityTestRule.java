@@ -11,10 +11,8 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.internal.runner.listener.InstrumentationResultPrinter;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
@@ -97,8 +95,6 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     @Override
     protected void before() throws Throwable {
         super.before();
-        mDefaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
-        Thread.setDefaultUncaughtExceptionHandler(new ChromeUncaughtExceptionHandler());
         ChromeApplicationTestUtils.setUp();
         // Instrumentation infrastructure and tests often access variables from the
         // instrumentation thread for asserts. See crbug.com/1173814 for more
@@ -121,7 +117,6 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
 
     @Override
     protected void after() {
-        Thread.setDefaultUncaughtExceptionHandler(mDefaultUncaughtExceptionHandler);
         super.after();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -554,23 +549,5 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
         final Coordinates coord = Coordinates.createFor(getWebContents());
         CriteriaHelper.pollUiThread(
                 coord::frameInfoUpdated, "FrameInfo has not been updated in time.");
-    }
-
-    private class ChromeUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
-        @Override
-        public void uncaughtException(Thread t, Throwable e) {
-            String stackTrace = android.util.Log.getStackTraceString(e);
-            if (e.getClass().getName().endsWith("StrictModeViolation")) {
-                stackTrace += "\nSearch logcat for \"StrictMode policy violation\" for full stack.";
-            }
-            Bundle resultsBundle = new Bundle();
-            resultsBundle.putString(
-                    InstrumentationResultPrinter.REPORT_KEY_NAME_CLASS, getClass().getName());
-            resultsBundle.putString(
-                    InstrumentationResultPrinter.REPORT_KEY_NAME_TEST, mCurrentTestName);
-            resultsBundle.putString(InstrumentationResultPrinter.REPORT_KEY_STACK, stackTrace);
-            InstrumentationRegistry.getInstrumentation().sendStatus(-1, resultsBundle);
-            mDefaultUncaughtExceptionHandler.uncaughtException(t, e);
-        }
     }
 }
