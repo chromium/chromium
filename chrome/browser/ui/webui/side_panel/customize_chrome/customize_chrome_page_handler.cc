@@ -73,12 +73,6 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
       prefs::kNtpDisabledModules,
       base::BindRepeating(&CustomizeChromePageHandler::UpdateModulesSettings,
                           base::Unretained(this)));
-  if (IsCartModuleEnabled()) {
-    pref_change_registrar_.Add(
-        prefs::kCartDiscountEnabled,
-        base::BindRepeating(&CustomizeChromePageHandler::UpdateModulesSettings,
-                            base::Unretained(this)));
-  }
   pref_change_registrar_.Add(
       ntp_prefs::kNtpUseMostVisitedTiles,
       base::BindRepeating(

@@ -258,7 +258,7 @@ class CustomizeChromePageHandlerTest : public testing::Test {
         .Times(1)
         .WillOnce(SaveArg<0>(&ntp_custom_background_service_observer_));
     const std::vector<std::pair<const std::string, int>> module_id_names = {
-        {"chrome_cart", IDS_NTP_MODULES_CART_SENTENCE}};
+        {"tab_resumption", IDS_NTP_TAB_RESUMPTION_TITLE}};
     handler_ = std::make_unique<CustomizeChromePageHandler>(
         mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>(),
         mock_page_.BindAndGetRemote(), &mock_ntp_custom_background_service_,
@@ -783,7 +783,7 @@ class CustomizeChromePageHandlerWithModulesTest
   void SetUp() override {
     base::test::ScopedFeatureList features;
     features.InitWithFeatures(
-        /*enabled_features=*/{ntp_features::kNtpChromeCartModule},
+        /*enabled_features=*/{ntp_features::kNtpTabResumptionModule},
         /*disabled_features=*/{});
     CustomizeChromePageHandlerTest::SetUp();
   }
@@ -805,10 +805,10 @@ TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModulesSettings) {
             visible = visible_arg;
           }));
 
-  constexpr char kChromeCartId[] = "chrome_cart";
+  constexpr char kTabResumptionId[] = "tab_resumption";
   profile().GetPrefs()->SetBoolean(prefs::kNtpModulesVisible, true);
   auto disabled_module_ids = base::Value::List();
-  disabled_module_ids.Append(kChromeCartId);
+  disabled_module_ids.Append(kTabResumptionId);
   profile().GetPrefs()->SetList(prefs::kNtpDisabledModules,
                                 std::move(disabled_module_ids));
   mock_page_.FlushForTesting();
@@ -816,7 +816,7 @@ TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModulesSettings) {
   EXPECT_TRUE(visible);
   EXPECT_FALSE(managed);
   EXPECT_EQ(1u, modules_settings.size());
-  EXPECT_EQ(kChromeCartId, modules_settings[0]->id);
+  EXPECT_EQ(kTabResumptionId, modules_settings[0]->id);
   EXPECT_FALSE(modules_settings[0]->enabled);
 }
 

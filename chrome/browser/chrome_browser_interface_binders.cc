@@ -1301,15 +1301,6 @@ void PopulateChromeWebUIFrameBinders(
       map);
 #endif  // !defined(OFFICIAL_BUILD)
 
-  if (IsCartModuleEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<chrome_cart::mojom::CartHandler,
-                                           NewTabPageUI, CustomizeChromeUI>(
-        map);
-  } else if (IsCartModuleEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<chrome_cart::mojom::CartHandler,
-                                           NewTabPageUI>(map);
-  }
-
   if (IsDriveModuleEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
         file_suggestion::mojom::FileSuggestionHandler, NewTabPageUI>(map);

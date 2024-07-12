@@ -9,7 +9,6 @@
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
@@ -32,7 +31,6 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-class CartHandler;
 class CustomizeChromePageHandler;
 class CustomizeChromeUI;
 class CustomizeColorSchemeModeHandler;
@@ -90,11 +88,6 @@ class CustomizeChromeUI
   void BindInterface(
       mojo::PendingReceiver<
           side_panel::mojom::CustomizeChromePageHandlerFactory> receiver);
-
-  // Instantiates the implementor of the chrome_cart::mojom::CartHandler
-  // mojo interface passing the pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<chrome_cart::mojom::CartHandler> pending_receiver);
 
   void BindInterface(
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
@@ -177,7 +170,6 @@ class CustomizeChromeUI
   // image_decoder_ object is deleted.
   std::unique_ptr<ImageDecoderImpl> image_decoder_;
   std::unique_ptr<CustomizeChromePageHandler> customize_chrome_page_handler_;
-  std::unique_ptr<CartHandler> cart_handler_;
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
   const std::vector<std::pair<const std::string, int>> module_id_names_;

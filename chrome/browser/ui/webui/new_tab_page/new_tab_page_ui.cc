@@ -20,7 +20,6 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
-#include "chrome/browser/cart/cart_handler.h"
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion_handler.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters.mojom.h"
@@ -127,71 +126,6 @@ bool HasCredentials(Profile* profile) {
   return
       /* Can be null if Chrome signin is disabled. */ identity_manager &&
       !identity_manager->GetAccountsInCookieJar().signed_in_accounts.empty();
-}
-
-void AddRawStringOrDefault(content::WebUIDataSource* source,
-                           const char key[],
-                           const std::string str,
-                           int default_string_id) {
-  if (str.empty()) {
-    source->AddLocalizedString(key, default_string_id);
-  } else {
-    source->AddString(key, str);
-  }
-}
-
-// The Discount Consent V2 is gated by Chrome Cart, and that is enabled for
-// en-us local only. So using plain en strings here is fine.
-void AddResourcesForCartDiscountConsentV2(content::WebUIDataSource* source) {
-  AddRawStringOrDefault(
-      source, "modulesCartDiscountConsentContent",
-      commerce::kNtpChromeCartModuleDiscountConsentStringChangeContent.Get(),
-      IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONTENT_V2);
-
-  source->AddBoolean(
-      "modulesCartConsentStepTwoDifferentColor",
-      commerce::kNtpChromeCartModuleDiscountConsentInlineStepTwoDifferentColor
-          .Get());
-
-  AddRawStringOrDefault(
-      source, "modulesCartDiscountConentTitle",
-      commerce::kNtpChromeCartModuleDiscountConsentNtpDialogContentTitle.Get(),
-      IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_TITLE);
-
-  source->AddBoolean(
-      "modulesCartStepOneUseStaticContent",
-      commerce::kNtpChromeCartModuleDiscountConsentNtpStepOneUseStaticContent
-          .Get());
-  source->AddLocalizedString("modulesCartStepOneStaticContent",
-                             IDS_NTP_CART_DISCOUNT_STEP_ONE_CONTENT);
-
-  AddRawStringOrDefault(
-      source, "modulesCartConsentStepOneOneMerchantContent",
-      commerce::kNtpChromeCartModuleDiscountConsentNtpStepOneContentOneCart
-          .Get(),
-      IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_STEP_1_WITH_MERCHANT_NAME);
-  AddRawStringOrDefault(
-      source, "modulesCartConsentStepOneTwoMerchantsContent",
-      commerce::kNtpChromeCartModuleDiscountConsentNtpStepOneContentTwoCarts
-          .Get(),
-      IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_STEP_1_WITH_TWO_MERCHANT_NAMES);
-  AddRawStringOrDefault(
-      source, "modulesCartConsentStepOneThreeMerchantsContent",
-      commerce::kNtpChromeCartModuleDiscountConsentNtpStepOneContentThreeCarts
-          .Get(),
-      IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_STEP_1_WITH_THREE_MERCHANT_NAMES);
-  AddRawStringOrDefault(
-      source, "modulesCartConsentStepTwoContent",
-      commerce::kNtpChromeCartModuleDiscountConsentNtpStepTwoContent.Get(),
-      IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONTENT_V3);
-
-  source->AddLocalizedString(
-      "modulesCartConsentStepOneButton",
-      IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_STEP_1_CONTINUE);
-
-  source->AddBoolean(
-      "modulesCartDiscountInlineCardShowCloseButton",
-      commerce::kNtpChromeCartModuleDiscountConsentInlineShowCloseButton.Get());
 }
 
 content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
@@ -406,12 +340,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesDisableButtonTextV2", IDS_NTP_MODULES_DISABLE_BUTTON_TEXT_V2},
       {"modulesCustomizeButtonText", IDS_NTP_MODULES_CUSTOMIZE_BUTTON_TEXT},
       {"modulesTasksInfo", IDS_NTP_MODULES_TASKS_INFO},
-      {"modulesCartInfo", IDS_NTP_MODULES_CART_INFO},
-      {"modulesCartSentence", IDS_NTP_MODULES_CART_SENTENCE},
-      {"modulesCartSentenceV2", IDS_NTP_MODULES_CART_SENTENCE_V2},
-      {"modulesCartLower", IDS_NTP_MODULES_CART_LOWER},
-      {"modulesCartLowerThese", IDS_NTP_MODULES_CART_LOWER_THESE},
-      {"modulesCartLowerYour", IDS_NTP_MODULES_CART_LOWER_YOUR},
       {"modulesDisableToastMessage",
        IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_TOAST_MESSAGE},
       {"modulesDriveDisableButtonText",
@@ -483,39 +411,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesPhotosNew", IDS_NTP_MODULES_PHOTOS_NEW},
       {"modulesTasksInfoTitle", IDS_NTP_MODULES_SHOPPING_TASKS_INFO_TITLE},
       {"modulesTasksInfoClose", IDS_NTP_MODULES_SHOPPING_TASKS_INFO_CLOSE},
-      {"modulesCartWarmWelcome", IDS_NTP_MODULES_CART_WARM_WELCOME},
-      {"modulesCartModuleMenuHideToastMessage",
-       IDS_NTP_MODULES_CART_MODULE_MENU_HIDE_TOAST_MESSAGE},
-      {"modulesCartCartMenuHideMerchant",
-       IDS_NTP_MODULES_CART_CART_MENU_HIDE_MERCHANT},
-      {"modulesCartCartMenuHideMerchantToastMessage",
-       IDS_NTP_MODULES_CART_CART_MENU_HIDE_MERCHANT_TOAST_MESSAGE},
-      {"modulesCartCartMenuRemoveMerchant",
-       IDS_NTP_MODULES_CART_CART_MENU_REMOVE_MERCHANT},
-      {"modulesCartCartMenuRemoveMerchantToastMessage",
-       IDS_NTP_MODULES_CART_CART_MENU_REMOVE_MERCHANT_TOAST_MESSAGE},
-      {"modulesCartDiscountChipAmount",
-       IDS_NTP_MODULES_CART_DISCOUNT_CHIP_AMOUNT},
-      {"modulesCartDiscountChipUpToAmount",
-       IDS_NTP_MODULES_CART_DISCOUNT_CHIP_UP_TO_AMOUNT},
-      {"modulesCartDiscountConsentAccept",
-       IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_ACCEPT},
-      {"modulesCartDiscountConsentAcceptConfirmation",
-       IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_ACCEPT_CONFIRMATION},
-      {"modulesCartDiscountConsentReject",
-       IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_REJECT},
-      {"modulesCartDiscountConsentRejectConfirmation",
-       IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_REJECT_CONFIRMATION},
-      {"modulesCartDiscountConsentConfirmationDismiss",
-       IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONFIRMATION_DISMISS},
-      {"modulesCartItemCountSingular",
-       IDS_NTP_MODULES_CART_ITEM_COUNT_SINGULAR},
-      {"modulesCartItemCountMultiple",
-       IDS_NTP_MODULES_CART_ITEM_COUNT_MULTIPLE},
-      {"modulesCartDiscountConsentContentV3",
-       IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONTENT_V3},
-      {"modulesCartDiscountConentTitle",
-       IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_TITLE},
       {"modulesNewTagLabel", IDS_NTP_MODULES_NEW_TAG_LABEL},
       {"modulesFirstRunExperienceTitle",
        IDS_NTP_MODULES_FIRST_RUN_EXPERIENCE_TITLE},
@@ -553,13 +448,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
        IDS_NTP_MODULES_HISTORY_CLUSTERS_BOOKMARKED},
       {"modulesJourneysOpenAllInNewTabGroupButtonText",
        IDS_NTP_MODULES_HISTORY_CLUSTERS_OPEN_ALL_IN_NEW_TAB_GROUP_BUTTON_TEXT},
-      {"modulesJourneysCartAnnotation", IDS_NTP_MODULES_QUEST_CART_ANNOTATION},
-      {"modulesJourneysCartTileLabelPlural",
-       IDS_NTP_MODULES_QUEST_CART_TILE_LABEL_PLURAL},
-      {"modulesJourneysCartTileLabelSingular",
-       IDS_NTP_MODULES_QUEST_CART_TILE_LABEL_SINGULAR},
-      {"modulesJourneysCartTileLabelDefault",
-       IDS_NTP_MODULES_QUEST_CART_TILE_LABEL_DEFAULT},
       {"modulesMoreActions", IDS_NTP_MODULES_MORE_ACTIONS},
       {"modulesTabResumptionDismissButton",
        IDS_NTP_MODULES_TAB_RESUMPTION_DISMISS_BUTTON},
@@ -591,17 +479,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       "modulesHeaderIconEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpModulesHeaderIcon));
 
-  source->AddInteger(
-      "modulesCartDiscountConsentVariation",
-      commerce::kNtpChromeCartModuleDiscountConsentNtpVariation.Get());
-
-  if (base::FeatureList::IsEnabled(commerce::kDiscountConsentV2)) {
-    AddResourcesForCartDiscountConsentV2(source);
-  } else {
-    source->AddLocalizedString("modulesCartDiscountConsentContent",
-                               IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONTENT);
-  }
-
   source->AddBoolean(
       "modulesOverflowScrollbarEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpModulesOverflowScrollbar));
@@ -613,23 +490,7 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean("photosModuleSplitSvgCustomArtWork",
                      base::FeatureList::IsEnabled(
                          ntp_features::kNtpPhotosModuleSplitSvgOptInArtWork));
-  source->AddBoolean(
-      "ruleBasedDiscountEnabled",
-      base::GetFieldTrialParamValueByFeature(
-          ntp_features::kNtpChromeCartModule,
-          ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam) ==
-          "true");
   source->AddBoolean("modulesRedesignedEnabled", redesigned_modules_enabled);
-
-  source->AddBoolean("modulesChromeCartInHistoryClustersModuleEnabled",
-                     base::FeatureList::IsEnabled(
-                         ntp_features::kNtpChromeCartInHistoryClusterModule));
-
-  source->AddBoolean(
-      "showCartInQuestModuleSetting",
-      IsCartModuleEnabled() &&
-          base::FeatureList::IsEnabled(
-              ntp_features::kNtpChromeCartInHistoryClusterModule));
 
   SearchboxHandler::SetupWebUIDataSource(
       source, profile,
@@ -889,13 +750,6 @@ void NewTabPageUI::BindInterface(
   foo_handler_ = std::make_unique<FooHandler>(std::move(pending_page_handler));
 }
 #endif
-
-void NewTabPageUI::BindInterface(
-    mojo::PendingReceiver<chrome_cart::mojom::CartHandler>
-        pending_page_handler) {
-  cart_handler_ = std::make_unique<CartHandler>(std::move(pending_page_handler),
-                                                profile_, web_contents());
-}
 
 void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<ntp::history_clusters::mojom::PageHandler>

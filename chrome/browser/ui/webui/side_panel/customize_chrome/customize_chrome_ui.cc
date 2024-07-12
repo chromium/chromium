@@ -10,7 +10,6 @@
 
 #include "base/rand_util.h"
 #include "chrome/browser/bad_message.h"
-#include "chrome/browser/cart/cart_handler.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
@@ -130,9 +129,6 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"showShortcutsToggle", IDS_NTP_CUSTOMIZE_SHOW_SHORTCUTS_LABEL},
       // Card strings.
       {"showCardsToggleTitle", IDS_NTP_CUSTOMIZE_SHOW_CARDS_LABEL},
-      {"modulesCartDiscountConsentAccept",
-       IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_ACCEPT},
-      {"modulesCartSentence", IDS_NTP_MODULES_CART_SENTENCE},
       // Required by <managed-dialog>.
       {"controlledSettingPolicy", IDS_CONTROLLED_SETTING_POLICY},
       {"close", IDS_NEW_TAB_VOICE_CLOSE_TOOLTIP},
@@ -237,11 +233,6 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       "modulesEnabled",
       ntp::HasModulesEnabled(module_id_names_,
                              IdentityManagerFactory::GetForProfile(profile_)));
-  source->AddBoolean(
-      "showCartInQuestModuleSetting",
-      IsCartModuleEnabled() &&
-          base::FeatureList::IsEnabled(
-              ntp_features::kNtpChromeCartInHistoryClusterModule));
 
   source->AddBoolean("showDeviceThemeToggle",
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
@@ -314,13 +305,6 @@ void CustomizeChromeUI::BindInterface(
     customize_toolbar_handler_factory_receiver_.reset();
   }
   customize_toolbar_handler_factory_receiver_.Bind(std::move(receiver));
-}
-
-void CustomizeChromeUI::BindInterface(
-    mojo::PendingReceiver<chrome_cart::mojom::CartHandler>
-        pending_page_handler) {
-  cart_handler_ = std::make_unique<CartHandler>(std::move(pending_page_handler),
-                                                profile_, web_contents_);
 }
 
 void CustomizeChromeUI::BindInterface(

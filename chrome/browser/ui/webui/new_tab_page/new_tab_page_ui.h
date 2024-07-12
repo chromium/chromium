@@ -11,7 +11,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "chrome/browser/new_tab_page/modules/feed/feed.mojom.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters.mojom.h"
@@ -72,7 +71,6 @@ class ColorChangeHandler;
 }  // namespace ui
 
 class BrowserCommandHandler;
-class CartHandler;
 class FileSuggestionHandler;
 #if !defined(OFFICIAL_BUILD)
 class FooHandler;
@@ -182,11 +180,6 @@ class NewTabPageUI
       mojo::PendingReceiver<foo::mojom::FooHandler> pending_receiver);
 #endif
 
-  // Instantiates the implementor of the chrome_cart::mojom::CartHandler
-  // mojo interface passing the pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<chrome_cart::mojom::CartHandler> pending_receiver);
-
   // Instantiates the implementor of the
   // ntp::history_clusters::mojom::PageHandler mojo interface passing to it the
   // pending receiver that will be internally bound.
@@ -278,7 +271,6 @@ class NewTabPageUI
 #if !defined(OFFICIAL_BUILD)
   std::unique_ptr<FooHandler> foo_handler_;
 #endif
-  std::unique_ptr<CartHandler> cart_handler_;
   std::unique_ptr<HistoryClustersPageHandler> history_clusters_handler_;
   std::unique_ptr<MostRelevantTabResumptionPageHandler>
       most_relevant_tab_resumption_handler_;
