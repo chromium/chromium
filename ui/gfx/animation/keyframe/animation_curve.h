@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/animation/keyframe/keyframe_animation_export.h"
@@ -61,7 +61,6 @@ class GFX_KEYFRAME_ANIMATION_EXPORT AnimationCurve {
   virtual base::TimeDelta TickInterval() const;
 };
 
-// RAW_PTR_EXCLUSION: #macro
 #define DECLARE_ANIMATION_CURVE_BODY(T, Name)                                \
  public:                                                                     \
   static const Name##AnimationCurve* To##Name##AnimationCurve(               \
@@ -90,7 +89,7 @@ class GFX_KEYFRAME_ANIMATION_EXPORT AnimationCurve {
   }                                                                          \
                                                                              \
  private:                                                                    \
-  RAW_PTR_EXCLUSION Target* target_ = nullptr;
+  raw_ptr<Target, DanglingUntriaged> target_ = nullptr;
 
 class GFX_KEYFRAME_ANIMATION_EXPORT ColorAnimationCurve
     : public AnimationCurve {
