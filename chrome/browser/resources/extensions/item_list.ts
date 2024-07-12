@@ -235,8 +235,7 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
     return this.extensions?.filter(
         extension =>
             !!(extension.safetyCheckText &&
-               extension.safetyCheckText.panelString &&
-               !extension.acknowledgeSafetyCheckWarning));
+               extension.safetyCheckText.panelString));
   }
 
   /**

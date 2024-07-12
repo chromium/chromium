@@ -196,7 +196,6 @@ export class Service implements ServiceInterface {
       reason: chrome.developerPrivate.SafetyCheckWarningReason): Promise<void> {
     return chrome.developerPrivate.updateExtensionConfiguration({
       extensionId: id,
-      acknowledgeSafetyCheckWarning: true,
       acknowledgeSafetyCheckWarningReason: reason,
     });
   }

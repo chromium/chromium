@@ -236,7 +236,6 @@ export function createExtensionInfo(
         webStoreUrl: '',
         showSafeBrowsingAllowlistWarning: false,
         showAccessRequestsInToolbar: false,
-        acknowledgeSafetyCheckWarning: false,
         isAffectedByMV2Deprecation: false,
         didAcknowledgeMV2DeprecationNotice: false,
         safetyCheckWarningReason: 'UNPUBLISHED',

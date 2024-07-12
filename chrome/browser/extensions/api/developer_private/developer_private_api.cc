@@ -1129,10 +1129,8 @@ DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
         .SetShowAccessRequestsInToolbar(
             extension->id(), *update.show_access_requests_in_toolbar);
   }
-  if (update.acknowledge_safety_check_warning) {
-    ExtensionPrefs::Get(browser_context())
-        ->SetBooleanPref(extension->id(), kPrefAcknowledgeSafetyCheckWarning,
-                         *update.acknowledge_safety_check_warning);
+  if (update.acknowledge_safety_check_warning_reason !=
+      developer_private::SafetyCheckWarningReason::kNone) {
     ExtensionPrefs::Get(browser_context())
         ->SetIntegerPref(
             extension->id(), kPrefAcknowledgeSafetyCheckWarningReason,

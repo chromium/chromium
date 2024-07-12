@@ -12,10 +12,10 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "extensions/browser/blocklist_state.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
 
@@ -69,10 +69,6 @@ class ExtensionInfoGenerator {
   static std::vector<URLPattern> GetDistinctHosts(
       const URLPatternSet& patterns);
 
-  // Sets the |cws_info_service| for testing.
-  void SetCWSInfoServiceForTesting(
-      extensions::CWSInfoService* cws_info_service);
-
  private:
   // Creates an ExtensionInfo for the given |extension| and |state|, and
   // asynchronously adds it to the |list|.
@@ -102,7 +98,6 @@ class ExtensionInfoGenerator {
   // Various systems, cached for convenience.
   raw_ptr<content::BrowserContext> browser_context_;
   raw_ptr<CommandService> command_service_;
-  raw_ptr<CWSInfoService> cws_info_service_;
   raw_ptr<ExtensionSystem> extension_system_;
   raw_ptr<ExtensionPrefs> extension_prefs_;
   raw_ptr<ExtensionActionAPI> extension_action_api_;

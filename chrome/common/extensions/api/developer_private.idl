@@ -280,7 +280,6 @@ namespace developerPrivate {
     boolean showSafeBrowsingAllowlistWarning;
     SafetyCheckWarningReason? safetyCheckWarningReason;
     boolean showAccessRequestsInToolbar;
-    boolean acknowledgeSafetyCheckWarning;
     boolean? pinnedToToolbar;
     boolean isAffectedByMV2Deprecation;
     boolean didAcknowledgeMV2DeprecationNotice;
@@ -345,7 +344,6 @@ namespace developerPrivate {
     HostAccess? hostAccess;
     boolean? showAccessRequestsInToolbar;
     SafetyCheckWarningReason? acknowledgeSafetyCheckWarningReason;
-    boolean? acknowledgeSafetyCheckWarning;
     boolean? acknowledgeMv2DeprecationNotice;
     boolean? pinnedToToolbar;
   };

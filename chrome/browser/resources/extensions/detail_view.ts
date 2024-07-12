@@ -521,8 +521,7 @@ export class ExtensionsDetailViewElement extends
       return false;
     }
     return !!(
-        this.data.safetyCheckText && this.data.safetyCheckText.detailString &&
-        this.data.acknowledgeSafetyCheckWarning !== true);
+        this.data.safetyCheckText && this.data.safetyCheckText.detailString);
   }
 
   /**

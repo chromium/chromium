@@ -8,6 +8,7 @@
 #include "base/gtest_prod_util.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "extensions/browser/blocklist_state.h"
+#include "extensions/browser/extension_prefs.h"
 
 class Profile;
 
@@ -15,6 +16,9 @@ namespace extensions {
 
 class CWSInfoServiceInterface;
 class Extension;
+
+inline constexpr PrefMap kPrefAcknowledgeSafetyCheckWarning = {
+    "ack_safety_check_warning", PrefType::kBool, PrefScope::kExtensionSpecific};
 
 // These functions are used as a utility functions for the Extension
 // Safety Check.

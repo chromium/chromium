@@ -614,32 +614,10 @@ TEST_F(DeveloperPrivateApiUnitTest,
       id, extensions::kPrefAcknowledgeSafetyCheckWarningReason,
       &warning_reason));
 
-  auto has_acknowledged_safety_check = [&]() {
-    bool has_acknowledged = false;
-    return ExtensionPrefs::Get(profile())->ReadPrefAsBoolean(
-               id, kPrefAcknowledgeSafetyCheckWarning, &has_acknowledged) &&
-           has_acknowledged;
-  };
-
-  TestExtensionPrefSetting(
-      base::BindLambdaForTesting(has_acknowledged_safety_check),
-      "acknowledgeSafetyCheckWarning", id, /*expected_default_value=*/false);
-
-  api::developer_private::SafetyCheckWarningReason warning_reason_enum;
-  EXPECT_TRUE(extension_prefs->ReadPrefAsInteger(
-      id, extensions::kPrefAcknowledgeSafetyCheckWarningReason,
-      &warning_reason));
-  warning_reason_enum =
-      static_cast<api::developer_private::SafetyCheckWarningReason>(
-          warning_reason);
-  EXPECT_EQ(warning_reason_enum,
-            api::developer_private::SafetyCheckWarningReason::kNone);
-
   // Test `acknowledgeSafetyCheckWarningReason` pref.
   base::Value::List args;
   args.Append(base::Value::Dict()
                   .Set("extensionId", id)
-                  .Set("acknowledgeSafetyCheckWarning", true)
                   .Set("acknowledgeSafetyCheckWarningReason", "MALWARE"));
 
   ExtensionFunction::ScopedUserGestureForTests scoped_user_gesture;
@@ -650,7 +628,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   extension_prefs->ReadPrefAsInteger(
       id, extensions::kPrefAcknowledgeSafetyCheckWarningReason,
       &warning_reason);
-  warning_reason_enum =
+  api::developer_private::SafetyCheckWarningReason warning_reason_enum =
       static_cast<api::developer_private::SafetyCheckWarningReason>(
           warning_reason);
   EXPECT_EQ(warning_reason_enum,

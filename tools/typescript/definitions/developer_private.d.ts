@@ -265,7 +265,6 @@ declare global {
         showSafeBrowsingAllowlistWarning: boolean;
         showAccessRequestsInToolbar: boolean;
         safetyCheckWarningReason: SafetyCheckWarningReason;
-        acknowledgeSafetyCheckWarning: boolean;
         pinnedToToolbar?: boolean;
         isAffectedByMV2Deprecation: boolean;
         didAcknowledgeMV2DeprecationNotice: boolean;
@@ -287,7 +286,6 @@ declare global {
         errorCollection?: boolean;
         hostAccess?: HostAccess;
         showAccessRequestsInToolbar?: boolean;
-        acknowledgeSafetyCheckWarning?: boolean;
         acknowledgeSafetyCheckWarningReason?: SafetyCheckWarningReason;
         acknowledgeMv2DeprecationNotice?: boolean;
         pinnedToToolbar?: boolean;
