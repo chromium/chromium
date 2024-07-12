@@ -15,6 +15,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -38,7 +39,35 @@ constexpr gfx::Insets kMargins(8);
 constexpr int kPreviewBackgroundBorderRadius = 8;
 constexpr gfx::Insets kLabelPadding = gfx::Insets::TLBR(8, 8, 0, 8);
 
+// A preview thumbnail image view with rounded corners.
+class RoundedPreviewImageView : public views::ImageView {
+  METADATA_HEADER(RoundedPreviewImageView, views::ImageView)
+
+ public:
+  explicit RoundedPreviewImageView(const gfx::Size image_size, int radius) {
+    SetImageSize(image_size);
+    SetBackground(views::CreateThemedRoundedRectBackground(
+        cros_tokens::kCrosSysSeparator, radius));
+    SkPath mask;
+    mask.addRoundRect(gfx::RectToSkRect(gfx::Rect(image_size)), radius, radius);
+    SetClipPath(mask);
+  }
+  RoundedPreviewImageView(const RoundedPreviewImageView&) = delete;
+  RoundedPreviewImageView& operator=(const RoundedPreviewImageView&) = delete;
+};
+
+BEGIN_METADATA(RoundedPreviewImageView)
+END_METADATA
+
+BEGIN_VIEW_BUILDER(/*no export*/, RoundedPreviewImageView, views::ImageView)
+END_VIEW_BUILDER
+
 }  // namespace
+}  // namespace ash
+
+DEFINE_VIEW_BUILDER(/* no export */, ash::RoundedPreviewImageView)
+
+namespace ash {
 
 PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
     : BubbleDialogDelegateView(anchor_view,
@@ -55,11 +84,9 @@ PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
       .set_corner_radius(kPickerBubbleCornerRadius)
       .SetButtons(ui::DIALOG_BUTTON_NONE)
       .AddChildren(
-          views::Builder<views::ImageView>()
-              .SetImageSize(kPreviewImageSize)
-              .SetBackground(views::CreateThemedRoundedRectBackground(
-                  cros_tokens::kCrosSysSeparator,
-                  kPreviewBackgroundBorderRadius))
+          views::Builder<RoundedPreviewImageView>(
+              std::make_unique<RoundedPreviewImageView>(
+                  kPreviewImageSize, kPreviewBackgroundBorderRadius))
               .CopyAddressTo(&image_view_),
           views::Builder<views::BoxLayoutView>()
               .SetOrientation(views::BoxLayout::Orientation::kVertical)
