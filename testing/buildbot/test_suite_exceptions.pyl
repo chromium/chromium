@@ -5387,7 +5387,7 @@
       'Dawn Win10 x64 ASAN Release (Intel)': {
         # ASAN builds taking a bit longer so needs extra shards to not timeout.
         'swarming': {
-          'shards': 12,
+          'shards': 14,
         }
       },
     },
@@ -5464,7 +5464,7 @@
       'Dawn Win10 x64 ASAN Release (Intel)': {
         # ASAN builds taking a bit longer so needs extra shards to not timeout.
         'swarming': {
-          'shards': 12,
+          'shards': 16,
         }
       },
       # These tests must run with a GPU.
