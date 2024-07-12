@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_EDITOR_MENU_PUBLIC_CPP_READ_WRITE_CARD_CONTROLLER_H_
-#define CHROMEOS_COMPONENTS_EDITOR_MENU_PUBLIC_CPP_READ_WRITE_CARD_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_CHROMEOS_READ_WRITE_CARDS_READ_WRITE_CARD_CONTROLLER_H_
+#define CHROME_BROWSER_UI_CHROMEOS_READ_WRITE_CARDS_READ_WRITE_CARD_CONTROLLER_H_
+
+#include <string>
 
 #include "base/component_export.h"
 
@@ -17,7 +19,7 @@ namespace chromeos {
 
 // A controller to manage the creation/dismissal of Quick Answers and Editor
 // Menu related views.
-class COMPONENT_EXPORT(EDITOR_MENU_PUBLIC_CPP) ReadWriteCardController {
+class ReadWriteCardController {
  public:
   ReadWriteCardController() = default;
   virtual ~ReadWriteCardController() = default;
@@ -48,4 +50,4 @@ class COMPONENT_EXPORT(EDITOR_MENU_PUBLIC_CPP) ReadWriteCardController {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_EDITOR_MENU_PUBLIC_CPP_READ_WRITE_CARD_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_CHROMEOS_READ_WRITE_CARDS_READ_WRITE_CARD_CONTROLLER_H_

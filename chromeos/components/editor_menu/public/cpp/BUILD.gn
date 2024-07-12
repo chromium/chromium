@@ -12,9 +12,6 @@ component("cpp") {
     "icon.h",
     "preset_text_query.cc",
     "preset_text_query.h",
-    "read_write_card_controller.h",
-    "read_write_cards_manager.cc",
-    "read_write_cards_manager.h",
   ]
 
   deps = [

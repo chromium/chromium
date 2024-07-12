@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
-#include "chromeos/components/editor_menu/public/cpp/read_write_card_controller.h"
+#include "chrome/browser/ui/chromeos/read_write_cards/read_write_card_controller.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
