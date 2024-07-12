@@ -171,9 +171,19 @@ struct BlockLineClampData {
         return true;
       }
 
+      MarginStrut collapsed_strut = previous_inflow_position.margin_strut;
+      collapsed_strut.positive_margin = std::max(
+          collapsed_strut.positive_margin, end_margin_strut.positive_margin);
+      collapsed_strut.quirky_positive_margin =
+          std::max(collapsed_strut.quirky_positive_margin,
+                   end_margin_strut.quirky_positive_margin);
+      collapsed_strut.negative_margin = std::max(
+          collapsed_strut.negative_margin, end_margin_strut.negative_margin);
+
       DCHECK(bfc_block_offset);
-      LayoutUnit bfc_offset =
-          *bfc_block_offset + previous_inflow_position.logical_block_offset;
+      LayoutUnit bfc_offset = *bfc_block_offset +
+                              previous_inflow_position.logical_block_offset +
+                              (collapsed_strut.Sum() - end_margin_strut.Sum());
 
       if (layout_result->HasContentAfterLineClamp()) {
         DCHECK_LE(bfc_offset, data.clamp_bfc_offset);
@@ -206,6 +216,8 @@ struct BlockLineClampData {
 
   bool has_content_after_clamp = false;
   bool is_relayout = false;
+
+  MarginStrut end_margin_strut;
 
   // If set, the box was clamped, and this is the previous inflow position after
   // the last line or box before clamp. Can only be set if

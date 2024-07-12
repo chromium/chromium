@@ -605,6 +605,8 @@ BlockLayoutAlgorithm::RelayoutWithLineClampBlockSize() {
       LineClampData::kClampByBfcOffset;
   algorithm_ignoring_line_clamp.line_clamp_data_.data.clamp_bfc_offset =
       *line_clamp_data_.latest_clampable_offset;
+  algorithm_ignoring_line_clamp.line_clamp_data_.end_margin_strut =
+      line_clamp_data_.end_margin_strut;
   algorithm_ignoring_line_clamp.line_clamp_data_.is_relayout = true;
   BoxFragmentBuilder& new_builder =
       algorithm_ignoring_line_clamp.container_builder_;
@@ -706,9 +708,24 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
     // offset, because that already accounts for the bmp.
     if (line_clamp_data_.data.state == LineClampData::kClampByBfcOffset &&
         !line_clamp_data_.is_relayout) {
-      // TODO(abotella): Margins.
+      MarginStrut end_margin_strut = constraint_space.LineClampEndMarginStrut();
+      end_margin_strut.Append(
+          ComputeMarginsForSelf(constraint_space, Style()).block_end,
+          /* is_quirky */ false);
+
+      // `constraint_space.LineClampEndMarginStrut().Sum()` is the margin
+      // contribution from our ancestor boxes, which has already been taken into
+      // account for the clamp BFC offset that we have. We only need to add any
+      // additional margin contribution from this box's margin.
       line_clamp_data_.data.clamp_bfc_offset -=
-          BorderScrollbarPadding().block_end;
+          BorderScrollbarPadding().block_end +
+          (end_margin_strut.Sum() -
+           constraint_space.LineClampEndMarginStrut().Sum());
+
+      // The presence of borders and padding blocks margin propagation.
+      if (!BorderScrollbarPadding().block_end) {
+        line_clamp_data_.end_margin_strut = end_margin_strut;
+      }
     }
   }
 
@@ -3144,6 +3161,7 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
           container_builder_.GetAdjoiningObjectTypes());
     }
     builder.SetLineClampData(line_clamp_data_.data);
+    builder.SetLineClampEndMarginStrut(line_clamp_data_.end_margin_strut);
   }
   builder.SetBlockStartAnnotationSpace(block_start_annotation_space);
 

@@ -794,6 +794,11 @@ class CORE_EXPORT ConstraintSpace final {
     return HasRareData() ? rare_data_->GetLineClampData() : LineClampData();
   }
 
+  MarginStrut LineClampEndMarginStrut() const {
+    return HasRareData() ? rare_data_->LineClampEndMarginStrut()
+                         : MarginStrut();
+  }
+
   // Return true if `text-box-trim` is in effect for the block-start/end.
   bool ShouldTextBoxTrimStart() const {
     return HasRareData() && rare_data_->should_text_box_trim_start;
@@ -1190,6 +1195,16 @@ class CORE_EXPORT ConstraintSpace final {
       EnsureBlockData()->line_clamp_data = value;
     }
 
+    MarginStrut LineClampEndMarginStrut() const {
+      return GetDataUnionType() == DataUnionType::kBlockData
+                 ? block_data_.line_clamp_end_margin_strut
+                 : MarginStrut();
+    }
+
+    void SetLineClampEndMarginStrut(MarginStrut value) {
+      EnsureBlockData()->line_clamp_end_margin_strut = value;
+    }
+
     void SetIsTableCell() { EnsureTableCellData(); }
 
     BoxStrut TableCellBorders() const {
@@ -1381,6 +1396,7 @@ class CORE_EXPORT ConstraintSpace final {
       std::optional<LayoutUnit> forced_bfc_block_offset;
       LayoutUnit clearance_offset = LayoutUnit::Min();
       LineClampData line_clamp_data;
+      MarginStrut line_clamp_end_margin_strut;
     };
 
     struct TableCellData {
