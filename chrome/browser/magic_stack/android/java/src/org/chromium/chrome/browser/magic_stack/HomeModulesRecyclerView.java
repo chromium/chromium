@@ -61,7 +61,7 @@ public class HomeModulesRecyclerView extends RecyclerView {
         int itemCount = getAdapter().getItemCount();
         int measuredWidth = getMeasuredWidth();
         for (int i = 0; i < getChildCount(); i++) {
-            onDrawImpl(getChildAt(i), itemCount, measuredWidth);
+            onDrawImplTablet(getChildAt(i), itemCount, measuredWidth);
         }
     }
 
@@ -72,17 +72,19 @@ public class HomeModulesRecyclerView extends RecyclerView {
     }
 
     @VisibleForTesting
-    void onDrawImpl(View view, int totalChildCount, int measuredWidth) {
+    // This function is only called on Tablets.
+    void onDrawImplTablet(View view, int totalChildCount, int measuredWidth) {
+        assert mIsTablet;
+
         MarginLayoutParams marginLayoutParams = (MarginLayoutParams) view.getLayoutParams();
         if (mItemPerScreen == 1 || totalChildCount == 1) {
             // If showing one item per screen, the view's width should match the parent
             // recyclerview.
-            if (marginLayoutParams.width == MATCH_PARENT) return;
-
             marginLayoutParams.width = MATCH_PARENT;
-            if (mItemPerScreen == 1) {
-                updateMargin(view, marginLayoutParams);
-            }
+            // We should always update margins on tablets. This is because when there is only one
+            // item to show, the margins could be different based on the width of the window.
+            // See b/352583431.
+            updateMargin(view, marginLayoutParams);
         } else {
             // On a wide screen, we will show 2 cards instead of 1 on the magic stack.
             // Updates the width of the view.

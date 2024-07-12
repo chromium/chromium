@@ -8,6 +8,7 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -71,17 +72,16 @@ public class HomeModulesRecyclerViewUnitTest {
         mRecyclerView.setStartMarginPxForTesting(startMarginPx);
 
         // Verifies when there is one item per screen, the width is set to MATCH_PARENT.
-        mRecyclerView.onDrawImpl(mView, 3, measuredWidth);
+        mRecyclerView.onDrawImplTablet(mView, 3, measuredWidth);
         assertEquals(MATCH_PARENT, marginLayoutParams.width);
         assertEquals(startMarginPx, marginLayoutParams.getMarginStart());
         assertEquals(startMarginPx, marginLayoutParams.getMarginEnd());
         verify(mView).setLayoutParams(eq(marginLayoutParams));
 
-        // Verifies that setLayoutParams() isn't called again whether there isn't any change to the
-        // width of the view.
-        mRecyclerView.onDrawImpl(mView, 3, measuredWidth);
+        // Verifies that setLayoutParams() is called again to update the margins.
+        mRecyclerView.onDrawImplTablet(mView, 3, measuredWidth);
         assertEquals(MATCH_PARENT, marginLayoutParams.width);
-        verify(mView).setLayoutParams(eq(marginLayoutParams));
+        verify(mView, times(2)).setLayoutParams(eq(marginLayoutParams));
     }
 
     @Test
@@ -100,7 +100,7 @@ public class HomeModulesRecyclerViewUnitTest {
                 (measuredWidth - mModuleInternalPaddingPx * (itemPerScreen - 1)) / itemPerScreen;
 
         // Verifies the width becomes the half of the parent's width.
-        mRecyclerView.onDrawImpl(mView, 3, measuredWidth);
+        mRecyclerView.onDrawImplTablet(mView, 3, measuredWidth);
         assertEquals(expectedWidth, marginLayoutParams.width);
         assertEquals(startMarginPx, marginLayoutParams.getMarginStart());
         assertEquals(startMarginPx, marginLayoutParams.getMarginEnd());
@@ -108,7 +108,7 @@ public class HomeModulesRecyclerViewUnitTest {
 
         // Verifies that setLayoutParams() isn't called again whether there isn't any change to the
         // width of the view.
-        mRecyclerView.onDrawImpl(mView, 3, measuredWidth);
+        mRecyclerView.onDrawImplTablet(mView, 3, measuredWidth);
         assertEquals(expectedWidth, marginLayoutParams.width);
         verify(mView).setLayoutParams(eq(marginLayoutParams));
     }
