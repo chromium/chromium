@@ -4,13 +4,7 @@
 
 package org.chromium.chrome.features.start_surface;
 
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-
-import static org.hamcrest.CoreMatchers.allOf;
-
 import static org.chromium.chrome.browser.tabmodel.TestTabModelDirectory.M26_GOOGLE_COM;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -26,8 +20,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.layouts.LayoutTestUtils;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -40,7 +32,6 @@ import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.R;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -69,22 +60,6 @@ public class StartSurfaceTestUtils {
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         activityTestRule.prepareUrlIntent(intent, null);
         activityTestRule.launchActivity(intent);
-    }
-
-    /**
-     * Wait for the start surface homepage visible.
-     *
-     * @param cta The ChromeTabbedActivity under test.
-     */
-    public static void waitForStartSurfaceVisible(ChromeTabbedActivity cta) {
-        CriteriaHelper.pollUiThread(() -> cta.getLayoutManager() != null);
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), getStartSurfaceLayoutType());
-
-        onViewWaiting(allOf(withId(R.id.primary_tasks_surface_view), isDisplayed()));
-    }
-
-    public static @LayoutType int getStartSurfaceLayoutType() {
-        return LayoutType.START_SURFACE;
     }
 
     /**

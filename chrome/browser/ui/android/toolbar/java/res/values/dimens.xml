@@ -45,9 +45,6 @@ found in the LICENSE file.
     <!-- Custom Tabs dimensions -->
     <dimen name="toolbar_icon_height">24dp</dimen>
 
-    <!-- Start surface toolbar dimensions -->
-    <dimen name="start_surface_fake_search_box_top_margin">24dp</dimen>
-
     <!-- Navigation history popup dimensions -->
     <dimen name="navigation_popup_width">312dp</dimen>
     <dimen name="navigation_popup_item_height">56dp</dimen>

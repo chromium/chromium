@@ -132,7 +132,6 @@ found in the LICENSE file.
     <dimen name="mvt_container_top_padding">17dp</dimen>
     <dimen name="mvt_container_bottom_padding">22dp</dimen>
     <dimen name="mvt_container_top_margin">23dp</dimen>
-    <dimen name="ntp_search_box_height_for_start_animation">48dp</dimen>
     <dimen name="ntp_search_box_bottom_margin">1dp</dimen>
     <dimen name="ntp_search_box_transition_length">16dp</dimen>
     <dimen name="ntp_search_box_transition_length_polish_offset">4dp</dimen>
