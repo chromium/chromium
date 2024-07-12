@@ -22,6 +22,12 @@ BASE_FEATURE(kTabGroupPaneAndroid,
              "TabGroupPaneAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Feature flag used to determine whether the network layer is disabled for
+// tab group sync.
+BASE_FEATURE(kTabGroupSyncDisableNetworkLayer,
+             "TabGroupSyncDisableNetworkLayer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTabGroupSyncForceOff,
              "TabGroupSyncForceOff",
              base::FEATURE_DISABLED_BY_DEFAULT);
