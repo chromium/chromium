@@ -216,6 +216,7 @@ class ManualFillingComponentBridge {
     private void addPlusAddressSectionToAccessorySheetData(
             Object objAccessorySheetData,
             @AccessoryTabType int sheetType,
+            @JniType("std::string") String origin,
             @JniType("std::u16string") String plusAddress) {
         Callback<UserInfoField> callback =
                 (field) -> {
@@ -235,7 +236,7 @@ class ManualFillingComponentBridge {
 
         ((AccessorySheetData) objAccessorySheetData)
                 .getPlusAddressSection()
-                .add(new PlusAddressSection(field));
+                .add(new PlusAddressSection(origin, field));
     }
 
     @CalledByNative

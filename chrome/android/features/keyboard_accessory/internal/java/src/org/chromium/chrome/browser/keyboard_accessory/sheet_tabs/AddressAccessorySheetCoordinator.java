@@ -15,8 +15,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
+import org.chromium.chrome.browser.keyboard_accessory.helper.FaviconHelper;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modelutil.RecyclerViewAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewMcp;
 
@@ -26,6 +28,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewMcp;
  */
 public class AddressAccessorySheetCoordinator extends AccessorySheetTabCoordinator {
     private final AccessorySheetTabMediator mMediator;
+    private final Profile mProfile;
 
     /**
      * Creates the address tab.
@@ -34,7 +37,9 @@ public class AddressAccessorySheetCoordinator extends AccessorySheetTabCoordinat
      * @param scrollListener An optional listener that will be bound to the inflated recycler view.
      */
     public AddressAccessorySheetCoordinator(
-            Context context, @Nullable RecyclerView.OnScrollListener scrollListener) {
+            Context context,
+            Profile profile,
+            @Nullable RecyclerView.OnScrollListener scrollListener) {
         super(
                 context.getString(R.string.address_accessory_sheet_title),
                 IconProvider.getIcon(context, R.drawable.gm_filled_location_on_24),
@@ -42,6 +47,7 @@ public class AddressAccessorySheetCoordinator extends AccessorySheetTabCoordinat
                 R.layout.address_accessory_sheet,
                 AccessoryTabType.ADDRESSES,
                 scrollListener);
+        mProfile = profile;
         mMediator =
                 new AccessorySheetTabMediator(
                         mModel,
@@ -54,7 +60,9 @@ public class AddressAccessorySheetCoordinator extends AccessorySheetTabCoordinat
     @Override
     public void onTabCreated(ViewGroup view) {
         super.onTabCreated(view);
-        AddressAccessorySheetViewBinder.initializeView((RecyclerView) view, mModel.get(ITEMS));
+        FaviconHelper faviconHelper = FaviconHelper.create(view.getContext(), mProfile);
+        AddressAccessorySheetViewBinder.initializeView(
+                (RecyclerView) view, mModel.get(ITEMS), faviconHelper);
     }
 
     @Override
@@ -70,12 +78,13 @@ public class AddressAccessorySheetCoordinator extends AccessorySheetTabCoordinat
      * @return Returns a fully initialized and wired adapter to a AddressAccessorySheetViewBinder.
      */
     static RecyclerViewAdapter<AccessorySheetTabViewBinder.ElementViewHolder, Void> createAdapter(
-            AccessorySheetTabItemsModel model) {
+            AccessorySheetTabItemsModel model, FaviconHelper faviconHelper) {
         return new RecyclerViewAdapter<>(
                 new SimpleRecyclerViewMcp<>(
                         model,
                         AccessorySheetDataPiece::getType,
                         AccessorySheetTabViewBinder.ElementViewHolder::bind),
-                AddressAccessorySheetViewBinder::create);
+                (parent, viewType) ->
+                        AddressAccessorySheetViewBinder.create(parent, viewType, faviconHelper));
     }
 }

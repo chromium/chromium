@@ -107,7 +107,7 @@ std::ostream& operator<<(std::ostream& out, const UserInfo& user_info);
 
 class PlusAddressSection final {
  public:
-  explicit PlusAddressSection(const std::u16string& plus_address);
+  PlusAddressSection(std::string origin, const std::u16string& plus_address);
 
   PlusAddressSection(const PlusAddressSection&);
   PlusAddressSection& operator=(const PlusAddressSection&);
@@ -116,11 +116,13 @@ class PlusAddressSection final {
 
   ~PlusAddressSection();
 
-  const AccessorySheetField plus_address() const { return plus_address_; }
+  const std::string& origin() const { return origin_; }
+  const AccessorySheetField& plus_address() const { return plus_address_; }
 
   bool operator==(const PlusAddressSection&) const = default;
 
  private:
+  std::string origin_;
   AccessorySheetField plus_address_;
 };
 
@@ -425,8 +427,10 @@ class AccessorySheetData::Builder final {
                        bool selectable) &;
 
   // Adds a new PlusAddressSection `accessory_sheet_data_`.
-  Builder&& AddPlusAddressSection(std::u16string plus_address) &&;
-  Builder& AddPlusAddressSection(std::u16string plus_address) &;
+  Builder&& AddPlusAddressSection(std::string origin,
+                                  std::u16string plus_address) &&;
+  Builder& AddPlusAddressSection(std::string origin,
+                                 std::u16string plus_address) &;
 
   // Adds a new PasskeySection `accessory_sheet_data_`.
   Builder&& AddPasskeySection(std::string username,

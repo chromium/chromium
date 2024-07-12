@@ -355,7 +355,7 @@ public class AccessorySheetRenderTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 new AddressAccessorySheetCoordinator(
-                                        mActivityTestRule.getActivity(), null));
+                                        mActivityTestRule.getActivity(), mProfile, null));
         showSheetTab(coordinator, sheet);
 
         mRenderTestRule.render(mContentView, "Addresses");
@@ -371,6 +371,7 @@ public class AccessorySheetRenderTest {
         sheet.getPlusAddressSection()
                 .add(
                         new KeyboardAccessoryData.PlusAddressSection(
+                                /* origin= */ "google.com",
                                 new UserInfoField(
                                         "example@gmail.com",
                                         "example@gmail.com",
@@ -384,7 +385,7 @@ public class AccessorySheetRenderTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 new AddressAccessorySheetCoordinator(
-                                        mActivityTestRule.getActivity(), null));
+                                        mActivityTestRule.getActivity(), mProfile, null));
         showSheetTab(coordinator, sheet);
 
         mRenderTestRule.render(mContentView, "Addresses with plus address");

@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PlusAddressSection;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
+import org.chromium.chrome.browser.keyboard_accessory.helper.FaviconHelper;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -87,7 +88,12 @@ public class AddressAccessorySheetViewTest {
                                                 AccessorySheetTabViewBinder.initializeView(
                                                         mView.get(), null);
                                                 AddressAccessorySheetViewBinder.initializeView(
-                                                        mView.get(), mModel);
+                                                        mView.get(),
+                                                        mModel,
+                                                        FaviconHelper.create(
+                                                                view.getContext(),
+                                                                mActivityTestRule.getProfile(
+                                                                        false)));
                                             }
 
                                             @Override
@@ -198,6 +204,7 @@ public class AddressAccessorySheetViewTest {
                     mModel.add(
                             new AccessorySheetDataPiece(
                                     new PlusAddressSection(
+                                            /* origin= */ "google.com",
                                             new UserInfoField.Builder()
                                                     .setDisplayText("example@gmail.com")
                                                     .setTextToFill("example@gmail.com")

@@ -225,10 +225,16 @@ public class KeyboardAccessoryData {
     }
 
     public static final class PlusAddressSection {
+        private final String mOrigin;
         private UserInfoField mPlusAddressInfo;
 
-        public PlusAddressSection(UserInfoField plusAddressInfo) {
+        public PlusAddressSection(String origin, UserInfoField plusAddressInfo) {
+            mOrigin = origin;
             mPlusAddressInfo = plusAddressInfo;
+        }
+
+        public String getOrigin() {
+            return mOrigin;
         }
 
         public UserInfoField getPlusAddress() {

@@ -30,6 +30,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
@@ -38,6 +39,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.ui.modelutil.ListObservable;
 
@@ -48,6 +50,7 @@ import org.chromium.ui.modelutil.ListObservable;
         shadows = {CustomShadowAsyncTask.class})
 public class AddressAccessorySheetControllerTest {
 
+    @Mock private Profile mProfile;
     @Mock private AccessorySheetTabView mMockView;
     @Mock private ListObservable.ListObserver<Void> mMockItemListObserver;
 
@@ -57,8 +60,11 @@ public class AddressAccessorySheetControllerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        when(mMockView.getContext()).thenReturn(ContextUtils.getApplicationContext());
         AccessorySheetTabCoordinator.IconProvider.setIconForTesting(mock(Drawable.class));
-        mCoordinator = new AddressAccessorySheetCoordinator(RuntimeEnvironment.application, null);
+        mCoordinator =
+                new AddressAccessorySheetCoordinator(
+                        RuntimeEnvironment.application, mProfile, null);
         assertNotNull(mCoordinator);
         mSheetDataPieces = mCoordinator.getSheetDataPiecesForTesting();
     }

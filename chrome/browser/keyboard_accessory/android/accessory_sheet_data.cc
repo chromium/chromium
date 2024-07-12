@@ -86,8 +86,10 @@ std::ostream& operator<<(std::ostream& os, const UserInfo& user_info) {
   return os << "]";
 }
 
-PlusAddressSection::PlusAddressSection(const std::u16string& plus_address)
-    : plus_address_(AccessorySheetField(/*display_text=*/plus_address,
+PlusAddressSection::PlusAddressSection(std::string origin,
+                                       const std::u16string& plus_address)
+    : origin_(std::move(origin)),
+      plus_address_(AccessorySheetField(/*display_text=*/plus_address,
                                         /*text_to_fill=*/plus_address,
                                         /*a11y_description=*/plus_address,
                                         /*id=*/std::string(),
@@ -108,8 +110,8 @@ PlusAddressSection::~PlusAddressSection() = default;
 
 std::ostream& operator<<(std::ostream& os,
                          const PlusAddressSection& plus_address) {
-  os << "plus_address: \"" << plus_address.plus_address().display_text()
-     << "\"";
+  os << "origin: \"" << plus_address.origin() << "\", " << "plus_address: \""
+     << plus_address.plus_address().display_text() << "\"";
   return os;
 }
 
@@ -424,15 +426,18 @@ AccessorySheetData::Builder& AccessorySheetData::Builder::AppendField(
 
 AccessorySheetData::Builder&&
 AccessorySheetData::Builder::AddPlusAddressSection(
+    std::string origin,
     std::u16string plus_address) && {
   // Calls PlusAddressSection(...)& since |this| is an lvalue.
-  return std::move(AddPlusAddressSection(std::move(plus_address)));
+  return std::move(
+      AddPlusAddressSection(std::move(origin), std::move(plus_address)));
 }
 
 AccessorySheetData::Builder& AccessorySheetData::Builder::AddPlusAddressSection(
+    std::string origin,
     std::u16string plus_address) & {
   accessory_sheet_data_.add_plus_address_section(
-      (PlusAddressSection(std::move(plus_address))));
+      (PlusAddressSection(std::move(origin), std::move(plus_address))));
   return *this;
 }
 

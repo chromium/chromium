@@ -893,7 +893,7 @@ class ManualFillingMediator
                         mActivity, profile, mAccessorySheet.getScrollListener());
             case AccessoryTabType.ADDRESSES:
                 return new AddressAccessorySheetCoordinator(
-                        mActivity, mAccessorySheet.getScrollListener());
+                        mActivity, profile, mAccessorySheet.getScrollListener());
             case AccessoryTabType.PASSWORDS:
                 return new PasswordAccessorySheetCoordinator(
                         mActivity, profile, mAccessorySheet.getScrollListener());

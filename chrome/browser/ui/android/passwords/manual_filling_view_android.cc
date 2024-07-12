@@ -99,6 +99,7 @@ ScopedJavaGlobalRef<jobject> ConvertAccessorySheetDataToJavaObject(
     Java_ManualFillingComponentBridge_addPlusAddressSectionToAccessorySheetData(
         env, java_object, j_tab_data,
         static_cast<int>(tab_data.get_sheet_type()),
+        plus_address_section.origin(),
         plus_address_section.plus_address().display_text());
   }
 

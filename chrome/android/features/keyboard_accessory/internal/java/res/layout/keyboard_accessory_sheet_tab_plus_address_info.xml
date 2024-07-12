@@ -17,12 +17,33 @@ found in the LICENSE file.
     android:layout_marginBottom="@dimen/keyboard_accessory_sheet_bottom_margin"
     android:orientation="vertical">
 
-    <org.chromium.components.browser_ui.widget.chips.ChipView
-        android:id="@+id/plus_address"
+    <LinearLayout
         android:gravity="center_vertical|start"
-        android:layout_width="wrap_content"
+        android:fillViewport="true"
         android:layout_height="wrap_content"
-        style="@style/InputChip" />
+        android:layout_width="match_parent"
+        android:orientation="horizontal">
+
+        <org.chromium.components.browser_ui.widget.chips.ChipView
+            android:id="@+id/plus_address"
+            android:gravity="center_vertical|start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/InputChip" />
+
+        <Space
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:layout_width="0dp" />
+
+        <ImageView
+            android:id="@+id/favicon"
+            android:layout_width="@dimen/keyboard_accessory_suggestion_icon_size"
+            android:layout_height="@dimen/keyboard_accessory_suggestion_icon_size"
+            android:importantForAccessibility="no"
+            android:layout_gravity="center"/>
+
+    </LinearLayout>
 
     <View style="@style/HorizontalDivider"
         android:layout_marginTop="@dimen/keyboard_accessory_sheet_divider_margin"
