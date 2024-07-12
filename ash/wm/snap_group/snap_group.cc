@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/scoped_overview_hide_windows.h"
+#include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/snap_group/snap_group_metrics.h"
 #include "ash/wm/splitview/split_view_constants.h"
@@ -185,6 +186,15 @@ bool SnapGroup::IsSnapGroupLayoutHorizontal() const {
 }
 
 void SnapGroup::OnLocatedEvent(ui::LocatedEvent* event) {
+  // `ToplevelWindowEventHandler` continues to process drag events in Overview
+  // mode, potentially leading to group removal and crashes in
+  // `OverviewGrid::RemoveItem()`. To prevent groups from being removed in
+  // Overview (forwarded from `ToplevelWindowEventHandler::HandleDrag()`) and
+  // subsequent crashes, early return here.
+  if (IsInOverviewSession()) {
+    return;
+  }
+
   CHECK(event->type() == ui::ET_MOUSE_DRAGGED ||
         event->type() == ui::ET_TOUCH_MOVED ||
         event->type() == ui::ET_GESTURE_SCROLL_UPDATE);
