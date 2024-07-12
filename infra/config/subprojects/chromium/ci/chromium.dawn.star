@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.dawn builder group."""
 
+load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
@@ -558,6 +559,11 @@ ci.thin_tester(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    # TODO(crbug.com/41489949): This config is experimental. It is not part of
+    # the WebGPU CTS roller for capacity reasons, so it goes red with each roll.
+    # Gardeners don't need to fix this, so exclude it from Sheriff-o-Matic.
+    # It should be added back to SoM once the roller runs it.
+    gardener_rotations = args.ignore_default(None),
     # Uncomment this entry when this experimental tester is actually in use.
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Android",

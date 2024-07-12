@@ -8,7 +8,6 @@ chromium/try/android-arm64-rel
 chromium/try/android-bfcache-rel
 chromium/try/android-clobber-rel
 chromium/try/android-dawn-arm-rel
-chromium/try/android-dawn-arm64-exp-rel
 chromium/try/android-dawn-arm64-rel
 chromium/try/android-dawn-arm64-s24-rel
 chromium/try/android-official
