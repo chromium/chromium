@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -1317,12 +1318,21 @@ void URLRequest::set_socket_tag(const SocketTag& socket_tag) {
 }
 
 bool URLRequest::ShouldSetLoadWithStorageAccess() const {
-  // TODO(https://crbug.com/344608182): this should probably only return true if
-  // the Storage-Access state is "inactive" or "active"/allowed. For now, this
-  // is fine because this is only used to set the renderer's bool, which is
-  // untrusted anyway.
+  CHECK(job_);
+  auto storage_access_can_be_activated = [this]() -> bool {
+    switch (job_->StorageAccessStatus()) {
+      case cookie_util::StorageAccessStatus::kNone:
+        return false;
+      case cookie_util::StorageAccessStatus::kInactive:
+        return true;
+      case cookie_util::StorageAccessStatus::kActive:
+        return true;
+    }
+    NOTREACHED_NORETURN();
+  };
   return base::FeatureList::IsEnabled(features::kStorageAccessHeaders) &&
-         response_headers() && response_headers()->HasStorageAccessLoadHeader();
+         storage_access_can_be_activated() && response_headers() &&
+         response_headers()->HasStorageAccessLoadHeader();
 }
 
 void URLRequest::SetSharedDictionaryGetter(

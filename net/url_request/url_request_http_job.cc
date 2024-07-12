@@ -491,9 +491,10 @@ void URLRequestHttpJob::MaybeSetSecFetchStorageAccessHeader() {
   std::optional<cookie_util::StorageAccessStatus> storage_access_status =
       request_->network_delegate()->GetStorageAccessStatus(*request_);
   if (storage_access_status) {
+    storage_access_status_ = storage_access_status.value();
     request_info_.extra_headers.SetHeader(
         HttpRequestHeaders::kSecFetchStorageAccess,
-        GetSecFetchStorageAccessHeaderValue(storage_access_status.value()));
+        GetSecFetchStorageAccessHeaderValue(storage_access_status_));
   }
 }
 
@@ -1508,6 +1509,11 @@ std::unique_ptr<SourceStream> URLRequestHttpJob::SetUpSourceStream() {
   return upstream;
 }
 
+cookie_util::StorageAccessStatus URLRequestHttpJob::StorageAccessStatus()
+    const {
+  return storage_access_status_;
+}
+
 bool URLRequestHttpJob::CopyFragmentOnRedirect(const GURL& location) const {
   // Allow modification of reference fragments by default, unless
   // |preserve_fragment_on_redirect_url_| is set and equal to the redirect URL.
@@ -1560,6 +1566,7 @@ bool URLRequestHttpJob::NeedsRetryWithStorageAccess() {
     return false;
   }
   if (!ShouldAddCookieHeader() ||
+      storage_access_status_ != cookie_util::StorageAccessStatus::kInactive ||
       request_->cookie_setting_overrides().Has(
           CookieSettingOverride::kStorageAccessGrantEligible) ||
       request_->cookie_setting_overrides().Has(

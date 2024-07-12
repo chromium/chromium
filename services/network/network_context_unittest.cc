@@ -90,6 +90,7 @@
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_store_test_callbacks.h"
 #include "net/cookies/cookie_util.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/disk_cache/cache_util.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/memory/mem_backend_impl.h"
@@ -9402,6 +9403,12 @@ INSTANTIATE_TEST_SUITE_P(NetworkContextBrowserCookieTestInstance,
 
 class StorageAccessHeaderNetworkContextTest : public NetworkContextTest {
  public:
+  struct PatternsAndSetting {
+    ContentSettingsPattern primary;
+    ContentSettingsPattern secondary;
+    ContentSetting value;
+  };
+
   StorageAccessHeaderNetworkContextTest() {
     features_.InitAndEnableFeature(net::features::kStorageAccessHeaders);
   }
@@ -9417,16 +9424,6 @@ class StorageAccessHeaderNetworkContextTest : public NetworkContextTest {
     http_response->AddCustomHeader("Activate-Storage-Access", "retry");
     http_response->set_content("");
     http_response->set_code(net::HTTP_OK);
-    {
-      base::AutoLock auto_lock(lock_);
-      cookie_headers_.push_back([&]() -> std::string {
-        if (auto it = request.headers.find(net::HttpRequestHeaders::kCookie);
-            it != request.headers.end()) {
-          return it->second;
-        }
-        return "None";
-      }());
-    }
     return http_response;
   }
 
@@ -9444,11 +9441,23 @@ class StorageAccessHeaderNetworkContextTest : public NetworkContextTest {
     test_server_.RegisterRequestHandler(base::BindRepeating(
         &StorageAccessHeaderNetworkContextTest::HandleRetryRequest,
         base::Unretained(this)));
+    test_server_.RegisterRequestHandler(base::BindRepeating(
+        &StorageAccessHeaderNetworkContextTest::HandleRedirectLoadRequest,
+        base::Unretained(this)));
     test_server_.RegisterRequestMonitor(base::BindLambdaForTesting(
         [&](const net::test_server::HttpRequest& request) {
           base::AutoLock auto_lock(lock_);
           most_recent_request_headers_.push_back(request.headers);
+          cookie_headers_.push_back([&]() -> std::string {
+            if (auto it =
+                    request.headers.find(net::HttpRequestHeaders::kCookie);
+                it != request.headers.end()) {
+              return it->second;
+            }
+            return "None";
+          }());
         }));
+    test_server_.AddDefaultHandlers();
     ASSERT_TRUE(test_server_.Start());
   }
 
@@ -9479,11 +9488,51 @@ class StorageAccessHeaderNetworkContextTest : public NetworkContextTest {
     EXPECT_THAT(client.completion_status().error_code, net::test::IsOk());
   }
 
+  void SetContentSettings(CookieManager* cookie_manager,
+                          ContentSettingsType content_type,
+                          std::initializer_list<PatternsAndSetting> patterns) {
+    std::vector<ContentSettingPatternSource> settings;
+    base::ranges::transform(
+        patterns, std::back_inserter(settings),
+        [](const PatternsAndSetting& patterns_and_setting) {
+          return ContentSettingPatternSource(
+              /*primary_pattern=*/patterns_and_setting.primary,
+              /*secondary_patttern=*/
+              patterns_and_setting.secondary,
+              /*setting_value=*/base::Value(patterns_and_setting.value),
+              content_settings::ProviderType::kPrefProvider,
+              /*incognito=*/false,
+              /*metadata=*/content_settings::RuleMetaData());
+        });
+    base::test::TestFuture<void> future;
+    cookie_manager->SetContentSettings(content_type, settings,
+                                       future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+  }
+
  protected:
   static constexpr char kStorageAccessRetryPath[] =
       "/retry-with-storage-access";
+  static constexpr char kStorageAccessRedirectLoadPath[] =
+      "/redirect-load-with-storage-access";
 
  private:
+  std::unique_ptr<net::test_server::HttpResponse> HandleRedirectLoadRequest(
+      const net::test_server::HttpRequest& request) {
+    if (!base::StartsWith(request.GetURL().path(),
+                          kStorageAccessRedirectLoadPath)) {
+      return nullptr;
+    }
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_content_type("text/plain");
+    http_response->AddCustomHeader("Activate-Storage-Access", "load");
+    http_response->set_code(net::HTTP_PERMANENT_REDIRECT);
+    http_response->AddCustomHeader("Location", "/empty.html");
+
+    return http_response;
+  }
+
   base::test::ScopedFeatureList features_;
 
   mutable base::Lock lock_;
@@ -9495,55 +9544,241 @@ class StorageAccessHeaderNetworkContextTest : public NetworkContextTest {
           net::test_server::EmbeddedTestServer::TYPE_HTTPS);
 };
 
-TEST_F(StorageAccessHeaderNetworkContextTest, StorageAccessHeaderRetry) {
-  // This test case makes a request to `kStorageAccessRetryPath`, which responds
-  // with the "Activate-Storage-Access: retry" header. The browser then retries
-  // the request (including unpartitioned cookies, if applicable). The second
-  // response still includes the header, but the browser ignores it the second
-  // time, since retrying would not make any difference.
+// This test fetches `kStorageAccessRetryPath`, but the browser does not retry
+// the request since there is no matching content setting (and therefore
+// retrying the request would be a waste of time).
+TEST_F(StorageAccessHeaderNetworkContextTest,
+       StorageAccessHeader_Retry_WithoutContentSetting) {
   StartTestServerWithRequestHeaderMonitorAndRetryHandler();
 
-  const GURL server_url =
+  const GURL request_url =
       test_server()->GetURL("a.test", kStorageAccessRetryPath);
-  const GURL third_party_url = test_server()->GetURL("b.test", "/");
+  const GURL top_level_url = test_server()->GetURL("b.test", "/");
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
-  EXPECT_TRUE(
-      SetCookieHelper(network_context.get(), server_url, "3PCookie", "1"));
+  ASSERT_TRUE(
+      SetCookieHelper(network_context.get(), request_url, "3PCookie", "1"));
 
   network_context->cookie_manager()->BlockThirdPartyCookies(true);
-  {
-    base::test::TestFuture<void> future;
-    network_context->cookie_manager()->SetContentSettings(
-        ContentSettingsType::STORAGE_ACCESS,
-        {
-            ContentSettingPatternSource(
-                /*primary_pattern=*/ContentSettingsPattern::
-                    FromURLToSchemefulSitePattern(server_url),
-                /*secondary_patttern=*/
-                ContentSettingsPattern::FromURLToSchemefulSitePattern(
-                    third_party_url),
-                /*setting_value=*/base::Value(CONTENT_SETTING_ALLOW),
-                content_settings::ProviderType::kPrefProvider,
-                /*incognito=*/false,
-                /*metadata=*/content_settings::RuleMetaData()),
-        },
-        future.GetCallback());
-    ASSERT_TRUE(future.Wait());
-  }
 
-  ResourceRequest third_party_request;
-  third_party_request.url = server_url;
-  third_party_request.site_for_cookies =
-      net::SiteForCookies::FromUrl(third_party_url);
+  ResourceRequest request;
+  request.url = request_url;
+  auto params = mojom::URLLoaderFactoryParams::New();
+  params->is_trusted = true;
+  params->process_id = mojom::kBrowserProcessId;
+  params->is_orb_enabled = false;
+  params->isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther,
+      url::Origin::Create(top_level_url), url::Origin::Create(request.url),
+      request.site_for_cookies);
   std::unique_ptr<TestURLLoaderClient> client =
-      FetchRequest(third_party_request, network_context.get());
+      FetchRequest(request, network_context.get(), mojom::kURLLoadOptionNone,
+                   mojom::kBrowserProcessId, std::move(params));
+
+  client->RunUntilComplete();
+
+  EXPECT_THAT(cookie_headers(), testing::ElementsAre("None"));
+}
+
+// This test fetches `kStorageAccessRetryPath`, but the browser does not retry
+// the request since cookies are not blocked (and therefore retrying the request
+// would be a waste of time).
+TEST_F(StorageAccessHeaderNetworkContextTest,
+       StorageAccessHeader_Retry_WithoutBlockingCookies) {
+  StartTestServerWithRequestHeaderMonitorAndRetryHandler();
+
+  const GURL request_url =
+      test_server()->GetURL("a.test", kStorageAccessRetryPath);
+  const GURL top_level_url = test_server()->GetURL("b.test", "/");
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  ASSERT_TRUE(
+      SetCookieHelper(network_context.get(), request_url, "3PCookie", "1"));
+
+  network_context->cookie_manager()->BlockThirdPartyCookies(false);
+
+  ResourceRequest request;
+  request.url = request_url;
+  auto params = mojom::URLLoaderFactoryParams::New();
+  params->is_trusted = true;
+  params->process_id = mojom::kBrowserProcessId;
+  params->is_orb_enabled = false;
+  params->isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther,
+      url::Origin::Create(top_level_url), url::Origin::Create(request.url),
+      request.site_for_cookies);
+  std::unique_ptr<TestURLLoaderClient> client =
+      FetchRequest(request, network_context.get(), mojom::kURLLoadOptionNone,
+                   mojom::kBrowserProcessId, std::move(params));
+
+  client->RunUntilComplete();
+
+  EXPECT_THAT(cookie_headers(), testing::ElementsAre("3PCookie=1"));
+}
+
+// This test case makes a request to `kStorageAccessRetryPath`, which responds
+// with the "Activate-Storage-Access: retry" header. The browser then retries
+// the request (including unpartitioned cookies, if applicable). The second
+// response still includes the header, but the browser ignores it the second
+// time, since retrying would not make any difference.
+TEST_F(StorageAccessHeaderNetworkContextTest, StorageAccessHeader_Retry) {
+  StartTestServerWithRequestHeaderMonitorAndRetryHandler();
+
+  const GURL request_url =
+      test_server()->GetURL("a.test", kStorageAccessRetryPath);
+  const GURL top_level_url = test_server()->GetURL("b.test", "/");
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  ASSERT_TRUE(
+      SetCookieHelper(network_context.get(), request_url, "3PCookie", "1"));
+
+  network_context->cookie_manager()->BlockThirdPartyCookies(true);
+  SetContentSettings(
+      network_context->cookie_manager(), ContentSettingsType::STORAGE_ACCESS,
+      {
+          {
+              ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                  request_url),
+              ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                  top_level_url),
+              CONTENT_SETTING_ALLOW,
+          },
+      });
+
+  ResourceRequest request;
+  request.url = request_url;
+  auto params = mojom::URLLoaderFactoryParams::New();
+  params->is_trusted = true;
+  params->process_id = mojom::kBrowserProcessId;
+  params->is_orb_enabled = false;
+  params->isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther,
+      url::Origin::Create(top_level_url), url::Origin::Create(request.url),
+      request.site_for_cookies);
+  std::unique_ptr<TestURLLoaderClient> client =
+      FetchRequest(request, network_context.get(), mojom::kURLLoadOptionNone,
+                   mojom::kBrowserProcessId, std::move(params));
 
   client->RunUntilComplete();
 
   EXPECT_THAT(cookie_headers(), testing::ElementsAre("None", "3PCookie=1"));
+}
+
+TEST_F(StorageAccessHeaderNetworkContextTest, StorageAccessHeader_Load) {
+  StartTestServerWithRequestHeaderMonitorAndRetryHandler();
+
+  const GURL top_level_url = test_server()->GetURL("a.test", "/");
+  const GURL request_url = test_server()->GetURL(
+      "b.test", "/set-header?Activate-Storage-Access: load");
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  ASSERT_TRUE(
+      SetCookieHelper(network_context.get(), request_url, "3PCookie", "1"));
+
+  network_context->cookie_manager()->BlockThirdPartyCookies(true);
+  SetContentSettings(
+      network_context->cookie_manager(), ContentSettingsType::STORAGE_ACCESS,
+      {
+          {
+              ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                  request_url),
+              ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                  top_level_url),
+              CONTENT_SETTING_ALLOW,
+          },
+      });
+
+  ResourceRequest request;
+  request.url = request_url;
+  auto params = mojom::URLLoaderFactoryParams::New();
+  params->is_trusted = true;
+  params->process_id = mojom::kBrowserProcessId;
+  params->is_orb_enabled = false;
+  params->isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther,
+      url::Origin::Create(top_level_url), url::Origin::Create(request.url),
+      request.site_for_cookies);
+  std::unique_ptr<TestURLLoaderClient> client =
+      FetchRequest(request, network_context.get(), mojom::kURLLoadOptionNone,
+                   mojom::kBrowserProcessId, std::move(params));
+
+  client->RunUntilComplete();
+
+  // Cookies were blocked on the request, since the server did not request them.
+  EXPECT_THAT(cookie_headers(), testing::ElementsAre("None"));
+  // But the server *is* able to request that the response is loaded with
+  // storage access.
+  EXPECT_TRUE(client->response_head()->load_with_storage_access);
+}
+
+// Only the final response in a redirect chain has any say on the
+// `load_with_storage_access` field of the response.
+TEST_F(StorageAccessHeaderNetworkContextTest,
+       StorageAccessHeader_RedirectWithLoad) {
+  StartTestServerWithRequestHeaderMonitorAndRetryHandler();
+  const GURL top_level_url = test_server()->GetURL("a.test", "/");
+  const GURL request_url =
+      test_server()->GetURL("b.test", kStorageAccessRedirectLoadPath);
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  ASSERT_TRUE(
+      SetCookieHelper(network_context.get(), request_url, "3PCookie", "1"));
+
+  network_context->cookie_manager()->BlockThirdPartyCookies(true);
+  SetContentSettings(
+      network_context->cookie_manager(), ContentSettingsType::STORAGE_ACCESS,
+      {
+          {
+              ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                  request_url),
+              ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                  top_level_url),
+              CONTENT_SETTING_ALLOW,
+          },
+      });
+
+  ResourceRequest request;
+  request.url = request_url;
+  request.trusted_params.emplace();
+  request.trusted_params->include_request_cookies_with_response = true;
+
+  mojo::Remote<mojom::URLLoaderFactory> loader_factory;
+  auto params = mojom::URLLoaderFactoryParams::New();
+  params->is_trusted = true;
+  params->process_id = mojom::kBrowserProcessId;
+  params->is_orb_enabled = false;
+  params->isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther,
+      url::Origin::Create(top_level_url), url::Origin::Create(request.url),
+      request.site_for_cookies);
+  network_context->CreateURLLoaderFactory(
+      loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+  TestURLLoaderClient client;
+  mojo::Remote<mojom::URLLoader> loader;
+  loader_factory->CreateLoaderAndStart(
+      loader.BindNewPipeAndPassReceiver(), 0 /* request_id */,
+      mojom::kURLLoadOptionNone, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  client.RunUntilRedirectReceived();
+  loader->FollowRedirect({}, {}, {}, {});
+  client.RunUntilComplete();
+
+  EXPECT_THAT(cookie_headers(), testing::ElementsAre("None", "None"));
+  // The redirect response included the `load` header, but the final response
+  // did not, so the URLLoader should not propagate it.
+  EXPECT_FALSE(client.response_head()->load_with_storage_access);
 }
 
 TEST_F(StorageAccessHeaderNetworkContextTest,

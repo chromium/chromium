@@ -32,6 +32,7 @@
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_setting_override.h"
+#include "net/cookies/cookie_util.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/http/http_auth_handler_factory.h"
@@ -288,6 +289,11 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
     return cookie_setting_overrides_records_;
   }
 
+  void set_storage_access_status(
+      std::optional<cookie_util::StorageAccessStatus> status) {
+    storage_access_status_ = status;
+  }
+
  protected:
   // NetworkDelegate:
   int OnBeforeURLRequest(URLRequest* request,
@@ -326,6 +332,8 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
       const URLRequest& request,
       const GURL& target_url,
       const GURL& referrer_url) const override;
+  std::optional<cookie_util::StorageAccessStatus> OnGetStorageAccessStatus(
+      const URLRequest& request) const override;
 
   void InitRequestStatesIfNew(int request_id);
 
@@ -375,6 +383,9 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
   int next_request_id_ = 0;
 
   mutable std::vector<CookieSettingOverrides> cookie_setting_overrides_records_;
+
+  std::optional<cookie_util::StorageAccessStatus> storage_access_status_ =
+      std::nullopt;
 };
 
 // ----------------------------------------------------------------------------

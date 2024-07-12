@@ -26,6 +26,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cookies/cookie_setting_override.h"
+#include "net/cookies/cookie_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_event_type.h"
@@ -394,6 +395,10 @@ GURL URLRequestJob::ComputeReferrerForPolicy(
 
   NOTREACHED_IN_MIGRATION();
   return GURL();
+}
+
+cookie_util::StorageAccessStatus URLRequestJob::StorageAccessStatus() const {
+  return cookie_util::StorageAccessStatus::kNone;
 }
 
 int URLRequestJob::NotifyConnected(const TransportInfo& info,

@@ -4967,10 +4967,83 @@ class StorageAccessHeaderURLLoaderTest : public URLLoaderTest {
   base::test::ScopedFeatureList features_;
 };
 
-TEST_F(StorageAccessHeaderURLLoaderTest, StorageAccessHeader_Load) {
+TEST_F(StorageAccessHeaderURLLoaderTest, StorageAccessHeader_Load_NoStatus) {
   base::RunLoop delete_run_loop;
   ResourceRequest request = CreateResourceRequest(
       "GET", test_server_.GetURL("/set-header?Activate-Storage-Access: load"));
+
+  test_network_delegate()->set_storage_access_status(std::nullopt);
+
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
+  url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), request,
+      client()->CreateRemote());
+
+  client()->RunUntilComplete();
+  delete_run_loop.Run();
+
+  // TestNetworkDelegate always returns std::nullopt for the
+  // GetStorageAccessStatus call, so the job's `storage_access_status_` is never
+  // overwritten and stays kNone.
+  EXPECT_FALSE(client()->response_head()->load_with_storage_access);
+}
+
+TEST_F(StorageAccessHeaderURLLoaderTest, StorageAccessHeader_Load_StatusNone) {
+  base::RunLoop delete_run_loop;
+  ResourceRequest request = CreateResourceRequest(
+      "GET", test_server_.GetURL("/set-header?Activate-Storage-Access: load"));
+
+  test_network_delegate()->set_storage_access_status(
+      net::cookie_util::StorageAccessStatus::kNone);
+
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
+  url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), request,
+      client()->CreateRemote());
+
+  client()->RunUntilComplete();
+  delete_run_loop.Run();
+
+  EXPECT_FALSE(client()->response_head()->load_with_storage_access);
+}
+
+TEST_F(StorageAccessHeaderURLLoaderTest,
+       StorageAccessHeader_Load_StatusInactive) {
+  base::RunLoop delete_run_loop;
+  ResourceRequest request = CreateResourceRequest(
+      "GET", test_server_.GetURL("/set-header?Activate-Storage-Access: load"));
+
+  test_network_delegate()->set_storage_access_status(
+      net::cookie_util::StorageAccessStatus::kInactive);
+
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
+  url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), request,
+      client()->CreateRemote());
+
+  client()->RunUntilComplete();
+  delete_run_loop.Run();
+
+  EXPECT_TRUE(client()->response_head()->load_with_storage_access);
+}
+
+TEST_F(StorageAccessHeaderURLLoaderTest,
+       StorageAccessHeader_Load_StatusActive) {
+  base::RunLoop delete_run_loop;
+  ResourceRequest request = CreateResourceRequest(
+      "GET", test_server_.GetURL("/set-header?Activate-Storage-Access: load"));
+
+  test_network_delegate()->set_storage_access_status(
+      net::cookie_util::StorageAccessStatus::kActive);
 
   mojo::PendingRemote<mojom::URLLoader> loader;
   std::unique_ptr<URLLoader> url_loader;
@@ -4990,6 +5063,9 @@ TEST_F(StorageAccessHeaderURLLoaderTest, StorageAccessHeader_RedirectWithLoad) {
   base::RunLoop delete_run_loop;
   ResourceRequest request = CreateResourceRequest(
       "GET", test_server_.GetURL(kStorageAccessRedirectLoadPath));
+
+  test_network_delegate()->set_storage_access_status(
+      net::cookie_util::StorageAccessStatus::kActive);
 
   mojo::PendingRemote<mojom::URLLoader> loader;
   std::unique_ptr<URLLoader> url_loader;

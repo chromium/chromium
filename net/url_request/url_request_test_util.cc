@@ -18,6 +18,7 @@
 #include "net/cert/cert_verifier.h"
 #include "net/cert/do_nothing_ct_verifier.h"
 #include "net/cookies/cookie_setting_override.h"
+#include "net/cookies/cookie_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_response_headers.h"
@@ -554,6 +555,11 @@ int TestNetworkDelegate::GetRequestId(URLRequest* request) {
   request->SetUserData(kTestNetworkDelegateRequestIdKey,
                        std::make_unique<TestRequestId>(id));
   return id;
+}
+
+std::optional<cookie_util::StorageAccessStatus>
+TestNetworkDelegate::OnGetStorageAccessStatus(const URLRequest& request) const {
+  return storage_access_status_;
 }
 
 FilteringTestNetworkDelegate::FilteringTestNetworkDelegate() = default;

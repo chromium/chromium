@@ -2963,10 +2963,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
       HeadersAre(UnorderedElementsAre(
           Pair(net::HttpRequestHeaders::kCookie, kHeaderNotProvidedSentinel),
           Pair(net::HttpRequestHeaders::kSecFetchStorageAccess, "none"))));
-  // TODO(https://crbug.com/332335089): this should really not bother to do the
-  // retry at all, since the client should know ahead of time that the
-  // additional override won't make a difference. So this count should be 1.
-  EXPECT_EQ(retry_path_fetch_count_, 2);
+  EXPECT_EQ(retry_path_fetch_count_, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
@@ -3132,10 +3129,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersWithThirdPartyCookiesBrowserTest,
       HeadersAre(UnorderedElementsAre(
           Pair(net::HttpRequestHeaders::kCookie, "cross-site=b.test"),
           Pair(net::HttpRequestHeaders::kSecFetchStorageAccess, "active"))));
-  // TODO(https://crbug.com/332335089): this should really not bother to do the
-  // retry at all, since the client should know ahead of time that the
-  // additional override won't make a difference. So this count should be 1.
-  EXPECT_EQ(retry_path_fetch_count_, 2);
+  EXPECT_EQ(retry_path_fetch_count_, 1);
 }
 
 class StorageAccessHeadersWithFedCMBrowserTest
@@ -3168,10 +3162,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersWithFedCMBrowserTest, RetryHeader) {
       HeadersAre(UnorderedElementsAre(
           Pair(net::HttpRequestHeaders::kCookie, kHeaderNotProvidedSentinel),
           Pair(net::HttpRequestHeaders::kSecFetchStorageAccess, "none"))));
-  // TODO(https://crbug.com/332335089): this should really not bother to do the
-  // retry at all, since the client should know ahead of time that the
-  // additional override won't make a difference. So this count should be 1.
-  EXPECT_EQ(retry_path_fetch_count_, 2);
+  EXPECT_EQ(retry_path_fetch_count_, 1);
 }
 
 // TODO(): Add test cases of 3PC enabled by other mechanisms.

@@ -95,6 +95,7 @@
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_store_test_helpers.h"
+#include "net/cookies/cookie_util.h"
 #include "net/cookies/test_cookie_access_delegate.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/dns/mock_host_resolver.h"
@@ -13326,8 +13327,11 @@ TEST_F(PartitionConnectionsByNetworkAnonymizationKey,
 class PatternedExpectBypassCacheNetworkDelegate : public TestNetworkDelegate {
  public:
   explicit PatternedExpectBypassCacheNetworkDelegate(
-      std::vector<bool> expectations)
-      : expectations_(std::move(expectations)) {}
+      std::vector<bool> expectations,
+      std::optional<cookie_util::StorageAccessStatus> storage_access_status)
+      : expectations_(std::move(expectations)) {
+    set_storage_access_status(storage_access_status);
+  }
 
   ~PatternedExpectBypassCacheNetworkDelegate() override {
     EXPECT_TRUE(expectations_.empty());
@@ -13473,7 +13477,8 @@ TEST_F(StorageAccessHeaderURLRequestTest, StorageAccessHeaderRetry) {
   auto context_builder = CreateTestURLRequestContextBuilder();
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
-          std::vector({false, true})));
+          std::vector({false, true}),
+          cookie_util::StorageAccessStatus::kInactive));
   auto context = context_builder->Build();
   TestDelegate d;
 
@@ -13504,7 +13509,8 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   auto context_builder = CreateTestURLRequestContextBuilder();
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
-          std::vector({false, true, false})));
+          std::vector({false, true, false}),
+          cookie_util::StorageAccessStatus::kInactive));
   auto context = context_builder->Build();
   TestDelegate d;
 
@@ -13547,7 +13553,8 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   auto context_builder = CreateTestURLRequestContextBuilder();
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
-          std::vector({false, true})));
+          std::vector({false, true}),
+          cookie_util::StorageAccessStatus::kInactive));
   auto context = context_builder->Build();
   TestDelegate d;
   d.set_credentials(AuthCredentials(kUser, kSecret));
@@ -13586,7 +13593,8 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   auto context_builder = CreateTestURLRequestContextBuilder();
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
-          std::vector({false, true})));
+          std::vector({false, true}),
+          cookie_util::StorageAccessStatus::kInactive));
   auto context = context_builder->Build();
   TestDelegate d;
   d.set_credentials(AuthCredentials(kUser, kSecret));
