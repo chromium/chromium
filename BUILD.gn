@@ -112,6 +112,7 @@ group("gn_all") {
       "//third_party/distributed_point_functions/shim:distributed_point_functions_shim_unittests",
       "//third_party/flatbuffers:flatbuffers_unittests",
       "//third_party/liburlpattern:liburlpattern_unittests",
+      "//third_party/rapidhash:rapidhash_fuzztests",
       "//tools/binary_size:binary_size_trybot_py",
       "//tools/ipc_fuzzer:ipc_fuzzer_all",
       "//tools/metrics:metrics_metadata",
