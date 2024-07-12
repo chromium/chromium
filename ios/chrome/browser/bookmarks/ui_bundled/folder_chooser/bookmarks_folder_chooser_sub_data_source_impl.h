@@ -10,7 +10,7 @@
 #import <Foundation/Foundation.h>
 #import <set>
 
-enum class BookmarkModelType;
+enum class BookmarkStorageType;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -44,7 +44,7 @@ class BookmarkNode;
 // Both `bookmarkModel` and `parentDataSource` needs to be non null.
 // Additionally, `bookmarkModel` needs to be fully loaded.
 - (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-                                 type:(BookmarkModelType)type
+                                 type:(BookmarkStorageType)type
                      parentDataSource:
                          (id<BookmarksFolderChooserParentDataSource>)
                              parentDataSource NS_DESIGNATED_INITIALIZER;

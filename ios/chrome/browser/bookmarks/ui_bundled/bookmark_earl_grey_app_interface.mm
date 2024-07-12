@@ -17,7 +17,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/query_parser/query_parser.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
-#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_path_cache.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
@@ -40,7 +40,7 @@ bookmarks::BookmarkModel* GetBookmarkModel() {
 std::vector<const bookmarks::BookmarkNode*> GetBookmarksWithTitle(
     NSString* title,
     bookmarks::BookmarkModel* bookmark_model,
-    BookmarkModelType type) {
+    BookmarkStorageType type) {
   int const kMaxCountOfBookmarks = 50;
 
   bookmarks::QueryFields query;
@@ -53,7 +53,7 @@ std::vector<const bookmarks::BookmarkNode*> GetBookmarksWithTitle(
 
   base::ranges::remove_if(nodes, [=](const bookmarks::BookmarkNode* node) {
     return type !=
-           bookmark_utils_ios::GetBookmarkModelType(node, bookmark_model);
+           bookmark_utils_ios::GetBookmarkStorageType(node, bookmark_model);
   });
 
   return nodes;
@@ -62,20 +62,20 @@ std::vector<const bookmarks::BookmarkNode*> GetBookmarksWithTitle(
 const bookmarks::BookmarkNode* GetFirstBookmarkWithTitle(
     NSString* title,
     bookmarks::BookmarkModel* bookmark_model,
-    BookmarkModelType type) {
+    BookmarkStorageType type) {
   std::vector<const bookmarks::BookmarkNode*> nodes =
       GetBookmarksWithTitle(title, bookmark_model, type);
   return nodes.empty() ? nullptr : nodes[0];
 }
 
 const bookmarks::BookmarkNode* GetMobileNodeWithType(
-    BookmarkModelType type,
+    BookmarkStorageType type,
     const bookmarks::BookmarkModel* model) {
   CHECK(model);
   switch (type) {
-    case BookmarkModelType::kLocalOrSyncable:
+    case BookmarkStorageType::kLocalOrSyncable:
       return model->mobile_node();
-    case BookmarkModelType::kAccount:
+    case BookmarkStorageType::kAccount:
       return model->account_mobile_node();
   }
   NOTREACHED_NORETURN();
@@ -117,7 +117,8 @@ const bookmarks::BookmarkNode* GetMobileNodeWithType(
                                       secondURL:(NSString*)secondURL
                                        thirdURL:(NSString*)thirdURL
                                       fourthURL:(NSString*)fourthURL
-                                      inStorage:(BookmarkModelType)storageType {
+                                      inStorage:
+                                          (BookmarkStorageType)storageType {
   NSError* bookmarkModelsLoadedError =
       [BookmarkEarlGreyAppInterface waitForBookmarkModelLoaded];
   if (bookmarkModelsLoadedError) {
@@ -164,7 +165,7 @@ const bookmarks::BookmarkNode* GetMobileNodeWithType(
 }
 
 + (NSError*)setupBookmarksWhichExceedsScreenHeightUsingURL:(NSString*)URL
-                                                 inStorage:(BookmarkModelType)
+                                                 inStorage:(BookmarkStorageType)
                                                                storageType {
   NSError* waitForBookmarkModelLoadedError =
       [BookmarkEarlGreyAppInterface waitForBookmarkModelLoaded];
@@ -220,7 +221,7 @@ const bookmarks::BookmarkNode* GetMobileNodeWithType(
 }
 
 + (void)setLastUsedBookmarkFolderToMobileBookmarksInStorageType:
-    (BookmarkModelType)storageType {
+    (BookmarkStorageType)storageType {
   bookmarks::BookmarkModel* bookmarkModel = GetBookmarkModel();
   const bookmarks::BookmarkNode* folder =
       GetMobileNodeWithType(storageType, bookmarkModel);
@@ -231,7 +232,7 @@ const bookmarks::BookmarkNode* GetMobileNodeWithType(
 
 + (NSError*)verifyBookmarksWithTitle:(NSString*)title
                        expectedCount:(NSUInteger)expectedCount
-                           inStorage:(BookmarkModelType)storageType {
+                           inStorage:(BookmarkStorageType)storageType {
   bookmarks::BookmarkModel* bookmarkModel = GetBookmarkModel();
 
   std::vector<const bookmarks::BookmarkNode*> nodes =
@@ -247,7 +248,7 @@ const bookmarks::BookmarkNode* GetMobileNodeWithType(
 
 + (NSError*)addBookmarkWithTitle:(NSString*)title
                              URL:(NSString*)url
-                       inStorage:(BookmarkModelType)storageType {
+                       inStorage:(BookmarkStorageType)storageType {
   NSError* waitForBookmarkModelLoadedError =
       [BookmarkEarlGreyAppInterface waitForBookmarkModelLoaded];
   if (waitForBookmarkModelLoadedError) {
@@ -263,7 +264,7 @@ const bookmarks::BookmarkNode* GetMobileNodeWithType(
 }
 
 + (NSError*)removeBookmarkWithTitle:(NSString*)title
-                          inStorage:(BookmarkModelType)storageType {
+                          inStorage:(BookmarkStorageType)storageType {
   bookmarks::BookmarkModel* bookmarkModel = GetBookmarkModel();
   const bookmarks::BookmarkNode* bookmark =
       GetFirstBookmarkWithTitle(title, bookmarkModel, storageType);
@@ -279,7 +280,7 @@ const bookmarks::BookmarkNode* GetMobileNodeWithType(
 
 + (NSError*)moveBookmarkWithTitle:(NSString*)bookmarkTitle
                 toFolderWithTitle:(NSString*)newFolderTitle
-                        inStorage:(BookmarkModelType)storageType {
+                        inStorage:(BookmarkStorageType)storageType {
   bookmarks::BookmarkModel* bookmarkModel = GetBookmarkModel();
 
   const bookmarks::BookmarkNode* bookmark =
@@ -311,7 +312,7 @@ const bookmarks::BookmarkNode* GetMobileNodeWithType(
 
 + (NSError*)verifyChildCount:(size_t)count
             inFolderWithName:(NSString*)name
-                   inStorage:(BookmarkModelType)storageType {
+                   inStorage:(BookmarkStorageType)storageType {
   bookmarks::BookmarkModel* bookmarkModel = GetBookmarkModel();
 
   const bookmarks::BookmarkNode* folder =
@@ -334,12 +335,12 @@ const bookmarks::BookmarkNode* GetMobileNodeWithType(
 
 + (NSError*)verifyExistenceOfBookmarkWithURL:(NSString*)URL
                                         name:(NSString*)name
-                                   inStorage:(BookmarkModelType)storageType {
+                                   inStorage:(BookmarkStorageType)storageType {
   bookmarks::BookmarkModel* bookmarkModel = GetBookmarkModel();
 
   for (const bookmarks::BookmarkNode* bookmark :
        bookmarkModel->GetNodesByURL(GURL(base::SysNSStringToUTF16(URL)))) {
-    if (bookmark_utils_ios::GetBookmarkModelType(bookmark, bookmarkModel) ==
+    if (bookmark_utils_ios::GetBookmarkStorageType(bookmark, bookmarkModel) ==
             storageType &&
         bookmark->GetTitle().compare(base::SysNSStringToUTF16(name)) == 0) {
       return nil;
@@ -351,12 +352,12 @@ const bookmarks::BookmarkNode* GetMobileNodeWithType(
 }
 
 + (NSError*)verifyAbsenceOfBookmarkWithURL:(NSString*)URL
-                                 inStorage:(BookmarkModelType)storageType {
+                                 inStorage:(BookmarkStorageType)storageType {
   bookmarks::BookmarkModel* bookmarkModel = GetBookmarkModel();
 
   for (const bookmarks::BookmarkNode* bookmark :
        bookmarkModel->GetNodesByURL(GURL(base::SysNSStringToUTF16(URL)))) {
-    if (bookmark_utils_ios::GetBookmarkModelType(bookmark, bookmarkModel) ==
+    if (bookmark_utils_ios::GetBookmarkStorageType(bookmark, bookmarkModel) ==
         storageType) {
       return testing::NSErrorWithLocalizedDescription(
           [NSString stringWithFormat:@"There is a bookmark for %@", URL]);
@@ -367,7 +368,7 @@ const bookmarks::BookmarkNode* GetMobileNodeWithType(
 }
 
 + (NSError*)verifyExistenceOfFolderWithTitle:(NSString*)title
-                                   inStorage:(BookmarkModelType)storageType {
+                                   inStorage:(BookmarkStorageType)storageType {
   bookmarks::BookmarkModel* bookmarkModel = GetBookmarkModel();
   const bookmarks::BookmarkNode* folder =
       GetFirstBookmarkWithTitle(title, bookmarkModel, storageType);

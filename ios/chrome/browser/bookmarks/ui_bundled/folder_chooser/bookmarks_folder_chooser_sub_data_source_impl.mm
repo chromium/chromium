@@ -9,7 +9,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
-#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
 
 using bookmarks::BookmarkNode;
@@ -22,14 +22,14 @@ using bookmarks::BookmarkNode;
   // Bookmarks model object.
   raw_ptr<bookmarks::BookmarkModel> _bookmarkModel;
   // Which subset of the BookmarkModel is in scope of this data source.
-  BookmarkModelType _type;
+  BookmarkStorageType _type;
   // Observer for `_bookmarkModel` changes.
   std::unique_ptr<BookmarkModelBridge> _bookmarkModelBridge;
   __weak id<BookmarksFolderChooserParentDataSource> _parentDataSource;
 }
 
 - (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-                                 type:(BookmarkModelType)type
+                                 type:(BookmarkStorageType)type
                      parentDataSource:
                          (id<BookmarksFolderChooserParentDataSource>)
                              parentDataSource {
@@ -62,9 +62,9 @@ using bookmarks::BookmarkNode;
 
 - (const BookmarkNode*)mobileFolderNode {
   switch (_type) {
-    case BookmarkModelType::kLocalOrSyncable:
+    case BookmarkStorageType::kLocalOrSyncable:
       return _bookmarkModel->mobile_node();
-    case BookmarkModelType::kAccount:
+    case BookmarkStorageType::kAccount:
       return _bookmarkModel->account_mobile_node();
   }
   NOTREACHED_NORETURN();

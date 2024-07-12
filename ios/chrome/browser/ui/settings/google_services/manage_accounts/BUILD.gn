@@ -115,7 +115,7 @@ source_set("eg2_tests") {
     "//base/test:test_support",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/bookmarks/model:bookmark_model_type",
+    "//ios/chrome/browser/bookmarks/model:bookmark_storage_type",
     "//ios/chrome/browser/bookmarks/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/policy/model:constants",
     "//ios/chrome/browser/shared/public/features",

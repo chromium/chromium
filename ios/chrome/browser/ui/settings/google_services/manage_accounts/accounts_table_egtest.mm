@@ -6,7 +6,7 @@
 
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
-#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_constants.h"
@@ -303,7 +303,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
                                    syncTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
 
   [SigninEarlGreyUI signOut];
 
@@ -328,7 +328,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
                                    syncTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kAccount];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kAccount];
 
   [SigninEarlGreyUI signOut];
 
@@ -353,7 +353,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
                                    syncTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
 
   [SigninEarlGreyUI signOut];
 
@@ -378,7 +378,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
                                    syncTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kAccount];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kAccount];
 
   [SigninEarlGreyUI signOut];
 
@@ -418,7 +418,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
                                    syncTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
 
   // Simulate that the user remove their primary account from another Google
   // app.
@@ -471,7 +471,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
   // Add a bookmark.
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
 
   [SigninEarlGreyUI signOut];
 
@@ -490,7 +490,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
 
   [SigninEarlGreyUI signOut];
 

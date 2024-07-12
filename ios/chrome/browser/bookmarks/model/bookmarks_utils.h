@@ -11,7 +11,7 @@
 
 #include "base/location.h"
 
-enum class BookmarkModelType;
+enum class BookmarkStorageType;
 class ChromeBrowserState;
 class PrefService;
 
@@ -55,7 +55,7 @@ extern const int64_t kLastUsedBookmarkFolderNone;
 // ordering used to display the folders in the management UI. Note that the
 // managed bookmarks folder is never included.
 //
-// Additional caveats if `BookmarkModelType::kAccount` is used:
+// Additional caveats if `BookmarkStorageType::kAccount` is used:
 // 1. The function may return an empty result if account bookmarks don't
 //    actually exist (e.g. the user is signed out).
 // 2. In rare cases, it may also return a non-empty but partial list, if this
@@ -64,7 +64,7 @@ extern const int64_t kLastUsedBookmarkFolderNone;
 //    same is true during their destruction (during signout).
 std::vector<const bookmarks::BookmarkNode*> PrimaryPermanentNodes(
     const bookmarks::BookmarkModel* model,
-    BookmarkModelType type);
+    BookmarkStorageType type);
 
 // Whether a bookmark was manually moved by the user to a different folder since
 // last signin/signout.
@@ -77,7 +77,7 @@ void ResetLastUsedBookmarkFolder(PrefService* prefs);
 // or move bookmarks.
 void SetLastUsedBookmarkFolder(PrefService* prefs,
                                const bookmarks::BookmarkNode* folder,
-                               BookmarkModelType type);
+                               BookmarkStorageType type);
 
 // It returns the first bookmark folder that exists, with the following
 // priority:

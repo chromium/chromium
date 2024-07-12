@@ -11,7 +11,10 @@
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
 #import "components/sync/base/user_selectable_type.h"
-#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_ui.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -22,9 +25,6 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_ui.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -85,7 +85,7 @@ using chrome_test_util::SettingsDoneButton;
 // Tests the promo view body message for signin.
 - (void)testPromoViewBody {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
 
   // Check that promo is visible.
@@ -105,7 +105,7 @@ using chrome_test_util::SettingsDoneButton;
 // child nodes.
 - (void)testPromoViewIsSeenOnlyInRootNode {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
 
   // We are going to set the PromoAlreadySeen preference. Set a teardown handler
@@ -139,7 +139,7 @@ using chrome_test_util::SettingsDoneButton;
 // Tests that tapping No thanks on the promo make it disappear.
 - (void)testPromoNoThanksMakeItDisappear {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
 
   // We are going to set the PromoAlreadySeen preference. Set a teardown handler
@@ -195,7 +195,7 @@ using chrome_test_util::SettingsDoneButton;
 // appears after dismissing the sheet.
 - (void)testSignInPromoWithIdentitiesUsingSecondaryButton {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
 
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -225,7 +225,7 @@ using chrome_test_util::SettingsDoneButton;
 // button that signs-out the user when tapped.
 - (void)testSigninOnlyPromoWithAccount {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   // Set up a fake identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -259,7 +259,7 @@ using chrome_test_util::SettingsDoneButton;
 // SSO Auth flow on tap. Concluding the auth successfully hides the promo.
 - (void)testSigninOnlyPromoWithoutAccount {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   // Check that promo is visible.
   [BookmarkEarlGrey verifyPromoAlreadySeen:NO];

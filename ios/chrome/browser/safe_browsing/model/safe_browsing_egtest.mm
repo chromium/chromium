@@ -10,7 +10,7 @@
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
@@ -776,7 +776,7 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
   [BookmarkEarlGrey
       addBookmarkWithTitle:phishingTitle
                        URL:base::SysUTF8ToNSString(_realTimePhishingURL.spec())
-                 inStorage:BookmarkModelType::kLocalOrSyncable];
+                 inStorage:BookmarkStorageType::kLocalOrSyncable];
   // Opt-in to real-time checks.
   [ChromeEarlGrey setURLKeyedAnonymizedDataCollectionEnabled:YES];
 

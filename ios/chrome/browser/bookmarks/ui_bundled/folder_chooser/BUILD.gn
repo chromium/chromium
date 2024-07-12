@@ -123,7 +123,7 @@ source_set("eg2_tests") {
     "//components/strings",
     "//components/sync/base:features",
     "//ios/chrome/app/strings:ios_strings_grit",
-    "//ios/chrome/browser/bookmarks/model:bookmark_model_type",
+    "//ios/chrome/browser/bookmarks/model:bookmark_storage_type",
     "//ios/chrome/browser/bookmarks/ui_bundled:constants",
     "//ios/chrome/browser/bookmarks/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/signin/model:fake_system_identity",

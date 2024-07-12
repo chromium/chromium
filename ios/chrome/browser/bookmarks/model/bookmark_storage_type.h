@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_MODEL_TYPE_H_
-#define IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_MODEL_TYPE_H_
+#ifndef IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_STORAGE_TYPE_H_
+#define IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_STORAGE_TYPE_H_
 
 // Distinguishes whether or not a bookmark node is considered an account node,
 // as opposed to a local-only node.
 //
 // Do not change the explicitly set values. This enum is saved in preference
 // kIosBookmarkLastUsedStorageReceivingBookmarks.
-// TODO(crbug.com/346918509): Rename or delete this enum, as there is currently
-// a single BookmarkModel instance. It could instead represent the bookmark
-// storage type or a similar concept.
-enum class BookmarkModelType {
+enum class BookmarkStorageType {
   // Bookmarks that are stored on the local device only.
   kLocalOrSyncable = 0,
   // Account storage indicates all data can be attributed to an account, which
@@ -22,4 +19,4 @@ enum class BookmarkModelType {
   kAccount = 1,
 };
 
-#endif  // IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_MODEL_TYPE_H_
+#endif  // IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_STORAGE_TYPE_H_

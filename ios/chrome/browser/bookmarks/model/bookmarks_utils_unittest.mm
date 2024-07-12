@@ -8,7 +8,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
-#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -35,7 +35,7 @@ class BookmarksUtilsTest : public BookmarkIOSUnitTestSupport {
                      folder_id);
     // Used for metrics only, when a node isn't found.
     prefs_->SetInteger(prefs::kIosBookmarkLastUsedStorageReceivingBookmarks,
-                       static_cast<int>(BookmarkModelType::kLocalOrSyncable));
+                       static_cast<int>(BookmarkStorageType::kLocalOrSyncable));
   }
 
   const bookmarks::BookmarkNode* GetDefaultBookmarkFolderHelper() {
@@ -137,19 +137,19 @@ TEST_F(BookmarksUtilsTest, GetDefaultBookmarkFolderWithDefaultBookmarkSet) {
 
 TEST_F(BookmarksUtilsTest, PrimaryPermanentNodes) {
   EXPECT_THAT(PrimaryPermanentNodes(bookmark_model_,
-                                    BookmarkModelType::kLocalOrSyncable),
+                                    BookmarkStorageType::kLocalOrSyncable),
               ElementsAre(bookmark_model_->mobile_node(),
                           bookmark_model_->bookmark_bar_node(),
                           bookmark_model_->other_node()));
   EXPECT_THAT(
-      PrimaryPermanentNodes(bookmark_model_, BookmarkModelType::kAccount),
+      PrimaryPermanentNodes(bookmark_model_, BookmarkStorageType::kAccount),
       ElementsAre(bookmark_model_->account_mobile_node(),
                   bookmark_model_->account_bookmark_bar_node(),
                   bookmark_model_->account_other_node()));
 
   bookmark_model_->RemoveAccountPermanentFolders();
   EXPECT_THAT(
-      PrimaryPermanentNodes(bookmark_model_, BookmarkModelType::kAccount),
+      PrimaryPermanentNodes(bookmark_model_, BookmarkStorageType::kAccount),
       IsEmpty());
 }
 

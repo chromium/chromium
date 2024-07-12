@@ -11,7 +11,7 @@
 #import "components/signin/public/base/signin_switches.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/variations/pref_names.h"
-#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
@@ -169,7 +169,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
                                    syncTimeout:kWaitForActionTimeout];
   [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
 
   // Turn off "Allow Chrome Sign-in" feature, which prompts the user with a
   // confirmation dialog to sign out.

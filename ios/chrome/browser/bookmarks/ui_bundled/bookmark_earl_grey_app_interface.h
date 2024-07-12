@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-enum class BookmarkModelType;
+enum class BookmarkStorageType;
 
 // BookmarkEarlGreyAppInterface contains the app-side implementation for
 // helpers that primarily work via direct model access. These helpers are
@@ -26,12 +26,13 @@ enum class BookmarkModelType;
                                       secondURL:(NSString*)secondURL
                                        thirdURL:(NSString*)thirdURL
                                       fourthURL:(NSString*)fourthURL
-                                      inStorage:(BookmarkModelType)storageType;
+                                      inStorage:
+                                          (BookmarkStorageType)storageType;
 
 // Loads a large set of bookmarks in the model which is longer than the screen
 // height.
 + (NSError*)setupBookmarksWhichExceedsScreenHeightUsingURL:(NSString*)URL
-                                                 inStorage:(BookmarkModelType)
+                                                 inStorage:(BookmarkStorageType)
                                                                storageType;
 
 // Waits for both LocalOrSyncable and Account (if available) bookmark models to
@@ -44,46 +45,46 @@ enum class BookmarkModelType;
 
 // Set the last used bookmark folder.
 + (void)setLastUsedBookmarkFolderToMobileBookmarksInStorageType:
-    (BookmarkModelType)storageType;
+    (BookmarkStorageType)storageType;
 
 // Asserts that `expectedCount` bookmarks exist with the corresponding `title`
 // using the BookmarkModel.
 + (NSError*)verifyBookmarksWithTitle:(NSString*)title
                        expectedCount:(NSUInteger)expectedCount
-                           inStorage:(BookmarkModelType)storageType;
+                           inStorage:(BookmarkStorageType)storageType;
 
 // Programmatically adds a bookmark with the given title and URL.
 + (NSError*)addBookmarkWithTitle:(NSString*)title
                              URL:(NSString*)url
-                       inStorage:(BookmarkModelType)storageType;
+                       inStorage:(BookmarkStorageType)storageType;
 
 // Removes programmatically the first bookmark with the given title.
 + (NSError*)removeBookmarkWithTitle:(NSString*)title
-                          inStorage:(BookmarkModelType)storageType;
+                          inStorage:(BookmarkStorageType)storageType;
 
 // Moves bookmark with title `bookmarkTitle` into a folder with title
 // `newFolder`.
 + (NSError*)moveBookmarkWithTitle:(NSString*)bookmarkTitle
                 toFolderWithTitle:(NSString*)newFolder
-                        inStorage:(BookmarkModelType)storageType;
+                        inStorage:(BookmarkStorageType)storageType;
 
 // Verifies that there is `count` children on the bookmark folder with `name`.
 + (NSError*)verifyChildCount:(size_t)count
             inFolderWithName:(NSString*)name
-                   inStorage:(BookmarkModelType)storageType;
+                   inStorage:(BookmarkStorageType)storageType;
 
 // Verifies the existence of a Bookmark with `URL` and `name`.
 + (NSError*)verifyExistenceOfBookmarkWithURL:(NSString*)URL
                                         name:(NSString*)name
-                                   inStorage:(BookmarkModelType)storageType;
+                                   inStorage:(BookmarkStorageType)storageType;
 
 // Verifies the absence of a Bookmark with `URL`.
 + (NSError*)verifyAbsenceOfBookmarkWithURL:(NSString*)URL
-                                 inStorage:(BookmarkModelType)storageType;
+                                 inStorage:(BookmarkStorageType)storageType;
 
 // Verifies that a folder called `title` exists.
 + (NSError*)verifyExistenceOfFolderWithTitle:(NSString*)title
-                                   inStorage:(BookmarkModelType)storageType;
+                                   inStorage:(BookmarkStorageType)storageType;
 
 // Checks that the promo has already been seen or not.
 + (NSError*)verifyPromoAlreadySeen:(BOOL)seen;

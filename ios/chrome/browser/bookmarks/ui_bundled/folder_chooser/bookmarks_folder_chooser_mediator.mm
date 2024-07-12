@@ -10,7 +10,7 @@
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
-#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_consumer.h"
@@ -61,11 +61,11 @@ using bookmarks::BookmarkNode;
     _localOrSyncableDataSource =
         [[BookmarksFolderChooserSubDataSourceImpl alloc]
             initWithBookmarkModel:model
-                             type:BookmarkModelType::kLocalOrSyncable
+                             type:BookmarkStorageType::kLocalOrSyncable
                  parentDataSource:self];
     _accountDataSource = [[BookmarksFolderChooserSubDataSourceImpl alloc]
         initWithBookmarkModel:model
-                         type:BookmarkModelType::kAccount
+                         type:BookmarkStorageType::kAccount
              parentDataSource:self];
 
     _editedNodes = std::move(editedNodes);

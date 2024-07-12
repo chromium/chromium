@@ -17,7 +17,7 @@
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
-#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
 
@@ -80,7 +80,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, CreateOrUpdateNoop) {
   EXPECT_EQ(node->GetTitle(), title);
 }
 
-TEST_F(BookmarkIOSUtilsUnitTest, CreateOrUpdateWithinModel) {
+TEST_F(BookmarkIOSUtilsUnitTest, CreateOrUpdateWithinStorage) {
   const BookmarkNode* mobile_node = bookmark_model_->mobile_node();
   const BookmarkNode* node = AddBookmark(mobile_node, u"a");
   const BookmarkNode* folder = AddFolder(mobile_node, u"f1");
@@ -248,7 +248,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestVisibleNonDescendantNodes) {
   obstructions.insert(lindsey);
 
   NodeVector result = VisibleNonDescendantNodes(
-      obstructions, bookmark_model_, BookmarkModelType::kLocalOrSyncable);
+      obstructions, bookmark_model_, BookmarkStorageType::kLocalOrSyncable);
   ASSERT_EQ(13u, result.size());
 
   EXPECT_EQ(result[0]->GetTitle(), u"Mobile Bookmarks");

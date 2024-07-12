@@ -9,7 +9,7 @@
 
 #import "ios/testing/earl_grey/base_eg_test_helper_impl.h"
 
-enum class BookmarkModelType;
+enum class BookmarkStorageType;
 
 @protocol GREYMatcher;
 
@@ -101,9 +101,10 @@ id<GREYMatcher> SearchIconButton();
 // Adds a bookmark for the current tab. Must be called when on a tab.
 - (void)starCurrentTab;
 
-// Creates a new folder in `model` starting from the folder picker.
+// Creates a new folder in `storageType` starting from the folder picker.
 // Passing a `name` of 0 length will use the default value.
-- (void)addFolderWithName:(NSString*)name inModel:(BookmarkModelType)model;
+- (void)addFolderWithName:(NSString*)name
+                inStorage:(BookmarkStorageType)storageType;
 
 // Waits for the disparition of the given `title` in the UI.
 - (void)waitForDeletionOfBookmarkWithTitle:(NSString*)title;

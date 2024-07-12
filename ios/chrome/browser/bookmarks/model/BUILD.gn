@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("bookmark_model_type") {
-  sources = [ "bookmark_model_type.h" ]
+source_set("bookmark_storage_type") {
+  sources = [ "bookmark_storage_type.h" ]
 }
 
 source_set("model") {
@@ -24,7 +24,7 @@ source_set("model") {
     "managed_bookmark_service_factory.mm",
   ]
   deps = [
-    ":bookmark_model_type",
+    ":bookmark_storage_type",
     "//base",
     "//components/bookmarks/browser",
     "//components/bookmarks/managed",
@@ -68,7 +68,7 @@ source_set("model_utils") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
   ]
-  public_deps = [ ":bookmark_model_type" ]
+  public_deps = [ ":bookmark_storage_type" ]
 }
 
 source_set("test_support") {

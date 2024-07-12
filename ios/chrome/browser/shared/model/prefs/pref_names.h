@@ -162,7 +162,7 @@ inline constexpr char kIosBookmarkLastUsedFolderReceivingBookmarks[] =
 
 // Preference that keep information about the storage type for
 // kIosBookmarkLastUsedFolderReceivingBookmarks. The value is based on
-// BookmarkModelType enum. This value should be ignored if the value of
+// BookmarkStorageType enum. This value should be ignored if the value of
 // `kIosBookmarkLastUsedFolderReceivingBookmarks` preference is
 // `kLastUsedBookmarkFolderNone`. Related to
 // `kIosBookmarkLastUsedFolderReceivingBookmarks`.

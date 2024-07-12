@@ -27,7 +27,7 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
-#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/model/managed_bookmark_service_factory.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_navigation_controller.h"
@@ -556,8 +556,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     [BookmarkPathCache
         cacheBookmarkTopMostRowWithPrefService:self.browserState->GetPrefs()
                                       folderId:self.displayedFolderNode->id()
-                                   inModelType:bookmark_utils_ios::
-                                                   GetBookmarkModelType(
+                                     inStorage:bookmark_utils_ios::
+                                                   GetBookmarkStorageType(
                                                        self.displayedFolderNode,
                                                        _bookmarkModel.get())
                                     topMostRow:topMostVisibleIndexPathRow];
@@ -1084,9 +1084,10 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     [BookmarkPathCache
         cacheBookmarkTopMostRowWithPrefService:prefService
                                       folderId:node->id()
-                                   inModelType:
-                                       bookmark_utils_ios::GetBookmarkModelType(
-                                           node, _bookmarkModel.get())
+                                     inStorage:bookmark_utils_ios::
+                                                   GetBookmarkStorageType(
+                                                       node,
+                                                       _bookmarkModel.get())
                                     topMostRow:0];
   }
 

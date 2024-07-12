@@ -28,7 +28,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
-#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/model/managed_bookmark_service_factory.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
@@ -255,9 +255,10 @@ bool IsABookmarkNodeSectionForIdentifier(
 
   std::vector<const bookmarks::BookmarkNode*> localPermanentNodes =
       PrimaryPermanentNodes(_bookmarkModel.get(),
-                            BookmarkModelType::kLocalOrSyncable);
+                            BookmarkStorageType::kLocalOrSyncable);
   std::vector<const bookmarks::BookmarkNode*> accountPermanentNodes =
-      PrimaryPermanentNodes(_bookmarkModel.get(), BookmarkModelType::kAccount);
+      PrimaryPermanentNodes(_bookmarkModel.get(),
+                            BookmarkStorageType::kAccount);
 
   if (managedNode) {
     localPermanentNodes.push_back(managedNode);
@@ -723,7 +724,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 - (BOOL)shouldShowBatchUploadSection {
   // Do not show if profile section is empty.
   BOOL showProfileSection = AnyNodeHasChildren(PrimaryPermanentNodes(
-      _bookmarkModel.get(), BookmarkModelType::kLocalOrSyncable));
+      _bookmarkModel.get(), BookmarkStorageType::kLocalOrSyncable));
   if (!showProfileSection) {
     return NO;
   }

@@ -15,7 +15,7 @@
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
-#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_consumer.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "testing/gtest_mac.h"
@@ -63,7 +63,7 @@ using bookmarks::BookmarkNode;
 
 class BookmarksFolderChooserSubDataSourceImplTest
     : public BookmarkIOSUnitTestSupport,
-      public testing::WithParamInterface<BookmarkModelType> {
+      public testing::WithParamInterface<BookmarkStorageType> {
  protected:
   BookmarksFolderChooserSubDataSourceImplTest() {
     mock_consumer_ =
@@ -85,9 +85,9 @@ class BookmarksFolderChooserSubDataSourceImplTest
 
   const bookmarks::BookmarkNode* mobile_node() {
     switch (GetParam()) {
-      case BookmarkModelType::kLocalOrSyncable:
+      case BookmarkStorageType::kLocalOrSyncable:
         return bookmark_model_->mobile_node();
-      case BookmarkModelType::kAccount:
+      case BookmarkStorageType::kAccount:
         return bookmark_model_->account_mobile_node();
     }
     NOTREACHED_NORETURN();
@@ -271,7 +271,8 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderMoved) {
               test_folder_title_2);
 }
 
-INSTANTIATE_TEST_SUITE_P(/* No InstantionName*/,
-                         BookmarksFolderChooserSubDataSourceImplTest,
-                         testing::Values(BookmarkModelType::kAccount,
-                                         BookmarkModelType::kLocalOrSyncable));
+INSTANTIATE_TEST_SUITE_P(
+    /* No InstantionName*/,
+    BookmarksFolderChooserSubDataSourceImplTest,
+    testing::Values(BookmarkStorageType::kAccount,
+                    BookmarkStorageType::kLocalOrSyncable));

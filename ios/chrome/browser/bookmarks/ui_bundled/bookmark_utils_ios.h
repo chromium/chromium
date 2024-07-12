@@ -19,7 +19,7 @@
 #import "base/uuid.h"
 
 class AuthenticationService;
-enum class BookmarkModelType;
+enum class BookmarkStorageType;
 class ChromeBrowserState;
 class GURL;
 @class MDCSnackbarMessage;
@@ -85,7 +85,7 @@ NSString* TitleForBookmarkNode(const bookmarks::BookmarkNode* node);
 // `bookmark_model` is bookmark model. It must not be null.
 // `bookmark_model` must contain `bookmark_node`.
 // This function is linear in time in the depth of the bookmark_node.
-BookmarkModelType GetBookmarkModelType(
+BookmarkStorageType GetBookmarkStorageType(
     const bookmarks::BookmarkNode* bookmark_node,
     const bookmarks::BookmarkModel* bookmark_model);
 
@@ -187,7 +187,7 @@ void SortFolders(NodeVector* vector);
 // sorted depth-first, then alphabetically.
 NodeVector VisibleNonDescendantNodes(const NodeSet& obstructions,
                                      const bookmarks::BookmarkModel* model,
-                                     BookmarkModelType type);
+                                     BookmarkStorageType type);
 
 // Whether `vector1` contains only elements of `vector2` in the same order.
 BOOL IsSubvectorOfNodes(const NodeVector& vector1, const NodeVector& vector2);
@@ -226,10 +226,10 @@ NSString* messageForAddingBookmarksInFolder(
     raw_ptr<syncer::SyncService> syncService);
 
 // The bookmark is saved in the account if either following condition is true:
-// * the saved folder is in the account model,
+// * the saved folder is an account bookmark,
 // * the sync consent has been granted and the bookmark data type is enabled
 bool bookmarkSavedIntoAccount(
-    BookmarkModelType bookmarkModelType,
+    BookmarkStorageType bookmarkStorageType,
     base::WeakPtr<AuthenticationService> authenticationService,
     raw_ptr<syncer::SyncService> syncService);
 

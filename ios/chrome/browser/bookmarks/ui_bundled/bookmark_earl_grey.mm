@@ -7,7 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_app_interface.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
@@ -38,7 +38,7 @@ const GURL GetFrenchUrl() {
   [BookmarkEarlGreyAppInterface clearBookmarksPositionCache];
 }
 
-- (void)setupStandardBookmarksInStorage:(BookmarkModelType)storageType {
+- (void)setupStandardBookmarksInStorage:(BookmarkStorageType)storageType {
   const GURL fourthURL = web::test::HttpServer::MakeUrl(
       "http://ios/testing/data/http_server_files/chromium_logo_page.html");
 
@@ -55,7 +55,7 @@ const GURL GetFrenchUrl() {
 }
 
 - (void)setupBookmarksWhichExceedsScreenHeightInStorage:
-    (BookmarkModelType)storageType {
+    (BookmarkStorageType)storageType {
   EG_TEST_HELPER_ASSERT_NO_ERROR([BookmarkEarlGreyAppInterface
       setupBookmarksWhichExceedsScreenHeightUsingURL:@"http://google.com"
                                            inStorage:storageType]);
@@ -71,7 +71,7 @@ const GURL GetFrenchUrl() {
 }
 
 - (void)setLastUsedBookmarkFolderToMobileBookmarksInStorageType:
-    (BookmarkModelType)storageType {
+    (BookmarkStorageType)storageType {
   [BookmarkEarlGreyAppInterface
       setLastUsedBookmarkFolderToMobileBookmarksInStorageType:storageType];
 }
@@ -80,7 +80,7 @@ const GURL GetFrenchUrl() {
 
 - (void)verifyBookmarksWithTitle:(NSString*)title
                    expectedCount:(NSUInteger)expectedCount
-                       inStorage:(BookmarkModelType)storageType {
+                       inStorage:(BookmarkStorageType)storageType {
   EG_TEST_HELPER_ASSERT_NO_ERROR([BookmarkEarlGreyAppInterface
       verifyBookmarksWithTitle:title
                  expectedCount:expectedCount
@@ -89,7 +89,7 @@ const GURL GetFrenchUrl() {
 
 - (void)verifyChildCount:(int)count
         inFolderWithName:(NSString*)name
-               inStorage:(BookmarkModelType)storageType {
+               inStorage:(BookmarkStorageType)storageType {
   EG_TEST_HELPER_ASSERT_NO_ERROR([BookmarkEarlGreyAppInterface
       verifyChildCount:count
       inFolderWithName:name
@@ -98,7 +98,7 @@ const GURL GetFrenchUrl() {
 
 - (void)addBookmarkWithTitle:(NSString*)title
                          URL:(NSString*)url
-                   inStorage:(BookmarkModelType)storageType {
+                   inStorage:(BookmarkStorageType)storageType {
   EG_TEST_HELPER_ASSERT_NO_ERROR([BookmarkEarlGreyAppInterface
       addBookmarkWithTitle:title
                        URL:url
@@ -106,7 +106,7 @@ const GURL GetFrenchUrl() {
 }
 
 - (void)removeBookmarkWithTitle:(NSString*)title
-                      inStorage:(BookmarkModelType)storageType {
+                      inStorage:(BookmarkStorageType)storageType {
   EG_TEST_HELPER_ASSERT_NO_ERROR([BookmarkEarlGreyAppInterface
       removeBookmarkWithTitle:title
                     inStorage:storageType]);
@@ -114,7 +114,7 @@ const GURL GetFrenchUrl() {
 
 - (void)moveBookmarkWithTitle:(NSString*)bookmarkTitle
             toFolderWithTitle:(NSString*)newFolder
-                    inStorage:(BookmarkModelType)storageType {
+                    inStorage:(BookmarkStorageType)storageType {
   EG_TEST_HELPER_ASSERT_NO_ERROR([BookmarkEarlGreyAppInterface
       moveBookmarkWithTitle:bookmarkTitle
           toFolderWithTitle:newFolder
@@ -123,7 +123,7 @@ const GURL GetFrenchUrl() {
 
 - (void)verifyExistenceOfBookmarkWithURL:(NSString*)URL
                                     name:(NSString*)name
-                               inStorage:(BookmarkModelType)storageType {
+                               inStorage:(BookmarkStorageType)storageType {
   EG_TEST_HELPER_ASSERT_NO_ERROR([BookmarkEarlGreyAppInterface
       verifyExistenceOfBookmarkWithURL:URL
                                   name:name
@@ -131,14 +131,14 @@ const GURL GetFrenchUrl() {
 }
 
 - (void)verifyAbsenceOfBookmarkWithURL:(NSString*)URL
-                             inStorage:(BookmarkModelType)storageType {
+                             inStorage:(BookmarkStorageType)storageType {
   EG_TEST_HELPER_ASSERT_NO_ERROR([BookmarkEarlGreyAppInterface
       verifyAbsenceOfBookmarkWithURL:URL
                            inStorage:storageType]);
 }
 
 - (void)verifyExistenceOfFolderWithTitle:(NSString*)title
-                               inStorage:(BookmarkModelType)storageType {
+                               inStorage:(BookmarkStorageType)storageType {
   EG_TEST_HELPER_ASSERT_NO_ERROR([BookmarkEarlGreyAppInterface
       verifyExistenceOfFolderWithTitle:title
                              inStorage:storageType]);

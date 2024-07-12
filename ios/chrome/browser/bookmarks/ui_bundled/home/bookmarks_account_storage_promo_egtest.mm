@@ -9,7 +9,10 @@
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_pref_names.h"
-#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_ui.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -18,9 +21,6 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_ui.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -118,7 +118,7 @@ using chrome_test_util::SecondarySignInButton;
                      forUserPref:prefs::kGoogleServicesLastSyncingGaiaId];
 
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
 
   // Verify that signin promo is visible.
@@ -166,7 +166,7 @@ using chrome_test_util::SecondarySignInButton;
 
   // Add bookmarks to account model.
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kAccount];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kAccount];
 
   [BookmarkEarlGreyUI openBookmarks];
 
@@ -195,9 +195,9 @@ using chrome_test_util::SecondarySignInButton;
 
   // Add bookmarks to local and account models.
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kAccount];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kAccount];
 
   [BookmarkEarlGreyUI openBookmarks];
 

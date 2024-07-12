@@ -8,7 +8,7 @@
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
@@ -24,17 +24,17 @@ const int64_t kFolderNone = -1;
   registry->RegisterInt64Pref(prefs::kIosBookmarkCachedFolderId, kFolderNone);
   registry->RegisterInt64Pref(
       prefs::kIosBookmarkCachedFolderModel,
-      static_cast<int64_t>(BookmarkModelType::kLocalOrSyncable));
+      static_cast<int64_t>(BookmarkStorageType::kLocalOrSyncable));
   registry->RegisterIntegerPref(prefs::kIosBookmarkCachedTopMostRow, 0);
 }
 
 + (void)cacheBookmarkTopMostRowWithPrefService:(PrefService*)prefService
                                       folderId:(int64_t)folderId
-                                   inModelType:(BookmarkModelType)modelType
+                                     inStorage:(BookmarkStorageType)storageType
                                     topMostRow:(int)topMostRow {
   prefService->SetInt64(prefs::kIosBookmarkCachedFolderId, folderId);
   prefService->SetInt64(prefs::kIosBookmarkCachedFolderModel,
-                        static_cast<int64_t>(modelType));
+                        static_cast<int64_t>(storageType));
   prefService->SetInteger(prefs::kIosBookmarkCachedTopMostRow, topMostRow);
 }
 
@@ -67,7 +67,7 @@ const int64_t kFolderNone = -1;
   prefService->SetInt64(prefs::kIosBookmarkCachedFolderId, kFolderNone);
   prefService->SetInt64(
       prefs::kIosBookmarkCachedFolderModel,
-      static_cast<int64_t>(BookmarkModelType::kLocalOrSyncable));
+      static_cast<int64_t>(BookmarkStorageType::kLocalOrSyncable));
 }
 
 @end

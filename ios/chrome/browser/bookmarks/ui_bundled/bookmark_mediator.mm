@@ -19,7 +19,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
-#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -56,7 +56,7 @@ using bookmarks::BookmarkNode;
       kLastUsedBookmarkFolderNone);
   registry->RegisterIntegerPref(
       prefs::kIosBookmarkLastUsedStorageReceivingBookmarks,
-      static_cast<int>(BookmarkModelType::kLocalOrSyncable));
+      static_cast<int>(BookmarkStorageType::kLocalOrSyncable));
 }
 
 - (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
@@ -187,12 +187,13 @@ using bookmarks::BookmarkNode;
 #pragma mark - Private
 
 // The localized string that appears to users for bulk adding bookmarks.
-- (NSString*)messageForBulkAddingBookmarks:(BookmarkModelType)bookmarkModelType
+- (NSString*)messageForBulkAddingBookmarks:
+                 (BookmarkStorageType)bookmarkStorageType
                 successfullyAddedBookmarks:(int)count {
   std::u16string result;
 
   BOOL savedIntoAccount = bookmark_utils_ios::bookmarkSavedIntoAccount(
-      bookmarkModelType, _authenticationService, _syncService);
+      bookmarkStorageType, _authenticationService, _syncService);
   if (savedIntoAccount) {
     id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity(
         signin::ConsentLevel::kSignin);

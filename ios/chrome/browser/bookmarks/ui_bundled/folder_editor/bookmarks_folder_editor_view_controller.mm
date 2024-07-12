@@ -21,7 +21,7 @@
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
-#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
@@ -322,7 +322,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 
   if (_manuallyChangedTheFolder) {
-    BookmarkModelType type = bookmark_utils_ios::GetBookmarkModelType(
+    BookmarkStorageType type = bookmark_utils_ios::GetBookmarkStorageType(
         _parentFolder, _bookmarkModel.get());
     SetLastUsedBookmarkFolder(self.browserState->GetPrefs(), _parentFolder,
                               type);

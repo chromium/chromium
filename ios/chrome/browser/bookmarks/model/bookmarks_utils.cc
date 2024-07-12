@@ -11,7 +11,7 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
-#include "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#include "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
@@ -53,15 +53,15 @@ bool RemoveAllUserBookmarksIOS(ChromeBrowserState* browser_state,
 
 std::vector<const bookmarks::BookmarkNode*> PrimaryPermanentNodes(
     const bookmarks::BookmarkModel* model,
-    BookmarkModelType type) {
+    BookmarkStorageType type) {
   CHECK(model);
   CHECK(model->loaded());
 
   switch (type) {
-    case BookmarkModelType::kLocalOrSyncable:
+    case BookmarkStorageType::kLocalOrSyncable:
       return {model->mobile_node(), model->bookmark_bar_node(),
               model->other_node()};
-    case BookmarkModelType::kAccount: {
+    case BookmarkStorageType::kAccount: {
       std::vector<const bookmarks::BookmarkNode*> nodes;
       // Normally either all account permanent nodes exists or none does, but
       // during transitional states (i.e. during creation or removal of account
@@ -91,7 +91,7 @@ void ResetLastUsedBookmarkFolder(PrefService* prefs) {
 
 void SetLastUsedBookmarkFolder(PrefService* prefs,
                                const bookmarks::BookmarkNode* folder,
-                               BookmarkModelType type) {
+                               BookmarkStorageType type) {
   CHECK(folder);
   CHECK(folder->is_folder()) << "node type: " << folder->type()
                              << ", storage type: " << static_cast<int>(type);
@@ -111,8 +111,9 @@ const bookmarks::BookmarkNode* GetDefaultBookmarkFolder(
     LogDefaultBookmarkFolderOutcome(
         DefaultBookmarkFolderOutcomeForMetrics::kUnset);
   } else {
-    BookmarkModelType type = static_cast<BookmarkModelType>(prefs->GetInteger(
-        prefs::kIosBookmarkLastUsedStorageReceivingBookmarks));
+    BookmarkStorageType type =
+        static_cast<BookmarkStorageType>(prefs->GetInteger(
+            prefs::kIosBookmarkLastUsedStorageReceivingBookmarks));
 
     const BookmarkNode* result =
         bookmarks::GetBookmarkNodeByID(bookmark_model, node_id);
@@ -126,7 +127,7 @@ const bookmarks::BookmarkNode* GetDefaultBookmarkFolder(
       return result;
     } else {
       LogDefaultBookmarkFolderOutcome(
-          (type == BookmarkModelType::kLocalOrSyncable)
+          (type == BookmarkStorageType::kLocalOrSyncable)
               ? DefaultBookmarkFolderOutcomeForMetrics::kMissingLocalFolderSet
               : DefaultBookmarkFolderOutcomeForMetrics::
                     kMissingAccountFolderSet);
@@ -150,9 +151,9 @@ void MigrateLastUsedBookmarkFolderUponLocalIdsReassigned(
     return;
   }
 
-  const BookmarkModelType type = static_cast<BookmarkModelType>(
+  const BookmarkStorageType type = static_cast<BookmarkStorageType>(
       prefs->GetInteger(prefs::kIosBookmarkLastUsedStorageReceivingBookmarks));
-  if (type != BookmarkModelType::kLocalOrSyncable) {
+  if (type != BookmarkStorageType::kLocalOrSyncable) {
     // Account bookmarks don't get their IDs reassigned as a result of the
     // migration covered here (the adoption of a single BookmarkModel on iOS,
     // whereas previously this client may have used two of them).

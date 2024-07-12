@@ -10,10 +10,10 @@
 #import "base/test/ios/wait_util.h"
 #import "build/build_config.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_constants.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -202,7 +202,8 @@ id<GREYMatcher> SearchIconButton() {
       performAction:grey_tap()];
 }
 
-- (void)addFolderWithName:(NSString*)name inModel:(BookmarkModelType)model {
+- (void)addFolderWithName:(NSString*)name
+                inStorage:(BookmarkStorageType)storageType {
   // Wait for folder picker to appear.
   [[EarlGrey
       selectElementWithMatcher:
@@ -211,7 +212,7 @@ id<GREYMatcher> SearchIconButton() {
 
   // Tap on "Create New Folder."
   NSString* accessibilityId =
-      (model == BookmarkModelType::kLocalOrSyncable)
+      (storageType == BookmarkStorageType::kLocalOrSyncable)
           ? kBookmarkCreateNewLocalOrSyncableFolderCellIdentifier
           : kBookmarkCreateNewAccountFolderCellIdentifier;
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(accessibilityId)]

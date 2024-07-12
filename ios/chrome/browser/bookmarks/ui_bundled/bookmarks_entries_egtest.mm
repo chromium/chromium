@@ -10,7 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "build/build_config.h"
-#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
@@ -78,7 +78,7 @@ id<GREYMatcher> AddBookmarkButton() {
 
 - (void)testUndoDeleteBookmarkFromSwipe {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -112,7 +112,7 @@ id<GREYMatcher> AddBookmarkButton() {
 
 - (void)testSwipeToDeleteDisabledInEditMode {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -165,7 +165,7 @@ id<GREYMatcher> AddBookmarkButton() {
 
 - (void)testActionSheetsForSingleURLSelection {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -192,7 +192,7 @@ id<GREYMatcher> AddBookmarkButton() {
 // Verify Edit Text functionality on single URL selection.
 - (void)testEditTextOnSingleURL {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -254,14 +254,14 @@ id<GREYMatcher> AddBookmarkButton() {
   [BookmarkEarlGrey
       verifyExistenceOfBookmarkWithURL:@"http://www.b.fr/"
                                   name:@"French URL"
-                             inStorage:BookmarkModelType::kLocalOrSyncable];
+                             inStorage:BookmarkStorageType::kLocalOrSyncable];
 
   // Press undo and verify the edit is undone.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Undo")]
       performAction:grey_tap()];
   [BookmarkEarlGrey
       verifyAbsenceOfBookmarkWithURL:@"http://www.b.fr/"
-                           inStorage:BookmarkModelType::kLocalOrSyncable];
+                           inStorage:BookmarkStorageType::kLocalOrSyncable];
 
   // Verify edit mode is closed (context bar back to default state).
   [BookmarkEarlGreyUI verifyContextBarInDefaultStateWithSelectEnabled:YES
@@ -271,7 +271,7 @@ id<GREYMatcher> AddBookmarkButton() {
 // Verify Move functionality on single URL selection.
 - (void)testMoveOnSingleURL {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -338,7 +338,7 @@ id<GREYMatcher> AddBookmarkButton() {
   // Verify that the bookmark was not updated.
   [BookmarkEarlGrey
       verifyAbsenceOfBookmarkWithURL:@"http://www.b.fr/"
-                           inStorage:BookmarkModelType::kLocalOrSyncable];
+                           inStorage:BookmarkStorageType::kLocalOrSyncable];
 
   // Verify edit mode remains.
   [BookmarkEarlGreyUI verifyContextBarInEditMode];
@@ -347,7 +347,7 @@ id<GREYMatcher> AddBookmarkButton() {
 // Verify Copy URL functionality on single URL selection.
 - (void)testCopyFunctionalityOnSingleURL {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -381,7 +381,7 @@ id<GREYMatcher> AddBookmarkButton() {
 
 - (void)testContextMenuForMultipleURLSelection {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -428,7 +428,7 @@ id<GREYMatcher> AddBookmarkButton() {
 // Verify the Open All functionality on multiple url selection.
 - (void)testContextMenuForMultipleURLOpenAll {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -471,7 +471,7 @@ id<GREYMatcher> AddBookmarkButton() {
 // Verify the Open All in Incognito functionality on multiple url selection.
 - (void)testContextMenuForMultipleURLOpenAllInIncognito {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -512,7 +512,7 @@ id<GREYMatcher> AddBookmarkButton() {
 // Verify the Open and Open in Incognito functionality on single url.
 - (void)testOpenSingleBookmarkInNormalAndIncognitoTab {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -630,7 +630,7 @@ id<GREYMatcher> AddBookmarkButton() {
 
 - (void)testContextMenuForMixedSelection {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -667,7 +667,7 @@ id<GREYMatcher> AddBookmarkButton() {
 
 - (void)testLongPressOnSingleURL {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -682,7 +682,7 @@ id<GREYMatcher> AddBookmarkButton() {
 // Verify Move functionality on mixed folder / url selection.
 - (void)testMoveFunctionalityOnMixedSelection {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -724,7 +724,7 @@ id<GREYMatcher> AddBookmarkButton() {
   // not close as the selected nodes "Second URL" and "Folder 1" still exist.
   [BookmarkEarlGrey
       removeBookmarkWithTitle:@"First URL"
-                    inStorage:BookmarkModelType::kLocalOrSyncable];
+                    inStorage:BookmarkStorageType::kLocalOrSyncable];
 
   // Choose to move into a new folder.
   [[EarlGrey selectElementWithMatcher:
@@ -760,7 +760,7 @@ id<GREYMatcher> AddBookmarkButton() {
   // Verify new folder "Title For New Folder" has two bookmark nodes.
   [BookmarkEarlGrey verifyChildCount:2
                     inFolderWithName:@"Title For New Folder"
-                           inStorage:BookmarkModelType::kLocalOrSyncable];
+                           inStorage:BookmarkStorageType::kLocalOrSyncable];
 
   // Drill down to where "Second URL" and "Folder 1" have been moved and assert
   // it's presence.
@@ -776,7 +776,7 @@ id<GREYMatcher> AddBookmarkButton() {
 // Verify Move functionality on multiple url selection.
 - (void)testMoveFunctionalityOnMultipleUrlSelection {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -826,7 +826,7 @@ id<GREYMatcher> AddBookmarkButton() {
   // Verify Folder 1 has three bookmark nodes.
   [BookmarkEarlGrey verifyChildCount:3
                     inFolderWithName:@"Folder 1"
-                           inStorage:BookmarkModelType::kLocalOrSyncable];
+                           inStorage:BookmarkStorageType::kLocalOrSyncable];
 
   // Drill down to where "Second URL" and "First URL" have been moved and assert
   // it's presence.
@@ -843,7 +843,7 @@ id<GREYMatcher> AddBookmarkButton() {
 // background.
 - (void)testMoveCancelledWhenAllSelectionDeleted {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -881,10 +881,10 @@ id<GREYMatcher> AddBookmarkButton() {
   // Delete the selected URL and folder programmatically.
   [BookmarkEarlGrey
       removeBookmarkWithTitle:@"Folder 1"
-                    inStorage:BookmarkModelType::kLocalOrSyncable];
+                    inStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGrey
       removeBookmarkWithTitle:@"Second URL"
-                    inStorage:BookmarkModelType::kLocalOrSyncable];
+                    inStorage:BookmarkStorageType::kLocalOrSyncable];
 
   // Verify folder picker is exited.
   [BookmarkEarlGreyUI verifyFolderFlowIsClosed];
@@ -893,7 +893,7 @@ id<GREYMatcher> AddBookmarkButton() {
 // Try deleting a bookmark from the edit screen, then undoing that delete.
 - (void)testUndoDeleteBookmarkFromEditScreen {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -959,7 +959,7 @@ id<GREYMatcher> AddBookmarkButton() {
 
 - (void)testDeleteSingleURLNode {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -998,7 +998,7 @@ id<GREYMatcher> AddBookmarkButton() {
 
 - (void)testDeleteMultipleNodes {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -1043,7 +1043,7 @@ id<GREYMatcher> AddBookmarkButton() {
 
 - (void)testSwipeDownToDismissFromPushedVC {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -1106,7 +1106,7 @@ id<GREYMatcher> AddBookmarkButton() {
 
   [BookmarkEarlGrey clearBookmarksPositionCache];
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -1138,7 +1138,7 @@ id<GREYMatcher> AddBookmarkButton() {
 
   [BookmarkEarlGrey clearBookmarksPositionCache];
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
 
   // Open bookmark panel in a second window
   [ChromeEarlGrey openNewWindow];

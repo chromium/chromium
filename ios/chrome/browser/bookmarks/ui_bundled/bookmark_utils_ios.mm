@@ -38,7 +38,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "components/url_formatter/url_fixer.h"
-#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/undo_manager_wrapper.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -151,14 +151,14 @@ NSString* TitleForBookmarkNode(const BookmarkNode* node) {
 
 #pragma mark - Profile and account
 
-BookmarkModelType GetBookmarkModelType(
+BookmarkStorageType GetBookmarkStorageType(
     const BookmarkNode* bookmark_node,
     const bookmarks::BookmarkModel* bookmark_model) {
   DCHECK(bookmark_node);
   DCHECK(bookmark_model);
   return bookmark_model->IsLocalOnlyNode(*bookmark_node)
-             ? BookmarkModelType::kLocalOrSyncable
-             : BookmarkModelType::kAccount;
+             ? BookmarkStorageType::kLocalOrSyncable
+             : BookmarkStorageType::kAccount;
 }
 
 bool IsAccountBookmarkStorageOptedIn(syncer::SyncService* sync_service) {
@@ -235,7 +235,7 @@ bool UpdateBookmark(const BookmarkNode* node,
 }
 
 bool bookmarkSavedIntoAccount(
-    BookmarkModelType bookmarkModelType,
+    BookmarkStorageType bookmarkStorageType,
     base::WeakPtr<AuthenticationService> authenticationService,
     raw_ptr<syncer::SyncService> syncService) {
   // TODO(crbug.com/40066949): Simplify once kSync becomes unreachable or is
@@ -244,7 +244,7 @@ bool bookmarkSavedIntoAccount(
   BOOL hasSyncConsent =
       authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSync);
   BOOL savedIntoAccount =
-      (bookmarkModelType == BookmarkModelType::kAccount) ||
+      (bookmarkStorageType == BookmarkStorageType::kAccount) ||
       (hasSyncConsent && syncService->GetUserSettings()->GetSelectedTypes().Has(
                              syncer::UserSelectableType::kBookmarks));
   return savedIntoAccount;
@@ -622,7 +622,7 @@ void SortFolders(NodeVector* vector) {
 
 NodeVector VisibleNonDescendantNodes(const NodeSet& obstructions,
                                      const bookmarks::BookmarkModel* model,
-                                     BookmarkModelType type) {
+                                     BookmarkStorageType type) {
   NodeVector primary_nodes = PrimaryPermanentNodes(model, type);
   NodeVector filtered_primary_nodes;
   for (auto* node : primary_nodes) {

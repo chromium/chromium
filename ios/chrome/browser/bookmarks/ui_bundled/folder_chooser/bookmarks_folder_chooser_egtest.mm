@@ -11,12 +11,12 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
-#import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -41,13 +41,13 @@ using chrome_test_util::ScrollToTop;
 using chrome_test_util::TabGridEditButton;
 using chrome_test_util::TappableBookmarkNodeWithLabel;
 
-BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
+BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   switch (kind) {
     case KindOfTest::kSignedOut:
     case KindOfTest::kLocal:
-      return BookmarkModelType::kLocalOrSyncable;
+      return BookmarkStorageType::kLocalOrSyncable;
     case KindOfTest::kAccount:
-      return BookmarkModelType::kAccount;
+      return BookmarkStorageType::kAccount;
   }
 }
 
@@ -1128,7 +1128,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 - (void)testStickyDefaultFolderLocal {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [BookmarkEarlGrey setLastUsedBookmarkFolderToMobileBookmarksInStorageType:
-                        BookmarkModelType::kLocalOrSyncable];
+                        BookmarkStorageType::kLocalOrSyncable];
   [self util_testStickyDefaultFolder:KindOfTest::kLocal];
 }
 - (void)testStickyDefaultFolderAccount {
@@ -1154,7 +1154,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 
   // Create a new folder.
   [BookmarkEarlGreyUI addFolderWithName:@"Sticky Folder"
-                                inModel:kindOfTestToStorageType(kindOfTest)];
+                              inStorage:kindOfTestToStorageType(kindOfTest)];
 
   // Verify that the editor is present.  Uses notNil() instead of
   // sufficientlyVisible() because the large title in the navigation bar causes
@@ -1380,7 +1380,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 - (void)testAddBookmarkInNewFolderLocal {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [BookmarkEarlGrey setLastUsedBookmarkFolderToMobileBookmarksInStorageType:
-                        BookmarkModelType::kLocalOrSyncable];
+                        BookmarkStorageType::kLocalOrSyncable];
   [self util_testAddBookmarkInNewFolder:KindOfTest::kLocal];
 }
 - (void)testAddBookmarkInNewFolderAccount {
@@ -1451,7 +1451,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 
   // Create a new folder with default name.
   [BookmarkEarlGreyUI addFolderWithName:nil
-                                inModel:kindOfTestToStorageType(kindOfTest)];
+                              inStorage:kindOfTestToStorageType(kindOfTest)];
 
   // Verify that the editor is present.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(

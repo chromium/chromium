@@ -14,7 +14,7 @@
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/commerce/core/proto/price_tracking.pb.h"
 #import "components/unified_consent/pref_names.h"
-#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_test_app_interface.h"
@@ -1048,7 +1048,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [BookmarkEarlGrey
       verifyExistenceOfBookmarkWithURL:base::SysUTF8ToNSString(_URL1.spec())
                                   name:kTitle1
-                             inStorage:BookmarkModelType::kLocalOrSyncable];
+                             inStorage:BookmarkStorageType::kLocalOrSyncable];
 }
 
 // Tests that Add to Bookmarks action is greyed out when editBookmarksEnabled
@@ -1800,14 +1800,14 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [BookmarkEarlGrey
       verifyExistenceOfBookmarkWithURL:base::SysUTF8ToNSString(_URL1.spec())
                                   name:kTitle1
-                             inStorage:BookmarkModelType::kLocalOrSyncable];
+                             inStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGrey
       verifyExistenceOfBookmarkWithURL:base::SysUTF8ToNSString(_URL4.spec())
                                   name:kTitle4
-                             inStorage:BookmarkModelType::kLocalOrSyncable];
+                             inStorage:BookmarkStorageType::kLocalOrSyncable];
   [BookmarkEarlGrey
       verifyAbsenceOfBookmarkWithURL:base::SysUTF8ToNSString(_URL2.spec())
-                           inStorage:BookmarkModelType::kLocalOrSyncable];
+                           inStorage:BookmarkStorageType::kLocalOrSyncable];
 }
 
 // Tests adding items to the readinglist from the tab grid edit mode.

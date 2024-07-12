@@ -15,7 +15,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/url_formatter/url_fixer.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
-#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_mediator.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
@@ -233,8 +233,8 @@
                               self.browserState, _authenticationService,
                               _syncService)];
   if (_manuallyChangedTheFolder) {
-    BookmarkModelType type =
-        bookmark_utils_ios::GetBookmarkModelType(_folder, _bookmarkModel.get());
+    BookmarkStorageType type = bookmark_utils_ios::GetBookmarkStorageType(
+        _folder, _bookmarkModel.get());
     SetLastUsedBookmarkFolder(_prefs, _folder, type);
   }
 }

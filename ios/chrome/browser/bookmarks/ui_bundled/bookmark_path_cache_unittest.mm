@@ -9,7 +9,7 @@
 #import "components/bookmarks/common/bookmark_metrics.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
-#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -37,7 +37,8 @@ TEST_F(BookmarkPathCacheTest, TestPathCache) {
   [BookmarkPathCache
       cacheBookmarkTopMostRowWithPrefService:&prefs_
                                     folderId:folder_id
-                                 inModelType:BookmarkModelType::kLocalOrSyncable
+                                   inStorage:BookmarkStorageType::
+                                                 kLocalOrSyncable
                                   topMostRow:topmost_row];
 
   int64_t result_folder_id;
@@ -60,7 +61,8 @@ TEST_F(BookmarkPathCacheTest, TestPathCacheWhenFolderDeleted) {
   [BookmarkPathCache
       cacheBookmarkTopMostRowWithPrefService:&prefs_
                                     folderId:folder_id
-                                 inModelType:BookmarkModelType::kLocalOrSyncable
+                                   inStorage:BookmarkStorageType::
+                                                 kLocalOrSyncable
                                   topMostRow:topmost_row];
 
   // Delete the folder.

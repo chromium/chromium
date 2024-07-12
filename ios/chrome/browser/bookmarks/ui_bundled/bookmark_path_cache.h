@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-enum class BookmarkModelType;
+enum class BookmarkStorageType;
 class PrefService;
 
 namespace bookmarks {
@@ -28,7 +28,7 @@ class PrefRegistrySyncable;
 // Caches the bookmark top most row that the user was last viewing.
 + (void)cacheBookmarkTopMostRowWithPrefService:(PrefService*)prefService
                                       folderId:(int64_t)folderId
-                                   inModelType:(BookmarkModelType)modelType
+                                     inStorage:(BookmarkStorageType)storageType
                                     topMostRow:(int)topMostRow;
 
 // Gets the bookmark top most row that the user was last viewing. Returns YES if
