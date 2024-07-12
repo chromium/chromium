@@ -101,12 +101,19 @@ void AddTextOnImage(FPDF_DOCUMENT document,
     return;
   }
   const gfx::Size image_pixel_size(image_pixel_width, image_pixel_height);
+  const FS_MATRIX image_scale_matrix(
+      image_rendered_size.width() / image_pixel_size.width(), 0, 0,
+      image_rendered_size.height() / image_pixel_size.height(), 0, 0);
 
-  FS_MATRIX image_matrix;
-  if (!FPDFPageObj_GetMatrix(image, &image_matrix)) {
+  FS_MATRIX image_without_scaling_matrix;
+  if (!FPDFPageObj_GetMatrix(image, &image_without_scaling_matrix)) {
     DLOG(ERROR) << "Failed to get image matrix";
     return;
   }
+  image_without_scaling_matrix.a /= image_rendered_size.width();
+  image_without_scaling_matrix.b /= image_rendered_size.width();
+  image_without_scaling_matrix.c /= image_rendered_size.height();
+  image_without_scaling_matrix.d /= image_rendered_size.height();
 
   for (const auto& line : annotation->lines) {
     SearchifyBoundingBoxOrigin baseline_origin =
@@ -160,44 +167,46 @@ void AddTextOnImage(FPDF_DOCUMENT document,
       const gfx::SizeF text_object_size(right - left, top - bottom);
       CHECK_GT(text_object_size.width(), 0);
       CHECK_GT(text_object_size.height(), 0);
-      float width_scale = word->bounding_box.width() / text_object_size.width();
-      float height_scale =
-          word->bounding_box.height() / text_object_size.height();
-      FPDFPageObj_Transform(text.get(), width_scale, 0, 0, height_scale, 0, 0);
+      const FS_MATRIX text_scale_matrix(
+          word->bounding_box.width() / text_object_size.width(), 0, 0,
+          word->bounding_box.height() / text_object_size.height(), 0, 0);
+      FPDFPageObj_Transform(text.get(), text_scale_matrix.a,
+                            text_scale_matrix.b, text_scale_matrix.c,
+                            text_scale_matrix.d, text_scale_matrix.e,
+                            text_scale_matrix.f);
 
       // Move text object to the corresponding text position on the full image.
       SearchifyBoundingBoxOrigin origin =
           ConvertToPdfOrigin(word->bounding_box, word->bounding_box_angle,
                              image_rendered_size.height());
       origin = ProjectToBaseline(origin, baseline_origin);
-      float a = cosf(origin.theta);
-      float b = sinf(origin.theta);
-      float c = -sinf(origin.theta);
-      float d = cosf(origin.theta);
-      float e = origin.point.x();
-      float f = origin.point.y();
+      FS_MATRIX move_matrix(cosf(origin.theta), sinf(origin.theta),
+                            -sinf(origin.theta), cosf(origin.theta),
+                            origin.point.x(), origin.point.y());
       if (word->direction ==
           screen_ai::mojom::Direction::DIRECTION_RIGHT_TO_LEFT) {
-        a = -a;
-        b = -b;
-        e += cosf(origin.theta) * word->bounding_box.width();
-        f += sinf(origin.theta) * word->bounding_box.width();
+        move_matrix.a = -move_matrix.a;
+        move_matrix.b = -move_matrix.b;
+        move_matrix.e += cosf(origin.theta) * word->bounding_box.width();
+        move_matrix.f += sinf(origin.theta) * word->bounding_box.width();
       }
-      FPDFPageObj_Transform(text.get(), a, b, c, d, e, f);
+      FPDFPageObj_Transform(text.get(), move_matrix.a, move_matrix.b,
+                            move_matrix.c, move_matrix.d, move_matrix.e,
+                            move_matrix.f);
 
       // Scale from full image size to rendered image size on the PDF.
-      FPDFPageObj_Transform(
-          text.get(), image_rendered_size.width() / image_pixel_size.width(), 0,
-          0, image_rendered_size.height() / image_pixel_size.height(), 0, 0);
+      FPDFPageObj_Transform(text.get(), image_scale_matrix.a,
+                            image_scale_matrix.b, image_scale_matrix.c,
+                            image_scale_matrix.d, image_scale_matrix.e,
+                            image_scale_matrix.f);
 
       // Apply the image's transformation matrix on the PDF page without the
       // scaling matrix.
-      FPDFPageObj_Transform(text.get(),
-                            image_matrix.a / image_rendered_size.width(),
-                            image_matrix.b / image_rendered_size.width(),
-                            image_matrix.c / image_rendered_size.height(),
-                            image_matrix.d / image_rendered_size.height(),
-                            image_matrix.e, image_matrix.f);
+      FPDFPageObj_Transform(
+          text.get(), image_without_scaling_matrix.a,
+          image_without_scaling_matrix.b, image_without_scaling_matrix.c,
+          image_without_scaling_matrix.d, image_without_scaling_matrix.e,
+          image_without_scaling_matrix.f);
 
       FPDFPage_InsertObject(page, text.release());
     }
