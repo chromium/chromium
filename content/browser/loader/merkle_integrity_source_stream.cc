@@ -111,7 +111,7 @@ bool MerkleIntegritySourceStream::FilterDataImpl(base::span<char>* output,
       return false;
     }
     uint64_t record_size =
-        base::numerics::U64FromBigEndian(base::as_bytes(bytes).first<8u>());
+        base::U64FromBigEndian(base::as_bytes(bytes).first<8u>());
     if (record_size == 0u) {
       return false;
     }

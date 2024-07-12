@@ -701,11 +701,10 @@ bool NetworkSpeechRecognitionEngineImplTest::ResultsAreEqual(
 
 void NetworkSpeechRecognitionEngineImplTest::ExpectFramedChunk(
     const std::string& chunk, uint32_t type) {
-  uint32_t value = base::numerics::U32FromBigEndian(
-      base::as_byte_span(chunk).subspan<0u, 4u>());
+  uint32_t value =
+      base::U32FromBigEndian(base::as_byte_span(chunk).subspan<0u, 4u>());
   EXPECT_EQ(chunk.size() - 8, value);
-  value = base::numerics::U32FromBigEndian(
-      base::as_byte_span(chunk).subspan<4u, 4u>());
+  value = base::U32FromBigEndian(base::as_byte_span(chunk).subspan<4u, 4u>());
   EXPECT_EQ(type, value);
 }
 
@@ -767,7 +766,7 @@ std::string NetworkSpeechRecognitionEngineImplTest::SerializeProtobufResponse(
 
   // Prepend 4 byte prefix length indication to the protobuf message as
   // envisaged by the google streaming recognition webservice protocol.
-  msg_string.insert(0u, base::as_string_view(base::numerics::U32ToBigEndian(
+  msg_string.insert(0u, base::as_string_view(base::U32ToBigEndian(
                             base::checked_cast<uint32_t>(msg_string.size()))));
 
   return msg_string;

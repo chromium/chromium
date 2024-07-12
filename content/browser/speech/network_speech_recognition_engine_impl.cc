@@ -740,9 +740,9 @@ void NetworkSpeechRecognitionEngineImpl::UploadAudioChunk(
     std::string frame(data.size() + 8u, char{0});
     auto frame_span = base::as_writable_byte_span(frame);
     frame_span.subspan<0u, 4u>().copy_from(
-        base::numerics::U32ToBigEndian(static_cast<uint32_t>(data.size())));
+        base::U32ToBigEndian(static_cast<uint32_t>(data.size())));
     frame_span.subspan<4u, 4u>().copy_from(
-        base::numerics::U32ToBigEndian(base::checked_cast<uint32_t>(type)));
+        base::U32ToBigEndian(base::checked_cast<uint32_t>(type)));
     frame.replace(8u, data.size(), data);
     upstream_loader_->AppendChunkToUpload(frame, is_final);
   } else {

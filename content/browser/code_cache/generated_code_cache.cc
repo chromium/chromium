@@ -168,9 +168,9 @@ void WriteCommonDataHeader(net::IOBufferWithSize* buffer,
   auto header =
       base::as_writable_bytes(buffer->span()).first<kHeaderSizeInBytes>();
   auto [header_time, header_size] = header.split_at<kResponseTimeSizeInBytes>();
-  header_time.copy_from(base::numerics::I64ToLittleEndian(
+  header_time.copy_from(base::I64ToLittleEndian(
       response_time.ToDeltaSinceWindowsEpoch().InMicroseconds()));
-  header_size.copy_from(base::numerics::U32ToLittleEndian(data_size));
+  header_size.copy_from(base::U32ToLittleEndian(data_size));
 }
 
 void ReadCommonDataHeader(net::IOBufferWithSize* buffer,
@@ -178,10 +178,10 @@ void ReadCommonDataHeader(net::IOBufferWithSize* buffer,
                           uint32_t* data_size) {
   auto header = base::as_bytes(buffer->span().first<kHeaderSizeInBytes>());
   auto [header_time, header_size] = header.split_at<kResponseTimeSizeInBytes>();
-  int64_t raw_response_time = base::numerics::I64FromLittleEndian(header_time);
+  int64_t raw_response_time = base::I64FromLittleEndian(header_time);
   *response_time = base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(raw_response_time));
-  *data_size = base::numerics::U32FromLittleEndian(header_size);
+  *data_size = base::U32FromLittleEndian(header_size);
 }
 
 static_assert(mojo_base::BigBuffer::kMaxInlineBytes <=

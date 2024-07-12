@@ -294,9 +294,9 @@ DWORD WINAPI GetFontDataPatch(HDC dc_handle,
   // which would in this case result in |getTableData| returning 0 which isn't
   // the correct answer for emulating GDI. |table_tag| must also have its
   // byte order swapped to counter the swap which occurs in the called method.
-  size_t length = typeface->getTableData(
-      base::numerics::ByteSwap(uint32_t{table_tag}), table_offset,
-      buffer ? buffer_length : INT32_MAX, buffer);
+  size_t length =
+      typeface->getTableData(base::ByteSwap(uint32_t{table_tag}), table_offset,
+                             buffer ? buffer_length : INT32_MAX, buffer);
   // We can't distinguish between an empty table and an error.
   if (length == 0)
     return GDI_ERROR;

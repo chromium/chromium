@@ -171,7 +171,8 @@ ConstructUnencryptedExperimentalPoplarPayloads(
 }
 #endif  // BUILDFLAG(USE_DISTRIBUTED_POINT_FUNCTIONS)
 
-// TODO(crbug.com/40215445): Replace with `base::numerics` if available.
+// TODO(crbug.com/40215445): Replace with `base/numerics/byte_conversions.h` if
+// available.
 std::array<uint8_t, 16u> U128ToBigEndian(absl::uint128 integer) {
   std::array<uint8_t, 16u> byte_string;
 
@@ -189,7 +190,7 @@ void AppendEncodedContributionToCborArray(
     std::optional<size_t> filtering_id_max_bytes) {
   cbor::Value::MapValue map;
   map.emplace("bucket", U128ToBigEndian(contribution.bucket));
-  map.emplace("value", base::numerics::U32ToBigEndian(contribution.value));
+  map.emplace("value", base::U32ToBigEndian(contribution.value));
 
   // Only include filtering ID in the format if max bytes is non-null.
   if (filtering_id_max_bytes.has_value()) {
@@ -201,8 +202,7 @@ void AppendEncodedContributionToCborArray(
         AggregationServicePayloadContents::kMaximumFilteringIdMaxBytes == 8);
     std::array<uint8_t, 8u> encoded_id;
     encoded_id.fill(0);
-    base::make_span(encoded_id)
-        .copy_from(base::numerics::U64ToBigEndian(filtering_id));
+    base::make_span(encoded_id).copy_from(base::U64ToBigEndian(filtering_id));
 
     // Note that the payload will have a length dependent on the choice of
     // `filtering_id_max_bytes` here. APIs using this field should ensure that

@@ -207,7 +207,7 @@ void EncodeSortableDouble(double value, std::string* into) {
   }
 
   std::array<uint8_t, 8u> chars;
-  base::span(chars).copy_from(base::numerics::U64ToBigEndian(modified_bits));
+  base::span(chars).copy_from(base::U64ToBigEndian(modified_bits));
   into->insert(into->end(), chars.begin(), chars.end());
 }
 
@@ -219,7 +219,7 @@ bool DecodeSortableDouble(std::string_view& data, double* output) {
     return false;
   }
 
-  uint64_t host_bits = base::numerics::U64FromBigEndian(base::as_bytes(
+  uint64_t host_bits = base::U64FromBigEndian(base::as_bytes(
       base::span<const char, kLengthInBytes>{data.data(), kLengthInBytes}));
   data = data.substr(kLengthInBytes);
 
@@ -1530,10 +1530,8 @@ PartitionedLockId GetObjectStoreLockId(int64_t database_id,
   // existing leveldb key scheme used by IndexedDB. This is no longer a goal.
   std::array<uint8_t, 16u> chars;
   auto [db, obj] = base::span(chars).split_at<8u>();
-  db.copy_from(
-      base::numerics::U64ToBigEndian(static_cast<uint64_t>(database_id)));
-  obj.copy_from(
-      base::numerics::U64ToBigEndian(static_cast<uint64_t>(object_store_id)));
+  db.copy_from(base::U64ToBigEndian(static_cast<uint64_t>(database_id)));
+  obj.copy_from(base::U64ToBigEndian(static_cast<uint64_t>(object_store_id)));
   return {kObjectStoreLockPartition, std::string(chars.begin(), chars.end())};
 }
 

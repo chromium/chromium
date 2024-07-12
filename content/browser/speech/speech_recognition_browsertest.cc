@@ -176,7 +176,7 @@ std::string MakeGoodResponse() {
 
   // Prepend 4 byte prefix length indication to the protobuf message as
   // envisaged by the google streaming recognition webservice protocol.
-  msg_string.insert(0u, base::as_string_view(base::numerics::U32ToBigEndian(
+  msg_string.insert(0u, base::as_string_view(base::U32ToBigEndian(
                             base::checked_cast<uint32_t>(msg_string.size()))));
   return msg_string;
 }

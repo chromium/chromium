@@ -156,7 +156,7 @@ void VerifyReport(
           EXPECT_EQ(bucket_byte_string.size(), 16u);  // 16 bytes = 128 bits
 
           // TODO(crbug.com/40215445): Replace with
-          // `base::numerics::U128FromBigEndian()` when available.
+          // `base::U128FromBigEndian()` when available.
           absl::uint128 bucket;
           base::HexStringToUInt128(base::HexEncode(bucket_byte_string),
                                    &bucket);
@@ -168,7 +168,7 @@ void VerifyReport(
               data_map.at(cbor::Value("value")).GetBytestring();
           EXPECT_EQ(value_byte_string.size(), 4u);  // 4 bytes = 32 bits
 
-          uint32_t value = base::numerics::U32FromBigEndian(
+          uint32_t value = base::U32FromBigEndian(
               base::as_byte_span(value_byte_string).first<4u>());
           EXPECT_EQ(int64_t{value}, expected_contributions[j].value);
 
@@ -192,7 +192,7 @@ void VerifyReport(
 
             CHECK_LE(expected_payload_contents.filtering_id_max_bytes.value(),
                      8u);
-            uint64_t filtering_id = base::numerics::U64FromBigEndian(
+            uint64_t filtering_id = base::U64FromBigEndian(
                 base::make_span(padded_filtering_id_bytestring));
 
             EXPECT_EQ(filtering_id,

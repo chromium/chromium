@@ -515,7 +515,7 @@ TEST_F(SpeechRecognizerImplTest, StopWithData) {
   proto_alternative->set_transcript("123");
   std::string msg_string;
   proto_event.SerializeToString(&msg_string);
-  msg_string.insert(0u, base::as_string_view(base::numerics::U32ToBigEndian(
+  msg_string.insert(0u, base::as_string_view(base::U32ToBigEndian(
                             base::checked_cast<uint32_t>(msg_string.size()))));
 
   // Issue the network callback to complete the process.
