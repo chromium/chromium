@@ -160,5 +160,41 @@ TEST_F(PickerSectionViewTest, ClearsItems) {
   EXPECT_THAT(section_view.item_views_for_testing(), IsEmpty());
 }
 
+class PickerSectionViewUrlFormattingTest
+    : public PickerSectionViewTest,
+      public testing::WithParamInterface<std::pair<GURL, std::u16string>> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PickerSectionViewUrlFormattingTest,
+    testing::Values(
+        std::make_pair(GURL("http://foo.com/bar"), u"foo.com/bar"),
+        std::make_pair(GURL("https://foo.com/bar"), u"foo.com/bar"),
+        std::make_pair(GURL("https://www.foo.com/bar"), u"foo.com/bar"),
+        std::make_pair(GURL("chrome://version"), u"chrome://version"),
+        std::make_pair(GURL("chrome-extension://aaa"),
+                       u"chrome-extension://aaa"),
+        std::make_pair(GURL("file://a/b/c"), u"file://a/b/c")));
+
+TEST_P(PickerSectionViewUrlFormattingTest, AddingHistoryResultFormatsUrl) {
+  MockPickerAssetFetcher asset_fetcher;
+  PickerPreviewBubbleController preview_controller;
+  PickerSubmenuController submenu_controller;
+  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                 &submenu_controller);
+
+  section_view.AddResult(PickerSearchResult::BrowsingHistory(
+                             GetParam().first, u"title", /*icon=*/{}),
+                         &preview_controller, base::DoNothing());
+
+  base::span<const raw_ptr<PickerItemView>> items =
+      section_view.item_views_for_testing();
+  ASSERT_THAT(items, SizeIs(1));
+  EXPECT_TRUE(views::IsViewClass<PickerListItemView>(items[0]));
+  EXPECT_EQ(views::AsViewClass<PickerListItemView>(items[0])
+                ->GetSecondaryTextForTesting(),
+            GetParam().second);
+}
+
 }  // namespace
 }  // namespace ash

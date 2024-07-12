@@ -28,6 +28,7 @@ include_rules = [
   "+components/sync_preferences/testing_pref_service_syncable.h",
   "+components/ui_devtools",
   "+components/ukm",
+  "+components/url_formatter",
   "+components/url_matcher",
   "+components/user_education/common",
   "+components/user_education/views",

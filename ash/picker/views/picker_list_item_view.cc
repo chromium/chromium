@@ -18,6 +18,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
+#include "base/strings/string_util.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -294,6 +295,13 @@ ui::ImageModel PickerListItemView::GetPrimaryImageForTesting() const {
     return image->GetImageModel();
   }
   return ui::ImageModel();
+}
+
+std::u16string_view PickerListItemView::GetSecondaryTextForTesting() const {
+  if (secondary_label_ == nullptr) {
+    return base::EmptyString16();
+  }
+  return secondary_label_->GetText();
 }
 
 void PickerListItemView::UpdateIconWithPreview() {

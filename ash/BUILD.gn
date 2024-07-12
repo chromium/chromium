@@ -3361,6 +3361,7 @@ component("ash") {
     "//components/soda:constants",
     "//components/strings",
     "//components/sync",
+    "//components/url_formatter",
     "//components/url_matcher",
     "//components/user_education/common",
     "//components/user_education/common:events",

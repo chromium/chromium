@@ -30,6 +30,7 @@
 #include "chromeos/components/editor_menu/public/cpp/icon.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "components/url_formatter/url_formatter.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -127,6 +128,15 @@ const gfx::VectorIcon& GetIconForCaseTransformType(
   }
 }
 
+std::u16string FormatBrowsingHistoryUrl(const GURL& url) {
+  return url_formatter::FormatUrl(
+      url,
+      url_formatter::kFormatUrlOmitDefaults |
+          url_formatter::kFormatUrlOmitHTTPS |
+          url_formatter::kFormatUrlOmitTrivialSubdomains,
+      base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
+}
+
 }  // namespace
 
 PickerSectionView::PickerSectionView(
@@ -211,7 +221,7 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(data.title);
-            item_view->SetSecondaryText(base::UTF8ToUTF16(data.url.spec()));
+            item_view->SetSecondaryText(FormatBrowsingHistoryUrl(data.url));
             item_view->SetLeadingIcon(data.icon);
             return item_view;
           },

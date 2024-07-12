@@ -77,6 +77,7 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
   }
   std::u16string GetPrimaryTextForTesting() const;
   ui::ImageModel GetPrimaryImageForTesting() const;
+  std::u16string_view GetSecondaryTextForTesting() const;
 
  private:
   void UpdateIconWithPreview();
