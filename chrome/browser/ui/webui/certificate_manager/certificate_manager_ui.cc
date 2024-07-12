@@ -8,6 +8,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/certificate_manager_localized_strings_provider.h"
+#include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
@@ -57,10 +58,6 @@ void AddCertificateManagerV2Strings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CRS_CERTIFICATES},
       {"certificateManagerV2HashCopiedToast",
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_HASH_COPIED_TOAST},
-      {"certificateManagerV2PolicyCertsSingular",
-       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_ADMIN_CERTS_SINGULAR},
-      {"certificateManagerV2PolicyCertsPlural",
-       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_ADMIN_CERTS_PLURAL},
       {"certificateManagerV2AdminCertsTitle",
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_ADMIN_CERTS_TITLE},
       {"certificateManagerV2TrustedCertsList",
@@ -86,7 +83,7 @@ CertificateManagerUI::CertificateManagerUI(content::WebUI* web_ui)
 #if BUILDFLAG(IS_CHROMEOS)
     : MojoWebDialogUI(web_ui) {
 #else
-    : MojoWebUIController(web_ui) {
+    : MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
 #endif
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
@@ -121,6 +118,12 @@ CertificateManagerUI::CertificateManagerUI(content::WebUI* web_ui)
   if (base::FeatureList::IsEnabled(features::kEnableCertManagementUIV2)) {
     source->AddResourcePath("", IDR_CERT_MANAGER_DIALOG_V2_HTML);
     AddCertificateManagerV2Strings(source);
+
+    auto plural_string_handler = std::make_unique<PluralStringHandler>();
+    plural_string_handler->AddLocalizedString(
+        "certificateManagerV2PolicyCerts",
+        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_ADMIN_CERTS);
+    web_ui->AddMessageHandler(std::move(plural_string_handler));
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)

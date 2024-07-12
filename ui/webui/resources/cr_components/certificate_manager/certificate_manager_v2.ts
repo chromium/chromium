@@ -29,6 +29,7 @@ import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 // import type {CertificateEnterpriseCertsV2Element} from
@@ -148,6 +149,7 @@ export class CertificateManagerV2Element extends
       },
 
       toastMessage_: String,
+      policyCertsString_: String,
 
       showSearch_: {
         type: Boolean,
@@ -173,6 +175,7 @@ export class CertificateManagerV2Element extends
 
   private selectedPage_: Page = Page.LOCAL_CERTS;
   private toastMessage_: string;
+  private policyCertsString_: string;
   private certPolicy_: CertPolicyInfo;
   private importOsCertsEnabled_: boolean;
   private importOsCertsEnabledManaged_: boolean;
@@ -185,7 +188,22 @@ export class CertificateManagerV2Element extends
     proxy.handler.getPolicyInformation().then(
         (results: {policyInfo: CertPolicyInfo}) => {
           this.certPolicy_ = results.policyInfo;
+          this.updatePolicyCertsString_();
         });
+  }
+
+  private async updatePolicyCertsString_() {
+    if (this.certPolicy_ === undefined) {
+      this.policyCertsString_ = '';
+    } else {
+      PluralStringProxyImpl.getInstance()
+          .getPluralString(
+              'certificateManagerV2PolicyCerts',
+              this.certPolicy_.numPolicyCerts)
+          .then(label => {
+            this.policyCertsString_ = label;
+          });
+    }
   }
 
   private onHashCopied_() {
@@ -240,21 +258,6 @@ export class CertificateManagerV2Element extends
 
   private computeImportOsCertsManaged_(): boolean {
     return this.certPolicy_.isIncludeSystemTrustStoreManaged;
-  }
-
-  private getPolicyCertsString_(): string {
-    if (this.certPolicy_ === undefined) {
-      return '';
-    }
-
-    // TODO(crbug.com/40928765): Use PluralStringProxy instead.
-    if (this.certPolicy_.numPolicyCerts > 1) {
-      return loadTimeData.getStringF(
-          'certificateManagerV2PolicyCertsPlural',
-          this.certPolicy_.numPolicyCerts);
-    } else {
-      return loadTimeData.getString('certificateManagerV2PolicyCertsSingular');
-    }
   }
 
   // If true, show the Custom Certs section.
