@@ -154,14 +154,25 @@ void BirchKeyedService::RemoveFileItemFromLauncher(const base::FilePath& path) {
   file_suggest_keyed_service->RemoveSuggestionsAndNotify(file_paths);
 }
 
-void BirchKeyedService::GetFaviconImage(
-    const GURL& url,
+void BirchKeyedService::GetFaviconImageForIconURL(
+    const GURL& icon_url,
     base::OnceCallback<void(const ui::ImageModel&)> callback) {
   favicon::FaviconService* service =
       FaviconServiceFactory::GetInstance()->GetForProfile(
           profile_, ServiceAccessType::EXPLICIT_ACCESS);
   service->GetFaviconImage(
-      url, base::BindOnce(&OnGotFaviconImage, std::move(callback)),
+      icon_url, base::BindOnce(&OnGotFaviconImage, std::move(callback)),
+      &cancelable_task_tracker_);
+}
+
+void BirchKeyedService::GetFaviconImageForPageURL(
+    const GURL& page_url,
+    base::OnceCallback<void(const ui::ImageModel&)> callback) {
+  favicon::FaviconService* service =
+      FaviconServiceFactory::GetInstance()->GetForProfile(
+          profile_, ServiceAccessType::EXPLICIT_ACCESS);
+  service->GetFaviconImageForPageURL(
+      page_url, base::BindOnce(&OnGotFaviconImage, std::move(callback)),
       &cancelable_task_tracker_);
 }
 

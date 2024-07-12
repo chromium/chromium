@@ -63,7 +63,11 @@ class StubBirchClient : public BirchClient {
   }
   base::FilePath GetRemovedItemsFilePath() override { return base::FilePath(); }
   void RemoveFileItemFromLauncher(const base::FilePath& path) override {}
-  void GetFaviconImage(
+  void GetFaviconImageForIconURL(
+      const GURL& url,
+      base::OnceCallback<void(const ui::ImageModel&)> callback) override {}
+
+  void GetFaviconImageForPageURL(
       const GURL& url,
       base::OnceCallback<void(const ui::ImageModel&)> callback) override {}
 

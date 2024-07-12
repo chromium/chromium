@@ -13,6 +13,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/history/core/browser/history_types.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -63,7 +64,7 @@ class BirchMostVisitedProvider : public BirchDataProvider {
   // The most visited data from the last fetch. Used to avoid re-fetching the
   // icon.
   GURL last_url_;
-  gfx::Image last_image_;
+  ui::ImageModel last_image_;
 
   // Task tracker for history requests.
   base::CancelableTaskTracker cancelable_task_tracker_;

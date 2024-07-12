@@ -29,6 +29,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/models/image_model.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
 
@@ -139,7 +140,8 @@ class TestRecentTabsProvider : public BirchDataProvider {
     std::vector<BirchTabItem> items;
     items.emplace_back(u"tab", GURL("http://example.com/"), base::Time::Now(),
                        GURL("http://favicon.com/"), "session",
-                       BirchTabItem::DeviceFormFactor::kDesktop);
+                       BirchTabItem::DeviceFormFactor::kDesktop,
+                       ui::ImageModel());
     Shell::Get()->birch_model()->SetRecentTabItems(std::move(items));
   }
 };
@@ -182,8 +184,8 @@ class TestSelfShareProvider : public BirchDataProvider {
   void RequestBirchDataFetch() override {
     std::vector<BirchSelfShareItem> items;
     items.emplace_back(u"guid", u"tab", GURL("http://example.com/"),
-                       base::Time::Now(), u"my device",
-                       GURL("https://favicon.com/"), base::DoNothing());
+                       base::Time::Now(), u"my device", ui::ImageModel(),
+                       base::DoNothing());
     Shell::Get()->birch_model()->SetSelfShareItems(std::move(items));
   }
 };
@@ -197,6 +199,7 @@ class TestLostMediaProvider : public BirchDataProvider {
   void RequestBirchDataFetch() override {
     std::vector<BirchLostMediaItem> items;
     items.emplace_back(GURL("https://www.source.com"), u"media title", false,
+                       ui::ImageModel(),
                        base::BindRepeating(&TestLostMediaProvider::OnActivation,
                                            weak_factory_.GetWeakPtr()));
     Shell::Get()->birch_model()->SetLostMediaItems(std::move(items));

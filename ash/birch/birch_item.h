@@ -260,7 +260,8 @@ class ASH_EXPORT BirchTabItem : public BirchItem {
                const base::Time& timestamp,
                const GURL& favicon_url,
                const std::string& session_name,
-               const DeviceFormFactor& form_factor);
+               const DeviceFormFactor& form_factor,
+               const ui::ImageModel& backup_icon);
   BirchTabItem(BirchTabItem&&);
   BirchTabItem(const BirchTabItem&);
   BirchTabItem& operator=(const BirchTabItem&);
@@ -288,6 +289,7 @@ class ASH_EXPORT BirchTabItem : public BirchItem {
   GURL favicon_url_;
   std::string session_name_;
   DeviceFormFactor form_factor_;
+  ui::ImageModel backup_icon_;
 };
 
 // A birch item for the last active URL.
@@ -355,7 +357,7 @@ class ASH_EXPORT BirchSelfShareItem : public BirchItem {
                      const GURL& url,
                      const base::Time& shared_time,
                      const std::u16string& device_name,
-                     const GURL& favicon_url,
+                     const ui::ImageModel& backup_icon,
                      base::RepeatingClosure activation_callback);
   BirchSelfShareItem(BirchSelfShareItem&&);
   BirchSelfShareItem(const BirchSelfShareItem&);
@@ -373,7 +375,6 @@ class ASH_EXPORT BirchSelfShareItem : public BirchItem {
   const std::u16string& guid() const { return guid_; }
   const base::Time& shared_time() const { return shared_time_; }
   const GURL& url() const { return url_; }
-  void set_favicon_url(const GURL& favicon_url) { favicon_url_ = favicon_url; }
 
  private:
   static std::u16string GetSubtitle(const std::u16string& device_name,
@@ -382,7 +383,7 @@ class ASH_EXPORT BirchSelfShareItem : public BirchItem {
   std::u16string guid_;
   GURL url_;
   base::Time shared_time_;
-  GURL favicon_url_;
+  ui::ImageModel backup_icon_;
   // `activation_callback_` is triggered when the item is clicked by the user,
   // calling `OnItemPressed()` in `BirchSelfShareProvider` to mark the
   // corresponding `SendTabToSelfEntry` as opened.
@@ -396,6 +397,7 @@ class ASH_EXPORT BirchLostMediaItem : public BirchItem {
   BirchLostMediaItem(const GURL& source_url,
                      const std::u16string& media_title,
                      bool is_video_conference_tab,
+                     const ui::ImageModel& backup_icon,
                      base::RepeatingClosure activation_callback);
   BirchLostMediaItem(BirchLostMediaItem&&);
   BirchLostMediaItem(const BirchLostMediaItem&);
@@ -420,6 +422,7 @@ class ASH_EXPORT BirchLostMediaItem : public BirchItem {
   GURL source_url_;
   std::u16string media_title_;
   bool is_video_conference_tab_;
+  ui::ImageModel backup_icon_;
   base::RepeatingClosure activation_callback_;
 };
 

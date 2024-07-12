@@ -297,15 +297,23 @@ std::unique_ptr<KeyedService> BuildTestSendTabToSelfSyncService(
 
 class FaviconServiceMock : public favicon::MockFaviconService {
  public:
-  FaviconServiceMock() = default;
+  FaviconServiceMock() {
+    // This default implementation is provided to satisfy both actual
+    // functionality and the ability to set expectations in tests.
+    ON_CALL(*this,
+            GetFaviconImageForPageURL(testing::_, testing::_, testing::_))
+        .WillByDefault(testing::Invoke(
+            this, &FaviconServiceMock::DefaultGetFaviconImageForPageURL));
+  }
   ~FaviconServiceMock() override = default;
   FaviconServiceMock(const FaviconServiceMock&) = delete;
   FaviconServiceMock& operator=(const FaviconServiceMock&) = delete;
 
-  base::CancelableTaskTracker::TaskId GetFaviconImageForPageURL(
+ private:
+  base::CancelableTaskTracker::TaskId DefaultGetFaviconImageForPageURL(
       const GURL& page_url,
       favicon_base::FaviconImageCallback callback,
-      base::CancelableTaskTracker* tracker) override {
+      base::CancelableTaskTracker* tracker) {
     favicon_base::FaviconImageResult result;
     result.image = gfx::Image();
     result.icon_url = GURL("https://example.com/favicon.ico");
@@ -808,6 +816,7 @@ TEST_F(BirchKeyedServiceTest, SelfShareProvider) {
   model->SetRecentTabItems(std::vector<BirchTabItem>());
   model->SetFileSuggestItems(std::vector<BirchFileItem>());
   model->SetReleaseNotesItems(std::vector<BirchReleaseNotesItem>());
+  model->SetLostMediaItems(std::vector<BirchLostMediaItem>());
   EXPECT_EQ(model->GetSelfShareItemsForTest().size(), 1u);
 
   // Mark Self Share Item as opened, the provider should now return zero items.
@@ -932,11 +941,20 @@ TEST_F(BirchKeyedServiceTest, RemoveFileItemFromLauncher) {
   birch_keyed_service()->RemoveFileItemFromLauncher(test_path);
 }
 
-// Verifies that GetFaviconImage calls the favicon service.
-TEST_F(BirchKeyedServiceTest, GetFaviconImage) {
-  GURL url("http://example.com/favicon.ico");
-  EXPECT_CALL(*favicon_service(), GetFaviconImage(url, testing::_, testing::_));
-  birch_keyed_service()->GetFaviconImage(url, base::DoNothing());
+// Verifies that `GetFaviconImageForIconURL` calls the favicon service.
+TEST_F(BirchKeyedServiceTest, GetFaviconImageForIconURL) {
+  GURL icon_url("http://example.com/favicon.ico");
+  EXPECT_CALL(*favicon_service(),
+              GetFaviconImage(icon_url, testing::_, testing::_));
+  birch_keyed_service()->GetFaviconImageForIconURL(icon_url, base::DoNothing());
+}
+
+// Verifies that `GetFaviconImageForPageURL` calls the favicon service.
+TEST_F(BirchKeyedServiceTest, GetFaviconImageForPageURL) {
+  GURL page_url("http://example.com/");
+  EXPECT_CALL(*favicon_service(),
+              GetFaviconImageForPageURL(page_url, testing::_, testing::_));
+  birch_keyed_service()->GetFaviconImageForPageURL(page_url, base::DoNothing());
 }
 
 }  // namespace ash

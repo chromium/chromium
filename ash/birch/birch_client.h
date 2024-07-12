@@ -48,11 +48,18 @@ class ASH_EXPORT BirchClient {
   // /media/fuse/drivefs-48de6bc248c2f6d8e809521347ef6190/root/Test doc.gdoc
   virtual void RemoveFileItemFromLauncher(const base::FilePath& path) = 0;
 
-  // Attempts to load the favicon at `url` out of the FaviconService cache.
+  // Attempts to load the favicon at the `icon_url` out of the FaviconService
+  // cache. Invokes the callback either with a valid image (success) or an empty
+  // image (failure).
+  virtual void GetFaviconImageForIconURL(
+      const GURL& icon_url,
+      base::OnceCallback<void(const ui::ImageModel&)> callback) = 0;
+
+  // Attempts to load the favicon at the `page_url` with the FaviconService.
   // Invokes the callback either with a valid image (success) or an empty image
   // (failure).
-  virtual void GetFaviconImage(
-      const GURL& url,
+  virtual void GetFaviconImageForPageURL(
+      const GURL& page_url,
       base::OnceCallback<void(const ui::ImageModel&)> callback) = 0;
 
   virtual ~BirchClient() = default;

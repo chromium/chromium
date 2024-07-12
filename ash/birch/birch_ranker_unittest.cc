@@ -13,6 +13,7 @@
 #include "base/test/icu_test_util.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/models/image_model.h"
 
 namespace ash {
 namespace {
@@ -469,27 +470,33 @@ TEST(BirchRankerTest, RankRecentTabItems) {
 
   // Create phone tab with a timestamp in the last 5 minutes.
   BirchTabItem item0(u"item0", GURL(), TimeFromString("22 Feb 2024 08:59 UTC"),
-                     GURL(), "", BirchTabItem::DeviceFormFactor::kPhone);
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kPhone,
+                     ui::ImageModel());
 
   // Create tablet tab with a timestamp in the last 5 minutes.
   BirchTabItem item1(u"item1", GURL(), TimeFromString("22 Feb 2024 08:58 UTC"),
-                     GURL(), "", BirchTabItem::DeviceFormFactor::kTablet);
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kTablet,
+                     ui::ImageModel());
 
   // Create phone tab with a timestamp in the last hour.
   BirchTabItem item2(u"item2", GURL(), TimeFromString("22 Feb 2024 08:31 UTC"),
-                     GURL(), "", BirchTabItem::DeviceFormFactor::kPhone);
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kPhone,
+                     ui::ImageModel());
 
   // Create a desktop tab with timestamp in the last hour.
   BirchTabItem item3(u"item3", GURL(), TimeFromString("22 Feb 2024 08:30 UTC"),
-                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop);
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop,
+                     ui::ImageModel());
 
   // Create a tab with timestamp in the last day.
   BirchTabItem item4(u"item4", GURL(), TimeFromString("21 Feb 2024 09:01 UTC"),
-                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop);
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop,
+                     ui::ImageModel());
 
   // Create a tab with timestamp more than a day ago.
   BirchTabItem item5(u"item5", GURL(), TimeFromString("21 Feb 2024 08:59 UTC"),
-                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop);
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop,
+                     ui::ImageModel());
 
   // Put the items in the vector in reverse order to validate that they are
   // still handled in the correct order (by time) inside the ranker.

@@ -281,7 +281,11 @@ class TestBirchClient : public BirchClient {
 
   void RemoveFileItemFromLauncher(const base::FilePath& path) override {}
 
-  void GetFaviconImage(
+  void GetFaviconImageForIconURL(
+      const GURL& url,
+      base::OnceCallback<void(const ui::ImageModel&)> callback) override {}
+
+  void GetFaviconImageForPageURL(
       const GURL& url,
       base::OnceCallback<void(const ui::ImageModel&)> callback) override {}
 
@@ -425,7 +429,8 @@ class BirchBarTestBase : public AshTestBase {
           /*timestamp=*/base::Time(),
           /*favicon_url=*/GURL("https://www.favicon.com/"),
           /*session_name=*/"session",
-          /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop);
+          /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop,
+          /*backup_icon=*/ui::ImageModel());
       item_list.back().set_ranking(1.0f);
     }
     birch_client_->SetRecentTabsItems(item_list);
@@ -454,7 +459,6 @@ class BirchBarTestBase : public AshTestBase {
   }
 
   // Adds a number of `num` self share birch items to data source.
-  GURL faviconUrl = GURL("https://www.favicon.com/");
   void SetSelfShareItems(size_t num) {
     std::vector<BirchSelfShareItem> item_list;
     for (size_t i = 0; i < num; i++) {
@@ -462,7 +466,7 @@ class BirchBarTestBase : public AshTestBase {
           /*guid=*/u"self share guid", /*title*/ u"self share tab",
           /*url=*/GURL("https://www.exampletwo.com/"),
           /*shared_time=*/base::Time(), /*device_name=*/u"my device",
-          /*favicon_url=*/faviconUrl,
+          /*backup_icon=*/ui::ImageModel(),
           /*activation_callback=*/base::DoNothing());
       item_list.back().set_ranking(1.0f);
     }
@@ -473,8 +477,10 @@ class BirchBarTestBase : public AshTestBase {
   void SetLostMediaItems(size_t num) {
     std::vector<BirchLostMediaItem> item_list;
     for (size_t i = 0; i < num; i++) {
-      item_list.emplace_back(GURL("https://www.source.com/"), u"media title",
+      item_list.emplace_back(/*source_url=*/GURL("https://www.source.com/"),
+                             /*media_title=*/u"media title",
                              /*is_video_conference_tab=*/false,
+                             /*backup_icon=*/ui::ImageModel(),
                              /*activation_callback=*/base::DoNothing());
       item_list.back().set_ranking(1.0f);
     }

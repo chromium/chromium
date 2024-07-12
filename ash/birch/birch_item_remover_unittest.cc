@@ -38,13 +38,17 @@ class BirchItemRemoverTest : public ::testing::Test {
 
 TEST_F(BirchItemRemoverTest, RemoveTab) {
   BirchTabItem item0(u"item0", GURL("https://example.com/0"), base::Time(),
-                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop);
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop,
+                     ui::ImageModel());
   BirchTabItem item1(u"item1", GURL("https://example.com/1"), base::Time(),
-                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop);
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop,
+                     ui::ImageModel());
   BirchTabItem item2(u"item2", GURL("https://example.com/2"), base::Time(),
-                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop);
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop,
+                     ui::ImageModel());
   BirchTabItem item3(u"item3", GURL("https://example.com/3"), base::Time(),
-                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop);
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop,
+                     ui::ImageModel());
   std::vector<BirchTabItem> tab_items = {item0, item1, item2, item3};
 
   // Filter `tab_items` before any items are removed. The list should remain
@@ -62,19 +66,18 @@ TEST_F(BirchItemRemoverTest, RemoveTab) {
 }
 
 TEST_F(BirchItemRemoverTest, RemoveSelfShareItems) {
-  GURL favicon_url = GURL("https://favicon.com");
   BirchSelfShareItem item0(u"item0_guid", u"item0_title",
                            GURL("https://example.com/0"), base::Time(),
-                           u"device_name", favicon_url, base::DoNothing());
+                           u"device_name", ui::ImageModel(), base::DoNothing());
   BirchSelfShareItem item1(u"item1_guid", u"item1_title",
                            GURL("https://example.com/1"), base::Time(),
-                           u"device_name", favicon_url, base::DoNothing());
+                           u"device_name", ui::ImageModel(), base::DoNothing());
   BirchSelfShareItem item2(u"item2_guid", u"item2_title",
                            GURL("https://example.com/2"), base::Time(),
-                           u"device_name", favicon_url, base::DoNothing());
+                           u"device_name", ui::ImageModel(), base::DoNothing());
   BirchSelfShareItem item3(u"item3_guid", u"item3_title",
                            GURL("https://example.com/3"), base::Time(),
-                           u"device_name", favicon_url, base::DoNothing());
+                           u"device_name", ui::ImageModel(), base::DoNothing());
   std::vector<BirchSelfShareItem> self_share_items = {item0, item1, item2,
                                                       item3};
 

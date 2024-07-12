@@ -9,11 +9,13 @@
 #include "ash/shell.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace ash {
 
@@ -53,8 +55,7 @@ void BirchLastActiveProvider::OnGotHistory(history::QueryResults results) {
   if (last_active.url() == previous_url_) {
     std::vector<BirchLastActiveItem> last_active_items;
     last_active_items.emplace_back(last_active.title(), last_active.url(),
-                                   last_active.last_visit(),
-                                   ui::ImageModel::FromImage(previous_image_));
+                                   last_active.last_visit(), previous_image_);
     Shell::Get()->birch_model()->SetLastActiveItems(
         std::move(last_active_items));
     return;
@@ -74,20 +75,25 @@ void BirchLastActiveProvider::OnGotFaviconImage(
     const GURL& url,
     base::Time last_visit,
     const favicon_base::FaviconImageResult& image_result) {
-  // Don't show the result if there's no icon available (should be rare).
-  if (image_result.image.IsEmpty()) {
-    Shell::Get()->birch_model()->SetLastActiveItems({});
-    return;
-  }
   // Populate the BirchModel with this URL.
   std::vector<BirchLastActiveItem> last_active_items;
-  last_active_items.emplace_back(title, url, last_visit,
-                                 ui::ImageModel::FromImage(image_result.image));
+
+  ui::ImageModel icon;
+  if (!image_result.image.IsEmpty()) {
+    icon = ui::ImageModel::FromImage(image_result.image);
+  } else {
+    ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
+    icon = ui::ImageModel::FromImageSkia(
+        *rb.GetImageSkiaNamed(IDR_CHROME_APP_ICON_192));
+  }
+
+  last_active_items.emplace_back(title, url, last_visit, icon);
+
   Shell::Get()->birch_model()->SetLastActiveItems(std::move(last_active_items));
 
   // Cache the data for next time.
   previous_url_ = url;
-  previous_image_ = image_result.image;
+  previous_image_ = icon;
 }
 
 }  // namespace ash
