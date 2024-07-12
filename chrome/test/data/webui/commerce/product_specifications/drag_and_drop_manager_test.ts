@@ -85,6 +85,12 @@ suite('ProductSpecificationsTableTest', () => {
     document.dispatchEvent(event);
   }
 
+  function dispatchDragLeave({origin}: {origin: HTMLElement}) {
+    const event = new DragEvent('dragleave', {});
+    event.composedPath = () => [origin];
+    tableElement.dispatchEvent(event);
+  }
+
   function assertNotDragging() {
     assertTrue(!tableElement.draggingColumn);
     assertFalse(!!$$(tableElement, '.col[is-dragging'));
@@ -113,72 +119,86 @@ suite('ProductSpecificationsTableTest', () => {
     assertStyle(title!, 'visibility', 'hidden');
   }
 
-  test('drag first column to second position', async () => {
-    initializeColumns({numColumns: 2});
-    const columns = tableElement.$.table.querySelectorAll<HTMLElement>('.col');
-    assertEquals(2, columns.length);
-    assertNotDragging();
+  [true, false].forEach(dropNotLeave => {
+    test('drag first column to second position', async () => {
+      initializeColumns({numColumns: 2});
+      const columns =
+          tableElement.$.table.querySelectorAll<HTMLElement>('.col');
+      assertEquals(2, columns.length);
+      assertNotDragging();
 
-    const first = columns[0]!;
-    const second = columns[1]!;
-    dispatchDragStart({origin: first});
-    assertDragging(first);
-    assertStyle(first, 'order', '0');
-    assertStyle(second, 'order', '1');
+      const first = columns[0]!;
+      const second = columns[1]!;
+      dispatchDragStart({origin: first});
+      assertDragging(first);
+      assertStyle(first, 'order', '0');
+      assertStyle(second, 'order', '1');
 
-    dispatchDragOver({target: second});
-    assertStyle(first, 'order', '1');
-    assertStyle(second, 'order', '0');
+      dispatchDragOver({target: second});
+      assertStyle(first, 'order', '1');
+      assertStyle(second, 'order', '0');
 
-    const images =
-        tableElement.$.table.querySelectorAll<CrAutoImgElement>('.col img');
-    assertEquals(2, images.length);
-    assertEquals('https://0', images[0]!.autoSrc);
-    assertEquals('https://1', images[1]!.autoSrc);
+      const images =
+          tableElement.$.table.querySelectorAll<CrAutoImgElement>('.col img');
+      assertEquals(2, images.length);
+      assertEquals('https://0', images[0]!.autoSrc);
+      assertEquals('https://1', images[1]!.autoSrc);
 
-    const eventPromise = eventToPromise('url-order-update', tableElement);
-    dispatchDrop({origin: first});
-    await waitAfterNextRender(tableElement);
-    assertNotDragging();
+      const eventPromise = eventToPromise('url-order-update', tableElement);
+      if (dropNotLeave) {
+        dispatchDrop({origin: first});
+      } else {
+        dispatchDragLeave({origin: first});
+      }
+      await waitAfterNextRender(tableElement);
+      assertNotDragging();
 
-    const event = await eventPromise;
-    assertTrue(!!event);
-    assertEquals(2, images.length);
-    assertEquals('https://1', images[0]!.autoSrc);
-    assertEquals('https://0', images[1]!.autoSrc);
+      const event = await eventPromise;
+      assertTrue(!!event);
+      assertEquals(2, images.length);
+      assertEquals('https://1', images[0]!.autoSrc);
+      assertEquals('https://0', images[1]!.autoSrc);
+    });
   });
 
-  test('drag second column to first position', async () => {
-    initializeColumns({numColumns: 3});
-    const columns = tableElement.$.table.querySelectorAll<HTMLElement>('.col');
-    assertEquals(3, columns.length);
-    assertNotDragging();
+  [true, false].forEach(dropNotLeave => {
+    test('drag second column to first position', async () => {
+      initializeColumns({numColumns: 3});
+      const columns =
+          tableElement.$.table.querySelectorAll<HTMLElement>('.col');
+      assertEquals(3, columns.length);
+      assertNotDragging();
 
-    const first = columns[0]!;
-    const second = columns[1]!;
-    dispatchDragStart({origin: second});
-    assertDragging(second);
-    assertStyle(first, 'order', '0');
-    assertStyle(second, 'order', '1');
+      const first = columns[0]!;
+      const second = columns[1]!;
+      dispatchDragStart({origin: second});
+      assertDragging(second);
+      assertStyle(first, 'order', '0');
+      assertStyle(second, 'order', '1');
 
-    dispatchDragOver({target: first});
-    assertStyle(first, 'order', '1');
-    assertStyle(second, 'order', '0');
+      dispatchDragOver({target: first});
+      assertStyle(first, 'order', '1');
+      assertStyle(second, 'order', '0');
 
-    const images =
-        tableElement.$.table.querySelectorAll<CrAutoImgElement>('.col img');
-    assertEquals(3, images.length);
-    assertEquals('https://0', images[0]!.autoSrc);
-    assertEquals('https://1', images[1]!.autoSrc);
-    assertEquals('https://2', images[2]!.autoSrc);
+      const images =
+          tableElement.$.table.querySelectorAll<CrAutoImgElement>('.col img');
+      assertEquals(3, images.length);
+      assertEquals('https://0', images[0]!.autoSrc);
+      assertEquals('https://1', images[1]!.autoSrc);
+      assertEquals('https://2', images[2]!.autoSrc);
 
-    dispatchDrop({origin: second});
-    await waitAfterNextRender(tableElement);
-    assertNotDragging();
+      if (dropNotLeave) {
+        dispatchDrop({origin: second});
+      } else {
+        dispatchDragLeave({origin: second});
+      }
+      await waitAfterNextRender(tableElement);
+      assertNotDragging();
 
-    assertEquals('https://1', images[0]!.autoSrc);
-    assertEquals('https://0', images[1]!.autoSrc);
-    assertEquals('https://2', images[2]!.autoSrc);
+      assertEquals('https://1', images[0]!.autoSrc);
+      assertEquals('https://0', images[1]!.autoSrc);
+      assertEquals('https://2', images[2]!.autoSrc);
+    });
   });
 
   test('dragover multiple times before dropping', async () => {
@@ -266,21 +286,6 @@ suite('ProductSpecificationsTableTest', () => {
     assertEquals('https://2', images[2]!.autoSrc);
   });
 
-  test('leave table mid-drag', async () => {
-    initializeColumns({numColumns: 2});
-    const columns = tableElement.$.table.querySelectorAll<HTMLElement>('.col');
-    assertEquals(2, columns.length);
-    assertNotDragging();
-
-    const first = columns[0]!;
-    dispatchDragStart({origin: first});
-    assertDragging(first);
-    tableElement.dispatchEvent(
-        new DragEvent('dragleave', {bubbles: true, cancelable: true}));
-
-    assertNotDragging();
-  });
-
   test('drop column without dragging over', async () => {
     initializeColumns({numColumns: 2});
     const columns = tableElement.$.table.querySelectorAll<HTMLElement>('.col');
@@ -309,35 +314,61 @@ suite('ProductSpecificationsTableTest', () => {
     assertEquals('https://1', images[1]!.autoSrc);
   });
 
-  test('titles always show in first column', async () => {
-    initializeColumns({numColumns: 3});
+  test('cancel drop after dragover', async () => {
+    initializeColumns({numColumns: 2});
     const columns = tableElement.$.table.querySelectorAll<HTMLElement>('.col');
-    assertEquals(3, columns.length);
+    assertEquals(2, columns.length);
     const first = columns[0]!;
     const second = columns[1]!;
-    const third = columns[2]!;
-    assertTitleVisible(first);
-    assertTitleHidden(second);
-    assertTitleHidden(third);
-
     dispatchDragStart({origin: first});
-
-    assertTitleVisible(first);
-    assertTitleHidden(second);
-    assertTitleHidden(third);
-
     dispatchDragOver({target: second});
+    assertStyle(first, 'order', '1');
+    assertStyle(second, 'order', '0');
 
-    assertTitleHidden(first);
-    assertTitleVisible(second);
-    assertTitleHidden(third);
-
-    dispatchDrop({origin: first});
+    document.dispatchEvent(new DragEvent('dragend'));
     await waitAfterNextRender(tableElement);
+    assertNotDragging();
 
-    // Attribute should go back to the first column.
-    assertTitleVisible(first);
-    assertTitleHidden(second);
-    assertTitleHidden(third);
+    assertStyle(first, 'order', '0');
+    assertStyle(second, 'order', '1');
+  });
+
+  [true, false].forEach(dropNotEnd => {
+    test('titles always show in first column', async () => {
+      initializeColumns({numColumns: 3});
+      const columns =
+          tableElement.$.table.querySelectorAll<HTMLElement>('.col');
+      assertEquals(3, columns.length);
+      const first = columns[0]!;
+      const second = columns[1]!;
+      const third = columns[2]!;
+      assertTitleVisible(first);
+      assertTitleHidden(second);
+      assertTitleHidden(third);
+
+      dispatchDragStart({origin: first});
+
+      assertTitleVisible(first);
+      assertTitleHidden(second);
+      assertTitleHidden(third);
+
+      dispatchDragOver({target: second});
+
+      assertTitleHidden(first);
+      assertTitleVisible(second);
+      assertTitleHidden(third);
+
+      if (dropNotEnd) {
+        dispatchDrop({origin: second});
+      } else {
+        document.dispatchEvent(new DragEvent('dragend'));
+      }
+      await waitAfterNextRender(tableElement);
+
+      // Attribute should go back to the first column.
+      assertTitleVisible(first);
+      assertTitleHidden(second);
+      assertTitleHidden(third);
+    });
   });
 });

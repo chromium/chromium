@@ -21,14 +21,20 @@ import {$$} from './utils.js';
  * DragAndDropManager adds listeners to the owner document and table for
  * relevant drag events.
  *
- * When the dragged column hovers over another column, its potential new
+ * When the dragging column hovers over another column, its potential new
  * position is visually indicated by updating its 'order' CSS property.
  *
- * Releasing the dragged column over a valid drop target (another column),
- * notifies `product-specifications-table` to update its internal column order
- * and, subsequently, their DOM positions.
+ * Releasing the dragging column over a valid drop target (another column),
+ * notifies the `product-specifications-table` to update its internal column
+ * order and, subsequently, their DOM positions. Listeners are then removed from
+ * the document and table for non-'dragstart' drag events.
  *
- * Dragging the element outside of the table cancels drag-and-drop.
+ * Leaving the table mid-drag drops the dragging column at the position where
+ * the 'dragleave' event was triggered.
+ *
+ * If a drop fails or is cancelled, column positions are restored to their
+ * original state in the DOM to ensure the visual layout matches the underlying
+ * data structure.
  */
 
 function getColumnByComposedPath(path?: EventTarget[]): HTMLElement|null {
@@ -48,6 +54,14 @@ function getColumnByComposedPath(path?: EventTarget[]): HTMLElement|null {
 function getVisualOrderIndex(col: HTMLElement) {
   assert(col.style.order !== '');
   return parseInt(col.style.order);
+}
+
+function syncVisualOrderWithDOM(columnElements: HTMLElement[]) {
+  columnElements.forEach((column, index) => {
+    // `is-first-column` ensures the first column has necessary styling.
+    column.toggleAttribute('is-first-column', index === 0);
+    column.style.order = `${index}`;
+  });
 }
 
 export class DragAndDropManager {
@@ -87,10 +101,10 @@ export class DragAndDropManager {
     this.eventTracker_.add(
         document, 'dragover', (e: DragEvent) => this.dragOver_(e));
     this.eventTracker_.add(document, 'drop', (e: DragEvent) => this.drop_(e));
-    // Ends drag-and-drop if the dragging column leaves the table. This ensures
+    // Drops the dragging column if it leaves the table. This ensures
     // that 'dragover' events only fire for adjacent columns.
     this.eventTracker_.add(
-        this.tableElement_, 'dragleave', () => this.dragEnd_());
+        this.tableElement_, 'dragleave', (e: DragEvent) => this.drop_(e));
     this.eventTracker_.add(document, 'dragend', () => {
       this.eventTracker_.remove(document, 'dragover');
       this.eventTracker_.remove(document, 'drop');
@@ -102,12 +116,8 @@ export class DragAndDropManager {
   // Sets up column reordering for drag events.
   private dragStart_(dragElement: HTMLElement) {
     this.tableElement_.draggingColumn = dragElement;
-    const columnElements = this.columnElements_;
     // Set initial column order for later visual reordering.
-    columnElements.forEach((column, index) => {
-      column.toggleAttribute('is-first-column', index === 0);
-      column.style.order = `${index}`;
-    });
+    syncVisualOrderWithDOM(this.columnElements_);
   }
 
   // Swaps the visual order of the dragging column with the adjacent column it
@@ -134,6 +144,7 @@ export class DragAndDropManager {
       }
       dropTarget.style.order = `${fromIndex}`;
       dragElement.style.order = `${toIndex}`;
+      // `is-first-column` ensures the first column has necessary styling.
       dropTarget.toggleAttribute('is-first-column', fromIndex === 0);
       dragElement.toggleAttribute('is-first-column', toIndex === 0);
     }
@@ -161,13 +172,24 @@ export class DragAndDropManager {
       this.tableElement_.moveColumnOnDrop(fromIndex, toIndex);
     }
 
-    this.dragEnd_();
+    // Since drag-and-drop only works for adjacent columns, a drop is considered
+    // successful regardless of whether `toIndex` and `fromIndex` don't match.
+    // If they do match, the 'order' CSS property of each column should already
+    // match its DOM position.
+    this.tableElement_.draggingColumn = null;
   }
 
-  // Called when drag-and-drop is finished (even if the drop was canceled).
+  // Called when drag-and-drop is finished, even if canceled.
+  // If cancelled, the 'order' CSS property of each column is reset to match its
+  // DOM position, to ensure the visual layout matches the underlying data
+  // structure.
   private dragEnd_() {
-    // TODO(b/350958833): Update |this.tableElement_.columns| if a 'dragend'
-    // event is fired before a 'drop' event is.
+    if (!this.tableElement_.draggingColumn) {
+      return;
+    }
+
     this.tableElement_.draggingColumn = null;
+    // Ensure each column's CSS 'order' property aligns with its DOM position.
+    syncVisualOrderWithDOM(this.columnElements_);
   }
 }
