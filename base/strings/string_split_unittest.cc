@@ -6,7 +6,9 @@
 
 #include <stddef.h>
 
+#include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -441,7 +443,7 @@ TEST(StringSplitTest, SplitStringAlongWhitespace) {
     { "b\tat",   2, "b",  "at" },
     { "b\t at",  2, "b",  "at" },
   };
-  for (const auto& i : data) {
+  for (const TestData& i : data) {
     std::vector<std::string> results =
         base::SplitString(i.input, kWhitespaceASCII, base::KEEP_WHITESPACE,
                           base::SPLIT_WANT_NONEMPTY);
@@ -450,6 +452,44 @@ TEST(StringSplitTest, SplitStringAlongWhitespace) {
       ASSERT_EQ(i.output1, results[0]);
     if (i.expected_result_count > 1)
       ASSERT_EQ(i.output2, results[1]);
+  }
+}
+
+TEST(StringSplitTest, NullSeparatorWantNonEmpty) {
+  struct TestData {
+    std::string_view test_case;
+    std::vector<std::string_view> expected;
+  } data[] = {
+      {base::MakeStringViewWithNulChars("a"), {"a"}},
+      {base::MakeStringViewWithNulChars("a\0"), {"a"}},
+      {base::MakeStringViewWithNulChars("a\0a"), {"a", "a"}},
+      {base::MakeStringViewWithNulChars("\0a\0\0a\0"), {"a", "a"}},
+  };
+
+  for (const auto& i : data) {
+    std::vector<std::string_view> results = base::SplitStringPiece(
+        i.test_case, base::MakeStringViewWithNulChars("\0"),
+        base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    EXPECT_EQ(results, i.expected);
+  }
+}
+
+TEST(StringSplitTest, NullSeparatorWantAll) {
+  struct TestData {
+    std::string_view test_case;
+    std::vector<std::string_view> expected;
+  } data[] = {
+      {base::MakeStringViewWithNulChars("a"), {"a"}},
+      {base::MakeStringViewWithNulChars("a\0"), {"a", ""}},
+      {base::MakeStringViewWithNulChars("a\0a"), {"a", "a"}},
+      {base::MakeStringViewWithNulChars("\0a\0\0a\0"), {"", "a", "", "a", ""}},
+  };
+
+  for (const TestData& i : data) {
+    std::vector<std::string_view> results = base::SplitStringPiece(
+        i.test_case, base::MakeStringViewWithNulChars("\0"),
+        base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+    EXPECT_EQ(results, i.expected);
   }
 }
 
