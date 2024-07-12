@@ -89,8 +89,9 @@ class CastAudioManagerTest : public testing::Test {
       audio_manager_->Shutdown();
       audio_manager_.reset();
     }
-    if (audio_thread_.IsRunning())
+    if (audio_thread_.IsRunning()) {
       audio_thread_.Stop();
+    }
     CHECK(audio_thread_.StartAndWaitForTesting());
 
     mock_backend_factory_ = std::make_unique<MockCmaBackendFactory>();
@@ -152,7 +153,8 @@ class CastAudioManagerTest : public testing::Test {
 };
 
 TEST_F(CastAudioManagerTest, HasValidOutputStreamParameters) {
-  std::string default_device_id = AudioDeviceDescription::kDefaultDeviceId;
+  std::string default_device_id =
+      ::media::AudioDeviceDescription::kDefaultDeviceId;
   ::media::AudioParameters params =
       audio_manager_->GetOutputStreamParameters(default_device_id);
   EXPECT_TRUE(params.IsValid());

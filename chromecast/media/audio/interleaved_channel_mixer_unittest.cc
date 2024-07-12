@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromecast/media/audio/interleaved_channel_mixer.h"
+
 #include <cmath>
 #include <string>
 #include <tuple>
 
-#include "chromecast/media/audio/interleaved_channel_mixer.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/channel_layout.h"
@@ -57,7 +58,9 @@ TEST_P(InterleavedChannelMixerTest, Transform) {
 
   // Check that the output of upstream ChannelMixer + interleave is the same
   // as the output of interleave + InterleavedChannelMixer.
-  ::media::ChannelMixer channel_mixer(input_layout, output_layout);
+  ::media::ChannelMixer channel_mixer(
+      input_layout, ::media::ChannelLayoutToChannelCount(input_layout),
+      output_layout, ::media::ChannelLayoutToChannelCount(output_layout));
   channel_mixer.Transform(original.get(), transformed.get());
 
   std::vector<float> original_interleaved(num_input_channels * kNumFrames);

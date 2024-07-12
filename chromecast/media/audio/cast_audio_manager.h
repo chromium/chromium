@@ -69,6 +69,9 @@ class CastAudioManager : public ::media::AudioManagerBase {
   const char* GetName() override;
   void ReleaseOutputStream(::media::AudioOutputStream* stream) override;
 
+  // Make this public for testing.
+  using ::media::AudioManagerBase::GetOutputStreamParameters;
+
  protected:
   // AudioManagerBase implementation.
   ::media::AudioOutputStream* MakeLinearOutputStream(
