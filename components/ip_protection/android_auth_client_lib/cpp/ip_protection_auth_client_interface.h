@@ -52,6 +52,9 @@ class IpProtectionAuthClientInterface {
   // Asynchronously send an AuthAndSignRequest to the signing server.
   virtual void AuthAndSign(const privacy::ppn::AuthAndSignRequest& request,
                            AuthAndSignResponseCallback callback) const = 0;
+
+  // Returns a weak pointer to this object.
+  virtual base::WeakPtr<IpProtectionAuthClientInterface> GetWeakPtr() = 0;
 };
 
 }  // namespace ip_protection::android

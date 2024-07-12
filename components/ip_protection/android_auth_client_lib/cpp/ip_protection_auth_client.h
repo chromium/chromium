@@ -11,6 +11,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "components/ip_protection/android_auth_client_lib/cpp/ip_protection_auth_client_interface.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/auth_and_sign.pb.h"
@@ -60,6 +61,8 @@ class IpProtectionAuthClient : public IpProtectionAuthClientInterface {
   void AuthAndSign(const privacy::ppn::AuthAndSignRequest& request,
                    AuthAndSignResponseCallback callback) const override;
 
+  base::WeakPtr<IpProtectionAuthClientInterface> GetWeakPtr() override;
+
  private:
   // BindCallbackListener::OnResult calls IpProtectionAuthClient's constructor.
   friend class BindCallbackListener;
@@ -68,6 +71,8 @@ class IpProtectionAuthClient : public IpProtectionAuthClientInterface {
 
   // Reference to the Java IpProtectionAuthClient object.
   jni_zero::ScopedJavaGlobalRef<jobject> ip_protection_auth_client_;
+
+  base::WeakPtrFactory<IpProtectionAuthClient> weak_ptr_factory_{this};
 };
 
 }  // namespace ip_protection::android

@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -44,6 +45,13 @@ class MockIpProtectionAuthClient
               (const privacy::ppn::AuthAndSignRequest& request,
                ip_protection::android::AuthAndSignResponseCallback callback),
               (const override));
+
+  base::WeakPtr<IpProtectionAuthClientInterface> GetWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockIpProtectionAuthClient> weak_ptr_factory_{this};
 };
 }  // anonymous namespace
 
@@ -321,11 +329,16 @@ TEST_F(BlindSignMessageAndroidImplTest, DoRequestHandlesOtherErrors) {
 
   ASSERT_FALSE(get_initial_data_result_future.Get().ok());
   EXPECT_EQ(get_initial_data_result_future.Get().status().code(),
-            absl::StatusCode::kUnavailable);
+            absl::StatusCode::kInternal);
 
-  EXPECT_CALL(*mock_ip_protection_auth_client_,
-              GetInitialData(EqualsProto(get_initial_data_request), _))
-      .Times(0);
+  // Set `ip_protection_auth_client_` with mock client given client was reset on
+  // `kOther` response.
+  auto mock_ip_protection_auth_client =
+      std::make_unique<MockIpProtectionAuthClient>();
+  mock_ip_protection_auth_client_ = mock_ip_protection_auth_client.get();
+  fetcher_->SetIpProtectionAuthClientForTesting(
+      std::move(mock_ip_protection_auth_client));
+
   EXPECT_CALL(*mock_ip_protection_auth_client_,
               AuthAndSign(EqualsProto(auth_and_sign_request), _))
       .Times(1)
@@ -352,8 +365,7 @@ TEST_F(BlindSignMessageAndroidImplTest, DoRequestHandlesOtherErrors) {
                       std::move(callback));
 
   ASSERT_FALSE(result_future.Get().ok());
-  EXPECT_EQ(result_future.Get().status().code(),
-            absl::StatusCode::kUnavailable);
+  EXPECT_EQ(result_future.Get().status().code(), absl::StatusCode::kInternal);
 }
 
 TEST_F(BlindSignMessageAndroidImplTest,
@@ -427,4 +439,115 @@ TEST_F(BlindSignMessageAndroidImplTest,
             absl::StatusCode::kOk);
   EXPECT_EQ(auth_and_sign_result_future.Get()->status_code(),
             absl::StatusCode::kOk);
+}
+
+TEST_F(BlindSignMessageAndroidImplTest,
+       DoRequestReturnsInternalErrorIfFailureToBindToService) {
+  // Skip trying to create a connected instance and add request to queue waiting
+  // for `ip_protection_auth_client_` to connect.
+  fetcher_->SetIpProtectionAuthClientForTesting(nullptr);
+  fetcher_->SkipCreateConnectedInstanceForTesting();
+
+  base::test::TestFuture<absl::StatusOr<quiche::BlindSignMessageResponse>>
+      get_initial_data_result_future;
+  auto get_initial_data_callback =
+      [&get_initial_data_result_future](
+          absl::StatusOr<quiche::BlindSignMessageResponse> response) {
+        get_initial_data_result_future.SetValue(std::move(response));
+      };
+
+  fetcher_->DoRequest(quiche::BlindSignMessageRequestType::kGetInitialData,
+                      std::nullopt, kGetInitialDataRequestBody,
+                      std::move(get_initial_data_callback));
+
+  ASSERT_TRUE(fetcher_->GetPendingRequestsForTesting().size() == 1u);
+
+  // Finish create connected instance request and assert an internal error is
+  // returned for pending requests when failing to create a connected instance
+  // to the service.
+  base::expected<
+      std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>,
+      std::string>
+      client = base::unexpected("Auth client creation failed");
+
+  fetcher_->OnCreateIpProtectionAuthClientComplete(std::move(client));
+
+  ASSERT_TRUE(fetcher_->GetPendingRequestsForTesting().size() == 0u);
+  ASSERT_FALSE(get_initial_data_result_future.Get().ok());
+  EXPECT_EQ(get_initial_data_result_future.Get().status().code(),
+            absl::StatusCode::kInternal);
+}
+
+TEST_F(BlindSignMessageAndroidImplTest,
+       RetryCreateConnectedInstanceOnNextRequestfServiceDisconnected) {
+  EXPECT_CALL(*mock_ip_protection_auth_client_,
+              GetInitialData(EqualsProto(get_initial_data_request), _))
+      .Times(1)
+      .WillOnce([](const privacy::ppn::GetInitialDataRequest& request,
+                   auto&& callback) {
+        base::unexpected<ip_protection::android::AuthRequestError> other_error(
+            ip_protection::android::AuthRequestError::kOther);
+        base::expected<privacy::ppn::GetInitialDataResponse,
+                       ip_protection::android::AuthRequestError>
+            response(std::move(other_error));
+        std::move(callback).Run(std::move(response));
+      });
+
+  base::test::TestFuture<absl::StatusOr<quiche::BlindSignMessageResponse>>
+      get_initial_data_result_future;
+  auto get_initial_data_callback =
+      [&get_initial_data_result_future](
+          absl::StatusOr<quiche::BlindSignMessageResponse> response) {
+        get_initial_data_result_future.SetValue(std::move(response));
+      };
+
+  // When `kOther` error is returned for a request, reset client and retry
+  // creating connected instance to service on next request.
+  fetcher_->DoRequest(quiche::BlindSignMessageRequestType::kGetInitialData,
+                      std::nullopt, kGetInitialDataRequestBody,
+                      std::move(get_initial_data_callback));
+
+  ASSERT_FALSE(get_initial_data_result_future.Get().ok());
+  EXPECT_EQ(get_initial_data_result_future.Get().status().code(),
+            absl::StatusCode::kInternal);
+  ASSERT_TRUE(fetcher_->GetIpProtectionAuthClientForTesting() == nullptr);
+
+  base::test::TestFuture<absl::StatusOr<quiche::BlindSignMessageResponse>>
+      auth_and_sign_result_future;
+  auto auth_and_sign_callback =
+      [&auth_and_sign_result_future](
+          absl::StatusOr<quiche::BlindSignMessageResponse> response) {
+        auth_and_sign_result_future.SetValue(std::move(response));
+      };
+
+  fetcher_->SkipCreateConnectedInstanceForTesting();
+
+  fetcher_->DoRequest(quiche::BlindSignMessageRequestType::kAuthAndSign,
+                      std::nullopt, kAuthAndSignRequestBody,
+                      std::move(auth_and_sign_callback));
+
+  // Initialize `ip_protection_auth_client_` with new mock client.
+  auto mock_ip_protection_auth_client =
+      std::make_unique<MockIpProtectionAuthClient>();
+  mock_ip_protection_auth_client_ = mock_ip_protection_auth_client.get();
+
+  EXPECT_CALL(*mock_ip_protection_auth_client_,
+              AuthAndSign(EqualsProto(auth_and_sign_request), _))
+      .Times(1)
+      .WillOnce([this](const privacy::ppn::AuthAndSignRequest& request,
+                       auto&& callback) {
+        base::expected<privacy::ppn::AuthAndSignResponse,
+                       ip_protection::android::AuthRequestError>
+            response(auth_and_sign_response);
+        std::move(callback).Run(std::move(response));
+      });
+
+  // Finish create connected instance request.
+  fetcher_->OnCreateIpProtectionAuthClientComplete(
+      std::move(mock_ip_protection_auth_client));
+
+  ASSERT_TRUE(auth_and_sign_result_future.Get().ok());
+  EXPECT_EQ(auth_and_sign_result_future.Get()->status_code(),
+            absl::StatusCode::kOk);
+  ASSERT_TRUE(fetcher_->GetIpProtectionAuthClientForTesting() != nullptr);
 }

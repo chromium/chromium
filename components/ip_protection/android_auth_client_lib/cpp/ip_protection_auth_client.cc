@@ -8,6 +8,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "components/ip_protection/android_auth_client_lib/cpp/bind_callback_listener.h"
 #include "components/ip_protection/android_auth_client_lib/cpp/byte_array_callback_listener.h"
 #include "components/ip_protection/android_auth_client_lib/cpp/ip_protection_auth_client_interface.h"
@@ -87,6 +88,11 @@ void IpProtectionAuthClient::AuthAndSign(
       ByteArrayCallbackListener::Create(
           ConvertProtoCallback<privacy::ppn::AuthAndSignResponse>(
               std::move(callback))));
+}
+
+base::WeakPtr<IpProtectionAuthClientInterface>
+IpProtectionAuthClient::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 IpProtectionAuthClient::IpProtectionAuthClient(

@@ -46,8 +46,8 @@ void BlindSignMessageAndroidImpl::DoRequest(
   }
 
   pending_requests_.emplace(request_type, body, std::move(callback));
-  // If `ip_protection_auth_client_` is not yet set, try
-  // to create a connected instance.
+  // If `ip_protection_auth_client_` is not yet set, try to create a new
+  // connected instance.
   if (pending_requests_.size() == 1u) {
     CreateIpProtectionAuthClient();
   }
@@ -63,11 +63,8 @@ void BlindSignMessageAndroidImpl::CreateIpProtectionAuthClient() {
           weak_ptr_factory_.GetWeakPtr())));
 }
 
-// TODO(b/328780742): Add support for error handling when service connection
-// fails.
 void BlindSignMessageAndroidImpl::OnCreateIpProtectionAuthClientComplete(
-    base::expected<std::unique_ptr<
-                       ip_protection::android::IpProtectionAuthClientInterface>,
+    base::expected<std::unique_ptr<IpProtectionAuthClientInterface>,
                    std::string> ip_protection_auth_client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ip_protection_auth_client.has_value()) {
@@ -80,7 +77,7 @@ void BlindSignMessageAndroidImpl::OnCreateIpProtectionAuthClientComplete(
       SendRequest(request_type, body, std::move(callback));
     } else {
       std::move(callback)(absl::InternalError(
-          "Failed request to bind to the GmsCore IP Protection service."));
+          "Failed request to bind to the Android IP Protection service."));
     }
     pending_requests_.pop();
   }
@@ -100,7 +97,8 @@ void BlindSignMessageAndroidImpl::SendRequest(
           base::BindPostTaskToCurrentDefault(base::BindOnce(
               &BlindSignMessageAndroidImpl::OnSendRequestComplete<
                   privacy::ppn::GetInitialDataResponse>,
-              weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
+              weak_ptr_factory_.GetWeakPtr(),
+              ip_protection_auth_client_->GetWeakPtr(), std::move(callback))));
       break;
     }
     case quiche::BlindSignMessageRequestType::kAuthAndSign: {
@@ -111,7 +109,8 @@ void BlindSignMessageAndroidImpl::SendRequest(
           base::BindPostTaskToCurrentDefault(base::BindOnce(
               &BlindSignMessageAndroidImpl::OnSendRequestComplete<
                   privacy::ppn::AuthAndSignResponse>,
-              weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
+              weak_ptr_factory_.GetWeakPtr(),
+              ip_protection_auth_client_->GetWeakPtr(), std::move(callback))));
       break;
     }
     case quiche::BlindSignMessageRequestType::kUnknown:
@@ -121,6 +120,8 @@ void BlindSignMessageAndroidImpl::SendRequest(
 
 template <typename ResponseType>
 void BlindSignMessageAndroidImpl::OnSendRequestComplete(
+    base::WeakPtr<IpProtectionAuthClientInterface>
+        requesting_ip_protection_auth_client,
     quiche::BlindSignMessageCallback callback,
     base::expected<ResponseType, ip_protection::android::AuthRequestError>
         response) {
@@ -144,9 +145,19 @@ void BlindSignMessageAndroidImpl::OnSendRequestComplete(
         break;
       }
       case ip_protection::android::AuthRequestError::kOther:
-        std::move(callback)(absl::UnavailableError(
-            "An error that is not expliclity communicated when making request "
-            "to the service implementing IP Protection."));
+        // `kOther` error may indicate that the service became disconnected
+        // during the request. Because binding succeeded previously, reset the
+        // `ip_protection_auth_client_` only if the current client is
+        // responsible for the request.
+        if (requesting_ip_protection_auth_client) {
+          CHECK(requesting_ip_protection_auth_client.get() ==
+                ip_protection_auth_client_.get());
+          CHECK(pending_requests_.empty());
+          ip_protection_auth_client_.reset();
+        }
+        std::move(callback)(absl::InternalError(
+            "An internal error where there is no longer a connection to the "
+            "Android IP Protection service during a request."));
         break;
     }
   }

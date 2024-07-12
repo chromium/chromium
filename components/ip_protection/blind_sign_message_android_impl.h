@@ -52,9 +52,24 @@ class BlindSignMessageAndroidImpl : public quiche::BlindSignMessageInterface {
 
  private:
   friend class BlindSignMessageAndroidImplTest;
+
   FRIEND_TEST_ALL_PREFIXES(BlindSignMessageAndroidImplTest, SetUp);
   FRIEND_TEST_ALL_PREFIXES(BlindSignMessageAndroidImplTest,
                            RequestsAreQueuedUntilConnectedInstance);
+  FRIEND_TEST_ALL_PREFIXES(
+      BlindSignMessageAndroidImplTest,
+      DoRequestReturnsInternalErrorIfFailureToBindToService);
+  FRIEND_TEST_ALL_PREFIXES(
+      BlindSignMessageAndroidImplTest,
+      RetryCreateConnectedInstanceOnNextRequestfServiceDisconnected);
+  FRIEND_TEST_ALL_PREFIXES(BlindSignMessageAndroidImplTest,
+                           DoRequestHandlesOtherErrors);
+
+  using IpProtectionAuthClientInterface =
+      ip_protection::android::IpProtectionAuthClientInterface;
+  using PendingRequest = std::tuple<quiche::BlindSignMessageRequestType,
+                                    std::string,
+                                    quiche::BlindSignMessageCallback>;
 
   // Request to bind to the Android IP Protection service by creating a
   // connected instance of `ip_protection_auth_client_`.
@@ -71,10 +86,8 @@ class BlindSignMessageAndroidImpl : public quiche::BlindSignMessageInterface {
   void ProcessPendingRequests();
 
   void OnCreateIpProtectionAuthClientComplete(
-      base::expected<
-          std::unique_ptr<
-              ip_protection::android::IpProtectionAuthClientInterface>,
-          std::string> ip_protection_auth_client);
+      base::expected<std::unique_ptr<IpProtectionAuthClientInterface>,
+                     std::string> ip_protection_auth_client);
 
   void OnGetInitialDataComplete(
       quiche::BlindSignMessageCallback callback,
@@ -88,42 +101,42 @@ class BlindSignMessageAndroidImpl : public quiche::BlindSignMessageInterface {
 
   template <typename ResponseType>
   void OnSendRequestComplete(
+      base::WeakPtr<IpProtectionAuthClientInterface>
+          requesting_ip_protection_auth_client,
       quiche::BlindSignMessageCallback callback,
       base::expected<ResponseType, ip_protection::android::AuthRequestError>
           response);
 
   // Set the `ip_protection_auth_client_` for testing.
   void SetIpProtectionAuthClientForTesting(
-      std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
+      std::unique_ptr<IpProtectionAuthClientInterface>
           ip_protection_auth_client) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     ip_protection_auth_client_ = std::move(ip_protection_auth_client);
+  }
+
+  IpProtectionAuthClientInterface* GetIpProtectionAuthClientForTesting() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return ip_protection_auth_client_.get();
   }
 
   void SkipCreateConnectedInstanceForTesting() {
     skip_create_connected_instance_for_testing_ = true;
   }
 
-  base::queue<std::tuple<quiche::BlindSignMessageRequestType,
-                         std::string,
-                         quiche::BlindSignMessageCallback>>&
-  GetPendingRequestsForTesting() {
+  base::queue<PendingRequest>& GetPendingRequestsForTesting() {
     return pending_requests_;
   }
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
-      ip_protection_auth_client_ GUARDED_BY_CONTEXT(sequence_checker_) =
-          nullptr;
+  std::unique_ptr<IpProtectionAuthClientInterface> ip_protection_auth_client_
+      GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   // Queue of incoming requests waiting for `ip_protection_auth_client_` to
   // connect to the Android IP Protection service. Once an instance is
   // connected, the queue should be empty.
-  base::queue<std::tuple<quiche::BlindSignMessageRequestType,
-                         std::string,
-                         quiche::BlindSignMessageCallback>>
-      pending_requests_;
+  base::queue<PendingRequest> pending_requests_;
 
   bool skip_create_connected_instance_for_testing_ = false;
 
