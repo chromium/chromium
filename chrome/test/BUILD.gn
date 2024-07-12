@@ -4834,18 +4834,14 @@ if (!is_android) {
         ]
       }
       if (enable_assistant_integration_tests) {
-        sources += [
-          "../browser/ash/app_list/launcher_search_iph_browsertest.cc",
-          "../browser/ui/ash/assistant/assistant_browsertest.cc",
-          "../browser/ui/ash/assistant/assistant_test_mixin.cc",
-          "../browser/ui/ash/assistant/assistant_test_mixin.h",
-          "../browser/ui/ash/assistant/assistant_timers_browsertest.cc",
-        ]
+        sources +=
+            [ "../browser/ash/app_list/launcher_search_iph_browsertest.cc" ]
 
         deps += [
           "//ash/assistant/model",
           "//ash/assistant/ui",
           "//ash/assistant/ui:constants",
+          "//chrome/browser/ui/ash/assistant:browser_tests",
           "//chrome/browser/ui/ash/assistant/test_support",
           "//chromeos/ash/components/assistant/test_support",
           "//chromeos/assistant/internal:libassistant",
@@ -8566,9 +8562,6 @@ test("unit_tests") {
       "../browser/ui/ash/accelerator_metadata_unittest.cc",
       "../browser/ui/ash/app_access_notifier_unittest.cc",
       "../browser/ui/ash/app_icon_color_cache_unittest.cc",
-      "../browser/ui/ash/assistant/assistant_state_client_unittest.cc",
-      "../browser/ui/ash/assistant/device_actions_unittest.cc",
-      "../browser/ui/ash/assistant/search_and_assistant_enabled_checker_unittest.cc",
       "../browser/ui/ash/birch/birch_calendar_fetcher_unittest.cc",
       "../browser/ui/ash/birch/birch_calendar_provider_unittest.cc",
       "../browser/ui/ash/birch/birch_keyed_service_factory_unittest.cc",
@@ -8764,6 +8757,7 @@ test("unit_tests") {
       "//chrome/browser/push_notification/protos:proto",
       "//chrome/browser/screen_ai:unit_tests",
       "//chrome/browser/screen_ai/public:test_support",
+      "//chrome/browser/ui/ash/assistant",
       "//chrome/browser/ui/ash/holding_space:test_support",
       "//chrome/browser/ui/chromeos/magic_boost",
       "//chrome/browser/ui/chromeos/magic_boost:magic_boost_constants",
@@ -8881,6 +8875,7 @@ test("unit_tests") {
       "//chrome/browser/ui/ash/ambient:unit_tests",
       "//chrome/browser/ui/ash/annotator:unit_tests",
       "//chrome/browser/ui/ash/api/tasks:unit_tests",
+      "//chrome/browser/ui/ash/assistant:unit_tests",
     ]
 
     data_deps += [ "//testing/buildbot/filters:chromeos_filters" ]
