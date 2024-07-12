@@ -278,6 +278,7 @@ class CONTENT_EXPORT AttributionStorageSql {
   };
   [[nodiscard]] ReplaceReportResult MaybeReplaceLowerPriorityEventLevelReport(
       const AttributionReport& report,
+      const StoredSource& source,
       int num_attributions,
       std::optional<AttributionReport>& replaced_report)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
@@ -347,6 +348,7 @@ class CONTENT_EXPORT AttributionStorageSql {
 
   AttributionTrigger::EventLevelResult MaybeStoreEventLevelReport(
       AttributionReport& report,
+      const StoredSource& source,
       std::optional<uint64_t> dedup_key,
       int num_attributions,
       std::optional<AttributionReport>& replaced_report,
@@ -432,13 +434,15 @@ class CONTENT_EXPORT AttributionStorageSql {
   AttributionTrigger::AggregatableResult
   MaybeStoreAggregatableAttributionReportData(
       AttributionReport& report,
+      StoredSource::Id source_id,
       int remaining_aggregatable_attribution_budget,
       int num_aggregatable_attribution_reports,
       std::optional<uint64_t> dedup_key,
       std::optional<int>& max_aggregatable_reports_per_source)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  [[nodiscard]] bool StoreAttributionReport(AttributionReport& report)
+  [[nodiscard]] bool StoreAttributionReport(AttributionReport& report,
+                                            const StoredSource* source)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Generates null aggregatable reports for the given trigger and stores all
@@ -446,6 +450,7 @@ class CONTENT_EXPORT AttributionStorageSql {
   [[nodiscard]] bool GenerateNullAggregatableReportsAndStoreReports(
       const AttributionTrigger&,
       const AttributionInfo&,
+      const StoredSource* source,
       std::optional<AttributionReport>& new_aggregatable_report,
       std::optional<base::Time>& min_null_aggregatable_report_time)
       VALID_CONTEXT_REQUIRED(sequence_checker_);

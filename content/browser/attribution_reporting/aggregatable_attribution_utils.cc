@@ -190,8 +190,8 @@ std::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
             NOTREACHED_IN_MIGRATION();
           },
           [&](const AttributionReport::AggregatableAttributionData& data) {
-            source_time = data.source.source_time();
-            source_debug_key = data.source.debug_key();
+            source_time = data.source_time;
+            source_debug_key = data.source_debug_key;
             common_aggregatable_data = &data.common_data;
             contributions = data.contributions;
           },
@@ -257,7 +257,7 @@ std::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
           filtering_id_max_bytes),
       AggregatableReportSharedInfo(
           report.initial_report_time(), report.external_report_id(),
-          report.GetReportingOrigin(), debug_mode, std::move(additional_fields),
+          report.reporting_origin(), debug_mode, std::move(additional_fields),
           filtering_id_max_bytes.has_value()
               ? AttributionReport::CommonAggregatableData::
                     kVersionWithFlexibleContributionFiltering

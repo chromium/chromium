@@ -86,7 +86,7 @@ void AttributionReportNetworkSender::SendReport(
   GURL url = report.ReportURL(is_debug_report);
   std::string body = SerializeAttributionJson(report.ReportBody());
 
-  url::Origin origin(report.GetReportingOrigin());
+  url::Origin origin(report.reporting_origin());
   SendReport(std::move(url), std::move(origin), body,
              base::BindOnce(&AttributionReportNetworkSender::OnReportSent,
                             base::Unretained(this), std::move(report),

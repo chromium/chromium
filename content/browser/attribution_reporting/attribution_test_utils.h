@@ -325,9 +325,6 @@ class ReportBuilder {
 
 bool operator==(const StoredSource&, const StoredSource&);
 
-bool operator==(const AttributionReport::EventLevelData&,
-                const AttributionReport::EventLevelData&);
-
 bool operator==(const AttributionReport::CommonAggregatableData&,
                 const AttributionReport::CommonAggregatableData&);
 
@@ -461,10 +458,6 @@ MATCHER_P(TriggerDestinationOriginIs, matcher, "") {
 
 // Report matchers
 
-MATCHER_P(ReportSourceIs, matcher, "") {
-  return ExplainMatchResult(matcher, *arg.GetStoredSource(), result_listener);
-}
-
 MATCHER_P(ReportTimeIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.report_time(), result_listener);
 }
@@ -482,6 +475,10 @@ MATCHER_P(FailedSendAttemptsIs, matcher, "") {
 MATCHER_P(TriggerDebugKeyIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.attribution_info().debug_key,
                             result_listener);
+}
+
+MATCHER_P(ReportSourceDebugKeyIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.GetSourceDebugKey(), result_listener);
 }
 
 MATCHER_P(EventLevelDataIs, matcher, "") {
@@ -503,7 +500,7 @@ MATCHER_P(ReportURLIs, matcher, "") {
 }
 
 MATCHER_P(ReportOriginIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.GetReportingOrigin(), result_listener);
+  return ExplainMatchResult(matcher, arg.reporting_origin(), result_listener);
 }
 
 MATCHER_P(ReportTypeIs, matcher, "") {

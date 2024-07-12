@@ -898,12 +898,21 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_ObserversNotified) {
       &observer);
   observation.Observe(attribution_manager_.get());
 
-  EXPECT_CALL(observer, OnReportSent(ReportSourceIs(SourceEventIdIs(1u)),
-                                     /*is_debug_report=*/false, _));
-  EXPECT_CALL(observer, OnReportSent(ReportSourceIs(SourceEventIdIs(2u)),
-                                     /*is_debug_report=*/false, _));
-  EXPECT_CALL(observer, OnReportSent(ReportSourceIs(SourceEventIdIs(3u)),
-                                     /*is_debug_report=*/false, _));
+  EXPECT_CALL(observer,
+              OnReportSent(
+                  EventLevelDataIs(Field(
+                      &AttributionReport::EventLevelData::source_event_id, 1u)),
+                  /*is_debug_report=*/false, _));
+  EXPECT_CALL(observer,
+              OnReportSent(
+                  EventLevelDataIs(Field(
+                      &AttributionReport::EventLevelData::source_event_id, 2u)),
+                  /*is_debug_report=*/false, _));
+  EXPECT_CALL(observer,
+              OnReportSent(
+                  EventLevelDataIs(Field(
+                      &AttributionReport::EventLevelData::source_event_id, 3u)),
+                  /*is_debug_report=*/false, _));
 
   attribution_manager_->HandleSource(
       SourceBuilder().SetSourceEventId(1).SetExpiry(kImpressionExpiry).Build(),
@@ -2463,7 +2472,7 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_DebugKey) {
         kFrameId);
     EXPECT_THAT(
         StoredReports(),
-        ElementsAre(AllOf(ReportSourceIs(SourceDebugKeyIs(std::nullopt)),
+        ElementsAre(AllOf(ReportSourceDebugKeyIs(std::nullopt),
                           TriggerDebugKeyIs(test_case.expected_debug_key))));
 
     attribution_manager_->ClearData(base::Time::Min(), base::Time::Max(),
@@ -2530,8 +2539,7 @@ TEST_F(AttributionManagerImplTest, DebugReport_SentImmediately) {
     if (test_case.send_expected) {
       EXPECT_CALL(
           *report_sender_,
-          SendReport(AllOf(ReportSourceIs(
-                               SourceDebugKeyIs(test_case.source_debug_key)),
+          SendReport(AllOf(ReportSourceDebugKeyIs(test_case.source_debug_key),
                            TriggerDebugKeyIs(test_case.trigger_debug_key)),
                      true, _))
           .Times(2)

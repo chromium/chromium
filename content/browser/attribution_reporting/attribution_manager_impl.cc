@@ -527,10 +527,10 @@ bool AttributionManagerImpl::IsReportAllowed(
   const attribution_reporting::SuitableOrigin* source_origin = absl::visit(
       base::Overloaded{
           [](const AttributionReport::EventLevelData& data) {
-            return &data.source.common_info().source_origin();
+            return &data.source_origin;
           },
           [](const AttributionReport::AggregatableAttributionData& data) {
-            return &data.source.common_info().source_origin();
+            return &data.source_origin;
           },
           [&](const AttributionReport::NullAggregatableData&) {
             return &report.attribution_info().context_origin;
@@ -541,8 +541,7 @@ bool AttributionManagerImpl::IsReportAllowed(
       *storage_partition_,
       ContentBrowserClient::AttributionReportingOperation::kReport,
       /*rfh=*/nullptr, &**source_origin,
-      &*report.attribution_info().context_origin,
-      &*report.GetReportingOrigin());
+      &*report.attribution_info().context_origin, &*report.reporting_origin());
 }
 
 // static
@@ -979,9 +978,7 @@ void AttributionManagerImpl::OnReportStored(
 
 void AttributionManagerImpl::MaybeSendDebugReport(AttributionReport&& report) {
   const AttributionInfo& attribution_info = report.attribution_info();
-  const StoredSource* source = report.GetStoredSource();
-  DCHECK(source);
-  if (!attribution_info.debug_key || !source->debug_key() ||
+  if (!attribution_info.debug_key || !report.GetSourceDebugKey() ||
       !IsReportAllowed(report)) {
     return;
   }

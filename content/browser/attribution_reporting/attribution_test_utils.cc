@@ -517,7 +517,8 @@ AttributionReport ReportBuilder::Build() const {
       attribution_info_, report_id_, report_time_,
       /*initial_report_time=*/report_time_, external_report_id_,
       /*failed_send_attempts=*/0,
-      AttributionReport::EventLevelData(trigger_data_, priority_, source_));
+      AttributionReport::EventLevelData(trigger_data_, priority_, source_),
+      source_.common_info().reporting_origin());
 }
 
 AttributionReport ReportBuilder::BuildAggregatableAttribution() const {
@@ -531,7 +532,8 @@ AttributionReport ReportBuilder::BuildAggregatableAttribution() const {
               *attribution_reporting::AggregatableTriggerConfig::Create(
                   source_registration_time_config_, trigger_context_id_,
                   aggregatable_filtering_ids_max_bytes_)),
-          contributions_, source_));
+          contributions_, source_),
+      source_.common_info().reporting_origin());
 }
 
 AttributionReport ReportBuilder::BuildNullAggregatable() const {
@@ -545,7 +547,8 @@ AttributionReport ReportBuilder::BuildNullAggregatable() const {
               *attribution_reporting::AggregatableTriggerConfig::Create(
                   source_registration_time_config_, trigger_context_id_,
                   attribution_reporting::AggregatableFilteringIdsMaxBytes())),
-          source_.common_info().reporting_origin(), source_.source_time()));
+          source_.source_time()),
+      source_.common_info().reporting_origin());
 }
 
 // Does not compare source IDs, as they are set by the underlying sqlite DB and
@@ -568,14 +571,6 @@ bool operator==(const StoredSource& a, const StoredSource& b) {
   return tie(a) == tie(b);
 }
 
-bool operator==(const AttributionReport::EventLevelData& a,
-                const AttributionReport::EventLevelData& b) {
-  const auto tie = [](const AttributionReport::EventLevelData& data) {
-    return std::make_tuple(data.trigger_data, data.priority, data.source);
-  };
-  return tie(a) == tie(b);
-}
-
 // Does not compare the assembled report as it is returned by the
 // aggregation service from all the other data.
 bool operator==(const AttributionReport::CommonAggregatableData& a,
@@ -592,7 +587,8 @@ bool operator==(const AttributionReport::AggregatableAttributionData& a,
   const auto tie =
       [](const AttributionReport::AggregatableAttributionData& data) {
         return std::make_tuple(data.common_data, data.contributions,
-                               data.source);
+                               data.source_time, data.source_debug_key,
+                               data.source_origin);
       };
   return tie(a) == tie(b);
 }
@@ -600,8 +596,7 @@ bool operator==(const AttributionReport::AggregatableAttributionData& a,
 bool operator==(const AttributionReport::NullAggregatableData& a,
                 const AttributionReport::NullAggregatableData& b) {
   const auto tie = [](const AttributionReport::NullAggregatableData& data) {
-    return std::make_tuple(data.common_data, data.reporting_origin,
-                           data.fake_source_time);
+    return std::make_tuple(data.common_data, data.fake_source_time);
   };
   return tie(a) == tie(b);
 }
@@ -613,7 +608,8 @@ bool operator==(const AttributionReport& a, const AttributionReport& b) {
     return std::make_tuple(report.attribution_info(), report.report_time(),
                            report.initial_report_time(),
                            report.external_report_id(),
-                           report.failed_send_attempts(), report.data());
+                           report.failed_send_attempts(), report.data(),
+                           report.reporting_origin());
   };
   return tie(a) == tie(b);
 }
@@ -737,9 +733,20 @@ std::ostream& operator<<(
 
 std::ostream& operator<<(std::ostream& out,
                          const AttributionReport::EventLevelData& data) {
-  return out << "{trigger_data=" << data.trigger_data
-             << ",priority=" << data.priority << ",source=" << data.source
-             << "}";
+  out << "{trigger_data=" << data.trigger_data << ",priority=" << data.priority
+      << ",source_origin=" << data.source_origin
+      << ",destinations=" << data.destinations
+      << ",source_event_id=" << data.source_event_id
+      << ",source_type=" << data.source_type << ",source_debug_key=";
+
+  if (data.source_debug_key.has_value()) {
+    out << *data.source_debug_key;
+  } else {
+    out << "null";
+  }
+
+  return out << ",randomized_response_rate=" << data.randomized_response_rate
+             << ",attributed_truthfully=" << data.attributed_truthfully << "}";
 }
 
 std::ostream& operator<<(
@@ -764,15 +771,20 @@ std::ostream& operator<<(
     separator = ", ";
   }
 
-  out << "]";
+  out << "],source_time=" << data.source_time << ",source_debug_key=";
 
-  return out << ",source=" << data.source << "}";
+  if (data.source_debug_key.has_value()) {
+    out << *data.source_debug_key;
+  } else {
+    out << "null";
+  }
+
+  return out << ",source_origin=" << data.source_origin << "}";
 }
 
 std::ostream& operator<<(std::ostream& out,
                          const AttributionReport::NullAggregatableData& data) {
   return out << "{common_data=" << data.common_data
-             << ",reporting_origin=" << data.reporting_origin
              << ",fake_source_time=" << data.fake_source_time << "}";
 }
 
@@ -791,7 +803,8 @@ std::ostream& operator<<(std::ostream& out, const AttributionReport& report) {
              << ",initial_report_time=" << report.initial_report_time()
              << ",external_report_id=" << report.external_report_id()
              << ",failed_send_attempts=" << report.failed_send_attempts()
-             << ",data=" << report.data() << "}";
+             << ",data=" << report.data()
+             << ",reporting_origin=" << report.reporting_origin() << "}";
 }
 
 std::ostream& operator<<(std::ostream& out, SendResult::Status status) {

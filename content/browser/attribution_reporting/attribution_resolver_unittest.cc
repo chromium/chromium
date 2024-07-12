@@ -555,7 +555,8 @@ TEST_F(AttributionResolverTest,
   // Verify it was the new impression that converted.
   EXPECT_THAT(
       storage()->GetAttributionReports(/*max_report_time=*/base::Time::Max()),
-      ElementsAre(ReportSourceIs(SourceEventIdIs(1000u))));
+      ElementsAre(EventLevelDataIs(
+          Field(&AttributionReport::EventLevelData::source_event_id, 1000u))));
 }
 
 TEST_F(AttributionResolverTest,
@@ -616,7 +617,8 @@ TEST_F(
             MaybeCreateAndStoreEventLevelReport(conversion));
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
-              ElementsAre(ReportSourceIs(SourceEventIdIs(10))));
+              ElementsAre(EventLevelDataIs(Field(
+                  &AttributionReport::EventLevelData::source_event_id, 10))));
 }
 
 TEST_F(AttributionResolverTest,
@@ -1654,7 +1656,8 @@ TEST_F(AttributionResolverTest,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
-              ElementsAre(ReportSourceIs(SourceEventIdIs(5u))));
+              ElementsAre(EventLevelDataIs(Field(
+                  &AttributionReport::EventLevelData::source_event_id, 5u))));
 }
 
 TEST_F(AttributionResolverTest,
@@ -1675,7 +1678,8 @@ TEST_F(AttributionResolverTest,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
-              ElementsAre(ReportSourceIs(SourceEventIdIs(5u))));
+              ElementsAre(EventLevelDataIs(Field(
+                  &AttributionReport::EventLevelData::source_event_id, 5u))));
 }
 
 TEST_F(AttributionResolverTest, MultipleImpressions_CorrectDeactivation) {
@@ -1906,8 +1910,12 @@ TEST_F(AttributionResolverTest, TriggerPriority) {
   EXPECT_THAT(
       storage()->GetAttributionReports(base::Time::Max()),
       ElementsAre(
-          AllOf(ReportSourceIs(SourceEventIdIs(5u)), TriggerDebugKeyIs(21u)),
-          AllOf(ReportSourceIs(SourceEventIdIs(7u)), TriggerDebugKeyIs(22u))));
+          AllOf(EventLevelDataIs(Field(
+                    &AttributionReport::EventLevelData::source_event_id, 5u)),
+                TriggerDebugKeyIs(21u)),
+          AllOf(EventLevelDataIs(Field(
+                    &AttributionReport::EventLevelData::source_event_id, 7u)),
+                TriggerDebugKeyIs(22u))));
 }
 
 // Regression test for erroneous use of report_time instead of
@@ -2975,9 +2983,9 @@ TEST_F(AttributionResolverTest, TriggerDebugKey_RoundTrips) {
             MaybeCreateAndStoreEventLevelReport(
                 TriggerBuilder().SetDebugKey(33).Build()));
 
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
-              ElementsAre(AllOf(ReportSourceIs(SourceDebugKeyIs(22)),
-                                TriggerDebugKeyIs(33))));
+  EXPECT_THAT(
+      storage()->GetAttributionReports(base::Time::Max()),
+      ElementsAre(AllOf(ReportSourceDebugKeyIs(22), TriggerDebugKeyIs(33))));
 }
 
 TEST_F(AttributionResolverTest, AttributionAggregationKeys_RoundTrips) {
@@ -3200,12 +3208,21 @@ TEST_F(AttributionResolverTest,
   MaybeCreateAndStoreEventLevelReport(
       TriggerBuilder().SetReportingOrigin(origin2).Build());
 
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
-              UnorderedElementsAre(
-                  ReportSourceIs(AllOf(SourceTypeIs(SourceType::kNavigation),
-                                       RandomizedResponseRateIs(0.1))),
-                  ReportSourceIs(AllOf(SourceTypeIs(SourceType::kEvent),
-                                       RandomizedResponseRateIs(0.1)))));
+  EXPECT_THAT(
+      storage()->GetAttributionReports(base::Time::Max()),
+      UnorderedElementsAre(
+          EventLevelDataIs(AllOf(
+              Field(&AttributionReport::EventLevelData::source_type,
+                    SourceType::kNavigation),
+              Field(
+                  &AttributionReport::EventLevelData::randomized_response_rate,
+                  0.1))),
+          EventLevelDataIs(AllOf(
+              Field(&AttributionReport::EventLevelData::source_type,
+                    SourceType::kEvent),
+              Field(
+                  &AttributionReport::EventLevelData::randomized_response_rate,
+                  0.1)))));
 }
 
 TEST_F(AttributionResolverTest, RandomizedResponseRatePerSourceUsed) {
@@ -3216,7 +3233,8 @@ TEST_F(AttributionResolverTest, RandomizedResponseRatePerSourceUsed) {
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
   EXPECT_THAT(
       storage()->GetAttributionReports(base::Time::Max()),
-      UnorderedElementsAre(ReportSourceIs(RandomizedResponseRateIs(0.1))));
+      UnorderedElementsAre(EventLevelDataIs(Field(
+          &AttributionReport::EventLevelData::randomized_response_rate, 0.1))));
 }
 
 // Will return minimum of next event-level report and next aggregatable report
@@ -3284,10 +3302,14 @@ TEST_F(AttributionResolverTest, TriggerDataSanitized) {
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
               UnorderedElementsAre(
-                  AllOf(ReportSourceIs(SourceTypeIs(SourceType::kNavigation)),
-                        EventLevelDataIs(TriggerDataIs(0))),
-                  AllOf(ReportSourceIs(SourceTypeIs(SourceType::kEvent)),
-                        EventLevelDataIs(TriggerDataIs(1)))));
+                  EventLevelDataIs(AllOf(
+                      Field(&AttributionReport::EventLevelData::source_type,
+                            SourceType::kNavigation),
+                      TriggerDataIs(0))),
+                  EventLevelDataIs(AllOf(
+                      Field(&AttributionReport::EventLevelData::source_type,
+                            SourceType::kEvent),
+                      TriggerDataIs(1)))));
 }
 
 TEST_F(AttributionResolverTest, SourceFilterData_RoundTrips) {
@@ -3703,9 +3725,13 @@ TEST_F(AttributionResolverTest,
   ASSERT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
-              ElementsAre(ReportSourceIs(SourceEventIdIs(3)),
-                          ReportSourceIs(SourceEventIdIs(3))));
+  EXPECT_THAT(
+      storage()->GetAttributionReports(base::Time::Max()),
+      ElementsAre(
+          EventLevelDataIs(
+              Field(&AttributionReport::EventLevelData::source_event_id, 3)),
+          EventLevelDataIs(
+              Field(&AttributionReport::EventLevelData::source_event_id, 3))));
 }
 
 TEST_F(AttributionResolverTest,
@@ -3726,9 +3752,13 @@ TEST_F(AttributionResolverTest,
 
   // If the first source were deleted instead of deactivated, this would return
   // only a single report, as the join against the sources table would fail.
-  ASSERT_THAT(storage()->GetAttributionReports(base::Time::Max()),
-              ElementsAre(ReportSourceIs(SourceEventIdIs(3)),
-                          ReportSourceIs(SourceEventIdIs(7))));
+  ASSERT_THAT(
+      storage()->GetAttributionReports(base::Time::Max()),
+      ElementsAre(
+          EventLevelDataIs(
+              Field(&AttributionReport::EventLevelData::source_event_id, 3)),
+          EventLevelDataIs(
+              Field(&AttributionReport::EventLevelData::source_event_id, 7))));
 }
 
 TEST_F(AttributionResolverTest, AggregationCoordinator_RoundTrip) {

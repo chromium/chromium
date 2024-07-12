@@ -18,6 +18,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
+#include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/source_type.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
@@ -73,10 +74,17 @@ void PopulateReportBody(base::Value::Dict& dict,
 
 AttributionReport::EventLevelData::EventLevelData(uint32_t trigger_data,
                                                   int64_t priority,
-                                                  StoredSource source)
+                                                  const StoredSource& source)
     : trigger_data(trigger_data),
       priority(priority),
-      source(std::move(source)) {}
+      source_origin(source.common_info().source_origin()),
+      destinations(source.destination_sites()),
+      source_event_id(source.source_event_id()),
+      source_type(source.common_info().source_type()),
+      source_debug_key(source.debug_key()),
+      randomized_response_rate(source.randomized_response_rate()),
+      attributed_truthfully(source.attribution_logic() ==
+                            StoredSource::AttributionLogic::kTruthfully) {}
 
 AttributionReport::EventLevelData::EventLevelData(const EventLevelData&) =
     default;
@@ -121,10 +129,12 @@ AttributionReport::AggregatableAttributionData::AggregatableAttributionData(
     CommonAggregatableData common_data,
     std::vector<blink::mojom::AggregatableReportHistogramContribution>
         contributions,
-    StoredSource source)
+    const StoredSource& source)
     : common_data(std::move(common_data)),
       contributions(std::move(contributions)),
-      source(std::move(source)) {}
+      source_time(source.source_time()),
+      source_debug_key(source.debug_key()),
+      source_origin(source.common_info().source_origin()) {}
 
 AttributionReport::AggregatableAttributionData::AggregatableAttributionData(
     const AggregatableAttributionData&) = default;
@@ -150,10 +160,8 @@ AttributionReport::AggregatableAttributionData::BudgetRequired() const {
 
 AttributionReport::NullAggregatableData::NullAggregatableData(
     CommonAggregatableData common_data,
-    attribution_reporting::SuitableOrigin reporting_origin,
     base::Time fake_source_time)
     : common_data(std::move(common_data)),
-      reporting_origin(std::move(reporting_origin)),
       fake_source_time(fake_source_time) {}
 
 AttributionReport::NullAggregatableData::NullAggregatableData(
@@ -172,20 +180,23 @@ AttributionReport::NullAggregatableData::operator=(NullAggregatableData&&) =
 
 AttributionReport::NullAggregatableData::~NullAggregatableData() = default;
 
-AttributionReport::AttributionReport(AttributionInfo attribution_info,
-                                     Id id,
-                                     base::Time report_time,
-                                     base::Time initial_report_time,
-                                     base::Uuid external_report_id,
-                                     int failed_send_attempts,
-                                     Data data)
+AttributionReport::AttributionReport(
+    AttributionInfo attribution_info,
+    Id id,
+    base::Time report_time,
+    base::Time initial_report_time,
+    base::Uuid external_report_id,
+    int failed_send_attempts,
+    Data data,
+    attribution_reporting::SuitableOrigin reporting_origin)
     : attribution_info_(std::move(attribution_info)),
       id_(id),
       report_time_(report_time),
       initial_report_time_(initial_report_time),
       external_report_id_(std::move(external_report_id)),
       failed_send_attempts_(failed_send_attempts),
-      data_(std::move(data)) {
+      data_(std::move(data)),
+      reporting_origin_(std::move(reporting_origin)) {
   DCHECK(external_report_id_.is_valid());
   DCHECK_GE(failed_send_attempts_, 0);
 }
@@ -221,7 +232,7 @@ GURL AttributionReport::ReportURL(bool debug) const {
 
   GURL::Replacements replacements;
   replacements.SetPathStr(path);
-  return GetReportingOrigin()->GetURL().ReplaceComponents(replacements);
+  return reporting_origin_->GetURL().ReplaceComponents(replacements);
 }
 
 base::Value::Dict AttributionReport::ReportBody() const {
@@ -230,21 +241,18 @@ base::Value::Dict AttributionReport::ReportBody() const {
   absl::visit(
       base::Overloaded{
           [&](const EventLevelData& data) {
-            const StoredSource& source = data.source;
-
-            dict.Set("attribution_destination",
-                     source.destination_sites().ToJson());
+            dict.Set("attribution_destination", data.destinations.ToJson());
 
             // The API denotes these values as strings; a `uint64_t` cannot be
             // put in a dict as an integer in order to be opaque to various API
             // configurations.
             dict.Set("source_event_id",
-                     base::NumberToString(source.source_event_id()));
+                     base::NumberToString(data.source_event_id));
 
             dict.Set("trigger_data", base::NumberToString(data.trigger_data));
 
-            dict.Set("source_type", attribution_reporting::SourceTypeName(
-                                        source.common_info().source_type()));
+            dict.Set("source_type",
+                     attribution_reporting::SourceTypeName(data.source_type));
 
             dict.Set("report_id", external_report_id_.AsLowercaseString());
 
@@ -252,11 +260,10 @@ base::Value::Dict AttributionReport::ReportBody() const {
             // randomized response with epsilon = 14 without rounding to 0
             // (0.00000166305 -> 0.0000017).
             double rounded_rate =
-                round(source.randomized_response_rate() * 10000000) /
-                10000000.0;
+                round(data.randomized_response_rate * 10000000) / 10000000.0;
             dict.Set("randomized_trigger_rate", rounded_rate);
 
-            PopulateSourceDebugKey(dict, source.debug_key());
+            PopulateSourceDebugKey(dict, data.source_debug_key);
             PopulateTriggerDebugKey(dict, attribution_info_.debug_key);
 
             dict.Set("scheduled_report_time",
@@ -269,7 +276,7 @@ base::Value::Dict AttributionReport::ReportBody() const {
             PopulateReportBody(dict, data.common_data,
                                attribution_info_.debug_key);
 
-            PopulateSourceDebugKey(dict, data.source.debug_key());
+            PopulateSourceDebugKey(dict, data.source_debug_key);
           },
 
           [&](const NullAggregatableData& data) {
@@ -301,35 +308,18 @@ std::optional<base::Time> AttributionReport::MinReportTime(
   return std::min(*a, *b);
 }
 
-const StoredSource* AttributionReport::GetStoredSource() const {
+std::optional<uint64_t> AttributionReport::GetSourceDebugKey() const {
   return absl::visit(
       base::Overloaded{
-          [](const EventLevelData& data) { return &data.source; },
-          [](const AggregatableAttributionData& data) { return &data.source; },
-          [](const NullAggregatableData& data) -> const StoredSource* {
-            return nullptr;
+          [](const EventLevelData& data) { return data.source_debug_key; },
+          [](const AggregatableAttributionData& data) {
+            return data.source_debug_key;
+          },
+          [](const NullAggregatableData& data) {
+            return std::optional<uint64_t>();
           },
       },
       data_);
-}
-
-const attribution_reporting::SuitableOrigin&
-AttributionReport::GetReportingOrigin() const {
-  return absl::visit(base::Overloaded{
-                         [](const EventLevelData& data)
-                             -> const attribution_reporting::SuitableOrigin& {
-                           return data.source.common_info().reporting_origin();
-                         },
-                         [](const AggregatableAttributionData& data)
-                             -> const attribution_reporting::SuitableOrigin& {
-                           return data.source.common_info().reporting_origin();
-                         },
-                         [](const NullAggregatableData& data)
-                             -> const attribution_reporting::SuitableOrigin& {
-                           return data.reporting_origin;
-                         },
-                     },
-                     data_);
 }
 
 }  // namespace content

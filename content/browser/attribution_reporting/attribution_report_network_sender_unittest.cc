@@ -156,7 +156,7 @@ TEST_F(AttributionReportNetworkSenderTest, SameSite) {
             network::mojom::RequestMode::kSameOrigin);
   EXPECT_EQ(
       test_url_loader_factory_.GetPendingRequest(0)->request.request_initiator,
-      report.GetReportingOrigin());
+      report.reporting_origin());
 }
 
 TEST_F(AttributionReportNetworkSenderTest, Isolation) {

@@ -16,11 +16,12 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
+#include "components/attribution_reporting/destination_set.h"
+#include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
-#include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom-forward.h"
@@ -28,6 +29,8 @@
 class GURL;
 
 namespace content {
+
+class StoredSource;
 
 // Class that contains all the data needed to serialize and send an attribution
 // report. This class can represent multiple different types of reports.
@@ -39,7 +42,9 @@ class CONTENT_EXPORT AttributionReport {
 
   // Struct that contains the data specific to the event-level report.
   struct CONTENT_EXPORT EventLevelData {
-    EventLevelData(uint32_t trigger_data, int64_t priority, StoredSource);
+    EventLevelData(uint32_t trigger_data,
+                   int64_t priority,
+                   const StoredSource&);
     EventLevelData(const EventLevelData&);
     EventLevelData& operator=(const EventLevelData&);
     EventLevelData(EventLevelData&&);
@@ -54,10 +59,16 @@ class CONTENT_EXPORT AttributionReport {
     // Priority specified in conversion redirect.
     int64_t priority;
 
-    StoredSource source;
+    attribution_reporting::SuitableOrigin source_origin;
+    attribution_reporting::DestinationSet destinations;
+    uint64_t source_event_id;
+    attribution_reporting::mojom::SourceType source_type;
+    std::optional<uint64_t> source_debug_key;
+    double randomized_response_rate;
+    bool attributed_truthfully;
 
-    // When adding new members, the corresponding `operator==()` definition in
-    // `attribution_test_utils.h` should also be updated.
+    friend bool operator==(const EventLevelData&,
+                           const EventLevelData&) = default;
   };
 
   struct CONTENT_EXPORT CommonAggregatableData {
@@ -99,7 +110,7 @@ class CONTENT_EXPORT AttributionReport {
         CommonAggregatableData,
         std::vector<blink::mojom::AggregatableReportHistogramContribution>
             contributions,
-        StoredSource);
+        const StoredSource&);
     AggregatableAttributionData(const AggregatableAttributionData&);
     AggregatableAttributionData& operator=(const AggregatableAttributionData&);
     AggregatableAttributionData(AggregatableAttributionData&&);
@@ -114,7 +125,9 @@ class CONTENT_EXPORT AttributionReport {
     std::vector<blink::mojom::AggregatableReportHistogramContribution>
         contributions;
 
-    StoredSource source;
+    base::Time source_time;
+    std::optional<uint64_t> source_debug_key;
+    attribution_reporting::SuitableOrigin source_origin;
 
     // When adding new members, the corresponding `operator==()` definition in
     // `attribution_test_utils.h` should also be updated.
@@ -122,7 +135,6 @@ class CONTENT_EXPORT AttributionReport {
 
   struct CONTENT_EXPORT NullAggregatableData {
     NullAggregatableData(CommonAggregatableData,
-                         attribution_reporting::SuitableOrigin reporting_origin,
                          base::Time fake_source_time);
     NullAggregatableData(const NullAggregatableData&);
     NullAggregatableData(NullAggregatableData&&);
@@ -131,7 +143,6 @@ class CONTENT_EXPORT AttributionReport {
     ~NullAggregatableData();
 
     CommonAggregatableData common_data;
-    attribution_reporting::SuitableOrigin reporting_origin;
     base::Time fake_source_time;
 
     // When adding new members, the corresponding `operator==()` definition in
@@ -153,7 +164,8 @@ class CONTENT_EXPORT AttributionReport {
                     base::Time initial_report_time,
                     base::Uuid external_report_id,
                     int failed_send_attempts,
-                    Data data);
+                    Data data,
+                    attribution_reporting::SuitableOrigin reporting_origin);
   AttributionReport(const AttributionReport&);
   AttributionReport& operator=(const AttributionReport&);
   AttributionReport(AttributionReport&&);
@@ -183,9 +195,11 @@ class CONTENT_EXPORT AttributionReport {
 
   Type GetReportType() const { return static_cast<Type>(data_.index()); }
 
-  const StoredSource* GetStoredSource() const;
+  std::optional<uint64_t> GetSourceDebugKey() const;
 
-  const attribution_reporting::SuitableOrigin& GetReportingOrigin() const;
+  const attribution_reporting::SuitableOrigin& reporting_origin() const {
+    return reporting_origin_;
+  }
 
   void set_id(Id id) { id_ = id; }
 
@@ -213,6 +227,8 @@ class CONTENT_EXPORT AttributionReport {
 
   // Only one type of data may be stored at once.
   Data data_;
+
+  attribution_reporting::SuitableOrigin reporting_origin_;
 
   // When adding new members, the corresponding `operator==()` definition in
   // `attribution_test_utils.h` should also be updated.

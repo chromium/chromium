@@ -157,8 +157,7 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
             return ai_mojom::WebUIReportData::NewEventLevelData(
                 ai_mojom::WebUIReportEventLevelData::New(
                     event_level_data.priority,
-                    event_level_data.source.attribution_logic() ==
-                        StoredSource::AttributionLogic::kTruthfully));
+                    event_level_data.attributed_truthfully));
           },
 
           [](const AttributionReport::AggregatableAttributionData&
