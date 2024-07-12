@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -357,6 +358,13 @@ void BrowserDesktopWindowTreeHostLinux::OnWindowStateChanged(
     // If the browser view initiated this state change,
     // BrowserView::ProcessFullscreen will no-op, so this call is harmless.
     browser_view_->FullscreenStateChanging();
+
+    // In sync fullscreen window state mode, the FullscreenStateChanged()
+    // is called just after requesting to set fullscreen property
+    // to the platform, so not to call here to avoid duplicated invocation.
+    if (base::FeatureList::IsEnabled(features::kAsyncFullscreenWindowState)) {
+      browser_view_->FullscreenStateChanged();
+    }
   }
 
   UpdateFrameHints();

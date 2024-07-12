@@ -947,6 +947,14 @@ class BrowserView : public BrowserWindow,
   // removed.
   void UpdateUIForContents(content::WebContents* contents);
 
+  // Invoked to prepare the transition of fullscreen state.
+  // If features::kAsyncFullscreenWindowState is disabled, this is invoked
+  // synchronously when requesting platform window state changes.
+  // If features::kAsyncFullscreenWindowState is enabled, this is invoked
+  // asynchronously when the platform window state change is observed.
+  // TODO(crbug.com/40276379): Deprecate the synchronous codepath.
+  void PrepareFullscreen(bool fullscreen);
+
   // Invoked to update the necessary things when our fullscreen state changes
   // to |fullscreen|. On Windows this is invoked immediately when we toggle the
   // full screen node_data. On Linux changing the fullscreen node_data is async,

@@ -228,6 +228,16 @@ void WaylandToplevelWindow::SetFullscreen(bool fullscreen,
   // The `target_display_id` must be invalid if not going into fullscreen.
   DCHECK(fullscreen || target_display_id == display::kInvalidDisplayId);
 
+  if (base::FeatureList::IsEnabled(features::kAsyncFullscreenWindowState)) {
+    if (fullscreen) {
+      shell_toplevel_->SetFullscreen(
+          GetWaylandOutputForDisplayId(target_display_id));
+    } else {
+      shell_toplevel_->UnSetFullscreen();
+    }
+    return;
+  }
+
   // We must track the previous state to correctly say our state as long as it
   // can be the maximized instead of normal one.
   PlatformWindowState new_state = PlatformWindowState::kUnknown;

@@ -22,6 +22,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "ui/base/ozone_buildflags.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/buildflags.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/widget/widget_interactive_uitest_utils.h"
@@ -311,6 +314,61 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, WindowActivatedAccessibleEvent) {
   ASSERT_EQ(2, ax_observer_.GetCount(ax::mojom::Event::kWindowActivated));
 }
 #endif
+
+class BrowserViewFullscreenTest : public BrowserViewTest {
+ public:
+  BrowserViewFullscreenTest() {
+    feature_list_.InitAndEnableFeature(features::kAsyncFullscreenWindowState);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Disabled on platforms where async fullscreen state transition is not
+// yet supported.
+// TODO(b/40276379): Apply this to all remaining desktop platforms.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#define MAYBE_Fullscreen Fullscreen
+#else
+#define MAYBE_Fullscreen DISABLED_Fullscreen
+#endif
+IN_PROC_BROWSER_TEST_F(BrowserViewFullscreenTest, MAYBE_Fullscreen) {
+#if BUILDFLAG(IS_LINUX)
+  // Skip non wayland cases, now, such as X11, where the fullscreen
+  // call async support is not yet completed.
+  if (ui::OzonePlatform::GetPlatformNameForTest() != "wayland") {
+    GTEST_SKIP();
+  }
+#endif
+
+  BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
+
+  // The top view should always show up in regular mode.
+  EXPECT_FALSE(browser_view->IsFullscreen());
+
+  // Enter into fullscreen mode.
+  {
+    ui_test_utils::FullscreenWaiter waiter(browser(),
+                                           {.browser_fullscreen = true});
+    chrome::ToggleFullscreenMode(browser());
+    // The state won't change immediately.
+    EXPECT_FALSE(browser_view->IsFullscreen());
+    waiter.Wait();
+    EXPECT_TRUE(browser_view->IsFullscreen());
+  }
+
+  // Exit from fullscreen mode.
+  {
+    ui_test_utils::FullscreenWaiter waiter(browser(),
+                                           {.browser_fullscreen = false});
+    chrome::ToggleFullscreenMode(browser());
+    // The state won't change immediately.
+    EXPECT_TRUE(browser_view->IsFullscreen());
+    waiter.Wait();
+    EXPECT_FALSE(browser_view->IsFullscreen());
+  }
+}
 
 // Class for BrowserView unit tests for the loading animation feature.
 // Creates a Browser with a |features_list| where

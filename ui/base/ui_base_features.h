@@ -253,6 +253,9 @@ BASE_DECLARE_FEATURE(kEnableGestureBeginEndTypes);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kUseUtf8EncodingForSvgImage);
 
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kAsyncFullscreenWindowState);
+
 }  // namespace features
 
 #endif  // UI_BASE_UI_BASE_FEATURES_H_

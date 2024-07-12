@@ -1917,25 +1917,34 @@ void BrowserView::Restore() {
 void BrowserView::EnterFullscreen(const GURL& url,
                                   ExclusiveAccessBubbleType bubble_type,
                                   const int64_t display_id) {
-  auto* screen = display::Screen::GetScreen();
-  auto display = screen->GetDisplayNearestWindow(GetNativeWindow());
-  const bool requesting_another_screen =
-      display_id != display.id() && display_id != display::kInvalidDisplayId;
-  if (IsFullscreen() && !requesting_another_screen) {
-    // Nothing to do.
-    return;
+  if (base::FeatureList::IsEnabled(features::kAsyncFullscreenWindowState)) {
+    RequestFullscreen(true, display_id);
+  } else {
+    auto* screen = display::Screen::GetScreen();
+    auto display = screen->GetDisplayNearestWindow(GetNativeWindow());
+    const bool requesting_another_screen =
+        display_id != display.id() && display_id != display::kInvalidDisplayId;
+    if (IsFullscreen() && !requesting_another_screen) {
+      // Nothing to do.
+      return;
+    }
+    ProcessFullscreen(true, display_id);
   }
-  ProcessFullscreen(true, display_id);
 }
 
 void BrowserView::ExitFullscreen() {
-  if (!IsFullscreen())
-    return;  // Nothing to do.
-
-  if (IsForceFullscreen())
+  if (IsForceFullscreen()) {
     return;
+  }
 
-  ProcessFullscreen(false, display::kInvalidDisplayId);
+  if (base::FeatureList::IsEnabled(features::kAsyncFullscreenWindowState)) {
+    RequestFullscreen(false, display::kInvalidDisplayId);
+  } else {
+    if (!IsFullscreen()) {
+      return;  // Nothing to do.
+    }
+    ProcessFullscreen(false, display::kInvalidDisplayId);
+  }
 }
 
 void BrowserView::UpdateExclusiveAccessBubble(
@@ -2053,7 +2062,11 @@ void BrowserView::FullscreenStateChanging() {
     return;
   }
 
-  ProcessFullscreen(IsFullscreen(), display::kInvalidDisplayId);
+  if (base::FeatureList::IsEnabled(features::kAsyncFullscreenWindowState)) {
+    PrepareFullscreen(IsFullscreen());
+  } else {
+    ProcessFullscreen(IsFullscreen(), display::kInvalidDisplayId);
+  }
 }
 
 void BrowserView::FullscreenStateChanged() {
@@ -2089,6 +2102,11 @@ void BrowserView::FullscreenStateChanged() {
   GetExclusiveAccessManager()
       ->fullscreen_controller()
       ->FullscreenTransitionCompleted();
+
+  if (base::FeatureList::IsEnabled(features::kAsyncFullscreenWindowState)) {
+    ToolbarSizeChanged(false);
+    frame_->GetFrameView()->OnFullscreenStateChanged();
+  }
 }
 
 void BrowserView::SetToolbarButtonProvider(ToolbarButtonProvider* provider) {
@@ -4769,15 +4787,11 @@ void BrowserView::UpdateUIForContents(WebContents* contents) {
     DeprecatedLayoutImmediately();
 }
 
-void BrowserView::ProcessFullscreen(bool fullscreen,
-                                    const int64_t display_id) {
-  if (in_process_fullscreen_)
-    return;
-  in_process_fullscreen_ = true;
-
-  if (top_controls_slide_controller_)
+void BrowserView::PrepareFullscreen(bool fullscreen) {
+  if (top_controls_slide_controller_) {
     top_controls_slide_controller_->OnBrowserFullscreenStateWillChange(
         fullscreen);
+  }
 
   // Reduce jankiness during the following position changes by:
   //   * Hiding the window until it's in the final position
@@ -4789,8 +4803,9 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
     views::FocusManager* focus_manager = GetFocusManager();
     DCHECK(focus_manager);
     // Look for focus in the location bar itself or any child view.
-    if (GetLocationBarView()->Contains(focus_manager->GetFocusedView()))
+    if (GetLocationBarView()->Contains(focus_manager->GetFocusedView())) {
       focus_manager->ClearFocus();
+    }
 
     fullscreen_control_host_ = std::make_unique<FullscreenControlHost>(this);
   } else {
@@ -4803,6 +4818,17 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
       fullscreen_control_host_.reset();
     }
   }
+}
+
+void BrowserView::ProcessFullscreen(bool fullscreen, const int64_t display_id) {
+  CHECK(!base::FeatureList::IsEnabled(features::kAsyncFullscreenWindowState));
+
+  if (in_process_fullscreen_) {
+    return;
+  }
+  in_process_fullscreen_ = true;
+
+  PrepareFullscreen(fullscreen);
 
   // TODO(b/40276379): Move this out from ProcessFullscreen.
   RequestFullscreen(fullscreen, display_id);

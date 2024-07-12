@@ -530,4 +530,10 @@ BASE_FEATURE(kEnableGestureBeginEndTypes,
 BASE_FEATURE(kUseUtf8EncodingForSvgImage,
              "UseUtf8EncodingForSvgImage",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, fullscreen window state is updated asynchronously.
+BASE_FEATURE(kAsyncFullscreenWindowState,
+             "AsyncFullscreenWindowState",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

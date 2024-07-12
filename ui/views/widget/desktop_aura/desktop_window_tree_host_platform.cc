@@ -763,14 +763,17 @@ void DesktopWindowTreeHostPlatform::SetFullscreen(bool fullscreen,
   if (!weak_ptr)
     return;
 
-  // The state must change synchronously to let media react on fullscreen
-  // changes.
-  DCHECK_EQ(fullscreen, IsFullscreen());
+  if (!base::FeatureList::IsEnabled(features::kAsyncFullscreenWindowState)) {
+    // The state must change synchronously to let media react on fullscreen
+    // changes.
+    DCHECK_EQ(fullscreen, IsFullscreen());
 
-  if (IsFullscreen() == fullscreen)
-    ScheduleRelayout();
-  // Else: the widget will be relaid out either when the window bounds change
-  // or when |platform_window|'s fullscreen state changes.
+    if (IsFullscreen() == fullscreen) {
+      ScheduleRelayout();
+    }
+    // Else: the widget will be relaid out either when the window bounds change
+    // or when |platform_window|'s fullscreen state changes.
+  }
 }
 
 bool DesktopWindowTreeHostPlatform::IsFullscreen() const {
