@@ -2,7 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/network_service_instance_impl.h"
+
+#include <stdint.h>
+
+#include "base/command_line.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
@@ -71,6 +77,70 @@ TEST_F(NetworkServiceShutdownRaceTest, CreateNetworkContextDuringShutdown) {
       EarlyShutdownTestContentBrowserClient::GetInstance());
   // Trigger the network context creation.
   CreateNetworkContext();
+}
+
+TEST(NetworkServiceInstanceImplParseCommandLineTest,
+     ParseNetLogMaximumFileNoSwitch) {
+  base::CommandLine command_line{base::CommandLine::NO_PROGRAM};
+  EXPECT_EQ(GetNetLogMaximumFileSizeFromCommandLineForTesting(command_line),
+            std::numeric_limits<uint64_t>::max());
+}
+
+TEST(NetworkServiceInstanceImplParseCommandLineTest,
+     ParseNetLogMaximumFileSizeZero) {
+  base::CommandLine command_line{base::CommandLine::NO_PROGRAM};
+  command_line.AppendSwitchASCII("net-log-max-size-mb", "0");
+  EXPECT_EQ(GetNetLogMaximumFileSizeFromCommandLineForTesting(command_line),
+            0u);
+}
+
+TEST(NetworkServiceInstanceImplParseCommandLineTest,
+     ParseNetLogMaximumFileSizeSmall) {
+  base::CommandLine command_line{base::CommandLine::NO_PROGRAM};
+  command_line.AppendSwitchASCII("net-log-max-size-mb", "42");
+  EXPECT_EQ(GetNetLogMaximumFileSizeFromCommandLineForTesting(command_line),
+            42u * 1024 * 1024);
+}
+
+// Regression test for <https://crbug.com/352496169>.
+TEST(NetworkServiceInstanceImplParseCommandLineTest,
+     ParseNetLogMaximumFileSizeLargeButInRange) {
+  constexpr uint64_t kTestCases[] = {
+      1 << 12,
+      std::numeric_limits<uint32_t>::max(),
+  };
+
+  for (uint64_t test_case : kTestCases) {
+    base::CommandLine command_line{base::CommandLine::NO_PROGRAM};
+    command_line.AppendSwitchASCII("net-log-max-size-mb",
+                                   base::NumberToString(test_case));
+    EXPECT_EQ(GetNetLogMaximumFileSizeFromCommandLineForTesting(command_line),
+              test_case * 1024 * 1024);
+  }
+}
+
+TEST(NetworkServiceInstanceImplParseCommandLineTest,
+     ParseNetLogMaximumFileSizeTooLarge) {
+  constexpr uint64_t kTooLarge =
+      uint64_t{std::numeric_limits<uint32_t>::max()} + 1;
+  base::CommandLine command_line{base::CommandLine::NO_PROGRAM};
+  command_line.AppendSwitchASCII("net-log-max-size-mb",
+                                 base::NumberToString(kTooLarge));
+  EXPECT_EQ(GetNetLogMaximumFileSizeFromCommandLineForTesting(command_line),
+            std::numeric_limits<uint64_t>::max());
+}
+
+TEST(NetworkServiceInstanceImplParseCommandLineTest,
+     ParseNetLogMaximumFileSizeNotNumeric) {
+  constexpr std::string_view kTestCases[] = {"",    " ",     "-", "-0",
+                                             "-42", "hello", "\a"};
+  for (std::string_view test_case : kTestCases) {
+    SCOPED_TRACE(testing::Message() << "Test case: " << test_case);
+    base::CommandLine command_line{base::CommandLine::NO_PROGRAM};
+    command_line.AppendSwitchASCII("net-log-max-size-mb", test_case);
+    EXPECT_EQ(GetNetLogMaximumFileSizeFromCommandLineForTesting(command_line),
+              std::numeric_limits<uint64_t>::max());
+  }
 }
 
 }  // namespace content

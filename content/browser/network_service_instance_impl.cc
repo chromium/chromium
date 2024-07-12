@@ -4,6 +4,8 @@
 
 #include "content/browser/network_service_instance_impl.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <string_view>
@@ -25,6 +27,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -522,7 +525,7 @@ net::NetLogCaptureMode GetNetCaptureModeFromCommandLine(
 
 // Parse the maximum file size for the NetLog, if one was specified.
 // kNoLimit indicates no, valid, maximum size was specified.
-int64_t GetNetMaximumFileSizeFromCommandLine(
+base::StrictNumeric<uint64_t> GetNetLogMaximumFileSizeFromCommandLine(
     const base::CommandLine& command_line) {
   std::string_view switch_name = network::switches::kNetLogMaxSizeMb;
 
@@ -547,11 +550,16 @@ int64_t GetNetMaximumFileSizeFromCommandLine(
 
   // Value is currently in megabytes, convert to bytes. 1024*1024 == 2^20 ==
   // left shift by 20 bits
-  uint64_t max_size_bytes = max_size_megabytes << 20;
+  uint64_t max_size_bytes = uint64_t{max_size_megabytes} << 20;
   return max_size_bytes;
 }
 
 }  // namespace
+
+uint64_t GetNetLogMaximumFileSizeFromCommandLineForTesting(  // IN-TEST
+    const base::CommandLine& command_line) {
+  return GetNetLogMaximumFileSizeFromCommandLine(command_line);
+}
 
 class NetworkServiceInstancePrivate {
  public:
@@ -650,12 +658,10 @@ network::mojom::NetworkService* GetNetworkService() {
         if (!file.IsValid()) {
           LOG(ERROR) << "Failed opening NetLog: " << log_path.value();
         } else {
-          uint64_t max_file_size =
-              GetNetMaximumFileSizeFromCommandLine(*command_line);
-
           (*g_network_service_remote)
               ->StartNetLog(
-                  std::move(file), max_file_size,
+                  std::move(file),
+                  GetNetLogMaximumFileSizeFromCommandLine(*command_line),
                   GetNetCaptureModeFromCommandLine(*command_line),
                   GetContentClient()->browser()->GetNetLogConstants());
         }
