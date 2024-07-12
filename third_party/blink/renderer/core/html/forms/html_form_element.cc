@@ -178,9 +178,9 @@ void HTMLFormElement::RemovedFrom(ContainerNode& insertion_point) {
     } else {
       ListedElement::List elements;
       CollectListedElements(
-          NodeTraversal::HighestAncestorOrSelf(insertion_point), elements);
+          &NodeTraversal::HighestAncestorOrSelf(insertion_point), elements);
       NotifyFormRemovedFromTree(elements, root);
-      CollectListedElements(root, elements);
+      CollectListedElements(&root, elements);
       NotifyFormRemovedFromTree(elements, root);
     }
 
@@ -777,19 +777,17 @@ HTMLFormControlsCollection* HTMLFormElement::elements() {
 }
 
 void HTMLFormElement::CollectListedElements(
-    const Node& root,
+    const Node* root,
     ListedElement::List& elements,
     ListedElement::List* elements_including_shadow_trees,
     bool in_shadow_tree) const {
+  CHECK(root);
   DCHECK(!in_shadow_tree || elements_including_shadow_trees);
-  // A performance optimization used below - if `root_is_descendant` is true,
-  // then we can save some checks whether elements that we are traversing are
-  // descendants of `this`.
-  const bool root_is_descendant = in_shadow_tree || &root == this;
   HeapVector<Member<HTMLFormElement>> nested_forms;
   if (!in_shadow_tree) {
     elements.clear();
-    if (base::FeatureList::IsEnabled(
+    if (elements_including_shadow_trees &&
+        base::FeatureList::IsEnabled(
             features::kAutofillIncludeFormElementsInShadowDom)) {
       for (HTMLFormElement& nested_form :
            Traversal<HTMLFormElement>::DescendantsOf(*this)) {
@@ -797,7 +795,26 @@ void HTMLFormElement::CollectListedElements(
       }
     }
   }
-  for (HTMLElement& element : Traversal<HTMLElement>::DescendantsOf(root)) {
+
+  // We flatten elements of nested forms into `elements_including_shadow_trees`.
+  // If one of the nested forms has an element associated by form attribute,
+  // that element may be outside of `root`'s subtree and we need to start at the
+  // root node.
+  const bool nested_forms_have_elements_associated_by_form_attribute =
+      base::ranges::any_of(nested_forms, [](const auto& form) {
+        return form->has_elements_associated_by_form_attribute_;
+      });
+  if (nested_forms_have_elements_associated_by_form_attribute &&
+      isConnected()) {
+    root = &GetTreeScope().RootNode();
+  }
+
+  // A performance optimization - if `root_is_descendant` is true,
+  // then we can save some checks whether elements that we are traversing are
+  // descendants of `this`.
+  const bool root_is_descendant = in_shadow_tree || root == this;
+
+  for (HTMLElement& element : Traversal<HTMLElement>::DescendantsOf(*root)) {
     if (ListedElement* listed_element = ListedElement::From(element)) {
       // There are two scenarios:
       // - If `kAutofillIncludeFormElementsInShadowDom` is disabled, then we
@@ -817,16 +834,14 @@ void HTMLFormElement::CollectListedElements(
       if (in_shadow_tree &&
           (base::FeatureList::IsEnabled(
                features::kAutofillIncludeFormElementsInShadowDom) ||
-           (!HasFormInBetween(&root, &element) && !listed_element->Form()))) {
+           (!HasFormInBetween(root, &element) && !listed_element->Form()))) {
         elements_including_shadow_trees->push_back(listed_element);
       } else if (listed_element->Form() == this) {
         elements.push_back(listed_element);
         if (elements_including_shadow_trees)
           elements_including_shadow_trees->push_back(listed_element);
       } else if (base::Contains(nested_forms, listed_element->Form())) {
-        if (elements_including_shadow_trees) {
-          elements_including_shadow_trees->push_back(listed_element);
-        }
+        elements_including_shadow_trees->push_back(listed_element);
       }
     }
     // Descend recursively into shadow DOM if the following conditions are met:
@@ -840,9 +855,9 @@ void HTMLFormElement::CollectListedElements(
         (root_is_descendant || element.IsDescendantOf(this)) &&
         (base::FeatureList::IsEnabled(
              features::kAutofillIncludeFormElementsInShadowDom) ||
-         !HasFormInBetween(in_shadow_tree ? &root : this, &element))) {
-      const Node& shadow = *element.AuthorShadowRoot();
-      CollectListedElements(shadow, elements, elements_including_shadow_trees,
+         !HasFormInBetween(in_shadow_tree ? root : this, &element))) {
+      CollectListedElements(element.AuthorShadowRoot(), elements,
+                            elements_including_shadow_trees,
                             /*in_shadow_tree=*/true);
     }
   }
@@ -862,11 +877,10 @@ const ListedElement::List& HTMLFormElement::ListedElements(
       scope = &NodeTraversal::HighestAncestorOrSelf(*mutable_this);
     if (isConnected() && has_elements_associated_by_form_attribute_)
       scope = &GetTreeScope().RootNode();
-    DCHECK(scope);
     mutable_this->listed_elements_.clear();
     mutable_this->listed_elements_including_shadow_trees_.clear();
     CollectListedElements(
-        *scope, mutable_this->listed_elements_,
+        scope, mutable_this->listed_elements_,
         collect_shadow_inputs
             ? &mutable_this->listed_elements_including_shadow_trees_
             : nullptr);

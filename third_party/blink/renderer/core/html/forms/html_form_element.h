@@ -169,7 +169,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
                               HTMLFormControlElement* submit_button);
 
   void CollectListedElements(
-      const Node& root,
+      const Node* root,
       ListedElement::List& elements,
       ListedElement::List* elements_including_shadow_trees = nullptr,
       bool in_shadow_tree = false) const;

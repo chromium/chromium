@@ -564,4 +564,27 @@ TEST_F(HTMLFormElementTest, FormRemovalsInvalidateFormCaches) {
   EXPECT_THAT(f2->ListedElements(/*include_shadow_trees=*/true), IsEmpty());
 }
 
+// Tests that `include_shadow_trees=true` also includes form control elements
+// that are associated via form-attribute with forms nested inside the form
+// whose listed elements we are examining.
+TEST_F(HTMLFormElementTest, ElementsAssociateWithNestedForms) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillIncludeFormElementsInShadowDom};
+  HTMLBodyElement* body = GetDocument().FirstBodyElement();
+  HTMLFormElement* f1 = MakeGarbageCollected<HTMLFormElement>(GetDocument());
+  HTMLFormElement* f2 = MakeGarbageCollected<HTMLFormElement>(GetDocument());
+  HTMLInputElement* t1 = MakeGarbageCollected<HTMLInputElement>(GetDocument());
+  HTMLInputElement* t2 = MakeGarbageCollected<HTMLInputElement>(GetDocument());
+
+  body->AppendChild(f1);
+  f2->SetIdAttribute(AtomicString("f2"));
+  f1->AppendChild(f2);
+  f2->AppendChild(t1);
+  t2->setAttribute(html_names::kFormAttr, AtomicString("f2"));
+  body->AppendChild(t2);
+
+  EXPECT_THAT(f1->ListedElements(/*include_shadow_trees=*/true),
+              ElementsAre(t1, t2));
+}
+
 }  // namespace blink
