@@ -450,6 +450,10 @@ struct AuthenticatorRequestDialogModel {
   // This can return nullptr in tests.
   content::RenderFrameHost* GetRenderFrameHost() const;
 
+  // generation is incremented each time the request is restarted so that events
+  // from different request generations can be distinguished.
+  int generation = 0;
+
   // The following methods and fields are read by views and both read and
   // written by controllers. Views use these values to determine what
   // information to show.

@@ -535,15 +535,23 @@ bool AuthenticatorRequestDialogModel::should_dialog_be_closed() const {
   return step_ui_type(step_) != StepUIType::DIALOG;
 }
 
-#define AUTHENTICATOR_REQUEST_EVENT_0(name)      \
-  void AuthenticatorRequestDialogModel::name() { \
-    for (auto& observer : observers) {           \
-      observer.name();                           \
-    }                                            \
+#define AUTHENTICATOR_REQUEST_EVENT_0(name)        \
+  void AuthenticatorRequestDialogModel::name() {   \
+    const int start_generation = this->generation; \
+    for (auto& observer : observers) {             \
+      if (start_generation != this->generation) {  \
+        break;                                     \
+      }                                            \
+      observer.name();                             \
+    }                                              \
   }
 #define AUTHENTICATOR_REQUEST_EVENT_1(name, arg1type)         \
   void AuthenticatorRequestDialogModel::name(arg1type arg1) { \
+    const int start_generation = this->generation;            \
     for (auto& observer : observers) {                        \
+      if (start_generation != this->generation) {             \
+        break;                                                \
+      }                                                       \
       observer.name(arg1);                                    \
     }                                                         \
   }
