@@ -21,6 +21,7 @@ import {recordLensOverlayInteraction, UserAction} from './metrics_utils.js';
 import {getTemplate} from './object_layer.html.js';
 import type {OverlayObject} from './overlay_object.mojom-webui.js';
 import {Polygon_CoordinateType} from './polygon.mojom-webui.js';
+import type {Vertex} from './polygon.mojom-webui.js';
 import type {PostSelectionBoundingBox} from './post_selection_renderer.js';
 import type {CursorData} from './selection_overlay.js';
 import {CursorType, focusShimmerOnRegion, type GestureEvent, getRelativeCoordinate, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
@@ -57,7 +58,14 @@ function isObjectRenderable(object: OverlayObject): boolean {
       CenterRotatedBox_CoordinateType.kImage;
 }
 
-// Orders objects with larger areas before objects with smaller areas.
+// Returns true if the object has a segmentation mask.
+function hasSegmentationMask(object: OverlayObject): boolean {
+  assert(object.geometry);
+  return object.geometry.segmentationPolygon.length > 0;
+}
+
+// Comparator to order objects with larger areas before objects with smaller
+// areas.
 function compareArea(object1: OverlayObject, object2: OverlayObject): number {
   assert(object1.geometry);
   assert(object2.geometry);
@@ -65,6 +73,79 @@ function compareArea(object1: OverlayObject, object2: OverlayObject): number {
       object2.geometry.boundingBox.box.height -
       object1.geometry.boundingBox.box.width *
       object1.geometry.boundingBox.box.height;
+}
+
+// Comparator to order objects with segmentation masks with larger areas before
+// objects with segmentation masks with smaller areas.
+function compareSegmentationMaskArea(
+    object1: OverlayObject, object2: OverlayObject): number {
+  assert(object1.geometry);
+  assert(object2.geometry);
+  return getSegmentationMaskArea(object2) - getSegmentationMaskArea(object1);
+}
+
+// Calculates the area of the segmentation mask of the object using the
+// shoelace formula. Uses signed area so that counter-clockwise polygons
+// (holes) are subtracted.
+function getSegmentationMaskArea(object: OverlayObject): number {
+  let area = 0;
+  for (const polygon of object.geometry.segmentationPolygon) {
+    const vertices = polygon.vertex;
+    for (let i = 0; i < vertices.length; i++) {
+      if (i < vertices.length - 1) {
+        area += vertices[i].x * vertices[i + 1].y -
+            vertices[i + 1].x * vertices[i].y;
+      } else {
+        area += vertices[i].x * vertices[0].y - vertices[0].x * vertices[i].y;
+      }
+    }
+  }
+  return 0.5 * area;
+}
+
+// Returns a clip path value for the object corresponding to its segmentation
+// mask. If there is no segmentation mask, returns the value 'none'.
+function toCssClipPath(object: OverlayObject): string {
+  const polygons = object.geometry.segmentationPolygon;
+  if (!polygons) {
+    return 'none';
+  }
+
+  const points: string[] = [];
+  for (const polygon of polygons) {
+    // TODO(b/330183480): Currently, we are assuming that polygon
+    // coordinates are normalized. We should still implement
+    // rendering in case this assumption is ever violated.
+    if (polygon.coordinateType !== Polygon_CoordinateType.kNormalized) {
+      continue;
+    }
+
+    for (const vertex of polygon.vertex) {
+      points.push(toCssPolygonVertex(object, vertex));
+    }
+    // Add first vertex again to close the path.
+    points.push(toCssPolygonVertex(object, polygon.vertex[0]));
+  }
+  if (points.length === 0) {
+    return 'none';
+  }
+  return 'polygon(evenodd, ' + points.join(', ') + ')';
+}
+
+// Converts the vertex to a string containing a pair of length-percentage values
+// relative to the object bounding box, to be used in the CSS polygon()
+// function.
+function toCssPolygonVertex(object: OverlayObject, vertex: Vertex): string {
+  const objectBoundingBox = object.geometry!.boundingBox;
+  return toPercent(
+             0.5 +
+             (vertex.x - objectBoundingBox.box.x) /
+                 objectBoundingBox.box.width) +
+      ' ' +
+      toPercent(
+             0.5 +
+             (vertex.y - objectBoundingBox.box.y) /
+                 objectBoundingBox.box.height);
 }
 
 export interface ObjectLayerElement {
@@ -225,8 +306,7 @@ export class ObjectLayerElement extends PolymerElement {
       composed: true,
     }));
     // Only show the pointer if the object has a segmentation mask.
-    const hasSegmentationMask = object.geometry!.segmentationPolygon.length > 0;
-    if (hasSegmentationMask) {
+    if (hasSegmentationMask(object)) {
       this.style.cursor = 'pointer';
     }
   }
@@ -453,10 +533,23 @@ export class ObjectLayerElement extends PolymerElement {
   }
 
   private onObjectsReceived(objects: OverlayObject[]) {
-    // Sort objects by descending bounding box areas so that smaller objects
-    // are rendered over, and take priority over, larger objects.
-    this.renderedObjects =
-        objects.filter(o => isObjectRenderable(o)).sort(compareArea);
+    // Sort objects with segmentation masks after objects without
+    // segmentation masks. Then sort by descending segmentation mask or
+    // bounding box area so that smaller objects are rendered over, and take
+    // priority over, larger objects.
+    const renderableObjects = objects.filter(o => isObjectRenderable(o));
+    const objectsWithMask: OverlayObject[] = [];
+    const objectsWithoutMask: OverlayObject[] = [];
+    for (const object of renderableObjects) {
+      if (hasSegmentationMask(object)) {
+        objectsWithMask.push(object);
+      } else {
+        objectsWithoutMask.push(object);
+      }
+    }
+    objectsWithMask.sort(compareSegmentationMaskArea);
+    objectsWithoutMask.sort(compareArea);
+    this.renderedObjects = objectsWithoutMask.concat(objectsWithMask);
   }
 
   /** @return The CSS styles string for the given object. */
@@ -488,6 +581,7 @@ export class ObjectLayerElement extends PolymerElement {
           toPercent(
               objectBoundingBox.box.x - (objectBoundingBox.box.width / 2))}`,
       `transform: rotate(${objectBoundingBox.rotation}rad)`,
+      `clip-path: ${toCssClipPath(object)}`,
     ];
     return styles.join(';');
   }
