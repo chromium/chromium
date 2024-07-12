@@ -4840,6 +4840,9 @@ def make_property_entries_and_callback_defs(cg_context, attribute_entries,
                     may_use_feature_selector=True)
 
             if "PerWorldBindings" in member.extended_attributes:
+                assert not isinstance(
+                    member, web_idl.ConstructorGroup
+                ), "[PerWorldBindings] is not supported for constructors"
                 worlds = (CodeGenContext.MAIN_WORLD,
                           CodeGenContext.NON_MAIN_WORLDS)
             else:
@@ -5370,16 +5373,8 @@ def make_install_interface_template(cg_context, function_name, class_name,
             nodes = [
                 CxxUnlikelyIfNode(cond=entry.exposure_conditional, body=nodes),
             ]
-        if entry.world == CodeGenContext.MAIN_WORLD:
-            body.append(
-                CxxLikelyIfNode(cond="${world}.IsMainWorld()", body=nodes))
-        elif entry.world == CodeGenContext.NON_MAIN_WORLDS:
-            body.append(
-                CxxUnlikelyIfNode(cond="!${world}.IsMainWorld()", body=nodes))
-        elif entry.world == CodeGenContext.ALL_WORLDS:
-            body.extend(nodes)
-        else:
-            assert False
+        assert entry.world == CodeGenContext.ALL_WORLDS
+        body.extend(nodes)
         body.append(EmptyNode())
 
     body.extend([
