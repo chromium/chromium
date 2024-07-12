@@ -569,9 +569,11 @@ class GSL_POINTER span {
     requires(!std::is_const_v<T>)
   {
     if constexpr (std::is_trivially_copyable_v<T>) {
-      // Avoid having to look for overlap and pick a direction, memmove allows
-      // arbitrary overlap.
-      memmove(data(), other.data(), size_bytes());
+      if constexpr (N > 0) {
+        // Avoid having to look for overlap and pick a direction, memmove allows
+        // arbitrary overlap.
+        memmove(data(), other.data(), size_bytes());
+      }
     } else {
       // Use intptrs as pointers from different allocations are not comparable.
       const auto data_intptr = reinterpret_cast<uintptr_t>(data());
@@ -1107,9 +1109,11 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
     CHECK_EQ(size(), other.size());
 
     if constexpr (std::is_trivially_copyable_v<T>) {
-      // Avoid having to look for overlap and pick a direction, memmove allows
-      // arbitrary overlap.
-      memmove(data(), other.data(), size_bytes());
+      if (!empty()) {
+        // Avoid having to look for overlap and pick a direction, memmove allows
+        // arbitrary overlap.
+        memmove(data(), other.data(), size_bytes());
+      }
     } else {
       // Use intptrs as pointers from different allocations are not comparable.
       const auto data_intptr = reinterpret_cast<uintptr_t>(data());
