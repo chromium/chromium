@@ -11,6 +11,7 @@ p {
 .s-v { appearance: slider-vertical }
 .htb { writing-mode: horizontal-tb }
 .side { writing-mode: sideways-lr }
+.srl { writing-mode: sideways-rl }
 .vlr { writing-mode: vertical-lr }
 .vrl { writing-mode: vertical-rl }
 
@@ -21,10 +22,14 @@ ltr,s-v:<input type="range" value="30" min="0" max="100" class="ltr s-v htb" lis
 rtl:<input type="range" value="30" min="0" max="100" class="rtl htb" list=foo>
 rtl,s-v:<input type="range" value="30" min="0" max="100" class="rtl s-v htb" list=foo>
 <p>Sideway</p>
-ltr:<input type="range" value="30" min="0" max="100" class="ltr side" list=foo>
-ltr,s-v:<input type="range" value="30" min="0" max="100" class="ltr s-v side" list=foo>
-rtl:<input type="range" value="30" min="0" max="100" class="rtl side" list=foo>
-rtl,s-v:<input type="range" value="30" min="0" max="100" class="rtl s-v side" list=foo>
+s-lr,ltr:<input type="range" value="30" min="0" max="100" class="ltr side" list=foo>
+s-lr,ltr,s-v:<input type="range" value="30" min="0" max="100" class="ltr s-v side" list=foo>
+s-lr,rtl:<input type="range" value="30" min="0" max="100" class="rtl side" list=foo>
+s-lr,rtl,s-v:<input type="range" value="30" min="0" max="100" class="rtl s-v side" list=foo>
+s-rl,ltr:<input type="range" value="30" min="0" max="100" class="ltr srl" list=foo>
+s-rl,ltr,s-v:<input type="range" value="30" min="0" max="100" class="ltr s-v srl" list=foo>
+s-rl,rtl:<input type="range" value="30" min="0" max="100" class="rtl srl" list=foo>
+s-rl,rtl,s-v:<input type="range" value="30" min="0" max="100" class="rtl s-v srl" list=foo>
 <p>Vertical</p>
 v-lr,ltr:<input type="range" value="30" min="0" max="100" class="ltr vlr" list=foo>
 v-lr,ltr,s-v:<input type="range" value="30" min="0" max="100" class="ltr s-v vlr" list=foo>
