@@ -1,0 +1,32 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//chromeos/ash/components/assistant/assistant.gni")
+
+assert(is_chromeos_ash)
+
+static_library("auth") {
+  sources = [
+    "cryptohome_pin_engine.cc",
+    "cryptohome_pin_engine.h",
+    "legacy_fingerprint_engine.cc",
+    "legacy_fingerprint_engine.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/quick_unlock",
+    "//chrome/browser/ash/login/users",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/login/auth",
+    "//components/account_id",
+    "//components/prefs",
+    "//components/user_manager",
+  ]
+}

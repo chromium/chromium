@@ -3952,6 +3952,7 @@ static_library("ui") {
       "//chrome/browser/ui/ash/annotator",
       "//chrome/browser/ui/ash/api/tasks",
       "//chrome/browser/ui/ash/assistant",
+      "//chrome/browser/ui/ash/auth",
       "//chrome/browser/ui/quick_answers",
       "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings",
       "//chrome/browser/ui/webui/ash/app_install:mojo_bindings",

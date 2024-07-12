@@ -177,6 +177,7 @@ static_library("screens") {
     "//chrome/browser/ash/login/screens/chromevox_hint",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/auth",
     "//chrome/browser/ui/webui/ash/login/mojom",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/arc",
