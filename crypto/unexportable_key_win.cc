@@ -315,6 +315,8 @@ class ECDSAKey : public UnexportableSigningKey {
     return SignECDSA(key_.get(), data);
   }
 
+  bool IsHardwareBacked() const override { return true; }
+
  private:
   ScopedNCryptKey key_;
   const std::vector<uint8_t> wrapped_;
@@ -345,6 +347,8 @@ class RSAKey : public UnexportableSigningKey {
       base::span<const uint8_t> data) override {
     return SignRSA(key_.get(), data);
   }
+
+  bool IsHardwareBacked() const override { return true; }
 
  private:
   ScopedNCryptKey key_;

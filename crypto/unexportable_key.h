@@ -61,6 +61,13 @@ class CRYPTO_EXPORT UnexportableSigningKey {
   virtual std::optional<std::vector<uint8_t>> SignSlowly(
       base::span<const uint8_t> data) = 0;
 
+  // Returns true if the underlying key is stored in "hardware". Something like
+  // ARM TrustZone would count as hardware for these purposes. Ideally all
+  // implementations of this class would return true here, because software
+  // implementations aren't really "unexportable", but a software implementation
+  // does exist.
+  virtual bool IsHardwareBacked() const;
+
 #if BUILDFLAG(IS_MAC)
   // Returns the underlying reference to a Keychain key owned by the current
   // instance.

@@ -349,8 +349,11 @@ cbor::Value BuildRegistrationMessage(
     scoped_refptr<crypto::RefCountedUserVerifyingSigningKey> uv_key,
     bool defer_uv_key) {
   cbor::Value::MapValue pub_keys;
-  pub_keys.emplace(enclave::kHardwareKey,
-                   identity_key.GetSubjectPublicKeyInfo());
+
+  const char* key_type = identity_key.IsHardwareBacked()
+                             ? enclave::kHardwareKey
+                             : enclave::kSoftwareKey;
+  pub_keys.emplace(key_type, identity_key.GetSubjectPublicKeyInfo());
   if (uv_key) {
     pub_keys.emplace(enclave::kUserVerificationKey,
                      uv_key->key().GetPublicKey());
@@ -2978,7 +2981,9 @@ enclave::SigningCallback EnclaveManager::IdentityKeySigningCallback() {
                         client_signature.device_id = ToVector(device_id);
                         client_signature.signature = std::move(*signature);
                         client_signature.key_type =
-                            enclave::ClientKeyType::kHardware;
+                            key->key().IsHardwareBacked()
+                                ? enclave::ClientKeyType::kHardware
+                                : enclave::ClientKeyType::kSoftware;
                         return std::move(client_signature);
                       },
                       std::move(device_id), std::move(message_to_be_signed),

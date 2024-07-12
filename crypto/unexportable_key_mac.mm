@@ -156,6 +156,8 @@ class UnexportableSigningKeyMac : public UnexportableSigningKey {
     return CFDataToVec(signature.get());
   }
 
+  bool IsHardwareBacked() const override { return true; }
+
   SecKeyRef GetSecKeyRef() const override { return key_.get(); }
 
  private:

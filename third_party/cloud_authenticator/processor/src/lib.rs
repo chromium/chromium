@@ -424,6 +424,8 @@ impl Default for ParsedState {
 /// Represents the type of public key that authenticates a request.
 #[derive(PartialEq, Eq, PartialOrd, Ord, Copy, Clone)]
 enum AuthLevel {
+    /// The key is kept in software.
+    Software,
     /// The key is hardware bound to the device.
     Hardware,
     /// The key is bound to the device and requires user verification before
@@ -434,6 +436,7 @@ enum AuthLevel {
 impl AuthLevel {
     fn as_str(&self) -> &'static str {
         match self {
+            AuthLevel::Software => "sw",
             AuthLevel::Hardware => "hw",
             AuthLevel::UserVerification => "uv",
         }
@@ -444,6 +447,7 @@ impl core::str::FromStr for AuthLevel {
     type Err = ();
     fn from_str(s: &str) -> Result<AuthLevel, ()> {
         match s {
+            "sw" => Ok(AuthLevel::Software),
             "hw" => Ok(AuthLevel::Hardware),
             "uv" => Ok(AuthLevel::UserVerification),
             _ => Err(()),

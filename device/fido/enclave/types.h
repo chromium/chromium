@@ -37,6 +37,8 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) EnclaveIdentity {
 // ClientKeyType enumerates the types of identity keys that a client might
 // register with an enclave.
 enum class ClientKeyType {
+  // kSoftware ("sw") keys are just kept in software.
+  kSoftware,
   // kHardware ("hw") keys are hardware-bound, but can be used silently.
   kHardware,
   // kUserVerified ("uv") keys are hardware-bound, but can only be used for
