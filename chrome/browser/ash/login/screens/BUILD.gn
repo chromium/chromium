@@ -381,6 +381,7 @@ source_set("browser_tests") {
 
   sources = [
     "add_child_screen_browsertest.cc",
+    "ai_intro_screen_browsertest.cc",
     "app_downloading_screen_browsertest.cc",
     "assistant_optin_flow_screen_browsertest.cc",
     "categories_selection_screen_browsertest.cc",
@@ -418,6 +419,7 @@ source_set("browser_tests") {
     "theme_selection_screen_browsertest.cc",
     "touchpad_scroll_screen_browsertest.cc",
     "tpm_error_screen_browsertest.cc",
+    "tuna_screen_browsertest.cc",
     "update_required_screen_browsertest.cc",
     "update_screen_browsertest.cc",
     "user_creation_screen_browsertest.cc",
