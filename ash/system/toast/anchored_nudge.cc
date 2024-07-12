@@ -134,6 +134,10 @@ AnchoredNudge::AnchoredNudge(
   if (anchored_to_shelf_ || !GetAnchorView()) {
     Shell::Get()->AddShellObserver(this);
   }
+
+  if (!nudge_data.announce_chromevox) {
+    SetAccessibleWindowRole(ax::mojom::Role::kNone);
+  }
 }
 
 AnchoredNudge::~AnchoredNudge() {

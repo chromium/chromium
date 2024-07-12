@@ -102,6 +102,7 @@ void ShowEndingMomentNudge() {
   nudge_data.arrow = views::BubbleBorder::BOTTOM_CENTER;
   nudge_data.duration = NudgeDuration::kDefaultDuration;
   nudge_data.anchored_to_shelf = true;
+  nudge_data.announce_chromevox = false;
   nudge_data.click_callback =
       base::BindRepeating(&FocusModeTray::ShowBubble, base::Unretained(tray));
   AnchoredNudgeManager::Get()->Show(nudge_data);

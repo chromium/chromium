@@ -18,6 +18,7 @@
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
 #include "ash/system/status_area_widget_test_helper.h"
+#include "ash/system/toast/anchored_nudge.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
@@ -40,6 +41,12 @@ constexpr base::TimeDelta kLongDuration = base::Minutes(30);
 
 bool IsEndingMomentNudgeShown() {
   return Shell::Get()->anchored_nudge_manager()->IsNudgeShown(
+      focus_mode_util::kFocusModeEndingMomentNudgeId);
+}
+
+AnchoredNudge* GetShownEndingMomentNudge() {
+  CHECK(IsEndingMomentNudgeShown());
+  return Shell::Get()->anchored_nudge_manager()->GetShownNudgeForTest(
       focus_mode_util::kFocusModeEndingMomentNudgeId);
 }
 
@@ -398,6 +405,11 @@ TEST_F(FocusModeControllerMultiUserTest, EndingMomentNudgeTest) {
   // Verify that the nudge is visible when the ending moment is triggered.
   trigger_ending_moment();
   EXPECT_TRUE(IsEndingMomentNudgeShown());
+
+  // After the ending moment nudge shown, we ignore the nudge view for
+  // accessibility purposes.
+  EXPECT_EQ(ax::mojom::Role::kNone,
+            GetShownEndingMomentNudge()->GetAccessibleWindowRole());
 
   // Verify that the ending moment terminating also hides the nudge.
   AdvanceClock(focus_mode_util::kEndingMomentDuration);

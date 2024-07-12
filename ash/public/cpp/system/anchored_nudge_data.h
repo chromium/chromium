@@ -123,6 +123,9 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
   // If true, set the `anchor_view` as parent.
   bool set_anchor_view_as_parent = false;
 
+  // If false, the ChromeVox will not announce `body_text`.
+  bool announce_chromevox = true;
+
   // If not null, the nudge will anchor inside the `anchor_widget`, which is a
   // `views::Widget`. Used together with the `views::BubbleBorder::Arrow`, but
   // currently only support anchoring to the bottom corners of the
