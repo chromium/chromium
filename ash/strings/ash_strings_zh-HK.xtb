@@ -601,7 +601,7 @@
 <translation id="3306386552969601301">有 <ph name="DEVICECOUNT" /> 部裝置已連線至 <ph name="DEVICE_NAME" /> 熱點</translation>
 <translation id="3307642347673023554">已切換至手提電腦模式</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> 稍後仍可登入。</translation>
-<translation id="3321628682574733415">家長存取碼錯誤</translation>
+<translation id="3321628682574733415">家長驗證碼錯誤</translation>
 <translation id="332827762492701193">已隱藏通知</translation>
 <translation id="3333674550998107387">展開「<ph name="NOTIFICATION_TITLE" />」通知</translation>
 <translation id="3339826665088060472">螢幕截圖，用嚟擷取螢幕截圖同埋錄影螢幕嘅工具</translation>
@@ -989,7 +989,7 @@
 <translation id="4673427585974421255">保持開啟</translation>
 <translation id="468293128311738995">手機應用程式</translation>
 <translation id="4690510401873698237">捷徑列喺螢幕個底度</translation>
-<translation id="4696813013609194136">使用家長存取碼解鎖裝置</translation>
+<translation id="4696813013609194136">使用家長驗證碼解鎖裝置</translation>
 <translation id="4697357603686181098">很抱歉，我們無法處理。請嘗試提出其他要求。</translation>
 <translation id="4702647871202761252">已停用私隱保護畫面</translation>
 <translation id="4706121060329443414">系統稍後將再次嘗試下載，目前會暫時將語音傳送給 Google 處理。</translation>
@@ -1330,7 +1330,7 @@
 <translation id="5864748620896638071">電量：<ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">正在收集網絡資料</translation>
 <translation id="5867606971598166637">系統管理員正在監控您的畫面</translation>
-<translation id="5876666360658629066">輸入家長存取碼</translation>
+<translation id="5876666360658629066">輸入家長驗證碼</translation>
 <translation id="5881540930187678962">稍後再設定 Phone Hub</translation>
 <translation id="588258955323874662">全螢幕</translation>
 <translation id="5887954372087850114">「<ph name="WINDOW_TITLE" />」視窗已指派給「<ph name="DESK_TITLE" />」，並取消指派給所有其他桌面</translation>
