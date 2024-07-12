@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/dom/document_part_root.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_document_documentfragment.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
