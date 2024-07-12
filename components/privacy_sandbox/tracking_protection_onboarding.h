@@ -138,6 +138,15 @@ class TrackingProtectionOnboarding : public KeyedService {
         SilentOnboardingStatus onboarding_status) {}
   };
 
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Whether the current profile is managed by an enterprise or not. Affects
+    // which onboarding notices are shown.
+    virtual bool IsEnterpriseManaged() const = 0;
+  };
+
   TrackingProtectionOnboarding(PrefService* pref_service,
                                version_info::Channel channel,
                                bool is_silent_onboarding_enabled = false);
