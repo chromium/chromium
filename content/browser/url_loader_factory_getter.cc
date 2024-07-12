@@ -97,10 +97,11 @@ void ReconnectableURLLoaderFactory::FlushForTesting() {
 class URLLoaderFactoryGetter::PendingURLLoaderFactoryForIOThread
     : public network::PendingSharedURLLoaderFactory {
  public:
-  PendingURLLoaderFactoryForIOThread() = default;
   explicit PendingURLLoaderFactoryForIOThread(
       scoped_refptr<URLLoaderFactoryGetter> factory_getter)
-      : factory_getter_(std::move(factory_getter)) {}
+      : factory_getter_(std::move(factory_getter)) {
+    CHECK(factory_getter_);
+  }
 
   PendingURLLoaderFactoryForIOThread(
       const PendingURLLoaderFactoryForIOThread&) = delete;
@@ -108,10 +109,6 @@ class URLLoaderFactoryGetter::PendingURLLoaderFactoryForIOThread
       const PendingURLLoaderFactoryForIOThread&) = delete;
 
   ~PendingURLLoaderFactoryForIOThread() override = default;
-
-  scoped_refptr<URLLoaderFactoryGetter>& url_loader_factory_getter() {
-    return factory_getter_;
-  }
 
  protected:
   // PendingSharedURLLoaderFactory implementation.
@@ -124,9 +121,10 @@ class URLLoaderFactoryGetter::URLLoaderFactoryForIOThread
     : public network::SharedURLLoaderFactory {
  public:
   explicit URLLoaderFactoryForIOThread(
-      std::unique_ptr<PendingURLLoaderFactoryForIOThread> info)
-      : factory_getter_(std::move(info->url_loader_factory_getter())) {
+      scoped_refptr<URLLoaderFactoryGetter> factory_getter)
+      : factory_getter_(std::move(factory_getter)) {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    CHECK(factory_getter_);
   }
 
   URLLoaderFactoryForIOThread(const URLLoaderFactoryForIOThread&) = delete;
@@ -143,8 +141,6 @@ class URLLoaderFactoryGetter::URLLoaderFactoryForIOThread
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override {
     DCHECK(BrowserThread::CurrentlyOn(BrowserThread::IO));
-    if (!factory_getter_)
-      return;
     factory_getter_->GetURLLoaderFactory()->CreateLoaderAndStart(
         std::move(receiver), request_id, options, url_request,
         std::move(client), traffic_annotation);
@@ -152,8 +148,6 @@ class URLLoaderFactoryGetter::URLLoaderFactoryForIOThread
 
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
       override {
-    if (!factory_getter_)
-      return;
     factory_getter_->GetURLLoaderFactory()->Clone(std::move(receiver));
   }
 
@@ -169,15 +163,13 @@ class URLLoaderFactoryGetter::URLLoaderFactoryForIOThread
   friend class base::RefCounted<URLLoaderFactoryForIOThread>;
   ~URLLoaderFactoryForIOThread() override = default;
 
-  scoped_refptr<URLLoaderFactoryGetter> factory_getter_;
+  const scoped_refptr<URLLoaderFactoryGetter> factory_getter_;
 };
 
 scoped_refptr<network::SharedURLLoaderFactory>
 URLLoaderFactoryGetter::PendingURLLoaderFactoryForIOThread::CreateFactory() {
-  auto other = std::make_unique<PendingURLLoaderFactoryForIOThread>();
-  other->factory_getter_ = std::move(factory_getter_);
-
-  return base::MakeRefCounted<URLLoaderFactoryForIOThread>(std::move(other));
+  return base::MakeRefCounted<URLLoaderFactoryForIOThread>(
+      std::move(factory_getter_));
 }
 
 // -----------------------------------------------------------------------------
