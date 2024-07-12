@@ -276,8 +276,11 @@ CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
       return Parser::ParseAtFontPaletteValuesDescriptor(id, range, context);
     case StyleRule::kProperty:
       return Parser::ParseAtPropertyDescriptor(id, tokenized_value, context);
-    case StyleRule::kCounterStyle:
-      return Parser::ParseAtCounterStyleDescriptor(id, range, context);
+    case StyleRule::kCounterStyle: {
+      CSSTokenizer tokenizer(tokenized_value.text);
+      CSSParserTokenStream stream(tokenizer);
+      return Parser::ParseAtCounterStyleDescriptor(id, stream, context);
+    }
     case StyleRule::kViewTransition:
       return Parser::ParseAtViewTransitionDescriptor(id, range, context);
     case StyleRule::kCharset:

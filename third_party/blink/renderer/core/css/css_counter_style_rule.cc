@@ -193,10 +193,9 @@ void CSSCounterStyleRule::SetterInternal(
   auto& context = *MakeGarbageCollected<CSSParserContext>(
       ParserContext(execution_context->GetSecureContextMode()), style_sheet);
   CSSTokenizer tokenizer(text);
-  auto tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange token_range(tokens);
+  CSSParserTokenStream stream(tokenizer);
   CSSValue* new_value = AtRuleDescriptorParser::ParseAtCounterStyleDescriptor(
-      descriptor_id, token_range, context);
+      descriptor_id, stream, context);
   if (!new_value ||
       !counter_style_rule_->NewValueInvalidOrEqual(descriptor_id, new_value)) {
     return;
