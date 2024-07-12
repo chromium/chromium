@@ -72,6 +72,20 @@ GURL WebAppPictureInPictureMixinTestBase::GetPictureInPictureURL() const {
       base::FilePath(kPictureInPictureDocumentPipPage));
 }
 
+bool WebAppPictureInPictureMixinTestBase::AwaitPipWindowClosedSuccessfully() {
+  auto* render_widget_host_view = GetRenderWidgetHostView();
+  if (!render_widget_host_view) {
+    return true;
+  }
+  ui_test_utils::CheckWaiter(
+      base::BindRepeating(&content::RenderWidgetHostView::IsShowing,
+                          base::Unretained(render_widget_host_view)),
+      false, base::Seconds(30))
+      .Wait();
+
+  return (GetRenderWidgetHostView() == nullptr);
+}
+
 content::RenderWidgetHostView*
 WebAppPictureInPictureMixinTestBase::GetRenderWidgetHostView() {
   if (!window_controller()) {

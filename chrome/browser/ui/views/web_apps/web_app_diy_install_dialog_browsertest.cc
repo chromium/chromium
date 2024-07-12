@@ -4,21 +4,31 @@
 
 #include <memory>
 
+#include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/web_applications/test/web_app_picture_in_picture_mixin_test_base.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "components/webapps/browser/installable/ml_installability_promoter.h"
+#include "content/public/browser/document_picture_in_picture_window_controller.h"
+#include "content/public/browser/picture_in_picture_window_controller.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/test/widget_test.h"
@@ -207,6 +217,59 @@ IN_PROC_BROWSER_TEST_F(WebAppDiyInstallDialogBrowserTest,
   EXPECT_TRUE(std::get<bool>(dialog_results));
   EXPECT_EQ(std::get<std::unique_ptr<WebAppInstallInfo>>(dialog_results)->title,
             u"trimmed app");
+}
+
+class PictureInPictureDiyDialogOcclusionTest
+    : public MixinBasedInProcessBrowserTest {
+ protected:
+  void ShowDialogUi() {
+    auto install_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+        GURL("https://example.com"));
+    install_info->title = u"test";
+    install_info->description = u"This is a test app";
+    install_info->is_diy_app = true;
+
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
+        webapps::MLInstallabilityPromoter::FromWebContents(web_contents)
+            ->RegisterCurrentInstallForWebContents(
+                webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
+
+    ShowDiyAppInstallDialog(browser()->tab_strip_model()->GetWebContentsAt(0),
+                            std::move(install_info), std::move(install_tracker),
+                            base::DoNothing(),
+                            PwaInProductHelpState::kNotShown);
+  }
+  WebAppPictureInPictureMixinTestBase picture_in_picture_test_base_{
+      &mixin_host_};
+};
+
+IN_PROC_BROWSER_TEST_F(PictureInPictureDiyDialogOcclusionTest,
+                       PipWindowCloses) {
+  picture_in_picture_test_base_.NavigateToURLAndEnterPictureInPicture(
+      browser());
+  auto* pip_web_contents =
+      picture_in_picture_test_base_.window_controller()->GetChildWebContents();
+  ASSERT_NE(nullptr, pip_web_contents);
+  picture_in_picture_test_base_.WaitForPageLoad(pip_web_contents);
+
+  // Show dialog.
+  base::UserActionTester action_tester;
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{}, "WebAppDiyInstallDialog");
+  ShowDialogUi();
+  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+  EXPECT_NE(nullptr, widget);
+
+  // Occlude dialog with picture in picture web contents, verify window is
+  // closed but dialog stays open.
+  PictureInPictureWindowManager::GetInstance()
+      ->GetOcclusionTracker()
+      ->SetWidgetOcclusionStateForTesting(widget, /*occluded=*/true);
+  EXPECT_TRUE(picture_in_picture_test_base_.AwaitPipWindowClosedSuccessfully());
+  EXPECT_NE(nullptr, widget);
+  EXPECT_TRUE(widget->IsVisible());
 }
 
 }  // namespace

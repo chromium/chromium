@@ -41,6 +41,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -155,7 +156,11 @@ void ShowDiyAppInstallDialog(
 
   views::BubbleDialogDelegate* dialog_delegate =
       dialog->AsBubbleDialogDelegate();
-  constrained_window::ShowWebModalDialogViews(dialog.release(), web_contents);
+  views::Widget* diy_dialog_widget =
+      constrained_window::ShowWebModalDialogViews(dialog.release(),
+                                                  web_contents);
+  delegate_weak_ptr->StartObservingForPictureInPictureOcclusion(
+      diy_dialog_widget);
 
   base::RecordAction(base::UserMetricsAction("WebAppDiyInstallShown"));
 

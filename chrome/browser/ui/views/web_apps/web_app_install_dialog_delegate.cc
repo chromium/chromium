@@ -9,6 +9,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/observer_list_internal.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -27,6 +29,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/40147906): Enable gn check once it learns about conditional
@@ -104,6 +107,11 @@ WebAppInstallDialogDelegate::~WebAppInstallDialogDelegate() {
       install_icon->SetHighlighted(false);
     }
   }
+}
+
+void WebAppInstallDialogDelegate::StartObservingForPictureInPictureOcclusion(
+    views::Widget* install_dialog_widget) {
+  occlusion_observation_.Observe(install_dialog_widget);
 }
 
 void WebAppInstallDialogDelegate::OnAccept() {
@@ -194,7 +202,7 @@ void WebAppInstallDialogDelegate::OnTextFieldChangedMaybeUpdateButton(
 
 void WebAppInstallDialogDelegate::OnVisibilityChanged(
     content::Visibility visibility) {
-  if (visibility == content::Visibility::HIDDEN) {
+  if (visibility != content::Visibility::VISIBLE) {
     CloseDialogAsIgnored();
   }
 }
@@ -207,12 +215,21 @@ void WebAppInstallDialogDelegate::PrimaryPageChanged(content::Page& page) {
   CloseDialogAsIgnored();
 }
 
+void WebAppInstallDialogDelegate::OnOcclusionStateChanged(bool occluded) {
+  // If a picture-in-picture window is occluding the dialog, froce it to close
+  // to prevent spoofing.
+  if (occluded) {
+    PictureInPictureWindowManager::GetInstance()->ExitPictureInPicture();
+  }
+}
+
 void WebAppInstallDialogDelegate::CloseDialogAsIgnored() {
+  if (!dialog_model() || !dialog_model()->host()) {
+    return;
+  }
   CHECK(install_tracker_);
   install_tracker_->ReportResult(webapps::MlInstallUserResponse::kIgnored);
-  if (dialog_model() && dialog_model()->host()) {
-    dialog_model()->host()->Close();
-  }
+  dialog_model()->host()->Close();
 }
 
 void WebAppInstallDialogDelegate::MeasureIphOnDialogClose() {

@@ -34,6 +34,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -142,7 +143,9 @@ void ShowSimpleInstallDialogForWebApps(
     if (icon) {
       dialog_delegate->SetAnchorView(icon);
     }
-    constrained_window::ShowWebModalDialogViews(dialog.release(), web_contents);
+    views::Widget* modal_widget = constrained_window::ShowWebModalDialogViews(
+        dialog.release(), web_contents);
+    delegate_weak_ptr->StartObservingForPictureInPictureOcclusion(modal_widget);
   } else {
     auto* dialog_view = new PWAConfirmationBubbleView(
         anchor_view, web_contents->GetWeakPtr(), icon, std::move(web_app_info),

@@ -8,9 +8,12 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/web_applications/test/web_app_picture_in_picture_mixin_test_base.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -30,6 +33,8 @@
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/document_picture_in_picture_window_controller.h"
+#include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/dialog_test.h"
@@ -39,6 +44,27 @@
 
 namespace web_app {
 namespace {
+
+// Creates a dummy WebAppInstallInfo instance used to populate details on the
+// install dialog.
+std::unique_ptr<WebAppInstallInfo> GetAppInfo() {
+  auto app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example2.com"));
+  app_info->title = u"Test app 2";
+  app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
+  return app_info;
+}
+
+// Creates an installation tracker for ML installability promoter required by
+// the install dialog.
+std::unique_ptr<webapps::MlInstallOperationTracker> GetInstallTracker(
+    Browser* browser) {
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  return webapps::MLInstallabilityPromoter::FromWebContents(web_contents)
+      ->RegisterCurrentInstallForWebContents(
+          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
+}
 
 class SimpleInstallDialogBubbleViewBrowserTest
     : public WebAppBrowserTestBase,
@@ -59,23 +85,6 @@ class SimpleInstallDialogBubbleViewBrowserTest
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
   ~SimpleInstallDialogBubbleViewBrowserTest() override = default;
-
-  std::unique_ptr<WebAppInstallInfo> GetAppInfo() {
-    auto app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
-        GURL("https://example2.com"));
-    app_info->title = u"Test app 2";
-    app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
-    return app_info;
-  }
-
-  std::unique_ptr<webapps::MlInstallOperationTracker> GetInstallTracker(
-      Browser* browser) {
-    content::WebContents* web_contents =
-        browser->tab_strip_model()->GetActiveWebContents();
-    return webapps::MLInstallabilityPromoter::FromWebContents(web_contents)
-        ->RegisterCurrentInstallForWebContents(
-            webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
-  }
 
  protected:
   bool UniversalInstallEnabled() { return GetParam(); }
@@ -307,6 +316,51 @@ INSTANTIATE_TEST_SUITE_P(All,
                            return info.param ? "WebAppSimpleInstallDialog"
                                              : "PWAConfirmationBubbleView";
                          });
+
+class PictureInPictureSimpleInstallDialogOcclusionTest
+    : public MixinBasedInProcessBrowserTest {
+ protected:
+  WebAppPictureInPictureMixinTestBase picture_in_picture_test_base_{
+      &mixin_host_};
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kWebAppUniversalInstall};
+};
+
+IN_PROC_BROWSER_TEST_F(PictureInPictureSimpleInstallDialogOcclusionTest,
+                       PipWindowCloses) {
+  picture_in_picture_test_base_.NavigateToURLAndEnterPictureInPicture(
+      browser());
+  auto* pip_web_contents =
+      picture_in_picture_test_base_.window_controller()->GetChildWebContents();
+  ASSERT_NE(nullptr, pip_web_contents);
+  picture_in_picture_test_base_.WaitForPageLoad(pip_web_contents);
+
+  // Show dialog.
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{}, "WebAppSimpleInstallDialog");
+  base::test::TestFuture<bool, std::unique_ptr<WebAppInstallInfo>> test_future;
+  ShowSimpleInstallDialogForWebApps(
+      browser()->tab_strip_model()->GetActiveWebContents(), GetAppInfo(),
+      GetInstallTracker(browser()), test_future.GetCallback());
+  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+  EXPECT_NE(nullptr, widget);
+  EXPECT_FALSE(test_future.IsReady());
+
+  // Occlude dialog with picture in picture web contents, verify window is
+  // closed but dialog stays open.
+  PictureInPictureWindowManager::GetInstance()
+      ->GetOcclusionTracker()
+      ->SetWidgetOcclusionStateForTesting(widget, /*occluded=*/true);
+  EXPECT_TRUE(picture_in_picture_test_base_.AwaitPipWindowClosedSuccessfully());
+  EXPECT_NE(nullptr, widget);
+  EXPECT_TRUE(widget->IsVisible());
+
+  // Verify that the callback has not run yet, which is a measure that the
+  // widget is still open.
+  EXPECT_FALSE(test_future.IsReady());
+}
 
 }  // namespace
 }  // namespace web_app

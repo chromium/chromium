@@ -66,6 +66,7 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/40147906): Enable gn check once it learns about conditional
@@ -462,11 +463,14 @@ void ShowWebAppDetailedInstallDialog(
             .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_CANCEL)
             .Build();
   }
-
   auto dialog = views::BubbleDialogModelHost::CreateModal(
       std::move(dialog_model), ui::MODAL_TYPE_CHILD);
 
-  constrained_window::ShowWebModalDialogViews(dialog.release(), web_contents);
+  views::Widget* detailed_dialog_widget =
+      constrained_window::ShowWebModalDialogViews(dialog.release(),
+                                                  web_contents);
+  delegate_weak_ptr->StartObservingForPictureInPictureOcclusion(
+      detailed_dialog_widget);
   base::RecordAction(base::UserMetricsAction("WebAppDetailedInstallShown"));
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -39,6 +39,7 @@ class WebAppPictureInPictureMixinTestBase : public InProcessBrowserTestMixin {
   void WaitForPageLoad(content::WebContents* contents);
 
   GURL GetPictureInPictureURL() const;
+  bool AwaitPipWindowClosedSuccessfully();
   content::DocumentPictureInPictureWindowController* window_controller() {
     return pip_window_controller_;
   }
