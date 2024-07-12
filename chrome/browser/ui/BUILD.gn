@@ -2567,10 +2567,6 @@ static_library("ui") {
       "../ash/app_list/search/util/score_normalizer.cc",
       "../ash/app_list/search/util/score_normalizer.h",
       "app_icon_loader_delegate.h",
-      "ash/annotator/annotations_overlay_view_impl.cc",
-      "ash/annotator/annotations_overlay_view_impl.h",
-      "ash/annotator/annotator_client_impl.cc",
-      "ash/annotator/annotator_client_impl.h",
       "ash/api/tasks/chrome_tasks_delegate.cc",
       "ash/api/tasks/chrome_tasks_delegate.h",
       "ash/api/tasks/tasks_client_impl.cc",
@@ -3970,6 +3966,7 @@ static_library("ui") {
       "//chrome/browser/screen_ai/public:optical_character_recognizer",
       "//chrome/browser/ui/ash/accessibility",
       "//chrome/browser/ui/ash/ambient",
+      "//chrome/browser/ui/ash/annotator",
       "//chrome/browser/ui/quick_answers",
       "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings",
       "//chrome/browser/ui/webui/ash/app_install:mojo_bindings",
@@ -4321,6 +4318,7 @@ static_library("ui") {
       "//chrome/browser/ash/usb",
       "//chrome/browser/chromeos/extensions/wm",
       "//chrome/browser/ui/ash/accessibility",
+      "//chrome/browser/ui/ash/annotator",
     ]
 
     if (is_chrome_branded) {

@@ -39,7 +39,7 @@ source_set("browser_tests") {
       "//ash/webui/media_app_ui:browser_test_support",
       "//ash/webui/projector_app/public/cpp",
       "//base",
-      "//chrome/browser/ui",
+      "//chrome/browser/ui/ash/annotator",
       "//chrome/test:test_support",
       "//content/public/browser",
       "//content/public/common",

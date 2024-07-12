@@ -4665,7 +4665,6 @@ if (!is_android) {
         "../browser/speech/speech_recognition_recognizer_client_impl_browsertest.cc",
         "../browser/support_tool/ash/ui_hierarchy_data_collector_browsertest.cc",
         "../browser/ui/ash/accelerator_commands_browsertest.cc",
-        "../browser/ui/ash/annotator/annotator_client_impl_browsertest.cc",
         "../browser/ui/ash/app_list/app_list_search_browsertest.cc",
         "../browser/ui/ash/app_list/app_list_with_recent_apps_browsertest.cc",
         "../browser/ui/ash/app_list/apps_grid_drag_browsertest.cc",
@@ -5160,6 +5159,7 @@ if (!is_android) {
 
         # Gather browser tests from //c/b/ui/ash.
         "//chrome/browser/ui/ash/ambient:browser_tests",
+        "//chrome/browser/ui/ash/annotator:browser_tests",
         "//chrome/browser/ui/ash/holding_space:browser_tests",
       ]
     }
@@ -8566,7 +8566,6 @@ test("unit_tests") {
       "../browser/support_tool/ash/ui_hierarchy_data_collector_unittest.cc",
       "../browser/task_manager/providers/crosapi/crosapi_task_provider_ash_unittest.cc",
       "../browser/ui/ash/accelerator_metadata_unittest.cc",
-      "../browser/ui/ash/annotator/annotator_client_impl_unittest.cc",
       "../browser/ui/ash/api/tasks/tasks_client_impl_unittest.cc",
       "../browser/ui/ash/app_access_notifier_unittest.cc",
       "../browser/ui/ash/app_icon_color_cache_unittest.cc",
@@ -8883,6 +8882,7 @@ test("unit_tests") {
       # Gather unit tests from //c/b/ui/ash.
       "//chrome/browser/ui/ash/accessibility:unit_tests",
       "//chrome/browser/ui/ash/ambient:unit_tests",
+      "//chrome/browser/ui/ash/annotator:unit_tests",
     ]
 
     data_deps += [ "//testing/buildbot/filters:chromeos_filters" ]
