@@ -62,6 +62,7 @@ build_webui_tests("build") {
     files += [
       "ink2_annotation_bar_test.ts",
       "ink2_save_test.ts",
+      "ink2_side_panel_test.ts",
       "ink2_test.ts",
       "ink2_viewer_toolbar_test.ts",
     ]

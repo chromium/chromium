@@ -187,6 +187,11 @@
     </div>
     <div id="content-focus-rectangle" hidden$="[[!documentHasFocus_]]"></div>
   </div>
+  <if expr="enable_pdf_ink2">
+    <template is="dom-if" if="[[inInk2AnnotationMode_(annotationMode_)]]">
+      <viewer-side-panel></viewer-side-panel>
+    </template>
+  </if>
 </div>
 
 <template is="dom-if" if="[[showErrorDialog]]" on-dom-change="onErrorDialog_">

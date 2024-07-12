@@ -7,6 +7,9 @@ import './elements/viewer-error-dialog.js';
 import './elements/viewer-ink-host.js';
 // </if>
 import './elements/viewer-password-dialog.js';
+// <if expr="enable_pdf_ink2">
+import './elements/viewer-side-panel.js';
+// </if>
 import './elements/viewer-pdf-sidenav.js';
 import './elements/viewer-properties-dialog.js';
 import './elements/viewer-toolbar.js';
@@ -1235,6 +1238,15 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   private isRotated_(): boolean {
     return this.clockwiseRotations_ !== 0;
   }
+
+  // <if expr="enable_pdf_ink2">
+  /**
+   * @returns Whether the PDF viewer has Ink2 enabled and is in annotation mode.
+   */
+  private inInk2AnnotationMode_() {
+    return this.pdfInk2Enabled_ && this.annotationMode_;
+  }
+  // </if>
 
   // <if expr="enable_ink">
   /**
