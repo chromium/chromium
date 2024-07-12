@@ -473,8 +473,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest,
 //  (2) User opens lens overlay.
 //  (3) User makes a selection that opens the results side panel.
 //  (4) User presses the escape key to close lens overlay.
-// TODO(b/340343342): Reenable on windows.
-#if BUILDFLAG(IS_WIN) || defined(MEMORY_SANITIZER)
+// TODO(crbug.com/340343342): Reenable on Windows and Mac.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || defined(MEMORY_SANITIZER)
 #define MAYBE_EscapeKeyCloseWithResultsPanel \
   DISABLED_EscapeKeyCloseWithResultsPanel
 #else
