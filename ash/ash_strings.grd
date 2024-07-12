@@ -8440,6 +8440,33 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_BIRCH_MENU_RESET" desc="Context menu item that resets all suggestion types to their default (on) in informed restore/overview UI">
         Reset
       </message>
+      <message name="IDS_ASH_BIRCH_HIDE_THIS_SUGGESTION" desc="Context menu item that hides the current suggestion in informed restore/overview UI">
+        Hide this suggestion
+      </message>
+      <message name="IDS_ASH_BIRCH_HIDE_WEATHER_SUGGESTION" desc="Context menu item that hides the weather suggestion in informed restore/overview UI">
+        Hide weather suggestion
+      </message>
+      <message name="IDS_ASH_BIRCH_HIDE_CALENDAR_SUGGESTIONS" desc="Context menu item that hides Google Calendar suggestions in informed restore/overview UI">
+        Hide all Google Calendar suggestions
+      </message>
+      <message name="IDS_ASH_BIRCH_HIDE_DRIVE_SUGGESTIONS" desc="Context menu item that hides Google Drive suggestions in informed restore/overview UI">
+        Hide all Google Drive suggestions
+      </message>
+      <message name="IDS_ASH_BIRCH_HIDE_CHROME_SUGGESTIONS" desc="Context menu item that hides Chrome browser tab suggestions in informed restore/overview UI">
+        Hide all Chrome browser suggestions
+      </message>
+      <message name="IDS_ASH_BIRCH_HIDE_MEDIA_SUGGESTIONS" desc="Context menu item that hides audio/video media suggestions in informed restore/overview UI">
+        Hide all media suggestions
+      </message>
+      <message name="IDS_ASH_BIRCH_CUSTOMIZE_SUGGESTIONS" desc="Context menu item that opens the submenu to customize suggestions in informed restore/overview UI">
+        Customize suggestions
+      </message>
+      <message name="IDS_ASH_BIRCH_TOGGLE_TEMPERATURE_UNITS" desc="Context menu item that toggles temperature units (F vs. C) for the weather suggestion in informed restore/overview UI">
+        Toggle temperature units (F vs. C)
+      </message>
+      <message name="IDS_ASH_BIRCH_SEND_FEEDBACK" desc="Context menu item that sends feedback about suggestions in informed restore/overview UI">
+        Send feedback
+      </message>
      </messages>
     </release>
 </grit>

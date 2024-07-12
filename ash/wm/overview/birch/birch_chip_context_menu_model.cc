@@ -5,7 +5,9 @@
 #include "ash/wm/overview/birch/birch_chip_context_menu_model.h"
 
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/views/controls/menu/menu_types.h"
 
@@ -19,54 +21,62 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
           delegate,
           BirchBarContextMenuModel::Type::kExpandedBarMenu)) {
   auto add_hide_suggestion_item = [&]() {
-    AddItemWithIcon(base::to_underlying(CommandId::kHideSuggestion),
-                    u"Hide this suggestion",
-                    CreateIconForMenuItem(kSystemTrayDoNotDisturbIcon));
+    AddItemWithIcon(
+        base::to_underlying(CommandId::kHideSuggestion),
+        l10n_util::GetStringUTF16(IDS_ASH_BIRCH_HIDE_THIS_SUGGESTION),
+        CreateIconForMenuItem(kSystemTrayDoNotDisturbIcon));
   };
 
   switch (chip_type) {
     case BirchSuggestionType::kWeather:
-      AddItemWithIcon(base::to_underlying(CommandId::kHideWeatherSuggestions),
-                      u"Hide Weather suggestion",
-                      CreateIconForMenuItem(kForbidIcon));
+      AddItemWithIcon(
+          base::to_underlying(CommandId::kHideWeatherSuggestions),
+          l10n_util::GetStringUTF16(IDS_ASH_BIRCH_HIDE_WEATHER_SUGGESTION),
+          CreateIconForMenuItem(kForbidIcon));
       break;
     case BirchSuggestionType::kCalendar:
       add_hide_suggestion_item();
-      AddItemWithIcon(base::to_underlying(CommandId::kHideCalendarSuggestions),
-                      u"Hide all Google Calendar suggestions",
-                      CreateIconForMenuItem(kForbidIcon));
+      AddItemWithIcon(
+          base::to_underlying(CommandId::kHideCalendarSuggestions),
+          l10n_util::GetStringUTF16(IDS_ASH_BIRCH_HIDE_CALENDAR_SUGGESTIONS),
+          CreateIconForMenuItem(kForbidIcon));
       break;
     case BirchSuggestionType::kDrive:
       add_hide_suggestion_item();
-      AddItemWithIcon(base::to_underlying(CommandId::kHideDriveSuggestions),
-                      u"Hide all Google Drive suggestions",
-                      CreateIconForMenuItem(kForbidIcon));
+      AddItemWithIcon(
+          base::to_underlying(CommandId::kHideDriveSuggestions),
+          l10n_util::GetStringUTF16(IDS_ASH_BIRCH_HIDE_DRIVE_SUGGESTIONS),
+          CreateIconForMenuItem(kForbidIcon));
       break;
     case BirchSuggestionType::kChromeTab:
       add_hide_suggestion_item();
-      AddItemWithIcon(base::to_underlying(CommandId::kHideChromeTabSuggestions),
-                      u"Hide all Chrome suggestions",
-                      CreateIconForMenuItem(kForbidIcon));
+      AddItemWithIcon(
+          base::to_underlying(CommandId::kHideChromeTabSuggestions),
+          l10n_util::GetStringUTF16(IDS_ASH_BIRCH_HIDE_CHROME_SUGGESTIONS),
+          CreateIconForMenuItem(kForbidIcon));
       break;
     case BirchSuggestionType::kMedia:
       add_hide_suggestion_item();
-      AddItemWithIcon(base::to_underlying(CommandId::kHideMediaSuggestions),
-                      u"Hide all media suggestions",
-                      CreateIconForMenuItem(kForbidIcon));
+      AddItemWithIcon(
+          base::to_underlying(CommandId::kHideMediaSuggestions),
+          l10n_util::GetStringUTF16(IDS_ASH_BIRCH_HIDE_MEDIA_SUGGESTIONS),
+          CreateIconForMenuItem(kForbidIcon));
       break;
     default:
       break;
   }
 
-  AddSubMenuWithIcon(base::to_underlying(CommandId::kCustomizeSuggestions),
-                     u"Customize suggestions", sub_menu_model_.get(),
-                     CreateIconForMenuItem(kPencilIcon));
+  AddSubMenuWithIcon(
+      base::to_underlying(CommandId::kCustomizeSuggestions),
+      l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CUSTOMIZE_SUGGESTIONS),
+      sub_menu_model_.get(), CreateIconForMenuItem(kPencilIcon));
   if (chip_type == BirchSuggestionType::kWeather) {
     AddItem(base::to_underlying(CommandId::kToggleTemperatureUnits),
-            u"Toggle temperature units (F vs C)");
+            l10n_util::GetStringUTF16(IDS_ASH_BIRCH_TOGGLE_TEMPERATURE_UNITS));
   }
   AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
-  AddItemWithIcon(base::to_underlying(CommandId::kFeedback), u"Send Feedback",
+  AddItemWithIcon(base::to_underlying(CommandId::kFeedback),
+                  l10n_util::GetStringUTF16(IDS_ASH_BIRCH_SEND_FEEDBACK),
                   CreateIconForMenuItem(kFeedbackIcon));
 }
 
