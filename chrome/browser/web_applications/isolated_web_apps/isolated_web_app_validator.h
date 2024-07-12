@@ -41,12 +41,11 @@ class IsolatedWebAppValidator {
   // Important: This method does not verify the signatures themselves - it only
   // checks whether the public keys associated with these signatures correspond
   // to trusted parties.
-  virtual void ValidateIntegrityBlock(
+  virtual base::expected<void, std::string> ValidateIntegrityBlock(
       const web_package::SignedWebBundleId& expected_web_bundle_id,
       const web_package::SignedWebBundleIntegrityBlock& integrity_block,
       bool dev_mode,
-      const IsolatedWebAppTrustChecker& trust_checker,
-      IntegrityBlockCallback callback);
+      const IsolatedWebAppTrustChecker& trust_checker);
 
   // Validates that the metadata of the Isolated Web App is valid given the
   // `web_bundle_id`.

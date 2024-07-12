@@ -69,13 +69,12 @@ class FakeIsolatedWebAppValidator : public IsolatedWebAppValidator {
       base::expected<void, std::string> integrity_block_validation_result)
       : integrity_block_validation_result_(integrity_block_validation_result) {}
 
-  void ValidateIntegrityBlock(
+  base::expected<void, std::string> ValidateIntegrityBlock(
       const web_package::SignedWebBundleId& web_bundle_id,
       const web_package::SignedWebBundleIntegrityBlock& integrity_block,
       bool dev_mode,
-      const IsolatedWebAppTrustChecker& trust_checker,
-      IntegrityBlockCallback callback) override {
-    std::move(callback).Run(integrity_block_validation_result_);
+      const IsolatedWebAppTrustChecker& trust_checker) override {
+    return integrity_block_validation_result_;
   }
 
  private:

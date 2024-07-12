@@ -105,22 +105,9 @@ void IsolatedWebAppResponseReaderFactory::OnIntegrityBlockRead(
         integrity_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  validator_->ValidateIntegrityBlock(
+  auto validation_result = validator_->ValidateIntegrityBlock(
       web_bundle_id, integrity_block, flags.Has(Flag::kDevModeBundle),
-      trust_checker_,
-      base::BindOnce(
-          &IsolatedWebAppResponseReaderFactory::OnIntegrityBlockValidated,
-          weak_ptr_factory_.GetWeakPtr(),
-          flags.Has(Flag::kSkipSignatureVerification),
-          std::move(integrity_callback)));
-}
-
-void IsolatedWebAppResponseReaderFactory::OnIntegrityBlockValidated(
-    bool skip_signature_verification,
-    base::OnceCallback<void(SignedWebBundleReader::SignatureVerificationAction)>
-        integrity_callback,
-    base::expected<void, std::string> validation_result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+      trust_checker_);
 
   if (!validation_result.has_value()) {
     // Aborting parsing will trigger a call to `OnIntegrityBlockAndMetadataRead`
@@ -131,7 +118,7 @@ void IsolatedWebAppResponseReaderFactory::OnIntegrityBlockValidated(
     return;
   }
 
-  if (skip_signature_verification) {
+  if (flags.Has(Flag::kSkipSignatureVerification)) {
     std::move(integrity_callback)
         .Run(SignedWebBundleReader::SignatureVerificationAction::
                  ContinueAndSkipSignatureVerification());

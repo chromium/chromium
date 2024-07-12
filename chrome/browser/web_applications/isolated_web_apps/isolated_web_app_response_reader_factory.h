@@ -84,13 +84,6 @@ class IsolatedWebAppResponseReaderFactory {
       base::OnceCallback<
           void(SignedWebBundleReader::SignatureVerificationAction)> callback);
 
-  void OnIntegrityBlockValidated(
-      bool skip_signature_verification,
-      base::OnceCallback<
-          void(SignedWebBundleReader::SignatureVerificationAction)>
-          integrity_callback,
-      base::expected<void, std::string> validation_result);
-
   void OnIntegrityBlockAndMetadataRead(
       std::unique_ptr<SignedWebBundleReader> reader,
       const base::FilePath& web_bundle_path,
