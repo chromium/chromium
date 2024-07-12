@@ -14,7 +14,9 @@ PassageEmbedderExecutionTask::PassageEmbedderExecutionTask(
     : tflite::task::core::BaseTaskApi<OutputType, InputType>(
           std::move(tflite_engine)) {}
 
-PassageEmbedderExecutionTask::~PassageEmbedderExecutionTask() = default;
+PassageEmbedderExecutionTask::~PassageEmbedderExecutionTask() {
+  GetTfLiteEngine()->Cancel();
+}
 
 std::optional<OutputType> PassageEmbedderExecutionTask::Execute(
     InputType input) {
