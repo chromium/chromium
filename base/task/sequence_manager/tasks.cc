@@ -79,7 +79,6 @@ HeapHandle Task::GetHeapHandle() const {
 bool Task::IsCanceled() const {
   CHECK(task);
   if (task.IsCancelled()) {
-    DCHECK(!delayed_task_handle_delegate_);
     return true;
   }
 
