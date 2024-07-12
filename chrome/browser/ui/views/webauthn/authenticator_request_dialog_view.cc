@@ -31,6 +31,8 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view.h"
 
+using Step = AuthenticatorRequestDialogModel::Step;
+
 // static
 void ShowAuthenticatorRequestDialog(content::WebContents* web_contents,
                                     AuthenticatorRequestDialogModel* model) {
@@ -93,10 +95,15 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
   SetButtonLabel(ui::DIALOG_BUTTON_OK, sheet_->model()->GetAcceptButtonLabel());
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                  sheet_->model()->GetCancelButtonLabel());
-  if (model_->step() ==
-          AuthenticatorRequestDialogModel::Step::kTrustThisComputerAssertion ||
-      model_->step() ==
-          AuthenticatorRequestDialogModel::Step::kTrustThisComputerCreation) {
+  if (model_->step() == Step::kTrustThisComputerAssertion ||
+      model_->step() == Step::kTrustThisComputerCreation ||
+      model_->step() == Step::kGPMCreatePasskey ||
+      model_->step() == Step::kGPMEnterPin ||
+      model_->step() == Step::kGPMEnterArbitraryPin ||
+      model_->step() == Step::kGPMCreatePin ||
+      model_->step() == Step::kGPMCreateArbitraryPin ||
+      model_->step() == Step::kGPMChangePin ||
+      model_->step() == Step::kGPMChangeArbitraryPin) {
     SetButtonStyle(ui::DIALOG_BUTTON_CANCEL, ui::ButtonStyle::kTonal);
   }
 
@@ -124,8 +131,8 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
     SetExtraView(std::move(forgot_pin_button));
   } else if (sheet_->model()->IsGPMPinOptionsButtonVisible()) {
     PinOptionsButton::CommandId checked_command_id =
-        model_->step() ==
-                AuthenticatorRequestDialogModel::Step::kGPMCreateArbitraryPin
+        (model_->step() == Step::kGPMCreateArbitraryPin ||
+         model_->step() == Step::kGPMChangeArbitraryPin)
             ? PinOptionsButton::CommandId::CHOOSE_ARBITRARY_PIN
             : PinOptionsButton::CommandId::CHOOSE_SIX_DIGIT_PIN;
     auto pin_options_button = std::make_unique<PinOptionsButton>(
