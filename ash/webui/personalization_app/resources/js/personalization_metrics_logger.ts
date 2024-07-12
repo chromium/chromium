@@ -7,6 +7,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {ColorScheme} from '../color_scheme.mojom-webui.js';
 import {StaticColor, TopicSource} from '../personalization_app.mojom-webui.js';
 
+import {GeolocationAccessLevel} from './geolocation_dialog.js';
 import {Paths} from './personalization_router_element.js';
 
 // Numerical values are used for metrics; do not change or reuse values. These
@@ -43,6 +44,8 @@ const enum HistogramName {
   DYNAMIC_COLOR_TOGGLE_BUTTON = 'Ash.Personalization.DynamicColor.ToggleButton',
   KEYBOARD_BACKLIGHT_OPEN_ZONE_CUSTOMIZATION =
       'Ash.Personalization.KeyboardBacklight.OpenZoneCustomization',
+  LOCATION_PERMISSION_CHANGE_FROM_DIALOG =
+      'ChromeOS.PrivacyHub.Geolocation.AccessLevelChanged.GeolocationDialog',
 }
 
 function toMetricsEnum(path: Paths) {
@@ -123,4 +126,11 @@ export function logDynamicColorColorSchemeButtonClick(color: ColorScheme) {
 export function logAmbientModeLinkToGooglePhotosClick() {
   chrome.metricsPrivate.recordBoolean(
       HistogramName.AMBIENT_LINK_TO_GOOGLE_PHOTOS_CLICKED, true);
+}
+
+export function logSystemLocationPermissionChange(
+    accessLevel: GeolocationAccessLevel) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      HistogramName.LOCATION_PERMISSION_CHANGE_FROM_DIALOG, accessLevel,
+      GeolocationAccessLevel.MAX_VALUE + 1);
 }
