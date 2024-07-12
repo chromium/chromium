@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
+import("//remoting/remoting_enable.gni")
 import("//testing/test.gni")
 
 component("display_features") {
@@ -255,7 +256,7 @@ static_library("test_support") {
     ]
   }
 
-  if (is_linux && ozone_platform_x11) {
+  if (is_linux && ozone_platform_x11 && enable_remoting) {
     sources += [
       "linux/test/virtual_display_util_linux.cc",
       "linux/test/virtual_display_util_linux.h",
