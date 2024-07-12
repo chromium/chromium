@@ -1,6 +1,11 @@
 #ifndef _LIBCPP_CONFIG_SITE
 #define _LIBCPP_CONFIG_SITE
 
+// Dynamic libc++ configuration macros are in
+// build/config/libc++:runtime_library. This file only has defines
+// that are constant across platforms, or easily set via preprocessor checks.
+// Things that are set depending on GN args are not here.
+
 // We set a custom _LIBCPP_ABI_NAMESPACE for the following reasons:
 //
 // 1. When libcxx_is_shared is true, symbols from libc++.so are exported for all
@@ -39,9 +44,6 @@
 
 // TODO(thakis): Is this right?
 /* #undef _LIBCPP_HAS_NO_TIME_ZONE_DATABASE */
-
-// TODO(thakis): Reenable, crbug.com/347026228 and crbug.com/347379886
-/* #undef _LIBCPP_INSTRUMENTED_WITH_ASAN */
 
 // PSTL backends
 /* #undef _LIBCPP_PSTL_BACKEND_SERIAL */

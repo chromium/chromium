@@ -42,6 +42,14 @@ config("runtime_library") {
     defines += [ "_LIBCPP_ENABLE_DEBUG_MODE" ]
   }
 
+  # Fuzzers build parts of the code with asan enabled and some with it
+  # disabled. That's incompatible with _LIBCPP_INSTRUMENTED_WITH_ASAN, see
+  # https://crbug.com/347026228#comment25
+  # TODO(thakis): Enable on apple if https://llvm.org/PR96099 gets fixed.
+  if (is_asan && !use_fuzzing_engine && !is_apple) {
+    defines += [ "_LIBCPP_INSTRUMENTED_WITH_ASAN" ]
+  }
+
   defines += [ "CR_LIBCXX_REVISION=$libcxx_revision" ]
 
   if (is_win) {
