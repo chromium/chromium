@@ -30,8 +30,7 @@ public class InputHintChecker {
      * @param view The View to pull the input hint from next time.
      */
     public static void setView(@Nullable View view) {
-        if (sAllowSetViewForTesting || Build.VERSION.SDK_INT >= VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            // TODO(pasko): Restrict to SDK_INT >= V when V is available in VERSION_CODES.
+        if (sAllowSetViewForTesting || Build.VERSION.SDK_INT >= VERSION_CODES.VANILLA_ICE_CREAM) {
             InputHintCheckerJni.get().setView(view);
         }
     }
