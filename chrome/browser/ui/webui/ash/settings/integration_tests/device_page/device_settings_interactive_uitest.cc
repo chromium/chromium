@@ -152,6 +152,15 @@ class DeviceSettingsInteractiveUiTest : public InteractiveAshTest {
       "settings-device-page", "#perDeviceKeyboardRow",
   };
 
+  const DeepQuery kPerDeviceKeyboardSubsectionQuery{
+      "os-settings-ui",
+      "os-settings-main",
+      "main-page-container",
+      "settings-device-page",
+      "settings-per-device-keyboard",
+      "settings-per-device-keyboard-subsection",
+  };
+
   // Query to pierce through Shadow DOM to find the Settings search box.
   const DeepQuery kSearchboxQuery{
       "os-settings-ui", "settings-toolbar", "#searchBox",
@@ -845,6 +854,54 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest, KeyboardFkeys) {
   // Get settings browser and verify that the window is maximized.
   Browser* browser = BrowserList::GetInstance()->get(0);
   EXPECT_TRUE(browser->window()->IsFullscreen());
+}
+
+class DeviceSettingsBrightnessInteractiveUiTest
+    : public DeviceSettingsInteractiveUiTest {
+ public:
+  DeviceSettingsBrightnessInteractiveUiTest() {
+    feature_list_.Reset();
+    feature_list_.InitWithFeatures(
+        {features::kInputDeviceSettingsSplit,
+         features::kPeripheralCustomization,
+         features::kEnableKeyboardBacklightControlInSettings},
+        {});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DeviceSettingsBrightnessInteractiveUiTest,
+                       NavigateToRgbCustomization) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kRgbKeyboardCustomizationSectionId);
+
+  const DeepQuery kKeyboardColorsQuery{
+      "os-settings-ui",
+      "os-settings-main",
+      "#mainPageContainer",
+      "settings-device-page",
+      "settings-per-device-keyboard",
+      "settings-per-device-keyboard-subsection",
+      "#rgbKeyboardControlLink",
+  };
+
+  RunTestSequence(
+      SetupInternalKeyboard(),
+      LaunchSettingsApp(
+          webcontents_id_,
+          chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath),
+      Log("Manually enabling RGB keyboard support."),
+      WaitForElementExists(webcontents_id_, kPerDeviceKeyboardSubsectionQuery),
+      ExecuteJsAt(webcontents_id_, kPerDeviceKeyboardSubsectionQuery,
+                  "(subsection) => { if (subsection) { "
+                  "subsection.isRgbKeyboardSupported = true; "
+                  "subsection.notifyPath('isRgbKeyboardSupported', true); "
+                  "}}"),
+      Log("Waiting for keyboard colors section to exist"),
+      WaitForElementExists(webcontents_id_, kKeyboardColorsQuery),
+      Log("Clicking the keyboard colors section"),
+      ClickElement(webcontents_id_, kKeyboardColorsQuery),
+      Log("Verifying rgb customization page is open"),
+      InstrumentNextTab(kRgbKeyboardCustomizationSectionId, AnyBrowser()),
+      WaitForShow(kRgbKeyboardCustomizationSectionId));
 }
 
 }  // namespace
