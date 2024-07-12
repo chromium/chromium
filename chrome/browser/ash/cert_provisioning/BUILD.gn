@@ -96,6 +96,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/platform_keys/key_permissions",
     "//chrome/browser/ash/platform_keys/key_permissions:test_support",
     "//chrome/test:test_support",
+    "//components/invalidation:test_support",
     "//components/invalidation/impl:test_support",
     "//net:test_support",
     "//testing/gtest",
