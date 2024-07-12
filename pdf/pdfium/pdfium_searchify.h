@@ -15,12 +15,16 @@
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdfview.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/geometry/point_f.h"
+
+namespace gfx {
+class Rect;
+}  // namespace gfx
 
 namespace chrome_pdf {
 
 struct SearchifyBoundingBoxOrigin {
-  float x;
-  float y;
+  gfx::PointF point;
   float theta;
 };
 
@@ -31,9 +35,7 @@ std::vector<uint8_t> PDFiumSearchify(
 
 // Internal function exposed for testing.
 SearchifyBoundingBoxOrigin ConvertToPdfOriginForTesting(
-    int x,
-    int y,
-    int height,
+    const gfx::Rect& rect,
     float angle,
     float coordinate_system_height);
 

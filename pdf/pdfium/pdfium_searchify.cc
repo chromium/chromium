@@ -32,6 +32,10 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace chrome_pdf {
 
@@ -49,15 +53,14 @@ std::vector<uint32_t> Utf8ToCharcodes(const std::string& string) {
 
 // The coordinate systems between OCR and PDF are different. OCR's origin is at
 // top-left, so we need to convert them to PDF's bottom-left.
-SearchifyBoundingBoxOrigin ConvertToPdfOrigin(int x,
-                                              int y,
-                                              int height,
+SearchifyBoundingBoxOrigin ConvertToPdfOrigin(const gfx::Rect& rect,
                                               float angle,
                                               float coordinate_system_height) {
   const float theta = base::DegToRad(angle);
-  return {.x = x - (sinf(theta) * height),
-          .y = coordinate_system_height - (y + cosf(theta) * height),
-          .theta = -theta};
+  const float x = rect.x() - (sinf(theta) * rect.height());
+  const float y =
+      coordinate_system_height - (rect.y() + cosf(theta) * rect.height());
+  return {.point = {x, y}, .theta = -theta};
 }
 
 // Project the text object's origin to the baseline's origin.
@@ -65,10 +68,14 @@ SearchifyBoundingBoxOrigin ProjectToBaseline(
     const SearchifyBoundingBoxOrigin& origin,
     const SearchifyBoundingBoxOrigin& baseline_origin) {
   // The length between `origin` and `baseline_origin`.
-  float length = (origin.x - baseline_origin.x) * cosf(baseline_origin.theta) +
-                 (origin.y - baseline_origin.y) * sinf(baseline_origin.theta);
-  return {.x = baseline_origin.x + length * cosf(baseline_origin.theta),
-          .y = baseline_origin.y + length * sinf(baseline_origin.theta),
+  const float length = (origin.point.x() - baseline_origin.point.x()) *
+                           cosf(baseline_origin.theta) +
+                       (origin.point.y() - baseline_origin.point.y()) *
+                           sinf(baseline_origin.theta);
+  return {.point = {baseline_origin.point.x() +
+                        length * cosf(baseline_origin.theta),
+                    baseline_origin.point.y() +
+                        length * sinf(baseline_origin.theta)},
           .theta = baseline_origin.theta};
 }
 
@@ -83,10 +90,9 @@ void AddTextOnImage(FPDF_DOCUMENT document,
     return;
   }
 
-  float image_rendered_width =
-      hypotf(quadpoints.x1 - quadpoints.x2, quadpoints.y1 - quadpoints.y2);
-  float image_rendered_height =
-      hypotf(quadpoints.x2 - quadpoints.x3, quadpoints.y2 - quadpoints.y3);
+  const gfx::SizeF image_rendered_size(
+      hypotf(quadpoints.x1 - quadpoints.x2, quadpoints.y1 - quadpoints.y2),
+      hypotf(quadpoints.x2 - quadpoints.x3, quadpoints.y2 - quadpoints.y3));
   unsigned int image_pixel_width;
   unsigned int image_pixel_height;
   if (!FPDFImageObj_GetImagePixelSize(image, &image_pixel_width,
@@ -94,6 +100,8 @@ void AddTextOnImage(FPDF_DOCUMENT document,
     DLOG(ERROR) << "Failed to get image dimensions";
     return;
   }
+  const gfx::Size image_pixel_size(image_pixel_width, image_pixel_height);
+
   FS_MATRIX image_matrix;
   if (!FPDFPageObj_GetMatrix(image, &image_matrix)) {
     DLOG(ERROR) << "Failed to get image matrix";
@@ -102,20 +110,16 @@ void AddTextOnImage(FPDF_DOCUMENT document,
 
   for (const auto& line : annotation->lines) {
     SearchifyBoundingBoxOrigin baseline_origin =
-        ConvertToPdfOrigin(line->baseline_box.x(), line->baseline_box.y(),
-                           line->baseline_box.height(),
-                           line->baseline_box_angle, image_rendered_height);
+        ConvertToPdfOrigin(line->baseline_box, line->baseline_box_angle,
+                           image_rendered_size.height());
 
     for (const auto& word : line->words) {
-      float width = word->bounding_box.width();
-      float height = word->bounding_box.height();
-
-      if (width == 0 || height == 0) {
+      if (word->bounding_box.IsEmpty()) {
         continue;
       }
 
-      ScopedFPDFPageObject text(
-          FPDFPageObj_CreateTextObj(document, font, height));
+      ScopedFPDFPageObject text(FPDFPageObj_CreateTextObj(
+          document, font, word->bounding_box.height()));
       CHECK(text);
 
       std::string word_string = word->word;
@@ -149,48 +153,50 @@ void AddTextOnImage(FPDF_DOCUMENT document,
       float right;
       float top;
       if (!FPDFPageObj_GetBounds(text.get(), &left, &bottom, &right, &top)) {
-        DLOG(ERROR) << "Failed to get the bounding box of original text object";
+        DLOG(ERROR) << "Failed to get the bounding box of text object";
         continue;
       }
-      float original_text_object_width = right - left;
-      float original_text_object_height = top - bottom;
-      CHECK_GT(original_text_object_width, 0);
-      CHECK_GT(original_text_object_height, 0);
-      float width_scale = width / original_text_object_width;
-      float height_scale = height / original_text_object_height;
+
+      const gfx::SizeF text_object_size(right - left, top - bottom);
+      CHECK_GT(text_object_size.width(), 0);
+      CHECK_GT(text_object_size.height(), 0);
+      float width_scale = word->bounding_box.width() / text_object_size.width();
+      float height_scale =
+          word->bounding_box.height() / text_object_size.height();
       FPDFPageObj_Transform(text.get(), width_scale, 0, 0, height_scale, 0, 0);
 
       // Move text object to the corresponding text position on the full image.
-      SearchifyBoundingBoxOrigin origin = ConvertToPdfOrigin(
-          word->bounding_box.x(), word->bounding_box.y(), height,
-          word->bounding_box_angle, image_rendered_height);
+      SearchifyBoundingBoxOrigin origin =
+          ConvertToPdfOrigin(word->bounding_box, word->bounding_box_angle,
+                             image_rendered_size.height());
       origin = ProjectToBaseline(origin, baseline_origin);
       float a = cosf(origin.theta);
       float b = sinf(origin.theta);
       float c = -sinf(origin.theta);
       float d = cosf(origin.theta);
-      float e = origin.x;
-      float f = origin.y;
+      float e = origin.point.x();
+      float f = origin.point.y();
       if (word->direction ==
           screen_ai::mojom::Direction::DIRECTION_RIGHT_TO_LEFT) {
         a = -a;
         b = -b;
-        e += cosf(origin.theta) * width;
-        f += sinf(origin.theta) * width;
+        e += cosf(origin.theta) * word->bounding_box.width();
+        f += sinf(origin.theta) * word->bounding_box.width();
       }
       FPDFPageObj_Transform(text.get(), a, b, c, d, e, f);
 
       // Scale from full image size to rendered image size on the PDF.
-      FPDFPageObj_Transform(text.get(),
-                            image_rendered_width / image_pixel_width, 0, 0,
-                            image_rendered_height / image_pixel_height, 0, 0);
+      FPDFPageObj_Transform(
+          text.get(), image_rendered_size.width() / image_pixel_size.width(), 0,
+          0, image_rendered_size.height() / image_pixel_size.height(), 0, 0);
 
       // Apply the image's transformation matrix on the PDF page without the
       // scaling matrix.
-      FPDFPageObj_Transform(text.get(), image_matrix.a / image_rendered_width,
-                            image_matrix.b / image_rendered_width,
-                            image_matrix.c / image_rendered_height,
-                            image_matrix.d / image_rendered_height,
+      FPDFPageObj_Transform(text.get(),
+                            image_matrix.a / image_rendered_size.width(),
+                            image_matrix.b / image_rendered_size.width(),
+                            image_matrix.c / image_rendered_size.height(),
+                            image_matrix.d / image_rendered_size.height(),
                             image_matrix.e, image_matrix.f);
 
       FPDFPage_InsertObject(page, text.release());
@@ -275,12 +281,10 @@ std::vector<uint8_t> PDFiumSearchify(
 }
 
 SearchifyBoundingBoxOrigin ConvertToPdfOriginForTesting(
-    int x,
-    int y,
-    int height,
+    const gfx::Rect& rect,
     float angle,
     float coordinate_system_height) {
-  return ConvertToPdfOrigin(x, y, height, angle, coordinate_system_height);
+  return ConvertToPdfOrigin(rect, angle, coordinate_system_height);
 }
 
 PdfiumProgressiveSearchifier::ScopedSdkInitializer::ScopedSdkInitializer() {
