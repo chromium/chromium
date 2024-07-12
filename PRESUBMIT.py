@@ -470,11 +470,12 @@ _BANNED_IOS_OBJC_FUNCTIONS = (
       (
         '+[UIImage systemImageNamed:] should not be used to create symbols.',
         'Instead use a wrapper defined in:',
-        'ios/chrome/browser/ui/icons/symbol_helpers.h'
+        'ios/chrome/browser/shared/ui/symbols/symbol_helpers.h'
       ),
       True,
       excluded_paths=(
         'ios/chrome/browser/shared/ui/symbols/symbol_helpers.mm',
+        'ios/chrome/common',
         'ios/chrome/search_widget_extension/',
       ),
     ),
