@@ -8413,6 +8413,33 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_BIRCH_LOST_MEDIA_VIDEO_CONFERENCE_TAB_SUBTITLE" desc="The subtitle for a suggestion chip for a video conference tab that is currently ongoing. Note: The 'Ongoing' is supposed to indicate the status of the tab, not the identity of the tab. 'Switch to tab' is an action/verb that switches to the tab if the item is pressed.">
       Ongoing &#x00B7; Switch to tab
       </message>
+      <message name="IDS_ASH_BIRCH_MENU_SHOW_SUGGESTIONS" desc="Context menu item that toggles the list of suggestion actions in informed restore/overview UI">
+        Show suggestions
+      </message>
+      <message name="IDS_ASH_BIRCH_MENU_WEATHER" desc="Context menu item that toggles a suggestion button with the weather in informed restore/overview UI">
+        Weather
+      </message>
+      <message name="IDS_ASH_BIRCH_MENU_WEATHER_NOT_AVAILABLE" desc="Context menu item used in informed restore/overview UI when weather suggestions are not available because of privacy settings">
+        Weather (not available)
+      </message>
+      <message name="IDS_ASH_BIRCH_MENU_WEATHER_NOT_AVAILABLE_TOOLTIP" desc="Context menu tooltip used in informed restore/overview UI when weather suggestions are not available because of privacy settings">
+        Weather isn't available because location access is turned off. You can change this in settings.
+      </message>
+      <message name="IDS_ASH_BIRCH_MENU_CALENDAR" desc="Context menu item that toggles Google Calendar suggestions in informed restore/overview UI">
+        Google Calendar
+      </message>
+      <message name="IDS_ASH_BIRCH_MENU_DRIVE" desc="Context menu item that toggles Google Drive suggestions in informed restore/overview UI">
+        Google Drive
+      </message>
+      <message name="IDS_ASH_BIRCH_MENU_CHROME_BROWSER" desc="Context menu item that toggles Chrome browser tab suggestions in informed restore/overview UI">
+        Chrome browser
+      </message>
+      <message name="IDS_ASH_BIRCH_MENU_MEDIA" desc="Context menu item that toggles audio/video media tab suggestions in informed restore/overview UI">
+        Media
+      </message>
+      <message name="IDS_ASH_BIRCH_MENU_RESET" desc="Context menu item that resets all suggestion types to their default (on) in informed restore/overview UI">
+        Reset
+      </message>
      </messages>
     </release>
 </grit>
