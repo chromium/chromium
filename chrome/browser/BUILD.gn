@@ -5495,6 +5495,7 @@ static_library("browser") {
       "//chrome/browser/push_notification:push_notification",
       "//chrome/browser/resources:app_icon_resources",
       "//chrome/browser/scalable_iph:scalable_iph_factory",
+      "//chrome/browser/ui/ash/accessibility",
       "//chrome/browser/ui/ash/system_web_apps",
       "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings",
       "//chrome/browser/ui/webui/ash/app_install:mojo_bindings",
@@ -5803,6 +5804,7 @@ static_library("browser") {
       "//chrome/browser/ash/usb",
       "//chrome/browser/ash/video_conference",
       "//chrome/browser/ash/wallpaper_handlers",
+      "//chrome/browser/ui/ash/accessibility",
     ]
 
     if (is_chrome_branded) {

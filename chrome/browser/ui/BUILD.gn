@@ -2567,8 +2567,6 @@ static_library("ui") {
       "../ash/app_list/search/util/score_normalizer.cc",
       "../ash/app_list/search/util/score_normalizer.h",
       "app_icon_loader_delegate.h",
-      "ash/accessibility/accessibility_controller_client.cc",
-      "ash/accessibility/accessibility_controller_client.h",
       "ash/ambient/ambient_client_impl.cc",
       "ash/ambient/ambient_client_impl.h",
       "ash/annotator/annotations_overlay_view_impl.cc",
@@ -3972,6 +3970,7 @@ static_library("ui") {
       "//chrome/browser/push_notification:push_notification",
       "//chrome/browser/scalable_iph:scalable_iph_factory",
       "//chrome/browser/screen_ai/public:optical_character_recognizer",
+      "//chrome/browser/ui/ash/accessibility",
       "//chrome/browser/ui/quick_answers",
       "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings",
       "//chrome/browser/ui/webui/ash/app_install:mojo_bindings",
@@ -4322,6 +4321,7 @@ static_library("ui") {
       "//chrome/browser/ash/tether",
       "//chrome/browser/ash/usb",
       "//chrome/browser/chromeos/extensions/wm",
+      "//chrome/browser/ui/ash/accessibility",
     ]
 
     if (is_chrome_branded) {
