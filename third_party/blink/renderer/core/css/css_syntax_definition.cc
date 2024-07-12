@@ -18,13 +18,13 @@ namespace blink {
 namespace {
 
 const CSSValue* ConsumeSingleType(const CSSSyntaxComponent& syntax,
-                                  CSSParserTokenRange& range,
+                                  CSSParserTokenStream& stream,
                                   const CSSParserContext& context) {
   switch (syntax.GetType()) {
     case CSSSyntaxType::kIdent:
-      if (range.Peek().GetType() == kIdentToken &&
-          range.Peek().Value() == syntax.GetString()) {
-        range.ConsumeIncludingWhitespace();
+      if (stream.Peek().GetType() == kIdentToken &&
+          stream.Peek().Value() == syntax.GetString()) {
+        stream.ConsumeIncludingWhitespace();
         return MakeGarbageCollected<CSSCustomIdentValue>(
             AtomicString(syntax.GetString()));
       }
@@ -33,46 +33,46 @@ const CSSValue* ConsumeSingleType(const CSSSyntaxComponent& syntax,
       CSSParserContext::ParserModeOverridingScope scope(context,
                                                         kHTMLStandardMode);
       return css_parsing_utils::ConsumeLength(
-          range, context, CSSPrimitiveValue::ValueRange::kAll);
+          stream, context, CSSPrimitiveValue::ValueRange::kAll);
     }
     case CSSSyntaxType::kNumber:
       return css_parsing_utils::ConsumeNumber(
-          range, context, CSSPrimitiveValue::ValueRange::kAll);
+          stream, context, CSSPrimitiveValue::ValueRange::kAll);
     case CSSSyntaxType::kPercentage:
       return css_parsing_utils::ConsumePercent(
-          range, context, CSSPrimitiveValue::ValueRange::kAll);
+          stream, context, CSSPrimitiveValue::ValueRange::kAll);
     case CSSSyntaxType::kLengthPercentage: {
       CSSParserContext::ParserModeOverridingScope scope(context,
                                                         kHTMLStandardMode);
       return css_parsing_utils::ConsumeLengthOrPercent(
-          range, context, CSSPrimitiveValue::ValueRange::kAll,
+          stream, context, CSSPrimitiveValue::ValueRange::kAll,
           css_parsing_utils::UnitlessQuirk::kForbid, kCSSAnchorQueryTypesAll);
     }
     case CSSSyntaxType::kColor: {
       CSSParserContext::ParserModeOverridingScope scope(context,
                                                         kHTMLStandardMode);
-      return css_parsing_utils::ConsumeColor(range, context);
+      return css_parsing_utils::ConsumeColor(stream, context);
     }
     case CSSSyntaxType::kImage:
-      return css_parsing_utils::ConsumeImage(range, context);
+      return css_parsing_utils::ConsumeImage(stream, context);
     case CSSSyntaxType::kUrl:
-      return css_parsing_utils::ConsumeUrl(range, context);
+      return css_parsing_utils::ConsumeUrl(stream, context);
     case CSSSyntaxType::kInteger:
-      return css_parsing_utils::ConsumeIntegerOrNumberCalc(range, context);
+      return css_parsing_utils::ConsumeIntegerOrNumberCalc(stream, context);
     case CSSSyntaxType::kAngle:
-      return css_parsing_utils::ConsumeAngle(range, context,
+      return css_parsing_utils::ConsumeAngle(stream, context,
                                              std::optional<WebFeature>());
     case CSSSyntaxType::kTime:
       return css_parsing_utils::ConsumeTime(
-          range, context, CSSPrimitiveValue::ValueRange::kAll);
+          stream, context, CSSPrimitiveValue::ValueRange::kAll);
     case CSSSyntaxType::kResolution:
-      return css_parsing_utils::ConsumeResolution(range, context);
+      return css_parsing_utils::ConsumeResolution(stream, context);
     case CSSSyntaxType::kTransformFunction:
-      return css_parsing_utils::ConsumeTransformValue(range, context);
+      return css_parsing_utils::ConsumeTransformValue(stream, context);
     case CSSSyntaxType::kTransformList:
-      return css_parsing_utils::ConsumeTransformList(range, context);
+      return css_parsing_utils::ConsumeTransformList(stream, context);
     case CSSSyntaxType::kCustomIdent:
-      return css_parsing_utils::ConsumeCustomIdent(range, context);
+      return css_parsing_utils::ConsumeCustomIdent(stream, context);
     default:
       NOTREACHED_IN_MIGRATION();
       return nullptr;
@@ -80,13 +80,13 @@ const CSSValue* ConsumeSingleType(const CSSSyntaxComponent& syntax,
 }
 
 const CSSValue* ConsumeSyntaxComponent(const CSSSyntaxComponent& syntax,
-                                       CSSParserTokenRange range,
+                                       CSSParserTokenStream& stream,
                                        const CSSParserContext& context) {
   // CSS-wide keywords are already handled by the CSSPropertyParser
   if (syntax.GetRepeat() == CSSSyntaxRepeat::kSpaceSeparated) {
     CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-    while (!range.AtEnd()) {
-      const CSSValue* value = ConsumeSingleType(syntax, range, context);
+    while (!stream.AtEnd()) {
+      const CSSValue* value = ConsumeSingleType(syntax, stream, context);
       if (!value) {
         return nullptr;
       }
@@ -97,16 +97,16 @@ const CSSValue* ConsumeSyntaxComponent(const CSSSyntaxComponent& syntax,
   if (syntax.GetRepeat() == CSSSyntaxRepeat::kCommaSeparated) {
     CSSValueList* list = CSSValueList::CreateCommaSeparated();
     do {
-      const CSSValue* value = ConsumeSingleType(syntax, range, context);
+      const CSSValue* value = ConsumeSingleType(syntax, stream, context);
       if (!value) {
         return nullptr;
       }
       list->Append(*value);
-    } while (css_parsing_utils::ConsumeCommaIncludingWhitespace(range));
-    return list->length() && range.AtEnd() ? list : nullptr;
+    } while (css_parsing_utils::ConsumeCommaIncludingWhitespace(stream));
+    return list->length() && stream.AtEnd() ? list : nullptr;
   }
-  const CSSValue* result = ConsumeSingleType(syntax, range, context);
-  if (!range.AtEnd()) {
+  const CSSValue* result = ConsumeSingleType(syntax, stream, context);
+  if (!stream.AtEnd()) {
     return nullptr;
   }
   return result;
@@ -121,10 +121,12 @@ const CSSValue* CSSSyntaxDefinition::Parse(CSSTokenizedValue value,
     return CSSVariableParser::ParseUniversalSyntaxValue(value, context,
                                                         is_animation_tainted);
   }
-  value.range.ConsumeWhitespace();
   for (const CSSSyntaxComponent& component : syntax_components_) {
+    CSSTokenizer tokenizer(value.text);
+    CSSParserTokenStream stream(tokenizer);
+    stream.ConsumeWhitespace();
     if (const CSSValue* result =
-            ConsumeSyntaxComponent(component, value.range, context)) {
+            ConsumeSyntaxComponent(component, stream, context)) {
       return result;
     }
   }

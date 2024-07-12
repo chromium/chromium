@@ -2153,7 +2153,7 @@ void InspectorStyleSheet::ParseText(const String& text) {
           CSSTokenizer tokenizer(property_source_data.value);
           Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
           CSSTokenizedValue tokenized_value{CSSParserTokenRange(tokens),
-                                            property_source_data.name};
+                                            property_source_data.value};
           if (!registration->Syntax().Parse(
                   tokenized_value, *style_sheet->ParserContext(), false)) {
             property_source_data.parsed_ok = false;

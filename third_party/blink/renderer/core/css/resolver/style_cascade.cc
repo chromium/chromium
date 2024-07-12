@@ -1535,9 +1535,9 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
     // The fallback must match the syntax of the referenced custom property.
     // https://drafts.css-houdini.org/css-properties-values-api-1/#fallbacks-in-var-references
     //
-    // NOTE: We don't need the original text here, because ValidateFallback()
-    // only validates the tokens; it doesn't store anything.
-    if (!ValidateFallback(property, {fallback.TokenRange(), StringView()})) {
+    // TODO(sesse): Do we need the token range here anymore?
+    if (!ValidateFallback(property,
+                          {fallback.TokenRange(), fallback.OriginalText()})) {
       return false;
     }
     if (!data) {

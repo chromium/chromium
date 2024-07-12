@@ -1778,7 +1778,10 @@ template CSSPrimitiveValue* ConsumeTime(
     const CSSParserContext& context,
     CSSPrimitiveValue::ValueRange value_range);
 
-CSSPrimitiveValue* ConsumeResolution(CSSParserTokenRange& range,
+template <typename T>
+  requires std::is_same_v<T, CSSParserTokenStream> ||
+           std::is_same_v<T, CSSParserTokenRange>
+CSSPrimitiveValue* ConsumeResolution(T& range,
                                      const CSSParserContext& context) {
   if (const CSSParserToken& token = range.Peek();
       token.GetType() == kDimensionToken) {
@@ -1804,6 +1807,11 @@ CSSPrimitiveValue* ConsumeResolution(CSSParserTokenRange& range,
 
   return nullptr;
 }
+
+template CSSPrimitiveValue* ConsumeResolution(CSSParserTokenRange& range,
+                                              const CSSParserContext& context);
+template CSSPrimitiveValue* ConsumeResolution(CSSParserTokenStream& range,
+                                              const CSSParserContext& context);
 
 // https://drafts.csswg.org/css-values-4/#ratio-value
 //

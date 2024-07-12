@@ -196,8 +196,10 @@ template <typename T>
 CSSPrimitiveValue* ConsumeTime(T&,
                                const CSSParserContext&,
                                CSSPrimitiveValue::ValueRange);
-CSSPrimitiveValue* ConsumeResolution(CSSParserTokenRange&,
-                                     const CSSParserContext&);
+template <typename T>
+  requires std::is_same_v<T, CSSParserTokenStream> ||
+           std::is_same_v<T, CSSParserTokenRange>
+CSSPrimitiveValue* ConsumeResolution(T&, const CSSParserContext&);
 CSSValue* ConsumeRatio(CSSParserTokenStream&, const CSSParserContext&);
 CSSIdentifierValue* ConsumeIdent(CSSParserTokenRange&);
 CSSIdentifierValue* ConsumeIdent(CSSParserTokenStream&);
