@@ -68,6 +68,11 @@ typedef NS_ENUM(NSUInteger, RowIdentifier) {
   RowIdentifierAddAccount,
   // The secondary account entries use the gaia ID as item identifier.
 };
+// Custom detent identifier for when the bottom sheet is minimized.
+NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
+
+// Custom detent identifier for when the bottom sheet is expanded.
+NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 }  // namespace
 
@@ -89,6 +94,13 @@ typedef NS_ENUM(NSUInteger, RowIdentifier) {
   [self setUpNavigationController];
   [self setUpTableContent];
   [self updatePrimaryAccount];
+  [self setUpBottomSheetDetents];
+}
+
+- (void)viewWillLayoutSubviews {
+  [super viewWillLayoutSubviews];
+  // Update the bottom sheet height.
+  [self setUpBottomSheetDetents];
 }
 
 #pragma mark - Private
@@ -214,9 +226,6 @@ typedef NS_ENUM(NSUInteger, RowIdentifier) {
 - (void)setUpBottomSheetPresentationController {
   UISheetPresentationController* presentationController =
       self.sheetPresentationController;
-  if (!self.sheetPresentationController) {
-    return;
-  }
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
   presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
   presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
@@ -272,6 +281,45 @@ typedef NS_ENUM(NSUInteger, RowIdentifier) {
              intoSectionWithIdentifier:@(SignOutSectionIdentifier)];
 
   [_accountMenuDataSource applySnapshot:snapshot animatingDifferences:YES];
+}
+
+// Updates the bottom sheet height.
+- (void)setUpBottomSheetDetents {
+  UISheetPresentationController* presentationController =
+      self.sheetPresentationController;
+  if (@available(iOS 16, *)) {
+    CGFloat bottomSheetHeight = [self preferredHeightForContent];
+    auto resolver = ^CGFloat(
+        id<UISheetPresentationControllerDetentResolutionContext> context) {
+      return bottomSheetHeight;
+    };
+    UISheetPresentationControllerDetent* customDetent =
+        [UISheetPresentationControllerDetent
+            customDetentWithIdentifier:kCustomMinimizedDetentIdentifier
+                              resolver:resolver];
+    presentationController.detents = @[ customDetent ];
+    presentationController.selectedDetentIdentifier =
+        kCustomMinimizedDetentIdentifier;
+  } else {
+    presentationController.detents = @[
+      [UISheetPresentationControllerDetent mediumDetent],
+      [UISheetPresentationControllerDetent largeDetent]
+    ];
+    presentationController.selectedDetentIdentifier =
+        UISheetPresentationControllerDetentIdentifierMedium;
+  }
+}
+
+// Returns preferred height according to the container view width.
+- (CGFloat)preferredHeightForContent {
+  // Get the size of the container view which is the maximum available size.
+  UIView* containerView = self.sheetPresentationController.containerView;
+  CGSize fittingSize = containerView.bounds.size;
+  CGFloat height =
+      [self.tableView systemLayoutSizeFittingSize:fittingSize].height;
+  // Add the navigation bar.
+  height += self.navigationController.navigationBar.frame.size.height;
+  return height;
 }
 
 #pragma mark - UITableViewDelegate
