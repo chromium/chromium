@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-
 import {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -11,10 +9,12 @@ import {Command} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './middle_slot_promo.html.js';
+import {getCss} from './middle_slot_promo.css.js';
+import {getHtml} from './middle_slot_promo.html.js';
 import type {Promo} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {WindowProxy} from './window_proxy.js';
@@ -145,31 +145,32 @@ export interface MiddleSlotPromoElement {
 // Element that requests and renders the middle-slot promo. The element is
 // hidden until the promo is rendered, If no promo exists or the promo is empty,
 // the element remains hidden.
-export class MiddleSlotPromoElement extends PolymerElement {
+export class MiddleSlotPromoElement extends CrLitElement {
   static get is() {
     return 'ntp-middle-slot-promo';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       shownMiddleSlotPromoId_: {
         type: String,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
-      promo_: {
-        type: Object,
-        observer: 'onPromoChange_',
-      },
+      promo_: {type: Object},
     };
   }
 
   private eventTracker_: EventTracker = new EventTracker();
-  private shownMiddleSlotPromoId_: string;
+  protected shownMiddleSlotPromoId_: string;
   private blocklistedMiddleSlotPromoId_: string;
   private promo_: Promo;
 
@@ -193,6 +194,17 @@ export class MiddleSlotPromoElement extends PolymerElement {
         this.setPromoListenerId_!);
   }
 
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('promo_')) {
+      this.onPromoChange_();
+    }
+  }
+
   private onPromoChange_() {
     renderPromo(this.promo_).then(promo => {
       if (!promo) {
@@ -211,8 +223,7 @@ export class MiddleSlotPromoElement extends PolymerElement {
         this.$.promoAndDismissContainer.prepend(renderedPromoContainer);
         this.$.promoAndDismissContainer.hidden = false;
       }
-      this.dispatchEvent(new Event(
-          'ntp-middle-slot-promo-loaded', {bubbles: true, composed: true}));
+      this.fire('ntp-middle-slot-promo-loaded');
     });
   }
 
@@ -226,7 +237,7 @@ export class MiddleSlotPromoElement extends PolymerElement {
     }
   }
 
-  private onDismissPromoButtonClick_() {
+  protected onDismissPromoButtonClick_() {
     assert(this.$.promoAndDismissContainer);
     this.$.promoAndDismissContainer.hidden = true;
     NewTabPageProxy.getInstance().handler.blocklistPromo(
@@ -236,7 +247,7 @@ export class MiddleSlotPromoElement extends PolymerElement {
     recordPromoDismissAction(PromoDismissAction.DISMISS);
   }
 
-  private onUndoDismissPromoButtonClick_() {
+  protected onUndoDismissPromoButtonClick_() {
     assert(this.$.promoAndDismissContainer);
     NewTabPageProxy.getInstance().handler.undoBlocklistPromo(
         this.blocklistedMiddleSlotPromoId_);

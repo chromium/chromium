@@ -1,84 +1,14 @@
-<style include="cr-hidden-style cr-icons">
-  :host {
-    font-size: 12px;
-    max-width: 537px;
-    white-space: pre;
-  }
-
-  #promoAndDismissContainer {
-    align-items: center;
-    background-color: var(--color-new-tab-page-promo-background);
-    border: solid var(--color-new-tab-page-border) 1px;
-    border-radius: 24px;
-    box-sizing: border-box;
-    color: var(--color-new-tab-page-primary-foreground);
-    display: flex;
-    flex-direction: row;
-    height: 30px;
-    justify-content: center;
-  }
-
-  #promoContainer {
-    align-items: center;
-    display: flex;
-    overflow-x: clip;
-    padding-inline-end: 8px;
-  }
-
-  :host([shown-middle-slot-promo-id_]) #promoContainer {
-    padding-inline-end: 2px;
-  }
-
-  #promoContainer > :first-child {
-    margin-inline-start: 8px;
-  }
-
-  a {
-    color: var(--color-new-tab-page-link);
-    cursor: pointer;
-    text-decoration: underline;
-  }
-
-  a:focus {
-    border-radius: 2px;
-    box-shadow: var(--ntp-focus-shadow);
-    outline: none;
-  }
-
-  img {
-    background-color: var(--color-new-tab-page-promo-image-background);
-    border-radius: 50%;
-    height: 20px;
-    margin-inline-end: 4px;
-    pointer-events: none;
-    width: 20px;
-  }
-
-  #dismissPromoButton {
-    --cr-icon-button-icon-size: 14px;
-    --cr-icon-button-size: 20px;
-    --cr-icon-button-fill-color: var(--color-new-tab-page-primary-foreground);
-    color: var(--color-new-tab-page-primary-foreground);
-    margin-inline-end: 4px;
-    margin-inline-start: 8px;
-  }
-
-  #promoContainer > :last-child {
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-</style>
 <!-- Visibility is toggled in TS -->
 <div id="promoAndDismissContainer" hidden>
   <!-- Promo parts are added by TS. -->
-  <template is="dom-if" if="[[shownMiddleSlotPromoId_]]">
+  ${this.shownMiddleSlotPromoId_ ? html`
     <cr-icon-button id="dismissPromoButton"
         class="icon-clear"
         aria-label="$i18n{close}"
         title="$i18n{close}"
-        on-click="onDismissPromoButtonClick_">
+        @click="${this.onDismissPromoButtonClick_}">
     </cr-icon-button>
-  </template>
+  ` : ''}
 </div>
 <cr-toast id="dismissPromoButtonToast" duration="10000">
   <div id="dismissPromoButtonToastMessage">
@@ -86,7 +16,7 @@
   </div>
   <cr-button id="undoDismissPromoButton"
       aria-label="$i18n{undoDescription}"
-      on-click="onUndoDismissPromoButtonClick_">
+      @click="${this.onUndoDismissPromoButtonClick_}">
     $i18n{undo}
   </cr-button>
 </cr-toast>
