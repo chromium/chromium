@@ -825,6 +825,12 @@ targets.legacy_basic_suite(
         ),
         "midi_unittests": targets.legacy_test_config(),
         "mojo_unittests": targets.legacy_test_config(),
+        "net_unittests": targets.legacy_test_config(
+            args = [
+                # TODO(b/352673853): These tests require vpython on DUT.
+                "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.betty.net_unittests.filter",
+            ],
+        ),
         "ozone_gl_unittests": targets.legacy_test_config(
             args = [
                 "--stop-ui",
@@ -854,41 +860,6 @@ targets.legacy_basic_suite(
         ),
         "fake_libva_driver_unittest": targets.legacy_test_config(
             experiment_percentage = 100,
-        ),
-        # net_unittests has a test-time dependency on vpython. So add a CIPD'ed
-        # vpython of the right arch to the task, and tell the test runner to copy
-        # it over to the VM before the test runs.
-        "net_unittests": targets.legacy_test_config(
-            args = [
-                "--vpython-dir=../../vpython_dir_linux_amd64",
-                # PythonUtils.PythonRunTime (as opposed to Python3RunTime) requires a
-                # copy of Python 2, but it's testing test helpers that are only used
-                # outside of net_unittests. This bot runs out of space if trying to
-                # ship two vpythons, so we exclude Python 2 and the one test which
-                # uses it.
-                "--gtest_filter=-PythonUtils.PythonRunTime",
-            ],
-            swarming = targets.swarming(
-                shards = 3,
-                cipd_packages = [
-                    targets.cipd_package(
-                        package = "infra/3pp/tools/cpython3/linux-amd64",
-                        location = "vpython_dir_linux_amd64",
-                        revision = "version:2@3.8.10.chromium.34",
-                    ),
-                    targets.cipd_package(
-                        package = "infra/tools/luci/vpython3/linux-amd64",
-                        location = "vpython_dir_linux_amd64",
-                        revision = "git_revision:6ee2ba6ba03b09d8d8763f524aa77edf1945ca92",
-                    ),
-                    # required by vpython3
-                    targets.cipd_package(
-                        package = "infra/tools/cipd/linux-amd64",
-                        location = "vpython_dir_linux_amd64",
-                        revision = "git_revision:200dbdf0e967e81388359d3f85f095d39b35db67",
-                    ),
-                ],
-            ),
         ),
     },
 )

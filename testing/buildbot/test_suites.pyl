@@ -761,32 +761,6 @@
         ],
         'experiment_percentage': 100,
       },
-      'net_unittests': {
-        'args': [
-          '--vpython-dir=../../vpython_dir_linux_amd64',
-          '--gtest_filter=-PythonUtils.PythonRunTime',
-        ],
-        'swarming': {
-          'shards': 3,
-          'cipd_packages': [
-            {
-              'cipd_package': 'infra/3pp/tools/cpython3/linux-amd64',
-              'location': 'vpython_dir_linux_amd64',
-              'revision': 'version:2@3.8.10.chromium.34',
-            },
-            {
-              'cipd_package': 'infra/tools/luci/vpython3/linux-amd64',
-              'location': 'vpython_dir_linux_amd64',
-              'revision': 'git_revision:6ee2ba6ba03b09d8d8763f524aa77edf1945ca92',
-            },
-            {
-              'cipd_package': 'infra/tools/cipd/linux-amd64',
-              'location': 'vpython_dir_linux_amd64',
-              'revision': 'git_revision:200dbdf0e967e81388359d3f85f095d39b35db67',
-            },
-          ],
-        },
-      },
       'video_decode_accelerator_tests_fake_vaapi': {
         'test': 'video_decode_accelerator_tests',
         'args': [
@@ -830,6 +804,11 @@
       },
       'midi_unittests': {},
       'mojo_unittests': {},
+      'net_unittests': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.betty.net_unittests.filter',
+        ],
+      },
       'ozone_gl_unittests': {
         'args': [
           '--stop-ui',
