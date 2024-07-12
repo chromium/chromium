@@ -43,6 +43,8 @@ const char kTestVersion[] = "test_version";
 const char kTestChannel[] = "test_channel";
 const char kTestAssertion[] = "test_assertion";
 
+constexpr char kAssertionSentinel[] = "DBSC_CHALLENGE_IF_REQUIRED";
+
 class MockOAuth2AccessTokenConsumer : public OAuth2AccessTokenConsumer {
  public:
   MockOAuth2AccessTokenConsumer() = default;
@@ -190,7 +192,8 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, Params) {
   expected_params.enable_granular_permissions = false;
   expected_params.mode = OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE;
   expected_params.scopes = {kTestScope};
-  expected_params.bound_oauth_token = std::string();
+  expected_params.bound_oauth_token = gaia::CreateBoundOAuthToken(
+      kTestUserGaiaId, kTestRefreshToken, kAssertionSentinel);
   EXPECT_THAT(mock_flow()->params(), ParamsEq(expected_params));
 }
 

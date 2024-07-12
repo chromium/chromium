@@ -17,6 +17,10 @@
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+namespace {
+constexpr char kTokenBindingAssertionSentinel[] = "DBSC_CHALLENGE_IF_REQUIRED";
+}
+
 OAuth2MintAccessTokenFetcherAdapter::OAuth2MintAccessTokenFetcherAdapter(
     OAuth2AccessTokenConsumer* consumer,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -40,11 +44,15 @@ void OAuth2MintAccessTokenFetcherAdapter::Start(
     const std::string& client_id,
     const std::string& client_secret,
     const std::vector<std::string>& scopes) {
-  std::string bound_oauth_token;
-  if (!binding_key_assertion_.empty()) {
-    bound_oauth_token = gaia::CreateBoundOAuthToken(
-        user_gaia_id_, refresh_token_, binding_key_assertion_);
+  if (binding_key_assertion_.empty()) {
+    // The sentinel should be attached only if the `refresh_token_` is bound.
+    // For now, `OAuth2MintAccessTokenFetcherAdapter` is only used with bound
+    // tokens, so we can attach it unconditionally. This needs to be revised in
+    // the future.
+    binding_key_assertion_ = kTokenBindingAssertionSentinel;
   }
+  std::string bound_oauth_token = gaia::CreateBoundOAuthToken(
+      user_gaia_id_, refresh_token_, binding_key_assertion_);
   auto params = OAuth2MintTokenFlow::Parameters::CreateForClientFlow(
       client_id, std::vector<std::string_view>(scopes.begin(), scopes.end()),
       client_version_, client_channel_, device_id_, bound_oauth_token);
