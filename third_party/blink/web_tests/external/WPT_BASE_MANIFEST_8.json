@@ -482,6 +482,13 @@
          {}
         ]
        ],
+       "firefox-bug-1906768.html": [
+        "0300a90b206f2149414d5b00c31c1a45eacc15bc",
+        [
+         null,
+         {}
+        ]
+       ],
        "float-rewind-parallel-flow-1-crash.html": [
         "79d90b89b6523ccb64502d1b43b6b0a054148cd1",
         [
@@ -6739,6 +6746,15 @@
       ],
       "two-summaries-removal-crash.html": [
        "164d3f16aa65deb97826607e2f57c33dcaa0f9b0",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
+     "widgets": {
+      "input-checkbox-appearance-none-dynamic-crash.html": [
+       "fb10f6a7fa63a62eee988778b902179ab38e3603",
        [
         null,
         {}
@@ -161984,6 +162000,32 @@
         {}
        ]
       ],
+      "line-clamp-026.tentative.html": [
+       "329d12d10bd1021a6565b09be013aeefea973fc6",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-026-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-027.tentative.html": [
+       "b2a376b2bd93c577e426d5d6f7a52ccf016b0b75",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-027-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "line-clamp-auto-001.tentative.html": [
        "02d8479736d4d6fd7e26df53611624e7a75d0989",
        [
@@ -162296,6 +162338,32 @@
         {}
        ]
       ],
+      "line-clamp-auto-025.tentative.html": [
+       "ee394b2a76d12a276c8809577e92993e2e32e7a8",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-auto-025-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-026.tentative.html": [
+       "f616cbed028a82638dfd84465e134230eb109219",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-auto-026-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "line-clamp-with-abspos-001.tentative.html": [
        "79667f23fbdc3d941484c343b2cf0a04ec34363f",
        [
@@ -162433,6 +162501,32 @@
         [
          [
           "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-011-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-abspos-012.tentative.html": [
+       "bed065f38381a9b151cee045b37b45de8f7cd0fb",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-abspos-013.tentative.html": [
+       "ccea125f7246cf526da15a469261c3e90d4d2609",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
           "=="
          ]
         ],
@@ -288381,7 +288475,7 @@
        ]
       ],
       "non-scaling-stroke-003.html": [
-       "147bf814d30f10094b77aeb4eb0fc25396cda00e",
+       "4fec5711d6c46e1da279f3cbd24da0a45a723e08",
        [
         null,
         [
@@ -298215,7 +298309,7 @@
      []
     ],
     "OWNERS": [
-     "517774d1ac46d7aa57db2f3d8e7b8187accfd6a8",
+     "3a06654b44ba32c6d6f777aa52e2c5e15d75a440",
      []
     ],
     "resources": {
@@ -330911,6 +331005,14 @@
         "55ca1ca92be48310cbdc4839573fa8f67ca84c2a",
         []
        ],
+       "line-clamp-026-ref.html": [
+        "b6e816f997c21186153ddd340916889b7ba7c53d",
+        []
+       ],
+       "line-clamp-027-ref.html": [
+        "01ed862e0a27147bf6be4b2c88e81f897b6ce34a",
+        []
+       ],
        "line-clamp-auto-002-ref.html": [
         "fe0a8dbd588a8a56c8ac0488713a061ef83474f9",
         []
@@ -330945,6 +331047,14 @@
        ],
        "line-clamp-auto-023-ref.html": [
         "adb4b6dc6edf2a401cd4016f394c74b9bf9b89cb",
+        []
+       ],
+       "line-clamp-auto-025-ref.html": [
+        "a76468d6d546e1e58a15a604a2ae476cf8dfec27",
+        []
+       ],
+       "line-clamp-auto-026-ref.html": [
+        "44d503a05220fdf89caf4722961fc478ae943350",
         []
        ],
        "line-clamp-with-abspos-001-ref.html": [
@@ -402121,11 +402231,11 @@
      []
     ],
     "audio-encoder-config.https.any-expected.txt": [
-     "07ed985460385b94a41156a3660ed46ff3ebec16",
+     "d9a80b8a4a8e65aed2ce13ba9f666e657f274352",
      []
     ],
     "audio-encoder-config.https.any.worker-expected.txt": [
-     "07ed985460385b94a41156a3660ed46ff3ebec16",
+     "d9a80b8a4a8e65aed2ce13ba9f666e657f274352",
      []
     ],
     "av1.mp4": [
@@ -402270,6 +402380,14 @@
     ],
     "video-decoder.crossOriginIsolated.https.any.js.headers": [
      "5f8621ef83660c66f0d037ea28fafefb558140f1",
+     []
+    ],
+    "video-encoder-config.https.any-expected.txt": [
+     "50fd1a0d1ca1df5d73befd0f2fb0c0e04990888a",
+     []
+    ],
+    "video-encoder-config.https.any.worker-expected.txt": [
+     "50fd1a0d1ca1df5d73befd0f2fb0c0e04990888a",
      []
     ],
     "video-encoder-h264.https.any.worker_high-6.2-expected.txt": [
@@ -402699,7 +402817,7 @@
          []
         ],
         "conftest.py": [
-         "969641b8fd202df97753e0c6221d0db20af42827",
+         "1f12c9fcb8435fd41d2c2e31678464220c26d94a",
          []
         ]
        },
@@ -424905,7 +425023,7 @@
       ]
      ],
      "simple-trigger-aggregatable-debug-report.sub.https.html": [
-      "4dbf7b39a7b5979468ea83d3293b6fb73c4581f5",
+      "68eae824a295020f45a1d2e37a8ab0a54e9b473d",
       [
        null,
        {
@@ -449323,6 +449441,13 @@
      ],
      "display-none-dont-cancel.tentative.html": [
       "6ae115803b820ffdb51169c38769ee51f5062652",
+      [
+       null,
+       {}
+      ]
+     ],
+     "display-none-prevents-starting-in-subtree.html": [
+      "d5d48b2a1849c3173d35db7b62ea36a207972308",
       [
        null,
        {}
@@ -476020,6 +476145,13 @@
      ],
      "transitionevent-interface.html": [
       "a40ba4537518361c13aab1d9b0648387f7c88aaa",
+      [
+       null,
+       {}
+      ]
+     ],
+     "transitions-retarget.html": [
+      "ee4c54a0b19f39a888b1e157ec2127084cf35500",
       [
        null,
        {}
@@ -541376,7 +541508,7 @@
    },
    "geolocation": {
     "PositionOptions.https.html": [
-     "e54e8679aa9d16cca2c83ac4aba50c286355010e",
+     "73d84738bd91ef4aee541df0f0f5da0b63a15482",
      [
       null,
       {
@@ -541507,7 +541639,7 @@
      ]
     ],
     "tojson.https.window.js": [
-     "f8cef07a7f0d4325914fbf07bc34c681804b9d51",
+     "b3f8500b1a81beeda1f2b7407fcccc21666fd9fb",
      [
       "geolocation/tojson.https.window.html",
       {
@@ -591174,7 +591306,7 @@
        ]
       ],
       "popover-attribute-basic.html": [
-       "2af3bbc137f1a0883921fb025ac548f1a0ec740c",
+       "f13a05288c3e03acf219810022f623ba27793998",
        [
         null,
         {
@@ -661075,14 +661207,7 @@
       ]
      ],
      "vector-effect-invalid.html": [
-      "ec49b88c59959ce33b6b3914026b25003cf74ee8",
-      [
-       null,
-       {}
-      ]
-     ],
-     "vector-effect-valid.html": [
-      "9563db0523ba741a94887c9e98d1db37b6da327b",
+      "18f82502ddd3369d477fba0a7b5f96b3c77150ff",
       [
        null,
        {}
@@ -677387,7 +677512,7 @@
      ]
     ],
     "audio-encoder-config.https.any.js": [
-     "a70bf28f80c9ab576a569d9a9798d727133150d5",
+     "ad5d56ca492a6cdf4a0be8338c30647db9e616c6",
      [
       "webcodecs/audio-encoder-config.https.any.html",
       {
@@ -678070,7 +678195,7 @@
      ]
     ],
     "full-cycle-test.https.any.js": [
-     "8e1ae65bdcad6427cfc5901c9411ddca9568deb0",
+     "a63edd04d75ea1c3921456a7179ade7cf39a8375",
      [
       "webcodecs/full-cycle-test.https.any.html?av1",
       {
@@ -680691,7 +680816,7 @@
      ]
     ],
     "video-encoder-config.https.any.js": [
-     "8d554e4f4dbb935d12a6c7e3aa606fc50db01424",
+     "d61958919d78b9e246a7021fa9c19242cb6d7538",
      [
       "webcodecs/video-encoder-config.https.any.html",
       {
@@ -738039,7 +738164,7 @@
        },
        "set_cache_behavior": {
         "contexts.py": [
-         "4aa2a58854cb1b3eec7f1e9b7fdc582f31b7059f",
+         "5872a7d12e0d63787616ac4275f2489e91ff570b",
          [
           null,
           {}
@@ -738052,8 +738177,8 @@
           {}
          ]
         ],
-        "set_cache_bypass.py": [
-         "f08c854e66b09ccd25d211e11e8aa3e73afa7619",
+        "set_cache_behavior.py": [
+         "0d55d520c9636a688f32158a7d7e3fb48e599153",
          [
           null,
           {}
@@ -739766,7 +739891,7 @@
         ]
        ],
        "unhandled_prompt_behavior.py": [
-        "2df69b131ffae686fe2d9b49890e692f3ac8601d",
+        "05b0f9309162b0a35bba1200713bc0db14acee4f",
         [
          null,
          {

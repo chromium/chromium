@@ -1,4 +1,5 @@
 import pytest_asyncio
+import random
 
 from .. import RESPONSE_COMPLETED_EVENT
 
@@ -15,3 +16,18 @@ async def is_request_from_cache(
         return event["response"]["fromCache"]
 
     return is_request_from_cache
+
+
+@pytest_asyncio.fixture
+async def is_cache_enabled_for_context(fetch, top_context, url, is_request_from_cache):
+    async def is_cache_enabled_for_context(context=top_context):
+        cached_url = url(
+            f"/webdriver/tests/support/http_handlers/cached.py?status=200&nocache={random.random()}"
+        )
+
+        # Make first request to fill up the cache.
+        await is_request_from_cache(url=cached_url, context=context)
+
+        return await is_request_from_cache(url=cached_url, context=context)
+
+    return is_cache_enabled_for_context

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Test that VideoEncoder.isConfigSupported() rejects invalid config: bitrate is present but zero
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] Test that VideoEncoder.configure() rejects invalid config: bitrate is present but zero
+  assert_throws_js: function "() => {\n          codec.configure(entry.config);\n        }" did not throw
+Harness: the test ran to completion.
+
