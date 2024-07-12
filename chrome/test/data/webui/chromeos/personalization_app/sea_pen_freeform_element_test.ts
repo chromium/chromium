@@ -44,15 +44,11 @@ suite('SeaPenFreeformElementTest', function() {
         !!freeformElement.shadowRoot!.querySelector(SeaPenSamplesElement.is),
         'sample prompts element shown on freeform page');
 
-    const freeformTabsElement =
-        freeformElement.shadowRoot!.querySelector('sea-pen-freeform-tabs');
-    assertTrue(!!freeformTabsElement, 'freeform tabs element displays');
-
     assertFalse(
-        !!freeformTabsElement.shadowRoot!.querySelector('#tabStrip'),
+        !!freeformElement.shadowRoot!.querySelector('#tabStrip'),
         'tab strip is not shown');
     assertTrue(
-        !!freeformTabsElement.shadowRoot!.querySelector('#samplesTitle'),
+        !!freeformElement.shadowRoot!.querySelector('#samplesTitle'),
         'Sample Prompts title is shown');
 
     assertTrue(
@@ -93,11 +89,7 @@ suite('SeaPenFreeformElementTest', function() {
     freeformElement = initElement(SeaPenFreeformElement);
     await waitAfterNextRender(freeformElement);
 
-    const freeformTabsElement =
-        freeformElement.shadowRoot!.querySelector('sea-pen-freeform-tabs');
-    assertTrue(!!freeformTabsElement, 'freeform tabs element displays');
-
-    const tabStrip = freeformTabsElement.shadowRoot!.querySelector('#tabStrip');
+    const tabStrip = freeformElement.shadowRoot!.querySelector('#tabStrip');
     assertTrue(!!tabStrip, 'tab strip displays');
 
     // Sample prompts tab should be present and but not pressed.
@@ -135,11 +127,7 @@ suite('SeaPenFreeformElementTest', function() {
     freeformElement = initElement(SeaPenFreeformElement);
     await waitAfterNextRender(freeformElement);
 
-    const freeformTabsElement =
-        freeformElement.shadowRoot!.querySelector('sea-pen-freeform-tabs');
-    assertTrue(!!freeformTabsElement, 'freeform tabs element displays');
-
-    const tabStrip = freeformTabsElement.shadowRoot!.querySelector('#tabStrip');
+    const tabStrip = freeformElement.shadowRoot!.querySelector('#tabStrip');
     assertTrue(!!tabStrip, 'tab strip displays');
 
     // Switch to Sample Prompts tab
