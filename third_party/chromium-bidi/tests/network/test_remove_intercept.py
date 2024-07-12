@@ -144,7 +144,7 @@ async def test_remove_intercept_unblocks(websocket, context_id,
 
     event_response = await wait_for_event(websocket,
                                           "network.beforeRequestSent")
-    assert event_response == {
+    assert event_response == AnyExtending({
         "method": "network.beforeRequestSent",
         "params": {
             "context": context_id,
@@ -168,7 +168,7 @@ async def test_remove_intercept_unblocks(websocket, context_id,
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
-    }
+    })
 
     result = await execute_command(
         websocket, {
@@ -193,7 +193,7 @@ async def test_remove_intercept_unblocks(websocket, context_id,
     # Network events should complete.
     event_response = await wait_for_event(websocket,
                                           "network.responseCompleted")
-    assert event_response == {
+    assert event_response == AnyExtending({
         'type': 'event',
         "method": "network.responseCompleted",
         "params": {
@@ -214,7 +214,7 @@ async def test_remove_intercept_unblocks(websocket, context_id,
             "response": ANY_DICT,
             "timestamp": ANY_TIMESTAMP,
         }
-    }
+    })
 
 
 @pytest.mark.asyncio
@@ -263,7 +263,7 @@ async def test_remove_intercept_does_not_affect_another_intercept(
         })
     event_response = await wait_for_event(websocket,
                                           "network.beforeRequestSent")
-    assert event_response == {
+    assert event_response == AnyExtending({
         "method": "network.beforeRequestSent",
         "params": {
             "context": context_id,
@@ -287,7 +287,7 @@ async def test_remove_intercept_does_not_affect_another_intercept(
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
-    }
+    })
 
     await send_JSON_command(
         websocket, {
@@ -300,7 +300,7 @@ async def test_remove_intercept_does_not_affect_another_intercept(
         })
     event_response_2 = await wait_for_event(websocket,
                                             "network.beforeRequestSent")
-    assert event_response_2 == {
+    assert event_response_2 == AnyExtending({
         "method": "network.beforeRequestSent",
         "params": {
             "context": another_context_id,
@@ -324,7 +324,7 @@ async def test_remove_intercept_does_not_affect_another_intercept(
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
-    }
+    })
     network_id_2 = event_response_2["params"]["request"]["request"]
 
     result = await execute_command(

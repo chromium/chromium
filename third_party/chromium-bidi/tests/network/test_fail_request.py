@@ -114,7 +114,7 @@ async def test_fail_request_twice(websocket, context_id, url_example):
 
     event_response = await wait_for_event(websocket,
                                           "network.beforeRequestSent")
-    assert event_response == {
+    assert event_response == AnyExtending({
         "method": "network.beforeRequestSent",
         "params": {
             "context": context_id,
@@ -138,7 +138,7 @@ async def test_fail_request_twice(websocket, context_id, url_example):
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
-    }
+    })
     network_id = event_response["params"]["request"]["request"]
 
     result = await execute_command(websocket, {
@@ -220,7 +220,7 @@ async def test_fail_request_completes(websocket, context_id, url_example):
 
     event_response = await wait_for_event(websocket,
                                           "network.beforeRequestSent")
-    assert event_response == {
+    assert event_response == AnyExtending({
         "method": "network.beforeRequestSent",
         "params": {
             "context": context_id,
@@ -244,7 +244,7 @@ async def test_fail_request_completes(websocket, context_id, url_example):
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
-    }
+    })
     network_id = event_response["params"]["request"]["request"]
 
     await subscribe(websocket, ["network.fetchError"])
@@ -331,7 +331,7 @@ async def test_fail_request_completes_new_request_still_blocks(
 
     event_response2 = await wait_for_event(websocket,
                                            "network.beforeRequestSent")
-    assert event_response2 == {
+    assert event_response2 == AnyExtending({
         "method": "network.beforeRequestSent",
         "params": {
             "context": context_id,
@@ -356,7 +356,7 @@ async def test_fail_request_completes_new_request_still_blocks(
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
-    }
+    })
     network_id_2 = event_response2["params"]["request"]["request"]
 
     # The second request should have a different ID.
@@ -397,7 +397,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
 
     event_response1 = await wait_for_event(websocket,
                                            "network.beforeRequestSent")
-    assert event_response1 == {
+    assert event_response1 == AnyExtending({
         "method": "network.beforeRequestSent",
         "params": {
             "context": context_id,
@@ -421,7 +421,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
-    }
+    })
     network_id_1 = event_response1["params"]["request"]["request"]
 
     # Navigation in second context.
@@ -437,7 +437,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
 
     event_response2 = await wait_for_event(websocket,
                                            "network.beforeRequestSent")
-    assert event_response2 == {
+    assert event_response2 == AnyExtending({
         "method": "network.beforeRequestSent",
         "params": {
             "context": another_context_id,
@@ -461,7 +461,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
-    }
+    })
     network_id_2 = event_response2["params"]["request"]["request"]
 
     assert network_id_1 != network_id_2
@@ -563,7 +563,7 @@ async def test_fail_request_remove_intercept_inflight_request(
 
     event_response = await wait_for_event(websocket,
                                           "network.beforeRequestSent")
-    assert event_response == {
+    assert event_response == AnyExtending({
         "method": "network.beforeRequestSent",
         "params": {
             "context": context_id,
@@ -587,7 +587,7 @@ async def test_fail_request_remove_intercept_inflight_request(
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
-    }
+    })
     network_id = event_response["params"]["request"]["request"]
 
     result = await execute_command(

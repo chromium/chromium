@@ -14,9 +14,9 @@
 #  limitations under the License.
 import pytest
 from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR
-from test_helpers import (ANY_TIMESTAMP, ANY_UUID, create_request_via_fetch,
-                          execute_command, goto_url, send_JSON_command,
-                          subscribe, wait_for_event)
+from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
+                          create_request_via_fetch, execute_command, goto_url,
+                          send_JSON_command, subscribe, wait_for_event)
 
 from . import create_blocked_request
 
@@ -182,7 +182,7 @@ async def test_continue_request_completes(websocket, context_id, url_example):
 
     event_response = await wait_for_event(websocket,
                                           "network.beforeRequestSent")
-    assert event_response == {
+    assert event_response == AnyExtending({
         "method": "network.beforeRequestSent",
         "params": {
             "context": context_id,
@@ -207,7 +207,7 @@ async def test_continue_request_completes(websocket, context_id, url_example):
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
-    }
+    })
     network_id = event_response["params"]["request"]["request"]
 
     await execute_command(
@@ -266,7 +266,7 @@ async def test_continue_request_twice(websocket, context_id, url_example):
 
     event_response = await wait_for_event(websocket,
                                           "network.beforeRequestSent")
-    assert event_response == {
+    assert event_response == AnyExtending({
         "method": "network.beforeRequestSent",
         "params": {
             "context": context_id,
@@ -290,7 +290,7 @@ async def test_continue_request_twice(websocket, context_id, url_example):
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
-    }
+    })
     network_id = event_response["params"]["request"]["request"]
 
     await execute_command(
@@ -353,7 +353,7 @@ async def test_continue_request_remove_intercept_inflight_request(
 
     event_response = await wait_for_event(websocket,
                                           "network.beforeRequestSent")
-    assert event_response == {
+    assert event_response == AnyExtending({
         "method": "network.beforeRequestSent",
         "params": {
             "context": context_id,
@@ -377,7 +377,7 @@ async def test_continue_request_remove_intercept_inflight_request(
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
-    }
+    })
 
     result = await execute_command(
         websocket, {

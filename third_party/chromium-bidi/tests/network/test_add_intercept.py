@@ -16,8 +16,9 @@ import re
 
 import pytest
 from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR
-from test_helpers import (ANY_TIMESTAMP, ANY_UUID, execute_command,
-                          send_JSON_command, subscribe, wait_for_event)
+from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
+                          execute_command, send_JSON_command, subscribe,
+                          wait_for_event)
 
 
 @pytest.mark.asyncio
@@ -306,7 +307,7 @@ async def test_add_intercept_blocks(
 
     event_response = await wait_for_event(websocket,
                                           "network.beforeRequestSent")
-    assert event_response == {
+    assert event_response == AnyExtending({
         "method": "network.beforeRequestSent",
         "params": {
             "intercepts": [result["intercept"]],
@@ -330,4 +331,4 @@ async def test_add_intercept_blocks(
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
-    }
+    })

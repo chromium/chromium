@@ -835,6 +835,10 @@ export class NetworkRequest {
       headersSize: computeHeadersSize(headers),
       bodySize: this.#bodySize,
       timings: this.#timings,
+      // @ts-expect-error CDP-specific attribute.
+      'goog:postData': this.#request.info?.request?.postData,
+      'goog:hasPostData': this.#request.info?.request?.hasPostData,
+      'goog:resourceType': this.#request.info?.type,
     };
   }
 

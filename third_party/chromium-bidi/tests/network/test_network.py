@@ -43,7 +43,7 @@ async def test_network_before_request_sent_event_emitted(
 
     resp = await read_JSON_message(websocket)
 
-    assert resp == {
+    assert resp == AnyExtending({
         'type': 'event',
         "method": "network.beforeRequestSent",
         "params": {
@@ -66,7 +66,7 @@ async def test_network_before_request_sent_event_emitted(
             },
             "timestamp": ANY_TIMESTAMP
         }
-    }
+    })
     navigation_id = resp["params"]["navigation"]
 
     resp = await read_JSON_message(websocket)
@@ -100,7 +100,7 @@ async def test_network_before_request_sent_event_emitted_with_url_fragment(
 
     resp = await read_JSON_message(websocket)
 
-    assert resp == {
+    assert resp == AnyExtending({
         'type': 'event',
         "method": "network.beforeRequestSent",
         "params": {
@@ -123,7 +123,7 @@ async def test_network_before_request_sent_event_emitted_with_url_fragment(
             },
             "timestamp": ANY_TIMESTAMP
         }
-    }
+    })
 
 
 @pytest.mark.asyncio
@@ -187,7 +187,7 @@ async def test_network_before_request_sent_event_with_cookies_emitted(
         })
 
     resp = await read_JSON_message(websocket)
-    assert resp == {
+    assert resp == AnyExtending({
         'type': 'event',
         "method": "network.beforeRequestSent",
         "params": {
@@ -224,7 +224,7 @@ async def test_network_before_request_sent_event_with_cookies_emitted(
             },
             "timestamp": ANY_TIMESTAMP
         }
-    }
+    })
 
 
 @pytest.mark.asyncio
@@ -246,7 +246,7 @@ async def test_network_response_completed_event_emitted(
     headersSize = compute_response_headers_size(
         resp["params"]["response"]["headers"])
 
-    assert resp == {
+    assert resp == AnyExtending({
         'type': 'event',
         "method": "network.responseCompleted",
         "params": {
@@ -281,7 +281,7 @@ async def test_network_response_completed_event_emitted(
                 }
             }
         }
-    }
+    })
 
 
 @pytest.mark.asyncio
@@ -303,7 +303,7 @@ async def test_network_response_started_event_emitted(websocket, context_id,
     headersSize = compute_response_headers_size(
         resp["params"]["response"]["headers"])
 
-    assert resp == {
+    assert resp == AnyExtending({
         'type': 'event',
         "method": "network.responseStarted",
         "params": {
@@ -338,7 +338,7 @@ async def test_network_response_started_event_emitted(websocket, context_id,
                 }
             }
         }
-    }
+    })
 
 
 @pytest.mark.asyncio
@@ -356,7 +356,7 @@ async def test_network_bad_ssl(websocket, context_id, url_bad_ssl):
         })
 
     resp = await read_JSON_message(websocket)
-    assert resp == {
+    assert resp == AnyExtending({
         'type': 'event',
         "method": "network.fetchError",
         "params": {
@@ -377,7 +377,7 @@ async def test_network_bad_ssl(websocket, context_id, url_bad_ssl):
             "timestamp": ANY_TIMESTAMP,
             "errorText": "net::ERR_CERT_AUTHORITY_INVALID"
         }
-    }
+    })
 
 
 @pytest.mark.asyncio
@@ -395,7 +395,7 @@ async def test_network_before_request_sent_event_with_data_url_emitted(
             }
         })
     resp = await read_JSON_message(websocket)
-    assert resp == {
+    assert resp == AnyExtending({
         'type': 'event',
         "method": "network.beforeRequestSent",
         "params": {
@@ -418,7 +418,7 @@ async def test_network_before_request_sent_event_with_data_url_emitted(
             },
             "timestamp": ANY_TIMESTAMP
         }
-    }
+    })
 
 
 @pytest.mark.asyncio
@@ -483,7 +483,7 @@ async def test_network_sends_only_included_cookies(websocket, context_id,
         })
 
     response = await wait_for_event(websocket, "network.beforeRequestSent")
-    assert response == {
+    assert response == AnyExtending({
         'type': 'event',
         "method": "network.beforeRequestSent",
         "params": {
@@ -506,7 +506,7 @@ async def test_network_sends_only_included_cookies(websocket, context_id,
             },
             "timestamp": ANY_TIMESTAMP
         }
-    }
+    })
 
 
 @pytest.mark.asyncio
@@ -530,7 +530,7 @@ async def test_network_should_not_block_queue_shared_workers_with_data_url(
         })
 
     response = await wait_for_event(websocket, 'network.beforeRequestSent')
-    assert response == {
+    assert response == AnyExtending({
         'type': 'event',
         "method": "network.beforeRequestSent",
         "params": {
@@ -553,4 +553,4 @@ async def test_network_should_not_block_queue_shared_workers_with_data_url(
             },
             "timestamp": ANY_TIMESTAMP
         }
-    }
+    })

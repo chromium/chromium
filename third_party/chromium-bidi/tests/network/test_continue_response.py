@@ -385,7 +385,7 @@ async def test_continue_response_twice(websocket, context_id, url_example):
         })
 
     event_response = await wait_for_event(websocket, "network.responseStarted")
-    assert event_response == {
+    assert event_response == AnyExtending({
         "method": "network.responseStarted",
         "params": {
             "context": context_id,
@@ -407,7 +407,7 @@ async def test_continue_response_twice(websocket, context_id, url_example):
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
-    }
+    })
     network_id = event_response["params"]["request"]["request"]
 
     await execute_command(

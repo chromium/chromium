@@ -14,8 +14,9 @@
 #  limitations under the License.
 import pytest
 from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR
-from test_helpers import (ANY_TIMESTAMP, ANY_UUID, execute_command, goto_url,
-                          send_JSON_command, subscribe, wait_for_event)
+from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
+                          execute_command, goto_url, send_JSON_command,
+                          subscribe, wait_for_event)
 
 from . import create_blocked_request
 
@@ -175,7 +176,7 @@ async def test_continue_with_auth_completes(websocket, context_id,
         })
 
     event_response = await wait_for_event(websocket, "network.authRequired")
-    assert event_response == {
+    assert event_response == AnyExtending({
         "method": "network.authRequired",
         "params": {
             "context": context_id,
@@ -197,7 +198,7 @@ async def test_continue_with_auth_completes(websocket, context_id,
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
-    }
+    })
     network_id = event_response["params"]["request"]["request"]
 
     await execute_command(
@@ -256,7 +257,7 @@ async def test_continue_with_auth_twice(websocket, context_id,
         })
 
     event_response = await wait_for_event(websocket, "network.authRequired")
-    assert event_response == {
+    assert event_response == AnyExtending({
         "method": "network.authRequired",
         "params": {
             "context": context_id,
@@ -278,7 +279,7 @@ async def test_continue_with_auth_twice(websocket, context_id,
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
-    }
+    })
     network_id = event_response["params"]["request"]["request"]
 
     await execute_command(
