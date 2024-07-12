@@ -1,6 +1,19 @@
 Test that the Storage.attributionReportingSourceRegistered event is fired.
 {
     registration : {
+        aggregatableDebugReportingConfig : {
+            budget : 123
+            debugData : [
+                [0] : {
+                    keyPiece : 0x10
+                    types : [
+                        [0] : source-success
+                    ]
+                    value : 12
+                }
+            ]
+            keyPiece : 0x1
+        }
         aggregatableReportWindow : 2592000
         aggregationKeys : [
             [0] : {

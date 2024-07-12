@@ -21,10 +21,12 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/debug_types.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
@@ -2135,6 +2137,48 @@ ToSourceRegistrationTimeConfig(
   }
 }
 
+std::unique_ptr<
+    Array<Storage::AttributionReportingAggregatableDebugReportingData>>
+ToAggregatableDebugReportingDataArray(
+    const attribution_reporting::AggregatableDebugReportingConfig::DebugData&
+        data) {
+  auto out = std::make_unique<
+      Array<Storage::AttributionReportingAggregatableDebugReportingData>>();
+  for (const auto& [type, contribution] : data) {
+    auto types = std::make_unique<Array<String>>();
+    types->emplace_back(attribution_reporting::SerializeDebugDataType(type));
+    out->emplace_back(
+        Storage::AttributionReportingAggregatableDebugReportingData::Create()
+            .SetKeyPiece(attribution_reporting::HexEncodeAggregationKey(
+                contribution.key_piece()))
+            .SetValue(contribution.value())
+            .SetTypes(std::move(types))
+            .Build());
+  }
+  return out;
+}
+
+std::unique_ptr<Storage::AttributionReportingAggregatableDebugReportingConfig>
+ToAggregatableDebugReportingConfig(
+    std::optional<double> budget,
+    const attribution_reporting::AggregatableDebugReportingConfig& config) {
+  auto out_config =
+      Storage::AttributionReportingAggregatableDebugReportingConfig::Create()
+          .SetKeyPiece(
+              attribution_reporting::HexEncodeAggregationKey(config.key_piece))
+          .SetDebugData(
+              ToAggregatableDebugReportingDataArray(config.debug_data))
+          .Build();
+  if (budget.has_value()) {
+    out_config->SetBudget(*budget);
+  }
+  if (config.aggregation_coordinator_origin.has_value()) {
+    out_config->SetAggregationCoordinatorOrigin(
+        config.aggregation_coordinator_origin->Serialize());
+  }
+  return out_config;
+}
+
 }  // namespace
 
 void StorageHandler::OnSourceHandled(
@@ -2152,6 +2196,8 @@ void StorageHandler::OnSourceHandled(
   }
 
   const auto& common_info = source.common_info();
+  const auto& aggregatable_debug_reporting_config =
+      registration.aggregatable_debug_reporting_config;
   auto out_source =
       Storage::AttributionReportingSourceRegistration::Create()
           .SetTime(source_time.InSecondsFSinceUnixEpoch())
@@ -2173,6 +2219,10 @@ void StorageHandler::OnSourceHandled(
               ToTriggerDataMatching(registration.trigger_data_matching))
           .SetDestinationLimitPriority(
               base::NumberToString(registration.destination_limit_priority))
+          .SetAggregatableDebugReportingConfig(
+              ToAggregatableDebugReportingConfig(
+                  aggregatable_debug_reporting_config.budget(),
+                  aggregatable_debug_reporting_config.config()))
           .Build();
 
   if (registration.debug_key.has_value()) {
@@ -2207,6 +2257,10 @@ void StorageHandler::OnTriggerHandled(std::optional<uint64_t> cleared_debug_key,
           .SetSourceRegistrationTimeConfig(ToSourceRegistrationTimeConfig(
               registration.aggregatable_trigger_config
                   .source_registration_time_config()))
+          .SetAggregatableDebugReportingConfig(
+              ToAggregatableDebugReportingConfig(
+                  /*budget=*/std::nullopt,
+                  registration.aggregatable_debug_reporting_config))
           .Build();
 
   if (registration.debug_key.has_value()) {
