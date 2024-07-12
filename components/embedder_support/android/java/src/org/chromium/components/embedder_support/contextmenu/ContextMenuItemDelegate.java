@@ -41,17 +41,23 @@ public interface ContextMenuItemDelegate {
     /**
      * @return Whether or not this context menu is being shown for an incognito content.
      */
-    boolean isIncognito();
+    default boolean isIncognito() {
+        return false;
+    }
 
     /**
      * @return Whether or not the current application can show incognito pages.
      */
-    boolean isIncognitoSupported();
+    default boolean isIncognitoSupported() {
+        return false;
+    }
 
     /**
      * @return Whether the embedder can get itself into multi-window mode.
      */
-    boolean canEnterMultiWindowMode();
+    default boolean canEnterMultiWindowMode() {
+        return false;
+    }
 
     /**
      * Called when the context menu is trying to start a download.
@@ -60,7 +66,9 @@ public interface ContextMenuItemDelegate {
      * @param isLink Whether or not the download is a link (as opposed to an image/video).
      * @return Whether or not a download should actually be started.
      */
-    boolean startDownload(GURL url, boolean isLink);
+    default boolean startDownload(GURL url, boolean isLink) {
+        return false;
+    }
 
     /**
      * Called when the {@code text} should be saved to the clipboard.
@@ -68,64 +76,72 @@ public interface ContextMenuItemDelegate {
      * @param text The text to save to the clipboard.
      * @param clipboardType The type of data in {@code text}.
      */
-    void onSaveToClipboard(String text, @ClipboardType int clipboardType);
+    default void onSaveToClipboard(String text, @ClipboardType int clipboardType) {}
 
     /**
      * Called when the image should be saved to the clipboard.
      *
      * @param Uri The (@link Uri) of the image to save to the clipboard.
      */
-    void onSaveImageToClipboard(Uri uri);
+    default void onSaveImageToClipboard(Uri uri) {}
 
     /**
      * @return whether an activity is available to handle an intent to call a phone number.
      */
-    public boolean supportsCall();
+    default boolean supportsCall() {
+        return false;
+    }
 
     /**
      * Called when the {@code url} should be parsed to call a phone number.
      *
      * @param url The URL to be parsed to call a phone number.
      */
-    void onCall(GURL url);
+    default void onCall(GURL url) {}
 
     /**
      * @return whether an activity is available to handle an intent to send an email.
      */
-    public boolean supportsSendEmailMessage();
+    default boolean supportsSendEmailMessage() {
+        return false;
+    }
 
     /**
      * Called when the {@code url} should be parsed to send an email.
      *
      * @param url The URL to be parsed to send an email.
      */
-    void onSendEmailMessage(GURL url);
+    default void onSendEmailMessage(GURL url) {}
 
     /**
      * @return whether an activity is available to handle an intent to send a text message.
      */
-    public boolean supportsSendTextMessage();
+    default boolean supportsSendTextMessage() {
+        return false;
+    }
 
     /**
      * Called when the {@code url} should be parsed to send a text message.
      *
      * @param url The URL to be parsed to send a text message.
      */
-    void onSendTextMessage(GURL url);
+    default void onSendTextMessage(GURL url) {}
 
     /**
      * Returns whether or not an activity is available to handle intent to add contacts.
      *
      * @return true if an activity is available to handle intent to add contacts.
      */
-    public boolean supportsAddToContacts();
+    default boolean supportsAddToContacts() {
+        return false;
+    }
 
     /**
      * Called when the {@code url} should be parsed to add to contacts.
      *
      * @param url The URL to be parsed to add to contacts.
      */
-    void onAddToContacts(GURL url);
+    default void onAddToContacts(GURL url) {}
 
     /**
      * @return page url.
