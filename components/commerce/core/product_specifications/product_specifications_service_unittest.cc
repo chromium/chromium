@@ -270,8 +270,21 @@ class ProductSpecificationsServiceTest : public testing::Test {
 
   syncer::ModelTypeStore* store() { return store_.get(); }
 
-  std::map<std::string, sync_pb::ProductComparisonSpecifics> entries() {
+  std::map<std::string, sync_pb::ProductComparisonSpecifics>& entries() {
     return service()->bridge_->entries_;
+  }
+
+  ProductSpecificationsSet FindProductSpecificationsSet(
+      const base::Uuid& query_uuid) {
+    const std::vector<commerce::ProductSpecificationsSet> sets =
+        service()->GetAllProductSpecifications();
+    for (const ProductSpecificationsSet& set : sets) {
+      if (set.uuid() == query_uuid) {
+        return set;
+      }
+    }
+    NOTREACHED() << "Set with uuid " << query_uuid.AsLowercaseString()
+                 << " not found\n";
   }
 
  private:
@@ -714,6 +727,51 @@ TEST_F(ProductSpecificationsServiceTest, TestSetUrlsMultiSpecifics) {
   }
   EXPECT_NE(nullptr, modified_set) << "Couldn't find modified set";
   EXPECT_EQ(new_urls, modified_set->urls());
+}
+
+TEST_F(ProductSpecificationsServiceTest, TestSetNameMultiSpecifics) {
+  EnableMultiSpecFlag();
+
+  std::vector<ProductSpecificationsSet> sets;
+  for (int i = 0; i < 2; i++) {
+    sets.push_back(
+        service()
+            ->AddProductSpecificationsSet(
+                base::StringPrintf("Set %d", i),
+                {GURL("https://a.example.com"), GURL("https://b.example.com")})
+            .value());
+  }
+  base::RunLoop().RunUntilIdle();
+  CheckProductSpecificationsExists(sets);
+
+  const base::Uuid& uuid_to_modify = sets[1].uuid();
+  EXPECT_EQ("Set 1", FindProductSpecificationsSet(uuid_to_modify).name());
+  service()->SetName(uuid_to_modify, "New name");
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ("New name", FindProductSpecificationsSet(uuid_to_modify).name());
+}
+
+TEST_F(ProductSpecificationsServiceTest,
+       TestSetNameMultiSpecificsTopLevelSpecificAbsent) {
+  EnableMultiSpecFlag();
+
+  std::vector<ProductSpecificationsSet> sets;
+  for (int i = 0; i < 2; i++) {
+    sets.push_back(
+        service()
+            ->AddProductSpecificationsSet(
+                base::StringPrintf("Set %d", i),
+                {GURL("https://a.example.com"), GURL("https://b.example.com")})
+            .value());
+  }
+  base::RunLoop().RunUntilIdle();
+  CheckProductSpecificationsExists(sets);
+
+  const base::Uuid& uuid_to_modify = sets[1].uuid();
+  auto it = entries().find(uuid_to_modify.AsLowercaseString());
+  entries().erase(it);
+  EXPECT_EQ(std::nullopt, service()->SetName(uuid_to_modify, "New name"));
 }
 
 }  // namespace commerce

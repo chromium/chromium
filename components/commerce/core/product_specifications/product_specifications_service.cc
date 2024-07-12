@@ -324,21 +324,52 @@ ProductSpecificationsService::SetUrls(const base::Uuid& uuid,
 const std::optional<ProductSpecificationsSet>
 ProductSpecificationsService::SetName(const base::Uuid& uuid,
                                       const std::string& name) {
-  auto entry = bridge_->entries().find(uuid.AsLowercaseString());
+  if (base::FeatureList::IsEnabled(
+          commerce::kProductSpecificationsMultiSpecifics)) {
+    // If we can't find the top level entry (perhaps due to a sync failure -
+    // item level entries were synced, but the top level entry sync failed, the
+    // item level entries are considered orphaned and the
+    // ProductSpecificationsSet does not exist until the top level entry is
+    // synced.
+    if (bridge_->entries().find(uuid.AsLowercaseString()) ==
+        bridge_->entries().end()) {
+      return std::nullopt;
+    }
+    sync_pb::ProductComparisonSpecifics top_level_specific =
+        *GetTopLevelSpecific(uuid.AsLowercaseString(), bridge_->entries());
+    top_level_specific.set_name(name);
+    base::Time now = base::Time::Now();
+    top_level_specific.mutable_product_comparison()->set_name(name);
+    top_level_specific.set_update_time_unix_epoch_millis(
+        now.InMillisecondsSinceUnixEpoch());
+    bridge_->UpdateSpecifics(top_level_specific);
+    std::vector<GURL> urls;
+    for (const sync_pb::ProductComparisonSpecifics& specifics :
+         GetItemSpecifics(uuid.AsLowercaseString(), bridge_->entries())) {
+      urls.emplace_back(specifics.product_comparison_item().url());
+    }
+    return ProductSpecificationsSet(
+        uuid.AsLowercaseString(),
+        top_level_specific.creation_time_unix_epoch_millis(),
+        now.InMillisecondsSinceUnixEpoch(), urls, name);
+  } else {
+    auto entry = bridge_->entries().find(uuid.AsLowercaseString());
 
-  if (entry == bridge_->entries().end()) {
-    return std::nullopt;
+    if (entry == bridge_->entries().end()) {
+      return std::nullopt;
+    }
+    sync_pb::ProductComparisonSpecifics original = entry->second;
+    sync_pb::ProductComparisonSpecifics& specifics = entry->second;
+    specifics.set_update_time_unix_epoch_millis(
+        base::Time::Now().InMillisecondsSinceUnixEpoch());
+    specifics.set_name(name);
+    bridge_->UpdateSpecifics(specifics);
+    ProductSpecificationsSet set =
+        ProductSpecificationsSet::FromProto(specifics);
+    NotifyProductSpecificationsUpdate(
+        ProductSpecificationsSet::FromProto(original), set);
+    return set;
   }
-  sync_pb::ProductComparisonSpecifics original = entry->second;
-  sync_pb::ProductComparisonSpecifics& specifics = entry->second;
-  specifics.set_update_time_unix_epoch_millis(
-      base::Time::Now().InMillisecondsSinceUnixEpoch());
-  specifics.set_name(name);
-  bridge_->UpdateSpecifics(specifics);
-  ProductSpecificationsSet set = ProductSpecificationsSet::FromProto(specifics);
-  NotifyProductSpecificationsUpdate(
-      ProductSpecificationsSet::FromProto(original), set);
-  return set;
 }
 
 void ProductSpecificationsService::DeleteProductSpecificationsSet(
