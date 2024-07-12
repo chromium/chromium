@@ -623,16 +623,6 @@ bool WasmJSPromiseIntegrationEnabledCallback(v8::Local<v8::Context> context) {
       execution_context);
 }
 
-bool JavaScriptCompileHintsMagicEnabledCallback(
-    v8::Local<v8::Context> context) {
-  ExecutionContext* execution_context = ToExecutionContext(context);
-  if (!execution_context) {
-    return false;
-  }
-  return RuntimeEnabledFeatures::JavaScriptCompileHintsMagicRuntimeEnabled(
-      execution_context);
-}
-
 v8::MaybeLocal<v8::Promise> HostImportModuleDynamically(
     v8::Local<v8::Context> context,
     v8::Local<v8::Data> v8_host_defined_options,
@@ -776,8 +766,6 @@ void V8Initializer::InitializeV8Common(v8::Isolate* isolate) {
   isolate->SetWasmJSPIEnabledCallback(WasmJSPromiseIntegrationEnabledCallback);
   isolate->SetSharedArrayBufferConstructorEnabledCallback(
       SharedArrayBufferConstructorEnabledCallback);
-  isolate->SetJavaScriptCompileHintsMagicEnabledCallback(
-      JavaScriptCompileHintsMagicEnabledCallback);
   isolate->SetHostImportModuleDynamicallyCallback(HostImportModuleDynamically);
   isolate->SetHostInitializeImportMetaObjectCallback(
       HostGetImportMetaProperties);
