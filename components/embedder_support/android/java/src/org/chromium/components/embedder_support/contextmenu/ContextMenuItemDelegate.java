@@ -7,11 +7,8 @@ package org.chromium.components.embedder_support.contextmenu;
 import android.net.Uri;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
-import org.chromium.content_public.browser.AdditionalNavigationParams;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.common.Referrer;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -52,12 +49,7 @@ public interface ContextMenuItemDelegate {
     boolean isIncognitoSupported();
 
     /**
-     * @return Whether the "Open in other window" context menu item should be shown.
-     */
-    boolean isOpenInOtherWindowSupported();
-
-    /**
-     * @return Whether Chrome can get itself into multi-window mode.
+     * @return Whether the embedder can get itself into multi-window mode.
      */
     boolean canEnterMultiWindowMode();
 
@@ -69,58 +61,6 @@ public interface ContextMenuItemDelegate {
      * @return Whether or not a download should actually be started.
      */
     boolean startDownload(GURL url, boolean isLink);
-
-    /**
-     * Called when the {@code url} should be opened in the other window with the same incognito
-     * state as the current page.
-     *
-     * @param url The URL to open.
-     */
-    void onOpenInOtherWindow(GURL url, Referrer referrer);
-
-    /**
-     * Called when the {@code url} should be opened in a new page with the same incognito state as
-     * the current page.
-     *
-     * @param url The URL to open.
-     * @param navigateToTab Whether or not to navigate to the new page.
-     * @param impression The attribution impression to associate with the navigation.
-     * @param additionalNavigationParams Additional information that needs to be passed to the
-     *     navigation request.
-     */
-    void onOpenInNewTab(
-            GURL url,
-            Referrer referrer,
-            boolean navigateToTab,
-            @Nullable AdditionalNavigationParams additionalNavigationParams);
-
-    /**
-     * Called when {@code url} should be opened in a new page in the same group as the current page.
-     *
-     * @param url The URL to open.
-     */
-    void onOpenInNewTabInGroup(GURL url, Referrer referrer);
-
-    /**
-     * Called when the {@code url} should be opened in a new incognito page.
-     *
-     * @param url The URL to open.
-     */
-    void onOpenInNewIncognitoTab(GURL url);
-
-    /**
-     * Called when the {@code url} is of an image and should be opened in the same page.
-     *
-     * @param url The image URL to open.
-     */
-    void onOpenImageUrl(GURL url, Referrer referrer);
-
-    /**
-     * Called when the {@code url} is of an image and should be opened in a new page.
-     *
-     * @param url The image URL to open.
-     */
-    void onOpenImageInNewTab(GURL url, Referrer referrer);
 
     /**
      * Called when the {@code text} should be saved to the clipboard.
@@ -193,46 +133,9 @@ public interface ContextMenuItemDelegate {
     GURL getPageUrl();
 
     /**
-     * Called when a link should be opened in the main Chrome browser.
-     *
-     * @param linkUrl URL that should be opened.
-     * @param pageUrl URL of the current page.
-     */
-    void onOpenInChrome(GURL linkUrl, GURL pageUrl);
-
-    /**
-     * Called when the {@code url} should be opened in a new Chrome page from CCT.
-     *
-     * @param linkUrl The URL to open.
-     * @param isIncognito true if the {@code url} should be opened in a new incognito page.
-     */
-    void onOpenInNewChromeTabFromCCT(GURL linkUrl, boolean isIncognito);
-
-    /**
-     * @return title of the context menu to open a page in external apps.
-     */
-    String getTitleForOpenTabInExternalApp();
-
-    /**
-     * Called when the current Chrome app is not the default to handle a View Intent.
+     * Called when the current embedder app is not the default to handle a View Intent.
      *
      * @param url The URL to open.
      */
     void onOpenInDefaultBrowser(GURL url);
-
-    /**
-     * Called when the {@code url} should be opened in an ephemeral page.
-     *
-     * @param url The URL to open.
-     * @param title The title text to show on top control.
-     */
-    void onOpenInEphemeralTab(GURL url, String title);
-
-    /**
-     * Called when Read Later was selected from the context menu.
-     *
-     * @param url The URL to be saved to the reading list.
-     * @param title The title text to be shown for this item in the reading list.
-     */
-    void onReadLater(GURL url, String title);
 }

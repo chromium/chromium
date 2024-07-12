@@ -117,7 +117,9 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         return IncognitoUtils.isIncognitoModeEnabled(mTab.getProfile());
     }
 
-    @Override
+    /**
+     * @return Whether the "Open in other window" context menu item should be shown.
+     */
     public boolean isOpenInOtherWindowSupported() {
         return MultiWindowUtils.getInstance()
                 .isOpenInOtherWindowSupported(TabUtils.getActivity(mTab));
@@ -214,7 +216,12 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         IntentUtils.safeStartActivity(mTab.getContext(), intent);
     }
 
-    @Override
+    /**
+     * Called when the {@code url} should be opened in the other window with the same incognito
+     * state as the current page.
+     *
+     * @param url The URL to open.
+     */
     public void onOpenInOtherWindow(GURL url, Referrer referrer) {
         ChromeAsyncTabLauncher chromeAsyncTabLauncher =
                 new ChromeAsyncTabLauncher(mTab.isIncognito());
@@ -228,7 +235,16 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
                 MultiWindowUtils.getAdjacentWindowActivity(activity));
     }
 
-    @Override
+    /**
+     * Called when the {@code url} should be opened in a new page with the same incognito state as
+     * the current page.
+     *
+     * @param url The URL to open.
+     * @param navigateToTab Whether or not to navigate to the new page.
+     * @param impression The attribution impression to associate with the navigation.
+     * @param additionalNavigationParams Additional information that needs to be passed to the
+     *     navigation request.
+     */
     public void onOpenInNewTab(
             GURL url,
             Referrer referrer,
@@ -248,7 +264,11 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
                 isIncognito());
     }
 
-    @Override
+    /**
+     * Called when {@code url} should be opened in a new page in the same group as the current page.
+     *
+     * @param url The URL to open.
+     */
     public void onOpenInNewTabInGroup(GURL url, Referrer referrer) {
         RecordUserAction.record("MobileNewTabOpened");
         RecordUserAction.record("LinkOpenedInNewTab");
@@ -270,7 +290,11 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         }
     }
 
-    @Override
+    /**
+     * Called when the {@code url} should be opened in a new incognito page.
+     *
+     * @param url The URL to open.
+     */
     public void onOpenInNewIncognitoTab(GURL url) {
         RecordUserAction.record("MobileNewTabOpened");
         mTabModelSelector.openNewTab(
@@ -285,7 +309,11 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         return mTab.getUrl();
     }
 
-    @Override
+    /**
+     * Called when the {@code url} is of an image and should be opened in the same page.
+     *
+     * @param url The image URL to open.
+     */
     public void onOpenImageUrl(GURL url, Referrer referrer) {
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
         loadUrlParams.setTransitionType(PageTransition.LINK);
@@ -293,7 +321,11 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         mTab.loadUrl(loadUrlParams);
     }
 
-    @Override
+    /**
+     * Called when the {@code url} is of an image and should be opened in a new page.
+     *
+     * @param url The image URL to open.
+     */
     public void onOpenImageInNewTab(GURL url, Referrer referrer) {
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
         loadUrlParams.setReferrer(referrer);
@@ -301,7 +333,12 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
                 loadUrlParams, TabLaunchType.FROM_LONGPRESS_BACKGROUND, mTab, isIncognito());
     }
 
-    @Override
+    /**
+     * Called when the {@code url} should be opened in an ephemeral page.
+     *
+     * @param url The URL to open.
+     * @param title The title text to show on top control.
+     */
     public void onOpenInEphemeralTab(GURL url, String title) {
         if (mEphemeralTabCoordinatorSupplier == null
                 || mEphemeralTabCoordinatorSupplier.get() == null) {
@@ -310,7 +347,12 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         mEphemeralTabCoordinatorSupplier.get().requestOpenSheet(url, title, mTab.getProfile());
     }
 
-    @Override
+    /**
+     * Called when Read Later was selected from the context menu.
+     *
+     * @param url The URL to be saved to the reading list.
+     * @param title The title text to be shown for this item in the reading list.
+     */
     public void onReadLater(GURL url, String title) {
         if (url == null || url.isEmpty()) return;
         assert url.isValid();
@@ -340,7 +382,12 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
                 });
     }
 
-    @Override
+    /**
+     * Called when a link should be opened in the main Chrome browser.
+     *
+     * @param linkUrl URL that should be opened.
+     * @param pageUrl URL of the current page.
+     */
     public void onOpenInChrome(GURL linkUrl, GURL pageUrl) {
         Context applicationContext = ContextUtils.getApplicationContext();
         Intent chromeIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(linkUrl.getSpec()));
@@ -370,7 +417,12 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         }
     }
 
-    @Override
+    /**
+     * Called when the {@code url} should be opened in a new Chrome page from CCT.
+     *
+     * @param linkUrl The URL to open.
+     * @param isIncognito true if the {@code url} should be opened in a new incognito page.
+     */
     public void onOpenInNewChromeTabFromCCT(GURL linkUrl, boolean isIncognito) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(linkUrl.getSpec()));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -386,7 +438,9 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         IntentUtils.safeStartActivity(mTab.getContext(), intent);
     }
 
-    @Override
+    /**
+     * @return title of the context menu to open a page in external apps.
+     */
     public String getTitleForOpenTabInExternalApp() {
         return DefaultBrowserInfo.getTitleOpenInDefaultBrowser(false);
     }

@@ -53,11 +53,11 @@ import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextHelper;
+import org.chromium.chrome.browser.tab.TabContextMenuItemDelegate;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.embedder_support.contextmenu.ChipDelegate;
 import org.chromium.components.embedder_support.contextmenu.ChipRenderParams;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuImageFormat;
-import org.chromium.components.embedder_support.contextmenu.ContextMenuItemDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuNativeDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulator;
@@ -86,7 +86,7 @@ import java.util.List;
 /** A {@link ContextMenuPopulator} used for showing the default Chrome context menu. */
 public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     private final Context mContext;
-    private final ContextMenuItemDelegate mItemDelegate;
+    private final TabContextMenuItemDelegate mItemDelegate;
     private final @ContextMenuMode int mMode;
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
     private final ExternalAuthUtils mExternalAuthUtils;
@@ -210,10 +210,11 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
     /**
      * Builds a {@link ChromeContextMenuPopulator}.
-     * @param itemDelegate The {@link ContextMenuItemDelegate} that will be notified with actions
-     *                 to perform when menu items are selected.
+     *
+     * @param itemDelegate The {@link TabContextMenuItemDelegate} that will be notified with actions
+     *     to perform when menu items are selected.
      * @param shareDelegate The Supplier of {@link ShareDelegate} that will be notified when a share
-     *                      action is performed.
+     *     action is performed.
      * @param mode Defines the context menu mode
      * @param externalAuthUtils {@link ExternalAuthUtils} instance.
      * @param context The {@link Context} used to retrieve the strings.
@@ -221,7 +222,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
      * @param nativeDelegate The {@link ContextMenuNativeDelegate} used to interact with native.
      */
     public ChromeContextMenuPopulator(
-            ContextMenuItemDelegate itemDelegate,
+            TabContextMenuItemDelegate itemDelegate,
             Supplier<ShareDelegate> shareDelegate,
             @ContextMenuMode int mode,
             ExternalAuthUtils externalAuthUtils,
@@ -518,7 +519,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             recordContextMenuSelection(ContextMenuUma.Action.COPY_LINK_ADDRESS);
             mItemDelegate.onSaveToClipboard(
                     mParams.getUnfilteredLinkUrl().getSpec(),
-                    ContextMenuItemDelegate.ClipboardType.LINK_URL);
+                    TabContextMenuItemDelegate.ClipboardType.LINK_URL);
         } else if (itemId == R.id.contextmenu_call) {
             recordContextMenuSelection(ContextMenuUma.Action.CALL);
             mItemDelegate.onCall(mParams.getLinkUrl());
@@ -538,17 +539,17 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 recordContextMenuSelection(ContextMenuUma.Action.COPY_EMAIL_ADDRESS);
                 mItemDelegate.onSaveToClipboard(
                         MailTo.parse(mParams.getLinkUrl().getSpec()).getTo(),
-                        ContextMenuItemDelegate.ClipboardType.LINK_URL);
+                        TabContextMenuItemDelegate.ClipboardType.LINK_URL);
             } else if (UrlUtilities.isTelScheme(mParams.getLinkUrl())) {
                 recordContextMenuSelection(ContextMenuUma.Action.COPY_PHONE_NUMBER);
                 mItemDelegate.onSaveToClipboard(
                         UrlUtilities.getTelNumber(mParams.getLinkUrl()),
-                        ContextMenuItemDelegate.ClipboardType.LINK_URL);
+                        TabContextMenuItemDelegate.ClipboardType.LINK_URL);
             }
         } else if (itemId == R.id.contextmenu_copy_link_text) {
             recordContextMenuSelection(ContextMenuUma.Action.COPY_LINK_TEXT);
             mItemDelegate.onSaveToClipboard(
-                    mParams.getLinkText(), ContextMenuItemDelegate.ClipboardType.LINK_TEXT);
+                    mParams.getLinkText(), TabContextMenuItemDelegate.ClipboardType.LINK_TEXT);
         } else if (itemId == R.id.contextmenu_save_image) {
             recordContextMenuSelection(ContextMenuUma.Action.SAVE_IMAGE);
             if (mItemDelegate.startDownload(mParams.getSrcUrl(), false)) {
