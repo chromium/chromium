@@ -119,8 +119,11 @@ function handleBrowserCommand(messageData: BrowserCommand) {
 }
 
 function handlePageLoadMetric(data: PageLoadedMetric, isAutoOpen: boolean) {
+  const {handler} = WhatsNewProxyImpl.getInstance();
+  const now: JSTime = {msec: Date.now()};
+  handler.recordTimeToLoadContent(now);
+
   if (data.type === 'version' && Number.isInteger(data.version)) {
-    const {handler} = WhatsNewProxyImpl.getInstance();
     handler.recordVersionPageLoaded(isAutoOpen);
   } else {
     console.warn(
@@ -209,15 +212,6 @@ export class WhatsNewAppElement extends CrLitElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
-  }
-
-  /**
-   * Called when embedded content has loaded.
-   */
-  protected onContentLoaded_() {
-    const {handler} = WhatsNewProxyImpl.getInstance();
-    const now: JSTime = {msec: Date.now()};
-    handler.recordTimeToLoadContent(now);
   }
 
   /**

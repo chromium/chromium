@@ -24,6 +24,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/user_education_features.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -62,10 +63,10 @@ void WhatsNewUI::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
 WhatsNewUI::WhatsNewUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
+      content::WebContentsObserver(web_ui->GetWebContents()),
       page_factory_receiver_(this),
       browser_command_factory_receiver_(this),
-      profile_(Profile::FromWebUI(web_ui)),
-      navigation_start_time_(base::Time::Now()) {
+      profile_(Profile::FromWebUI(web_ui)) {
   CreateAndAddWhatsNewUIHtmlSource(profile_);
 }
 
@@ -92,6 +93,13 @@ void WhatsNewUI::CreatePageHandler(
   page_handler_ = std::make_unique<WhatsNewHandler>(
       std::move(receiver), std::move(page), profile_,
       web_ui()->GetWebContents(), navigation_start_time_);
+}
+
+void WhatsNewUI::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (navigation_handle->GetURL() == GURL(chrome::kChromeUIWhatsNewURL)) {
+    navigation_start_time_ = base::Time::Now();
+  }
 }
 
 void WhatsNewUI::BindInterface(

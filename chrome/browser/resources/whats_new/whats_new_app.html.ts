@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {WhatsNewAppElement} from './whats_new_app.js';
 
 export function getHtml(this: WhatsNewAppElement) {
-  return this.url_ ? html`<iframe id="content" src="${this.url_}" @load="${
-                         this.onContentLoaded_}"></iframe>` :
+  return this.url_ ? html`<iframe id="content" src="${this.url_}"></iframe>` :
                      '';
 }

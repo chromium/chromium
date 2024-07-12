@@ -134,6 +134,10 @@ suite('WhatsNewAppTest', function() {
     const isAutoOpen =
         await proxy.handler.whenCalled('recordVersionPageLoaded');
     assertEquals(false, isAutoOpen);
+
+    const contentLoadedCallCount =
+        proxy.handler.getCallCount('recordTimeToLoadContent');
+    assertEquals(1, contentLoadedCallCount);
   });
 
   test('with module_impression metrics from embedded page', async () => {
