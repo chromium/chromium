@@ -67,8 +67,8 @@ if (is_nacl) {
 
 libvpx_include_dirs = [
   "source/config",
-  platform_include_dir,
   "source/libvpx",
+  platform_include_dir,
 ]
 
 # Private configuration used in building libvpx.
@@ -107,6 +107,10 @@ config("libvpx_config") {
 # This config is applied to targets that depend on libvpx.
 config("libvpx_public_config") {
   include_dirs = [
+    # libvpx_public_config does not have "source/config" (which gives access to
+    # the private header vpx_version.h) because code outside the libvpx library
+    # should use the vpx_codec_version*() functions and macros declared in the
+    # public header vpx_codec.h.
     "source/libvpx",
     platform_include_dir,
   ]
