@@ -11231,6 +11231,12 @@ const FeatureEntry kFeatureEntries[] = {
          compose::features::kEnableComposeSelectionNudge,
          kComposeSelectionNudgeVariations,
          "ComposeSelectionNudge")},
+
+    {"autofill-caret-extraction",
+     flag_descriptions::kAutofillCaretExtractionName,
+     flag_descriptions::kAutofillCaretExtractionDescription,
+     kOsWin | kOsLinux | kOsMac | kOsCrOS,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillCaretExtraction)},
 #endif
 
     {"related-website-sets-permission-grants",

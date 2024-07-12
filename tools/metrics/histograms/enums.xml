@@ -16854,6 +16854,7 @@ from previous Chrome versions.
   <int value="-1666652919" label="MagnifierPanningImprovements:disabled"/>
   <int value="-1666519913"
       label="PrivateNetworkAccessPreflightShortTimeout:disabled"/>
+  <int value="-1664914750" label="AutofillCaretExtraction:enabled"/>
   <int value="-1664795930" label="StorageAccessAPI:disabled"/>
   <int value="-1664497967" label="SendPasswords:enabled"/>
   <int value="-1664290318" label="ComputePressure:enabled"/>
@@ -20771,6 +20772,7 @@ from previous Chrome versions.
   <int value="-8405936" label="IsolatedWebAppUnmanagedInstall:disabled"/>
   <int value="-8063095" label="AutofillEnableRemadeDownstreamMetrics:enabled"/>
   <int value="-7996532" label="ThrottleIntersectionObserverUMA:disabled"/>
+  <int value="-7297564" label="AutofillCaretExtraction:disabled"/>
   <int value="-7008077" label="MediaPickerAdoption:enabled"/>
   <int value="-5492723" label="CCTIncognito:enabled"/>
   <int value="-5305648" label="OmniboxClosePopupWithEscape:enabled"/>
