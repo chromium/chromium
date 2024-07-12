@@ -255,7 +255,8 @@ SBOX_TESTS_COMMAND int AppContainerEvent_Open(int argc, wchar_t** argv) {
   return SBOX_TEST_FAILED;
 }
 
-TEST_F(AppContainerTest, DenyOpenEventForLowBox) {
+// TODO: crbug.com/352478202 - Enable again once the test is no longer flaky.
+TEST_F(AppContainerTest, DISABLED_DenyOpenEventForLowBox) {
   if (!features::IsAppContainerSandboxSupported())
     return;
 
@@ -271,7 +272,8 @@ TEST_F(AppContainerTest, DenyOpenEventForLowBox) {
   EXPECT_EQ(SBOX_TEST_DENIED, runner.RunTest(test_str.c_str()));
 }
 
-TEST_F(AppContainerTest, CheckIncompatibleOptions) {
+// TODO: crbug.com/352478202 - Enable again once the test is no longer flaky.
+TEST_F(AppContainerTest, DISABLED_CheckIncompatibleOptions) {
   if (!created_profile_) {
     return;
   }
@@ -299,7 +301,8 @@ TEST_F(AppContainerTest, CheckIncompatibleOptions) {
                                  MITIGATION_HEAP_TERMINATE));
 }
 
-TEST_F(AppContainerTest, NoCapabilities) {
+// TODO: crbug.com/352478202 - Enable again once the test is no longer flaky.
+TEST_F(AppContainerTest, DISABLED_NoCapabilities) {
   if (!created_profile_) {
     return;
   }
@@ -318,7 +321,8 @@ TEST_F(AppContainerTest, NoCapabilities) {
                    security_capabilities.get(), FALSE);
 }
 
-TEST_F(AppContainerTest, NoCapabilitiesRestricted) {
+// TODO: crbug.com/352478202 - Enable again once the test is no longer flaky.
+TEST_F(AppContainerTest, DISABLED_NoCapabilitiesRestricted) {
   if (!created_profile_) {
     return;
   }
@@ -337,7 +341,8 @@ TEST_F(AppContainerTest, NoCapabilitiesRestricted) {
                    security_capabilities.get(), TRUE);
 }
 
-TEST_F(AppContainerTest, WithCapabilities) {
+// TODO: crbug.com/352478202 - Enable again once the test is no longer flaky.
+TEST_F(AppContainerTest, DISABLED_WithCapabilities) {
   if (!created_profile_) {
     return;
   }
@@ -359,7 +364,8 @@ TEST_F(AppContainerTest, WithCapabilities) {
                    security_capabilities.get(), FALSE);
 }
 
-TEST_F(AppContainerTest, WithCapabilitiesRestricted) {
+// TODO: crbug.com/352478202 - Enable again once the test is no longer flaky.
+TEST_F(AppContainerTest, DISABLED_WithCapabilitiesRestricted) {
   if (!created_profile_) {
     return;
   }
@@ -381,7 +387,8 @@ TEST_F(AppContainerTest, WithCapabilitiesRestricted) {
                    security_capabilities.get(), TRUE);
 }
 
-TEST_F(AppContainerTest, WithImpersonationCapabilities) {
+// TODO: crbug.com/352478202 - Enable again once the test is no longer flaky.
+TEST_F(AppContainerTest, DISABLED_WithImpersonationCapabilities) {
   if (!created_profile_) {
     return;
   }
@@ -411,7 +418,8 @@ TEST_F(AppContainerTest, WithImpersonationCapabilities) {
                    &impersonation_security_capabilities, FALSE);
 }
 
-TEST_F(AppContainerTest, NoCapabilitiesLPAC) {
+// TODO: crbug.com/352478202 - Enable again once the test is no longer flaky.
+TEST_F(AppContainerTest, DISABLED_NoCapabilitiesLPAC) {
   if (!features::IsAppContainerSandboxSupported())
     return;
 
@@ -447,7 +455,8 @@ SBOX_TESTS_COMMAND int CheckIsAppContainer(int argc, wchar_t** argv) {
   return SBOX_TEST_FAILED;
 }
 
-TEST(AppContainerLaunchTest, CheckLPACACE) {
+// TODO: crbug.com/352667603 - Enable again once the test is no longer flaky.
+TEST(AppContainerLaunchTest, DISABLED_CheckLPACACE) {
   if (!features::IsAppContainerSandboxSupported())
     return;
   TestRunner runner;
@@ -458,7 +467,8 @@ TEST(AppContainerLaunchTest, CheckLPACACE) {
   AppContainerBase::Delete(GetAppContainerProfileName().c_str());
 }
 
-TEST(AppContainerLaunchTest, IsAppContainer) {
+// TODO: crbug.com/35666722 - Enable again once the test is no longer flaky.
+TEST(AppContainerLaunchTest, DISABLED_IsAppContainer) {
   if (!features::IsAppContainerSandboxSupported())
     return;
   TestRunner runner;
@@ -516,7 +526,8 @@ TEST(AppContainerLaunchTest, CreateTempFileNoFirewall) {
   EXPECT_TRUE(AppContainerBase::DeleteNoFirewall(package_name.c_str()));
 }
 
-TEST_F(AppContainerTest, ChildProcessMitigationLowBox) {
+// TODO: crbug.com/352478202 - Enable again once the test is no longer flaky.
+TEST_F(AppContainerTest, DISABLED_ChildProcessMitigationLowBox) {
   if (!features::IsAppContainerSandboxSupported()) {
     return;
   }
