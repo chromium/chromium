@@ -62,6 +62,9 @@ public class OmniboxFeatures {
     public static final CachedFlag sAsyncViewInflation =
             newFlag(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION, false);
 
+    public static final CachedFlag sElegantTextHeight =
+            newFlag(OmniboxFeatureList.OMNIBOX_ELEGANT_TEXT_HEIGHT, false);
+
     public static final BooleanCachedFieldTrialParameter QUERY_TILES_SHOW_AS_CAROUSEL =
             newBooleanParam(sQueryTilesInZPSOnNTP, "QueryTilesShowAsCarousel", false);
 

@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.util.FirstDrawDetector;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowDelegate;
 import org.chromium.ui.display.DisplayAndroid;
@@ -219,7 +220,7 @@ public class UrlBar extends AutocompleteEditText {
         // respect the user's need to increase the font size.
         // Enabling elegant text for UrlBar will likely produce smaller font when users ask for a
         // larger one.
-        setElegantTextHeight(false);
+        setElegantTextHeight(OmniboxFeatures.sElegantTextHeight.isEnabled());
         // Use a global draw instead of View#onDraw in case this View is not visible.
         FirstDrawDetector.waitForFirstDraw(
                 this,

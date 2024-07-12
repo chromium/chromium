@@ -569,6 +569,13 @@ BASE_FEATURE(kUseFusedLocationProvider,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
+// Enable the Elegant Text Height attribute on the UrlBar.
+// This attribute increases line height by up to 60% to accommodate certain
+// scripts (e.g. Burmese).
+BASE_FEATURE(kOmniboxElegantTextHeight,
+             "OmniboxElegantTextHeight",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace android {
 static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
@@ -581,6 +588,7 @@ static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
           &kOmniboxAsyncViewInflation,
           &kRichAutocompletion,
           &kUseFusedLocationProvider,
+          &kOmniboxElegantTextHeight,
       }});
 
   return reinterpret_cast<jlong>(kFeatureMap.get());
