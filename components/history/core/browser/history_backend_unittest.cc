@@ -27,6 +27,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -37,6 +38,7 @@
 #include "components/history/core/browser/history_backend_client.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/history_database_params.h"
+#include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
@@ -5888,6 +5890,55 @@ TEST_P(HistoryBackendTestForVisitedLinks, NotifyVisitedLinksAdded) {
   ASSERT_TRUE(added_links[0].top_level_url.has_value());
   EXPECT_EQ(added_links[0].top_level_url.value(), top_level_url);
   EXPECT_EQ(added_links[0].referrer, frame_url);
+}
+
+// A HistoryDBTask that runs for a specified number of iterations (returning
+// false from Run() until the target number of iterations has been reached).
+class RepeatingDBTask : public HistoryDBTask {
+ public:
+  explicit RepeatingDBTask(int iterations, base::OnceClosure done_callback)
+      : iterations_left_(iterations), done_callback_(std::move(done_callback)) {
+    CHECK(iterations_left_ > 0) << "You're holding it wrong!";
+  }
+  ~RepeatingDBTask() override = default;
+
+  bool RunOnDBThread(HistoryBackend* backend, HistoryDatabase* db) override {
+    --iterations_left_;
+    // This task is done if there are no iterations left.
+    return iterations_left_ <= 0;
+  }
+
+  void DoneRunOnMainThread() override { std::move(done_callback_).Run(); }
+
+ private:
+  int iterations_left_ = 0;
+  base::OnceClosure done_callback_;
+};
+
+// Regression test for crbug.com/352515665.
+TEST_F(HistoryBackendTest, ProcessDBTaskWithMultipleIterations) {
+  // Schedule a HistoryDBTask that will take some iterations to run.
+  base::MockOnceClosure first_task_done;
+  backend_->ProcessDBTask(
+      std::make_unique<RepeatingDBTask>(5, first_task_done.Get()),
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      /*is_canceled=*/base::BindRepeating([]() { return false; }));
+
+  // Note: At this point, the first iteration of the above task has been run,
+  // and a task has been posted to run the next one.
+
+  // While the first HistoryDBTask is pending in HistoryBackend's queue, add
+  // another one. It'll get added to the queue.
+  base::MockOnceClosure second_task_done;
+  backend_->ProcessDBTask(
+      std::make_unique<RepeatingDBTask>(1, second_task_done.Get()),
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      /*is_canceled=*/base::BindRepeating([]() { return false; }));
+
+  // Ensure both HistoryDBTasks finish all their iterations.
+  EXPECT_CALL(first_task_done, Run);
+  EXPECT_CALL(second_task_done, Run);
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace history

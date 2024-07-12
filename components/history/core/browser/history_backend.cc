@@ -3294,8 +3294,11 @@ void HistoryBackend::ProcessDBTaskImpl() {
     task->DoneRun();
   } else {
     // The task wants to run some more. Schedule it at the end of the current
-    // tasks, and process it after an invoke later.
+    // tasks.
     queued_history_db_tasks_.push_back(std::move(task));
+  }
+
+  if (!queued_history_db_tasks_.empty()) {
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&HistoryBackend::ProcessDBTaskImpl, this));
   }
