@@ -425,11 +425,6 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
 // Updates `locationBarContainer` height and adjusts its corner radius for the
 // fullscreen `progress`
 - (void)updateLocationBarHeightForFullscreenProgress:(CGFloat)progress {
-  // Updating the constraints while the view is not in a window might cause a
-  // crash (crbug.com/40069602).
-  if (!self.view.window) {
-    return;
-  }
   const CGFloat expandedHeight =
       LocationBarHeight(self.traitCollection.preferredContentSizeCategory);
   const CGFloat collapsedHeight =
