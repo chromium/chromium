@@ -49,6 +49,11 @@ bool FakeKioskController::HandleAccelerator(LoginAcceleratorAction action) {
   return false;
 }
 
+void FakeKioskController::InitializeKioskSystemSession(
+    Profile* profile,
+    const KioskAppId& kiosk_app_id,
+    const std::optional<std::string>& app_name) {}
+
 KioskSystemSession* FakeKioskController::GetKioskSystemSession() {
   return nullptr;
 }

@@ -20,6 +20,7 @@ class KioskTestHelper {
 
   [[nodiscard]] static base::AutoReset<bool> SkipSplashScreenWait();
   [[nodiscard]] static base::AutoReset<bool> BlockAppLaunch();
+  [[nodiscard]] static base::AutoReset<bool> BlockSystemSessionCreation();
   [[nodiscard]] static base::AutoReset<bool> BlockExitOnFailure();
 };
 

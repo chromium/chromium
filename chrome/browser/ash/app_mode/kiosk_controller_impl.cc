@@ -125,8 +125,8 @@ std::optional<KioskApp> KioskControllerImpl::GetAutoLaunchApp() const {
 }
 
 void KioskControllerImpl::InitializeKioskSystemSession(
-    const KioskAppId& kiosk_app_id,
     Profile* profile,
+    const KioskAppId& kiosk_app_id,
     const std::optional<std::string>& app_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -283,10 +283,11 @@ void KioskControllerImpl::OnAppLaunched(
     const KioskAppId& kiosk_app_id,
     Profile* profile,
     const std::optional<std::string>& app_name) {
-  InitializeKioskSystemSession(kiosk_app_id, profile, app_name);
+  InitializeKioskSystemSession(profile, kiosk_app_id, app_name);
 }
 
-void KioskControllerImpl::OnLaunchComplete(KioskAppLaunchError::Error error) {
+void KioskControllerImpl::OnLaunchComplete(
+    std::optional<KioskAppLaunchError::Error> error) {
   // Delete the launcher so it doesn't end up with dangling references.
   DeleteLaunchControllerAsync();
 }
@@ -315,7 +316,7 @@ void KioskControllerImpl::OnLaunchCompleteAfterCrash(
     const std::optional<std::string>& app_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (success) {
-    InitializeKioskSystemSession(app, profile, app_name);
+    InitializeKioskSystemSession(profile, app, app_name);
   } else {
     chrome::AttemptUserExit();
   }

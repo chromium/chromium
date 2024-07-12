@@ -372,8 +372,8 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   base::test::
       TestFuture<const KioskAppId&, Profile*, const std::optional<std::string>&>
           app_launched_future_;
-
-  base::test::TestFuture<KioskAppLaunchError::Error> launch_done_future_;
+  base::test::TestFuture<std::optional<KioskAppLaunchError::Error>>
+      launch_done_future_;
 
   base::AutoReset<std::optional<bool>> can_configure_network_for_testing_ =
       NetworkUiController::SetCanConfigureNetworkForTesting(true);
