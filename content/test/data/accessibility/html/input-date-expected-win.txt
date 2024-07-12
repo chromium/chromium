@@ -8,7 +8,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>'
 ++++++++++ROLE_SYSTEM_SPINBUTTON name='Day' value='01' FOCUSABLE
 ++++++++++ROLE_SYSTEM_STATICTEXT name='/' ia2_hypertext='/'
 ++++++++++ROLE_SYSTEM_SPINBUTTON name='Year' value='2008' FOCUSABLE
-++++++ROLE_SYSTEM_BUTTONMENU name='Show date picker' FOCUSABLE HASPOPUP
+++++++ROLE_SYSTEM_BUTTONMENU name='Show date picker' FOCUSABLE HASPOPUP description-from:tooltip description='Show date picker'
 ++++IA2_ROLE_DATE_EDITOR name='When' value='2008-09-01' FOCUSABLE text-input-type:date ia2_hypertext='<obj0><obj1>'
 ++++++IA2_ROLE_SECTION ia2_hypertext='<obj0>'
 ++++++++IA2_ROLE_SECTION ia2_hypertext='<obj0>/<obj2>/<obj4>'
@@ -17,4 +17,4 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>'
 ++++++++++ROLE_SYSTEM_SPINBUTTON name='Day When' value='01' FOCUSABLE
 ++++++++++ROLE_SYSTEM_STATICTEXT name='/' ia2_hypertext='/'
 ++++++++++ROLE_SYSTEM_SPINBUTTON name='Year When' value='2008' FOCUSABLE
-++++++ROLE_SYSTEM_BUTTONMENU name='Show date picker' FOCUSABLE HASPOPUP
+++++++ROLE_SYSTEM_BUTTONMENU name='Show date picker' FOCUSABLE HASPOPUP description-from:tooltip description='Show date picker'

@@ -14,4 +14,4 @@
 ++++++++++[spin button] name='Minutes' current=0.000000 minimum=0.000000 maximum=59.000000
 ++++++++++[static] name=' '
 ++++++++++[spin button] name='AM/PM' current=0.000000 minimum=1.000000 maximum=2.000000
-++++++[push button] name='Show local date and time picker' haspopup:menu
+++++++[push button] name='Show local date and time picker' description='Show local date and time picker' description-from:tooltip haspopup:menu

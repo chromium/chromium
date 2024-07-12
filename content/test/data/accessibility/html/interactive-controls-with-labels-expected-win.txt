@@ -37,7 +37,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++++++ROLE_SYSTEM_SPINBUTTON name='Minutes aria label' value='05' FOCUSABLE
 ++++++++ROLE_SYSTEM_STATICTEXT name=' '
 ++++++++ROLE_SYSTEM_SPINBUTTON name='AM/PM aria label' value='PM' FOCUSABLE
-++++ROLE_SYSTEM_BUTTONMENU name='Show time picker' FOCUSABLE HASPOPUP
+++++ROLE_SYSTEM_BUTTONMENU name='Show time picker' FOCUSABLE HASPOPUP description-from:tooltip description='Show time picker'
 ++ROLE_SYSTEM_GROUPING name='Test label' value='12:05' FOCUSABLE
 ++++IA2_ROLE_SECTION
 ++++++IA2_ROLE_SECTION
@@ -46,6 +46,6 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++++++ROLE_SYSTEM_SPINBUTTON name='Minutes Test label' value='05' FOCUSABLE
 ++++++++ROLE_SYSTEM_STATICTEXT name=' '
 ++++++++ROLE_SYSTEM_SPINBUTTON name='AM/PM Test label' value='PM' FOCUSABLE
-++++ROLE_SYSTEM_BUTTONMENU name='Show time picker' FOCUSABLE HASPOPUP
+++++ROLE_SYSTEM_BUTTONMENU name='Show time picker' FOCUSABLE HASPOPUP description-from:tooltip description='Show time picker'
 ++IA2_ROLE_COLOR_CHOOSER name='aria label' value='89% red 89% green 89% blue' FOCUSABLE
 ++IA2_ROLE_COLOR_CHOOSER name='Test label' value='89% red 89% green 89% blue' FOCUSABLE
