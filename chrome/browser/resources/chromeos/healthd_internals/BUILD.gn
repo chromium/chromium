@@ -15,11 +15,12 @@ build_webui("build") {
 
   web_component_files = [
     "app.ts",
-    "pages/telemetry.ts",
-    "pages/thermal_chart.ts",
     "line_chart/line_chart.ts",
     "line_chart/menu.ts",
     "line_chart/scrollbar.ts",
+    "pages/battery_chart.ts",
+    "pages/telemetry.ts",
+    "pages/thermal_chart.ts",
   ]
 
   non_web_component_files = [

@@ -33,6 +33,16 @@ std::string Convert(mojom::ThermalSensorInfo::ThermalSensorSource source) {
   }
 }
 
+base::Value::Dict ConvertBatteryValue(const mojom::BatteryInfoPtr& info) {
+  base::Value::Dict out_battery;
+  if (info) {
+    out_battery.Set("currentNow", info->current_now);
+    out_battery.Set("voltageNow", info->voltage_now);
+    out_battery.Set("chargeNow", info->charge_now);
+  }
+  return out_battery;
+}
+
 base::Value::List ConvertThermalValue(const mojom::ThermalInfoPtr& info) {
   base::Value::List out_thermals;
   if (info) {
@@ -79,7 +89,7 @@ void HealthdInternalsMessageHandler::HandleGetHealthdTelemetryInfo(
   }
 
   service->ProbeTelemetryInfo(
-      {mojom::ProbeCategoryEnum::kThermal},
+      {mojom::ProbeCategoryEnum::kBattery, mojom::ProbeCategoryEnum::kThermal},
       base::BindOnce(&HealthdInternalsMessageHandler::HandleTelemetryResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback_id)));
 }
@@ -94,6 +104,10 @@ void HealthdInternalsMessageHandler::HandleTelemetryResult(
   }
 
   base::Value::Dict result;
+  if (info->battery_result && info->battery_result->is_battery_info()) {
+    result.Set("battery",
+               ConvertBatteryValue(info->battery_result->get_battery_info()));
+  }
   if (info->thermal_result && info->thermal_result->is_thermal_info()) {
     result.Set("thermals",
                ConvertThermalValue(info->thermal_result->get_thermal_info()));

@@ -7,6 +7,15 @@
  */
 
 /**
+ * `getHealthdTelemetryInfo` battery result.
+ */
+export interface HealthdApiBatteryResult {
+  currentNow: number;
+  voltageNow: number;
+  chargeNow: number;
+}
+
+/**
  * `getHealthdTelemetryInfo` thermal result.
  */
 export interface HealthdApiThermalResult {
@@ -19,5 +28,6 @@ export interface HealthdApiThermalResult {
  * `getHealthdTelemetryInfo` api result.
  */
 export interface HealthdApiTelemetryResult {
+  battery: HealthdApiBatteryResult;
   thermals: HealthdApiThermalResult[];
 }
