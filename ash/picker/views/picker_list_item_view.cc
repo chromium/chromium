@@ -5,6 +5,7 @@
 #include "ash/picker/views/picker_list_item_view.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -114,7 +115,7 @@ PickerListItemView::PickerListItemView(SelectItemCallback select_item_callback)
   // The leading icon should always be preferred size.
   leading_icon_view_ = item_contents->AddChildView(
       views::Builder<LeadingIconImageView>()
-          .SetImageSize(kLeadingIconSizeDip)
+          .SetPreferredSize(kLeadingIconSizeDip)
           .SetCanProcessEventsWithinSubtree(false)
           .SetProperty(views::kMarginsKey, kLeadingIconRightPadding)
           .Build());
@@ -183,8 +184,10 @@ void PickerListItemView::SetPrimaryImage(const ui::ImageModel& primary_image) {
   UpdateAccessibleName();
 }
 
-void PickerListItemView::SetLeadingIcon(const ui::ImageModel& icon) {
+void PickerListItemView::SetLeadingIcon(const ui::ImageModel& icon,
+                                        std::optional<gfx::Size> icon_size) {
   leading_icon_view_->SetImage(icon);
+  leading_icon_view_->SetImageSize(icon_size.value_or(kLeadingIconSizeDip));
 }
 
 void PickerListItemView::SetSecondaryText(

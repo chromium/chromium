@@ -5,6 +5,7 @@
 #ifndef ASH_PICKER_VIEWS_PICKER_LIST_ITEM_VIEW_H_
 #define ASH_PICKER_VIEWS_PICKER_LIST_ITEM_VIEW_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/ash_export.h"
@@ -13,6 +14,7 @@
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "base/files/file_path.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace ui {
 class ImageModel;
@@ -42,7 +44,8 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
   PickerListItemView& operator=(const PickerListItemView&) = delete;
   ~PickerListItemView() override;
 
-  void SetLeadingIcon(const ui::ImageModel& icon);
+  void SetLeadingIcon(const ui::ImageModel& icon,
+                      std::optional<gfx::Size> icon_size = std::nullopt);
 
   // Sets the primary text or image of the list item. This replaces any existing
   // contents in the primary container.

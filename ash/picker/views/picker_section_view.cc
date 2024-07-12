@@ -54,6 +54,9 @@ namespace {
 // set it.
 constexpr int kIconSize = 20;
 
+// Icons for browsing history should be smaller than the normal icon size.
+constexpr auto kBrowsingHistoryIconSize = gfx::Size(18, 18);
+
 constexpr auto kSectionTitleMargins = gfx::Insets::VH(8, 16);
 constexpr auto kSectionTitleTrailingLinkMargins =
     gfx::Insets::TLBR(4, 8, 4, 16);
@@ -222,7 +225,7 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(data.title);
             item_view->SetSecondaryText(FormatBrowsingHistoryUrl(data.url));
-            item_view->SetLeadingIcon(data.icon);
+            item_view->SetLeadingIcon(data.icon, kBrowsingHistoryIconSize);
             return item_view;
           },
           [&](const PickerSearchResult::LocalFileData& data) -> ReturnType {
