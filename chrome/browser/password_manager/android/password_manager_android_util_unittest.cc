@@ -1259,6 +1259,63 @@ TEST_F(
             static_cast<int>(kOff));
 }
 
+TEST_F(PasswordManagerAndroidUtilTest,
+       SetUsesSplitStoresAndUPMForLocal_DeletesLoginDataFilesForMigratedUsers) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kClearLoginDatabaseForAllMigratedUPMUsers);
+
+  base::HistogramTester histogram_tester;
+  const char kRemovalStatusProfileMetric[] =
+      "PasswordManager.ProfileLoginData.RemovalStatus";
+  const char kRemovalStatusAccountMetric[] =
+      "PasswordManager.AccountLoginData.RemovalStatus";
+
+  // This is a state of a local user that has just been migrated.
+  pref_service()->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
+                             static_cast<int>(kOn));
+  pref_service()->SetBoolean(
+      password_manager::prefs::kUserAcknowledgedLocalPasswordsMigrationWarning,
+      true);
+  pref_service()->SetBoolean(
+      password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
+
+  // Creating the login data files for testing.
+  base::FilePath profile_db_path = login_db_directory().Append(
+      password_manager::kLoginDataForProfileFileName);
+  base::FilePath account_db_path = login_db_directory().Append(
+      password_manager::kLoginDataForAccountFileName);
+  base::FilePath profile_db_journal_path = login_db_directory().Append(
+      password_manager::kLoginDataJournalForProfileFileName);
+  base::FilePath account_db_journal_path = login_db_directory().Append(
+      password_manager::kLoginDataJournalForAccountFileName);
+
+  base::WriteFile(profile_db_path, "Test content");
+  base::WriteFile(account_db_path, "Test content");
+  base::WriteFile(profile_db_journal_path, "Test content");
+  base::WriteFile(account_db_journal_path, "Test content");
+
+  EXPECT_TRUE(PathExists(profile_db_path));
+  EXPECT_TRUE(PathExists(account_db_path));
+  EXPECT_TRUE(PathExists(profile_db_journal_path));
+  EXPECT_TRUE(PathExists(account_db_journal_path));
+
+  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
+
+  // The user wasn't deactivated, so the login data file should have been
+  // cleared because the user was already migrated to UPM with split stores.
+  EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
+            static_cast<int>(kOn));
+  EXPECT_FALSE(PathExists(profile_db_path));
+  EXPECT_FALSE(PathExists(account_db_path));
+  EXPECT_FALSE(PathExists(profile_db_journal_path));
+  EXPECT_FALSE(PathExists(account_db_journal_path));
+  EXPECT_TRUE(pref_service()->GetBoolean(
+      password_manager::prefs::kEmptyProfileStoreLoginDatabase));
+
+  histogram_tester.ExpectUniqueSample(kRemovalStatusProfileMetric, true, 1);
+  histogram_tester.ExpectUniqueSample(kRemovalStatusAccountMetric, true, 1);
+}
+
 // Integration test for UsesSplitStoresAndUPMForLocal(), which emulates restarts
 // by creating and destroying TestingProfiles. This doesn't exercise any of the
 // Java layers.
