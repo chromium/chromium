@@ -222,6 +222,7 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
   const LayoutResult* layout_result = nullptr;
   BoxStrut fragment_margins;
   LayoutOpportunity opportunity;
+  LayoutUnit fragmentainer_block_size = FragmentainerCapacity(parent_space);
   bool need_break_before = false;
 
   if (!is_fragmentable) {
@@ -347,8 +348,9 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
       }
 
       if (!MovePastBreakpoint(parent_space, node, *layout_result,
-                              fragmentainer_block_offset, kBreakAppealPerfect,
-                              /* builder */ nullptr)) {
+                              fragmentainer_block_offset,
+                              fragmentainer_block_size, kBreakAppealPerfect,
+                              /*builder=*/nullptr)) {
         need_break_before = true;
       } else if (is_at_block_end &&
                  parent_space.HasKnownFragmentainerBlockSize()) {
@@ -443,7 +445,8 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
           FragmentainerOffsetAtBfc(parent_space) +
           float_bfc_offset.block_offset;
       minimum_space_shortage = CalculateSpaceShortage(
-          parent_space, layout_result, fragmentainer_block_offset);
+          parent_space, layout_result, fragmentainer_block_offset,
+          fragmentainer_block_size);
     }
   }
 

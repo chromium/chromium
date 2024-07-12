@@ -252,8 +252,8 @@ void FlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
           total_intrinsic_block_size_, container_builder_.InlineSize());
     } else {
       LayoutUnit center = total_block_size_ / 2;
-      should_process_block_center = center - previous_consumed_block_size <=
-                                    FragmentainerCapacity(GetConstraintSpace());
+      should_process_block_center =
+          center - previous_consumed_block_size <= FragmentainerCapacity();
     }
   }
 
@@ -2281,13 +2281,14 @@ BreakStatus FlexLayoutAlgorithm::BreakBeforeRowIfNeeded(
 
   LayoutUnit fragmentainer_block_offset =
       GetConstraintSpace().FragmentainerOffset() + row_block_offset;
+  LayoutUnit fragmentainer_block_size = FragmentainerCapacity();
 
   if (has_container_separation) {
     if (IsForcedBreakValue(GetConstraintSpace(), row_break_between)) {
-      BreakBeforeChild(GetConstraintSpace(), child, /* layout_result */ nullptr,
-                       fragmentainer_block_offset, kBreakAppealPerfect,
-                       /* is_forced_break */ true, &container_builder_,
-                       row.line_cross_size);
+      BreakBeforeChild(GetConstraintSpace(), child, /*layout_result=*/nullptr,
+                       fragmentainer_block_offset, fragmentainer_block_size,
+                       kBreakAppealPerfect, /*is_forced_break=*/true,
+                       &container_builder_, row.line_cross_size);
       return BreakStatus::kBrokeBefore;
     }
   }
@@ -2309,9 +2310,9 @@ BreakStatus FlexLayoutAlgorithm::BreakBeforeRowIfNeeded(
   // be before this row, or before an earlier sibling, if there's a more
   // appealing breakpoint there.
   if (!AttemptSoftBreak(GetConstraintSpace(), child,
-                        /* layout_result */ nullptr, fragmentainer_block_offset,
-                        appeal_before, &container_builder_,
-                        row.line_cross_size)) {
+                        /*layout_result=*/nullptr, fragmentainer_block_offset,
+                        fragmentainer_block_size, appeal_before,
+                        &container_builder_, row.line_cross_size)) {
     return BreakStatus::kNeedsEarlierBreak;
   }
 
@@ -2331,8 +2332,7 @@ bool FlexLayoutAlgorithm::MovePastRowBreakPoint(
     return true;
   }
 
-  LayoutUnit space_left =
-      FragmentainerCapacity(GetConstraintSpace()) - fragmentainer_block_offset;
+  LayoutUnit space_left = FragmentainerCapacity() - fragmentainer_block_offset;
 
   // If the row starts past the end of the fragmentainer, we must break before
   // it.
@@ -2346,8 +2346,7 @@ bool FlexLayoutAlgorithm::MovePastRowBreakPoint(
   }
   if (must_break_before) {
 #if DCHECK_IS_ON()
-    bool refuse_break_before =
-        space_left >= FragmentainerCapacity(GetConstraintSpace());
+    bool refuse_break_before = space_left >= FragmentainerCapacity();
     DCHECK(!refuse_break_before);
 #endif
     return false;

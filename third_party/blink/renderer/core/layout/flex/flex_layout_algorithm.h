@@ -124,8 +124,8 @@ class CORE_EXPORT FlexLayoutAlgorithm
       FlexColumnBreakInfo* flex_column_break_info) {
     return ::blink::BreakBeforeChildIfNeeded(
         GetConstraintSpace(), child, layout_result, fragmentainer_block_offset,
-        has_container_separation, &container_builder_, is_row_item,
-        flex_column_break_info);
+        FragmentainerCapacity(), has_container_separation, &container_builder_,
+        is_row_item, flex_column_break_info);
   }
 
   // Insert a fragmentainer break before a row if necessary. Rows do not produce

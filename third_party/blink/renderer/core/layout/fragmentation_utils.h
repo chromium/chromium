@@ -335,6 +335,7 @@ BreakStatus BreakBeforeChildIfNeeded(
     LayoutInputNode child,
     const LayoutResult&,
     LayoutUnit fragmentainer_block_offset,
+    LayoutUnit fragmentainer_block_size,
     bool has_container_separation,
     BoxFragmentBuilder*,
     bool is_row_item = false,
@@ -348,6 +349,7 @@ void BreakBeforeChild(
     LayoutInputNode child,
     const LayoutResult*,
     LayoutUnit fragmentainer_block_offset,
+    LayoutUnit fragmentainer_block_size,
     std::optional<BreakAppeal> appeal,
     bool is_forced_break,
     BoxFragmentBuilder*,
@@ -379,8 +381,10 @@ void PropagateSpaceShortage(
     const ConstraintSpace&,
     const LayoutResult*,
     LayoutUnit fragmentainer_block_offset,
+    LayoutUnit fragmentainer_block_size,
     FragmentBuilder*,
     std::optional<LayoutUnit> block_size_override = std::nullopt);
+
 // Calculate how much we would need to stretch the column block-size to fit the
 // current result (if applicable). |block_size_override| should only be supplied
 // when you wish to propagate a different block-size than that of the provided
@@ -389,6 +393,7 @@ LayoutUnit CalculateSpaceShortage(
     const ConstraintSpace&,
     const LayoutResult*,
     LayoutUnit fragmentainer_block_offset,
+    LayoutUnit fragmentainer_block_size,
     std::optional<LayoutUnit> block_size_override = std::nullopt);
 // Update |minimal_space_shortage| based on the current |space_shortage|.
 void UpdateMinimalSpaceShortage(std::optional<LayoutUnit> space_shortage,
@@ -403,6 +408,7 @@ bool MovePastBreakpoint(const ConstraintSpace& space,
                         LayoutInputNode child,
                         const LayoutResult& layout_result,
                         LayoutUnit fragmentainer_block_offset,
+                        LayoutUnit fragmentainer_block_size,
                         BreakAppeal appeal_before,
                         BoxFragmentBuilder* builder,
                         bool is_row_item = false,
@@ -412,6 +418,7 @@ bool MovePastBreakpoint(const ConstraintSpace& space,
 bool MovePastBreakpoint(const ConstraintSpace& space,
                         const LayoutResult& layout_result,
                         LayoutUnit fragmentainer_block_offset,
+                        LayoutUnit fragmentainer_block_size,
                         BreakAppeal appeal_before,
                         BoxFragmentBuilder* builder,
                         bool is_row_item = false,
@@ -440,6 +447,7 @@ bool AttemptSoftBreak(
     LayoutInputNode child,
     const LayoutResult*,
     LayoutUnit fragmentainer_block_offset,
+    LayoutUnit fragmentainer_block_size,
     BreakAppeal appeal_before,
     BoxFragmentBuilder*,
     std::optional<LayoutUnit> block_size_override = std::nullopt,

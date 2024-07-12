@@ -2793,7 +2793,8 @@ BreakStatus BlockLayoutAlgorithm::BreakBeforeChildIfNeeded(
         CalculateBreakBetweenValue(child, layout_result, container_builder_);
     if (IsForcedBreakValue(GetConstraintSpace(), break_between)) {
       BreakBeforeChild(GetConstraintSpace(), child, &layout_result,
-                       fragmentainer_block_offset, kBreakAppealPerfect,
+                       fragmentainer_block_offset, FragmentainerCapacity(),
+                       kBreakAppealPerfect,
                        /* is_forced_break */ true, &container_builder_);
       ConsumeRemainingFragmentainerSpace(previous_inflow_position);
       return BreakStatus::kBrokeBefore;
@@ -2844,7 +2845,8 @@ BreakStatus BlockLayoutAlgorithm::BreakBeforeChildIfNeeded(
       // enough (to worry about performance), so let's focus on code
       // simplicity instead.
       PropagateSpaceShortage(GetConstraintSpace(), &layout_result,
-                             fragmentainer_block_offset, &container_builder_);
+                             fragmentainer_block_offset,
+                             FragmentainerCapacity(), &container_builder_);
     }
     // Attempt to honor orphans and widows requests.
     if (int line_count = container_builder_.LineCount()) {
@@ -2894,8 +2896,8 @@ BreakStatus BlockLayoutAlgorithm::BreakBeforeChildIfNeeded(
   }
 
   if (!AttemptSoftBreak(GetConstraintSpace(), child, &layout_result,
-                        fragmentainer_block_offset, appeal_before,
-                        &container_builder_)) {
+                        fragmentainer_block_offset, FragmentainerCapacity(),
+                        appeal_before, &container_builder_)) {
     return BreakStatus::kNeedsEarlierBreak;
   }
 

@@ -146,13 +146,17 @@ class CORE_EXPORT LayoutAlgorithm {
     return container_builder_.GetExclusionSpace();
   }
 
+  LayoutUnit FragmentainerCapacity() const {
+    return ::blink::FragmentainerCapacity(GetConstraintSpace());
+  }
+
   BreakStatus BreakBeforeChildIfNeeded(LayoutInputNode child,
                                        const LayoutResult& layout_result,
                                        LayoutUnit fragmentainer_block_offset,
                                        bool has_container_separation) {
     return ::blink::BreakBeforeChildIfNeeded(
         GetConstraintSpace(), child, layout_result, fragmentainer_block_offset,
-        has_container_separation, &container_builder_);
+        FragmentainerCapacity(), has_container_separation, &container_builder_);
   }
 
   bool MovePastBreakpoint(LayoutInputNode child,
@@ -161,15 +165,15 @@ class CORE_EXPORT LayoutAlgorithm {
                           BreakAppeal appeal_before) {
     return ::blink::MovePastBreakpoint(
         GetConstraintSpace(), child, layout_result, fragmentainer_block_offset,
-        appeal_before, &container_builder_);
+        FragmentainerCapacity(), appeal_before, &container_builder_);
   }
 
   bool MovePastBreakpoint(const LayoutResult& layout_result,
                           LayoutUnit fragmentainer_block_offset,
                           BreakAppeal appeal_before) {
-    return ::blink::MovePastBreakpoint(GetConstraintSpace(), layout_result,
-                                       fragmentainer_block_offset,
-                                       appeal_before, &container_builder_);
+    return ::blink::MovePastBreakpoint(
+        GetConstraintSpace(), layout_result, fragmentainer_block_offset,
+        FragmentainerCapacity(), appeal_before, &container_builder_);
   }
 
   // Lay out again, this time with a predefined good breakpoint that we

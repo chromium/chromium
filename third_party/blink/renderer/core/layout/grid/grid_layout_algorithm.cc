@@ -3735,6 +3735,8 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
   const auto container_writing_direction =
       constraint_space.GetWritingDirection();
 
+  LayoutUnit fragmentainer_block_size = FragmentainerCapacity();
+
   // The following roughly comes from:
   // https://drafts.csswg.org/css-grid-1/#fragmentation-alg
   //
@@ -3904,7 +3906,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
           auto* result = grid_item.node.Layout(space, break_token);
           PropagateSpaceShortage(constraint_space, result,
                                  fragment_relative_block_offset,
-                                 &container_builder_);
+                                 fragmentainer_block_size, &container_builder_);
         }
         has_subsequent_children = true;
         continue;
@@ -3952,7 +3954,8 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
         // MovePastBreakpoint(). No fragment builder passed?
         if (!::blink::MovePastBreakpoint(
                 constraint_space, grid_item.node, *result,
-                fragment_relative_block_offset, appeal_before,
+                fragment_relative_block_offset, fragmentainer_block_size,
+                appeal_before,
                 /*builder=*/nullptr)) {
           UpdateBreakpointRowSetIndex(item_row_set_index);
 
@@ -3960,7 +3963,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
           // space shortage to the column balancer.
           PropagateSpaceShortage(constraint_space, result,
                                  fragment_relative_block_offset,
-                                 &container_builder_);
+                                 fragmentainer_block_size, &container_builder_);
 
           // We may have "break-before:avoid" or similar on this row. Instead
           // of just breaking on this row, search upwards for a row with a
@@ -4211,8 +4214,7 @@ void GridLayoutAlgorithm::PlaceOutOfFlowItems(
     // items or items with a grid-area that is not in the first or last
     // fragment, we could end up with an incorrect static position.
     if (should_process_block_end ||
-        child_offset.block_offset <=
-            FragmentainerCapacity(GetConstraintSpace())) {
+        child_offset.block_offset <= FragmentainerCapacity()) {
       container_builder_.AddOutOfFlowChildCandidate(
           out_of_flow_item.node, child_offset, inline_edge, block_edge);
     } else {
