@@ -11,6 +11,7 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "url/gurl.h"
 
 std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForBocaApp() {
   GURL start_url = GURL(ash::kChromeBocaAppIndexURL);
@@ -33,6 +34,13 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForBocaApp() {
   return info;
 }
 
+// Returns whether the user is able to consume Boca sessions. Primarily used by
+// the delegate to tailor SWA UX.
+// TODO(b/352675698): Identify Boca consumer profile without feature flags.
+bool IsConsumerProfile(Profile* profile) {
+  return ash::features::IsBocaConsumerEnabled();
+}
+
 BocaSystemAppDelegate::BocaSystemAppDelegate(Profile* profile)
     : ash::SystemWebAppDelegate(ash::SystemWebAppType::BOCA,
                                 "Boca",
@@ -46,6 +54,28 @@ BocaSystemAppDelegate::GetWebAppInfo() const {
 
 bool BocaSystemAppDelegate::ShouldCaptureNavigations() const {
   return true;
+}
+
+bool BocaSystemAppDelegate::ShouldAllowResize() const {
+  return !IsConsumerProfile(profile());
+}
+
+bool BocaSystemAppDelegate::ShouldAllowMaximize() const {
+  return !IsConsumerProfile(profile());
+}
+
+bool BocaSystemAppDelegate::ShouldHaveTabStrip() const {
+  return IsConsumerProfile(profile());
+}
+
+bool BocaSystemAppDelegate::IsUrlInSystemAppScope(const GURL& url) const {
+  // Consumer SWA will also host 3P content, so we override app scope checks to
+  // prevent navigation outside the app.
+  return IsConsumerProfile(profile());
+}
+
+bool BocaSystemAppDelegate::ShouldPinTab(GURL url) const {
+  return ShouldHaveTabStrip() && url == GURL(ash::kChromeBocaAppIndexURL);
 }
 
 bool BocaSystemAppDelegate::IsAppEnabled() const {

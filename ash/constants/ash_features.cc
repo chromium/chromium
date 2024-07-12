@@ -286,6 +286,12 @@ BASE_FEATURE(kBluetoothQualityReport,
              "BluetoothQualityReport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables Boca feature on ChromeOS
+BASE_FEATURE(kBoca, "Boca", base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables or disables Boca consumer user experience on ChromeOS.
+BASE_FEATURE(kBocaConsumer, "BocaConsumer", base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCrosSwitcher, "CrosSwitcher", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCameraAppAutoQRDetection,
@@ -438,9 +444,6 @@ BASE_FEATURE(kChangePasswordFactorSetup,
 BASE_FEATURE(kCheckPasswordsAgainstCryptohomeHelper,
              "CheckPasswordsAgainstCryptohomeHelper",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables or disables Boca feature on ChromeOS
-BASE_FEATURE(kBoca, "Boca", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled alongside the keyboard auto-repeat setting, holding down Ctrl+V
 // will cause the clipboard history menu to show. From there, the user can
@@ -3459,6 +3462,14 @@ bool IsBluetoothQualityReportEnabled() {
   return base::FeatureList::IsEnabled(kBluetoothQualityReport);
 }
 
+bool IsBocaEnabled() {
+  return base::FeatureList::IsEnabled(kBoca);
+}
+
+bool IsBocaConsumerEnabled() {
+  return base::FeatureList::IsEnabled(kBocaConsumer);
+}
+
 bool IsBrightnessControlInSettingsEnabled() {
   return base::FeatureList::IsEnabled(kEnableBrightnessControlInSettings);
 }
@@ -3481,10 +3492,6 @@ bool IsChangePasswordFactorSetupEnabled() {
 
 bool IsCheckPasswordsAgainstCryptohomeHelperEnabled() {
   return base::FeatureList::IsEnabled(kCheckPasswordsAgainstCryptohomeHelper);
-}
-
-bool IsBocaEnabled() {
-  return base::FeatureList::IsEnabled(kBoca);
 }
 
 bool IsClipboardHistoryLongpressEnabled() {
