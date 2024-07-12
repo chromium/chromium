@@ -14,12 +14,15 @@ class Rect;
 namespace chromeos::editor_menu {
 
 enum class CardType {
-  // Currently `kDefault` can be either Quick Answers or Mahi Menu.
+  // Currently `kDefault` can be either Quick Answers or Mahi Condensed Menu
+  // Card.
   kDefault = 0,
 
   kEditorMenu = 1,
 
   kMahiDefaultMenu = 2,
+
+  kMagicBoostOptInCard = 3,
 };
 
 // Spacing between the editor menu and the anchor view (context menu).

@@ -79,7 +79,9 @@ const gfx::FontList kTitleTextFontList =
 // MagicBoostOptInCard --------------------------------------------------------
 
 MagicBoostOptInCard::MagicBoostOptInCard(MagicBoostCardController* controller)
-    : controller_(controller) {
+    : chromeos::editor_menu::PreTargetHandlerView(
+          /*card_type=*/editor_menu::CardType::kMagicBoostOptInCard),
+      controller_(controller) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetInteriorMargin(kInteriorMargin)

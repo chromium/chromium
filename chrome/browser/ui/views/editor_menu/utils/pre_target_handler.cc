@@ -24,9 +24,12 @@ namespace chromeos::editor_menu {
 
 namespace {
 
-bool IsEditorOrMahiDefaultMenu(CardType card_type) {
+// If true. Focus can be moved into the root view by using the tab key.
+// Otherwise, users can move focus into the root view using up and down keys.
+bool IsNavigatableUsingTabKey(CardType card_type) {
   return card_type == CardType::kEditorMenu ||
-         card_type == CardType::kMahiDefaultMenu;
+         card_type == CardType::kMahiDefaultMenu ||
+         card_type == CardType::kMagicBoostOptInCard;
 }
 
 }  // namespace
@@ -205,13 +208,13 @@ void PreTargetHandler::ProcessKeyEvent(ui::KeyEvent* key_event) {
   switch (key_code) {
     case ui::VKEY_UP:
     case ui::VKEY_DOWN: {
-      if (!IsEditorOrMahiDefaultMenu(card_type_)) {
+      if (!IsNavigatableUsingTabKey(card_type_)) {
         ProcessKeyUpAndDown(key_event);
       }
       return;
     }
     case ui::VKEY_TAB: {
-      if (IsEditorOrMahiDefaultMenu(card_type_) && !view_has_pane_focus) {
+      if (IsNavigatableUsingTabKey(card_type_) && !view_has_pane_focus) {
         root_view->RequestFocus();
         key_event->StopPropagation();
       }

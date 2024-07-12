@@ -190,7 +190,8 @@ INSTANTIATE_TEST_SUITE_P(,
                          PreTargetHandlerTest,
                          testing::Values(CardType::kDefault,
                                          CardType::kEditorMenu,
-                                         CardType::kMahiDefaultMenu));
+                                         CardType::kMahiDefaultMenu,
+                                         CardType::kMagicBoostOptInCard));
 
 TEST_P(PreTargetHandlerTest, KeyUpWhenNoItemSelected) {
   auto card_type = GetCardType();
@@ -349,6 +350,20 @@ TEST_P(PreTargetHandlerTest, TraverseBetweenViews) {
         << "should focus view at index " << i;
     event_generator.PressAndReleaseKey(ui::VKEY_UP);
   }
+}
+
+TEST_P(PreTargetHandlerTest, NavigateUsingTabKey) {
+  auto card_type = GetCardType();
+
+  TestHandlerDelegate delegate(test_view_);
+  PreTargetHandler handler(delegate, card_type);
+
+  ui::test::EventGenerator event_generator(
+      views::GetRootWindow(test_widget_.get()));
+  event_generator.PressAndReleaseKey(ui::VKEY_TAB);
+
+  // All the card types besides `kDefault` should be focusable using tab keys.
+  EXPECT_EQ(card_type != CardType::kDefault, test_view_->HasFocus());
 }
 
 }  // namespace
