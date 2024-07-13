@@ -44,9 +44,7 @@
 // Must be applied to all functions within this file.
 #define NO_INSTRUMENT_FUNCTION __attribute__((no_instrument_function))
 
-namespace base {
-namespace android {
-namespace orderfile {
+namespace base::android::orderfile {
 
 namespace {
 // Constants used for StartDelayedDump().
@@ -145,14 +143,13 @@ __attribute__((always_inline, no_instrument_function)) void RecordAddress(
       ImmediateCrash();
     }
 
-    // We should really crash at the first instance, but it does happen on bots,
-    // for a mysterious reason. Give it some leeway. Note that since we don't
-    // remember the caller address, if a single function is misplaced but we get
-    // many calls to it, then we still crash. If this is the case, add
-    // deduplication.
-    //
-    // Bumped to 100 temporarily as part of crbug.com/1265928 investigation.
-    if (g_unexpected_addresses.fetch_add(1, std::memory_order_relaxed) < 100) {
+    // Observing return addresses outside of the intended range indicates a
+    // potentially serious problem in the way the build is set up. However, a
+    // small number of unexpected addresses is tolerable for production builds.
+    // It seems useful to allow a limited number of out-of-range addresses to
+    // let the orderfile_generator guess the root causes. See
+    // crbug.com/330761384, crbug.com/352317042.
+    if (g_unexpected_addresses.fetch_add(1, std::memory_order_relaxed) < 10) {
       return;
     }
 
@@ -352,9 +349,7 @@ NO_INSTRUMENT_FUNCTION std::vector<size_t> GetOrderedOffsetsForTesting() {
   return result;
 }
 
-}  // namespace orderfile
-}  // namespace android
-}  // namespace base
+}  // namespace base::android::orderfile
 
 extern "C" {
 
