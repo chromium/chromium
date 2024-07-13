@@ -1276,6 +1276,7 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
+    @DisabledTest(message = "b/352829204 - flaky test")
     public void testFullscreenExitWithSelectionPopPresent_BackGestureRefactorLegacy()
             throws InterruptedException {
         testFullscreenExitWithSelectionPopPresentLegacy();
