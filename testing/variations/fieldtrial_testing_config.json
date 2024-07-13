@@ -15828,20 +15828,21 @@
         {
             "platforms": [
                 "android",
-                "android_weblayer",
                 "chromeos",
                 "chromeos_lacros",
-                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "enabled_triple_nik_cross_site_flag_nak_rollout",
+                    "//0": "This feature has shipped for Chrome but not for ",
+                    "//1": "Chromium embedders, so the corresponding feature ",
+                    "//2": "flag value is false but we rely on this entry to ",
+                    "//3": "enable the feature for most types of tests",
+                    "name": "EnableFeatureForTests",
                     "enable_features": [
-                        "PartitionConnectionsByNetworkIsolationKey",
-                        "PartitionDomainReliabilityByNetworkIsolationKey"
+                        "PartitionConnectionsByNetworkIsolationKey"
                     ],
                     "disable_features": []
                 }
@@ -21309,22 +21310,21 @@
         {
             "platforms": [
                 "android",
-                "android_weblayer",
-                "android_webview",
                 "chromeos",
                 "chromeos_lacros",
-                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "Experiment_Triple_Key_20201001",
+                    "//0": "This feature has shipped for Chrome but not for ",
+                    "//1": "Chromium embedders, so the corresponding feature ",
+                    "//2": "flag value is false but we rely on this entry to ",
+                    "//3": "enable the feature for most types of tests",
+                    "name": "EnableFeatureForTests",
                     "enable_features": [
-                        "AppendFrameOriginToNetworkIsolationKey",
-                        "SplitCacheByNetworkIsolationKey",
-                        "UseRegistrableDomainInNetworkIsolationKey"
+                        "SplitCacheByNetworkIsolationKey"
                     ]
                 }
             ]
