@@ -9,6 +9,10 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/wm/overview/overview_item_base.h"
+#include "ash/wm/overview/overview_test_util.h"
+#include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/overview/scoped_overview_transform_window.h"
 #include "ash/wm/snap_group/snap_group_test_util.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_divider.h"
@@ -42,10 +46,10 @@ class SnapGroupPixelTest : public AshTestBase {
 // Visual regression test for divider component (default and hover states).
 TEST_F(SnapGroupPixelTest, SnapGroupDividerBasic) {
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
-  DecorateWindow(w1.get(), u"w1", SK_ColorGREEN);
+  DecorateWindow(w1.get(), /*title=*/u"w1", SK_ColorGREEN);
   auto* w1_widget = views::Widget::GetWidgetForNativeView(w1.get());
   std::unique_ptr<aura::Window> w2(CreateAppWindow());
-  DecorateWindow(w2.get(), u"w2", SK_ColorBLUE);
+  DecorateWindow(w2.get(), /*title=*/u"w2", SK_ColorBLUE);
   auto* w2_widget = views::Widget::GetWidgetForNativeView(w2.get());
 
   auto* event_generator = GetEventGenerator();
@@ -67,6 +71,42 @@ TEST_F(SnapGroupPixelTest, SnapGroupDividerBasic) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "snap_group_divider_hover_state",
       /*revision_number=*/0, divider_widget, w1_widget, w2_widget));
+}
+
+// Visual regression test for `OverviewGroupItem`.
+TEST_F(SnapGroupPixelTest, OverviewGroupItem) {
+  ScopedOverviewTransformWindow::SetImmediateCloseForTests(/*immediate=*/true);
+
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  DecorateWindow(w1.get(), /*title=*/u"w1", SK_ColorGREEN);
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  DecorateWindow(w2.get(), /*title=*/u"w2", SK_ColorBLUE);
+
+  SnapTwoTestWindows(w1.get(), /*window2=*/w2.get(), /*horizontal=*/true,
+                     GetEventGenerator());
+
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+
+  OverviewItemBase* overview_group_item = GetOverviewItemForWindow(w1.get());
+  ASSERT_TRUE(overview_group_item);
+  auto* group_item_widget = overview_group_item->item_widget();
+  ASSERT_TRUE(group_item_widget);
+
+  // Verify the `OverviewGroupItem` visuals.
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "overviewgroupitem",
+      /*revision_number=*/0, group_item_widget));
+
+  // Verify the visuals after one of the windows in the group got destroyed.
+  w2.reset();
+  OverviewItemBase* item_after_destruction = GetOverviewItemForWindow(w1.get());
+  ASSERT_TRUE(item_after_destruction);
+  auto* remaining_item_widget = item_after_destruction->item_widget();
+  ASSERT_TRUE(item_after_destruction);
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "remaining_item_widget",
+      /*revision_number=*/0, remaining_item_widget));
 }
 
 }  // namespace ash
