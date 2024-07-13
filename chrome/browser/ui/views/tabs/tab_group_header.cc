@@ -139,7 +139,7 @@ TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
-  is_collapsed_ = tab_slot_controller_->IsGroupCollapsed(group);
+  UpdateIsCollapsed();
 }
 
 TabGroupHeader::~TabGroupHeader() = default;
@@ -269,14 +269,6 @@ void TabGroupHeader::OnFocus() {
 void TabGroupHeader::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kTabList;
   node_data->AddState(ax::mojom::State::kEditable);
-  bool is_collapsed = tab_slot_controller_->IsGroupCollapsed(group().value());
-  if (is_collapsed) {
-    node_data->AddState(ax::mojom::State::kCollapsed);
-    node_data->RemoveState(ax::mojom::State::kExpanded);
-  } else {
-    node_data->AddState(ax::mojom::State::kExpanded);
-    node_data->RemoveState(ax::mojom::State::kCollapsed);
-  }
 
   std::u16string title = tab_slot_controller_->GetGroupTitle(group().value());
   std::u16string contents =
@@ -289,6 +281,7 @@ void TabGroupHeader::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 // will be reread with the updated state when the header's collapsed state is
 // toggled.
 #if !BUILDFLAG(IS_WIN)
+  bool is_collapsed = tab_slot_controller_->IsGroupCollapsed(group().value());
   collapsed_state =
       is_collapsed ? l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_COLLAPSED)
                    : l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_EXPANDED);
@@ -523,7 +516,7 @@ void TabGroupHeader::VisualsChanged() {
     if (element_id) {
       views::ElementTrackerViews::GetInstance()->NotifyViewActivated(element_id,
                                                                      this);
-      is_collapsed_ = collapsed_state;
+      UpdateIsCollapsed();
     }
   }
 }
@@ -539,6 +532,16 @@ bool TabGroupHeader::ShouldShowSyncIcon() const {
 
   return saved_tab_group_service_ && saved_tab_group_service_->model() &&
          saved_tab_group_service_->model()->Contains(group().value());
+}
+
+void TabGroupHeader::UpdateIsCollapsed() {
+  is_collapsed_ = tab_slot_controller_->IsGroupCollapsed(group().value());
+
+  if (is_collapsed_) {
+    GetViewAccessibility().SetIsCollapsed();
+  } else {
+    GetViewAccessibility().SetIsExpanded();
+  }
 }
 
 void TabGroupHeader::RemoveObserverFromWidget(views::Widget* widget) {

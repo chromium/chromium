@@ -88,6 +88,8 @@ class TabGroupHeader : public TabSlotView,
   // Determines if the sync icon should be shown in the header.
   bool ShouldShowSyncIcon() const;
 
+  void UpdateIsCollapsed();
+
   const raw_ref<TabSlotController> tab_slot_controller_;
 
   // The title chip for the tab group header which comprises of title text if
@@ -109,7 +111,9 @@ class TabGroupHeader : public TabSlotView,
   const raw_ref<const TabGroupStyle> group_style_;
   const raw_ptr<const TabStyle> tab_style_;
 
-  // Saved collapsed state for usage with activation of element tracker system.
+  // Local saved collapsed state. When this differs from
+  // `TabSlotController::IsGroupCollapsed()`, then the collapsed state has
+  // changed in the model and we need to react to that.
   bool is_collapsed_;
 
   // Tracks whether our editor bubble is open. At most one can be open

@@ -87,6 +87,8 @@ TEST_F(TabGroupViewsTest, HeaderInitialAccessibilityProperties) {
   header->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_TRUE(node_data.HasState(ax::mojom::State::kEditable));
   EXPECT_EQ(node_data.role, ax::mojom::Role::kTabList);
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
 }
 
 // Underline should actually underline the group.
