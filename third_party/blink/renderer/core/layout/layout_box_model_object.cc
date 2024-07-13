@@ -485,7 +485,7 @@ PhysicalRect LayoutBoxModelObject::VisualOverflowRectIncludingFilters() const {
 PhysicalRect LayoutBoxModelObject::ApplyFiltersToRect(
     const PhysicalRect& rect) const {
   NOT_DESTROYED();
-  if (!StyleRef().HasFilter()) {
+  if (!HasReflection() && !StyleRef().HasFilter()) {
     return rect;
   }
   gfx::RectF float_rect(rect);
