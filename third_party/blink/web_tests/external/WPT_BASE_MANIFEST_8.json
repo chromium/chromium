@@ -367530,6 +367530,10 @@
         "af9c736aea7f9b20f4fd09522a8aa2dd25a11ef1",
         []
        ],
+       "2d.text.measure.getActualBoundingBox-exceptions.tentative-expected.txt": [
+        "d507b6ca1488ae1225cd359f0de0e7142f265cf0",
+        []
+       ],
        "WEB_FEATURES.yml": [
         "1d9e4bab82191d72c374c7399e666bd6bfe42bc2",
         []
@@ -367982,6 +367986,10 @@
        ],
        "2d.text.fontVariantCaps6-expected.html": [
         "af9c736aea7f9b20f4fd09522a8aa2dd25a11ef1",
+        []
+       ],
+       "2d.text.measure.getActualBoundingBox-exceptions.tentative-expected.txt": [
+        "d507b6ca1488ae1225cd359f0de0e7142f265cf0",
         []
        ],
        "WEB_FEATURES.yml": [
@@ -558358,7 +558366,7 @@
         ]
        ],
        "2d.text.measure.getActualBoundingBox-exceptions.tentative.html": [
-        "e60d1e337d3a8cd3e56bc8004097e2b9ffdfddff",
+        "8ce7ed79482813b9a148d2ddbb704f88a72090e3",
         [
          null,
          {}
@@ -571928,14 +571936,14 @@
         ]
        ],
        "2d.text.measure.getActualBoundingBox-exceptions.tentative.html": [
-        "551f2c1d916fba8636c8c812567fea0a93f4d311",
+        "8b41d0c830ebcaaa493756f704ab1cc730964b82",
         [
          null,
          {}
         ]
        ],
        "2d.text.measure.getActualBoundingBox-exceptions.tentative.worker.js": [
-        "5b5b7c76b04b7df26e7170d20025862bc966cc06",
+        "84bc720399c9d701157aa3eacea1190e7443493e",
         [
          "html/canvas/offscreen/text/2d.text.measure.getActualBoundingBox-exceptions.tentative.worker.html",
          {}
@@ -587601,10 +587609,12 @@
         ]
        ],
        "form-validation-reportValidity.html": [
-        "c68e21c9d5f7eed6fc3d048c68817fcc6975da36",
+        "5f0393f9275358b1699c562e1fa42153377617bb",
         [
          null,
-         {}
+         {
+          "timeout": "long"
+         }
         ]
        ],
        "form-validation-validate.html": [
