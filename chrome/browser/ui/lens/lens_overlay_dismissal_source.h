@@ -63,7 +63,10 @@ enum class LensOverlayDismissalSource {
   // Renderer closed unexpected (ex. renderer crashed).
   kRendererClosed = 14,
 
-  kMaxValue = kRendererClosed
+  // The user started finding text on the page underneath.
+  kFindInPageInvoked = 15,
+
+  kMaxValue = kFindInPageInvoked
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayDismissalSource)
 

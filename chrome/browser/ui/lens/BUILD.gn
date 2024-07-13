@@ -60,6 +60,7 @@ source_set("lens") {
     "//chrome/browser/ui/webui/top_chrome",
     "//chrome/common",
     "//chrome/common:constants",
+    "//components/find_in_page",
     "//components/google/core/common",
     "//components/input",
     "//components/lens:features",
