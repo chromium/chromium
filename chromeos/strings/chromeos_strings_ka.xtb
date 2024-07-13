@@ -84,6 +84,7 @@
 <translation id="1413240736185167732">ვერ მოხერხდა — ფილტრის ხარვეზი</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">ორქიდეა</translation>
+<translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">გასაღებთა წყვილი მაქვს</translation>
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> კლავიში არ არის დაჭერილი</translation>
 <translation id="1432110487435300883">მიახლოებითი შედეგის მისაღებად გაყავით <ph name="CATEGORY_TEXT" />-ის მნიშვნელობა <ph name="CONVERSION_RATE" />-ზე</translation>
@@ -771,6 +772,7 @@
 <translation id="5220549459260334974">ჩამოიტვირთა <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="5222676887888702881">გამოსვლა</translation>
 <translation id="522307662484862935">არ დაერთოს ელფოსტის მისამართი</translation>
+<translation id="5226879510707344687">ტრანსკრიპტის ექსპორტი</translation>
 <translation id="5227902338748591677">მუქი თემის განრიგი</translation>
 <translation id="5229344016299762883">სრულეკრანიანი რეჟიმიდან გასვლა</translation>
 <translation id="5234764350956374838">გაუქმება</translation>
@@ -961,6 +963,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6283581480003247988">ლურჯი და იისფერი</translation>
 <translation id="6284632978374966585">მუქი თემის გააქტიურება</translation>
+<translation id="6285260286443238386">ჩანაწერის ექსპორტი</translation>
 <translation id="628726841779494414">პრინტერების მართვა შეგიძლიათ პრინტერების პარამეტრებიდან</translation>
 <translation id="6292095526077353682">დატენისას ეკრანმზოგის ჩვენება:</translation>
 <translation id="629550705077076970">კლავიატურის დაბნელება</translation>
@@ -995,6 +998,7 @@
 <translation id="6417265370957905582">Google ასისტენტი</translation>
 <translation id="6419454453018688975">დაუშვით სისტემის მდებარეობაზე წვდომა</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">სუსტი (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">ანგარიშის პარამეტრებზე გადასვლა</translation>
 <translation id="6462978824459367242">APN-ის დამატების ღილაკი ახლა ჩართულია</translation>
@@ -1466,6 +1470,7 @@
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />-ის <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918813738569491921">მარილის ქვა</translation>
 <translation id="8919837981463578619">ვერ მოხერხდა — პრინტერს კალათა აკლია</translation>
+<translation id="8924154518905976972">აუდიოს ექსპორტი</translation>
 <translation id="8928727111548978589">ვერ მოხერხდა — ქაღალდი გაუთავდა</translation>
 <translation id="8930521118335213258">მსგავსი</translation>
 <translation id="8930622219860340959">უსადენო</translation>

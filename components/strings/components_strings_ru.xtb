@@ -651,6 +651,7 @@
 <translation id="2168151236314517198">Администратор запретил печатать этот контент.</translation>
 <translation id="2170417331417184438">Карта сохранена только на устройстве</translation>
 <translation id="2172089022819052306">Ремонт и обслуживание транспортных средств</translation>
+<translation id="2174875517416416684">Не удалось завершить транзакцию. Средства списаны не были.</translation>
 <translation id="2175630235841878061">Файлы больше 100 МБ недоступны для скачивания</translation>
 <translation id="2176974405772725904">Сохранение адреса в аккаунте</translation>
 <translation id="2178665390943006934">Кнопка "Обновить Chrome". Нажмите ее, чтобы обновить Chrome.</translation>
@@ -3391,6 +3392,7 @@
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> мм)</translation>
 <translation id="7450577240311017924">Кнопка "Настройки синхронизации". Нажмите ее, чтобы задать параметры синхронизации в настройках Chrome.</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Узнайте больше<ph name="END_LINK" /> об этой проблеме.</translation>
+<translation id="745208957946308667">Игра Chrome Dino. Чтобы начать, нажмите Пробел.</translation>
 <translation id="7454377933424667109">Аккаунт Google Cloud</translation>
 <translation id="7455133967321480974">Использовать глобальный параметр по умолчанию (блокировать)</translation>
 <translation id="7455452752247248289">Корпоративные технологии</translation>
@@ -4043,6 +4045,7 @@
 <translation id="8676424191133491403">Без задержки</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, ответ, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">При загрузке веб-страницы <ph name="PAGE" /> произошла ошибка по следующим причинам:</translation>
+<translation id="8682297334444610648">Игра Chrome Dino. Нажмите, чтобы начать.</translation>
 <translation id="8686424632716064939">Компьютерная безопасность</translation>
 <translation id="8687278439622293018">Удалена запись "<ph name="ENTRY_VOICEOVER" />"</translation>
 <translation id="8687429322371626002">Вашим устройством и аккаунтом управляет <ph name="MANAGER" />.</translation>

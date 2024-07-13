@@ -84,6 +84,7 @@
 <translation id="1413240736185167732">Збой: фільтр не працуе</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">архідэя</translation>
+<translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">У мяне ёсць пара ключоў</translation>
 <translation id="1423591390236870726">Клавіша "<ph name="KEY_NAME" />" не націснута</translation>
 <translation id="1432110487435300883">Каб атрымаць прыблізны вынік, падзяліце значэнне "<ph name="CATEGORY_TEXT" />" на <ph name="CONVERSION_RATE" /></translation>
@@ -771,6 +772,7 @@
 <translation id="5220549459260334974">Спампавана: <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="5222676887888702881">Выйсці</translation>
 <translation id="522307662484862935">Не дадаваць адрас электроннай пошты</translation>
+<translation id="5226879510707344687">Экспартаваць расшыфроўку</translation>
 <translation id="5227902338748591677">Расклад уключэння цёмнай тэмы</translation>
 <translation id="5229344016299762883">Выйсці з поўнаэкраннага рэжыму</translation>
 <translation id="5234764350956374838">Адхіліць</translation>
@@ -961,6 +963,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6283581480003247988">сіні і фіялетавы</translation>
 <translation id="6284632978374966585">Уключыць цёмную тэму</translation>
+<translation id="6285260286443238386">Экспарт запісу</translation>
 <translation id="628726841779494414">Вы можаце кіраваць прынтарамі ў адпаведных наладах</translation>
 <translation id="6292095526077353682">Падчас зарадкі паказваць застаўку</translation>
 <translation id="629550705077076970">зацямненне клавіятуры</translation>
@@ -995,6 +998,7 @@
 <translation id="6417265370957905582">Памочнік Google</translation>
 <translation id="6419454453018688975">Уключыць доступ да даных пра месцазнаходжанне</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">Слабы (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Перайсці ў налады ўліковага запісу</translation>
 <translation id="6462978824459367242">Кнопка "Дадаць APN" уключана</translation>
@@ -1463,6 +1467,7 @@
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />: <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918813738569491921">крышталь солі</translation>
 <translation id="8919837981463578619">Збой: няма латка</translation>
+<translation id="8924154518905976972">Экспартаваць аўдыя</translation>
 <translation id="8928727111548978589">Збой: скончылася папера</translation>
 <translation id="8930521118335213258">Вузел</translation>
 <translation id="8930622219860340959">Бесправадныя сеткі</translation>

@@ -84,6 +84,7 @@
 <translation id="1413240736185167732">失败 - 过滤器出问题了</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">兰花</translation>
+<translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">我有一个密钥对</translation>
 <translation id="1423591390236870726">未按下<ph name="KEY_NAME" />键</translation>
 <translation id="1432110487435300883">用<ph name="CATEGORY_TEXT" />值除以 <ph name="CONVERSION_RATE" /> 求近似值</translation>
@@ -771,6 +772,7 @@
 <translation id="5220549459260334974">已下载 <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="5222676887888702881">退出</translation>
 <translation id="522307662484862935">不附加电子邮件地址</translation>
+<translation id="5226879510707344687">导出转写文稿</translation>
 <translation id="5227902338748591677">深色主题时间表</translation>
 <translation id="5229344016299762883">退出全屏模式</translation>
 <translation id="5234764350956374838">关闭</translation>
@@ -961,6 +963,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6283581480003247988">蓝色和紫色</translation>
 <translation id="6284632978374966585">开启深色主题</translation>
+<translation id="6285260286443238386">导出录制内容</translation>
 <translation id="628726841779494414">在打印机设置中管理您的打印机</translation>
 <translation id="6292095526077353682">充电时的屏保显示时长</translation>
 <translation id="629550705077076970">将键盘调暗</translation>
@@ -995,6 +998,7 @@
 <translation id="6417265370957905582">Google 助理</translation>
 <translation id="6419454453018688975">开启系统位置信息使用权</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">很弱 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">打开账号设置</translation>
 <translation id="6462978824459367242">APN“添加”按钮现已启用</translation>
@@ -1465,6 +1469,7 @@
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918813738569491921">盐岩</translation>
 <translation id="8919837981463578619">失败 - 缺少送纸盘</translation>
+<translation id="8924154518905976972">导出音频</translation>
 <translation id="8928727111548978589">失败 - 纸张已用完</translation>
 <translation id="8930521118335213258">对等节点</translation>
 <translation id="8930622219860340959">无线</translation>

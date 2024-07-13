@@ -20,6 +20,7 @@
 <translation id="1229096353876452996">Chromeను ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయమని Google సిఫార్సు చేస్తుంది</translation>
 <translation id="1265739287306757398">ఎలాగో తెలుసుకోండి</translation>
 <translation id="1278833599417554002">&amp;Chromeను అప్‌డేట్ చేయడానికి రీ-లాంచ్ చేయండి</translation>
+<translation id="1290883685122687410">సెటప్ ఎర్రర్: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">దయచేసి Chrome తాజా సిస్టమ్ అప్‌డేట్‌లను ఇన్‌స్టాల్ చేస్తున్నప్పుడు వేచి ఉండండి.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> కోసం ఈ పరికరాన్ని ఉపయోగించడానికి ముందు కింది సర్వీస్ నియమాలను మీరు చదివి, అంగీకరించాలి. ఈ నియమాలు Google ChromeOS Flex నియమాలను విస్తరింపజేయవు, సవరించవు లేదా పరిమితం చేయవు.</translation>
 <translation id="1341711321000856656">మీరు మరొక Chrome ప్రొఫైల్‌కు మారి, పాస్‌వర్డ్‌లను చూడవచ్చు</translation>
@@ -191,6 +192,7 @@
 <translation id="3583751698304738917">మీరు ఇప్పటికే మరొక Chrome ప్రొఫైల్‌లో <ph name="USER_EMAIL_ADDRESS" />‌గా సైన్ ఇన్ చేశారు</translation>
 <translation id="3595784445906693824">కొత్త ప్రొఫైల్‌లో Chromeకి సైన్ ఇన్ చేయాలా?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{అప్‌డేట్‌ను వర్తింపజేయడం కోసం మీరు Chromeను పునఃప్రారంభించాలని మీ నిర్వాహకుడు కోరుతున్నారు}=1{అప్‌డేట్‌ను వర్తింపజేయడం కోసం మీరు Chromeను పునఃప్రారంభించాలని మీ నిర్వాహకుడు కోరుతున్నారు. మీ అజ్ఞాత విండో మళ్లీ తెరవబడదు.}other{అప్‌డేట్‌ను వర్తింపజేయడం కోసం మీరు Chromeను పునఃప్రారంభించాలని మీ నిర్వాహకుడు కోరుతున్నారు. మీ # అజ్ఞాత విండోలు మళ్లీ తెరవబడవు.}}</translation>
+<translation id="3597003331831379823">అదనపు అధికారాలతో సెటప్‌ను రన్ చేయడం విఫలమైంది. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">మీరు ఇటీవల వెళ్లలేదు. Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />‌ను తీసివేసింది</translation>
 <translation id="3622797965165704966">ఇప్పుడు మీ Google ఖాతాతో, షేర్ చేయ‌బ‌డిన కంప్యూటర్‌ల‌లో Chromeను సులభంగా ఉపయోగించవచ్చు.</translation>
 <translation id="3635073343384702370">మీరు పాస్‌వర్డ్‌లను సేవ్ చేసినప్పుడు Chrome మీ వాటిని చెక్ చేయగలదు</translation>

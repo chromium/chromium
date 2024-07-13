@@ -651,6 +651,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2168151236314517198">Bu içeriğin yazdırılması yönetici politikası tarafından engellendi</translation>
 <translation id="2170417331417184438">Kart yalnızca cihaza kaydedildi</translation>
 <translation id="2172089022819052306">Araç Tamiri ve Bakımı</translation>
+<translation id="2174875517416416684">İşleminiz yapılmadı. Hesabınızdan para çekilmedi.</translation>
 <translation id="2175630235841878061">100 MB'tan büyük dosyalar indirilemez</translation>
 <translation id="2176974405772725904">Adresi Hesaba Kaydedin</translation>
 <translation id="2178665390943006934">Chrome'u güncelle düğmesi, Chrome ayarlarınızdan Chrome'u güncellemek için etkinleştirin</translation>
@@ -3392,6 +3393,7 @@ Ek ayrıntılar:
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Senkronizasyonu yönet düğmesi, Chrome ayarlarında hangi bilgileri senkronize ettiğinizi yönetmek için etkinleştirin</translation>
 <translation id="7451311239929941790">Bu sorun hakkında <ph name="BEGIN_LINK" />daha fazla<ph name="END_LINK" /> bilgi edinme.</translation>
+<translation id="745208957946308667">Dinozor oyunu, oynamak için boşluk tuşuna basın</translation>
 <translation id="7454377933424667109">Cloud hesabı</translation>
 <translation id="7455133967321480974">Genel varsayılanı kullan (Engelle)</translation>
 <translation id="7455452752247248289">Kurumsal Teknoloji</translation>
@@ -4045,6 +4047,7 @@ Ek ayrıntılar:
 <translation id="8676424191133491403">Gecikme yok</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, yanıt, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> adresindeki web sayfası şu nedenle yüklenemedi:</translation>
+<translation id="8682297334444610648">Dinozor oyunu, oynamak için dokunun</translation>
 <translation id="8686424632716064939">Bilgisayar Güvenliği</translation>
 <translation id="8687278439622293018"><ph name="ENTRY_VOICEOVER" /> girişi silindi</translation>
 <translation id="8687429322371626002">Cihazınız ve hesabınız <ph name="MANAGER" /> tarafından yönetiliyor.</translation>

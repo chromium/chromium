@@ -84,6 +84,7 @@
 <translation id="1413240736185167732">Sikertelen – Szűrőhiba</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">orchidea</translation>
+<translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">Rendelkezem kulcspárral</translation>
 <translation id="1423591390236870726">Nem lett megnyomva a következő gomb: <ph name="KEY_NAME" /></translation>
 <translation id="1432110487435300883">Hozzávetőleges eredményért ossza el a(z) <ph name="CATEGORY_TEXT" /> értékét ennyivel: <ph name="CONVERSION_RATE" /></translation>
@@ -771,6 +772,7 @@
 <translation id="5220549459260334974"><ph name="PROGRESS_PERCENTAGE" />% letöltve</translation>
 <translation id="5222676887888702881">Kijelentkezés</translation>
 <translation id="522307662484862935">Ne tartalmazzon e-mail-címet</translation>
+<translation id="5226879510707344687">Átirat exportálása</translation>
 <translation id="5227902338748591677">Sötét téma ütemezése</translation>
 <translation id="5229344016299762883">Kilépés a teljes képernyős nézetből</translation>
 <translation id="5234764350956374838">Elvetés</translation>
@@ -961,6 +963,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6283581480003247988">kék és lila</translation>
 <translation id="6284632978374966585">Sötét téma bekapcsolása</translation>
+<translation id="6285260286443238386">Felvétel exportálása</translation>
 <translation id="628726841779494414">A nyomtatókat a nyomtatóbeállításokban kezelheti</translation>
 <translation id="6292095526077353682">Képernyőkímélő megjelenítése töltés közben ennyi ideig:</translation>
 <translation id="629550705077076970">billentyűzet elsötétítése</translation>
@@ -995,6 +998,7 @@
 <translation id="6417265370957905582">Google Segéd</translation>
 <translation id="6419454453018688975">A rendszer helyhozzáférésének bekapcsolása</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">Gyenge (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Ugrás a fiókbeállításokhoz</translation>
 <translation id="6462978824459367242">Az APN hozzáadása gomb mostantól engedélyezve van</translation>
@@ -1465,6 +1469,7 @@ Ezt a funkciót bármikor kikapcsolhatja a Beállításokban.</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> – <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918813738569491921">salt rock</translation>
 <translation id="8919837981463578619">Sikertelen – Hiányzó tálca</translation>
+<translation id="8924154518905976972">Hang exportálása</translation>
 <translation id="8928727111548978589">Sikertelen – Kifogyott a papír</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Vezeték nélküli</translation>

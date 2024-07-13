@@ -51,6 +51,7 @@
 <translation id="2879583609344924966"><ph name="CAMERA" /> est branchée.</translation>
 <translation id="3067436040345934772">Pano à droite</translation>
 <translation id="3081586908890909590">Passer à l'enregistrement de vidéo</translation>
+<translation id="3091480460059548935">Détection de texte dans l'aperçu</translation>
 <translation id="313467653172006084">30 FPS</translation>
 <translation id="3157038259444425153">Vous pouvez désormais copier directement le texte de votre photo</translation>
 <translation id="3158534262962737808">Rejoindre "<ph name="WIFINAME" />"</translation>
@@ -141,6 +142,7 @@ S'ils concernent la qualité de l'image ou de la vidéo, veuillez joindre un exe
 <translation id="7337660886763914220">Erreurs du système de fichiers.</translation>
 <translation id="7450541714075000668">Texte copié</translation>
 <translation id="7488619942230388918">Enregistrer une vidéo GIF</translation>
+<translation id="7527714402753141485">Affiche le texte et le bouton de copie</translation>
 <translation id="7557677699350329807">Passer à la caméra suivante</translation>
 <translation id="7607002721634913082">Suspendu</translation>
 <translation id="7608223098072244877">4 par 4</translation>

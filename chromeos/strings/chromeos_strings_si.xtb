@@ -84,6 +84,7 @@
 <translation id="1413240736185167732">අසාර්ථක විය - පෙරහන අසාර්ථක විය</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">උඩවැඩියා</translation>
+<translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">මට යතුරු යුගලක් ඇත</translation>
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> යතුර ඔබා නැත</translation>
 <translation id="1432110487435300883">ආසන්න ප්‍රතිඵලයක් සඳහා, <ph name="CATEGORY_TEXT" /> අගය <ph name="CONVERSION_RATE" />න් බෙදන්න</translation>
@@ -771,6 +772,7 @@
 <translation id="5220549459260334974"><ph name="PROGRESS_PERCENTAGE" />% බාගැනිණි</translation>
 <translation id="5222676887888702881">පිටවීම</translation>
 <translation id="522307662484862935">ඉ-තැපැල් ලිපිනය ඇතුළත් නොකරන්න</translation>
+<translation id="5226879510707344687">අනුපත නිර්යාත කරන්න</translation>
 <translation id="5227902338748591677">අඳුරු තේමා කාල සටහන</translation>
 <translation id="5229344016299762883">සම්පූර්ණයෙන් පිටවීම</translation>
 <translation id="5234764350956374838">ඉවත් කරන්න</translation>
@@ -961,6 +963,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6283581480003247988">නිල් සහ දම්</translation>
 <translation id="6284632978374966585">අඳුරු තේමාව ක්‍රියාත්මක කරන්න</translation>
+<translation id="6285260286443238386">පටිගත කිරීම නිර්යාත කරන්න</translation>
 <translation id="628726841779494414">මුද්‍රක සැකසීම් තුළ ඔබේ මුද්‍රක කළමනාකරණය කරන්න</translation>
 <translation id="6292095526077353682">ආරෝපණය කරන අතරේ, මේ සඳහා තිර සුරැකුම පෙන්වන්න</translation>
 <translation id="629550705077076970">යතුරු පුවරුව අඳුරු වීම</translation>
@@ -995,6 +998,7 @@
 <translation id="6417265370957905582">Google සහායක</translation>
 <translation id="6419454453018688975">පද්ධති ස්ථාන ප්‍රවේශය සක්‍රීය කරන්න.</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">දුර්වලයි (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">ගිණුම් සැකසීම් වෙත යන්න</translation>
 <translation id="6462978824459367242">APN එක් කරන්න බොත්තම දැන් සබලයි</translation>
@@ -1465,6 +1469,7 @@
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />ගේ <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918813738569491921">ලුණු ගල්</translation>
 <translation id="8919837981463578619">අසාර්ථක විය - තැටිය මගහැරී ඇත</translation>
+<translation id="8924154518905976972">ශ්‍රව්‍ය නිර්යාත කරන්න</translation>
 <translation id="8928727111548978589">අසාර්ථක විය - කඩදාසි නැත</translation>
 <translation id="8930521118335213258">සාමානයා</translation>
 <translation id="8930622219860340959">නොරැහැන්</translation>

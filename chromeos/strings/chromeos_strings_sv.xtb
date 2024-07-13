@@ -84,6 +84,7 @@
 <translation id="1413240736185167732">Misslyckades – filterfel</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">orkidé</translation>
+<translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">Jag har ett nyckelpar</translation>
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> har inte tryckts ned</translation>
 <translation id="1432110487435300883">Om du vill ha ett ungefärligt resultat dividerar du värdet för <ph name="CATEGORY_TEXT" /> med <ph name="CONVERSION_RATE" /></translation>
@@ -771,6 +772,7 @@
 <translation id="5220549459260334974"><ph name="PROGRESS_PERCENTAGE" /> % har laddats ned</translation>
 <translation id="5222676887888702881">Logga ut</translation>
 <translation id="522307662484862935">Inkludera inte e-postadress</translation>
+<translation id="5226879510707344687">Exportera transkription</translation>
 <translation id="5227902338748591677">Schema för mörkt tema</translation>
 <translation id="5229344016299762883">Avsluta helskärm</translation>
 <translation id="5234764350956374838">Stäng</translation>
@@ -961,6 +963,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6283581480003247988">blått och lila</translation>
 <translation id="6284632978374966585">Aktivera mörkt tema</translation>
+<translation id="6285260286443238386">Exportera inspelning</translation>
 <translation id="628726841779494414">Hantera dina skrivare i skrivarinställningarna</translation>
 <translation id="6292095526077353682">Skärmsläckarens visningstid vid laddning:</translation>
 <translation id="629550705077076970">tona ned tangentbordet</translation>
@@ -995,6 +998,7 @@
 <translation id="6417265370957905582">Google Assistent</translation>
 <translation id="6419454453018688975">Aktivera systemets platsåtkomst</translation>
 <translation id="6423239382391657905">Öppen VPN</translation>
+<translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">Svag (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Öppna kontoinställningar</translation>
 <translation id="6462978824459367242">Knappen Lägg till APN har aktiverats</translation>
@@ -1465,6 +1469,7 @@ Du kan inaktivera detta när som helst i inställningarna.</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> som tillhör <ph name="GIVEN_NAME" /></translation>
 <translation id="8918813738569491921">saltsten</translation>
 <translation id="8919837981463578619">Misslyckades – fack saknas</translation>
+<translation id="8924154518905976972">Exportera ljud</translation>
 <translation id="8928727111548978589">Misslyckades – slut på papper</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Trådlöst</translation>

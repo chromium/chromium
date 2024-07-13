@@ -7019,7 +7019,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6148576794665275391">Open now</translation>
 <translation id="614890671148262506">Always allow notifications from this site</translation>
 <translation id="6149015141270619212">Can't connect to the Internet</translation>
-<translation id="6149061208933997199">Use Password</translation>
+<translation id="6149061208933997199">Use password</translation>
 <translation id="6149791593592044995">Use modern tone mark placement</translation>
 <translation id="6150116777338468525">Audio quality</translation>
 <translation id="6150278227694566734">Some contacts</translation>
@@ -9823,6 +9823,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8230134520748321204">Save password for <ph name="ORIGIN" />?</translation>
 <translation id="8230326817897075865">Delete <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="8230446983261649357">Don't allow sites to show images</translation>
+<translation id="823226567613548870">delete your <ph name="BRAND" /> data</translation>
 <translation id="8233028084277069927">Open now</translation>
 <translation id="8234795456569844941">Please help our engineers fix this problem. Tell us what happened right before you got the profile error message:</translation>
 <translation id="8235418492073272647">Page shared from <ph name="DEVICE_NAME" /></translation>

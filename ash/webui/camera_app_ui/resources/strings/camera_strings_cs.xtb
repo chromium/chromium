@@ -51,6 +51,7 @@
 <translation id="2879583609344924966">Kamera <ph name="CAMERA" /> je připojena.</translation>
 <translation id="3067436040345934772">Posunout doprava</translation>
 <translation id="3081586908890909590">Přepnout na záznam videa</translation>
+<translation id="3091480460059548935">Detekce textu v náhledu</translation>
 <translation id="313467653172006084">30 snímků/s</translation>
 <translation id="3157038259444425153">Nově můžete přímo zkopírovat text z fotky</translation>
 <translation id="3158534262962737808">Připojit se k síti <ph name="WIFINAME" /></translation>
@@ -141,6 +142,7 @@ Pokud se zpětná vazba týká kvality fotek nebo videí, připojte ukázkovou f
 <translation id="7337660886763914220">Chyby systému souborů.</translation>
 <translation id="7450541714075000668">Text byl zkopírován</translation>
 <translation id="7488619942230388918">Nahrát video GIF</translation>
+<translation id="7527714402753141485">Zobrazí text a tlačítko ke kopírování</translation>
 <translation id="7557677699350329807">Přepnout na další fotoaparát</translation>
 <translation id="7607002721634913082">Přerušeno</translation>
 <translation id="7608223098072244877">4 krát 4</translation>

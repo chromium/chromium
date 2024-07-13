@@ -84,6 +84,7 @@
 <translation id="1413240736185167732">Сбой: ошибка в работе фильтра</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">орхидея</translation>
+<translation id="142205161612889714">WebM</translation>
 <translation id="142228117786570094">У меня есть пара ключей</translation>
 <translation id="1423591390236870726">Клавиша <ph name="KEY_NAME" /> не нажата</translation>
 <translation id="1432110487435300883">Чтобы получить приблизительный результат, разделите значение "<ph name="CATEGORY_TEXT" />" на <ph name="CONVERSION_RATE" /></translation>
@@ -771,6 +772,7 @@
 <translation id="5220549459260334974">Скачано <ph name="PROGRESS_PERCENTAGE" /> %</translation>
 <translation id="5222676887888702881">Выйти</translation>
 <translation id="522307662484862935">Не указывать адрес электронной почты</translation>
+<translation id="5226879510707344687">Экспорт расшифровки</translation>
 <translation id="5227902338748591677">Расписание тёмной темы</translation>
 <translation id="5229344016299762883">Выйти из полноэкранного режима</translation>
 <translation id="5234764350956374838">Закрыть</translation>
@@ -961,6 +963,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6283581480003247988">синих и фиолетовых</translation>
 <translation id="6284632978374966585">Включить тёмную тему</translation>
+<translation id="6285260286443238386">Экспорт записи</translation>
 <translation id="628726841779494414">Чтобы изменить параметры принтеров, перейдите в настройки</translation>
 <translation id="6292095526077353682">Во время зарядки показывать заставку</translation>
 <translation id="629550705077076970">затемнение подсветки клавиатуры</translation>
@@ -995,6 +998,7 @@
 <translation id="6417265370957905582">Google Ассистент</translation>
 <translation id="6419454453018688975">Разрешить доступ к геоданным на уровне системы</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">Слабый (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Перейти к настройкам аккаунта</translation>
 <translation id="6462978824459367242">Доступна кнопка "Добавить точку доступа"</translation>
@@ -1465,6 +1469,7 @@
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> пользователя <ph name="GIVEN_NAME" /></translation>
 <translation id="8918813738569491921">кристаллы соли</translation>
 <translation id="8919837981463578619">Сбой: нет лотка для бумаги</translation>
+<translation id="8924154518905976972">Экспорт аудио</translation>
 <translation id="8928727111548978589">Сбой: закончилась бумага</translation>
 <translation id="8930521118335213258">Пользователь</translation>
 <translation id="8930622219860340959">Беспроводная связь</translation>

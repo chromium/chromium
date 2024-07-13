@@ -84,6 +84,7 @@
 <translation id="1413240736185167732">Neizdevās — filtra kļūme</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">orhideja</translation>
+<translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">Man ir atslēgu pāris</translation>
 <translation id="1423591390236870726">Taustiņš “<ph name="KEY_NAME" />” nav nospiests</translation>
 <translation id="1432110487435300883">Lai iegūtu aptuvenu rezultātu, <ph name="CATEGORY_TEXT" /> jādala ar <ph name="CONVERSION_RATE" /></translation>
@@ -771,6 +772,7 @@
 <translation id="5220549459260334974">Lejupielādētais apjoms: <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="5222676887888702881">Izrakstīties</translation>
 <translation id="522307662484862935">Neiekļaut e-pasta adresi</translation>
+<translation id="5226879510707344687">Transkripcijas eksportēšana</translation>
 <translation id="5227902338748591677">Tumšā motīva grafiks</translation>
 <translation id="5229344016299762883">Iziet no pilnekrāna režīma</translation>
 <translation id="5234764350956374838">Nerādīt</translation>
@@ -961,6 +963,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6283581480003247988">zila un violeta</translation>
 <translation id="6284632978374966585">Ieslēgt tumšo motīvu</translation>
+<translation id="6285260286443238386">Ieraksta eksportēšana</translation>
 <translation id="628726841779494414">Savus printerus varat pārvaldīt printera iestatījumos.</translation>
 <translation id="6292095526077353682">Ekrānsaudzētāja rādīšanas ilgums uzlādes laikā</translation>
 <translation id="629550705077076970">tastatūras aptumšošana</translation>
@@ -995,6 +998,7 @@
 <translation id="6417265370957905582">Google asistents</translation>
 <translation id="6419454453018688975">Ieslēgt sistēmas piekļuvi atrašanās vietas datiem</translation>
 <translation id="6423239382391657905">Atvērt VPN</translation>
+<translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">Vājš (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Pāriet uz konta iestatījumiem</translation>
 <translation id="6462978824459367242">APN pievienošanas poga tagad ir iespējota</translation>
@@ -1461,6 +1465,7 @@
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" />, ko izmanto <ph name="GIVEN_NAME" /></translation>
 <translation id="8918813738569491921">akmeņsāls</translation>
 <translation id="8919837981463578619">Neizdevās — trūkst paliktņa</translation>
+<translation id="8924154518905976972">Audio eksportēšana</translation>
 <translation id="8928727111548978589">Neizdevās — beidzies papīrs</translation>
 <translation id="8930521118335213258">Vienādranga ierīce</translation>
 <translation id="8930622219860340959">Bezvadu</translation>

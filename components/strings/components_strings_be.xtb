@@ -652,6 +652,7 @@
 <translation id="2168151236314517198">Палітыка, зададзеная адміністратарам, блакіруе магчымасць друкавання гэтага змесціва</translation>
 <translation id="2170417331417184438">Картка захавана толькі на прыладзе</translation>
 <translation id="2172089022819052306">Рамонт і абслугоўванне аўтамабіляў</translation>
+<translation id="2174875517416416684">Трансакцыя не выканана. Сродкі не спісаны з вашага рахунку.</translation>
 <translation id="2175630235841878061">Файлы памерам больш за 100 МБ спампоўваць нельга</translation>
 <translation id="2176974405772725904">Захаваць адрас ва ўліковым запісе</translation>
 <translation id="2178665390943006934">Кнопка "Абнавіць Chrome". Каб абнавіць браўзер Chrome праз яго налады, націсніце яе.</translation>
@@ -3394,6 +3395,7 @@
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> мм)</translation>
 <translation id="7450577240311017924">Кнопка "Кіраваць сінхранізацыяй". Каб задаць у наладах Chrome, якая іменна інфармацыя будзе сінхранізавацца, націсніце яе.</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /> пра гэту праблему.</translation>
+<translation id="745208957946308667">Гульня з дыназаўрам – націсніце клавішу прабелу, каб гуляць</translation>
 <translation id="7454377933424667109">Воблачны ўліковы запіс</translation>
 <translation id="7455133967321480974">Выкарыстоўваць глабальныя стандартныя налады (заблакіраваць)</translation>
 <translation id="7455452752247248289">Карпаратыўныя тэхналогіі</translation>
@@ -4046,6 +4048,7 @@
 <translation id="8676424191133491403">Без затрымкі</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, адказ, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Немагчыма загрузіць вэб-старонку па адрасе <ph name="PAGE" />, бо:</translation>
+<translation id="8682297334444610648">Гульня з дыназаўрам – дакраніцеся, каб гуляць</translation>
 <translation id="8686424632716064939">Камп'ютарная бяспека</translation>
 <translation id="8687278439622293018">Запіс "<ph name="ENTRY_VOICEOVER" />" выдалены</translation>
 <translation id="8687429322371626002">Вашай прыладай і ўліковым запісам кіруе <ph name="MANAGER" />.</translation>

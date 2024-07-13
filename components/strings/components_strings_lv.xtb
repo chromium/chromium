@@ -651,6 +651,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2168151236314517198">Administratora politika bloķē šī satura drukāšanu</translation>
 <translation id="2170417331417184438">Karte ir saglabāta tikai ierīcē</translation>
 <translation id="2172089022819052306">Transportlīdzekļu remonts un apkope</translation>
+<translation id="2174875517416416684">Neizdevās veikt darījumu. No jūsu konta netika atskaitīti līdzekļi.</translation>
 <translation id="2175630235841878061">Faili, kuru lielums pārsniedz 100 MB, nav pieejami lejupielādei.</translation>
 <translation id="2176974405772725904">Adreses saglabāšana kontā</translation>
 <translation id="2178665390943006934">Poga “Atjaunināt Chrome”. Aktivizējiet, lai Chrome iestatījumos atjauninātu pārlūku Chrome.</translation>
@@ -3391,6 +3392,7 @@ Papildu informācija:
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Poga “Sinhronizācijas pārvaldība”. Aktivizējiet, lai Chrome iestatījumos pārvaldītu, kāda informācija tiek sinhronizēta.</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /> par šo problēmu.</translation>
+<translation id="745208957946308667">Dinozaura spēle; nospiediet atstarpes taustiņu, lai to spēlētu</translation>
 <translation id="7454377933424667109">Mākoņa konts</translation>
 <translation id="7455133967321480974">Izmantot globālo noklusējumu (Bloķēt)</translation>
 <translation id="7455452752247248289">Uzņēmumu tehnoloģija</translation>
@@ -4044,6 +4046,7 @@ Papildu informācija:
 <translation id="8676424191133491403">Bez aizkaves</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, atbilde, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Tīmekļa lapu <ph name="PAGE" /> nevarēja ielādēt tālāk norādīto iemeslu dēļ.</translation>
+<translation id="8682297334444610648">Dinozaura spēle; pieskarieties, lai to spēlētu</translation>
 <translation id="8686424632716064939">Datoru drošība</translation>
 <translation id="8687278439622293018">Ieraksts <ph name="ENTRY_VOICEOVER" /> ir izdzēsts.</translation>
 <translation id="8687429322371626002">Jūsu ierīci un kontu pārvalda <ph name="MANAGER" />.</translation>

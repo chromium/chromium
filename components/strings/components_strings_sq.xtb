@@ -651,6 +651,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2168151236314517198">Printimi i kësaj përmbajtjeje është bllokuar nga politika e administratorit</translation>
 <translation id="2170417331417184438">Karta u ruajt vetëm te pajisja</translation>
 <translation id="2172089022819052306">Riparimi dhe mirëmbajtja e automjetit</translation>
+<translation id="2174875517416416684">Transaksioni yt nuk u krye. Nuk u tërhoqën fonde nga llogaria jote.</translation>
 <translation id="2175630235841878061">Skedarët mbi 100 MB nuk ofrohen për shkarkim</translation>
 <translation id="2176974405772725904">Ruaje adresën te llogaria</translation>
 <translation id="2178665390943006934">Butoni "Përditëso Chrome". Aktivizoje për të përditësuar Chrome nga cilësimet e Chrome</translation>
@@ -3391,6 +3392,7 @@ Detaje shtesë:
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Butoni "Menaxho sinkronizimin". Aktivizoje për të menaxhuar se çfarë informacionesh sinkronizon ti te cilësimet e Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /> rreth këtij problemi.</translation>
+<translation id="745208957946308667">Loja Dino, shtyp tastin e hapësirës për të luajtur</translation>
 <translation id="7454377933424667109">Llogaria në renë kompjuterike</translation>
 <translation id="7455133967321480974">Përdor parazgjedhjen globale (blloko)</translation>
 <translation id="7455452752247248289">Teknologji për ndërmarrjet</translation>
@@ -4043,6 +4045,7 @@ Detaje shtesë:
 <translation id="8676424191133491403">Pa vonesë</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, përgjigjja, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Faqja e uebit në <ph name="PAGE" /> nuk mund të ngarkohej sepse:</translation>
+<translation id="8682297334444610648">Loja Dino, trokit për të luajtur</translation>
 <translation id="8686424632716064939">Siguria kompjuterike</translation>
 <translation id="8687278439622293018">Hyrja <ph name="ENTRY_VOICEOVER" /> është fshirë</translation>
 <translation id="8687429322371626002">Pajisja dhe llogaria jote menaxhohen nga <ph name="MANAGER" />.</translation>

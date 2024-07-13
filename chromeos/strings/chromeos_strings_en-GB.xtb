@@ -84,6 +84,7 @@
 <translation id="1413240736185167732">Failed – Filter failed</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">orchid</translation>
+<translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">I have a keypair</translation>
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> key not pressed</translation>
 <translation id="1432110487435300883">For an approximate result, divide the <ph name="CATEGORY_TEXT" /> value by <ph name="CONVERSION_RATE" /></translation>
@@ -771,6 +772,7 @@
 <translation id="5220549459260334974"><ph name="PROGRESS_PERCENTAGE" />% downloaded</translation>
 <translation id="5222676887888702881">Sign out</translation>
 <translation id="522307662484862935">Don't include email address</translation>
+<translation id="5226879510707344687">Export transcript</translation>
 <translation id="5227902338748591677">Dark theme schedule</translation>
 <translation id="5229344016299762883">Exit full</translation>
 <translation id="5234764350956374838">Dismiss</translation>
@@ -961,6 +963,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6283581480003247988">blue and purple</translation>
 <translation id="6284632978374966585">Turn Dark theme on</translation>
+<translation id="6285260286443238386">Export recording</translation>
 <translation id="628726841779494414">Manage your printers in printer settings</translation>
 <translation id="6292095526077353682">While charging, show screen saver for</translation>
 <translation id="629550705077076970">keyboard dimming</translation>
@@ -995,6 +998,7 @@
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6419454453018688975">Turn on system location access</translation>
 <translation id="6423239382391657905">Open VPN</translation>
+<translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">Weak (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Go to account settings</translation>
 <translation id="6462978824459367242">Add APN button is now enabled</translation>
@@ -1465,6 +1469,7 @@ You can turn this off at any time in Settings.</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />'s <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918813738569491921">salt rock</translation>
 <translation id="8919837981463578619">Failed – Tray missing</translation>
+<translation id="8924154518905976972">Export audio</translation>
 <translation id="8928727111548978589">Failed – Out of paper</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Wireless</translation>

@@ -651,6 +651,7 @@
 <translation id="2168151236314517198">ଏହି ବିଷୟବସ୍ତୁକୁ ପ୍ରିଣ୍ଟ କରିବା ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ନୀତି ଦ୍ୱାରା ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="2170417331417184438">କାର୍ଡକୁ କେବଳ ଡିଭାଇସରେ ସେଭ କରାଯାଇଛି</translation>
 <translation id="2172089022819052306">ଗାଡ଼ି ମରାମତି ଏବଂ ରକ୍ଷଣାବେକ୍ଷଣ</translation>
+<translation id="2174875517416416684">ଆପଣଙ୍କ ଟ୍ରାଞ୍ଜେକ୍ସନ ସଫଳ ହେଲା ନାହିଁ। ଆପଣଙ୍କ ଆକାଉଣ୍ଟରୁ କୌଣସି ଫଣ୍ଡ ପ୍ରତ୍ୟାହାର କରାଯାଇନାହିଁ।</translation>
 <translation id="2175630235841878061">100MBରୁ ଅଧିକ ଫାଇଲଗୁଡ଼ିକ ଡାଉନଲୋଡ ପାଇଁ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="2176974405772725904">ଆକାଉଣ୍ଟରେ ଠିକଣା ସେଭ କରନ୍ତୁ</translation>
 <translation id="2178665390943006934">'Chromeକୁ ଅପଡେଟ କରନ୍ତୁ' ବଟନ, ଆପଣଙ୍କ Chrome ସେଟିଂସରୁ Chromeକୁ ଅପଡେଟ କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
@@ -3388,6 +3389,7 @@
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> ମିମି)</translation>
 <translation id="7450577240311017924">'ସିଙ୍କ ପରିଚାଳନା କରନ୍ତୁ' ବଟନ, Chrome ସେଟିଂସରେ ଆପଣ କେଉଁ ସୂଚନା ସିଙ୍କ କରନ୍ତି ତାହା ପରିଚାଳନା କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="7451311239929941790">ଏହି ସମସ୍ୟା ବିଷୟରେ <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" />।</translation>
+<translation id="745208957946308667">Dino ଗେମ, ପ୍ଲେ କରିବାକୁ ସ୍ପେସ ଦବାନ୍ତୁ</translation>
 <translation id="7454377933424667109">କ୍ଲାଉଡ ଆକାଉଣ୍ଟ</translation>
 <translation id="7455133967321480974">ବିଶ୍ୱବ୍ୟାପୀ ଡିଫଲ୍ଟ ବ୍ୟବହାର କରନ୍ତୁ (ଅବରୋଧ କରନ୍ତୁ)</translation>
 <translation id="7455452752247248289">ଏଣ୍ଟରପ୍ରାଇଜ ଟେକ୍ନୋଲୋଜି</translation>
@@ -4040,6 +4042,7 @@
 <translation id="8676424191133491403">କୌଣସି ବିଳମ୍ବ ନାହିଁ</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, ଉତ୍ତର ଦିଅନ୍ତୁ, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" />ରେ ୱେବ୍‌ପୃଷ୍ଠା ଲୋଡ୍ କରାଯାଇପାରିଲା ନାହିଁ, କାରଣ:</translation>
+<translation id="8682297334444610648">Dino ଗେମ, ପ୍ଲେ କରିବାକୁ ଟାପ କରନ୍ତୁ</translation>
 <translation id="8686424632716064939">କମ୍ପ୍ୟୁଟର ସୁରକ୍ଷା</translation>
 <translation id="8687278439622293018">ଏଣ୍ଟ୍ରି <ph name="ENTRY_VOICEOVER" />କୁ ଡିଲିଟ କରାଯାଇଛି</translation>
 <translation id="8687429322371626002">ଆପଣଙ୍କର ଡିଭାଇସ୍ ଏବଂ ଆକାଉଣ୍ଟ <ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି।</translation>

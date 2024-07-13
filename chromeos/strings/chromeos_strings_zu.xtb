@@ -84,6 +84,7 @@
 <translation id="1413240736185167732">Yehlulekile - Isihlungi sehlulekile</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">i-orchid</translation>
+<translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">Nginokhiye obhanqwayo</translation>
 <translation id="1423591390236870726">Ukhiye we-<ph name="KEY_NAME" /> akacindezelwanga</translation>
 <translation id="1432110487435300883">Ngomphumela osondelene, hlukanisa inani le-<ph name="CATEGORY_TEXT" /> ngo-<ph name="CONVERSION_RATE" /></translation>
@@ -771,6 +772,7 @@
 <translation id="5220549459260334974">U-<ph name="PROGRESS_PERCENTAGE" />% udawunilodiwe</translation>
 <translation id="5222676887888702881">Phuma ngemvume</translation>
 <translation id="522307662484862935">Ungafaki ikheli le-imeyili</translation>
+<translation id="5226879510707344687">Khipha okulotshiweyo</translation>
 <translation id="5227902338748591677">Shejula itimu emnyama</translation>
 <translation id="5229344016299762883">Phuma kokugcwele</translation>
 <translation id="5234764350956374838">Cashisa</translation>
@@ -961,6 +963,7 @@
 <translation id="6280912520669706465">I-ARC</translation>
 <translation id="6283581480003247988">okuluhlaza okwesibhakabhaka nokuphephuli</translation>
 <translation id="6284632978374966585">Vula itimu emnyama</translation>
+<translation id="6285260286443238386">Khipha ukurekhoda</translation>
 <translation id="628726841779494414">Phatha amaphrinta akho kumasethingi ephrinta</translation>
 <translation id="6292095526077353682">Ngenkathi ishaja, bonisa isilondolozi sesikrini</translation>
 <translation id="629550705077076970">ukufiphala kwekhibhodi</translation>
@@ -995,6 +998,7 @@
 <translation id="6417265370957905582">Umsizi we-Google</translation>
 <translation id="6419454453018688975">Vula ukufinyelela indawo yesistimu</translation>
 <translation id="6423239382391657905">I-OpenVPN</translation>
+<translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">Buthakathaka (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Iya kumasethingi e-akhawunti</translation>
 <translation id="6462978824459367242">Ukufaka inkinobho ye-APN manje kuvunyelwe</translation>
@@ -1465,6 +1469,7 @@ Ungavala lokhu noma inini kokuthi Amasethingi.</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918813738569491921">itshe likasawoti</translation>
 <translation id="8919837981463578619">Yehlulekile - Itreyi alikho</translation>
+<translation id="8924154518905976972">Khipha umsindo</translation>
 <translation id="8928727111548978589">Yehlulekile - Iphepha liphelile</translation>
 <translation id="8930521118335213258">Untanga</translation>
 <translation id="8930622219860340959">Okungenantambo</translation>

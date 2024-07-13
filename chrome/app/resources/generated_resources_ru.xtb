@@ -9817,6 +9817,7 @@
 <translation id="8230134520748321204">Сохранить пароль для <ph name="ORIGIN" />?</translation>
 <translation id="8230326817897075865">Удалить <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="8230446983261649357">Запретить сайтам показывать изображения</translation>
+<translation id="823226567613548870">удалить ваши данные из сервиса "<ph name="BRAND" />"</translation>
 <translation id="8233028084277069927">Открыть</translation>
 <translation id="8234795456569844941">Чтобы нашим разработчикам было проще решить проблему, опишите, что произошло перед появлением сообщения об ошибке в профиле:</translation>
 <translation id="8235418492073272647">Страница с устройства <ph name="DEVICE_NAME" /></translation>
@@ -10139,7 +10140,7 @@
 <translation id="8459023460357294721">Все равно открыть <ph name="FILE_NAME" /></translation>
 <translation id="8459333762072051247">Статус входа</translation>
 <translation id="8460448946170646641">Проверка основных настроек конфиденциальности и безопасности</translation>
-<translation id="8460490661223303637">Чтобы сохранить воспоминание, браузер Chrome удалил часть контента.</translation>
+<translation id="8460490661223303637">Чтобы сэкономить память, браузер Chrome удалил часть контента.</translation>
 <translation id="8460932807646981183">Управление поисковыми системами и поиском по сайту</translation>
 <translation id="84613761564611563">Отправлен запрос на получение интерфейса конфигурации сети. Подождите…</translation>
 <translation id="8461914792118322307">Настройки прокси-сервера</translation>

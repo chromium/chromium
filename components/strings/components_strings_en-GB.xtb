@@ -651,6 +651,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2168151236314517198">Printing this content is blocked by administrator policy</translation>
 <translation id="2170417331417184438">Card saved only to device</translation>
 <translation id="2172089022819052306">Vehicle repair and maintenance</translation>
+<translation id="2174875517416416684">Your transaction didn't go through. No funds were withdrawn from your account.</translation>
 <translation id="2175630235841878061">Files over 100MB are not available for download</translation>
 <translation id="2176974405772725904">Save address in Account</translation>
 <translation id="2178665390943006934">Update Chrome button, activate to update Chrome from your Chrome settings</translation>
@@ -3392,6 +3393,7 @@ Additional details:
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Manage sync button, activate to manage what info you sync in Chrome settings</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /> about this problem.</translation>
+<translation id="745208957946308667">Dino game, press space to play</translation>
 <translation id="7454377933424667109">Cloud account</translation>
 <translation id="7455133967321480974">Use global default (Block)</translation>
 <translation id="7455452752247248289">Enterprise Technology</translation>
@@ -4044,6 +4046,7 @@ Additional details:
 <translation id="8676424191133491403">No delay</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, answer, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">The web page at <ph name="PAGE" /> could not be loaded because:</translation>
+<translation id="8682297334444610648">Dino game, tap to play</translation>
 <translation id="8686424632716064939">Computer Security</translation>
 <translation id="8687278439622293018">Entry <ph name="ENTRY_VOICEOVER" /> has been deleted</translation>
 <translation id="8687429322371626002">Your device and account are managed by <ph name="MANAGER" />.</translation>

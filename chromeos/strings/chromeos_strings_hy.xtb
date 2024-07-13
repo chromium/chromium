@@ -84,6 +84,7 @@
 <translation id="1413240736185167732">Չհաջողվեց տպել – Զտիչը չաշխատեց</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">խոլորձ</translation>
+<translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">Ես ունեմ բանալիների զույգ</translation>
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> ստեղնը չի սեղմվել</translation>
 <translation id="1432110487435300883">Մոտավոր արդյունք ստանալու համար «<ph name="CATEGORY_TEXT" />» արժեքը բաժանեք <ph name="CONVERSION_RATE" />-ի</translation>
@@ -771,6 +772,7 @@
 <translation id="5220549459260334974">Ներբեռնվել է <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="5222676887888702881">Դուրս գրվել</translation>
 <translation id="522307662484862935">Չներառել էլ․ հասցե</translation>
+<translation id="5226879510707344687">Արտահանել գրադարձումը</translation>
 <translation id="5227902338748591677">Մուգ թեմայի ժամանակացույց</translation>
 <translation id="5229344016299762883">Դուրս գալ լիաէկրան ռեժիմից</translation>
 <translation id="5234764350956374838">Փակել</translation>
@@ -961,6 +963,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6283581480003247988">կապույտ և մանուշակագույն</translation>
 <translation id="6284632978374966585">Միացնել մուգ թեման</translation>
+<translation id="6285260286443238386">Գրառման արտահանում</translation>
 <translation id="628726841779494414">Կառավարեք տպիչները կարգավորումներում</translation>
 <translation id="6292095526077353682">Լիցքավորման ընթացքում ցուցադրել էկրանապահը</translation>
 <translation id="629550705077076970">ստեղնաշարի լուսավորության խամրեցում</translation>
@@ -995,6 +998,7 @@
 <translation id="6417265370957905582">Google Օգնական</translation>
 <translation id="6419454453018688975">Միացնել համակարգի տեղորոշման թույլտվությունը</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">Թույլ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Անցնել հաշվի կարգավորումներ</translation>
 <translation id="6462978824459367242">«Ավելացնել APN» կոճակը միացված է</translation>
@@ -1465,6 +1469,7 @@
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> (<ph name="GIVEN_NAME" />)</translation>
 <translation id="8918813738569491921">աղի հանքաքար</translation>
 <translation id="8919837981463578619">Չհաջողվեց տպել – Դարակը բացակայում է</translation>
+<translation id="8924154518905976972">Արտահանել աուդիոն</translation>
 <translation id="8928727111548978589">Չհաջողվեց տպել – Թուղթը սպառվել է</translation>
 <translation id="8930521118335213258">Նմանակ</translation>
 <translation id="8930622219860340959">Անլար</translation>

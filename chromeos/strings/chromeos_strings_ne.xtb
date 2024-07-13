@@ -84,6 +84,7 @@
 <translation id="1413240736185167732">प्रिन्ट गर्न सकिएन - फिल्टरमा समस्या आयो</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">सुनगाभा</translation>
+<translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">मसँग किपेयर छ</translation>
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> थिचिएको छैन</translation>
 <translation id="1432110487435300883">अनुमानित परिणाम प्राप्त गर्न <ph name="CONVERSION_RATE" /> ले <ph name="CATEGORY_TEXT" /> लाई भाग गर्नुहोस्</translation>
@@ -771,6 +772,7 @@
 <translation id="5220549459260334974"><ph name="PROGRESS_PERCENTAGE" />% डाउनलोड भएको छ</translation>
 <translation id="5222676887888702881">साइन आउट गर्नुहोस्</translation>
 <translation id="522307662484862935">इमेल ठेगाना समावेश नगर्नुहोस्</translation>
+<translation id="5226879510707344687">ट्रान्स्क्रिप्ट एक्सपोर्ट गर्नुहोस्</translation>
 <translation id="5227902338748591677">अँध्यारो थिमको समयतालिका</translation>
 <translation id="5229344016299762883">फुल स्क्रिनबाट बाहिरिनुहोस्</translation>
 <translation id="5234764350956374838">खारेज गर्नुहोस्</translation>
@@ -961,6 +963,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6283581480003247988">निलो र बैजनी</translation>
 <translation id="6284632978374966585">अँध्यारो थिम अन गर्नुहोस्‌</translation>
+<translation id="6285260286443238386">रेकर्डिङ एक्सपोर्ट गर्नुहोस्</translation>
 <translation id="628726841779494414">प्रिन्टरसम्बन्धी सेटिङमा गई आफ्ना प्रिन्टरहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="6292095526077353682">चार्ज भइरहेका बेला निम्न अवधिका लागि स्क्रिनसेभर देखाउनुहोस्</translation>
 <translation id="629550705077076970">किबोर्डको ब्याकलाइटको चमक कम गर्नुहोस्</translation>
@@ -995,6 +998,7 @@
 <translation id="6417265370957905582">Google सहायक</translation>
 <translation id="6419454453018688975">सिस्टमको लोकेसन प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="6423239382391657905">खुल्लाVPN</translation>
+<translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">कमजोर (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">खाताका सेटिङमा जानुहोस्</translation>
 <translation id="6462978824459367242">"APN हाल्नुहोस्" बटन अहिले अन गरिएको छ</translation>
@@ -1465,6 +1469,7 @@
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> को <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918813738569491921">सल्ट रक</translation>
 <translation id="8919837981463578619">प्रिन्ट गर्न सकिएन - ट्रे छैन</translation>
+<translation id="8924154518905976972">अडियो एक्सपोर्ट गर्नुहोस्</translation>
 <translation id="8928727111548978589">प्रिन्ट गर्न सकिएन - कागज सकियो</translation>
 <translation id="8930521118335213258">पियर</translation>
 <translation id="8930622219860340959">वायरलेस</translation>

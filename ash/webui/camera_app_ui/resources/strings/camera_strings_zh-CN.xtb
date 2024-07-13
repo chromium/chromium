@@ -51,6 +51,7 @@
 <translation id="2879583609344924966"><ph name="CAMERA" />已插入。</translation>
 <translation id="3067436040345934772">向右平移</translation>
 <translation id="3081586908890909590">切换到录制视频模式</translation>
+<translation id="3091480460059548935">预览文本检测</translation>
 <translation id="313467653172006084">30 FPS</translation>
 <translation id="3157038259444425153">现在，您可以直接复制照片中的文字</translation>
 <translation id="3158534262962737808">加入“<ph name="WIFINAME" />”</translation>
@@ -141,6 +142,7 @@
 <translation id="7337660886763914220">文件系统出错。</translation>
 <translation id="7450541714075000668">文本已复制</translation>
 <translation id="7488619942230388918">录制 GIF 视频</translation>
+<translation id="7527714402753141485">显示文本和复制按钮</translation>
 <translation id="7557677699350329807">切换到下一个摄像头</translation>
 <translation id="7607002721634913082">已暂停</translation>
 <translation id="7608223098072244877">4 x 4</translation>

@@ -84,6 +84,7 @@
 <translation id="1413240736185167732">Сәтсіз: сүзгі қатесі шықты</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">орхидея</translation>
+<translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">Кілттер жұбы өзімде бар</translation>
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> пернесі басылмады.</translation>
 <translation id="1432110487435300883">Нәтижені шамамен есептеу үшін <ph name="CATEGORY_TEXT" /> мәнін<ph name="CONVERSION_RATE" /> санына бөлу</translation>
@@ -771,6 +772,7 @@
 <translation id="5220549459260334974"><ph name="PROGRESS_PERCENTAGE" />% жүктеп алынды.</translation>
 <translation id="5222676887888702881">Шығу</translation>
 <translation id="522307662484862935">Электрондық мекенжайды енгізбеу</translation>
+<translation id="5226879510707344687">Транскрипцияны экспорттау</translation>
 <translation id="5227902338748591677">Қараңғы режим кестесі</translation>
 <translation id="5229344016299762883">Толық күйден шығу</translation>
 <translation id="5234764350956374838">Жабу</translation>
@@ -961,6 +963,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6283581480003247988">көк және күлгін</translation>
 <translation id="6284632978374966585">Қараңғы режимді қосу</translation>
+<translation id="6285260286443238386">Жазбаны экспорттау</translation>
 <translation id="628726841779494414">Принтер параметрлерінде принтерлерді басқарыңыз.</translation>
 <translation id="6292095526077353682">Зарядтау кезінде скринсейверді көрсету уақыты</translation>
 <translation id="629550705077076970">пернетақтаны күңгірттеу</translation>
@@ -995,6 +998,7 @@
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6419454453018688975">Жүйенің локацияны пайдалану рұқсатын қосу</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">Әлсіз (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Аккаунт параметрлеріне өту</translation>
 <translation id="6462978824459367242">APN қосу түймесі қосылды.</translation>
@@ -1465,6 +1469,7 @@
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> иелік ететін <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918813738569491921">тас тұзы</translation>
 <translation id="8919837981463578619">Сәтсіз: науа жоқ</translation>
+<translation id="8924154518905976972">Аудионы экспорттау</translation>
 <translation id="8928727111548978589">Сәтсіз: қағаз бітіп қалды</translation>
 <translation id="8930521118335213258">құрылғы</translation>
 <translation id="8930622219860340959">Сымсыз</translation>

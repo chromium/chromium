@@ -84,6 +84,7 @@
 <translation id="1413240736185167732">Неуспешно - филтерот не успеа</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">орхидеја</translation>
+<translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">Имам пар клучеви</translation>
 <translation id="1423591390236870726">Копчето <ph name="KEY_NAME" /> не е притиснато</translation>
 <translation id="1432110487435300883">За приближен резултат, поделете ја вредноста на <ph name="CATEGORY_TEXT" /> со <ph name="CONVERSION_RATE" /></translation>
@@ -771,6 +772,7 @@
 <translation id="5220549459260334974">Преземено: <ph name="PROGRESS_PERCENTAGE" /> %</translation>
 <translation id="5222676887888702881">Одјави се</translation>
 <translation id="522307662484862935">Не вклучувај адреса на е-пошта</translation>
+<translation id="5226879510707344687">Извезете ја транскрипцијата</translation>
 <translation id="5227902338748591677">Распоред за темна тема</translation>
 <translation id="5229344016299762883">Излези од цел екран</translation>
 <translation id="5234764350956374838">Отфрли</translation>
@@ -961,6 +963,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6283581480003247988">сина и виолетова</translation>
 <translation id="6284632978374966585">Вклучи темна тема</translation>
+<translation id="6285260286443238386">Извезете ја снимката</translation>
 <translation id="628726841779494414">Управувајте со печатачите во поставките за печатачи</translation>
 <translation id="6292095526077353682">При полнење, прикажувај „Штедач на екран“</translation>
 <translation id="629550705077076970">затемнување на тастатурата</translation>
@@ -995,6 +998,7 @@
 <translation id="6417265370957905582">Помошник на Google</translation>
 <translation id="6419454453018688975">Вклучи пристап до локацијата за оперативниот систем</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">Слаб (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Одете во поставките за сметката</translation>
 <translation id="6462978824459367242">Копчето „Додај“ во APN сега е овозможено</translation>
@@ -1465,6 +1469,7 @@
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> на <ph name="GIVEN_NAME" /></translation>
 <translation id="8918813738569491921">камена сол</translation>
 <translation id="8919837981463578619">Неуспешно - недостасува фиоката</translation>
+<translation id="8924154518905976972">Извезете го аудиото</translation>
 <translation id="8928727111548978589">Неуспешно - нема хартија</translation>
 <translation id="8930521118335213258">Споредба</translation>
 <translation id="8930622219860340959">Безжична</translation>

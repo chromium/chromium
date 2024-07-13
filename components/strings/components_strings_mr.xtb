@@ -679,6 +679,7 @@
 <translation id="2219658597883514593">ट्यूटोरियल रीस्टार्ट करा</translation>
 <translation id="2219735899272417925">डिव्हाइस रीसेट करण्याची आवश्यकता आहे</translation>
 <translation id="2221227930294879156">खाद्यपदार्थ आणि पेय इव्हेंट</translation>
+<translation id="2222604080869344662">डाउनलोड करणे पुढे सुरू ठेवण्यासाठी OneDrive मध्ये साइन इन करा</translation>
 <translation id="2224337661447660594">इंटरनेट नाही</translation>
 <translation id="2225927550500503913">व्हर्च्युअल कार्ड सुरू केले आहे</translation>
 <translation id="2226636330183131181">वायफाय नेटवर्कमध्ये <ph name="BEGIN_LINK" />साइन इन करणे<ph name="END_LINK" /> हे करत आहे</translation>
@@ -778,6 +779,7 @@
 <translation id="2399868464369312507">Google Chrome हे पेमेंट पद्धती संपादित करण्याचा प्रयत्न करत आहे.</translation>
 <translation id="2400600116338235695">सिरीअल पोर्टशी कनेक्ट करण्याची विनंती करू शकते</translation>
 <translation id="2404884497378469141">तुमच्या फाइल कॉपी करण्याचा पुन्हा प्रयत्न करा</translation>
+<translation id="2412310121876768057">पुढील वेळेस कार्ड ऑटोफिल करायचे आहे का?</translation>
 <translation id="2413155254802890957">जुना</translation>
 <translation id="2413528052993050574">हा सर्व्हर हे <ph name="DOMAIN" /> असल्याचे सिद्ध करू शकला नाही; त्याचे सुरक्षितता सर्टिफिकेट कदाचित रद्द केले असू शकते. हे कदाचित एका चुकीच्या कॉंफिगरेशनमुळे किंवा हल्लेखोराने तुमचे कनेक्शन इंटरसेप्ट केल्यामुळे झाले असू शकते.</translation>
 <translation id="2414886740292270097">गडद</translation>
@@ -1241,6 +1243,7 @@
 <translation id="3352881017886802007">क्रीडा सामने</translation>
 <translation id="3355823806454867987">प्रॉक्सी सेटिंग्ज बदला...</translation>
 <translation id="335809815767823">एक्सपोर्ट केली</translation>
+<translation id="3359387651158939842">तुम्ही तुमचे कार्ड Google Pay सह वापरण्यासाठी सेव्ह केल्यावर भविष्यातील खरेदीसाठी ऑटोफिल करा</translation>
 <translation id="3359565626472459400">विवाह</translation>
 <translation id="3360103848165129075">पेमेंट हँडलर शीट</translation>
 <translation id="3362968246557010467">हे धोरण कालबाह्य झालेल्या <ph name="OLD_POLICY" /> धोरणावरून आपोआप कॉपी केले गेले. तुम्ही त्याऐवजी हे धोरण वापरले पाहिजे.</translation>
@@ -2054,6 +2057,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ऑलिंपिक</translation>
 <translation id="4898742041545089450">हा विषय अनब्लॉक केला आहे आणि तो तुमच्या ब्राउझिंग इतिहासानुसार ॲक्टिव्ह होऊ शकतो</translation>
+<translation id="4899379435492347481">तुमच्या डिव्हाइसवर खरेदी करण्यासाठी Google Pay सह ऑनलाइन वापरण्याकरिता हे कार्ड सेव्ह करा</translation>
 <translation id="4900217275619098670">नववा रोल</translation>
 <translation id="4901052769830245369">लेबल (सेमी-ग्लॉस)</translation>
 <translation id="4901162432287938633">स्वच्छता आणि प्रसाधने</translation>
@@ -2718,6 +2722,7 @@
 <translation id="6180316780098470077">दोन प्रयत्नांमधील मध्यांतर</translation>
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome हे तृतीय पक्ष कुकीना आपोआप मर्यादित करते</translation>
+<translation id="6194139058731919563">तुमच्या कार्डचे तपशील तुमच्या Google खाते मध्ये सेव्ह केले जातात आणि ऑनलाइन पेमेंट करताना ते एन्क्रिप्ट केले जातात</translation>
 <translation id="6194209731893739467">तुमची सर्व माग ठेवलेली उत्पादने येथे पहा</translation>
 <translation id="6195163219142236913">तृतीय पक्ष कुकी मर्यादित आहेत</translation>
 <translation id="6195371403461054755">भूशास्त्र</translation>
@@ -3619,6 +3624,7 @@
 <translation id="7831993212387676366">खरेदीची सूची काय आहे?</translation>
 <translation id="7832078172950550575">दररोजची भाषा वापरून, "माझ्या जवळची पिझ्झाची ठिकाणे" किंवा "मुख्य शहरातील कुटुंबस्नेही पार्क" यांसारखी वाक्ये वापरून तुम्ही तुमचा ब्राउझिंग इतिहास शोधू शकता. तुमचे शोध, सर्वोत्तम जुळण्या आणि त्यांचा पेजचा आशय Google कडे पाठवला जातो आणि या वैशिष्ट्यामध्ये सुधारणा करण्यासाठी मानवी परीक्षणकर्त्यांद्वारे पाहिला जाऊ शकतो. <ph name="BEGIN_LINK" />तुमचे इतिहास शोध सेटिंग व्यवस्थापित करा<ph name="END_LINK" /></translation>
 <translation id="7840103971441592723">स्क्रीन कॅप्चर सुरू झाले आहे</translation>
+<translation id="7840504603489703295">तुमच्या वित्तीय संस्थेकडून मर्यादा लागू केल्या जातात.</translation>
 <translation id="784137052867620416">खरेदीशी संबंधित इनसाइट</translation>
 <translation id="784404208867107517">गटबद्ध केलेला इतिहास</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{काहीही नाही}=1{एक अ‍ॅप <ph name="EXAMPLE_APP_1" />}=2{२ अ‍ॅप्स <ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />}other{# अ‍ॅप्स <ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />}}</translation>
@@ -3817,6 +3823,7 @@
 <translation id="8241712895048303527">या साइटवर ब्लॉक करा</translation>
 <translation id="8242426110754782860">पुढे जा</translation>
 <translation id="8246482227229072868">अंगठ्या</translation>
+<translation id="8248406213705193919">कार्ड सुरक्षितपणे सेव्ह करायचे आहे का?</translation>
 <translation id="8249296373107784235">रद्द करा</translation>
 <translation id="824968735947741546"><ph name="SOURCE" /> (ऑटो-डिटेक्ट केलेला) मधून <ph name="TARGET" /> मध्ये भाषांतरित करत आहे</translation>
 <translation id="8250094606476360498">हा पत्ता या डिव्हाइसवर सेव्ह केला आहे. तो सर्व Google उत्पादनांवर वापरण्यासाठी, तुमच्या Google खाते <ph name="ACCOUNT" /> मध्ये सेव्ह करा.</translation>
@@ -4301,6 +4308,7 @@
 <translation id="9169664750068251925">या साइटवर नेहमी ब्लॉक करा</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" /> ला होम स्क्रीनवर जोडा</translation>
 <translation id="9170848237812810038">&amp;पूर्ववत करा</translation>
+<translation id="9170906125144697215">अ‍ॅप्स स्विच न करता Pix वापरून पेमेंट करा</translation>
 <translation id="9171296965991013597">ॲप सोडायचे?</translation>
 <translation id="9173282814238175921">एक दस्तऐवज/नवीन शीट</translation>
 <translation id="9173995187295789444">ब्लूटूथ डिव्हाइससाठी स्कॅन करत आहे...</translation>
@@ -4322,6 +4330,7 @@
 <translation id="9205078245616868884">तुमचा डेटा तुमच्या सिंक सांकेतिक पासफ्रेझासह एंक्रिप्ट केलेला केला जातो. सिंक सुरू करण्यासाठी तो एंटर करा.</translation>
 <translation id="920643408853370361">प्रवास विमा</translation>
 <translation id="9207861905230894330">लेख जोडण्यात अयशस्वी.</translation>
+<translation id="9209339767782560829">तुमचे लॉगिन सर्टिफिकेट वापरताना समस्या आली.</translation>
 <translation id="9210825002219699214">विमान प्रवास</translation>
 <translation id="9211461151375991073"><ph name="FEATURED_SEARCH_LIST" /> शोधण्यासाठी @ टाइप करा</translation>
 <translation id="9213433120051936369">स्वरूप कस्टमाइझ करा</translation>

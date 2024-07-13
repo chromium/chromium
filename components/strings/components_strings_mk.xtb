@@ -652,6 +652,7 @@
 <translation id="2168151236314517198">Администраторското правило го блокира печатењето на содржиниве</translation>
 <translation id="2170417331417184438">Картичката е зачувана само на уредот</translation>
 <translation id="2172089022819052306">Поправка и одржување возила</translation>
+<translation id="2174875517416416684">Вашата трансакција не се изврши. Не се повлечени средства од вашата сметка.</translation>
 <translation id="2175630235841878061">Датотеките поголеми од 100 MB не се достапни за преземање</translation>
 <translation id="2176974405772725904">Зачувајте ја адресата на сметката</translation>
 <translation id="2178665390943006934">Копче за ажурирање на Chrome, активирајте го за да го ажурирате Chrome од поставките за Chrome</translation>
@@ -3393,6 +3394,7 @@
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
 <translation id="7450577240311017924">Копче за управување со синхронизирањето, активирајте го за да управувате со податоците што се синхронизираат во поставките за Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />да дознаете повеќе<ph name="END_LINK" /> за овој проблем.</translation>
+<translation id="745208957946308667">Игра Dino, притиснете Space за да играте</translation>
 <translation id="7454377933424667109">Сметка во облак</translation>
 <translation id="7455133967321480974">Користи глобален стандард (Блокирај)</translation>
 <translation id="7455452752247248289">Технологија за претпријатија</translation>
@@ -4045,6 +4047,7 @@
 <translation id="8676424191133491403">Без одложување</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, одговор, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Веб-страницата на <ph name="PAGE" /> не може да се вчита бидејќи:</translation>
+<translation id="8682297334444610648">Игра Dino, допрете за да играте</translation>
 <translation id="8686424632716064939">Компјутерска безбедност</translation>
 <translation id="8687278439622293018">Записот <ph name="ENTRY_VOICEOVER" /> е избришан</translation>
 <translation id="8687429322371626002"><ph name="MANAGER" /> управува со уредот и сметката.</translation>
