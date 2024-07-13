@@ -188,8 +188,15 @@ bool XRWebGLDrawingBuffer::Initialize(const gfx::Size& size,
   if (use_multisampling) {
     gl->GetIntegerv(GL_MAX_SAMPLES_ANGLE, &max_sample_count);
     anti_aliasing_mode_ = kMSAAExplicitResolve;
-    if (extensions_util->SupportsExtension(
-            "GL_EXT_multisampled_render_to_texture")) {
+    const auto& gpu_feature_info =
+        drawing_buffer_->ContextProvider()->GetGpuFeatureInfo();
+    const bool is_using_graphite =
+        gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
+        gpu::kGpuFeatureStatusEnabled;
+    // With Graphite, Skia is not using ANGLE, so ANGLE cannot do an implicit
+    // resolve when the back buffer is sampled by Skia.
+    if (!is_using_graphite && extensions_util->SupportsExtension(
+                                  "GL_EXT_multisampled_render_to_texture")) {
       anti_aliasing_mode_ = kMSAAImplicitResolve;
     }
   }
