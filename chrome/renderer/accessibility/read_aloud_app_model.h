@@ -156,7 +156,7 @@ class ReadAloudAppModel {
       const ui::AXNodeID& id) const;
 
   bool IsValidAXPosition(
-      const ui::AXNodePosition::AXPositionInstance& positin,
+      const ui::AXNodePosition::AXPositionInstance& position,
       const a11y::ReadAloudCurrentGranularity& current_granularity,
       bool is_pdf,
       bool is_docs,
