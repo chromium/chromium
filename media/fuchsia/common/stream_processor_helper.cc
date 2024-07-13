@@ -323,18 +323,19 @@ void StreamProcessorHelper::OnError() {
 }
 
 void StreamProcessorHelper::SetInputBufferCollectionToken(
-    fuchsia::sysmem::BufferCollectionTokenPtr sysmem_token) {
+    fuchsia::sysmem2::BufferCollectionTokenPtr sysmem_token) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   fuchsia::media::StreamBufferPartialSettings settings;
   settings.set_buffer_lifetime_ordinal(kInputBufferLifetimeOrdinal);
   settings.set_buffer_constraints_version_ordinal(0);
-  settings.set_sysmem_token(std::move(sysmem_token));
+  settings.set_sysmem_token(fuchsia::sysmem::BufferCollectionTokenHandle(
+      sysmem_token.Unbind().TakeChannel()));
   processor_->SetInputBufferPartialSettings(std::move(settings));
 }
 
 void StreamProcessorHelper::CompleteOutputBuffersAllocation(
-    fuchsia::sysmem::BufferCollectionTokenPtr collection_token) {
+    fuchsia::sysmem2::BufferCollectionTokenPtr collection_token) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!output_buffer_constraints_.IsEmpty());
 
@@ -343,7 +344,8 @@ void StreamProcessorHelper::CompleteOutputBuffersAllocation(
   settings.set_buffer_lifetime_ordinal(output_buffer_lifetime_ordinal_);
   settings.set_buffer_constraints_version_ordinal(
       output_buffer_constraints_.buffer_constraints_version_ordinal());
-  settings.set_sysmem_token(std::move(collection_token));
+  settings.set_sysmem_token(fuchsia::sysmem::BufferCollectionTokenHandle(
+      collection_token.Unbind().TakeChannel()));
   processor_->SetOutputBufferPartialSettings(std::move(settings));
   processor_->CompleteOutputBufferPartialSettings(
       output_buffer_lifetime_ordinal_);

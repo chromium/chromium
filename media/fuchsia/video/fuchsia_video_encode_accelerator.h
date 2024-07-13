@@ -77,10 +77,10 @@ class MEDIA_EXPORT FuchsiaVideoEncodeAccelerator final
   void OnError(EncoderStatus status);
   void OnInputBuffersAcquired(
       std::vector<VmoBuffer> buffers,
-      const fuchsia::sysmem::SingleBufferSettings& buffer_settings);
+      const fuchsia::sysmem2::SingleBufferSettings& buffer_settings);
   void OnOutputBuffersAcquired(
       std::vector<VmoBuffer> buffers,
-      const fuchsia::sysmem::SingleBufferSettings& buffer_settings);
+      const fuchsia::sysmem2::SingleBufferSettings& buffer_settings);
   fuchsia::media::FormatDetails CreateFormatDetails(
       VideoEncodeAccelerator::Config& config);
 

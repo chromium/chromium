@@ -19,8 +19,8 @@
 namespace media {
 
 SysmemCollectionClient::SysmemCollectionClient(
-    fuchsia::sysmem::Allocator* allocator,
-    fuchsia::sysmem::BufferCollectionTokenPtr collection_token)
+    fuchsia::sysmem2::Allocator* allocator,
+    fuchsia::sysmem2::BufferCollectionTokenPtr collection_token)
     : allocator_(allocator), collection_token_(std::move(collection_token)) {
   DCHECK(allocator_);
   DCHECK(collection_token_);
@@ -29,24 +29,32 @@ SysmemCollectionClient::SysmemCollectionClient(
 SysmemCollectionClient::~SysmemCollectionClient() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (collection_)
-    collection_->Close();
+    collection_->Release();
 }
 
 void SysmemCollectionClient::Initialize(
-    fuchsia::sysmem::BufferCollectionConstraints constraints,
+    fuchsia::sysmem2::BufferCollectionConstraints constraints,
     std::string_view name,
     uint32_t name_priority) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  writable_ = (constraints.usage.cpu & fuchsia::sysmem::cpuUsageWrite) ==
-              fuchsia::sysmem::cpuUsageWrite;
+  uint32_t cpu = 0;
+  if (constraints.has_usage() && constraints.usage().has_cpu()) {
+    cpu = constraints.usage().cpu();
+  }
+  writable_ = (cpu & fuchsia::sysmem2::CPU_USAGE_WRITE) ==
+              fuchsia::sysmem2::CPU_USAGE_WRITE;
 
-  allocator_->BindSharedCollection(std::move(collection_token_),
-                                   collection_.NewRequest());
+  allocator_->BindSharedCollection(
+      std::move(fuchsia::sysmem2::AllocatorBindSharedCollectionRequest{}
+                    .set_token(std::move(collection_token_))
+                    .set_buffer_collection_request(collection_.NewRequest())));
 
   collection_.set_error_handler(
       fit::bind_member(this, &SysmemCollectionClient::OnError));
-  collection_->SetName(name_priority, std::string(name));
+  collection_->SetName(std::move(fuchsia::sysmem2::NodeSetNameRequest{}
+                                     .set_priority(name_priority)
+                                     .set_name(std::string(name))));
 
   // We may need to send a Sync to ensure previously-started CreateSharedToken()
   // calls can complete. The Sync completion is how we know that sysmem knows
@@ -59,8 +67,9 @@ void SysmemCollectionClient::Initialize(
         fit::bind_member(this, &SysmemCollectionClient::OnSyncComplete));
   }
 
-  collection_->SetConstraints(/*have_constraints=*/true,
-                              std::move(constraints));
+  collection_->SetConstraints(std::move(
+      fuchsia::sysmem2::BufferCollectionSetConstraintsRequest{}.set_constraints(
+          std::move(constraints))));
 }
 
 void SysmemCollectionClient::CreateSharedToken(
@@ -70,11 +79,17 @@ void SysmemCollectionClient::CreateSharedToken(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(collection_token_);
 
-  fuchsia::sysmem::BufferCollectionTokenPtr token;
-  collection_token_->Duplicate(ZX_RIGHT_SAME_RIGHTS, token.NewRequest());
+  fuchsia::sysmem2::BufferCollectionTokenPtr token;
+  collection_token_->Duplicate(
+      std::move(fuchsia::sysmem2::BufferCollectionTokenDuplicateRequest{}
+                    .set_rights_attenuation_mask(ZX_RIGHT_SAME_RIGHTS)
+                    .set_token_request(token.NewRequest())));
 
   if (!debug_client_name.empty()) {
-    token->SetDebugClientInfo(std::string(debug_client_name), debug_client_id);
+    token->SetDebugClientInfo(
+        std::move(fuchsia::sysmem2::NodeSetDebugClientInfoRequest{}
+                      .set_name(std::string(debug_client_name))
+                      .set_id(debug_client_id)));
   }
 
   shared_token_ready_closures_.push_back(
@@ -91,11 +106,12 @@ void SysmemCollectionClient::AcquireBuffers(AcquireBuffersCB cb) {
   }
 
   acquire_buffers_cb_ = std::move(cb);
-  collection_->WaitForBuffersAllocated(
+  collection_->WaitForAllBuffersAllocated(
       fit::bind_member(this, &SysmemCollectionClient::OnBuffersAllocated));
 }
 
-void SysmemCollectionClient::OnSyncComplete() {
+void SysmemCollectionClient::OnSyncComplete(
+    fuchsia::sysmem2::Node_Sync_Result sync_result) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   std::vector<base::OnceClosure> sync_closures =
@@ -106,21 +122,33 @@ void SysmemCollectionClient::OnSyncComplete() {
 }
 
 void SysmemCollectionClient::OnBuffersAllocated(
-    zx_status_t status,
-    fuchsia::sysmem::BufferCollectionInfo_2 buffer_collection_info) {
+    fuchsia::sysmem2::BufferCollection_WaitForAllBuffersAllocated_Result
+        wait_result) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (status != ZX_OK) {
-    ZX_LOG(ERROR, status) << "Failed to allocate sysmem buffers.";
-    OnError(status);
+  if (!wait_result.is_response()) {
+    zx_status_t error_status;
+    if (wait_result.is_framework_err()) {
+      ZX_LOG(ERROR, fidl::ToUnderlying(wait_result.framework_err()))
+          << "Failed to allocate sysmem buffers (framework_err).";
+      error_status = ZX_ERR_INTERNAL;
+    } else {
+      ZX_LOG(ERROR, static_cast<uint32_t>(wait_result.err()))
+          << "Failed to allocate sysmem buffers (err).";
+      // no real need to translate from sysmem2::Error to zx_status_t here
+      error_status = ZX_ERR_INTERNAL;
+    }
+    OnError(error_status);
     return;
   }
+  auto buffer_collection_info =
+      std::move(*wait_result.response().mutable_buffer_collection_info());
 
   if (acquire_buffers_cb_) {
     auto buffers = VmoBuffer::CreateBuffersFromSysmemCollection(
         &buffer_collection_info, writable_);
     std::move(acquire_buffers_cb_)
-        .Run(std::move(buffers), buffer_collection_info.settings);
+        .Run(std::move(buffers), buffer_collection_info.settings());
   }
 }
 
@@ -135,10 +163,12 @@ void SysmemCollectionClient::OnError(zx_status_t status) {
 SysmemAllocatorClient::SysmemAllocatorClient(std::string_view client_name) {
   allocator_ = base::ComponentContextForProcess()
                    ->svc()
-                   ->Connect<fuchsia::sysmem::Allocator>();
+                   ->Connect<fuchsia::sysmem2::Allocator>();
 
-  allocator_->SetDebugClientInfo(std::string(client_name),
-                                 base::GetCurrentProcId());
+  allocator_->SetDebugClientInfo(
+      std::move(fuchsia::sysmem2::AllocatorSetDebugClientInfoRequest{}
+                    .set_name(std::string(client_name))
+                    .set_id(base::GetCurrentProcId())));
 
   allocator_.set_error_handler([](zx_status_t status) {
     // Just log a warning. We will handle BufferCollection the failure when
@@ -150,10 +180,12 @@ SysmemAllocatorClient::SysmemAllocatorClient(std::string_view client_name) {
 
 SysmemAllocatorClient::~SysmemAllocatorClient() = default;
 
-fuchsia::sysmem::BufferCollectionTokenPtr
+fuchsia::sysmem2::BufferCollectionTokenPtr
 SysmemAllocatorClient::CreateNewToken() {
-  fuchsia::sysmem::BufferCollectionTokenPtr collection_token;
-  allocator_->AllocateSharedCollection(collection_token.NewRequest());
+  fuchsia::sysmem2::BufferCollectionTokenPtr collection_token;
+  allocator_->AllocateSharedCollection(
+      std::move(fuchsia::sysmem2::AllocatorAllocateSharedCollectionRequest{}
+                    .set_token_request(collection_token.NewRequest())));
   return collection_token;
 }
 
@@ -165,7 +197,7 @@ SysmemAllocatorClient::AllocateNewCollection() {
 
 std::unique_ptr<SysmemCollectionClient>
 SysmemAllocatorClient::BindSharedCollection(
-    fuchsia::sysmem::BufferCollectionTokenPtr token) {
+    fuchsia::sysmem2::BufferCollectionTokenPtr token) {
   return std::make_unique<SysmemCollectionClient>(allocator_.get(),
                                                   std::move(token));
 }

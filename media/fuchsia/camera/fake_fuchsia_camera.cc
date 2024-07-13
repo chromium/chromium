@@ -382,18 +382,21 @@ void FakeCameraStream::OnBufferCollectionSyncDone(
   // reserve any for the server side.
 
   // Initialize image format.
-  auto& ifc = constraints.mutable_image_format_constraints()->emplace_back();
-  ifc.set_pixel_format(fuchsia::images2::PixelFormat::NV12);
-  ifc.mutable_color_spaces()->emplace_back(
+  auto& image_constraints =
+      constraints.mutable_image_format_constraints()->emplace_back();
+  image_constraints.set_pixel_format(fuchsia::images2::PixelFormat::NV12);
+  image_constraints.mutable_color_spaces()->emplace_back(
       fuchsia::images2::ColorSpace::REC601_NTSC);
-  ifc.set_required_max_size(
-      fuchsia::math::SizeU{static_cast<uint32_t>(kMaxFrameSize.width()),
-                           static_cast<uint32_t>(kMaxFrameSize.height())});
+  image_constraints.set_required_max_size(
+      fuchsia::math::SizeU{
+        static_cast<uint32_t>(kMaxFrameSize.width()),
+        static_cast<uint32_t>(kMaxFrameSize.height())});
 
   if (first_buffer_collection_fail_mode_ == SysmemFailMode::kFailAllocation) {
     // Set color space to SRGB to trigger sysmem collection failure (SRGB is not
     // compatible with NV12 pixel type).
-    ifc.mutable_color_spaces()->at(0) = fuchsia::images2::ColorSpace::SRGB;
+    image_constraints.mutable_color_spaces()->at(0) =
+        fuchsia::images2::ColorSpace::SRGB;
   }
 
   buffer_collection_->SetConstraints(std::move(

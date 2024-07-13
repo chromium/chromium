@@ -108,7 +108,7 @@ class FuchsiaVideoEncodeAccelerator::VideoFrameWriterQueue {
   // Initialize the queue and starts processing if possible. `process_cb` is
   // called after each VideoFrame is copied.
   void Initialize(std::vector<VmoBuffer> buffers,
-                  fuchsia::sysmem::SingleBufferSettings buffer_settings,
+                  fuchsia::sysmem2::SingleBufferSettings buffer_settings,
                   fuchsia::media::FormatDetails initial_format_details,
                   gfx::Size coded_size,
                   ProcessCB process_cb);
@@ -215,7 +215,7 @@ void FuchsiaVideoEncodeAccelerator::VideoFrameWriterQueue::Enqueue(
 
 void FuchsiaVideoEncodeAccelerator::VideoFrameWriterQueue::Initialize(
     std::vector<VmoBuffer> buffers,
-    fuchsia::sysmem::SingleBufferSettings buffer_settings,
+    fuchsia::sysmem2::SingleBufferSettings buffer_settings,
     fuchsia::media::FormatDetails initial_format_details,
     gfx::Size coded_size,
     ProcessCB process_cb) {
@@ -229,11 +229,11 @@ void FuchsiaVideoEncodeAccelerator::VideoFrameWriterQueue::Initialize(
 
   // Calculate the stride and size of each frame based on `buffer_settings`.
   // Frames must fit within the buffer.
-  auto& constraints = buffer_settings.image_format_constraints;
+  const auto& image_constraints = buffer_settings.image_format_constraints();
   dst_y_stride_ =
-      base::bits::AlignUp(std::max(constraints.min_bytes_per_row,
+      base::bits::AlignUp(std::max(image_constraints.min_bytes_per_row(),
                                    static_cast<uint32_t>(coded_size_.width())),
-                          constraints.bytes_per_row_divisor);
+                          image_constraints.bytes_per_row_divisor());
   dst_uv_stride_ = (dst_y_stride_ + 1) / 2;
   dst_y_plane_size_ = coded_size_.height() * dst_y_stride_;
   dst_size_ = dst_y_plane_size_ + dst_y_plane_size_ / 2;
@@ -545,11 +545,12 @@ void FuchsiaVideoEncodeAccelerator::OnStreamProcessorAllocateInputBuffers(
       base::BindOnce(&StreamProcessorHelper::SetInputBufferCollectionToken,
                      base::Unretained(encoder_.get())));
 
-  fuchsia::sysmem::BufferCollectionConstraints constraints =
+  fuchsia::sysmem2::BufferCollectionConstraints constraints =
       VmoBuffer::GetRecommendedConstraints(kInputBufferCount,
                                            /*min_buffer_size=*/std::nullopt,
                                            /*writable=*/true);
-  input_buffer_collection_->Initialize(constraints, "VideoEncoderInput");
+  input_buffer_collection_->Initialize(std::move(constraints),
+                                       "VideoEncoderInput");
   input_buffer_collection_->AcquireBuffers(
       base::BindOnce(&FuchsiaVideoEncodeAccelerator::OnInputBuffersAcquired,
                      base::Unretained(this)));
@@ -557,25 +558,24 @@ void FuchsiaVideoEncodeAccelerator::OnStreamProcessorAllocateInputBuffers(
 
 void FuchsiaVideoEncodeAccelerator::OnInputBuffersAcquired(
     std::vector<VmoBuffer> buffers,
-    const fuchsia::sysmem::SingleBufferSettings& buffer_settings) {
+    const fuchsia::sysmem2::SingleBufferSettings& buffer_settings) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(config_);
 
-  auto& constraints = buffer_settings.image_format_constraints;
-  int coded_width =
-      base::bits::AlignUp(std::max(constraints.min_coded_width,
-                                   constraints.required_max_coded_width),
-                          constraints.coded_width_divisor);
-  int coded_height =
-      base::bits::AlignUp(std::max(constraints.min_coded_height,
-                                   constraints.required_max_coded_height),
-                          constraints.coded_height_divisor);
+  const auto& image_constraints = buffer_settings.image_format_constraints();
+  int coded_width = base::bits::AlignUp(
+      std::max(image_constraints.min_size().width,
+               image_constraints.required_max_size().width),
+      image_constraints.size_alignment().width);
+  int coded_height = base::bits::AlignUp(
+      std::max(image_constraints.min_size().height, image_constraints.required_max_size().height),
+      image_constraints.size_alignment().height);
   CHECK_GE(coded_width, config_->input_visible_size.width());
   CHECK_GE(coded_height, config_->input_visible_size.height());
 
   input_queue_->Initialize(
-      std::move(buffers), buffer_settings, CreateFormatDetails(*config_),
-      gfx::Size(coded_width, coded_height),
+      std::move(buffers), fidl::Clone(buffer_settings),
+      CreateFormatDetails(*config_), gfx::Size(coded_width, coded_height),
       base::BindRepeating(&StreamProcessorHelper::Process,
                           base::Unretained(encoder_.get())));
 }
@@ -589,10 +589,11 @@ void FuchsiaVideoEncodeAccelerator::OnStreamProcessorAllocateOutputBuffers(
       base::BindOnce(&StreamProcessorHelper::CompleteOutputBuffersAllocation,
                      base::Unretained(encoder_.get())));
 
-  fuchsia::sysmem::BufferCollectionConstraints constraints;
-  constraints.usage.cpu = fuchsia::sysmem::cpuUsageRead;
-  constraints.min_buffer_count_for_shared_slack = kOutputBufferCount;
-  output_buffer_collection_->Initialize(constraints, "VideoEncoderOutput");
+  fuchsia::sysmem2::BufferCollectionConstraints constraints;
+  constraints.mutable_usage()->set_cpu(fuchsia::sysmem2::CPU_USAGE_READ);
+  constraints.set_min_buffer_count_for_shared_slack(kOutputBufferCount);
+  output_buffer_collection_->Initialize(std::move(constraints),
+                                        "VideoEncoderOutput");
   output_buffer_collection_->AcquireBuffers(
       base::BindOnce(&FuchsiaVideoEncodeAccelerator::OnOutputBuffersAcquired,
                      base::Unretained(this)));
@@ -600,7 +601,7 @@ void FuchsiaVideoEncodeAccelerator::OnStreamProcessorAllocateOutputBuffers(
 
 void FuchsiaVideoEncodeAccelerator::OnOutputBuffersAcquired(
     std::vector<VmoBuffer> buffers,
-    const fuchsia::sysmem::SingleBufferSettings& buffer_settings) {
+    const fuchsia::sysmem2::SingleBufferSettings& buffer_settings) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   output_queue_->Initialize(

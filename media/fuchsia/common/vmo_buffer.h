@@ -6,7 +6,7 @@
 #define MEDIA_FUCHSIA_COMMON_VMO_BUFFER_H_
 
 #include <fuchsia/media/cpp/fidl.h>
-#include <fuchsia/sysmem/cpp/fidl.h>
+#include <fuchsia/sysmem2/cpp/fidl.h>
 
 #include <memory>
 #include <optional>
@@ -21,15 +21,15 @@ class MEDIA_EXPORT VmoBuffer {
  public:
   // Returns sysmem buffer constraints to use to ensure that sysmem buffer
   // collection is compatible with this class.
-  static fuchsia::sysmem::BufferCollectionConstraints GetRecommendedConstraints(
-      size_t min_buffer_count,
-      std::optional<size_t> min_buffer_size,
-      bool writable);
+  static fuchsia::sysmem2::BufferCollectionConstraints
+  GetRecommendedConstraints(size_t min_buffer_count,
+                            std::optional<size_t> min_buffer_size,
+                            bool writable);
 
   // Creates a set of buffers from a sysmem collection. An empty vector is
   // returned in case of a failure.
   static std::vector<VmoBuffer> CreateBuffersFromSysmemCollection(
-      fuchsia::sysmem::BufferCollectionInfo_2* info,
+      fuchsia::sysmem2::BufferCollectionInfo* info,
       bool writable);
 
   VmoBuffer();
@@ -47,7 +47,7 @@ class MEDIA_EXPORT VmoBuffer {
       bool writable,
       size_t offset,
       size_t size,
-      fuchsia::sysmem::CoherencyDomain coherency_domain);
+      fuchsia::sysmem2::CoherencyDomain coherency_domain);
 
   size_t size() const { return size_; }
 
@@ -90,7 +90,7 @@ class MEDIA_EXPORT VmoBuffer {
   bool writable_ = false;
   size_t offset_ = 0;
   size_t size_ = 0;
-  fuchsia::sysmem::CoherencyDomain coherency_domain_;
+  fuchsia::sysmem2::CoherencyDomain coherency_domain_;
 };
 
 }  // namespace media

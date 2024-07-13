@@ -210,7 +210,7 @@ void WebEngineAudioRenderer::UpdateVolume() {
 
 void WebEngineAudioRenderer::OnBuffersAcquired(
     std::vector<media::VmoBuffer> buffers,
-    const fuchsia::sysmem::SingleBufferSettings&) {
+    const fuchsia::sysmem2::SingleBufferSettings&) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   input_buffers_ = std::move(buffers);
@@ -835,7 +835,7 @@ base::TimeDelta WebEngineAudioRenderer::CurrentMediaTimeLocked() {
 }
 
 void WebEngineAudioRenderer::OnSysmemBufferStreamBufferCollectionToken(
-    fuchsia::sysmem::BufferCollectionTokenPtr token) {
+    fuchsia::sysmem2::BufferCollectionTokenPtr token) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Drop old buffers.
@@ -845,7 +845,7 @@ void WebEngineAudioRenderer::OnSysmemBufferStreamBufferCollectionToken(
   // Acquire buffers for the new buffer collection.
   input_buffer_collection_ =
       sysmem_allocator_.BindSharedCollection(std::move(token));
-  fuchsia::sysmem::BufferCollectionConstraints buffer_constraints =
+  fuchsia::sysmem2::BufferCollectionConstraints buffer_constraints =
       media::VmoBuffer::GetRecommendedConstraints(kNumBuffers, kBufferSize,
                                                   /*writable=*/false);
   input_buffer_collection_->Initialize(std::move(buffer_constraints),

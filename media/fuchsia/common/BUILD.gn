@@ -27,6 +27,6 @@ source_set("common") {
     "//base",
     "//media/base",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media:fuchsia.media_hlcpp",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem:fuchsia.sysmem_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem2:fuchsia.sysmem2_hlcpp",
   ]
 }

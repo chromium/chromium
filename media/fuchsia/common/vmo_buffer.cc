@@ -14,43 +14,44 @@
 namespace media {
 
 // static
-fuchsia::sysmem::BufferCollectionConstraints
+fuchsia::sysmem2::BufferCollectionConstraints
 VmoBuffer::GetRecommendedConstraints(size_t min_buffer_count,
                                      std::optional<size_t> min_buffer_size,
                                      bool writable) {
-  fuchsia::sysmem::BufferCollectionConstraints buffer_constraints;
+  fuchsia::sysmem2::BufferCollectionConstraints constraints;
 
-  buffer_constraints.usage.cpu = fuchsia::sysmem::cpuUsageRead;
-  if (writable)
-    buffer_constraints.usage.cpu |= fuchsia::sysmem::cpuUsageWrite;
-
-  buffer_constraints.min_buffer_count = min_buffer_count;
-
-  if (min_buffer_size) {
-    buffer_constraints.has_buffer_memory_constraints = true;
-    buffer_constraints.buffer_memory_constraints.min_size_bytes =
-        min_buffer_size.value();
-    buffer_constraints.buffer_memory_constraints.ram_domain_supported = true;
-    buffer_constraints.buffer_memory_constraints.cpu_domain_supported = true;
+  constraints.mutable_usage()->set_cpu(fuchsia::sysmem2::CPU_USAGE_READ);
+  if (writable) {
+    *constraints.mutable_usage()->mutable_cpu() |=
+        fuchsia::sysmem2::CPU_USAGE_WRITE;
   }
 
-  return buffer_constraints;
+  constraints.set_min_buffer_count(min_buffer_count);
+
+  if (min_buffer_size.has_value()) {
+    auto& memory_constraints = *constraints.mutable_buffer_memory_constraints();
+    memory_constraints.set_min_size_bytes(min_buffer_size.value());
+    memory_constraints.set_ram_domain_supported(true);
+    memory_constraints.set_cpu_domain_supported(true);
+  }
+
+  return constraints;
 }
 
 // static
 std::vector<VmoBuffer> VmoBuffer::CreateBuffersFromSysmemCollection(
-    fuchsia::sysmem::BufferCollectionInfo_2* info,
+    fuchsia::sysmem2::BufferCollectionInfo* info,
     bool writable) {
   std::vector<VmoBuffer> buffers;
-  buffers.resize(info->buffer_count);
+  buffers.resize(info->buffers().size());
 
-  fuchsia::sysmem::BufferMemorySettings& settings =
-      info->settings.buffer_settings;
-  for (size_t i = 0; i < info->buffer_count; ++i) {
-    fuchsia::sysmem::VmoBuffer& buffer = info->buffers[i];
-    if (!buffers[i].Initialize(std::move(buffer.vmo), writable,
-                               buffer.vmo_usable_start, settings.size_bytes,
-                               settings.coherency_domain)) {
+  const fuchsia::sysmem2::BufferMemorySettings& settings =
+      info->settings().buffer_settings();
+  for (size_t i = 0; i < info->buffers().size(); ++i) {
+    fuchsia::sysmem2::VmoBuffer& buffer = info->mutable_buffers()->at(i);
+    if (!buffers[i].Initialize(std::move(*buffer.mutable_vmo()), writable,
+                               buffer.vmo_usable_start(), settings.size_bytes(),
+                               settings.coherency_domain())) {
       return {};
     }
   }
@@ -77,7 +78,7 @@ bool VmoBuffer::Initialize(zx::vmo vmo,
                            bool writable,
                            size_t offset,
                            size_t size,
-                           fuchsia::sysmem::CoherencyDomain coherency_domain) {
+                           fuchsia::sysmem2::CoherencyDomain coherency_domain) {
   DCHECK(!base_address_);
   DCHECK(vmo);
 
@@ -140,8 +141,9 @@ void VmoBuffer::FlushCache(size_t flush_offset,
                            bool invalidate) {
   DCHECK_LE(flush_size, size_ - flush_offset);
 
-  if (coherency_domain_ != fuchsia::sysmem::CoherencyDomain::RAM)
+  if (coherency_domain_ != fuchsia::sysmem2::CoherencyDomain::RAM) {
     return;
+  }
 
   uint8_t* address = base_address_ + offset_ + flush_offset;
   uint32_t options = ZX_CACHE_FLUSH_DATA;

@@ -85,7 +85,7 @@ AudioInputStream::OpenOutcome AudioInputStreamFuchsia::Open() {
   bool mapped =
       capture_buffer_.Initialize(std::move(buffer_vmo), /*writable=*/false,
                                  /*offset=*/0, /*size=*/capture_buffer_size,
-                                 fuchsia::sysmem::CoherencyDomain::CPU);
+                                 fuchsia::sysmem2::CoherencyDomain::CPU);
 
   if (!mapped)
     return OpenOutcome::kFailed;

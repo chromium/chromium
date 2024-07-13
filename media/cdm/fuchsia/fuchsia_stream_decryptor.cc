@@ -157,18 +157,16 @@ void FuchsiaStreamDecryptor::OnStreamProcessorAllocateOutputBuffers(
       base::BindOnce(&Sink::OnSysmemBufferStreamBufferCollectionToken,
                      base::Unretained(sink_)));
 
-  fuchsia::sysmem::BufferCollectionConstraints buffer_constraints;
-  buffer_constraints.usage.none = fuchsia::sysmem::noneUsage;
-  buffer_constraints.min_buffer_count = min_buffer_count_;
-  buffer_constraints.has_buffer_memory_constraints = true;
-  buffer_constraints.buffer_memory_constraints.min_size_bytes =
-      min_buffer_size_;
-  buffer_constraints.buffer_memory_constraints.ram_domain_supported = true;
-  buffer_constraints.buffer_memory_constraints.cpu_domain_supported = true;
-  buffer_constraints.buffer_memory_constraints.inaccessible_domain_supported =
-      true;
+  fuchsia::sysmem2::BufferCollectionConstraints constraints;
+  constraints.mutable_usage()->set_none(fuchsia::sysmem2::NONE_USAGE);
+  constraints.set_min_buffer_count(min_buffer_count_);
+  auto& memory_constraints = *constraints.mutable_buffer_memory_constraints();
+  memory_constraints.set_min_size_bytes(min_buffer_size_);
+  memory_constraints.set_ram_domain_supported(true);
+  memory_constraints.set_cpu_domain_supported(true);
+  memory_constraints.set_inaccessible_domain_supported(true);
 
-  output_buffer_collection_->Initialize(std::move(buffer_constraints),
+  output_buffer_collection_->Initialize(std::move(constraints),
                                         "CrFuchsiaStreamDecryptorOutput");
 }
 
@@ -226,7 +224,7 @@ void FuchsiaStreamDecryptor::OnError() {
 
 void FuchsiaStreamDecryptor::OnInputBuffersAcquired(
     std::vector<VmoBuffer> buffers,
-    const fuchsia::sysmem::SingleBufferSettings&) {
+    const fuchsia::sysmem2::SingleBufferSettings&) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (buffers.empty()) {

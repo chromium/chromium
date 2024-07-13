@@ -5,7 +5,6 @@
 #include "media/fuchsia/video/fuchsia_video_decoder.h"
 
 #include <fuchsia/mediacodec/cpp/fidl.h>
-#include <fuchsia/sysmem/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 
 #include <memory>
