@@ -16,11 +16,16 @@
 #include "ash/wm/snap_group/snap_group_test_util.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_divider.h"
+#include "ash/wm/window_cycle/window_cycle_controller.h"
+#include "ash/wm/window_cycle/window_cycle_list.h"
+#include "ash/wm/window_cycle/window_cycle_view.h"
 #include "base/test/scoped_feature_list.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/widget/widget.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 
@@ -64,10 +69,12 @@ TEST_F(SnapGroupPixelTest, SnapGroupDividerBasic) {
       /*revision_number=*/0, divider_widget, w1_widget, w2_widget));
 
   // Move the mouse to the position that is a off the center(divider handler
-  // view) and verify the snap group divider UI components on hover state.
+  // view).
   event_generator->MoveMouseTo(
       snap_group_divider_bounds_in_screen().CenterPoint() +
       gfx::Vector2d(0, 10));
+
+  // Verify the snap group divider UI components on mouse hover.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "snap_group_divider_hover_state",
       /*revision_number=*/0, divider_widget, w1_widget, w2_widget));
@@ -107,6 +114,66 @@ TEST_F(SnapGroupPixelTest, OverviewGroupItem) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "remaining_item_widget",
       /*revision_number=*/0, remaining_item_widget));
+}
+
+// Visual regression test for Snap Group in window cycle view.
+TEST_F(SnapGroupPixelTest, WindowCycleView) {
+  WindowCycleList::SetDisableInitialDelayForTesting(true);
+
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  DecorateWindow(w1.get(), /*title=*/u"w1", SK_ColorGREEN);
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  DecorateWindow(w2.get(), /*title=*/u"w2", SK_ColorBLUE);
+
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true,
+                     GetEventGenerator());
+
+  // Explicitly activate the primary-snapped window so that it comes before
+  // secondary-snapped window in MRU order, anticipating a future Alt+Tab
+  // revamp.
+  wm::ActivateWindow(w1.get());
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressAndReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+
+  WindowCycleController* window_cycle_controller =
+      Shell::Get()->window_cycle_controller();
+  EXPECT_TRUE(window_cycle_controller->IsCycling());
+
+  const WindowCycleView* window_cycle_view =
+      window_cycle_controller->window_cycle_list()->cycle_view();
+  ASSERT_TRUE(window_cycle_view);
+
+  views::Widget* window_cycle_widget =
+      const_cast<views::Widget*>(window_cycle_view->GetWidget());
+  ASSERT_TRUE(window_cycle_widget);
+
+  // Verify the visuals with secondary-snapped window gets focused.
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "window_cycle_with_snap_group_secondary_focused",
+      /*revision_number=*/0, window_cycle_widget));
+
+  // Verify the visuals with primary-snapped window gets focused.
+  event_generator->PressAndReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "window_cycle_with_snap_group_primary_focused",
+      /*revision_number=*/0, window_cycle_widget));
+
+  // Verify the visuals after one of the windows in the group got destroyed
+  // while stepping.
+  w2.reset();
+  EXPECT_TRUE(window_cycle_controller->IsCycling());
+  const WindowCycleView* updated_window_cycle_view =
+      window_cycle_controller->window_cycle_list()->cycle_view();
+  ASSERT_TRUE(updated_window_cycle_view);
+
+  views::Widget* updated_window_cycle_widget =
+      const_cast<views::Widget*>(window_cycle_view->GetWidget());
+  ASSERT_TRUE(updated_window_cycle_widget);
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "window_cycle_with_snap_group_window_destruction",
+      /*revision_number=*/0, updated_window_cycle_widget));
 }
 
 }  // namespace ash
