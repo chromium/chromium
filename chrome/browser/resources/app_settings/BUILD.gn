@@ -35,6 +35,7 @@ build_webui("build") {
   ]
 
   css_files = [
+    "app.css",
     "app_content_dialog.css",
     "app_content_item.css",
     "app_management_shared_style.css",

@@ -4,7 +4,7 @@
 
 import 'chrome://app-settings/web_app_settings.js';
 
-import type {App, PermissionItemElement, PermissionTypeIndex, SupportedLinksItemElement, SupportedLinksOverlappingAppsDialogElement, ToggleRowElement, WebAppSettingsAppElement} from 'chrome://app-settings/web_app_settings.js';
+import type {App, AppElement, PermissionItemElement, PermissionTypeIndex, SupportedLinksItemElement, SupportedLinksOverlappingAppsDialogElement, ToggleRowElement} from 'chrome://app-settings/web_app_settings.js';
 import {AppType, BrowserProxy, createTriStatePermission, getPermissionValueBool, InstallReason, InstallSource, PermissionType, RunOnOsLoginMode, TriState, WindowMode} from 'chrome://app-settings/web_app_settings.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
@@ -18,7 +18,7 @@ import {TestAppManagementBrowserProxy} from './test_app_management_browser_proxy
 type AppConfig = Partial<App>;
 
 suite('AppSettingsAppTest', () => {
-  let appSettingsApp: WebAppSettingsAppElement;
+  let appSettingsApp: AppElement;
   let app: App;
   let testProxy: TestAppManagementBrowserProxy;
 
