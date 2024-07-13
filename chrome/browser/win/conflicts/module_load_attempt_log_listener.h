@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WIN_CONFLICTS_MODULE_LOAD_ATTEMPT_LOG_LISTENER_H_
 #define CHROME_BROWSER_WIN_CONFLICTS_MODULE_LOAD_ATTEMPT_LOG_LISTENER_H_
 
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -43,6 +44,11 @@ class ModuleLoadAttemptLogListener : public base::win::ObjectWatcher::Delegate {
   // base::win::ObjectWatcher::Delegate:
   void OnObjectSignaled(HANDLE object) override;
 
+  static std::vector<std::wstring_view> SplitLogicalDriveStringsForTesting(
+      std::wstring_view logical_drive_strings) {
+    return SplitLogicalDriveStringsImpl(logical_drive_strings);
+  }
+
  private:
   void StartDrainingLogs();
 
@@ -58,6 +64,10 @@ class ModuleLoadAttemptLogListener : public base::win::ObjectWatcher::Delegate {
 
   // Update the |device_to_letter_path_mapping_|.
   void UpdateDeviceToLetterPathMapping();
+
+  // Splits the result of calling GetLogicalDriveStrings() into its components.
+  static std::vector<std::wstring_view> SplitLogicalDriveStringsImpl(
+      std::wstring_view logical_drive_strings);
 
   // Invoked once per blocked module every time the log is drained.
   OnModuleBlockedCallback on_module_blocked_callback_;

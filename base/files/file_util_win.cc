@@ -41,6 +41,7 @@
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split_win.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
@@ -851,28 +852,34 @@ bool DevicePathToDriveLetterPath(const FilePath& nt_device_path,
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 
   // Get the mapping of drive letters to device paths.
-  std::array<wchar_t, 1024> drive_mapping_buffer = {L'\0'};
-  if (!::GetLogicalDriveStrings(drive_mapping_buffer.size() - 1u,
-                                drive_mapping_buffer.data())) {
-    DLOG(ERROR) << "Failed to get drive mapping.";
+  // Note: There are 26 letters possible, and each entry takes 4 characters of
+  // space (e.g. ['C', ':', '\\', '\0'] plus an additional NUL character at the
+  // end, meaning 128 is safely above the maximum possible size needed).
+  std::array<wchar_t, 128> drive_strings_buffer = {};
+  DWORD count = ::GetLogicalDriveStrings(drive_strings_buffer.size() - 1u,
+                                         drive_strings_buffer.data());
+  CHECK_LT(count, drive_strings_buffer.size());
+  if (!count) {
+    DLOG(ERROR) << "Failed to get drive mapping";
     return false;
   }
-
-  // The drive mapping is a sequence of null terminated strings.
-  // The last string is empty.
-  std::wstring_view drive_mapping(drive_mapping_buffer.data(),
-                                  drive_mapping_buffer.size());
-  wchar_t device_path_as_string[MAX_PATH];
-  wchar_t drive[] = FILE_PATH_LITERAL(" :");
+  // Truncate the buffer to the bytes actually copied by GetLogicalDriveStrings.
+  // Note: This gets rid of the superfluous NUL character at the end. Thus,
+  // `drive_strings` is now a sequence of null terminated strings.
+  std::wstring_view drive_strings(drive_strings_buffer.data(), count);
 
   // For each string in the drive mapping, get the junction that links
   // to it.  If that junction is a prefix of |device_path|, then we
   // know that |drive| is the real path prefix.
-  while (drive_mapping[0u]) {
-    drive[0u] = drive_mapping[0u];  // Copy the drive letter.
+  for (std::wstring_view drive_string : base::SplitStringPiece(
+           drive_strings, base::MakeStringViewWithNulChars(L"\0"),
+           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+    wchar_t drive[] = L" :";
+    drive[0u] = drive_string[0u];  // Copy the drive letter.
 
-    if (QueryDosDevice(drive, device_path_as_string,
-                       sizeof(device_path_as_string))) {
+    wchar_t device_path_as_string[MAX_PATH];
+    if (::QueryDosDevice(drive, device_path_as_string,
+                         std::size(device_path_as_string))) {
       FilePath device_path(device_path_as_string);
       if (device_path == nt_device_path ||
           device_path.IsParent(nt_device_path)) {
@@ -882,11 +889,6 @@ bool DevicePathToDriveLetterPath(const FilePath& nt_device_path,
         return true;
       }
     }
-    // Move to the next drive letter string, which starts one
-    // increment after the '\0' that terminates the current string.
-    size_t idx = drive_mapping.find(L'\0');
-    CHECK(idx != std::wstring_view::npos);
-    drive_mapping = drive_mapping.substr(idx + 1u);
   }
 
   // No drive matched.  The path does not start with a device junction
