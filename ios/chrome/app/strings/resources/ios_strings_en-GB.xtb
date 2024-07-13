@@ -1009,7 +1009,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6127379762771434464">Item removed</translation>
 <translation id="6136914049981179737">Seconds ago</translation>
 <translation id="6144589619057374135">Open ${url} in Incognito</translation>
-<translation id="6149061208933997199">Use Password</translation>
+<translation id="6149061208933997199">Use password</translation>
 <translation id="6152406514676263192">Sync for the most relevant content based on your interests.</translation>
 <translation id="6159839020698489198">optional</translation>
 <translation id="6160780110287872296">Download file?</translation>
@@ -1636,7 +1636,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="9100610230175265781">Passphrase required</translation>
 <translation id="9106655997975673326">From "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Check for compromised passwords</translation>
-<translation id="9109699888944026290">{count,plural, =1{New Password For This Site}other{New Passwords For This Site}}</translation>
+<translation id="9109699888944026290">{count,plural, =1{New password for this site}other{New passwords for this site}}</translation>
 <translation id="9120217828624527905">Switch to full-page translation</translation>
 <translation id="9124387962554796433">Google may use your history to personalise Search and other Google services.</translation>
 <translation id="913036870884277353">Easily open links in other apps.</translation>
