@@ -135,9 +135,18 @@ Command line arguments for the updater client are documented in the [functional 
 
 ## Error codes
 
-The updater setup process can exit with the following error codes:
-* UNEXPECTED_ELEVATION_LOOP = 113: This error code indicates that the
-updater setup failed to elevate itself when trying to install a system app.
+To allow for the updater metainstaller process exit codes to be meaningful, all
+metainstaller and updater error codes are in a range above 0xFFFF (65535) for
+Windows only, which is the range of Windows error codes.
+
+Specifically:
+* [Metainstaller error codes](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/win/installer/exit_code.h)
+are in the 73000 range.
+* Error codes
+[funnelled through `update_client`](https://source.chromium.org/search?q=kCustomInstallErrorBase&sq=&ss=chromium%2Fchromium%2Fsrc:chrome%2Fupdater%2F)
+are in the 74000 range.
+* [updater error codes](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/constants.h?q=%22%2F%2F%20Error%20codes.%22&ss=chromium%2Fchromium%2Fsrc:chrome%2Fupdater%2F)
+are in the 75000 range.
 
 ## Dynamic Install Parameters
 

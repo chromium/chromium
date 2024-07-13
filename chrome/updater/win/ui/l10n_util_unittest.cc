@@ -288,9 +288,6 @@ INSTANTIATE_TEST_SUITE_P(
         {FAILED_TO_ELEVATE_METAINSTALLER, ERROR_CANCELLED,
          GetLocalizedStringF(IDS_FAILED_TO_ELEVATE_METAINSTALLER_BASE,
                              GetTextForSystemError(ERROR_CANCELLED))},
-
-        // This is an `updater.exe` error, not a metainstaller error.
-        {kErrorTagParsing, 0, {}},
     }));
 
 TEST_P(GetLocalizedMetainstallerErrorStringTest, TestCases) {

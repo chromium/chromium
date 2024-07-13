@@ -271,11 +271,17 @@ extern const char kUserDefaultsSuiteName[];
 
 // Install Errors.
 //
-// Specific install errors for the updater are reported in such a way that
-// their range does not conflict with the range of generic errors defined by
-// the |update_client| module.
+// Specific errors for the updater that are passed through `update_client` are
+// reported in such a way that their range does not conflict with the range of
+// generic errors defined by the metainstaller, the `update_client` module, or
+// Windows.
+#if BUILDFLAG(IS_WIN)
+inline constexpr int kCustomInstallErrorBase =
+    static_cast<int>(update_client::InstallError::CUSTOM_ERROR_BASE) + 74000;
+#else
 inline constexpr int kCustomInstallErrorBase =
     static_cast<int>(update_client::InstallError::CUSTOM_ERROR_BASE);
+#endif
 
 // Running the application installer failed.
 inline constexpr int kErrorApplicationInstallerFailed =
@@ -310,148 +316,167 @@ inline constexpr int kErrorAppCommandLaunchFailed = kCustomInstallErrorBase + 5;
 // `error`.
 inline constexpr int kErrorAppCommandTimedOut = kCustomInstallErrorBase + 6;
 
+// Specific error codes for the updater are reported in such a way that their
+// range does not conflict with the range of generic errors defined by the
+// metainstaller, the `update_client` module, or Windows.
+#if BUILDFLAG(IS_WIN)
+inline constexpr int kUpdaterErrorBase = 75000;
+#else
+inline constexpr int kUpdaterErrorBase = 0;
+#endif
+
 // Error codes.
 //
 // The server process may exit with any of these exit codes.
 inline constexpr int kErrorOk = 0;
 
 // The server could not acquire the lock needed to run.
-inline constexpr int kErrorFailedToLockPrefsMutex = 1;
+inline constexpr int kErrorFailedToLockPrefsMutex = kUpdaterErrorBase + 1;
 
 // The server candidate failed to promote itself to active.
-inline constexpr int kErrorFailedToSwap = 2;
+inline constexpr int kErrorFailedToSwap = kUpdaterErrorBase + 2;
 
-inline constexpr int kErrorRegistrationFailed = 3;
-inline constexpr int kErrorPermissionDenied = 4;
-inline constexpr int kErrorWaitFailedUninstall = 5;
-inline constexpr int kErrorWaitFailedInstall = 6;
-inline constexpr int kErrorPathServiceFailed = 7;
-inline constexpr int kErrorComInitializationFailed = 8;
-inline constexpr int kErrorUnknownCommandLine = 9;
-inline constexpr int kErrorNoVersionedDirectory = 11;
-inline constexpr int kErrorNoBaseDirectory = 12;
-inline constexpr int kErrorPathTooLong = 13;
-inline constexpr int kErrorProcessLaunchFailed = 14;
+inline constexpr int kErrorRegistrationFailed = kUpdaterErrorBase + 3;
+inline constexpr int kErrorPermissionDenied = kUpdaterErrorBase + 4;
+inline constexpr int kErrorWaitFailedUninstall = kUpdaterErrorBase + 5;
+inline constexpr int kErrorWaitFailedInstall = kUpdaterErrorBase + 6;
+inline constexpr int kErrorPathServiceFailed = kUpdaterErrorBase + 7;
+inline constexpr int kErrorComInitializationFailed = kUpdaterErrorBase + 8;
+inline constexpr int kErrorUnknownCommandLine = kUpdaterErrorBase + 9;
+inline constexpr int kErrorNoVersionedDirectory = kUpdaterErrorBase + 11;
+inline constexpr int kErrorNoBaseDirectory = kUpdaterErrorBase + 12;
+inline constexpr int kErrorPathTooLong = kUpdaterErrorBase + 13;
+inline constexpr int kErrorProcessLaunchFailed = kUpdaterErrorBase + 14;
 
 // Failed to copy the updater's bundle.
-inline constexpr int kErrorFailedToCopyBundle = 15;
+inline constexpr int kErrorFailedToCopyBundle = kUpdaterErrorBase + 15;
 
 // Failed to delete the updater's install folder.
-inline constexpr int kErrorFailedToDeleteFolder = 16;
+inline constexpr int kErrorFailedToDeleteFolder = kUpdaterErrorBase + 16;
 
 // Failed to delete the updater's data folder.
-inline constexpr int kErrorFailedToDeleteDataFolder = 17;
+inline constexpr int kErrorFailedToDeleteDataFolder = kUpdaterErrorBase + 17;
 
 // Failed to get versioned updater folder path.
-inline constexpr int kErrorFailedToGetVersionedInstallDirectory = 18;
+inline constexpr int kErrorFailedToGetVersionedInstallDirectory =
+    kUpdaterErrorBase + 18;
 
 // Failed to get the install directory.
-inline constexpr int kErrorFailedToGetInstallDir = 19;
+inline constexpr int kErrorFailedToGetInstallDir = kUpdaterErrorBase + 19;
 
 // Failed to remove the active(unversioned) update service job from Launchd.
-inline constexpr int kErrorFailedToRemoveActiveUpdateServiceJobFromLaunchd = 20;
+inline constexpr int kErrorFailedToRemoveActiveUpdateServiceJobFromLaunchd =
+    kUpdaterErrorBase + 20;
 
 // Failed to remove versioned update service job from Launchd.
 inline constexpr int kErrorFailedToRemoveCandidateUpdateServiceJobFromLaunchd =
-    21;
+    kUpdaterErrorBase + 21;
 
 // Failed to remove versioned update service internal job from Launchd.
 inline constexpr int kErrorFailedToRemoveUpdateServiceInternalJobFromLaunchd =
-    22;
+    kUpdaterErrorBase + 22;
 
 // Failed to remove versioned wake job from Launchd.
-inline constexpr int kErrorFailedToRemoveWakeJobFromLaunchd = 23;
+inline constexpr int kErrorFailedToRemoveWakeJobFromLaunchd =
+    kUpdaterErrorBase + 23;
 
 // Failed to create the active(unversioned) update service Launchd plist.
-inline constexpr int kErrorFailedToCreateUpdateServiceLaunchdJobPlist = 24;
+inline constexpr int kErrorFailedToCreateUpdateServiceLaunchdJobPlist =
+    kUpdaterErrorBase + 24;
 
 // Failed to create the versioned update service Launchd plist.
 inline constexpr int kErrorFailedToCreateVersionedUpdateServiceLaunchdJobPlist =
-    25;
+    kUpdaterErrorBase + 25;
 
 // Failed to create the versioned update service internal Launchd plist.
 inline constexpr int kErrorFailedToCreateUpdateServiceInternalLaunchdJobPlist =
-    26;
+    kUpdaterErrorBase + 26;
 
 // Failed to create the versioned wake Launchd plist.
-inline constexpr int kErrorFailedToCreateWakeLaunchdJobPlist = 27;
+inline constexpr int kErrorFailedToCreateWakeLaunchdJobPlist =
+    kUpdaterErrorBase + 27;
 
 // Failed to start the active(unversioned) update service job.
-inline constexpr int kErrorFailedToStartLaunchdActiveServiceJob = 28;
+inline constexpr int kErrorFailedToStartLaunchdActiveServiceJob =
+    kUpdaterErrorBase + 28;
 
 // Failed to start the versioned update service job.
-inline constexpr int kErrorFailedToStartLaunchdVersionedServiceJob = 29;
+inline constexpr int kErrorFailedToStartLaunchdVersionedServiceJob =
+    kUpdaterErrorBase + 29;
 
 // Failed to start the update service internal job.
-inline constexpr int kErrorFailedToStartLaunchdUpdateServiceInternalJob = 30;
+inline constexpr int kErrorFailedToStartLaunchdUpdateServiceInternalJob =
+    kUpdaterErrorBase + 30;
 
 // Failed to start the wake job.
-inline constexpr int kErrorFailedToStartLaunchdWakeJob = 31;
+inline constexpr int kErrorFailedToStartLaunchdWakeJob = kUpdaterErrorBase + 31;
 
 // Timed out while awaiting launchctl to become aware of the update service
 // internal job.
-inline constexpr int kErrorFailedAwaitingLaunchdUpdateServiceInternalJob = 32;
+inline constexpr int kErrorFailedAwaitingLaunchdUpdateServiceInternalJob =
+    kUpdaterErrorBase + 32;
 
 // DM registration failure with mandatory enrollment.
-inline constexpr int kErrorDMRegistrationFailed = 33;
+inline constexpr int kErrorDMRegistrationFailed = kUpdaterErrorBase + 33;
 
-inline constexpr int kErrorFailedToInstallLegacyUpdater = 34;
+inline constexpr int kErrorFailedToInstallLegacyUpdater =
+    kUpdaterErrorBase + 34;
 
 // A Mojo remote was unexpectedly disconnected.
-inline constexpr int kErrorIpcDisconnect = 35;
+inline constexpr int kErrorIpcDisconnect = kUpdaterErrorBase + 35;
 
 // Failed to copy the updater binary.
-inline constexpr int kErrorFailedToCopyBinary = 36;
+inline constexpr int kErrorFailedToCopyBinary = kUpdaterErrorBase + 36;
 
 // Failed to delete a socket file.
-inline constexpr int kErrorFailedToDeleteSocket = 37;
+inline constexpr int kErrorFailedToDeleteSocket = kUpdaterErrorBase + 37;
 
 // Failed to create a symlink to the current version.
-inline constexpr int kErrorFailedToLinkCurrent = 38;
+inline constexpr int kErrorFailedToLinkCurrent = kUpdaterErrorBase + 38;
 
 // Failed to rename the current symlink during activation.
-inline constexpr int kErrorFailedToRenameCurrent = 39;
+inline constexpr int kErrorFailedToRenameCurrent = kUpdaterErrorBase + 39;
 
 // Failed to install one or more Systemd units.
-inline constexpr int kErrorFailedToInstallSystemdUnit = 40;
+inline constexpr int kErrorFailedToInstallSystemdUnit = kUpdaterErrorBase + 40;
 
 // Failed to remove one or more Systemd units during uninstallation.
-inline constexpr int kErrorFailedToRemoveSystemdUnit = 41;
+inline constexpr int kErrorFailedToRemoveSystemdUnit = kUpdaterErrorBase + 41;
 
 // Running as the wrong user for the provided UpdaterScope.
-inline constexpr int kErrorWrongUser = 42;
+inline constexpr int kErrorWrongUser = kUpdaterErrorBase + 42;
 
 // Failed to get the setup files.
-inline constexpr int kErrorFailedToGetSetupFiles = 43;
+inline constexpr int kErrorFailedToGetSetupFiles = kUpdaterErrorBase + 43;
 
 // Failed to run install list.
-inline constexpr int kErrorFailedToRunInstallList = 44;
+inline constexpr int kErrorFailedToRunInstallList = kUpdaterErrorBase + 44;
 
 // The server was running but had no tasks to do.
-inline constexpr int kErrorIdle = 45;
+inline constexpr int kErrorIdle = kUpdaterErrorBase + 45;
 
 // The call was rejected because the user needs to accept the EULA / Terms of
 // service.
-inline constexpr int kErrorEulaRequired = 46;
+inline constexpr int kErrorEulaRequired = kUpdaterErrorBase + 46;
 
 // The current operating system is not supported.
-inline constexpr int kErrorUnsupportedOperatingSystem = 47;
+inline constexpr int kErrorUnsupportedOperatingSystem = kUpdaterErrorBase + 47;
 
-inline constexpr int kErrorTagParsing = 50;
+inline constexpr int kErrorTagParsing = kUpdaterErrorBase + 50;
 
 // Metainstaller errors.
-inline constexpr int kErrorCreatingTempDir = 60;
-inline constexpr int kErrorUnpackingResource = 61;
-inline constexpr int kErrorInitializingBackupDir = 62;
+inline constexpr int kErrorCreatingTempDir = kUpdaterErrorBase + 60;
+inline constexpr int kErrorUnpackingResource = kUpdaterErrorBase + 61;
+inline constexpr int kErrorInitializingBackupDir = kUpdaterErrorBase + 62;
 
 // Launcher errors.
-constexpr int kErrorGettingUpdaterPath = 71;
-constexpr int kErrorStattingPath = 72;
-constexpr int kErrorLaunchingProcess = 73;
-constexpr int kErrorPathOwnershipMismatch = 74;
+inline constexpr int kErrorGettingUpdaterPath = kUpdaterErrorBase + 71;
+inline constexpr int kErrorStattingPath = kUpdaterErrorBase + 72;
+inline constexpr int kErrorLaunchingProcess = kUpdaterErrorBase + 73;
+inline constexpr int kErrorPathOwnershipMismatch = kUpdaterErrorBase + 74;
 
 // A setup process could not acquire the lock needed to run.
-inline constexpr int kErrorFailedToLockSetupMutex = 75;
+inline constexpr int kErrorFailedToLockSetupMutex = kUpdaterErrorBase + 75;
 
 // Policy Management constants.
 // The maximum value allowed for policy AutoUpdateCheckPeriodMinutes.

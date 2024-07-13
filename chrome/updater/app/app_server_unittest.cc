@@ -172,7 +172,7 @@ TEST_F(AppServerTestCase, SelfPromoteFails) {
     EXPECT_CALL(*app, ActiveDuty).Times(0);
     EXPECT_CALL(*app, SwapInNewVersion).WillOnce(Return(false));
     EXPECT_CALL(*app, UninstallSelf).Times(0);
-    EXPECT_EQ(app->Run(), 2);
+    EXPECT_EQ(app->Run(), kErrorFailedToSwap);
   }
   scoped_refptr<GlobalPrefs> global_prefs =
       CreateGlobalPrefs(GetUpdaterScopeForTesting());
@@ -253,7 +253,7 @@ TEST_F(AppServerTestCase, StateDirtySwapFails) {
     EXPECT_CALL(*app, ActiveDuty).Times(0);
     EXPECT_CALL(*app, SwapInNewVersion).WillOnce(Return(false));
     EXPECT_CALL(*app, UninstallSelf).Times(0);
-    EXPECT_EQ(app->Run(), 2);
+    EXPECT_EQ(app->Run(), kErrorFailedToSwap);
   }
   scoped_refptr<GlobalPrefs> global_prefs =
       CreateGlobalPrefs(GetUpdaterScopeForTesting());

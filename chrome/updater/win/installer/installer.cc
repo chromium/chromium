@@ -45,6 +45,7 @@
 #include "chrome/updater/win/installer/configuration.h"
 #include "chrome/updater/win/installer/installer_constants.h"
 #include "chrome/updater/win/installer/pe_resource.h"
+#include "chrome/updater/win/ui/l10n_util.h"
 
 namespace updater {
 
@@ -110,10 +111,11 @@ ProcessExitResult RunProcessAndWait(const wchar_t* exe_path, wchar_t* cmdline) {
 
   ::CloseHandle(pi.hThread);
 
-  DWORD exit_code = SUCCESS_EXIT_CODE;
+  DWORD updater_exit_code = 0;
   DWORD wr = ::WaitForSingleObject(pi.hProcess, INFINITE);
-  if (WAIT_OBJECT_0 != wr || !::GetExitCodeProcess(pi.hProcess, &exit_code)) {
-    // Note:  We've assumed that WAIT_OBJCT_0 != wr means a failure.  The call
+  if (WAIT_OBJECT_0 != wr ||
+      !::GetExitCodeProcess(pi.hProcess, &updater_exit_code)) {
+    // Note:  We've assumed that WAIT_OBJECT_0 != wr means a failure.  The call
     // could return a different object but since we never spawn more than one
     // sub-process at a time that case should never happen.
     return ProcessExitResult(WAIT_FOR_PROCESS_FAILED, ::GetLastError());
@@ -121,7 +123,7 @@ ProcessExitResult RunProcessAndWait(const wchar_t* exe_path, wchar_t* cmdline) {
 
   ::CloseHandle(pi.hProcess);
 
-  return ProcessExitResult(exit_code);
+  return ProcessExitResult(UPDATER_EXIT_CODE, updater_exit_code);
 }
 
 // Windows defined callback used in the EnumResourceNames call. For each
@@ -485,11 +487,25 @@ ProcessExitResult InstallerMain(HMODULE module) {
   return exit_code;
 }
 
-ProcessExitResult WMain(HMODULE module) {
-  const updater::ProcessExitResult result = InstallerMain(module);
+int WMain(HMODULE module) {
+  const ProcessExitResult result = InstallerMain(module);
   VLOG(1) << "Metainstaller WMain returned: " << result.exit_code
           << ", Windows error: " << result.windows_error;
-  return result;
+
+  // Display UI only for metainstaller errors.
+  if (result.exit_code != SUCCESS_EXIT_CODE &&
+      result.exit_code != UPDATER_EXIT_CODE &&
+      !GetCommandLineLegacyCompatible().HasSwitch(kSilentSwitch)) {
+    base::FilePath exe_path;
+    base::PathService::Get(base::FILE_EXE, &exe_path);
+    ::MessageBoxEx(nullptr,
+                   GetLocalizedMetainstallerErrorString(result.exit_code,
+                                                        result.windows_error)
+                       .c_str(),
+                   exe_path.BaseName().value().c_str(), 0, 0);
+  }
+  return result.exit_code == UPDATER_EXIT_CODE ? result.windows_error
+                                               : result.exit_code;
 }
 
 }  // namespace updater

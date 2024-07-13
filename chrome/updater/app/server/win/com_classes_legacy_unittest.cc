@@ -203,7 +203,7 @@ TEST_F(LegacyAppCommandWebImplTest, FailedToLaunchStatus) {
             EXPECT_EQ(command_id, base::WideToASCII(kCmdId1));
             EXPECT_EQ(error_params.error_code,
                       HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND));
-            EXPECT_EQ(error_params.extra_code1, 105);
+            EXPECT_EQ(error_params.extra_code1, kErrorAppCommandLaunchFailed);
           }),
       app_command_web));
 

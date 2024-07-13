@@ -50,7 +50,7 @@ ProcessExitResult BuildInstallerCommandLineArguments(
 ProcessExitResult HandleRunElevated(const base::CommandLine& command_line);
 
 // Main function for the installer.
-ProcessExitResult WMain(HMODULE module);
+int WMain(HMODULE module);
 
 }  // namespace updater
 
