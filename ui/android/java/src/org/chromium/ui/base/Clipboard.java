@@ -222,6 +222,26 @@ public class Clipboard {
     }
 
     /**
+     * Gets a CRLF separated list of content URIs on the primary clip on the Android Clipboard.
+     *
+     * @return a Java string with URI list if available, otherwise null.
+     */
+    @CalledByNative
+    protected String getFilenames() {
+        return null;
+    }
+
+    /**
+     * Check if the system clipboard contains any content URIs (filenames).
+     *
+     * @return True if the system clipboard contains any content URIs (filenames).
+     */
+    @CalledByNative
+    public boolean hasFilenames() {
+        return false;
+    }
+
+    /**
      * Emulates the behavior of the now-deprecated
      * {@link android.text.ClipboardManager#setText(CharSequence)}, setting the
      * clipboard's current primary clip to a plain-text clip that consists of
@@ -308,6 +328,16 @@ public class Clipboard {
     @VisibleForTesting
     public void setImage(final byte[] imageData, final String extension) {
         Log.w(TAG, "setImage is a no-op because Clipboard service isn't available");
+    }
+
+    /**
+     * Writes content URI filenames to the clipboard.
+     *
+     * @param uriList the CRLF-separated list of content URIs.
+     */
+    @CalledByNative
+    public void setFilenames(final String uriList) {
+        Log.w(TAG, "setFilenames is a no-op because Clipboard service isn't available");
     }
 
     /** Clears the Clipboard Primary clip. */

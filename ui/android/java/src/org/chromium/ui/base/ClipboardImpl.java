@@ -52,6 +52,7 @@ import org.chromium.url.GURL;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -74,6 +75,9 @@ public class ClipboardImpl extends Clipboard
 
     // This mime type annotates that clipboard contains a PNG image.
     private static final String PNG_MIME_TYPE = "image/png";
+
+    // Separator for multiple filenames in text/uri-list.
+    private static final String FILENAMES_LIST_SEP = "\r\n";
 
     private static @Nullable Boolean sSkipImageMimeTypeCheckForTesting;
 
@@ -372,6 +376,43 @@ public class ClipboardImpl extends Clipboard
     }
 
     @Override
+    protected String getFilenames() {
+        // getPrimaryClip() has been observed to throw unexpected exceptions for some devices (see
+        // crbug/654802 and b/31501780)
+        try {
+            ClipData clipData = mClipboardManager.getPrimaryClip();
+            List<String> uris = new ArrayList<String>();
+            for (int i = 0; i < clipData.getItemCount(); i++) {
+                Uri uri = clipData.getItemAt(i).getUri();
+                if (uri != null) {
+                    uris.add(uri.toString());
+                }
+            }
+            return !uris.isEmpty() ? String.join(FILENAMES_LIST_SEP, uris) : null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Override
+    public boolean hasFilenames() {
+        // getPrimaryClip() has been observed to throw unexpected exceptions for some devices (see
+        // crbug/654802 and b/31501780)
+        try {
+            ClipData clipData = mClipboardManager.getPrimaryClip();
+            for (int i = 0; i < clipData.getItemCount(); i++) {
+                Uri uri = clipData.getItemAt(i).getUri();
+                if (uri != null) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
     public void setText(final String text) {
         setText("text", text, false);
     }
@@ -467,6 +508,38 @@ public class ClipboardImpl extends Clipboard
                 (Uri uri) -> {
                     setImageUri(uri);
                 });
+    }
+
+    @Override
+    public void setFilenames(final String uriList) {
+        // Split uriList on `\r\n`, then add any valid URIs to ClipData.
+        String[] uris = uriList != null ? uriList.split(FILENAMES_LIST_SEP) : new String[0];
+        ClipData clipData = null;
+        ContentResolver cr = ContextUtils.getApplicationContext().getContentResolver();
+        for (int i = 0; i < uris.length; i++) {
+            String str = uris[i].trim();
+            Uri uri = null;
+            if (!str.isEmpty()) {
+                try {
+                    uri = Uri.parse(str);
+                } catch (Exception e) {
+                    // Handle null uri below.
+                }
+            }
+            if (uri == null) {
+                continue;
+            }
+            if (clipData == null) {
+                clipData = ClipData.newUri(cr, null, uri);
+            } else {
+                clipData.addItem(cr, new ClipData.Item(uri));
+            }
+        }
+        if (clipData != null) {
+            setPrimaryClipNoException(clipData);
+        } else {
+            clear();
+        }
     }
 
     @Override

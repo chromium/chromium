@@ -5,6 +5,7 @@
 package org.chromium.ui.base;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -16,6 +17,7 @@ import static org.mockito.Mockito.when;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
@@ -158,6 +160,51 @@ public class ClipboardTest {
         when(clipboardManager.getPrimaryClipDescription()).thenReturn(clipDescription);
 
         assertTrue(clipboard.hasCoercedText());
+    }
+
+    @Test
+    public void testClipboardGetFilenames() {
+        Clipboard clipboard = Clipboard.getInstance();
+        ClipboardManager clipboardManager = Mockito.mock(ClipboardManager.class);
+        ((ClipboardImpl) clipboard).overrideClipboardManagerForTesting(clipboardManager);
+
+        ClipData clipData = ClipData.newPlainText("label", "text");
+        when(clipboardManager.getPrimaryClip()).thenReturn(clipData);
+        assertFalse(clipboard.hasFilenames());
+        assertNull(clipboard.getFilenames());
+
+        ContentResolver cr = ContextUtils.getApplicationContext().getContentResolver();
+        String file1 = "content://tmp/test/file1.jpg";
+        String file2 = "content://tmp/test/file2.txt";
+        clipData = ClipData.newUri(cr, "label", Uri.parse(file1));
+        when(clipboardManager.getPrimaryClip()).thenReturn(clipData);
+        assertTrue(clipboard.hasFilenames());
+        assertEquals(file1, clipboard.getFilenames());
+
+        clipData = ClipData.newPlainText("label", "text");
+        clipData.addItem(new ClipData.Item(Uri.parse(file1)));
+        clipData.addItem(new ClipData.Item(Uri.parse(file2)));
+        when(clipboardManager.getPrimaryClip()).thenReturn(clipData);
+        assertTrue(clipboard.hasFilenames());
+        assertEquals(file1 + "\r\n" + file2, clipboard.getFilenames());
+    }
+
+    @Test
+    public void testClipboardSetFilenames() {
+        Clipboard clipboard = Clipboard.getInstance();
+        ClipboardManager clipboardManager = Mockito.mock(ClipboardManager.class);
+        ((ClipboardImpl) clipboard).overrideClipboardManagerForTesting(clipboardManager);
+
+        String file1 = "content://tmp/test/file1.jpg";
+        String file2 = "content://tmp/test/file2.txt";
+        // Items should be trimmed, and empty items ignored.
+        clipboard.setFilenames(" \r\n " + file1 + "\r\n" + file2 + "\r\n\r\n ");
+
+        ArgumentCaptor<ClipData> clipCaptor = ArgumentCaptor.forClass(ClipData.class);
+        verify(clipboardManager).setPrimaryClip(clipCaptor.capture());
+        assertEquals(2, clipCaptor.getValue().getItemCount());
+        assertEquals(file1, clipCaptor.getValue().getItemAt(0).getUri().toString());
+        assertEquals(file2, clipCaptor.getValue().getItemAt(1).getUri().toString());
     }
 
     @Test
