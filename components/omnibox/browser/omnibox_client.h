@@ -233,9 +233,6 @@ class OmniboxClient {
   // Discards the state for all pending and transient navigations.
   virtual void DiscardNonCommittedNavigations() {}
 
-  // Presents prompt to update Chrome.
-  virtual void OpenUpdateChromeDialog() {}
-
   // Focuses the `WebContents`, i.e. the web page of the current tab.
   virtual void FocusWebContents() {}
 

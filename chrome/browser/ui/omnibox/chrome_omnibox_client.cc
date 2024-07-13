@@ -460,21 +460,6 @@ void ChromeOmniboxClient::DiscardNonCommittedNavigations() {
   location_bar_->GetWebContents()->GetController().DiscardNonCommittedEntries();
 }
 
-void ChromeOmniboxClient::OpenUpdateChromeDialog() {
-  const content::WebContents* contents = location_bar_->GetWebContents();
-  if (contents) {
-    Browser* browser = chrome::FindBrowserWithTab(contents);
-    if (browser) {
-      // Here we record and take action more directly than
-      // chrome::OpenUpdateChromeDialog because that call is intended for use
-      // by the delayed-update/auto-nag system, possibly presenting dialogs
-      // that don't apply when the goal is immediate relaunch & update.
-      base::RecordAction(base::UserMetricsAction("UpdateChrome"));
-      browser->window()->ShowUpdateChromeDialog();
-    }
-  }
-}
-
 void ChromeOmniboxClient::FocusWebContents() {
   if (location_bar_->GetWebContents()) {
     location_bar_->GetWebContents()->Focus();

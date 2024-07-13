@@ -113,8 +113,6 @@ class OmniboxPopupViewViews : public views::View,
   // at the specified point.
   size_t GetIndexForPoint(const gfx::Point& point);
 
-  LocationBarView* location_bar_view() const { return location_bar_view_; }
-
  private:
   void UpdateExpandedCollapsedAccessibleState() const;
 
