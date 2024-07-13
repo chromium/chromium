@@ -161,32 +161,9 @@ a11y::ReadAloudCurrentGranularity ReadAloudAppModel::GetNextNodes(
           is_superscript ? combined_text.length()
                          : GetNextSentence(combined_text, is_pdf);
 
-      bool is_opening_punctuation = false;
-      // The code that checks for accessible text boundaries sometimes
-      // incorrectly includes opening punctuation (i.e. '(', '<', etc.) as part
-      // of the prior sentence.
-      // e.g. "This is a sentence.[2]" will return a sentence boundary for
-      // "This is a sentence.[", splitting the opening and closing punctuation.
-      // When opening punctuation is split like this in Read Aloud, text will
-      // be read out for the punctuation e.g. "opening square bracket," which
-      // we want to avoid.
-      // Therefore, this is a workaround that prevents adding text from the
-      // next node to the current segment if that text is a single character
-      // and also opening punctuation. The opening punctuation will then be
-      // read out as part of the next segment. If the opening punctuation is
-      // followed by text and closing punctuation, the punctuation will not be
-      // read out directly- just the text content.
-      // This workaround is not needed for superscripts because with a
-      // superscript, the entire superscript is added to the utterance of the
-      // superscript's associated sentence.
-      // TODO(crbug.com/40927698): See if it's possible to fix the code
-      // in FindAccessibleTextBoundary instead so that this workaround isn't
-      // needed.
-      if (!is_superscript && combined_sentence_index ==
-                                 (int)current_granularity.text.length() + 1) {
-        char c = combined_text[combined_sentence_index - 1];
-        is_opening_punctuation = IsOpeningPunctuation(c);
-      }
+      bool is_opening_punctuation = PositionEndsWithOpeningPunctuation(
+          is_superscript, combined_sentence_index, combined_text,
+          current_granularity);
 
       // If the combined_sentence_index is the same as the current_text length,
       // the new node should not be considered part of the current sentence.
@@ -262,6 +239,40 @@ a11y::ReadAloudCurrentGranularity ReadAloudAppModel::GetNextNodes(
     }
   }
   return current_granularity;
+}
+
+bool ReadAloudAppModel::PositionEndsWithOpeningPunctuation(
+    bool is_superscript,
+    int combined_sentence_index,
+    const std::u16string& combined_text,
+    a11y::ReadAloudCurrentGranularity current_granularity) {
+  // The code that checks for accessible text boundaries sometimes
+  // incorrectly includes opening punctuation (i.e. '(', '<', etc.) as part
+  // of the prior sentence.
+  // e.g. "This is a sentence.[2]" will return a sentence boundary for
+  // "This is a sentence.[", splitting the opening and closing punctuation.
+  // When opening punctuation is split like this in Read Aloud, text will
+  // be read out for the punctuation e.g. "opening square bracket," which
+  // we want to avoid.
+  // Therefore, this is a workaround that prevents adding text from the
+  // next node to the current segment if that text is a single character
+  // and also opening punctuation. The opening punctuation will then be
+  // read out as part of the next segment. If the opening punctuation is
+  // followed by text and closing punctuation, the punctuation will not be
+  // read out directly- just the text content.
+  // This workaround is not needed for superscripts because with a
+  // superscript, the entire superscript is added to the utterance of the
+  // superscript's associated sentence.
+  // TODO(crbug.com/40927698): See if it's possible to fix the code
+  // in FindAccessibleTextBoundary instead so that this workaround isn't
+  // needed.
+  if (!is_superscript &&
+      combined_sentence_index == (int)current_granularity.text.length() + 1) {
+    char c = combined_text[combined_sentence_index - 1];
+    return IsOpeningPunctuation(c);
+  }
+
+  return false;
 }
 
 bool ReadAloudAppModel::ShouldEndTextTraversal(

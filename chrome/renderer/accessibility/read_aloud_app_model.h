@@ -174,6 +174,12 @@ class ReadAloudAppModel {
   bool ShouldEndTextTraversal(
       a11y::ReadAloudCurrentGranularity current_granularity);
 
+  bool PositionEndsWithOpeningPunctuation(
+      bool is_superscript,
+      int combined_sentence_index,
+      const std::u16string& combined_text,
+      a11y::ReadAloudCurrentGranularity current_granularity);
+
   // Whether Read Aloud speech is currently playing or not.
   bool speech_playing_ = false;
 
