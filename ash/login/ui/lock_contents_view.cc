@@ -503,7 +503,7 @@ void LockContentsView::ShowEnterpriseDomainManager(
   bottom_status_indicator_->SetText(l10n_util::GetStringFUTF16(
       IDS_ASH_LOGIN_MANAGED_DEVICE_INDICATOR, ui::GetChromeOSDeviceName(),
       base::UTF8ToUTF16(entreprise_domain_manager)));
-  bottom_status_indicator_->set_role_for_accessibility(
+  bottom_status_indicator_->GetViewAccessibility().SetRole(
       ax::mojom::Role::kButton);
   bottom_status_indicator_state_ = BottomIndicatorState::kManagedDevice;
   UpdateBottomStatusIndicatorColors();
@@ -513,7 +513,7 @@ void LockContentsView::ShowEnterpriseDomainManager(
 void LockContentsView::ShowAdbEnabled() {
   bottom_status_indicator_->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SCREEN_UNVERIFIED_CODE_WARNING));
-  bottom_status_indicator_->set_role_for_accessibility(
+  bottom_status_indicator_->GetViewAccessibility().SetRole(
       ax::mojom::Role::kStaticText);
   bottom_status_indicator_state_ = BottomIndicatorState::kAdbSideLoadingEnabled;
   UpdateBottomStatusIndicatorColors();

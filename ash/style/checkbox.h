@@ -35,7 +35,6 @@ class ASH_EXPORT Checkbox : public OptionButtonBase {
   gfx::ImageSkia GetImage(ButtonState for_state) const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
   bool IsIconOnTheLeftSide() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 };
 
 }  // namespace ash

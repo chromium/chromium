@@ -142,7 +142,6 @@ class ImeListItemView : public views::Button {
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     views::Button::GetAccessibleNodeData(node_data);
-    node_data->role = ax::mojom::Role::kCheckBox;
     node_data->SetCheckedState(selected_ ? ax::mojom::CheckedState::kTrue
                                          : ax::mojom::CheckedState::kFalse);
   }

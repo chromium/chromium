@@ -603,7 +603,10 @@ void TrayBackgroundView::AboutToRequestFocusFromTabTraversal(bool reverse) {
 
 void TrayBackgroundView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   views::Button::GetAccessibleNodeData(node_data);
-  node_data->SetName(GetAccessibleNameForTray());
+  // Override the name set in `LabelButton::SetText`.
+  // TODO(crbug.com/325137417): Remove this once the accessible name is set in
+  // the cache as soon as the name is updated.
+  GetViewAccessibility().SetName(GetAccessibleNameForTray());
 
   if (LockScreen::HasInstance()) {
     GetViewAccessibility().SetNextFocus(LockScreen::Get()->widget());

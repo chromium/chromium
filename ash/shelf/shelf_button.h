@@ -30,7 +30,6 @@ class ASH_EXPORT ShelfButton : public views::Button {
   void OnThemeChanged() override;
   gfx::Rect GetAnchorBoundsInScreen() const override;
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void NotifyClick(const ui::Event& event) override;
 
   Shelf* shelf() { return shelf_; }

@@ -51,6 +51,8 @@ void ShelfButton::OnThemeChanged() {
     StyleUtil::ConfigureInkDropAttributes(
         this, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity);
   }
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 }
 
 gfx::Rect ShelfButton::GetAnchorBoundsInScreen() const {
@@ -65,12 +67,6 @@ gfx::Rect ShelfButton::GetAnchorBoundsInScreen() const {
 void ShelfButton::AboutToRequestFocusFromTabTraversal(bool reverse) {
   shelf_button_delegate_->OnShelfButtonAboutToRequestFocusFromTabTraversal(
       this, reverse);
-}
-
-// Do not remove this function to avoid unnecessary ChromeVox announcement
-// triggered by Button::GetAccessibleNodeData. (See https://crbug.com/932200)
-void ShelfButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kButton;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

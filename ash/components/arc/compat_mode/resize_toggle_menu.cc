@@ -141,6 +141,9 @@ ResizeToggleMenu::MenuButtonView::MenuButtonView(PressedCallback callback,
     views::FocusRing::Get(this)->SetColorId(
         static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing));
   }
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(title_string_id_));
 }
 
 ResizeToggleMenu::MenuButtonView::~MenuButtonView() = default;
@@ -444,13 +447,6 @@ void ResizeToggleMenu::CloseBubble() {
     return;
 
   bubble_widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
-}
-
-void ResizeToggleMenu::MenuButtonView::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  views::Button::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kMenuItem;
-  node_data->SetName(l10n_util::GetStringUTF16(title_string_id_));
 }
 
 }  // namespace arc

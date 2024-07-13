@@ -23,6 +23,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/rrect_f.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -483,13 +484,13 @@ TEST_P(FeatureTileTest, AccessibilityRoles) {
                              /*is_togglable=*/true);
   togglable_tile.SetToggled(true);
   ui::AXNodeData node_data;
-  togglable_tile.GetAccessibleNodeData(&node_data);
+  togglable_tile.GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(node_data.role, ax::mojom::Role::kToggleButton);
   EXPECT_EQ(node_data.GetCheckedState(), ax::mojom::CheckedState::kTrue);
 
   togglable_tile.SetToggled(false);
   ui::AXNodeData node_data2;
-  togglable_tile.GetAccessibleNodeData(&node_data2);
+  togglable_tile.GetViewAccessibility().GetAccessibleNodeData(&node_data2);
   EXPECT_EQ(node_data2.role, ax::mojom::Role::kToggleButton);
   EXPECT_EQ(node_data2.GetCheckedState(), ax::mojom::CheckedState::kFalse);
 
@@ -498,14 +499,14 @@ TEST_P(FeatureTileTest, AccessibilityRoles) {
   // tile takes the user to a detail page.
   togglable_tile.SetIconClickable(true);
   ui::AXNodeData node_data3;
-  togglable_tile.GetAccessibleNodeData(&node_data3);
+  togglable_tile.GetViewAccessibility().GetAccessibleNodeData(&node_data3);
   EXPECT_EQ(node_data3.role, ax::mojom::Role::kButton);
 
   // Non-togglable feature tiles are just buttons.
   FeatureTile non_togglable_tile(views::Button::PressedCallback(),
                                  /*is_togglable=*/false);
   ui::AXNodeData node_data4;
-  non_togglable_tile.GetAccessibleNodeData(&node_data4);
+  non_togglable_tile.GetViewAccessibility().GetAccessibleNodeData(&node_data4);
   EXPECT_EQ(node_data4.role, ax::mojom::Role::kButton);
 }
 

@@ -204,7 +204,6 @@ class ASH_EXPORT FeatureTile : public views::Button {
   void SetDownloadState(DownloadState state, int progress);
 
   // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void AddLayerToRegion(ui::Layer* layer, views::LayerRegion region) override;
   void RemoveLayerFromRegions(ui::Layer* layer) override;
 

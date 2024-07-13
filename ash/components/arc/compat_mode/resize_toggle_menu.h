@@ -51,9 +51,6 @@ class ResizeToggleMenu : public views::WidgetObserver,
 
     void SetSelected(bool is_selected);
 
-    // views::View:
-    void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
    private:
     // views::View:
     void OnThemeChanged() override;

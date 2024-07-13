@@ -48,8 +48,6 @@ class ASH_EXPORT QsBatteryInfoViewBase : public PillButton,
   void ConfigureIcon(bool bsm_active = false);
 
  private:
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void ChildPreferredSizeChanged(views::View* child) override;
   void ChildVisibilityChanged(views::View* child) override;
 

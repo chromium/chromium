@@ -29,7 +29,9 @@ Checkbox::Checkbox(int button_width,
                        std::move(callback),
                        label,
                        insets,
-                       image_label_spacing) {}
+                       image_label_spacing) {
+  GetViewAccessibility().SetRole(ax::mojom::Role::kCheckBox);
+}
 
 Checkbox::~Checkbox() = default;
 
@@ -43,17 +45,6 @@ const gfx::VectorIcon& Checkbox::GetVectorIcon() const {
 
 bool Checkbox::IsIconOnTheLeftSide() {
   return true;
-}
-
-void Checkbox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  OptionButtonBase::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kCheckBox;
-  const std::u16string cached_name = GetViewAccessibility().GetCachedName();
-  // Explicitly set the name so that this is compatible with
-  // `MenuItemView::GetAccessibleNodeData()`.
-  if (!cached_name.empty()) {
-    node_data->SetName(cached_name);
-  }
 }
 
 BEGIN_METADATA(Checkbox)

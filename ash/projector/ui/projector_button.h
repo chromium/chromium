@@ -31,10 +31,6 @@ class ASH_EXPORT ProjectorButton : public views::ToggleImageButton {
   // views::ToggleImageButton:
   void OnPaintBackground(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
- private:
-  std::u16string name_;
 };
 
 }  // namespace ash

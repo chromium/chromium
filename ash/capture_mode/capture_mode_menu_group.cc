@@ -224,6 +224,7 @@ class CaptureModeOption
     SetInkDropForButton(this);
     GetViewAccessibility().SetIsLeaf(true);
     GetViewAccessibility().SetName(GetOptionLabel());
+    GetViewAccessibility().SetRole(ax::mojom::Role::kRadioButton);
 
     SetEnabled(enabled);
   }
@@ -289,8 +290,6 @@ class CaptureModeOption
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     Button::GetAccessibleNodeData(node_data);
-    node_data->role = ax::mojom::Role::kRadioButton;
-    node_data->SetName(GetOptionLabel());
     node_data->SetCheckedState(IsOptionChecked()
                                    ? ax::mojom::CheckedState::kTrue
                                    : ax::mojom::CheckedState::kFalse);

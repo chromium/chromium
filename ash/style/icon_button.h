@@ -196,7 +196,6 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   void OnFocus() override;
   void OnBlur() override;
   void PaintButtonContents(gfx::Canvas* canvas) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void NotifyClick(const ui::Event& event) override;
 
  protected:
