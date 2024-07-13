@@ -137,17 +137,8 @@ a11y::ReadAloudCurrentGranularity ReadAloudAppModel::GetNextNodes(
       // Reset the current text index within the current node since we just
       // moved to a new node.
       current_text_index_ = 0;
-      // If we've reached the end of the content, go ahead and return the
-      // current list of nodes because there are no more nodes to look through.
-      if (ax_position_->IsNullPosition() || ax_position_->AtEndOfAXTree() ||
-          !ax_position_->GetAnchor()) {
-        return current_granularity;
-      }
-
-      // If the position is now at the start of a paragraph and we already have
-      // nodes to return, return the current list of nodes so that we don't
-      // cross paragraph boundaries with text.
-      if (ShouldSplitAtParagraph(ax_position_, current_granularity)) {
+      // Return the current granularity if the position is invalid.
+      if (ShouldEndTextTraversal(current_granularity)) {
         return current_granularity;
       }
 
@@ -271,6 +262,21 @@ a11y::ReadAloudCurrentGranularity ReadAloudAppModel::GetNextNodes(
     }
   }
   return current_granularity;
+}
+
+bool ReadAloudAppModel::ShouldEndTextTraversal(
+    a11y::ReadAloudCurrentGranularity current_granularity) {
+  // We should end text traversal early if we:
+  // - Have reached the end of the content because there are no more nodes
+  //   to look through
+  // - Have move to the start of a paragraph and we've already gotten nodes
+  //   to return because we don't want to cross paragraph boundaries in a
+  //   speech segment
+  // If we've reached the end of the content, go ahead and return the
+  // current list of nodes because there are no more nodes to look through.
+  return (ax_position_->IsNullPosition() || ax_position_->AtEndOfAXTree() ||
+          !ax_position_->GetAnchor()) ||
+         ShouldSplitAtParagraph(ax_position_, current_granularity);
 }
 
 void ReadAloudAppModel::AddTextToCurrentGranularity(

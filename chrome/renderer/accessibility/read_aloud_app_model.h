@@ -168,6 +168,12 @@ class ReadAloudAppModel {
       int end_index,
       a11y::ReadAloudCurrentGranularity& current_granularity);
 
+  // Returns if we should end text traversal from the current position, due
+  // to reaching the end of content or reaching a point, such as a paragraph,
+  // where a segment should be split.
+  bool ShouldEndTextTraversal(
+      a11y::ReadAloudCurrentGranularity current_granularity);
+
   // Whether Read Aloud speech is currently playing or not.
   bool speech_playing_ = false;
 
