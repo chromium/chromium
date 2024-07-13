@@ -666,7 +666,7 @@ void VideoRendererImpl::FrameReady(VideoDecoderStream::ReadResult result) {
   if (!sink_started_ && !painted_first_frame_ && algorithm_->frames_queued()) {
     if (received_end_of_stream_ ||
         (algorithm_->effective_frames_queued() && has_best_first_frame)) {
-      PaintFirstFrame();
+      PaintFirstFrame_Locked();
     } else if (cant_read) {
       // `cant_read` isn't always reliable, so only paint after 250ms if we
       // haven't gotten anything better. This resets for each frame received. We
@@ -1067,7 +1067,14 @@ void VideoRendererImpl::AttemptReadAndCheckForMetadataChanges(
 }
 
 void VideoRendererImpl::PaintFirstFrame() {
+  base::AutoLock auto_lock(lock_);
+  PaintFirstFrame_Locked();
+}
+
+void VideoRendererImpl::PaintFirstFrame_Locked() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  lock_.AssertAcquired();
+
   if (painted_first_frame_ || sink_started_) {
     return;
   }
