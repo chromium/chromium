@@ -950,8 +950,8 @@ void WorkspaceWindowResizer::CompleteDrag() {
     return;
   }
 
-  // Maximized to normal. State doesn't change during a drag so restore the
-  // window here.
+  // Maximized to normal. State doesn't change during a drag so set the
+  // window to normal state here.
   if (window_state()->IsMaximized()) {
     DCHECK_EQ(HTCAPTION, details().window_component);
     // Reaching here the only running animation should be the drag to
@@ -965,7 +965,11 @@ void WorkspaceWindowResizer::CompleteDrag() {
     // animation will use the current bounds as the target bounds, so we can
     // disable the animation here.
     wm::ScopedAnimationDisabler disabler(window_state()->window());
-    window_state()->Restore();
+
+    // Set the maximized window to normal state since it's being resized/dragged
+    // by the user now.
+    const WMEvent event(WM_EVENT_NORMAL);
+    window_state()->OnWMEvent(&event);
     return;
   }
 

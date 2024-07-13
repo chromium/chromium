@@ -1168,13 +1168,16 @@ TEST_F(WindowStateTest, MouseDragWindowInMultiDisplays) {
   EXPECT_EQ(initial_bounds, window_state->GetRestoreBoundsInScreen());
   EXPECT_EQ(restore_stack[1], WindowStateType::kPrimarySnapped);
 
-  // Mouse drag the window to the 2nd display. Both the restore bounds property
-  // and resotore bounds inside the history stack should be updated to bounds
-  // inside the 2nd display.
-  ui::test::EventGenerator event_generator(window->GetRootWindow(),
-                                           window.get());
+  // Mouse drag the window to snap on the 2nd display. Both the restore bounds
+  // property and resotore bounds inside the history stack should be updated to
+  // bounds inside the 2nd display. Note since `display2_bounds` are in screen,
+  // the event generator coordinates should also be in screen.
+  auto* event_generator = GetEventGenerator();
   const gfx::Rect display2_bounds = displays[1].bounds();
-  event_generator.DragMouseTo(display2_bounds.CenterPoint());
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(display2_bounds.left_center());
+  ASSERT_TRUE(window_state->is_dragged());
+  event_generator->ReleaseLeftButton();
   EXPECT_EQ(displays[1].id(),
             screen->GetDisplayNearestWindow(window.get()).id());
   EXPECT_TRUE(window_state->IsSnapped());
