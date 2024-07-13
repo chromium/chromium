@@ -167,6 +167,7 @@ class COMPONENT_EXPORT(URL) SchemeHostPort {
 
   std::string SerializeInternal(url::Parsed* parsed) const;
 
+ private:
   std::string scheme_;
   std::string host_;
   uint16_t port_ = 0;
