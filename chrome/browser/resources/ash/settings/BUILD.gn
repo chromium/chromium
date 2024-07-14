@@ -99,6 +99,7 @@ build_webui("build") {
     "device_page/per_device_mouse_subsection.ts",
     "device_page/per_device_pointing_stick.ts",
     "device_page/per_device_pointing_stick_subsection.ts",
+    "device_page/per_device_subsection_header.ts",
     "device_page/per_device_touchpad.ts",
     "device_page/per_device_touchpad_subsection.ts",
     "device_page/pointers.ts",

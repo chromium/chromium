@@ -118,6 +118,7 @@ build_webui_tests("build") {
     "device_page/per_device_mouse_test.ts",
     "device_page/per_device_pointing_stick_subsection_test.ts",
     "device_page/per_device_pointing_stick_test.ts",
+    "device_page/per_device_subsection_header_test.ts",
     "device_page/per_device_touchpad_subsection_test.ts",
     "device_page/per_device_touchpad_test.ts",
     "device_page/pointers_test.ts",

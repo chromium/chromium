@@ -907,6 +907,11 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestSplitEnabled,
   RunSettingsTest("device_page/per_device_pointing_stick_subsection_test.js");
 }
 
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampDeviceTestPeripheralAndSplitEnabled,
+                       DevicePagePerDeviceSubsectionHeader) {
+  RunSettingsTest("device_page/per_device_subsection_header_test.js");
+}
+
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestSplitEnabled,
                        DevicePagePerDeviceTouchpad) {
   RunSettingsTest("device_page/per_device_touchpad_test.js");
