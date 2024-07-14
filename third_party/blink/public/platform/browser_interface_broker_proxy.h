@@ -2,27 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_BROWSER_INTERFACE_BROKER_PROXY_H_
-#define THIRD_PARTY_BLINK_PUBLIC_COMMON_BROWSER_INTERFACE_BROKER_PROXY_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_BROWSER_INTERFACE_BROKER_PROXY_H_
+#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_BROWSER_INTERFACE_BROKER_PROXY_H_
 
 #include <utility>
 
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
-
-// TODO(https://crbug.com/41482945): Remove `nogncheck` after moving
-// `browser_interface_broker_proxy.h` to `blink/public/platform`.
-#include "third_party/blink/public/platform/cross_variant_mojo_util.h"  // nogncheck
+#include "third_party/blink/public/mojom/browser_interface_broker.mojom-shared.h"
+#include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 
 namespace blink {
 
 // BrowserInterfaceBrokerProxy provides access to interfaces exposed by the
 // browser to the renderer. It is intended to replace document- and
 // worker-scoped InterfaceProvider (see crbug.com/718652).
-class BLINK_COMMON_EXPORT BrowserInterfaceBrokerProxy {
+class BLINK_PLATFORM_EXPORT BrowserInterfaceBrokerProxy {
  public:
   BrowserInterfaceBrokerProxy();
 
@@ -61,9 +58,9 @@ class BLINK_COMMON_EXPORT BrowserInterfaceBrokerProxy {
 
 // Returns an instance of BrowserInterfaceBrokerProxy that is safe to use but is
 // not connected to anything.
-BLINK_COMMON_EXPORT BrowserInterfaceBrokerProxy&
+BLINK_PLATFORM_EXPORT BrowserInterfaceBrokerProxy&
 GetEmptyBrowserInterfaceBroker();
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_BROWSER_INTERFACE_BROKER_PROXY_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_BROWSER_INTERFACE_BROKER_PROXY_H_

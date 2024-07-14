@@ -22,7 +22,7 @@
 #include "media/base/renderer_client.h"
 #include "media/filters/decrypting_demuxer_stream.h"
 #include "net/base/io_buffer.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 
 #define RUN_ON_MAIN_THREAD(method, ...)                     \
   main_task_runner_->PostTask(                              \

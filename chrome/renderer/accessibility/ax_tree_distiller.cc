@@ -15,7 +15,7 @@
 #include "content/public/renderer/render_thread.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_computed_node_data.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"

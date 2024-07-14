@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
@@ -32,7 +33,70 @@ struct InterfaceNameHashTranslator {
   }
 };
 
+class EmptyBrowserInterfaceBrokerProxy
+    : public TestableBrowserInterfaceBrokerProxy {
+ public:
+  EmptyBrowserInterfaceBrokerProxy() = default;
+  ~EmptyBrowserInterfaceBrokerProxy() override = default;
+
+  CrossVariantMojoReceiver<mojom::BrowserInterfaceBrokerInterfaceBase> Reset(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {
+    // `Reset` should only be called on a real `BrowserInterfaceBrokerProxy`.
+    // It should never be called on `EmptyBrowserInterfaceBrokerProxy`.
+    NOTREACHED_NORETURN();
+  }
+
+  void GetInterface(mojo::GenericPendingReceiver receiver) const override {
+    DCHECK(receiver.interface_name());
+    TestBinder* binder = FindTestBinder(receiver.interface_name().value());
+    if (binder) {
+      binder->Run(receiver.PassPipe());
+    }
+
+    // Otherwise, do nothing and leave `receiver` unbound.
+  }
+};
+
 }  // namespace
+
+TestableBrowserInterfaceBrokerProxy::TestBinder*
+TestableBrowserInterfaceBrokerProxy::FindTestBinder(
+    std::string_view interface_name) const {
+  if (!binder_map_for_testing_.empty()) {
+    auto it = binder_map_for_testing_
+                  .Find<InterfaceNameHashTranslator, std::string_view>(
+                      interface_name);
+    if (it != binder_map_for_testing_.end()) {
+      return &it->value;
+    }
+  }
+
+  return nullptr;
+}
+
+bool TestableBrowserInterfaceBrokerProxy::SetBinderForTesting(
+    const std::string& name,
+    base::RepeatingCallback<void(mojo::ScopedMessagePipeHandle)> binder) const {
+  String wtf_name(name);
+
+  if (!binder) {
+    binder_map_for_testing_.erase(wtf_name);
+    return true;
+  }
+
+  auto result =
+      binder_map_for_testing_.insert(std::move(wtf_name), std::move(binder));
+  return result.is_new_entry;
+}
+
+BrowserInterfaceBrokerProxy& GetEmptyBrowserInterfaceBroker() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(EmptyBrowserInterfaceBrokerProxy,
+                                  empty_broker, ());
+  return empty_broker;
+}
+
+BrowserInterfaceBrokerProxy::BrowserInterfaceBrokerProxy() = default;
+BrowserInterfaceBrokerProxy::~BrowserInterfaceBrokerProxy() = default;
 
 void BrowserInterfaceBrokerProxyImpl::Bind(
     CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase> broker,
@@ -51,17 +115,11 @@ BrowserInterfaceBrokerProxyImpl::Reset(
 
 void BrowserInterfaceBrokerProxyImpl::GetInterface(
     mojo::GenericPendingReceiver receiver) const {
-  // Local binders can be registered via SetBinderForTesting.
   DCHECK(receiver.interface_name());
-
-  if (!binder_map_for_testing_.empty()) {
-    auto it = binder_map_for_testing_
-                  .Find<InterfaceNameHashTranslator, std::string_view>(
-                      receiver.interface_name().value());
-    if (it != binder_map_for_testing_.end()) {
-      it->value.Run(receiver.PassPipe());
-      return;
-    }
+  TestBinder* binder = FindTestBinder(receiver.interface_name().value());
+  if (binder) {
+    binder->Run(receiver.PassPipe());
+    return;
   }
 
   broker_->GetInterface(std::move(receiver));
@@ -69,21 +127,6 @@ void BrowserInterfaceBrokerProxyImpl::GetInterface(
 
 bool BrowserInterfaceBrokerProxyImpl::is_bound() const {
   return broker_.is_bound();
-}
-
-bool BrowserInterfaceBrokerProxyImpl::SetBinderForTesting(
-    const std::string& name,
-    base::RepeatingCallback<void(mojo::ScopedMessagePipeHandle)> binder) const {
-  String wtf_name(name);
-
-  if (!binder) {
-    binder_map_for_testing_.erase(wtf_name);
-    return true;
-  }
-
-  auto result =
-      binder_map_for_testing_.insert(std::move(wtf_name), std::move(binder));
-  return result.is_new_entry;
 }
 
 }  // namespace blink

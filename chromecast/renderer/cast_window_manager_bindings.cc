@@ -15,7 +15,7 @@
 #include "chromecast/renderer/feature_manager.h"
 #include "content/public/renderer/render_frame.h"
 #include "gin/data_object_builder.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"

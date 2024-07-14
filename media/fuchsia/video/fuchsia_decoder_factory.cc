@@ -8,7 +8,7 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/fuchsia/video/fuchsia_video_decoder.h"
 #include "media/video/gpu_video_accelerator_factories.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 
 namespace media {
 

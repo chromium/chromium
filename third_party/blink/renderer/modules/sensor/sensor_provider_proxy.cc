@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/sensor/sensor_provider_proxy.h"
 
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/modules/sensor/sensor_proxy_impl.h"
 
 namespace blink {

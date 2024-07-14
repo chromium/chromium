@@ -142,7 +142,6 @@ source_set("common") {
     "associated_interfaces/associated_interface_registry.cc",
     "blob/blob_utils.cc",
     "bluetooth/web_bluetooth_device_id.cc",
-    "browser_interface_broker_proxy.cc",
     "cache_storage/cache_storage_utils.cc",
     "chrome_debug_urls.cc",
     "client_hints/client_hints.cc",

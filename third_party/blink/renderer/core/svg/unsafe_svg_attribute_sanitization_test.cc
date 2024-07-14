@@ -3,13 +3,12 @@
 // found in the LICENSE file.
 
 // FIXME(dominicc): Poor confused check-webkit-style demands Attribute.h here.
-#include "third_party/blink/renderer/core/dom/attribute.h"
-
 #include <memory>
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
+#include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"

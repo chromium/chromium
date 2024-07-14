@@ -9,8 +9,8 @@
 
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_position_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_session_action_details.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_session_action_handler.h"

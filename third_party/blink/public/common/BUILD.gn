@@ -118,7 +118,6 @@ source_set("headers") {
     "blob/blob_utils.h",
     "bluetooth/web_bluetooth_device_id.h",
     "bluetooth/web_bluetooth_device_id_mojom_traits.h",
-    "browser_interface_broker_proxy.h",
     "cache_storage/cache_storage_utils.h",
     "chrome_debug_urls.h",
     "client_hints/client_hints.h",

@@ -132,7 +132,7 @@ cast_source_set("audio_renderer") {
     "//media/mojo/mojom",
     "//mojo/public/cpp/bindings",
     "//net",
-    "//third_party/blink/public/common",
+    "//third_party/blink/public:blink_headers",
   ]
 }
 

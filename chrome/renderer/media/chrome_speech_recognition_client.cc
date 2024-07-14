@@ -18,7 +18,7 @@
 #include "media/base/channel_mixer.h"
 #include "media/mojo/mojom/audio_data.mojom.h"
 #include "media/mojo/mojom/media_types.mojom.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 
 // Preallocate 500ms worth of buffers when using a ReconfigurableAudioBusPool.
 constexpr base::TimeDelta kAudioBusPoolDuration = base::Milliseconds(500);
