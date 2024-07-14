@@ -237,8 +237,6 @@ class PaymentMethodAccessoryControllerCardUnmaskTest
         return test::GetCreditCard();
       case CreditCard::RecordType::kMaskedServerCard:
         return test::GetMaskedServerCard();
-      case CreditCard::RecordType::kFullServerCard:
-        return test::GetFullServerCard();
       case CreditCard::RecordType::kVirtualCard: {
         // The PaymentMethodAccessoryController will automatically create a virtual
         // card for this masked server card.
@@ -247,6 +245,9 @@ class PaymentMethodAccessoryControllerCardUnmaskTest
             CreditCard::VirtualCardEnrollmentState::kEnrolled);
         return card;
       }
+      case CreditCard::RecordType::kFullServerCard:
+        // Full server cards are never unmasked, so they are not tested.
+        NOTREACHED_NORETURN();
     }
   }
 
@@ -288,43 +289,11 @@ TEST_P(PaymentMethodAccessoryControllerCardUnmaskTest, CardUnmask) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     PaymentMethodAccessoryControllerCardUnmaskTest,
+    // Full server cards are never unmasked, so they should not be present in
+    // this test.
     testing::Values(CreditCard::RecordType::kLocalCard,
                     CreditCard::RecordType::kMaskedServerCard,
-                    CreditCard::RecordType::kFullServerCard,
                     CreditCard::RecordType::kVirtualCard));
-
-TEST_F(PaymentMethodAccessoryControllerTest,
-       RefreshSuggestionsUnmaskedCachedCardNotAdded) {
-  // Store a full server card in the credit_card_access_manager's
-  // unmasked_cards_cache.
-  CreditCard card = test::GetCreditCard();
-  card.set_record_type(CreditCard::RecordType::kFullServerCard);
-  data_manager_.payments_data_manager().AddCreditCard(card);
-  std::u16string cvc = u"123";
-  autofill_manager().GetCreditCardAccessManager().CacheUnmaskedCardInfo(card,
-                                                                        cvc);
-  EXPECT_CALL(filling_source_observer_,
-              Run(controller(), IsFillingSourceAvailable(true)));
-  ASSERT_TRUE(controller());
-  controller()->RefreshSuggestions();
-
-  // Verify that the only the obfuscated last four and no cvc is added to the
-  // accessory sheet data.
-  EXPECT_EQ(controller()->GetSheetData(),
-            PaymentMethodAccessorySheetDataBuilder()
-                .AddUserInfo(kVisaCard)
-                .AppendField(card.ObfuscatedNumberWithVisibleLastFourDigits(),
-                             /*text_to_fill=*/std::u16string(),
-                             card.ObfuscatedNumberWithVisibleLastFourDigits(),
-                             card.guid(),
-                             /*is_obfuscated=*/false,
-                             /*selectable=*/true)
-                .AppendSimpleField(card.Expiration2DigitMonthAsString())
-                .AppendSimpleField(card.Expiration4DigitYearAsString())
-                .AppendSimpleField(card.GetRawInfo(CREDIT_CARD_NAME_FULL))
-                .AppendSimpleField(std::u16string())
-                .Build());
-}
 
 TEST_F(PaymentMethodAccessoryControllerTest,
        RefreshSuggestionsAddsCachedVirtualCards) {

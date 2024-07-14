@@ -587,7 +587,7 @@ TEST_F(PaymentsDataManagerTest, AddUpdateRemoveCreditCards) {
   cards.push_back(&credit_card2);
   ExpectSameElements(cards, payments_data_manager().GetCreditCards());
 
-  // Add a full server card.
+  // Add a server card.
   CreditCard credit_card3(base::Uuid::GenerateRandomV4().AsLowercaseString(),
                           test::kEmptyOrigin);
   test::SetCreditCardInfo(&credit_card3, "Jane Doe", "1111", "04", "2999", "1");
@@ -1184,40 +1184,10 @@ TEST_F(PaymentsDataManagerTest,
   EXPECT_EQ(0U, payments_data_manager().GetCreditCards().size());
 }
 
-// Tests that only the full server card is kept when deduping with a local
-// duplicate of it.
-TEST_F(PaymentsDataManagerTest,
-       DedupeCreditCardToSuggest_FullServerShadowsLocal) {
-  std::list<CreditCard*> credit_cards;
-
-  // Create 3 different local credit cards.
-  CreditCard local_card("287151C8-6AB1-487C-9095-28E80BE5DA15",
-                        test::kEmptyOrigin);
-  test::SetCreditCardInfo(&local_card, "Homer Simpson",
-                          "4234567890123456" /* Visa */, "01", "2999", "1");
-  local_card.set_use_count(3);
-  local_card.set_use_date(AutofillClock::Now() - base::Days(1));
-  credit_cards.push_back(&local_card);
-
-  // Create a full server card that is a duplicate of one of the local cards.
-  CreditCard full_server_card(CreditCard::RecordType::kFullServerCard, "c789");
-  test::SetCreditCardInfo(&full_server_card, "Homer Simpson",
-                          "4234567890123456" /* Visa */, "01", "2999", "1");
-  full_server_card.set_use_count(1);
-  full_server_card.set_use_date(AutofillClock::Now() - base::Days(15));
-  credit_cards.push_back(&full_server_card);
-
-  PaymentsDataManager::DedupeCreditCardToSuggest(&credit_cards);
-  ASSERT_EQ(1U, credit_cards.size());
-
-  const CreditCard* deduped_card = credit_cards.front();
-  EXPECT_TRUE(*deduped_card == full_server_card);
-}
-
-// Tests that only the local card is kept when deduping with a masked server
-// duplicate of it or vice-versa. This is checked based on the value assigned
-// during the for loop.
-TEST_F(PaymentsDataManagerTest, DedupeLocalCreditCardToSuggest) {
+// Tests that only the masked card is kept when deduping with a local duplicate
+// of it or vice-versa. This is checked based on the value assigned during the
+// for loop.
+TEST_F(PaymentsDataManagerTest, DedupeCreditCardToSuggest_MaskedIsKept) {
   std::list<CreditCard*> credit_cards;
 
   CreditCard local_card("1141084B-72D7-4B73-90CF-3D6AC154673B",
@@ -1240,8 +1210,7 @@ TEST_F(PaymentsDataManagerTest, DedupeLocalCreditCardToSuggest) {
   EXPECT_EQ(*credit_cards.front(), masked_card);
 }
 
-// Tests that different local, masked, and full server credit cards are not
-// deduped.
+// Tests that different local and server credit cards are not deduped.
 TEST_F(PaymentsDataManagerTest, DedupeCreditCardToSuggest_DifferentCards) {
   std::list<CreditCard*> credit_cards;
 
@@ -1259,21 +1228,10 @@ TEST_F(PaymentsDataManagerTest, DedupeCreditCardToSuggest_DifferentCards) {
                           "1");
   masked_card.set_use_count(3);
   masked_card.set_use_date(AutofillClock::Now() - base::Days(15));
-  // credit_card4.SetNetworkForMaskedCard(kVisaCard);
   credit_cards.push_back(&masked_card);
 
-  // Create a full server card that is slightly different of the two other
-  // cards.
-  CreditCard full_server_card(CreditCard::RecordType::kFullServerCard, "c789");
-  test::SetCreditCardInfo(&full_server_card, "Homer Simpson",
-                          "378282246310005" /* American Express */, "04",
-                          "2999", "1");
-  full_server_card.set_use_count(1);
-  full_server_card.set_use_date(AutofillClock::Now() - base::Days(15));
-  credit_cards.push_back(&full_server_card);
-
   PaymentsDataManager::DedupeCreditCardToSuggest(&credit_cards);
-  EXPECT_EQ(3U, credit_cards.size());
+  EXPECT_EQ(2U, credit_cards.size());
 }
 
 TEST_F(PaymentsDataManagerTest, DeleteLocalCreditCards) {
@@ -2495,7 +2453,7 @@ TEST_F(PaymentsDataManagerTest, IsServerCard_DuplicateOfMaskedServerCard) {
 
   SetServerCards(server_cards);
 
-  // Add a dupe local card of a full server card.
+  // Add a dupe local card of the masked server card.
   CreditCard local_card("287151C8-6AB1-487C-9095-28E80BE5DA15",
                         test::kEmptyOrigin);
   test::SetCreditCardInfo(&local_card, "Emmet Dalton",
