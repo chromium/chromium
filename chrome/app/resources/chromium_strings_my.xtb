@@ -27,6 +27,7 @@
 <translation id="1497802159252041924">တပ်ဆင်မှုအမှား- <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Chromium တဘ် မျှဝေခြင်း</translation>
 <translation id="1553461853655228091">သင့်ပတ်ဝန်းကျင်၏ 3D မြေပုံ ပြုလုပ်ရန် Chromium က သင့်ကင်မရာကို အသုံးပြုခွင့် လိုအပ်သည်</translation>
+<translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{ဤနောက်ဆက်တွဲကို မပံ့ပိုးတော့ပါ။ ၎င်းကို ဖယ်ရှားရန် Chromium က အကြံပြုပါသည်။}other{ဤနောက်ဆက်တွဲများကို မပံ့ပိုးတော့ပါ။ ၎င်းတို့ကို ဖယ်ရှားရန် Chromium က အကြံပြုပါသည်။}}</translation>
 <translation id="1574377791422810894">Chromium ၏ လုံခြုံရေးတူးလ်များ</translation>
 <translation id="1591808205441691831">ဒေတာအချို့ကို သင့် Google Account တွင် မသိမ်းမီ၊ သင့်စက်အားလုံးတွင် မသုံးမီ Chromium သည် သင်ဖြစ်ကြောင်း အတည်ပြုရန်လိုသည်။ ထွက်ပါက ဤဒေတာသည် ဤစက်တွင် ဆက်ရှိပါမည်။</translation>
 <translation id="1594928384848033697">Chromium က သင်၏ Password Manager ဒေတာကို ဖျက်လိုသည်။ ၎င်းကိုခွင့်ပြုရန် သင်၏ Windows စကားဝှက်ကို ရိုက်ပါ။</translation>
