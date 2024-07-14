@@ -6,8 +6,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "base/containers/contains.h"
 #include "base/containers/extend.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/json/json_reader.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
@@ -35,57 +35,10 @@
 namespace ash::input_method {
 namespace {
 
-constexpr std::string_view kCountryAllowlist[] = {
-    "au", "be", "ca", "ch", "cz", "de", "dk", "es", "fi",
-    "fr", "gb", "ie", "in", "it", "jp", "lu", "mx", "no",
-    "nz", "nl", "pl", "pt", "se", "us", "za",
-};
-
-constexpr ui::TextInputType kTextInputTypeAllowlist[] = {
-    ui::TEXT_INPUT_TYPE_CONTENT_EDITABLE, ui::TEXT_INPUT_TYPE_TEXT,
-    ui::TEXT_INPUT_TYPE_TEXT_AREA};
-
-constexpr chromeos::AppType kAppTypeDenylist[] = {
-    chromeos::AppType::ARC_APP,
-    chromeos::AppType::CROSTINI_APP,
-};
-
 const char* kWorkspaceDomainsWithPathDenylist[][2] = {
     {"calendar.google", ""}, {"docs.google", ""},      {"drive.google", ""},
     {"keep.google", ""},     {"mail.google", "/chat"}, {"mail.google", "/mail"},
     {"meet.google", ""},     {"script.google", ""},    {"sites.google", ""},
-};
-
-const char* kWorkspaceAppIdDenylist[] = {
-    extension_misc::kGmailAppId,
-    extension_misc::kCalendarAppId,
-    extension_misc::kGoogleDocsAppId,
-    extension_misc::kGoogleSlidesAppId,
-    extension_misc::kGoogleSheetsAppId,
-    extension_misc::kGoogleDriveAppId,
-    extension_misc::kGoogleKeepAppId,
-    extension_misc::kGoogleMeetPwaAppId,
-    extension_misc::kGoogleDocsPwaAppId,
-    extension_misc::kGoogleSheetsPwaAppId,
-    // App ids in demo mode
-    extension_misc::kCalendarDemoAppId,
-    extension_misc::kGoogleDocsDemoAppId,
-    extension_misc::kGoogleSheetsDemoAppId,
-    extension_misc::kGoogleSlidesDemoAppId,
-    web_app::kGmailAppId,
-    web_app::kGoogleChatAppId,
-    web_app::kGoogleMeetAppId,
-    web_app::kGoogleDocsAppId,
-    web_app::kGoogleSlidesAppId,
-    web_app::kGoogleSheetsAppId,
-    web_app::kGoogleDriveAppId,
-    web_app::kGoogleKeepAppId,
-    web_app::kGoogleCalendarAppId,
-};
-
-const char* kNonWorkspaceAppIdDenylist[] = {
-    extension_misc::kFilesManagerAppId,
-    file_manager::kFileManagerSwaAppId,
 };
 
 constexpr int kTextLengthMaxLimit = 10000;
@@ -129,11 +82,22 @@ bool IsProfileManaged(Profile* profile) {
 }
 
 bool IsCountryAllowed(std::string_view country_code) {
-  return base::Contains(kCountryAllowlist, country_code);
+  constexpr auto kCountryAllowlist = base::MakeFixedFlatSet<std::string_view>({
+      "au", "be", "ca", "ch", "cz", "de", "dk", "es", "fi",
+      "fr", "gb", "ie", "in", "it", "jp", "lu", "mx", "no",
+      "nz", "nl", "pl", "pt", "se", "us", "za",
+  });
+
+  return kCountryAllowlist.contains(country_code);
 }
 
 bool IsInputTypeAllowed(ui::TextInputType type) {
-  return base::Contains(kTextInputTypeAllowlist, type);
+  constexpr auto kTextInputTypeAllowlist =
+      base::MakeFixedFlatSet<ui::TextInputType>(
+          {ui::TEXT_INPUT_TYPE_CONTENT_EDITABLE, ui::TEXT_INPUT_TYPE_TEXT,
+           ui::TEXT_INPUT_TYPE_TEXT_AREA});
+
+  return kTextInputTypeAllowlist.contains(type);
 }
 
 bool IsInputMethodEngineAllowed(const std::vector<std::string>& allowlist,
@@ -151,7 +115,13 @@ bool IsAppTypeAllowed(chromeos::AppType app_type) {
       app_type == chromeos::AppType::ARC_APP) {
     return true;
   }
-  return !base::Contains(kAppTypeDenylist, app_type);
+
+  constexpr auto kAppTypeDenylist = base::MakeFixedFlatSet<chromeos::AppType>({
+      chromeos::AppType::ARC_APP,
+      chromeos::AppType::CROSTINI_APP,
+  });
+
+  return !kAppTypeDenylist.contains(app_type);
 }
 
 bool IsTriggerableFromConsentStatus(ConsentStatus consent_status) {
@@ -176,12 +146,46 @@ bool IsUrlAllowed(GURL url) {
 }
 
 bool IsAppAllowed(std::string_view app_id) {
-  if (base::Contains(kNonWorkspaceAppIdDenylist, app_id)) {
+  constexpr auto kNonWorkspaceAppIdDenylist =
+      base::MakeFixedFlatSet<std::string_view>({
+          extension_misc::kFilesManagerAppId,
+          file_manager::kFileManagerSwaAppId,
+      });
+
+  if (kNonWorkspaceAppIdDenylist.contains(app_id)) {
     return false;
   }
 
+  constexpr auto kWorkspaceAppIdDenylist =
+      base::MakeFixedFlatSet<std::string_view>({
+          extension_misc::kGmailAppId,
+          extension_misc::kCalendarAppId,
+          extension_misc::kGoogleDocsAppId,
+          extension_misc::kGoogleSlidesAppId,
+          extension_misc::kGoogleSheetsAppId,
+          extension_misc::kGoogleDriveAppId,
+          extension_misc::kGoogleKeepAppId,
+          extension_misc::kGoogleMeetPwaAppId,
+          extension_misc::kGoogleDocsPwaAppId,
+          extension_misc::kGoogleSheetsPwaAppId,
+          // App ids in demo mode
+          extension_misc::kCalendarDemoAppId,
+          extension_misc::kGoogleDocsDemoAppId,
+          extension_misc::kGoogleSheetsDemoAppId,
+          extension_misc::kGoogleSlidesDemoAppId,
+          web_app::kGmailAppId,
+          web_app::kGoogleChatAppId,
+          web_app::kGoogleMeetAppId,
+          web_app::kGoogleDocsAppId,
+          web_app::kGoogleSlidesAppId,
+          web_app::kGoogleSheetsAppId,
+          web_app::kGoogleDriveAppId,
+          web_app::kGoogleKeepAppId,
+          web_app::kGoogleCalendarAppId,
+      });
+
   return base::FeatureList::IsEnabled(features::kOrcaOnWorkspace) ||
-         !base::Contains(kWorkspaceAppIdDenylist, app_id);
+         !kWorkspaceAppIdDenylist.contains(app_id);
 }
 
 bool IsTriggerableFromTextLength(int text_length) {

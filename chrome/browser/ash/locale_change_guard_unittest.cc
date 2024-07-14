@@ -7,7 +7,7 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -17,154 +17,155 @@ namespace {
 
 // These languages require user notification when locale is automatically
 // switched between different regions within the same language.
-const char* const kShowNotificationLanguages[] = {
-    "af",   // Afrikaans
-    "ak",   // Twi
-    "am",   // Amharic
-    "an",   // Aragonese
-    "ar",   // Arabic
-    "as",   // Assamese
-    "ast",  // Asturian
-    "ay",   // Aymara
-    "az",   // Azerbaijani
-    "be",   // Belarusian
-    "bg",   // Bulgarian
-    "bh",   // Bihari
-    "bho",  // Bhojpuri
-    "bm",   // Bambara
-    "bn",   // Bengali
-    "br",   // Breton
-    "bs",   // Bosnian
-    "ca",   // Catalan
-    "ceb",  // Cebuano
-    "chr",  // Cherokee
-    "ckb",  // Sorani (Kurdish-Arabic)
-    "co",   // Corsican
-    "cs",   // Czech
-    "cy",   // Welsh
-    "da",   // Danish
-    "doi",  // Dogri
-    "dv",   // Dhivehi
-    "ee",   // Ewe
-    "el",   // Greek
-    "eo",   // Esperanto
-    "es",   // Spanish
-    "et",   // Estonian
-    "eu",   // Basque
-    "fa",   // Persian
-    "fi",   // Finnish
-    "fil",  // Filipino
-    "fo",   // Faroese
-    "fy",   // Frisian
-    "ga",   // Irish
-    "gd",   // Scots Gaelic
-    "gl",   // Galician
-    "gn",   // Guarani
-    "gu",   // Gujarati
-    "ha",   // Hausa
-    "haw",  // Hawaiian
-    "he",   // Hebrew
-    "hi",   // Hindi
-    "hmn",  // Hmong
-    "hr",   // Croatian
-    "ht",   // Haitian Creole
-    "hu",   // Hungarian
-    "hy",   // Armenian
-    "ia",   // Interlingua
-    "id",   // Indonesian
-    "ig",   // Igbo
-    "ilo",  // Ilocano
-    "is",   // Icelandic
-    "ja",   // Japanese
-    "jv",   // Javanese
-    "ka",   // Georgian
-    "kk",   // Kazakh
-    "km",   // Cambodian
-    "kn",   // Kannada
-    "ko",   // Korean
-    "kok",  // Konkani
-    "kri",  // Krio
-    "ku",   // Kurdish
-    "ky",   // Kyrgyz
-    "la",   // Latin
-    "lb",   // Luxembourgish
-    "lg",   // Luganda
-    "ln",   // Lingala
-    "lo",   // Laothian
-    "lt",   // Lithuanian
-    "lus",  // Mizo
-    "lv",   // Latvian
-    "mai",  // Maithili
-    "mg",   // Malagasy
-    "mi",   // Maori
-    "mk",   // Macedonian
-    "ml",   // Malayalam
-    "mn",   // Mongolian
-    "mni",  // Manipuri (Meitei Mayek)
-    "mo",   // Moldavian
-    "mr",   // Marathi
-    "ms",   // Malay
-    "mt",   // Maltese
-    "my",   // Burmese
-    "nb",   // Norwegian (Bokmal)
-    "ne",   // Nepali
-    "nl",   // Dutch
-    "nn",   // Norwegian (Nynorsk)
-    "no",   // Norwegian
-    "nso",  // Sepedi
-    "ny",   // Nyanja
-    "oc",   // Occitan
-    "om",   // Oromo
-    "or",   // Oriya
-    "pa",   // Punjabi
-    "pl",   // Polish
-    "ps",   // Pashto
-    "pt",   // Portuguese
-    "qu",   // Quechua
-    "rm",   // Romansh
-    "ro",   // Romanian
-    "ru",   // Russian
-    "rw",   // Kinyarwanda
-    "sa",   // Sanskrit
-    "sd",   // Sindhi
-    "sh",   // Serbo-Croatian
-    "si",   // Sinhalese
-    "sk",   // Slovak
-    "sl",   // Slovenian
-    "sm",   // Samoan
-    "sn",   // Shona
-    "so",   // Somali
-    "sq",   // Albanian
-    "sr",   // Serbian
-    "st",   // Sesotho
-    "su",   // Sundanese
-    "sv",   // Swedish
-    "sw",   // Swahili
-    "ta",   // Tamil
-    "te",   // Telugu
-    "tg",   // Tajik
-    "th",   // Thai
-    "ti",   // Tigrinya
-    "tk",   // Turkmen
-    "tn",   // Tswana
-    "to",   // Tonga
-    "tr",   // Turkish
-    "ts",   // Tsonga
-    "tt",   // Tatar
-    "tw",   // Twi
-    "ug",   // Uighur
-    "uk",   // Ukrainian
-    "ur",   // Urdu
-    "uz",   // Uzbek
-    "vi",   // Vietnamese
-    "wa",   // Walloon
-    "wo",   // Wolof
-    "xh",   // Xhosa
-    "yi",   // Yiddish
-    "yo",   // Yoruba
-    "zh",   // Chinese
-    "zu",   // Zulu
-};
+constexpr auto kShowNotificationLanguages =
+    base::MakeFixedFlatSet<std::string_view>({
+        "af",   // Afrikaans
+        "ak",   // Twi
+        "am",   // Amharic
+        "an",   // Aragonese
+        "ar",   // Arabic
+        "as",   // Assamese
+        "ast",  // Asturian
+        "ay",   // Aymara
+        "az",   // Azerbaijani
+        "be",   // Belarusian
+        "bg",   // Bulgarian
+        "bh",   // Bihari
+        "bho",  // Bhojpuri
+        "bm",   // Bambara
+        "bn",   // Bengali
+        "br",   // Breton
+        "bs",   // Bosnian
+        "ca",   // Catalan
+        "ceb",  // Cebuano
+        "chr",  // Cherokee
+        "ckb",  // Sorani (Kurdish-Arabic)
+        "co",   // Corsican
+        "cs",   // Czech
+        "cy",   // Welsh
+        "da",   // Danish
+        "doi",  // Dogri
+        "dv",   // Dhivehi
+        "ee",   // Ewe
+        "el",   // Greek
+        "eo",   // Esperanto
+        "es",   // Spanish
+        "et",   // Estonian
+        "eu",   // Basque
+        "fa",   // Persian
+        "fi",   // Finnish
+        "fil",  // Filipino
+        "fo",   // Faroese
+        "fy",   // Frisian
+        "ga",   // Irish
+        "gd",   // Scots Gaelic
+        "gl",   // Galician
+        "gn",   // Guarani
+        "gu",   // Gujarati
+        "ha",   // Hausa
+        "haw",  // Hawaiian
+        "he",   // Hebrew
+        "hi",   // Hindi
+        "hmn",  // Hmong
+        "hr",   // Croatian
+        "ht",   // Haitian Creole
+        "hu",   // Hungarian
+        "hy",   // Armenian
+        "ia",   // Interlingua
+        "id",   // Indonesian
+        "ig",   // Igbo
+        "ilo",  // Ilocano
+        "is",   // Icelandic
+        "ja",   // Japanese
+        "jv",   // Javanese
+        "ka",   // Georgian
+        "kk",   // Kazakh
+        "km",   // Cambodian
+        "kn",   // Kannada
+        "ko",   // Korean
+        "kok",  // Konkani
+        "kri",  // Krio
+        "ku",   // Kurdish
+        "ky",   // Kyrgyz
+        "la",   // Latin
+        "lb",   // Luxembourgish
+        "lg",   // Luganda
+        "ln",   // Lingala
+        "lo",   // Laothian
+        "lt",   // Lithuanian
+        "lus",  // Mizo
+        "lv",   // Latvian
+        "mai",  // Maithili
+        "mg",   // Malagasy
+        "mi",   // Maori
+        "mk",   // Macedonian
+        "ml",   // Malayalam
+        "mn",   // Mongolian
+        "mni",  // Manipuri (Meitei Mayek)
+        "mo",   // Moldavian
+        "mr",   // Marathi
+        "ms",   // Malay
+        "mt",   // Maltese
+        "my",   // Burmese
+        "nb",   // Norwegian (Bokmal)
+        "ne",   // Nepali
+        "nl",   // Dutch
+        "nn",   // Norwegian (Nynorsk)
+        "no",   // Norwegian
+        "nso",  // Sepedi
+        "ny",   // Nyanja
+        "oc",   // Occitan
+        "om",   // Oromo
+        "or",   // Oriya
+        "pa",   // Punjabi
+        "pl",   // Polish
+        "ps",   // Pashto
+        "pt",   // Portuguese
+        "qu",   // Quechua
+        "rm",   // Romansh
+        "ro",   // Romanian
+        "ru",   // Russian
+        "rw",   // Kinyarwanda
+        "sa",   // Sanskrit
+        "sd",   // Sindhi
+        "sh",   // Serbo-Croatian
+        "si",   // Sinhalese
+        "sk",   // Slovak
+        "sl",   // Slovenian
+        "sm",   // Samoan
+        "sn",   // Shona
+        "so",   // Somali
+        "sq",   // Albanian
+        "sr",   // Serbian
+        "st",   // Sesotho
+        "su",   // Sundanese
+        "sv",   // Swedish
+        "sw",   // Swahili
+        "ta",   // Tamil
+        "te",   // Telugu
+        "tg",   // Tajik
+        "th",   // Thai
+        "ti",   // Tigrinya
+        "tk",   // Turkmen
+        "tn",   // Tswana
+        "to",   // Tonga
+        "tr",   // Turkish
+        "ts",   // Tsonga
+        "tt",   // Tatar
+        "tw",   // Twi
+        "ug",   // Uighur
+        "uk",   // Ukrainian
+        "ur",   // Urdu
+        "uz",   // Uzbek
+        "vi",   // Vietnamese
+        "wa",   // Walloon
+        "wo",   // Wolof
+        "xh",   // Xhosa
+        "yi",   // Yiddish
+        "yo",   // Yoruba
+        "zh",   // Chinese
+        "zu",   // Zulu
+    });
 
 }  // namespace
 
@@ -232,7 +233,7 @@ TEST(LocaleChangeGuardTest, ShowNotificationLocaleChangedList) {
         (dash ? std::string(locale, dash - locale) : std::string(locale));
 
     const bool notification_allowed =
-        base::Contains(kShowNotificationLanguages, language);
+        kShowNotificationLanguages.contains(language);
 
     const char* const* skipped_begin =
         LocaleChangeGuard::GetSkipShowNotificationLanguagesForTesting();

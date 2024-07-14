@@ -15,6 +15,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/system/sys_info.h"
@@ -282,14 +283,15 @@ ConnectionStatus GetDriveConnectionStatus(Profile* const profile) {
 }
 
 bool IsPinnableGDocMimeType(const std::string& mime_type) {
-  static const char* const kPinnableGDocMimeTypes[] = {
-      "application/vnd.google-apps.document",
-      "application/vnd.google-apps.drawing",
-      "application/vnd.google-apps.presentation",
-      "application/vnd.google-apps.spreadsheet",
-  };
+  constexpr auto kPinnableGDocMimeTypes =
+      base::MakeFixedFlatSet<std::string_view>({
+          "application/vnd.google-apps.document",
+          "application/vnd.google-apps.drawing",
+          "application/vnd.google-apps.presentation",
+          "application/vnd.google-apps.spreadsheet",
+      });
 
-  return base::Contains(kPinnableGDocMimeTypes, mime_type);
+  return kPinnableGDocMimeTypes.contains(mime_type);
 }
 
 int64_t ComputeDriveFsContentCacheSize(const base::FilePath& path) {

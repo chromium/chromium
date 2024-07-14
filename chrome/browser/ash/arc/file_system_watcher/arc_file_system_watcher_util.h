@@ -9,10 +9,6 @@
 
 namespace arc {
 
-// Exposed only for testing.
-extern const char* kAndroidSupportedMediaExtensions[];
-extern const int kAndroidSupportedMediaExtensionsSize;
-
 // The removable media path in ChromeOS. This is the actual directory to be
 // watched.
 constexpr base::FilePath::CharType kCrosRemovableMediaDir[] =
