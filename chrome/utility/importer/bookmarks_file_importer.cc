@@ -6,6 +6,9 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "chrome/common/importer/imported_bookmark_entry.h"
@@ -32,36 +35,40 @@ namespace internal {
 // filter out the URL with a unsupported scheme.
 bool CanImportURL(const GURL& url) {
   // The URL is not valid.
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return false;
+  }
 
   // Filter out the URLs with unsupported schemes.
-  const char* const kInvalidSchemes[] = {"wyciwyg", "place"};
-  for (size_t i = 0; i < std::size(kInvalidSchemes); ++i) {
-    if (url.SchemeIs(kInvalidSchemes[i]))
+  for (const char* invalid_scheme : {"wyciwyg", "place"}) {
+    if (url.SchemeIs(invalid_scheme)) {
       return false;
+    }
   }
 
   // Check if |url| is about:blank.
-  if (url == url::kAboutBlankURL)
+  if (url == url::kAboutBlankURL) {
     return true;
+  }
 
   // If |url| starts with chrome:// or about:, check if it's one of the URLs
   // that we support.
   if (url.SchemeIs(content::kChromeUIScheme) ||
       url.SchemeIs(url::kAboutScheme)) {
-    if (url.host_piece() == chrome::kChromeUIAboutHost)
+    if (url.host_piece() == chrome::kChromeUIAboutHost) {
       return true;
-
-    GURL fixed_url(url_formatter::FixupURL(url.spec(), std::string()));
-    for (size_t i = 0; i < chrome::kNumberOfChromeHostURLs; ++i) {
-      if (fixed_url.DomainIs(chrome::kChromeHostURLs[i]))
-        return true;
     }
 
-    for (size_t i = 0; i < chrome::kNumberOfChromeDebugURLs; ++i) {
-      if (fixed_url == chrome::kChromeDebugURLs[i])
+    GURL fixed_url(url_formatter::FixupURL(url.spec(), std::string()));
+    const base::span<const base::cstring_view> hosts = chrome::ChromeURLHosts();
+    for (const base::cstring_view host : hosts) {
+      if (fixed_url.DomainIs(host)) {
         return true;
+      }
+    }
+
+    if (base::Contains(chrome::ChromeDebugURLs(), fixed_url)) {
+      return true;
     }
 
     // If url has either chrome:// or about: schemes but wasn't found in the

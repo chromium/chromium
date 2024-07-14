@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -44,6 +45,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/top_sites.h"
@@ -108,17 +110,23 @@ namespace {
 #if !BUILDFLAG(IS_ANDROID)
 // This list should be kept in sync with chrome/common/webui_url_constants.h.
 // Only include useful sub-pages, confirmation alerts are not useful.
-const char* const kChromeSettingsSubPages[] = {
-    chrome::kAddressesSubPage,        chrome::kAutofillSubPage,
-    chrome::kClearBrowserDataSubPage, chrome::kContentSettingsSubPage,
-    chrome::kLanguageOptionsSubPage,  chrome::kPasswordManagerSubPage,
-    chrome::kPaymentsSubPage,         chrome::kResetProfileSettingsSubPage,
-    chrome::kSearchEnginesSubPage,    chrome::kSyncSetupSubPage,
+constexpr auto kChromeSettingsSubPages = std::to_array<base::cstring_view>({
+    chrome::kAddressesSubPage,
+    chrome::kAutofillSubPage,
+    chrome::kClearBrowserDataSubPage,
+    chrome::kContentSettingsSubPage,
+    chrome::kLanguageOptionsSubPage,
+    chrome::kPasswordManagerSubPage,
+    chrome::kPaymentsSubPage,
+    chrome::kResetProfileSettingsSubPage,
+    chrome::kSearchEnginesSubPage,
+    chrome::kSyncSetupSubPage,
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-    chrome::kImportDataSubPage,       chrome::kManageProfileSubPage,
+    chrome::kImportDataSubPage,
+    chrome::kManageProfileSubPage,
     chrome::kPeopleSubPage,
 #endif
-};
+});
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
@@ -276,22 +284,25 @@ ChromeAutocompleteProviderClient::GetEmbedderRepresentationOfAboutScheme()
 }
 
 std::vector<std::u16string> ChromeAutocompleteProviderClient::GetBuiltinURLs() {
-  std::vector<std::string> chrome_builtins(
-      chrome::kChromeHostURLs,
-      chrome::kChromeHostURLs + chrome::kNumberOfChromeHostURLs);
-  std::sort(chrome_builtins.begin(), chrome_builtins.end());
-
   std::vector<std::u16string> builtins;
+  const base::span<const base::cstring_view> url_hosts =
+      chrome::ChromeURLHosts();
+#if BUILDFLAG(IS_ANDROID)
+  builtins.reserve(url_hosts.size());
+#else
+  builtins.reserve(url_hosts.size() + kChromeSettingsSubPages.size());
+#endif
 
-  for (auto i(chrome_builtins.begin()); i != chrome_builtins.end(); ++i)
-    builtins.push_back(base::ASCIIToUTF16(*i));
+  for (base::cstring_view chrome_builtin_host : url_hosts) {
+    builtins.push_back(base::ASCIIToUTF16(chrome_builtin_host));
+  }
+  std::ranges::sort(builtins);
 
 #if !BUILDFLAG(IS_ANDROID)
   std::u16string settings(chrome::kChromeUISettingsHost16);
   settings += u"/";
-  for (size_t i = 0; i < std::size(kChromeSettingsSubPages); i++) {
-    builtins.push_back(settings +
-                       base::ASCIIToUTF16(kChromeSettingsSubPages[i]));
+  for (base::cstring_view chrome_settings_sub_page : kChromeSettingsSubPages) {
+    builtins.push_back(settings + base::ASCIIToUTF16(chrome_settings_sub_page));
   }
 #endif
 

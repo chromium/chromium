@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
@@ -490,11 +491,9 @@ std::string ChromeURLs(content::BrowserContext* browser_context) {
   AppendBody(&html);
 
   html += "<h2>List of Chrome URLs</h2>\n<ul>\n";
-  std::vector<std::string> hosts(
-      chrome::kChromeHostURLs,
-      chrome::kChromeHostURLs + chrome::kNumberOfChromeHostURLs);
+  const base::span<const base::cstring_view> hosts = chrome::ChromeURLHosts();
   std::vector<content::WebUIConfigInfo> infos;
-  for (const std::string& host : hosts) {
+  for (base::cstring_view host : hosts) {
     GURL url(base::StrCat(
         {content::kChromeUIScheme, url::kStandardSchemeSeparator, host}));
     infos.push_back({.origin = url::Origin::Create(url), .enabled = true});
@@ -522,13 +521,15 @@ std::string ChromeURLs(content::BrowserContext* browser_context) {
   // make sure that only allowed URLs are being presented.
   if (is_lacros_primary) {
     auto* WebUiControllerFactory = ChromeWebUIControllerFactory::GetInstance();
-    for (const std::string& host : hosts) {
+    for (base::cstring_view host : hosts) {
       // TODO(crbug.com/40805730): The refactor should make sure that the
       // provided list can be shown as is without filtering.
-      if (WebUiControllerFactory->CanHandleUrl(GURL("os://" + host)) ||
-          WebUiControllerFactory->CanHandleUrl(GURL("chrome://" + host))) {
-        html +=
-            "<li><a href='chrome://" + host + "/'>os://" + host + "</a></li>\n";
+      std::string chrome_url = base::StrCat({"chrome://", host});
+      std::string os_url = base::StrCat({"os://", host});
+      if (WebUiControllerFactory->CanHandleUrl(GURL(os_url)) ||
+          WebUiControllerFactory->CanHandleUrl(GURL(chrome_url))) {
+        html += base::StrCat(
+            {"<li><a href='", chrome_url, "/'>", os_url, "</a></li>\n"});
       }
     }
   } else {
@@ -549,14 +550,15 @@ std::string ChromeURLs(content::BrowserContext* browser_context) {
     html +=
         "</ul><a id=\"internals\"><h2>List of chrome://internals "
         "pages</h2></a>\n<ul>\n";
-    std::vector<std::string> internals_paths(
-        chrome::kChromeInternalsPathURLs,
-        chrome::kChromeInternalsPathURLs +
-            chrome::kNumberOfChromeInternalsPathURLs);
-    std::sort(internals_paths.begin(), internals_paths.end());
-    for (const std::string& path : internals_paths) {
-      html += "<li><a href='chrome://internals/" + path +
-              "'>chrome://internals/" + path + "</a></li>\n";
+    const base::span<const base::cstring_view> internals_paths =
+        chrome::ChromeInternalsURLPaths();
+    std::vector<std::string_view> sorted_internals_paths = base::ToVector(
+        internals_paths,
+        [](base::cstring_view v) -> std::string_view { return v; });
+    std::ranges::sort(sorted_internals_paths);
+    for (const std::string_view path : sorted_internals_paths) {
+      html += base::StrCat({"<li><a href='chrome://internals/", path,
+                            "'>chrome://internals/", path, "</a></li>\n"});
     }
   }
 
@@ -571,21 +573,22 @@ std::string ChromeURLs(content::BrowserContext* browser_context) {
   // make sure that only allowed URLs are being presented.
   if (is_lacros_primary) {
     auto* WebUiControllerFactory = ChromeWebUIControllerFactory::GetInstance();
-    for (size_t i = 0; i < chrome::kNumberOfChromeDebugURLs; i++) {
+    for (base::cstring_view url : chrome::ChromeDebugURLs()) {
       // TODO(crbug.com/40805730): The refactor should make sure that the
       // provided list can be shown as is without filtering.
-      const std::string host = GURL(chrome::kChromeDebugURLs[i]).host();
+      const std::string host = GURL(url).host();
       if (WebUiControllerFactory->CanHandleUrl(GURL("os://" + host)) ||
           WebUiControllerFactory->CanHandleUrl(GURL("chrome://" + host))) {
-        html += "<li>os://" + host + "</li>\n";
+        html += base::StrCat({"<li>os://", host, "</li>\n"});
       }
     }
   } else {
 #else
   {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    for (size_t i = 0; i < chrome::kNumberOfChromeDebugURLs; i++)
-      html += "<li>" + std::string(chrome::kChromeDebugURLs[i]) + "</li>\n";
+    for (base::cstring_view url : chrome::ChromeDebugURLs()) {
+      html += base::StrCat({"<li>", url, "</li>\n"});
+    }
   }
   html += "</ul>\n";
 

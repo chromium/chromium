@@ -12,6 +12,9 @@
 
 #include <string_view>
 
+#include "base/containers/flat_set.h"
+#include "base/containers/span.h"
+#include "base/strings/cstring_view.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -718,16 +721,15 @@ inline constexpr char kExtensionConfigureCommandsSubPage[] =
     "configureCommands";
 
 // Gets the hosts/domains that are shown in chrome://chrome-urls.
-extern const char* const kChromeHostURLs[];
-extern const size_t kNumberOfChromeHostURLs;
+base::span<const base::cstring_view> ChromeURLHosts();
 
-// Gets the chrome://internals pages that are shown in chrome://chrome-urls.
-extern const char* const kChromeInternalsPathURLs[];
-extern const size_t kNumberOfChromeInternalsPathURLs;
+// Gets the path strings of chrome://internals URLs that are shown in
+// chrome://chrome-urls.
+base::span<const base::cstring_view> ChromeInternalsURLPaths();
 
-// "Debug" pages which are dangerous and not for general consumption.
-extern const char* const kChromeDebugURLs[];
-extern const size_t kNumberOfChromeDebugURLs;
+// Gets the URL strings of "debug" pages which are dangerous and not for general
+// consumption.
+base::span<const base::cstring_view> ChromeDebugURLs();
 
 }  // namespace chrome
 
