@@ -326,58 +326,6 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForLocalCard) {
   card_unmask_delegate()->OnUnmaskPromptAccepted(details);
 }
 
-// Verify getting the CVC for an unmasked server card.
-TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForFullServerCard) {
-  EXPECT_CALL(*result_delegate(),
-              OnFullCardRequestSucceeded(
-                  testing::Ref(*request()),
-                  CardMatches(CreditCard::RecordType::kFullServerCard, "4111"),
-                  testing::Eq(u"123")));
-  EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
-  EXPECT_CALL(*ui_delegate(),
-              OnUnmaskVerificationResult(PaymentsRpcResult::kSuccess));
-
-  CreditCard full_server_card(CreditCard::RecordType::kFullServerCard,
-                              "server_id");
-  test::SetCreditCardInfo(&full_server_card, nullptr, "4111", "12", "2050",
-                          "1");
-  MakeGetFullCardRequest(
-      FullCardRequestOptions().with_credit_card(full_server_card));
-  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
-  details.cvc = u"123";
-  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
-}
-
-// Verify getting the CVC for an unmasked server card with expiration date in
-// the past.
-TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForExpiredFullServerCard) {
-  EXPECT_CALL(*result_delegate(),
-              OnFullCardRequestSucceeded(
-                  testing::Ref(*request()),
-                  CardMatches(CreditCard::RecordType::kFullServerCard, "4111",
-                              "12", "2051"),
-                  testing::Eq(u"123")));
-  EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
-  EXPECT_CALL(*ui_delegate(),
-              OnUnmaskVerificationResult(PaymentsRpcResult::kSuccess));
-
-  base::Time::Exploded today;
-  AutofillClock::Now().LocalExplode(&today);
-  CreditCard full_server_card(CreditCard::RecordType::kFullServerCard,
-                              "server_id");
-  test::SetCreditCardInfo(&full_server_card, nullptr, "4111", "12",
-                          base::StringPrintf("%d", today.year - 1).c_str(),
-                          "1");
-  MakeGetFullCardRequest(
-      FullCardRequestOptions().with_credit_card(full_server_card));
-  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
-  details.cvc = u"123";
-  details.exp_year = u"2051";
-  details.exp_month = u"12";
-  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
-  OnDidGetRealPan(PaymentsRpcResult::kSuccess, "4111");
-}
-
 // Verify getting the CVC for a masked server card with expiration date in the past.
 TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForExpiredMaskedServerCard) {
   EXPECT_CALL(*result_delegate(),
@@ -784,32 +732,6 @@ TEST_F(FullCardRequestTest, UpdateExpDateForMaskedServerCard) {
 
   MakeGetFullCardRequest(FullCardRequestOptions().with_credit_card(
       CreditCard(CreditCard::RecordType::kMaskedServerCard, "server_id")));
-  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
-  details.cvc = u"123";
-  details.exp_month = u"12";
-  details.exp_year = u"2050";
-  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
-  OnDidGetRealPan(PaymentsRpcResult::kSuccess, "4111");
-}
-
-// Verify updating expiration date for an unmasked server card.
-TEST_F(FullCardRequestTest, UpdateExpDateForFullServerCard) {
-  EXPECT_CALL(*result_delegate(),
-              OnFullCardRequestSucceeded(
-                  testing::Ref(*request()),
-                  CardMatches(CreditCard::RecordType::kFullServerCard, "4111",
-                              "12", "2050"),
-                  testing::Eq(u"123")));
-  EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
-  EXPECT_CALL(*ui_delegate(),
-              OnUnmaskVerificationResult(PaymentsRpcResult::kSuccess));
-
-  CreditCard full_server_card(CreditCard::RecordType::kFullServerCard,
-                              "server_id");
-  test::SetCreditCardInfo(&full_server_card, nullptr, "4111", "10", "2000",
-                          "1");
-  MakeGetFullCardRequest(
-      FullCardRequestOptions().with_credit_card(full_server_card));
   CardUnmaskDelegate::UserProvidedUnmaskDetails details;
   details.cvc = u"123";
   details.exp_month = u"12";

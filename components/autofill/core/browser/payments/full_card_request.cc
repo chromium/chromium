@@ -115,6 +115,10 @@ void FullCardRequest::GetFullCardImpl(
 
   CreditCard::RecordType card_type = card.record_type();
 
+  // Full server cards are the temporarily-cached result of unmasking a masked
+  // card, and so we should never reach a GetFullCardImpl request for one.
+  DCHECK_NE(card_type, CreditCard::RecordType::kFullServerCard);
+
   // Only one request can be active at a time. If the member variable
   // |result_delegate_| is already set, then immediately reject the new request
   // through the method parameter |result_delegate|.
@@ -159,8 +163,6 @@ void FullCardRequest::GetFullCardImpl(
     request_->selected_challenge_option = selected_challenge_option;
 
   should_unmask_card_ = card.masked() ||
-                        (card_type == CreditCard::RecordType::kFullServerCard &&
-                         card.ShouldUpdateExpiration()) ||
                         (card_type == CreditCard::RecordType::kVirtualCard);
   if (should_unmask_card_) {
     payments_network_interface_->Prepare();
@@ -375,6 +377,9 @@ void FullCardRequest::OnDidGetRealPan(
         request_->card.set_cvc(base::UTF8ToUTF16(response_details.dcvv));
       } else if (response_details.card_type ==
                  PaymentsAutofillClient::PaymentsRpcCardType::kServerCard) {
+        // When a masked card is fetched, it is transformed into a full server
+        // card locally and cached for any re-fills on the same page. Full
+        // server cards are not persisted in any way.
         request_->card.set_record_type(CreditCard::RecordType::kFullServerCard);
       } else {
         NOTREACHED_IN_MIGRATION();
