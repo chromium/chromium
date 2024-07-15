@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -937,7 +938,7 @@ void Buffer::MaybeRunPerCommitRelease(
 
 void Buffer::FenceSignalled(uint64_t commit_id) {
   auto iter = buffer_releases_.find(commit_id);
-  DCHECK(iter != buffer_releases_.end());
+  CHECK(iter != buffer_releases_.end(), base::NotFatalUntil::M130);
   std::move(iter->second.buffer_release_callback).Run();
   buffer_releases_.erase(iter);
 }

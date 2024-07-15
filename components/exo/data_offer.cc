@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -428,7 +429,7 @@ void DataOffer::OnDataReady(const std::string& mime_type,
                             scoped_refptr<base::RefCountedMemory> data) {
   // Update cache from nullptr to data.
   const auto cache_it = data_cache_.find(mime_type);
-  DCHECK(cache_it != data_cache_.end());
+  CHECK(cache_it != data_cache_.end(), base::NotFatalUntil::M130);
   DCHECK(!cache_it->second);
   data_cache_.erase(cache_it);
   data_cache_.emplace(mime_type, data);
