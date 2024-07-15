@@ -4,6 +4,8 @@
 
 #include "chrome/browser/sharing/fake_device_info.h"
 
+#include <optional>
+
 #include "components/sync_device_info/device_info_util.h"
 
 std::unique_ptr<syncer::DeviceInfo> CreateFakeDeviceInfo(
@@ -29,5 +31,6 @@ std::unique_ptr<syncer::DeviceInfo> CreateFakeDeviceInfo(
       sharing_info,
       /*paask_info=*/std::nullopt,
       /*fcm_registration_token=*/std::string(),
-      /*interested_data_types=*/syncer::ModelTypeSet());
+      /*interested_data_types=*/syncer::ModelTypeSet(),
+      /*floating_workspace_last_signin_timestamp=*/std::nullopt);
 }

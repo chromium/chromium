@@ -411,7 +411,8 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
              SharingSenderIdAuthSecretForSuffix(kLocalSuffix)},
             sharing_enabled_features),
         /*paask_info=*/std::nullopt, last_fcm_registration_token,
-        last_interested_data_types);
+        last_interested_data_types,
+        /*floating_workspace_last_signin_timestamp=*/std::nullopt);
   }
 
   void Clear() override { local_device_info_.reset(); }
@@ -419,6 +420,11 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
   void UpdateClientName(const std::string& client_name) override {
     ASSERT_TRUE(local_device_info_);
     local_device_info_->set_client_name(client_name);
+  }
+
+  void UpdateRecentSignInTime(base::Time time) override {
+    ASSERT_TRUE(local_device_info_);
+    local_device_info_->set_floating_workspace_last_signin_timestamp(time);
   }
 
   version_info::Channel GetChannel() const override {

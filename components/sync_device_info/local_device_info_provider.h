@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback_list.h"
+#include "base/time/time.h"
 #include "components/sync/base/model_type.h"
 #include "components/version_info/channel.h"
 
@@ -56,6 +57,8 @@ class MutableLocalDeviceInfoProvider : public LocalDeviceInfoProvider {
   // Updates the local device's client name. Initialize() must be called before
   // calling this function.
   virtual void UpdateClientName(const std::string& client_name) = 0;
+
+  virtual void UpdateRecentSignInTime(base::Time time) = 0;
 };
 
 }  // namespace syncer

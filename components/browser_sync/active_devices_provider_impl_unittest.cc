@@ -5,6 +5,7 @@
 #include "components/browser_sync/active_devices_provider_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -54,7 +55,8 @@ std::unique_ptr<DeviceInfo> CreateFakeDeviceInfo(
       sync_pb::
           SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
       /*sharing_info=*/std::nullopt, /*paask_info=*/std::nullopt,
-      fcm_registration_token, interested_data_types);
+      fcm_registration_token, interested_data_types,
+      /*floating_workspace_last_signin_timestamp=*/std::nullopt);
 }
 
 ModelTypeSet DefaultInterestedDataTypes() {

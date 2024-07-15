@@ -59,7 +59,8 @@ std::unique_ptr<DeviceInfo> CreateDeviceInfo(
       std::nullopt,
       /*paask_info=*/std::nullopt,
       /*fcm_registration_token=*/std::string(),
-      /*interested_data_types=*/syncer::ModelTypeSet());
+      /*interested_data_types=*/syncer::ModelTypeSet(),
+      /*floating_workspace_last_signin_timestamp=*/std::nullopt);
 }
 
 class MockFieldTrialRegister : public FieldTrialRegister {

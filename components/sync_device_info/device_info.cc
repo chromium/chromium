@@ -4,6 +4,7 @@
 
 #include "components/sync_device_info/device_info.h"
 
+#include <optional>
 #include <utility>
 
 #include "components/sync/protocol/device_info_specifics.pb.h"
@@ -79,7 +80,8 @@ DeviceInfo::DeviceInfo(
     const std::optional<SharingInfo>& sharing_info,
     const std::optional<PhoneAsASecurityKeyInfo>& paask_info,
     const std::string& fcm_registration_token,
-    const ModelTypeSet& interested_data_types)
+    const ModelTypeSet& interested_data_types,
+    std::optional<base::Time> floating_workspace_last_signin_timestamp)
     : guid_(guid),
       client_name_(client_name),
       chrome_version_(chrome_version),
@@ -98,7 +100,9 @@ DeviceInfo::DeviceInfo(
       sharing_info_(sharing_info),
       paask_info_(paask_info),
       fcm_registration_token_(fcm_registration_token),
-      interested_data_types_(interested_data_types) {}
+      interested_data_types_(interested_data_types),
+      floating_workspace_last_signin_timestamp_(
+          floating_workspace_last_signin_timestamp) {}
 
 DeviceInfo::~DeviceInfo() = default;
 
@@ -184,6 +188,11 @@ const ModelTypeSet& DeviceInfo::interested_data_types() const {
   return interested_data_types_;
 }
 
+std::optional<base::Time> DeviceInfo::floating_workspace_last_signin_timestamp()
+    const {
+  return floating_workspace_last_signin_timestamp_;
+}
+
 void DeviceInfo::set_public_id(const std::string& id) {
   public_id_ = id;
 }
@@ -222,6 +231,11 @@ void DeviceInfo::set_fcm_registration_token(const std::string& fcm_token) {
 
 void DeviceInfo::set_interested_data_types(const ModelTypeSet& data_types) {
   interested_data_types_ = data_types;
+}
+
+void DeviceInfo::set_floating_workspace_last_signin_timestamp(
+    std::optional<base::Time> time) {
+  floating_workspace_last_signin_timestamp_ = time;
 }
 
 }  // namespace syncer

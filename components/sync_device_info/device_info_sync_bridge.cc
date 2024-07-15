@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <map>
+#include <optional>
 #include <unordered_set>
 #include <utility>
 
@@ -129,6 +130,17 @@ SpecificsToPhoneAsASecurityKeyInfo(const DeviceInfoSpecifics& specifics) {
   return to;
 }
 
+std::optional<base::Time> SpecificsToFloatingWorkspaceLastSigninTime(
+    const DeviceInfoSpecifics& specifics) {
+  if (!specifics.feature_fields()
+           .has_floating_workspace_last_signin_time_windows_epoch_micros()) {
+    return std::nullopt;
+  }
+  return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
+      specifics.feature_fields()
+          .floating_workspace_last_signin_time_windows_epoch_micros()));
+}
+
 std::string GetVersionNumberFromSpecifics(
     const DeviceInfoSpecifics& specifics) {
   // The new field takes precedence, if populated.
@@ -178,7 +190,8 @@ DeviceInfo SpecificsToModel(const DeviceInfoSpecifics& specifics) {
       SpecificsToPhoneAsASecurityKeyInfo(specifics),
       specifics.invalidation_fields().instance_id_token(),
       GetModelTypeSetFromSpecificsFieldNumberList(
-          specifics.invalidation_fields().interested_data_type_ids()));
+          specifics.invalidation_fields().interested_data_type_ids()),
+      SpecificsToFloatingWorkspaceLastSigninTime(specifics));
 }
 
 // Allocate a EntityData and copies |specifics| into it.
@@ -237,7 +250,14 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
       info.send_tab_to_self_receiving_enabled());
   feature_fields->set_send_tab_to_self_receiving_type(
       info.send_tab_to_self_receiving_type());
-
+  if (info.floating_workspace_last_signin_timestamp().has_value()) {
+    feature_fields
+        ->set_floating_workspace_last_signin_time_windows_epoch_micros(
+            info.floating_workspace_last_signin_timestamp()
+                .value()
+                .ToDeltaSinceWindowsEpoch()
+                .InMicroseconds());
+  }
   const std::optional<DeviceInfo::SharingInfo>& sharing_info =
       info.sharing_info();
   if (sharing_info) {
@@ -307,7 +327,11 @@ bool StoredDeviceInfoStillAccurate(const DeviceInfo* stored,
               stored->paask_info().value())) &&
          current->fcm_registration_token() ==
              stored->fcm_registration_token() &&
-         current->interested_data_types() == stored->interested_data_types();
+         current->interested_data_types() == stored->interested_data_types() &&
+         current->floating_workspace_last_signin_timestamp().has_value() ==
+             stored->floating_workspace_last_signin_timestamp().has_value() &&
+         current->floating_workspace_last_signin_timestamp() ==
+             stored->floating_workspace_last_signin_timestamp();
 }
 
 // Record a histogram of the age of the PaaSK fields, in days. To confirm that

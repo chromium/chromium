@@ -91,7 +91,8 @@ std::unique_ptr<syncer::DeviceInfo> CreateDevice(
       /*sharing_info=*/std::nullopt,
       /*paask_info=*/std::nullopt,
       /*fcm_registration_token=*/std::string(),
-      /*interested_data_types=*/syncer::ModelTypeSet());
+      /*interested_data_types=*/syncer::ModelTypeSet(),
+      /*floating_workspace_last_signin_timestamp=*/std::nullopt);
 }
 
 sync_pb::ModelTypeState StateWithEncryption(

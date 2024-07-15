@@ -35,7 +35,8 @@ FakeLocalDeviceInfoProvider::FakeLocalDeviceInfoProvider()
           /*sharing_info=*/std::nullopt,
           /*paask_info=*/std::nullopt,
           /*fcm_registration_token=*/std::string(),
-          /*interested_data_types=*/ModelTypeSet()) {}
+          /*interested_data_types=*/ModelTypeSet(),
+          /*floating_workspace_last_signin_timestamp=*/std::nullopt) {}
 
 FakeLocalDeviceInfoProvider::~FakeLocalDeviceInfoProvider() = default;
 

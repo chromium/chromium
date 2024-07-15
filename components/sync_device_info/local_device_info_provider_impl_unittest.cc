@@ -4,6 +4,8 @@
 
 #include "components/sync_device_info/local_device_info_provider_impl.h"
 
+#include <optional>
+
 #include "base/memory/ptr_util.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/base/model_type.h"
@@ -309,7 +311,8 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldKeepStoredInvalidationFields) {
       sync_pb::
           SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
       /*sharing_info=*/std::nullopt, paask_info, kFCMRegistrationToken,
-      kInterestedDataTypes);
+      kInterestedDataTypes,
+      /*floating_workspace_last_signin_timestamp=*/std::nullopt);
 
   // |kFCMRegistrationToken|, |kInterestedDataTypes|,
   // and |paask_info| should be taken from |device_info_restored_from_store|
