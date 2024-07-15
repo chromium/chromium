@@ -2998,7 +2998,9 @@ class PrivacySandboxActivityTypeStorageTests
   void InitializeFeaturesBeforeStart() override {
     feature_list()->InitAndEnableFeatureWithParameters(
         privacy_sandbox::kPrivacySandboxActivityTypeStorage,
-        {{"last-n-launches", "5"}, {"within-x-days", "2"}});
+        {{"last-n-launches", "5"},
+         {"within-x-days", "2"},
+         {"skip-pre-first-tab", "false"}});
   }
 
  protected:
@@ -3173,7 +3175,9 @@ class PrivacySandboxActivityTypeStorageMetricsTests
   void InitializeFeaturesBeforeStart() override {
     feature_list()->InitAndEnableFeatureWithParameters(
         privacy_sandbox::kPrivacySandboxActivityTypeStorage,
-        {{"last-n-launches", "100"}, {"within-x-days", "60"}});
+        {{"last-n-launches", "100"},
+         {"within-x-days", "60"},
+         {"skip-pre-first-tab", "false"}});
   }
 
   struct PercentageMetricValues {
@@ -3543,4 +3547,43 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Range(static_cast<int>(ActivityType::kOther),
                    static_cast<int>(ActivityType::kMaxValue) + 1));
 
+class PrivacySandboxActivityTypeStorageSkipPreFirstTabTests
+    : public PrivacySandboxActivityTypeStorageTests {
+  void InitializeFeaturesBeforeStart() override {
+    feature_list()->InitAndEnableFeatureWithParameters(
+        privacy_sandbox::kPrivacySandboxActivityTypeStorage,
+        {{"last-n-launches", "100"},
+         {"within-x-days", "60"},
+         {"skip-pre-first-tab", "true"}});
+  }
+};
+
+TEST_F(PrivacySandboxActivityTypeStorageSkipPreFirstTabTests,
+       RecordsOnlyTabbedActivity) {
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  EXPECT_EQ(1u,
+            prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size());
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.TypeReceived", ActivityType::kTabbed,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.Percentage.BrApp2", 100, 1);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.Percentage.PreFirstTab2", 0, 1);
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kPreFirstTab);
+  EXPECT_EQ(1u,
+            prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size());
+  EXPECT_EQ(static_cast<int>(ActivityType::kTabbed),
+            *prefs()
+                 ->GetList(prefs::kPrivacySandboxActivityTypeRecord2)[0]
+                 .GetDict()
+                 .Find("activity_type"));
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.TypeReceived",
+      ActivityType::kPreFirstTab, 1);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.Percentage.BrApp2", 100, 1);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.Percentage.PreFirstTab2", 0, 1);
+}
 #endif  // BUILDFLAG(IS_ANDROID)

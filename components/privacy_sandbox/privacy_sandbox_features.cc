@@ -257,6 +257,14 @@ const base::FeatureParam<int> kPrivacySandboxActivityTypeStorageWithinXDays{
     &kPrivacySandboxActivityTypeStorage,
     kPrivacySandboxActivityTypeStorageWithinXDaysName, 60};
 
+const char kPrivacySandboxActivityTypeStorageSkipPreFirstTabName[] =
+    "skip-pre-first-tab";
+
+const base::FeatureParam<bool>
+    kPrivacySandboxActivityTypeStorageSkipPreFirstTab{
+        &kPrivacySandboxActivityTypeStorage,
+        kPrivacySandboxActivityTypeStorageSkipPreFirstTabName, false};
+
 BASE_FEATURE(kPrivacySandboxAdsDialogDisabledOnAll3PCBlock,
              "PrivacySandboxAdsDialogDisabledOnAll3PCBlock",
              base::FEATURE_ENABLED_BY_DEFAULT);

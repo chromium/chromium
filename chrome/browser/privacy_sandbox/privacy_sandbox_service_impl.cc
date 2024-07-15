@@ -1643,6 +1643,16 @@ void PrivacySandboxServiceImpl::RecordActivityType(
     PrivacySandboxStorageActivityType type) const {
   base::UmaHistogramEnumeration(
       "PrivacySandbox.ActivityTypeStorage.TypeReceived", type);
+
+  // If skip-pre-first-tab is turned on, the list is not updated when the type
+  // passed in is kPreFirstTab.
+  if (type == PrivacySandboxService::PrivacySandboxStorageActivityType::
+                  kPreFirstTab &&
+      privacy_sandbox::kPrivacySandboxActivityTypeStorageSkipPreFirstTab
+          .Get()) {
+    return;
+  }
+
   // Activity type launches can only be recorded if they fall within a specific
   // timeframe. This timeframe is determined by the within-x-days parameter,
   // where oldest_timestamp_allowed marks the end of the timeframe and
