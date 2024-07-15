@@ -795,6 +795,16 @@ Called by update_protocol_commands_enum.py.-->
   <int value="147" label="Console panel - Used context: filter"/>
   <int value="148" label="Console panel - Used source: filter"/>
   <int value="149" label="Console panel - Used url: filter"/>
+  <int value="150" label="Console insight consent reminder shown"/>
+  <int value="151" label="Console insight consent reminder canceled"/>
+  <int value="152" label="Console insight consent reminder confirmed"/>
+  <int value="153" label="Console insight onboarding shown"/>
+  <int value="154" label="Console insight onboarding canceled on page 1"/>
+  <int value="155" label="Console insight onboarding canceled on page 2"/>
+  <int value="156" label="Console insight onboarding confirmed"/>
+  <int value="157" label="Console insight onboarding moving to next page"/>
+  <int value="158" label="Console insight onboarding moving to previous page"/>
+  <int value="159" label="Console insight onboarding disabling feature"/>
 </enum>
 
 <enum name="DevToolsAnimationPlaybackRateChanged">
