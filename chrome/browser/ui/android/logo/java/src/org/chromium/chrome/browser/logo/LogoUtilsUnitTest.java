@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.logo;
 
+import static org.mockito.Mockito.when;
+
 import android.app.Activity;
 import android.content.res.Resources;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -15,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -26,9 +29,11 @@ import org.chromium.chrome.browser.logo.LogoUtils.LogoSizeForLogoPolish;
 @Config(manifest = Config.NONE)
 public class LogoUtilsUnitTest {
     @Mock private Resources mResources;
+    @Mock private LogoView mLogoView;
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
         mResources = Robolectric.buildActivity(Activity.class).setup().get().getResources();
     }
 
@@ -36,9 +41,10 @@ public class LogoUtilsUnitTest {
     @SmallTest
     public void testSetLogoViewLayoutParams() {
         MarginLayoutParams layoutParams = new MarginLayoutParams(0, 0);
+        when(mLogoView.getLayoutParams()).thenReturn(layoutParams);
+
         int logoHeight = mResources.getDimensionPixelSize(R.dimen.ntp_logo_height);
         int logoTopMargin = mResources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top);
-        int logoBottomMargin = mResources.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
 
         int logoHeightLargeForLogoPolish =
                 mResources.getDimensionPixelSize(R.dimen.logo_height_logo_polish_large);
@@ -48,58 +54,43 @@ public class LogoUtilsUnitTest {
                 mResources.getDimensionPixelSize(R.dimen.logo_height_logo_polish_small);
         int logoTopMarginForLogoPolish =
                 mResources.getDimensionPixelSize(R.dimen.logo_margin_top_logo_polish);
-        int logoBottomMarginForLogoPolish =
-                mResources.getDimensionPixelSize(R.dimen.logo_margin_bottom_logo_polish);
 
         LogoUtils.setLogoViewLayoutParams(
-                layoutParams,
+                mLogoView,
                 mResources,
                 /* isLogoPolishEnabled= */ false,
                 /* logoSizeForLogoPolish= */ LogoSizeForLogoPolish.LARGE);
-        testSetLogoViewLayoutParamsImpl(logoHeight, logoTopMargin, logoBottomMargin, layoutParams);
+        testSetLogoViewLayoutParamsImpl(logoHeight, logoTopMargin, layoutParams);
 
         // Verifies the layout params for Logo Polish.
         LogoUtils.setLogoViewLayoutParams(
-                layoutParams,
+                mLogoView,
                 mResources,
                 /* isLogoPolishEnabled= */ true,
                 /* logoSizeForLogoPolish= */ LogoSizeForLogoPolish.LARGE);
         testSetLogoViewLayoutParamsImpl(
-                logoHeightLargeForLogoPolish,
-                logoTopMarginForLogoPolish,
-                logoBottomMarginForLogoPolish,
-                layoutParams);
+                logoHeightLargeForLogoPolish, logoTopMarginForLogoPolish, layoutParams);
 
         LogoUtils.setLogoViewLayoutParams(
-                layoutParams,
+                mLogoView,
                 mResources,
                 /* isLogoPolishEnabled= */ true,
                 /* logoSizeForLogoPolish= */ LogoSizeForLogoPolish.MEDIUM);
         testSetLogoViewLayoutParamsImpl(
-                logoHeightMediumForLogoPolish,
-                logoTopMarginForLogoPolish,
-                logoBottomMarginForLogoPolish,
-                layoutParams);
+                logoHeightMediumForLogoPolish, logoTopMarginForLogoPolish, layoutParams);
 
         LogoUtils.setLogoViewLayoutParams(
-                layoutParams,
+                mLogoView,
                 mResources,
                 /* isLogoPolishEnabled= */ true,
                 /* logoSizeForLogoPolish= */ LogoSizeForLogoPolish.SMALL);
         testSetLogoViewLayoutParamsImpl(
-                logoHeightSmallForLogoPolish,
-                logoTopMarginForLogoPolish,
-                logoBottomMarginForLogoPolish,
-                layoutParams);
+                logoHeightSmallForLogoPolish, logoTopMarginForLogoPolish, layoutParams);
     }
 
     private void testSetLogoViewLayoutParamsImpl(
-            int logoHeight,
-            int logoTopMargin,
-            int logoBottomMargin,
-            MarginLayoutParams layoutParams) {
+            int logoHeight, int logoTopMargin, MarginLayoutParams layoutParams) {
         Assert.assertEquals(logoHeight, layoutParams.height);
         Assert.assertEquals(logoTopMargin, layoutParams.topMargin);
-        Assert.assertEquals(logoBottomMargin, layoutParams.bottomMargin);
     }
 }

@@ -1054,7 +1054,14 @@ class StartSurfaceMediator
         mLogoContainerView.setVisibility(View.VISIBLE);
         LogoView logoView = mLogoContainerView.findViewById(R.id.search_provider_logo);
         mLogoCoordinator =
-                new LogoCoordinator(mContext, logoClickedCallback, logoView, true, null, this);
+                new LogoCoordinator(
+                        mContext,
+                        logoClickedCallback,
+                        logoView,
+                        /* shouldFetchDoodle= */ true,
+                        /* onLogoAvailableCallback= */ null,
+                        /* visibilityObserver= */ this,
+                        /* isLogoPolishFlagEnabled= */ false);
         return mLogoCoordinator;
     }
 

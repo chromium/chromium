@@ -21,6 +21,7 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +55,7 @@ import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.logo.LogoUtils;
+import org.chromium.chrome.browser.logo.LogoView;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageLayout;
 import org.chromium.chrome.browser.tab.Tab;
@@ -313,7 +315,7 @@ public class ShowNtpAtStartupTest {
         Resources res = mActivityTestRule.getActivity().getResources();
         int expectedLogoHeight = LogoUtils.getLogoHeightForLogoPolishWithLargeSize(res);
         int expectedTopMargin = LogoUtils.getTopMarginForLogoPolish(res);
-        int expectedBottomMargin = LogoUtils.getBottomMarginForLogoPolish(res);
+        int expectedBottomMargin = res.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
 
         // Verifies the logo size is decreased, and top bottom margins are updated.
         testLogoSizeImpl(expectedLogoHeight, expectedTopMargin, expectedBottomMargin);
@@ -330,7 +332,7 @@ public class ShowNtpAtStartupTest {
         Resources res = mActivityTestRule.getActivity().getResources();
         int expectedLogoHeight = LogoUtils.getLogoHeightForLogoPolishWithMediumSize(res);
         int expectedTopMargin = LogoUtils.getTopMarginForLogoPolish(res);
-        int expectedBottomMargin = LogoUtils.getBottomMarginForLogoPolish(res);
+        int expectedBottomMargin = res.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
 
         // Verifies the logo size is decreased, and top bottom margins are updated.
         testLogoSizeImpl(expectedLogoHeight, expectedTopMargin, expectedBottomMargin);
@@ -346,7 +348,7 @@ public class ShowNtpAtStartupTest {
         Resources res = mActivityTestRule.getActivity().getResources();
         int expectedLogoHeight = LogoUtils.getLogoHeightForLogoPolishWithSmallSize(res);
         int expectedTopMargin = LogoUtils.getTopMarginForLogoPolish(res);
-        int expectedBottomMargin = LogoUtils.getBottomMarginForLogoPolish(res);
+        int expectedBottomMargin = res.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
 
         // Verifies the logo size is decreased, and top bottom margins are updated.
         testLogoSizeImpl(expectedLogoHeight, expectedTopMargin, expectedBottomMargin);
@@ -406,15 +408,14 @@ public class ShowNtpAtStartupTest {
     private void enableDoodleLogoForTestingLogoSize() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
-        NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
-        Logo logo =
-                new Logo(
-                        Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8),
-                        null,
-                        null,
-                        "https://www.gstatic.com/chrome/ntp/doodle_test/ddljson_android4.json");
+        LogoView logoView = ntp.getView().findViewById(R.id.search_provider_logo);
         ThreadUtils.runOnUiThreadBlocking(
-                () -> ntpLayout.getOnLogoAvailableCallback().onResult(logo));
+                () -> {
+                    Logo logo =
+                            new Logo(Bitmap.createBitmap(1, 1, Config.ALPHA_8), null, null, null);
+                    logoView.updateLogo(logo);
+                    logoView.endAnimationsForTesting();
+                });
     }
 
     private void testLogoSizeImpl(

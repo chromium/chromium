@@ -144,6 +144,7 @@ public class NewTabPageLayout extends LinearLayout {
     private boolean mIsInNarrowWindowOnTablet;
     // This variable is only valid when the NTP surface is in tablet mode.
     private boolean mIsInMultiWindowModeOnTablet;
+    private boolean mIsLogoPolishFlagEnabled;
     private boolean mIsLogoPolishEnabled;
     private @LogoSizeForLogoPolish int mLogoSizeForLogoPolish;
     private View mFakeSearchBoxLayout;
@@ -224,6 +225,7 @@ public class NewTabPageLayout extends LinearLayout {
         mNewTabPageUma = uma;
         mWindowAndroid = windowAndroid;
         mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
+        mIsLogoPolishFlagEnabled = StartSurfaceConfiguration.isLogoPolishEnabled();
         mIsLogoPolishEnabled =
                 StartSurfaceConfiguration.isLogoPolishEnabledWithGoogleDoodle(
                         mSearchProviderIsGoogle && mShowingNonStandardGoogleLogo);
@@ -390,15 +392,10 @@ public class NewTabPageLayout extends LinearLayout {
                 mCallbackController.makeCancelable(
                         (logo) -> {
                             mSnapshotTileGridChanged = true;
-
-                            boolean wasShowingNonStandardGoogleLogo = mShowingNonStandardGoogleLogo;
                             mShowingNonStandardGoogleLogo = logo != null && mSearchProviderIsGoogle;
-                            if (mShowingNonStandardGoogleLogo != wasShowingNonStandardGoogleLogo) {
-                                updateLogoForLogoPolish(
-                                        StartSurfaceConfiguration
-                                                .isLogoPolishEnabledWithGoogleDoodle(
-                                                        mShowingNonStandardGoogleLogo));
-                            }
+                            mIsLogoPolishEnabled =
+                                    StartSurfaceConfiguration.isLogoPolishEnabledWithGoogleDoodle(
+                                            mShowingNonStandardGoogleLogo);
                         });
 
         // If pull up Feed position is enabled, doodle is not supported since there is not enough
@@ -413,7 +410,12 @@ public class NewTabPageLayout extends LinearLayout {
                         mLogoView,
                         shouldFetchDoodle,
                         mOnLogoAvailableCallback,
-                        /* visibilityObserver= */ null);
+                        /* visibilityObserver= */ null,
+                        mIsLogoPolishFlagEnabled);
+        mLogoCoordinator.setLogoSizeForLogoPolish(
+                mIsInMultiWindowModeOnTablet
+                        ? LogoSizeForLogoPolish.SMALL
+                        : mLogoSizeForLogoPolish);
         mLogoCoordinator.initWithNative();
         setSearchProviderInfo(searchProviderHasLogo, searchProviderIsGoogle);
         setSearchProviderTopMargin();
@@ -613,14 +615,15 @@ public class NewTabPageLayout extends LinearLayout {
         mSearchProviderHasLogo = hasLogo;
         mSearchProviderIsGoogle = isGoogle;
 
-        boolean isSearchProviderMarginUpdated =
-                updateLogoForLogoPolish(
-                        StartSurfaceConfiguration.isLogoPolishEnabledWithGoogleDoodle(
-                                mSearchProviderIsGoogle && mShowingNonStandardGoogleLogo));
-        if (!isSearchProviderMarginUpdated) {
-            setSearchProviderTopMargin();
-            setSearchProviderBottomMargin();
+        if (!mSearchProviderIsGoogle) {
+            mShowingNonStandardGoogleLogo = false;
+            mIsLogoPolishEnabled =
+                    StartSurfaceConfiguration.isLogoPolishEnabledWithGoogleDoodle(
+                            mShowingNonStandardGoogleLogo);
         }
+
+        setSearchProviderTopMargin();
+        setSearchProviderBottomMargin();
 
         updateTilesLayoutMargins();
 
@@ -631,28 +634,6 @@ public class NewTabPageLayout extends LinearLayout {
         onUrlFocusAnimationChanged();
 
         mSnapshotTileGridChanged = true;
-    }
-
-    /**
-     * Updates the logo polish variable depending on whether the logo becomes a Google doodle.
-     * Adjusts the logo size as needed. Returns true if search provider margins have updated.
-     */
-    private boolean updateLogoForLogoPolish(boolean isLogoPolishEnabled) {
-        if (mIsLogoPolishEnabled == isLogoPolishEnabled) {
-            return false;
-        }
-
-        mIsLogoPolishEnabled = isLogoPolishEnabled;
-        LogoUtils.setLogoViewLayoutParams(
-                mLogoView,
-                getResources(),
-                mIsLogoPolishEnabled,
-                mIsInMultiWindowModeOnTablet
-                        ? LogoSizeForLogoPolish.SMALL
-                        : mLogoSizeForLogoPolish);
-        setSearchProviderTopMargin();
-        setSearchProviderBottomMargin();
-        return true;
     }
 
     /** Updates the margins for the most visited tiles layout based on what is shown above it. */
@@ -862,13 +843,7 @@ public class NewTabPageLayout extends LinearLayout {
     }
 
     private int getLogoBottomMargin() {
-        Resources resources = getResources();
-
-        if (mIsLogoPolishEnabled && mSearchProviderHasLogo) {
-            return LogoUtils.getBottomMarginForLogoPolish(resources);
-        }
-
-        return resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
+        return getResources().getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
     }
 
     /**
@@ -929,6 +904,7 @@ public class NewTabPageLayout extends LinearLayout {
 
     /**
      * Should be called before a thumbnail of the parent view is captured.
+     *
      * @see InvalidationAwareThumbnailProvider#captureThumbnail(Canvas)
      */
     public void onPreCaptureThumbnail() {
@@ -1028,13 +1004,13 @@ public class NewTabPageLayout extends LinearLayout {
                 && mLogoSizeForLogoPolish != LogoSizeForLogoPolish.SMALL
                 && mLogoView != null
                 && isInMultiWindowModeOnTabletPreviousValue != mIsInMultiWindowModeOnTablet) {
-            LogoUtils.setLogoViewLayoutParams(
-                    mLogoView,
-                    getResources(),
-                    mIsLogoPolishEnabled,
+            int realLogoSizeForLogoPolish =
                     mIsInMultiWindowModeOnTablet
                             ? LogoSizeForLogoPolish.SMALL
-                            : mLogoSizeForLogoPolish);
+                            : mLogoSizeForLogoPolish;
+            mLogoCoordinator.setLogoSizeForLogoPolish(realLogoSizeForLogoPolish);
+            LogoUtils.setLogoViewLayoutParams(
+                    mLogoView, getResources(), mIsLogoPolishEnabled, realLogoSizeForLogoPolish);
         }
     }
 
@@ -1088,9 +1064,5 @@ public class NewTabPageLayout extends LinearLayout {
     public static boolean isInNarrowWindowOnTablet(boolean isTablet, UiConfig uiConfig) {
         return isTablet
                 && uiConfig.getCurrentDisplayStyle().horizontal < HorizontalDisplayStyle.WIDE;
-    }
-
-    public Callback<Logo> getOnLogoAvailableCallback() {
-        return mOnLogoAvailableCallback;
     }
 }

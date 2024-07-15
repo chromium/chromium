@@ -12,5 +12,4 @@ found in the LICENSE file.
   <dimen name="logo_height_logo_polish_medium">104dp</dimen>
   <dimen name="logo_height_logo_polish_small">84dp</dimen>
   <dimen name="logo_margin_top_logo_polish">@dimen/ntp_logo_margin_top</dimen>
-  <dimen name="logo_margin_bottom_logo_polish">@dimen/ntp_logo_margin_bottom</dimen>
 </resources>

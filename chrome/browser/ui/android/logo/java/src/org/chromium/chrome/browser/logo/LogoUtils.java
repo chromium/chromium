@@ -33,11 +33,6 @@ public class LogoUtils {
         return resources.getDimensionPixelSize(R.dimen.logo_margin_top_logo_polish);
     }
 
-    /** Returns the bottom margin of the LogoView if Logo Polish is enabled. */
-    public static int getBottomMarginForLogoPolish(Resources resources) {
-        return resources.getDimensionPixelSize(R.dimen.logo_margin_bottom_logo_polish);
-    }
-
     @VisibleForTesting
     /** Returns the height of the LogoView if Logo Polish is enabled with large height. */
     public static int getLogoHeightForLogoPolishWithLargeSize(Resources resources) {
@@ -72,19 +67,20 @@ public class LogoUtils {
      */
     public static int getLogoTotalHeightForLogoPolish(
             Resources resources, final @LogoSizeForLogoPolish int logoSize) {
+        int bottomMargin = resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
         switch (logoSize) {
             case LogoSizeForLogoPolish.LARGE:
                 return getLogoHeightForLogoPolishWithLargeSize(resources)
-                        + getBottomMarginForLogoPolish(resources)
-                        + getTopMarginForLogoPolish(resources);
+                        + getTopMarginForLogoPolish(resources)
+                        + bottomMargin;
             case LogoSizeForLogoPolish.MEDIUM:
                 return getLogoHeightForLogoPolishWithMediumSize(resources)
-                        + getBottomMarginForLogoPolish(resources)
-                        + getTopMarginForLogoPolish(resources);
+                        + getTopMarginForLogoPolish(resources)
+                        + bottomMargin;
             case LogoSizeForLogoPolish.SMALL:
                 return getLogoHeightForLogoPolishWithSmallSize(resources)
-                        + getBottomMarginForLogoPolish(resources)
-                        + getTopMarginForLogoPolish(resources);
+                        + getTopMarginForLogoPolish(resources)
+                        + bottomMargin;
             default:
                 assert false;
                 return getLogoTotalHeight(resources);
@@ -92,52 +88,58 @@ public class LogoUtils {
     }
 
     /** Sets the layout params for the LogoView when Logo Polished is enabled. */
+    @VisibleForTesting
     public static void setLogoViewLayoutParams(
             LogoView logoView,
             Resources resources,
             boolean isLogoPolishEnabled,
             final @LogoSizeForLogoPolish int logoSizeForLogoPolish) {
         MarginLayoutParams layoutParams = (MarginLayoutParams) logoView.getLayoutParams();
-        setLogoViewLayoutParams(
-                layoutParams, resources, isLogoPolishEnabled, logoSizeForLogoPolish);
-        if (layoutParams != null) {
-            logoView.setLayoutParams(layoutParams);
-        }
+        if (layoutParams == null) return;
+
+        int[] logoViewLayoutParams =
+                getLogoViewLayoutParams(resources, isLogoPolishEnabled, logoSizeForLogoPolish);
+        setLogoViewLayoutParams(logoView, logoViewLayoutParams[0], logoViewLayoutParams[1]);
     }
 
-    @VisibleForTesting
-    public static void setLogoViewLayoutParams(
-            MarginLayoutParams layoutParams,
+    public static int[] getLogoViewLayoutParams(
             Resources resources,
             boolean isLogoPolishEnabled,
             final @LogoSizeForLogoPolish int logoSizeForLogoPolish) {
-        if (layoutParams == null) return;
-
         if (isLogoPolishEnabled) {
             switch (logoSizeForLogoPolish) {
                 case LogoSizeForLogoPolish.LARGE:
-                    layoutParams.height = getLogoHeightForLogoPolishWithLargeSize(resources);
-                    layoutParams.topMargin = getTopMarginForLogoPolish(resources);
-                    layoutParams.bottomMargin = getBottomMarginForLogoPolish(resources);
-                    break;
+                    return new int[] {
+                        getLogoHeightForLogoPolishWithLargeSize(resources),
+                        getTopMarginForLogoPolish(resources),
+                    };
                 case LogoSizeForLogoPolish.MEDIUM:
-                    layoutParams.height = getLogoHeightForLogoPolishWithMediumSize(resources);
-                    layoutParams.topMargin = getTopMarginForLogoPolish(resources);
-                    layoutParams.bottomMargin = getBottomMarginForLogoPolish(resources);
-                    break;
+                    return new int[] {
+                        getLogoHeightForLogoPolishWithMediumSize(resources),
+                        getTopMarginForLogoPolish(resources),
+                    };
                 case LogoSizeForLogoPolish.SMALL:
-                    layoutParams.height = getLogoHeightForLogoPolishWithSmallSize(resources);
-                    layoutParams.topMargin = getTopMarginForLogoPolish(resources);
-                    layoutParams.bottomMargin = getBottomMarginForLogoPolish(resources);
-                    break;
+                    return new int[] {
+                        getLogoHeightForLogoPolishWithSmallSize(resources),
+                        getTopMarginForLogoPolish(resources),
+                    };
                 default:
                     assert false;
             }
         } else {
-            layoutParams.height = resources.getDimensionPixelSize(R.dimen.ntp_logo_height);
-            layoutParams.topMargin = resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top);
-            layoutParams.bottomMargin =
-                    resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
+            return new int[] {
+                resources.getDimensionPixelSize(R.dimen.ntp_logo_height),
+                resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top),
+            };
         }
+        return new int[] {0, 0};
+    }
+
+    public static void setLogoViewLayoutParams(
+            LogoView logoView, int logoHeight, int logoTopMargin) {
+        MarginLayoutParams layoutParams = (MarginLayoutParams) logoView.getLayoutParams();
+        layoutParams.height = logoHeight;
+        layoutParams.topMargin = logoTopMargin;
+        logoView.setLayoutParams(layoutParams);
     }
 }

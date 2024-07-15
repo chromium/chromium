@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.logo;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -19,9 +20,11 @@ import android.util.FloatProperty;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import jp.tomorrowkey.android.gifplayer.BaseGifDrawable;
 import jp.tomorrowkey.android.gifplayer.BaseGifImage;
@@ -66,6 +69,8 @@ public class LogoView extends FrameLayout implements OnClickListener {
 
     private ClickHandler mClickHandler;
     private Callback<LogoBridge.Logo> mOnLogoAvailableCallback;
+    private boolean mIsLogoPolishFlagEnabled;
+    private int mLogoSizeForLogoPolish;
 
     private final FloatProperty<LogoView> mTransitionProperty =
             new FloatProperty<LogoView>("") {
@@ -138,6 +143,19 @@ public class LogoView extends FrameLayout implements OnClickListener {
         mOnLogoAvailableCallback = onLogoAvailableCallback;
     }
 
+    /** Sets the isLogoPolishFlagEnabled to determine if logo polish flag is enabled. */
+    void setLogoPolishFlagEnabled(boolean isLogoPolishFlagEnabled) {
+        mIsLogoPolishFlagEnabled = isLogoPolishFlagEnabled;
+    }
+
+    /**
+     * Sets the logo size to use when logo polish is enabled. When logo polish is disabled, this
+     * value should be invalid.
+     */
+    void setLogoSizeForLogoPolish(int logoSizeForLogoPolish) {
+        mLogoSizeForLogoPolish = logoSizeForLogoPolish;
+    }
+
     /** Jumps to the end of the logo cross-fading animation, if any. */
     void endFadeAnimation() {
         if (mFadeAnimation != null) {
@@ -188,7 +206,8 @@ public class LogoView extends FrameLayout implements OnClickListener {
      *
      * @param logo The new logo to fade in.
      */
-    void updateLogo(Logo logo) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public void updateLogo(Logo logo) {
         if (logo == null) {
             if (!maybeShowDefaultLogo()) {
                 mLogo = null;
@@ -244,10 +263,53 @@ public class LogoView extends FrameLayout implements OnClickListener {
         mNewLogo = logo;
         mNewLogoMatrix = new Matrix();
         mNewLogoIsDefault = isDefaultLogo;
+
+        MarginLayoutParams logoViewLayoutParams = (MarginLayoutParams) getLayoutParams();
+        int oldLogoHeight = logoViewLayoutParams.height;
+        int oldLogoTopMargin = logoViewLayoutParams.topMargin;
+        int[] newLogoViewLayoutParams =
+                LogoUtils.getLogoViewLayoutParams(
+                        getResources(),
+                        mIsLogoPolishFlagEnabled && !isDefaultLogo,
+                        mLogoSizeForLogoPolish);
+        int newLogoHeight = newLogoViewLayoutParams[0];
+        int newLogoTopMargin = newLogoViewLayoutParams[1];
+
         setMatrix(mNewLogo.getWidth(), mNewLogo.getHeight(), mNewLogoMatrix, mNewLogoIsDefault);
 
         mFadeAnimation = ObjectAnimator.ofFloat(this, mTransitionProperty, 0f, 1f);
+        mFadeAnimation.setInterpolator(new LinearInterpolator());
         mFadeAnimation.setDuration(mAnimationEnabled ? LOGO_TRANSITION_TIME_MS : 0);
+        mFadeAnimation.addUpdateListener(
+                new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        if (isDefaultLogo || newLogoHeight == oldLogoHeight) return;
+
+                        float animationValue = (Float) animation.getAnimatedValue();
+                        if (animationValue <= 0.5f) {
+                            return;
+                        }
+
+                        // Interpolate height
+                        int logoHeight =
+                                (int)
+                                        (oldLogoHeight
+                                                + (newLogoHeight - oldLogoHeight)
+                                                        * 2
+                                                        * (animationValue - 0.5f));
+
+                        // Interpolate top margin
+                        int logoTopMargin =
+                                (int)
+                                        (oldLogoTopMargin
+                                                + (newLogoTopMargin - oldLogoTopMargin)
+                                                        * 2
+                                                        * (animationValue - 0.5f));
+
+                        LogoUtils.setLogoViewLayoutParams(LogoView.this, logoHeight, logoTopMargin);
+                    }
+                });
         mFadeAnimation.addListener(
                 new Animator.AnimatorListener() {
                     @Override
@@ -265,6 +327,8 @@ public class LogoView extends FrameLayout implements OnClickListener {
                         mNewLogoMatrix = null;
                         mTransitionAmount = 0f;
                         mFadeAnimation = null;
+                        LogoUtils.setLogoViewLayoutParams(
+                                LogoView.this, newLogoHeight, newLogoTopMargin);
                         setContentDescription(contentDescription);
                         setClickable(isClickable);
                         setFocusable(isClickable || !TextUtils.isEmpty(contentDescription));
@@ -313,7 +377,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
      * and scaled to fit within the LogoView.
      *
      * @param preventUpscaling Whether the image should not be scaled up. If true, the image might
-     *                         not fill the entire view but will still be centered.
+     *     not fill the entire view but will still be centered.
      */
     private void setMatrix(
             int imageWidth, int imageHeight, Matrix matrix, boolean preventUpscaling) {
@@ -372,7 +436,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
             }
 
             if (mNewLogo != null && mTransitionAmount > 0.5f) {
-                mPaint.setAlpha((int) (255 * 2 * (mTransitionAmount - 0.5f)));
+                mPaint.setAlpha((int) (255 * Math.pow(2 * (mTransitionAmount - 0.5f), 3)));
                 canvas.save();
                 canvas.concat(mNewLogoMatrix);
                 canvas.drawBitmap(mNewLogo, 0, 0, mPaint);
@@ -411,7 +475,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
         }
     }
 
-    void endAnimationsForTesting() {
+    public void endAnimationsForTesting() {
         mFadeAnimation.end();
     }
 
@@ -453,5 +517,17 @@ public class LogoView extends FrameLayout implements OnClickListener {
 
     void setLoadingViewVisibilityForTesting(int visibility) {
         mLoadingView.setVisibility(visibility);
+    }
+
+    void setIsLogoPolishFlagEnabledForTesting(boolean isLogoPolishFlagEnabled) {
+        mIsLogoPolishFlagEnabled = isLogoPolishFlagEnabled;
+    }
+
+    boolean getIsLogoPolishFlagEnabledForTesting() {
+        return mIsLogoPolishFlagEnabled;
+    }
+
+    int getLogoSizeForLogoPolishForTesting() {
+        return mLogoSizeForLogoPolish;
     }
 }

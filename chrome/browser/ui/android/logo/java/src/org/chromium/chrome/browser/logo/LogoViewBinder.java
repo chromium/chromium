@@ -46,6 +46,10 @@ class LogoViewBinder
             logoView.playAnimatedLogo(model.get(LogoProperties.ANIMATED_LOGO));
         } else if (LogoProperties.LOGO_AVAILABLE_CALLBACK == propertyKey) {
             logoView.setLogoAvailableCallback(model.get(LogoProperties.LOGO_AVAILABLE_CALLBACK));
+        } else if (LogoProperties.LOGO_POLISH_FLAG_ENABLED == propertyKey) {
+            logoView.setLogoPolishFlagEnabled(model.get(LogoProperties.LOGO_POLISH_FLAG_ENABLED));
+        } else if (LogoProperties.LOGO_SIZE_FOR_LOGO_POLISH == propertyKey) {
+            logoView.setLogoSizeForLogoPolish(model.get(LogoProperties.LOGO_SIZE_FOR_LOGO_POLISH));
         } else {
             assert false : "Unhandled property detected in LogoViewBinder!";
         }
