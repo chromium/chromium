@@ -1657,8 +1657,14 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
   ExpectNoPresentationFeedback();
 }
 
+// TODO(crbug.com/353234554): Flaky on linux-lacros-tester-rel.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_ShowWhileCapturing DISABLED_ShowWhileCapturing
+#else
+#define MAYBE_ShowWhileCapturing ShowWhileCapturing
+#endif
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
-                       ShowWhileCapturing) {
+                       MAYBE_ShowWhileCapturing) {
   // Frame is captured and then becomes visible.
   CreateVisibleTimeRequest();
   GetRenderWidgetHostView()->ShowWithVisibility(
