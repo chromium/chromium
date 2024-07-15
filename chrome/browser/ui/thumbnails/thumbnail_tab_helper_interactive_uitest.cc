@@ -247,18 +247,8 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
       WaitForAndVerifyThumbnail(0), CheckTabHasThumbnailData(0, true));
 }
 
-// TODO(crbug.com/40883117) flakes on ChromeOS and MSAN/TSAN/ASAN builders.
-// TODO(crbug.com/335997050) timeout on ARM64 debug builder.
-#if BUILDFLAG(IS_CHROMEOS) || defined(THREAD_SANITIZER) ||     \
-    defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
-    (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64) && !defined(NDEBUG))
-#define MAYBE_TabDiscardPreservesScreenshot \
-  DISABLED_TabDiscardPreservesScreenshot
-#else
-#define MAYBE_TabDiscardPreservesScreenshot TabDiscardPreservesScreenshot
-#endif  // BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
-                       MAYBE_TabDiscardPreservesScreenshot) {
+                       TabDiscardPreservesScreenshot) {
   RunTestSequence(
       AddInstrumentedTab(kFirstTab, GURL(chrome::kChromeUINewTabURL), 0),
       WaitForWebContentsReady(kFirstTab), CheckTabHasThumbnailData(0, false),
