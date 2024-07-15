@@ -8,6 +8,7 @@
 
 #include "base/json/values_util.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -645,7 +646,7 @@ base::Value::List GpuControlList::Entry::GetFeatureNames(
   base::Value::List feature_names;
   for (size_t ii = 0; ii < feature_size; ++ii) {
     auto iter = feature_map.find(features[ii]);
-    DCHECK(iter != feature_map.end());
+    CHECK(iter != feature_map.end(), base::NotFatalUntil::M130);
     feature_names.Append(iter->second);
   }
   for (size_t ii = 0; ii < disabled_extension_size; ++ii) {
