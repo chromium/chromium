@@ -23396,6 +23396,7 @@ from previous Chrome versions.
   <int value="1117795262" label="BloatedRendererDetection:disabled"/>
   <int value="1118109174" label="enable-launcher-search-provider-api"/>
   <int value="1118339487" label="MemoriesDebug:disabled"/>
+  <int value="1120074279" label="VCTrayTitleHeader:disabled"/>
   <int value="1120211655" label="(Obsolete) enable-simplified-fullscreen-ui"/>
   <int value="1120428727" label="TabGridLayoutAndroid:enabled"/>
   <int value="1121879933" label="CrosPrivacyHubAppPermissions:enabled"/>
@@ -24885,6 +24886,7 @@ from previous Chrome versions.
       label="AccessibilityReducedAnimationsInKiosk:enabled"/>
   <int value="1748481830" label="AppManagement:enabled"/>
   <int value="1749028785" label="SubresourceRedirect:disabled"/>
+  <int value="1750625345" label="VCTrayTitleHeader:enabled"/>
   <int value="1750658031" label="OmniboxBookmarkPaths:enabled"/>
   <int value="1750693293" label="AutofillPreventMixedFormsFilling:enabled"/>
   <int value="1750824169" label="OmniboxOnDeviceTailModel:disabled"/>

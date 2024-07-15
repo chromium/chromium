@@ -3731,6 +3731,11 @@ const char kVcSegmentationModelDescription[] =
     "Allows a different segmentation model to be used for blur and relighting, "
     "which may reduce the workload on the GPU.";
 
+const char kVcTrayTitleHeaderName[] = "Adds a title header segment in VC tray";
+const char kVcTrayTitleHeaderDescription[] =
+    "Displays a title header segment in VC Tray that holds an icon, label, "
+    "mic indicator and sidetone button";
+
 const char kVcLightIntensityName[] = "VC relighting intensity";
 const char kVcLightIntensityDescription[] =
     "Allows different light intenisty to be used for relighting.";

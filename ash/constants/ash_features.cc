@@ -3108,6 +3108,11 @@ BASE_FEATURE(kVcSegmentationModel,
              "VCSegmentationModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables VC tray title header
+BASE_FEATURE(kVcTrayTitleHeader,
+             "VCTrayTitleHeader",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables alternative light intensity for ChromeOS video
 // conferencing relighting.
 BASE_FEATURE(kVcLightIntensity,
@@ -4743,6 +4748,10 @@ bool IsVcPortraitRelightEnabled() {
 
 bool IsVcControlsUiFakeEffectsEnabled() {
   return base::FeatureList::IsEnabled(kVcControlsUiFakeEffects);
+}
+
+bool IsVcTrayTitleHeaderEnabled() {
+  return base::FeatureList::IsEnabled(kVcTrayTitleHeader);
 }
 
 bool IsVcWebApiEnabled() {

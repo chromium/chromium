@@ -9087,6 +9087,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "vc-tray-title-header",
+    "owners": [ "normanbt@chromium.org", "chromeos-audio@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "vc-web-api",
     "owners": [ "chenjih@chromium.org", "charleszhao@chromium.org" ],
     "expiry_milestone": 140
