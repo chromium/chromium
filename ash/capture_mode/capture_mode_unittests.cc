@@ -5395,55 +5395,12 @@ class ProjectorCaptureModeIntegrationTests
     EXPECT_TRUE(controller->is_recording_in_progress());
   }
 
-  void VerifyOverlayEnabledState(aura::Window* overlay_window,
-                                 bool overlay_enabled_state) {
-    if (overlay_enabled_state) {
-      EXPECT_TRUE(overlay_window->IsVisible());
-      EXPECT_EQ(overlay_window->event_targeting_policy(),
-                aura::EventTargetingPolicy::kTargetAndDescendants);
-    } else {
-      EXPECT_FALSE(overlay_window->IsVisible());
-      EXPECT_EQ(overlay_window->event_targeting_policy(),
-                aura::EventTargetingPolicy::kNone);
-    }
-  }
-
-  void VerifyOverlayStacking(aura::Window* overlay_window,
-                             aura::Window* window_being_recorded,
-                             CaptureModeSource source) {
-    auto* parent = overlay_window->parent();
-
-    if (source == CaptureModeSource::kWindow) {
-      // The overlay window should always be the top-most child of the window
-      // being recorded when in window mode.
-      ASSERT_EQ(parent, window_being_recorded);
-      EXPECT_EQ(window_being_recorded->children().back(), overlay_window);
-    } else {
-      auto* menu_container =
-          window_being_recorded->GetRootWindow()->GetChildById(
-              kShellWindowId_MenuContainer);
-      ASSERT_EQ(parent, menu_container);
-      EXPECT_EQ(menu_container->children().front(), overlay_window);
-    }
-  }
-
   void VerifyOverlayWindow(aura::Window* overlay_window,
                            CaptureModeSource source) {
     auto* window_being_recorded = GetWindowBeingRecorded();
 
-    VerifyOverlayStacking(overlay_window, window_being_recorded, source);
-
-    switch (source) {
-      case CaptureModeSource::kFullscreen:
-      case CaptureModeSource::kWindow:
-        EXPECT_EQ(overlay_window->bounds(),
-                  gfx::Rect(window_being_recorded->bounds().size()));
-        break;
-
-      case CaptureModeSource::kRegion:
-        EXPECT_EQ(overlay_window->bounds(), kUserRegion);
-        break;
-    }
+    VerifyOverlayWindowForCaptureMode(overlay_window, window_being_recorded,
+                                      source, kUserRegion);
   }
 
   aura::Window* GetWindowBeingRecorded() const {

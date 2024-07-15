@@ -7,10 +7,10 @@
 
 #include "ash/annotator/annotations_overlay_controller.h"
 #include "ash/annotator/annotator_controller.h"
+#include "ash/annotator/annotator_test_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/webui/annotator/test/mock_annotator_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/gfx/geometry/point.h"
@@ -19,43 +19,6 @@
 namespace ash {
 
 namespace {
-
-void ExpectChildOfMenuContainer(aura::Window* overlay_window,
-                                aura::Window* source_window) {
-  auto* parent = overlay_window->parent();
-
-  auto* menu_container = source_window->GetRootWindow()->GetChildById(
-      kShellWindowId_MenuContainer);
-  ASSERT_EQ(parent, menu_container);
-  EXPECT_EQ(menu_container->children().front(), overlay_window);
-}
-
-void ExpectSameWindowBounds(aura::Window* overlay_window,
-                            aura::Window* source_window) {
-  EXPECT_EQ(overlay_window->bounds(),
-            gfx::Rect(source_window->bounds().size()));
-}
-
-void VerifyWindowStackingOnRoot(aura::Window* overlay_window,
-                                aura::Window* source_window) {
-  ExpectChildOfMenuContainer(overlay_window, source_window);
-  ExpectSameWindowBounds(overlay_window, source_window);
-}
-
-void VerifyWindowStackingOnTestWindow(aura::Window* overlay_window,
-                                      aura::Window* source_window) {
-  auto* parent = overlay_window->parent();
-  ASSERT_EQ(parent, source_window);
-  EXPECT_EQ(source_window->children().back(), overlay_window);
-  ExpectSameWindowBounds(overlay_window, source_window);
-}
-
-void VerifyWindowStackingOnRegion(aura::Window* overlay_window,
-                                  aura::Window* source_window,
-                                  const gfx::Rect region_bounds) {
-  ExpectChildOfMenuContainer(overlay_window, source_window);
-  EXPECT_EQ(overlay_window->bounds(), region_bounds);
-}
 
 void VerifyToggleOverlay(AnnotationsOverlayController* overlay_controller) {
   EXPECT_FALSE(overlay_controller->is_enabled());
@@ -74,9 +37,8 @@ class AnnotationsOverlayTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
+    annotator_helper_.SetUp();
 
-    auto* annotator_controller = Shell::Get()->annotator_controller();
-    annotator_controller->SetToolClient(&client_);
     window_ = CreateTestWindow(gfx::Rect(20, 30, 200, 200));
   }
 
@@ -90,7 +52,7 @@ class AnnotationsOverlayTest : public AshTestBase {
   static constexpr gfx::Rect kUserRegion{20, 50, 60, 70};
 
  protected:
-  MockAnnotatorClient client_;
+  AnnotatorIntegrationHelper annotator_helper_;
   std::unique_ptr<aura::Window> window_;
 };
 

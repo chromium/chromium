@@ -4827,6 +4827,8 @@ static_library("test_support") {
     "ambient/test/mock_ambient_view_observer.h",
     "ambient/test/test_ambient_client.cc",
     "ambient/test/test_ambient_client.h",
+    "annotator/annotator_test_util.cc",
+    "annotator/annotator_test_util.h",
     "api/tasks/fake_tasks_client.cc",
     "api/tasks/fake_tasks_client.h",
     "api/tasks/test_tasks_delegate.cc",

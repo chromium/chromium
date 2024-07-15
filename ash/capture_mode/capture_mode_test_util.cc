@@ -7,7 +7,6 @@
 #include "ash/accessibility/a11y_feature_type.h"
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
-#include "ash/annotator/annotator_controller.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
@@ -416,10 +415,9 @@ ProjectorCaptureModeIntegrationHelper::ProjectorCaptureModeIntegrationHelper() =
     default;
 
 void ProjectorCaptureModeIntegrationHelper::SetUp() {
+  annotator_helper_.SetUp();
   auto* projector_controller = ProjectorController::Get();
   projector_controller->SetClient(&projector_client_);
-  auto* annotator_controller = Shell::Get()->annotator_controller();
-  annotator_controller->SetToolClient(&annotator_client_);
   ON_CALL(projector_client_, StopSpeechRecognition)
       .WillByDefault(testing::Invoke([]() {
         ProjectorController::Get()->OnSpeechRecognitionStopped(
