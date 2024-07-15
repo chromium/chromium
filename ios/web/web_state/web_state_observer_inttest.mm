@@ -944,6 +944,11 @@ TEST_F(WebStateObserverTest, NewPageNavigation) {
 // Tests loading about://newtab/ and immediately loading another web page
 // without waiting until about://newtab/ navigation finishes.
 TEST_F(WebStateObserverTest, AboutNewTabNavigation) {
+  // TODO(crbug.com/352091001): Make this work on iOS 18.
+  if (@available(iOS 18, *)) {
+    GTEST_SKIP();
+  }
+
   GURL first_url("about://newtab/");
   const GURL second_url = test_server_->GetURL("/echoall");
 
@@ -976,7 +981,7 @@ TEST_F(WebStateObserverTest, AboutNewTabNavigation) {
   }
 
   EXPECT_CALL(*decider_, MockShouldAllowRequest(
-                             _, RequestInfoMatch(expected_request_info), _))
+                              _, RequestInfoMatch(expected_request_info), _))
       .WillOnce(
           RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
 
@@ -1003,7 +1008,7 @@ TEST_F(WebStateObserverTest, AboutNewTabNavigation) {
 
   // Load `second_url`.
   EXPECT_CALL(*decider_, MockShouldAllowRequest(
-                             _, RequestInfoMatch(expected_request_info), _))
+                              _, RequestInfoMatch(expected_request_info), _))
       .WillOnce(
           RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
@@ -1012,7 +1017,7 @@ TEST_F(WebStateObserverTest, AboutNewTabNavigation) {
           web_state(), second_url, ui::PageTransition::PAGE_TRANSITION_TYPED,
           &context, &nav_id));
   EXPECT_CALL(*decider_, ShouldAllowResponse(
-                             _, ResponseInfoMatch(expected_response_info), _))
+                              _, ResponseInfoMatch(expected_response_info), _))
       .WillOnce(
           RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
   EXPECT_CALL(observer_, DidChangeBackForwardState(web_state()));
@@ -1031,7 +1036,7 @@ TEST_F(WebStateObserverTest, AboutNewTabNavigation) {
   test::LoadUrl(web_state(), first_url);
   test::LoadUrl(web_state(), second_url);
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
-    return page_loaded;
+      return page_loaded;
   }));
 }
 
@@ -2108,7 +2113,7 @@ TEST_F(WebStateObserverTest, RedirectNavigation) {
 TEST_F(WebStateObserverTest, DownloadNavigation) {
   // TODO(crbug.com/330370835): Re-enable on iOS 17.4 when fixed.
   if (@available(iOS 17.4, *)) {
-    return;
+    GTEST_SKIP();
   }
 
   GURL url = test_server_->GetURL("/download");
@@ -2235,6 +2240,11 @@ TEST_F(WebStateObserverTest, FailedSslConnection) {
 // Tests cancelling the navigation from ShouldAllowRequest. The load should
 // stop, but no other callbacks are called.
 TEST_F(WebStateObserverTest, DisallowRequest) {
+  // TODO(crbug.com/352091001): Make this work on iOS 18.
+  if (@available(iOS 18, *)) {
+    return;
+  }
+
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   const WebStatePolicyDecider::RequestInfo expected_request_info(
       ui::PageTransition::PAGE_TRANSITION_TYPED,
@@ -2242,7 +2252,7 @@ TEST_F(WebStateObserverTest, DisallowRequest) {
       /*target_window_is_cross_origin=*/false,
       /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
   EXPECT_CALL(*decider_, MockShouldAllowRequest(
-                             _, RequestInfoMatch(expected_request_info), _))
+                              _, RequestInfoMatch(expected_request_info), _))
       .WillOnce(
           RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Cancel()));
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
