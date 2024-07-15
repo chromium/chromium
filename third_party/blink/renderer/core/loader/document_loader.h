@@ -130,6 +130,8 @@ namespace {
 struct SameSizeAsDocumentLoader;
 }  // namespace
 
+enum class FirePopstate { kYes, kNo };
+
 // The DocumentLoader fetches a main resource and handles the result.
 // TODO(https://crbug.com/855189). This was originally structured to have a
 // provisional load, then commit but that is no longer necessary and this class
@@ -244,6 +246,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
                                    mojom::blink::SameDocumentNavigationType,
                                    scoped_refptr<SerializedScriptValue>,
                                    WebFrameLoadType,
+                                   FirePopstate,
                                    bool is_browser_initiated = false,
                                    bool is_synchronously_committed = true,
                                    std::optional<scheduler::TaskAttributionId>
@@ -258,6 +261,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       mojom::blink::SameDocumentNavigationType,
       scoped_refptr<SerializedScriptValue>,
       WebFrameLoadType,
+      FirePopstate,
       const SecurityOrigin* initiator_origin,
       bool is_browser_initiated,
       bool is_synchronously_committed,

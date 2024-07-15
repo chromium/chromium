@@ -917,6 +917,7 @@ void DocumentLoader::RunURLAndHistoryUpdateSteps(
     mojom::blink::SameDocumentNavigationType same_document_navigation_type,
     scoped_refptr<SerializedScriptValue> data,
     WebFrameLoadType type,
+    FirePopstate fire_popstate,
     bool is_browser_initiated,
     bool is_synchronously_committed,
     std::optional<scheduler::TaskAttributionId>
@@ -928,8 +929,9 @@ void DocumentLoader::RunURLAndHistoryUpdateSteps(
   // in this process.
   UpdateForSameDocumentNavigation(
       new_url, history_item, same_document_navigation_type, std::move(data),
-      type, frame_->DomWindow()->GetSecurityOrigin(), is_browser_initiated,
-      is_synchronously_committed, soft_navigation_heuristics_task_id);
+      type, fire_popstate, frame_->DomWindow()->GetSecurityOrigin(),
+      is_browser_initiated, is_synchronously_committed,
+      soft_navigation_heuristics_task_id);
 }
 
 void DocumentLoader::UpdateForSameDocumentNavigation(
@@ -938,6 +940,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     mojom::blink::SameDocumentNavigationType same_document_navigation_type,
     scoped_refptr<SerializedScriptValue> data,
     WebFrameLoadType type,
+    FirePopstate fire_popstate,
     const SecurityOrigin* initiator_origin,
     bool is_browser_initiated,
     bool is_synchronously_committed,
@@ -1092,8 +1095,9 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
 
   // Anything except a history.pushState/replaceState is considered a new
   // navigation that resets whether the user has scrolled and fires popstate.
-  if (same_document_navigation_type !=
-      mojom::blink::SameDocumentNavigationType::kHistoryApi) {
+  // A history.pushState/replaceState intercepted via the navigation API should
+  // also not fire popstate.
+  if (fire_popstate == FirePopstate::kYes) {
     initial_scroll_state_.was_scrolled_by_user = false;
 
     // If the item sequence number didn't change, there's no need to trigger
@@ -1736,8 +1740,9 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
 
   UpdateForSameDocumentNavigation(
       url, history_item, same_document_navigation_type, nullptr,
-      frame_load_type, initiator_origin, is_browser_initiated,
-      is_synchronously_committed, soft_navigation_heuristics_task_id);
+      frame_load_type, FirePopstate::kYes, initiator_origin,
+      is_browser_initiated, is_synchronously_committed,
+      soft_navigation_heuristics_task_id);
   if (!frame_)
     return;
 

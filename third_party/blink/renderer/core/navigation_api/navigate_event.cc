@@ -267,6 +267,9 @@ void NavigateEvent::CommitNow() {
       dispatch_params_->url, dispatch_params_->destination_item,
       mojom::blink::SameDocumentNavigationType::kNavigationApiIntercept,
       state_object, dispatch_params_->frame_load_type,
+      dispatch_params_->event_type == NavigateEventType::kHistoryApi
+          ? FirePopstate::kNo
+          : FirePopstate::kYes,
       dispatch_params_->is_browser_initiated,
       dispatch_params_->is_synchronously_committed_same_document,
       dispatch_params_->soft_navigation_heuristics_task_id);

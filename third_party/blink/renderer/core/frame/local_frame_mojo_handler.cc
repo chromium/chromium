@@ -1449,6 +1449,7 @@ void LocalFrameMojoHandler::UpdatePrerenderURL(
       mojom::blink::SameDocumentNavigationType::
           kPrerenderNoVarySearchActivation,
       /*data=*/nullptr, WebFrameLoadType::kReplaceCurrentItem,
+      FirePopstate::kYes,
       /*is_browser_initiated=*/true);
   std::move(callback).Run();
 }
