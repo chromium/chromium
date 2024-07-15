@@ -562,6 +562,21 @@ std::pair<std::string, std::string> FakeUserDataAuthClient::TestApi::AddSession(
   return {auth_session_id, session.broadcast_id};
 }
 
+bool FakeUserDataAuthClient::TestApi::IsAuthenticated(
+    const cryptohome::AccountIdentifier& account_id) {
+  CHECK(FakeUserDataAuthClient::Get()->users_.contains(account_id));
+
+  auto& auth_sessions = FakeUserDataAuthClient::Get()->auth_sessions_;
+
+  auto [auth_session_id, session] =
+      *find_if(std::begin(auth_sessions), std::end(auth_sessions),
+               [&account_id](auto session_entry) {
+                 return session_entry.second.account == account_id;
+               });
+
+  return session.authenticated;
+}
+
 bool FakeUserDataAuthClient::TestApi::IsCurrentSessionEphemeral() {
   CHECK_EQ(FakeUserDataAuthClient::Get()->auth_sessions_.size(), 1u);
   return FakeUserDataAuthClient::Get()

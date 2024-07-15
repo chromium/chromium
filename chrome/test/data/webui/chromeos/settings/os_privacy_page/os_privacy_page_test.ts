@@ -406,13 +406,17 @@ suite('<os-settings-privacy-page>', () => {
       fingerprintUnlockEnabled: true,
     });
 
+    const tokenLabel = loadTimeData.getBoolean('isAuthPanelEnabled') ?
+        'authTokenReply_' :
+        'authTokenInfo_';
+
     privacyPage = document.createElement('os-settings-privacy-page');
     document.body.appendChild(privacyPage);
 
     await waitAfterNextRender(privacyPage);
 
     const quickUnlockPrivateApi = new FakeQuickUnlockPrivate();
-    privacyPage['authTokenInfo_'] = quickUnlockPrivateApi.getFakeToken();
+    privacyPage[tokenLabel] = quickUnlockPrivateApi.getFakeToken();
 
     Router.getInstance().navigateTo(routes.LOCK_SCREEN);
     flush();
@@ -450,13 +454,16 @@ suite('<os-settings-privacy-page>', () => {
     fingerprintTrigger.click();
 
     // Invalidate the auth token by firing an event.
-    assertNotEquals(undefined, privacyPage.get('authTokenInfo_'));
+    assertNotEquals(undefined, privacyPage.get(tokenLabel));
     const event = new CustomEvent('invalidate-auth-token-requested');
     lockScreenPage.dispatchEvent(event);
-    assertEquals(undefined, privacyPage.get('authTokenInfo_'));
+    assertEquals(undefined, privacyPage.get(tokenLabel));
 
     assertEquals(routes.FINGERPRINT, Router.getInstance().currentRoute);
-    assertTrue(privacyPage.get('showPasswordPromptDialog_'));
+
+    if (!loadTimeData.getBoolean('isAuthPanelEnabled')) {
+      assertTrue(privacyPage.get('showPasswordPromptDialog_'));
+    }
   });
 
   test('Smart privacy hidden when both features disabled', async () => {

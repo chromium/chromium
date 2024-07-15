@@ -53,6 +53,8 @@ class CryptohomeMixin : public InProcessBrowserTestMixin,
   void SendLegacyFingerprintSuccessScan();
   void SendLegacyFingerprintFailureScan();
   void SendLegacyFingerprintFailureLockoutScan();
+
+  bool IsAuthenticated(const AccountId& user);
 };
 
 }  // namespace ash

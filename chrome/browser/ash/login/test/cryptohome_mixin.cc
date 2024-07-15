@@ -177,4 +177,10 @@ void CryptohomeMixin::SendLegacyFingerprintFailureLockoutScan() {
       user_data_auth::FingerprintScanResult::FINGERPRINT_SCAN_RESULT_LOCKOUT);
 }
 
+bool CryptohomeMixin::IsAuthenticated(const AccountId& user) {
+  CHECK(FakeUserDataAuthClient::TestApi::Get());
+  return FakeUserDataAuthClient::TestApi::Get()->IsAuthenticated(
+      cryptohome::CreateAccountIdentifierFromAccountId(user));
+}
+
 }  // namespace ash

@@ -49,6 +49,8 @@ class AuthPanel : public NonAccessibleView, public AuthFactorStatusConsumer {
 
     PasswordAuthView* GetPasswordAuthView();
 
+    AuthHubConnector* GetAuthHubConnector();
+
     void SetSubmitPasswordCallback(auth_panel::SubmitPasswordCallback);
 
    private:

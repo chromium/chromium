@@ -524,9 +524,9 @@ export class OsSettingsPrivacyPageElement extends
     }
 
     if (this.authTokenReply_) {
-      await InSessionAuth.getRemote().invalidateToken(
-          this.authTokenReply_.token);
+      const token = this.authTokenReply_.token;
       this.authTokenReply_ = undefined;
+      await InSessionAuth.getRemote().invalidateToken(token);
     }
   }
 

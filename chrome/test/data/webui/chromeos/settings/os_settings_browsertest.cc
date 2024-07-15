@@ -6,13 +6,17 @@
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
+#include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chromeos/lacros_only_mocha_browser_test.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ui_base_features.h"
@@ -74,6 +78,27 @@ INSTANTIATE_TEST_SUITE_P(RevampParameterized,
                          OSSettingsRevampMochaTest,
                          testing::Bool(),
                          OSSettingsRevampMochaTest::DescribeParams);
+
+class OSSettingsRevampMochaTestWithExistingUser
+    : public OSSettingsRevampMochaTest {
+ public:
+  OSSettingsRevampMochaTestWithExistingUser() {
+    UserDataAuthClient::Get()->InitializeFake();
+  }
+
+  void SetUpOnMainThread() override {
+    OSSettingsRevampMochaTest::SetUpOnMainThread();
+    FakeUserDataAuthClient::TestApi::Get()->AddExistingUser(
+        cryptohome::CreateAccountIdentifierFromAccountId(
+            user_manager::StubAccountId()));
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    RevampParameterized,
+    OSSettingsRevampMochaTestWithExistingUser,
+    testing::Bool(),
+    OSSettingsRevampMochaTestWithExistingUser::DescribeParams);
 
 class OSSettingsMochaTestRevampEnabled : public OSSettingsMochaTest {
  protected:
@@ -1753,7 +1778,8 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsPrintingPagePrinterStatus) {
   RunSettingsTest("os_printing_page/printer_status_test.js");
 }
 
-IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsPrivacyPage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestWithExistingUser,
+                       OsPrivacyPage) {
   RunSettingsTest("os_privacy_page/os_privacy_page_test.js");
 }
 

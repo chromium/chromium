@@ -28,6 +28,7 @@
 #include "chromeos/ash/components/cryptohome/constants.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
+#include "chromeos/ash/components/osauth/impl/auth_surface_registry.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_status_consumer.h"
 #include "chromeos/ash/components/osauth/public/auth_hub.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
@@ -189,6 +190,8 @@ void InSessionAuthDialogControllerImpl::OnUserAuthAttemptConfirmed(
   dialog_ = CreateAuthDialogWidget(std::move(contents_view));
   dialog_->Show();
   state_ = State::kShown;
+  AuthParts::Get()->GetAuthSurfaceRegistry()->NotifyInSessionAuthDialogShown(
+      connector);
 }
 
 void InSessionAuthDialogControllerImpl::OnAuthPanelPreferredSizeChanged() {

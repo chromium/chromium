@@ -17,6 +17,12 @@
 #include "components/account_id/account_id.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+namespace ash {
+
+class AuthHubConnector;
+
+}
+
 namespace ash::settings {
 
 // Fixture for browser tests of the "lock screen" section in
@@ -53,7 +59,10 @@ class OSSettingsLockScreenBrowserTestBase
   // The account ID of the user set up by this fixture.
   const AccountId& GetAccountId();
 
+  void AuthenticateViaCryptohomePasswordEngine(bool keep_alive_connector);
+
  protected:
+  mojo::Remote<mojom::LockScreenSettings> lock_screen_settings_remote_;
   std::unique_ptr<LoggedInUserMixin> logged_in_user_mixin_;
   raw_ptr<CryptohomeMixin> cryptohome_{nullptr};
   OSSettingsBrowserTestMixin os_settings_mixin_{&mixin_host_};
@@ -65,7 +74,8 @@ class OSSettingsLockScreenBrowserTestBase
       const std::string& relative_url = "");
 
   mojo::Remote<mojom::OSSettingsDriver> os_settings_driver_remote_;
-  mojo::Remote<mojom::LockScreenSettings> lock_screen_settings_remote_;
+
+  raw_ptr<AuthHubConnector> connector_;
 };
 
 }  // namespace ash::settings

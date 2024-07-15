@@ -6,11 +6,17 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/in_session_auth_dialog_controller.h"
 #include "base/check_op.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/data/webui/chromeos/settings/test_api.test-mojom-test-utils.h"
+#include "chromeos/ash/components/osauth/impl/auth_surface_registry.h"
+#include "chromeos/ash/components/osauth/public/auth_engine_api.h"
+#include "chromeos/ash/components/osauth/public/auth_parts.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 
 namespace ash::settings {
@@ -52,16 +58,55 @@ void OSSettingsLockScreenBrowserTestBase::SetUpOnMainThread() {
 
 mojom::LockScreenSettingsAsyncWaiter
 OSSettingsLockScreenBrowserTestBase::OpenLockScreenSettings() {
-  auto os_settings_driver = OpenOSSettings();
-  lock_screen_settings_remote_ =
-      mojo::Remote(os_settings_driver.GoToLockScreenSettings());
+  if (ash::features::IsUseAuthPanelInSettingsEnabled()) {
+    base::test::TestFuture<AuthHubConnector*, AuthSurfaceRegistry::AuthSurface>
+        future;
+    auto subscription =
+        ash::AuthParts::Get()->GetAuthSurfaceRegistry()->RegisterShownCallback(
+            future.GetCallback());
+
+    auto os_settings_driver = OpenOSSettings();
+
+    lock_screen_settings_remote_ =
+        mojo::Remote(os_settings_driver.GoToLockScreenSettings());
+
+    auto [connector, surface] = future.Get();
+
+    connector_ = connector;
+
+    base::RunLoop().RunUntilIdle();
+  } else {
+    auto os_settings_driver = OpenOSSettings();
+    lock_screen_settings_remote_ =
+        mojo::Remote(os_settings_driver.GoToLockScreenSettings());
+  }
+
   return mojom::LockScreenSettingsAsyncWaiter(
       lock_screen_settings_remote_.get());
 }
 
+void OSSettingsLockScreenBrowserTestBase::
+    AuthenticateViaCryptohomePasswordEngine(bool keep_alive_connector) {
+  AuthEngineApi::AuthenticateWithPassword(
+      connector_, AshAuthFactor::kGaiaPassword, kPassword);
+  if (!keep_alive_connector) {
+    // In certain cases, we do not want to invalidate `connector`,
+    // for example, to test scenarios such as entering the wrong password
+    // initially, followed by the correct one.
+    connector_ = nullptr;
+  }
+  base::RunLoop().RunUntilIdle();
+}
+
 mojom::LockScreenSettingsAsyncWaiter
 OSSettingsLockScreenBrowserTestBase::OpenLockScreenSettingsAndAuthenticate() {
-  OpenLockScreenSettings().Authenticate(kPassword);
+  if (ash::features::IsUseAuthPanelInSettingsEnabled()) {
+    OpenLockScreenSettings();
+    AuthenticateViaCryptohomePasswordEngine(false);
+  } else {
+    OpenLockScreenSettings().Authenticate(kPassword);
+  }
+
   // The mojom AsyncWaiter classes have deleted copy constructors even though
   // they only hold a non-owning pointer to a mojo remote. This restriction
   // should probably be dropped, so that we can just return the async waiter
@@ -76,12 +121,32 @@ mojom::LockScreenSettingsAsyncWaiter OSSettingsLockScreenBrowserTestBase::
         const std::string& setting_id) {
   std::string relative_url = "/osPrivacy/lockScreen?settingId=";
   relative_url += setting_id;
-  auto os_settings_driver = OpenOSSettings(relative_url);
+  if (ash::features::IsUseAuthPanelInSettingsEnabled()) {
+    base::test::TestFuture<AuthHubConnector*, AuthSurfaceRegistry::AuthSurface>
+        future;
+    auto subscription =
+        ash::AuthParts::Get()->GetAuthSurfaceRegistry()->RegisterShownCallback(
+            future.GetCallback());
 
-  lock_screen_settings_remote_ =
-      mojo::Remote(os_settings_driver.AssertOnLockScreenSettings());
-  mojom::LockScreenSettingsAsyncWaiter(lock_screen_settings_remote_.get())
-      .Authenticate(kPassword);
+    auto os_settings_driver = OpenOSSettings(relative_url);
+
+    auto [connector, surface] = future.Get();
+
+    connector_ = connector;
+
+    base::RunLoop().RunUntilIdle();
+
+    AuthenticateViaCryptohomePasswordEngine(false);
+
+    lock_screen_settings_remote_ =
+        mojo::Remote(os_settings_driver.AssertOnLockScreenSettings());
+  } else {
+    auto os_settings_driver = OpenOSSettings(relative_url);
+    lock_screen_settings_remote_ =
+        mojo::Remote(os_settings_driver.AssertOnLockScreenSettings());
+    mojom::LockScreenSettingsAsyncWaiter(lock_screen_settings_remote_.get())
+        .Authenticate(kPassword);
+  }
 
   return mojom::LockScreenSettingsAsyncWaiter(
       lock_screen_settings_remote_.get());

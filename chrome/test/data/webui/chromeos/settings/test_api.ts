@@ -15,7 +15,7 @@ import {PinSettingsApi} from './os_people_page/pin_settings_api.js';
 import {PasswordSettingsApiRemote} from './password_settings_api.test-mojom-webui.js';
 import {PinSettingsApiRemote} from './pin_settings_api.test-mojom-webui.js';
 import {GoogleDriveSettingsInterface, GoogleDriveSettingsReceiver, GoogleDriveSettingsRemote, LockScreenSettings_RecoveryDialogAction as RecoveryDialogAction, LockScreenSettingsInterface, LockScreenSettingsReceiver, LockScreenSettingsRemote, OSSettingsBrowserProcess, OSSettingsDriverInterface, OSSettingsDriverReceiver} from './test_api.test-mojom-webui.js';
-import {assertAsync, assertForDuration, hasBooleanProperty, hasProperty, Lazy, querySelectorShadow, retry, retryUntilSome} from './utils.js';
+import {assertAsync, assertForDuration, hasBooleanProperty, hasProperty, hasStringProperty, Lazy, querySelectorShadow, retry, retryUntilSome} from './utils.js';
 
 class RecoveryDialog {
   private element: HTMLElement;
@@ -80,6 +80,19 @@ export class LockScreenSettings implements LockScreenSettingsInterface {
   }
 
   async assertAuthenticated(isAuthenticated: boolean): Promise<void> {
+    if (loadTimeData.getBoolean('isAuthPanelEnabled')) {
+      const property = () => {
+        const authTokenExists =
+            hasStringProperty(this.lockScreen, 'authToken') &&
+            this.lockScreen['authToken'] !== undefined;
+        return isAuthenticated === authTokenExists;
+      };
+
+      assertAsync(property);
+      assertForDuration(property);
+      return;
+    }
+
     const property = () => {
       const dialogExists = this.passwordDialog() !== null;
       return isAuthenticated === !dialogExists;

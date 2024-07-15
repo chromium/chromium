@@ -41,6 +41,8 @@ component("impl") {
     "auth_parts_impl.h",
     "auth_session_storage_impl.cc",
     "auth_session_storage_impl.h",
+    "auth_surface_registry.cc",
+    "auth_surface_registry.h",
     "cryptohome_core_impl.cc",
     "cryptohome_core_impl.h",
     "early_login_auth_policy_connector.cc",

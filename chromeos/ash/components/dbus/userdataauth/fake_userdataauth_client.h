@@ -162,6 +162,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     void SetNextOperationError(Operation operation,
                                ::cryptohome::ErrorWrapper error);
 
+    bool IsAuthenticated(const cryptohome::AccountIdentifier& account_id);
+
    private:
     FakeUserDataAuthClient::UserCryptohomeState& GetUserState(
         const cryptohome::AccountIdentifier& account_id);

@@ -83,6 +83,7 @@ void AuthPartsImpl::CreateDefaultComponents(PrefService* local_state) {
 
   login_screen_policy_connector_ =
       std::make_unique<LoginScreenAuthPolicyConnector>(local_state);
+  auth_surface_registry_ = std::make_unique<AuthSurfaceRegistry>();
 }
 
 AuthSessionStorage* AuthPartsImpl::GetAuthSessionStorage() {
@@ -164,6 +165,10 @@ void AuthPartsImpl::Shutdown() {
   if (profile_prefs_policy_connector_) {
     profile_prefs_policy_connector_->OnShutdown();
   }
+}
+
+AuthSurfaceRegistry* AuthPartsImpl::GetAuthSurfaceRegistry() {
+  return auth_surface_registry_.get();
 }
 
 }  // namespace ash
