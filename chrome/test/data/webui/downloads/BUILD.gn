@@ -6,6 +6,7 @@ import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
   files = [
+    "bypass_warning_confirmation_interstitial_test.ts",
     "item_test.ts",
     "manager_test.ts",
     "non_existent_url_test.ts",

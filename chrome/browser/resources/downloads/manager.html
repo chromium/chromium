@@ -139,8 +139,16 @@
 <template is="dom-if"
     if="[[shouldShowBypassWarningPrompt_(bypassPromptItemId_)]]"
     restamp>
-  <download-bypass-warning-confirmation-dialog
-      file-name="[[computeBypassWarningPromptFileName_(bypassPromptItemId_)]]"
-      on-close="onBypassWarningConfirmationDialogClose_">
-  </download-bypass-warning-confirmation-dialog>
+  <template is="dom-if" if="[[dangerousDownloadInterstitial_]]" restamp>
+    <downloads-dangerous-download-interstitial
+        trust-site-line=
+        "[[computeDangerousInterstitialTrustSiteLine_(bypassPromptItemId_)]]">
+    </downloads-dangerous-download-interstitial>
+  </template>
+  <template is="dom-if" if="[[!dangerousDownloadInterstitial_]]" restamp>
+    <download-bypass-warning-confirmation-dialog
+        file-name="[[computeBypassWarningDialogFileName_(bypassPromptItemId_)]]"
+        on-close="onBypassWarningConfirmationDialogClose_">
+    </download-bypass-warning-confirmation-dialog>
+  </template>
 </template>

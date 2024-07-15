@@ -349,6 +349,69 @@ suite('manager tests', function() {
         assertFalse(isVisible(dialog));
       });
 
+  test(
+      'interstitial shown when dangerousDownloadInterstitial enabled',
+      async () => {
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        loadTimeData.overrideValues({dangerousDownloadInterstitial: true});
+        manager = document.createElement('downloads-manager');
+        document.body.appendChild(manager);
+        callbackRouterRemote.insertItems(0, [
+          createDownload({
+            id: 'itemId',
+            state: State.kDangerous,
+            isDangerous: true,
+            dangerType: DangerType.kDangerousUrl,
+          }),
+        ]);
+        await callbackRouterRemote.$.flushForTesting();
+        flush();
+        const saveDangerousButton =
+            manager.shadowRoot!.querySelector('downloads-item')!.shadowRoot!
+                .querySelector('cr-action-menu')!.querySelector<HTMLElement>(
+                    '#save-dangerous');
+        assertTrue(!!saveDangerousButton);
+        saveDangerousButton.click();
+        flush();
+        const interstitial = manager.shadowRoot!.querySelector(
+            'downloads-dangerous-download-interstitial');
+        assertTrue(!!interstitial);
+        assertTrue(interstitial.$.dialog.open);
+      });
+
+  test(
+      'bypass warning confirmation interstitial closed when file removed',
+      async () => {
+        callbackRouterRemote.insertItems(0, [
+          createDownload({
+            id: 'itemId',
+            state: State.kDangerous,
+            isDangerous: true,
+            dangerType: DangerType.kDangerousUrl,
+          }),
+        ]);
+        await callbackRouterRemote.$.flushForTesting();
+        flush();
+        const item = manager.shadowRoot!.querySelector('downloads-item');
+        assertTrue(!!item);
+        const saveDangerousButton =
+            manager.shadowRoot!.querySelector('downloads-item')!.shadowRoot!
+                .querySelector('cr-action-menu')!.querySelector<HTMLElement>(
+                    '#save-dangerous');
+        assertTrue(!!saveDangerousButton);
+        saveDangerousButton.click();
+        flush();
+        const interstitial = manager.shadowRoot!.querySelector(
+            'downloads-dangerous-download-interstitial');
+        assertTrue(!!interstitial);
+        assertTrue(interstitial.$.dialog.open);
+        // Remove the file and check that the interstitial is hidden.
+        callbackRouterRemote.removeItem(0);
+        await callbackRouterRemote.$.flushForTesting();
+        flush();
+        assertFalse(isVisible(interstitial));
+      });
+
   // <if expr="_google_chrome">
   test(
       'shouldShowEsbPromotion returns true on first dangerous download',

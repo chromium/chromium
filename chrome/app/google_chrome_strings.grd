@@ -733,9 +733,9 @@ Permissions you've already given to websites and apps may apply to this account.
         Chrome blocked this download because you turned Safe Browsing off and the file can't be verified
       </message>
 
-      <!-- chrome://downloads page bypass dangerous download warning dialog -->
-      <message name="IDS_DOWNLOAD_WARNING_BYPASS_DIALOG_LEARN_MORE_LINK"
-               desc="On the downloads page, the label for the link to the help center in the dialog to bypass a dangerous download warning.">
+      <!-- chrome://downloads page bypass dangerous download warning prompt-->
+      <message name="IDS_DOWNLOAD_WARNING_BYPASS_PROMPT_LEARN_MORE_LINK"
+               desc="On the downloads page, the label for the link to the help center in the prompt to bypass a dangerous download warning.">
         Learn why Chrome blocks some files
       </message>
 

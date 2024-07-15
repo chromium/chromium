@@ -158,13 +158,37 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"screenreaderResumed", IDS_DOWNLOAD_SCREENREADER_RESUMED},
       {"screenreaderCanceled", IDS_DOWNLOAD_SCREENREADER_CANCELED},
 
+      // Warning bypass prompt (used in both the dialog and interstitial).
+      {"warningBypassPromptLearnMoreLink",
+       IDS_DOWNLOAD_WARNING_BYPASS_PROMPT_LEARN_MORE_LINK},
+      {"warningBypassPromptDescription",
+       IDS_DOWNLOAD_WARNING_BYPASS_PROMPT_DESCRIPTION},
+
       // Warning bypass dialog.
       {"warningBypassDialogTitle", IDS_DOWNLOAD_WARNING_BYPASS_DIALOG_TITLE},
-      {"warningBypassDialogDescription",
-       IDS_DOWNLOAD_WARNING_BYPASS_DIALOG_DESCRIPTION},
-      {"warningBypassDialogLearnMoreLink",
-       IDS_DOWNLOAD_WARNING_BYPASS_DIALOG_LEARN_MORE_LINK},
       {"warningBypassDialogCancel", IDS_CANCEL},
+
+      // Warning bypass interstitial main content.
+      {"warningBypassInterstitialTitle",
+       IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_TITLE},
+      {"warningBypassInterstitialContinue",
+       IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_CONTINUE},
+      {"warningBypassInterstitialCancel",
+       IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_CANCEL},
+      {"warningBypassInterstitialDownload",
+       IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_DOWNLOAD},
+
+      // Warning bypass interstitial survey content.
+      {"warningBypassInterstitialSurveyTitle",
+       IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_TITLE},
+      {"warningBypassInterstitialSurveyCreatedFile",
+       IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_CREATED_FILE},
+      {"warningBypassInterstitialSurveyTrustSiteWithoutUrl",
+       IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_TRUST_SITE_WITHOUT_URL},
+      {"warningBypassInterstitialSurveyTrustSiteWithUrl",
+       IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_TRUST_SITE_WITH_URL},
+      {"warningBypassInterstitialSurveyAcceptRisk",
+       IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_ACCEPT_RISK},
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       // ESB Download Row Promo
@@ -187,6 +211,10 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"referrerLine", IDS_DOWNLOADS_PAGE_REFERRER_LINE},
   };
   source->AddLocalizedStrings(kStrings);
+
+  source->AddBoolean("dangerousDownloadInterstitial",
+                     base::FeatureList::IsEnabled(
+                         safe_browsing::kDangerousDownloadInterstitial));
 
   source->AddBoolean(
       "showReferrerUrl",

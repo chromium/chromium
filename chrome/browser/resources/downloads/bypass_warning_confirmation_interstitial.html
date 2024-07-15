@@ -1,0 +1,128 @@
+<style>
+  #dialog {
+    align-items: center;
+    background-color: var(--cr-fallback-color-error);
+    border: none;
+    box-sizing: border-box;
+    color: white;
+    display: flex;
+    font-size: 125%;
+    height: 100vh;
+    justify-content: center;
+    max-height: 100vh;
+    max-width: 100vw;
+    width: 100vw;
+  }
+
+  #interstitial-wrapper {
+    max-width: 736px;
+  }
+
+  #icon {
+    height: 72px;
+    width: 72px;
+  }
+
+  #main-message{
+    margin: 30px 0;
+  }
+
+  #title {
+    font-size: 1.6em;
+    font-weight: normal;
+    line-height: 1.25em;
+    margin-bottom: 16px;
+  }
+
+  #button-container {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 30px;
+  }
+
+  #back-to-safety-button {
+    background: white;
+    border: none;
+    color: var(--cr-fallback-color-primary);
+  }
+
+  #back-to-safety-button:hover {
+    background: var(--cr-fallback-color-primary-container);
+  }
+
+  .secondary-button {
+    border: 1px solid #fff;
+    background: var(--cr-fallback-color-error);
+    color: white;
+  }
+
+  .secondary-button:hover {
+    background: var(--google-red-500);
+    text-decoration: none;
+  }
+
+  a,
+  cr-button,
+  cr-radio-group {
+    color: white;
+  }
+
+  cr-radio-button {
+    --cr-radio-button-checked-color: #fff;
+    --cr-radio-button-unchecked-color: #fff;
+  }
+
+  #survey-wrapper {
+    margin-bottom: 20px;
+  }
+
+  #survey-title {
+    margin: 2px 0;
+  }
+</style>
+<dialog id="dialog">
+  <div id="interstitial-wrapper">
+    <div id="main-content">
+      <div id="icon-wrapper" role="img"
+          aria-label="$i18n{accessibleLabelDangerous}">
+        <cr-icon id="icon" icon="downloads:dangerous"></cr-icon>
+      </div>
+      <div id="main-message">
+        <h1 id="title">$i18n{warningBypassInterstitialTitle}</h1>
+        <p>$i18n{warningBypassPromptDescription}
+          <!-- noopener cuts off the script connection between
+            chrome://downloads, which has sensitive capabilities, and the newly
+            opened web renderer, which may be more readily compromised. -->
+          <a href="$i18n{blockedLearnMoreUrl}" target="_blank" rel="noopener">
+            $i18n{warningBypassPromptLearnMoreLink}
+          </a>
+        </p>
+      </div>
+      <div id="button-container">
+        <cr-button class="secondary-button" id="continue-anyway-button">
+          $i18n{warningBypassInterstitialContinue}
+        </cr-button>
+        <cr-button id="back-to-safety-button">
+          $i18n{warningBypassInterstitialCancel}
+        </cr-button>
+      </div>
+    </div>
+    <div id="survey-wrapper">
+      <p id="survey-title">$i18n{warningBypassInterstitialSurveyTitle}</p>
+      <cr-radio-group>
+        <cr-radio-button name="CreatedFile">
+          $i18n{warningBypassInterstitialSurveyCreatedFile}
+        </cr-radio-button>
+        <cr-radio-button name="TrustSite">
+          [[trustSiteLine]]
+        </cr-radio-button>
+        <cr-radio-button name="AcceptRisk">
+          $i18n{warningBypassInterstitialSurveyAcceptRisk}
+        </cr-radio-button>
+      </cr-radio-group>
+    </div>
+    <cr-button class="secondary-button" id="download-button">
+      $i18n{warningBypassInterstitialDownload}
+    </cr-button>
+  </div>
+</dialog>

@@ -2638,9 +2638,46 @@ are declared in tools/grit/grit_rule.gni.
                desc="On the downloads page, the title of the dialog to bypass a dangerous download warning.">
         This file could harm your device
       </message>
-      <message name="IDS_DOWNLOAD_WARNING_BYPASS_DIALOG_DESCRIPTION"
-               desc="On the downloads page, the description in the dialog to bypass a dangerous download warning.">
-        This file contains malware or comes from a suspicious site
+      <message name="IDS_DOWNLOAD_WARNING_BYPASS_PROMPT_DESCRIPTION"
+               desc="On the downloads page, the description in the prompt to bypass a dangerous download warning.">
+        This file contains malware or comes from a suspicious site.
+      </message>
+
+      <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_TITLE"
+               desc="On the downloads page, the title in the interstitial to bypass a dangerous download warning.">
+        Download warning
+      </message>
+      <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_CONTINUE"
+               desc="On the downloads page, the text for the continue anyway button in the interstitial to bypass a dangerous download warning.">
+        Continue anyway
+      </message>
+      <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_CANCEL"
+               desc="On the downloads page, the text for the back to safety button in the interstitial to bypass a dangerous download warning.">
+        Back to safety
+      </message>
+      <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_DOWNLOAD"
+               desc="On the downloads page, the text for the download button in the interstitial to bypass a dangerous download warning.">
+        Download
+      </message>
+      <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_TITLE"
+               desc="On the downloads page, the survey title in the interstitial to bypass a dangerous download warning.">
+        Tell us why you're downloading this file anyway
+      </message>
+      <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_CREATED_FILE"
+               desc="On the downloads page, the created file survey option in the interstitial to bypass a dangerous download warning.">
+        I created this file
+      </message>
+      <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_TRUST_SITE_WITHOUT_URL"
+               desc="On the downloads page, the trust site survey option within the interstitial to bypass a dangerous download warning.">
+        I trust the site
+      </message>
+      <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_TRUST_SITE_WITH_URL"
+               desc="On the downloads page, the trust site survey option with a url within the interstitial to bypass a dangerous download warning.">
+        I trust the site (<ph name="SITE_URL">$1<ex>https://example.com</ex></ph>)
+      </message>
+      <message name="IDS_DOWNLOAD_WARNING_BYPASS_INTERSTITIAL_SURVEY_ACCEPT_RISK"
+               desc="On the downloads page, the accept risk survey option in the interstitial to bypass a dangerous download warning.">
+        I'm willing to accept the risk
       </message>
 
       <!-- Download Alerts for Accessibility -->

@@ -4,6 +4,7 @@
 
 import './strings.m.js';
 import './bypass_warning_confirmation_dialog.js';
+import './bypass_warning_confirmation_interstitial.js';
 import './item.js';
 import './toolbar.js';
 import 'chrome://resources/cr_components/managed_footnote/managed_footnote.js';
@@ -20,6 +21,7 @@ import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mi
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {Debouncer, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -113,6 +115,11 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
       lastFocused_: Object,
 
       listBlurred_: Boolean,
+
+      dangerousDownloadInterstitial_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('dangerousDownloadInterstitial'),
+      },
     };
   }
 
@@ -131,6 +138,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
   private esbDownloadRowPromo_: boolean;
   private isEligibleForEsbPromo_: boolean;
   // </if>
+  private dangerousDownloadInterstitial_: boolean;
 
   private announcerDebouncer_: Debouncer|null = null;
   private mojoHandler_: PageHandlerInterface;
@@ -253,13 +261,30 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     return this.bypassPromptItemId_ !== '';
   }
 
-  private computeBypassWarningPromptFileName_(): string {
+  private computeBypassWarningDialogFileName_(): string {
     const bypassItem =
         this.items_.find(item => item.id === this.bypassPromptItemId_);
     return bypassItem?.fileName || '';
   }
 
-  private hideBypassWarningDialog_() {
+  private computeDangerousInterstitialTrustSiteLine_(): string {
+    const bypassItem =
+        this.items_.find(item => item.id === this.bypassPromptItemId_);
+    if (!bypassItem) {
+      return '';
+    }
+
+    const url = mojoString16ToString(bypassItem.displayReferrerUrl);
+    if (url === '') {
+      return loadTimeData.getString(
+          'warningBypassInterstitialSurveyTrustSiteWithoutUrl');
+    }
+    return loadTimeData.getStringF(
+        'warningBypassInterstitialSurveyTrustSiteWithUrl', url);
+  }
+
+
+  private hideBypassWarningPrompt_() {
     this.bypassPromptItemId_ = '';
   }
 
@@ -278,7 +303,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
       this.mojoHandler_.recordCancelBypassWarningDialog(
           this.bypassPromptItemId_);
     }
-    this.hideBypassWarningDialog_();
+    this.hideBypassWarningPrompt_();
   }
 
   private clearAll_() {
@@ -425,7 +450,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     const removed = this.items_.splice(index, 1);
     this.updateHideDates_(index, index);
     if (removed.some(item => item.id === this.bypassPromptItemId_)) {
-      this.hideBypassWarningDialog_();
+      this.hideBypassWarningPrompt_();
     }
     this.notifySplices('items_', [{
                          index: index,
