@@ -104,6 +104,8 @@ GITHASH_TO_SVN_URL = {
 
 VERSION_INFO_URL = ('https://chromiumdash.appspot.com/fetch_version?version=%s')
 
+MILESTONES_URL = ('https://chromiumdash.appspot.com/fetch_milestones')
+
 # Search pattern to be matched in the JSON output from
 # CHROMIUM_GITHASH_TO_SVN_URL to get the chromium revision (svn revision).
 CHROMIUM_SEARCH_PATTERN_OLD = (
@@ -1767,6 +1769,27 @@ def GetRevisionFromVersion(version):
   return None
 
 
+def GetRevisionFromMilestone(milestone):
+  """Get revision (e.g. 782793) from milestone such as 85."""
+  response = urllib.request.urlopen(MILESTONES_URL)
+  milestones = json.loads(response.read())
+  for m in milestones:
+    if m['milestone'] == milestone:
+      return m['chromium_main_branch_position']
+  return None
+
+
+def GetRevision(revision):
+  """Get revision from either milestone M85 or full version 85.0.4183.0"""
+  if type(revision) == type(0):
+    return revision
+  if IsVersionNumber(revision):
+    return GetRevisionFromVersion(revision)
+  elif revision[:1].upper() == 'M' and revision[1:].isdigit():
+    return GetRevisionFromMilestone(int(revision[1:]))
+  return None
+
+
 def CheckDepotToolsInPath():
   delimiter = ';' if sys.platform.startswith('win') else ':'
   path_list = os.environ['PATH'].split(delimiter)
@@ -2112,13 +2135,17 @@ def UpdateScript():
 def main():
   opts, args = ParseCommandLine()
 
-  if not opts.bad:
-    print('Please specify a bad version.')
-    return 1
-
   if not opts.good:
     print('Please specify a good version.')
     return 1
+
+  if opts.release_builds:
+    if not opts.bad:
+      print('Please specify a bad version.')
+      return 1
+    if not IsVersionNumber(opts.good) or not IsVersionNumber(opts.bad):
+      print('For release, you can only use chrome version to bisect.')
+      return 1
 
   try:
     SetupEnvironment(opts)
@@ -2144,9 +2171,6 @@ def main():
   context = PathContext(opts, device)
 
   if context.is_release:
-    if not IsVersionNumber(opts.good):
-      print('For release, you can only use chrome version to bisect.')
-      return 1
     if opts.archive.startswith('android-'):
       # Channel builds have _ in their names, e.g. chrome_canary or chrome_beta.
       # Non-channel builds don't, e.g. chrome or chromium. Make this a warning
@@ -2160,12 +2184,11 @@ def main():
   else:
     # For official and snapshot, we convert good and bad to commit position
     # as int.
-    if IsVersionNumber(opts.good):
-      context.good_revision = GetRevisionFromVersion(opts.good)
-      context.bad_revision = GetRevisionFromVersion(opts.bad)
-    else:
-      context.good_revision = int(context.good_revision)
-      context.bad_revision = int(context.bad_revision)
+    if not opts.bad:
+      context.bad_revision = GetChromiumRevision(context,
+                                                 context.GetLastChangeURL())
+    context.good_revision = GetRevision(context.good_revision)
+    context.bad_revision = GetRevision(context.bad_revision)
 
   context.deploy_chrome_path = deploy_chrome_path
 
