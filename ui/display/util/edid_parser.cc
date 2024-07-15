@@ -594,7 +594,30 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
           {gfx::ColorSpace::PrimaryID::BT2020,
            gfx::ColorSpace::MatrixID::BT2020_NCL},
           // BT2020RGB. Colorimetry based on ITU-R BT.2020 R’G’B’.
-          {gfx::ColorSpace::PrimaryID::BT2020, gfx::ColorSpace::MatrixID::RGB}};
+          {gfx::ColorSpace::PrimaryID::BT2020, gfx::ColorSpace::MatrixID::RGB},
+          // MD0. Metadata bit.
+          {gfx::ColorSpace::PrimaryID::INVALID,
+           gfx::ColorSpace::MatrixID::INVALID},
+          // MD1. Metadata bit.
+          {gfx::ColorSpace::PrimaryID::INVALID,
+           gfx::ColorSpace::MatrixID::INVALID},
+          // MD2. Metadata bit.
+          {gfx::ColorSpace::PrimaryID::INVALID,
+           gfx::ColorSpace::MatrixID::INVALID},
+          // MD3. Metadata bit.
+          {gfx::ColorSpace::PrimaryID::INVALID,
+           gfx::ColorSpace::MatrixID::INVALID},
+          // F44=0.
+          {gfx::ColorSpace::PrimaryID::INVALID,
+           gfx::ColorSpace::MatrixID::INVALID},
+          // F45=0.
+          {gfx::ColorSpace::PrimaryID::INVALID,
+           gfx::ColorSpace::MatrixID::INVALID},
+          // F46=0.
+          {gfx::ColorSpace::PrimaryID::INVALID,
+           gfx::ColorSpace::MatrixID::INVALID},
+          // DCI-P3. Colorimetry based on DCI-P3.
+          {gfx::ColorSpace::PrimaryID::P3, gfx::ColorSpace::MatrixID::RGB}};
   // See CEA 861.G-2018, Sec.7.5.13, "HDR Static Metadata Data Block" for these.
   constexpr uint8_t kHDRStaticMetadataCapabilityTag = 0x6;
   constexpr gfx::ColorSpace::TransferID kTransferIDMap[] = {
@@ -694,9 +717,14 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
           break;
 
         case kColorimetryDataBlockCapabilityTag: {
-          constexpr size_t kMaxNumColorimetryEntries = 8;
+          constexpr size_t kMaxNumColorimetryEntries = 16;
+          // The Colorimetry Data Block bitfield is 2 bytes long, the second
+          // byte containing the most significant bit (MSB), so it needs to be
+          // shifted to the left to create a 16 bit long value that can be
+          // passed to the bitset constructor.
           const std::bitset<kMaxNumColorimetryEntries>
-              supported_primaries_bitfield(edid[data_offset + 2]);
+              supported_primaries_bitfield(edid[data_offset + 2] +
+                                           (edid[data_offset + 3] << 8));
           static_assert(
               kMaxNumColorimetryEntries == std::size(kPrimaryMatrixIDMap),
               "kPrimaryIDMap should describe all possible colorimetry entries");

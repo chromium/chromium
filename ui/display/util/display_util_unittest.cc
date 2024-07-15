@@ -8,6 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/test/display_test_util.h"
 #include "ui/display/util/edid_parser.h"
+#include "ui/gfx/color_space.h"
 
 namespace display {
 
@@ -83,6 +84,26 @@ const unsigned char kScreeboP3[] =
     "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
     "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
     "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x3c";
+
+// EDID with only DCI-P3 in colorimetry data block
+const unsigned char kCDBP3[] =
+    "\x00\xff\xff\xff\xff\xff\xff\x00\x06\xb3\xda\x16\x5e\x42\x02\x00"
+    "\x15\x20\x01\x04\xb5\x22\x13\x78\x3a\x0c\xf5\xae\x52\x3c\xb9\x23"
+    "\x0c\x50\x54\x21\x08\x00\xb3\x00\x95\x00\x81\x80\x81\x40\x81\xc0"
+    "\x01\x01\x01\x01\x01\x01\x35\x36\x80\xa0\x70\x38\x20\x40\x30\x20"
+    "\x88\x00\x58\xc2\x10\x00\x00\x1b\x00\x00\x00\xff\x00\x4e\x35\x4c"
+    "\x4d\x54\x46\x31\x34\x38\x30\x36\x32\x0a\x00\x00\x00\xfd\x00\x18"
+    "\x3d\x18\x53\x11\x00\x0a\x20\x20\x20\x20\x20\x20\x00\x00\x00\xfc"
+    "\x00\x41\x53\x55\x53\x20\x4d\x51\x31\x36\x41\x48\x0a\x20\x01\x55"
+
+    "\x02\x03\x30\xf1\x52\x01\x03\x02\x04\x0e\x0f\x90\x12\x11\x13\x1e"
+    "\x1d\x1f\x05\x14\x20\x21\x22\x23\x09\x07\x07\x83\x01\x00\x00\x65"
+    "\x03\x0c\x00\x20\x00\xe3\x05\x00\x81\xe6\x06\x05\x01\x5c\x5c\x09"
+    "\x02\x3a\x80\x18\x71\x38\x2d\x40\x58\x2c\x45\x00\x58\xc2\x10\x00"
+    "\x00\x1e\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x9a";
 
 // Chromebook Samsung Galaxy (kohaku) that supports HDR metadata.
 constexpr unsigned char kHDR[] =
@@ -289,7 +310,7 @@ TEST(DisplayUtilTest, GetColorSpaceFromEdid) {
   histogram_tester.ExpectTotalCount(
       "DrmUtil.GetColorSpaceFromEdid.ChecksOutcome", 5);
 
-  // Test with a display that is close to P3.
+  // Test with a display with primaries near P3, but {BT2020,RGB} in its CDB.
   constexpr SkColorSpacePrimaries expected_p3_primaries = {.fRX = 0.680f,
                                                            .fRY = 0.320f,
                                                            .fGX = 0.265f,
@@ -305,9 +326,17 @@ TEST(DisplayUtilTest, GetColorSpaceFromEdid) {
   const gfx::ColorSpace expected_p3_color_space = gfx::ColorSpace::CreateCustom(
       expected_p3_to_XYZ50_matrix, gfx::ColorSpace::TransferID::PQ);
   EXPECT_TRUE(expected_p3_color_space.IsWide());
+  // Expect P3 primaries and PQ transfer function.
   EXPECT_EQ(expected_p3_color_space.ToString(),
             GetColorSpaceFromEdid(display::EdidParser(std::move(p3_edid)))
                 .ToString());
+
+  // Test with a display that has only DCI-P3 in its Colorimetry Data Block.
+  std::vector<uint8_t> p3_cdb_edid(kCDBP3, kCDBP3 + std::size(kCDBP3) - 1);
+  EXPECT_EQ(
+      gfx::ColorSpace::CreateDisplayP3D65().ToString(),
+      GetColorSpaceFromEdid(display::EdidParser(std::move(p3_cdb_edid), true))
+          .ToString());
 }
 
 TEST(DisplayUtilTest, GetInvalidColorSpaceFromEdid) {
@@ -393,8 +422,9 @@ TEST(DisplayUtilTest, MultipleInternalDisplayIds) {
   int64_t from_last_set = 0;
   for (const auto& id_set : kTestIdsList) {
     SetInternalDisplayIds(id_set);
-    for (int64_t id : id_set)
+    for (int64_t id : id_set) {
       EXPECT_TRUE(IsInternalDisplayId(id));
+    }
     EXPECT_FALSE(IsInternalDisplayId(from_last_set));
     from_last_set = *id_set.rbegin();
   }
@@ -402,8 +432,9 @@ TEST(DisplayUtilTest, MultipleInternalDisplayIds) {
   // Reset the internal display.
   SetInternalDisplayIds({});
   for (auto id_set : kTestIdsList) {
-    for (int64_t id : id_set)
+    for (int64_t id : id_set) {
       EXPECT_FALSE(IsInternalDisplayId(id));
+    }
   }
 }
 

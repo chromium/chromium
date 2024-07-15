@@ -182,6 +182,14 @@ gfx::ColorSpace GetColorSpaceFromEdid(const display::EdidParser& edid_parser) {
                               gfx::ColorSpace::TransferID::HLG)) {
       transfer_id = gfx::ColorSpace::TransferID::HLG;
     }
+    // If we reach here: CDB has {BT2020,RGB} or {BT2020,NCL},
+    // but HDR Static Metadata Data Block does not contain PQ.
+    // transfer == INVALID
+  } else if (base::Contains(edid_parser.supported_color_primary_matrix_ids(),
+                            EdidParser::PrimaryMatrixPair(
+                                gfx::ColorSpace::PrimaryID::P3,
+                                gfx::ColorSpace::MatrixID::RGB))) {
+    return gfx::ColorSpace::CreateDisplayP3D65();
   } else if (gamma == 2.2f) {
     transfer_id = gfx::ColorSpace::TransferID::GAMMA22;
   } else if (gamma == 2.4f) {
