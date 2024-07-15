@@ -508,8 +508,8 @@ void ChromeRenderFrameObserver::RequestBitmapForContextNode(
   std::move(callback).Run(image);
 }
 
-void ChromeRenderFrameObserver::RequestBitmapForContextNodeWithBoundsDiagnostic(
-    RequestBitmapForContextNodeWithBoundsDiagnosticCallback callback) {
+void ChromeRenderFrameObserver::RequestBitmapForContextNodeWithBoundsHint(
+    RequestBitmapForContextNodeWithBoundsHintCallback callback) {
   WebNode context_node = render_frame()->GetWebFrame()->ContextMenuImageNode();
   SkBitmap image;
   gfx::Rect bounds;
@@ -524,8 +524,8 @@ void ChromeRenderFrameObserver::RequestBitmapForContextNodeWithBoundsDiagnostic(
   std::move(callback).Run(image, bounds);
 }
 
-void ChromeRenderFrameObserver::RequestBoundsForAllImagesDiagnostic(
-    RequestBoundsForAllImagesDiagnosticCallback callback) {
+void ChromeRenderFrameObserver::RequestBoundsHintForAllImages(
+    RequestBoundsHintForAllImagesCallback callback) {
   std::vector<blink::WebElement> image_elements;
   std::vector<gfx::Rect> all_bounds;
   const blink::WebDocument doc = render_frame()->GetWebFrame()->GetDocument();

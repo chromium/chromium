@@ -1083,7 +1083,7 @@ void LensOverlayController::FetchViewportImageBoundingBoxes(
   // there's either a connection error or a response.
   auto* frame = chrome_render_frame.get();
 
-  frame->RequestBoundsForAllImagesDiagnostic(base::BindOnce(
+  frame->RequestBoundsHintForAllImages(base::BindOnce(
       &LensOverlayController::DidCaptureScreenshot, weak_factory_.GetWeakPtr(),
       std::move(chrome_render_frame), ++screenshot_attempt_id_, bitmap));
 }

@@ -520,7 +520,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void ExecuteMediaPlayerActionAtLocation(
       const gfx::Point&,
       const blink::mojom::MediaPlayerAction& action) override;
-  void RequestVideoFrameAtWithBoundsDiagnostics(
+  void RequestVideoFrameAtWithBoundsHint(
       const gfx::Point& viewport_position,
       const gfx::Size& max_size,
       int max_area,

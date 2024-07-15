@@ -4349,7 +4349,7 @@ void RenderViewContextMenu::ExecSearchLensForImage(bool is_image_translate) {
     // there's either a connection error or a response.
     auto* frame = chrome_render_frame.get();
 
-    frame->RequestBitmapForContextNodeWithBoundsDiagnostic(base::BindOnce(
+    frame->RequestBitmapForContextNodeWithBoundsHint(base::BindOnce(
         &RenderViewContextMenu::OpenLensOverlayWithPreselectedRegion,
         weak_pointer_factory_.GetWeakPtr(), std::move(chrome_render_frame),
         tab_bounds, view_bounds, device_scale_factor));
@@ -4516,7 +4516,7 @@ void RenderViewContextMenu::ExecSearchForVideoFrame() {
     return;
   }
 
-  frame_host->RequestVideoFrameAtWithBoundsDiagnostics(
+  frame_host->RequestVideoFrameAtWithBoundsHint(
       gfx::Point(params_.x, params_.y),
       gfx::Size(lens::features::GetMaxPixelsForImageSearch(),
                 lens::features::GetMaxPixelsForImageSearch()),

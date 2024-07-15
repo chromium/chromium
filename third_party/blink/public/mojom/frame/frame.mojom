@@ -935,9 +935,9 @@ interface LocalFrame {
   // their correlation with the bounds of the video frame as displayed in the
   // presentation layer. The returned bounds are also not guaranteed to
   // correspond to the result of returned video frame.
-  RequestVideoFrameAtWithBoundsDiagnostics(gfx.mojom.Point location,
-                                           gfx.mojom.Size max_size,
-                                           int32 max_area)
+  RequestVideoFrameAtWithBoundsHint(gfx.mojom.Point location,
+                                    gfx.mojom.Size max_size,
+                                    int32 max_area)
       => (skia.mojom.BitmapN32? bitmap, gfx.mojom.Rect bounds);
 
   // Tells the renderer to perform the given action on the plugin location at

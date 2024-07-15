@@ -124,11 +124,11 @@ class LocalFrameMojoHandler
   void BeforeUnload(bool is_reload, BeforeUnloadCallback callback) final;
   void MediaPlayerActionAt(const gfx::Point& window_point,
                            mojom::blink::MediaPlayerActionPtr action) final;
-  void RequestVideoFrameAtWithBoundsDiagnostics(
+  void RequestVideoFrameAtWithBoundsHint(
       const gfx::Point& window_point,
       const gfx::Size& max_size,
       int max_area,
-      RequestVideoFrameAtWithBoundsDiagnosticsCallback callback) final;
+      RequestVideoFrameAtWithBoundsHintCallback callback) final;
   void AdvanceFocusInFrame(
       mojom::blink::FocusType focus_type,
       const std::optional<RemoteFrameToken>& source_frame_token) final;

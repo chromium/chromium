@@ -3583,7 +3583,7 @@ void LocalFrame::MediaPlayerActionAtViewportPoint(
   }
 }
 
-void LocalFrame::RequestVideoFrameAtWithBoundsDiagnostics(
+void LocalFrame::RequestVideoFrameAtWithBoundsHint(
     const gfx::Point& viewport_position,
     const gfx::Size& max_size,
     int max_area,

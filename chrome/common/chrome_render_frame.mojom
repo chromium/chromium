@@ -41,7 +41,7 @@ interface ChromeRenderFrame {
   // correlation with the bounds of the image as displayed in the presentation
   // layer. The returned bounds are also not guaranteed to correspond to the
   // result of returned image.
-  RequestBitmapForContextNodeWithBoundsDiagnostic()
+  RequestBitmapForContextNodeWithBoundsHint()
       => (skia.mojom.BitmapN32? bitmap, gfx.mojom.Rect bounds);
 
   // Requests the bounds of all images found in the DOM of the render frame.
@@ -52,7 +52,7 @@ interface ChromeRenderFrame {
   // presentation layer. The returned bounds are also not guaranteed to
   // correspond to the result of calling RequestBitmapForContextNode() on each
   // image.
-  RequestBoundsForAllImagesDiagnostic() => (array<gfx.mojom.Rect> all_bounds);
+  RequestBoundsHintForAllImages() => (array<gfx.mojom.Rect> all_bounds);
 
   // Requests an encoded image selected by the most recently opened context
   // menu. The encoding format is specified as a parameter. If no image is

@@ -914,7 +914,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // their correlation with the bounds of the video frame as displayed in the
   // presentation layer. The returned bounds are also not guaranteed to
   // correspond to the result of returned video frame.
-  virtual void RequestVideoFrameAtWithBoundsDiagnostics(
+  virtual void RequestVideoFrameAtWithBoundsHint(
       const gfx::Point& location,
       const gfx::Size& max_size,
       int max_area,

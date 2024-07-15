@@ -101,11 +101,10 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
       RequestImageForContextNodeCallback callback) override;
   void RequestBitmapForContextNode(
       RequestBitmapForContextNodeCallback callback) override;
-  void RequestBitmapForContextNodeWithBoundsDiagnostic(
-      RequestBitmapForContextNodeWithBoundsDiagnosticCallback callback)
-      override;
-  void RequestBoundsForAllImagesDiagnostic(
-      RequestBoundsForAllImagesDiagnosticCallback callback) override;
+  void RequestBitmapForContextNodeWithBoundsHint(
+      RequestBitmapForContextNodeWithBoundsHintCallback callback) override;
+  void RequestBoundsHintForAllImages(
+      RequestBoundsHintForAllImagesCallback callback) override;
   void FindImageElements(blink::WebElement element,
                          std::vector<blink::WebElement>& images);
   void RequestReloadImageForContextNode() override;

@@ -741,7 +741,7 @@ class CORE_EXPORT LocalFrame final
       const gfx::Point& viewport_position,
       const blink::mojom::blink::MediaPlayerActionType type,
       bool enable);
-  void RequestVideoFrameAtWithBoundsDiagnostics(
+  void RequestVideoFrameAtWithBoundsHint(
       const gfx::Point& viewport_position,
       const gfx::Size& max_size,
       int max_area,

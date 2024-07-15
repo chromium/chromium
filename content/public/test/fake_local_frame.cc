@@ -86,11 +86,11 @@ void FakeLocalFrame::MediaPlayerActionAt(
     const gfx::Point& location,
     blink::mojom::MediaPlayerActionPtr action) {}
 
-void FakeLocalFrame::RequestVideoFrameAtWithBoundsDiagnostics(
+void FakeLocalFrame::RequestVideoFrameAtWithBoundsHint(
     const gfx::Point& window_point,
     const gfx::Size& max_size,
     int max_area,
-    RequestVideoFrameAtWithBoundsDiagnosticsCallback callback) {}
+    RequestVideoFrameAtWithBoundsHintCallback callback) {}
 
 void FakeLocalFrame::PluginActionAt(const gfx::Point& location,
                                     blink::mojom::PluginActionType action) {}
