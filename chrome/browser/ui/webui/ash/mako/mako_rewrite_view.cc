@@ -78,7 +78,7 @@ MakoRewriteView::MakoRewriteView(WebUIContentsWrapper* contents_wrapper,
                             contents_wrapper->GetWeakPtr(),
                             std::nullopt,
                             views::BubbleBorder::TOP_RIGHT,
-                            false),
+                            true),
       caret_bounds_(caret_bounds) {
   set_has_parent(false);
   set_corner_radius(kMakoRewriteCornerRadius);
