@@ -115,7 +115,11 @@ class LegacyOutputAdapter:
   def _StdoutProcessLine(self, line):
     if not line.startswith(self.ANNOTATOR_PREFIX_SUFIX):
       # Pass through any non-engine text
-      basic_logger.log(self._current_log_level, line)
+      is_urlish = re.match(r'^http[s]?://\S+$', line)
+      if is_urlish:
+        logging.log(self._current_log_level, line)
+      else:
+        basic_logger.log(self._current_log_level, line)
 
   def _StepNameProcessLine(self, line):
     if line.startswith(self.SEED_STEP_TEXT):
@@ -123,9 +127,7 @@ class LegacyOutputAdapter:
       logging.log(self._current_log_level,
                   '\n[cyan]Running: ' + self._current_step_name + '[/]')
       return
-    if not line.startswith(self.ANNOTATOR_PREFIX_SUFIX):
-      # Pass through any non-engine text
-      basic_logger.log(self._current_log_level, line)
+    self._StdoutProcessLine(line)
 
   def _ProcessTriggerLine(self, line):
     if line.startswith(self.SEED_STEP_TEXT + self.TRIGGER_STEP_PREFIX):
