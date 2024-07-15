@@ -2750,6 +2750,8 @@ Called by update_extension_histograms.py.-->
   <int value="1891" label="PERMISSIONS_REMOVESITEACCESSREQUEST"/>
   <int value="1892" label="ACCESSIBILITY_PRIVATE_SETCHROMEVOXFOCUS"/>
   <int value="1893" label="PASSWORDSPRIVATE_DELETEALLPASSWORDMANAGERDATA"/>
+  <int value="1894"
+      label="DEVELOPERPRIVATE_DISMISSMV2DEPRECATIONNOTICEFOREXTENSION"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">

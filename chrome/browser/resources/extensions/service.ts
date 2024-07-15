@@ -510,11 +510,8 @@ export class Service implements ServiceInterface {
         {isMv2DeprecationWarningDismissed: true});
   }
 
-  dismissMv2DeprecationNoticeForExtension(id: string) {
-    chrome.developerPrivate.updateExtensionConfiguration({
-      extensionId: id,
-      acknowledgeMv2DeprecationNotice: true,
-    });
+  dismissMv2DeprecationNoticeForExtension(id: string): Promise<void> {
+    return chrome.developerPrivate.dismissMv2DeprecationNoticeForExtension(id);
   }
 
   static getInstance(): ServiceInterface {

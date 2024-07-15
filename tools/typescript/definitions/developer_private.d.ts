@@ -287,7 +287,6 @@ declare global {
         hostAccess?: HostAccess;
         showAccessRequestsInToolbar?: boolean;
         acknowledgeSafetyCheckWarningReason?: SafetyCheckWarningReason;
-        acknowledgeMv2DeprecationNotice?: boolean;
         pinnedToToolbar?: boolean;
       }
 
@@ -506,6 +505,8 @@ declare global {
           site: string, updates: ExtensionSiteAccessUpdate[]): Promise<void>;
       export function dismissSafetyHubExtensionsMenuNotification(): void;
       export function dismissMv2DeprecationPanel(): void;
+      export function dismissMv2DeprecationNoticeForExtension(
+          extensionId: string): Promise<void>;
 
       export const onItemStateChanged: ChromeEvent<(data: EventData) => void>;
       export const onProfileStateChanged:

@@ -3161,10 +3161,12 @@ INSTANTIATE_TEST_SUITE_P(
     DeveloperPrivateApiSupervisedUserUnitTest,
     testing::Bool());
 
-class DeveloperPrivateApiWithMV2DeprecationUnitTest
+// Test suite for cases where the user is in the  MV2 deprecation "warning"
+// experiment phase.
+class DeveloperPrivateApiWithMV2DeprecationWarningUnitTest
     : public DeveloperPrivateApiUnitTest {
  public:
-  DeveloperPrivateApiWithMV2DeprecationUnitTest() {
+  DeveloperPrivateApiWithMV2DeprecationWarningUnitTest() {
     feature_list_.InitAndEnableFeature(
         extensions_features::kExtensionManifestV2DeprecationWarning);
   }
@@ -3173,8 +3175,23 @@ class DeveloperPrivateApiWithMV2DeprecationUnitTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(DeveloperPrivateApiWithMV2DeprecationUnitTest,
-       TestAcknowledgingAGivenExtension) {
+// Test suite for cases where the user is in the  MV2 deprecation "disabled"
+// experiment phase.
+class DeveloperPrivateApiWithMV2DeprecationDisabledUnitTest
+    : public DeveloperPrivateApiUnitTest {
+ public:
+  DeveloperPrivateApiWithMV2DeprecationDisabledUnitTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionManifestV2Disabled);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(DeveloperPrivateApiWithMV2DeprecationWarningUnitTest,
+       TestAcknowledgingAnExtension) {
+  // Add an extension that is affected by the MV2 deprecation.
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("ext").SetManifestVersion(2).Build();
   service()->AddExtension(extension.get());
@@ -3184,22 +3201,48 @@ TEST_F(DeveloperPrivateApiWithMV2DeprecationUnitTest,
   EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
   EXPECT_FALSE(experiment_manager->DidUserAcknowledgeNotice(extension->id()));
 
-  auto update_function = base::MakeRefCounted<
-      api::DeveloperPrivateUpdateExtensionConfigurationFunction>();
-  update_function->set_source_context_type(mojom::ContextType::kWebUi);
-
   base::Value::List args;
-  args.Append(base::Value::Dict()
-                  .Set("extensionId", extension->id())
-                  .Set("acknowledgeMv2DeprecationNotice", true));
+  args.Append(extension->id());
 
-  EXPECT_TRUE(RunFunction(update_function, args));
+  // Dismiss the extension's notice.
+  auto dismiss_notice_function = base::MakeRefCounted<
+      api::DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction>();
+  dismiss_notice_function->set_source_context_type(mojom::ContextType::kWebUi);
+  EXPECT_TRUE(RunFunction(dismiss_notice_function, args));
 
+  // Extension's notice should be marked as acknowledged.
   EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
   EXPECT_TRUE(experiment_manager->DidUserAcknowledgeNotice(extension->id()));
 }
 
-TEST_F(DeveloperPrivateApiWithMV2DeprecationUnitTest,
+TEST_F(DeveloperPrivateApiWithMV2DeprecationWarningUnitTest,
+       TestAcknowledgingANonAffectedExtension) {
+  // Add an extension that is not affected by the MV2 deprecation.
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("ext").SetManifestVersion(3).Build();
+  service()->AddExtension(extension.get());
+
+  std::string args = base::StringPrintf(R"(["%s"])", extension->id().c_str());
+  auto dismiss_notice_function = base::MakeRefCounted<
+      api::DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction>();
+  dismiss_notice_function->set_source_context_type(mojom::ContextType::kWebUi);
+
+  // Cannot dismiss an extension's notice whe the extension is not affected by
+  // the MV2 deprecation.
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      dismiss_notice_function, args, browser()->profile());
+  EXPECT_EQ(error,
+            ErrorUtils::FormatErrorMessage(
+                "Extension with ID '*' is not affected by the MV2 deprecation.",
+                extension->id()));
+
+  // Extension notice should not be marked as acknowledged.
+  ManifestV2ExperimentManager* experiment_manager =
+      ManifestV2ExperimentManager::Get(browser_context());
+  EXPECT_FALSE(experiment_manager->DidUserAcknowledgeNotice(extension->id()));
+}
+
+TEST_F(DeveloperPrivateApiWithMV2DeprecationWarningUnitTest,
        TestAcknowledgingWarningGlobally) {
   ManifestV2ExperimentManager* experiment_manager =
       ManifestV2ExperimentManager::Get(browser_context());
@@ -3215,6 +3258,44 @@ TEST_F(DeveloperPrivateApiWithMV2DeprecationUnitTest,
   EXPECT_TRUE(RunFunction(update_profile_function, args));
 
   EXPECT_TRUE(experiment_manager->DidUserAcknowledgeWarningGlobally());
+}
+
+TEST_F(DeveloperPrivateApiWithMV2DeprecationDisabledUnitTest,
+       TestAcknowledgingAnExtension) {
+  // Add an extension that is affected by the MV2 deprecation.
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("ext").SetManifestVersion(2).Build();
+  service()->AddExtension(extension.get());
+
+  ManifestV2ExperimentManager* experiment_manager =
+      ManifestV2ExperimentManager::Get(browser_context());
+  EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
+  EXPECT_FALSE(experiment_manager->DidUserAcknowledgeNotice(extension->id()));
+
+  base::Value::List args;
+  args.Append(extension->id());
+
+  // Call the dismiss notice function, and cancel the dismissal.
+  auto dismiss_notice_function = base::MakeRefCounted<
+      api::DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction>();
+  dismiss_notice_function->set_source_context_type(mojom::ContextType::kWebUi);
+  dismiss_notice_function->accept_bubble_for_testing(false);
+  EXPECT_TRUE(RunFunction(dismiss_notice_function, args));
+
+  // Extension notice should NOT be marked as acknowledged.
+  EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
+  EXPECT_FALSE(experiment_manager->DidUserAcknowledgeNotice(extension->id()));
+
+  // Call the dismiss notice function, and accept the dismissal.
+  dismiss_notice_function = base::MakeRefCounted<
+      api::DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction>();
+  dismiss_notice_function->set_source_context_type(mojom::ContextType::kWebUi);
+  dismiss_notice_function->accept_bubble_for_testing(true);
+  EXPECT_TRUE(RunFunction(dismiss_notice_function, args));
+
+  // Extension's notice should be marked as acknowledged.
+  EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
+  EXPECT_TRUE(experiment_manager->DidUserAcknowledgeNotice(extension->id()));
 }
 
 }  // namespace extensions
