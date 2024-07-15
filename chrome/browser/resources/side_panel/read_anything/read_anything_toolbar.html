@@ -120,6 +120,10 @@
   .more-options-icon {
     margin: 8px 6px;
   }
+
+  #more-options-menu-dialog::part(dialog) {
+    min-width: 92px;
+  }
 </style>
 <div id="toolbarContainer" class="toolbar-container" role="toolbar"
     aria-label$="[[getToolbarAriaLabel_()]]"
@@ -260,7 +264,8 @@
 
   <cr-lazy-render id="moreOptionsMenu">
     <template>
-      <cr-action-menu on-keydown="onToolbarKeyDown_"
+      <cr-action-menu id="more-options-menu-dialog"
+          on-keydown="onToolbarKeyDown_"
           role-description="$i18n{menu}">
         <template is="dom-repeat" items="[[moreOptionsButtons_]]"
             inital-count="0">

@@ -648,11 +648,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   private onMoreOptionsClick_(event: MouseEvent) {
     const menu = this.$.moreOptionsMenu.get();
-    // The min width of the dialog can't be lowered so center the buttons if
-    // there are only 3 in the more options menu. There's an extra wrapper child
-    // in the menu so we check for 4 children, which indicates 3 buttons.
-    (menu.firstChild as HTMLElement).style.marginLeft =
-        (menu.children.length === 4) ? '16px' : '6px';
     openMenu(menu, event.target as HTMLElement);
   }
 
@@ -944,11 +939,13 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     //  if we've reached the end or beginning.
     let newIndex = this.getNewIndex_(e, focusableElements);
     const direction = e.key === 'ArrowRight' ? 1 : -1;
-    // Skip focusing the button itself and go directly to the children. We still
-    // need this button in the list of focusable elements because it can become
-    // focused by tabbing while the menu is open and we want the arrow key
-    // behavior to continue smoothly.
-    if (focusableElements[newIndex].id === 'more') {
+    // If the next item has overflowed, skip focusing the more options button
+    // itself and go directly to the children. We still need this button in the
+    // list of focusable elements because it can become focused by tabbing while
+    // the menu is open and we want the arrow key behavior to continue smoothly.
+    const elementToFocus = focusableElements[newIndex];
+    if (elementToFocus.id === 'more' ||
+        elementToFocus.classList.contains(moreOptionsClass.slice(1))) {
       const moreOptionsRendered = this.$.moreOptionsMenu.getIfExists();
       // If the more options menu has not been rendered yet, render it and wait
       // for it to be drawn so we can get the number of elements in the menu.
@@ -963,7 +960,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         });
         return;
       }
-      newIndex += direction;
     }
     this.updateFocus_(focusableElements, newIndex);
   }
@@ -987,20 +983,26 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
 
   private updateFocus_(focusableElements: HTMLElement[], newIndex: number) {
-    // Close the overflow menu if the next button is not in the menu.
     const elementToFocus = focusableElements[newIndex];
     assert(elementToFocus, 'no element to focus');
-    if (elementToFocus.className !== moreOptionsClass.slice(1)) {
-      this.$.moreOptionsMenu.getIfExists()?.close();
-    }
 
     // When the user tabs away from the toolbar and then tabs back, we want to
     // focus the last focused item in the toolbar
     focusableElements.forEach(el => {
       el.tabIndex = -1;
     });
-    elementToFocus.tabIndex = 0;
     this.currentFocusId_ = elementToFocus.id;
+
+    // If a more options button is focused and we tab away, we need to tab
+    // back to the more options button instead of the item inside the menu since
+    // the menu closes when we tab away.
+    if (elementToFocus.classList.contains(moreOptionsClass.slice(1))) {
+      this.$.more.tabIndex = 0;
+    } else {
+      elementToFocus.tabIndex = 0;
+      // Close the overflow menu if the next button is not in the menu.
+      this.$.moreOptionsMenu.getIfExists()?.close();
+    }
 
     // Wait for the next animation frame for the overflow menu to show or hide.
     requestAnimationFrame(() => {
