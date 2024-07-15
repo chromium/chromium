@@ -605,4 +605,36 @@ suite('SelectionOverlay', function() {
     await testBrowserProxy.handler.whenCalled('closeSearchBubble');
     assertEquals(1, testBrowserProxy.handler.getCallCount('closeSearchBubble'));
   });
+  test(
+      'verify that completing a drag calls closePreselectionBubble',
+      async () => {
+        const imageBounds = getImageBoundingRect(selectionOverlayElement);
+        const startPointInsideOverlay = {
+          x: imageBounds.left + 10,
+          y: imageBounds.top + 10,
+        };
+        const endPointAboveOverlay = {
+          x: imageBounds.left + 100,
+          y: imageBounds.top - 30,
+        };
+
+        await simulateDrag(
+            selectionOverlayElement, startPointInsideOverlay,
+            endPointAboveOverlay);
+
+        await testBrowserProxy.handler.whenCalled('closePreselectionBubble');
+        assertEquals(
+            1,
+            testBrowserProxy.handler.getCallCount('closePreselectionBubble'));
+      });
+  test(`verify that a tap calls closePreselectionBubble`, async () => {
+    const imageBounds = getImageBoundingRect(selectionOverlayElement);
+    await simulateClick(
+        selectionOverlayElement,
+        {x: imageBounds.left + 10, y: imageBounds.top + 10});
+
+    await testBrowserProxy.handler.whenCalled('closePreselectionBubble');
+    assertEquals(
+        1, testBrowserProxy.handler.getCallCount('closePreselectionBubble'));
+  });
 });

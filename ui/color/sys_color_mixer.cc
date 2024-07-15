@@ -199,10 +199,12 @@ void AddSysColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
   // Inverse.
   mixer[kColorSysInversePrimary] = {dark_mode ? kColorRefPrimary40
                                               : kColorRefPrimary80};
-  mixer[kColorSysInverseSurface] = {dark_mode ? kColorRefNeutral90
-                                              : kColorRefNeutral20};
   mixer[kColorSysInverseOnSurface] = {dark_mode ? kColorRefNeutral10
                                                 : kColorRefNeutral95};
+  mixer[kColorSysInverseSurface] = {dark_mode ? kColorRefNeutral90
+                                              : kColorRefNeutral20};
+  mixer[kColorSysInverseSurfacePrimary] = {dark_mode ? kColorRefPrimary95
+                                                     : kColorRefPrimary20};
 
   // Surfaces.
   mixer[kColorSysSurface] = {dark_mode ? kColorRefNeutral10

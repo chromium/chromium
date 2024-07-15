@@ -509,6 +509,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         'selection-overlay-clicked', {bubbles: true, composed: true}));
     this.addDragListeners();
     BrowserProxyImpl.getInstance().handler.closeSearchBubble();
+    BrowserProxyImpl.getInstance().handler.closePreselectionBubble();
 
     this.currentGesture = {
       state: GestureState.STARTING,

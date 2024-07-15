@@ -65,6 +65,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -403,6 +404,10 @@ void LensOverlayController::ShowUI(
   // Setup observer to be notified of side panel opens and closes.
   side_panel_state_observer_.Observe(side_panel_coordinator_);
 
+  if (auto* helper = OmniboxTabHelper::FromWebContents(tab_->GetContents())) {
+    omnibox_tab_helper_observer_.Observe(helper);
+  }
+
   if (side_panel_coordinator_->IsSidePanelShowing()) {
     // Close the currently opened side panel and postpone taking the screenshot
     // until OnSidePanelDidClose
@@ -423,6 +428,7 @@ void LensOverlayController::ShowUI(
   ukm::builders::Lens_Overlay_Invoked(source_id)
       .SetSource(static_cast<int64_t>(invocation_source))
       .Record(ukm::UkmRecorder::Get());
+  ShowPreselectionBubble();
 }
 
 void LensOverlayController::CloseUIAsync(
@@ -1207,6 +1213,7 @@ void LensOverlayController::ShowOverlay() {
 void LensOverlayController::BackgroundUI() {
   RemoveBackgroundBlur();
   overlay_view_->SetVisible(false);
+  HidePreselectionBubble();
   tab_contents_observer_.reset();
   state_ = State::kBackground;
 
@@ -1241,6 +1248,9 @@ void LensOverlayController::CloseUIPart2(
 
   // Closes lens search bubble if it exists.
   CloseSearchBubble();
+
+  // Closes preselection toast if it exists.
+  ClosePreselectionBubble();
 
   // A permission prompt may be suspended if the overlay was showing when the
   // permission was queued. Restore the suspended prompt if possible.
@@ -1279,6 +1289,7 @@ void LensOverlayController::CloseUIPart2(
   overlay_view_ = nullptr;
 
   tab_contents_view_observer_.Reset();
+  omnibox_tab_helper_observer_.Reset();
   tab_contents_observer_.reset();
   side_panel_receiver_.reset();
   side_panel_page_.reset();
@@ -1422,6 +1433,22 @@ void LensOverlayController::OnViewBoundsChanged(views::View* observed_view) {
   overlay_view_->SetBoundsRect(bounds);
 }
 
+void LensOverlayController::OnWidgetDestroying(views::Widget* widget) {
+  preselection_widget_ = nullptr;
+}
+
+void LensOverlayController::OnOmniboxFocusChanged(
+    OmniboxFocusState state,
+    OmniboxFocusChangeReason reason) {
+  if (state_ == LensOverlayController::State::kOverlay) {
+    if (state == OMNIBOX_FOCUS_NONE) {
+      ShowPreselectionBubble();
+    } else {
+      HidePreselectionBubble();
+    }
+  }
+}
+
 const GURL& LensOverlayController::GetPageURL() const {
   // TODO(b/335234545): Return the page URL when appropriate.
   return GURL::EmptyGURL();
@@ -1533,10 +1560,16 @@ void LensOverlayController::TabForegrounded(tabs::TabInterface* tab) {
   // If the overlay was backgrounded, reshow the overlay view.
   if (state_ == State::kBackground) {
     ShowOverlay();
-    state_ = State::kOverlay;
+    state_ = (results_side_panel_coordinator_ &&
+              results_side_panel_coordinator_->IsEntryShowing())
+                 ? State::kOverlayAndResults
+                 : State::kOverlay;
 
     // Show after moving to kOverlay state.
     AddBackgroundBlur();
+    if (state_ != State::kOverlayAndResults) {
+      ShowPreselectionBubble();
+    }
   }
 }
 
@@ -1753,6 +1786,30 @@ void LensOverlayController::IssueTextSelectionRequestInner(
 
 void LensOverlayController::CloseSearchBubble() {
   search_bubble_controller_->Close();
+}
+
+void LensOverlayController::ClosePreselectionBubble() {
+  if (preselection_widget_) {
+    preselection_widget_->Close();
+    preselection_widget_ = nullptr;
+    preselection_widget_observer_.Reset();
+  }
+}
+
+void LensOverlayController::ShowPreselectionBubble() {
+  if (!preselection_widget_) {
+    preselection_widget_ = views::BubbleDialogDelegateView::CreateBubble(
+        std::make_unique<lens::LensPreselectionBubble>(
+            tab_->GetBrowserWindowInterface()->GetWebView()->parent()));
+    preselection_widget_observer_.Observe(preselection_widget_);
+  }
+  preselection_widget_->Show();
+}
+
+void LensOverlayController::HidePreselectionBubble() {
+  if (preselection_widget_) {
+    preselection_widget_->Hide();
+  }
 }
 
 void LensOverlayController::IssueSearchBoxRequest(
