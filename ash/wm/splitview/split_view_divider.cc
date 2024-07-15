@@ -136,6 +136,15 @@ class SplitViewDivider::SplitViewDividerWidget : public views::Widget {
     divider_view->SetPaneFocusAndFocusDefault();
     return true;
   }
+
+  // ui::ColorProviderSource:
+  ui::ColorProviderKey GetColorProviderKey() const override {
+    //  As the transient child of the topmost window, divider uses that window's
+    //  theme color. Override `GetColorProviderKey()` to let it use the system's
+    //  theme instead.
+    return ui::NativeTheme::GetInstanceForNativeUi()->GetColorProviderKey(
+        nullptr);
+  }
 };
 
 SplitViewDivider::SplitViewDivider(LayoutDividerController* controller)
