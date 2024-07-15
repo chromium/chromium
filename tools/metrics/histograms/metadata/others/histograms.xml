@@ -8500,7 +8500,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SiteIsolatedCodeCache.JS.WebUI.Behaviour"
-    enum="SiteIsolatedCodeCacheJSBehaviour" expires_after="2024-04-03">
+    enum="SiteIsolatedCodeCacheJSBehaviour" expires_after="2025-07-01">
   <owner>temao@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <summary>
