@@ -369,7 +369,7 @@ BASE_FEATURE(kSnapshotEvictedRootSurface,
 // UMAs.
 BASE_FEATURE(kShouldLogFrameQuadInfo,
              "ShouldLogFrameQuadInfo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, ClientResourceProvider will allow for the batching of
 // callbacks. So that the client can perform a series of individual releases,
