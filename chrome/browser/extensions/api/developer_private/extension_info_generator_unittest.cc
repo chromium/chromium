@@ -857,7 +857,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest,
        WithheldUrlsOverlappingWithContentScript) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
-          .AddPermissions({"*://example.com/*", "*://chromium.org/*"})
+          .AddHostPermissions({"*://example.com/*", "*://chromium.org/*"})
           .AddContentScript("script.js", {"*://example.com/foo"})
           .Build();
   {

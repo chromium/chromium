@@ -550,7 +550,7 @@ TEST_F(NotificationPermissionContextTest, ExtensionPermissionGranted) {
 
   scoped_refptr<const extensions::Extension> extension = RegisterExtension(
       extensions::ExtensionBuilder("Notification Permission Test")
-          .AddPermission("notifications")
+          .AddAPIPermission("notifications")
           .Build());
 
   ASSERT_TRUE(extension);
@@ -572,7 +572,7 @@ TEST_F(NotificationPermissionContextTest, ExtensionPermissionOverrideDenied) {
 
   scoped_refptr<const extensions::Extension> extension = RegisterExtension(
       extensions::ExtensionBuilder("Notification Permission Test")
-          .AddPermission("notifications")
+          .AddAPIPermission("notifications")
           .Build());
 
   ASSERT_TRUE(extension);

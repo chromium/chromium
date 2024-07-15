@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, ChromeExtensions) {
   extensions::ExtensionBuilder builder("test");
   builder.SetPath(temp_dir.GetPath())
       .SetVersion("1.0")
-      .AddPermission(kExtensionSite)
+      .AddHostPermission(kExtensionSite)
       .SetLocation(extensions::mojom::ManifestLocation::kExternalPolicyDownload)
       .SetManifestKey("web_accessible_resources", std::move(resources));
 

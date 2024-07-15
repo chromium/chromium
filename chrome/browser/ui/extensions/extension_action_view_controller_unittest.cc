@@ -145,7 +145,7 @@ class ExtensionActionViewControllerUnitTest : public BrowserWithTestWindowTest {
         extensions::ExtensionBuilder(name)
             .SetAction(action_type)
             .SetLocation(ManifestLocation::kInternal)
-            .AddPermissions(permissions)
+            .AddHostPermissions(permissions)
             .Build();
 
     if (!permissions.empty())

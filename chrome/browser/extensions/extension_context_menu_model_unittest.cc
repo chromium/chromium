@@ -1468,7 +1468,7 @@ TEST_F(ExtensionContextMenuModelTest,
   InitializeEmptyExtensionService();
 
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("extension").AddPermissions({"activeTab"}).Build();
+      ExtensionBuilder("extension").AddAPIPermission("activeTab").Build();
   InitializeAndAddExtension(*extension);
 
   // Navigate to a url that should have "customize by extension" site
@@ -1674,7 +1674,7 @@ TEST_F(ExtensionContextMenuModelTest,
   // Add an extension that wants access to a.com and b.com.
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
-          .AddPermissions({"*://a.com/*", "*://b.com/*"})
+          .AddHostPermissions({"*://a.com/*", "*://b.com/*"})
           .Build();
   InitializeAndAddExtension(*extension);
 

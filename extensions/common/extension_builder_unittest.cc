@@ -41,24 +41,6 @@ TEST(ExtensionBuilderTest, Basic) {
   }
 }
 
-TEST(ExtensionBuilderTest, Permissions) {
-  {
-    scoped_refptr<const Extension> extension =
-        ExtensionBuilder("no permissions").Build();
-    EXPECT_TRUE(extension->permissions_data()->active_permissions().IsEmpty());
-  }
-  {
-    scoped_refptr<const Extension> extension =
-        ExtensionBuilder("permissions")
-            .AddPermission("storage")
-            .AddPermissions({"alarms", "idle"})
-            .Build();
-    EXPECT_TRUE(extension->permissions_data()->HasAPIPermission("storage"));
-    EXPECT_TRUE(extension->permissions_data()->HasAPIPermission("alarms"));
-    EXPECT_TRUE(extension->permissions_data()->HasAPIPermission("idle"));
-  }
-}
-
 TEST(ExtensionBuilderTest, AddAPIPermission) {
   // MV2 API permissions.
   {
@@ -261,28 +243,6 @@ TEST(ExtensionBuilderTest, AddOptionalHostPermission) {
         GURL("http://three.example")));
     EXPECT_FALSE(optional_permissions.HasExplicitAccessToOrigin(
         GURL("http://four.example")));
-  }
-}
-
-TEST(ExtensionBuilderTest, OptionalPermissions) {
-  {
-    scoped_refptr<const Extension> extension =
-        ExtensionBuilder("no optional permissions").Build();
-    EXPECT_TRUE(
-        PermissionsParser::GetOptionalPermissions(extension.get()).IsEmpty());
-  }
-  {
-    scoped_refptr<const Extension> extension =
-        ExtensionBuilder("permissions")
-            .AddOptionalPermission("storage")
-            .AddOptionalPermissions({"alarms", "idle"})
-            .Build();
-    EXPECT_TRUE(PermissionsParser::GetOptionalPermissions(extension.get())
-                    .HasAPIPermission("storage"));
-    EXPECT_TRUE(PermissionsParser::GetOptionalPermissions(extension.get())
-                    .HasAPIPermission("alarms"));
-    EXPECT_TRUE(PermissionsParser::GetOptionalPermissions(extension.get())
-                    .HasAPIPermission("idle"));
   }
 }
 

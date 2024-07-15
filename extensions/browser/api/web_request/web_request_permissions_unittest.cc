@@ -490,7 +490,9 @@ TEST_F(ExtensionWebRequestPermissionsTest,
   // Set up the extension to have access to kGoogleCom and withheld access to
   // kExampleCom.
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("ext").AddPermissions({kGoogleCom, kExampleCom}).Build();
+      ExtensionBuilder("ext")
+          .AddHostPermissions({kGoogleCom, kExampleCom})
+          .Build();
 
   URLPatternSet kActivePatternSet(
       {URLPattern(Extension::kValidHostPermissionSchemes, kGoogleCom)});

@@ -139,7 +139,7 @@ class LoginScreenExtensionUiHandlerUnittest : public testing::Test {
                      /*name=*/"LoginScreenUi test extension")
                      .SetID(kAllowlistedExtensionID1)
                      .SetLocation(ManifestLocation::kExternalPolicy)
-                     .AddPermission(kPermissionName)
+                     .AddAPIPermission(kPermissionName)
                      .AddFlags(extensions::Extension::FOR_LOGIN_SCREEN)
                      .Build();
     extension_registry_->AddEnabled(extension_);
@@ -303,7 +303,7 @@ TEST_F(LoginScreenExtensionUiHandlerUnittest, OnlyOneWindow) {
       extensions::ExtensionBuilder(/*name=*/"Imprivata")
           .SetID(kAllowlistedExtensionID2)
           .SetLocation(ManifestLocation::kExternalPolicy)
-          .AddPermission(kPermissionName)
+          .AddAPIPermission(kPermissionName)
           .AddFlags(extensions::Extension::FOR_LOGIN_SCREEN)
           .Build();
   extension_registry_->AddEnabled(other_extension);
@@ -382,7 +382,7 @@ TEST_F(LoginScreenExtensionUiHandlerDeathUnittest, NotAllowed) {
       extensions::ExtensionBuilder(/*name=*/"other profile")
           .SetID(kAllowlistedExtensionID2)  // allowlisted
           .SetLocation(ManifestLocation::kExternalPolicy)
-          .AddPermission(kPermissionName)
+          .AddAPIPermission(kPermissionName)
           .AddFlags(extensions::Extension::FOR_LOGIN_SCREEN)
           .Build();
 

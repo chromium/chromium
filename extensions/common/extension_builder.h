@@ -87,19 +87,6 @@ class ExtensionBuilder {
   //////////////////////////////////////////////////////////////////////////////
   // Utility methods for use with aided manifest construction.
 
-  // DEPRECATED. Please use one of AddHostPermission() or AddAPIPermission()
-  // below.
-  // TODO(https://crbug.com/40804030): Remove these methods.
-  ExtensionBuilder& AddPermission(const std::string& permission);
-  ExtensionBuilder& AddPermissions(const std::vector<std::string>& permissions);
-
-  // DEPRECATED. Please use one of AddOptionalHostPermission() or
-  // AddOptionalAPIPermission() below.
-  // TODO(https://crbug.com/40804030): Remove these methods.
-  ExtensionBuilder& AddOptionalPermission(const std::string& permission);
-  ExtensionBuilder& AddOptionalPermissions(
-      const std::vector<std::string>& permissions);
-
   // Adds one or more API permissions to the extension.
   ExtensionBuilder& AddAPIPermission(const std::string& permission);
   ExtensionBuilder& AddAPIPermissions(

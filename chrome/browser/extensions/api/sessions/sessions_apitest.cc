@@ -190,7 +190,7 @@ void ExtensionSessionsTest::SetUpOnMainThread() {
 
 void ExtensionSessionsTest::CreateTestExtension() {
   extension_ = ExtensionBuilder("Test")
-                   .AddPermissions({"sessions", "tabs"})
+                   .AddAPIPermissions({"sessions", "tabs"})
                    .SetLocation(mojom::ManifestLocation::kInternal)
                    .Build();
 }

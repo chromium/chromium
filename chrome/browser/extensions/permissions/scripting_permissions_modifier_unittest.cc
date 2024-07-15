@@ -108,7 +108,7 @@ TEST_F(ScriptingPermissionsModifierUnitTest, GrantAndWithholdHostPermissions) {
     SCOPED_TRACE(test_case_name);
     scoped_refptr<const Extension> extension =
         ExtensionBuilder(test_case_name)
-            .AddPermissions(test_case)
+            .AddHostPermissions(test_case)
             .AddContentScript("foo.js", test_case)
             .SetLocation(ManifestLocation::kInternal)
             .Build();
@@ -156,7 +156,7 @@ TEST_F(ScriptingPermissionsModifierUnitTest, WithholdHostPermissionsOnInstall) {
   constexpr char kHostChromium[] = "https://chromium.org/*";
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("a")
-          .AddPermissions({kHostGoogle, kHostChromium})
+          .AddHostPermissions({kHostGoogle, kHostChromium})
           .AddContentScript("foo.js", {kHostGoogle})
           .SetLocation(ManifestLocation::kInternal)
           .AddFlags(Extension::WITHHOLD_PERMISSIONS)
@@ -607,7 +607,8 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
 
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("test")
-          .AddPermissions({"https://example.com/*", "https://chromium.org/*"})
+          .AddHostPermissions(
+              {"https://example.com/*", "https://chromium.org/*"})
           .Build();
   ScriptingPermissionsModifier modifier(profile(), extension.get());
 

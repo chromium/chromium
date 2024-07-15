@@ -50,7 +50,7 @@ class PageCaptureApiUnitTest : public ExtensionServiceTestBase {
 // API call will result in an error.
 TEST_F(PageCaptureApiUnitTest, PageNavigationDuringSaveAsMHTML) {
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("Page Capture").AddPermission("pageCapture").Build();
+      ExtensionBuilder("Page Capture").AddAPIPermission("pageCapture").Build();
   auto function = base::MakeRefCounted<PageCaptureSaveAsMHTMLFunction>();
   function->set_extension(extension.get());
 

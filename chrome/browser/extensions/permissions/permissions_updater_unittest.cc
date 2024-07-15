@@ -80,7 +80,8 @@ TEST_F(PermissionsUpdaterTest, GrantAndRevokeOptionalPermissions) {
   // Load the test extension.
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("permissions")
-          .AddPermissions({"management", "http://a.com/*"})
+          .AddAPIPermission("management")
+          .AddHostPermission("http://a.com/*")
           .SetManifestKey("optional_permissions",
                           base::Value::List()
                               .Append("http://*.c.com/*")
@@ -559,7 +560,7 @@ TEST_F(PermissionsUpdaterTest, ChromeFaviconIsNotARevokableHost) {
   {
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("favicon extension")
-            .AddPermissions({"https://example.com/*", "chrome://favicon/*"})
+            .AddHostPermissions({"https://example.com/*", "chrome://favicon/*"})
             .Build();
     URLPattern example_com_pattern(Extension::kValidHostPermissionSchemes,
                                    "https://example.com/*");

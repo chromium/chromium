@@ -638,7 +638,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder("Extension name")
             .SetID(kExtensionId)
-            .AddPermission(test.pattern)
+            .AddHostPermission(test.pattern)
             .Build();
     extensions::ExtensionRegistry::Get(browser_context())
         ->AddEnabled(extension);
@@ -660,7 +660,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder("Extension name")
             .SetID(kExtensionId)
-            .AddPermission(test.pattern)
+            .AddHostPermission(test.pattern)
             .Build();
     extensions::ExtensionRegistry::Get(browser_context())
         ->AddEnabled(extension);

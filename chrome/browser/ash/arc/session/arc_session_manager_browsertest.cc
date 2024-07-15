@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(ArcSessionManagerTest, ArcDisabledInLockedFullscreen) {
   scoped_refptr<const extensions::Extension> extension(
       extensions::ExtensionBuilder("Test")
           .SetID("pmgljoohajacndjcjlajcopidgnhphcl")
-          .AddPermission("lockWindowFullscreenPrivate")
+          .AddAPIPermission("lockWindowFullscreenPrivate")
           .Build());
   function->set_extension(extension.get());
 

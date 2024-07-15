@@ -104,7 +104,7 @@ class ExtensionsPermissionsTrackerTest : public testing::Test {
       const std::vector<std::string>& permissions) {
     auto extension = ExtensionBuilder(extension_id)
                          .SetID(extension_id)
-                         .AddPermissions(permissions)
+                         .AddAPIPermissions(permissions)
                          .Build();
     registry_->AddEnabled(extension);
 

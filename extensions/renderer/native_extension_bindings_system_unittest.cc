@@ -46,7 +46,7 @@ bool PropertyExists(v8::Local<v8::Context> context, std::string_view property) {
 TEST_F(NativeExtensionBindingsSystemUnittest, Basic) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("foo")
-          .AddPermissions({"idle", "power", "webRequest"})
+          .AddAPIPermissions({"idle", "power", "webRequest"})
           .Build();
   RegisterExtension(extension);
 
@@ -153,7 +153,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, Basic) {
 
 TEST_F(NativeExtensionBindingsSystemUnittest, Events) {
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("foo").AddPermissions({"idle", "power"}).Build();
+      ExtensionBuilder("foo").AddAPIPermissions({"idle", "power"}).Build();
   RegisterExtension(extension);
 
   v8::HandleScope handle_scope(isolate());
@@ -226,7 +226,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, APIObjectsAreEqual) {
 TEST_F(NativeExtensionBindingsSystemUnittest,
        ReferencingAPIAfterDisposingContext) {
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("foo").AddPermissions({"idle", "power"}).Build();
+      ExtensionBuilder("foo").AddAPIPermissions({"idle", "power"}).Build();
 
   RegisterExtension(extension);
 
@@ -408,7 +408,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestSendRequestHook) {
 // unittests.
 TEST_F(NativeExtensionBindingsSystemUnittest, TestEventRegistration) {
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("foo").AddPermissions({"idle", "power"}).Build();
+      ExtensionBuilder("foo").AddAPIPermissions({"idle", "power"}).Build();
 
   RegisterExtension(extension);
 
@@ -538,7 +538,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
 
 TEST_F(NativeExtensionBindingsSystemUnittest, TestLastError) {
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("foo").AddPermissions({"idle", "power"}).Build();
+      ExtensionBuilder("foo").AddAPIPermissions({"idle", "power"}).Build();
   RegisterExtension(extension);
 
   v8::HandleScope handle_scope(isolate());
@@ -922,7 +922,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, AliasedAPIsAreDifferentObjects) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
           .SetID(kAllowlistedId)
-          .AddPermissions({"networkingPrivate", "networking.onc"})
+          .AddAPIPermissions({"networkingPrivate", "networking.onc"})
           .Build();
   RegisterExtension(extension);
 
@@ -1120,7 +1120,7 @@ TEST_P(SignatureValidationNativeExtensionBindingsSystemUnittest,
 
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("foo")
-          .AddPermissions({"idle", "power", "webRequest"})
+          .AddAPIPermissions({"idle", "power", "webRequest"})
           .Build();
   RegisterExtension(extension);
 
@@ -1195,7 +1195,7 @@ TEST_P(SignatureValidationNativeExtensionBindingsSystemUnittest,
       base::BindLambdaForTesting(on_validation_failure));
 
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("foo").AddPermissions({"idle"}).Build();
+      ExtensionBuilder("foo").AddAPIPermission("idle").Build();
   RegisterExtension(extension);
 
   v8::HandleScope handle_scope(isolate());

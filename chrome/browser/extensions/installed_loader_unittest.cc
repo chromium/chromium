@@ -90,12 +90,13 @@ class InstalledLoaderUnitTest : public ExtensionServiceUserTestBase {
 };
 
 const Extension* InstalledLoaderUnitTest::AddExtension(
-    const std::vector<std::string>& permissions,
+    const std::vector<std::string>& host_permissions,
     mojom::ManifestLocation location) {
-  scoped_refptr<const Extension> extension = ExtensionBuilder("test")
-                                                 .AddPermissions(permissions)
-                                                 .SetLocation(location)
-                                                 .Build();
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("test")
+          .AddHostPermissions(host_permissions)
+          .SetLocation(location)
+          .Build();
   PermissionsUpdater updater(profile());
   updater.InitializePermissions(extension.get());
   updater.GrantActivePermissions(extension.get());

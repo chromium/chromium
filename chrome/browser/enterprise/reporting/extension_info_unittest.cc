@@ -23,11 +23,11 @@ const char kId2[] = "abcdefghijklmnoabcdefghijklmnoac";
 const char kVersion[] = "1.0.0";
 const char kDescription[] = "an extension description.";
 const char kHomepage[] = "https://foo.com/extension";
-const char kPermission1[] = "alarms";
-const char kPermission2[] = "idle";
-const char kPermission3[] = "*://*.example.com/*";
-const char kPermissionOptional1[] = "storage";
-const char kPermissionOptional2[] = "https://www.example2.com/*";
+const char kAPIPermission1[] = "alarms";
+const char kAPIPermission2[] = "idle";
+const char kHostPermission[] = "*://*.example.com/*";
+const char kAPIPermissionOptional[] = "storage";
+const char kHostPermissionOptional[] = "https://www.example2.com/*";
 const char kAppLaunchUrl[] = "https://www.example.com/";
 const int kManifestVersion = 2;
 
@@ -55,11 +55,11 @@ class ExtensionInfoTest : public extensions::ExtensionServiceTestBase {
         .SetManifestKey(extensions::manifest_keys::kDescription, kDescription)
         .SetManifestKey(extensions::manifest_keys::kHomepageURL, kHomepage)
         .SetLocation(location)
-        .AddPermission(kPermission1)
-        .AddPermission(kPermission2)
-        .AddPermission(kPermission3)
-        .AddOptionalPermission(kPermissionOptional1)
-        .AddOptionalPermission(kPermissionOptional2);
+        .AddAPIPermission(kAPIPermission1)
+        .AddAPIPermission(kAPIPermission2)
+        .AddHostPermission(kHostPermission)
+        .AddOptionalAPIPermission(kAPIPermissionOptional)
+        .AddOptionalHostPermission(kHostPermissionOptional);
     if (is_app) {
       extensionBuilder.SetManifestPath("app.launch.web_url", kAppLaunchUrl);
     }
@@ -98,12 +98,13 @@ TEST_F(ExtensionInfoTest, ExtensionReport) {
   EXPECT_FALSE(actual_extension_report.from_webstore());
 
   EXPECT_EQ(3, actual_extension_report.permissions_size());
-  EXPECT_EQ(kPermission1, actual_extension_report.permissions(0));
-  EXPECT_EQ(kPermission2, actual_extension_report.permissions(1));
-  EXPECT_EQ(kPermissionOptional1, actual_extension_report.permissions(2));
+  EXPECT_EQ(kAPIPermission1, actual_extension_report.permissions(0));
+  EXPECT_EQ(kAPIPermission2, actual_extension_report.permissions(1));
+  EXPECT_EQ(kAPIPermissionOptional, actual_extension_report.permissions(2));
   EXPECT_EQ(2, actual_extension_report.host_permissions_size());
-  EXPECT_EQ(kPermission3, actual_extension_report.host_permissions(0));
-  EXPECT_EQ(kPermissionOptional2, actual_extension_report.host_permissions(1));
+  EXPECT_EQ(kHostPermission, actual_extension_report.host_permissions(0));
+  EXPECT_EQ(kHostPermissionOptional,
+            actual_extension_report.host_permissions(1));
 }
 
 TEST_F(ExtensionInfoTest, MultipleExtensions) {

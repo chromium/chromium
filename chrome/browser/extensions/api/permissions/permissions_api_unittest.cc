@@ -347,7 +347,7 @@ TEST_F(PermissionsAPIUnitTest, ContainsAndGetAllWithRuntimeHostPermissions) {
 TEST_F(PermissionsAPIUnitTest, RequestingGrantedPermissions) {
   // Create an extension with requires all urls, and grant the permission.
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("extension").AddPermissions({"<all_urls>"}).Build();
+      ExtensionBuilder("extension").AddHostPermission("<all_urls>").Build();
   AddExtensionAndGrantPermissions(*extension);
 
   // Request access to any host permissions. No permissions should be prompted,
@@ -365,7 +365,7 @@ TEST_F(PermissionsAPIUnitTest, RequestingWithheldPermissions) {
   // permissions.
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
-          .AddPermissions({"https://example.com/*", "https://google.com/*"})
+          .AddHostPermissions({"https://example.com/*", "https://google.com/*"})
           .Build();
   AddExtensionAndGrantPermissions(*extension);
   ScriptingPermissionsModifier(profile(), extension)
@@ -536,7 +536,7 @@ TEST_F(PermissionsAPIUnitTest, RequestingWithheldAndOptionalPermissions) {
   // withhold the required permissions.
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
-          .AddPermissions({"https://example.com/*", "https://google.com/*"})
+          .AddHostPermissions({"https://example.com/*", "https://google.com/*"})
           .SetManifestKey("optional_permissions",
                           StringVectorToValue({"https://chromium.org/*"}))
           .Build();
@@ -582,9 +582,7 @@ TEST_F(PermissionsAPIUnitTest, RequestingPermissionsNotSpecifiedInManifest) {
   // withhold the required permissions.
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
-          .AddPermissions({
-              "https://example.com/*",
-          })
+          .AddHostPermission("https://example.com/*")
           .SetManifestKey("optional_permissions",
                           StringVectorToValue({"https://chromium.org/*"}))
           .Build();
@@ -621,7 +619,7 @@ TEST_F(PermissionsAPIUnitTest, RequestingAlreadyGrantedWithheldPermissions) {
   // permissions, and then grant one of the hosts.
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
-          .AddPermissions({"https://example.com/*", "https://google.com/*"})
+          .AddHostPermissions({"https://example.com/*", "https://google.com/*"})
           .Build();
   AddExtensionAndGrantPermissions(*extension);
   ScriptingPermissionsModifier modifier(profile(), extension);

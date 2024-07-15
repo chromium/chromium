@@ -247,7 +247,7 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
         extensions::ExtensionBuilder(name)
             .SetLocation(extensions::mojom::ManifestLocation::kInternal)
             .SetManifestVersion(3)
-            .AddPermission("sidePanel")
+            .AddAPIPermission("sidePanel")
             .Build();
 
     extension_service()->GrantPermissions(extension.get());

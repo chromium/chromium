@@ -213,26 +213,6 @@ base::Value ExtensionBuilder::BuildManifest() {
                                     : manifest_value_->Clone());
 }
 
-ExtensionBuilder& ExtensionBuilder::AddPermission(
-    const std::string& permission) {
-  return AddAPIPermission(permission);
-}
-
-ExtensionBuilder& ExtensionBuilder::AddPermissions(
-    const std::vector<std::string>& permissions) {
-  return AddAPIPermissions(permissions);
-}
-
-ExtensionBuilder& ExtensionBuilder::AddOptionalPermission(
-    const std::string& permission) {
-  return AddOptionalAPIPermission(permission);
-}
-
-ExtensionBuilder& ExtensionBuilder::AddOptionalPermissions(
-    const std::vector<std::string>& permissions) {
-  return AddOptionalAPIPermissions(permissions);
-}
-
 ExtensionBuilder& ExtensionBuilder::AddAPIPermission(
     const std::string& permission) {
   CHECK(manifest_data_);

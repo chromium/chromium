@@ -32,7 +32,7 @@ constexpr char kCallUserScriptsRegister[] =
 TEST_F(NativeExtensionBindingsSystemUnittest, InitializeContext) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("foo")
-          .AddPermissions({"idle", "power", "webRequest", "tabs"})
+          .AddAPIPermissions({"idle", "power", "webRequest", "tabs"})
           .Build();
   RegisterExtension(extension);
 
