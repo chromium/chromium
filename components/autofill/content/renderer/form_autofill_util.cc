@@ -2424,49 +2424,62 @@ FindFormAndFieldForFormControlElement(
     if (WebDocument doc = element.GetDocument()) {
       url = doc.Url();
     }
+    auto get_id = [](const WebElement& e) {
+      return e ? e.GetIdAttribute().Utf8() : "";
+    };
+    auto is_top_level = [](const WebFormElement form) {
+      WebNode n = form;
+      while (n && (n = n.ParentOrShadowHostNode())) {
+        if (n.DynamicTo<WebFormElement>()) {
+          return false;
+        }
+      }
+      return true;
+    };
+    auto has_nested_form = [](const WebFormElement form,
+                              WebFormControlElement elem) {
+      for (WebNode n = elem; n && n != form; n = n.ParentOrShadowHostNode()) {
+        if (n.DynamicTo<WebFormElement>()) {
+          return true;
+        }
+      }
+      return false;
+    };
+    auto get_form_size = [&document](const WebFormElement& form) {
+      return document
+                 ? static_cast<int>(GetOwnedFormControls(document, form).size())
+                 : -1;
+    };
     WebFormElement assoc_form_element = element.Form();
+
+    // clang-format off
     SCOPED_CRASH_KEY_STRING64("Autofill", "url", url.spec());
-    SCOPED_CRASH_KEY_STRING64("Autofill", "elem_tag_name",
-                              element.TagName().Utf8());
-    SCOPED_CRASH_KEY_STRING64("Autofill", "elem_id",
-                              element.GetIdAttribute().Utf8());
-    SCOPED_CRASH_KEY_NUMBER(
-        "Autofill", "elem_form_control_type",
-        base::to_underlying(element.FormControlType()));  // nocheck
-    SCOPED_CRASH_KEY_BOOL("Autofill", "elem_autofillable",
-                          IsAutofillableElement(element));
-    SCOPED_CRASH_KEY_BOOL("Autofill", "elem_document", !document.IsNull());
+    SCOPED_CRASH_KEY_BOOL("Autofill", "ExtractFormData_succeeded", extract_form_data_succeeded);
+    SCOPED_CRASH_KEY_NUMBER("Autofill", "extracted_form_size", form->fields().size());
+
+    SCOPED_CRASH_KEY_STRING64("Autofill", "elem_tag_name", element.TagName().Utf8());
+    SCOPED_CRASH_KEY_STRING64("Autofill", "elem_id", get_id(element));
+    SCOPED_CRASH_KEY_STRING64("Autofill", "elem_form_attr", element.GetAttribute("form").Utf8());
+    SCOPED_CRASH_KEY_NUMBER("Autofill", "elem_form_control_type", base::to_underlying(element.FormControlType()));  // nocheck
+
+    SCOPED_CRASH_KEY_BOOL("Autofill", "elem_autofillable", IsAutofillableElement(element));
+    SCOPED_CRASH_KEY_BOOL("Autofill", "elem_document", !!document);
     SCOPED_CRASH_KEY_BOOL("Autofill", "elem_connected", element.IsConnected());
-    SCOPED_CRASH_KEY_BOOL(
-        "Autofill", "elem_assoc_form_connected",
-        assoc_form_element && assoc_form_element.IsConnected());
-    SCOPED_CRASH_KEY_BOOL("Autofill", "elem_in_shadow_dom",
-                          !element.OwnerShadowHost().IsNull());
-    SCOPED_CRASH_KEY_BOOL("Autofill", "elem_assoc_form",
-                          !assoc_form_element.IsNull());
-    SCOPED_CRASH_KEY_BOOL(
-        "Autofill", "elem_assoc_form_in_shadow_dom",
-        assoc_form_element && !assoc_form_element.OwnerShadowHost().IsNull());
-    SCOPED_CRASH_KEY_BOOL(
-        "Autofill", "elem_assoc_form_in_same_dom",
-        assoc_form_element &&
-            element.OwnerShadowHost() == assoc_form_element.OwnerShadowHost());
-    SCOPED_CRASH_KEY_BOOL("Autofill", "elem_owng_form", !form_element.IsNull());
-    SCOPED_CRASH_KEY_BOOL(
-        "Autofill", "elem_owng_form_in_shadow_dom",
-        form_element && !form_element.OwnerShadowHost().IsNull());
-    SCOPED_CRASH_KEY_BOOL("Autofill", "elem_owng_form_in_same_dom",
-                          form_element && element.OwnerShadowHost() ==
-                                              form_element.OwnerShadowHost());
-    SCOPED_CRASH_KEY_BOOL("Autofill", "extract_form_data_succeeded",
-                          extract_form_data_succeeded);
-    SCOPED_CRASH_KEY_NUMBER("Autofill", "extracted_form_size",
-                            form->fields().size());
-    SCOPED_CRASH_KEY_NUMBER(
-        "Autofill", "assoc_form_size",
-        document ? static_cast<int>(
-                       GetOwnedFormControls(document, form_element).size())
-                 : -1);
+    SCOPED_CRASH_KEY_BOOL("Autofill", "elem_in_shadow_dom", !!element.OwnerShadowHost());
+
+#define SCOPED_CRASH_KEYS_FOR_FORM(prefix, f)                                                                              \
+    SCOPED_CRASH_KEY_BOOL("Autofill", #prefix "_form_non_null", !!f);                                                                \
+    SCOPED_CRASH_KEY_BOOL("Autofill", #prefix "_form_connected", f && f.IsConnected());                                    \
+    SCOPED_CRASH_KEY_BOOL("Autofill", #prefix "_form_in_shadow_dom", f && !!f.OwnerShadowHost());                          \
+    SCOPED_CRASH_KEY_BOOL("Autofill", #prefix "_form_in_same_dom", f && element.OwnerShadowHost() == f.OwnerShadowHost()); \
+    SCOPED_CRASH_KEY_BOOL("Autofill", #prefix "_form_is_top_level", is_top_level(f));                                      \
+    SCOPED_CRASH_KEY_BOOL("Autofill", #prefix "_form_has_nested_form", has_nested_form(f, element));                       \
+    SCOPED_CRASH_KEY_NUMBER("Autofill", #prefix "_form_size", get_form_size(f));                                           \
+    SCOPED_CRASH_KEY_STRING64("Autofill", #prefix "_form_id", get_id(f));
+    SCOPED_CRASH_KEYS_FOR_FORM("assoc", assoc_form_element);
+    SCOPED_CRASH_KEYS_FOR_FORM("owng", form_element);
+#undef FORM_CRASH_KEYS
+    // clang-format on
     NOTREACHED(base::NotFatalUntil::M129);
   }
   return std::nullopt;
