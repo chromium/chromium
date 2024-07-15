@@ -5,6 +5,7 @@
 #include "components/user_notes/browser/user_note_service.h"
 
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/typed_macros.h"
@@ -95,7 +96,7 @@ void UserNoteService::OnNoteInstanceAddedToPage(
   }
 
   const auto& entry_it = model_map_.find(id);
-  DCHECK(entry_it != model_map_.end())
+  CHECK(entry_it != model_map_.end(), base::NotFatalUntil::M130)
       << "A note instance without backing model was added to a page";
 
   entry_it->second.managers.insert(manager);
@@ -117,7 +118,7 @@ void UserNoteService::OnNoteInstanceRemovedFromPage(
     creation_map_.erase(creation_entry_it);
   } else {
     const auto& entry_it = model_map_.find(id);
-    DCHECK(entry_it != model_map_.end())
+    CHECK(entry_it != model_map_.end(), base::NotFatalUntil::M130)
         << "A note model was destroyed before all its instances";
 
     auto deleteCount = entry_it->second.managers.erase(manager);
@@ -237,7 +238,7 @@ void UserNoteService::OnNoteCreationDone(const base::UnguessableToken& id,
   // to all relevant pages via `FrameUserNoteChanges::Apply()`. The partial
   // model will be cleaned up from the creation map as part of that process.
   const auto& creation_entry_it = creation_map_.find(id);
-  DCHECK(creation_entry_it != creation_map_.end())
+  CHECK(creation_entry_it != creation_map_.end(), base::NotFatalUntil::M130)
       << "Attempted to complete the creation of a note that doesn't exist";
   const UserNote* note = creation_entry_it->second.model.get();
   if (!note)
@@ -253,7 +254,7 @@ void UserNoteService::OnNoteCreationCancelled(
   // `OnNoteInstanceRemovedFromPage`, which will clean up the partial model from
   // the creation map.
   const auto& entry_it = creation_map_.find(id);
-  DCHECK(entry_it != creation_map_.end())
+  CHECK(entry_it != creation_map_.end(), base::NotFatalUntil::M130)
       << "Attempted to cancel the creation of a note that doesn't exist";
   DCHECK_EQ(entry_it->second.managers.size(), 1u)
       << "Unexpectedly had more than one manager ref in the creation map for a "
@@ -503,12 +504,12 @@ void UserNoteService::OnNoteModelsFetched(
       // loaded in another tab. Either way, its model already exists in the
       // model map, so simply update it with the latest model.
       DCHECK(creation_entry_it == creation_map_.end());
-      DCHECK(model_entry_it != model_map_.end());
+      CHECK(model_entry_it != model_map_.end(), base::NotFatalUntil::M130);
       model_entry_it->second.model->Update(std::move(note));
     } else {
       // This is a new note that wasn't authored locally. Simply add the model
       // to the model map.
-      DCHECK(new_note_it != new_notes.end());
+      CHECK(new_note_it != new_notes.end(), base::NotFatalUntil::M130);
       DCHECK(model_entry_it == model_map_.end());
       UserNoteService::ModelMapEntry entry(std::move(note));
       model_map_.emplace(id, std::move(entry));
@@ -529,7 +530,8 @@ void UserNoteService::OnNoteModelsFetched(
 void UserNoteService::OnFrameChangesApplied(base::UnguessableToken change_id) {
   TRACE_EVENT("browser", "UserNoteService::OnFrameChangesApplied");
   const auto& changes_it = note_changes_in_progress_.find(change_id);
-  DCHECK(changes_it != note_changes_in_progress_.end());
+  CHECK(changes_it != note_changes_in_progress_.end(),
+        base::NotFatalUntil::M130);
 
   const std::unique_ptr<FrameUserNoteChanges>& frame_changes =
       changes_it->second;

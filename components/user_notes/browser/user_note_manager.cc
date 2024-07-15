@@ -5,6 +5,7 @@
 #include "components/user_notes/browser/user_note_manager.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/user_notes/browser/user_note_instance.h"
 #include "content/public/browser/page.h"
@@ -56,7 +57,7 @@ const std::vector<UserNoteInstance*> UserNoteManager::GetAllNoteInstances() {
 void UserNoteManager::RemoveNote(const base::UnguessableToken& id) {
   TRACE_EVENT("browser", "UserNoteManager::RemoveNote", "id", id);
   const auto& entry_it = instance_map_.find(id);
-  DCHECK(entry_it != instance_map_.end())
+  CHECK(entry_it != instance_map_.end(), base::NotFatalUntil::M130)
       << "Attempted to remove a note instance from a page where it didn't "
          "exist";
 
