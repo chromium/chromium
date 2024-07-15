@@ -953,7 +953,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.CreateVerifiedMatcherTime"
-    units="ms" expires_after="2024-07-21">
+    units="ms" expires_after="2025-07-21">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -1064,7 +1064,7 @@ of interesting buckets, such as "internal + external".
     name="Extensions.DeclarativeNetRequest.RegexRulesBeforeRequestActionTime.{RegexRulesetSize}"
     units="microseconds" expires_after="2024-12-30">
   <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>kelvinjiang.cronin@chromium.org</owner>
+  <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
     The time taken to evaluate regex rules for a single declarativeNetRequest
@@ -1078,9 +1078,9 @@ of interesting buckets, such as "internal + external".
 
 <histogram
     name="Extensions.DeclarativeNetRequest.RegexRulesEvaluationPercentage"
-    units="%" expires_after="2024-08-28">
+    units="%" expires_after="2025-08-28">
   <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>kelvinjiang.cronin@chromium.org</owner>
+  <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
     For a single declarativeNetRequest ruleset, the percent of the total amount
@@ -1092,9 +1092,9 @@ of interesting buckets, such as "internal + external".
 
 <histogram
     name="Extensions.DeclarativeNetRequest.RegexRulesHeadersReceivedActionTime.{RegexRulesetSize}"
-    units="microseconds" expires_after="2024-08-28">
+    units="microseconds" expires_after="2025-08-28">
   <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>kelvinjiang.cronin@chromium.org</owner>
+  <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
     The time taken to evaluate regex rules for a single declarativeNetRequest
@@ -1108,9 +1108,9 @@ of interesting buckets, such as "internal + external".
 
 <histogram
     name="Extensions.DeclarativeNetRequest.RegexRulesHeadersReceivedEvaluationPercentage"
-    units="%" expires_after="2024-08-28">
+    units="%" expires_after="2025-08-28">
   <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>kelvinjiang.cronin@chromium.org</owner>
+  <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
     For a single declarativeNetRequest ruleset, the percent of the total amount
@@ -1132,7 +1132,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.RequestHeaderAdded"
-    enum="WebRequest.RequestHeader" expires_after="2024-08-08">
+    enum="WebRequest.RequestHeader" expires_after="2025-08-08">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
@@ -1205,7 +1205,7 @@ of interesting buckets, such as "internal + external".
 
 <histogram
     name="Extensions.DeclarativeNetRequest.RulesetMatchingBeforeRequestActionTime.{RulesetSize}"
-    units="microseconds" expires_after="2024-08-28">
+    units="microseconds" expires_after="2025-08-28">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
@@ -1220,7 +1220,7 @@ of interesting buckets, such as "internal + external".
 
 <histogram
     name="Extensions.DeclarativeNetRequest.RulesetMatchingHeadersReceivedActionTime.{RulesetSize}"
-    units="microseconds" expires_after="2024-08-28">
+    units="microseconds" expires_after="2025-08-28">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
