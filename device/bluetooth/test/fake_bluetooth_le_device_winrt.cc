@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -373,7 +374,7 @@ void FakeBluetoothLEDeviceWinrt::SimulateGattServiceRemoved(
   auto iter = base::ranges::find(
       fake_services_, device_service,
       &Microsoft::WRL::ComPtr<FakeGattDeviceServiceWinrt>::Get);
-  DCHECK(iter != fake_services_.end());
+  CHECK(iter != fake_services_.end(), base::NotFatalUntil::M130);
   fake_services_.erase(iter);
   SimulateGattServicesChanged();
   DCHECK(gatt_services_callback_);

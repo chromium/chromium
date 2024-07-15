@@ -446,7 +446,8 @@ void Adapter::ProcessPendingInsecureServiceConnectionRequest(
   auto it = connect_to_service_requests_pending_discovery_.begin();
   while (it != connect_to_service_requests_pending_discovery_.end()) {
     auto request_it = connect_to_service_request_map_.find(*it);
-    DCHECK(request_it != connect_to_service_request_map_.end());
+    CHECK(request_it != connect_to_service_request_map_.end(),
+          base::NotFatalUntil::M130);
     if (address == request_it->second->address) {
       ProcessDeviceForInsecureServiceConnection(*it, device, disconnected);
       it = connect_to_service_requests_pending_discovery_.erase(it);
