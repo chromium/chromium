@@ -135,7 +135,6 @@ void InspectorAnimationAgent::Restore() {
 void InspectorAnimationAgent::InvalidateInternalState() {
   id_to_animation_snapshot_.clear();
   id_to_animation_.clear();
-  id_to_animation_clone_.clear();
   cleared_animations_.clear();
   notify_animation_updated_tasks_.clear();
 }
@@ -148,8 +147,6 @@ protocol::Response InspectorAnimationAgent::enable() {
 
 protocol::Response InspectorAnimationAgent::disable() {
   setPlaybackRate(1.0);
-  for (const auto& clone : id_to_animation_clone_.Values())
-    clone->cancel();
   enabled_.Clear();
   instrumenting_agents_->RemoveInspectorAnimationAgent(this);
   InvalidateInternalState();
@@ -344,10 +341,6 @@ protocol::Response InspectorAnimationAgent::getCurrentTime(
   if (!response.IsSuccess())
     return response;
 
-  auto it = id_to_animation_clone_.find(id);
-  if (it != id_to_animation_clone_.end())
-    animation = it->value;
-
   *current_time = Timing::NullValue();
   if (animation->Paused() || !animation->TimelineInternal()->IsActive()) {
     std::optional<AnimationTimeDelta> animation_current_time =
@@ -433,11 +426,6 @@ protocol::Response InspectorAnimationAgent::releaseAnimations(
     if (it != id_to_animation_.end())
       it->value->SetEffectSuppressed(false);
 
-    it = id_to_animation_clone_.find(animation_id);
-    if (it != id_to_animation_clone_.end())
-      it->value->cancel();
-
-    id_to_animation_clone_.erase(animation_id);
     id_to_animation_.erase(animation_id);
     cleared_animations_.insert(animation_id);
     id_to_animation_snapshot_.erase(animation_id);
@@ -474,10 +462,6 @@ protocol::Response InspectorAnimationAgent::resolveAnimation(
   protocol::Response response = AssertAnimation(animation_id, animation);
   if (!response.IsSuccess())
     return response;
-
-  auto it = id_to_animation_clone_.find(animation_id);
-  if (it != id_to_animation_clone_.end())
-    animation = it->value;
 
   const Element* element =
       To<KeyframeEffect>(animation->effect())->EffectTarget();
@@ -876,7 +860,6 @@ void InspectorAnimationAgent::Trace(Visitor* visitor) const {
   visitor->Trace(css_agent_);
   visitor->Trace(id_to_animation_snapshot_);
   visitor->Trace(id_to_animation_);
-  visitor->Trace(id_to_animation_clone_);
   visitor->Trace(weak_factory_);
   InspectorBaseAgent::Trace(visitor);
 }
