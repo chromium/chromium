@@ -119,10 +119,6 @@
 
       <!-- TODO(crbug.com/40928765): wire up all of the dynamic content
         in the local certificates section (
-        * # of imported OS certs
-        * viewing/managing imported certs from OS
-        * # of admin policy certs
-        * viewing admin policy certs
         * Dynamically figuring out OS name
         * Allow user modifications of trust settings here when allowed
           by enterprise.
@@ -133,8 +129,9 @@
           <div>
             Use imported local certificates from your operating system
           </div>
-          <div class="cr-secondary-text" hidden="[[!importOsCertsEnabled_]]">
-            56 leaf certs
+          <div id="numSystemCerts" class="cr-secondary-text"
+              hidden="[[!importOsCertsEnabled_]]">
+            [[numSystemCertsString_]]
           </div>
         </div>
         <cr-toggle id="importOsCerts" class="push-left"
@@ -160,12 +157,12 @@
         </cr-link-row>
       </if>
 
-      <template is="dom-if" if="[[showCustomSection_(certPolicy_)]]">
+      <template is="dom-if" if="[[showCustomSection_(certManagementMetadata_)]]">
         <div id="customCertsSection">
           <h3>Custom</h3>
           <cr-link-row id="adminCertsInstalledLinkRow"
               label="[[i18n('certificateManagerV2AdminCertsTitle')]]"
-              sub-label="[[policyCertsString_]]"
+              sub-label="[[numPolicyCertsString_]]"
               on-click="onAdminCertsInstalledLinkRowClick_">
          </cr-link-row>
         </div>

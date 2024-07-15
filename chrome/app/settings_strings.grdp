@@ -882,8 +882,9 @@
     <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_EXPORT_BUTTON_LABEL" desc="Label for button that exports a list of certificates." translateable="false">
       Export
     </message>
-    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_ADMIN_CERTS" desc="How many certificate are installed via enterprise policy." translateable="false">
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_NUM_CERTS" desc="Label describing a number of certificates." translateable="false">
     {COUNT, plural,
+      =0 {No certificates}
       =1 {1 certificate}
       other {{COUNT} certificates}}
     </message>

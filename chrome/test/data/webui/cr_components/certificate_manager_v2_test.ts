@@ -7,13 +7,26 @@
 import 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.js';
 import 'chrome://certificate-manager/strings.m.js';
 
+import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import type {CertificateManagerV2Element} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.js';
-import type {CertPolicyInfo} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
+import type {CertManagementMetadata} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
 import {CertificatesV2BrowserProxy} from 'chrome://resources/cr_components/certificate_manager/certificates_v2_browser_proxy.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestCertificateManagerProxy} from './certificate_manager_v2_test_support.js';
+
+class CertManagerTestPluralStringProxy extends TestPluralStringProxy {
+  override text: string = '';
+
+  override getPluralString(messageName: string, itemCount: number) {
+    if (messageName === 'certificateManagerV2NumCerts') {
+      this.methodCalled('getPluralString', {messageName, itemCount});
+    }
+    return Promise.resolve(this.text);
+  }
+}
 
 suite('CertificateManagerV2Test', () => {
   let certManager: CertificateManagerV2Element;
@@ -44,16 +57,40 @@ suite('CertificateManagerV2Test', () => {
   });
   // </if>
 
-  test('Policy - OS certs imported and managed', async () => {
-    const policyInfo: CertPolicyInfo = {
+  test('Policy - OS certs number string', async () => {
+    const pluralStringProxy = new CertManagerTestPluralStringProxy();
+    PluralStringProxyImpl.setInstance(pluralStringProxy);
+    pluralStringProxy.text = '5 certificates';
+    const metadata: CertManagementMetadata = {
       includeSystemTrustStore: true,
+      numUserAddedSystemCerts: 5,
       isIncludeSystemTrustStoreManaged: true,
       numPolicyCerts: 0,
     };
-    testProxy.handler.setPolicyInformation(policyInfo);
+    testProxy.handler.setCertManagementMetadata(metadata);
     initializeElement();
 
-    await testProxy.handler.whenCalled('getPolicyInformation');
+    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await pluralStringProxy.whenCalled('getPluralString');
+    await microtasksFinished();
+
+    assertEquals(
+        '5 certificates', certManager.$.numSystemCerts.innerText,
+        'num system certs string incorrect');
+    assertTrue(isVisible(certManager.$.numSystemCerts));
+  });
+
+  test('Policy - OS certs imported and managed', async () => {
+    const metadata: CertManagementMetadata = {
+      includeSystemTrustStore: true,
+      numUserAddedSystemCerts: 0,
+      isIncludeSystemTrustStoreManaged: true,
+      numPolicyCerts: 0,
+    };
+    testProxy.handler.setCertManagementMetadata(metadata);
+    initializeElement();
+
+    await testProxy.handler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
 
     assertTrue(certManager.$.importOsCerts.checked, 'os toggle state wrong');
@@ -71,15 +108,16 @@ suite('CertificateManagerV2Test', () => {
   });
 
   test('Policy - OS certs imported but not managed', async () => {
-    const policyInfo: CertPolicyInfo = {
+    const metadata: CertManagementMetadata = {
       includeSystemTrustStore: true,
+      numUserAddedSystemCerts: 0,
       isIncludeSystemTrustStoreManaged: false,
       numPolicyCerts: 0,
     };
-    testProxy.handler.setPolicyInformation(policyInfo);
+    testProxy.handler.setCertManagementMetadata(metadata);
     initializeElement();
 
-    await testProxy.handler.whenCalled('getPolicyInformation');
+    await testProxy.handler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
 
     assertTrue(
@@ -98,19 +136,21 @@ suite('CertificateManagerV2Test', () => {
   });
 
   test('Policy - OS certs not imported but managed', async () => {
-    const policyInfo: CertPolicyInfo = {
+    const metadata: CertManagementMetadata = {
       includeSystemTrustStore: false,
+      numUserAddedSystemCerts: 0,
       isIncludeSystemTrustStoreManaged: true,
       numPolicyCerts: 0,
     };
-    testProxy.handler.setPolicyInformation(policyInfo);
+    testProxy.handler.setCertManagementMetadata(metadata);
     initializeElement();
 
-    await testProxy.handler.whenCalled('getPolicyInformation');
+    await testProxy.handler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
 
     assertFalse(
         certManager.$.importOsCerts.checked, 'os import toggle state wrong');
+    assertFalse(isVisible(certManager.$.numSystemCerts));
     assertTrue(
         isVisible(certManager.$.importOsCertsManagedIcon),
         'enterprise managed icon visibility wrong');
@@ -125,19 +165,21 @@ suite('CertificateManagerV2Test', () => {
   });
 
   test('Policy - OS certs not imported and not managed', async () => {
-    const policyInfo: CertPolicyInfo = {
+    const metadata: CertManagementMetadata = {
       includeSystemTrustStore: false,
+      numUserAddedSystemCerts: 0,
       isIncludeSystemTrustStoreManaged: false,
       numPolicyCerts: 0,
     };
-    testProxy.handler.setPolicyInformation(policyInfo);
+    testProxy.handler.setCertManagementMetadata(metadata);
     initializeElement();
 
-    await testProxy.handler.whenCalled('getPolicyInformation');
+    await testProxy.handler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
 
     assertFalse(
         certManager.$.importOsCerts.checked, 'os import toggle state wrong');
+    assertFalse(isVisible(certManager.$.numSystemCerts));
     assertFalse(
         isVisible(certManager.$.importOsCertsManagedIcon),
         'enterprise managed icon visibility wrong');
@@ -153,15 +195,16 @@ suite('CertificateManagerV2Test', () => {
 
   // <if expr="is_win or is_macosx">
   test('Open native certificate management', async () => {
-    const policyInfo: CertPolicyInfo = {
+    const metadata: CertManagementMetadata = {
       includeSystemTrustStore: true,
+      numUserAddedSystemCerts: 0,
       isIncludeSystemTrustStoreManaged: true,
       numPolicyCerts: 0,
     };
-    testProxy.handler.setPolicyInformation(policyInfo);
+    testProxy.handler.setCertManagementMetadata(metadata);
     initializeElement();
 
-    await testProxy.handler.whenCalled('getPolicyInformation');
+    await testProxy.handler.whenCalled('getCertManagementMetadata');
     certManager.$.localMenuItem.click();
     await microtasksFinished();
     assertTrue(
@@ -185,15 +228,16 @@ suite('CertificateManagerV2Test', () => {
   // </if>
 
   test('no admin certs, hide custom section', async () => {
-    const policyInfo: CertPolicyInfo = {
+    const metadata: CertManagementMetadata = {
       includeSystemTrustStore: true,
+      numUserAddedSystemCerts: 0,
       isIncludeSystemTrustStoreManaged: true,
       numPolicyCerts: 0,
     };
-    testProxy.handler.setPolicyInformation(policyInfo);
+    testProxy.handler.setCertManagementMetadata(metadata);
     initializeElement();
 
-    await testProxy.handler.whenCalled('getPolicyInformation');
+    await testProxy.handler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
     const customSection =
         certManager.shadowRoot!.querySelector('#customCertsSection');
@@ -201,15 +245,16 @@ suite('CertificateManagerV2Test', () => {
   });
 
   test('have admin certs, show custom section', async () => {
-    const policyInfo: CertPolicyInfo = {
+    const metadata: CertManagementMetadata = {
       includeSystemTrustStore: true,
+      numUserAddedSystemCerts: 0,
       isIncludeSystemTrustStoreManaged: true,
       numPolicyCerts: 5,
     };
-    testProxy.handler.setPolicyInformation(policyInfo);
+    testProxy.handler.setCertManagementMetadata(metadata);
     initializeElement();
 
-    await testProxy.handler.whenCalled('getPolicyInformation');
+    await testProxy.handler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
     const customSection =
         certManager.shadowRoot!.querySelector('#customCertsSection');
@@ -218,15 +263,16 @@ suite('CertificateManagerV2Test', () => {
   });
 
   test('show admin certs', async () => {
-    const policyInfo: CertPolicyInfo = {
+    const metadata: CertManagementMetadata = {
       includeSystemTrustStore: true,
+      numUserAddedSystemCerts: 0,
       isIncludeSystemTrustStoreManaged: true,
       numPolicyCerts: 5,
     };
-    testProxy.handler.setPolicyInformation(policyInfo);
+    testProxy.handler.setCertManagementMetadata(metadata);
     initializeElement();
 
-    await testProxy.handler.whenCalled('getPolicyInformation');
+    await testProxy.handler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
     const customSection =
         certManager.shadowRoot!.querySelector('#customCertsSection');
@@ -238,15 +284,16 @@ suite('CertificateManagerV2Test', () => {
   });
 
   test('navigate back from admin certs', async () => {
-    const policyInfo: CertPolicyInfo = {
+    const metadata: CertManagementMetadata = {
       includeSystemTrustStore: true,
+      numUserAddedSystemCerts: 0,
       isIncludeSystemTrustStoreManaged: true,
       numPolicyCerts: 5,
     };
-    testProxy.handler.setPolicyInformation(policyInfo);
+    testProxy.handler.setCertManagementMetadata(metadata);
     initializeElement();
 
-    await testProxy.handler.whenCalled('getPolicyInformation');
+    await testProxy.handler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
     const customSection =
         certManager.shadowRoot!.querySelector('#customCertsSection');

@@ -57,7 +57,8 @@ class CertificateManagerPageHandler
   void ExportCertificates(
       certificate_manager_v2::mojom::CertificateSource source_id) override;
 
-  void GetPolicyInformation(GetPolicyInformationCallback callback) override;
+  void GetCertManagementMetadata(
+      GetCertManagementMetadataCallback callback) override;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   void ShowNativeManageCertificates() override;

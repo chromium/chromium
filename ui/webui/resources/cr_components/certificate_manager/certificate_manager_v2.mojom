@@ -63,9 +63,12 @@ enum CertificateSource {
   kExtensionsClientCert,
 };
 
-struct CertPolicyInfo {
-  // If true, user-added certs are imported from the system
+struct CertManagementMetadata {
+  // If true, user-added certs are imported from the system.
   bool include_system_trust_store;
+
+  // Number of user-added certs that could be imported from the system.
+  uint8 num_user_added_system_certs;
 
   // If true, an enterprise policy controls whether user-added certs are
   // imported from the system.
@@ -80,9 +83,8 @@ interface CertificateManagerPageHandler {
   // Get the list of certificates from a given source.
   GetCertificates(CertificateSource source) => (array<SummaryCertInfo> certs);
 
-  // Get information about enterprise policies impacting certificate
-  // verification.
-  GetPolicyInformation() => (CertPolicyInfo policy_info);
+  // Get Certificate verification metadata (e.g. enterprise policies)
+  GetCertManagementMetadata() => (CertManagementMetadata metadata);
 
   // Open the view certificate dialog for a specific certificate.
   ViewCertificate(CertificateSource source, string sha256_hash_hex);

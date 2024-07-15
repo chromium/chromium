@@ -36,7 +36,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 // './certificate_enterprise_certs_v2.js';
 import type {CertificateListV2Element} from './certificate_list_v2.js';
 import {getTemplate} from './certificate_manager_v2.html.js';
-import type {CertPolicyInfo} from './certificate_manager_v2.mojom-webui.js';
+import type {CertManagementMetadata} from './certificate_manager_v2.mojom-webui.js';
 import {CertificateSource} from './certificate_manager_v2.mojom-webui.js';
 import type {CertificateSubpageV2Element, SubpageCertificateList} from './certificate_subpage_v2.js';
 import {CertificatesV2BrowserProxy} from './certificates_v2_browser_proxy.js';
@@ -81,6 +81,7 @@ export interface CertificateManagerV2Element {
     adminCertsInstalledLinkRow: HTMLElement,
     adminCertsSection: CertificateSubpageV2Element,
     platformCertsSection: CertificateSubpageV2Element,
+    numSystemCerts: HTMLElement,
   };
 }
 
@@ -149,7 +150,8 @@ export class CertificateManagerV2Element extends
       },
 
       toastMessage_: String,
-      policyCertsString_: String,
+      numSystemCertsString_: String,
+      numPolicyCertsString_: String,
 
       showSearch_: {
         type: Boolean,
@@ -158,12 +160,12 @@ export class CertificateManagerV2Element extends
 
       importOsCertsEnabled_: {
         type: Boolean,
-        computed: 'computeImportOsCertsEnabled_(certPolicy_)',
+        computed: 'computeImportOsCertsEnabled_(certManagementMetadata_)',
       },
 
       importOsCertsEnabledManaged_: {
         type: Boolean,
-        computed: 'computeImportOsCertsManaged_(certPolicy_)',
+        computed: 'computeImportOsCertsManaged_(certManagementMetadata_)',
       },
 
       certificateSourceEnum_: {
@@ -175,8 +177,9 @@ export class CertificateManagerV2Element extends
 
   private selectedPage_: Page = Page.LOCAL_CERTS;
   private toastMessage_: string;
-  private policyCertsString_: string;
-  private certPolicy_: CertPolicyInfo;
+  private numPolicyCertsString_: string;
+  private numSystemCertsString_: string;
+  private certManagementMetadata_: CertManagementMetadata;
   private importOsCertsEnabled_: boolean;
   private importOsCertsEnabledManaged_: boolean;
   private enterpriseSubpageLists_: SubpageCertificateList[];
@@ -185,23 +188,31 @@ export class CertificateManagerV2Element extends
   override ready() {
     super.ready();
     const proxy = CertificatesV2BrowserProxy.getInstance();
-    proxy.handler.getPolicyInformation().then(
-        (results: {policyInfo: CertPolicyInfo}) => {
-          this.certPolicy_ = results.policyInfo;
-          this.updatePolicyCertsString_();
+    proxy.handler.getCertManagementMetadata().then(
+        (results: {metadata: CertManagementMetadata}) => {
+          this.certManagementMetadata_ = results.metadata;
+          this.updateNumCertsStrings_();
         });
   }
 
-  private async updatePolicyCertsString_() {
-    if (this.certPolicy_ === undefined) {
-      this.policyCertsString_ = '';
+  private updateNumCertsStrings_() {
+    if (this.certManagementMetadata_ === undefined) {
+      this.numPolicyCertsString_ = '';
+      this.numSystemCertsString_ = '';
     } else {
       PluralStringProxyImpl.getInstance()
           .getPluralString(
-              'certificateManagerV2PolicyCerts',
-              this.certPolicy_.numPolicyCerts)
+              'certificateManagerV2NumCerts',
+              this.certManagementMetadata_.numPolicyCerts)
           .then(label => {
-            this.policyCertsString_ = label;
+            this.numPolicyCertsString_ = label;
+          });
+      PluralStringProxyImpl.getInstance()
+          .getPluralString(
+              'certificateManagerV2NumCerts',
+              this.certManagementMetadata_.numUserAddedSystemCerts)
+          .then(label => {
+            this.numSystemCertsString_ = label;
           });
     }
   }
@@ -253,17 +264,17 @@ export class CertificateManagerV2Element extends
   }
 
   private computeImportOsCertsEnabled_(): boolean {
-    return this.certPolicy_.includeSystemTrustStore;
+    return this.certManagementMetadata_.includeSystemTrustStore;
   }
 
   private computeImportOsCertsManaged_(): boolean {
-    return this.certPolicy_.isIncludeSystemTrustStoreManaged;
+    return this.certManagementMetadata_.isIncludeSystemTrustStoreManaged;
   }
 
   // If true, show the Custom Certs section.
   private showCustomSection_(): boolean {
-    return this.certPolicy_ !== undefined &&
-        this.certPolicy_.numPolicyCerts > 0;
+    return this.certManagementMetadata_ !== undefined &&
+        this.certManagementMetadata_.numPolicyCerts > 0;
   }
 
   // <if expr="is_win or is_macosx">

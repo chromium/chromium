@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {CertificateManagerPageHandlerInterface, CertificateManagerPageRemote, CertificateSource, CertPolicyInfo, SummaryCertInfo} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
+import type {CertificateManagerPageHandlerInterface, CertificateManagerPageRemote, CertificateSource, CertManagementMetadata, SummaryCertInfo} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
 import {CertificateManagerPageCallbackRouter} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -18,8 +18,9 @@ class FakePageHandler extends TestBrowserProxy implements
     return {certs: []};
   };
 
-  private policyInfo_: CertPolicyInfo = {
+  private metadata_: CertManagementMetadata = {
     includeSystemTrustStore: true,
+    numUserAddedSystemCerts: 0,
     isIncludeSystemTrustStoreManaged: false,
     numPolicyCerts: 0,
   };
@@ -27,7 +28,7 @@ class FakePageHandler extends TestBrowserProxy implements
   constructor() {
     super([
       'getCertificates',
-      'getPolicyInformation',
+      'getCertManagementMetadata',
       'viewCertificate',
       'exportCertificates',
       'showNativeManageCertificates',
@@ -40,9 +41,9 @@ class FakePageHandler extends TestBrowserProxy implements
     return Promise.resolve(this.getCertificatesCallback_(source));
   }
 
-  getPolicyInformation(): Promise<{policyInfo: CertPolicyInfo}> {
-    this.methodCalled('getPolicyInformation');
-    return Promise.resolve({policyInfo: this.policyInfo_});
+  getCertManagementMetadata(): Promise<{metadata: CertManagementMetadata}> {
+    this.methodCalled('getCertManagementMetadata');
+    return Promise.resolve({metadata: this.metadata_});
   }
 
   viewCertificate(source: CertificateSource, sha256hashHex: string) {
@@ -59,8 +60,8 @@ class FakePageHandler extends TestBrowserProxy implements
     this.getCertificatesCallback_ = callbackFn;
   }
 
-  setPolicyInformation(policyInfo: CertPolicyInfo) {
-    this.policyInfo_ = policyInfo;
+  setCertManagementMetadata(metadata: CertManagementMetadata) {
+    this.metadata_ = metadata;
   }
 
   // <if expr="is_win or is_macosx">

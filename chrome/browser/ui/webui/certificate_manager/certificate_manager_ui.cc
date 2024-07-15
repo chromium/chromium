@@ -121,8 +121,8 @@ CertificateManagerUI::CertificateManagerUI(content::WebUI* web_ui)
 
     auto plural_string_handler = std::make_unique<PluralStringHandler>();
     plural_string_handler->AddLocalizedString(
-        "certificateManagerV2PolicyCerts",
-        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_ADMIN_CERTS);
+        "certificateManagerV2NumCerts",
+        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_NUM_CERTS);
     web_ui->AddMessageHandler(std::move(plural_string_handler));
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||

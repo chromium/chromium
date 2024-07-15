@@ -18,11 +18,48 @@
 #include "chrome/browser/ui/webui/certificate_manager/client_cert_sources.h"
 #include "chrome/browser/ui/webui/certificate_manager/enterprise_cert_sources.h"
 #include "chrome/browser/ui/webui/certificate_manager/platform_cert_sources.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/webui/settings/settings_utils.h"
 #endif
+
+namespace {
+
+void GetCertManagementMetadataAsync(
+    ProfileNetworkContextService::CertificatePoliciesForView policies,
+    CertificateManagerPageHandler::GetCertManagementMetadataCallback callback,
+    cert_verifier::mojom::PlatformRootStoreInfoPtr info) {
+  certificate_manager_v2::mojom::CertManagementMetadataPtr metadata =
+      certificate_manager_v2::mojom::CertManagementMetadata::New();
+#if !BUILDFLAG(IS_CHROMEOS)
+  metadata->include_system_trust_store =
+      policies.certificate_policies->include_system_trust_store;
+  metadata->is_include_system_trust_store_managed =
+      policies.is_include_system_trust_store_managed;
+#else
+  // TODO(crbug.com/40928765): figure out how this should be displayed for
+  // ChromeOS
+  metadata->include_system_trust_store = true;
+  metadata->is_include_system_trust_store_managed = false;
+#endif
+
+  metadata->num_policy_certs =
+      policies.full_distrusted_certs.size() +
+      policies.certificate_policies->trust_anchors.size() +
+      policies.certificate_policies->trust_anchors_with_enforced_constraints
+          .size() +
+      policies.certificate_policies->trust_anchors_with_additional_constraints
+          .size() +
+      policies.certificate_policies->all_certificates.size();
+
+  metadata->num_user_added_system_certs = info->user_added_certs.size();
+
+  std::move(callback).Run(std::move(metadata));
+}
+
+}  // namespace
 
 CertificateManagerPageHandler::CertificateManagerPageHandler(
     mojo::PendingRemote<certificate_manager_v2::mojom::CertificateManagerPage>
@@ -120,37 +157,15 @@ CertificateManagerPageHandler::GetCertSource(
   return *source_ptr;
 }
 
-void CertificateManagerPageHandler::GetPolicyInformation(
-    GetPolicyInformationCallback callback) {
+void CertificateManagerPageHandler::GetCertManagementMetadata(
+    GetCertManagementMetadataCallback callback) {
   ProfileNetworkContextService* service =
       ProfileNetworkContextServiceFactory::GetForContext(profile_);
   ProfileNetworkContextService::CertificatePoliciesForView policies =
       service->GetCertificatePolicyForView();
-
-  certificate_manager_v2::mojom::CertPolicyInfoPtr cert_policy_info =
-      certificate_manager_v2::mojom::CertPolicyInfo::New();
-#if !BUILDFLAG(IS_CHROMEOS)
-  cert_policy_info->include_system_trust_store =
-      policies.certificate_policies->include_system_trust_store;
-  cert_policy_info->is_include_system_trust_store_managed =
-      policies.is_include_system_trust_store_managed;
-#else
-  // TODO(crbug.com/40928765): figure out how this should be displayed for
-  // ChromeOS
-  cert_policy_info->include_system_trust_store = true;
-  cert_policy_info->is_include_system_trust_store_managed = false;
-#endif
-
-  cert_policy_info->num_policy_certs =
-      policies.full_distrusted_certs.size() +
-      policies.certificate_policies->trust_anchors.size() +
-      policies.certificate_policies->trust_anchors_with_enforced_constraints
-          .size() +
-      policies.certificate_policies->trust_anchors_with_additional_constraints
-          .size() +
-      policies.certificate_policies->all_certificates.size();
-
-  std::move(callback).Run(std::move(cert_policy_info));
+  content::GetCertVerifierServiceFactory()->GetPlatformRootStoreInfo(
+      base::BindOnce(&GetCertManagementMetadataAsync, std::move(policies),
+                     std::move(callback)));
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
