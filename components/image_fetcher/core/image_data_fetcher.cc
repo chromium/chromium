@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "components/image_fetcher/core/image_fetcher_metrics_reporter.h"
 #include "net/base/data_url.h"
 #include "net/base/load_flags.h"
@@ -193,7 +194,7 @@ void ImageDataFetcher::FinishRequest(const network::SimpleURLLoader* source,
                                      const std::string& image_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto request_iter = pending_requests_.find(source);
-  DCHECK(request_iter != pending_requests_.end());
+  CHECK(request_iter != pending_requests_.end(), base::NotFatalUntil::M130);
   auto callback = std::move(request_iter->second->callback);
   pending_requests_.erase(request_iter);
   std::move(callback).Run(image_data, metadata);

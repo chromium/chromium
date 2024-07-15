@@ -114,7 +114,7 @@ void ImageFetcherImpl::OnImageDecoded(const GURL& image_url,
                                       const gfx::Image& image) {
   // Get request for the given image_url from the request queue.
   auto image_iter = pending_net_requests_.find(image_url);
-  DCHECK(image_iter != pending_net_requests_.end());
+  CHECK(image_iter != pending_net_requests_.end(), base::NotFatalUntil::M130);
   ImageRequest* request = &image_iter->second;
 
   // Run all image callbacks.
