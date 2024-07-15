@@ -268,7 +268,7 @@ void GraphImplCoreml::CreateAndBuildOnBackgroundThread(
     auto& name = graph_info->id_to_operand_map.at(output_id)->name;
     CHECK(name.has_value());
     coreml_name_to_operand_name.emplace_back(
-        GetCoreMLNameFromOutput(name.value()), name.value());
+        GetCoreMLNameFromOutput(name.value(), output_id), name.value());
   }
 
   auto input_feature_info = std::make_unique<CoreMLFeatureInfoMap>(

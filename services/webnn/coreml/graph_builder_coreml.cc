@@ -556,18 +556,38 @@ void SetInputWithName(
   inputs[key].add_arguments()->set_name(std::string(name));
 }
 
-std::string GetCoreMLNameFromInput(std::string_view input_name) {
+// CoreML requires names to match regular expression [A-Za-z\_][A-Za-z0-9\_@]*
+// Note prefixes "input_", "output_" are added to names, so here only removing
+// characters that don't match [A-Za-z0-9\_@]*
+// https://github.com/apple/coremltools/blob/0e292a072452db19d1e64b687a372c0c54704a90/mlmodel/format/MIL.proto#L23
+std::string SanitizeName(std::string_view name) {
+  std::string sanitized_name(name);
+  std::erase_if(sanitized_name, [](char c) {
+    return !base::IsAsciiAlphaNumeric(c) && c != '_' && c != '@';
+  });
+  return sanitized_name;
+}
+
+std::string GetCoreMLNameFromInput(std::string_view input_name,
+                                   uint64_t operand_id) {
   // Prefix is added to user provided names to avoid collision with intermediate
-  // operands' names
-  return base::JoinString({kInputNamePrefix, input_name}, kStringSeparator);
+  // operands' names. `operand_id` is added to avoid collision with other
+  // inputs' sanitized values.
+  return base::JoinString({kInputNamePrefix, SanitizeName(input_name),
+                           base::NumberToString(operand_id)},
+                          kStringSeparator);
 }
 
 }  // namespace
 
-std::string GetCoreMLNameFromOutput(std::string_view output_name) {
+std::string GetCoreMLNameFromOutput(std::string_view output_name,
+                                    uint64_t operand_id) {
   // Prefix is added to user provided names to avoid collision with intermediate
-  // operands' names
-  return base::JoinString({kOutputNamePrefix, output_name}, kStringSeparator);
+  // operands' names. `operand_id` is added to avoid collision with other
+  // outputs' sanitized values.
+  return base::JoinString({kOutputNamePrefix, SanitizeName(output_name),
+                           base::NumberToString(operand_id)},
+                          kStringSeparator);
 }
 
 // static
@@ -847,7 +867,7 @@ GraphBuilderCoreml::BuildCoreMLModel() {
 
   // Add output.
   for (uint64_t output_id : graph_info_->output_operands) {
-    block.add_outputs(GetCoreMLNameFromOperand(output_id));
+    block.add_outputs(GetOperandInfo(output_id).coreml_name);
     RETURN_IF_ERROR(AddOutput(output_id));
   }
   return base::ok();
@@ -1004,6 +1024,8 @@ GraphBuilderCoreml::AddInput(
             OperandTypeToMILDataType(operand.descriptor.data_type()), {}));
     RETURN_IF_ERROR(
         AddOperationForReshape(input_id, internal_operand_id, block));
+    // Points the input_id to the reshaped node's coreml identifier, so that
+    // subsequent operations find the correct inputs.
     id_to_operand_info_map()[input_id].coreml_name =
         GetOperandInfo(internal_operand_id).coreml_name;
   }
@@ -2574,7 +2596,7 @@ GraphBuilderCoreml::PopulateFeatureDescription(
         "Unsupported rank for input. It should be between 0 to 5.");
   }
   feature_description.mutable_name()->assign(
-      GetCoreMLNameFromOperand(operand_id));
+      GetOperandInfo(operand_id).external_coreml_name);
   return base::ok();
 }
 
@@ -2704,14 +2726,14 @@ std::string GraphBuilderCoreml::GetCoreMLNameFromOperand(uint64_t operand_id) {
   switch (operand.kind) {
     case mojom::Operand::Kind::kInput:
       CHECK(operand.name.has_value());
-      return GetCoreMLNameFromInput(operand.name.value());
+      return GetCoreMLNameFromInput(operand.name.value(), operand_id);
     case mojom::Operand::Kind::kConstant:
       return base::JoinString(
           {kIntermediateOperandPrefix, base::NumberToString(operand_id)},
           kStringSeparator);
     case mojom::Operand::Kind::kOutput:
       if (operand.name.has_value()) {
-        return GetCoreMLNameFromOutput(operand.name.value());
+        return GetCoreMLNameFromOutput(operand.name.value(), operand_id);
       } else {
         // Intermediate outputs don't have names so use operand_id instead.
         return base::JoinString(

@@ -42,7 +42,8 @@ concept IsSupportedTensorType =
 inline constexpr char kPlaceholderInputName[] = "placeholder";
 
 // Get name identifiers used in CoreML model files for output operands.
-std::string GetCoreMLNameFromOutput(std::string_view output_name);
+std::string GetCoreMLNameFromOutput(std::string_view output_name,
+                                    uint64_t operand_id);
 
 // Reads the WebNN graph from the mojom::GraphInfo to
 // produce CoreML model and serializes to provided `working_directory`.
