@@ -4981,6 +4981,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_GOOGLE_BOTTOM_BAR_PAGE_INSIGHTS_BUTTON_DESCRIPTION" desc="Content description for page insights button">
       View page insights
       </message>
+      <message name="IDS_GOOGLE_BOTTOM_BAR_SEARCH_BUTTON_DESCRIPTION" desc="Content description for search button">
+      Search
+      </message>
+      <message name="IDS_GOOGLE_BOTTOM_BAR_HOME_BUTTON_DESCRIPTION" desc="Content description for home button">
+      Go to Google App Home
+      </message>
       <message name="IDS_GOOGLE_BOTTOM_BAR_SEARCHBOX_SUPER_G_BUTTON_DESCRIPTION" desc="Content description for super G button in a searchbox that opens Home tab in Google App">
       Go to Google App Home
       </message>

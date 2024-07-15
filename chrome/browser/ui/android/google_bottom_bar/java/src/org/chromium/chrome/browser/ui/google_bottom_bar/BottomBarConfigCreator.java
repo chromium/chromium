@@ -315,9 +315,7 @@ public class BottomBarConfigCreator {
                                 mContext,
                                 R.drawable.ic_search,
                                 R.color.default_icon_color_baseline),
-                        // TODO(b/351978684) Add new string
-                        // google_bottom_bar_search_button_description
-                        mContext.getString(R.string.bookmark_toolbar_search_title),
+                        mContext.getString(R.string.google_bottom_bar_search_button_description),
                         /* pendingIntent= */ null);
             case ButtonId.HOME:
                 return new ButtonConfig(
@@ -326,10 +324,7 @@ public class BottomBarConfigCreator {
                                 mContext,
                                 R.drawable.bottom_bar_home_icon,
                                 R.color.default_icon_color_baseline),
-                        // TODO(b/351978684) Add new string
-                        // google_bottom_bar_home_button_description
-                        mContext.getString(
-                                R.string.google_bottom_bar_searchbox_super_g_button_description),
+                        mContext.getString(R.string.google_bottom_bar_home_button_description),
                         /* pendingIntent= */ null);
             default:
                 {
