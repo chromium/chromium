@@ -81,7 +81,6 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
@@ -102,6 +101,8 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityManagerJni;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.metrics.SyncButtonClicked;
+import org.chromium.components.signin.metrics.SyncButtonsType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -1239,11 +1240,10 @@ public class SyncConsentFragmentTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 "Signin.SyncButtons.Clicked",
-                                SigninMetricsUtils.SyncButtonClicked.SYNC_CANCEL_EQUAL_WEIGHTED)
+                                SyncButtonClicked.SYNC_CANCEL_EQUAL_WEIGHTED)
                         .expectIntRecord(
                                 "Signin.SyncButtons.Shown",
-                                SigninMetricsUtils.SyncButtonsType
-                                        .SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)
+                                SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)
                         .build();
 
         mChromeActivityTestRule.startMainActivityOnBlankPage();
@@ -1264,10 +1264,9 @@ public class SyncConsentFragmentTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 "Signin.SyncButtons.Clicked",
-                                SigninMetricsUtils.SyncButtonClicked.SYNC_CANCEL_NOT_EQUAL_WEIGHTED)
+                                SyncButtonClicked.SYNC_CANCEL_NOT_EQUAL_WEIGHTED)
                         .expectIntRecord(
-                                "Signin.SyncButtons.Shown",
-                                SigninMetricsUtils.SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED)
+                                "Signin.SyncButtons.Shown", SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED)
                         .build();
 
         mChromeActivityTestRule.startMainActivityOnBlankPage();
@@ -1287,11 +1286,10 @@ public class SyncConsentFragmentTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 "Signin.SyncButtons.Clicked",
-                                SigninMetricsUtils.SyncButtonClicked.SYNC_OPT_IN_EQUAL_WEIGHTED)
+                                SyncButtonClicked.SYNC_OPT_IN_EQUAL_WEIGHTED)
                         .expectIntRecord(
                                 "Signin.SyncButtons.Shown",
-                                SigninMetricsUtils.SyncButtonsType
-                                        .SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)
+                                SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)
                         .build();
 
         mChromeActivityTestRule.startMainActivityOnBlankPage();
@@ -1312,10 +1310,9 @@ public class SyncConsentFragmentTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 "Signin.SyncButtons.Clicked",
-                                SigninMetricsUtils.SyncButtonClicked.SYNC_OPT_IN_NOT_EQUAL_WEIGHTED)
+                                SyncButtonClicked.SYNC_OPT_IN_NOT_EQUAL_WEIGHTED)
                         .expectIntRecord(
-                                "Signin.SyncButtons.Shown",
-                                SigninMetricsUtils.SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED)
+                                "Signin.SyncButtons.Shown", SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED)
                         .build();
 
         mChromeActivityTestRule.startMainActivityOnBlankPage();
@@ -1336,8 +1333,7 @@ public class SyncConsentFragmentTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 "Signin.SyncButtons.Shown",
-                                SigninMetricsUtils.SyncButtonsType
-                                        .SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)
+                                SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)
                         .build();
 
         mChromeActivityTestRule.startMainActivityOnBlankPage();
@@ -1362,8 +1358,7 @@ public class SyncConsentFragmentTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
-                                "Signin.SyncButtons.Shown",
-                                SigninMetricsUtils.SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED)
+                                "Signin.SyncButtons.Shown", SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED)
                         .build();
 
         mChromeActivityTestRule.startMainActivityOnBlankPage();
@@ -1387,8 +1382,7 @@ public class SyncConsentFragmentTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 "Signin.SyncButtons.Shown",
-                                SigninMetricsUtils.SyncButtonsType
-                                        .SYNC_EQUAL_WEIGHTED_FROM_DEADLINE)
+                                SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_DEADLINE)
                         .build();
 
         mChromeActivityTestRule.startMainActivityOnBlankPage();
@@ -1443,8 +1437,7 @@ public class SyncConsentFragmentTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 "Signin.SyncButtons.Shown",
-                                SigninMetricsUtils.SyncButtonsType
-                                        .SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)
+                                SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)
                         .build();
         MinorModeHelper.disableTimeoutForTesting();
         mChromeActivityTestRule.startMainActivityOnBlankPage();
@@ -1489,8 +1482,7 @@ public class SyncConsentFragmentTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
-                                "Signin.SyncButtons.Shown",
-                                SigninMetricsUtils.SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED)
+                                "Signin.SyncButtons.Shown", SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED)
                         .build();
 
         MinorModeHelper.disableTimeoutForTesting();
@@ -1537,8 +1529,7 @@ public class SyncConsentFragmentTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 "Signin.SyncButtons.Shown",
-                                SigninMetricsUtils.SyncButtonsType
-                                        .SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)
+                                SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)
                         .build();
 
         mChromeActivityTestRule.startMainActivityOnBlankPage();
@@ -1559,8 +1550,7 @@ public class SyncConsentFragmentTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
-                                "Signin.SyncButtons.Shown",
-                                SigninMetricsUtils.SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED)
+                                "Signin.SyncButtons.Shown", SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED)
                         .build();
 
         mChromeActivityTestRule.startMainActivityOnBlankPage();
@@ -1581,8 +1571,7 @@ public class SyncConsentFragmentTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 "Signin.SyncButtons.Shown",
-                                SigninMetricsUtils.SyncButtonsType
-                                        .SYNC_EQUAL_WEIGHTED_FROM_DEADLINE)
+                                SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_DEADLINE)
                         .build();
 
         mChromeActivityTestRule.startMainActivityOnBlankPage();

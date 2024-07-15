@@ -48,8 +48,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
-import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.SyncButtonsType;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper;
 import org.chromium.chrome.browser.ui.signin.R;
@@ -58,6 +56,8 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.metrics.SyncButtonClicked;
+import org.chromium.components.signin.metrics.SyncButtonsType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
@@ -153,8 +153,7 @@ public class HistorySyncTest {
                         .expectIntRecord("Signin.HistorySyncOptIn.Completed", SIGNIN_ACCESS_POINT)
                         .expectIntRecord(
                                 "Signin.SyncButtons.Clicked",
-                                SigninMetricsUtils.SyncButtonClicked
-                                        .HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED)
+                                SyncButtonClicked.HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED)
                         .expectIntRecord(
                                 "Signin.SyncButtons.Shown",
                                 SyncButtonsType.HISTORY_SYNC_NOT_EQUAL_WEIGHTED)
@@ -180,8 +179,7 @@ public class HistorySyncTest {
                         .expectIntRecord("Signin.HistorySyncOptIn.Declined", SIGNIN_ACCESS_POINT)
                         .expectIntRecord(
                                 "Signin.SyncButtons.Clicked",
-                                SigninMetricsUtils.SyncButtonClicked
-                                        .HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED)
+                                SyncButtonClicked.HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED)
                         .expectIntRecord(
                                 "Signin.SyncButtons.Shown",
                                 SyncButtonsType.HISTORY_SYNC_NOT_EQUAL_WEIGHTED)
@@ -206,8 +204,7 @@ public class HistorySyncTest {
                         .expectIntRecord("Signin.HistorySyncOptIn.Completed", SIGNIN_ACCESS_POINT)
                         .expectIntRecord(
                                 "Signin.SyncButtons.Clicked",
-                                SigninMetricsUtils.SyncButtonClicked
-                                        .HISTORY_SYNC_OPT_IN_EQUAL_WEIGHTED)
+                                SyncButtonClicked.HISTORY_SYNC_OPT_IN_EQUAL_WEIGHTED)
                         .expectIntRecord(
                                 "Signin.SyncButtons.Shown",
                                 SyncButtonsType.HISTORY_SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)
@@ -232,8 +229,7 @@ public class HistorySyncTest {
                         .expectIntRecord("Signin.HistorySyncOptIn.Declined", SIGNIN_ACCESS_POINT)
                         .expectIntRecord(
                                 "Signin.SyncButtons.Clicked",
-                                SigninMetricsUtils.SyncButtonClicked
-                                        .HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED)
+                                SyncButtonClicked.HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED)
                         .expectIntRecord(
                                 "Signin.SyncButtons.Shown",
                                 SyncButtonsType.HISTORY_SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)

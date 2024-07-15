@@ -17,6 +17,8 @@ import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.metrics.SyncButtonClicked;
+import org.chromium.components.signin.metrics.SyncButtonsType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -123,9 +125,9 @@ public class MinorModeHelper implements IdentityManager.Observer {
      * Records whether the buttons on sync screen and history sync were equally weighted. If the
      * buttons were unweighted it specifies if this was due to the deadline or the capability.
      *
-     * @param type See {@link SigninMetricsUtils.SyncButtonsType}
+     * @param type See {@link SyncButtonsType}
      */
-    public static void recordButtonsShown(@SigninMetricsUtils.SyncButtonsType int type) {
+    public static void recordButtonsShown(@SyncButtonsType int type) {
         SigninMetricsUtils.recordButtonsShown(type);
     }
 
@@ -133,9 +135,9 @@ public class MinorModeHelper implements IdentityManager.Observer {
      * Records which buttons (accept or decline) were clicked on sync screen and history sync and
      * whether the buttons were equally weighted.
      *
-     * @param type See {@link SigninMetricsUtils.SyncButtonClicked}
+     * @param type See {@link SyncButtonClicked}
      */
-    public static void recordButtonClicked(@SigninMetricsUtils.SyncButtonClicked int type) {
+    public static void recordButtonClicked(@SyncButtonClicked int type) {
         SigninMetricsUtils.recordButtonTypeClicked(type);
     }
 

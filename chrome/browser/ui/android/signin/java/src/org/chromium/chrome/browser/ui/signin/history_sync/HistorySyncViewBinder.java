@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.ui.signin.history_sync;
 
-import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.SyncButtonsType;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper.ScreenMode;
+import org.chromium.components.signin.metrics.SyncButtonsType;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 

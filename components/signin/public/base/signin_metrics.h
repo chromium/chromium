@@ -503,6 +503,7 @@ enum class FetchAccountCapabilitiesFromSystemLibraryResult {
 };
 
 // Tracks type of the button that was presented to the user.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.metrics
 enum class SyncButtonsType : int {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -526,6 +527,7 @@ enum class SyncButtonsType : int {
 };
 
 // Tracks type of the button that was clicked by the user.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.metrics
 enum class SyncButtonClicked : int {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.

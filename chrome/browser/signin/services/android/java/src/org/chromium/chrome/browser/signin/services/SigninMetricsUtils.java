@@ -12,6 +12,8 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.metrics.SyncButtonClicked;
+import org.chromium.components.signin.metrics.SyncButtonsType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -38,64 +40,6 @@ public class SigninMetricsUtils {
         int NULL_ACCOUNT_NAME = 5;
         int NUM_STATES = 6;
     }
-
-    @IntDef({
-        SyncButtonClicked.SYNC_OPT_IN_EQUAL_WEIGHTED,
-        SyncButtonClicked.SYNC_CANCEL_EQUAL_WEIGHTED,
-        SyncButtonClicked.SYNC_SETTINGS_EQUAL_WEIGHTED,
-        SyncButtonClicked.SYNC_OPT_IN_NOT_EQUAL_WEIGHTED,
-        SyncButtonClicked.SYNC_CANCEL_NOT_EQUAL_WEIGHTED,
-        SyncButtonClicked.SYNC_SETTINGS_NOT_EQUAL_WEIGHTED,
-        SyncButtonClicked.HISTORY_SYNC_OPT_IN_EQUAL_WEIGHTED,
-        SyncButtonClicked.HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED,
-        SyncButtonClicked.HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED,
-        SyncButtonClicked.HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED,
-        SyncButtonClicked.SYNC_SETTINGS_UNKNOWN_WEIGHTED,
-        SyncButtonClicked.NUM_ENTRIES,
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface SyncButtonClicked {
-        // These values are persisted to logs. Entries should not be renumbered and
-        // numeric values should never be reused.
-        int SYNC_OPT_IN_EQUAL_WEIGHTED = 0;
-        int SYNC_CANCEL_EQUAL_WEIGHTED = 1;
-        int SYNC_SETTINGS_EQUAL_WEIGHTED = 2;
-        int SYNC_OPT_IN_NOT_EQUAL_WEIGHTED = 3;
-        int SYNC_CANCEL_NOT_EQUAL_WEIGHTED = 4;
-        int SYNC_SETTINGS_NOT_EQUAL_WEIGHTED = 5;
-        int HISTORY_SYNC_OPT_IN_EQUAL_WEIGHTED = 6;
-        int HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED = 7;
-        int HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED = 8;
-        int HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED = 9;
-        int SYNC_SETTINGS_UNKNOWN_WEIGHTED = 10;
-        int NUM_ENTRIES = 11;
-    };
-
-    @IntDef({
-        SyncButtonsType.SYNC_EQUAL_WEIGHTED_DEPRECATED,
-        SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED,
-        SyncButtonsType.HISTORY_SYNC_EQUAL_WEIGHTED_DEPRECATED,
-        SyncButtonsType.HISTORY_SYNC_NOT_EQUAL_WEIGHTED,
-        SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_DEADLINE,
-        SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY,
-        SyncButtonsType.HISTORY_SYNC_EQUAL_WEIGHTED_FROM_DEADLINE,
-        SyncButtonsType.HISTORY_SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY,
-        SyncButtonsType.NUM_ENTRIES,
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface SyncButtonsType {
-        // These values are persisted to logs. Entries should not be renumbered and
-        // numeric values should never be reused.
-        int SYNC_EQUAL_WEIGHTED_DEPRECATED = 0;
-        int SYNC_NOT_EQUAL_WEIGHTED = 1;
-        int HISTORY_SYNC_EQUAL_WEIGHTED_DEPRECATED = 2;
-        int HISTORY_SYNC_NOT_EQUAL_WEIGHTED = 3;
-        int SYNC_EQUAL_WEIGHTED_FROM_DEADLINE = 4;
-        int SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY = 5;
-        int HISTORY_SYNC_EQUAL_WEIGHTED_FROM_DEADLINE = 6;
-        int HISTORY_SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY = 7;
-        int NUM_ENTRIES = 8;
-    };
 
     /**
      * Logs Signin.AccountConsistencyPromoAction.* histograms.
@@ -152,12 +96,12 @@ public class SigninMetricsUtils {
 
     public static void recordButtonTypeClicked(@SyncButtonClicked int type) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Signin.SyncButtons.Clicked", type, SyncButtonClicked.NUM_ENTRIES);
+                "Signin.SyncButtons.Clicked", type, SyncButtonClicked.MAX_VALUE);
     }
 
     public static void recordButtonsShown(@SyncButtonsType int type) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Signin.SyncButtons.Shown", type, SyncButtonsType.NUM_ENTRIES);
+                "Signin.SyncButtons.Shown", type, SyncButtonsType.MAX_VALUE);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

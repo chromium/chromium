@@ -18,9 +18,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper.ScreenMode;
 import org.chromium.components.browser_ui.widget.DualControlLayout;
+import org.chromium.components.signin.metrics.SyncButtonClicked;
+import org.chromium.components.signin.metrics.SyncButtonsType;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.drawable.AnimationLooper;
 
@@ -163,12 +164,11 @@ class SigninView extends LinearLayout {
         switch (mScreenMode) {
             case ScreenMode.RESTRICTED:
             case ScreenMode.DEADLINED:
-                MinorModeHelper.recordButtonClicked(
-                        SigninMetricsUtils.SyncButtonClicked.SYNC_OPT_IN_EQUAL_WEIGHTED);
+                MinorModeHelper.recordButtonClicked(SyncButtonClicked.SYNC_OPT_IN_EQUAL_WEIGHTED);
                 break;
             case ScreenMode.UNRESTRICTED:
                 MinorModeHelper.recordButtonClicked(
-                        SigninMetricsUtils.SyncButtonClicked.SYNC_OPT_IN_NOT_EQUAL_WEIGHTED);
+                        SyncButtonClicked.SYNC_OPT_IN_NOT_EQUAL_WEIGHTED);
                 break;
             default:
                 // Button not present
@@ -181,12 +181,11 @@ class SigninView extends LinearLayout {
         switch (mScreenMode) {
             case ScreenMode.RESTRICTED:
             case ScreenMode.DEADLINED:
-                MinorModeHelper.recordButtonClicked(
-                        SigninMetricsUtils.SyncButtonClicked.SYNC_CANCEL_EQUAL_WEIGHTED);
+                MinorModeHelper.recordButtonClicked(SyncButtonClicked.SYNC_CANCEL_EQUAL_WEIGHTED);
                 break;
             case ScreenMode.UNRESTRICTED:
                 MinorModeHelper.recordButtonClicked(
-                        SigninMetricsUtils.SyncButtonClicked.SYNC_CANCEL_NOT_EQUAL_WEIGHTED);
+                        SyncButtonClicked.SYNC_CANCEL_NOT_EQUAL_WEIGHTED);
                 break;
             default:
                 // Button not present
@@ -197,16 +196,15 @@ class SigninView extends LinearLayout {
         switch (mScreenMode) {
             case ScreenMode.PENDING:
                 MinorModeHelper.recordButtonClicked(
-                        SigninMetricsUtils.SyncButtonClicked.SYNC_SETTINGS_UNKNOWN_WEIGHTED);
+                        SyncButtonClicked.SYNC_SETTINGS_UNKNOWN_WEIGHTED);
                 break;
             case ScreenMode.RESTRICTED:
             case ScreenMode.DEADLINED:
-                MinorModeHelper.recordButtonClicked(
-                        SigninMetricsUtils.SyncButtonClicked.SYNC_SETTINGS_EQUAL_WEIGHTED);
+                MinorModeHelper.recordButtonClicked(SyncButtonClicked.SYNC_SETTINGS_EQUAL_WEIGHTED);
                 break;
             case ScreenMode.UNRESTRICTED:
                 MinorModeHelper.recordButtonClicked(
-                        SigninMetricsUtils.SyncButtonClicked.SYNC_SETTINGS_NOT_EQUAL_WEIGHTED);
+                        SyncButtonClicked.SYNC_SETTINGS_NOT_EQUAL_WEIGHTED);
                 break;
         }
     }
@@ -288,15 +286,14 @@ class SigninView extends LinearLayout {
         switch (mScreenMode) {
             case ScreenMode.RESTRICTED:
                 MinorModeHelper.recordButtonsShown(
-                        SigninMetricsUtils.SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY);
+                        SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY);
                 break;
             case ScreenMode.UNRESTRICTED:
-                MinorModeHelper.recordButtonsShown(
-                        SigninMetricsUtils.SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED);
+                MinorModeHelper.recordButtonsShown(SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED);
                 break;
             case ScreenMode.DEADLINED:
                 MinorModeHelper.recordButtonsShown(
-                        SigninMetricsUtils.SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_DEADLINE);
+                        SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_DEADLINE);
                 break;
         }
     }
