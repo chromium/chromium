@@ -93,6 +93,8 @@ TestChromeBrowserState::TestChromeBrowserState(
       original_browser_state_(original_browser_state) {
   DCHECK(original_browser_state_);
 
+  BrowserStateDependencyManager::GetInstance()->MarkBrowserStateLive(this);
+
   AssignTestingFactories(this, std::move(testing_factories));
   profile_metrics::SetBrowserProfileType(
       this, profile_metrics::BrowserProfileType::kIncognito);
@@ -121,6 +123,8 @@ TestChromeBrowserState::TestChromeBrowserState(
       otr_browser_state_(nullptr),
       original_browser_state_(nullptr) {
   DCHECK(!browser_state_name.empty());
+
+  BrowserStateDependencyManager::GetInstance()->MarkBrowserStateLive(this);
 
   AssignTestingFactories(this, std::move(testing_factories));
   profile_metrics::SetBrowserProfileType(

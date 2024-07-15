@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/supports_user_data.h"
+#include "components/keyed_service/core/features_buildflags.h"
 #include "components/keyed_service/core/keyed_service_base_factory.h"
 #include "components/keyed_service/core/keyed_service_factory.h"
 #include "components/keyed_service/core/refcounted_keyed_service_factory.h"
@@ -54,10 +55,16 @@ DependencyManager::~DependencyManager() = default;
 
 void DependencyManager::AddComponent(KeyedServiceBaseFactory* component) {
 #if DCHECK_IS_ON()
+#if BUILDFLAG(KEYED_SERVICE_HAS_TIGHT_REGISTRATION)
+  const bool registration_allowed = !any_context_created_;
+#else
   // TODO(crbug.com/40158018): Tighten this check to ensure that no factories
   // are registered after CreateContextServices() is called.
-  DCHECK(!any_context_created_ || !(component->ServiceIsCreatedWithContext() ||
-                                    component->ServiceIsNULLWhileTesting()))
+  const bool registration_allowed =
+      !any_context_created_ || !(component->ServiceIsCreatedWithContext() ||
+                                 component->ServiceIsNULLWhileTesting());
+#endif
+  DCHECK(registration_allowed)
       << "Tried to construct " << component->name()
       << " after context.\n"
          "Keyed Service Factories must be constructed before any context is "
@@ -110,10 +117,7 @@ void DependencyManager::RegisterPrefsForServices(
 
 void DependencyManager::CreateContextServices(void* context,
                                               bool is_testing_context) {
-#if DCHECK_IS_ON()
-  any_context_created_ = true;
-#endif
-  MarkContextLive(context);
+  AssertContextWasntDestroyed(context);
 
   const OrderedFactories construction_order = GetConstructionOrder();
 
@@ -122,10 +126,11 @@ void DependencyManager::CreateContextServices(void* context,
 #endif
 
   for (KeyedServiceBaseFactory* factory : construction_order) {
-    if (is_testing_context && factory->ServiceIsNULLWhileTesting() &&
-        !factory->HasTestingFactory(context)) {
-      factory->SetEmptyTestingFactory(context);
-    } else if (factory->ServiceIsCreatedWithContext()) {
+    factory->ContextInitialized(context, is_testing_context);
+  }
+
+  for (KeyedServiceBaseFactory* factory : construction_order) {
+    if (factory->ServiceIsCreatedWithContext()) {
       factory->CreateServiceNow(context);
     }
   }
@@ -219,7 +224,21 @@ void DependencyManager::AssertContextWasntDestroyed(void* context) const {
 }
 
 void DependencyManager::MarkContextLive(void* context) {
+#if DCHECK_IS_ON()
+  any_context_created_ = true;
+#endif
+
   dead_context_pointers_.erase(context);
+
+  const OrderedFactories construction_order = GetConstructionOrder();
+
+#ifndef NDEBUG
+  DumpContextDependencies(context);
+#endif
+
+  for (KeyedServiceBaseFactory* factory : construction_order) {
+    factory->ContextCreated(context);
+  }
 }
 
 void DependencyManager::MarkContextDead(void* context) {

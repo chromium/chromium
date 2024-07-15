@@ -107,10 +107,4 @@ void SimpleKeyedServiceFactory::RegisterPrefs(
   RegisterProfilePrefs(registry);
 }
 
-void SimpleKeyedServiceFactory::SetEmptyTestingFactory(void* context) {}
-
-bool SimpleKeyedServiceFactory::HasTestingFactory(void* context) const {
-  return false;
-}
-
 void SimpleKeyedServiceFactory::CreateServiceNow(void* context) {}
