@@ -828,9 +828,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   void CommitAXUpdatesImpl(Document&);
   void UpdateLifecycleIfNeeded(Document& document);
 
-  // Helper for CommitAXUpdates. Checks if layout is ready.
-  bool IsReadyToProcessDeferredEvents();
-
   // Is the main document currently parsing content, as opposed to being blocked
   // by script execution or being load complete state.
   bool IsParsingMainDocument() const;

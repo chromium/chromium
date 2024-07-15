@@ -5,6 +5,8 @@
 
 var global = {argumentsReceived: false, params: null, picker: null};
 
+const DELAYED_LAYOUT_THRESHOLD = 1000;
+
 /**
  * @param {Event} event
  */
@@ -35,7 +37,11 @@ function handleArgumentsTimeout() {
  * @param {!Array} optionBounds
  */
 function buildOptionBoundsArray(parent, optionBounds) {
-  for (let i = 0; i < parent.children.length; i++) {
+  // The optionBounds.length check prevents us from doing so many
+  // getBoundingClientRect() calls that the picker hangs for 10+ seconds.
+  for (let i = 0; i < parent.children.length &&
+       optionBounds.length < DELAYED_LAYOUT_THRESHOLD;
+       i++) {
     const child = parent.children[i];
     if (child.tagName === 'OPTION') {
       optionBounds[child.index] = child.getBoundingClientRect();
@@ -352,8 +358,6 @@ class ListPicker extends Picker {
     this.selectElement_.scrollTop = scrollPosition;
     this.dispatchEvent('didUpdate');
   }
-
-  static DELAYED_LAYOUT_THRESHOLD = 1000;
 
   /**
    * @param {!Element} parent Select element or optgroup element.
