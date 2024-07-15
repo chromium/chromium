@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
@@ -180,13 +181,13 @@ void HostResolver::OnResolveHostComplete(ResolveHostRequest* request,
   DCHECK_NE(net::ERR_IO_PENDING, error);
 
   auto found_request = requests_.find(request);
-  DCHECK(found_request != requests_.end());
+  CHECK(found_request != requests_.end(), base::NotFatalUntil::M130);
   requests_.erase(found_request);
 }
 
 void HostResolver::OnMdnsListenerCancelled(HostResolverMdnsListener* listener) {
   auto found_listener = listeners_.find(listener);
-  DCHECK(found_listener != listeners_.end());
+  CHECK(found_listener != listeners_.end(), base::NotFatalUntil::M130);
   listeners_.erase(found_listener);
 }
 

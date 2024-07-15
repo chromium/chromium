@@ -25,6 +25,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
@@ -196,7 +197,7 @@ std::unique_ptr<net::UploadDataStream> CreateUploadDataStream(
             body, element.As<DataElementBytes>()));
         break;
       case network::mojom::DataElementDataView::Tag::kFile:
-        DCHECK(opened_file != opened_files.end());
+        CHECK(opened_file != opened_files.end(), base::NotFatalUntil::M130);
         element_readers.push_back(std::make_unique<FileElementReader>(
             body, file_task_runner, element.As<network::DataElementFile>(),
             std::move(*opened_file++)));
@@ -1556,7 +1557,8 @@ void URLLoader::ContinueOnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     uint64_t response_index) {
   auto iter = on_receive_redirect_responses_.find(response_index);
-  DCHECK(iter != on_receive_redirect_responses_.end());
+  CHECK(iter != on_receive_redirect_responses_.end(),
+        base::NotFatalUntil::M130);
   mojom::URLResponseHeadPtr response = std::move(iter->second);
   DCHECK(response);
   on_receive_redirect_responses_.erase(iter);

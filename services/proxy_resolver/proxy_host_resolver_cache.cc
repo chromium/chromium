@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/not_fatal_until.h"
 #include "base/time/time.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
@@ -39,7 +40,8 @@ void ProxyHostResolverCache::StoreEntry(
   // Delete any old, now-obsolete entries.
   auto old_entry = entries_.find(key);
   if (old_entry != entries_.end()) {
-    DCHECK(old_entry->second.expiration_list_it != expiration_list_.end());
+    CHECK(old_entry->second.expiration_list_it != expiration_list_.end(),
+          base::NotFatalUntil::M130);
     expiration_list_.erase(old_entry->second.expiration_list_it);
     entries_.erase(old_entry);
   }
@@ -71,7 +73,8 @@ const std::vector<net::IPAddress>* ProxyHostResolverCache::LookupEntry(
   if (entry == entries_.end())
     return nullptr;
 
-  DCHECK(entry->second.expiration_list_it != expiration_list_.end());
+  CHECK(entry->second.expiration_list_it != expiration_list_.end(),
+        base::NotFatalUntil::M130);
   if (entry->second.expiration < base::TimeTicks::Now()) {
     expiration_list_.erase(std::move(entry->second.expiration_list_it));
     entries_.erase(entry);

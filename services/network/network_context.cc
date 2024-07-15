@@ -2893,7 +2893,7 @@ void NetworkContext::OnHttpCacheCleared(ClearHttpCacheCallback callback,
 
 void NetworkContext::OnHostResolverShutdown(HostResolver* resolver) {
   auto found_resolver = host_resolvers_.find(resolver);
-  DCHECK(found_resolver != host_resolvers_.end());
+  CHECK(found_resolver != host_resolvers_.end(), base::NotFatalUntil::M130);
   host_resolvers_.erase(found_resolver);
 }
 
@@ -2930,7 +2930,7 @@ GURL NetworkContext::GetHSTSRedirect(const GURL& original_url) {
 #if BUILDFLAG(IS_P2P_ENABLED)
 void NetworkContext::DestroySocketManager(P2PSocketManager* socket_manager) {
   auto iter = socket_managers_.find(socket_manager);
-  DCHECK(iter != socket_managers_.end());
+  CHECK(iter != socket_managers_.end(), base::NotFatalUntil::M130);
   socket_managers_.erase(iter);
 }
 #endif  // BUILDFLAG(IS_P2P_ENABLED)
@@ -2949,7 +2949,7 @@ void NetworkContext::OnVerifyCertForSignedExchangeComplete(
     uint64_t cert_verify_id,
     int result) {
   auto iter = cert_verifier_requests_.find(cert_verify_id);
-  DCHECK(iter != cert_verifier_requests_.end());
+  CHECK(iter != cert_verifier_requests_.end(), base::NotFatalUntil::M130);
 
   auto pending_cert_verify = std::move(iter->second);
   cert_verifier_requests_.erase(iter);
