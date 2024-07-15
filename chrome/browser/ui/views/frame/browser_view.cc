@@ -770,7 +770,7 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
   }
 
   void UpdateWindowControlsOverlay(
-      const gfx::Rect& available_titlebar_area) const override {
+      const gfx::Rect& available_titlebar_area) override {
     content::WebContents* web_contents = browser_view_->GetActiveWebContents();
     if (!web_contents) {
       return;
@@ -1239,7 +1239,7 @@ bool BrowserView::IsAcceleratorRegistered(const ui::Accelerator& accelerator) {
   return accelerator_table_.find(accelerator) != accelerator_table_.end();
 }
 
-WebContents* BrowserView::GetActiveWebContents() const {
+WebContents* BrowserView::GetActiveWebContents() {
   return browser_->tab_strip_model()->GetActiveWebContents();
 }
 
@@ -2643,7 +2643,8 @@ std::optional<bool> BrowserView::GetCanResizeFromWebAPI() const {
   // The value can only be set in web apps, where there currently can only be 1
   // WebContents, the return value can be determined only by looking at the
   // value set by the active WebContents' primary page.
-  content::WebContents* web_contents = GetActiveWebContents();
+  content::WebContents* web_contents =
+      const_cast<BrowserView*>(this)->GetActiveWebContents();
   if (!web_contents || !web_contents->GetPrimaryMainFrame()) {
     return std::nullopt;
   }
@@ -5324,8 +5325,8 @@ void BrowserView::UpdateUIForTabFullscreen() {
   frame()->GetFrameView()->UpdateFullscreenTopUI();
 }
 
-WebContents* BrowserView::GetActiveWebContents() {
-  return browser_->tab_strip_model()->GetActiveWebContents();
+WebContents* BrowserView::GetWebContentsForExclusiveAccess() {
+  return GetActiveWebContents();
 }
 
 void BrowserView::UnhideDownloadShelf() {

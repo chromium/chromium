@@ -53,7 +53,7 @@ class ExclusiveAccessContext {
   virtual void OnExclusiveAccessUserInput() = 0;
 
   // Returns the currently active WebContents, or nullptr if there is none.
-  virtual content::WebContents* GetActiveWebContents() = 0;
+  virtual content::WebContents* GetWebContentsForExclusiveAccess() = 0;
 
   // There are special modes where the user isn't allowed to exit fullscreen on
   // their own, and this function allows us to check for that.

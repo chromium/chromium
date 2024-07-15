@@ -507,7 +507,7 @@ void ChromeNativeAppWindowViewsAuraAsh::OnExclusiveAccessUserInput() {
 }
 
 content::WebContents*
-ChromeNativeAppWindowViewsAuraAsh::GetActiveWebContents() {
+ChromeNativeAppWindowViewsAuraAsh::GetWebContentsForExclusiveAccess() {
   return web_view()->web_contents();
 }
 

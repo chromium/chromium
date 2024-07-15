@@ -56,7 +56,7 @@ class FullscreenControllerTestWindow : public TestBrowserWindow,
 
   // ExclusiveAccessContext Interface:
   Profile* GetProfile() override;
-  content::WebContents* GetActiveWebContents() override;
+  content::WebContents* GetWebContentsForExclusiveAccess() override;
   void EnterFullscreen(const GURL& url,
                        ExclusiveAccessBubbleType type,
                        int64_t display_id) override;
@@ -176,7 +176,8 @@ Profile* FullscreenControllerTestWindow::GetProfile() {
   return browser_->profile();
 }
 
-content::WebContents* FullscreenControllerTestWindow::GetActiveWebContents() {
+content::WebContents*
+FullscreenControllerTestWindow::GetWebContentsForExclusiveAccess() {
   return browser_->tab_strip_model()->GetActiveWebContents();
 }
 

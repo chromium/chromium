@@ -572,7 +572,7 @@ OpaqueBrowserFrameView::GetFrameButtonStyle() const {
 }
 
 void OpaqueBrowserFrameView::UpdateWindowControlsOverlay(
-    const gfx::Rect& bounding_rect) const {
+    const gfx::Rect& bounding_rect) {
   content::WebContents* web_contents = browser_view()->GetActiveWebContents();
   if (web_contents) {
     web_contents->UpdateWindowControlsOverlay(bounding_rect);

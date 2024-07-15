@@ -190,7 +190,7 @@ class FullscreenTestBrowserWindow : public TestBrowserWindow,
 
   // ExclusiveAccessContext:
   Profile* GetProfile() override { return profile_; }
-  content::WebContents* GetActiveWebContents() override {
+  content::WebContents* GetWebContentsForExclusiveAccess() override {
     NOTIMPLEMENTED();
     return nullptr;
   }

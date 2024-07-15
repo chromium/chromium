@@ -99,7 +99,7 @@ class PresentationReceiverWindowView final
       ExclusiveAccessBubbleHideCallback first_hide_callback) override;
   bool IsExclusiveAccessBubbleDisplayed() const final;
   void OnExclusiveAccessUserInput() final;
-  content::WebContents* GetActiveWebContents() final;
+  content::WebContents* GetWebContentsForExclusiveAccess() final;
   bool CanUserExitFullscreen() const final;
 
   // ExclusiveAccessBubbleViewsContext overrides.

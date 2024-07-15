@@ -300,7 +300,7 @@ class FullscreenTestBrowserWindow : public TestBrowserWindow,
 
   // Exclusive access interface:
   Profile* GetProfile() override;
-  content::WebContents* GetActiveWebContents() override;
+  content::WebContents* GetWebContentsForExclusiveAccess() override;
   void UpdateExclusiveAccessBubble(
       const ExclusiveAccessBubbleParams& params,
       ExclusiveAccessBubbleHideCallback first_hide_callback) override {}
@@ -341,7 +341,8 @@ Profile* FullscreenTestBrowserWindow::GetProfile() {
   return test_browser_->GetBrowser()->profile();
 }
 
-content::WebContents* FullscreenTestBrowserWindow::GetActiveWebContents() {
+content::WebContents*
+FullscreenTestBrowserWindow::GetWebContentsForExclusiveAccess() {
   return test_browser_->GetBrowser()->tab_strip_model()->GetActiveWebContents();
 }
 

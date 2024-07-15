@@ -348,7 +348,8 @@ bool PresentationReceiverWindowView::IsExclusiveAccessBubbleDisplayed() const {
 
 void PresentationReceiverWindowView::OnExclusiveAccessUserInput() {}
 
-content::WebContents* PresentationReceiverWindowView::GetActiveWebContents() {
+content::WebContents*
+PresentationReceiverWindowView::GetWebContentsForExclusiveAccess() {
   return delegate_->web_contents();
 }
 

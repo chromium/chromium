@@ -44,8 +44,7 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   bool UseCustomFrame() const override { return true; }
   bool IsFrameCondensed() const override { return false; }
   bool EverHasVisibleBackgroundTabShapes() const override { return false; }
-  void UpdateWindowControlsOverlay(
-      const gfx::Rect& bounding_rect) const override {}
+  void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) override {}
   bool ShouldDrawRestoredFrameShadow() const override { return true; }
 #if BUILDFLAG(IS_LINUX)
   bool IsTiled() const override { return tiled_; }

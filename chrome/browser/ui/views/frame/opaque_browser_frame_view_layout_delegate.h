@@ -88,8 +88,7 @@ class OpaqueBrowserFrameViewLayoutDelegate {
   // Indicates the type of the frame buttons.
   virtual FrameButtonStyle GetFrameButtonStyle() const;
 
-  virtual void UpdateWindowControlsOverlay(
-      const gfx::Rect& bounding_rect) const = 0;
+  virtual void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) = 0;
 
   // Returns true if a client-side shadow should be drawn for restored windows.
   virtual bool ShouldDrawRestoredFrameShadow() const = 0;

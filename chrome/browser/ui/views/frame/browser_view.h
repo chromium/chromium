@@ -310,13 +310,8 @@ class BrowserView : public BrowserWindow,
   // Returns true if the specificed |accelerator| is registered with this view.
   bool IsAcceleratorRegistered(const ui::Accelerator& accelerator);
 
-  // Returns the active WebContents. Used by our NonClientView's
-  // TabIconView::TabContentsProvider implementations.
-  // TODO(beng): exposing this here is a bit bogus, since it's only used to
-  // determine loading state. It'd be nicer if we could change this to be
-  // bool IsSelectedTabLoading() const; or something like that. We could even
-  // move it to a WindowDelegate subclass.
-  content::WebContents* GetActiveWebContents() const;
+  // Returns the active WebContents.
+  content::WebContents* GetActiveWebContents();
 
   // Returns true if the Browser object associated with this BrowserView
   // supports tabs, such as all normal browsers, and tabbed apps like terminal.
@@ -754,7 +749,7 @@ class BrowserView : public BrowserWindow,
   // ExclusiveAccessContext:
   Profile* GetProfile() override;
   void UpdateUIForTabFullscreen() override;
-  content::WebContents* GetActiveWebContents() override;
+  content::WebContents* GetWebContentsForExclusiveAccess() override;
   bool CanUserExitFullscreen() const override;
 
   // ExclusiveAccessBubbleViewsContext:
