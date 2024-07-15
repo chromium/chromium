@@ -98,6 +98,7 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_config_utils.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/debug_info_printer.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
@@ -4234,11 +4235,15 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
             registrar.GetAppEffectiveDisplayMode(app_id),
             registrar.GetAppUserDisplayMode(app_id),
             manifest_launcher_icon_filename,
-            registrar.IsLocallyInstalled(app_id),
+            registrar.IsInstallState(
+                app_id, {web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                         web_app::proto::INSTALLED_WITH_OS_INTEGRATION}),
             IsShortcutAndIconCreated(profile, registrar.GetAppShortName(app_id),
                                      app_id));
 #if !BUILDFLAG(IS_CHROMEOS)
-        if (registrar.IsLocallyInstalled(app_id)) {
+        if (registrar.IsInstallState(
+                app_id, {web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                         web_app::proto::INSTALLED_WITH_OS_INTEGRATION})) {
           CheckAppSettingsAppState(profile->GetOriginalProfile(), state);
         }
 #endif
