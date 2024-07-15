@@ -140,10 +140,9 @@ IOSurfaceImageBackingFactory::IOSurfaceImageBackingFactory(
       progress_reporter_(progress_reporter),
       texture_target_(texture_target) {
   for (gfx::BufferFormat buffer_format : gpu_memory_buffer_formats_) {
+    viz::SharedImageFormat format = viz::GetSharedImageFormat(buffer_format);
     // Add supported single-plane formats.
-    viz::SharedImageFormat format =
-        viz::GetSinglePlaneSharedImageFormat(buffer_format);
-    if (IsFormatSupported(format)) {
+    if (format.is_single_plane() && IsFormatSupported(format)) {
       supported_formats_.insert(format);
     }
   }
