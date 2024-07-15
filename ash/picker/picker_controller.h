@@ -31,6 +31,7 @@ class PickerAssetFetcher;
 class PickerCapsLockStateView;
 class PickerClient;
 class PickerEmojiHistoryModel;
+class PickerEmojiSuggester;
 class PickerInsertMediaRequest;
 class PickerModel;
 class PickerPasteRequest;
@@ -127,6 +128,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   PickerFeatureTour feature_tour_;
   std::unique_ptr<PickerModel> model_;
   std::unique_ptr<PickerEmojiHistoryModel> emoji_history_model_;
+  std::unique_ptr<PickerEmojiSuggester> emoji_suggester_;
   views::UniqueWidgetPtr widget_;
   std::unique_ptr<PickerAssetFetcher> asset_fetcher_;
   std::unique_ptr<PickerInsertMediaRequest> insert_media_request_;

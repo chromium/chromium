@@ -1,0 +1,82 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/picker/model/picker_emoji_suggester.h"
+
+#include <algorithm>
+#include <string>
+#include <string_view>
+#include <vector>
+
+#include "ash/picker/model/picker_emoji_history_model.h"
+#include "ash/public/cpp/picker/picker_search_result.h"
+#include "base/check_deref.h"
+#include "base/notreached.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
+#include "ui/base/emoji/emoji_panel_helper.h"
+
+namespace ash {
+namespace {
+
+using HistoryItem = PickerEmojiHistoryModel::EmojiHistoryItem;
+
+constexpr std::string_view kDefaultSuggestedEmojis[] = {"😀", "😃", "😄"};
+
+}  // namespace
+
+PickerEmojiSuggester::PickerEmojiSuggester(
+    PickerEmojiHistoryModel* history_model)
+    : history_model_(CHECK_DEREF(history_model)) {}
+
+std::vector<PickerSearchResult> PickerEmojiSuggester::GetSuggestedEmoji()
+    const {
+  std::vector<HistoryItem> recent_emojis =
+      history_model_->GetRecentEmojis(ui::EmojiPickerCategory::kEmojis);
+  std::vector<HistoryItem> recent_emoticons =
+      history_model_->GetRecentEmojis(ui::EmojiPickerCategory::kEmoticons);
+  std::vector<HistoryItem> recent_symbols =
+      history_model_->GetRecentEmojis(ui::EmojiPickerCategory::kSymbols);
+
+  recent_emojis.reserve(recent_emojis.size() + recent_emoticons.size() +
+                        recent_symbols.size());
+  recent_emojis.insert(recent_emojis.end(), recent_emoticons.begin(),
+                       recent_emoticons.end());
+  recent_emojis.insert(recent_emojis.end(), recent_symbols.begin(),
+                       recent_symbols.end());
+  std::sort(recent_emojis.begin(), recent_emojis.end(),
+            [](const HistoryItem& a, const HistoryItem& b) {
+              return a.timestamp > b.timestamp;
+            });
+
+  std::vector<PickerSearchResult> results;
+  for (const auto& item : recent_emojis) {
+    switch (item.category) {
+      case ui::EmojiPickerCategory::kEmojis:
+        results.push_back(
+            PickerSearchResult::Emoji(base::UTF8ToUTF16(item.text)));
+        break;
+      case ui::EmojiPickerCategory::kEmoticons:
+        results.push_back(
+            PickerSearchResult::Emoticon(base::UTF8ToUTF16(item.text)));
+        break;
+      case ui::EmojiPickerCategory::kSymbols:
+        results.push_back(
+            PickerSearchResult::Symbol(base::UTF8ToUTF16(item.text)));
+        break;
+      case ui::EmojiPickerCategory::kGifs:
+        NOTREACHED_NORETURN();
+    }
+  }
+  if (results.empty()) {
+    // Fall back to a default set of suggested emojis.
+    for (std::string_view emoji : kDefaultSuggestedEmojis) {
+      results.push_back(PickerSearchResult::Emoji(base::UTF8ToUTF16(emoji)));
+    }
+  }
+  return results;
+}
+
+}  // namespace ash

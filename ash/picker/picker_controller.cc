@@ -17,6 +17,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/picker/model/picker_action_type.h"
 #include "ash/picker/model/picker_emoji_history_model.h"
+#include "ash/picker/model/picker_emoji_suggester.h"
 #include "ash/picker/model/picker_mode_type.h"
 #include "ash/picker/model/picker_model.h"
 #include "ash/picker/model/picker_search_results_section.h"
@@ -88,8 +89,6 @@ constexpr std::string_view kPickerFeatureTestKeyHash(
 enum class PickerFeatureKeyType { kNone, kDev, kTest };
 
 constexpr base::TimeDelta kCapsLockStateViewDisplayTime = base::Seconds(3);
-
-constexpr std::string_view kDefaultSuggestedEmojis[] = {"😀", "😃", "😄"};
 
 PickerFeatureKeyType MatchPickerFeatureKeyHash() {
   // Command line looks like:
@@ -609,55 +608,9 @@ PickerActionType PickerController::GetActionForResult(
       result.data());
 }
 
-// TODO(b/352421997): Move the method to a separate class.
 std::vector<PickerSearchResult> PickerController::GetSuggestedEmoji() {
-  using HistoryItem = PickerEmojiHistoryModel::EmojiHistoryItem;
-  CHECK(emoji_history_model_);
-  std::vector<HistoryItem> recent_emojis =
-      emoji_history_model_->GetRecentEmojis(ui::EmojiPickerCategory::kEmojis);
-  std::vector<HistoryItem> recent_emoticons =
-      emoji_history_model_->GetRecentEmojis(
-          ui::EmojiPickerCategory::kEmoticons);
-  std::vector<HistoryItem> recent_symbols =
-      emoji_history_model_->GetRecentEmojis(ui::EmojiPickerCategory::kSymbols);
-
-  recent_emojis.reserve(recent_emojis.size() + recent_emoticons.size() +
-                        recent_symbols.size());
-  recent_emojis.insert(recent_emojis.end(), recent_emoticons.begin(),
-                       recent_emoticons.end());
-  recent_emojis.insert(recent_emojis.end(), recent_symbols.begin(),
-                       recent_symbols.end());
-  std::sort(recent_emojis.begin(), recent_emojis.end(),
-            [](const HistoryItem& a, const HistoryItem& b) {
-              return a.timestamp > b.timestamp;
-            });
-
-  std::vector<PickerSearchResult> results;
-  for (const auto& item : recent_emojis) {
-    switch (item.category) {
-      case ui::EmojiPickerCategory::kEmojis:
-        results.push_back(
-            PickerSearchResult::Emoji(base::UTF8ToUTF16(item.text)));
-        break;
-      case ui::EmojiPickerCategory::kEmoticons:
-        results.push_back(
-            PickerSearchResult::Emoticon(base::UTF8ToUTF16(item.text)));
-        break;
-      case ui::EmojiPickerCategory::kSymbols:
-        results.push_back(
-            PickerSearchResult::Symbol(base::UTF8ToUTF16(item.text)));
-        break;
-      case ui::EmojiPickerCategory::kGifs:
-        NOTREACHED_NORETURN();
-    }
-  }
-  if (results.empty()) {
-    // Fall back to a default set of suggested emojis.
-    for (std::string_view emoji : kDefaultSuggestedEmojis) {
-      results.push_back(PickerSearchResult::Emoji(base::UTF8ToUTF16(emoji)));
-    }
-  }
-  return results;
+  CHECK(emoji_suggester_);
+  return emoji_suggester_->GetSuggestedEmoji();
 }
 
 void PickerController::OnWidgetDestroying(views::Widget* widget) {
@@ -665,6 +618,8 @@ void PickerController::OnWidgetDestroying(views::Widget* widget) {
   feature_usage_metrics_.StopUsage();
   session_metrics_.reset();
   widget_observation_.Reset();
+  emoji_suggester_.reset();
+  emoji_history_model_.reset();
 }
 
 void PickerController::FetchFileThumbnail(const base::FilePath& path,
@@ -701,6 +656,8 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp) {
 
   emoji_history_model_ =
       std::make_unique<PickerEmojiHistoryModel>(client_->GetPrefs());
+  emoji_suggester_ =
+      std::make_unique<PickerEmojiSuggester>(emoji_history_model_.get());
   session_metrics_ = std::make_unique<PickerSessionMetrics>();
 
   widget_ = PickerWidget::Create(
