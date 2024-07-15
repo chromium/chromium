@@ -17,6 +17,7 @@
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/synchronization/lock.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/simple/simple_histogram_enums.h"
@@ -189,7 +190,7 @@ void SimpleFileTracker::Doom(const SimpleSynchronousEntry* owner,
                              EntryFileKey* key) {
   base::AutoLock hold_lock(lock_);
   auto iter = tracked_files_.find(key->entry_hash);
-  DCHECK(iter != tracked_files_.end());
+  CHECK(iter != tracked_files_.end(), base::NotFatalUntil::M130);
 
   uint64_t max_doom_gen = 0;
   for (const std::unique_ptr<TrackedFiles>& file_with_same_hash :
@@ -223,7 +224,7 @@ bool SimpleFileTracker::IsEmptyForTesting() {
 SimpleFileTracker::TrackedFiles* SimpleFileTracker::Find(
     const SimpleSynchronousEntry* owner) {
   auto candidates = tracked_files_.find(owner->entry_file_key().entry_hash);
-  DCHECK(candidates != tracked_files_.end());
+  CHECK(candidates != tracked_files_.end(), base::NotFatalUntil::M130);
   for (const auto& candidate : candidates->second) {
     if (candidate->owner == owner) {
       return candidate.get();
