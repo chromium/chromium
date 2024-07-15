@@ -81,6 +81,7 @@ ProfileSelections ProfileSelections::BuildForRegularProfile() {
   return ProfileSelections::Builder()
       .WithGuest(ProfileSelection::kNone)
       .WithSystem(ProfileSelection::kNone)
+      .WithAshInternals(ProfileSelection::kNone)
       .Build();
 }
 
@@ -89,6 +90,7 @@ ProfileSelections ProfileSelections::BuildForRegularAndIncognito() {
       .WithRegular(ProfileSelection::kOwnInstance)
       .WithGuest(ProfileSelection::kNone)
       .WithSystem(ProfileSelection::kNone)
+      .WithAshInternals(ProfileSelection::kNone)
       .Build();
 }
 
@@ -97,6 +99,7 @@ ProfileSelections ProfileSelections::BuildRedirectedInIncognito() {
       .WithRegular(ProfileSelection::kRedirectedToOriginal)
       .WithGuest(ProfileSelection::kNone)
       .WithSystem(ProfileSelection::kNone)
+      .WithAshInternals(ProfileSelection::kNone)
       .Build();
 }
 

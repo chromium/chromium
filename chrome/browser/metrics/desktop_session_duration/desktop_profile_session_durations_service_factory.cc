@@ -39,7 +39,12 @@ DesktopProfileSessionDurationsServiceFactory::
           // and syncing in their regular profile and that is browsing in
           // incognito profile, Chromium will record the session time as being
           // signed in and syncing.
-          ProfileSelections::BuildRedirectedInIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
+              .Build()) {
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }

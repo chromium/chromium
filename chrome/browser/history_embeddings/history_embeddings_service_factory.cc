@@ -58,8 +58,14 @@ HistoryEmbeddingsServiceFactory::GetInstance() {
 }
 
 HistoryEmbeddingsServiceFactory::HistoryEmbeddingsServiceFactory()
-    : ProfileKeyedServiceFactory("HistoryEmbeddingsService",
-                                 ProfileSelections::BuildForRegularProfile()) {
+    : ProfileKeyedServiceFactory(
+          "HistoryEmbeddingsService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(PageContentAnnotationsServiceFactory::GetInstance());
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());

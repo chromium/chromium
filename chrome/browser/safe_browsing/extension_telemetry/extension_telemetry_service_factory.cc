@@ -35,8 +35,14 @@ ExtensionTelemetryServiceFactory::GetInstance() {
 }
 
 ExtensionTelemetryServiceFactory::ExtensionTelemetryServiceFactory()
-    : ProfileKeyedServiceFactory("ExtensionTelemetryService",
-                                 ProfileSelections::BuildForRegularProfile()) {
+    : ProfileKeyedServiceFactory(
+          "ExtensionTelemetryService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(NetworkContextServiceFactory::GetInstance());
   DependsOn(extensions::ExtensionPrefsFactory::GetInstance());
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());

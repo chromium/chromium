@@ -19,7 +19,12 @@
 AffiliationServiceFactory::AffiliationServiceFactory()
     : ProfileKeyedServiceFactory(
           "AffiliationService",
-          ProfileSelections::BuildRedirectedInIncognito()) {}
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
+              .Build()) {}
 
 AffiliationServiceFactory::~AffiliationServiceFactory() = default;
 

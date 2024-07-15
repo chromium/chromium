@@ -93,7 +93,7 @@ class ProfileSelections {
   // | Regular | self       | no profile |
   // | Guest   | no profile | no profile |
   // | System  | no profile | no profile |
-  // | Ash Int.| self       | no profile |
+  // | Ash Int.| no profile | no profile |
   // +---------+------------+------------+
   static ProfileSelections BuildForRegularProfile();
 
@@ -120,7 +120,7 @@ class ProfileSelections {
   // | Regular | self       | self       |
   // | Guest   | no profile | no profile |
   // | System  | no profile | no profile |
-  // | Ash Int.| self       | self       |
+  // | Ash Int.| no profile | no profile |
   // +---------+------------+------------+
   static ProfileSelections BuildForRegularAndIncognito();
 
@@ -136,7 +136,7 @@ class ProfileSelections {
   // | Regular | self       | original   |
   // | Guest   | no profile | no profile |
   // | System  | no profile | no profile |
-  // | Ash Int.| self       | original   |
+  // | Ash Int.| no profile | no profile |
   // +---------+------------+------------+
   static ProfileSelections BuildRedirectedInIncognito();
 

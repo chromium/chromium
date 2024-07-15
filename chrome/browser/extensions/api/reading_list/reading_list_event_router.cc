@@ -42,7 +42,12 @@ class ReadingListEventRouterFactory : public ProfileKeyedServiceFactory {
 ReadingListEventRouterFactory::ReadingListEventRouterFactory()
     : ProfileKeyedServiceFactory(
           "ReadingListEventRouter",
-          ProfileSelections::BuildForRegularAndIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOwnInstance)
+              .Build()) {
   DependsOn(EventRouterFactory::GetInstance());
   DependsOn(ReadingListModelFactory::GetInstance());
 }

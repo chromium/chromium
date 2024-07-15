@@ -34,8 +34,14 @@ SupervisedUserMetricsServiceFactory::GetInstance() {
 }
 
 SupervisedUserMetricsServiceFactory::SupervisedUserMetricsServiceFactory()
-    : ProfileKeyedServiceFactory("SupervisedUserMetricsServiceFactory",
-                                 ProfileSelections::BuildForRegularProfile()) {
+    : ProfileKeyedServiceFactory(
+          "SupervisedUserMetricsServiceFactory",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOriginalOnly)
+              .Build()) {
   // Used for tracking web filter metrics.
   DependsOn(SupervisedUserServiceFactory::GetInstance());
 }
