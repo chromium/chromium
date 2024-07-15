@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/floating_sso/floating_sso_sync_bridge.h"
 
+#include <map>
 #include <memory>
 #include <optional>
 

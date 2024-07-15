@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_FLOATING_SSO_FLOATING_SSO_SYNC_BRIDGE_H_
 #define CHROME_BROWSER_ASH_FLOATING_SSO_FLOATING_SSO_SYNC_BRIDGE_H_
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
 
-#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_store_base.h"
@@ -22,6 +22,8 @@ class MetadataBatch;
 class MetadataChangeList;
 class ModelError;
 class ModelTypeChangeProcessor;
+template <typename Entry>
+class ModelTypeStoreWithInMemoryCache;
 }  // namespace syncer
 
 namespace ash::floating_sso {
@@ -29,7 +31,7 @@ namespace ash::floating_sso {
 class FloatingSsoSyncBridge : public syncer::ModelTypeSyncBridge {
  public:
   using CookieSpecificsEntries =
-      base::flat_map<std::string, sync_pb::CookieSpecifics>;
+      std::map<std::string, sync_pb::CookieSpecifics>;
 
   explicit FloatingSsoSyncBridge(
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
@@ -51,25 +53,25 @@ class FloatingSsoSyncBridge : public syncer::ModelTypeSyncBridge {
       StorageKeyList storage_keys) override;
   std::unique_ptr<syncer::DataBatch> GetAllDataForDebugging() override;
 
+  // Assumes that the `store_` is initialized.
   const CookieSpecificsEntries& CookieSpecificsEntriesForTest() const;
   bool IsInitialDataReadFinishedForTest() const;
 
  private:
-  void OnStoreCreated(const std::optional<syncer::ModelError>& error,
-                      std::unique_ptr<syncer::ModelTypeStore> store);
-  void OnReadAllDataAndMetadata(
-      const std::optional<syncer::ModelError>& error,
-      std::unique_ptr<syncer::ModelTypeStore::RecordList> record_list,
-      std::unique_ptr<syncer::MetadataBatch> metadata_batch);
+  using StoreWithCache =
+      syncer::ModelTypeStoreWithInMemoryCache<sync_pb::CookieSpecifics>;
 
-  CookieSpecificsEntries entries_;
+  void OnStoreCreated(const std::optional<syncer::ModelError>& error,
+                      std::unique_ptr<StoreWithCache> store,
+                      std::unique_ptr<syncer::MetadataBatch> metadata_batch);
 
   // Whether we finished reading data and metadata from disk on initial bridge
   // creation.
   bool is_initial_data_read_finished_ = false;
 
-  // Reads and writes data from/to disk.
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  // Reads and writes data from/to disk, maintains an in-memory copy of the
+  // data.
+  std::unique_ptr<StoreWithCache> store_;
 
   base::WeakPtrFactory<FloatingSsoSyncBridge> weak_ptr_factory_{this};
 };

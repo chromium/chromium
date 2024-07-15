@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
+#include "components/sync/protocol/cookie_specifics.pb.h"
 #include "components/sync/protocol/security_event_specifics.pb.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
 
@@ -177,6 +178,7 @@ ModelTypeStoreWithInMemoryCache<Entry>::WriteBatchImpl::ExtractChanges() {
 }
 
 // Explicit instantiations for all required entry types.
+template class ModelTypeStoreWithInMemoryCache<sync_pb::CookieSpecifics>;
 template class ModelTypeStoreWithInMemoryCache<sync_pb::SecurityEventSpecifics>;
 template class ModelTypeStoreWithInMemoryCache<sync_pb::UserConsentSpecifics>;
 template class ModelTypeStoreWithInMemoryCache<sync_pb::UserEventSpecifics>;

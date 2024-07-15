@@ -9,11 +9,13 @@
 #include <string>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_store.h"
+#include "components/sync/model/model_type_store_with_in_memory_cache.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/protocol/cookie_specifics.pb.h"
 
@@ -23,10 +25,10 @@ FloatingSsoSyncBridge::FloatingSsoSyncBridge(
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
     syncer::OnceModelTypeStoreFactory create_store_callback)
     : syncer::ModelTypeSyncBridge(std::move(change_processor)) {
-  std::move(create_store_callback)
-      .Run(syncer::COOKIES,
-           base::BindOnce(&FloatingSsoSyncBridge::OnStoreCreated,
-                          weak_ptr_factory_.GetWeakPtr()));
+  StoreWithCache::CreateAndLoad(
+      std::move(create_store_callback), syncer::COOKIES,
+      base::BindOnce(&FloatingSsoSyncBridge::OnStoreCreated,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 FloatingSsoSyncBridge::~FloatingSsoSyncBridge() = default;
@@ -81,7 +83,7 @@ FloatingSsoSyncBridge::GetAllDataForDebugging() {
 
 const FloatingSsoSyncBridge::CookieSpecificsEntries&
 FloatingSsoSyncBridge::CookieSpecificsEntriesForTest() const {
-  return entries_;
+  return CHECK_DEREF(store_.get()).in_memory_data();
 }
 
 bool FloatingSsoSyncBridge::IsInitialDataReadFinishedForTest() const {
@@ -90,35 +92,14 @@ bool FloatingSsoSyncBridge::IsInitialDataReadFinishedForTest() const {
 
 void FloatingSsoSyncBridge::OnStoreCreated(
     const std::optional<syncer::ModelError>& error,
-    std::unique_ptr<syncer::ModelTypeStore> store) {
-  if (error) {
-    change_processor()->ReportError(*error);
-    return;
-  }
-
-  store_ = std::move(store);
-  store_->ReadAllDataAndMetadata(
-      base::BindOnce(&FloatingSsoSyncBridge::OnReadAllDataAndMetadata,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void FloatingSsoSyncBridge::OnReadAllDataAndMetadata(
-    const std::optional<syncer::ModelError>& error,
-    std::unique_ptr<syncer::ModelTypeStore::RecordList> record_list,
+    std::unique_ptr<StoreWithCache> store,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   if (error) {
     change_processor()->ReportError(*error);
     return;
   }
-
-  for (const syncer::ModelTypeStore::Record& record : *record_list) {
-    sync_pb::CookieSpecifics cookie_specifics;
-    if (!cookie_specifics.ParseFromString(record.value)) {
-      continue;
-    }
-    entries_.emplace(cookie_specifics.unique_key(), cookie_specifics);
-  }
-
+  CHECK(store);
+  store_ = std::move(store);
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
   is_initial_data_read_finished_ = true;
 }
