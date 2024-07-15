@@ -654,8 +654,10 @@ void TextSuggestionController::ReplaceRangeWithText(const EphemeralRange& range,
 
   if (is_canceled)
     return;
-  GetFrame().GetEditor().ReplaceSelectionWithText(
-      replacement, false, false, InputEvent::InputType::kInsertReplacementText);
+
+  GetFrame().GetEditor().InsertTextWithoutSendingTextEvent(
+      replacement, false, nullptr,
+      InputEvent::InputType::kInsertReplacementText);
 }
 
 }  // namespace blink
