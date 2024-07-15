@@ -784,7 +784,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             mContentContainer,
                             mTabSwitcherSupplier,
                             getTabModelSelectorSupplier(),
-                            getBrowserControlsManager(),
                             getTabContentManagerSupplier(),
                             mRootUiCoordinator::getTopUiThemeColorProvider,
                             createHubLayoutDependencyHolder());
@@ -799,7 +798,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 TraceEvent.scoped("ChromeTabbedActivity.setupCompositorContentForTablet")) {
             CompositorViewHolder compositorViewHolder = getCompositorViewHolderSupplier().get();
 
-            ViewGroup tabSwitcherViewHolder = findViewById(R.id.tab_switcher_view_holder);
             ViewStub tabHoverCardViewStub = findViewById(R.id.tab_hover_card_holder_stub);
             View toolbarContainerView = findViewById(R.id.toolbar_container);
             mDragDropDelegate = new DragAndDropDelegateImpl();
@@ -825,8 +823,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             getTabContentManagerSupplier(),
                             mRootUiCoordinator::getTopUiThemeColorProvider,
                             mTabModelStartupInfoSupplier,
-                            tabSwitcherViewHolder,
-                            mRootUiCoordinator.getScrimCoordinator(),
                             getLifecycleDispatcher(),
                             createHubLayoutDependencyHolder(),
                             mMultiInstanceManager,
@@ -1484,7 +1480,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 // away in Recents. http://crbug.com/626629
                 boolean ignoreIncognitoFiles = !hadCipherData;
 
-                // If the Start surface should be shown on startup, check if the active tab restored
+                // If the home surface should be shown on startup, check if the active tab restored
                 // from disk is an NTP that can be reused for Start.
                 Callback<String> onStandardActiveIndexRead = null;
                 shouldShowNtpAsHomeSurfaceAtStartup = shouldShowNtpHomeSurfaceOnStartup();
@@ -1658,8 +1654,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         Log.i(TAG, "#createInitialTab executed.");
         mPendingInitialTabCreation = false;
 
-        // If the start surface or grid tab switcher will be shown on start, do not create a new
-        // tab.
         String url = null;
         GURL homepageGurl = HomepageManager.getInstance().getHomepageGurl();
         if (homepageGurl.isEmpty()) {
@@ -2653,8 +2647,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 tracker.notifyEvent(EventConstants.APP_MENU_NEW_INCOGNITO_TAB_CLICKED);
             }
         } else if (id == R.id.all_bookmarks_menu_id) {
-            // Note that 'currentTab' could be null in overview mode when start surface is
-            // enabled.
             getCompositorViewHolderSupplier()
                     .get()
                     .hideKeyboard(

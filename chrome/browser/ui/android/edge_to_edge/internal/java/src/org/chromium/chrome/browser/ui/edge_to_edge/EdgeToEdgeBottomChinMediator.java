@@ -72,8 +72,7 @@ class EdgeToEdgeBottomChinMediator
     private void updateVisibility() {
         boolean supportedLayoutType =
                 mCurrentLayoutType == LayoutType.BROWSING
-                        || mCurrentLayoutType == LayoutType.TOOLBAR_SWIPE
-                        || mCurrentLayoutType == LayoutType.START_SURFACE;
+                        || mCurrentLayoutType == LayoutType.TOOLBAR_SWIPE;
 
         // Check that the bottom inset is greater than zero, otherwise there is no space to show the
         // bottom chin. A zero inset indicates a lack of "dismissable" bottom bar (e.g. fullscreen

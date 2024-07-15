@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvid
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 import java.util.List;
@@ -71,7 +70,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     // Lazy Tab Switcher Init
     private final Supplier<TabSwitcher> mTabSwitcherSupplier;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
-    private final ScrimCoordinator mScrimCoordinator;
 
     private final HubLayoutDependencyHolder mHubLayoutDependencyHolder;
     private final ThumbnailChangeListener mThumbnailChangeListener = (id) -> requestUpdate();
@@ -87,13 +85,8 @@ public class LayoutManagerChrome extends LayoutManagerImpl
      * @param tabSwitcherSupplier Supplier for an interface to talk to the Grid Tab Switcher. Used
      *     to create TabSwitcherLayout if it has value.
      * @param tabModelSelectorSupplier Supplier for an interface to talk to the Tab Model Selector.
-     * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for top
-     *     controls.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
-     * @param tabSwitcherScrimAnchor {@link ViewGroup} used by tab switcher layout to show scrim
-     *     when overview is visible.
-     * @param scrimCoordinator {@link ScrimCoordinator} to show/hide scrim.
      * @param hubLayoutDependencyHolder The dependency holder for creating {@link HubLayout}.
      */
     public LayoutManagerChrome(
@@ -101,11 +94,8 @@ public class LayoutManagerChrome extends LayoutManagerImpl
             ViewGroup contentContainer,
             Supplier<TabSwitcher> tabSwitcherSupplier,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
-            BrowserControlsStateProvider browserControlsStateProvider,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
-            ViewGroup tabSwitcherScrimAnchor,
-            ScrimCoordinator scrimCoordinator,
             HubLayoutDependencyHolder hubLayoutDependencyHolder) {
         super(host, contentContainer, tabContentManagerSupplier, topUiThemeColorProvider);
         // Build Event Filter Handlers
@@ -116,7 +106,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
 
         mTabSwitcherSupplier = tabSwitcherSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
-        mScrimCoordinator = scrimCoordinator;
         mHubLayoutDependencyHolder = hubLayoutDependencyHolder;
     }
 

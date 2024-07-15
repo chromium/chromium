@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
@@ -69,9 +68,6 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      *     controls.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
-     * @param tabSwitcherViewHolder {@link ViewGroup} used by tab switcher layout to show scrim when
-     *     overview is visible.
-     * @param scrimCoordinator {@link ScrimCoordinator} to show/hide scrim.
      * @param lifecycleDispatcher @{@link ActivityLifecycleDispatcher} to be passed to TabStrip
      *     helper.
      * @param hubLayoutDependencyHolder The dependency holder for creating {@link HubLayout}.
@@ -94,8 +90,6 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
             ObservableSupplier<TabModelStartupInfo> tabModelStartupInfoSupplier,
-            ViewGroup tabSwitcherViewHolder,
-            ScrimCoordinator scrimCoordinator,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             HubLayoutDependencyHolder hubLayoutDependencyHolder,
             MultiInstanceManager multiInstanceManager,
@@ -111,11 +105,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                 contentContainer,
                 tabSwitcherSupplier,
                 tabModelSelectorSupplier,
-                browserControlsStateProvider,
                 tabContentManagerSupplier,
                 topUiThemeColorProvider,
-                tabSwitcherViewHolder,
-                scrimCoordinator,
                 hubLayoutDependencyHolder);
         mTabStripLayoutHelperManager =
                 new StripLayoutHelperManager(

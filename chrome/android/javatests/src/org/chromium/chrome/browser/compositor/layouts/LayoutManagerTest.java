@@ -48,7 +48,6 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout.LayoutState;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
@@ -92,7 +91,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
     @Mock private HubLayoutDependencyHolder mHubLayoutDependencyHolder;
-    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private TabWindowManager mTabWindowManager;
 
     private TabModelSelector mTabModelSelector;
@@ -215,7 +213,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                         container,
                         mTabSwitcherSupplier,
                         mTabModelSelectorSupplier,
-                        mBrowserControlsStateProvider,
                         tabContentManagerSupplier,
                         () -> mTopUiThemeColorProvider,
                         mHubLayoutDependencyHolder);

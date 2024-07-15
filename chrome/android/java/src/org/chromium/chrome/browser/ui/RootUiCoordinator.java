@@ -1991,9 +1991,6 @@ public class RootUiCoordinator
     /**
      * @return The {@link ScrimCoordinator} to control activity's primary scrim.
      */
-    // TODO(crbug.com/40123584): This method is used to pass ScrimCoordinator to StartSurface. We
-    // should be able to create StartSurface in this class so that we don't need to expose this
-    // getter.
     public ScrimCoordinator getScrimCoordinator() {
         return mScrimCoordinator;
     }
