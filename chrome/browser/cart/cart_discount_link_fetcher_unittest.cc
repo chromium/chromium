@@ -88,7 +88,7 @@ class CartDiscountLinkFetcherTest {
  public:
   static std::string generatePostData(
       cart_db::ChromeCartContentProto cart_content_proto) {
-    return CartDiscountLinkFetcher::GeneratePostData(
+    return CartDiscountLinkFetcher::GeneratePostDataForTesting(
         std::move(cart_content_proto));
   }
 };

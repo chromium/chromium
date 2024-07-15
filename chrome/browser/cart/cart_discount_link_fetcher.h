@@ -25,18 +25,9 @@ class CartDiscountLinkFetcher {
       cart_db::ChromeCartContentProto cart_content_proto,
       CartDiscountLinkFetcherCallback callback);
 
- private:
-  friend class CartDiscountLinkFetcherTest;
-  // TODO(crbug.com/40181210): Move these static method to the anonymous
-  // namespace in the cc file.
-  static std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
-      std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
+  // Generates the post data for the request.
+  static std::string GeneratePostDataForTesting(
       cart_db::ChromeCartContentProto cart_content_proto);
-  static std::string GeneratePostData(
-      cart_db::ChromeCartContentProto cart_content_proto);
-  static void OnLinkFetched(std::unique_ptr<EndpointFetcher> endpoint_fetcher,
-                            CartDiscountLinkFetcherCallback callback,
-                            std::unique_ptr<EndpointResponse> responses);
 };
 
 #endif  // CHROME_BROWSER_CART_CART_DISCOUNT_LINK_FETCHER_H_

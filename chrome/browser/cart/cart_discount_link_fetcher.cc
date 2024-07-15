@@ -24,65 +24,8 @@ const char kContentType[] = "application/json; charset=UTF-8";
 const char kFetchDiscountLinkEndpoint[] =
     "https://memex-pa.googleapis.com/v1/shopping/cart/discounted";
 constexpr base::TimeDelta kTimeout = base::Milliseconds(30000);
-}  // namespace
 
-CartDiscountLinkFetcher::~CartDiscountLinkFetcher() = default;
-
-void CartDiscountLinkFetcher::Fetch(
-    std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
-    cart_db::ChromeCartContentProto cart_content_proto,
-    CartDiscountLinkFetcherCallback callback) {
-
-  auto fetcher = CreateEndpointFetcher(std::move(pending_factory),
-                                       std::move(cart_content_proto));
-
-  auto* const fetcher_ptr = fetcher.get();
-  fetcher_ptr->PerformRequest(
-      base::BindOnce(&OnLinkFetched, std::move(fetcher), std::move(callback)),
-      nullptr);
-  CartDiscountMetricCollector::RecordFetchingForDiscountedLink();
-}
-
-std::unique_ptr<EndpointFetcher> CartDiscountLinkFetcher::CreateEndpointFetcher(
-    std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
-    cart_db::ChromeCartContentProto cart_content_proto) {
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("chrome_cart_get_discounted_link", R"(
-        semantics {
-          sender: "Chrome Cart"
-          description:
-            "Chrome gets a discounted link for the given 'Chrome Shopping Cart'"
-            " that has the discount info."
-          trigger:
-            "After user has clicked on the 'Chrome Shopping Cart' that has a "
-            "discount label on the New Tab Page."
-          data:
-            "The Chrome Cart data, includes the shopping site and merchant "
-            "discount info."
-          destination: GOOGLE_OWNED_SERVICE
-        }
-        policy {
-          cookies_allowed: NO
-          setting:
-            "You can enable or disable this feature via the Chrome NTP "
-            "customized page."
-          policy_exception_justification: "No policy provided because this "
-            "does not require user to sign in or sync, and they must given "
-            "their consent before triggering this. And user can disable this "
-            "feature."
-        })");
-
-  const std::vector<std::string> empty_header = {};
-
-  std::string post_data = GeneratePostData(std::move(cart_content_proto));
-  return std::make_unique<EndpointFetcher>(
-      GURL(kFetchDiscountLinkEndpoint), kPostMethod, kContentType, kTimeout,
-      post_data, empty_header, empty_header, traffic_annotation,
-      network::SharedURLLoaderFactory::Create(std::move(pending_factory)),
-      false);
-}
-
-std::string CartDiscountLinkFetcher::GeneratePostData(
+static std::string GeneratePostData(
     cart_db::ChromeCartContentProto cart_content_proto) {
   const cart_db::ChromeCartDiscountProto& cart_discount_proto =
       cart_content_proto.discount_info();
@@ -147,9 +90,48 @@ std::string CartDiscountLinkFetcher::GeneratePostData(
   return request_json;
 }
 
-void CartDiscountLinkFetcher::OnLinkFetched(
+static std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
+    std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
+    cart_db::ChromeCartContentProto cart_content_proto) {
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("chrome_cart_get_discounted_link", R"(
+        semantics {
+          sender: "Chrome Cart"
+          description:
+            "Chrome gets a discounted link for the given 'Chrome Shopping Cart'"
+            " that has the discount info."
+          trigger:
+            "After user has clicked on the 'Chrome Shopping Cart' that has a "
+            "discount label on the New Tab Page."
+          data:
+            "The Chrome Cart data, includes the shopping site and merchant "
+            "discount info."
+          destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "You can enable or disable this feature via the Chrome NTP "
+            "customized page."
+          policy_exception_justification: "No policy provided because this "
+            "does not require user to sign in or sync, and they must given "
+            "their consent before triggering this. And user can disable this "
+            "feature."
+        })");
+
+  const std::vector<std::string> empty_header = {};
+
+  std::string post_data = GeneratePostData(std::move(cart_content_proto));
+  return std::make_unique<EndpointFetcher>(
+      GURL(kFetchDiscountLinkEndpoint), kPostMethod, kContentType, kTimeout,
+      post_data, empty_header, empty_header, traffic_annotation,
+      network::SharedURLLoaderFactory::Create(std::move(pending_factory)),
+      false);
+}
+
+static void OnLinkFetched(
     std::unique_ptr<EndpointFetcher> endpoint_fetcher,
-    CartDiscountLinkFetcherCallback callback,
+    CartDiscountLinkFetcher::CartDiscountLinkFetcherCallback callback,
     std::unique_ptr<EndpointResponse> responses) {
   VLOG(2) << "Response: " << responses->response;
   DCHECK(responses) << "responses should not be null";
@@ -167,4 +149,26 @@ void CartDiscountLinkFetcher::OnLinkFetched(
     return;
   }
   std::move(callback).Run(GURL(*value->GetDict().FindString("url")));
+}
+}  // namespace
+
+CartDiscountLinkFetcher::~CartDiscountLinkFetcher() = default;
+
+void CartDiscountLinkFetcher::Fetch(
+    std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
+    cart_db::ChromeCartContentProto cart_content_proto,
+    CartDiscountLinkFetcherCallback callback) {
+  auto fetcher = CreateEndpointFetcher(std::move(pending_factory),
+                                       std::move(cart_content_proto));
+
+  auto* const fetcher_ptr = fetcher.get();
+  fetcher_ptr->PerformRequest(
+      base::BindOnce(&OnLinkFetched, std::move(fetcher), std::move(callback)),
+      nullptr);
+  CartDiscountMetricCollector::RecordFetchingForDiscountedLink();
+}
+
+std::string CartDiscountLinkFetcher::GeneratePostDataForTesting(
+    cart_db::ChromeCartContentProto cart_content_proto) {
+  return GeneratePostData(cart_content_proto);
 }
