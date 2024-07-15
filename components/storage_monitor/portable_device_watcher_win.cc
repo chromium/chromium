@@ -19,6 +19,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
@@ -668,7 +669,7 @@ void PortableDeviceWatcherWin::HandleDeviceDetachEvent(
        ++storage_object_iter) {
     std::string storage_id = storage_object_iter->object_persistent_id;
     MTPStorageMap::iterator storage_map_iter = storage_map_.find(storage_id);
-    DCHECK(storage_map_iter != storage_map_.end());
+    CHECK(storage_map_iter != storage_map_.end(), base::NotFatalUntil::M130);
     if (storage_notifications_) {
       storage_notifications_->ProcessDetach(
           storage_map_iter->second.device_id());
