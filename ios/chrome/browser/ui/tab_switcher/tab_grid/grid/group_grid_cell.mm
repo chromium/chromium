@@ -177,17 +177,9 @@ const CGFloat kGroupColorViewSize = 18;
 }
 
 - (void)didMoveToWindow {
-  if (self.window) {
-    if (self.theme == GridThemeLight) {
-      if (@available(iOS 17, *)) {
-        [self.window.windowScene
-            registerForTraitChanges:@[ UITraitUserInterfaceStyle.self ]
-                         withTarget:self
-                             action:@selector(interfaceStyleChangedForWindow:
-                                                             traitCollection:)];
-        self.overrideUserInterfaceStyle =
-            self.window.windowScene.traitCollection.userInterfaceStyle;
-      }
+  if (self.theme == GridThemeLight) {
+    if (@available(iOS 17, *)) {
+      [self updateInterfaceStyleForWindow:self.window];
     }
   }
 }
@@ -231,7 +223,7 @@ const CGFloat kGroupColorViewSize = 18;
   switch (theme) {
     case GridThemeLight:
       if (@available(iOS 17, *)) {
-        // On iOS 17, this is handled when the cell is added to the window.
+        [self updateInterfaceStyleForWindow:self.window];
       } else {
         self.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
       }
@@ -520,6 +512,23 @@ const CGFloat kGroupColorViewSize = 18;
              self.traitCollection.preferredContentSizeCategory)
              ? kGridCellHeaderAccessibilityHeight
              : kGridCellHeaderHeight;
+}
+
+// If window is not nil, register for updates to its interface style updates and
+// set the user interface style to be the same as the window.
+- (void)updateInterfaceStyleForWindow:(UIWindow*)window {
+  if (!window) {
+    return;
+  }
+  if (@available(iOS 17, *)) {
+    [self.window.windowScene
+        registerForTraitChanges:@[ UITraitUserInterfaceStyle.self ]
+                     withTarget:self
+                         action:@selector(interfaceStyleChangedForWindow:
+                                                         traitCollection:)];
+    self.overrideUserInterfaceStyle =
+        self.window.windowScene.traitCollection.userInterfaceStyle;
+  }
 }
 
 // Callback for the observation of the user interface style trait of the window
