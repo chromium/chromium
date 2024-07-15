@@ -14684,28 +14684,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="Lens.Overlay.Invoked">
-  <owner>jdonnelly@google.com</owner>
-  <owner>lens-chrome@google.com</owner>
-  <summary>
-    Recorded once when the Lens Overlay feature is invoked. In general, it
-    should not be possible to attempt to invoke the feature if the overlay is
-    already showing but if this happens, nothing will be recorded.
-  </summary>
-  <metric name="Source" enum="LensOverlayInvocationSource">
-    <summary>
-      The UI entry point used to invoke the Lens Overlay feature.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-</event>
-
 <event name="Lens.Overlay.Overlay.UserAction">
   <owner>jdonnelly@google.com</owner>
   <owner>lens-chrome@google.com</owner>
@@ -14717,6 +14695,54 @@ be describing additional metrics about the same event.
     <summary>
       The user interaction with the Lens Overlay.
     </summary>
+  </metric>
+</event>
+
+<event name="Lens.Overlay.SessionEnd">
+  <owner>jdonnelly@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed. Measures the
+    invocation source of the session, the duration, and whether a search
+    performed in the session.
+  </summary>
+  <metric name="InvocationResultedInSearch" enum="Boolean">
+    <summary>
+      Indicates whether or not a search was performed at any point since the
+      overlay was invoked.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="InvocationSource" enum="LensOverlayInvocationSource">
+    <summary>
+      The UI entry point used to invoke the Lens Overlay feature.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SessionDuration">
+    <summary>
+      Measures the elapsed time between when the overlay was invoked and when it
+      was dismissed.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
