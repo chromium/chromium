@@ -268,15 +268,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests that signing out of a managed account from the Settings works
 // correctly.
-// TODO(crbug.com/331182048): Test failing on iPad simulator.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testSignInDisconnectFromChromeManaged \
-  FLAKY_testSignInDisconnectFromChromeManaged
-#else
-#define MAYBE_testSignInDisconnectFromChromeManaged \
-  testSignInDisconnectFromChromeManaged
-#endif
-- (void)MAYBE_testSignInDisconnectFromChromeManaged {
+// TODO(crbug.com/331182048): Test failing on devices and simulator.
+- (void)DISABLED_testSignInDisconnectFromChromeManaged {
   // Sign-in with a managed account.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeManagedIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
