@@ -160,12 +160,7 @@ public class HistorySyncRenderTest {
         mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
         buildHistorySyncCoordinator(orientation);
 
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            onViewWaiting(withId(R.id.button_primary_minor_mode));
-        } else {
-            onViewWaiting(withId(R.id.button_primary));
-        }
-
+        onViewWaiting(withId(R.id.button_primary));
         mRenderTestRule.render(
                 mHistorySyncCoordinator.getView(), "history_sync_with_minor_mode_enabled");
     }

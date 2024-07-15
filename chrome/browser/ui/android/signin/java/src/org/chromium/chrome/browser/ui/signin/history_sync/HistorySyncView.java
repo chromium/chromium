@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.signin.history_sync;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -16,6 +17,7 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper.ScreenMode;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.components.browser_ui.widget.DualControlLayout;
+import org.chromium.components.browser_ui.widget.DualControlLayout.DualControlLayoutAlignment;
 
 /** View that wraps history sync consent screen and caches references to UI elements. */
 public class HistorySyncView extends LinearLayout {
@@ -67,22 +69,10 @@ public class HistorySyncView extends LinearLayout {
             return;
         }
 
-        if (isButtonBar) {
-            createButtonBar(restrictionStatus);
-        } else {
-            createButtonsForPortraitLayout(restrictionStatus);
-        }
-        assert mAcceptButton != null && mDeclineButton != null;
-        mAcceptButton.setText(R.string.history_sync_primary_action);
-        mDeclineButton.setText(R.string.history_sync_secondary_action);
-
-        mAcceptButton.setVisibility(VISIBLE);
-        mDeclineButton.setVisibility(VISIBLE);
+        createButtons(restrictionStatus, isButtonBar);
     }
 
-    private void createButtonBar(@ScreenMode int restrictionStatus) {
-        DualControlLayout buttonBar = findViewById(R.id.dual_control_button_bar);
-        buttonBar.removeAllViews();
+    private void createButtons(@ScreenMode int restrictionStatus, boolean isButtonBar) {
 
         final @DualControlLayout.ButtonType int acceptButtonType;
         final @DualControlLayout.ButtonType int declineButtonType;
@@ -99,20 +89,38 @@ public class HistorySyncView extends LinearLayout {
         mDeclineButton =
                 DualControlLayout.createButtonForLayout(getContext(), declineButtonType, "", null);
 
-        buttonBar.addView(mAcceptButton);
-        buttonBar.addView(mDeclineButton);
-        buttonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.END);
-        buttonBar.setVisibility(VISIBLE);
-    }
+        // In certain situations (e.g. a wide screen) the accept and refuse buttons will be placed
+        // on either ends of the screen using the DualControlLayout. When the buttons should be
+        // stacked the buttons are added to a LinearLayout (R.id.small_screen_button_layout).
+        if (isButtonBar) {
+            DualControlLayout dualControlButtonBar = findViewById(R.id.dual_control_button_bar);
+            dualControlButtonBar.removeAllViews();
 
-    private void createButtonsForPortraitLayout(@ScreenMode int restrictionStatus) {
-        // TODO(b/345663992) Allow buttons to be added dynamically
-        if (restrictionStatus == ScreenMode.UNRESTRICTED) {
-            mAcceptButton = findViewById(R.id.button_primary);
-            mDeclineButton = findViewById(R.id.button_secondary);
+            dualControlButtonBar.addView(mAcceptButton);
+            dualControlButtonBar.addView(mDeclineButton);
+            dualControlButtonBar.setAlignment(DualControlLayoutAlignment.END);
+            dualControlButtonBar.setVisibility(VISIBLE);
         } else {
-            mAcceptButton = findViewById(R.id.button_primary_minor_mode);
-            mDeclineButton = findViewById(R.id.button_secondary_minor_mode);
+            LinearLayout smallScreenButtonLayout = findViewById(R.id.small_screen_button_layout);
+            smallScreenButtonLayout.removeAllViews();
+
+            ViewGroup.LayoutParams layoutParams =
+                    new ViewGroup.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT);
+            mAcceptButton.setLayoutParams(layoutParams);
+            mDeclineButton.setLayoutParams(layoutParams);
+
+            smallScreenButtonLayout.addView(mAcceptButton);
+            smallScreenButtonLayout.addView(mDeclineButton);
+            smallScreenButtonLayout.setVisibility(VISIBLE);
         }
+
+        assert mAcceptButton != null && mDeclineButton != null;
+        mAcceptButton.setText(R.string.history_sync_primary_action);
+        mDeclineButton.setText(R.string.history_sync_secondary_action);
+
+        mAcceptButton.setVisibility(VISIBLE);
+        mDeclineButton.setVisibility(VISIBLE);
     }
 }

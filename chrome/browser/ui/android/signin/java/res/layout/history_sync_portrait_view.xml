@@ -93,7 +93,7 @@ found in the LICENSE file.
     </ScrollView>
 
     <!-- Depending on the size of the screen, either the dual_control_button_bar or the
-    primary_button/secondary_button pair will be made visible from the Java side. -->
+    small_screen_button_layout will be made visible from the Java side. -->
     <org.chromium.components.browser_ui.widget.DualControlLayout
         android:id="@+id/dual_control_button_bar"
         android:layout_width="match_parent"
@@ -101,35 +101,15 @@ found in the LICENSE file.
         android:layout_marginBottom="22dp"
         android:visibility="gone" />
 
-    <org.chromium.ui.widget.ButtonCompat
-        android:id="@+id/button_primary"
-        style="@style/FilledButton.Flat"
+    <LinearLayout
+        android:id="@+id/small_screen_button_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"/>
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:visibility="gone">
 
-    <!--   TODO(b/345663992) Allow buttons to be added dynamically-->
-    <org.chromium.ui.widget.ButtonCompat
-        android:id="@+id/button_primary_minor_mode"
-        style="@style/OutlinedButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"/>
-
-    <org.chromium.ui.widget.ButtonCompat
-        android:id="@+id/button_secondary"
-        style="@style/TextButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"/>
-
-    <!--   TODO(b/345663992) Allow buttons to be added dynamically-->
-    <org.chromium.ui.widget.ButtonCompat
-        android:id="@+id/button_secondary_minor_mode"
-        style="@style/OutlinedButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"/>
+    </LinearLayout>
 
     <org.chromium.ui.widget.TextViewWithLeading
         android:id="@+id/history_sync_footer"
