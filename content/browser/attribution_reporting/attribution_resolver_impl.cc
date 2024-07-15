@@ -61,7 +61,11 @@ std::vector<AttributionReport> AttributionResolverImpl::GetAttributionReports(
     base::Time max_report_time,
     int limit) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return storage_.GetAttributionReports(max_report_time, limit);
+
+  std::vector<AttributionReport> reports =
+      storage_.GetAttributionReports(max_report_time, limit);
+  delegate_->ShuffleReports(reports);
+  return reports;
 }
 
 std::optional<base::Time> AttributionResolverImpl::GetNextReportTime(

@@ -309,10 +309,6 @@ class CONTENT_EXPORT AttributionStorageSql {
   std::optional<StoredSourceData> ReadSourceToAttribute(
       StoredSource::Id source_id) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  std::vector<AttributionReport> GetReportsInternal(base::Time max_report_time,
-                                                    int limit)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-
   [[nodiscard]] bool DeleteReportInternal(AttributionReport::Id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 

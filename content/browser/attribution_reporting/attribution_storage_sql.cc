@@ -1877,16 +1877,6 @@ std::vector<AttributionReport> AttributionStorageSql::GetAttributionReports(
     return {};
   }
 
-  std::vector<AttributionReport> reports =
-      GetReportsInternal(max_report_time, limit);
-
-  delegate_->ShuffleReports(reports);
-  return reports;
-}
-
-std::vector<AttributionReport> AttributionStorageSql::GetReportsInternal(
-    base::Time max_report_time,
-    int limit) {
   // Get at most |limit| entries in the reports table with a
   // |report_time| no greater than |max_report_time| and their matching
   // information from the impression table. Negatives are treated as no limit
