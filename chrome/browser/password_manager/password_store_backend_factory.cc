@@ -47,13 +47,56 @@ using ::password_manager::PasswordStoreBackend;
 using ::password_manager::PasswordStoreBuiltInBackend;
 #if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 using password_manager::prefs::UseUpmLocalAndSeparateStoresState;
+#endif
 
+std::unique_ptr<PasswordStoreBackend> CreateProfilePasswordStoreBuiltInBackend(
+    const base::FilePath& login_db_directory,
+    PrefService* prefs,
+    os_crypt_async::OSCryptAsync* os_crypt_async) {
+  std::unique_ptr<password_manager::LoginDatabase> login_db(
+      password_manager::CreateLoginDatabaseForProfileStorage(
+          login_db_directory));
+  password_manager::LoginDatabase* login_db_ptr = login_db.get();
+  std::unique_ptr<PasswordStoreBackend> backend =
+      std::make_unique<PasswordStoreBuiltInBackend>(
+          std::move(login_db),
+          syncer::WipeModelUponSyncDisabledBehavior::kNever, prefs,
+          os_crypt_async);
+
+  auto is_profile_db_empty_cb =
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
+          &password_manager::IntermediateCallbackForSettingPrefs,
+          backend->AsWeakPtr(),
+#if BUILDFLAG(IS_ANDROID)
+          base::BindRepeating(
+              &password_manager::SetEmptyStorePref, prefs,
+              password_manager::prefs::kEmptyProfileStoreLoginDatabase)));
+#else
+          base::BindRepeating(
+              &password_manager::SetAutofillableCredentialsStorePref, prefs,
+              password_manager::prefs::
+                  kAutofillableCredentialsProfileStoreLoginDatabase)));
+#endif
+  login_db_ptr->SetIsEmptyCb(std::move(is_profile_db_empty_cb));
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  base::FilePath user_data_dir;
+  policy::path_parser::CheckUserDataDirPolicy(&user_data_dir);
+  // If `user_data_dir` is empty it means that policy did not set it.
+  login_db_ptr->SetIsUserDataDirPolicySet(!user_data_dir.empty());
+#endif
+
+  return backend;
+}
+
+#if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 std::unique_ptr<PasswordStoreBackend>
 CreateProfilePasswordStoreBackendForUpmAndroid(
     PrefService* prefs,
-    std::unique_ptr<PasswordStoreBuiltInBackend> built_in_backend,
     password_manager::PasswordAffiliationSourceAdapter&
-        password_affiliation_adapter) {
+        password_affiliation_adapter,
+    const base::FilePath& login_db_directory,
+    os_crypt_async::OSCryptAsync* os_crypt_async) {
   base::UmaHistogramBoolean(
       "PasswordManager.PasswordStore.WasEnrolledInUPMWhenBackendWasCreated",
       !prefs->GetBoolean(password_manager::prefs::
@@ -78,7 +121,8 @@ CreateProfilePasswordStoreBackendForUpmAndroid(
     case UseUpmLocalAndSeparateStoresState::kOffAndMigrationPending:
       return std::make_unique<
           password_manager::PasswordStoreBackendMigrationDecorator>(
-          std::move(built_in_backend),
+          CreateProfilePasswordStoreBuiltInBackend(login_db_directory, prefs,
+                                                   os_crypt_async),
           std::make_unique<password_manager::PasswordStoreAndroidLocalBackend>(
               prefs, password_affiliation_adapter),
           prefs);
@@ -91,13 +135,13 @@ CreateProfilePasswordStoreBackendForUpmAndroid(
         return std::make_unique<
             password_manager::PasswordStoreAndroidLocalBackend>(
             prefs, password_affiliation_adapter);
-      } else {
-        return std::make_unique<AndroidBackendWithDoubleDeletion>(
-            std::move(built_in_backend),
-            std::make_unique<
-                password_manager::PasswordStoreAndroidLocalBackend>(
-                prefs, password_affiliation_adapter));
       }
+      return std::make_unique<AndroidBackendWithDoubleDeletion>(
+          CreateProfilePasswordStoreBuiltInBackend(login_db_directory, prefs,
+                                                   os_crypt_async),
+          std::make_unique<password_manager::PasswordStoreAndroidLocalBackend>(
+              prefs, password_affiliation_adapter));
+
     // Old UPM: support for local passwords in GMSCore is unavailable for some
     // reason.
     case UseUpmLocalAndSeparateStoresState::kOff: {
@@ -116,8 +160,9 @@ CreateProfilePasswordStoreBackendForUpmAndroid(
         // to the account GMSCore storage. Only PasswordStoreProxyBackend is
         // created.
         return std::make_unique<password_manager::PasswordStoreProxyBackend>(
-            std::move(built_in_backend), std::move(android_account_backend),
-            prefs);
+            CreateProfilePasswordStoreBuiltInBackend(login_db_directory, prefs,
+                                                     os_crypt_async),
+            std::move(android_account_backend), prefs);
       }
       // The password store migration decorator is created as backend.
       // There are no split stores at this stage, and the decorator is expected
@@ -125,8 +170,9 @@ CreateProfilePasswordStoreBackendForUpmAndroid(
       // core account store.
       return std::make_unique<
           password_manager::LegacyPasswordStoreBackendMigrationDecorator>(
-          std::move(built_in_backend), std::move(android_account_backend),
-          prefs);
+          CreateProfilePasswordStoreBuiltInBackend(login_db_directory, prefs,
+                                                   os_crypt_async),
+          std::move(android_account_backend), prefs);
     }
   }
 }
@@ -140,50 +186,18 @@ std::unique_ptr<PasswordStoreBackend> CreateProfilePasswordStoreBackend(
         password_affiliation_adapter,
     os_crypt_async::OSCryptAsync* os_crypt_async) {
   TRACE_EVENT0("passwords", "PasswordStoreBackendCreation");
-  std::unique_ptr<password_manager::LoginDatabase> login_db(
-      password_manager::CreateLoginDatabaseForProfileStorage(
-          login_db_directory));
-  password_manager::LoginDatabase* login_db_ptr = login_db.get();
-  std::unique_ptr<PasswordStoreBackend> backend =
-      std::make_unique<PasswordStoreBuiltInBackend>(
-          std::move(login_db),
-          syncer::WipeModelUponSyncDisabledBehavior::kNever, prefs,
-          os_crypt_async);
 
 #if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
   // This are the absolute minimum requirements to have any version of UPM.
   if (password_manager_android_util::AreMinUpmRequirementsMet()) {
-    std::unique_ptr<PasswordStoreBuiltInBackend> backend_as_built_in_backend(
-        static_cast<PasswordStoreBuiltInBackend*>(backend.release()));
-    backend = CreateProfilePasswordStoreBackendForUpmAndroid(
-        prefs, std::move(backend_as_built_in_backend),
-        password_affiliation_adapter);
+    return CreateProfilePasswordStoreBackendForUpmAndroid(
+        prefs, password_affiliation_adapter, login_db_directory,
+        os_crypt_async);
   }
 #endif  // !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 
-  auto is_profile_db_empty_cb =
-      base::BindPostTaskToCurrentDefault(base::BindRepeating(
-          &password_manager::IntermediateCallbackForSettingPrefs,
-          backend->AsWeakPtr(),
-#if BUILDFLAG(IS_ANDROID)
-          base::BindRepeating(
-              &password_manager::SetEmptyStorePref, prefs,
-              password_manager::prefs::kEmptyProfileStoreLoginDatabase)));
-#else
-          base::BindRepeating(
-              &password_manager::SetAutofillableCredentialsStorePref, prefs,
-              password_manager::prefs::
-                  kAutofillableCredentialsProfileStoreLoginDatabase)));
-#endif
-  login_db_ptr->SetIsEmptyCb(std::move(is_profile_db_empty_cb));
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  base::FilePath user_data_dir;
-  policy::path_parser::CheckUserDataDirPolicy(&user_data_dir);
-  // If `user_data_dir` is empty it means that policy did not set it.
-  login_db_ptr->SetIsUserDataDirPolicySet(!user_data_dir.empty());
-#endif
-  return backend;
+  return CreateProfilePasswordStoreBuiltInBackend(login_db_directory, prefs,
+                                                  os_crypt_async);
 }
 
 std::unique_ptr<PasswordStoreBackend> CreateAccountPasswordStoreBackend(
