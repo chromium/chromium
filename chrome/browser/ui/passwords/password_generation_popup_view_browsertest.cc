@@ -240,7 +240,6 @@ INSTANTIATE_TEST_SUITE_P(ContentExperiment,
                                          "safety_first",
                                          "try_something_new",
                                          "convenience",
-                                         "cross_device",
-                                         "edit_password"));
+                                         "cross_device"));
 
 }  // namespace autofill

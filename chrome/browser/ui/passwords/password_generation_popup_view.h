@@ -37,9 +37,6 @@ class PasswordGenerationPopupView {
   // Called when the password selection state has changed.
   virtual void PasswordSelectionUpdated() = 0;
 
-  // Called when the edit password selection state has changed.
-  virtual void EditPasswordSelectionUpdated() = 0;
-
   // Called when the nudge password selection state has changed.
   // TODO(crbug.com/41492898): Clean up this method after experiment.
   virtual void NudgePasswordSelectionUpdated() = 0;

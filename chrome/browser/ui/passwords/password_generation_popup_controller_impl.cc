@@ -180,15 +180,10 @@ PasswordGenerationPopupControllerImpl::GetWeakPtr() {
 
 bool PasswordGenerationPopupControllerImpl::HandleKeyPressEvent(
     const input::NativeWebKeyboardEvent& event) {
-  bool edit_password_enabled = false;
   bool nudge_password_enabled = false;
   // Password generation experiments are defined for Desktop only.
 #if !BUILDFLAG(IS_ANDROID)
-  PasswordGenerationVariation password_generation_variation =
-      kPasswordGenerationExperimentVariationParam.Get();
   nudge_password_enabled = ShouldShowNudgePassword();
-  edit_password_enabled = password_generation_variation ==
-                          PasswordGenerationVariation::kEditPassword;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   switch (event.windows_key_code) {
@@ -199,11 +194,6 @@ bool PasswordGenerationPopupControllerImpl::HandleKeyPressEvent(
             cancel_button_selected()
                 ? PasswordGenerationPopupElement::kNudgePasswordAcceptButton
                 : PasswordGenerationPopupElement::kNudgePasswordCancelButton);
-        return true;
-      }
-
-      if (edit_password_enabled && password_selected()) {
-        SelectElement(PasswordGenerationPopupElement::kEditPassword);
         return true;
       }
 
@@ -232,9 +222,6 @@ bool PasswordGenerationPopupControllerImpl::PossiblyAcceptSelectedElement() {
     case PasswordGenerationPopupElement::kNudgePasswordAcceptButton:
       PasswordAccepted();
       return true;
-    case PasswordGenerationPopupElement::kEditPassword:
-      EditPasswordClicked();
-      return true;
     case PasswordGenerationPopupElement::kNudgePasswordCancelButton:
       HideImpl();
       return true;
@@ -261,7 +248,6 @@ void PasswordGenerationPopupControllerImpl::SelectElement(
 
   selected_element_ = element;
   view_->PasswordSelectionUpdated();
-  view_->EditPasswordSelectionUpdated();
   view_->NudgePasswordSelectionUpdated();
 }
 
@@ -419,17 +405,6 @@ void PasswordGenerationPopupControllerImpl::SetSelected() {
   SelectElement(PasswordGenerationPopupElement::kUseStrongPassword);
 }
 
-void PasswordGenerationPopupControllerImpl::EditPasswordClicked() {
-  driver_->GeneratedPasswordAccepted(form_data_, generation_element_id_,
-                                     current_generated_password_);
-  Show(kEditGeneratedPassword);
-}
-
-void PasswordGenerationPopupControllerImpl::EditPasswordHovered(bool hovered) {
-  SelectElement(hovered ? PasswordGenerationPopupElement::kEditPassword
-                        : PasswordGenerationPopupElement::kNone);
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 std::u16string PasswordGenerationPopupControllerImpl::GetPrimaryAccountEmail() {
   content::WebContents* web_contents = GetWebContents();
@@ -510,10 +485,6 @@ PasswordGenerationPopupControllerImpl::state() const {
 bool PasswordGenerationPopupControllerImpl::password_selected() const {
   return selected_element_ ==
          PasswordGenerationPopupElement::kUseStrongPassword;
-}
-
-bool PasswordGenerationPopupControllerImpl::edit_password_selected() const {
-  return selected_element_ == PasswordGenerationPopupElement::kEditPassword;
 }
 
 bool PasswordGenerationPopupControllerImpl::accept_button_selected() const {

@@ -54,13 +54,10 @@ class MockPasswordGenerationPopupController
   MOCK_METHOD(void, PasswordAccepted, (), (override));
   MOCK_METHOD(void, SetSelected, (), (override));
   MOCK_METHOD(void, SelectionCleared, (), (override));
-  MOCK_METHOD(void, EditPasswordClicked, (), (override));
-  MOCK_METHOD(void, EditPasswordHovered, (bool), (override));
   MOCK_METHOD(std::u16string, GetPrimaryAccountEmail, (), (override));
   MOCK_METHOD(bool, ShouldShowNudgePassword, (), (const override));
   MOCK_METHOD(GenerationUIState, state, (), (const override));
   MOCK_METHOD(bool, password_selected, (), (const override));
-  MOCK_METHOD(bool, edit_password_selected, (), (const override));
   MOCK_METHOD(bool, accept_button_selected, (), (const override));
   MOCK_METHOD(bool, cancel_button_selected, (), (const override));
   MOCK_METHOD(const std::u16string&, password, (), (const override));
@@ -274,7 +271,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                                         "try_something_new",
                                         "convenience",
                                         "cross_device",
-                                        "edit_password",
                                         "chunk_password",
                                         "nudge_password")),
                          PasswordGenerationPopupViewWithExperimentsBrowsertest::

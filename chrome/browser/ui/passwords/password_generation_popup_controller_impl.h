@@ -159,9 +159,8 @@ class PasswordGenerationPopupControllerImpl
   enum class PasswordGenerationPopupElement {
     kNone = 0,
     kUseStrongPassword = 1,
-    kEditPassword = 2,
-    kNudgePasswordAcceptButton = 3,
-    kNudgePasswordCancelButton = 4,
+    kNudgePasswordAcceptButton = 2,
+    kNudgePasswordCancelButton = 3,
   };
 
   // AutofillPopupViewDelegate implementation:
@@ -177,15 +176,12 @@ class PasswordGenerationPopupControllerImpl
   void PasswordAccepted() override;
   void SetSelected() override;
   void SelectionCleared() override;
-  void EditPasswordClicked() override;
-  void EditPasswordHovered(bool hovered) override;
 #if !BUILDFLAG(IS_ANDROID)
   std::u16string GetPrimaryAccountEmail() override;
   bool ShouldShowNudgePassword() const override;
 #endif  // !BUILDFLAG(IS_ANDROID)
   GenerationUIState state() const override;
   bool password_selected() const override;
-  bool edit_password_selected() const override;
   bool accept_button_selected() const override;
   bool cancel_button_selected() const override;
   const std::u16string& password() const override;

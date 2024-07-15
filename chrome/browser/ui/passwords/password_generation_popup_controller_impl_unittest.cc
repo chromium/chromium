@@ -87,7 +87,6 @@ class MockPasswordGenerationPopupView : public PasswordGenerationPopupView {
   MOCK_METHOD(void, UpdateGeneratedPasswordValue, (), (override));
   MOCK_METHOD(bool, UpdateBoundsAndRedrawPopup, (), (override));
   MOCK_METHOD(void, PasswordSelectionUpdated, (), (override));
-  MOCK_METHOD(void, EditPasswordSelectionUpdated, (), (override));
   MOCK_METHOD(void, NudgePasswordSelectionUpdated, (), (override));
 };
 
@@ -367,32 +366,6 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
               GeneratedPasswordAccepted(_, autofill::FieldRendererId(100), _));
   EXPECT_CALL(driver(), FocusNextFieldAfterPasswords);
   controller->PasswordAccepted();
-}
-
-TEST_F(PasswordGenerationPopupControllerImplTest,
-       DoesNotAdvanceFieldFocusOnEditPassword) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{kPasswordGenerationExperiment,
-        {{"password_generation_variation", "edit_password"}}}},
-      {});
-
-  base::WeakPtr<PasswordGenerationPopupController> controller =
-      PasswordGenerationPopupControllerImpl::GetOrCreate(
-          /*previous=*/nullptr, ui_data().bounds, ui_data(), weak_driver(),
-          /*observer=*/nullptr, web_contents(), main_rfh(),
-          /*pref_service=*/nullptr);
-  // EditPasswordClicked() below results in calling view->Show(), hence the need
-  // to use the mock.
-  static_cast<PasswordGenerationPopupControllerImpl*>(controller.get())
-      ->SetViewForTesting(popup_view());
-  static_cast<PasswordGenerationPopupControllerImpl*>(controller.get())
-      ->GeneratePasswordValue(PasswordGenerationType::kAutomatic);
-
-  EXPECT_CALL(driver(),
-              GeneratedPasswordAccepted(_, autofill::FieldRendererId(100), _));
-  EXPECT_CALL(driver(), FocusNextFieldAfterPasswords).Times(0);
-  controller->EditPasswordClicked();
 }
 
 TEST_F(PasswordGenerationPopupControllerImplTest,

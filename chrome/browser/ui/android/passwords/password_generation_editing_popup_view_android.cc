@@ -97,9 +97,6 @@ bool PasswordGenerationEditingPopupViewAndroid::UpdateBoundsAndRedrawPopup() {
 
 void PasswordGenerationEditingPopupViewAndroid::PasswordSelectionUpdated() {}
 
-void PasswordGenerationEditingPopupViewAndroid::EditPasswordSelectionUpdated() {
-}
-
 void PasswordGenerationEditingPopupViewAndroid::
     NudgePasswordSelectionUpdated() {}
 
