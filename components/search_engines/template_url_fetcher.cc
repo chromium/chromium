@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -279,6 +280,6 @@ void TemplateURLFetcher::ScheduleDownload(
 void TemplateURLFetcher::RequestCompleted(RequestDelegate* request) {
   auto i = base::ranges::find(requests_, request,
                               &std::unique_ptr<RequestDelegate>::get);
-  DCHECK(i != requests_.end());
+  CHECK(i != requests_.end(), base::NotFatalUntil::M130);
   requests_.erase(i);
 }
