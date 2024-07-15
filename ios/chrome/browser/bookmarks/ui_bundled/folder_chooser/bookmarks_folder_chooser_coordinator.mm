@@ -278,8 +278,8 @@
 #pragma mark - Private
 
 - (void)stopBookmarksFolderEditorCoordinator {
-  [_folderEditorCoordinator stop];
   _folderEditorCoordinator.delegate = nil;
+  [_folderEditorCoordinator stop];
   _folderEditorCoordinator = nil;
 }
 
