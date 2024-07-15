@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -19,7 +20,6 @@ import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.hats.SurveyThrottler.FilteringResult;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Calendar;
 
@@ -39,7 +39,7 @@ public class SurveyThrottlerUnitTest {
         SurveyMetadata.initializeForTesting(mSurveyMetadata, null);
 
         FirstRunStatus.setFirstRunTriggeredForTesting(false);
-        TestThreadUtils.setThreadAssertsDisabled(true);
+        ThreadUtils.setThreadAssertsDisabledForTesting(true);
     }
 
     @Test

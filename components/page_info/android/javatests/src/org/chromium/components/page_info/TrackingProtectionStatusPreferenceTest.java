@@ -22,6 +22,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
@@ -30,7 +31,6 @@ import org.chromium.components.content_settings.CookieControlsBridge.TrackingPro
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.content_settings.TrackingProtectionBlockingStatus;
 import org.chromium.components.content_settings.TrackingProtectionFeatureType;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -122,7 +122,7 @@ public class TrackingProtectionStatusPreferenceTest {
         }
 
         // Simulate updates as if Tracking Protection is off.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     for (TestElement element : mTestElements) {
                         preference.updateStatus(
@@ -144,7 +144,7 @@ public class TrackingProtectionStatusPreferenceTest {
     public void testElementVisibility() {
         var preference = new TrackingProtectionStatusPreference(mActivity);
         mPreferenceScreen.addPreference(preference);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // 3PCD are limited and not completely blocked.
                     preference.setBlockAll3PC(false);
@@ -161,7 +161,7 @@ public class TrackingProtectionStatusPreferenceTest {
 
         // Check that hiding each element works.
         for (TestElement element : mTestElements) {
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         preference.updateStatus(
                                 new TrackingProtectionFeature(
@@ -180,7 +180,7 @@ public class TrackingProtectionStatusPreferenceTest {
                 }
             }
             // Reenable.
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         preference.updateStatus(
                                 new TrackingProtectionFeature(

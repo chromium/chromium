@@ -25,10 +25,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.settings.test.R;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Tests of {@link ChromeImageViewPreference}. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -103,7 +103,7 @@ public class ChromeImageViewPreferenceTest {
         getTitleView().check(matches(allOf(withText(TITLE), isDisplayed())));
         getImageViewWidget().check(matches(isDisplayed()));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     preference.setImageView(0, 0, null);
                 });

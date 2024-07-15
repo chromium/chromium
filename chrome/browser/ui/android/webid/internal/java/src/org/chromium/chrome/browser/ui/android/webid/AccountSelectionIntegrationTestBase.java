@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.ui.android.webid;
 
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
+
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
-
-import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
 import android.graphics.Color;
 

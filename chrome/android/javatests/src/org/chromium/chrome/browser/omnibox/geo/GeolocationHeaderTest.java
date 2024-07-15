@@ -18,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -35,7 +36,6 @@ import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.SessionModel;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Tests for GeolocationHeader and GeolocationTracker. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -226,7 +226,7 @@ public class GeolocationHeaderTest {
             final @ContentSettingValues int httpsPermission,
             final long locationTime,
             final boolean shouldBeNull) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PermissionInfo infoHttps =
                             new PermissionInfo(
@@ -245,7 +245,7 @@ public class GeolocationHeaderTest {
     }
 
     private void checkHeaderWithLocation(final long locationTime, final boolean shouldBeNull) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     setMockLocation(locationTime);
                     String header =
@@ -302,7 +302,7 @@ public class GeolocationHeaderTest {
 
     private void assertNullHeader(final String url, final boolean isIncognito) {
         final Tab tab = sActivityTestRule.loadUrlInNewTab("about:blank", isIncognito);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertNull(GeolocationHeader.getGeoHeader(url, tab));
                 });
@@ -311,7 +311,7 @@ public class GeolocationHeaderTest {
     private void assertNonNullHeader(
             final String url, final boolean isIncognito, final long locationTime) {
         final Tab tab = sActivityTestRule.loadUrlInNewTab("about:blank", isIncognito);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertHeaderEquals(locationTime, GeolocationHeader.getGeoHeader(url, tab));
                 });
@@ -369,7 +369,7 @@ public class GeolocationHeaderTest {
                         /* isEmbargo= */ false,
                         sessionModel);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     infoHttps.setContentSetting(
                             ProfileManager.getLastUsedRegularProfile(), setting);

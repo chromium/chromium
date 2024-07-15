@@ -33,6 +33,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -68,7 +69,6 @@ import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageStateHandler;
 import org.chromium.components.messages.MessagesTestHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.UiRestriction;
@@ -126,7 +126,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
         String innerHtml = getInnerHtml(originalTab);
         assertThat(innerHtml).doesNotContain("article-header");
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     originalTab
                             .getUserDataHost()
@@ -151,7 +151,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
         downloadAndOpenOfflinePage();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     originalTab
                             .getUserDataHost()
@@ -209,7 +209,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
         String innerHtml = getInnerHtml(originalTab);
         assertThat(innerHtml).doesNotContain("article-header");
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     originalTab
                             .getUserDataHost()
@@ -238,7 +238,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
         // Stop the server and also disconnect the network.
         mTestServer.stopAndDestroyServer();
         mTestServer = null;
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     NetworkChangeNotifier.forceConnectivityState(false);
                 });
@@ -252,8 +252,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
     private static boolean isOfflinePage(final Tab tab) {
         AtomicBoolean isOffline = new AtomicBoolean();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> isOffline.set(OfflinePageUtils.isOfflinePage(tab)));
+        ThreadUtils.runOnUiThreadBlocking(() -> isOffline.set(OfflinePageUtils.isOfflinePage(tab)));
         return isOffline.get();
     }
 
@@ -265,7 +264,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
         String innerHtml = getInnerHtml(tab);
         assertThat(innerHtml).doesNotContain("article-header");
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tab.getUserDataHost()
                             .getUserData(ReaderModeManager.USER_DATA_KEY)
@@ -279,7 +278,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
     @EnableFeatures(ChromeFeatureList.READER_MODE_IN_CCT)
     public void testPreferenceInCCT() throws TimeoutException {
         Tab originalTab = mDownloadTestRule.getActivity().getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     originalTab
                             .getUserDataHost()
@@ -331,7 +330,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
     private DistilledPagePrefs getDistilledPagePrefs() {
         AtomicReference<DistilledPagePrefs> prefs = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     DomDistillerService domDistillerService =
                             DomDistillerServiceFactory.getForProfile(
@@ -398,7 +397,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
         CriteriaHelper.pollUiThread(
                 () -> {
                     MessageDispatcher messageDispatcher =
-                            TestThreadUtils.runOnUiThreadBlocking(
+                            ThreadUtils.runOnUiThreadBlocking(
                                     () ->
                                             MessageDispatcherProvider.from(
                                                     mDownloadTestRule

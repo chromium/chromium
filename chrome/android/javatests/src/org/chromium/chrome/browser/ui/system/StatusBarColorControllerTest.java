@@ -58,7 +58,6 @@ import org.chromium.chrome.test.util.browser.ThemeTestUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.UiRestriction;
@@ -107,18 +106,18 @@ public class StatusBarColorControllerTest {
         sActivityTestRule.loadUrlInNewTab(
                 "about:blank", /* incognito= */ true, TabLaunchType.FROM_CHROME_UI);
         TabModelSelector tabModelSelector = activity.getTabModelSelector();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tabModelSelector.selectModel(/* incognito= */ true);
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     activity.getLayoutManager()
                             .showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);
                 });
 
         waitForStatusBarColor(activity, expectedOverviewIncognitoColor);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tabModelSelector.selectModel(/* incognito= */ false);
                 });
@@ -144,7 +143,7 @@ public class StatusBarColorControllerTest {
         ThemeTestUtils.waitForThemeColor(activity, Color.RED);
         waitForStatusBarColor(activity, Color.RED);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     activity.getLayoutManager()
                             .showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);
@@ -195,7 +194,7 @@ public class StatusBarColorControllerTest {
                 statusBarColorController.getStatusBarColorWithoutStatusIndicator());
 
         // Set a status indicator color.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> statusBarColorController.onStatusIndicatorColorChanged(Color.BLUE));
 
         Assert.assertEquals("Wrong status bar color.", Color.BLUE, statusBarColor.get().intValue());
@@ -208,7 +207,7 @@ public class StatusBarColorControllerTest {
                 statusBarColorController.getStatusBarColorWithoutStatusIndicator());
 
         // Set scrim.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> statusBarColorController.setStatusBarScrimFraction(.5f));
 
         // The resulting color should be a scrimmed version of the status bar color.
@@ -217,7 +216,7 @@ public class StatusBarColorControllerTest {
                 getScrimmedColor(Color.BLUE, .5f),
                 statusBarColor.get().intValue());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Remove scrim.
                     statusBarColorController.setStatusBarScrimFraction(.0f);
@@ -355,7 +354,7 @@ public class StatusBarColorControllerTest {
                 statusBarColorController.getStatusBarColorWithoutStatusIndicator());
 
         // Set a status indicator color.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> statusBarColorController.onStatusIndicatorColorChanged(Color.BLUE));
 
         Assert.assertEquals("Wrong status bar color.", Color.BLUE, statusBarColor.get().intValue());
@@ -368,7 +367,7 @@ public class StatusBarColorControllerTest {
                 statusBarColorController.getStatusBarColorWithoutStatusIndicator());
 
         // Set scrim.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> statusBarColorController.setStatusBarScrimFraction(.5f));
 
         Assert.assertEquals(
@@ -376,7 +375,7 @@ public class StatusBarColorControllerTest {
                 getScrimmedColor(Color.BLUE, .5f),
                 statusBarColor.get().intValue());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Remove scrim.
                     statusBarColorController.setStatusBarScrimFraction(.0f);
@@ -407,8 +406,7 @@ public class StatusBarColorControllerTest {
                         .getRootUiCoordinatorForTesting()
                         .getStatusBarColorController();
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> statusBarColorController.updateStatusBarColor());
+        ThreadUtils.runOnUiThreadBlocking(() -> statusBarColorController.updateStatusBarColor());
         assertEquals(
                 "Wrong value returned for Tab Strip Redesign Folio.",
                 TabUiThemeUtil.getTabStripBackgroundColor(activity, false),
@@ -440,7 +438,7 @@ public class StatusBarColorControllerTest {
 
         // Assume that the tab strip is initially hidden.
         statusBarColorController.setTabStripHiddenOnTablet(true);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> statusBarColorController.onToolbarColorChanged(toolbarColor));
         assertEquals(
                 "Status bar color on tablet should match the toolbar background when the tab strip"
@@ -454,7 +452,7 @@ public class StatusBarColorControllerTest {
         // state in StatusBarColorController for this transition once the control container margins
         // are updated and before the transition runs to completion.
         statusBarColorController.setTabStripHiddenOnTablet(false);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> statusBarColorController.setTabStripColorOverlay(toolbarColor, 0.5f));
         assertEquals(
                 "Status bar color on tablet should use the tab strip transition scrim overlay"
@@ -467,7 +465,7 @@ public class StatusBarColorControllerTest {
 
         // Simulate transition completion by resetting the transition overlay state in
         // StatusBarColorController.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         statusBarColorController.setTabStripColorOverlay(
                                 ScrimProperties.INVALID_COLOR, 0f));

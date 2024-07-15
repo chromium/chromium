@@ -12,7 +12,6 @@ import org.chromium.android_webview.WebMessageListener;
 import org.chromium.base.ThreadUtils;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -58,7 +57,7 @@ public class TestWebMessageListener implements WebMessageListener {
             final WebMessageListener listener)
             throws Exception {
         AwActivityTestRule.checkJavaScriptEnabled(awContents);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> awContents.addWebMessageListener(jsObjectName, allowedOriginRules, listener));
     }
 

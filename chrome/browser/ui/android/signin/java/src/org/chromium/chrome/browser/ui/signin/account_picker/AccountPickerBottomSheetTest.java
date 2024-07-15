@@ -63,6 +63,7 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -91,7 +92,6 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.sync.SyncFeatureMap;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -104,7 +104,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class AccountPickerBottomSheetTest {
     private static class CustomFakeAccountInfoService extends FakeAccountInfoService {
         int getNumberOfObservers() {
-            return TestThreadUtils.runOnUiThreadBlockingNoException(mObservers::size);
+            return ThreadUtils.runOnUiThreadBlockingNoException(mObservers::size);
         }
     }
 
@@ -224,7 +224,7 @@ public class AccountPickerBottomSheetTest {
         mAccountManagerTestRule.removeAccount(mCoreAccountInfo1.getId());
         mAccountManagerTestRule.removeAccount(mCoreAccountInfo2.getId());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCoordinator =
                             new AccountPickerBottomSheetCoordinator(
@@ -249,7 +249,7 @@ public class AccountPickerBottomSheetTest {
         mAccountManagerTestRule.removeAccount(mCoreAccountInfo1.getId());
         mAccountManagerTestRule.removeAccount(mCoreAccountInfo2.getId());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCoordinator =
                             new AccountPickerBottomSheetCoordinator(
@@ -477,7 +477,7 @@ public class AccountPickerBottomSheetTest {
     public void testAccountReappearedOnCollapsedSheet() {
         mAccountManagerTestRule.removeAccount(mCoreAccountInfo1.getId());
         mAccountManagerTestRule.removeAccount(mCoreAccountInfo2.getId());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCoordinator =
                             new AccountPickerBottomSheetCoordinator(
@@ -1149,7 +1149,7 @@ public class AccountPickerBottomSheetTest {
 
         verify(mFakeAccountManagerFacade)
                 .updateCredentials(any(), any(), mUpdateCredentialsSuccessCallbackCaptor.capture());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mUpdateCredentialsSuccessCallbackCaptor.getValue().onResult(true);
                 });
@@ -1441,7 +1441,7 @@ public class AccountPickerBottomSheetTest {
     }
 
     private void clickContinueButton(View bottomSheetView) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     bottomSheetView
                             .findViewById(R.id.account_picker_continue_as_button)
@@ -1508,7 +1508,7 @@ public class AccountPickerBottomSheetTest {
         // here to enable
         // checks of other elements on the screen.
         // TODO(crbug.com/40144184): Delete this line.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     bottomSheetView
                             .findViewById(R.id.account_picker_signin_spinner_view)
@@ -1529,7 +1529,7 @@ public class AccountPickerBottomSheetTest {
 
     private void completeDeviceLock(boolean deviceLockCreated) {
         assertTrue(mDeviceLockActivityLauncher.isLaunched());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mDeviceLockActivityLauncher.runCallback(
                             deviceLockCreated ? Activity.RESULT_OK : Activity.RESULT_CANCELED);
@@ -1574,7 +1574,7 @@ public class AccountPickerBottomSheetTest {
 
     private void buildAndShowBottomSheet(@AccountPickerLaunchMode int launchMode) {
         mDeviceLockActivityLauncher = new CustomDeviceLockActivityLauncher();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCoordinator =
                             new AccountPickerBottomSheetCoordinator(

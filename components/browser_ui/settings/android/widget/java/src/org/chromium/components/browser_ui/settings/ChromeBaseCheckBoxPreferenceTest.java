@@ -30,10 +30,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.settings.test.R;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Tests of {@link ChromeBaseCheckBoxPreference}. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -175,7 +175,7 @@ public class ChromeBaseCheckBoxPreferenceTest {
         PreferenceFragmentCompat fragment = mSettingsRule.getPreferenceFragment();
         SettingsUtils.addPreferencesFromResource(
                 fragment, R.xml.test_chrome_base_checkbox_preference_screen);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeBaseCheckBoxPreference preference =
                             fragment.findPreference(CUSTOM_LAYOUT_PREF_NAME);
@@ -204,7 +204,7 @@ public class ChromeBaseCheckBoxPreferenceTest {
         PreferenceFragmentCompat fragment = mSettingsRule.getPreferenceFragment();
         SettingsUtils.addPreferencesFromResource(
                 fragment, R.xml.test_chrome_base_checkbox_preference_screen);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeBaseCheckBoxPreference preference =
                             fragment.findPreference(CUSTOM_LAYOUT_PREF_NAME);
@@ -244,7 +244,7 @@ public class ChromeBaseCheckBoxPreferenceTest {
         PreferenceFragmentCompat fragment = mSettingsRule.getPreferenceFragment();
         SettingsUtils.addPreferencesFromResource(
                 fragment, R.xml.test_chrome_base_checkbox_preference_screen);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeBaseCheckBoxPreference preference =
                             fragment.findPreference(CUSTOM_LAYOUT_PREF_NAME);
@@ -277,7 +277,7 @@ public class ChromeBaseCheckBoxPreferenceTest {
         PreferenceFragmentCompat fragment = mSettingsRule.getPreferenceFragment();
         SettingsUtils.addPreferencesFromResource(
                 fragment, R.xml.test_chrome_base_checkbox_preference_screen);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeBaseCheckBoxPreference preference =
                             fragment.findPreference(CUSTOM_LAYOUT_PREF_NAME);

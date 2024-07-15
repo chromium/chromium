@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
@@ -47,7 +48,6 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Tests for ThemeSettingsFragment. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -101,7 +101,7 @@ public class ThemeSettingsFragmentTest {
     @Feature({"Themes"})
     public void testSelectThemes() {
         launchThemeSettings(ThemeSettingsEntry.SETTINGS);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     int expectedDefaultTheme = ThemeType.LIGHT;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -152,7 +152,7 @@ public class ThemeSettingsFragmentTest {
     @EnableFeatures(DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)
     public void testDarkenWebsiteButton() {
         launchThemeSettings(ThemeSettingsEntry.SETTINGS);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     int expectedDefaultTheme = ThemeType.LIGHT;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

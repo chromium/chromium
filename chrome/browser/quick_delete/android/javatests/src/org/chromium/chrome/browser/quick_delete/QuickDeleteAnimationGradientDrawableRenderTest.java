@@ -26,7 +26,6 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.RenderTestRule;
 
@@ -60,7 +59,7 @@ public class QuickDeleteAnimationGradientDrawableRenderTest {
 
     @Before
     public void setUp() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Set to dark mode so the gradient animation is more visible in the
                     // screenshots.
@@ -84,7 +83,7 @@ public class QuickDeleteAnimationGradientDrawableRenderTest {
         QuickDeleteAnimationGradientDrawable drawable =
                 QuickDeleteAnimationGradientDrawable.createQuickDeleteWipeAnimationDrawable(
                         mActivity, VIEW_HEIGHT, /* isIncognito= */ false);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     testView.setForeground(drawable);
                 });
@@ -101,7 +100,7 @@ public class QuickDeleteAnimationGradientDrawableRenderTest {
         QuickDeleteAnimationGradientDrawable drawable =
                 QuickDeleteAnimationGradientDrawable.createQuickDeleteFadeAnimationDrawable(
                         mActivity, VIEW_HEIGHT, /* isIncognito= */ false);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     testView.setForeground(drawable);
                 });
@@ -115,7 +114,7 @@ public class QuickDeleteAnimationGradientDrawableRenderTest {
             throws Exception {
         for (int i = 0; i < 5; i++) {
             final float animatorFraction = stepFraction * i;
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         animator.setCurrentFraction(animatorFraction);
                     });
@@ -128,7 +127,7 @@ public class QuickDeleteAnimationGradientDrawableRenderTest {
         View view = new View(mActivity);
         view.setBackgroundColor(Color.BLACK);
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(VIEW_WIDTH, VIEW_HEIGHT);
-        TestThreadUtils.runOnUiThreadBlocking(() -> mFrameLayout.addView(view, layoutParams));
+        ThreadUtils.runOnUiThreadBlocking(() -> mFrameLayout.addView(view, layoutParams));
         return view;
     }
 }

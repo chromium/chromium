@@ -25,6 +25,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
@@ -45,7 +46,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -146,7 +146,7 @@ public class AccountPickerBottomSheetRenderTest {
 
     @ParameterAnnotations.UseMethodParameterBefore(NightModeTestUtils.NightModeParams.class)
     public void setupNightMode(boolean nightModeEnabled) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);
                 });
@@ -478,7 +478,7 @@ public class AccountPickerBottomSheetRenderTest {
         buildAndShowCollapsedBottomSheet();
 
         View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     bottomSheetView
                             .findViewById(R.id.account_picker_continue_as_button)
@@ -506,7 +506,7 @@ public class AccountPickerBottomSheetRenderTest {
         buildAndShowCollapsedBottomSheet();
 
         View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     bottomSheetView
                             .findViewById(R.id.account_picker_continue_as_button)
@@ -522,7 +522,7 @@ public class AccountPickerBottomSheetRenderTest {
 
     private void clickContinueButtonAndWaitForErrorView() {
         View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     bottomSheetView
                             .findViewById(R.id.account_picker_continue_as_button)
@@ -538,7 +538,7 @@ public class AccountPickerBottomSheetRenderTest {
 
     private void clickContinueButtonAndCheckSigninInProgressView(String testId) throws IOException {
         View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     bottomSheetView
                             .findViewById(R.id.account_picker_continue_as_button)
@@ -549,7 +549,7 @@ public class AccountPickerBottomSheetRenderTest {
         // Currently the ProgressBar animation cannot be disabled with animations disabled.
         // Hide the ProgressBar manually here to enable checks of other elements on the screen.
         // TODO(crbug.com/40144184): Delete this line.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     bottomSheetView
                             .findViewById(R.id.account_picker_signin_spinner_view)
@@ -560,7 +560,7 @@ public class AccountPickerBottomSheetRenderTest {
 
     private void expandBottomSheet() {
         View view = mCoordinator.getBottomSheetViewForTesting();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     view.findViewById(R.id.account_picker_selected_account).performClick();
                 });
@@ -568,7 +568,7 @@ public class AccountPickerBottomSheetRenderTest {
     }
 
     private void buildAndShowCollapsedBottomSheet() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCoordinator =
                             new AccountPickerBottomSheetCoordinator(

@@ -27,6 +27,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
@@ -41,7 +42,6 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -88,7 +88,7 @@ public class SurveyClientUnitTest {
                         task.run();
                     }
                 });
-        TestThreadUtils.setThreadAssertsDisabled(true);
+        ThreadUtils.setThreadAssertsDisabledForTesting(true);
     }
 
     @Test

@@ -11,6 +11,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.TerminationStatus;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content.browser.input.SelectPopup;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
@@ -33,11 +34,12 @@ public class WebContentsUtils {
     /**
      * Reports all frame submissions to the browser process, even those that do not impact Browser
      * UI.
+     *
      * @param webContents The WebContents for which to report all frame submissions.
      * @param enabled Whether to report all frame submissions.
      */
     public static void reportAllFrameSubmissions(final WebContents webContents, boolean enabled) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     WebContentsUtilsJni.get().reportAllFrameSubmissions(webContents, enabled);
                 });
@@ -65,18 +67,18 @@ public class WebContentsUtils {
      * @param webContents The WebContents in use.
      */
     public static void simulateRendererKilled(WebContents webContents) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> ((WebContentsImpl) webContents).simulateRendererKilledForTesting());
     }
 
     /**
      * Returns {@link ImeAdapter} instance associated with a given {@link WebContents}.
+     *
      * @param webContents The WebContents in use.
      */
     public static ImeAdapter getImeAdapter(WebContents webContents) {
         try {
-            return TestThreadUtils.runOnUiThreadBlocking(
-                    () -> ImeAdapter.fromWebContents(webContents));
+            return ThreadUtils.runOnUiThreadBlocking(() -> ImeAdapter.fromWebContents(webContents));
         } catch (ExecutionException e) {
             return null;
         }
@@ -84,11 +86,12 @@ public class WebContentsUtils {
 
     /**
      * Returns {@link GestureListenerManager} instance associated with a given {@link WebContents}.
+     *
      * @param webContents The WebContents in use.
      */
     public static GestureListenerManager getGestureListenerManager(WebContents webContents) {
         try {
-            return TestThreadUtils.runOnUiThreadBlocking(
+            return ThreadUtils.runOnUiThreadBlocking(
                     () -> GestureListenerManager.fromWebContents(webContents));
         } catch (ExecutionException e) {
             return null;
@@ -97,11 +100,12 @@ public class WebContentsUtils {
 
     /**
      * Returns {@link ViewEventSink} instance associated with a given {@link WebContents}.
+     *
      * @param webContents The WebContents in use.
      */
     public static ViewEventSink getViewEventSink(WebContents webContents) {
         try {
-            return TestThreadUtils.runOnUiThreadBlocking(() -> ViewEventSink.from(webContents));
+            return ThreadUtils.runOnUiThreadBlocking(() -> ViewEventSink.from(webContents));
         } catch (ExecutionException e) {
             return null;
         }
@@ -117,7 +121,7 @@ public class WebContentsUtils {
     public static void evaluateJavaScriptWithUserGesture(
             WebContents webContents, String script, @Nullable JavaScriptCallback callback) {
         if (script == null) return;
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         WebContentsUtilsJni.get()
                                 .evaluateJavaScriptWithUserGesture(webContents, script, callback));
@@ -157,13 +161,13 @@ public class WebContentsUtils {
                         callbackHelper.notifyCalled();
                     }
                 };
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     webContents.addObserver(observer);
                     WebContentsUtilsJni.get().crashTab(webContents);
                 });
         callbackHelper.waitForOnly();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     webContents.removeObserver(observer);
                 });
@@ -185,7 +189,7 @@ public class WebContentsUtils {
     public static void waitForCopyableViewInWebContents(final WebContents webContents)
             throws TimeoutException {
         CallbackHelper callbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     WebContentsUtilsJni.get()
                             .notifyCopyableViewInWebContents(

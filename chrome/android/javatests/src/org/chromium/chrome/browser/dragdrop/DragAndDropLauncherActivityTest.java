@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -43,7 +44,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 import org.chromium.url.GURL;
@@ -112,8 +112,7 @@ public class DragAndDropLauncherActivityTest {
                 });
 
         // Verify that the link is opened in the activity tab of the new Chrome instance.
-        Tab activityTab =
-                TestThreadUtils.runOnUiThreadBlocking(lastAccessedActivity::getActivityTab);
+        Tab activityTab = ThreadUtils.runOnUiThreadBlocking(lastAccessedActivity::getActivityTab);
         Assert.assertEquals(
                 "Activity tab URL should match the dragged link URL.",
                 new GURL(mLinkUrl).getSpec(),
@@ -149,7 +148,7 @@ public class DragAndDropLauncherActivityTest {
                         () -> mContext.startActivity(intent));
         MultiWindowUtils.setMaxInstancesForTesting(2);
         int lastAccessedInstanceId =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> MultiWindowUtils.getInstanceIdForLinkIntent(lastAccessedActivity));
         addTabModelSelectorObserver(lastAccessedActivity);
 
@@ -216,7 +215,7 @@ public class DragAndDropLauncherActivityTest {
         // Open a new tab in the current activity, that will be used as the dragged tab.
         ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), sourceActivity);
 
-        var draggedTab = TestThreadUtils.runOnUiThreadBlocking(sourceActivity::getActivityTab);
+        var draggedTab = ThreadUtils.runOnUiThreadBlocking(sourceActivity::getActivityTab);
         var initialTabCountInSourceActivity =
                 sourceActivity.getTabModelSelector().getTotalTabCount();
 
@@ -249,11 +248,11 @@ public class DragAndDropLauncherActivityTest {
 
         // Verify that the dragged tab is reparented in the new instance.
         int tabCountInNewActivity =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> newActivity.getTabModelSelector().getTotalTabCount());
         Assert.assertEquals(
                 "New window should have only the dragged tab.", 1, tabCountInNewActivity);
-        Tab newActivityTab = TestThreadUtils.runOnUiThreadBlocking(newActivity::getActivityTab);
+        Tab newActivityTab = ThreadUtils.runOnUiThreadBlocking(newActivity::getActivityTab);
         Assert.assertEquals(
                 "New activity tab should be the same as the dragged tab.",
                 draggedTab,
@@ -272,7 +271,7 @@ public class DragAndDropLauncherActivityTest {
 
     private void addTabModelSelectorObserver(ChromeTabbedActivity activity) {
         TabModelSelector tabModelSelector = activity.getTabModelSelector();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabModelSelectorObserver tabModelSelectorObserver =
                             new TabModelSelectorObserver() {
@@ -288,14 +287,14 @@ public class DragAndDropLauncherActivityTest {
 
     private Intent createLinkDragDropIntent(String linkUrl, Integer windowId)
             throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         DragAndDropLauncherActivity.getLinkLauncherIntent(
                                 mContext, linkUrl, windowId, UrlIntentSource.LINK));
     }
 
     private Intent createTabDragDropIntent(Tab tab) throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         DragAndDropLauncherActivity.getTabIntent(
                                 mContext, tab, MultiWindowUtils.INVALID_INSTANCE_ID));

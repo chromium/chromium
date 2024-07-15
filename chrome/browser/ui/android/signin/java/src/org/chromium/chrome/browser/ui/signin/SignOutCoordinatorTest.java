@@ -36,6 +36,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
@@ -61,7 +62,6 @@ import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.accessibility.UiAccessibilityFeatures;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
@@ -110,7 +110,7 @@ public class SignOutCoordinatorTest {
     @SmallTest
     public void testNullOnSignOutCallback() {
         try {
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         SignOutCoordinator.startSignOutFlow(
                                 mActivityTestRule.getActivity(),
@@ -184,7 +184,7 @@ public class SignOutCoordinatorTest {
 
         startSignOutFlow(signOutReason, mOnSignOut, false);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(mSnackbarManager.isShowing());
                     Snackbar currentSnackbar = mSnackbarManager.getCurrentSnackbarForTesting();
@@ -309,7 +309,7 @@ public class SignOutCoordinatorTest {
 
         onView(withText(R.string.sign_out)).inRoot(isDialog()).perform(click());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(mSnackbarManager.isShowing());
                     Snackbar currentSnackbar = mSnackbarManager.getCurrentSnackbarForTesting();
@@ -366,7 +366,7 @@ public class SignOutCoordinatorTest {
                 .when(mSyncService)
                 .getTypesWithUnsyncedData(any(Callback.class));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSnackbarManager =
                             new SnackbarManager(
@@ -380,7 +380,7 @@ public class SignOutCoordinatorTest {
 
     private void startSignOutFlow(
             @SignoutReason int signoutReason, Runnable onSignOut, boolean showConfirmDialog) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         SignOutCoordinator.startSignOutFlow(
                                 mActivityTestRule.getActivity(),

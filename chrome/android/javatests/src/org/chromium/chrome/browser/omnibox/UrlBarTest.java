@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -42,7 +43,6 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.test.util.UiRestriction;
@@ -113,7 +113,7 @@ public class UrlBarTest {
         final AtomicReference<String> textWithAutocomplete = new AtomicReference<String>();
         final AtomicReference<String> additionalText = new AtomicReference<String>();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (action != null) action.run();
                     hasAutocomplete.set(mUrlBar.hasAutocomplete());
@@ -136,7 +136,7 @@ public class UrlBarTest {
     private void setTextAndVerifyTextDirection(String text, int expectedDirection)
             throws TimeoutException {
         CallbackHelper directionCallback = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mUrlBar.setUrlDirectionListener(
                             (direction) -> {
@@ -149,12 +149,12 @@ public class UrlBarTest {
         directionCallback.waitForOnly(
                 "Direction never reached expected direction: " + expectedDirection);
         assertUrlDirection(expectedDirection);
-        TestThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.setUrlDirectionListener(null));
+        ThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.setUrlDirectionListener(null));
     }
 
     private void assertUrlDirection(int expectedDirection) {
         int actualDirection =
-                TestThreadUtils.runOnUiThreadBlockingNoException(() -> mUrlBar.getUrlDirection());
+                ThreadUtils.runOnUiThreadBlockingNoException(() -> mUrlBar.getUrlDirection());
         Assert.assertEquals(expectedDirection, actualDirection);
     }
 
@@ -182,7 +182,7 @@ public class UrlBarTest {
         // Replace part of the non-autocomplete text
         mOmnibox.setText("test");
         mOmnibox.setAutocompleteText("ing is fun", Optional.empty());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mUrlBar.setText(mUrlBar.getText().replace(1, 2, "a"));
                 });
@@ -191,7 +191,7 @@ public class UrlBarTest {
         // Replace part of the autocomplete text.
         mOmnibox.setText("test");
         mOmnibox.setAutocompleteText("ing is fun", Optional.empty());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mUrlBar.setText(mUrlBar.getText().replace(8, 10, "no"));
                 });
@@ -331,7 +331,7 @@ public class UrlBarTest {
         // this slightly differently than the other cases.
         mOmnibox.setText("test");
         mOmnibox.setAutocompleteText("ing is fun", Optional.of("www.bar.com"));
-        TestThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.setSelection(4, 14));
+        ThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.setSelection(4, 14));
         mOmnibox.checkText(equalTo("testing is fun"), null, equalTo("www.bar.com"));
     }
 
@@ -493,7 +493,7 @@ public class UrlBarTest {
         // Invalid case (cursor not at the end of the text).
         mOmnibox.setText("g");
         mOmnibox.setAutocompleteText("oogle.com", Optional.empty());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InputConnection conn = mUrlBar.getInputConnection();
                     conn.beginBatchEdit();
@@ -777,7 +777,7 @@ public class UrlBarTest {
         mUrlBar.setTypingStartedListener(listener);
         mOmnibox.requestFocus();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Clipboard.getInstance().setText("");
                     // Paste directly. This is because Keyboard paste normally goes through an IME,
@@ -787,7 +787,7 @@ public class UrlBarTest {
                 });
         verifyNoInteractions(listener);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Clipboard.getInstance().setText("asdf");
                     // Paste directly. This is because Keyboard paste normally goes through an IME,

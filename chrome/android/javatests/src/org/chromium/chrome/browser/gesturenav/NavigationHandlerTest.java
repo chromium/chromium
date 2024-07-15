@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.FeatureList;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -50,7 +51,6 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -98,7 +98,7 @@ public class NavigationHandlerTest {
     }
 
     private Tab currentTab() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlockingNoException(
                 () -> mActivityTestRule.getActivity().getActivityTabProvider().get());
     }
 
@@ -143,7 +143,7 @@ public class NavigationHandlerTest {
                 AnimationStage.OTHER,
                 tab.getWebContents().getCurrentBackForwardTransitionStage());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mNavigationHandler.release(true));
+        ThreadUtils.runOnUiThreadBlocking(() -> mNavigationHandler.release(true));
         CriteriaHelper.pollInstrumentationThread(
                 () ->
                         AnimationStage.INVOKE_ANIMATION
@@ -187,7 +187,7 @@ public class NavigationHandlerTest {
                 AnimationStage.OTHER,
                 tab.getWebContents().getCurrentBackForwardTransitionStage());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mNavigationHandler.release(true));
+        ThreadUtils.runOnUiThreadBlocking(() -> mNavigationHandler.release(true));
         CriteriaHelper.pollInstrumentationThread(
                 () ->
                         AnimationStage.INVOKE_ANIMATION
@@ -260,7 +260,7 @@ public class NavigationHandlerTest {
                 EmbeddedTestServer.createAndStartServer(
                         InstrumentationRegistry.getInstrumentation().getContext());
         mActivityTestRule.loadUrl(mTestServer.getURL(RENDERED_PAGE));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Right swipe on a rendered page to initiate overscroll glow.
                     mNavigationHandler.onDown();
@@ -309,9 +309,9 @@ public class NavigationHandlerTest {
                         .build();
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         mActivityTestRule.loadUrl(UrlConstants.RECENT_TABS_URL);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 mActivityTestRule.getActivity().getOnBackPressedDispatcher()::onBackPressed);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 mActivityTestRule.getActivity().getOnBackPressedDispatcher()::onBackPressed);
         histogramWatcher.assertExpected("Should not record when back is not triggered by swipe");
     }
@@ -349,10 +349,10 @@ public class NavigationHandlerTest {
     private void testLeftEdgeSwipeClosesTabLaunchedFromLinkInternal() {
         Tab oldTab = currentTab();
         TabCreator tabCreator =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> mActivityTestRule.getActivity().getTabCreator(false));
         Tab newTab =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
                             return tabCreator.createNewTab(
                                     new LoadUrlParams(
@@ -382,13 +382,13 @@ public class NavigationHandlerTest {
                 EmbeddedTestServer.createAndStartServer(
                         InstrumentationRegistry.getInstrumentation().getContext());
         mActivityTestRule.loadUrl(mTestServer.getURL(RENDERED_PAGE));
-        TestThreadUtils.runOnUiThreadBlocking(mNavigationHandler::destroy);
+        ThreadUtils.runOnUiThreadBlocking(mNavigationHandler::destroy);
 
         // |triggerUi| can be invoked by SwipeRefreshHandler on the rendered
         // page. Make sure this won't crash after the handler(and also
         // handler action delegate) is destroyed.
         Assert.assertTrue(
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> mNavigationHandler.triggerUi(BackGestureEventSwipeEdge.LEFT, 0, 0)));
 
         // Just check we're still on the same URL.
@@ -404,12 +404,12 @@ public class NavigationHandlerTest {
                 EmbeddedTestServer.createAndStartServer(
                         InstrumentationRegistry.getInstrumentation().getContext());
         mActivityTestRule.loadUrl(mTestServer.getURL(RENDERED_PAGE));
-        TestThreadUtils.runOnUiThreadBlocking(currentTab()::destroy);
+        ThreadUtils.runOnUiThreadBlocking(currentTab()::destroy);
 
         // |triggerUi| can be invoked by SwipeRefreshHandler on the rendered
         // page. Make sure this won't crash after the current tab is destroyed.
         Assert.assertFalse(
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> mNavigationHandler.triggerUi(BackGestureEventSwipeEdge.LEFT, 0, 0)));
     }
 
@@ -420,7 +420,7 @@ public class NavigationHandlerTest {
                 EmbeddedTestServer.createAndStartServer(
                         InstrumentationRegistry.getInstrumentation().getContext());
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        TestThreadUtils.runOnUiThreadBlocking(mActivityTestRule.getActivity()::finish);
+        ThreadUtils.runOnUiThreadBlocking(mActivityTestRule.getActivity()::finish);
 
         // CompositorViewHolder dispatches motion events and invoke the handler's
         // |handleTouchEvent| on native pages. Make sure this won't crash the app after
@@ -434,7 +434,7 @@ public class NavigationHandlerTest {
                         /* x= */ 10,
                         /* y= */ 100,
                         0);
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlockingNoException(
                 () ->
                         mActivityTestRule
                                 .getActivity()
@@ -471,7 +471,7 @@ public class NavigationHandlerTest {
         setTabSwitcherModeAndWait(true);
         Assert.assertFalse(
                 "Navigation UI should be reset.",
-                TestThreadUtils.runOnUiThreadBlockingNoException(mNavigationHandler::isActive));
+                ThreadUtils.runOnUiThreadBlockingNoException(mNavigationHandler::isActive));
     }
 
     /**

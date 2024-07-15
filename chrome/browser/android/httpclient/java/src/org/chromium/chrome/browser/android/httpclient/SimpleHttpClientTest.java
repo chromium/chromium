@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.android.httpclient.SimpleHttpClient.HttpRespo
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
@@ -64,7 +63,7 @@ public class SimpleHttpClientTest {
                     mCallbackHelper.notifyCalled();
                 };
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mHttpClient =
                                 new SimpleHttpClient(ProfileManager.getLastUsedRegularProfile()));
@@ -77,7 +76,7 @@ public class SimpleHttpClientTest {
         GURL gurl = new GURL(url);
         String body = "";
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mHttpClient.send(
                                 gurl,
@@ -147,7 +146,7 @@ public class SimpleHttpClientTest {
                     mCallback);
 
             receivedRequestCallback.waitForOnly();
-            TestThreadUtils.runOnUiThreadBlocking(() -> mHttpClient.destroy());
+            ThreadUtils.runOnUiThreadBlocking(() -> mHttpClient.destroy());
 
             serverRespondedCallbackHelper.waitForOnly();
             Assert.assertThrows(

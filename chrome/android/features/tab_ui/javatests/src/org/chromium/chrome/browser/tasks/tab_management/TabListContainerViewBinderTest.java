@@ -26,10 +26,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -54,12 +54,12 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
     public void setUpTest() throws Exception {
         super.setUpTest();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRecyclerView = getActivity().findViewById(R.id.tab_list_recycler_view);
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mContainerModel = new PropertyModel(TabListContainerProperties.ALL_KEYS);
 
@@ -73,12 +73,12 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
 
     @Override
     public void tearDownTest() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(mMCP::destroy);
+        ThreadUtils.runOnUiThreadBlocking(mMCP::destroy);
         super.tearDownTest();
     }
 
     private void setUpGridLayoutManager() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mGridLayoutManager = spy(new GridLayoutManager(getActivity(), 2));
                     mRecyclerView.setLayoutManager(mGridLayoutManager);
@@ -86,7 +86,7 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
     }
 
     private void setUpLinearLayoutManager() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mLinearLayoutManager = spy(new LinearLayoutManager(getActivity()));
                     mRecyclerView.setLayoutManager(mLinearLayoutManager);
