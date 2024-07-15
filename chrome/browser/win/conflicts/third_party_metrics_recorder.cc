@@ -5,6 +5,7 @@
 #include "chrome/browser/win/conflicts/third_party_metrics_recorder.h"
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <string>
 #include <string_view>
@@ -122,13 +123,13 @@ void ThirdPartyMetricsRecorder::OnModuleDatabaseIdle() {
 void ThirdPartyMetricsRecorder::AddUnsignedModuleToCrashkeys(
     const std::wstring& module_basename) {
   using UnsignedModulesKey = crash_reporter::CrashKeyString<kCrashKeySize>;
-  static UnsignedModulesKey unsigned_modules_keys[] = {
+  static std::array<UnsignedModulesKey, 5> unsigned_modules_keys{{
       {"unsigned-modules-1", UnsignedModulesKey::Tag::kArray},
       {"unsigned-modules-2", UnsignedModulesKey::Tag::kArray},
       {"unsigned-modules-3", UnsignedModulesKey::Tag::kArray},
       {"unsigned-modules-4", UnsignedModulesKey::Tag::kArray},
       {"unsigned-modules-5", UnsignedModulesKey::Tag::kArray},
-  };
+  }};
 
   if (current_key_index_ >= std::size(unsigned_modules_keys))
     return;

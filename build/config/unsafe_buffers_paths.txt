@@ -69,6 +69,7 @@
 +chrome/browser/preloading/
 +chrome/browser/ui/autofill/
 +chrome/browser/ui/views/autofill/
++chrome/browser/win/
 -chromecast/
 -chromeos/
 -clank/

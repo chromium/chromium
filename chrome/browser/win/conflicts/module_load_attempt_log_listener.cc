@@ -10,8 +10,12 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
+#include "base/memory/aligned_memory.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split_win.h"
 #include "base/strings/string_util.h"
@@ -33,19 +37,26 @@ DrainLogOnBackgroundTask() {
   DrainLog(nullptr, 0, &bytes_needed);
 
   // Drain the log.
-  auto buffer = std::make_unique<uint8_t[]>(bytes_needed);
-  uint32_t bytes_written = DrainLog(buffer.get(), bytes_needed, nullptr);
-  DCHECK_EQ(bytes_needed, bytes_written);
+  auto buffer = base::HeapArray<uint8_t>::WithSize(bytes_needed);
+  uint32_t bytes_written = DrainLog(buffer.data(), buffer.size(), nullptr);
+  CHECK_EQ(bytes_needed, bytes_written);
 
-  // Parse the data using the recommanded pattern for iterating over the log.
+  // Parse the data.
   std::vector<std::tuple<base::FilePath, uint32_t, uint32_t>> blocked_modules;
-  uint8_t* tracker = buffer.get();
-  uint8_t* buffer_end = buffer.get() + bytes_written;
-  while (tracker < buffer_end) {
+
+  auto reader = base::SpanReader(buffer.as_span());
+  // Need to read at least sizeof(third_party_dlls::LogEntry) bytes to figure
+  // out the real size of log entry.
+  while (auto span = reader.Read(sizeof(third_party_dlls::LogEntry))) {
     third_party_dlls::LogEntry* entry =
-        reinterpret_cast<third_party_dlls::LogEntry*>(tracker);
-    DCHECK_LE(tracker + third_party_dlls::GetLogEntrySize(entry->path_len),
-              buffer_end);
+        reinterpret_cast<third_party_dlls::LogEntry*>(span->data());
+    CHECK(base::IsAligned(span->data(), alignof(third_party_dlls::LogEntry)));
+
+    // Now get the real size of the log entry and ensure it fully fits inside
+    // the buffer.
+    uint32_t log_entry_size =
+        third_party_dlls::GetLogEntrySize(entry->path_len);
+    CHECK(reader.Skip(log_entry_size - sizeof(third_party_dlls::LogEntry)));
 
     // Only consider blocked modules.
     // TODO(pmonette): Wire-up loaded modules to ModuleDatabase::OnModuleLoad to
@@ -53,13 +64,11 @@ DrainLogOnBackgroundTask() {
     // process.
     if (entry->type == third_party_dlls::LogType::kBlocked) {
       // No log path should be empty.
-      DCHECK(entry->path_len);
+      CHECK(entry->path_len);
       blocked_modules.emplace_back(
           base::UTF8ToWide(std::string_view(entry->path, entry->path_len)),
           entry->module_size, entry->time_date_stamp);
     }
-
-    tracker += third_party_dlls::GetLogEntrySize(entry->path_len);
   }
 
   return blocked_modules;
