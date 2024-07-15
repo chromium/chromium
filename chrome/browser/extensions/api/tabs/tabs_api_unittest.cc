@@ -153,6 +153,9 @@ void TabsApiUnitTest::SetUp() {
 }
 
 void TabsApiUnitTest::TearDown() {
+  // Do this first before resetting `browser_`.
+  browser()->tab_strip_model()->CloseAllTabs();
+
   browser_.reset();
   browser_window_.reset();
   ExtensionServiceTestBase::TearDown();
@@ -266,10 +269,6 @@ TEST_F(TabsApiUnitTest, IsTabStripEditable) {
   }
 
   // TODO(solomonkinard): Consider adding tests for drag cancellation.
-
-  // Clean up.
-  while (!browser()->tab_strip_model()->empty())
-    browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
 }
 
 TEST_F(TabsApiUnitTest, QueryWithoutTabsPermission) {
@@ -323,9 +322,6 @@ TEST_F(TabsApiUnitTest, QueryWithoutTabsPermission) {
   ASSERT_TRUE(third_tab_info.is_dict());
   std::optional<int> third_tab_id = third_tab_info.GetDict().FindInt("id");
   EXPECT_EQ(ExtensionTabUtil::GetTabId(web_contentses[2]), third_tab_id);
-
-  while (!browser()->tab_strip_model()->empty())
-    browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
 }
 
 TEST_F(TabsApiUnitTest, QueryWithHostPermission) {
@@ -401,8 +397,6 @@ TEST_F(TabsApiUnitTest, QueryWithHostPermission) {
     ASSERT_TRUE(third_tab_id);
     EXPECT_TRUE(base::Contains(expected_tabs_ids, *third_tab_id));
   }
-  while (!browser()->tab_strip_model()->empty())
-    browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
 }
 
 // Test that using the PDF extension for tab updates is treated as a
@@ -450,8 +444,6 @@ TEST_F(TabsApiUnitTest, PDFExtensionNavigation) {
 
   // Clean up.
   response_helper.WaitForResponse();
-  while (!browser()->tab_strip_model()->empty())
-    browser()->tab_strip_model()->CloseWebContentsAt(0, 0);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -505,9 +497,6 @@ TEST_F(TabsApiUnitTest, TabsUpdate) {
       browser()->tab_strip_model()->GetActiveWebContents()->GetController();
   content::RenderFrameHostTester::CommitPendingLoad(&controller);
   EXPECT_EQ(kChromiumOrg, raw_contents->GetLastCommittedURL());
-
-  // Clean up.
-  browser()->tab_strip_model()->CloseAllTabs();
 }
 
 // Tests that calling chrome.tabs.update does not update a saved tab.
@@ -694,7 +683,6 @@ TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTab) {
 
   // Clean up.
   saved_service->UnsaveGroup(group, tab_groups::ClosingSource::kUnknown);
-  browser()->tab_strip_model()->CloseAllTabs();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -760,7 +748,6 @@ TEST_F(TabsApiUnitTest,
 
   // Clean up.
   saved_service->UnsaveGroup(group, tab_groups::ClosingSource::kUnknown);
-  browser()->tab_strip_model()->CloseAllTabs();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -799,9 +786,6 @@ TEST_F(TabsApiUnitTest, TabsUpdateJavaScriptUrlNotAllowed) {
       function.get(), args, profile(), api_test_utils::FunctionMode::kNone);
   EXPECT_EQ(tabs_constants::kJavaScriptUrlsNotAllowedInExtensionNavigations,
             error);
-
-  // Clean up.
-  browser()->tab_strip_model()->CloseAllTabs();
 }
 
 // Test that the tabs.move() function correctly rearranges sets of tabs within a
@@ -843,9 +827,6 @@ TEST_F(TabsApiUnitTest, TabsMoveWithinWindow) {
   EXPECT_EQ(tab_strip_model->GetWebContentsAt(2), web_contentses[2]);
   EXPECT_EQ(tab_strip_model->GetWebContentsAt(3), web_contentses[4]);
   EXPECT_EQ(tab_strip_model->GetWebContentsAt(4), web_contentses[3]);
-
-  // Clean up.
-  browser()->tab_strip_model()->CloseAllTabs();
 }
 
 // Test that the tabs.move() function correctly rearranges sets of tabs across
@@ -918,7 +899,6 @@ TEST_F(TabsApiUnitTest, TabsMoveAcrossWindows) {
   EXPECT_EQ(tab_strip_model2->GetWebContentsAt(4), web_contentses[4]);
 
   // Clean up.
-  browser()->tab_strip_model()->CloseAllTabs();
   browser2->tab_strip_model()->CloseAllTabs();
 }
 
@@ -982,7 +962,6 @@ TEST_F(TabsApiUnitTest, TabsMoveSavedTabGroupTabNotAllowed) {
 
   // Clean up.
   saved_service->UnsaveGroup(group, tab_groups::ClosingSource::kUnknown);
-  browser()->tab_strip_model()->CloseAllTabs();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1051,7 +1030,6 @@ TEST_F(TabsApiUnitTest,
 
   // Clean up.
   saved_service->UnsaveGroup(group, tab_groups::ClosingSource::kUnknown);
-  browser()->tab_strip_model()->CloseAllTabs();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -1104,9 +1082,6 @@ TEST_F(TabsApiUnitTest, TabsGroupWithinWindow) {
   EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(2));
   EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(3));
   EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(4));
-
-  // Clean up.
-  browser()->tab_strip_model()->CloseAllTabs();
 }
 
 // Test that the tabs.group() function correctly groups tabs even when given
@@ -1159,9 +1134,6 @@ TEST_F(TabsApiUnitTest, TabsGroupMixedTabIds) {
   EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(2));
   EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(3));
   EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(4));
-
-  // Clean up.
-  browser()->tab_strip_model()->CloseAllTabs();
 }
 
 // Test that the tabs.group() function throws an error if both createProperties
@@ -1206,9 +1178,6 @@ TEST_F(TabsApiUnitTest, TabsGroupParamsError) {
   std::string error = api_test_utils::RunFunctionAndReturnError(
       function.get(), args, profile(), api_test_utils::FunctionMode::kNone);
   EXPECT_EQ(tabs_constants::kGroupParamsError, error);
-
-  // Clean up.
-  browser()->tab_strip_model()->CloseAllTabs();
 }
 
 // Test that the tabs.group() function correctly rearranges sets of tabs across
@@ -1284,7 +1253,6 @@ TEST_F(TabsApiUnitTest, TabsGroupAcrossWindows) {
   EXPECT_EQ(group2, tab_strip_model2->GetTabGroupForTab(4).value());
 
   // Clean up.
-  browser()->tab_strip_model()->CloseAllTabs();
   browser2->tab_strip_model()->CloseAllTabs();
 }
 
@@ -1357,7 +1325,6 @@ TEST_F(TabsApiUnitTest, TabsGroupForSavedTabGroupTabNotAllowed) {
 
   // Clean up.
   saved_service->UnsaveGroup(group, tab_groups::ClosingSource::kUnknown);
-  browser()->tab_strip_model()->CloseAllTabs();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1427,7 +1394,6 @@ TEST_F(TabsApiUnitTest,
 
   // Clean up.
   saved_service->UnsaveGroup(group, tab_groups::ClosingSource::kUnknown);
-  browser()->tab_strip_model()->CloseAllTabs();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -1476,9 +1442,6 @@ TEST_F(TabsApiUnitTest, TabsUngroupSingleGroup) {
   EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(2));
   EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(3));
   EXPECT_FALSE(tab_strip_model->group_model()->ContainsTabGroup(group));
-
-  // Clean up.
-  browser()->tab_strip_model()->CloseAllTabs();
 }
 
 // Test that the tabs.ungroup does not ungroup a SavedTabGroup.
@@ -1542,7 +1505,6 @@ TEST_F(TabsApiUnitTest, TabsUngroupSingleGroupForSavedTabGroupNotAllowed) {
 
   // Clean up.
   saved_service->UnsaveGroup(group, tab_groups::ClosingSource::kUnknown);
-  browser()->tab_strip_model()->CloseAllTabs();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1609,9 +1571,6 @@ TEST_F(
   EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(2));
   EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(3));
   EXPECT_FALSE(tab_strip_model->group_model()->ContainsTabGroup(group));
-
-  // Clean up.
-  browser()->tab_strip_model()->CloseAllTabs();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -1662,9 +1621,6 @@ TEST_F(TabsApiUnitTest, TabsUngroupFromMultipleGroups) {
   EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(4));
   EXPECT_TRUE(tab_strip_model->group_model()->ContainsTabGroup(group1));
   EXPECT_FALSE(tab_strip_model->group_model()->ContainsTabGroup(group2));
-
-  // Clean up.
-  tab_strip_model->CloseAllTabs();
 }
 
 TEST_F(TabsApiUnitTest, TabsGoForwardNoSelectedTabError) {
@@ -1731,11 +1687,6 @@ TEST_F(TabsApiUnitTest, TabsGoForwardAndBack) {
   EXPECT_EQ(tabs_constants::kNotFoundNextPageError, error);
   EXPECT_EQ(urls[1], web_contents->GetLastCommittedURL());
   EXPECT_EQ(urls[1], web_contents->GetVisibleURL());
-
-  // Clean up.
-  while (!browser()->tab_strip_model()->empty())
-    browser()->tab_strip_model()->CloseWebContentsAt(0, 0);
-  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(TabsApiUnitTest, TabsGoForwardAndBackSavedTabGroupTabNotAllowed) {
@@ -1807,7 +1758,6 @@ TEST_F(TabsApiUnitTest, TabsGoForwardAndBackSavedTabGroupTabNotAllowed) {
 
   // Clean up.
   saved_service->UnsaveGroup(group, tab_groups::ClosingSource::kUnknown);
-  browser()->tab_strip_model()->CloseAllTabs();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1891,7 +1841,6 @@ TEST_F(
 
   // Clean up.
   saved_service->UnsaveGroup(group, tab_groups::ClosingSource::kUnknown);
-  browser()->tab_strip_model()->CloseAllTabs();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -1973,11 +1922,6 @@ TEST_F(TabsApiUnitTest, TabsGoForwardAndBackWithoutTabId) {
   EXPECT_EQ(tab2_urls[0], tab2_webcontents->GetVisibleURL());
   EXPECT_TRUE(ui::PAGE_TRANSITION_FORWARD_BACK &
               controller2.GetLastCommittedEntry()->GetTransitionType());
-
-  // Clean up.
-  while (!browser()->tab_strip_model()->empty())
-    browser()->tab_strip_model()->CloseWebContentsAt(0, 0);
-  base::RunLoop().RunUntilIdle();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -2014,9 +1958,6 @@ TEST_F(TabsApiUnitTest, ScreenshotsRestricted) {
   std::string error = api_test_utils::RunFunctionAndReturnError(
       function.get(), "[{}]", profile(), api_test_utils::FunctionMode::kNone);
   EXPECT_EQ(tabs_constants::kScreenshotsDisabledByDlp, error);
-
-  // Clean up.
-  browser()->tab_strip_model()->CloseAllTabs();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -2072,9 +2013,6 @@ TEST_F(TabsApiUnitTest, ScreenshotDisabledInProfilePreferences) {
   std::string error = api_test_utils::RunFunctionAndReturnError(
       function.get(), "[{}]", profile(), api_test_utils::FunctionMode::kNone);
   EXPECT_EQ(tabs_constants::kScreenshotsDisabled, error);
-
-  // Clean up.
-  browser()->tab_strip_model()->CloseAllTabs();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -2145,9 +2083,6 @@ TEST_F(TabsApiUnitTest, TabsDiscard) {
   content::WebContents* new_contents_at_index =
       browser()->tab_strip_model()->GetWebContentsAt(index);
   EXPECT_TRUE(new_contents_at_index->WasDiscarded());
-
-  // Clean up.
-  browser()->tab_strip_model()->CloseAllTabs();
 }
 
 // Tests that calling chrome.tabs.discard on a saved tab does not discard.
@@ -2203,7 +2138,6 @@ TEST_F(TabsApiUnitTest, TabsDiscardSavedTabGroupTabNotAllowed) {
 
   // Clean up.
   saved_service->UnsaveGroup(group, tab_groups::ClosingSource::kUnknown);
-  browser()->tab_strip_model()->CloseAllTabs();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -2265,7 +2199,6 @@ TEST_F(TabsApiUnitTest,
 
   // Clean up.
   saved_service->UnsaveGroup(group, tab_groups::ClosingSource::kUnknown);
-  browser()->tab_strip_model()->CloseAllTabs();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
