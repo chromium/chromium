@@ -37,6 +37,14 @@
       <include name="IDR_EMOJI_PICKER_EMOTICON_TEST_ORDERING_JSON" compress="gzip" file="${root_gen_dir}/chromeos/ash/components/emoji/emoticon_test_ordering.json" resource_path="emoticon_test_ordering.json" use_base_dir="false" type="chrome_html" />
       <include name="IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON" compress="gzip" file="${root_gen_dir}/chromeos/ash/components/emoji/symbol_ordering.json" resource_path="symbol_ordering.json" use_base_dir="false" type="chrome_html" />
       <include name="IDR_EMOJI_PICKER_SYMBOL_TEST_ORDERING_JSON" compress="gzip" file="${root_gen_dir}/chromeos/ash/components/emoji/symbol_test_ordering.json" resource_path="symbol_test_ordering.json" use_base_dir="false" type="chrome_html" />
+      <include name="IDR_EMOJI_PICKER_SYMBOL_DE" compress="gzip" file="${root_gen_dir}/chromeos/ash/components/emoji/symbols_de.json" resource_path="symbols_de.json" use_base_dir="false" type="chrome_html" />
+      <include name="IDR_EMOJI_PICKER_SYMBOL_JA" compress="gzip" file="${root_gen_dir}/chromeos/ash/components/emoji/symbols_ja.json" resource_path="symbols_ja.json" use_base_dir="false" type="chrome_html" />
+      <include name="IDR_EMOJI_PICKER_SYMBOL_ES" compress="gzip" file="${root_gen_dir}/chromeos/ash/components/emoji/symbols_es.json" resource_path="symbols_es.json" use_base_dir="false" type="chrome_html" />
+      <include name="IDR_EMOJI_PICKER_SYMBOL_SV" compress="gzip" file="${root_gen_dir}/chromeos/ash/components/emoji/symbols_sv.json" resource_path="symbols_sv.json" use_base_dir="false" type="chrome_html" />
+      <include name="IDR_EMOJI_PICKER_SYMBOL_NO" compress="gzip" file="${root_gen_dir}/chromeos/ash/components/emoji/symbols_no.json" resource_path="symbols_no.json" use_base_dir="false" type="chrome_html" />
+      <include name="IDR_EMOJI_PICKER_SYMBOL_FI" compress="gzip" file="${root_gen_dir}/chromeos/ash/components/emoji/symbols_fi.json" resource_path="symbols_fi.json" use_base_dir="false" type="chrome_html" />
+      <include name="IDR_EMOJI_PICKER_SYMBOL_FR" compress="gzip" file="${root_gen_dir}/chromeos/ash/components/emoji/symbols_fr.json" resource_path="symbols_fr.json" use_base_dir="false" type="chrome_html" />
+      <include name="IDR_EMOJI_PICKER_SYMBOL_DA" compress="gzip" file="${root_gen_dir}/chromeos/ash/components/emoji/symbols_da.json" resource_path="symbols_da.json" use_base_dir="false" type="chrome_html" />
     </includes>
   </release>
 </grit>

@@ -175,6 +175,27 @@ action("emoji_data_de_remaining") {
   args += [ "--keywords" ] + rebase_path(inputs, root_build_dir)
 }
 
+action("symbol_data_de") {
+  script = "tools/symbol_data.py"
+
+  outputs = [ "$target_gen_dir/symbols_de.json" ]
+
+  deps = [
+    ":emoji_data_de",
+    ":emoji_data_de_remaining",
+  ]
+
+  args = [
+    "--output",
+    rebase_path(outputs[0], root_build_dir),
+  ]
+  args += [ "--filter-data-paths" ] +
+          rebase_path(get_target_outputs(":emoji_data_de"), root_build_dir) +
+          rebase_path(get_target_outputs(":emoji_data_de_remaining"),
+                      root_build_dir)
+  args += [ "--cldr_data_path" ] + rebase_path(de_keyword_xmls, root_build_dir)
+}
+
 # Japanese keywords.
 ja_keyword_xmls = [
   "//third_party/cldr/src/common/annotations/ja.xml",
@@ -213,6 +234,27 @@ action("emoji_data_ja_remaining") {
          ] + rebase_path(outputs, root_build_dir)
   args += [ "--metadata" ] + rebase_path(sources, root_build_dir)
   args += [ "--keywords" ] + rebase_path(inputs, root_build_dir)
+}
+
+action("symbol_data_ja") {
+  script = "tools/symbol_data.py"
+
+  outputs = [ "$target_gen_dir/symbols_ja.json" ]
+
+  deps = [
+    ":emoji_data_ja",
+    ":emoji_data_ja_remaining",
+  ]
+
+  args = [
+    "--output",
+    rebase_path(outputs[0], root_build_dir),
+  ]
+  args += [ "--filter-data-paths" ] +
+          rebase_path(get_target_outputs(":emoji_data_ja"), root_build_dir) +
+          rebase_path(get_target_outputs(":emoji_data_ja_remaining"),
+                      root_build_dir)
+  args += [ "--cldr_data_path" ] + rebase_path(ja_keyword_xmls, root_build_dir)
 }
 
 # Spanish keywords.
@@ -255,6 +297,27 @@ action("emoji_data_es_remaining") {
   args += [ "--keywords" ] + rebase_path(inputs, root_build_dir)
 }
 
+action("symbol_data_es") {
+  script = "tools/symbol_data.py"
+
+  outputs = [ "$target_gen_dir/symbols_es.json" ]
+
+  deps = [
+    ":emoji_data_es",
+    ":emoji_data_es_remaining",
+  ]
+
+  args = [
+    "--output",
+    rebase_path(outputs[0], root_build_dir),
+  ]
+  args += [ "--filter-data-paths" ] +
+          rebase_path(get_target_outputs(":emoji_data_es"), root_build_dir) +
+          rebase_path(get_target_outputs(":emoji_data_es_remaining"),
+                      root_build_dir)
+  args += [ "--cldr_data_path" ] + rebase_path(es_keyword_xmls, root_build_dir)
+}
+
 # Swedish keywords.
 sv_keyword_xmls = [
   "//third_party/cldr/src/common/annotations/sv.xml",
@@ -293,6 +356,27 @@ action("emoji_data_sv_remaining") {
          ] + rebase_path(outputs, root_build_dir)
   args += [ "--metadata" ] + rebase_path(sources, root_build_dir)
   args += [ "--keywords" ] + rebase_path(inputs, root_build_dir)
+}
+
+action("symbol_data_sv") {
+  script = "tools/symbol_data.py"
+
+  outputs = [ "$target_gen_dir/symbols_sv.json" ]
+
+  deps = [
+    ":emoji_data_sv",
+    ":emoji_data_sv_remaining",
+  ]
+
+  args = [
+    "--output",
+    rebase_path(outputs[0], root_build_dir),
+  ]
+  args += [ "--filter-data-paths" ] +
+          rebase_path(get_target_outputs(":emoji_data_sv"), root_build_dir) +
+          rebase_path(get_target_outputs(":emoji_data_sv_remaining"),
+                      root_build_dir)
+  args += [ "--cldr_data_path" ] + rebase_path(sv_keyword_xmls, root_build_dir)
 }
 
 # Norwegian keywords.
@@ -335,6 +419,27 @@ action("emoji_data_no_remaining") {
   args += [ "--keywords" ] + rebase_path(inputs, root_build_dir)
 }
 
+action("symbol_data_no") {
+  script = "tools/symbol_data.py"
+
+  outputs = [ "$target_gen_dir/symbols_no.json" ]
+
+  deps = [
+    ":emoji_data_no",
+    ":emoji_data_no_remaining",
+  ]
+
+  args = [
+    "--output",
+    rebase_path(outputs[0], root_build_dir),
+  ]
+  args += [ "--filter-data-paths" ] +
+          rebase_path(get_target_outputs(":emoji_data_no"), root_build_dir) +
+          rebase_path(get_target_outputs(":emoji_data_no_remaining"),
+                      root_build_dir)
+  args += [ "--cldr_data_path" ] + rebase_path(no_keyword_xmls, root_build_dir)
+}
+
 # Finnish keywords.
 fi_keyword_xmls = [
   "//third_party/cldr/src/common/annotations/fi.xml",
@@ -373,6 +478,27 @@ action("emoji_data_fi_remaining") {
          ] + rebase_path(outputs, root_build_dir)
   args += [ "--metadata" ] + rebase_path(sources, root_build_dir)
   args += [ "--keywords" ] + rebase_path(inputs, root_build_dir)
+}
+
+action("symbol_data_fi") {
+  script = "tools/symbol_data.py"
+
+  outputs = [ "$target_gen_dir/symbols_fi.json" ]
+
+  deps = [
+    ":emoji_data_fi",
+    ":emoji_data_fi_remaining",
+  ]
+
+  args = [
+    "--output",
+    rebase_path(outputs[0], root_build_dir),
+  ]
+  args += [ "--filter-data-paths" ] +
+          rebase_path(get_target_outputs(":emoji_data_fi"), root_build_dir) +
+          rebase_path(get_target_outputs(":emoji_data_fi_remaining"),
+                      root_build_dir)
+  args += [ "--cldr_data_path" ] + rebase_path(fi_keyword_xmls, root_build_dir)
 }
 
 # Danish keywords.
@@ -415,6 +541,27 @@ action("emoji_data_da_remaining") {
   args += [ "--keywords" ] + rebase_path(inputs, root_build_dir)
 }
 
+action("symbol_data_da") {
+  script = "tools/symbol_data.py"
+
+  outputs = [ "$target_gen_dir/symbols_da.json" ]
+
+  deps = [
+    ":emoji_data_da",
+    ":emoji_data_da_remaining",
+  ]
+
+  args = [
+    "--output",
+    rebase_path(outputs[0], root_build_dir),
+  ]
+  args += [ "--filter-data-paths" ] +
+          rebase_path(get_target_outputs(":emoji_data_da"), root_build_dir) +
+          rebase_path(get_target_outputs(":emoji_data_da_remaining"),
+                      root_build_dir)
+  args += [ "--cldr_data_path" ] + rebase_path(da_keyword_xmls, root_build_dir)
+}
+
 # French keywords.
 fr_keyword_xmls = [
   "//third_party/cldr/src/common/annotations/fr.xml",
@@ -455,6 +602,27 @@ action("emoji_data_fr_remaining") {
   args += [ "--keywords" ] + rebase_path(inputs, root_build_dir)
 }
 
+action("symbol_data_fr") {
+  script = "tools/symbol_data.py"
+
+  outputs = [ "$target_gen_dir/symbols_fr.json" ]
+
+  deps = [
+    ":emoji_data_fr",
+    ":emoji_data_fr_remaining",
+  ]
+
+  args = [
+    "--output",
+    rebase_path(outputs[0], root_build_dir),
+  ]
+  args += [ "--filter-data-paths" ] +
+          rebase_path(get_target_outputs(":emoji_data_fr"), root_build_dir) +
+          rebase_path(get_target_outputs(":emoji_data_fr_remaining"),
+                      root_build_dir)
+  args += [ "--cldr_data_path" ] + rebase_path(fr_keyword_xmls, root_build_dir)
+}
+
 # Resources used by chrome://picker.
 grit("resources") {
   source = "emoji.grd"
@@ -480,6 +648,14 @@ grit("resources") {
     ":emoji_data_sv_remaining",
     ":emoticon_data",
     ":symbol_data",
+    ":symbol_data_da",
+    ":symbol_data_de",
+    ":symbol_data_es",
+    ":symbol_data_fi",
+    ":symbol_data_fr",
+    ":symbol_data_ja",
+    ":symbol_data_no",
+    ":symbol_data_sv",
     ":symbol_test_data",
   ]
 
