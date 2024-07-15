@@ -64,10 +64,6 @@ std::u16string RemoveWhitespace(const std::u16string& value);
 // entered by the website and not a real value entered by the user.
 bool SanitizedFieldIsEmpty(const std::u16string& value);
 
-// Returns true if the first suggestion should be autoselected when the autofill
-// dropdown is shown due to an arrow down event. Enabled on desktop only.
-bool ShouldAutoselectFirstSuggestionOnArrowDown();
-
 // Returns true if focused_field_type corresponds to a fillable field.
 bool IsFillable(mojom::FocusedFieldType focused_field_type);
 

@@ -137,16 +137,10 @@ struct ShowAutofillSuggestionsParams {
       p.execution_target.value_or(test->GetWebContents());
   content::RenderFrameHost* rfh = execution_target.render_frame_host();
   content::RenderWidgetHostView* view = rfh->GetView();
-  content::RenderWidgetHost* widget = view->GetRenderWidgetHost();
 
   auto ArrowDown = [&](std::list<ObservedUiEvents> exp) {
-    constexpr auto kDown = ui::DomKey::ARROW_DOWN;
-    if (base::Contains(exp, ObservedUiEvents::kSuggestionsShown)) {
-      return test->SendKeyToPageAndWait(kDown, std::move(exp), p.timeout);
-    } else {
-      return test->SendKeyToPopupAndWait(kDown, std::move(exp), widget,
-                                         p.timeout);
-    }
+    return test->SendKeyToPageAndWait(ui::DomKey::ARROW_DOWN, std::move(exp),
+                                      p.timeout);
   };
   auto Backspace = [&]() {
     return test->SendKeyToPageAndWait(ui::DomKey::BACKSPACE, {}, p.timeout);
@@ -162,8 +156,7 @@ struct ShowAutofillSuggestionsParams {
   };
   auto Click = [&](std::list<ObservedUiEvents> exp) {
     gfx::Point point = view->TransformPointToRootCoordSpace(GetCenter(e, rfh));
-    test->test_delegate()->SetExpectations(
-        {ObservedUiEvents::kSuggestionsShown}, p.timeout);
+    test->test_delegate()->SetExpectations(std::move(exp), p.timeout);
     content::SimulateMouseClickAt(test->GetWebContents(), 0,
                                   blink::WebMouseEvent::Button::kLeft, point);
     return test->test_delegate()->Wait();
@@ -210,22 +203,9 @@ struct ShowAutofillSuggestionsParams {
         return AssertionFailure()
                << m << "Field " << *e << " must be focused. ";
       }
-      if (!ShouldAutoselectFirstSuggestionOnArrowDown()) {
-        if (AssertionResult b = ArrowDown({kSuggest}); !b) {
-          m << "Cannot trigger suggestions by first arrow: " << b.message();
-          continue;
-        }
-        if (AssertionResult b =
-                has_preview ? ArrowDown({kPreview}) : ArrowDown({});
-            !b) {
-          m << "Cannot select first suggestion by second arrow: "
-            << b.message();
-          continue;
-        }
-      } else if (AssertionResult b = has_preview
-                                         ? ArrowDown({kPreview, kSuggest})
-                                         : ArrowDown({kSuggest});
-                 !b) {
+      if (AssertionResult b = has_preview ? ArrowDown({kPreview, kSuggest})
+                                          : ArrowDown({kSuggest});
+          !b) {
         m << "Cannot trigger and select first suggestion by arrow: "
           << b.message();
         continue;
