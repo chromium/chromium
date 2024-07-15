@@ -1175,9 +1175,7 @@ PDFiumPage::Area PDFiumEngine::GetCharIndex(const gfx::Point& point,
                                             int* form_type,
                                             PDFiumPage::LinkTarget* target) {
   int page = -1;
-  gfx::Point point_in_page(
-      static_cast<int>((point.x() + position_.x()) / current_zoom_),
-      static_cast<int>((point.y() + position_.y()) / current_zoom_));
+  const gfx::Point point_in_page = DeviceToScreen(point);
   for (int visible_page : visible_pages_) {
     if (pages_[visible_page]->rect().Contains(point_in_page)) {
       page = visible_page;
@@ -3650,19 +3648,23 @@ void PDFiumEngine::DeviceToPage(int page_index,
                                 double* page_y) {
   *page_x = 0;
   *page_y = 0;
+
+  gfx::Point point_in_page = DeviceToScreen(device_point);
+
   PDFiumPage* page = pages_[page_index].get();
   const gfx::Rect& page_rect = page->rect();
-  float device_x = device_point.x();
-  float device_y = device_point.y();
-  int temp_x = static_cast<int>((device_x + position_.x()) / current_zoom_ -
-                                page_rect.x());
-  int temp_y = static_cast<int>((device_y + position_.y()) / current_zoom_ -
-                                page_rect.y());
+  point_in_page -= page_rect.OffsetFromOrigin();
+
   FPDF_BOOL ret = FPDF_DeviceToPage(
       page->GetPage(), 0, 0, page_rect.width(), page_rect.height(),
-      ToPDFiumRotation(layout_.options().default_page_orientation()), temp_x,
-      temp_y, page_x, page_y);
+      ToPDFiumRotation(layout_.options().default_page_orientation()),
+      point_in_page.x(), point_in_page.y(), page_x, page_y);
   DCHECK(ret);
+}
+
+gfx::Point PDFiumEngine::DeviceToScreen(const gfx::Point& device_point) const {
+  return {static_cast<int>((device_point.x() + position_.x()) / current_zoom_),
+          static_cast<int>((device_point.y() + position_.y()) / current_zoom_)};
 }
 
 int PDFiumEngine::GetVisiblePageIndex(FPDF_PAGE page) {

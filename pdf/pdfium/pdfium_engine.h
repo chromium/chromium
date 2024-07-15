@@ -513,12 +513,16 @@ class PDFiumEngine : public PDFEngine,
                  SkColor color,
                  std::vector<gfx::Rect>& highlighted_rects) const;
 
-  // Helper function to convert a device to page coordinates.  If the page is
-  // not yet loaded, `page_x` and `page_y` will be set to 0.
+  // Helper function to convert device coordinates to page coordinates.  If the
+  // page is not yet loaded, `page_x` and `page_y` will be set to 0.
   void DeviceToPage(int page_index,
                     const gfx::Point& device_point,
                     double* page_x,
                     double* page_y);
+
+  // Helper function to convert device coordinates to screen coordinates.
+  // Normalizes `device_point` based on `position_` and `current_zoom_`.
+  gfx::Point DeviceToScreen(const gfx::Point& device_point) const;
 
   // Helper function to get the index of a given FPDF_PAGE.  Returns -1 if not
   // found.
