@@ -20282,6 +20282,21 @@
             ]
         }
     ],
+    "ScreencastGm3": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ProjectorGm3"
+                    ]
+                }
+            ]
+        }
+    ],
     "ScreencastServerBasedUSMLocales": [
         {
             "platforms": [
