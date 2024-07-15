@@ -73,7 +73,8 @@ std::u16string BluetoothChooserController::GetOption(size_t index) const {
   DCHECK_LT(index, devices_.size());
   const std::string& device_id = devices_[index].id;
   const auto& device_name_it = device_id_to_name_map_.find(device_id);
-  DCHECK(device_name_it != device_id_to_name_map_.end());
+  CHECK(device_name_it != device_id_to_name_map_.end(),
+        base::NotFatalUntil::M130);
   const auto& it = device_name_counts_.find(device_name_it->second);
   CHECK(it != device_name_counts_.end(), base::NotFatalUntil::M130);
   return it->second == 1
@@ -188,7 +189,7 @@ void BluetoothChooserController::AddOrUpdateDevice(
     auto device_it =
         base::ranges::find(devices_, device_id, &BluetoothDeviceInfo::id);
 
-    DCHECK(device_it != devices_.end());
+    CHECK(device_it != devices_.end(), base::NotFatalUntil::M130);
     // When Bluetooth device scanning stops, the |signal_strength_level|
     // is -1, and in this case, should still use the previously stored
     // signal strength level value.

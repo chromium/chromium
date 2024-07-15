@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -511,7 +512,7 @@ void PermissionContextBase::PermissionDecided(const PermissionRequestID& id,
   bool persist = content_setting != CONTENT_SETTING_DEFAULT;
 
   auto request = pending_requests_.find(id.ToString());
-  DCHECK(request != pending_requests_.end());
+  CHECK(request != pending_requests_.end(), base::NotFatalUntil::M130);
   // Check if `request` has `BrowserPermissionCallback`. The call back might be
   // missing if a permission prompt was preignored and we already notified an
   // origin about it.

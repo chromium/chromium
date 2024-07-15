@@ -64,7 +64,8 @@ std::u16string BluetoothScanningPromptController::GetOption(
   DCHECK_LT(index, device_ids_.size());
   const std::string& device_id = device_ids_[index];
   const auto& device_name_it = device_id_to_name_map_.find(device_id);
-  DCHECK(device_name_it != device_id_to_name_map_.end());
+  CHECK(device_name_it != device_id_to_name_map_.end(),
+        base::NotFatalUntil::M130);
   const auto& it = device_name_counts_.find(device_name_it->second);
   CHECK(it != device_name_counts_.end(), base::NotFatalUntil::M130);
   return it->second == 1
@@ -128,7 +129,7 @@ void BluetoothScanningPromptController::AddOrUpdateDevice(
 
     auto device_id_it = base::ranges::find(device_ids_, device_id);
 
-    DCHECK(device_id_it != device_ids_.end());
+    CHECK(device_id_it != device_ids_.end(), base::NotFatalUntil::M130);
     if (view())
       view()->OnOptionUpdated(device_id_it - device_ids_.begin());
     return;
