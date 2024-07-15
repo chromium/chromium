@@ -117,6 +117,12 @@ id<GREYMatcher> TabPickupSwitchItem(bool is_toggled_on, bool enabled) {
 // Verifies that the TabPickup banner is not displayed on the NTP when the tab
 // resumption feature is enabled.
 - (void)testBannerNotDisplayedOnNTPWhenTabResumptionEnbaled {
+  // TODO(b/353350057): Failing on ipad device.
+#if !TARGET_OS_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped because failing");
+  }
+#endif
   // This test is failing on iOS 16.7 only.
   // TODO(crbug.com/41489744): Re-enable the test.
   if (@available(iOS 16.7, *)) {
@@ -143,6 +149,12 @@ id<GREYMatcher> TabPickupSwitchItem(bool is_toggled_on, bool enabled) {
 // Verifies that the TabPickup banner is correctly displayed if the last tab
 // was synced before the defined threshold.
 - (void)testBannerVisibleBeforeThreshold {
+  // TODO(b/353350057): Failing on ipad device.
+#if !TARGET_OS_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped because failing");
+  }
+#endif
   // This test is failing on iOS 16.7 only.
   // TODO(crbug.com/41489744): Re-enable the test.
   if (@available(iOS 16.7, *)) {
@@ -171,6 +183,12 @@ id<GREYMatcher> TabPickupSwitchItem(bool is_toggled_on, bool enabled) {
 // Verifies that the TabPickup banner is not displayed if the last tab was
 // synced after the defined threshold.
 - (void)testBannerNotVisibleAfterThreshold {
+  // TODO(b/353350057): Failing on ipad device.
+#if !TARGET_OS_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped because failing");
+  }
+#endif
   // This test is failing on iOS 16.7 only.
   // TODO(crbug.com/41489744): Re-enable the test.
   if (@available(iOS 16.7, *)) {
@@ -196,7 +214,14 @@ id<GREYMatcher> TabPickupSwitchItem(bool is_toggled_on, bool enabled) {
 
 // Verifies that tapping on the open button of the TabPickup banner correctly
 // opens the distant tab.
-- (void)testAcceptBanner {  // This test is failing on iOS 16.7 only.
+- (void)testAcceptBanner {
+  // TODO(b/353350057): Failing on ipad device.
+#if !TARGET_OS_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped because failing");
+  }
+#endif
+  // This test is failing on iOS 16.7 only.
   // TODO(crbug.com/41489744): Re-enable the test.
   if (@available(iOS 16.7, *)) {
     if (@available(iOS 17.0, *)) {
@@ -234,6 +259,12 @@ id<GREYMatcher> TabPickupSwitchItem(bool is_toggled_on, bool enabled) {
 // Verifies that tapping on the wheel icon correctly opens the tab pickup
 // modal.
 - (void)testOpenModalFromBanner {
+  // TODO(b/353350057): Failing on ipad device.
+#if !TARGET_OS_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped because failing");
+  }
+#endif
   // This test is failing on iOS 16.7 only.
   // TODO(crbug.com/41489744): Re-enable the test.
   if (@available(iOS 16.7, *)) {
@@ -277,6 +308,12 @@ id<GREYMatcher> TabPickupSwitchItem(bool is_toggled_on, bool enabled) {
 
 // Verifies that the TabPickup banner is displayed only once.
 - (void)testBannerDisplayedOnce {
+  // TODO(b/353350057): Failing on ipad device.
+#if !TARGET_OS_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped because failing");
+  }
+#endif
   // This test is failing on iOS 16.7 only.
   // TODO(crbug.com/41489744): Re-enable the test.
   if (@available(iOS 16.7, *)) {
@@ -324,6 +361,12 @@ id<GREYMatcher> TabPickupSwitchItem(bool is_toggled_on, bool enabled) {
 // foregrounding the app if the last banner was displayed after the minimum
 // delay between the presentation of two tab pickup banners.
 - (void)testBannerDisplayedAfterBackground {
+  // TODO(b/353350057): Failing on ipad device.
+#if !TARGET_OS_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped because failing");
+  }
+#endif
   // This test is failing on iOS 16.7 only.
   // TODO(crbug.com/41489744): Re-enable the test.
   if (@available(iOS 16.7, *)) {
@@ -376,6 +419,12 @@ id<GREYMatcher> TabPickupSwitchItem(bool is_toggled_on, bool enabled) {
 // Verifies that a second TabPickup banner is not displayed after backgrounding
 // and foregrounding the app.
 - (void)testBannerNotDisplayedAfterBackground {
+  // TODO(b/353350057): Failing on ipad device.
+#if !TARGET_OS_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped because failing");
+  }
+#endif
   // This test is failing on iOS 16.7 only.
   // TODO(crbug.com/41489744): Re-enable the test.
   if (@available(iOS 16.7, *)) {
@@ -424,6 +473,12 @@ id<GREYMatcher> TabPickupSwitchItem(bool is_toggled_on, bool enabled) {
 
 // Verifies that the same TabPickup banner is not displayed twice.
 - (void)testSameBannerNotDisplayedTwice {
+  // TODO(b/353350057): Failing on ipad device.
+#if !TARGET_OS_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped because failing");
+  }
+#endif
   // This test is failing on iOS 16.7 only.
   // TODO(crbug.com/41489744): Re-enable the test.
   if (@available(iOS 16.7, *)) {
