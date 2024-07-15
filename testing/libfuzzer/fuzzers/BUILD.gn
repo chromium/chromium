@@ -251,6 +251,10 @@ if (v8_enable_webassembly) {
     v8_fuzzer("wasm_init_expr_fuzzer") {
       max_len = 500
     }
+
+    v8_fuzzer("wasm_deopt_fuzzer") {
+      max_len = 500
+    }
   }
 }
 
