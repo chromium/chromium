@@ -10,6 +10,7 @@
 #include <psapi.h>
 
 #include "base/numerics/safe_conversions.h"
+#include "base/process/process.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/win/pe_image.h"
@@ -36,19 +37,25 @@ std::string MakeDebugID(const GUID& guid, DWORD age) {
 // static
 bool OSMetrics::FillOSMemoryDump(base::ProcessId pid,
                                  mojom::RawOSMemDump* dump) {
-  // Creating process metrics for child processes in mac or windows requires
-  // additional information like ProcessHandle or port provider.
-  DCHECK_EQ(base::kNullProcessId, pid);
-
+  base::Process process;
+  if (pid == base::kNullProcessId) {
+    process = base::Process::Current();
+  } else {
+    process = base::Process::Open(pid);
+  }
+  if (!process.IsValid()) {
+    return false;
+  }
   PROCESS_MEMORY_COUNTERS_EX pmc;
-  if (::GetProcessMemoryInfo(::GetCurrentProcess(),
+  if (::GetProcessMemoryInfo(process.Handle(),
                              reinterpret_cast<PROCESS_MEMORY_COUNTERS*>(&pmc),
                              sizeof(pmc))) {
     dump->platform_private_footprint->private_bytes = pmc.PrivateUsage;
     dump->resident_set_kb =
         base::saturated_cast<uint32_t>(pmc.WorkingSetSize / 1024);
+    return true;
   }
-  return true;
+  return false;
 }
 
 // static

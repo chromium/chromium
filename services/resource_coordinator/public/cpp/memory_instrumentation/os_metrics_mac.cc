@@ -251,11 +251,19 @@ void AddRegionByteStats(VMRegion* dest, const VMRegion& source) {
 // static
 bool OSMetrics::FillOSMemoryDump(base::ProcessId pid,
                                  mojom::RawOSMemDump* dump) {
+  if (pid != base::kNullProcessId && pid != base::GetCurrentProcId()) {
+    return false;
+  }
+  return FillOSMemoryDumpFromTaskPort(mach_task_self(), dump);
+}
+
+// static
+bool OSMetrics::FillOSMemoryDumpFromTaskPort(mach_port_t task_port,
+                                             mojom::RawOSMemDump* dump) {
   task_vm_info info;
   mach_msg_type_number_t count = ChromeTaskVMInfoCount;
-  kern_return_t result =
-      task_info(mach_task_self(), TASK_VM_INFO,
-                reinterpret_cast<task_info_t>(&info), &count);
+  kern_return_t result = task_info(
+      task_port, TASK_VM_INFO, reinterpret_cast<task_info_t>(&info), &count);
   if (result != KERN_SUCCESS)
     return false;
 
