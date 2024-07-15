@@ -334,7 +334,7 @@ void DirectFromSellerSignalsRequester::OnRequestDestroyed(Request& request) {
   // Otherwise, remove the request pointer to `this` from
   // `coalesced_downloads_`.
   auto map_it = coalesced_downloads_.find(request.signals_url_);
-  DCHECK(map_it != coalesced_downloads_.end());
+  CHECK(map_it != coalesced_downloads_.end(), base::NotFatalUntil::M130);
   CoalescedDownload& coalesced_download = map_it->second;
   DCHECK_EQ(coalesced_download.downloader->source_url(), request.signals_url_);
   DCHECK_GT(coalesced_download.requests.size(), 0u);
