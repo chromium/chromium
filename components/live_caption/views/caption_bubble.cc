@@ -789,7 +789,8 @@ void CaptionBubble::Init() {
   collapse_button_ =
       content_container->AddChildView(std::move(collapse_button));
 
-  if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+  if (base::FeatureList::IsEnabled(media::kLiveTranslate) ||
+      base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
     auto language_label = std::make_unique<LanguageLabelButton>(
         base::BindRepeating(&CaptionBubble::CaptionSettingsButtonPressed,
                             base::Unretained(this)));
@@ -1426,11 +1427,18 @@ void CaptionBubble::OnLanguageChanged() {
 }
 
 void CaptionBubble::UpdateLanguageLabelText() {
-  if (!base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+  const bool live_translate_enabled =
+      base::FeatureList::IsEnabled(media::kLiveTranslate);
+  // We update the language text and set it whenever live translate OR
+  // multilingual live captions are enabled. We early out when both are
+  // disabled.
+  if (!live_translate_enabled &&
+      !base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
     return;
   }
 
-  if (profile_prefs_->GetBoolean(prefs::kLiveTranslateEnabled) &&
+  if (live_translate_enabled &&
+      profile_prefs_->GetBoolean(prefs::kLiveTranslateEnabled) &&
       l10n_util::GetLanguage(source_language_code_) !=
           l10n_util::GetLanguage(target_language_code_)) {
     language_label_->SetText(l10n_util::GetStringFUTF16(
@@ -1440,6 +1448,7 @@ void CaptionBubble::UpdateLanguageLabelText() {
         source_language_text_, target_language_text_));
     language_label_->SetTranslateIconVisible(true);
   } else {
+    CHECK(language_label_ != nullptr);
     if (auto_detected_source_language_) {
       language_label_->SetText(l10n_util::GetStringFUTF16(
           IDS_LIVE_CAPTION_CAPTION_LANGUAGE_AUTODETECTED,
@@ -1447,7 +1456,6 @@ void CaptionBubble::UpdateLanguageLabelText() {
     } else {
       language_label_->SetText(source_language_text_);
     }
-
     language_label_->SetTranslateIconVisible(false);
   }
 }
