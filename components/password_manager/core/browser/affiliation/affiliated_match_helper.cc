@@ -10,6 +10,7 @@
 
 #include "base/barrier_callback.h"
 #include "base/barrier_closure.h"
+#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -210,7 +211,7 @@ void AffiliatedMatchHelper::CompleteInjectAffiliationAndBrandingInformation(
   // icon URL). We expect to always find a matching facet URI in the results.
   auto facet = base::ranges::find(results, facet_uri, &Facet::uri);
 
-  DCHECK(facet != results.end());
+  CHECK(facet != results.end(), base::NotFatalUntil::M130);
   form->app_display_name = facet->branding_info.name;
   form->app_icon_url = facet->branding_info.icon_url;
 
