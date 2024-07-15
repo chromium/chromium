@@ -2397,6 +2397,64 @@ TEST(SpanTest, CopyFromConversion) {
   EXPECT_THAT(dynamic_span, ElementsAre(-1, -2, -3));
 }
 
+TEST(SpanTest, CopyPrefixFrom) {
+  const int vals[] = {1, 2, 3, 4, 5};
+  int arr[] = {1, 2, 3, 4, 5};
+  span<int, 2> fixed2 = span(arr).first<2>();
+  span<int, 3> fixed3 = span(arr).last<3>();
+  span<int> dyn2 = span(arr).first(2u);
+  span<int> dyn3 = span(arr).last(3u);
+
+  // Copy from a larger buffer.
+  EXPECT_CHECK_DEATH(fixed2.copy_prefix_from(dyn3));
+  EXPECT_CHECK_DEATH(dyn2.copy_prefix_from(fixed3));
+  EXPECT_CHECK_DEATH(dyn2.copy_prefix_from(dyn3));
+
+  // Copy from a smaller buffer into the prefix.
+  fixed3.copy_prefix_from(fixed2);
+  EXPECT_THAT(arr, ElementsAre(1, 2, 1, 2, 5));
+  span(arr).copy_from(vals);
+
+  fixed3.copy_prefix_from(dyn2);
+  EXPECT_THAT(arr, ElementsAre(1, 2, 1, 2, 5));
+  span(arr).copy_from(vals);
+
+  dyn3.copy_prefix_from(fixed2);
+  EXPECT_THAT(arr, ElementsAre(1, 2, 1, 2, 5));
+  span(arr).copy_from(vals);
+
+  dyn3.copy_prefix_from(dyn2);
+  EXPECT_THAT(arr, ElementsAre(1, 2, 1, 2, 5));
+  span(arr).copy_from(vals);
+
+  // Copy from an empty buffer.
+  fixed2.copy_prefix_from(span<int, 0>());
+  EXPECT_THAT(arr, ElementsAre(1, 2, 3, 4, 5));
+  fixed2.copy_prefix_from(span<int>());
+  EXPECT_THAT(arr, ElementsAre(1, 2, 3, 4, 5));
+  dyn2.copy_prefix_from(span<int, 0>());
+  EXPECT_THAT(arr, ElementsAre(1, 2, 3, 4, 5));
+  dyn2.copy_prefix_from(span<int>());
+  EXPECT_THAT(arr, ElementsAre(1, 2, 3, 4, 5));
+
+  // Copy from a same-size buffer.
+  fixed3.first<2>().copy_prefix_from(fixed2);
+  EXPECT_THAT(arr, ElementsAre(1, 2, 1, 2, 5));
+  span(arr).copy_from(vals);
+
+  fixed3.first<2>().copy_prefix_from(dyn2);
+  EXPECT_THAT(arr, ElementsAre(1, 2, 1, 2, 5));
+  span(arr).copy_from(vals);
+
+  dyn3.first(2u).copy_prefix_from(fixed2);
+  EXPECT_THAT(arr, ElementsAre(1, 2, 1, 2, 5));
+  span(arr).copy_from(vals);
+
+  dyn3.first(2u).copy_prefix_from(dyn2);
+  EXPECT_THAT(arr, ElementsAre(1, 2, 1, 2, 5));
+  span(arr).copy_from(vals);
+}
+
 TEST(SpanTest, SplitAt) {
   int arr[] = {1, 2, 3};
   span<int, 0> empty_static_span;

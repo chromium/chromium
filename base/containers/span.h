@@ -615,7 +615,7 @@ class GSL_POINTER span {
   // match at compile time.
   template <class R, size_t X = internal::ExtentV<R>>
     requires(X == dynamic_extent && std::convertible_to<R, span<const T>>)
-  constexpr void copy_from(R other)
+  constexpr void copy_from(const R& other)
     requires(!std::is_const_v<T>)
   {
     return copy_from(span<const T, N>(other));
@@ -683,11 +683,41 @@ class GSL_POINTER span {
   // match at compile time.
   template <class R, size_t X = internal::ExtentV<R>>
     requires(X == dynamic_extent && std::convertible_to<R, span<const T>>)
-  UNSAFE_BUFFER_USAGE constexpr void copy_from_nonoverlapping(R other)
+  UNSAFE_BUFFER_USAGE constexpr void copy_from_nonoverlapping(const R& other)
     requires(!std::is_const_v<T>)
   {
     // SAFETY: The caller must ensure the spans do not overlap.
     UNSAFE_BUFFERS(copy_from_nonoverlapping(span<const T, N>(other)));
+  }
+
+  // Bounds-checked copy from a span into the front of this span. The `other`
+  // span must not be larger than this span.
+  //
+  // Prefer copy_from() when you expect the entire span to be written to. This
+  // method does not make that guarantee and may leave some bytes uninitialized
+  // in the destination span, while `copy_from()` ensures the entire span is
+  // written which helps prevent bugs.
+  //
+  // This is sugar for `span.first(other.size()).copy_from(other)` to avoid the
+  // need for writing the size twice, while also preserving compile-time size
+  // information.
+  //
+  // # Checks
+  // If `other` is dynamic-sized, then this function CHECKs if `other` is larger
+  // than this span. If `other` is fixed-size, then the same verification is
+  // done at compile time.
+  template <class R, size_t X = internal::ExtentV<R>>
+    requires((X <= N || X == dynamic_extent) &&
+             std::convertible_to<R, span<const T, X>>)
+  constexpr void copy_prefix_from(const R& other)
+    requires(!std::is_const_v<T>)
+  {
+    auto from = span<const T, X>(other);
+    if constexpr (X == dynamic_extent) {
+      return first(from.size()).copy_from(from);
+    } else {
+      return first<X>().copy_from(from);
+    }
   }
 
   // Implicit conversion from std::span<T, N> to base::span<T, N>.
@@ -1178,6 +1208,27 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
     // the same type), so `data()` and `other.data()` both have at least
     // `size()` elements.
     UNSAFE_BUFFERS(std::copy(other.data(), other.data() + size(), data()));
+  }
+
+  // Bounds-checked copy from a span into the front of this span. The `other`
+  // span must not be larger than this span.
+  //
+  // Prefer copy_from() when you expect the entire span to be written to. This
+  // method does not make that guarantee and may leave some bytes uninitialized
+  // in the destination span, while `copy_from()` ensures the entire span is
+  // written which helps prevent bugs.
+  //
+  // This is sugar for `span.first(other.size()).copy_from(other)` to avoid the
+  // need for writing the size twice, while also preserving compile-time size
+  // information.
+  //
+  // # Checks
+  // If `other` is dynamic-sized, then this function CHECKs if `other` is larger
+  // than this span.
+  constexpr void copy_prefix_from(span<const T> other)
+    requires(!std::is_const_v<T>)
+  {
+    return first(other.size()).copy_from(other);
   }
 
   // Compares two spans for equality by comparing the objects pointed to by the

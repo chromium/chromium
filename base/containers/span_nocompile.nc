@@ -191,6 +191,8 @@ void FixedSizeCopyTooSmall() {
   base::span(dst).copy_from(base::span(src));  // expected-error@*:* {{no matching member function}}
 
   base::span(dst).copy_from(src);  // expected-error@*:* {{no matching member function}}
+
+  base::span(dst).copy_prefix_from(src);  // expected-error@*:* {{no matching member function}}
 }
 
 void FixedSizeCopyFromNonSpan() {
