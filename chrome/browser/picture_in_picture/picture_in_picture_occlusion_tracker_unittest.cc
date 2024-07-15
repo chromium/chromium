@@ -14,6 +14,7 @@
 namespace {
 
 using testing::_;
+using testing::Invoke;
 
 class MockPictureInPictureOcclusionObserver
     : public PictureInPictureOcclusionObserver {
@@ -267,6 +268,41 @@ TEST_F(PictureInPictureOcclusionTrackerTest, ObserveTwiceDoesNotCrash) {
 
   // Destroy the original widget. This should not crash.
   occludable_widget1.reset();
+}
+
+// Regression test for https://crbug/com/353039531.
+TEST_F(PictureInPictureOcclusionTrackerTest,
+       SynchronouslyReobservingDoesNotCrash) {
+  MockPictureInPictureOcclusionObserver observer;
+  ScopedPictureInPictureOcclusionObservation observation(&observer);
+  std::unique_ptr<views::Widget> picture_in_picture_widget =
+      CreatePictureInPictureWidget();
+
+  // Create a widget to track the occlusion state of, placing it so that it
+  // starts out occluded.
+  std::unique_ptr<views::Widget> occludable_widget1 =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  occludable_widget1->Show();
+  occludable_widget1->SetBounds({50, 50, 200, 200});
+
+  // Create a second widget to observe in the `OnOcclusionStateChanged`
+  // callback.
+  std::unique_ptr<views::Widget> occludable_widget2 =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  occludable_widget2->Show();
+
+  EXPECT_CALL(observer, OnOcclusionStateChanged(true)).WillOnce(Invoke([&]() {
+    testing::Mock::VerifyAndClearExpectations(&observer);
+
+    // Synchronously start observing the second widget when we see that the
+    // first is occluded. This should not crash.
+    observation.Observe(occludable_widget2.get());
+  }));
+
+  // Start observing `occludable_widget`. This should immediately inform the
+  // observer that the window is occluded and therefore synchronously start
+  // observing `occludable_widget2`.
+  observation.Observe(occludable_widget1.get());
 }
 
 }  // namespace
