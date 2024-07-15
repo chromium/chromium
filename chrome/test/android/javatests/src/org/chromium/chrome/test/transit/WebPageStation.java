@@ -10,13 +10,16 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.chromium.base.test.transit.ViewElement.unscopedViewElement;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.base.test.transit.Elements;
+import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.util.Coordinates;
 
 /** The screen that shows a loaded webpage with the omnibox and the toolbar. */
 public class WebPageStation extends PageStation {
@@ -42,6 +45,7 @@ public class WebPageStation extends PageStation {
         mWebContentsSupplier =
                 elements.declareEnterCondition(
                         new WebContentsPresentCondition(mPageLoadedSupplier));
+        elements.declareEnterCondition(new FrameInfoUpdatedCondition(mWebContentsSupplier));
 
         elements.declareView(URL_BAR);
     }
@@ -94,6 +98,29 @@ public class WebPageStation extends PageStation {
         @Override
         public boolean hasValue() {
             return get() != null;
+        }
+    }
+
+    private static class FrameInfoUpdatedCondition extends UiThreadCondition {
+        Supplier<WebContents> mWebContentsSupplier;
+
+        public FrameInfoUpdatedCondition(Supplier<WebContents> webContentsSupplier) {
+            mWebContentsSupplier = dependOnSupplier(webContentsSupplier, "WebContents");
+        }
+
+        @Override
+        protected ConditionStatus checkWithSuppliers() {
+            Coordinates coordinates = Coordinates.createFor(mWebContentsSupplier.get());
+            return whether(
+                    coordinates.frameInfoUpdated(),
+                    "frameInfoUpdated %b, pageScaleFactor: %.2f",
+                    coordinates.frameInfoUpdated(),
+                    coordinates.getPageScaleFactor());
+        }
+
+        @Override
+        public String buildDescription() {
+            return "WebContents frame info updated";
         }
     }
 }
