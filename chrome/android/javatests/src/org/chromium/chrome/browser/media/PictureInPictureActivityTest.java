@@ -42,6 +42,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
@@ -145,6 +146,7 @@ public class PictureInPictureActivityTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "b/353025645")
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testMakeEnterPictureInPictureWithBadSourceRect() throws Throwable {
@@ -268,6 +270,7 @@ public class PictureInPictureActivityTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "b/353357051")
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testActionsInSync() throws Throwable {
