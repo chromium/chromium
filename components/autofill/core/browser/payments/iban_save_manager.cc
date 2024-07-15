@@ -141,7 +141,8 @@ IbanSaveManager::TypeOfOfferToSave IbanSaveManager::DetermineHowToSaveIban(
   if (base::FeatureList::IsEnabled(features::kAutofillEnableServerIban) &&
       IsIbanUploadEnabled(
           client_->GetSyncService(),
-          payments_data_manager().GetPaymentsSigninStateForMetrics())) {
+          payments_data_manager().GetPaymentsSigninStateForMetrics()) &&
+      payments_data_manager().GetServerIbans().size() <= kMaxNumServerIbans) {
     autofill_metrics::LogIbanSaveOfferedCountry(
         import_candidate.GetCountryCode());
     return TypeOfOfferToSave::kOfferServerSave;

@@ -179,6 +179,26 @@ TEST_F(IbanSaveManagerTest, ShouldOfferUploadSave_NewIban_FlagOff) {
             GetIbanSaveManager().DetermineHowToSaveIbanForTesting(iban));
 }
 
+// Test that new IBANs should not be offered upload save due to reaching the
+// maximum limit.
+TEST_F(IbanSaveManagerTest, ShouldOfferUploadSave_MaxServerIban) {
+  Iban iban;
+  iban.set_value(std::u16string(test::kIbanValue16));
+  for (int num_server_ibans = 1; num_server_ibans <= kMaxNumServerIbans + 1;
+       num_server_ibans++) {
+    Iban server_iban((Iban::InstrumentId(num_server_ibans)));
+    server_iban.set_prefix(u"DE");
+    server_iban.set_suffix(
+        (base::UTF8ToUTF16(base::NumberToString(10 + num_server_ibans))));
+    server_iban.set_length(22);
+    personal_data().test_payments_data_manager().AddServerIban(server_iban);
+    EXPECT_EQ(num_server_ibans <= kMaxNumServerIbans
+                  ? IbanSaveManager::TypeOfOfferToSave::kOfferServerSave
+                  : IbanSaveManager::TypeOfOfferToSave::kOfferLocalSave,
+              GetIbanSaveManager().DetermineHowToSaveIbanForTesting(iban));
+  }
+}
+
 // Test that new IBANs should be offered upload save to Google Payments.
 TEST_F(IbanSaveManagerTest, ShouldOfferUploadSave_NewIban) {
   Iban iban;

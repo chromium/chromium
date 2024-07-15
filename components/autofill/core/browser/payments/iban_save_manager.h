@@ -17,6 +17,11 @@
 
 namespace autofill {
 
+// The maximum number of IBANs allowed to be saved to Google Payments from
+// Chrome for a single user. Created as a client-side check instead of a
+// server-side one to optimize the user experience.
+inline constexpr int kMaxNumServerIbans = 99;
+
 class AutofillClient;
 class PaymentsDataManager;
 
