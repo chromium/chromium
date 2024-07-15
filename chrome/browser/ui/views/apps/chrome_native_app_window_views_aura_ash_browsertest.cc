@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chromeos/ash/components/login/login_state/scoped_test_public_session_login_state.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "components/user_manager/user_manager.h"
@@ -202,11 +203,12 @@ IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
   InitWindow();
   ASSERT_TRUE(window());
   EXPECT_FALSE(IsImmersiveActive());
-  constexpr int kFrameHeight = 32;
+  const int frame_height =
+      chromeos::features::IsRoundedWindowsEnabled() ? 40 : 32;
 
   views::ClientView* client_view =
       window()->widget()->non_client_view()->client_view();
-  EXPECT_EQ(kFrameHeight, client_view->bounds().y());
+  EXPECT_EQ(frame_height, client_view->bounds().y());
 
   // Verify that when fullscreen is toggled on, immersive mode is enabled and
   // that when fullscreen is toggled off, immersive mode is disabled.
@@ -216,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
 
   app_window_->Restore();
   EXPECT_FALSE(IsImmersiveActive());
-  ViewBoundsChangeWaiter::VerifyY(client_view, kFrameHeight);
+  ViewBoundsChangeWaiter::VerifyY(client_view, frame_height);
 
   // Verify that since the auto hide title bars in tablet mode feature turned
   // on, immersive mode is enabled once tablet mode is entered, and disabled
@@ -227,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
 
   ash::ShellTestApi().SetTabletModeEnabledForTest(false);
   EXPECT_FALSE(IsImmersiveActive());
-  ViewBoundsChangeWaiter::VerifyY(client_view, kFrameHeight);
+  ViewBoundsChangeWaiter::VerifyY(client_view, frame_height);
 
   // Verify that the window was fullscreened before entering tablet mode, it
   // will remain fullscreened after exiting tablet mode.

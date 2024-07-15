@@ -69,6 +69,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/permissions/permission_request_manager.h"
@@ -1263,7 +1264,12 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   int client_view_height =
       frame_view_cros->frame()->client_view()->GetMinimumSize().height();
 
-  EXPECT_EQ(frame_view_height, caption_container_height + client_view_height);
+  // Frame view minimum height also includes radius of window to ensure correct
+  // rounding of window. See b/294588040.
+  int window_radius = chromeos::features::RoundedWindowsRadius();
+
+  EXPECT_EQ(frame_view_height,
+            caption_container_height + client_view_height + window_radius);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
