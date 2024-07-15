@@ -102,6 +102,9 @@ TEST(BrowserUserEducationServiceTest, CheckNewBadgeHistograms) {
 
 TEST(BrowserUserEducationServiceTest, CheckTutorialHistograms) {
   std::optional<base::HistogramVariantsEntryMap> tutorial_features;
+  std::map<std::string, std::string> known_histograms;
+  std::vector<std::tuple<std::string, std::string, std::string>>
+      histogram_collisions;
   std::vector<std::string> missing_features;
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -117,16 +120,25 @@ TEST(BrowserUserEducationServiceTest, CheckTutorialHistograms) {
     ASSERT_NE(nullptr, tutorial->histograms)
         << "Tutorials must be created with a histogram prefix";
     const auto variant_name = tutorial->histograms->GetTutorialPrefix();
+    if (!known_histograms.emplace(variant_name, identifier).second) {
+      histogram_collisions.emplace_back(
+          identifier, known_histograms[identifier], variant_name);
+    }
     if (!base::Contains(*tutorial_features, variant_name)) {
       missing_features.emplace_back(variant_name);
     }
   }
-  ASSERT_TRUE(missing_features.empty())
+  EXPECT_TRUE(missing_features.empty())
       << "Tutorial Features:\n"
       << base::JoinString(missing_features, ", ")
       << "\nconfigured in browser_user_education_service.cc but no "
          "corresponding variants were added to TutorialID variants in "
          "//tools/metrics/histograms/metadata/user_education/histograms.xml";
+  for (const auto& [t1, t2, histogram] : histogram_collisions) {
+    ADD_FAILURE() << "Error: tutorial " << t1 << " and " << t2
+                  << " share histogram " << histogram;
+  }
+  EXPECT_TRUE(histogram_collisions.empty());
 }
 
 TEST(BrowserUserEducationServiceTest, PreventNewHardCodedConfigurations) {

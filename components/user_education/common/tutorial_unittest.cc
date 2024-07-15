@@ -264,34 +264,6 @@ TEST_F(TutorialTest, RegisterTutorialsWithAndWithoutHistograms) {
   EXPECT_TRUE(registry->IsTutorialRegistered(kTestTutorial3));
 }
 
-#if DCHECK_IS_ON()
-#define MAYBE_RegisterDifferentTutorialsWithSameHistogram \
-  RegisterDifferentTutorialsWithSameHistogram
-#else
-#define MAYBE_RegisterDifferentTutorialsWithSameHistogram \
-  DISABLED_RegisterDifferentTutorialsWithSameHistogram
-#endif
-
-TEST_F(TutorialTest, MAYBE_RegisterDifferentTutorialsWithSameHistogram) {
-  std::unique_ptr<TutorialRegistry> registry =
-      std::make_unique<TutorialRegistry>();
-
-  const auto step = TutorialDescription::BubbleStep(kTestIdentifier1)
-                        .SetBubbleBodyText(IDS_OK);
-
-  TutorialDescription description1;
-  description1.steps.push_back(step);
-  description1.histograms = MakeTutorialHistograms<kHistogramName1>(1);
-
-  TutorialDescription description2;
-  description2.steps.push_back(step);
-  description2.histograms = MakeTutorialHistograms<kHistogramName1>(1);
-
-  registry->AddTutorial(kTestTutorial1, std::move(description1));
-  EXPECT_DCHECK_DEATH(
-      registry->AddTutorial(kTestTutorial2, std::move(description2)));
-}
-
 TEST_F(TutorialTest, RegisterSameTutorialInMultipleRegistries) {
   std::unique_ptr<TutorialRegistry> registry1 =
       std::make_unique<TutorialRegistry>();
