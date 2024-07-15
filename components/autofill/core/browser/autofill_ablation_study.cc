@@ -124,6 +124,10 @@ uint64_t GetAblationHash(const std::string& seed,
   return DigestToUInt64(digest);
 }
 
+int GetDayInAblationWindow(base::Time now) {
+  return DaysSinceLocalWindowsEpoch(now) % kAblationWindowInDays;
+}
+
 AutofillAblationStudy::AutofillAblationStudy(std::string_view seed)
     : seed_(seed) {}
 AutofillAblationStudy::AutofillAblationStudy(PrefService* pref_service)

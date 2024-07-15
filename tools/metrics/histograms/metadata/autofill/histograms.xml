@@ -3216,6 +3216,8 @@ chromium-metrics-reviews@google.com.
     destruction time (whatever comes first).
   </summary>
   <token key="LogEventTypes">
+    <variant name="AblationEvent"
+        summary="total number of AblationEvent events recorded"/>
     <variant name="All" summary="total number of all the log events recorded"/>
     <variant name="AskForValuesToFillEvent"
         summary="total number of AskForValuesToFillFieldLogEvent events

@@ -50,7 +50,8 @@ class AutofillField : public FormFieldData {
                                           HeuristicPredictionFieldLogEvent,
                                           AutocompleteAttributeFieldLogEvent,
                                           ServerPredictionFieldLogEvent,
-                                          RationalizationFieldLogEvent>;
+                                          RationalizationFieldLogEvent,
+                                          AblationFieldLogEvent>;
 
   AutofillField();
   explicit AutofillField(const FormFieldData& field);

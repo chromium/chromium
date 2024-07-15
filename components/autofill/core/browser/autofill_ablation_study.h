@@ -47,6 +47,12 @@ uint64_t GetAblationHash(const std::string& seed,
                          base::Time now);
 #endif  // defined(UNIT_TEST)
 
+// Returns a number between 0 (incl.) and kAblationWindowInDays (excl.)
+// reflecting the number of days that have passed since the beginning of an
+// ablation window during which the ablation behavior remains constant for a
+// client.
+int GetDayInAblationWindow(base::Time now);
+
 // A class to control the ablation study. The decision whether a given form
 // is subject to an ablated experience is pseudorandomly derived from the
 // combination of [site * 14 day window * seed]: Different sites may have

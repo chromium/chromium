@@ -141,6 +141,26 @@ TEST_F(AutofillAblationStudyTestInEST, DaysSinceLocalWindowsEpoch) {
   }
 }
 
+TEST_F(AutofillAblationStudyTestInEST, DayInAblationWindow) {
+  struct {
+    const char* time_string;
+    int day_in_ablation_window;
+  } kTests[] = {
+      {"Mon, 1 Jan 1601, 00:00:00 EST", 0},
+      {"Mon, 1 Jan 1601, 01:00:00 EST", 0},
+      {"Mon, 1 Jan 1601, 23:00:00 EST", 0},
+      {"Tue, 2 Jan 1601, 00:00:00 EST", 1},
+      {"Tue, 2 Jan 1601, 01:00:00 EST", 1},
+      {"Mon, 15 Jan 1601, 01:00:00 EST", 0},
+  };
+  for (const auto& test : kTests) {
+    SCOPED_TRACE(test.time_string);
+    base::Time time;
+    ASSERT_TRUE(base::Time::FromString(test.time_string, &time));
+    EXPECT_EQ(test.day_in_ablation_window, GetDayInAblationWindow(time));
+  }
+}
+
 TEST_F(AutofillAblationStudyTestInUTC, GetAblationHash_IdenticalInput) {
   EXPECT_EQ(GetAblationHash("seed1", GetDefaultUrl(), GetDefaultTime()),
             GetAblationHash("seed1", GetDefaultUrl(), GetDefaultTime()));

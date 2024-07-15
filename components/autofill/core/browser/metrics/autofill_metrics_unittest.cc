@@ -52,6 +52,7 @@
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_autofill_external_delegate.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
@@ -81,6 +82,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 #include "url/url_canon.h"
@@ -7436,6 +7438,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
 struct LogFocusedComplexFormAtFormRemoveTestCase {
   std::string test_name;
   test::FormDescription form;
+  bool enable_ablation_study_for_addresses = false;
   // Simulate focus by tab key, focus on page load, or focus by click/tap.
   // For click/tap, also `step_1_click` should be true. The first field
   // of the form is focused.
@@ -7475,11 +7478,21 @@ class LogFocusedComplexFormAtFormRemoveTest
   }
   ~LogFocusedComplexFormAtFormRemoveTest() override = default;
 
-  void SetUp() override { SetUpHelper(); }
-  void TearDown() override { TearDownHelper(); }
+  void SetUp() override {
+    SetUpHelper();
+    // Enforce a timezone to create deterministic behavior w.r.t.
+    // UkmFocusedComplexFormType::kDayInAblationWindowName.
+    previousZone = base::WrapUnique(icu::TimeZone::createDefault());
+    icu::TimeZone::adoptDefault(icu::TimeZone::createTimeZone("GMT"));
+  }
+  void TearDown() override {
+    TearDownHelper();
+    icu::TimeZone::adoptDefault(previousZone.release());
+  }
 
  private:
   base::test::ScopedFeatureList scoped_features_;
+  std::unique_ptr<icu::TimeZone> previousZone;
 };
 
 namespace {
@@ -7770,6 +7783,56 @@ INSTANTIATE_TEST_SUITE_P(
                     {UkmFocusedComplexFormType::kSuggestionsAvailableName,
                      kFormType_CreditCard},
                     {UkmFocusedComplexFormType::kWasSubmittedName, 1},
+                }},
+        LogFocusedComplexFormAtFormRemoveTestCase{
+            // The user focuses and types into an autofillable field. Because
+            // the ablation study is rolled to 100%, the respective metrics are
+            // reported.
+            .test_name = "ablation_study",
+            .form =
+                test::FormDescription{
+                    .fields = {{.role = ADDRESS_HOME_LINE1,
+                                .autocomplete_attribute = "address-line1"},
+                               {.role = ADDRESS_HOME_CITY,
+                                .autocomplete_attribute = "address-level2"},
+                               {.role = ADDRESS_HOME_STATE,
+                                .autocomplete_attribute = "address-level1"}}},
+            .enable_ablation_study_for_addresses = true,
+            .step_0_focus = true,
+            .step_1_click = true,
+            .step_2_typing = true,
+            .step_5_submit = true,
+            .expected_metrics =
+                {
+                    {UkmFocusedComplexFormType::kAutofilledName, 0},
+                    {UkmFocusedComplexFormType::kEditedAfterAutofillName, 0},
+                    {UkmFocusedComplexFormType::kAutofillDataQueriedName,
+                     kFormType_Address},
+                    {UkmFocusedComplexFormType::kFormTypesName,
+                     kFormTypeNameForLogging_AddressForm_or_PostalAddressForm},
+                    {UkmFocusedComplexFormType::
+                         kHadNonEmptyValueAtSubmissionName,
+                     kFormType_Address},
+                    {UkmFocusedComplexFormType::kUserModifiedName,
+                     kFormType_Address},
+                    {UkmFocusedComplexFormType::
+                         kMillisecondsFromFirstInteractionUntilSubmissionName,
+                     1000},
+                    {UkmFocusedComplexFormType::kSuggestionsAvailableName, 0},
+                    {UkmFocusedComplexFormType::kWasSubmittedName, 1},
+                    // Ablation study metrics.
+                    {UkmFocusedComplexFormType::
+                         kIsInAblationGroupOfAblationName,
+                     kFormType_Address},
+                    {UkmFocusedComplexFormType::
+                         kIsInAblationGroupOfConditionalAblationName,
+                     kFormType_Address},
+                    {UkmFocusedComplexFormType::kIsInControlGroupOfAblationName,
+                     0},
+                    {UkmFocusedComplexFormType::
+                         kIsInControlGroupOfConditionalAblationName,
+                     0},
+                    {UkmFocusedComplexFormType::kDayInAblationWindowName, 10},
                 }}),
     [](const testing::TestParamInfo<
         LogFocusedComplexFormAtFormRemoveTest::ParamType>& info) {
@@ -7781,6 +7844,20 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Test if we have recorded Autofill2.FocusedComplexForm UKM metrics correctly.
 TEST_P(LogFocusedComplexFormAtFormRemoveTest, TestEmittedUKM) {
+  base::FieldTrialParams feature_parameters{
+      {features::kAutofillAblationStudyEnabledForAddressesParam.name, "true"},
+      {features::kAutofillAblationStudyEnabledForPaymentsParam.name, "true"},
+      {features::kAutofillAblationStudyAblationWeightPerMilleParam.name,
+       "1000"}};
+  base::test::ScopedFeatureList scoped_feature_list;
+  if (GetParam().enable_ablation_study_for_addresses) {
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        features::kAutofillEnableAblationStudy, feature_parameters);
+  }
+  constexpr base::Time arbitrary_default_time =
+      base::Time::FromSecondsSinceUnixEpoch(25);
+  autofill::TestAutofillClock test_clock(arbitrary_default_time);
+
   CreateCreditCards(
       /*include_local_credit_card=*/true,
       /*include_masked_server_credit_card=*/false,

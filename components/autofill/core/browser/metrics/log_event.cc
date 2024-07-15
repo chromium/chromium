@@ -110,4 +110,12 @@ bool AreCollapsible(const RationalizationFieldLogEvent& event1,
          event1.type_changed == event2.type_changed;
 }
 
+bool AreCollapsible(const AblationFieldLogEvent& event1,
+                    const AblationFieldLogEvent& event2) {
+  return event1.ablation_group == event2.ablation_group &&
+         event1.conditional_ablation_group ==
+             event2.conditional_ablation_group &&
+         event1.day_in_ablation_window == event2.day_in_ablation_window;
+}
+
 }  // namespace autofill

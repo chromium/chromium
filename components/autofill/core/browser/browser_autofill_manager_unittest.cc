@@ -1254,12 +1254,25 @@ class BrowserAutofillManagerTest : public testing::Test {
                     expected.type_changed)));
   }
 
+  // Matches a AblationFieldLogEvent by equality of fields.
+  auto Equal(const AblationFieldLogEvent& expected) {
+    return VariantWith<AblationFieldLogEvent>(
+        AllOf(Field("ablation_group", &AblationFieldLogEvent::ablation_group,
+                    expected.ablation_group),
+              Field("conditional_ablation_group",
+                    &AblationFieldLogEvent::conditional_ablation_group,
+                    expected.conditional_ablation_group),
+              Field("day_in_ablation_window",
+                    &AblationFieldLogEvent::day_in_ablation_window,
+                    expected.day_in_ablation_window)));
+  }
+
   // Matches a vector of FieldLogEventType objects by equality of fields of each
   // log event type.
   auto ArrayEquals(
       const std::vector<AutofillField::FieldLogEventType>& expected) {
     static_assert(
-        absl::variant_size<AutofillField::FieldLogEventType>() == 9,
+        absl::variant_size<AutofillField::FieldLogEventType>() == 10,
         "If you add a new field event type, you need to update this function");
     std::vector<Matcher<AutofillField::FieldLogEventType>> matchers;
     for (const auto& event : expected) {
@@ -1287,6 +1300,8 @@ class BrowserAutofillManagerTest : public testing::Test {
       } else if (absl::holds_alternative<RationalizationFieldLogEvent>(event)) {
         matchers.push_back(
             Equal(absl::get<RationalizationFieldLogEvent>(event)));
+      } else if (absl::holds_alternative<AblationFieldLogEvent>(event)) {
+        matchers.push_back(Equal(absl::get<AblationFieldLogEvent>(event)));
       } else {
         NOTREACHED_IN_MIGRATION();
       }

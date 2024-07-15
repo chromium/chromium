@@ -67,6 +67,7 @@ struct SuggestionsContext {
   // either kAblation or kControl were reported, consumers should stick to
   // that.
   AblationGroup conditional_ablation_group = AblationGroup::kDefault;
+  int day_in_ablation_window = -1;
 };
 
 }  // namespace autofill

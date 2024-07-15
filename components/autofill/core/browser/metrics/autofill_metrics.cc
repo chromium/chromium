@@ -2336,7 +2336,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   };
 
   for (const auto& log_event : field_log_events) {
-    static_assert(absl::variant_size<AutofillField::FieldLogEventType>() == 9,
+    static_assert(absl::variant_size<AutofillField::FieldLogEventType>() == 10,
                   "When adding new variants check that this function does not "
                   "need to be updated.");
     if (auto* event =
@@ -2690,6 +2690,12 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   // The set of form types of fields that were non-empty at submission time.
   DenseSet<FormType> had_non_empty_value_at_submission;
 
+  DenseSet<FormType> control_group_of_ablation;
+  DenseSet<FormType> ablation_group_of_ablation;
+  DenseSet<FormType> control_group_of_conditional_ablation;
+  DenseSet<FormType> ablation_group_of_conditional_ablation;
+  int day_in_ablation_window = -1;
+
   for (const std::unique_ptr<AutofillField>& field : form_structure.fields()) {
     FormType form_type = FieldTypeGroupToFormType(field->Type().group());
     if (form_type == FormType::kUnknownFormType) {
@@ -2731,6 +2737,23 @@ void AutofillMetrics::FormInteractionsUkmLogger::
         }
         has_value_after_typing = event->has_value_after_typing;
       }
+
+      if (auto* event = absl::get_if<AblationFieldLogEvent>(&log_event)) {
+        if (event->ablation_group == AblationGroup::kControl) {
+          control_group_of_ablation.insert(form_type);
+        } else if (event->ablation_group == AblationGroup::kAblation) {
+          ablation_group_of_ablation.insert(form_type);
+        }
+        if (event->conditional_ablation_group == AblationGroup::kControl) {
+          control_group_of_conditional_ablation.insert(form_type);
+        } else if (event->conditional_ablation_group ==
+                   AblationGroup::kAblation) {
+          ablation_group_of_conditional_ablation.insert(form_type);
+        }
+        if (event->day_in_ablation_window >= 0) {
+          day_in_ablation_window = event->day_in_ablation_window;
+        }
+      }
     }
 
     if (had_value_after_filling == OptionalBoolean::kTrue ||
@@ -2739,8 +2762,6 @@ void AutofillMetrics::FormInteractionsUkmLogger::
     }
   }
 
-  // TODO(crbug.com/348362142): DayInAblationWindow
-  // TODO(crbug.com/348362142): AblationStatus
   // TODO(crbug.com/348362142): DataAvailability
 
   // Don't log anything if the user did not interact with address or credit
@@ -2771,6 +2792,17 @@ void AutofillMetrics::FormInteractionsUkmLogger::
         GetSemanticBucketMinForAutofillDurationTiming(
             (form_submitted_timestamp - initial_interaction_timestamp)
                 .InMilliseconds()));
+  }
+
+  if (day_in_ablation_window >= 0) {
+    builder.SetDayInAblationWindow(day_in_ablation_window);
+    builder.SetIsInControlGroupOfAblation(control_group_of_ablation.data()[0]);
+    builder.SetIsInAblationGroupOfAblation(
+        ablation_group_of_ablation.data()[0]);
+    builder.SetIsInControlGroupOfConditionalAblation(
+        control_group_of_conditional_ablation.data()[0]);
+    builder.SetIsInAblationGroupOfConditionalAblation(
+        ablation_group_of_conditional_ablation.data()[0]);
   }
 
   builder.Record(ukm_recorder_);

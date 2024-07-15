@@ -1296,6 +1296,12 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
       base::BindOnce(&BrowserAutofillManager::OnGenerateSuggestionsComplete,
                      weak_ptr_factory_.GetWeakPtr(), form, field,
                      trigger_source, context));
+
+  if (autofill_field && context.ablation_group != AblationGroup::kDefault) {
+    autofill_field->AppendLogEventIfNotRepeated(AblationFieldLogEvent{
+        context.ablation_group, context.conditional_ablation_group,
+        context.day_in_ablation_window});
+  }
 }
 
 void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
@@ -1304,7 +1310,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     const FormFieldData& field,
     const AutofillField* autofill_field,
     AutofillSuggestionTriggerSource trigger_source,
-    SuggestionsContext context,
+    SuggestionsContext& context,
     OnGenerateSuggestionsCallback callback) {
   std::vector<Suggestion> suggestions =
       GetAvailableAddressAndCreditCardSuggestions(
@@ -1316,9 +1322,10 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
         return false;
 
       case SuppressReason::kAblation:
+        CHECK(suggestions.empty());
         single_field_form_fill_router_->CancelPendingQueries();
-        external_delegate_->OnSuggestionsReturned(field.global_id(),
-                                                  suggestions);
+        std::move(callback).Run(/*show_suggestions=*/true,
+                                std::move(suggestions));
         LOG_AF(log_manager())
             << LoggingScope::kFilling << LogMessage::kSuggestionSuppressed
             << " Reason: Ablation experiment";
@@ -3021,6 +3028,8 @@ BrowserAutofillManager::GetAvailableAddressAndCreditCardSuggestions(
     // In that case we stick to kDefault.
     context.conditional_ablation_group =
         !suggestions.empty() ? ablation_group : AblationGroup::kDefault;
+    context.day_in_ablation_window =
+        GetDayInAblationWindow(AutofillClock::Now());
 
     // In both cases (credit card and address forms), we inform the other event
     // logger also about the ablation.
@@ -3251,11 +3260,12 @@ void BrowserAutofillManager::LogEventCountsUMAMetric(
   size_t num_autocomplete_attribute_event = 0;
   size_t num_server_prediction_event = 0;
   size_t num_rationalization_event = 0;
+  size_t num_ablation_event = 0;
 
   for (const auto& autofill_field : form_structure) {
     for (const auto& log_event : autofill_field->field_log_events()) {
       static_assert(
-          absl::variant_size<AutofillField::FieldLogEventType>() == 9,
+          absl::variant_size<AutofillField::FieldLogEventType>() == 10,
           "When adding new variants check that this function does not "
           "need to be updated.");
       if (absl::holds_alternative<AskForValuesToFillFieldLogEvent>(log_event)) {
@@ -3278,6 +3288,8 @@ void BrowserAutofillManager::LogEventCountsUMAMetric(
       } else if (absl::holds_alternative<RationalizationFieldLogEvent>(
                      log_event)) {
         ++num_rationalization_event;
+      } else if (absl::holds_alternative<AblationFieldLogEvent>(log_event)) {
+        ++num_ablation_event;
       } else {
         NOTREACHED_IN_MIGRATION();
       }
@@ -3288,7 +3300,7 @@ void BrowserAutofillManager::LogEventCountsUMAMetric(
       num_ask_for_values_to_fill_event + num_trigger_fill_event +
       num_fill_event + num_typing_event + num_heuristic_prediction_event +
       num_autocomplete_attribute_event + num_server_prediction_event +
-      num_rationalization_event;
+      num_rationalization_event + num_ablation_event;
   // Record the number of each type of log events into UMA to decide if we need
   // to clear them before the form is submitted or destroyed.
   UMA_HISTOGRAM_COUNTS_10000("Autofill.LogEvent.AskForValuesToFillEvent",
@@ -3305,6 +3317,8 @@ void BrowserAutofillManager::LogEventCountsUMAMetric(
                              num_server_prediction_event);
   UMA_HISTOGRAM_COUNTS_10000("Autofill.LogEvent.RationalizationEvent",
                              num_rationalization_event);
+  UMA_HISTOGRAM_COUNTS_10000("Autofill.LogEvent.AblationEvent",
+                             num_ablation_event);
   UMA_HISTOGRAM_COUNTS_10000("Autofill.LogEvent.All", total_num_log_events);
 }
 

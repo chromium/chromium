@@ -4106,6 +4106,16 @@ be describing additional metrics about the same event.
       (if the autofill is reverted or modified, this is ignored).
     </summary>
   </metric>
+  <metric name="DayInAblationWindow">
+    <summary>
+      For an ablation experiment we define a grid of 14-day windows. The
+      ablation state is determined by a hash value of a user-seed (random
+      number), the main frame origin, the ablation window. If, for example, an
+      ablation window lasts 14 days, this can be a value between 0 and 13. It
+      indicates whether the user is in the begining or at the end of an ablation
+      window.
+    </summary>
+  </metric>
   <metric name="EditedAfterAutofill">
     <summary>
       A bit-vector with bits set according to `FormType`. A set bit indicates
@@ -4145,6 +4155,40 @@ be describing additional metrics about the same event.
       A bit-vector with bits set according to `FormType`. A set bit indicates
       that at least one field of type `FormType` was non-empty at submission
       time.
+    </summary>
+  </metric>
+  <metric name="IsInAblationGroupOfAblation">
+    <summary>
+      A bit-vector with bits set according to `FormType`. A set bit indicates
+      that that for this form and the respective form type, the user was in the
+      ablation group, meaning that the user did not get the autofill UI,
+      regardless whether they had data available for filling.
+    </summary>
+  </metric>
+  <metric name="IsInAblationGroupOfConditionalAblation">
+    <summary>
+      A bit-vector with bits set according to `FormType`. A set bit indicates
+      that that for this form and the respective form type, the user was in the
+      conditional ablation group, meaning that the user had data that could be
+      filled, but the filling was suppressed due to the ablation.
+    </summary>
+  </metric>
+  <metric name="IsInControlGroupOfAblation">
+    <summary>
+      A bit-vector with bits set according to `FormType`. A set bit indicates
+      that that for this form and the respective form type, the user was in the
+      ablation control group. This is the corresponding control group to
+      IsInAblationGroupOfAblation. Autofill is not disabled but metrics are
+      recorded.
+    </summary>
+  </metric>
+  <metric name="IsInControlGroupOfConditionalAblation">
+    <summary>
+      A bit-vector with bits set according to `FormType`. A set bit indicates
+      that that for this form and the respective form type, the user was in the
+      conditional ablation control group. This is the corresponding control
+      group to IsInAblationGroupOfConditionalAblation. Autofill is not disabled
+      but metrics are recorded.
     </summary>
   </metric>
   <metric name="MillisecondsFromFirstInteractionUntilSubmission">

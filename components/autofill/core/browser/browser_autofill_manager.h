@@ -538,7 +538,7 @@ class BrowserAutofillManager : public AutofillManager {
       const FormFieldData& field,
       const AutofillField* autofill_field,
       AutofillSuggestionTriggerSource trigger_source,
-      SuggestionsContext context,
+      SuggestionsContext& context,
       OnGenerateSuggestionsCallback callback);
 
   // Receives the lists of plus address and single field form fill suggestions
