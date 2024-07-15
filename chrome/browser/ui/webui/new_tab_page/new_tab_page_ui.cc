@@ -22,8 +22,6 @@
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion_handler.h"
-#include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters.mojom.h"
-#include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar_page_handler.h"
@@ -196,20 +194,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean("mostVisitedReflowOnOverflowEnabled",
                      base::FeatureList::IsEnabled(
                          ntp_features::kNtpMostVisitedReflowOnOverflow));
-  source->AddBoolean(
-      "historyClustersModuleEnabled",
-      base::FeatureList::IsEnabled(ntp_features::kNtpHistoryClustersModule));
-  source->AddBoolean(
-      "historyClustersSuggestionChipHeaderEnabled",
-      base::FeatureList::IsEnabled(
-          ntp_features::kNtpHistoryClustersModuleSuggestionChipHeader));
-  source->AddBoolean("historyClustersModuleLoadEnabled",
-                     base::FeatureList::IsEnabled(
-                         ntp_features::kNtpHistoryClustersModuleLoad) &&
-                         HasCredentials(profile));
-  source->AddBoolean("historyClustersImagesEnabled",
-                     !base::FeatureList::IsEnabled(
-                         ntp_features::kNtpHistoryClustersModuleTextOnly));
   source->AddBoolean("mostRelevantTabResumptionEnabled",
                      base::FeatureList::IsEnabled(
                          ntp_features::kNtpMostRelevantTabResumptionModule));
@@ -734,13 +718,6 @@ void NewTabPageUI::BindInterface(
   foo_handler_ = std::make_unique<FooHandler>(std::move(pending_page_handler));
 }
 #endif
-
-void NewTabPageUI::BindInterface(
-    mojo::PendingReceiver<ntp::history_clusters::mojom::PageHandler>
-        pending_page_handler) {
-  history_clusters_handler_ = std::make_unique<HistoryClustersPageHandler>(
-      std::move(pending_page_handler), web_contents());
-}
 
 void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<ntp::most_relevant_tab_resumption::mojom::PageHandler>

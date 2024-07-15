@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/new_tab_page/modules/feed/feed.mojom.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom.h"
-#include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters.mojom.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom.h"
@@ -77,7 +76,6 @@ class FooHandler;
 #endif
 class GoogleCalendarPageHandler;
 class GURL;
-class HistoryClustersPageHandler;
 class MostRelevantTabResumptionPageHandler;
 class MostVisitedHandler;
 class NewTabPageHandler;
@@ -180,13 +178,6 @@ class NewTabPageUI
       mojo::PendingReceiver<foo::mojom::FooHandler> pending_receiver);
 #endif
 
-  // Instantiates the implementor of the
-  // ntp::history_clusters::mojom::PageHandler mojo interface passing to it the
-  // pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<ntp::history_clusters::mojom::PageHandler>
-          pending_page_handler);
-
   void BindInterface(mojo::PendingReceiver<
                      ntp::most_relevant_tab_resumption::mojom::PageHandler>
                          pending_page_handler);
@@ -271,7 +262,6 @@ class NewTabPageUI
 #if !defined(OFFICIAL_BUILD)
   std::unique_ptr<FooHandler> foo_handler_;
 #endif
-  std::unique_ptr<HistoryClustersPageHandler> history_clusters_handler_;
   std::unique_ptr<MostRelevantTabResumptionPageHandler>
       most_relevant_tab_resumption_handler_;
   std::unique_ptr<TabResumptionPageHandler> tab_resumption_handler_;

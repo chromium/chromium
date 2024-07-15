@@ -54,12 +54,6 @@ const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
     details.emplace_back("tab_resumption", IDS_NTP_TAB_RESUMPTION_TITLE);
   }
 
-  if (IsHistoryClustersModuleEnabled() &&
-      base::FeatureList::IsEnabled(page_image_service::kImageService)) {
-    details.emplace_back("history_clusters",
-                         IDS_OMNIBOX_HISTORY_CLUSTERS_SEARCH_HINT);
-  }
-
   if (base::FeatureList::IsEnabled(ntp_features::kNtpFeedModule)) {
     details.emplace_back("feed", IDS_NTP_MODULES_FEED_TITLE);
   }

@@ -24,7 +24,6 @@ const std::vector<base::test::FeatureRef>& kAllModuleFeatures = {
     ntp_features::kNtpCalendarModule,
     ntp_features::kNtpDriveModule,
     ntp_features::kNtpFeedModule,
-    ntp_features::kNtpHistoryClustersModule,
     ntp_features::kNtpOutlookCalendarModule,
 };
 
@@ -42,7 +41,8 @@ std::vector<base::test::FeatureRef> ComputeDisabledFeaturesList(
 
 TEST(NewTabPageModulesTest, MakeModuleIdNames_SingleModuleEnabled) {
   const std::vector<base::test::FeatureRef>& some_module_features = {
-      ntp_features::kNtpFeedModule, ntp_features::kNtpHistoryClustersModule};
+      ntp_features::kNtpFeedModule,
+      ntp_features::kNtpMostRelevantTabResumptionModule};
   for (auto& feature : some_module_features) {
     base::test::ScopedFeatureList features;
     features.InitWithFeatures(

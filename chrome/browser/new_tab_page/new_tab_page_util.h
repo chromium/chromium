@@ -13,7 +13,6 @@ class VariationsService;
 
 bool IsCartModuleEnabled();
 bool IsDriveModuleEnabled();
-bool IsHistoryClustersModuleEnabled();
 bool IsEnUSLocaleOnlyFeatureEnabled(const base::Feature& ntp_feature);
 
 // Return the country code as provided by the variations service.
