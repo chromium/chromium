@@ -96,24 +96,31 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
     DCHECK(target == 0 || target == GL_TEXTURE_EXTERNAL_OES)
         << "Unsupported target " << gl::GLEnums::GetStringEnum(target);
     DCHECK_EQ(num_textures, 1u);
-    std::optional<gfx::BufferFormat> buffer_format =
-        VideoPixelFormatToGfxBufferFormat(format);
-    DCHECK(buffer_format.has_value());
     if (frame.shared_image_format_type() == SharedImageFormatType::kLegacy) {
-      si_formats[0] =
-          viz::GetSinglePlaneSharedImageFormat(buffer_format.value());
+      switch (format) {
+        case PIXEL_FORMAT_NV12:
+          si_formats[0] = viz::LegacyMultiPlaneFormat::kNV12;
+          break;
+        case PIXEL_FORMAT_YV12:
+          si_formats[0] = viz::LegacyMultiPlaneFormat::kYV12;
+          break;
+        case PIXEL_FORMAT_P010LE:
+          si_formats[0] = viz::LegacyMultiPlaneFormat::kP010;
+          break;
+        case PIXEL_FORMAT_NV12A:
+          si_formats[0] = viz::LegacyMultiPlaneFormat::kNV12A;
+          break;
+        default:
+          NOTREACHED_NORETURN();
+      }
     } else {
 #if BUILDFLAG(IS_OZONE)
       CHECK_EQ(frame.shared_image_format_type(),
                SharedImageFormatType::kSharedImageFormatExternalSampler);
 
-      // The format must be one of NV12/YV12/P010LE, as these are the only
+      // The format must be one of NV12/YV12/P010LE/NV12A, as these are the only
       // formats for which VideoFrame::RequiresExternalSampler() will return
       // true.
-      // NOTE: If this is ever expanded to include NV12A, it will be necessary
-      // to decide whether the value returned in that case should be RGB (as is
-      // done for other values here) or RGBA (as is done for the handling of
-      // NV12A with per-plane sampling below).
       switch (format) {
         case PIXEL_FORMAT_NV12:
           si_formats[0] = viz::MultiPlaneFormat::kNV12;
@@ -123,6 +130,9 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
           break;
         case PIXEL_FORMAT_P010LE:
           si_formats[0] = viz::MultiPlaneFormat::kP010;
+          break;
+        case PIXEL_FORMAT_NV12A:
+          si_formats[0] = viz::MultiPlaneFormat::kNV12A;
           break;
         default:
           NOTREACHED_NORETURN();
@@ -137,7 +147,8 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
 #endif
     }
 
-    return VideoFrameResourceType::RGB;
+    return format == PIXEL_FORMAT_NV12A ? VideoFrameResourceType::RGBA
+                                        : VideoFrameResourceType::RGB;
   }
 
   CHECK(!frame.RequiresExternalSampler());
