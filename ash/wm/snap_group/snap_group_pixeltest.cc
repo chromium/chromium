@@ -13,9 +13,11 @@
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/scoped_overview_transform_window.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/snap_group/snap_group_test_util.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_divider.h"
+#include "ash/wm/splitview/split_view_test_util.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_list.h"
 #include "ash/wm/window_cycle/window_cycle_view.h"
@@ -77,6 +79,33 @@ TEST_F(SnapGroupPixelTest, SnapGroupDividerBasic) {
   // Verify the snap group divider UI components on mouse hover.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "snap_group_divider_hover_state",
+      /*revision_number=*/0, divider_widget, w1_widget, w2_widget));
+}
+
+// Visual regression test partial split screen layout.
+TEST_F(SnapGroupPixelTest, PartialSplit) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  DecorateWindow(w1.get(), /*title=*/u"w1", SK_ColorGREEN);
+  auto* w1_widget = views::Widget::GetWidgetForNativeView(w1.get());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  DecorateWindow(w2.get(), /*title=*/u"w2", SK_ColorBLUE);
+  auto* w2_widget = views::Widget::GetWidgetForNativeView(w2.get());
+
+  SnapOneTestWindow(w1.get(),
+                    /*state_type=*/chromeos::WindowStateType::kPrimarySnapped,
+                    chromeos::kTwoThirdSnapRatio);
+  VerifySplitViewOverviewSession(w1.get());
+  ClickOverviewItem(GetEventGenerator(), w2.get());
+  auto* snap_group_controller = SnapGroupController::Get();
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  auto* divider_widget = snap_group_divider()->divider_widget();
+  ASSERT_TRUE(divider_widget);
+
+  // Verify the snap group divider UI components on in 2/3 and 1/3 split screen
+  // layout.
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "snap_group_partial_split",
       /*revision_number=*/0, divider_widget, w1_widget, w2_widget));
 }
 
