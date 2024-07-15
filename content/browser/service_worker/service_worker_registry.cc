@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/service_worker/service_worker_registry.h"
+
 #include <type_traits>
 #include <utility>
-
-#include "content/browser/service_worker/service_worker_registry.h"
 
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -1286,7 +1287,7 @@ void ServiceWorkerRegistry::RunFindRegistrationCallbacks(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto iter =
       find_registration_callbacks_.find(std::make_pair(client_url, key));
-  DCHECK(iter != find_registration_callbacks_.end());
+  CHECK(iter != find_registration_callbacks_.end(), base::NotFatalUntil::M130);
   std::vector<FindRegistrationCallback> callbacks = std::move(iter->second);
   find_registration_callbacks_.erase(iter);
   for (FindRegistrationCallback& callback : callbacks) {

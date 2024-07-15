@@ -632,7 +632,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleWellKnownRequest(
   // .well-known requests should advertise they accept JSON responses.
   const auto accept_header =
       request.headers.find(net::HttpRequestHeaders::kAccept);
-  DCHECK(accept_header != request.headers.end());
+  CHECK(accept_header != request.headers.end());
   EXPECT_EQ(accept_header->second, "application/json");
 
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
@@ -640,7 +640,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleWellKnownRequest(
   response->set_content("{}");
 
   const auto host_header = request.headers.find(net::HttpRequestHeaders::kHost);
-  DCHECK(host_header != request.headers.end());
+  CHECK(host_header != request.headers.end());
   if (base::StartsWith(host_header->second, "allow-join.")) {
     response->set_content(R"({"joinAdInterestGroup" : true})");
     response->AddCustomHeader("Access-Control-Allow-Origin", "*");

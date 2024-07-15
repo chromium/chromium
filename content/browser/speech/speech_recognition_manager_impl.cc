@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
+#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -762,7 +763,7 @@ SpeechRecognitionManagerImpl::Session*
 SpeechRecognitionManagerImpl::GetSession(int session_id) const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   auto iter = sessions_.find(session_id);
-  DCHECK(iter != sessions_.end());
+  CHECK(iter != sessions_.end(), base::NotFatalUntil::M130);
   return iter->second.get();
 }
 

@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 #include "content/browser/service_worker/service_worker_register_job_base.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
@@ -144,7 +145,8 @@ void ServiceWorkerJobCoordinator::FinishJob(const GURL& scope,
                                             const blink::StorageKey& key,
                                             ServiceWorkerRegisterJobBase* job) {
   auto pending_jobs = job_queues_.find(UniqueRegistrationKey(scope, key));
-  DCHECK(pending_jobs != job_queues_.end()) << "Deleting non-existent job.";
+  CHECK(pending_jobs != job_queues_.end(), base::NotFatalUntil::M130)
+      << "Deleting non-existent job.";
   pending_jobs->second.Pop(job);
   if (pending_jobs->second.empty())
     job_queues_.erase(pending_jobs);

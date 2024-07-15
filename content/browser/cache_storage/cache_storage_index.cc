@@ -137,7 +137,7 @@ void CacheStorageIndex::CalculateStoragePadding() {
 void CacheStorageIndex::DoomCache(const std::string& cache_name) {
   DCHECK(!has_doomed_cache_);
   auto map_it = cache_metadata_map_.find(cache_name);
-  DCHECK(map_it != cache_metadata_map_.end());
+  CHECK(map_it != cache_metadata_map_.end(), base::NotFatalUntil::M130);
   doomed_cache_metadata_ = std::move(*(map_it->second));
   after_doomed_cache_metadata_ = ordered_cache_metadata_.erase(map_it->second);
   cache_metadata_map_.erase(map_it);

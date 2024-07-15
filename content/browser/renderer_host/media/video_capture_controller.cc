@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/token.h"
 #include "build/build_config.h"
@@ -489,7 +490,8 @@ ReadyBuffer VideoCaptureController::MakeReadyBufferAndSetContextFeedbackId(
     media::mojom::VideoFrameInfoPtr frame_info,
     BufferContext** out_buffer_context) {
   auto buffer_context_iter = FindUnretiredBufferContextFromBufferId(buffer_id);
-  DCHECK(buffer_context_iter != buffer_contexts_.end());
+  CHECK(buffer_context_iter != buffer_contexts_.end(),
+        base::NotFatalUntil::M130);
   BufferContext* buffer_context = &(*buffer_context_iter);
   buffer_context->set_frame_feedback_id(frame_feedback_id);
   DCHECK(!buffer_context->HasConsumers());
@@ -527,7 +529,8 @@ void VideoCaptureController::OnBufferRetired(int buffer_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   auto buffer_context_iter = FindUnretiredBufferContextFromBufferId(buffer_id);
-  DCHECK(buffer_context_iter != buffer_contexts_.end());
+  CHECK(buffer_context_iter != buffer_contexts_.end(),
+        base::NotFatalUntil::M130);
 
   // If there are any clients still using the buffer, we need to allow them
   // to finish up. We need to hold on to the BufferContext entry until then,
@@ -817,7 +820,8 @@ void VideoCaptureController::OnClientFinishedConsumingBuffer(
     const media::VideoCaptureFeedback& feedback) {
   auto buffer_context_iter =
       FindBufferContextFromBufferContextId(buffer_context_id);
-  DCHECK(buffer_context_iter != buffer_contexts_.end());
+  CHECK(buffer_context_iter != buffer_contexts_.end(),
+        base::NotFatalUntil::M130);
 
   buffer_context_iter->RecordConsumerUtilization(feedback);
   buffer_context_iter->DecreaseConsumerCount();

@@ -354,7 +354,8 @@ FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
     const GURL& urn_uuid,
     const SharedStorageURNMappingResult& mapping_result) {
   auto pending_it = pending_urn_uuid_to_url_map_.find(urn_uuid);
-  DCHECK(pending_it != pending_urn_uuid_to_url_map_.end());
+  CHECK(pending_it != pending_urn_uuid_to_url_map_.end(),
+        base::NotFatalUntil::M130);
 
   DCHECK(!IsMapped(urn_uuid));
 

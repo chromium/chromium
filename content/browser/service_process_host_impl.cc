@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/process/process.h"
 #include "base/strings/utf_string_conversions.h"
@@ -65,7 +66,7 @@ class ServiceProcessTracker {
   void NotifyTerminated(ServiceProcessId id) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     auto iter = processes_.find(id);
-    DCHECK(iter != processes_.end());
+    CHECK(iter != processes_.end(), base::NotFatalUntil::M130);
 
     for (auto& observer : observers_)
       observer.OnServiceProcessTerminatedNormally(iter->second.Duplicate());
@@ -75,7 +76,7 @@ class ServiceProcessTracker {
   void NotifyCrashed(ServiceProcessId id) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     auto iter = processes_.find(id);
-    DCHECK(iter != processes_.end());
+    CHECK(iter != processes_.end(), base::NotFatalUntil::M130);
     for (auto& observer : observers_)
       observer.OnServiceProcessCrashed(iter->second.Duplicate());
     processes_.erase(iter);
