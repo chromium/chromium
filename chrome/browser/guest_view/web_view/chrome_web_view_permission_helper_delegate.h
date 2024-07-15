@@ -16,10 +16,6 @@
 #include "chrome/common/plugin.mojom.h"
 #endif
 
-namespace url {
-class Origin;
-}  // namespace url
-
 namespace extensions {
 class WebViewGuest;
 
@@ -81,14 +77,12 @@ class ChromeWebViewPermissionHelperDelegate
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
   void OnGeolocationPermissionResponse(
-      const url::Origin& requesting_origin,
       bool user_gesture,
       base::OnceCallback<void(blink::mojom::PermissionStatus)> callback,
       bool allow,
       const std::string& user_input);
 
   void OnHidPermissionResponse(base::OnceCallback<void(bool)> callback,
-                               const GURL& requesting_frame_url,
                                bool allow,
                                const std::string& user_input);
 

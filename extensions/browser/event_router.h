@@ -122,6 +122,7 @@ class EventRouter : public KeyedService,
     virtual void OnWillDispatchEvent(const Event& event) = 0;
     virtual void OnDidDispatchEventToProcess(const Event& event,
                                              int process_id) = 0;
+    virtual void OnNonExtensionEventDispatched(const std::string& event_name) {}
   };
 
   // Gets the EventRouter for |browser_context|.
