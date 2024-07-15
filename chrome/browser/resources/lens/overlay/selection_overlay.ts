@@ -224,6 +224,9 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       new ResizeObserver(() => {
         this.handleSelectionElementsResize();
       });
+  // Used to listen for changes in the window.devicePixelRatio. Stored as a
+  // variable so we can easily add and remove the listener.
+  private matchMedia?: MediaQueryList;
   private initialWidth: number = 0;
   private initialHeight: number = 0;
   private cursorOffsetX: number = 3;
@@ -321,6 +324,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.eventTracker_.add(document, 'unfocus-region', () => {
       this.shimmerOnSegmentation = false;
     });
+
+    this.updateDevicePixelRatioListener();
   }
 
   override disconnectedCallback() {
@@ -332,6 +337,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         id => assert(
             BrowserProxyImpl.getInstance().callbackRouter.removeListener(id)));
     this.listenerIds = [];
+
+    assert(this.matchMedia);
+    this.matchMedia.removeEventListener(
+        'change', this.onDevicePixelRatioChanged.bind(this));
   }
 
   override ready() {
@@ -350,6 +359,27 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.removeEventListener('pointerup', this.onPointerUp);
     this.removeEventListener('pointermove', this.onPointerMove);
     this.removeEventListener('pointercancel', this.onPointerCancel);
+  }
+
+  private updateDevicePixelRatioListener() {
+    // Remove the previous listener since we are now listening for a different
+    // pixel ratio change.
+    if (this.matchMedia) {
+      this.eventTracker_.remove(this.matchMedia, 'change');
+    }
+
+    // Listen to changes to the current device pixel ratio.
+    const queryString = `(resolution: ${window.devicePixelRatio}dppx)`;
+    this.matchMedia = matchMedia(queryString);
+    this.eventTracker_.add(
+        this.matchMedia, 'change', this.onDevicePixelRatioChanged.bind(this));
+  }
+
+  private onDevicePixelRatioChanged() {
+    // Update the listener to the new pixel ratio.
+    this.updateDevicePixelRatioListener();
+    // Handle UI updates.
+    this.handleSelectionElementsResize();
   }
 
   private updateCursorPosition(event: PointerEvent) {
