@@ -8,13 +8,16 @@
 
 import 'chrome://resources/ash/common/personalization/common.css.js';
 import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
+import 'chrome://resources/ash/common/personalization/personalization_shared_icons.html.js';
 import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 
+import {SEA_PEN_SAMPLES, SeaPenSamplePrompt} from './constants.js';
 import {SeaPenQuery} from './sea_pen.mojom-webui.js';
 import {getTemplate} from './sea_pen_freeform_element.html.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
+import {isArrayEqual, shuffle} from './sea_pen_utils.js';
 
 /** Enumeration of supported tabs. */
 export enum FreeformTab {
@@ -42,9 +45,15 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
         type: Object,
         observer: 'onSeaPenQueryChanged_',
       },
+
+      samples: {
+        type: Array,
+        value: SEA_PEN_SAMPLES,
+      },
     };
   }
 
+  samples: SeaPenSamplePrompt[];
   private freeformTab_: FreeformTab;
   private seaPenQuery_: SeaPenQuery|null;
 
@@ -53,6 +62,7 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
     this.watch<SeaPenFreeformElement['seaPenQuery_']>(
         'seaPenQuery_', state => state.currentSeaPenQuery);
     this.updateFromStore();
+    this.onShuffleClicked_();
   }
 
   /** Invoked on tab selected. */
@@ -77,7 +87,7 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
         query?.textQuery ? FreeformTab.RESULTS : FreeformTab.SAMPLE_PROMPTS;
   }
 
-  private isTabStripEnabled_(query: SeaPenQuery) {
+  private isTabContainerEnabled_(query: SeaPenQuery) {
     return !!query?.textQuery;
   }
 
@@ -91,6 +101,18 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
 
   private onRecentFreeformImageDelete_() {
     // TODO(b/347328001): add the function implementation.
+  }
+
+  private onShuffleClicked_(): void {
+    // Run shuffle (5 times at most) until the shuffled samples are
+    // different from current, which is highly likely to happen the first time.
+    for (let i = 0; i < 5; i++) {
+      const newSamples = shuffle(this.samples);
+      if (!isArrayEqual(newSamples, this.samples)) {
+        this.samples = newSamples;
+        break;
+      }
+    }
   }
 }
 
