@@ -2,6 +2,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <iterator>
 #include <optional>
 #include <string>
 #include <vector>
@@ -923,9 +924,12 @@ int main(int argc, char** argv) {
     LOG(FATAL) << "num_entries not parseable as an int.";
   }
 
-  bool to_stdout = true;
+  bool output_to_dir = cl.HasSwitch("corpus_dir");
+  bool to_stdout = !output_to_dir || ::getenv("LPM_DUMP_NATIVE_INPUT");
+  bool print_sqlite_errors = ::getenv("PRINT_SQLITE_ERRORS");
+
   base::FilePath dir_path;
-  if (cl.HasSwitch("corpus_dir")) {
+  if (output_to_dir) {
     to_stdout = false;
 
     dir_path = cl.GetSwitchValuePath("corpus_dir");
@@ -946,24 +950,29 @@ int main(int argc, char** argv) {
                  "stdout instead.";
   }
 
-  int last_index = 0;
-  for (int total = 0; total < num_entries; total++) {
+  int file_name_index = 0;
+  for (int i = 0; i < num_entries; i++) {
     SQLQueries queries = GenCorpusEntry();
-    std::vector<std::string> queries_str;
-    for (int i = 0; i < queries.extra_queries_size(); i++) {
-      queries_str.push_back(
-          sql_fuzzer::SQLQueryToString(queries.extra_queries(i)));
-      if (to_stdout || ::getenv("LPM_DUMP_NATIVE_INPUT")) {
-        std::cout << queries_str[i] << std::endl;
+
+    if (to_stdout || print_sqlite_errors) {
+      // Printing to stdout or printing the sql errors requires converting the
+      // queries to strings first.
+      std::vector<std::string> queries_str;
+      std::transform(
+          queries.extra_queries().begin(), queries.extra_queries().end(),
+          std::back_inserter(queries_str), sql_fuzzer::SQLQueryToString);
+
+      if (to_stdout) {
+        std::cout << base::JoinString(queries_str, "\n") << std::endl;
+      }
+
+      if (print_sqlite_errors) {
+        sql_fuzzer::RunSqlQueries(queries_str, ::getenv("LPM_SQLITE_TRACE"));
       }
     }
 
-    if (getenv("PRINT_SQLITE_ERRORS")) {
-      sql_fuzzer::RunSqlQueries(queries_str, ::getenv("LPM_SQLITE_TRACE"));
-    }
-
     // If we just want to print to stdout, skip the directory stuff below.
-    if (to_stdout) {
+    if (!output_to_dir) {
       continue;
     }
 
@@ -974,19 +983,19 @@ int main(int argc, char** argv) {
       LOG(FATAL) << "Could not serialize queries to string.";
     }
 
-    bool found_file = false;
-    while (!found_file) {
-      base::FilePath file_path =
-          dir_path.Append("corpus_queries" + std::to_string(last_index));
-      base::File file(file_path,
+    // Create a file to write the `proto_text` to.
+    base::FilePath file_path;
+    base::File file;
+    for (; !file.IsValid(); file_name_index++) {
+      file_path =
+          dir_path.Append("corpus_queries" + std::to_string(file_name_index));
+      file.Initialize(file_path,
                       base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-      if (file.created()) {
-        found_file = true;
-        if (file.Write(0, proto_text.data(), proto_text.length()) < 0) {
-          LOG(FATAL) << "Failed to write to file " << file_path;
-        }
-      }
-      last_index++;
+    }
+
+    // Write the `proto_text` data to the file.
+    if (file.Write(0, proto_text.data(), proto_text.length()) < 0) {
+      LOG(FATAL) << "Failed to write to file " << file_path;
     }
   }
 
