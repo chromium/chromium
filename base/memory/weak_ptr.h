@@ -112,7 +112,6 @@ class PluginDispatcher;
 
 namespace storage {
 class CopyOrMoveHookDelegate;
-class CopyOrMoveHookDelegateComposite;
 }  // namespace storage
 
 namespace ui {
@@ -534,7 +533,6 @@ class SupportsWeakPtr : public internal::SupportsWeakPtrBase {
   friend class media_router::MediaRoutesObserver;
   friend class ppapi::proxy::PluginDispatcher;
   friend class storage::CopyOrMoveHookDelegate;
-  friend class storage::CopyOrMoveHookDelegateComposite;
   friend class ui::MenuModel;
   friend class ui::TextInputClient;
   friend class views::WidgetDelegate;
