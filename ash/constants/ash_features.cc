@@ -1877,6 +1877,11 @@ BASE_FEATURE(kFeatureManagementLocalImageSearch,
 // Enables lobster feature.
 BASE_FEATURE(kLobster, "Lobster", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables / Disables the lobster feature from the feature management module.
+BASE_FEATURE(kFeatureManagementLobster,
+             "FeatureManagementLobster",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables local image search on core devices.
 BASE_FEATURE(kLocalImageSearchOnCore,
              "LocalImageSearchOnCore",
@@ -4050,7 +4055,8 @@ bool IsLinkCrossDeviceInternalsEnabled() {
 }
 
 bool IsLobsterEnabled() {
-  return base::FeatureList::IsEnabled(kLobster);
+  return base::FeatureList::IsEnabled(kLobster) &&
+         base::FeatureList::IsEnabled(kFeatureManagementLobster);
 }
 
 bool AreLocalPasswordsEnabledForConsumers() {
