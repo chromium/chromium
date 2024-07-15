@@ -19,6 +19,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
@@ -2289,7 +2290,7 @@ void AXTree::DestroyNodeAndSubtree(AXNode* node,
   UpdateReverseRelations(node, *empty_data);
 
   auto iter = id_map_.find(id);
-  DCHECK(iter != id_map_.end());
+  CHECK(iter != id_map_.end(), base::NotFatalUntil::M130);
   std::unique_ptr<AXNode> node_to_delete = std::move(iter->second);
   id_map_.erase(iter);
   node = nullptr;

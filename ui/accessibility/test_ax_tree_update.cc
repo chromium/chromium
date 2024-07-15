@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/accessibility/test_ax_tree_update.h"
+
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 
@@ -322,7 +323,7 @@ TestAXTreeUpdate::TestAXTreeUpdate(const std::string& tree_structure) {
       node_data_vector[i - 1].child_ids.push_back(curr_node.id);
     } else {
       elem = last_index_appearance_of_plus_count.find(plus_count - 2);
-      DCHECK(elem != last_index_appearance_of_plus_count.end())
+      CHECK(elem != last_index_appearance_of_plus_count.end())
           << "Error in plus sign count.";
       int parent_index = elem->second;
       node_data_vector[parent_index].child_ids.push_back(curr_node.id);
