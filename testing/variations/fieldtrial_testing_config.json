@@ -21408,7 +21408,15 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Dogfood",
+                    "name": "Auto_Dogfood",
+                    "enable_features": [
+                        "DeleteStaleLocalStorageOnStartup",
+                        "DeleteStaleSessionCookiesOnStartup",
+                        "EvictStaleQuotaStorage"
+                    ]
+                },
+                {
+                    "name": "Opt_In_Dogfood",
                     "enable_features": [
                         "DeleteStaleLocalStorageOnStartup",
                         "DeleteStaleSessionCookiesOnStartup",
