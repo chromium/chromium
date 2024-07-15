@@ -50,6 +50,7 @@ source_set("lens") {
     "//chrome/browser/resources/lens/overlay:resources_grit",
     "//chrome/browser/resources/lens/overlay/search_bubble:resources",
     "//chrome/browser/resources/lens/overlay/search_bubble:resources_grit",
+    "//chrome/browser/search_engines",
     "//chrome/browser/themes",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/browser_window",

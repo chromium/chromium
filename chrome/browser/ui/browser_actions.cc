@@ -171,7 +171,7 @@ void BrowserActions::InitializeBrowserActions() {
             .Build());
   }
 
-  if (LensOverlayController::IsEnabled(browser)) {
+  if (lens::features::IsLensOverlayEnabled()) {
     actions::ActionItem::InvokeActionCallback callback = base::BindRepeating(
         [](base::WeakPtr<Browser> browser, actions::ActionItem* item,
            actions::ActionInvocationContext context) {
