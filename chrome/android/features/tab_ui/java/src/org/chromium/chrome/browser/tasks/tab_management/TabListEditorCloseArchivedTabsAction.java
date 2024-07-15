@@ -61,7 +61,6 @@ public class TabListEditorCloseArchivedTabsAction extends TabListEditorAction {
     @Override
     public boolean performAction(List<Tab> tabs) {
         mArchiveDelegate.closeArchivedTabs(tabs);
-        // TODO(crbug.com/346436267): Record user action here.
         return true;
     }
 

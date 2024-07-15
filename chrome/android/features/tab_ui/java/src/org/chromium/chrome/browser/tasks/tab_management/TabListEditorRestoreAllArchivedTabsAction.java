@@ -61,7 +61,6 @@ public class TabListEditorRestoreAllArchivedTabsAction extends TabListEditorActi
     @Override
     public boolean performAction(List<Tab> tabs) {
         mArchiveDelegate.restoreAllArchivedTabs();
-        // TODO(crbug.com/346436267): Record user action here.
         return true;
     }
 

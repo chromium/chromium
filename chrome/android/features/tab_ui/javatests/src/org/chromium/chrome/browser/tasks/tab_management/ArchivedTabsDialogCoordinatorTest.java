@@ -32,6 +32,8 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator.Observer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -68,6 +70,7 @@ public class ArchivedTabsDialogCoordinatorTest {
     private ViewGroup mParentView;
     private TabCreator mRegularTabCreator;
     private TabModel mRegularTabModel;
+    private UserActionTester mUserActionTester;
 
     @Before
     public void setUp() throws Exception {
@@ -91,11 +94,13 @@ public class ArchivedTabsDialogCoordinatorTest {
 
         mArchivedTabModelOrchestrator = ArchivedTabModelOrchestrator.getForProfile(mProfile);
         mArchivedTabModel = mArchivedTabModelOrchestrator.getTabModelSelector().getModel(false);
+        mUserActionTester = new UserActionTester();
         waitForArchivedTabModelsToLoad(mArchivedTabModelOrchestrator);
     }
 
     @After
     public void tearDown() {
+        mUserActionTester.tearDown();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mArchivedTabModel.closeAllTabs();
@@ -134,11 +139,16 @@ public class ArchivedTabsDialogCoordinatorTest {
         showDialog(2);
         onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
 
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.RestoreAllArchivedTabsMenuItem.TabCount", 2);
         assertEquals(1, mRegularTabModel.getCount());
         mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Restore all");
         mRobot.resultRobot.verifyTabListEditorIsHidden();
         assertEquals(3, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
+        histogramExpectation.assertExpected();
+        assertEquals(1, mUserActionTester.getActionCount("Tabs.RestoreAllArchivedTabsMenuItem"));
     }
 
     @Test
@@ -162,18 +172,25 @@ public class ArchivedTabsDialogCoordinatorTest {
                         });
         mRobot.resultRobot.verifyTabListEditorIsHidden();
         ActivityTestUtils.waitForFragmentToAttach(activity, TabArchiveSettingsFragment.class);
+        assertEquals(1, mUserActionTester.getActionCount("Tabs.OpenArchivedTabsSettingsMenuItem"));
     }
 
     @Test
     @MediumTest
-    public void testCloseAllInactiveTabs() throws Exception {
+    public void testCloseAllArchivedTabs() throws Exception {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");
         showDialog(2);
+
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher("Tabs.CloseAllArchivedTabs.TabCount", 2);
+
         onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
         onView(withText("Close all inactive tabs")).perform(click());
         mRobot.resultRobot.verifyTabListEditorIsHidden();
         assertEquals(0, mArchivedTabModel.getCount());
+        histogramExpectation.assertExpected();
+        assertEquals(1, mUserActionTester.getActionCount("Tabs.CloseAllArchivedTabsMenuItem"));
     }
 
     @Test
@@ -184,6 +201,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         showDialog(2);
 
         mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
+        assertEquals(1, mUserActionTester.getActionCount("Tabs.SelectArchivedTabsMenuItem"));
 
         mRobot.resultRobot
                 .verifyAdapterHasItemCount(2)
@@ -246,6 +264,9 @@ public class ArchivedTabsDialogCoordinatorTest {
 
         mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
 
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.CloseArchivedTabsMenuItem.TabCount", 2);
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
         mRobot.actionRobot.clickItemAtAdapterPosition(1);
         mRobot.resultRobot.verifyToolbarSelectionText("2 tabs");
@@ -253,14 +274,21 @@ public class ArchivedTabsDialogCoordinatorTest {
         mRobot.resultRobot.verifyAdapterHasItemCount(1);
         assertEquals(1, mRegularTabModel.getCount());
         assertEquals(1, mArchivedTabModel.getCount());
+        histogramExpectation.assertExpected();
+        assertEquals(1, mUserActionTester.getActionCount("Tabs.CloseArchivedTabsMenuItem"));
 
         mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
 
+        histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.CloseArchivedTabsMenuItem.TabCount", 1);
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
         mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Close tab");
         mRobot.resultRobot.verifyTabListEditorIsHidden();
         assertEquals(1, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
+        histogramExpectation.assertExpected();
+        assertEquals(2, mUserActionTester.getActionCount("Tabs.CloseArchivedTabsMenuItem"));
     }
 
     @Test
@@ -275,6 +303,9 @@ public class ArchivedTabsDialogCoordinatorTest {
 
         mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
 
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.RestoreArchivedTabsMenuItem.TabCount", 2);
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
         mRobot.actionRobot.clickItemAtAdapterPosition(1);
         mRobot.resultRobot.verifyToolbarSelectionText("2 tabs");
@@ -282,14 +313,21 @@ public class ArchivedTabsDialogCoordinatorTest {
         mRobot.resultRobot.verifyAdapterHasItemCount(1);
         assertEquals(3, mRegularTabModel.getCount());
         assertEquals(1, mArchivedTabModel.getCount());
+        histogramExpectation.assertExpected();
+        assertEquals(1, mUserActionTester.getActionCount("Tabs.RestoreArchivedTabsMenuItem"));
 
         mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
 
+        histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.RestoreArchivedTabsMenuItem.TabCount", 1);
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
         mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Restore tab");
         mRobot.resultRobot.verifyTabListEditorIsHidden();
         assertEquals(4, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
+        histogramExpectation.assertExpected();
+        assertEquals(2, mUserActionTester.getActionCount("Tabs.RestoreArchivedTabsMenuItem"));
     }
 
     @Test
@@ -323,6 +361,7 @@ public class ArchivedTabsDialogCoordinatorTest {
                 mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
         Tab activityTab = mActivityTestRule.getActivity().getActivityTabProvider().get();
         assertEquals(tab, activityTab);
+        assertEquals(1, mUserActionTester.getActionCount("Tabs.RestoreSingleTab"));
     }
 
     private void showDialog(int numTabs) {

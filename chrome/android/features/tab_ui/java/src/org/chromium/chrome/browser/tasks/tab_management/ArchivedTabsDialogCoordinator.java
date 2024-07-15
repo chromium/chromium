@@ -14,6 +14,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
@@ -64,33 +66,43 @@ public class ArchivedTabsDialogCoordinator {
                 @Override
                 public void restoreAllArchivedTabs() {
                     List<Tab> tabs = TabModelUtils.convertTabListToListOfTabs(mArchivedTabModel);
-                    restoreArchivedTabs(tabs);
+                    int tabCount = tabs.size();
+                    ArchivedTabsDialogCoordinator.this.restoreArchivedTabs(tabs);
+                    RecordHistogram.recordCount1000Histogram(
+                            "Tabs.RestoreAllArchivedTabsMenuItem.TabCount", tabCount);
+                    RecordUserAction.record("Tabs.RestoreAllArchivedTabsMenuItem");
                 }
 
                 @Override
                 public void openArchiveSettings() {
                     new SettingsLauncherImpl()
                             .launchSettingsActivity(mContext, TabArchiveSettingsFragment.class);
+                    RecordUserAction.record("Tabs.OpenArchivedTabsSettingsMenuItem");
                 }
 
                 @Override
                 public void startTabSelection() {
                     moveToState(TabActionState.SELECTABLE);
+                    RecordUserAction.record("Tabs.SelectArchivedTabsMenuItem");
                 }
 
                 @Override
                 public void restoreArchivedTabs(List<Tab> tabs) {
-                    for (Tab tab : tabs) {
-                        mArchivedTabModelOrchestrator
-                                .getTabArchiver()
-                                .unarchiveAndRestoreTab(mRegularTabCreator, tab);
-                    }
+                    int tabCount = tabs.size();
+                    ArchivedTabsDialogCoordinator.this.restoreArchivedTabs(tabs);
                     moveToState(TabActionState.CLOSABLE);
+                    RecordHistogram.recordCount1000Histogram(
+                            "Tabs.RestoreArchivedTabsMenuItem.TabCount", tabCount);
+                    RecordUserAction.record("Tabs.RestoreArchivedTabsMenuItem");
                 }
 
                 @Override
                 public void closeArchivedTabs(List<Tab> tabs) {
-                    mArchivedTabModel.closeMultipleTabs(tabs, /* canUndo= */ true);
+                    int tabCount = tabs.size();
+                    ArchivedTabsDialogCoordinator.this.closeArchivedTabs(tabs);
+                    RecordHistogram.recordCount1000Histogram(
+                            "Tabs.CloseArchivedTabsMenuItem.TabCount", tabCount);
+                    RecordUserAction.record("Tabs.CloseArchivedTabsMenuItem");
                 }
             };
 
@@ -136,6 +148,7 @@ public class ArchivedTabsDialogCoordinator {
                     PostTask.postTask(
                             TaskTraits.UI_DEFAULT,
                             () -> mOnTabSelectingListener.onTabSelecting(tab.getId()));
+                    RecordUserAction.record("Tabs.RestoreSingleTab");
                 }
             };
 
@@ -293,8 +306,22 @@ public class ArchivedTabsDialogCoordinator {
 
     @VisibleForTesting
     void closeAllInactiveTabs(View view) {
+        int tabCount = mArchivedTabModel.getCount();
         mArchivedTabModel.closeAllTabs(false);
-        hide();
+        RecordHistogram.recordCount1000Histogram("Tabs.CloseAllArchivedTabs.TabCount", tabCount);
+        RecordUserAction.record("Tabs.CloseAllArchivedTabsMenuItem");
+    }
+
+    private void closeArchivedTabs(List<Tab> tabs) {
+        mArchivedTabModel.closeMultipleTabs(tabs, /* canUndo= */ true);
+    }
+
+    private void restoreArchivedTabs(List<Tab> tabs) {
+        for (Tab tab : tabs) {
+            mArchivedTabModelOrchestrator
+                    .getTabArchiver()
+                    .unarchiveAndRestoreTab(mRegularTabCreator, tab);
+        }
     }
 
     // Testing-specific methods

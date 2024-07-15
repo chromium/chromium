@@ -40845,6 +40845,66 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Tabs.CloseAllArchivedTabsMenuItem">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when the close all archived tabs menu item is clicked by a user in
+    the archived tabs dialog.
+  </description>
+</action>
+
+<action name="Tabs.CloseArchivedTabsMenuItem">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when the close menu item is clicked by a user while selecting in
+    the archived tabs dialog.
+  </description>
+</action>
+
+<action name="Tabs.OpenArchivedTabsSettingsMenuItem">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when the settings menu item is clicked by a user.
+  </description>
+</action>
+
+<action name="Tabs.RestoreAllArchivedTabsMenuItem">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when the restore all menu item is clicked by a user in the archived
+    tabs dialog.
+  </description>
+</action>
+
+<action name="Tabs.RestoreArchivedTabsMenuItem">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when the restore menu item is clicked by a user while selecting in
+    ths archived tabs dialog.
+  </description>
+</action>
+
+<action name="Tabs.RestoreSingleTab">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when the user selects a single tab from the archived tabs dialog.
+  </description>
+</action>
+
+<action name="Tabs.SelectArchivedTabsMenuItem">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when the select tabs menu item is clicked by a user.
+  </description>
+</action>
+
 <action name="TabsSearch.SuggestedActions.OpenTabs">
   <owner>michaeldo@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>

@@ -60,7 +60,6 @@ public class TabListEditorArchiveSettingsAction extends TabListEditorAction {
     @Override
     public boolean performAction(List<Tab> tabs) {
         mArchiveDelegate.openArchiveSettings();
-        // TODO(crbug.com/346436267): Record user action here.
         return true;
     }
 

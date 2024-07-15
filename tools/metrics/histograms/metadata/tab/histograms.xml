@@ -1488,6 +1488,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.CloseAllArchivedTabs.TabCount" units="tabs"
+    expires_after="2024-10-30">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records the number of tabs that are currently selected when the close all
+    inactive tabs button is clicked.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.CloseArchivedTabsMenuItem.TabCount" units="tabs"
+    expires_after="2024-10-30">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records the number of tabs that are currently selected when the close menu
+    item is clicked.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.CountAtResume2" units="tabs" expires_after="2024-11-17">
   <owner>marq@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
@@ -1992,6 +2012,26 @@ chromium-metrics-reviews@google.com.
     any entires of {RecentlyClosedType} type were shown.
   </summary>
   <token key="RecentlyClosedType" variants="RecentlyClosedType"/>
+</histogram>
+
+<histogram name="Tabs.RestoreAllArchivedTabsMenuItem.TabCount" units="tabs"
+    expires_after="2024-10-30">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records the number of tabs that are currently selected when the restore all
+    menu item is clicked.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.RestoreArchivedTabsMenuItem.TabCount" units="tabs"
+    expires_after="2024-10-30">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records the number of tabs that are currently selected when the restore menu
+    item is clicked.
+  </summary>
 </histogram>
 
 <histogram name="Tabs.RestoredFromInactiveCount" units="tabs"
