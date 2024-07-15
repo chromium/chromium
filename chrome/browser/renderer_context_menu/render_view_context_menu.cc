@@ -96,6 +96,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
@@ -1833,6 +1834,10 @@ void RenderViewContextMenu::AppendLinkItems() {
 
       if (multiple_profiles_open_ || has_active_profiles) {
         DCHECK(!target_profiles_entries.empty());
+        profiles::PlaceholderAvatarIconParams icon_params =
+            GetPlaceholderAvatarIconParamsVisibleAgainstColor(
+                GetWebContents()->GetColorProvider().GetColor(
+                    ui::kColorMenuBackground));
         if (target_profiles_entries.size() == 1) {
           int menu_index = static_cast<int>(profile_link_paths_.size());
           ProfileAttributesEntry* entry = target_profiles_entries.front();
@@ -1841,7 +1846,10 @@ void RenderViewContextMenu::AppendLinkItems() {
               IDC_OPEN_LINK_IN_PROFILE_FIRST + menu_index,
               l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_OPENLINKINPROFILE,
                                          entry->GetName()));
-          AddAvatarToLastMenuItem(entry->GetAvatarIcon(), &menu_model_);
+          AddAvatarToLastMenuItem(
+              entry->GetAvatarIcon(kDefaultSizeForPlaceholderAvatar,
+                                   /*use_high_res_file=*/true, icon_params),
+              &menu_model_);
         } else {
           for (ProfileAttributesEntry* entry : target_profiles_entries) {
             int menu_index = static_cast<int>(profile_link_paths_.size());
@@ -1855,8 +1863,10 @@ void RenderViewContextMenu::AppendLinkItems() {
             profile_link_paths_.push_back(entry->GetPath());
             profile_link_submenu_model_.AddItem(
                 IDC_OPEN_LINK_IN_PROFILE_FIRST + menu_index, entry->GetName());
-            AddAvatarToLastMenuItem(entry->GetAvatarIcon(),
-                                    &profile_link_submenu_model_);
+            AddAvatarToLastMenuItem(
+                entry->GetAvatarIcon(kDefaultSizeForPlaceholderAvatar,
+                                     /*use_high_res_file=*/true, icon_params),
+                &profile_link_submenu_model_);
           }
           menu_model_.AddSubMenuWithStringId(
               IDC_CONTENT_CONTEXT_OPENLINKINPROFILE,

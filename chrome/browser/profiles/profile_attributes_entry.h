@@ -27,6 +27,8 @@ class PrefService;
 class ProfileAttributesStorage;
 struct ProfileThemeColors;
 
+inline constexpr int kDefaultSizeForPlaceholderAvatar = 74;
+
 enum class SigninState {
   kNotSignedIn,
   kSignedInWithUnconsentedPrimaryAccount,
@@ -91,7 +93,7 @@ class ProfileAttributesEntry {
   // Consider adding a |shape| parameter and get rid of
   // profiles::GetSizedAvatarIcon().
   gfx::Image GetAvatarIcon(
-      int size_for_placeholder_avatar = 74,
+      int size_for_placeholder_avatar = kDefaultSizeForPlaceholderAvatar,
       bool use_high_res_file = true,
       const profiles::PlaceholderAvatarIconParams& icon_params = {}) const;
   // Returns true if the profile is currently running any background apps. Note
