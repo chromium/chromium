@@ -102,7 +102,7 @@ These design principles make it easier to write, debug, and maintain code in //c
                   in the .h file and does not necessarily introduce a dependency
                   on //chrome, since the returned service can be defined in
                   //components.
-    * `GlobalFeatures` (member of `BrowserProcess`)
+    * `GlobalDesktopFeatures` (member of `BrowserProcess`)
     * The core controller should not be a `NoDestructor` singleton.
 * Global functions should not access non-global state.
     * Pure functions do not access global state and are allowed. e.g. `base::UTF8ToWide()`

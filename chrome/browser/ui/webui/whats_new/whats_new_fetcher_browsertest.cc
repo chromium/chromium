@@ -7,7 +7,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/global_features.h"
+#include "chrome/browser/global_desktop_features.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/user_education/common/user_education_features.h"
@@ -38,9 +38,9 @@ BASE_FEATURE(kTestModuleDisabledByDefault,
              "TestModuleDisabledByDefault",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-class GlobalFeaturesOverride : public GlobalFeatures {
+class GlobalDesktopFeaturesOverride : public GlobalDesktopFeatures {
  public:
-  GlobalFeaturesOverride() = default;
+  GlobalDesktopFeaturesOverride() = default;
 
  protected:
   std::unique_ptr<whats_new::WhatsNewRegistry> CreateWhatsNewRegistry()
@@ -57,19 +57,21 @@ class WhatsNewFetcherBrowserTest : public InteractiveBrowserTest {
     feature_list_.InitWithFeatures({user_education::features::kWhatsNewVersion2,
                                     kTestModuleEnabled, kTestModule2Enabled},
                                    {kTestModuleDisabled});
-    GlobalFeatures::ReplaceGlobalFeaturesForTesting(
-        base::BindRepeating(&WhatsNewFetcherBrowserTest::CreateGlobalFeatures,
-                            base::Unretained(this)));
+    GlobalDesktopFeatures::ReplaceGlobalDesktopFeaturesForTesting(
+        base::BindRepeating(
+            &WhatsNewFetcherBrowserTest::CreateGlobalDesktopFeatures,
+            base::Unretained(this)));
   }
   ~WhatsNewFetcherBrowserTest() override {
-    GlobalFeatures::ReplaceGlobalFeaturesForTesting(base::NullCallback());
+    GlobalDesktopFeatures::ReplaceGlobalDesktopFeaturesForTesting(
+        base::NullCallback());
   }
-  std::unique_ptr<GlobalFeatures> CreateGlobalFeatures() {
-    return std::make_unique<GlobalFeaturesOverride>();
+  std::unique_ptr<GlobalDesktopFeatures> CreateGlobalDesktopFeatures() {
+    return std::make_unique<GlobalDesktopFeaturesOverride>();
   }
 
   whats_new::WhatsNewRegistry* GetRegistry() {
-    return g_browser_process->GetFeatures()->whats_new_registry();
+    return g_browser_process->GetDesktopFeatures()->whats_new_registry();
   }
 
  private:
