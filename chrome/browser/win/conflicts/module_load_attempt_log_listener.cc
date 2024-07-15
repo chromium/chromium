@@ -5,14 +5,16 @@
 #include "chrome/browser/win/conflicts/module_load_attempt_log_listener.h"
 
 #include <algorithm>
+#include <array>
 #include <memory>
-#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_split_win.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/win/conflicts/module_blocklist_cache_util.h"
@@ -138,28 +140,41 @@ bool ModuleLoadAttemptLogListener::GetDriveLetterPath(
 }
 
 void ModuleLoadAttemptLogListener::UpdateDeviceToLetterPathMapping() {
-  const int kDriveMappingSize = 1024;
-  wchar_t drive_mapping[kDriveMappingSize] = {'\0'};
-  if (!::GetLogicalDriveStrings(kDriveMappingSize - 1, drive_mapping))
+  // Note: There are 26 letters possible, and each entry takes 4 characters of
+  // space (e.g. ['C', ':', '\\', '\0'] plus an additional NUL character at the
+  // end, meaning 128 is safely above the maximum possible size needed).
+  std::array<wchar_t, 128> drive_strings_buffer = {};
+  DWORD count = ::GetLogicalDriveStrings(drive_strings_buffer.size() - 1u,
+                                         drive_strings_buffer.data());
+  CHECK_LT(count, drive_strings_buffer.size());
+  if (!count) {
+    // GetLogicalDriveStrings failed.
     return;
+  }
+  // Truncate the buffer to the bytes actually copied by GetLogicalDriveStrings.
+  // Note: This gets rid of the superfluous NUL character at the end. Thus,
+  // `drive_strings` is now a sequence of null terminated strings.
+  std::wstring_view drive_strings(drive_strings_buffer.data(), count);
 
   device_to_letter_path_mapping_.clear();
+  for (std::wstring_view drive_string :
+       SplitLogicalDriveStringsImpl(drive_strings)) {
+    wchar_t drive[] = L" :";
+    drive[0] = drive_string[0];  // Copy the drive letter.
 
-  wchar_t* drive_map_ptr = drive_mapping;
-  wchar_t device_path_as_string[MAX_PATH];
-  wchar_t drive[] = L" :";
-
-  while (*drive_map_ptr) {
-    drive[0] = drive_map_ptr[0];  // Copy the drive letter.
-
-    if (::QueryDosDevice(drive, device_path_as_string, MAX_PATH)) {
-      device_to_letter_path_mapping_.emplace_back(
-          base::FilePath(device_path_as_string), drive);
-    }
-
-    // Move to the next drive letter string, which starts one
-    // increment after the '\0' that terminates the current string.
-    while (*drive_map_ptr++) {
+    wchar_t device_path[MAX_PATH];
+    if (::QueryDosDevice(drive, device_path, std::size(device_path))) {
+      device_to_letter_path_mapping_.emplace_back(base::FilePath(device_path),
+                                                  drive);
     }
   }
+}
+
+// static
+std::vector<std::wstring_view>
+ModuleLoadAttemptLogListener::SplitLogicalDriveStringsImpl(
+    std::wstring_view logical_drive_strings) {
+  return base::SplitStringPiece(
+      logical_drive_strings, base::MakeStringViewWithNulChars(L"\0"),
+      base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 }
