@@ -1,9 +1,7 @@
 per-file connector_data_pipe_getter*=domfc@chromium.org
 per-file connector_upload_request*=nancylanxiao@google.com
 per-file deep_scanning_browsertest_base*=domfc@chromium.org
-per-file deep_scanning_utils*=rogerta@chromium.org
 per-file deep_scanning_utils*=domfc@chromium.org
-per-file deep_scanning_test_utils*=rogerta@chromium.org
 per-file deep_scanning_test_utils*=domfc@chromium.org
 per-file file_opening_job*=domfc@chromium.org
 per-file resumable_uploader*=nancylanxiao@google.com
