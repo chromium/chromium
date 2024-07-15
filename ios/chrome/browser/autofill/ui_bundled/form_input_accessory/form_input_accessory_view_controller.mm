@@ -297,15 +297,9 @@ using manual_fill::ManualFillDataType;
 #pragma mark - Actions
 
 - (void)tapInsideRecognized:(id)sender {
-  if (base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
-    [self.formInputAccessoryViewControllerDelegate
-        formInputAccessoryViewController:self
-            didTapFormInputAccessoryView:self.formInputAccessoryView];
-  } else {
-    // This method can't be reached when `kEnableStartupImprovements` is
-    // enabled.
-    NOTREACHED_IN_MIGRATION();
-  }
+  [self.formInputAccessoryViewControllerDelegate
+      formInputAccessoryViewController:self
+          didTapFormInputAccessoryView:self.formInputAccessoryView];
 }
 
 #pragma mark - Private
@@ -395,15 +389,13 @@ using manual_fill::ManualFillDataType;
   self.brandingViewController.keyboardAccessoryVisible =
       self.formAccessoryVisible;
 
-  if (base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
-    // Adds tap recognizer.
-    self.formInputAccessoryTapRecognizer = [[UITapGestureRecognizer alloc]
-        initWithTarget:self
-                action:@selector(tapInsideRecognized:)];
-    self.formInputAccessoryTapRecognizer.cancelsTouchesInView = NO;
-    [formInputAccessoryView
-        addGestureRecognizer:self.formInputAccessoryTapRecognizer];
-  }
+  // Adds tap recognizer.
+  self.formInputAccessoryTapRecognizer = [[UITapGestureRecognizer alloc]
+      initWithTarget:self
+              action:@selector(tapInsideRecognized:)];
+  self.formInputAccessoryTapRecognizer.cancelsTouchesInView = NO;
+  [formInputAccessoryView
+      addGestureRecognizer:self.formInputAccessoryTapRecognizer];
 
   self.formInputAccessoryView = formInputAccessoryView;
 }

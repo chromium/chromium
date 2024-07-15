@@ -156,12 +156,6 @@ const CGFloat kIPHVerticalOffset = -5;
         [[BrandingCoordinator alloc] initWithBaseViewController:viewController
                                                         browser:browser];
     _reauthenticationModule = [[ReauthenticationModule alloc] init];
-    if (!base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
-      _formInputAccessoryTapRecognizer = [[UITapGestureRecognizer alloc]
-          initWithTarget:self
-                  action:@selector(tapInsideRecognized:)];
-      _formInputAccessoryTapRecognizer.cancelsTouchesInView = NO;
-    }
   }
   return self;
 }
@@ -208,10 +202,6 @@ const CGFloat kIPHVerticalOffset = -5;
                                      self.browser->GetBrowserState())];
   self.formInputAccessoryViewController.formSuggestionClient =
       self.formInputAccessoryMediator;
-  if (!base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
-    [self.formInputAccessoryViewController.view
-        addGestureRecognizer:self.formInputAccessoryTapRecognizer];
-  }
 
   self.layoutGuide =
       [layoutGuideCenter makeLayoutGuideNamed:kAutofillFirstSuggestionGuide];
@@ -442,14 +432,7 @@ const CGFloat kIPHVerticalOffset = -5;
 - (void)formInputAccessoryViewController:
             (FormInputAccessoryViewController*)formInputAccessoryViewController
             didTapFormInputAccessoryView:(UIView*)formInputAccessoryView {
-  if (base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
-    [self dismissBubble];
-  } else {
-    // This method can't be reached when `kEnableStartupImprovements` is not
-    // enabled. It will call `[self tapInsideRecognized:]` to dismiss the bubble
-    // instead;
-    NOTREACHED_IN_MIGRATION();
-  }
+  [self dismissBubble];
 }
 
 - (void)formInputAccessoryViewControllerReset:
@@ -632,15 +615,7 @@ const CGFloat kIPHVerticalOffset = -5;
 #pragma mark - Actions
 
 - (void)tapInsideRecognized:(id)sender {
-  if (!base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
-    [self dismissBubble];
-  } else {
-    // This method can't be reached when `kEnableStartupImprovements` is
-    // enabled. It will call `[self
-    // formInputAccessoryViewController:didTapFormInputAccessoryView:]` to
-    // dismiss the bubble instead;
-    NOTREACHED_IN_MIGRATION();
-  }
+  [self dismissBubble];
 }
 
 #pragma mark - Private
