@@ -9,6 +9,7 @@ source_set("model") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
@@ -23,10 +24,14 @@ source_set("unit_tests") {
   deps = [
     ":model",
     "//base/test:test_support",
+    "//components/lens:enterprise_policy",
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/lens:lens_entrypoint",
+    "//ios/chrome/test:test_support",
     "//ios/testing:ocmock_support",
     "//ios/web/public/test",
     "//testing/gtest",

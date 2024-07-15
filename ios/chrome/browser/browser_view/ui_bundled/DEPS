@@ -28,6 +28,7 @@ include_rules = [
   "+ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h",
   "+ios/chrome/browser/lens/model/lens_tab_helper.h",
   "+ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h",
+  "+ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h",
   "+ios/chrome/browser/metrics/model",
   "+ios/chrome/browser/ntp/model",
   "+ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h",

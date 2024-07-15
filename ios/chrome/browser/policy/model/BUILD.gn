@@ -73,6 +73,7 @@ source_set("model") {
     "//components/enterprise/idle",
     "//components/history/core/common",
     "//components/keyed_service/ios",
+    "//components/lens:enterprise_policy",
     "//components/metrics",
     "//components/password_manager/core/common",
     "//components/policy:generated",

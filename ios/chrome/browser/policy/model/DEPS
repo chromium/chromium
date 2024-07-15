@@ -1,6 +1,7 @@
 include_rules = [
   "+ios/chrome/browser/policy_url_blocking/model",
   "+ios/chrome/browser/signin/model",
+  "+components/lens",
 ]
 
 specific_include_rules = {

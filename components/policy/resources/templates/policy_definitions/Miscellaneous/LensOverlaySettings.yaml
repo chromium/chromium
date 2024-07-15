@@ -31,6 +31,7 @@ schema:
 supported_on:
 - chrome.*:126-
 - chrome_os:126-
+- ios:128-
 tags:
 - google-sharing
 type: int-enum

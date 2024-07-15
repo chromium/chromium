@@ -1,4 +1,5 @@
 include_rules = [
   "+ios/chrome/browser/tabs/model/tab_helper_util.h",
   "+ios/chrome/browser/web/model/web_state_delegate_browser_agent.h",
+  "+components/lens",
 ]

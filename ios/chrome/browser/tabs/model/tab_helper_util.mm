@@ -59,6 +59,7 @@
 #import "ios/chrome/browser/infobars/model/overlays/translate_overlay_tab_helper.h"
 #import "ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h"
 #import "ios/chrome/browser/lens/model/lens_tab_helper.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/link_to_text/model/link_to_text_tab_helper.h"
 #import "ios/chrome/browser/metrics/model/pageload_foreground_duration_tab_helper.h"
@@ -159,7 +160,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     // created before AppLauncherTabHelper, which will filter out
     // unhandled schemes.
     LensTabHelper::CreateForWebState(web_state);
-    if (base::FeatureList::IsEnabled(kEnableLensOverlay)) {
+    if (IsLensOverlayAvailable()) {
       LensOverlayTabHelper::CreateForWebState(web_state);
     }
     AppLauncherTabHelper::CreateForWebState(

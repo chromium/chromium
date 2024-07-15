@@ -1,0 +1,16 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "lens.policy.lens_overlay_settings",
+      "pref_location": "local_state",
+      "default_value": 0,
+      "values_to_test": [
+        0,
+        1
+      ]
+    }
+  }
+]

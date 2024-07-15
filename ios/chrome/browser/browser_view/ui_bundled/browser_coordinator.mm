@@ -86,6 +86,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
@@ -1394,7 +1395,7 @@ enum class ToolbarKind {
   _dockingPromoCoordinator.promosUIHandler = _promosManagerCoordinator;
   [_dockingPromoCoordinator start];
 
-  if (base::FeatureList::IsEnabled(kEnableLensOverlay)) {
+  if (IsLensOverlayAvailable()) {
     _lensOverlayCoordinator = [[LensOverlayCoordinator alloc]
         initWithBaseViewController:self.viewController
                            browser:self.browser];
@@ -1662,7 +1663,7 @@ enum class ToolbarKind {
 }
 
 - (void)sharePage {
-  if (base::FeatureList::IsEnabled(kEnableLensOverlay)) {
+  if (IsLensOverlayAvailable()) {
     // Remap share button as Lens overlay entrypoint if the feature is enabled
     // otherwise fallback to the share page logic. This is a temporary override
     // and a dedicated button will be used before releasing this feature.

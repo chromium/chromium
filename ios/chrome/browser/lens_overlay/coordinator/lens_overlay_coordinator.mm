@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
@@ -116,7 +117,7 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  CHECK(base::FeatureList::IsEnabled(kEnableLensOverlay));
+  CHECK(IsLensOverlayAvailable());
   [super start];
 
   Browser* browser = self.browser;

@@ -31,6 +31,7 @@
 #import "components/invalidation/impl/per_user_topic_subscription_manager.h"
 #import "components/language/core/browser/language_prefs.h"
 #import "components/language/core/browser/pref_names.h"
+#import "components/lens/lens_overlay_permission_utils.h"
 #import "components/metrics/demographics/user_demographics.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/network_time/network_time_tracker.h"
@@ -469,6 +470,10 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterBooleanPref(prefs::kLensCameraAssistedSearchPolicyAllowed,
                                 true);
+
+  registry->RegisterIntegerPref(
+      lens::prefs::kLensOverlaySettings,
+      static_cast<int>(lens::prefs::LensOverlaySettingsPolicyValue::kEnabled));
 
   registry->RegisterDictionaryPref(kPrefPromoObject);
 

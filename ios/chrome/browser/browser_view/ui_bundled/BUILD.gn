@@ -98,6 +98,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/language/model",
     "//ios/chrome/browser/lens/model",
     "//ios/chrome/browser/lens_overlay/coordinator",
+    "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
     "//ios/chrome/browser/link_to_text/model",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/metrics/model:metrics_browser_agent",

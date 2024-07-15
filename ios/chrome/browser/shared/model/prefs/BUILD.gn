@@ -44,6 +44,7 @@ source_set("browser_prefs") {
     "//components/history/core/common",
     "//components/invalidation/impl:impl",
     "//components/language/core/browser",
+    "//components/lens:enterprise_policy",
     "//components/metrics",
     "//components/metrics/demographics",
     "//components/network_time",

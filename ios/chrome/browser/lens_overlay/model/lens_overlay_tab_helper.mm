@@ -5,12 +5,13 @@
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 
 #import "base/check_op.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
 LensOverlayTabHelper::LensOverlayTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
-  CHECK(base::FeatureList::IsEnabled(kEnableLensOverlay));
+  CHECK(IsLensOverlayAvailable());
   web_state->AddObserver(this);
 }
 
