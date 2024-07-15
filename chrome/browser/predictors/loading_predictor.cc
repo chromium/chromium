@@ -253,15 +253,29 @@ bool LoadingPredictor::PrepareForPageLoad(
     std::optional<LcppStat> lcpp_stat =
         resource_prefetch_predictor()->GetLcppStat(initiator_origin, url);
     if (lcpp_stat) {
-      auto network_anonymization_key =
-          net::NetworkAnonymizationKey::CreateSameSite(
-              net::SchemefulSite(url::Origin::Create(url)));
       size_t count = 0;
+      std::vector<PreconnectRequest> additional_preconnects;
+      auto page_url_origin = url::Origin::Create(url);
       for (const GURL& preconnect_origin :
            PredictPreconnectableOrigins(*lcpp_stat)) {
-        prediction.requests.emplace_back(url::Origin::Create(preconnect_origin),
-                                         1, network_anonymization_key);
+        additional_preconnects.emplace_back(
+            url::Origin::Create(preconnect_origin), 1,
+            net::NetworkAnonymizationKey::CreateSameSite(
+                net::SchemefulSite(page_url_origin)));
         ++count;
+      }
+
+      if (count) {
+        // The first preconnect record is to the url origin itself. With
+        // insertion at begin() + 1, we prioritize LCP preconnects just after
+        // the page origin preconnect, to minimize any performance regression.
+        // If no new requests were identified, leave the existing set as-is.
+        auto insertion_point =
+            prediction.requests.begin() + (prediction.requests.empty() ? 0 : 1);
+        prediction.requests.reserve(count + prediction.requests.size());
+        prediction.requests.insert(insertion_point,
+                                   additional_preconnects.begin(),
+                                   additional_preconnects.end());
       }
       base::UmaHistogramCounts10000("Blink.LCPP.PreconnectPredictionCount",
                                     count);
