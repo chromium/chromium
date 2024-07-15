@@ -288,6 +288,7 @@ component("gpu") {
       "d3d9.lib",
       "d3d11.lib",
       "d3d12.lib",
+      "dxgi.lib",
       "dxva2.lib",
       "strmiids.lib",
       "mf.lib",

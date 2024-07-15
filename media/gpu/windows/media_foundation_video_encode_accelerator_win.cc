@@ -20,12 +20,14 @@
 #include "base/features.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/native_library.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_variant.h"
+#include "base/win/win_util.h"
 #include "build/build_config.h"
 #include "gpu/ipc/common/dxgi_helpers.h"
 #include "media/base/bitstream_buffer.h"
@@ -302,18 +304,23 @@ bool IsIntelHybridAV1Encoder(IMFActivate* activate) {
   return false;
 }
 
-uint32_t EnumerateHardwareEncoders(VideoCodec codec, IMFActivate*** activates) {
-  if (!InitializeMediaFoundation()) {
-    return 0;
-  }
-#if defined(ARCH_CPU_ARM64)
-  // TODO (crbug.com/1509117): Temporarily disable video encoding on arm64
-  // until we figure out what OS reports all codecs as supported.
-  if (!base::FeatureList::IsEnabled(
-          kMediaFoundationAcceleratedEncodeOnArm64)) {
-    return 0;
-  }
-#endif
+using MFTEnum2Type = decltype(&MFTEnum2);
+MFTEnum2Type GetMFTEnum2Function() {
+  static const MFTEnum2Type kMFTEnum2Func = []() {
+    auto mf_dll = base::LoadSystemLibrary(L"mfplat.dll");
+    return mf_dll ? reinterpret_cast<MFTEnum2Type>(
+                        base::GetFunctionPointerFromNativeLibrary(mf_dll,
+                                                                  "MFTEnum2"))
+                  : nullptr;
+  }();
+  return kMFTEnum2Func;
+}
+
+// If MFTEnum2 is unavailable, this uses MFTEnumEx and doesn't fill any
+// adapter information if there are more than one adapters.
+std::vector<IMFActivate*> EnumerateHardwareEncodersLegacy(VideoCodec codec) {
+  std::vector<IMFActivate*> encoders;
+
   uint32_t flags = MFT_ENUM_FLAG_HARDWARE | MFT_ENUM_FLAG_SORTANDFILTER;
   MFT_REGISTER_TYPE_INFO input_info;
   input_info.guidMajorType = MFMediaType_Video;
@@ -322,40 +329,173 @@ uint32_t EnumerateHardwareEncoders(VideoCodec codec, IMFActivate*** activates) {
   output_info.guidMajorType = MFMediaType_Video;
   output_info.guidSubtype = VideoCodecToMFSubtype(codec);
 
-  uint32_t count = 0;
-  auto hr = MFTEnumEx(MFT_CATEGORY_VIDEO_ENCODER, flags, &input_info,
-                      &output_info, activates, &count);
+  Microsoft::WRL::ComPtr<IDXGIFactory1> factory;
+  auto hr = CreateDXGIFactory1(IID_PPV_ARGS(&factory));
   if (FAILED(hr)) {
-    // Log to VLOG since errors are expected as part of GetSupportedProfiles().
-    DVLOG(2) << "Failed to enumerate hardware encoders for "
-             << GetCodecName(codec) << ": " << PrintHr(hr);
-    return 0;
+    DVLOG(2) << "Failed to create DXGI Factory";
+    return encoders;
   }
 
-  uint32_t excluded_encoders = 0;
-  if (codec == VideoCodec::kAV1) {
-    for (UINT32 i = 0; i < count; i++) {
-      if (IsIntelHybridAV1Encoder((*activates)[i])) {
-        excluded_encoders++;
-      }
+  LUID single_adapter_luid{0, 0};
+  int num_adapters = 0;
+
+  Microsoft::WRL::ComPtr<IDXGIAdapter> temp_adapter;
+  for (UINT adapter_idx = 0;
+       SUCCEEDED(factory->EnumAdapters(adapter_idx, &temp_adapter));
+       adapter_idx++) {
+    ++num_adapters;
+
+    DXGI_ADAPTER_DESC desc;
+    hr = temp_adapter->GetDesc(&desc);
+    if (FAILED(hr)) {
+      continue;
+    }
+
+    if (desc.VendorId == 0x1414) {
+      // Skip MS software adapters.
+      --num_adapters;
+    } else {
+      single_adapter_luid = desc.AdapterLuid;
     }
   }
 
-  return count - excluded_encoders;
+  IMFActivate** pp_activates = nullptr;
+  uint32_t count = 0;
+  hr = MFTEnumEx(MFT_CATEGORY_VIDEO_ENCODER, flags, &input_info, &output_info,
+                 &pp_activates, &count);
+
+  if (FAILED(hr)) {
+    // Log to VLOG since errors are expected as part of
+    // GetSupportedProfiles().
+    DVLOG(2) << "Failed to enumerate hardware encoders for "
+             << GetCodecName(codec) << " : " << PrintHr(hr);
+    return encoders;
+  }
+
+  for (UINT32 i = 0; i < count; i++) {
+    if (codec == VideoCodec::kAV1 && IsIntelHybridAV1Encoder(pp_activates[i])) {
+      continue;
+    }
+
+    // We can still infer the MFT's adapter LUID if there's only one adapter
+    // in the system.
+    if (num_adapters == 1) {
+      pp_activates[i]->SetBlob(MFT_ENUM_ADAPTER_LUID,
+                               reinterpret_cast<BYTE*>(&single_adapter_luid),
+                               sizeof(LUID));
+    }
+    encoders.push_back(pp_activates[i]);
+  }
+
+  if (pp_activates) {
+    CoTaskMemFree(pp_activates);
+  }
+
+  return encoders;
+}
+
+std::vector<IMFActivate*> EnumerateHardwareEncoders(VideoCodec codec) {
+  std::vector<IMFActivate*> encoders;
+  if (!InitializeMediaFoundation()) {
+    return encoders;
+  }
+#if defined(ARCH_CPU_ARM64)
+  // TODO (crbug.com/1509117): Temporarily disable video encoding on arm64
+  // until we figure out what OS reports all codecs as supported.
+  if (!base::FeatureList::IsEnabled(
+          kMediaFoundationAcceleratedEncodeOnArm64)) {
+    return encoders;
+  }
+#endif
+
+  MFTEnum2Type mftenum2_func = GetMFTEnum2Function();
+  if (!mftenum2_func) {
+    return EnumerateHardwareEncodersLegacy(codec);
+  }
+
+  uint32_t flags = MFT_ENUM_FLAG_HARDWARE | MFT_ENUM_FLAG_SORTANDFILTER;
+  MFT_REGISTER_TYPE_INFO input_info;
+  input_info.guidMajorType = MFMediaType_Video;
+  input_info.guidSubtype = MFVideoFormat_NV12;
+  MFT_REGISTER_TYPE_INFO output_info;
+  output_info.guidMajorType = MFMediaType_Video;
+  output_info.guidSubtype = VideoCodecToMFSubtype(codec);
+
+  Microsoft::WRL::ComPtr<IDXGIFactory1> factory;
+  auto hr = CreateDXGIFactory1(IID_PPV_ARGS(&factory));
+  if (FAILED(hr)) {
+    DVLOG(2) << "Failed to create DXGI Factory";
+    return encoders;
+  }
+
+  Microsoft::WRL::ComPtr<IDXGIAdapter> temp_adapter;
+  for (UINT adapter_idx = 0;
+       SUCCEEDED(factory->EnumAdapters(adapter_idx, &temp_adapter));
+       adapter_idx++) {
+    DXGI_ADAPTER_DESC desc;
+    hr = temp_adapter->GetDesc(&desc);
+    if (FAILED(hr)) {
+      DVLOG(2) << "Failed to get description for adapter " << adapter_idx;
+      continue;
+    }
+
+    Microsoft::WRL::ComPtr<IMFAttributes> attributes;
+    hr = MFCreateAttributes(&attributes, 1);
+    if (FAILED(hr = attributes->SetBlob(
+                   MFT_ENUM_ADAPTER_LUID,
+                   reinterpret_cast<BYTE*>(&desc.AdapterLuid), sizeof(LUID)))) {
+      continue;
+    }
+
+    IMFActivate** pp_activates = nullptr;
+    uint32_t count = 0;
+    // MFTEnum2() function call.
+    hr = mftenum2_func(MFT_CATEGORY_VIDEO_ENCODER, flags, &input_info,
+                       &output_info, attributes.Get(), &pp_activates, &count);
+
+    if (FAILED(hr)) {
+      // Log to VLOG since errors are expected as part of
+      // GetSupportedProfiles().
+      DVLOG(2) << "Failed to enumerate hardware encoders for "
+               << GetCodecName(codec) << " at a adapter #" << adapter_idx
+               << " : " << PrintHr(hr);
+      continue;
+    }
+
+    for (UINT32 i = 0; i < count; i++) {
+      if (codec == VideoCodec::kAV1 &&
+          IsIntelHybridAV1Encoder(pp_activates[i])) {
+        continue;
+      }
+      // It's safe to ignore return value here.
+      // if SetBlob fails, the IMFActivate won't have a valid adapter LUID
+      // which will fail the check for preferred adapter LUID, so the
+      // MFDXGIDeviceManager will not be set for MFT, which is a safe option.
+      pp_activates[i]->SetBlob(MFT_ENUM_ADAPTER_LUID,
+                               reinterpret_cast<BYTE*>(&desc.AdapterLuid),
+                               sizeof(LUID));
+      encoders.push_back(pp_activates[i]);
+    }
+
+    if (pp_activates) {
+      CoTaskMemFree(pp_activates);
+    }
+  }
+
+  return encoders;
 }
 
 bool IsCodecSupportedForEncoding(VideoCodec codec, int* num_temporal_layers) {
   *num_temporal_layers = 1;
 
-  base::win::ScopedCoMem<IMFActivate*> activates;
-  const auto encoder_count = EnumerateHardwareEncoders(codec, &activates);
-  if (encoder_count == 0 || !activates) {
+  std::vector<IMFActivate*> activates = EnumerateHardwareEncoders(codec);
+  if (activates.empty()) {
     DVLOG(1) << "Hardware encode acceleration is not available for "
              << GetCodecName(codec);
     return false;
   }
 
-  for (UINT32 i = 0; i < encoder_count; i++) {
+  for (size_t i = 0; i < activates.size(); i++) {
     *num_temporal_layers =
         std::max(GetNumSupportedTemporalLayers(activates[i], codec),
                  *num_temporal_layers);
@@ -667,30 +807,28 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
       codec_, num_temporal_layers_);
 
   SetState(kInitializing);
-  IMFActivate** pp_activates = nullptr;
 
-  uint32_t encoder_count = EnumerateHardwareEncoders(codec_, &pp_activates);
+  std::vector<IMFActivate*> activates = EnumerateHardwareEncoders(codec_);
 
-  if (encoder_count == 0) {
+  if (activates.empty()) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderInitializationError,
                        "Failed finding a hardware encoder MFT"});
     return false;
   }
 
-  bool activated = ActivateAsyncEncoder(pp_activates, encoder_count,
-                                        config.is_constrained_h264);
-  if (pp_activates) {
+  bool activated = ActivateAsyncEncoder(activates, config.is_constrained_h264);
+  if (!activates.empty()) {
     // Release the enumerated instances if any.
     // According to Windows Dev Center,
     // https://docs.microsoft.com/en-us/windows/win32/api/mfapi/nf-mfapi-mftenumex
     // The caller must release the pointers.
-    for (UINT32 i = 0; i < encoder_count; i++) {
-      if (pp_activates[i]) {
-        pp_activates[i]->Release();
-        pp_activates[i] = nullptr;
+    for (size_t i = 0; i < activates.size(); i++) {
+      if (activates[i]) {
+        activates[i]->Release();
+        activates[i] = nullptr;
       }
     }
-    CoTaskMemFree(pp_activates);
+    activates.clear();
   }
 
   if (!activated) {
@@ -728,12 +866,25 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
       return false;
     }
 
-    auto mf_dxgi_device_manager =
-        dxgi_device_manager_->GetMFDXGIDeviceManager();
-    hr = encoder_->ProcessMessage(
-        MFT_MESSAGE_SET_D3D_MANAGER,
-        reinterpret_cast<ULONG_PTR>(mf_dxgi_device_manager.Get()));
-    // If HMFT rejects setting D3D manager, fallback to non-D3D11 encoding.
+    LUID mft_luid{0, 0};
+    UINT32 out_size = 0;
+    activate_->GetBlob(MFT_ENUM_ADAPTER_LUID,
+                       reinterpret_cast<BYTE*>(&mft_luid), sizeof(LUID),
+                       &out_size);
+
+    hr = E_FAIL;
+    if (out_size == sizeof(LUID) && mft_luid.HighPart == luid_.HighPart &&
+        mft_luid.LowPart == luid_.LowPart) {
+      // Only try to set the device manager for MFTs on the correct adapter.
+      // Don't rely on MFT rejecting the device manager.
+      auto mf_dxgi_device_manager =
+          dxgi_device_manager_->GetMFDXGIDeviceManager();
+      hr = encoder_->ProcessMessage(
+          MFT_MESSAGE_SET_D3D_MANAGER,
+          reinterpret_cast<ULONG_PTR>(mf_dxgi_device_manager.Get()));
+    }
+    // Can't use D3D11 decoding if HMFT is on a wrong LUID or rejects
+    // setting a DXGI device manager.
     if (FAILED(hr)) {
       dxgi_resource_mapping_required_ = true;
       MEDIA_LOG(INFO, media_log_)
@@ -1207,21 +1358,15 @@ bool MediaFoundationVideoEncodeAccelerator::IsGpuFrameResizeSupported() {
 }
 
 bool MediaFoundationVideoEncodeAccelerator::ActivateAsyncEncoder(
-    IMFActivate** pp_activate,
-    uint32_t encoder_count,
+    std::vector<IMFActivate*>& activates,
     bool is_constrained_h264) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Try to create the encoder with priority according to merit value.
   HRESULT hr = E_FAIL;
-  for (UINT32 i = 0; i < encoder_count; i++) {
-    auto vendor = GetDriverVendor(pp_activate[i]);
-    // Skip flawky Intel hybrid AV1 encoder.
-    if (codec_ == VideoCodec::kAV1 && IsIntelHybridAV1Encoder(pp_activate[i])) {
-      DLOG(WARNING) << "Skipped Intel hybrid AV1 encoder MFT.";
-      continue;
-    }
+  for (auto& activate : activates) {
+    auto vendor = GetDriverVendor(activate);
 
     // Skip NVIDIA GPU due to https://crbug.com/1088650 for constrained
     // baseline profile H.264 encoding, and go to the next instance according
@@ -1239,12 +1384,12 @@ bool MediaFoundationVideoEncodeAccelerator::ActivateAsyncEncoder(
 
     DCHECK(!encoder_);
     DCHECK(!activate_);
-    hr = pp_activate[i]->ActivateObject(IID_PPV_ARGS(&encoder_));
+    hr = activate->ActivateObject(IID_PPV_ARGS(&encoder_));
     if (encoder_.Get() != nullptr) {
       DCHECK(SUCCEEDED(hr));
-      activate_ = pp_activate[i];
+      activate_ = activate;
       vendor_ = vendor;
-      pp_activate[i] = nullptr;
+      activate = nullptr;
 
       // Print the friendly name.
       base::win::ScopedCoMem<WCHAR> friendly_name;
@@ -1261,7 +1406,7 @@ bool MediaFoundationVideoEncodeAccelerator::ActivateAsyncEncoder(
       // The component that calls ActivateObject is
       // responsible for calling ShutdownObject,
       // https://docs.microsoft.com/en-us/windows/win32/api/mfobjects/nf-mfobjects-imfactivate-shutdownobject.
-      pp_activate[i]->ShutdownObject();
+      activate->ShutdownObject();
     }
   }
 
