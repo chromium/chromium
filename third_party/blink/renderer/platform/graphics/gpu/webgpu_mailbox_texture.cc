@@ -110,8 +110,9 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromCanvasResource(
           FlushReason::kWebGPUTexture);
   DCHECK(canvas_resource->IsValid());
 
+  canvas_resource->SetMailboxSyncMode(kUnverifiedSyncToken);
   const gpu::Mailbox& mailbox =
-      canvas_resource->GetClientSharedImage(kUnverifiedSyncToken)->mailbox();
+      canvas_resource->GetClientSharedImage()->mailbox();
   gpu::SyncToken sync_token = canvas_resource->GetSyncToken();
   gfx::Size size = canvas_resource->Size();
 

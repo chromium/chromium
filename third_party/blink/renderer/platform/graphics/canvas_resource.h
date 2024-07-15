@@ -139,13 +139,16 @@ class PLATFORM_EXPORT CanvasResource
   // ExternalCanvasResource either holds ClientSharedImage or is removed.
   virtual bool UsesClientSharedImage() { return false; }
 
+  // The sync mode indicates how the sync token for the resource should be
+  // prepared. By default canvas resources do not actually do any different
+  // preparation based on the sync mode; subclasses that do should override this
+  // method.
+  virtual void SetMailboxSyncMode(MailboxSyncMode mode) {}
+
   // The ClientSharedImage containing information on the SharedImage (if any)
   // attached to the resource.
-  // The sync mode indicates how the sync token for the resource should be
-  // prepared.
   // NOTE: Valid to call only if UsesClientSharedImage() is true.
-  virtual scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage(
-      MailboxSyncMode) {
+  virtual scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() {
     NOTREACHED_NORETURN();
   }
 
@@ -360,8 +363,8 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   bool IsLost() const { return owning_thread_data().is_lost; }
   void CopyRenderingResultsToGpuMemoryBuffer(const sk_sp<SkImage>& image);
   bool UsesClientSharedImage() override { return true; }
-  scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage(
-      MailboxSyncMode) override;
+  void SetMailboxSyncMode(MailboxSyncMode mode) override;
+  scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() override;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                     const std::string& parent_path,
                     size_t bytes_per_pixel) const;
@@ -547,8 +550,7 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
   }
   void PresentSwapChain();
   bool UsesClientSharedImage() override { return true; }
-  scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage(
-      MailboxSyncMode) override;
+  scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() override;
 
  private:
   bool IsOverlayCandidate() const final { return true; }

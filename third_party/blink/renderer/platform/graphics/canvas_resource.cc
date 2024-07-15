@@ -228,7 +228,8 @@ bool CanvasResource::PrepareAcceleratedTransferableResourceFromClientSI(
   DCHECK(SharedGpuContext::IsGpuCompositingEnabled());
   if (!ContextProviderWrapper())
     return false;
-  auto client_shared_image = GetClientSharedImage(sync_mode);
+  SetMailboxSyncMode(sync_mode);
+  auto client_shared_image = GetClientSharedImage();
   if (!client_shared_image) {
     return false;
   }
@@ -725,14 +726,15 @@ void CanvasResourceSharedImage::CopyRenderingResultsToGpuMemoryBuffer(
   owning_thread_data().sync_token = sii->GenUnverifiedSyncToken();
 }
 
-scoped_refptr<gpu::ClientSharedImage>
-CanvasResourceSharedImage::GetClientSharedImage(MailboxSyncMode sync_mode) {
-  CHECK(client_shared_image());
-
+void CanvasResourceSharedImage::SetMailboxSyncMode(MailboxSyncMode mode) {
   if (!is_cross_thread()) {
-    owning_thread_data().mailbox_sync_mode = sync_mode;
+    owning_thread_data().mailbox_sync_mode = mode;
   }
+}
 
+scoped_refptr<gpu::ClientSharedImage>
+CanvasResourceSharedImage::GetClientSharedImage() {
+  CHECK(client_shared_image());
   return client_shared_image();
 }
 
@@ -1016,8 +1018,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
 }
 
 scoped_refptr<gpu::ClientSharedImage>
-CanvasResourceSwapChain::GetClientSharedImage(MailboxSyncMode sync_mode) {
-  DCHECK_EQ(sync_mode, kVerifiedSyncToken);
+CanvasResourceSwapChain::GetClientSharedImage() {
   return front_buffer_shared_image_;
 }
 

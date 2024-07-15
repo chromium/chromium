@@ -406,7 +406,7 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_EQ(image->GetMailboxHolder().mailbox,
             new_image->GetMailboxHolder().mailbox);
   EXPECT_EQ(provider->ProduceCanvasResource(FlushReason::kTesting)
-                ->GetClientSharedImage(kOrderingBarrier)
+                ->GetClientSharedImage()
                 ->mailbox(),
             image->GetMailboxHolder().mailbox);
 
@@ -490,9 +490,9 @@ TEST_F(CanvasResourceProviderTest,
 
   // Disabling copy-on-write forces a copy each time the resource is queried.
   auto resource = provider->ProduceCanvasResource(FlushReason::kTesting);
-  EXPECT_NE(resource->GetClientSharedImage(kOrderingBarrier)->mailbox(),
+  EXPECT_NE(resource->GetClientSharedImage()->mailbox(),
             provider->ProduceCanvasResource(FlushReason::kTesting)
-                ->GetClientSharedImage(kOrderingBarrier)
+                ->GetClientSharedImage()
                 ->mailbox());
 }
 
