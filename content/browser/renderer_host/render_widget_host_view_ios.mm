@@ -545,7 +545,7 @@ void RenderWidgetHostViewIOS::OnTouchEvent(blink::WebTouchEvent web_event) {
   }
 
   web_event.moved_beyond_slop_region = result.moved_beyond_slop_region;
-  ui::LatencyInfo latency_info(ui::SourceEventType::TOUCH);
+  ui::LatencyInfo latency_info;
   latency_info.AddLatencyNumber(ui::INPUT_EVENT_LATENCY_UI_COMPONENT);
   if (ShouldRouteEvents()) {
     host()->delegate()->GetInputEventRouter()->RouteTouchEvent(this, &web_event,
@@ -594,9 +594,7 @@ bool RenderWidgetHostViewIOS::RequiresDoubleTapGestureEvents() const {
 
 void RenderWidgetHostViewIOS::SendGestureEvent(
     const blink::WebGestureEvent& event) {
-  ui::LatencyInfo latency_info =
-      ui::WebInputEventTraits::CreateLatencyInfoForWebGestureEvent(event);
-  InjectGestureEvent(event, latency_info);
+  InjectGestureEvent(event, ui::LatencyInfo());
 }
 
 void RenderWidgetHostViewIOS::InjectTouchEvent(
