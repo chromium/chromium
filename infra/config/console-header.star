@@ -446,4 +446,5 @@ HEADER = headers.header(
         ),
     ],
     tree_status_host = "chromium-status.appspot.com" if settings.is_main else None,
+    tree_name = "chromium" if settings.is_main else None,
 )
