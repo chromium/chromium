@@ -513,7 +513,7 @@ class OverlayProcessorWebView::Manager
   OverlaySurface& GetOverlaySurfaceLocked(uint64_t id) {
     lock_.AssertAcquired();
     auto surface = overlay_surfaces_.find(id);
-    DCHECK(surface != overlay_surfaces_.end());
+    CHECK(surface != overlay_surfaces_.end(), base::NotFatalUntil::M130);
     return surface->second;
   }
 
@@ -875,7 +875,7 @@ void OverlayProcessorWebView::UpdateOverlayResource(
     const gfx::RectF& uv_rect) {
   DCHECK(resource_provider_);
   auto overlay = overlays_.find(frame_sink_id);
-  DCHECK(overlay != overlays_.end());
+  CHECK(overlay != overlays_.end(), base::NotFatalUntil::M130);
 
   DCHECK(resource_provider_->IsOverlayCandidate(new_resource_id));
 

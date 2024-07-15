@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "base/threading/platform_thread.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
@@ -204,7 +205,7 @@ void FrameSinkImpl::UIResourceReleased(cc::UIResourceId ui_resource_id,
                                        const gpu::SyncToken& sync_token,
                                        bool is_lost) {
   auto itr = uploaded_resources_.find(ui_resource_id);
-  DCHECK(itr != uploaded_resources_.end());
+  CHECK(itr != uploaded_resources_.end(), base::NotFatalUntil::M130);
   auto* sii = context_provider_->SharedImageInterface();
   sii->DestroySharedImage(sync_token, std::move(itr->second.shared_image));
   uploaded_resources_.erase(itr);
