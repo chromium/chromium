@@ -72,8 +72,13 @@ TabbedPaneTab::TabbedPaneTab(TabbedPane* tabbed_pane,
   // Use leaf so that name is spoken by screen reader without exposing the
   // children.
   GetViewAccessibility().SetIsLeaf(true);
+  UpdateAccessibleName();
 
   OnStateChanged();
+
+  title_text_changed_callback_ =
+      title_->AddTextChangedCallback(base::BindRepeating(
+          &TabbedPaneTab::UpdateAccessibleName, base::Unretained(this)));
 }
 
 TabbedPaneTab::~TabbedPaneTab() = default;
@@ -142,8 +147,6 @@ gfx::Size TabbedPaneTab::CalculatePreferredSize(
 
 void TabbedPaneTab::GetAccessibleNodeData(ui::AXNodeData* data) {
   data->role = ax::mojom::Role::kTab;
-  data->SetName(title_->GetText());
-  data->SetNameFrom(ax::mojom::NameFrom::kContents);
   data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, selected());
 }
 
@@ -288,6 +291,16 @@ void TabbedPaneTab::UpdateTitleColor() {
       state_ == State::kActive ? ui::kColorTabForegroundSelected
                                : ui::kColorTabForeground);
   title_->SetEnabledColor(font_color);
+}
+
+void TabbedPaneTab::UpdateAccessibleName() {
+  if (title_->GetText().empty()) {
+    GetViewAccessibility().SetName(
+        std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  } else {
+    GetViewAccessibility().SetName(title_->GetText(),
+                                   ax::mojom::NameFrom::kContents);
+  }
 }
 
 BEGIN_METADATA(TabbedPaneTab)
