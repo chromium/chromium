@@ -518,7 +518,7 @@ std::u16string getFormattedCurrentPrice(int64_t amount_micro,
   if (!_trackButton) {
     UIButtonConfiguration* configuration =
         [UIButtonConfiguration plainButtonConfiguration];
-    configuration.baseForegroundColor = UIColor.whiteColor;
+    configuration.baseForegroundColor = [UIColor colorNamed:kSolidWhiteColor];
     configuration.background.backgroundColor = [UIColor colorNamed:kBlueColor];
     configuration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
     configuration.contentInsets = NSDirectionalEdgeInsetsMake(
