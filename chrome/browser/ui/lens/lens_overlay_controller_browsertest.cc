@@ -53,6 +53,7 @@
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "components/prefs/pref_service.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
@@ -69,6 +70,7 @@
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/url_util.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/compositor/compositor_switches.h"
@@ -2696,6 +2698,36 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Dismissed",
                                     /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       RecordUkmLensOverlayInteraction) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // No metrics should be emitted before anything happens.
+  auto entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Lens_Overlay_Overlay_UserAction::kEntryName);
+  EXPECT_EQ(0u, entries.size());
+  // Test that the RecordUkmLensOverlayInteraction function which is called
+  // from the WebUI side, records the entry successfully.
+  controller->RecordUkmLensOverlayInteractionForTesting(
+      lens::mojom::UserAction::kRegionSelection);
+  entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Lens_Overlay_Overlay_UserAction::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  auto* entry = entries[0].get();
+  test_ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::Lens_Overlay_Overlay_UserAction::kUserActionName,
+      static_cast<int64_t>(lens::mojom::UserAction::kRegionSelection));
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,

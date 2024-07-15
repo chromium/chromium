@@ -13,6 +13,26 @@ import "ui/base/mojom/window_open_disposition.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
+// Enumerates the user interactions with the Lens Overlay.
+//
+// This enum must match the numbering for LensOverlayUserAction in enums.xml.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(UserAction)
+enum UserAction {
+  kRegionSelection = 0,
+  kRegionSelectionChange = 1,
+  kTextSelection = 2,
+  kObjectClick = 3,
+  kTranslateText = 4,
+  kCopyText = 5,
+  kMyActivity = 6,
+  kLearnMore = 7,
+  kSendFeedback = 8,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayUserAction)
+
 // Factory method for creating a new WebUI page handler.
 interface LensPageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
@@ -108,6 +128,9 @@ interface LensPageHandler {
 
   // When called, the C++ coordinator closes the preselection toast bubble.
   ClosePreselectionBubble();
+
+  // Records UKM metric for lens overlay interactions.
+  RecordUkmLensOverlayInteraction(UserAction user_action);
 };
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)

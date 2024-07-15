@@ -7,7 +7,7 @@ import 'chrome-untrusted://lens/selection_overlay.js';
 import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
 import type {LensPageRemote} from 'chrome-untrusted://lens/lens.mojom-webui.js';
-import {UserAction} from 'chrome-untrusted://lens/metrics_utils.js';
+import {UserAction} from 'chrome-untrusted://lens/lens.mojom-webui.js';
 import type {OverlayObject} from 'chrome-untrusted://lens/overlay_object.mojom-webui.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
@@ -100,15 +100,18 @@ suite('ObjectSelection', function() {
             await testBrowserProxy.handler.whenCalled('issueLensRequest');
         assertBoxesWithinThreshold(objects[1]!.geometry.boundingBox, rect);
         assertEquals(1, metrics.count('Lens.Overlay.Overlay.UserAction'));
+        const action = await testBrowserProxy.handler.whenCalled(
+            'recordUkmLensOverlayInteraction');
+        assertEquals(UserAction.kObjectClick, action);
         assertEquals(
             1,
             metrics.count(
-                'Lens.Overlay.Overlay.UserAction', UserAction.OBJECT_CLICK));
+                'Lens.Overlay.Overlay.UserAction', UserAction.kObjectClick));
         assertEquals(
             1,
             metrics.count(
                 'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
-                UserAction.OBJECT_CLICK));
+                UserAction.kObjectClick));
       });
 
   test(

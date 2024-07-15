@@ -6,7 +6,7 @@ import 'chrome-untrusted://lens/post_selection_renderer.js';
 
 import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
 import type {LensPageRemote} from 'chrome-untrusted://lens/lens.mojom-webui.js';
-import {UserAction} from 'chrome-untrusted://lens/metrics_utils.js';
+import {UserAction} from 'chrome-untrusted://lens/lens.mojom-webui.js';
 import type {PostSelectionBoundingBox, PostSelectionRendererElement} from 'chrome-untrusted://lens/post_selection_renderer.js';
 import {PERIMETER_SELECTION_PADDING_PX, RESTING_CORNER_LENGTH_PX} from 'chrome-untrusted://lens/post_selection_renderer.js';
 import type {GestureEvent} from 'chrome-untrusted://lens/selection_utils.js';
@@ -206,12 +206,15 @@ suite('PostSelectionRenderer', () => {
         1,
         metrics.count(
             'Lens.Overlay.Overlay.UserAction',
-            UserAction.REGION_SELECTION_CHANGE));
+            UserAction.kRegionSelectionChange));
     assertEquals(
         1,
         metrics.count(
             'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
-            UserAction.REGION_SELECTION_CHANGE));
+            UserAction.kRegionSelectionChange));
+    const action = await testBrowserProxy.handler.whenCalled(
+        'recordUkmLensOverlayInteraction');
+    assertEquals(UserAction.kRegionSelectionChange, action);
     await assertLensRequest(
         expectedLeft, expectedTop, expectedWidth, expectedHeight);
   });

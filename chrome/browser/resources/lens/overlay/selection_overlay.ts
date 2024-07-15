@@ -19,10 +19,12 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
+import type {BrowserProxy} from './browser_proxy.js';
 import {getFallbackTheme} from './color_utils.js';
 import {type CursorTooltipData, CursorTooltipType} from './cursor_tooltip.js';
+import {UserAction} from './lens.mojom-webui.js';
 import {INVOCATION_SOURCE} from './lens_overlay_app.js';
-import {recordLensOverlayInteraction, UserAction} from './metrics_utils.js';
+import {recordLensOverlayInteraction} from './metrics_utils.js';
 import type {ObjectLayerElement} from './object_layer.js';
 import type {OverlayShimmerElement} from './overlay_shimmer.js';
 import type {OverlayShimmerCanvasElement} from './overlay_shimmer_canvas.js';
@@ -232,21 +234,20 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private cursorOffsetX: number = 3;
   private cursorOffsetY: number = 6;
   private hasInitialFlashAnimationEnded = false;
+  private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();
     this.resizeObserver.observe(this);
     this.selectionElementsResizeObserver.observe(this.$.selectionOverlay);
     this.listenerIds = [
-      BrowserProxyImpl.getInstance()
-          .callbackRouter.notifyOverlayClosing.addListener(() => {
-            this.isClosing = true;
-            this.removeDragListeners();
-          }),
-      BrowserProxyImpl.getInstance().callbackRouter.triggerCopyText.addListener(
-          () => {
-            this.handleCopy();
-          }),
+      this.browserProxy.callbackRouter.notifyOverlayClosing.addListener(() => {
+        this.isClosing = true;
+        this.removeDragListeners();
+      }),
+      this.browserProxy.callbackRouter.triggerCopyText.addListener(() => {
+        this.handleCopy();
+      }),
     ];
     this.eventTracker_.add(
         document, 'shimmer-fade-out-complete', (e: CustomEvent<boolean>) => {
@@ -334,8 +335,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.selectionElementsResizeObserver.unobserve(this.$.selectionOverlay);
     this.eventTracker_.removeAll();
     this.listenerIds.forEach(
-        id => assert(
-            BrowserProxyImpl.getInstance().callbackRouter.removeListener(id)));
+        id => assert(this.browserProxy.callbackRouter.removeListener(id)));
     this.listenerIds = [];
 
     assert(this.matchMedia);
@@ -521,7 +521,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
     // Tell the browser to blur the background on next animation frame.
     requestAnimationFrame(() => {
-      BrowserProxyImpl.getInstance().handler.addBackgroundBlur();
+      this.browserProxy.handler.addBackgroundBlur();
     });
   }
 
@@ -538,8 +538,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.dispatchEvent(new CustomEvent(
         'selection-overlay-clicked', {bubbles: true, composed: true}));
     this.addDragListeners();
-    BrowserProxyImpl.getInstance().handler.closeSearchBubble();
-    BrowserProxyImpl.getInstance().handler.closePreselectionBubble();
+    this.browserProxy.handler.closeSearchBubble();
+    this.browserProxy.handler.closePreselectionBubble();
 
     this.currentGesture = {
       state: GestureState.STARTING,
@@ -728,8 +728,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     if (this.textSelectionStartIndex < 0 || this.textSelectionEndIndex < 0) {
       return;
     }
-    BrowserProxyImpl.getInstance().handler.copyText(this.highlightedText);
-    recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.COPY_TEXT);
+    this.browserProxy.handler.copyText(this.highlightedText);
+    recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.kCopyText);
     this.dispatchEvent(new CustomEvent('text-copied', {
       bubbles: true,
       composed: true,
@@ -749,7 +749,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         this.highlightedText, this.contentLanguage,
         this.textSelectionStartIndex, this.textSelectionEndIndex);
     this.showSelectedTextContextMenu = false;
-    recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.TRANSLATE_TEXT);
+    recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.kTranslateText);
   }
 
   // Make the cursor disappear over the context menu, as if leaving the overlay.
