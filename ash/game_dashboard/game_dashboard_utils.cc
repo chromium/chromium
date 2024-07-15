@@ -65,7 +65,8 @@ views::Widget* GetNextWidgetToFocus(
   return nullptr;
 }
 
-std::optional<ArcGameControlsFlag> GetGameControlsFlag(aura::Window* window) {
+std::optional<ArcGameControlsFlag> GetGameControlsFlag(
+    const aura::Window* window) {
   if (!IsArcWindow(window)) {
     return std::nullopt;
   }

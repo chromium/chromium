@@ -1050,7 +1050,7 @@ void GameDashboardMainMenuView::AddShortcutTilesRow() {
 }
 
 void GameDashboardMainMenuView::MaybeAddArcFeatureRows() {
-  aura::Window* game_window = context_->game_window();
+  const aura::Window* game_window = context_->game_window();
   if (!IsArcWindow(game_window)) {
     return;
   }

@@ -52,7 +52,8 @@ ASH_EXPORT views::Widget* GetNextWidgetToFocus(
 
 // Returns flags value if `window` is an ARC game window. Otherwise, it returns
 // nullopt.
-std::optional<ArcGameControlsFlag> GetGameControlsFlag(aura::Window* window);
+std::optional<ArcGameControlsFlag> GetGameControlsFlag(
+    const aura::Window* window);
 
 // Updates Game Controls mapping hint button, such as button enabled state,
 // toggled state, label text and tooltip text. `button` refers to
