@@ -99,6 +99,7 @@ class LazyBackgroundTaskQueueTest : public ExtensionsTest {
   scoped_refptr<const Extension> CreateLazyBackgroundExtension() {
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("Lazy background")
+            .SetManifestVersion(2)
             .SetBackgroundContext(
                 ExtensionBuilder::BackgroundContext::EVENT_PAGE)
             .SetID("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
@@ -228,6 +229,7 @@ TEST_F(LazyBackgroundTaskQueueTest, CreateLazyBackgroundPageOnExtensionLoaded) {
 
   scoped_refptr<const Extension> lazy_background =
       ExtensionBuilder("Lazy background")
+          .SetManifestVersion(2)
           .SetBackgroundContext(ExtensionBuilder::BackgroundContext::EVENT_PAGE)
           .SetID("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
           .Build();

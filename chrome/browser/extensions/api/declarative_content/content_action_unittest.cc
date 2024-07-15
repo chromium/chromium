@@ -24,6 +24,7 @@
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
 #include "extensions/common/api/extension_action/action_info.h"
+#include "extensions/common/api/extension_action/action_info_test_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -146,6 +147,7 @@ TEST_P(ParameterizedDeclarativeContentActionTest, ShowAction) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
           .SetAction(GetParam())
+          .SetManifestVersion(GetManifestVersionForActionType(GetParam()))
           .SetLocation(ManifestLocation::kInternal)
           .Build();
 

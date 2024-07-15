@@ -982,7 +982,11 @@ TEST(ExtensionAPITest, NoPermissions) {
 
   std::unique_ptr<ExtensionAPI> extension_api(
       ExtensionAPI::CreateWithDefaultConfiguration());
-  scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
+
+  // TODO(https://crbug.com/40804030): Update this to use MV3.
+  // Some of the APIs above are deprecated in MV3.
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("Test").SetManifestVersion(2).Build();
 
   for (size_t i = 0; i < std::size(kTests); ++i) {
     EXPECT_EQ(kTests[i].expect_success,
@@ -1002,21 +1006,26 @@ TEST(ExtensionAPITest, ManifestKeys) {
   std::unique_ptr<ExtensionAPI> extension_api(
       ExtensionAPI::CreateWithDefaultConfiguration());
 
-  scoped_refptr<const Extension> extension =
-      ExtensionBuilder("Test").SetAction(ActionInfo::Type::kBrowser).Build();
+  {
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder("Test").SetAction(ActionInfo::Type::kAction).Build();
+    EXPECT_TRUE(extension_api
+                    ->IsAvailable("action", extension.get(),
+                                  mojom::ContextType::kPrivilegedExtension,
+                                  GURL(), CheckAliasStatus::NOT_ALLOWED,
+                                  kUnspecifiedContextId, TestContextData())
+                    .is_available());
+  }
 
-  EXPECT_TRUE(extension_api
-                  ->IsAvailable("browserAction", extension.get(),
-                                mojom::ContextType::kPrivilegedExtension,
-                                GURL(), CheckAliasStatus::NOT_ALLOWED,
-                                kUnspecifiedContextId, TestContextData())
-                  .is_available());
-  EXPECT_FALSE(extension_api
-                   ->IsAvailable("pageAction", extension.get(),
-                                 mojom::ContextType::kPrivilegedExtension,
-                                 GURL(), CheckAliasStatus::NOT_ALLOWED,
-                                 kUnspecifiedContextId, TestContextData())
-                   .is_available());
+  {
+    scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
+    EXPECT_FALSE(extension_api
+                     ->IsAvailable("action", extension.get(),
+                                   mojom::ContextType::kPrivilegedExtension,
+                                   GURL(), CheckAliasStatus::NOT_ALLOWED,
+                                   kUnspecifiedContextId, TestContextData())
+                     .is_available());
+  }
 }
 
 // (TSAN) Tests that ExtensionAPI are able to handle GetSchema from different

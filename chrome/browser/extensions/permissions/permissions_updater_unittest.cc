@@ -82,10 +82,8 @@ TEST_F(PermissionsUpdaterTest, GrantAndRevokeOptionalPermissions) {
       ExtensionBuilder("permissions")
           .AddAPIPermission("management")
           .AddHostPermission("http://a.com/*")
-          .SetManifestKey("optional_permissions",
-                          base::Value::List()
-                              .Append("http://*.c.com/*")
-                              .Append("notifications"))
+          .AddOptionalAPIPermission("notifications")
+          .AddOptionalHostPermission("http://*.c.com/*")
           .Build();
 
   {
@@ -376,10 +374,7 @@ TEST_F(PermissionsUpdaterTest,
   InitializeEmptyExtensionService();
 
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("extension")
-          .SetManifestKey("optional_permissions",
-                          base::Value::List().Append("tabs"))
-          .Build();
+      ExtensionBuilder("extension").AddOptionalAPIPermission("tabs").Build();
 
   PermissionsUpdater updater(profile());
   updater.InitializePermissions(extension.get());
@@ -558,8 +553,10 @@ TEST_F(PermissionsUpdaterTest, ChromeFaviconIsNotARevokableHost) {
                                     "chrome://favicon/");
 
   {
+    // This test exercises chrome://favicon, which is only available in MV2.
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("favicon extension")
+            .SetManifestVersion(2)
             .AddHostPermissions({"https://example.com/*", "chrome://favicon/*"})
             .Build();
     URLPattern example_com_pattern(Extension::kValidHostPermissionSchemes,
@@ -600,8 +597,10 @@ TEST_F(PermissionsUpdaterTest, ChromeFaviconIsNotARevokableHost) {
                      .ContainsPattern(example_com_pattern));
   }
   {
+    // This test exercises chrome://favicon, which is only available in MV2.
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("all urls extension")
+            .SetManifestVersion(2)
             .AddHostPermission("<all_urls>")
             .Build();
     URLPattern all_urls_pattern(

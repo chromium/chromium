@@ -633,11 +633,9 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
        RemoveAllGrantedHostPermissions_GrantedOptionalPermissions) {
   InitializeEmptyExtensionService();
 
-  static constexpr char kOptionalPermissions[] = R"(["https://example.com/*"])";
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("test")
-          .SetManifestKey("optional_permissions",
-                          base::test::ParseJsonList(kOptionalPermissions))
+          .AddOptionalHostPermission("https://example.com/*")
           .Build();
 
   EXPECT_THAT(GetEffectivePatternsAsStrings(*extension), testing::IsEmpty());
@@ -1056,11 +1054,9 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
        RemoveAllURLsGrantedOptionalPermission) {
   InitializeEmptyExtensionService();
 
-  static constexpr char kOptionalPermissions[] = R"(["<all_urls>"])";
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
-          .SetManifestKey("optional_permissions",
-                          base::test::ParseJsonList(kOptionalPermissions))
+          .AddOptionalHostPermission("<all_urls>")
           .Build();
   InitializeExtensionPermissions(profile(), *extension);
 

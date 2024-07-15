@@ -1814,7 +1814,7 @@ TEST_F(ExtensionContextMenuModelTest, HistogramTest_CustomCommand) {
   InitializeEmptyExtensionService();
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
-          .SetAction(ActionInfo::Type::kBrowser)
+          .SetAction(ActionInfo::Type::kAction)
           .Build();
   InitializeAndAddExtension(*extension);
 
@@ -1822,7 +1822,7 @@ TEST_F(ExtensionContextMenuModelTest, HistogramTest_CustomCommand) {
   ASSERT_TRUE(manager);
 
   MenuBuilder builder(extension, GetBrowser(), manager);
-  builder.AddContextItem(MenuItem::BROWSER_ACTION);
+  builder.AddContextItem(MenuItem::ACTION);
   std::unique_ptr<ExtensionContextMenuModel> menu = builder.BuildMenu();
   EXPECT_EQ(1, CountExtensionItems(*menu));
 

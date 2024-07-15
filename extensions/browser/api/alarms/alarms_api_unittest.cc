@@ -350,7 +350,7 @@ TEST_F(ExtensionAlarmsTest, CreateDelayBelowMinimum) {
             local_frame.last_level());
   EXPECT_THAT(local_frame.last_message(),
               testing::HasSubstr(
-                  "delay is less than the minimum duration of 60 seconds"));
+                  "delay is less than the minimum duration of 30 seconds"));
 }
 
 TEST_F(ExtensionAlarmsTest, Get) {
@@ -611,7 +611,10 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollScheduling) {
 }
 
 TEST_F(ExtensionAlarmsSchedulingTest, ReleasedExtensionPollsInfrequently) {
+  // TODO(https://crbug.com/40804030): Update this to use MV3. MV3 has different
+  // min granularities for alarms.
   set_extension(ExtensionBuilder("Test")
+                    .SetManifestVersion(2)
                     .SetLocation(mojom::ManifestLocation::kInternal)
                     .Build());
   test_clock_.SetNow(base::Time::FromSecondsSinceUnixEpoch(300));
@@ -648,8 +651,11 @@ TEST_F(ExtensionAlarmsSchedulingTest, TimerRunning) {
 }
 
 TEST_F(ExtensionAlarmsSchedulingTest, MinimumGranularity) {
+  // TODO(https://crbug.com/40804030): Update this to use MV3. MV3 has different
+  // min granularities for alarms.
   set_extension(ExtensionBuilder("Test")
                     .SetLocation(mojom::ManifestLocation::kInternal)
+                    .SetManifestVersion(2)
                     .Build());
   test_clock_.SetNow(base::Time::UnixEpoch());
   CreateAlarm("[\"a\", {\"periodInMinutes\": 2}]");

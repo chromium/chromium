@@ -48,6 +48,9 @@ struct HostPermissionsMetricsTestParams {
   // The host permissions the extension requests.
   std::vector<std::string> requested_host_permissions;
 
+  // Whether the extension requests activeTab.
+  bool requests_active_tab = false;
+
   // Whether the user enables host permission withholding for the extension.
   bool has_withholding_permissions = false;
 
@@ -81,7 +84,8 @@ class InstalledLoaderUnitTest : public ExtensionServiceUserTestBase {
   }
 
   const Extension* AddExtension(const std::vector<std::string>& permissions,
-                                mojom::ManifestLocation location);
+                                mojom::ManifestLocation location,
+                                bool requests_active_tab = false);
 
   void RunHostPermissionsMetricsTest(HostPermissionsMetricsTestParams params);
 
@@ -91,12 +95,16 @@ class InstalledLoaderUnitTest : public ExtensionServiceUserTestBase {
 
 const Extension* InstalledLoaderUnitTest::AddExtension(
     const std::vector<std::string>& host_permissions,
-    mojom::ManifestLocation location) {
-  scoped_refptr<const Extension> extension =
-      ExtensionBuilder("test")
-          .AddHostPermissions(host_permissions)
-          .SetLocation(location)
-          .Build();
+    mojom::ManifestLocation location,
+    bool requests_active_tab) {
+  ExtensionBuilder builder("test");
+  builder.AddHostPermissions(host_permissions);
+  builder.SetLocation(location);
+  if (requests_active_tab) {
+    builder.AddAPIPermission("activeTab");
+  }
+
+  scoped_refptr<const Extension> extension = builder.Build();
   PermissionsUpdater updater(profile());
   updater.InitializePermissions(extension.get());
   updater.GrantActivePermissions(extension.get());
@@ -108,7 +116,8 @@ const Extension* InstalledLoaderUnitTest::AddExtension(
 void InstalledLoaderUnitTest::RunHostPermissionsMetricsTest(
     HostPermissionsMetricsTestParams params) {
   const Extension* extension =
-      AddExtension(params.requested_host_permissions, params.manifest_location);
+      AddExtension(params.requested_host_permissions, params.manifest_location,
+                   params.requests_active_tab);
 
   ScriptingPermissionsModifier modifier(profile(), extension);
   if (params.has_withholding_permissions) {
@@ -417,7 +426,7 @@ TEST_F(InstalledLoaderUnitTest,
   params.manifest_location = kManifestInternal;
   // The extension has activeTab API permission and no host permissions, so host
   // permission access is on active tab only.
-  params.requested_host_permissions = {"activeTab"};
+  params.requests_active_tab = true;
   params.expected_access_level = HostPermissionsAccess::kOnActiveTabOnly;
   params.request_scope = HostPermissionsMetricsTestParams::RequestScope::kNone;
 

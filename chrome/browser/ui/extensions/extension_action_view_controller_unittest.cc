@@ -719,8 +719,16 @@ TEST_F(ExtensionActionViewControllerUnitTest, ActiveTabIconAppearance) {
 // Tests that an extension with the activeTab permission has active tab site
 // interaction except for restricted URLs.
 TEST_F(ExtensionActionViewControllerUnitTest, GetSiteInteractionWithActiveTab) {
-  auto extension = CreateAndAddExtensionWithGrantedHostPermissions(
-      "active tab", extensions::ActionInfo::Type::kBrowser, {"activeTab"});
+  // Note: Not using `CreateAndAddExtensionWithGrantedHostPermissions` because
+  // this adds an API permission (activeTab).
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder("active tab")
+          .SetAction(extensions::ActionInfo::Type::kAction)
+          .SetLocation(ManifestLocation::kInternal)
+          .AddAPIPermission("activeTab")
+          .Build();
+  extension_service()->GrantPermissions(extension.get());
+  extension_service()->AddExtension(extension.get());
 
   // Navigate the browser to google.com. Since clicking the extension would
   // grant access to the page, the page interaction status should show as
@@ -814,7 +822,7 @@ TEST_F(ExtensionActionViewControllerUnitTest,
 // See https://crbug.com/888121
 TEST_F(ExtensionActionViewControllerUnitTest, TestGetIconWithNullWebContents) {
   auto extension = CreateAndAddExtensionWithGrantedHostPermissions(
-      "extension name", extensions::ActionInfo::Type::kBrowser,
+      "extension name", extensions::ActionInfo::Type::kAction,
       {"https://example.com/"});
 
   extensions::ScriptingPermissionsModifier permissions_modifier(profile(),

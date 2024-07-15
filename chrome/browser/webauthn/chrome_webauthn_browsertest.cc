@@ -15,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -200,8 +201,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, ChromeExtensions) {
 
   static constexpr char kPageFile[] = "page.html";
 
-  base::Value::List resources;
-  resources.Append(std::string(kPageFile));
   static constexpr char kContents[] = R"(
 <html>
   <head>
@@ -215,12 +214,19 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, ChromeExtensions) {
             sizeof(kContents) - 1);
 
   static constexpr char kExtensionSite[] = "https://extension-site.com/";
+  static constexpr char kWebAccessibleResources[] =
+      R"([{
+            "resources": ["page.html"],
+            "matches": ["*://*/*"]
+         }])";
+
   extensions::ExtensionBuilder builder("test");
   builder.SetPath(temp_dir.GetPath())
       .SetVersion("1.0")
       .AddHostPermission(kExtensionSite)
       .SetLocation(extensions::mojom::ManifestLocation::kExternalPolicyDownload)
-      .SetManifestKey("web_accessible_resources", std::move(resources));
+      .SetManifestKey("web_accessible_resources",
+                      base::test::ParseJson(kWebAccessibleResources));
 
   extensions::ExtensionService* service =
       extensions::ExtensionSystem::Get(browser()->profile())

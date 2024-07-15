@@ -12,6 +12,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/common/api/extension_action/action_info.h"
+#include "extensions/common/api/extension_action/action_info_test_util.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -62,6 +63,7 @@ TEST_P(ExtensionActionManagerTest, TestPopulateMissingValues_Icons) {
           .SetManifestKey("icons", base::Value::Dict()
                                        .Set("48", "icon48.png")
                                        .Set("128", "icon128.png"))
+          .SetManifestVersion(GetManifestVersionForActionType(GetParam()))
           .SetManifestKey(ActionInfo::GetManifestKeyForActionType(GetParam()),
                           base::Value::Dict())
           .Build();
@@ -82,6 +84,7 @@ TEST_P(ExtensionActionManagerTest, TestPopulateMissingValues_Icons) {
 TEST_P(ExtensionActionManagerTest, TestPopulateMissingValues_Title) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Test Extension")
+          .SetManifestVersion(GetManifestVersionForActionType(GetParam()))
           .SetManifestKey(ActionInfo::GetManifestKeyForActionType(GetParam()),
                           base::Value::Dict())
           .Build();
@@ -101,6 +104,7 @@ TEST_P(ExtensionActionManagerTest, TestPopulateMissingValues_Title) {
 TEST_P(ExtensionActionManagerTest, TestDontOverrideIfDefaultsProvided) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Test Extension")
+          .SetManifestVersion(GetManifestVersionForActionType(GetParam()))
           .SetManifestKey("icons", base::Value::Dict().Set("24", "icon24.png"))
           .SetManifestKey(ActionInfo::GetManifestKeyForActionType(GetParam()),
                           base::Value::Dict()

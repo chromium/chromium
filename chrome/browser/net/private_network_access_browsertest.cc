@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -1298,9 +1299,6 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   static constexpr char kPageFile[] = "page.html";
-
-  base::Value::List resources;
-  resources.Append(kPageFile);
   constexpr char kContents[] = R"(
   <html>
     <head>
@@ -1311,12 +1309,18 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
   </html>
   )";
   base::WriteFile(temp_dir.GetPath().AppendASCII(kPageFile), kContents);
+  static constexpr char kWebAccessibleResources[] =
+      R"([{
+            "resources": ["page.html"],
+            "matches": ["*://*/*"]
+         }])";
 
   extensions::ExtensionBuilder builder("test");
   builder.SetPath(temp_dir.GetPath())
       .SetVersion("1.0")
       .SetLocation(extensions::mojom::ManifestLocation::kExternalPolicyDownload)
-      .SetManifestKey("web_accessible_resources", std::move(resources));
+      .SetManifestKey("web_accessible_resources",
+                      base::test::ParseJson(kWebAccessibleResources));
 
   extensions::ExtensionService* service =
       extensions::ExtensionSystem::Get(browser()->profile())

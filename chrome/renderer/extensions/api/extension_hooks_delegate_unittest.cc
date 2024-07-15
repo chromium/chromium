@@ -73,7 +73,9 @@ class ExtensionHooksDelegateTest
   bool UseStrictIPCMessageSender() override { return true; }
 
   virtual scoped_refptr<const Extension> BuildExtension() {
-    return ExtensionBuilder("foo").Build();
+    // TODO(https://crbug.com/40804030): Update this to use MV3.
+    // Some extension module methods only exist in MV2.
+    return ExtensionBuilder("foo").SetManifestVersion(2).Build();
   }
 
   NativeRendererMessagingService* messaging_service() {
@@ -123,6 +125,7 @@ TEST_F(ExtensionHooksDelegateTest, SendRequestDisabled) {
   // extension with an event page).
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("foo")
+          .SetManifestVersion(2)
           .SetBackgroundContext(ExtensionBuilder::BackgroundContext::EVENT_PAGE)
           .SetLocation(mojom::ManifestLocation::kUnpacked)
           .Build();

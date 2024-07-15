@@ -28,7 +28,7 @@ TEST(ExtensionBuilderTest, Basic) {
     ASSERT_TRUE(extension);
     EXPECT_EQ("some name", extension->name());
     EXPECT_TRUE(extension->is_extension());
-    EXPECT_EQ(2, extension->manifest_version());
+    EXPECT_EQ(3, extension->manifest_version());
   }
   {
     scoped_refptr<const Extension> extension =
@@ -252,10 +252,12 @@ TEST(ExtensionBuilderTest, Actions) {
         ExtensionBuilder("no action").Build();
     EXPECT_FALSE(extension->manifest()->FindKey(manifest_keys::kPageAction));
     EXPECT_FALSE(extension->manifest()->FindKey(manifest_keys::kBrowserAction));
+    EXPECT_FALSE(extension->manifest()->FindKey(manifest_keys::kAction));
   }
   {
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("page action")
+            .SetManifestVersion(2)
             .SetAction(ActionInfo::Type::kPage)
             .Build();
     EXPECT_TRUE(extension->manifest()->FindKey(manifest_keys::kPageAction));
@@ -265,6 +267,7 @@ TEST(ExtensionBuilderTest, Actions) {
   {
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("browser action")
+            .SetManifestVersion(2)
             .SetAction(ActionInfo::Type::kBrowser)
             .Build();
     EXPECT_FALSE(extension->manifest()->FindKey(manifest_keys::kPageAction));
@@ -289,6 +292,7 @@ TEST(ExtensionBuilderTest, Background) {
   {
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("persistent background page")
+            .SetManifestVersion(2)
             .SetBackgroundContext(
                 ExtensionBuilder::BackgroundContext::BACKGROUND_PAGE)
             .Build();
@@ -299,6 +303,7 @@ TEST(ExtensionBuilderTest, Background) {
   {
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("event page")
+            .SetManifestVersion(2)
             .SetBackgroundContext(
                 ExtensionBuilder::BackgroundContext::EVENT_PAGE)
             .Build();

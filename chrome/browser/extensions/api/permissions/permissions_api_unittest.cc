@@ -69,15 +69,6 @@ scoped_refptr<const Extension> CreateExtensionWithPermissions(
       .Build();
 }
 
-// Helper function to create a base::Value from a list of strings.
-base::Value::List StringVectorToValue(const std::vector<std::string>& strings) {
-  base::Value::List lv;
-  for (const auto& s : strings) {
-    lv.Append(s);
-  }
-  return lv;
-}
-
 // Runs permissions.request() with the provided |args|, and returns the result
 // of the API call. Expects the function to succeed.
 // Populates |did_prompt_user| with whether the user would be prompted for the
@@ -478,8 +469,7 @@ TEST_F(PermissionsAPIUnitTest, ReRequestingWithheldOptionalPermissions) {
   // permissions.
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
-          .SetManifestKey("optional_permissions",
-                          StringVectorToValue({"https://chromium.org/*"}))
+          .AddOptionalHostPermission("https://chromium.org/*")
           .Build();
   AddExtensionAndGrantPermissions(*extension);
 
@@ -537,8 +527,7 @@ TEST_F(PermissionsAPIUnitTest, RequestingWithheldAndOptionalPermissions) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
           .AddHostPermissions({"https://example.com/*", "https://google.com/*"})
-          .SetManifestKey("optional_permissions",
-                          StringVectorToValue({"https://chromium.org/*"}))
+          .AddOptionalHostPermission("https://chromium.org/*")
           .Build();
   AddExtensionAndGrantPermissions(*extension);
   ScriptingPermissionsModifier(profile(), extension)
@@ -583,8 +572,7 @@ TEST_F(PermissionsAPIUnitTest, RequestingPermissionsNotSpecifiedInManifest) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
           .AddHostPermission("https://example.com/*")
-          .SetManifestKey("optional_permissions",
-                          StringVectorToValue({"https://chromium.org/*"}))
+          .AddOptionalHostPermission("https://chromium.org/*")
           .Build();
   AddExtensionAndGrantPermissions(*extension);
   ScriptingPermissionsModifier(profile(), extension)
@@ -664,8 +652,7 @@ TEST_F(PermissionsAPIUnitTest, RequestingAlreadyGrantedWithheldPermissions) {
 TEST_F(PermissionsAPIUnitTest, RequestingChromeURLs) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
-          .SetManifestKey("optional_permissions",
-                          base::Value::List().Append("<all_urls>"))
+          .AddOptionalHostPermission("<all_urls>")
           .Build();
   AddExtensionAndGrantPermissions(*extension);
 

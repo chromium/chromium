@@ -40,10 +40,14 @@ struct ExtensionBuilder::ManifestData {
   std::optional<base::Value::Dict> extra;
 
   base::Value::Dict GetValue() const {
+    int fallback_manifest_version = type == Type::PLATFORM_APP ? 2 : 3;
+    int effective_manifest_version =
+        manifest_version.value_or(fallback_manifest_version);
     auto manifest =
         base::Value::Dict()
             .Set(manifest_keys::kName, name)
-            .Set(manifest_keys::kManifestVersion, manifest_version.value_or(2))
+            .Set(manifest_keys::kManifestVersion,
+                 manifest_version.value_or(fallback_manifest_version))
             .Set(manifest_keys::kVersion, version.value_or("0.1"))
             .Set(manifest_keys::kDescription, "some description");
 
@@ -71,8 +75,7 @@ struct ExtensionBuilder::ManifestData {
       optional_permissions_value.Append(permission);
     }
 
-    bool separate_host_permissions =
-        manifest_version && manifest_version.value() >= 3;
+    bool separate_host_permissions = effective_manifest_version >= 3;
     for (const auto& permission : host_permissions) {
       if (separate_host_permissions) {
         host_permissions_value.Append(permission);
