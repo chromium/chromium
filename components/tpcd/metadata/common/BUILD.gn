@@ -25,6 +25,5 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//net",
     "//testing/gmock",
-    "//testing/gmock",
   ]
 }
