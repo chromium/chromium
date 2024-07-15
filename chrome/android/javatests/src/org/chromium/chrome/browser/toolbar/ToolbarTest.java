@@ -220,6 +220,7 @@ public class ToolbarTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "b/353348883")
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
     public void testMaybeShowUrlBarFocusIfHardwareKeyboardAvailable_newTabFromTabSwitcher() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
