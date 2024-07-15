@@ -78,13 +78,12 @@ class GPU_GLES2_EXPORT DXGISharedHandleState
   // Releases keyed mutex if all pending access for given device are ended.
   void ReleaseKeyedMutex(Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
 
-#if BUILDFLAG(USE_DAWN)
-  // Returns the Dawn SharedTextureMemory associated with given device. It's the
-  // caller's responsibility to initialize the shared texture memory if needed.
-  wgpu::SharedTextureMemory& GetDawnSharedTextureMemory(WGPUDevice device);
-
-  void EraseDawnSharedTextureMemory(WGPUDevice device);
-#endif  // BUILDFLAG(USE_DAWN)
+  // Returns the cached Dawn SharedTextureMemory associated with given device.
+  wgpu::SharedTextureMemory GetSharedTextureMemory(const wgpu::Device& device);
+  // Inserts the SharedTextureMemory for this device, if not already present.
+  void MaybeCacheSharedTextureMemory(const wgpu::Device& device,
+                                     wgpu::SharedTextureMemory memory);
+  void EraseDawnSharedTextureMemory(const wgpu::Device& device);
 
  private:
   struct D3D11TextureState {
