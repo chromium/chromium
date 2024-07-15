@@ -9330,6 +9330,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_TOOLTIP_MIC_SEARCH" desc="The tooltip for search-by-voice button">
         Search by voice
       </message>
+      <message name="IDS_LENS_OVERLAY_SEARCHBOX_THUMBNAIL_REMOVE_BUTTON_LABEL" desc="Aria label for the thumbnail in the Lens overlay search box, which is removed from the search when clicked.">
+        Delete image selection
+      </message>
       <message name="IDS_TOOLTIP_LENS_SEARCH" desc="The tooltip for search-by-image button">
         Search by image
       </message>

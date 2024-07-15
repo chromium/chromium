@@ -4,12 +4,15 @@
 
 import '//resources/cr_elements/cr_shared_style.css.js';
 
+import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './realbox_thumbnail.html.js';
 
+const ThumbnailElementBase = I18nMixin(PolymerElement);
+
 // Displays a thumbnail in the realbox input.
-class RealboxThumbnailElement extends PolymerElement {
+class RealboxThumbnailElement extends ThumbnailElementBase {
   static get is() {
     return 'cr-realbox-thumbnail';
   }

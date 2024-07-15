@@ -594,9 +594,11 @@ export class RealboxElement extends RealboxElementBase {
         }
       } else if (
           this.$.input.selectionStart === 0 &&
-          this.$.input.selectionEnd === 0 && e.key === 'Backspace' &&
-          this.$.input === this.shadowRoot!.activeElement) {
-        // Backspacing the thumbnail results in the thumbnail being focused.
+          this.$.input.selectionEnd === 0 &&
+          this.$.input === this.shadowRoot!.activeElement &&
+          (e.key === 'Backspace' || (e.key === 'Tab' && e.shiftKey))) {
+        // Backspacing or shift-tabbing the thumbnail results in the thumbnail
+        // being focused.
         thumbnail?.focus();
         e.preventDefault();
       }

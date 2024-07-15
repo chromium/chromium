@@ -321,9 +321,11 @@
   </cr-realbox-icon>
   <template is="dom-if" if="[[showThumbnail]]">
     <div id="thumbnailContainer">
+      <!--Tabindex is set to 1 so that the thumbnail is tabbed first,
+        then the search box. -->
       <cr-realbox-thumbnail id="thumbnail" thumbnail-url_="[[thumbnailUrl_]]"
           on-remove-thumbnail-click="onRemoveThumbnailClick_"
-          tabindex="-1">
+          tabindex="1">
       </cr-realbox-thumbnail>
     </div>
   </template>

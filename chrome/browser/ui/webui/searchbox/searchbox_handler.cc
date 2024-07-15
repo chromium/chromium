@@ -469,6 +469,8 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
   source->AddBoolean("searchboxInSidePanel", false);
 
   static constexpr webui::LocalizedString kStrings[] = {
+      {"deleteImageSelection",
+       IDS_LENS_OVERLAY_SEARCHBOX_THUMBNAIL_REMOVE_BUTTON_LABEL},
       {"hideSuggestions", IDS_TOOLTIP_HEADER_HIDE_SUGGESTIONS_BUTTON},
       {"lensSearchButtonLabel", IDS_TOOLTIP_LENS_SEARCH},
       {"realboxSeparator", IDS_AUTOCOMPLETE_MATCH_DESCRIPTION_SEPARATOR},
