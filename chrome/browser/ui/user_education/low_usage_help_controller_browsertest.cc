@@ -128,10 +128,7 @@ IN_PROC_BROWSER_TEST_F(LowUsageHelpControllerBrowsertest, PRE_PromoAtStartup) {
   // a day ago.
   RecentSessionData recent_session_data;
   recent_session_data.enabled_time = now - base::Days(120);
-  recent_session_data.recent_session_start_times = {
-      now - base::Days(1),
-      now - base::Days(19),
-  };
+  recent_session_data.recent_session_start_times = {now - base::Days(19)};
 
   // Mirror similar information in the recent session data so that a new
   // session will be triggered on browser startup.

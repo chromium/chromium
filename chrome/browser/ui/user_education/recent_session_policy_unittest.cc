@@ -413,48 +413,26 @@ TEST_F(RecentSessionPolicyTest,
   EXPECT_FALSE(policy_->ShouldEnableLowUsagePromoMode(data));
 
   // Not enough in any threshold, enabled at the longer threshold.
-  data = CreateSessionData({base::Days(2), base::Days(10)});
+  data = CreateSessionData({base::Days(10)});
   EXPECT_TRUE(policy_->ShouldEnableLowUsagePromoMode(data));
 }
 
 TEST_F(RecentSessionPolicyTest,
-       ShouldEnableLowUsagePromoMode_OffMoreThanTwoActiveWeeks) {
-  // Only current week.
+       ShouldEnableLowUsagePromoMode_OffMoreThanTwoActiveDays) {
+  // Two days, same week.
   auto data = CreateSessionData({base::Days(1)});
   EXPECT_TRUE(policy_->ShouldEnableLowUsagePromoMode(data));
 
-  // Two weeks.
+  // Two days, different weeks.
   data = CreateSessionData({base::Days(8)});
   EXPECT_TRUE(policy_->ShouldEnableLowUsagePromoMode(data));
 
-  // Two different weeks with multiple sessions.
-  data = CreateSessionData({base::Days(2), base::Days(22), base::Days(23),
-                            base::Days(24), base::Days(25)});
-  EXPECT_TRUE(policy_->ShouldEnableLowUsagePromoMode(data));
-
-  // Three weeks.
-  data = CreateSessionData(
-      {base::Days(2), base::Days(12), base::Days(23), base::Days(24)});
-  EXPECT_FALSE(policy_->ShouldEnableLowUsagePromoMode(data));
-}
-
-TEST_F(RecentSessionPolicyTest,
-       ShouldEnableLowUsagePromoMode_OffMoreThanFourActiveDaysThisWeek) {
-  // Only current week.
-  auto data = CreateSessionData({base::Days(1)});
-  EXPECT_TRUE(policy_->ShouldEnableLowUsagePromoMode(data));
-
-  // Two weeks, three this week.
-  data = CreateSessionData({base::Days(1), base::Days(2), base::Days(8)});
-  EXPECT_TRUE(policy_->ShouldEnableLowUsagePromoMode(data));
-
-  // Two weeks, four this week.
-  data = CreateSessionData(
-      {base::Days(1), base::Days(2), base::Days(3), base::Days(8)});
+  // Three days one week.
+  data = CreateSessionData({base::Days(1), base::Days(3)});
   EXPECT_FALSE(policy_->ShouldEnableLowUsagePromoMode(data));
 
-  // One week, four this week.
-  data = CreateSessionData({base::Days(1), base::Days(2), base::Days(3)});
+  // Three days multiple weeks.
+  data = CreateSessionData({base::Days(2), base::Days(22)});
   EXPECT_FALSE(policy_->ShouldEnableLowUsagePromoMode(data));
 }
 
@@ -588,6 +566,7 @@ TEST_F(RecentSessionPolicyFinchTest, ChangeExistingThresholds) {
 TEST_F(RecentSessionPolicyFinchTest, SwitchToNewThresholds) {
   Init({{"max_active_weeks", "0"},
         {"max_active_days", "0"},
+        {"max_monthly_active_days", "0"},
         {"max_weekly_sessions", "2"},
         {"max_monthly_sessions", "5"}});
 
@@ -610,8 +589,9 @@ TEST_F(RecentSessionPolicyFinchTest, SwitchToNewThresholds) {
 }
 
 TEST_F(RecentSessionPolicyFinchTest, EnableSuperActiveThreshold) {
-  Init({{"max_active_weeks", "0"},
-        {"max_active_days", "0"},
+  Init({{"max_active_days", "0"},
+        {"max_active_weeks", "0"},
+        {"max_monthly_active_days", "0"},
         {"super_active_days", "3"},
         {"max_super_active_weeks", "1"}});
 

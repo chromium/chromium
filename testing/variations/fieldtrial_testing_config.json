@@ -7710,6 +7710,27 @@
             ]
         }
     ],
+    "DesktopReEngagement": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "max_active_days": "0",
+                        "max_active_weeks": "0",
+                        "max_monthly_active_days": "2"
+                    },
+                    "enable_features": [
+                        "AllowRecentSessionTracking",
+                        "IPH_DesktopReEngagement"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopWebAppUniversalInstallExperiment": [
         {
             "platforms": [
