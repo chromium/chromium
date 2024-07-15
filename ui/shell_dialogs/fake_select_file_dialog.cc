@@ -65,10 +65,9 @@ void FakeSelectFileDialog::SelectFileImpl(
     int file_type_index,
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow owning_window,
-    void* params,
+    void* /* params */,
     const GURL* caller) {
   title_ = title;
-  params_ = params;
   if (file_types)
     file_types_ = *file_types;
   default_extension_ = base::FilePath(default_extension).MaybeAsASCII();
@@ -83,8 +82,7 @@ bool FakeSelectFileDialog::CallFileSelected(const base::FilePath& file_path,
          file_types_.extensions[index]) {
       if (base::FilePath(ext).MaybeAsASCII() == filter_text) {
         // FileSelected accepts a 1-based index.
-        listener_->FileSelected(SelectedFileInfo(file_path), index + 1,
-                                params_);
+        listener_->FileSelected(SelectedFileInfo(file_path), index + 1);
         return true;
       }
     }
@@ -94,8 +92,7 @@ bool FakeSelectFileDialog::CallFileSelected(const base::FilePath& file_path,
 
 void FakeSelectFileDialog::CallMultiFilesSelected(
     const std::vector<base::FilePath>& files) {
-  listener_->MultiFilesSelected(FilePathListToSelectedFileInfoList(files),
-                                params_);
+  listener_->MultiFilesSelected(FilePathListToSelectedFileInfoList(files));
 }
 
 void FakeSelectFileDialog::ListenerDestroyed() {

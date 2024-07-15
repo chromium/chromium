@@ -49,7 +49,7 @@ void SelectFileDialogImpl::OnFileSelected(
   if (!file_name.empty())
     file_info.display_name = file_name;
 
-  listener_->FileSelected(file_info, 0, nullptr);
+  listener_->FileSelected(file_info, 0);
 }
 
 void SelectFileDialogImpl::OnMultipleFilesSelected(
@@ -82,14 +82,14 @@ void SelectFileDialogImpl::OnMultipleFilesSelected(
     selected_files.push_back(file_info);
   }
 
-  listener_->MultiFilesSelected(selected_files, nullptr);
+  listener_->MultiFilesSelected(selected_files);
 }
 
 void SelectFileDialogImpl::OnFileNotSelected(
     JNIEnv* env,
     const JavaParamRef<jobject>& java_object) {
   if (listener_)
-    listener_->FileSelectionCanceled(nullptr);
+    listener_->FileSelectionCanceled();
 }
 
 bool SelectFileDialogImpl::IsRunning(gfx::NativeWindow) const {
@@ -116,7 +116,7 @@ void SelectFileDialogImpl::SelectFileImpl(
     int file_type_index,
     const std::string& default_extension,
     gfx::NativeWindow owning_window,
-    void* params,
+    void* /* params */,
     const GURL* caller) {
   JNIEnv* env = base::android::AttachCurrentThread();
 

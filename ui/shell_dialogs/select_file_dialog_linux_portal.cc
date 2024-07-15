@@ -206,7 +206,7 @@ void SelectFileDialogLinuxPortal::SelectFileImpl(
     int file_type_index,
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow owning_window,
-    void* params,
+    void* /* params */,
     const GURL* caller) {
   info_ = base::MakeRefCounted<DialogInfo>(
       base::BindOnce(&SelectFileDialogLinuxPortal::DialogCreatedOnMainThread,
@@ -217,7 +217,6 @@ void SelectFileDialogLinuxPortal::SelectFileImpl(
                      weak_factory_.GetWeakPtr()));
   info_->type = type;
   info_->main_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
-  listener_params_ = params;
 
   if (owning_window) {
     if (auto* root = owning_window->GetRootWindow()) {
@@ -696,8 +695,7 @@ void SelectFileDialogLinuxPortal::CompleteOpenOnMainThread(
 
   if (listener_) {
     if (info_->type == SELECT_OPEN_MULTI_FILE) {
-      listener_->MultiFilesSelected(FilePathListToSelectedFileInfoList(paths),
-                                    listener_params_);
+      listener_->MultiFilesSelected(FilePathListToSelectedFileInfoList(paths));
     } else if (paths.size() > 1) {
       LOG(ERROR) << "Got >1 file URI from a single-file chooser";
     } else {
@@ -708,8 +706,7 @@ void SelectFileDialogLinuxPortal::CompleteOpenOnMainThread(
           break;
         }
       }
-      listener_->FileSelected(SelectedFileInfo(paths[0]), index,
-                              listener_params_);
+      listener_->FileSelected(SelectedFileInfo(paths[0]), index);
     }
   }
 }
@@ -718,7 +715,7 @@ void SelectFileDialogLinuxPortal::CancelOpenOnMainThread() {
   UnparentOnMainThread();
 
   if (listener_)
-    listener_->FileSelectionCanceled(listener_params_);
+    listener_->FileSelectionCanceled();
 }
 
 void SelectFileDialogLinuxPortal::UnparentOnMainThread() {

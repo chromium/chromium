@@ -119,10 +119,8 @@ void SelectFileDialogLacros::SelectFileImpl(
     int file_type_index,
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow owning_window,
-    void* params,
+    void* /* params */,
     const GURL* caller) {
-  params_ = params;
-
   crosapi::mojom::SelectFileOptionsPtr options =
       crosapi::mojom::SelectFileOptions::New();
   options->type = GetMojoType(type);
@@ -163,19 +161,19 @@ void SelectFileDialogLacros::OnSelected(
   if (!listener_)
     return;
   if (mojo_files.empty()) {
-    listener_->FileSelectionCanceled(params_);
+    listener_->FileSelectionCanceled();
     return;
   }
   if (mojo_files.size() == 1) {
     SelectedFileInfo file = ConvertSelectedFileInfo(std::move(mojo_files[0]));
-    listener_->FileSelected(file, file_type_index, params_);
+    listener_->FileSelected(file, file_type_index);
     return;
   }
   std::vector<SelectedFileInfo> files;
   for (auto& mojo_file : mojo_files) {
     files.push_back(ConvertSelectedFileInfo(std::move(mojo_file)));
   }
-  listener_->MultiFilesSelected(files, params_);
+  listener_->MultiFilesSelected(files);
 }
 
 }  // namespace ui

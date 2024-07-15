@@ -295,7 +295,7 @@ void VmApplicationsServiceProvider::SelectFile(
   // SelectFile callback.
   listener.release();
   dialog->SelectFileWithFileManagerParams(
-      type, title, default_path, &file_types, file_type_index, nullptr, owner,
+      type, title, default_path, &file_types, file_type_index, owner,
       /*search_query=*/"", /*show_android_picker_apps=*/false);
 }
 

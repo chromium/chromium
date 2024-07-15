@@ -203,10 +203,6 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
   // This should be used in the main thread.
   base::WeakPtr<aura::WindowTreeHost> host_;
 
-  // The untyped params to pass to the listener, it should be used in the main
-  // thread.
-  raw_ptr<void> listener_params_ = nullptr;
-
   // Data shared across main thread and D-Bus thread.
   scoped_refptr<DialogInfo> info_;
 

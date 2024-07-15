@@ -42,8 +42,7 @@ class FakeFolderSelectionDialog : public ui::SelectFileDialog {
   void AcceptPath(const base::FilePath& path) {
     DCHECK(dialog_widget_);
     if (listener_) {
-      listener_->FileSelected(ui::SelectedFileInfo(path), /*index=*/0,
-                              /*params=*/nullptr);
+      listener_->FileSelected(ui::SelectedFileInfo(path), /*index=*/0);
     }
     DismissDialog();
   }
@@ -51,7 +50,7 @@ class FakeFolderSelectionDialog : public ui::SelectFileDialog {
   void CancelDialog() {
     DCHECK(dialog_widget_);
     if (listener_) {
-      listener_->FileSelectionCanceled(/*params=*/nullptr);
+      listener_->FileSelectionCanceled();
     }
     DismissDialog();
   }
@@ -77,7 +76,7 @@ class FakeFolderSelectionDialog : public ui::SelectFileDialog {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params,
+                      void* /* params */,
                       const GURL* caller) override {
     dialog_widget_ = views::UniqueWidgetPtr(std::make_unique<views::Widget>());
     views::Widget::InitParams widget_params(

@@ -162,12 +162,10 @@ static const int kPreviewHeight = 512;
 SelectFileDialogLinuxGtk::DialogState::DialogState() = default;
 
 SelectFileDialogLinuxGtk::DialogState::DialogState(
-    void* params,
     std::vector<ScopedGSignal> signals,
     aura::Window* parent,
     base::OnceClosure reenable_parent_events)
-    : params(params),
-      signals(std::move(signals)),
+    : signals(std::move(signals)),
       parent(parent),
       reenable_parent_events(std::move(reenable_parent_events)) {}
 
@@ -237,7 +235,7 @@ void SelectFileDialogLinuxGtk::SelectFileImpl(
     int file_type_index,
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow owning_window,
-    void* params,
+    void* /* params */,
     const GURL* caller) {
   set_type(type);
 
@@ -307,7 +305,7 @@ void SelectFileDialogLinuxGtk::SelectFileImpl(
   base::OnceClosure reenable_input_events =
       DisableHostInputHandling(dialog, owning_window);
 
-  dialogs_[dialog] = DialogState(params, std::move(signals), owning_window,
+  dialogs_[dialog] = DialogState(std::move(signals), owning_window,
                                  std::move(reenable_input_events));
 
   if (!GtkCheckVersion(4))
@@ -383,8 +381,7 @@ void SelectFileDialogLinuxGtk::FileSelected(GtkWidget* dialog,
 
   if (listener_) {
     listener_->FileSelected(ui::SelectedFileInfo(path),
-                            GtkDialogSelectedFilterIndex(dialog) + 1,
-                            PopParamsForDialog(dialog));
+                            GtkDialogSelectedFilterIndex(dialog) + 1);
   }
   GtkWindowDestroy(dialog);
 }
@@ -395,16 +392,15 @@ void SelectFileDialogLinuxGtk::MultiFilesSelected(
   set_last_opened_path(files[0].DirName());
 
   if (listener_) {
-    listener_->MultiFilesSelected(ui::FilePathListToSelectedFileInfoList(files),
-                                  PopParamsForDialog(dialog));
+    listener_->MultiFilesSelected(
+        ui::FilePathListToSelectedFileInfoList(files));
   }
   GtkWindowDestroy(dialog);
 }
 
 void SelectFileDialogLinuxGtk::FileNotSelected(GtkWidget* dialog) {
-  void* params = PopParamsForDialog(dialog);
   if (listener_) {
-    listener_->FileSelectionCanceled(params);
+    listener_->FileSelectionCanceled();
   }
   GtkWindowDestroy(dialog);
 }
@@ -544,14 +540,6 @@ GtkWidget* SelectFileDialogLinuxGtk::CreateSaveAsDialog(
   return dialog;
 }
 
-void* SelectFileDialogLinuxGtk::PopParamsForDialog(GtkWidget* dialog) {
-  auto iter = dialogs_.find(dialog);
-  CHECK(iter != dialogs_.end());
-  void* params = iter->second.params;
-  iter->second.params = nullptr;
-  return params;
-}
-
 bool SelectFileDialogLinuxGtk::IsCancelResponse(gint response_id) {
   bool is_cancel = response_id == GTK_RESPONSE_CANCEL ||
                    response_id == GTK_RESPONSE_DELETE_EVENT;
@@ -626,7 +614,6 @@ void SelectFileDialogLinuxGtk::OnFileChooserDestroy(GtkWidget* dialog) {
   }
   auto& state = it->second;
 
-  CHECK_EQ(state.params, nullptr);
   // `state.parent` can be nullptr when closing the host window
   // while opening the file-picker.
   if (state.parent) {

@@ -101,8 +101,7 @@ class SelectFileDialogHolder : public ui::SelectFileDialog::Listener {
     // |default_extension| is unused on Chrome OS.
     select_file_dialog_->SelectFileWithFileManagerParams(
         GetUiType(options->type), options->title, options->default_path,
-        file_types_.get(), file_type_index,
-        /*params=*/nullptr, owner,
+        file_types_.get(), file_type_index, owner,
         /*search_query=*/"",
         /*show_android_picker_apps=*/false);
   }

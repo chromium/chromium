@@ -94,14 +94,13 @@ class TestSelectFileDialog : public ui::SelectFileDialog {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params,
+                      void* /* params */,
                       const GURL* caller) override {
     if (auto_cancel_) {
-      listener_->FileSelectionCanceled(params);
+      listener_->FileSelectionCanceled();
     } else {
       base::FilePath path(FILE_PATH_LITERAL("/test/path"));
-      listener_->FileSelected(ui::SelectedFileInfo(path), file_type_index,
-                              params);
+      listener_->FileSelected(ui::SelectedFileInfo(path), file_type_index);
     }
   }
   // Pure virtual methods that need to be implemented.

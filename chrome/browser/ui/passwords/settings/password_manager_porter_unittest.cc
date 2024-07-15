@@ -72,10 +72,10 @@ class TestSelectFileDialog : public ui::SelectFileDialog {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params,
+                      void* /* params */,
                       const GURL* caller) override {
-    listener_->FileSelected(ui::SelectedFileInfo(forced_path_), file_type_index,
-                            params);
+    listener_->FileSelected(ui::SelectedFileInfo(forced_path_),
+                            file_type_index);
   }
   bool IsRunning(gfx::NativeWindow owning_window) const override {
     return false;
@@ -128,9 +128,9 @@ class FakeCancellingSelectFileDialog : public ui::SelectFileDialog {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params,
+                      void* /* params */,
                       const GURL* caller) override {
-    listener_->FileSelectionCanceled(params);
+    listener_->FileSelectionCanceled();
   }
 
   bool IsRunning(gfx::NativeWindow owning_window) const override {

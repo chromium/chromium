@@ -57,36 +57,23 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
   // the result of the Select File/Folder action. For any given call to
   // SelectFile(), exactly one of these callbacks will be invoked once, possibly
   // *but not necessarily* while SelectFile() is still on the stack.
-
-  // TODO(https://crbug.com/340178601): remove the params field. The default
-  // implementations of the variants that take params call the variants that do
-  // not take params, so if your client code does not use params, you should
-  // override the variants that do not accept params. We will gradually refactor
-  // away all overrides of the deprecated params variants, then remove the
-  // params argument altogether.
   class SHELL_DIALOGS_EXPORT Listener {
    public:
     // Notifies the Listener that a file/folder selection has been made. The
     // file/folder path is in |file|. |params| is the contextual value passed to
     // SelectFile. |index| specifies the index of the filter passed to the
     // initial call to SelectFile.
-    virtual void FileSelected(const SelectedFileInfo& file,
-                              int index,
-                              void* params);
     virtual void FileSelected(const SelectedFileInfo& file, int index) {}
 
     // Notifies the Listener that many files have been selected. The files are
     // in |files|. |params| is the contextual value passed to SelectFile.
     // Implementing this method is optional if no multi-file selection is ever
     // made, as the default implementation will call NOTREACHED.
-    virtual void MultiFilesSelected(const std::vector<SelectedFileInfo>& files,
-                                    void* params);
     virtual void MultiFilesSelected(const std::vector<SelectedFileInfo>& files);
 
     // Notifies the Listener that the file/folder selection was canceled (via
     // the user canceling or closing the selection dialog box, for example).
     // |params| is the contextual value passed to SelectFile.
-    virtual void FileSelectionCanceled(void* params);
     virtual void FileSelectionCanceled() {}
 
    protected:
@@ -271,7 +258,7 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
 
   // Informs the |listener_| that the file selection dialog was canceled. Moved
   // to a function for being able to post it to the message loop.
-  void CancelFileSelection(void* params);
+  void CancelFileSelection();
 
   // Returns true if the dialog has multiple file type choices.
   virtual bool HasMultipleFileTypeChoicesImpl() = 0;

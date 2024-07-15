@@ -207,18 +207,15 @@ TEST_F(FileSelectHelperTest, LastSelectedDirectory) {
     file_select_helper->dialog_mode_ = mode;
 
     file_select_helper->AddRef();  // Normally called by RunFileChooser().
-    file_select_helper->FileSelected(ui::SelectedFileInfo(file_path_1), index,
-                                     nullptr);
+    file_select_helper->FileSelected(ui::SelectedFileInfo(file_path_1), index);
     EXPECT_EQ(dir_path_1, profile.last_selected_directory());
 
     file_select_helper->AddRef();  // Normally called by RunFileChooser().
-    file_select_helper->FileSelected(ui::SelectedFileInfo(file_path_2), index,
-                                     nullptr);
+    file_select_helper->FileSelected(ui::SelectedFileInfo(file_path_2), index);
     EXPECT_EQ(dir_path_1, profile.last_selected_directory());
 
     file_select_helper->AddRef();  // Normally called by RunFileChooser().
-    file_select_helper->FileSelected(ui::SelectedFileInfo(file_path_3), index,
-                                     nullptr);
+    file_select_helper->FileSelected(ui::SelectedFileInfo(file_path_3), index);
     EXPECT_EQ(dir_path_2, profile.last_selected_directory());
 
     file_select_helper->AddRef();  // Normally called by RunFileChooser().
@@ -231,13 +228,11 @@ TEST_F(FileSelectHelperTest, LastSelectedDirectory) {
   file_select_helper->dialog_mode_ = FileChooserParams::Mode::kUploadFolder;
 
   file_select_helper->AddRef();  // Normally called by RunFileChooser().
-  file_select_helper->FileSelected(ui::SelectedFileInfo(dir_path_1), index,
-                                   nullptr);
+  file_select_helper->FileSelected(ui::SelectedFileInfo(dir_path_1), index);
   EXPECT_EQ(dir_path_1, profile.last_selected_directory());
 
   file_select_helper->AddRef();  // Normally called by RunFileChooser().
-  file_select_helper->FileSelected(ui::SelectedFileInfo(dir_path_2), index,
-                                   nullptr);
+  file_select_helper->FileSelected(ui::SelectedFileInfo(dir_path_2), index);
   EXPECT_EQ(dir_path_2, profile.last_selected_directory());
 
   file_select_helper->AddRef();  // Normally called by RunFileChooser().

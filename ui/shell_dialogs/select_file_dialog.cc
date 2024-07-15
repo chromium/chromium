@@ -50,25 +50,9 @@ void TruncateStringToSize(base::FilePath::StringType* string, size_t size) {
 
 namespace ui {
 
-void SelectFileDialog::Listener::FileSelected(const SelectedFileInfo& file,
-                                              int index,
-                                              void* params) {
-  FileSelected(file, index);
-}
-
-void SelectFileDialog::Listener::MultiFilesSelected(
-    const std::vector<SelectedFileInfo>& files,
-    void* params) {
-  MultiFilesSelected(files);
-}
-
 void SelectFileDialog::Listener::MultiFilesSelected(
     const std::vector<SelectedFileInfo>& files) {
   NOTREACHED_NORETURN();
-}
-
-void SelectFileDialog::Listener::FileSelectionCanceled(void* params) {
-  FileSelectionCanceled();
 }
 
 SelectFileDialog::FileTypeInfo::FileTypeInfo() = default;
@@ -159,7 +143,7 @@ void SelectFileDialog::SelectFile(
     // that the listener is called asynchronously.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(&SelectFileDialog::CancelFileSelection, this, params));
+        base::BindOnce(&SelectFileDialog::CancelFileSelection, this));
     return;
   }
 
@@ -182,9 +166,9 @@ SelectFileDialog::SelectFileDialog(Listener* listener,
 
 SelectFileDialog::~SelectFileDialog() {}
 
-void SelectFileDialog::CancelFileSelection(void* params) {
+void SelectFileDialog::CancelFileSelection() {
   if (listener_)
-    listener_->FileSelectionCanceled(params);
+    listener_->FileSelectionCanceled();
 }
 
 }  // namespace ui

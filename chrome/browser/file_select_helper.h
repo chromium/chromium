@@ -138,9 +138,7 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   void RunFileChooserEnd();
 
   // SelectFileDialog::Listener overrides.
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override;
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
   void MultiFilesSelected(
       const std::vector<ui::SelectedFileInfo>& files) override;
   void FileSelectionCanceled() override;
