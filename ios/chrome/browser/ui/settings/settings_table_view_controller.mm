@@ -2221,9 +2221,10 @@ struct EnhancedSafeBrowsingActivePromoData
   return YES;
 }
 
-// Check if this is the last active Password Manager showing the widget promo
-// and dismisses the FET if so.
+// Check if this is the last active Enhanced Safe Browsing promo shown and
+// dismisses the FET if so.
 - (void)removeEnhancedSafeBrowsingPromoFETDataIfNeeded {
+  CHECK(_browserState, base::NotFatalUntil::M131);
   feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForBrowserState(_browserState);
   EnhancedSafeBrowsingActivePromoData* data =
@@ -2290,11 +2291,6 @@ struct EnhancedSafeBrowsingActivePromoData
 
 - (void)reportDismissalUserAction {
   base::RecordAction(base::UserMetricsAction("MobileSettingsClose"));
-
-  // Remove EnhancedSafeBrowsingPromo FET Data.
-  // This is called here instead of in `settingsWillBeDismissed` because the
-  // ChromeBrowserState no longer exists by that point within the lifecycle.
-  [self removeEnhancedSafeBrowsingPromoFETDataIfNeeded];
 }
 
 - (void)reportBackUserAction {
@@ -2304,6 +2300,9 @@ struct EnhancedSafeBrowsingActivePromoData
 
 - (void)settingsWillBeDismissed {
   DCHECK(!_settingsAreDismissed);
+
+  // Remove Enhanced Safe Browsing Promo.
+  [self removeEnhancedSafeBrowsingPromoFETDataIfNeeded];
 
   // Stop children coordinators.
   [_googleServicesSettingsCoordinator stop];
