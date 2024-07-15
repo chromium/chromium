@@ -406,6 +406,15 @@ class _InfoFileContext:
 
 def _OnStaleMd5(changes, options, javac_cmd, javac_args, java_files, kt_files):
   logging.info('Starting _OnStaleMd5')
+
+  # Use the build server for errorprone runs.
+  if (options.enable_errorprone and not options.skip_build_server
+      and server_utils.MaybeRunCommand(name=options.target_name,
+                                       argv=sys.argv,
+                                       stamp_file=options.jar_path,
+                                       force=options.use_build_server)):
+    return
+
   if options.enable_kythe_annotations:
     # Kythe requires those env variables to be set and compile_java.py does the
     # same
@@ -731,14 +740,6 @@ def main(argv):
   build_utils.InitLogging('JAVAC_DEBUG')
   argv = build_utils.ExpandFileArgs(argv)
   options, java_files, kt_files = _ParseOptions(argv)
-
-  # Only use the build server for errorprone runs.
-  if (options.enable_errorprone and not options.skip_build_server
-      and server_utils.MaybeRunCommand(name=options.target_name,
-                                       argv=sys.argv,
-                                       stamp_file=options.jar_path,
-                                       force=options.use_build_server)):
-    return
 
   javac_cmd = [build_utils.JAVAC_PATH]
 
