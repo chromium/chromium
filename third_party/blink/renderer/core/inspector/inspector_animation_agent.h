@@ -101,7 +101,6 @@ class CORE_EXPORT InspectorAnimationAgent final
       blink::Animation&);
   double NormalizedStartTime(blink::Animation&);
   DocumentTimeline& ReferenceTimeline();
-  blink::Animation* AnimationClone(blink::Animation*);
   String CreateCSSId(blink::Animation&);
   void InvalidateInternalState();
   // Updates the given animation snapshot and

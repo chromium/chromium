@@ -380,22 +380,17 @@ protocol::Response InspectorAnimationAgent::setPaused(
     protocol::Response response = AssertAnimation(animation_id, animation);
     if (!response.IsSuccess())
       return response;
-    blink::Animation* clone = AnimationClone(animation);
-    if (!clone) {
-      return protocol::Response::ServerError(
-          "Failed to clone detached animation");
-    }
-    if (paused && !clone->Paused()) {
+    if (paused && !animation->Paused()) {
       // Ensure we restore a current time if the animation is limited.
       std::optional<AnimationTimeDelta> current_time;
-      if (!clone->TimelineInternal()->IsActive()) {
-        current_time = clone->CurrentTimeInternal();
+      if (!animation->TimelineInternal()->IsActive()) {
+        current_time = animation->CurrentTimeInternal();
       } else {
         std::optional<AnimationTimeDelta> start_time =
-            clone->StartTimeInternal();
+            animation->StartTimeInternal();
         if (start_time) {
           std::optional<AnimationTimeDelta> timeline_time =
-              clone->TimelineInternal()->CurrentTime();
+              animation->TimelineInternal()->CurrentTime();
           // TODO(crbug.com/916117): Handle NaN values.
           if (timeline_time) {
             current_time = timeline_time.value() - start_time.value();
@@ -403,61 +398,15 @@ protocol::Response InspectorAnimationAgent::setPaused(
         }
       }
 
-      clone->pause();
+      animation->pause();
       if (current_time) {
-        clone->SetCurrentTimeInternal(current_time.value());
+        animation->SetCurrentTimeInternal(current_time.value());
       }
-    } else if (!paused && clone->Paused()) {
-      clone->Unpause();
+    } else if (!paused && animation->Paused()) {
+      animation->Unpause();
     }
   }
   return protocol::Response::Success();
-}
-
-blink::Animation* InspectorAnimationAgent::AnimationClone(
-    blink::Animation* animation) {
-  const String id = String::Number(animation->SequenceNumber());
-  auto it = id_to_animation_clone_.find(id);
-  if (it != id_to_animation_clone_.end())
-    return it->value.Get();
-
-  auto* old_effect = To<KeyframeEffect>(animation->effect());
-  DCHECK(old_effect->Model()->IsKeyframeEffectModel());
-  KeyframeEffectModelBase* old_model = old_effect->Model();
-  KeyframeEffectModelBase* new_model = nullptr;
-  // Clone EffectModel.
-  // TODO(samli): Determine if this is an animations bug.
-  if (old_model->IsStringKeyframeEffectModel()) {
-    auto* old_string_keyframe_model = To<StringKeyframeEffectModel>(old_model);
-    KeyframeVector old_keyframes = old_string_keyframe_model->GetFrames();
-    StringKeyframeVector new_keyframes;
-    for (auto& old_keyframe : old_keyframes)
-      new_keyframes.push_back(To<StringKeyframe>(*old_keyframe));
-    new_model = MakeGarbageCollected<StringKeyframeEffectModel>(new_keyframes);
-  } else if (old_model->IsTransitionKeyframeEffectModel()) {
-    auto* old_transition_keyframe_model =
-        To<TransitionKeyframeEffectModel>(old_model);
-    KeyframeVector old_keyframes = old_transition_keyframe_model->GetFrames();
-    TransitionKeyframeVector new_keyframes;
-    for (auto& old_keyframe : old_keyframes)
-      new_keyframes.push_back(To<TransitionKeyframe>(*old_keyframe));
-    new_model =
-        MakeGarbageCollected<TransitionKeyframeEffectModel>(new_keyframes);
-  }
-
-  auto* new_effect = MakeGarbageCollected<KeyframeEffect>(
-      old_effect->EffectTarget(), new_model, old_effect->SpecifiedTiming());
-  is_cloning_ = true;
-  blink::Animation* clone =
-      blink::Animation::Create(new_effect, animation->TimelineInternal());
-  is_cloning_ = false;
-  id_to_animation_clone_.Set(id, clone);
-  id_to_animation_.Set(String::Number(clone->SequenceNumber()), clone);
-  clone->play();
-  clone->setStartTime(animation->startTime(), ASSERT_NO_EXCEPTION);
-
-  animation->SetEffectSuppressed(true);
-  return clone;
 }
 
 protocol::Response InspectorAnimationAgent::seekAnimations(
@@ -468,14 +417,10 @@ protocol::Response InspectorAnimationAgent::seekAnimations(
     protocol::Response response = AssertAnimation(animation_id, animation);
     if (!response.IsSuccess())
       return response;
-    blink::Animation* clone = AnimationClone(animation);
-    if (!clone) {
-      return protocol::Response::ServerError(
-          "Failed to clone a detached animation.");
+    if (!animation->Paused()) {
+      animation->play();
     }
-    if (!clone->Paused())
-      clone->play();
-    clone->SetCurrentTimeInternal(
+    animation->SetCurrentTimeInternal(
         ANIMATION_TIME_DELTA_FROM_MILLISECONDS(current_time));
   }
   return protocol::Response::Success();
@@ -510,7 +455,6 @@ protocol::Response InspectorAnimationAgent::setTiming(
   if (!response.IsSuccess())
     return response;
 
-  animation = AnimationClone(animation);
   NonThrowableExceptionState exception_state;
 
   OptionalEffectTiming* timing = OptionalEffectTiming::Create();
