@@ -1779,6 +1779,7 @@ bool XMLDocumentParser::AppendFragmentSource(const String& chunk) {
   xmlParseContent(Context());
   EndDocument();  // Close any open text nodes.
 
+#if LIBXML_VERSION < 21400
   // FIXME: If this code is actually needed, it should probably move to
   // finish()
   // XMLDocumentParserQt has a similar check (m_stream.error() ==
@@ -1794,6 +1795,7 @@ bool XMLDocumentParser::AppendFragmentSource(const String& chunk) {
            (bytes_processed >= 0 && !chunk_as_utf8.data()[bytes_processed]));
     return false;
   }
+#endif
 
   // No error if the chunk is well formed or it is not but we have no error.
   return Context()->wellFormed || !xmlCtxtGetLastError(Context());
