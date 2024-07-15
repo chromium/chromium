@@ -183,6 +183,10 @@ EncodedDataHelper::~EncodedDataHelper() {
   base::STLClearObject(&data_);
 }
 
+void EncodedDataHelper::Rewind() {
+  next_pos_to_parse_ = 0;
+}
+
 bool EncodedDataHelper::ReachEndOfStream() const {
   return next_pos_to_parse_ == data_.size();
 }
@@ -421,6 +425,14 @@ scoped_refptr<DecoderBuffer> EncodedDataHelperH265::GetNextBuffer() {
 
 bool EncodedDataHelperH265::ReachEndOfStream() const {
   return EncodedDataHelper::ReachEndOfStream() && previous_nalus_.empty();
+}
+
+void EncodedDataHelperH265::Rewind() {
+  h265_parser_->Reset();
+  h265_parser_->SetStream(reinterpret_cast<uint8_t*>(data_.data()),
+                          data_.size());
+  previous_nalus_.clear();
+  EncodedDataHelper::Rewind();
 }
 
 scoped_refptr<DecoderBuffer> EncodedDataHelperH265::ReassembleNALUs(

@@ -117,7 +117,7 @@ class EncodedDataHelper {
   virtual ~EncodedDataHelper();
   virtual scoped_refptr<DecoderBuffer> GetNextBuffer() = 0;
 
-  void Rewind() { next_pos_to_parse_ = 0; }
+  virtual void Rewind();
   virtual bool ReachEndOfStream() const;
 
  protected:
@@ -159,6 +159,7 @@ class EncodedDataHelperH265 : public EncodedDataHelper {
 
   scoped_refptr<DecoderBuffer> GetNextBuffer() override;
   bool ReachEndOfStream() const override;
+  void Rewind() override;
 
  private:
   // This struct is needed because:
