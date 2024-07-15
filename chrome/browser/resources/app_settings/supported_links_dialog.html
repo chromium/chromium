@@ -1,6 +1,6 @@
-<cr-dialog id="dialog" close-text="${this.i18n('close')}" show-on-attach
+<cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach
     show-close-button>
-  <div slot="title">${this.i18n('appManagementIntentSettingsDialogTitle')}</div>
+  <div slot="title">$i18n{appManagementIntentSettingsDialogTitle}</div>
   <div id="dialogBody" slot="body" scrollable>
     <div id="list">
       ${this.app.supportedLinks.map(item => html`

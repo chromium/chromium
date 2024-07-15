@@ -6,15 +6,14 @@ import './app_content_dialog.js';
 import '//resources/cr_elements/cr_link_row/cr_link_row.js';
 
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
-import {CrLitElement, type PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app_content_item.css.js';
 import {getHtml} from './app_content_item.html.js';
 import {createDummyApp} from './web_app_settings_utils.js';
 
-const AppContentItemElementBase = I18nMixinLit(CrLitElement);
-export class AppContentItemElement extends AppContentItemElementBase {
+export class AppContentItemElement extends CrLitElement {
   static get is() {
     return 'app-management-app-content-item';
   }

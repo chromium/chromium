@@ -6,17 +6,13 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './supported_links_dialog.css.js';
 import {getHtml} from './supported_links_dialog.html.js';
 import {createDummyApp} from './web_app_settings_utils.js';
 
-const SupportedLinksDialogElementBase = I18nMixinLit(CrLitElement);
-
-export class SupportedLinksDialogElement extends
-    SupportedLinksDialogElementBase {
+export class SupportedLinksDialogElement extends CrLitElement {
   static get is() {
     return 'app-management-supported-links-dialog';
   }

@@ -1,7 +1,7 @@
 <div id="file-handling-item">
   <app-management-toggle-row
      id="toggle-row"
-     label="${this.i18n('appManagementFileHandlingHeader')}"
+     label="$i18n{appManagementFileHandlingHeader}"
      ?managed="${this.isManaged_()}"
      ?value="${this.getValue_()}"
      class="header-text">
@@ -21,13 +21,13 @@
 ${this.showOverflowDialog ? html`
   <cr-dialog id="dialog" show-on-attach
       @close="${this.onDialogClose_}">
-    <div slot="title">${this.i18n('fileHandlingOverflowDialogTitle')}</div>
+    <div slot="title">$i18n{fileHandlingOverflowDialogTitle}</div>
     <div id="dialog-body" slot="body">
       ${this.userVisibleTypes_()}
     </div>
     <div slot="button-container">
       <cr-button class="action-button" @click="${this.onCloseButtonClicked_}">
-        ${this.i18n('close')}
+        $i18n{close}
       </cr-button>
     </div>
   </cr-dialog>
