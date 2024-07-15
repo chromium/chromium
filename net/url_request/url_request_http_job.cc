@@ -57,6 +57,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_util.h"
@@ -152,6 +153,7 @@ base::Value::Dict CookieInclusionStatusNetLogParams(
     const std::string& cookie_name,
     const std::string& cookie_domain,
     const std::string& cookie_path,
+    const std::optional<net::CookiePartitionKey>& partition_key,
     const net::CookieInclusionStatus& status,
     net::NetLogCaptureMode capture_mode) {
   base::Value::Dict dict;
@@ -165,6 +167,21 @@ base::Value::Dict CookieInclusionStatusNetLogParams(
     if (!cookie_path.empty())
       dict.Set("path", cookie_path);
   }
+  // The partition key is not sensitive, since it is fully determined by the
+  // structure of the page. The cookie may either be partitioned or not, but
+  // does not have the ability to influence the key's value.
+  std::string partition_key_str;
+  if (partition_key.has_value()) {
+    base::expected<net::CookiePartitionKey::SerializedCookiePartitionKey,
+                   std::string>
+        serialized = net::CookiePartitionKey::Serialize(partition_key);
+    partition_key_str = serialized.has_value()
+                            ? serialized.value().GetDebugString()
+                            : serialized.error();
+  } else {
+    partition_key_str = "(none)";
+  }
+  dict.Set("partition_key", std::move(partition_key_str));
   return dict;
 }
 
@@ -952,6 +969,7 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
                 "send", cookie_with_access_result.cookie.Name(),
                 cookie_with_access_result.cookie.Domain(),
                 cookie_with_access_result.cookie.Path(),
+                cookie_with_access_result.cookie.PartitionKey(),
                 cookie_with_access_result.access_result.status, capture_mode);
           });
     }
@@ -1119,15 +1137,16 @@ void URLRequestHttpJob::OnSetCookieResult(const CookieOptions& options,
                                           std::string cookie_string,
                                           CookieAccessResult access_result) {
   if (request_->net_log().IsCapturing()) {
-    request_->net_log().AddEvent(NetLogEventType::COOKIE_INCLUSION_STATUS,
-                                 [&](NetLogCaptureMode capture_mode) {
-                                   return CookieInclusionStatusNetLogParams(
-                                       "store",
-                                       cookie ? cookie.value().Name() : "",
-                                       cookie ? cookie.value().Domain() : "",
-                                       cookie ? cookie.value().Path() : "",
-                                       access_result.status, capture_mode);
-                                 });
+    request_->net_log().AddEvent(
+        NetLogEventType::COOKIE_INCLUSION_STATUS,
+        [&](NetLogCaptureMode capture_mode) {
+          return CookieInclusionStatusNetLogParams(
+              "store", cookie ? cookie.value().Name() : "",
+              cookie ? cookie.value().Domain() : "",
+              cookie ? cookie.value().Path() : "",
+              cookie ? cookie.value().PartitionKey() : std::nullopt,
+              access_result.status, capture_mode);
+        });
   }
 
   set_cookie_access_result_list_.emplace_back(

@@ -31,6 +31,8 @@ class NET_EXPORT CookiePartitionKey {
     const std::string& TopLevelSite() const;
     bool has_cross_site_ancestor() const;
 
+    std::string GetDebugString() const;
+
     // This constructor does not check if the values being serialized are valid.
     // The caller of this function must ensure that only valid values are passed
     // to this method.

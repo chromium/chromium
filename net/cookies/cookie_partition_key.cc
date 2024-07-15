@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/types/optional_util.h"
 #include "net/base/cronet_buildflags.h"
+#include "net/base/features.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
@@ -46,6 +47,17 @@ CookiePartitionKey::SerializedCookiePartitionKey::SerializedCookiePartitionKey(
 const std::string&
 CookiePartitionKey::SerializedCookiePartitionKey::TopLevelSite() const {
   return top_level_site_;
+}
+
+std::string CookiePartitionKey::SerializedCookiePartitionKey::GetDebugString()
+    const {
+  std::string out = TopLevelSite();
+  if (base::FeatureList::IsEnabled(
+          features::kAncestorChainBitEnabledInPartitionedCookies)) {
+    base::StrAppend(
+        &out, {", ", has_cross_site_ancestor() ? "cross-site" : "same-site"});
+  }
+  return out;
 }
 
 #if !BUILDFLAG(CRONET_BUILD)
