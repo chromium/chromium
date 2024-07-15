@@ -500,10 +500,6 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator) &&
           device::kWebAuthnGpmPin.Get());
 
-  source->AddBoolean("enableButterOnDesktopFollowup",
-                     base::FeatureList::IsEnabled(
-                         password_manager::features::kButterOnDesktopFollowup));
-
   source->AddString("passwordSharingLearnMoreURL",
                     chrome::kPasswordSharingLearnMoreURL);
 

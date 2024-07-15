@@ -442,7 +442,6 @@ suite('PasswordDetailsCardTest', function() {
   test(
       'clicking save password in account opens move password dialog',
       async function() {
-        loadTimeData.overrideValues({enableButterOnDesktopFollowup: true});
         passwordManager.data.isOptedInAccountStorage = true;
         syncProxy.syncInfo = {
           isEligibleForAccountStorage: true,

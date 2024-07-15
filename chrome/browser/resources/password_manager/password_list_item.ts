@@ -11,7 +11,6 @@ import './searchable_label.js';
 import './shared_style.css.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -60,13 +59,6 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
        */
       numberOfAccounts_: String,
 
-      enableButterOnDesktopFollowup_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableButterOnDesktopFollowup');
-        },
-      },
-
       deviceOnlyCredentialsAccessibilityLabelText_: String,
     };
   }
@@ -77,7 +69,6 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
   searchTerm: string;
   private numberOfAccounts_: string;
   private tooltipText_: string;
-  private enableButterOnDesktopFollowup_: boolean;
   private deviceOnlyCredentialsAccessibilityLabelText_: string;
 
   private computeElementClass_(): string {
@@ -127,18 +118,16 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
           await PluralStringProxyImpl.getInstance().getPluralString(
               'numberOfAccounts', this.item.entries.length);
     }
-    if (this.enableButterOnDesktopFollowup_) {
-      this.tooltipText_ =
-          await PluralStringProxyImpl.getInstance().getPluralString(
-              'deviceOnlyPasswordsIconTooltip',
-              this.getNumberOfCredentialsOnDevice_());
-      if (this.shouldShowDeviceOnlyCredentialsIcon_()) {
-        this.deviceOnlyCredentialsAccessibilityLabelText_ =
-            await PluralStringProxyImpl.getInstance()
-                .getPluralString(
-                    'deviceOnlyListItemAriaLabel', this.item.entries.length)
-                .then(label => label.replace('$1', this.item.name));
-      }
+    this.tooltipText_ =
+        await PluralStringProxyImpl.getInstance().getPluralString(
+            'deviceOnlyPasswordsIconTooltip',
+            this.getNumberOfCredentialsOnDevice_());
+    if (this.shouldShowDeviceOnlyCredentialsIcon_()) {
+      this.deviceOnlyCredentialsAccessibilityLabelText_ =
+          await PluralStringProxyImpl.getInstance()
+              .getPluralString(
+                  'deviceOnlyListItemAriaLabel', this.item.entries.length)
+              .then(label => label.replace('$1', this.item.name));
     }
   }
 
@@ -184,7 +173,7 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
   }
 
   private shouldShowDeviceOnlyCredentialsIcon_(): boolean {
-    return this.enableButterOnDesktopFollowup_ && this.isAccountStoreUser &&
+    return this.isAccountStoreUser &&
         (this.getNumberOfCredentialsOnDevice_() > 0);
   }
 

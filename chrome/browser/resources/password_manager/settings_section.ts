@@ -114,13 +114,6 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
         },
       },
 
-      enableButterOnDesktopFollowup_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableButterOnDesktopFollowup');
-        },
-      },
-
       showMovePasswordsDialog_: Boolean,
 
       passwordsOnDevice_: {
@@ -169,7 +162,6 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   private showPasswordsImporter_: boolean;
   private showMovePasswordsDialog_: boolean;
   private trustedVaultBannerState_: TrustedVaultBannerState;
-  private enableButterOnDesktopFollowup_: boolean;
   private movePasswordsLabel_: string;
   private passwordsOnDevice_: chrome.passwordsPrivate.PasswordUiEntry[] = [];
   private isPasswordManagerPinAvailable_: boolean = false;
@@ -365,10 +357,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
 
   private getToggleSubLabelForAccountStorageOptIn_(accountEmail: string):
       string {
-    if (this.enableButterOnDesktopFollowup_) {
-      return this.i18n('accountStorageToggleSubLabel', accountEmail);
-    }
-    return accountEmail;
+    return this.i18n('accountStorageToggleSubLabel', accountEmail);
   }
 
   // <if expr="is_win or is_macosx">
@@ -408,8 +397,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   }
 
   private shouldShowMovePasswordsEntry_(): boolean {
-    return this.enableButterOnDesktopFollowup_ && this.isAccountStoreUser &&
-        this.passwordsOnDevice_.length > 0;
+    return this.isAccountStoreUser && this.passwordsOnDevice_.length > 0;
   }
 
   private async updatePasswordsOnDevice_() {

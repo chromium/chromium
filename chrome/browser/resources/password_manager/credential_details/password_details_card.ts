@@ -23,7 +23,6 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {PasswordsMovedEvent, ValueCopiedEvent} from '../password_manager_app.js';
@@ -118,13 +117,6 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
         value: false,
       },
 
-      enableButterOnDesktopFollowup_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableButterOnDesktopFollowup');
-        },
-      },
-
       isUsingAccountStore: Boolean,
     };
   }
@@ -139,7 +131,6 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   private showShareFlow_: boolean;
   private showShareButton_: boolean;
   private showMovePasswordDialog_: boolean;
-  private enableButterOnDesktopFollowup_: boolean;
 
   private isFederated_(): boolean {
     return !!this.password.federationText;
@@ -308,7 +299,7 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   }
 
   private showMovePasswordEntry_(): boolean {
-    return this.enableButterOnDesktopFollowup_ && this.isUsingAccountStore &&
+    return this.isUsingAccountStore &&
         this.password.storedIn ===
         chrome.passwordsPrivate.PasswordStoreSet.DEVICE;
   }

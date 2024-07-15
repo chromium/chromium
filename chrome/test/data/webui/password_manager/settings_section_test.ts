@@ -479,7 +479,6 @@ suite('SettingsSectionTest', function() {
   });
 
   test('Move passwords to account button is visible', async function() {
-    loadTimeData.overrideValues({enableButterOnDesktopFollowup: true});
     passwordManager.data.isOptedInAccountStorage = true;
     syncProxy.syncInfo = {
       isEligibleForAccountStorage: true,
@@ -508,7 +507,6 @@ suite('SettingsSectionTest', function() {
   });
 
   test('Move passwords to account button is not visible', async function() {
-    loadTimeData.overrideValues({enableButterOnDesktopFollowup: true});
     passwordManager.data.isOptedInAccountStorage = true;
     syncProxy.syncInfo = {
       isEligibleForAccountStorage: true,
@@ -537,41 +535,8 @@ suite('SettingsSectionTest', function() {
   });
 
   test(
-      'Move passwords to account button not visible because feature disabled',
-      async function() {
-        loadTimeData.overrideValues({enableButterOnDesktopFollowup: false});
-        passwordManager.data.isOptedInAccountStorage = true;
-        syncProxy.syncInfo = {
-          isEligibleForAccountStorage: true,
-          isSyncingPasswords: false,
-        };
-
-        const group = createCredentialGroup({
-          name: 'test.com',
-          credentials: [
-            createPasswordEntry({
-              id: 0,
-              username: 'test1',
-              inProfileStore: true,
-              inAccountStore: false,
-            }),
-          ],
-        });
-
-        passwordManager.data.groups = [group];
-        const settings = document.createElement('settings-section');
-        document.body.appendChild(settings);
-        await passwordManager.whenCalled('getSavedPasswordList');
-        await flushTasks();
-
-        assertFalse(
-            !!settings.shadowRoot!.getElementById('movePasswordsButton'));
-      });
-
-  test(
       'clicking save passwords in account opens move passwords dialog',
       async function() {
-        loadTimeData.overrideValues({enableButterOnDesktopFollowup: true});
         passwordManager.data.isOptedInAccountStorage = true;
         syncProxy.syncInfo = {
           isEligibleForAccountStorage: true,

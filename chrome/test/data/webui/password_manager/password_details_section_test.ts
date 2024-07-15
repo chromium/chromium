@@ -7,7 +7,6 @@ import 'chrome://password-manager/password_manager.js';
 // clang-format off
 import type {PasskeyDetailsCardElement, PasswordDetailsCardElement, PasswordDetailsSectionElement} from 'chrome://password-manager/password_manager.js';
 import {Page, PasswordManagerImpl, PasswordViewPageInteractions, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -470,7 +469,6 @@ suite('PasswordDetailsSectionTest', function() {
   // </if>
 
   test('should show button to move password', async function() {
-    loadTimeData.overrideValues({enableButterOnDesktopFollowup: true});
     passwordManager.data.isOptedInAccountStorage = true;
     syncProxy.syncInfo = {
       isEligibleForAccountStorage: true,
@@ -503,7 +501,6 @@ suite('PasswordDetailsSectionTest', function() {
   });
 
   test('should not show button to move password', async function() {
-    loadTimeData.overrideValues({enableButterOnDesktopFollowup: true});
     passwordManager.data.isOptedInAccountStorage = true;
     syncProxy.syncInfo = {
       isEligibleForAccountStorage: true,
@@ -529,41 +526,4 @@ suite('PasswordDetailsSectionTest', function() {
     assertFalse(isVisible(passwordEntry!.shadowRoot!.querySelector<HTMLElement>(
         '.move-password-container')));
   });
-
-  test(
-      'should not show button to move password because fature disabled',
-      async function() {
-        // Disabling the feature.
-        loadTimeData.overrideValues({enableButterOnDesktopFollowup: false});
-        passwordManager.data.isOptedInAccountStorage = true;
-        syncProxy.syncInfo = {
-          isEligibleForAccountStorage: true,
-          isSyncingPasswords: false,
-        };
-
-        const group = createCredentialGroup({
-          name: 'test.com',
-          credentials: [
-            createPasswordEntry({
-              id: 0,
-              username: 'test1',
-              inProfileStore: true,
-              inAccountStore: false,
-            }),
-          ],
-        });
-        Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group);
-
-        const section = document.createElement('password-details-section');
-        document.body.appendChild(section);
-        await flushTasks();
-
-        const passwordEntry =
-            section.shadowRoot!.querySelector<PasswordDetailsCardElement>(
-                'password-details-card');
-        assertTrue(!!passwordEntry);
-        assertFalse(
-            isVisible(passwordEntry!.shadowRoot!.querySelector<HTMLElement>(
-                '.move-password-container')));
-      });
 });
