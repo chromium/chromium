@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_SIGNAL_STORAGE_CONFIG_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_SIGNAL_STORAGE_CONFIG_H_
 
+#include <memory>
+#include <set>
+#include <utility>
 #include <vector>
 
 #include "base/functional/callback.h"

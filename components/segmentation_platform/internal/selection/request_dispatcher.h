@@ -6,7 +6,9 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_REQUEST_DISPATCHER_H_
 
 #include <map>
+#include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <utility>
 

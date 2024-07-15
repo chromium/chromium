@@ -5,7 +5,12 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_HASHPREFIX_REALTIME_HASH_REALTIME_SERVICE_H_
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_HASHPREFIX_REALTIME_HASH_REALTIME_SERVICE_H_
 
+#include <limits>
+#include <memory>
 #include <optional>
+#include <set>
+#include <string>
+#include <vector>
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/gtest_prod_util.h"

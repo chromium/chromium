@@ -5,8 +5,12 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_UTIL_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_UTIL_H_
 
+#include <map>
 #include <optional>
+#include <set>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "components/optimization_guide/core/model_enums.h"

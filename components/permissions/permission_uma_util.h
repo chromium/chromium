@@ -6,6 +6,8 @@
 #define COMPONENTS_PERMISSIONS_PERMISSION_UMA_UTIL_H_
 
 #include <optional>
+#include <set>
+#include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"

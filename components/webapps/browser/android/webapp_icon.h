@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_WEBAPPS_BROWSER_ANDROID_WEBAPP_ICON_H_
 #define COMPONENTS_WEBAPPS_BROWSER_ANDROID_WEBAPP_ICON_H_
 
+#include <set>
 #include <string>
+
 #include "components/webapk/webapk.pb.h"
 #include "url/gurl.h"
 

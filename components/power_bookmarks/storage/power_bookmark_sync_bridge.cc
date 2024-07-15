@@ -4,6 +4,12 @@
 
 #include "components/power_bookmarks/storage/power_bookmark_sync_bridge.h"
 
+#include <memory>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "components/power_bookmarks/common/power.h"
 #include "components/power_bookmarks/storage/power_bookmark_sync_metadata_database.h"
 #include "components/sync/base/deletion_origin.h"

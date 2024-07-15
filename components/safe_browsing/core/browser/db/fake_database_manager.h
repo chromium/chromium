@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_FAKE_DATABASE_MANAGER_H_
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_FAKE_DATABASE_MANAGER_H_
 
+#include <set>
+#include <string>
+#include <vector>
+
 #include "base/containers/flat_map.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"

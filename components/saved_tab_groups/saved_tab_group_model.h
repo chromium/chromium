@@ -7,6 +7,9 @@
 
 #include <memory>
 #include <optional>
+#include <set>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"

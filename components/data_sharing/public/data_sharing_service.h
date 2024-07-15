@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_DATA_SHARING_PUBLIC_DATA_SHARING_SERVICE_H_
 #define COMPONENTS_DATA_SHARING_PUBLIC_DATA_SHARING_SERVICE_H_
 
+#include <set>
 #include <string>
 
 #include "base/functional/callback_forward.h"

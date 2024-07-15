@@ -7,6 +7,7 @@
 
 #include <array>
 #include <optional>
+#include <ostream>
 
 #include "base/notreached.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"

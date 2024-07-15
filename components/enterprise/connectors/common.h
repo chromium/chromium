@@ -5,6 +5,12 @@
 #ifndef COMPONENTS_ENTERPRISE_CONNECTORS_COMMON_H_
 #define COMPONENTS_ENTERPRISE_CONNECTORS_COMMON_H_
 
+#include <map>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/files/file_path.h"
 #include "base/supports_user_data.h"
 #include "components/download/public/common/download_danger_type.h"
