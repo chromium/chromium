@@ -101,7 +101,8 @@
                  dispatch_get_main_queue(), ^{
                    [self.delegate selectionUI:self
                               performedSelection:nil
-                       constructedResultsPageURL:GURL("http://chromium.org")
+                       constructedResultsPageURL:
+                           GURL("https://www.google.com/search?q=test&udm=2")
                                   suggestSignals:@"iil"];
                  });
 }
