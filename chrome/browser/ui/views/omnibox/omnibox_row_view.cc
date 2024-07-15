@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_header_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_match_cell_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
 #include "components/omnibox/browser/omnibox_controller.h"
@@ -114,7 +115,8 @@ views::View* OmniboxRowView::GetActiveAuxiliaryButtonForAccessibility() const {
 gfx::Insets OmniboxRowView::GetInsets() const {
   if (OmniboxFieldTrial::IsFeaturedSearchIPHEnabled() &&
       result_view_->GetThemeState() == OmniboxPartState::IPH) {
-    return gfx::Insets::TLBR(8, 8, 8, 16);
+    int LRInsets = OmniboxMatchCellView::kIPHLeftOffset;
+    return gfx::Insets::TLBR(8, LRInsets, 8, LRInsets);
   }
 
   return gfx::Insets::TLBR(0, 0, 0, 16);

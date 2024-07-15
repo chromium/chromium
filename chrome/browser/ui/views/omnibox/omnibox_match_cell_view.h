@@ -25,6 +25,7 @@ class OmniboxMatchCellView : public views::View {
   static constexpr int kMarginLeft = 4;
   static constexpr int kMarginRight = 8;
   static constexpr int kImageBoundsWidth = 40;
+  static constexpr int kIPHLeftOffset = 16;
 
   // Computes the maximum width, in pixels, that can be allocated for the two
   // parts of an autocomplete result, i.e. the contents and the description.
