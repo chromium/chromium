@@ -5,6 +5,7 @@
 #include "extensions/renderer/bindings/listener_tracker.h"
 
 #include "base/check.h"
+#include "base/not_fatal_until.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/value_counter.h"
 
@@ -24,7 +25,7 @@ bool ListenerTracker::RemoveUnfilteredListener(
     const std::string& event_name) {
   ListenerCountMap& listeners = unfiltered_listeners_[context_owner_id];
   auto iter = listeners.find(event_name);
-  DCHECK(iter != listeners.end());
+  CHECK(iter != listeners.end(), base::NotFatalUntil::M130);
   if (--(iter->second) == 0) {
     listeners.erase(iter);
     return true;
@@ -64,7 +65,7 @@ ListenerTracker::RemoveFilteredListener(const std::string& context_owner_id,
   FilteredListeners::const_iterator counts = filtered_listeners_.find(key);
 
   bool was_last_of_kind = false;
-  DCHECK(counts != filtered_listeners_.end());
+  CHECK(counts != filtered_listeners_.end(), base::NotFatalUntil::M130);
   base::Value filter_copy = base::Value(matcher->value()->Clone());
   if (counts->second->Remove(filter_copy)) {
     if (counts->second->is_empty()) {

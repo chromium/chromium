@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -355,7 +356,7 @@ class ContentVerifier::HashHelper {
     }
 
     auto iter = callback_infos_.find(key);
-    DCHECK(iter != callback_infos_.end());
+    CHECK(iter != callback_infos_.end(), base::NotFatalUntil::M130);
     auto& callback_info = iter->second;
 
     // Force creation of computed_hashes.json if all of the following are true:
@@ -394,7 +395,7 @@ class ContentVerifier::HashHelper {
     }
 
     auto iter = callback_infos_.find(key);
-    DCHECK(iter != callback_infos_.end());
+    CHECK(iter != callback_infos_.end(), base::NotFatalUntil::M130);
     auto& callback_info = iter->second;
 
     for (auto& callback : callback_info.callbacks)

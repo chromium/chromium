@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
@@ -250,11 +251,13 @@ std::vector<RequestAction> RulesetManager::MergeModifyHeaderActions(
       [this](const RequestAction& lhs, const RequestAction& rhs) {
         auto lhs_install_time_it =
             extension_install_times_.find(lhs.extension_id);
-        DCHECK(lhs_install_time_it != extension_install_times_.end());
+        CHECK(lhs_install_time_it != extension_install_times_.end(),
+              base::NotFatalUntil::M130);
 
         auto rhs_install_time_it =
             extension_install_times_.find(rhs.extension_id);
-        DCHECK(rhs_install_time_it != extension_install_times_.end());
+        CHECK(rhs_install_time_it != extension_install_times_.end(),
+              base::NotFatalUntil::M130);
 
         // Same comparator as ExtensionRulesetData's for actions from different
         // extensions. Otherwise, default to RequestAction's comparator.

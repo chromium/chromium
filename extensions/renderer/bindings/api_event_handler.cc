@@ -425,7 +425,7 @@ size_t APIEventHandler::GetNumEventListenersForTesting(
   DCHECK(data);
 
   auto iter = data->emitters.find(event_name);
-  DCHECK(iter != data->emitters.end());
+  CHECK(iter != data->emitters.end());
   EventEmitter* emitter = nullptr;
   gin::Converter<EventEmitter*>::FromV8(
       context->GetIsolate(), iter->second.Get(context->GetIsolate()), &emitter);

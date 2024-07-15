@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/not_fatal_until.h"
 #include "components/guest_view/browser/guest_view_event.h"
 #include "extensions/browser/api/guest_view/web_view/web_view_internal_api.h"
 #include "extensions/browser/guest_view/web_view/web_view_constants.h"
@@ -62,7 +63,7 @@ void WebViewFindHelper::DispatchFindUpdateEvent(bool canceled,
 
 void WebViewFindHelper::EndFindSession(int session_request_id, bool canceled) {
   auto session_iterator = find_info_map_.find(session_request_id);
-  DCHECK(session_iterator != find_info_map_.end());
+  CHECK(session_iterator != find_info_map_.end(), base::NotFatalUntil::M130);
   FindInfo* find_info = session_iterator->second.get();
 
   // Call the callback function of the first request of the find session.
