@@ -544,6 +544,14 @@ bool IsSubtreePrunedForAccessibility(const Element* node) {
   if (IsA<HTMLTitleElement>(node))
     return true;
 
+  // ::scroll-marker pseudo elements are attached to the
+  // ::scroll-marker-group's layout object, so don't create them
+  // here, instead they will be created as part of the
+  // AXNodeObject::AddPseudoElementChildrenFromLayoutTree.
+  if (node->IsScrollMarkerPseudoElement()) {
+    return true;
+  }
+
   return false;
 }
 

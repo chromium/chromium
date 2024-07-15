@@ -3709,7 +3709,7 @@ bool LayoutBox::IsMonolithic() const {
       (IsFixedPositioned() && GetDocument().Printing() &&
        IsA<LayoutView>(Container())) ||
       ShouldApplySizeContainment() || IsFrameSet() ||
-      StyleRef().HasLineClamp()) {
+      StyleRef().HasLineClamp() || IsScrollMarkerGroup()) {
     return true;
   }
 

@@ -316,6 +316,45 @@ std::optional<LayoutUnit> ContentMinimumInlineSize(
   return std::nullopt;
 }
 
+// Look for scroll markers inside `parent`, and attach them.
+void AttachScrollMarkers(LayoutObject& parent,
+                         Node::AttachContext& context,
+                         bool has_absolute_containment = false,
+                         bool has_fixed_containment = false) {
+  if (parent.CanContainAbsolutePositionObjects()) {
+    has_absolute_containment = true;
+    if (parent.CanContainFixedPositionObjects()) {
+      has_fixed_containment = true;
+    }
+  }
+
+  for (LayoutObject* child = parent.SlowFirstChild(); child;
+       child = child->NextSibling()) {
+    if ((child->IsFixedPositioned() && !has_fixed_containment) ||
+        (child->IsAbsolutePositioned() && !has_absolute_containment)) {
+      continue;
+    }
+    if (auto* element = DynamicTo<Element>(child->GetNode())) {
+      if (PseudoElement* marker =
+              element->GetPseudoElement(kPseudoIdScrollMarker)) {
+        marker->AttachLayoutTree(context);
+      }
+    }
+    // Descend into the subtree of the child unless it is a scroll marker group,
+    // or establishes one.
+    //
+    // TODO(layout-dev): Need to enter nested scrollable containers if an outer
+    // scrollable container has "stronger" containment than the inner one. E.g.
+    // if the outer one is position:relative, and the inner one has a scroll
+    // marker in an absolutely positioned subtree, the marker belongs in the
+    // outermost scroll marker group.
+    if (!child->IsScrollMarkerGroup() && !child->GetScrollMarkerGroup()) {
+      AttachScrollMarkers(*child, context, has_absolute_containment,
+                          has_fixed_containment);
+    }
+  }
+}
+
 }  // namespace
 
 const LayoutResult* BlockNode::Layout(
@@ -1508,6 +1547,72 @@ bool BlockNode::HasNonVisibleBlockOverflow() const {
 
 bool BlockNode::IsCustomLayoutLoaded() const {
   return To<LayoutCustom>(box_.Get())->IsLoaded();
+}
+
+void BlockNode::HandleScrollMarkerGroup() const {
+  BlockNode group_node = GetScrollMarkerGroup();
+  if (!group_node) {
+    return;
+  }
+
+  GetDocument().GetStyleEngine().SetInScrollMarkersAttachment(true);
+
+  // Detach all markers.
+  while (LayoutObject* child = group_node.GetLayoutBox()->SlowFirstChild()) {
+    // Anonymous wrappers may have been inserted. Search for the marker.
+    for (LayoutObject* walker = child; walker;
+         walker = walker->NextInPreOrder(child)) {
+      if (walker->GetNode() &&
+          walker->GetNode()->IsScrollMarkerPseudoElement()) {
+        walker->GetNode()->DetachLayoutTree(/*performing_reattach=*/true);
+        break;
+      }
+    }
+  }
+  DCHECK(!group_node.GetLayoutBox()->SlowFirstChild());
+
+  Node::AttachContext context;
+  context.parent = group_node.GetLayoutBox();
+  DCHECK(context.parent);
+
+  AttachScrollMarkers(*box_, context);
+
+  DCHECK(GetDocument().GetStyleEngine().InScrollMarkersAttachment());
+  GetDocument().GetStyleEngine().SetInScrollMarkersAttachment(false);
+
+  // The ::scroll-marker-group has now been populated with markers. If the group
+  // comes after the principal box, we can return, and let the parent layout
+  // algorithm (whatever that is) handle it as part of normal layout.
+  if (!group_node.GetLayoutBox()->IsScrollMarkerGroupBefore()) {
+    return;
+  }
+
+  // If the group comes before the principal box, it means that we might already
+  // be past it, layout-wise. Lay it out again, and replace the innards of the
+  // fragment from the previous layout. This should be safe, as long as the box
+  // establishes sufficient amounts of containment.
+  const LayoutResult* result =
+      group_node.GetLayoutBox()->GetCachedLayoutResult(nullptr);
+  if (!result) {
+    // This may happen e.g. if the ::scroll-marker-group is out-of-flow
+    // positioned, and hasn't been laid out yet (which is great, because then we
+    // won't have to do the innards-replacement).
+    return;
+  }
+  const auto& fragment = To<PhysicalBoxFragment>(result->GetPhysicalFragment());
+
+  // A ::scroll-marker-group should be monolithic.
+  DCHECK(fragment.IsOnlyForNode());
+
+  const ConstraintSpace& space = result->GetConstraintSpaceForCaching();
+  const LayoutResult* new_result = group_node.Layout(space);
+  // TODO(layout-dev): It's being genetically modified all right, but we're not
+  // really "cloning".
+  fragment.GetMutableForCloning().ReplaceChildren(
+      To<PhysicalBoxFragment>(new_result->GetPhysicalFragment()));
+  // The second layout would have replaced the original layout result with the
+  // new one, but we want to keep the original result.
+  group_node.StoreResultInLayoutBox(result, /*BlockBreakToken=*/nullptr);
 }
 
 MathScriptType BlockNode::ScriptType() const {

@@ -3195,7 +3195,8 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
 }
 
 void Element::AttachLayoutTree(AttachContext& context) {
-  DCHECK(GetDocument().InStyleRecalc());
+  DCHECK(GetDocument().InStyleRecalc() ||
+         GetDocument().GetStyleEngine().InScrollMarkersAttachment());
 
   StyleEngine& style_engine = GetDocument().GetStyleEngine();
 

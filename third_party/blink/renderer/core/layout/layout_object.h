@@ -1684,6 +1684,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   bool IsRenderedLegendInternal() const;
 
+  bool IsScrollMarkerGroup() const;
+  bool IsScrollMarkerGroupBefore() const;
+  LayoutObject* GetScrollMarkerGroup() const;
+
   // Returns true if this object represents ::marker for the first SUMMARY
   // child of a DETAILS, and list-style-type is disclosure-*.
   bool IsListMarkerForSummary() const;

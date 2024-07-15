@@ -531,6 +531,21 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
       return base::make_span(fragment_.children_);
     }
 
+    // Remove existing children, and add those from new_fragment.
+    void ReplaceChildren(const PhysicalBoxFragment& new_fragment) {
+      // TODO(layout-dev): This trick is only going to work if there are no
+      // inlines. If we do want to support inlines, there's more work to do. We
+      // could force the original fragment to create fragment items storage,
+      // whether it actually needs it or not, in case we end up with them once
+      // new_fragment has been built. Or, we could make sure that, if we end up
+      // with inlines, wrap everything inside an anonymous block.
+      DCHECK(!new_fragment.HasItems());
+      DCHECK(!fragment_.HasItems());
+
+      fragment_.children_.clear();
+      fragment_.children_.AppendVector(new_fragment.children_);
+    }
+
    private:
     explicit MutableForCloning(const PhysicalBoxFragment& fragment)
         : fragment_(const_cast<PhysicalBoxFragment&>(fragment)) {}

@@ -855,6 +855,35 @@ bool LayoutObject::IsRenderedLegendInternal() const {
          LayoutFieldset::FindInFlowLegend(*parent_layout_block) == this;
 }
 
+bool LayoutObject::IsScrollMarkerGroup() const {
+  NOT_DESTROYED();
+  return GetNode() && GetNode()->IsScrollMarkerGroupPseudoElement();
+}
+
+bool LayoutObject::IsScrollMarkerGroupBefore() const {
+  NOT_DESTROYED();
+  return GetNode() && GetNode()->IsScrollMarkerGroupBeforePseudoElement();
+}
+
+LayoutObject* LayoutObject::GetScrollMarkerGroup() const {
+  NOT_DESTROYED();
+  if (Style()->ScrollMarkerGroup() == EScrollMarkerGroup::kNone ||
+      !IsScrollContainer()) {
+    return nullptr;
+  }
+  if (auto* element = DynamicTo<Element>(GetNode())) {
+    if (PseudoElement* pseudo =
+            element->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore)) {
+      return pseudo->GetLayoutObject();
+    }
+    if (PseudoElement* pseudo =
+            element->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter)) {
+      return pseudo->GetLayoutObject();
+    }
+  }
+  return nullptr;
+}
+
 bool LayoutObject::IsListMarkerForSummary() const {
   if (!IsListMarker()) {
     return false;
@@ -4820,7 +4849,8 @@ void LayoutObject::ClearPaintFlags() {
 
 bool LayoutObject::IsAllowedToModifyLayoutTreeStructure(Document& document) {
   return document.Lifecycle().StateAllowsLayoutTreeMutations() ||
-         document.GetStyleEngine().InContainerQueryStyleRecalc();
+         document.GetStyleEngine().InContainerQueryStyleRecalc() ||
+         document.GetStyleEngine().InScrollMarkersAttachment();
 }
 
 void LayoutObject::SetSubtreeShouldDoFullPaintInvalidation(

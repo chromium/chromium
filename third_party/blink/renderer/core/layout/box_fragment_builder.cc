@@ -540,6 +540,10 @@ void BoxFragmentBuilder::PropagateChildBreakValues(
 
 void BoxFragmentBuilder::HandleOofsAndSpecialDescendants() {
   OutOfFlowLayoutPart(this).Run();
+  if (Style().ScrollMarkerGroup() != EScrollMarkerGroup::kNone &&
+      !GetConstraintSpace().IsAnonymous()) {
+    Node().HandleScrollMarkerGroup();
+  }
 }
 
 const LayoutResult* BoxFragmentBuilder::ToBoxFragment(

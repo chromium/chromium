@@ -65,7 +65,8 @@ class LayoutTreeBuilder {
                     const ComputedStyle* style)
       : node_(&node), context_(context), style_(style) {
     DCHECK(!node.GetLayoutObject());
-    DCHECK(node.GetDocument().InStyleRecalc());
+    DCHECK(node.GetDocument().InStyleRecalc() ||
+           node.GetDocument().GetStyleEngine().InScrollMarkersAttachment());
     DCHECK(node.InActiveDocument());
     DCHECK(context.parent);
   }

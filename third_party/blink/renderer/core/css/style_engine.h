@@ -649,6 +649,13 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool InPositionTryStyleRecalc() const {
     return in_position_try_style_recalc_;
   }
+  void SetInScrollMarkersAttachment(bool in_scroll_markers_attachment) {
+    DCHECK(!in_scroll_markers_attachment_ || !in_scroll_markers_attachment);
+    in_scroll_markers_attachment_ = in_scroll_markers_attachment;
+  }
+  bool InScrollMarkersAttachment() const {
+    return in_scroll_markers_attachment_;
+  }
   // Get the root element of an interleaving recalc, if any. This function will
   // return nullptr if the interleaving root is a PseudoElement, because such
   // elements can't be recalc roots.
@@ -967,6 +974,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool in_layout_tree_rebuild_{false};
   bool in_container_query_style_recalc_{false};
   bool in_position_try_style_recalc_{false};
+  bool in_scroll_markers_attachment_{false};
   bool in_dom_removal_{false};
   bool in_detach_scope_{false};
   bool in_apply_animation_update_{false};

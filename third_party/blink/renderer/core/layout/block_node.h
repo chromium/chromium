@@ -179,6 +179,15 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   // for the web-developer defined layout is ready).
   bool IsCustomLayoutLoaded() const;
 
+  // Return the ::scroll-marker-group associated with this node, if any.
+  BlockNode GetScrollMarkerGroup() const {
+    return BlockNode(DynamicTo<LayoutBlock>(box_->GetScrollMarkerGroup()));
+  }
+
+  // Populate with scroll markers (and relayout if necessary)
+  // the::scroll-marker-group associated with this node, if any.
+  void HandleScrollMarkerGroup() const;
+
   // Get script type for scripts (msub, msup, msubsup, munder, mover and
   // munderover).
   MathScriptType ScriptType() const;

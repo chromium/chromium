@@ -58,6 +58,10 @@ LayoutObject* LayoutTreeBuilderForElement::NextLayoutObject() const {
   if (node_->IsFirstLetterPseudoElement()) {
     return context_.next_sibling;
   }
+  // ::scroll-marker pseudo elements are always attached one after another.
+  if (node_->IsScrollMarkerPseudoElement()) {
+    return nullptr;
+  }
   if (style_->IsRenderedInTopLayer(*node_)) {
     if (LayoutObject* next_in_top_layer =
             LayoutTreeBuilderTraversal::NextInTopLayer(*node_)) {
