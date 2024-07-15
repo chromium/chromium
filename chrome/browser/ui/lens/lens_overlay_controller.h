@@ -168,10 +168,8 @@ class LensOverlayController : public LensSearchboxClient,
   // Starts the closing process of the overlay. This is an asynchronous process
   // with the following sequence:
   //   (1) Close the side panel
-  //   (2) Unblur the background
-  //   (3) Wait for the next frame to present
-  //   (4) Close the overlay.
-  // Steps (1) through (3) are asynchronous.
+  //   (2) Close the overlay.
+  // Step (1) is asynchronous.
   void CloseUIAsync(lens::LensOverlayDismissalSource dismissal_source);
 
   // Instantly closes the overlay. This may not look nice if the overlay is
@@ -599,17 +597,6 @@ class LensOverlayController : public LensSearchboxClient,
   // LensOverlayController.
   void CloseUIPart2(lens::LensOverlayDismissalSource dismissal_source);
 
-  // Unblurs the background and gives a callback to the UI compositor layer to
-  // finish the closing process once the background is unblurred. This should
-  // only be called from a closing flow that started with CloseUIAsync.
-  void UnblurBackgroundAndContinueClose(
-      lens::LensOverlayDismissalSource dismissal_source);
-
-  // Passed into the compositor layer to know when the background is done being
-  // unblurred and it is safe to close the overlay.
-  void OnBackgroundUnblurred(lens::LensOverlayDismissalSource dismissal_source,
-                             const viz::FrameTimingDetails& details);
-
   // Initializes the overlay UI after it has been created with data fetched
   // before its creation.
   void InitializeOverlayUI(const OverlayInitializationData& init_data);
@@ -670,9 +657,6 @@ class LensOverlayController : public LensSearchboxClient,
   // Called when the tab will be removed from the window.
   void WillDetach(tabs::TabInterface* tab,
                   tabs::TabInterface::DetachReason reason);
-
-  // Removes the blur on the live page.
-  void RemoveBackgroundBlur();
 
   // Makes a Lens request and updates all state related to the Lens request. If
   // region_bitmap is provided, it will use those bytes to send to the Lens

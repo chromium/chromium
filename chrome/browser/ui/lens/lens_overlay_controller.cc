@@ -462,7 +462,7 @@ void LensOverlayController::CloseUIAsync(
   // Set a short 200ms timeout to give the fade out time to transition.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&LensOverlayController::UnblurBackgroundAndContinueClose,
+      base::BindOnce(&LensOverlayController::CloseUIPart2,
                      weak_factory_.GetWeakPtr(), dismissal_source),
       kFadeoutAnimationTimeout);
 }
@@ -480,7 +480,6 @@ void LensOverlayController::CloseUISync(
     side_panel_coordinator_->Close();
   }
 
-  RemoveBackgroundBlur();
   CloseUIPart2(dismissal_source);
 }
 
@@ -827,7 +826,7 @@ void LensOverlayController::OnSidePanelHidden() {
   // If we're already in the process of closing, continue to do so.
   if (state_ == State::kClosingSidePanel) {
     CHECK(last_dismissal_source_.has_value());
-    UnblurBackgroundAndContinueClose(*last_dismissal_source_);
+    CloseUIPart2(*last_dismissal_source_);
     last_dismissal_source_.reset();
     return;
   }
@@ -1211,7 +1210,6 @@ void LensOverlayController::ShowOverlay() {
 }
 
 void LensOverlayController::BackgroundUI() {
-  RemoveBackgroundBlur();
   overlay_view_->SetVisible(false);
   HidePreselectionBubble();
   tab_contents_observer_.reset();
@@ -1314,33 +1312,6 @@ void LensOverlayController::CloseUIPart2(
   state_ = State::kOff;
 
   base::UmaHistogramEnumeration("Lens.Overlay.Dismissed", dismissal_source);
-}
-
-void LensOverlayController::UnblurBackgroundAndContinueClose(
-    lens::LensOverlayDismissalSource dismissal_source) {
-  if (state_ != State::kClosing && state_ != State::kClosingSidePanel) {
-    return;
-  }
-
-  // To avoid flickering, we need to remove the background blur and wait for a
-  // paint before closing the rest of the overlay.
-  RemoveBackgroundBlur();
-
-  auto* ui_layer_compositor = tab_->GetBrowserWindowInterface()
-                                  ->GetWebView()
-                                  ->holder()
-                                  ->GetUILayer()
-                                  ->GetCompositor();
-  ui_layer_compositor->RequestSuccessfulPresentationTimeForNextFrame(
-      base::BindOnce(&LensOverlayController::OnBackgroundUnblurred,
-                     weak_factory_.GetWeakPtr(), dismissal_source));
-}
-
-void LensOverlayController::OnBackgroundUnblurred(
-    lens::LensOverlayDismissalSource dismissal_source,
-    const viz::FrameTimingDetails& details) {
-  // We only finish the closing process once the background has been unblurred.
-  CloseUIPart2(dismissal_source);
 }
 
 void LensOverlayController::InitializeOverlayUI(
@@ -1564,9 +1535,6 @@ void LensOverlayController::TabForegrounded(tabs::TabInterface* tab) {
               results_side_panel_coordinator_->IsEntryShowing())
                  ? State::kOverlayAndResults
                  : State::kOverlay;
-
-    // Show after moving to kOverlay state.
-    AddBackgroundBlur();
     if (state_ != State::kOverlayAndResults) {
       ShowPreselectionBubble();
     }
@@ -1618,13 +1586,6 @@ void LensOverlayController::WillDetach(
   }
 }
 
-void LensOverlayController::RemoveBackgroundBlur() {
-  auto* ui_layer =
-      tab_->GetBrowserWindowInterface()->GetWebView()->holder()->GetUILayer();
-  ui_layer->SetClipRect(gfx::Rect());
-  ui_layer->SetLayerBlur(0);
-}
-
 void LensOverlayController::DoLensRequest(
     lens::mojom::CenterRotatedBoxPtr region,
     std::optional<SkBitmap> region_bytes) {
@@ -1668,29 +1629,15 @@ void LensOverlayController::AddBackgroundBlur() {
   if (state_ != State::kOverlay && state_ != State::kOverlayAndResults) {
     return;
   }
-  // Blur the original web contents. This should be done after the overlay
-  // view is showing and the screenshot is rendered so the user cannot see the
-  // live page get blurred. SetLayerBlur() multiplies by 3 to convert the given
-  // value to a pixel value. Since we are already in pixels, we need to divide
-  // by 3 so the blur is as expected.
-  CHECK(tab_->IsInForeground());
-  auto* ui_layer =
-      tab_->GetBrowserWindowInterface()->GetWebView()->holder()->GetUILayer();
 
   int blur_radius_pixels =
       lens::features::GetLensOverlayLivePageBlurRadiusPixels();
   if (blur_radius_pixels >= 0) {
-#if BUILDFLAG(IS_MAC)
-    // This fixes an issue on Mac where the blur will leak beyond the webpage
-    // and into the toolbar. Setting a clip rect forces the mask to not
-    // overflow. Clipping the rect breaks on linux, so gating the change to
-    // MacOS until a fix to cc allows for a universal solution. See b/328294684.
-    gfx::Rect web_contents_rect = tab_->GetContents()->GetContainerBounds();
-    ui_layer->SetClipRect(gfx::Rect(0, blur_radius_pixels - 2,
-                                    web_contents_rect.width(),
-                                    web_contents_rect.height()));
-#endif  // BUILDFLAG(IS_MAC)
-    ui_layer->SetLayerBlur(blur_radius_pixels / 3);
+    // SetBackgroundBlur() multiplies by 3 to convert the given
+    // value to a pixel value. Since we are already in pixels, we need to divide
+    // by 3 so the blur is as expected.
+    overlay_web_view_->holder()->GetUILayer()->SetBackgroundBlur(
+        blur_radius_pixels / 3);
   }
 }
 
