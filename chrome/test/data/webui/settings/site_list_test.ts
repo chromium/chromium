@@ -69,6 +69,26 @@ let prefsOneEnabled: SiteSettingsPref;
 let prefsOneDisabled: SiteSettingsPref;
 
 /**
+ * An example pref with 1 allowed notification item.
+ */
+let prefsOneEnabledNotification: SiteSettingsPref;
+
+/**
+ * An example pref with 1 blocked notification item.
+ */
+let prefsOneDisabledNotification: SiteSettingsPref;
+
+/**
+ * An example pref with 2 allowed notification item.
+ */
+let prefsTwoEnabledNotification: SiteSettingsPref;
+
+/**
+ * An example pref with 2 blocked notification item.
+ */
+let prefsTwoDisabledNotification: SiteSettingsPref;
+
+/**
  * An example Cookies pref with 1 in each of the three categories.
  */
 let prefsSessionOnly: SiteSettingsPref;
@@ -212,6 +232,60 @@ function populateTestExceptions() {
           embeddingOrigin: '',
           setting: ContentSetting.BLOCK,
         })]),
+  ]);
+
+  prefsOneEnabledNotification = createSiteSettingsPrefs([], [
+    createContentSettingTypeToValuePair(
+        ContentSettingsTypes.NOTIFICATIONS,
+        [createRawSiteException('https://foo-allow.com:443', {
+          embeddingOrigin: '',
+          type: ContentSettingsTypes.NOTIFICATIONS,
+          setting: ContentSetting.ALLOW,
+        })]),
+  ]);
+
+  prefsOneDisabledNotification = createSiteSettingsPrefs([], [
+    createContentSettingTypeToValuePair(
+        ContentSettingsTypes.NOTIFICATIONS,
+        [createRawSiteException('https://foo-block.com:443', {
+          embeddingOrigin: '',
+          type: ContentSettingsTypes.NOTIFICATIONS,
+          setting: ContentSetting.BLOCK,
+        })]),
+  ]);
+
+  prefsTwoEnabledNotification = createSiteSettingsPrefs([], [
+    createContentSettingTypeToValuePair(
+        ContentSettingsTypes.NOTIFICATIONS,
+        [
+          createRawSiteException('https://foo-allow1.com:443', {
+            embeddingOrigin: '',
+            type: ContentSettingsTypes.NOTIFICATIONS,
+            setting: ContentSetting.ALLOW,
+          }),
+          createRawSiteException('https://foo-allow2.com:443', {
+            embeddingOrigin: '',
+            type: ContentSettingsTypes.NOTIFICATIONS,
+            setting: ContentSetting.ALLOW,
+          }),
+        ]),
+  ]);
+
+  prefsTwoDisabledNotification = createSiteSettingsPrefs([], [
+    createContentSettingTypeToValuePair(
+        ContentSettingsTypes.NOTIFICATIONS,
+        [
+          createRawSiteException('https://foo-block1.com:443', {
+            embeddingOrigin: '',
+            type: ContentSettingsTypes.NOTIFICATIONS,
+            setting: ContentSetting.BLOCK,
+          }),
+          createRawSiteException('https://foo-block2.com:443', {
+            embeddingOrigin: '',
+            type: ContentSettingsTypes.NOTIFICATIONS,
+            setting: ContentSetting.BLOCK,
+          }),
+        ]),
   ]);
 
   prefsSessionOnly = createSiteSettingsPrefs([], [
@@ -1217,6 +1291,159 @@ suite('SiteList', function() {
         await browserProxy.whenCalled('getExceptionList');
         flush();
         assertTrue(testElement.$.addSite.hidden);
+      });
+
+  test('Reset the last entry moves focus', async function() {
+    setUpCategory(
+        ContentSettingsTypes.NOTIFICATIONS, ContentSetting.ALLOW,
+        prefsOneEnabledNotification);
+    await browserProxy.whenCalled('getExceptionList');
+
+    await microtasksFinished();
+    flush();  // Populates action menu.
+    openActionMenu(0);
+    await microtasksFinished();
+
+    // Select 'Remove' from menu.
+    const remove = testElement.shadowRoot!.querySelector<HTMLElement>('#reset');
+    assertTrue(!!remove);
+    remove.click();
+    await browserProxy.whenCalled('resetCategoryPermissionForPattern');
+    await microtasksFinished();
+
+    // Resetting the last element should move the focus to the list's header.
+    assertEquals(
+        testElement.$.listHeader, testElement.shadowRoot!.activeElement);
+  });
+
+  test('Block the last allowed entry moves focus', async function() {
+    setUpCategory(
+        ContentSettingsTypes.NOTIFICATIONS, ContentSetting.ALLOW,
+        prefsOneEnabledNotification);
+    await browserProxy.whenCalled('getExceptionList');
+
+    await microtasksFinished();
+    flush();  // Populates action menu.
+    openActionMenu(0);
+    await microtasksFinished();
+
+    // Select 'block' from menu.
+    const block = testElement.shadowRoot!.querySelector<HTMLElement>('#block');
+    assertTrue(!!block);
+    block.click();
+    await browserProxy.whenCalled('setCategoryPermissionForPattern');
+    await microtasksFinished();
+
+    // Resetting the last element should move the focus to the list's header.
+    assertEquals(
+        testElement.$.listHeader, testElement.shadowRoot!.activeElement);
+  });
+
+  test('Allow the last blocked entry moves focus', async function() {
+    setUpCategory(
+        ContentSettingsTypes.NOTIFICATIONS, ContentSetting.BLOCK,
+        prefsOneDisabledNotification);
+    await browserProxy.whenCalled('getExceptionList');
+
+    await microtasksFinished();
+    flush();  // Populates action menu.
+    openActionMenu(0);
+    await microtasksFinished();
+
+    // Select 'allow' from menu.
+    const allow = testElement.shadowRoot!.querySelector<HTMLElement>('#allow');
+    assertTrue(!!allow);
+    allow.click();
+    await browserProxy.whenCalled('setCategoryPermissionForPattern');
+    await microtasksFinished();
+
+    // Resetting the last element should move the focus to the list's header.
+    assertEquals(
+        testElement.$.listHeader, testElement.shadowRoot!.activeElement);
+  });
+
+  test('Reset not the last entry focuses the next entry', async function() {
+    setUpCategory(
+        ContentSettingsTypes.NOTIFICATIONS, ContentSetting.ALLOW,
+        prefsTwoEnabledNotification);
+    await browserProxy.whenCalled('getExceptionList');
+
+    await microtasksFinished();
+    flush();  // Populates action menu.
+    openActionMenu(0);
+    await microtasksFinished();
+
+    // Select 'Remove' from menu.
+    const remove = testElement.shadowRoot!.querySelector<HTMLElement>('#reset');
+    assertTrue(!!remove);
+    remove.click();
+    await browserProxy.whenCalled('resetCategoryPermissionForPattern');
+    await microtasksFinished();
+
+    const firstListEntry =
+        testElement.$.listContainer.querySelectorAll('site-list-entry')[0];
+    assertTrue(!!firstListEntry);
+
+    // Focus a site’s list entry.
+    assertEquals(firstListEntry, testElement.shadowRoot!.activeElement);
+  });
+
+  test(
+      'Block not the last allowed entry focuses the next entry',
+      async function() {
+        setUpCategory(
+            ContentSettingsTypes.NOTIFICATIONS, ContentSetting.ALLOW,
+            prefsTwoEnabledNotification);
+        await browserProxy.whenCalled('getExceptionList');
+
+        await microtasksFinished();
+        flush();  // Populates action menu.
+        openActionMenu(0);
+        await microtasksFinished();
+
+        // Select 'block' from menu.
+        const block =
+            testElement.shadowRoot!.querySelector<HTMLElement>('#block');
+        assertTrue(!!block);
+        block.click();
+        await browserProxy.whenCalled('setCategoryPermissionForPattern');
+        await microtasksFinished();
+
+        const firstListEntry =
+            testElement.$.listContainer.querySelectorAll('site-list-entry')[0];
+        assertTrue(!!firstListEntry);
+
+        // Focus a site’s list entry.
+        assertEquals(firstListEntry, testElement.shadowRoot!.activeElement);
+      });
+
+  test(
+      'Allow not the last blocked entry focuses the next entry',
+      async function() {
+        setUpCategory(
+            ContentSettingsTypes.NOTIFICATIONS, ContentSetting.BLOCK,
+            prefsTwoDisabledNotification);
+        await browserProxy.whenCalled('getExceptionList');
+
+        await microtasksFinished();
+        flush();  // Populates action menu.
+        openActionMenu(0);
+        await microtasksFinished();
+
+        // Select 'allow' from menu.
+        const allow =
+            testElement.shadowRoot!.querySelector<HTMLElement>('#allow');
+        assertTrue(!!allow);
+        allow.click();
+        await browserProxy.whenCalled('setCategoryPermissionForPattern');
+        await microtasksFinished();
+
+        const firstListEntry =
+            testElement.$.listContainer.querySelectorAll('site-list-entry')[0];
+        assertTrue(!!firstListEntry);
+
+        // Focus a site’s list entry.
+        assertEquals(firstListEntry, testElement.shadowRoot!.activeElement);
       });
 });
 
