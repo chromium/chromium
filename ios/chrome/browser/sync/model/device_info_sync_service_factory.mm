@@ -4,16 +4,19 @@
 
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 
+#import <optional>
 #import <utility>
 
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/singleton.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/time/default_clock.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/signin/public/base/device_id_helper.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/invalidations/sync_invalidations_service.h"
 #import "components/sync/model/model_type_store_service.h"
 #import "components/sync/protocol/sync_enums.pb.h"
@@ -21,9 +24,11 @@
 #import "components/sync_device_info/device_info_sync_client.h"
 #import "components/sync_device_info/device_info_sync_service_impl.h"
 #import "components/sync_device_info/local_device_info_provider_impl.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/model_type_store_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_invalidations_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
@@ -34,9 +39,11 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
  public:
   DeviceInfoSyncClient(
       PrefService* prefs,
-      syncer::SyncInvalidationsService* sync_invalidations_service)
+      syncer::SyncInvalidationsService* sync_invalidations_service,
+      signin::IdentityManager* identity_manager)
       : prefs_(prefs),
-        sync_invalidations_service_(sync_invalidations_service) {}
+        sync_invalidations_service_(sync_invalidations_service),
+        identity_manager_(identity_manager) {}
   ~DeviceInfoSyncClient() override = default;
 
   // syncer::DeviceInfoSyncClient:
@@ -67,7 +74,25 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
   // syncer::DeviceInfoSyncClient:
   std::optional<syncer::DeviceInfo::SharingInfo> GetLocalSharingInfo()
       const override {
-    return std::nullopt;
+    if (!identity_manager_ ||
+        !base::FeatureList::IsEnabled(
+            send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
+      return std::nullopt;
+    }
+    std::string gaia_id =
+        identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+            .gaia;
+    std::string representative_target_id =
+        GetApplicationContext()
+            ->GetPushNotificationService()
+            ->GetRepresentativeTargetIdForGaiaId(
+                base::SysUTF8ToNSString(gaia_id));
+    // Sharing info is not implemented on iOS, so empty structs are passed in.
+    // TODO(crbug.com/352370268): Use SharingSyncPreference to hold SharingInfo.
+    return syncer::DeviceInfo::SharingInfo(
+        syncer::DeviceInfo::SharingTargetInfo(),
+        syncer::DeviceInfo::SharingTargetInfo(), representative_target_id,
+        std::set<sync_pb::SharingSpecificFields_EnabledFeatures>());
   }
 
   // syncer::DeviceInfoSyncClient:
@@ -105,6 +130,7 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
  private:
   const raw_ptr<PrefService> prefs_;
   const raw_ptr<syncer::SyncInvalidationsService> sync_invalidations_service_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
 };
 
 }  // namespace
@@ -148,6 +174,7 @@ DeviceInfoSyncServiceFactory::DeviceInfoSyncServiceFactory()
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
   DependsOn(SyncInvalidationsServiceFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 DeviceInfoSyncServiceFactory::~DeviceInfoSyncServiceFactory() {}
@@ -160,8 +187,10 @@ DeviceInfoSyncServiceFactory::BuildServiceInstanceFor(
 
   syncer::SyncInvalidationsService* const sync_invalidations_service =
       SyncInvalidationsServiceFactory::GetForBrowserState(browser_state);
+  signin::IdentityManager* const identity_manager =
+      IdentityManagerFactory::GetForBrowserState(browser_state);
   auto device_info_sync_client = std::make_unique<DeviceInfoSyncClient>(
-      browser_state->GetPrefs(), sync_invalidations_service);
+      browser_state->GetPrefs(), sync_invalidations_service, identity_manager);
   auto local_device_info_provider =
       std::make_unique<syncer::LocalDeviceInfoProviderImpl>(
           ::GetChannel(), ::GetVersionString(), device_info_sync_client.get());

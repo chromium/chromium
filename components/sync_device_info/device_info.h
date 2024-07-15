@@ -46,6 +46,7 @@ class DeviceInfo {
   struct SharingInfo {
     SharingInfo(SharingTargetInfo vapid_target_info,
                 SharingTargetInfo sharing_target_info,
+                std::string chime_representative_target_id,
                 std::set<sync_pb::SharingSpecificFields_EnabledFeatures>
                     enabled_features);
     SharingInfo(const SharingInfo& other);
@@ -59,6 +60,9 @@ class DeviceInfo {
 
     // Target info using Sharing sender ID.
     SharingTargetInfo sender_id_target_info;
+
+    // Identifier used to send messages to a specific device through Chime.
+    std::string chime_representative_target_id;
 
     // Set of Sharing features enabled on the device.
     std::set<sync_pb::SharingSpecificFields_EnabledFeatures> enabled_features;

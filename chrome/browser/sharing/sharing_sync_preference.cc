@@ -262,7 +262,10 @@ SharingSyncPreference::GetLocalSharingInfoForSync(PrefService* prefs) {
         static_cast<SharingSpecificFields::EnabledFeatures>(feature_value));
   }
 
-  return syncer::DeviceInfo::SharingInfo(std::move(*vapid_target_info),
-                                         std::move(*sender_id_target_info),
-                                         std::move(enabled_features));
+  // Pass in null for chime_representative_target_id field because currently
+  // only iOS devices register with Chime.
+  return syncer::DeviceInfo::SharingInfo(
+      std::move(*vapid_target_info), std::move(*sender_id_target_info),
+      /*chime_representative_target_id=*/std::string(),
+      std::move(enabled_features));
 }

@@ -110,6 +110,8 @@ MATCHER_P(ModelEqualsSpecifics, expected_specifics, "") {
             arg_info.sender_id_target_info.p256dh ||
         expected_fields.sender_id_auth_secret_v2() !=
             arg_info.sender_id_target_info.auth_secret ||
+        expected_fields.chime_representative_target_id() !=
+            arg_info.chime_representative_target_id ||
         static_cast<size_t>(expected_fields.enabled_features_size()) !=
             arg_info.enabled_features.size()) {
       return false;
@@ -247,6 +249,10 @@ std::string SharingSenderIdFcmTokenForSuffix(int suffix) {
   return base::StringPrintf("sharing sender-id fcm token %d", suffix);
 }
 
+std::string SharingChimeRepresentativeTargetIdForSuffix(int suffix) {
+  return base::StringPrintf("chime representative target id %d", suffix);
+}
+
 std::string SharingSenderIdP256dhForSuffix(int suffix) {
   return base::StringPrintf("sharing sender-id p256dh %d", suffix);
 }
@@ -303,6 +309,8 @@ DeviceInfoSpecifics CreateSpecifics(
       SharingVapidAuthSecretForSuffix(suffix));
   specifics.mutable_sharing_fields()->set_sender_id_fcm_token_v2(
       SharingSenderIdFcmTokenForSuffix(suffix));
+  specifics.mutable_sharing_fields()->set_chime_representative_target_id(
+      SharingChimeRepresentativeTargetIdForSuffix(suffix));
   specifics.mutable_sharing_fields()->set_sender_id_p256dh_v2(
       SharingSenderIdP256dhForSuffix(suffix));
   specifics.mutable_sharing_fields()->set_sender_id_auth_secret_v2(
@@ -409,6 +417,7 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
             {SharingSenderIdFcmTokenForSuffix(kLocalSuffix),
              SharingSenderIdP256dhForSuffix(kLocalSuffix),
              SharingSenderIdAuthSecretForSuffix(kLocalSuffix)},
+            SharingChimeRepresentativeTargetIdForSuffix(kLocalSuffix),
             sharing_enabled_features),
         /*paask_info=*/std::nullopt, last_fcm_registration_token,
         last_interested_data_types,

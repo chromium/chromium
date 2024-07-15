@@ -75,6 +75,12 @@ void PushNotificationService::UnregisterAccount(
   }
 }
 
+// TODO(crbug.com/343495515): remove after downstream implementation is added.
+std::string PushNotificationService::GetRepresentativeTargetIdForGaiaId(
+    NSString* gaia_id) {
+  return "";
+}
+
 void PushNotificationService::RegisterBrowserStatePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(prefs::kFeaturePushNotificationPermissions);

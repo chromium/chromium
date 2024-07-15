@@ -33,6 +33,8 @@ const char kSharingVapidAuthSecret[] = "test_vapid_auth_secret";
 const char kSharingSenderIdFCMRegistrationToken[] = "test_sender_id_fcm_token";
 const char kSharingSenderIdP256dh[] = "test_sender_id_p256_dh";
 const char kSharingSenderIdAuthSecret[] = "test_sender_id_auth_secret";
+const char kSharingChimeRepresentativeTargetId[] =
+    "chime_representative_target_id";
 const sync_pb::SharingSpecificFields::EnabledFeatures
     kSharingEnabledFeatures[] = {
         sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2};
@@ -246,7 +248,7 @@ TEST_F(LocalDeviceInfoProviderImplTest, SharingInfo) {
           DeviceInfo::SharingTargetInfo{kSharingSenderIdFCMRegistrationToken,
                                         kSharingSenderIdP256dh,
                                         kSharingSenderIdAuthSecret},
-          enabled_features);
+          kSharingChimeRepresentativeTargetId, enabled_features);
   ON_CALL(device_info_sync_client_, GetLocalSharingInfo())
       .WillByDefault(Return(sharing_info));
 
@@ -263,6 +265,8 @@ TEST_F(LocalDeviceInfoProviderImplTest, SharingInfo) {
             local_sharing_info->sender_id_target_info.fcm_token);
   EXPECT_EQ(kSharingSenderIdP256dh,
             local_sharing_info->sender_id_target_info.p256dh);
+  EXPECT_EQ(kSharingChimeRepresentativeTargetId,
+            local_sharing_info->chime_representative_target_id);
   EXPECT_EQ(kSharingSenderIdAuthSecret,
             local_sharing_info->sender_id_target_info.auth_secret);
   EXPECT_EQ(enabled_features, local_sharing_info->enabled_features);

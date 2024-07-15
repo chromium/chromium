@@ -3,6 +3,7 @@ include_rules = [
   "+ios/chrome/browser/commerce/model",
   "+ios/chrome/browser/search_engines/model/template_url_service_factory.h",
   "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/tips_notifications/model",
   "+ios/chrome/browser/url_loading",
 ]

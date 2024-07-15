@@ -37,6 +37,7 @@ const char kDevicep256dh[] = "test_p256_dh";
 const char kSenderIdP256dh[] = "sharing_p256dh";
 const char kDeviceAuthSecret[] = "test_auth_secret";
 const char kSenderIdAuthSecret[] = "sharing_auth_secret";
+const char kChimeRepresentativeTargetId[] = "chime_rep_id";
 
 std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfo(
     const std::string& client_name,
@@ -45,11 +46,12 @@ std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfo(
     const std::string& model_name = "model",
     syncer::DeviceInfo::SharingTargetInfo vapid_target_info =
         {kVapidFCMToken, kDevicep256dh, kDeviceAuthSecret},
-    syncer::DeviceInfo::SharingTargetInfo sender_id_target_info = {
-        kSenderIdFCMToken, kSenderIdP256dh, kSenderIdAuthSecret}) {
+    syncer::DeviceInfo::SharingTargetInfo sender_id_target_info =
+        {kSenderIdFCMToken, kSenderIdP256dh, kSenderIdAuthSecret},
+    const std::string& chime_rep_id = kChimeRepresentativeTargetId) {
   syncer::DeviceInfo::SharingInfo sharing_info(std::move(vapid_target_info),
                                                std::move(sender_id_target_info),
-                                               {enabled_feature});
+                                               chime_rep_id, {enabled_feature});
 
   return CreateFakeDeviceInfo(
       base::Uuid::GenerateRandomV4().AsLowercaseString(), client_name,

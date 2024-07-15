@@ -89,6 +89,7 @@ syncer::DeviceInfo::SharingInfo CreateLocalSharingInfo() {
       {kSenderVapidFcmToken, kSenderVapidP256dh, kSenderVapidAuthSecret},
       {kSenderSenderIdFcmToken, kSenderSenderIdP256dh,
        kSenderSenderIdAuthSecret},
+      /*chime_representative_target_id=*/std::string(),
       std::set<sync_pb::SharingSpecificFields::EnabledFeatures>());
 }
 
@@ -96,6 +97,7 @@ syncer::DeviceInfo::SharingInfo CreateSharingInfo() {
   return syncer::DeviceInfo::SharingInfo(
       {kFCMToken, kP256dh, kAuthSecret},
       {"sender_id_fcm_token", "sender_id_p256dh", "sender_id_auth_secret"},
+      "chime_representative_target_id",
       std::set<sync_pb::SharingSpecificFields::EnabledFeatures>{
           sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2});
 }

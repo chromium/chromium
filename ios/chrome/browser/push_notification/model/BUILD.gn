@@ -74,6 +74,8 @@ source_set("push_notification_service") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/search_engines",
+    "//components/send_tab_to_self",
+    "//components/sync_device_info",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/startup:startup_basic",
     "//ios/chrome/browser/commerce/model/push_notification",
@@ -90,6 +92,7 @@ source_set("push_notification_service") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features:features",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
     "//ios/chrome/browser/tips_notifications/model:client",
     "//ios/chrome/common/app_group",
   ]

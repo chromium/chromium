@@ -90,6 +90,7 @@ std::optional<DeviceInfo::SharingInfo> SpecificsToSharingInfo(
       {specifics.sharing_fields().sender_id_fcm_token_v2(),
        specifics.sharing_fields().sender_id_p256dh_v2(),
        specifics.sharing_fields().sender_id_auth_secret_v2()},
+      specifics.sharing_fields().chime_representative_target_id(),
       std::move(enabled_features));
 }
 
@@ -273,6 +274,8 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
         sharing_info->sender_id_target_info.p256dh);
     sharing_fields->set_sender_id_auth_secret_v2(
         sharing_info->sender_id_target_info.auth_secret);
+    sharing_fields->set_chime_representative_target_id(
+        sharing_info->chime_representative_target_id);
     for (sync_pb::SharingSpecificFields::EnabledFeatures feature :
          sharing_info->enabled_features) {
       sharing_fields->add_enabled_features(feature);

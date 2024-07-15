@@ -45,6 +45,11 @@ class PushNotificationService {
   // Returns whether the device has retrieved and stored its APNS device token.
   virtual bool DeviceTokenIsSet() const = 0;
 
+  // Returns the representative target ID for the given Gaia ID. Returns null if
+  // the user with the associated gaia_id is not registered for push
+  // notifications.
+  virtual std::string GetRepresentativeTargetIdForGaiaId(NSString* gaia_id);
+
   // Returns PushNotificationService's PushNotificationClientManager.
   PushNotificationClientManager* GetPushNotificationClientManager();
 

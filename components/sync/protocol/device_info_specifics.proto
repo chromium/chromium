@@ -121,7 +121,8 @@ message FeatureSpecificFields {
 }
 
 // Device specific information for Sharing feature. Used to send end-to-end
-// encrypted message through FCM to other devices.
+// encrypted message through FCM or unencrypted message through Chime to other
+// devices.
 message SharingSpecificFields {
   // FCM registration token of device subscribed using VAPID key.
   // TODO(crbug.com/40102247): Deprecate when VAPID migration is over.
@@ -176,6 +177,10 @@ message SharingSpecificFields {
 
   // Auth secret for message encryption [RFC8291] using Sharing sender ID.
   optional bytes sender_id_auth_secret_v2 = 10;
+
+  // Identifier used to send notifications to a specific device in Chime. Added
+  // in M128.
+  optional string chime_representative_target_id = 11;
 }
 
 // Device specific information telling how to send invalidations to this device.

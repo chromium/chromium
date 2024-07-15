@@ -16,6 +16,8 @@
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_prepopulate_data.h"
 #import "components/search_engines/template_url_service.h"
+#import "components/send_tab_to_self/features.h"
+#import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_nau_configuration.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_service.h"
@@ -41,6 +43,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 
 namespace {
@@ -233,6 +236,12 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
     } else {
       base::UmaHistogramBoolean("IOS.PushNotification.ChimeDeviceRegistration",
                                 true);
+      if (base::FeatureList::IsEnabled(
+              send_tab_to_self::kSendTabToSelfIOSPushNotifications) &&
+          browserState) {
+        DeviceInfoSyncServiceFactory::GetForBrowserState(browserState)
+            ->RefreshLocalDeviceInfo();
+      }
     }
   });
 }

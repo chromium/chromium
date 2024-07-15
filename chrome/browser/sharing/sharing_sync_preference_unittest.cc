@@ -51,6 +51,7 @@ class SharingSyncPreferenceTest : public testing::Test {
         {kDeviceVapidFcmToken, kDeviceVapidP256dh, kDeviceVapidAuthToken},
         {kDeviceSenderIdFcmToken, kDeviceSenderIdP256dh,
          kDeviceSenderIdAuthToken},
+        /*chime_representative_target_id=*/std::string(),
         std::set<sync_pb::SharingSpecificFields::EnabledFeatures>{
             sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2});
   }

@@ -48,6 +48,7 @@ static std::unique_ptr<syncer::DeviceInfo> CreateFakeDeviceInfo(
       syncer::DeviceInfo::SharingInfo(
           {"vapid_fcm_token", "vapid_p256dh", "vapid_auth_secret"},
           {"sender_id_fcm_token", "sender_id_p256dh", "sender_id_auth_secret"},
+          "chime_representative_target_id",
           std::set<sync_pb::SharingSpecificFields::EnabledFeatures>{
               sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2}),
       /*paask_info=*/std::nullopt,

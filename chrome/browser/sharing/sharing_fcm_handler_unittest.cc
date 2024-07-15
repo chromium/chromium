@@ -96,6 +96,7 @@ class SharingFCMHandlerTest : public testing::Test {
         syncer::DeviceInfo::SharingInfo(
             {kVapidFCMToken, kVapidP256dh, kVapidAuthSecret},
             {kSenderIdFCMToken, kSenderIdP256dh, kSenderIdAuthSecret},
+            /*chime_representative_target_id=*/std::string(),
             std::set<sync_pb::SharingSpecificFields::EnabledFeatures>()));
   }
 
