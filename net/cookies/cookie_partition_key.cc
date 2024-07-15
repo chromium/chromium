@@ -37,6 +37,7 @@ std::string SerializeSchemefulSite(const SchemefulSite& site) {
 }  // namespace
 
 CookiePartitionKey::SerializedCookiePartitionKey::SerializedCookiePartitionKey(
+    base::PassKey<CookiePartitionKey> key,
     const std::string& site,
     bool has_cross_site_ancestor)
     : top_level_site_(site),
@@ -108,8 +109,8 @@ bool CookiePartitionKey::operator<(const CookiePartitionKey& other) const {
 base::expected<CookiePartitionKey::SerializedCookiePartitionKey, std::string>
 CookiePartitionKey::Serialize(const std::optional<CookiePartitionKey>& in) {
   if (!in) {
-    return base::ok(
-        SerializedCookiePartitionKey(kEmptyCookiePartitionKey, true));
+    return base::ok(SerializedCookiePartitionKey(
+        base::PassKey<CookiePartitionKey>(), kEmptyCookiePartitionKey, true));
   }
 
   if (!in->IsSerializeable()) {
@@ -117,7 +118,8 @@ CookiePartitionKey::Serialize(const std::optional<CookiePartitionKey>& in) {
   }
 
   return base::ok(SerializedCookiePartitionKey(
-      SerializeSchemefulSite(in->site_), in->IsThirdParty()));
+      base::PassKey<CookiePartitionKey>(), SerializeSchemefulSite(in->site_),
+      in->IsThirdParty()));
 }
 
 std::optional<CookiePartitionKey> CookiePartitionKey::FromNetworkIsolationKey(

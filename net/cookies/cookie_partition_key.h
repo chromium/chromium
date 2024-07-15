@@ -31,14 +31,14 @@ class NET_EXPORT CookiePartitionKey {
     const std::string& TopLevelSite() const;
     bool has_cross_site_ancestor() const;
 
-   private:
-    friend class CookiePartitionKey;
     // This constructor does not check if the values being serialized are valid.
     // The caller of this function must ensure that only valid values are passed
     // to this method.
-    explicit SerializedCookiePartitionKey(const std::string& site,
-                                          bool has_cross_site_ancestor);
+    SerializedCookiePartitionKey(base::PassKey<CookiePartitionKey> key,
+                                 const std::string& site,
+                                 bool has_cross_site_ancestor);
 
+   private:
     std::string top_level_site_;
     bool has_cross_site_ancestor_;
   };
