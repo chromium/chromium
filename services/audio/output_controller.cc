@@ -590,4 +590,15 @@ std::pair<float, bool> OutputController::ReadCurrentPowerAndClip() {
   return power_monitor_.ReadCurrentPowerAndClip();
 }
 
+void OutputController::SwitchAudioOutputDeviceId(
+    const std::string& new_output_device_id) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  if (output_device_id_ == new_output_device_id) {
+    return;
+  }
+
+  output_device_id_ = new_output_device_id;
+  ProcessDeviceChange();
+}
+
 }  // namespace audio

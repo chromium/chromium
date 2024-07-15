@@ -200,6 +200,9 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   // audio_power_monitor.h for usage.  This may be called on any thread.
   std::pair<float, bool> ReadCurrentPowerAndClip();
 
+  // Recreates the output stream to play audio to specified device.
+  void SwitchAudioOutputDeviceId(const std::string& new_output_device_id);
+
  protected:
   // Time constant for AudioPowerMonitor.  See AudioPowerMonitor ctor comments
   // for semantics.  This value was arbitrarily chosen, but seems to work well.
@@ -318,8 +321,9 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   const base::TimeTicks construction_time_;
 
   // Specifies the device id of the output device to open or empty for the
-  // default output device.
-  const std::string output_device_id_;
+  // default output device. The device id can be updated by the
+  // `SwitchAudioOutputDeviceId()`, which will recreate the stream.
+  std::string output_device_id_;
 
   raw_ptr<media::AudioOutputStream, DanglingUntriaged> stream_;
 
