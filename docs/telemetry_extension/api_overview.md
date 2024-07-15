@@ -228,7 +228,7 @@ M96
 ### getRoutineUpdate()
 ```
 chrome.os.diagnostics.getRoutineUpdate(
-  params: GetRoutineUpdateRequest,
+  request: GetRoutineUpdateRequest,
 ) => Promise<GetRoutineUpdateResponse>
 ```
 
@@ -241,7 +241,7 @@ M96
 ### runAcPowerRoutine()
 ```
 chrome.os.diagnostics.runAcPowerRoutine(
-  params: RunAcPowerRoutineRequest,
+  request: RunAcPowerRoutineRequest,
 ) => Promise<RunRoutineResponse>
 ```
 
@@ -278,7 +278,7 @@ M96
 ### runBatteryChargeRoutine()
 ```
 chrome.os.diagnostics.runBatteryChargeRoutine(
-  params: RunBatteryChargeRoutineRequest,
+  request: RunBatteryChargeRoutineRequest,
 ) => Promise<RunRoutineResponse>
 ```
 
@@ -291,7 +291,7 @@ M96
 ### runBatteryDischargeRoutine()
 ```
 chrome.os.diagnostics.runBatteryDischargeRoutine(
-  params: RunBatteryDischargeRoutineRequest,
+  request: RunBatteryDischargeRoutineRequest,
 ) => Promise<RunRoutineResponse>
 ```
 
@@ -361,7 +361,7 @@ M118
 ### runCpuCacheRoutine()
 ```
 chrome.os.diagnostics.runCpuCacheRoutine(
-  params: RunCpuRoutineRequest,
+  request: RunCpuRoutineRequest,
 ) => Promise<RunRoutineResponse>
 ```
 
@@ -374,7 +374,7 @@ M96
 ### runCpuFloatingPointAccuracyRoutine()
 ```
 chrome.os.diagnostics.runCpuFloatingPointAccuracyRoutine(
-  params: RunCpuRoutineRequest,
+  request: RunCpuRoutineRequest,
 ) => Promise<RunRoutineResponse>
 ```
 
@@ -387,7 +387,7 @@ M99
 ### runCpuPrimeSearchRoutine()
 ```
 chrome.os.diagnostics.runCpuPrimeSearchRoutine(
-  params: RunCpuRoutineRequest,
+  request: RunCpuRoutineRequest,
 ) => Promise<RunRoutineResponse>
 ```
 
@@ -400,7 +400,7 @@ M99
 ### runCpuStressRoutine()
 ```
 chrome.os.diagnostics.runCpuStressRoutine(
-  params: RunCpuRoutineRequest,
+  request: RunCpuRoutineRequest,
 ) => Promise<RunRoutineResponse>
 ```
 
@@ -413,7 +413,7 @@ M96
 ### runDiskReadRoutine()
 ```
 chrome.os.diagnostics.runDiskReadRoutine(
-  params: RunDiskReadRequest,
+  request: RunDiskReadRequest,
 ) => Promise<RunRoutineResponse>
 ```
 
@@ -514,7 +514,7 @@ M96
 ### runNvmeSelfTestRoutine()
 ```
 chrome.os.diagnostics.runNvmeSelfTestRoutine(
-  params: RunNvmeSelfTestRequest,
+  request: RunNvmeSelfTestRequest,
 ) => Promise<RunRoutineResponse>
 ```
 
@@ -527,7 +527,7 @@ M110
 ### runPowerButtonRoutine()
 ```
 chrome.os.diagnostics.runPowerButtonRoutine(
-  params: RunPowerButtonRequest,
+  request: RunPowerButtonRequest,
 ) => Promise<RunRoutineResponse>
 ```
 
@@ -562,14 +562,14 @@ M108
 ### runSmartctlCheckRoutine()
 ```
 chrome.os.diagnostics.runSmartctlCheckRoutine(
-  params: RunSmartctlCheckRequest?,
+  request: RunSmartctlCheckRequest?,
 ) => Promise<RunRoutineResponse>
 ```
 
 #### Released in Chrome version
 M102
 
-Optional parameter `params` added in M110.
+Optional parameter `request` added in M110.
 
 The parameter is only available if "smartctl_check_with_percentage_used" is
 returned from `GetAvailableRoutines()`.
@@ -928,7 +928,7 @@ This is a [union type](#Dictionary_based-union-types). Exactly one field is set.
 ### cancelRoutine()
 ```
 chrome.os.diagnostics.cancelRoutine(
-  params: CancelRoutineRequest,
+  request: CancelRoutineRequest,
 ) => Promise<void>
 ```
 
@@ -976,7 +976,7 @@ M125
 ### replyToRoutineInquiry()
 ```
 chrome.os.diagnostics.replyToRoutineInquiry(
-  params: ReplyToRoutineInquiryRequest,
+  request: ReplyToRoutineInquiryRequest,
 ) => Promise<void>
 ```
 
@@ -992,7 +992,7 @@ M125
 ### startRoutine()
 ```
 chrome.os.diagnostics.startRoutine(
-  params: StartRoutineRequest,
+  request: StartRoutineRequest,
 ) => Promise<void>
 ```
 
