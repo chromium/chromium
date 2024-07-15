@@ -75,36 +75,6 @@ class SuggestionAnswer {
   typedef std::vector<TextField> TextFields;
   typedef std::vector<GURL> URLs;
 
-  // These values are based on the server-side type AnswerTriggererKey. Do not
-  // remove values from this enum (or the client/server will become out of
-  // sync).
-  //
-  // A Java counterpart will be generated for this enum.
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.omnibox
-  enum AnswerType {
-    ANSWER_TYPE_INVALID = 0,
-    ANSWER_TYPE_DICTIONARY = 1,
-    ANSWER_TYPE_FINANCE = 2,
-    ANSWER_TYPE_KNOWLEDGE_GRAPH = 3,
-    ANSWER_TYPE_LOCAL = 4,
-    ANSWER_TYPE_SPORTS = 5,
-    ANSWER_TYPE_SUNRISE = 6,
-    ANSWER_TYPE_TRANSLATION = 7,
-    ANSWER_TYPE_WEATHER = 8,
-    ANSWER_TYPE_WHEN_IS = 9,
-    ANSWER_TYPE_CURRENCY = 10,
-    ANSWER_TYPE_LOCAL_TIME = 11,
-    ANSWER_TYPE_PLAY_INSTALL = 12,
-
-    // Last value - tracks total number of different answer types.
-    // Deliberately not assigning a value to this enum to prevent errors where a
-    // new enum values are added above and compiler accepts the overlapping
-    // enums.
-    ANSWER_TYPE_TOTAL_COUNT
-  };
-  static_assert(ANSWER_TYPE_TOTAL_COUNT == 13,
-                "Do not remove enums from AnswerType");
-
   // The above TextType values match what is sent by server, but are not used
   // normally by new answers.  These enum values are used instead, styling
   // answer text through a client-side process of interpretation that depends

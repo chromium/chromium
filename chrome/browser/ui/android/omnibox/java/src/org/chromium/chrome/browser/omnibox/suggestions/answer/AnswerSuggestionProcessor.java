@@ -17,7 +17,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
-import org.chromium.components.omnibox.AnswerType;
+import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
@@ -70,8 +70,7 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
 
     private void setStateForSuggestion(
             PropertyModel model, AutocompleteMatch suggestion, int position) {
-        @AnswerType
-        int answerType =
+        AnswerType answerType =
                 suggestion.getAnswer() == null
                         ? suggestion.getAnswerType()
                         : suggestion.getAnswer().getType();
@@ -152,8 +151,8 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
      * @return true, if red/green colors should be swapped.
      */
     @VisibleForTesting
-    public boolean checkColorReversalRequired(@AnswerType int answerType) {
-        boolean isFinanceAnswer = answerType == AnswerType.FINANCE;
+    public boolean checkColorReversalRequired(AnswerType answerType) {
+        boolean isFinanceAnswer = answerType == AnswerType.ANSWER_TYPE_FINANCE;
         // Country not eligible.
         if (!isCountryEligibleForColorReversal()) return false;
         // Not a finance answer.
@@ -172,37 +171,38 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
     public @NonNull OmniboxDrawableState getFallbackIcon(@NonNull AutocompleteMatch suggestion) {
         int icon = 0;
 
-        @AnswerType
-        int type =
+        AnswerType type =
                 suggestion.getAnswer() == null
                         ? suggestion.getAnswerType()
                         : suggestion.getAnswer().getType();
-        if (type != AnswerType.INVALID) {
+        if (type != AnswerType.ANSWER_TYPE_UNSPECIFIED) {
             switch (type) {
-                case AnswerType.DICTIONARY:
+                case ANSWER_TYPE_DICTIONARY:
                     icon = R.drawable.ic_book_round;
                     break;
-                case AnswerType.FINANCE:
+                case ANSWER_TYPE_FINANCE:
                     icon = R.drawable.ic_swap_vert_round;
                     break;
-                case AnswerType.KNOWLEDGE_GRAPH:
-                case AnswerType.SPORTS:
+                case ANSWER_TYPE_GENERIC_ANSWER:
+                case ANSWER_TYPE_SPORTS:
                     icon = R.drawable.ic_google_round;
                     break;
-                case AnswerType.SUNRISE:
+                case ANSWER_TYPE_SUNRISE_SUNSET:
                     icon = R.drawable.ic_wb_sunny_round;
                     break;
-                case AnswerType.TRANSLATION:
+                case ANSWER_TYPE_TRANSLATION:
                     icon = R.drawable.logo_translate_round;
                     break;
-                case AnswerType.WEATHER:
+                case ANSWER_TYPE_WEATHER:
                     icon = R.drawable.logo_partly_cloudy;
                     break;
-                case AnswerType.WHEN_IS:
+                case ANSWER_TYPE_WHEN_IS:
                     icon = R.drawable.ic_event_round;
                     break;
-                case AnswerType.CURRENCY:
+                case ANSWER_TYPE_CURRENCY:
                     icon = R.drawable.ic_loop_round;
+                    break;
+                default:
                     break;
             }
         } else if (suggestion.getType() == OmniboxSuggestionType.CALCULATOR) {

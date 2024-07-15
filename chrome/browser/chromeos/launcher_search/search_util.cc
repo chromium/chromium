@@ -19,6 +19,7 @@
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/search_engines/search_terms_data.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/omnibox_proto/answer_type.pb.h"
 #include "ui/base/page_transition_types.h"
 
 namespace crosapi {
@@ -30,20 +31,20 @@ using RemoteConsumer = mojo::Remote<crosapi::mojom::SearchResultConsumer>;
 using RequestSource = SearchTermsData::RequestSource;
 
 SearchResult::AnswerType MatchTypeToAnswerType(const int type) {
-  switch (static_cast<SuggestionAnswer::AnswerType>(type)) {
-    case SuggestionAnswer::ANSWER_TYPE_WEATHER:
+  switch (static_cast<omnibox::AnswerType>(type)) {
+    case omnibox::ANSWER_TYPE_WEATHER:
       return SearchResult::AnswerType::kWeather;
-    case SuggestionAnswer::ANSWER_TYPE_CURRENCY:
+    case omnibox::ANSWER_TYPE_CURRENCY:
       return SearchResult::AnswerType::kCurrency;
-    case SuggestionAnswer::ANSWER_TYPE_DICTIONARY:
+    case omnibox::ANSWER_TYPE_DICTIONARY:
       return SearchResult::AnswerType::kDictionary;
-    case SuggestionAnswer::ANSWER_TYPE_FINANCE:
+    case omnibox::ANSWER_TYPE_FINANCE:
       return SearchResult::AnswerType::kFinance;
-    case SuggestionAnswer::ANSWER_TYPE_SUNRISE:
+    case omnibox::ANSWER_TYPE_SUNRISE_SUNSET:
       return SearchResult::AnswerType::kSunrise;
-    case SuggestionAnswer::ANSWER_TYPE_TRANSLATION:
+    case omnibox::ANSWER_TYPE_TRANSLATION:
       return SearchResult::AnswerType::kTranslation;
-    case SuggestionAnswer::ANSWER_TYPE_WHEN_IS:
+    case omnibox::ANSWER_TYPE_WHEN_IS:
       return SearchResult::AnswerType::kWhenIs;
     default:
       return SearchResult::AnswerType::kDefaultAnswer;

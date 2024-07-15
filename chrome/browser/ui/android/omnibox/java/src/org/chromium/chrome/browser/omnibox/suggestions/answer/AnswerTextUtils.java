@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.omnibox.suggestions.answer;
 
 import android.text.Html;
 
-import org.chromium.components.omnibox.AnswerType;
+import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
 
 /** Shared logic for implementations of {@link AnswerText} */
 class AnswerTextUtils {
@@ -22,9 +22,9 @@ class AnswerTextUtils {
      * @return Text stripped of HTML tags and, if applicable, shortened to make currency answers
      *     more readable.
      */
-    static String processAnswerText(String text, boolean isAnswerLine, int answerType) {
+    static String processAnswerText(String text, boolean isAnswerLine, AnswerType answerType) {
         text = Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY).toString();
-        if (isAnswerLine && answerType == AnswerType.CURRENCY) {
+        if (isAnswerLine && answerType == AnswerType.ANSWER_TYPE_CURRENCY) {
             // Modify the content of answer to present only the value after conversion, that is:
             //    1,000 United State Dollar = 1,330.75 Canadian Dollar
             // becomes

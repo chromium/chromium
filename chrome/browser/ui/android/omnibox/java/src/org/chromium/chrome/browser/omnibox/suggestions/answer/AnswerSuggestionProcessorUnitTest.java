@@ -50,7 +50,7 @@ import org.chromium.components.omnibox.AnswerDataProto.FormattedString;
 import org.chromium.components.omnibox.AnswerDataProto.Image;
 import org.chromium.components.omnibox.AnswerTextStyle;
 import org.chromium.components.omnibox.AnswerTextType;
-import org.chromium.components.omnibox.AnswerType;
+import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxFeatureList;
@@ -78,16 +78,16 @@ import java.util.Optional;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE)
 public class AnswerSuggestionProcessorUnitTest {
-    private static final @AnswerType int[] ANSWER_TYPES = {
-        AnswerType.DICTIONARY,
-        AnswerType.FINANCE,
-        AnswerType.KNOWLEDGE_GRAPH,
-        AnswerType.SPORTS,
-        AnswerType.SUNRISE,
-        AnswerType.TRANSLATION,
-        AnswerType.WEATHER,
-        AnswerType.WHEN_IS,
-        AnswerType.CURRENCY
+    private static final AnswerType[] ANSWER_TYPES = {
+        AnswerType.ANSWER_TYPE_DICTIONARY,
+        AnswerType.ANSWER_TYPE_FINANCE,
+        AnswerType.ANSWER_TYPE_GENERIC_ANSWER,
+        AnswerType.ANSWER_TYPE_SPORTS,
+        AnswerType.ANSWER_TYPE_SUNRISE_SUNSET,
+        AnswerType.ANSWER_TYPE_TRANSLATION,
+        AnswerType.ANSWER_TYPE_WEATHER,
+        AnswerType.ANSWER_TYPE_WHEN_IS,
+        AnswerType.ANSWER_TYPE_CURRENCY
     };
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -188,7 +188,7 @@ public class AnswerSuggestionProcessorUnitTest {
 
     /** Create Answer Suggestion. */
     SuggestionTestHelper createAnswerSuggestion(
-            @AnswerType int type,
+            AnswerType type,
             String line1Text,
             int line1Size,
             String line2Text,
@@ -208,7 +208,7 @@ public class AnswerSuggestionProcessorUnitTest {
     }
 
     SuggestionTestHelper createRichAnswerSuggestion(
-            @AnswerType int type, int numberOfActions, boolean includeImage) {
+            AnswerType type, int numberOfActions, boolean includeImage) {
         AnswerData.Builder answerDataBuilder =
                 AnswerData.newBuilder()
                         .setHeadline(FormattedString.newBuilder().setText("").build())
@@ -267,7 +267,8 @@ public class AnswerSuggestionProcessorUnitTest {
     @Test
     public void regularAnswer_order() {
         final SuggestionTestHelper suggHelper =
-                createAnswerSuggestion(AnswerType.KNOWLEDGE_GRAPH, "Query", 1, "Answer", 1, null);
+                createAnswerSuggestion(
+                        AnswerType.ANSWER_TYPE_GENERIC_ANSWER, "Query", 1, "Answer", 1, null);
 
         // Note: Most answers are shown in Answer -> Question order, but announced in
         // Question -> Answer order.
@@ -278,7 +279,8 @@ public class AnswerSuggestionProcessorUnitTest {
     @Test
     public void dictionaryAnswer_order() {
         final SuggestionTestHelper suggHelper =
-                createAnswerSuggestion(AnswerType.DICTIONARY, "Query", 1, "Answer", 1, null);
+                createAnswerSuggestion(
+                        AnswerType.ANSWER_TYPE_DICTIONARY, "Query", 1, "Answer", 1, null);
 
         // Note: Dictionary answers are shown in Question -> Answer order.
         suggHelper.verifyLine1("Query", 1, "Query");
@@ -296,7 +298,7 @@ public class AnswerSuggestionProcessorUnitTest {
     @Test
     public void regularAnswer_shortMultiline() {
         final SuggestionTestHelper suggHelper =
-                createAnswerSuggestion(AnswerType.KNOWLEDGE_GRAPH, "", 1, "", 3, null);
+                createAnswerSuggestion(AnswerType.ANSWER_TYPE_GENERIC_ANSWER, "", 1, "", 3, null);
 
         suggHelper.verifyLine1("", 3, "");
         suggHelper.verifyLine2("", 1, "");
@@ -305,7 +307,7 @@ public class AnswerSuggestionProcessorUnitTest {
     @Test
     public void dictionaryAnswer_shortMultiline() {
         final SuggestionTestHelper suggHelper =
-                createAnswerSuggestion(AnswerType.DICTIONARY, "", 1, "", 3, null);
+                createAnswerSuggestion(AnswerType.ANSWER_TYPE_DICTIONARY, "", 1, "", 3, null);
 
         suggHelper.verifyLine1("", 1, "");
         suggHelper.verifyLine2("", 3, "");
@@ -316,7 +318,7 @@ public class AnswerSuggestionProcessorUnitTest {
     @Test
     public void regularAnswer_truncatedMultiline() {
         final SuggestionTestHelper suggHelper =
-                createAnswerSuggestion(AnswerType.KNOWLEDGE_GRAPH, "", 3, "", 10, null);
+                createAnswerSuggestion(AnswerType.ANSWER_TYPE_GENERIC_ANSWER, "", 3, "", 10, null);
 
         suggHelper.verifyLine1("", 3, "");
         suggHelper.verifyLine2("", 1, "");
@@ -325,7 +327,7 @@ public class AnswerSuggestionProcessorUnitTest {
     @Test
     public void dictionaryAnswer_truncatedMultiline() {
         final SuggestionTestHelper suggHelper =
-                createAnswerSuggestion(AnswerType.DICTIONARY, "", 3, "", 10, null);
+                createAnswerSuggestion(AnswerType.ANSWER_TYPE_DICTIONARY, "", 3, "", 10, null);
 
         suggHelper.verifyLine1("", 1, "");
         suggHelper.verifyLine2("", 3, "");
@@ -334,7 +336,7 @@ public class AnswerSuggestionProcessorUnitTest {
     // Image fetching and icon association tests.
     @Test
     public void answerImage_fallbackIcons() {
-        for (@AnswerType int type : ANSWER_TYPES) {
+        for (AnswerType type : ANSWER_TYPES) {
             SuggestionTestHelper suggHelper = createAnswerSuggestion(type, "", 1, "", 1, null);
             // Note: model is re-created on every iteration.
             Assert.assertNotNull("No icon associated with type: " + type, suggHelper.getIcon());
@@ -343,7 +345,7 @@ public class AnswerSuggestionProcessorUnitTest {
 
     @Test
     public void answerImage_fallbackIcons_richAnswerTemplate() {
-        for (@AnswerType int type : ANSWER_TYPES) {
+        for (AnswerType type : ANSWER_TYPES) {
             SuggestionTestHelper suggHelper = createRichAnswerSuggestion(type, 0, false);
             // Note: model is re-created on every iteration.
             Assert.assertNotNull("No icon associated with type: " + type, suggHelper.getIcon());
@@ -355,7 +357,7 @@ public class AnswerSuggestionProcessorUnitTest {
     public void richAnswerCard() {
         OmniboxFeatures.sAnswerActionsShowRichCard.setForTesting(true);
         SuggestionTestHelper suggHelper =
-                createRichAnswerSuggestion(AnswerType.DICTIONARY, 1, true);
+                createRichAnswerSuggestion(AnswerType.ANSWER_TYPE_DICTIONARY, 1, true);
         Assert.assertEquals(
                 suggHelper.mModel.get(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING),
                 mContext.getResources()
@@ -365,11 +367,11 @@ public class AnswerSuggestionProcessorUnitTest {
         Assert.assertTrue(suggHelper.mModel.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION));
         Assert.assertTrue(suggHelper.mModel.get(BaseSuggestionViewProperties.SHOW_DECORATION));
 
-        suggHelper = createRichAnswerSuggestion(AnswerType.DICTIONARY, 1, false);
+        suggHelper = createRichAnswerSuggestion(AnswerType.ANSWER_TYPE_DICTIONARY, 1, false);
         Assert.assertFalse(suggHelper.mModel.get(BaseSuggestionViewProperties.SHOW_DECORATION));
 
         // A rich answer with no actions shouldn't get the card treatment.
-        suggHelper = createRichAnswerSuggestion(AnswerType.DICTIONARY, 0, true);
+        suggHelper = createRichAnswerSuggestion(AnswerType.ANSWER_TYPE_DICTIONARY, 0, true);
         Assert.assertEquals(
                 suggHelper.mModel.get(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING),
                 OmniboxResourceProvider.getSuggestionDecorationIconSizeWidth(mContext));
@@ -381,31 +383,33 @@ public class AnswerSuggestionProcessorUnitTest {
     @Test
     public void answerImage_iconAssociation() {
         SuggestionTestHelper suggHelper =
-                createAnswerSuggestion(AnswerType.DICTIONARY, "", 1, "", 1, null);
+                createAnswerSuggestion(AnswerType.ANSWER_TYPE_DICTIONARY, "", 1, "", 1, null);
         Assert.assertEquals(R.drawable.ic_book_round, suggHelper.getIconRes());
 
-        suggHelper = createAnswerSuggestion(AnswerType.FINANCE, "", 1, "", 1, null);
+        suggHelper = createAnswerSuggestion(AnswerType.ANSWER_TYPE_FINANCE, "", 1, "", 1, null);
         Assert.assertEquals(R.drawable.ic_swap_vert_round, suggHelper.getIconRes());
 
-        suggHelper = createAnswerSuggestion(AnswerType.KNOWLEDGE_GRAPH, "", 1, "", 1, null);
+        suggHelper =
+                createAnswerSuggestion(AnswerType.ANSWER_TYPE_GENERIC_ANSWER, "", 1, "", 1, null);
         Assert.assertEquals(R.drawable.ic_google_round, suggHelper.getIconRes());
 
-        suggHelper = createAnswerSuggestion(AnswerType.SPORTS, "", 1, "", 1, null);
+        suggHelper = createAnswerSuggestion(AnswerType.ANSWER_TYPE_SPORTS, "", 1, "", 1, null);
         Assert.assertEquals(R.drawable.ic_google_round, suggHelper.getIconRes());
 
-        suggHelper = createAnswerSuggestion(AnswerType.SUNRISE, "", 1, "", 1, null);
+        suggHelper =
+                createAnswerSuggestion(AnswerType.ANSWER_TYPE_SUNRISE_SUNSET, "", 1, "", 1, null);
         Assert.assertEquals(R.drawable.ic_wb_sunny_round, suggHelper.getIconRes());
 
-        suggHelper = createAnswerSuggestion(AnswerType.TRANSLATION, "", 1, "", 1, null);
+        suggHelper = createAnswerSuggestion(AnswerType.ANSWER_TYPE_TRANSLATION, "", 1, "", 1, null);
         Assert.assertEquals(R.drawable.logo_translate_round, suggHelper.getIconRes());
 
-        suggHelper = createAnswerSuggestion(AnswerType.WEATHER, "", 1, "", 1, null);
+        suggHelper = createAnswerSuggestion(AnswerType.ANSWER_TYPE_WEATHER, "", 1, "", 1, null);
         Assert.assertEquals(R.drawable.logo_partly_cloudy, suggHelper.getIconRes());
 
-        suggHelper = createAnswerSuggestion(AnswerType.WHEN_IS, "", 1, "", 1, null);
+        suggHelper = createAnswerSuggestion(AnswerType.ANSWER_TYPE_WHEN_IS, "", 1, "", 1, null);
         Assert.assertEquals(R.drawable.ic_event_round, suggHelper.getIconRes());
 
-        suggHelper = createAnswerSuggestion(AnswerType.CURRENCY, "", 1, "", 1, null);
+        suggHelper = createAnswerSuggestion(AnswerType.ANSWER_TYPE_CURRENCY, "", 1, "", 1, null);
         Assert.assertEquals(R.drawable.ic_loop_round, suggHelper.getIconRes());
     }
 
@@ -417,7 +421,8 @@ public class AnswerSuggestionProcessorUnitTest {
 
     @Test
     public void answerImage_fallbackIconServedForUnsupportedAnswerType() {
-        var suggHelper = createAnswerSuggestion(AnswerType.TOTAL_COUNT, "", 1, "", 1, null);
+        var suggHelper =
+                createAnswerSuggestion(AnswerType.ANSWER_TYPE_UNSPECIFIED, "", 1, "", 1, null);
         var drawable = suggHelper.mModel.get(BaseSuggestionViewProperties.ICON).drawable;
         Assert.assertEquals(
                 R.drawable.ic_suggestion_magnifier, shadowOf(drawable).getCreatedFromResId());
@@ -430,7 +435,7 @@ public class AnswerSuggestionProcessorUnitTest {
                 new AnswerSuggestionProcessor(
                         mContext, mSuggestionHost, mUrlStateProvider, Optional.empty());
         final SuggestionTestHelper suggHelper =
-                createAnswerSuggestion(AnswerType.WEATHER, "", 1, "", 1, url);
+                createAnswerSuggestion(AnswerType.ANSWER_TYPE_WEATHER, "", 1, "", 1, url);
         Assert.assertNotNull(suggHelper.getIcon());
     }
 
@@ -438,7 +443,7 @@ public class AnswerSuggestionProcessorUnitTest {
     @DisableFeatures(ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE)
     public void checkColorReversalRequired_ReturnsFalseIfOmniBoxAnswerColorReversalDisabled() {
         mProcessor.onNativeInitialized();
-        for (@AnswerType int type : ANSWER_TYPES) {
+        for (AnswerType type : ANSWER_TYPES) {
             Assert.assertFalse(mProcessor.checkColorReversalRequired(type));
         }
     }
@@ -448,8 +453,8 @@ public class AnswerSuggestionProcessorUnitTest {
             checkColorReversalRequired_ReturnsTrueIfOmniBoxAnswerColorReversalEnabledAndIncludedInCountryList() {
         mProcessor.onNativeInitialized();
         Locale.setDefault(new Locale("ja", "JP"));
-        for (@AnswerType int type : ANSWER_TYPES) {
-            if (type == AnswerType.FINANCE) {
+        for (AnswerType type : ANSWER_TYPES) {
+            if (type == AnswerType.ANSWER_TYPE_FINANCE) {
                 Assert.assertTrue(mProcessor.checkColorReversalRequired(type));
             } else {
                 Assert.assertFalse(mProcessor.checkColorReversalRequired(type));
@@ -462,7 +467,7 @@ public class AnswerSuggestionProcessorUnitTest {
             checkColorReversalRequired_ReturnsFalseIfOmniBoxAnswerColorReversalEnabledAndNotIncludedInCountryList() {
         mProcessor.onNativeInitialized();
         Locale.setDefault(new Locale("en", "US"));
-        for (@AnswerType int type : ANSWER_TYPES) {
+        for (AnswerType type : ANSWER_TYPES) {
             Assert.assertFalse(mProcessor.checkColorReversalRequired(type));
         }
     }
@@ -470,7 +475,7 @@ public class AnswerSuggestionProcessorUnitTest {
     @Test
     public void doesProcessSuggestion_suggestionWithAnswer() {
         SuggestionTestHelper suggHelper =
-                createAnswerSuggestion(AnswerType.DICTIONARY, "", 1, "", 1, null);
+                createAnswerSuggestion(AnswerType.ANSWER_TYPE_DICTIONARY, "", 1, "", 1, null);
         Assert.assertTrue(mProcessor.doesProcessSuggestion(suggHelper.mSuggestion, 0));
     }
 
@@ -492,7 +497,12 @@ public class AnswerSuggestionProcessorUnitTest {
     public void fetchAnswerImage_withSupplier() {
         var suggHelper =
                 createAnswerSuggestion(
-                        AnswerType.TOTAL_COUNT, "", 1, "", 1, JUnitTestGURLs.BLUE_1.getSpec());
+                        AnswerType.ANSWER_TYPE_UNSPECIFIED,
+                        "",
+                        1,
+                        "",
+                        1,
+                        JUnitTestGURLs.BLUE_1.getSpec());
 
         ArgumentCaptor<Callback<Bitmap>> cb = ArgumentCaptor.forClass(Callback.class);
         verify(mImageSupplier, times(1)).fetchImage(eq(JUnitTestGURLs.BLUE_1), cb.capture());
@@ -520,7 +530,12 @@ public class AnswerSuggestionProcessorUnitTest {
 
         var suggHelper =
                 createAnswerSuggestion(
-                        AnswerType.TOTAL_COUNT, "", 1, "", 1, JUnitTestGURLs.BLUE_1.getSpec());
+                        AnswerType.ANSWER_TYPE_UNSPECIFIED,
+                        "",
+                        1,
+                        "",
+                        1,
+                        JUnitTestGURLs.BLUE_1.getSpec());
 
         var sds1 = suggHelper.mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(sds1);

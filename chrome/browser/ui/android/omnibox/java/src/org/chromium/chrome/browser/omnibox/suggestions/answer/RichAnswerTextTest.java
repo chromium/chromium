@@ -24,7 +24,7 @@ import org.chromium.components.omnibox.AnswerDataProto.AnswerData;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString.ColorType;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString.FormattedStringFragment;
-import org.chromium.components.omnibox.AnswerType;
+import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
@@ -97,7 +97,7 @@ public class RichAnswerTextTest {
                                 AnswerData.newBuilder().setHeadline(headline).setSubhead(subhead))
                         .build();
 
-        int answerType = AnswerType.DICTIONARY;
+        AnswerType answerType = AnswerType.ANSWER_TYPE_DICTIONARY;
         AnswerText[] texts =
                 RichAnswerText.from(mContext, richAnswerTemplate, answerType, false, false);
         Assert.assertEquals(texts[0].getMaxLines(), 1);
@@ -156,7 +156,7 @@ public class RichAnswerTextTest {
                                         .setSubhead(positiveSubhead))
                         .build();
 
-        int answerType = AnswerType.FINANCE;
+        AnswerType answerType = AnswerType.ANSWER_TYPE_FINANCE;
         AnswerText[] texts =
                 RichAnswerText.from(mContext, richAnswerTemplate, answerType, false, false);
         // A11y descriptions are reverse of visual ordering.
@@ -247,7 +247,7 @@ public class RichAnswerTextTest {
                                         .setSubhead(positiveSubhead))
                         .build();
 
-        int answerType = AnswerType.FINANCE;
+        AnswerType answerType = AnswerType.ANSWER_TYPE_FINANCE;
         AnswerText[] texts =
                 RichAnswerText.from(mContext, richAnswerTemplate, answerType, true, false);
         SpannableStringBuilder primaryText = texts[0].getText();
@@ -317,7 +317,7 @@ public class RichAnswerTextTest {
                                 AnswerData.newBuilder().setHeadline(headline).setSubhead(subhead))
                         .build();
 
-        int answerType = AnswerType.WEATHER;
+        AnswerType answerType = AnswerType.ANSWER_TYPE_WEATHER;
         AnswerText[] texts =
                 RichAnswerText.from(mContext, richAnswerTemplate, answerType, false, false);
         Assert.assertEquals(texts[0].getMaxLines(), 1);
@@ -364,7 +364,7 @@ public class RichAnswerTextTest {
                                 AnswerData.newBuilder().setHeadline(headline).setSubhead(subhead))
                         .build();
 
-        int answerType = AnswerType.TRANSLATION;
+        AnswerType answerType = AnswerType.ANSWER_TYPE_TRANSLATION;
         AnswerText[] texts =
                 RichAnswerText.from(mContext, richAnswerTemplate, answerType, false, false);
         Assert.assertEquals(texts[0].getMaxLines(), 3);
@@ -395,7 +395,7 @@ public class RichAnswerTextTest {
                                 AnswerData.newBuilder().setHeadline(headline).setSubhead(subhead))
                         .build();
 
-        int answerType = AnswerType.CURRENCY;
+        AnswerType answerType = AnswerType.ANSWER_TYPE_CURRENCY;
         AnswerText[] texts =
                 RichAnswerText.from(mContext, richAnswerTemplate, answerType, false, false);
         SpannableStringBuilder primaryText = texts[0].getText();
@@ -424,7 +424,7 @@ public class RichAnswerTextTest {
                                 AnswerData.newBuilder().setHeadline(headline).setSubhead(subhead))
                         .build();
 
-        int answerType = AnswerType.WEATHER;
+        AnswerType answerType = AnswerType.ANSWER_TYPE_WEATHER;
         AnswerText[] texts =
                 RichAnswerText.from(mContext, richAnswerTemplate, answerType, false, false);
         SpannableStringBuilder primaryText = texts[0].getText();
@@ -467,7 +467,7 @@ public class RichAnswerTextTest {
                                 AnswerData.newBuilder().setHeadline(headline).setSubhead(subhead))
                         .build();
 
-        int answerType = AnswerType.WEATHER;
+        AnswerType answerType = AnswerType.ANSWER_TYPE_WEATHER;
         AnswerText[] texts =
                 RichAnswerText.from(mContext, richAnswerTemplate, answerType, false, true);
         SpannableStringBuilder primaryText = texts[0].getText();

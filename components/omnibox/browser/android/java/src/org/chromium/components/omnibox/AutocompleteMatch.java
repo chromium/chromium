@@ -19,6 +19,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
+import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
 import org.chromium.components.omnibox.GroupsProto.GroupId;
 import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
 import org.chromium.components.omnibox.action.OmniboxAction;
@@ -73,7 +74,7 @@ public class AutocompleteMatch {
     private List<MatchClassification> mDescriptionClassifications;
     private SuggestionAnswer mAnswer;
     private @Nullable RichAnswerTemplate mAnswerTemplate;
-    private final int mAnswerType;
+    private final AnswerType mAnswerType;
     private final String mFillIntoEdit;
     private GURL mUrl;
     private final GURL mImageUrl;
@@ -139,7 +140,7 @@ public class AutocompleteMatch {
                 // When parsing error occurs, leave template as null.
             }
         }
-        mAnswerType = answerType;
+        mAnswerType = AnswerType.forNumber(answerType);
         mFillIntoEdit = TextUtils.isEmpty(fillIntoEdit) ? displayText : fillIntoEdit;
         assert url != null;
         mUrl = url;
@@ -343,7 +344,7 @@ public class AutocompleteMatch {
         return mAnswerTemplate;
     }
 
-    public @AnswerType int getAnswerType() {
+    public AnswerType getAnswerType() {
         return mAnswerType;
     }
 

@@ -40,6 +40,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/prerender_test_util.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/omnibox_proto/answer_type.pb.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"
@@ -102,9 +103,8 @@ IN_PROC_BROWSER_TEST_P(BrowserTestWithParam, MatchVectorIcons) {
 // Tests that all Omnibox Answer vector icons map to an equivalent SVG for use
 // in the NTP Realbox.
 IN_PROC_BROWSER_TEST_P(BrowserTestWithParam, AnswerVectorIcons) {
-  for (int answer_type = SuggestionAnswer::ANSWER_TYPE_DICTIONARY;
-       answer_type != SuggestionAnswer::ANSWER_TYPE_TOTAL_COUNT;
-       answer_type++) {
+  for (int answer_type = omnibox::ANSWER_TYPE_DICTIONARY;
+       answer_type != omnibox::AnswerType_ARRAYSIZE; answer_type++) {
     AutocompleteMatch match;
     SuggestionAnswer answer;
     answer.set_type(answer_type);

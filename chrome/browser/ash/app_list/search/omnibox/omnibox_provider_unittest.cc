@@ -27,6 +27,7 @@
 #include "components/variations/variations_ids_provider.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/answer_type.pb.h"
 
 namespace app_list::test {
 
@@ -50,7 +51,7 @@ AutocompleteMatch NewOmniboxResult(const std::string& url) {
 }
 
 AutocompleteMatch NewAnswerResult(const std::string& url,
-                                  SuggestionAnswer::AnswerType answer_type) {
+                                  omnibox::AnswerType answer_type) {
   AutocompleteMatch result;
 
   result.relevance = 1.0;
@@ -184,9 +185,8 @@ TEST_F(OmniboxProviderTest, Basic) {
   AutocompleteResult result;
 
   to_produce.emplace_back(NewOmniboxResult("https://example.com/result"));
-  to_produce.emplace_back(
-      NewAnswerResult("https://example.com/answer",
-                      SuggestionAnswer::AnswerType::ANSWER_TYPE_WEATHER));
+  to_produce.emplace_back(NewAnswerResult(
+      "https://example.com/answer", omnibox::AnswerType::ANSWER_TYPE_WEATHER));
   to_produce.emplace_back(NewOpenTabResult("https://example.com/open_tab"));
   result.AppendMatches(to_produce);
   ProduceResults(std::move(result));
@@ -237,8 +237,8 @@ TEST_F(OmniboxProviderTest, BadUrls) {
   AutocompleteResult result;
 
   to_produce.emplace_back(NewOmniboxResult(""));
-  to_produce.emplace_back(NewAnswerResult(
-      "badscheme", SuggestionAnswer::AnswerType::ANSWER_TYPE_WEATHER));
+  to_produce.emplace_back(
+      NewAnswerResult("badscheme", omnibox::AnswerType::ANSWER_TYPE_WEATHER));
   to_produce.emplace_back(NewOpenTabResult("http://?k=v"));
   result.AppendMatches(to_produce);
   ProduceResults(std::move(result));
@@ -290,7 +290,7 @@ TEST_F(OmniboxProviderTest, UnhandledUrls) {
   to_produce.emplace_back(NewOmniboxResult("https://drive.google.com/doc1"));
   to_produce.emplace_back(
       NewAnswerResult("https://docs.google.com/doc2",
-                      SuggestionAnswer::AnswerType::ANSWER_TYPE_FINANCE));
+                      omnibox::AnswerType::ANSWER_TYPE_FINANCE));
   to_produce.emplace_back(NewOpenTabResult("https://drive.google.com/doc1"));
   to_produce.emplace_back(NewOpenTabResult("https://docs.google.com/doc2"));
   to_produce.emplace_back(NewOpenTabResult("file:///docs/doc3"));
@@ -320,9 +320,8 @@ TEST_F(OmniboxProviderTest, WebSearchControl) {
   AutocompleteResult result;
 
   to_produce.emplace_back(NewOmniboxResult("https://example.com/result"));
-  to_produce.emplace_back(
-      NewAnswerResult("https://example.com/answer",
-                      SuggestionAnswer::AnswerType::ANSWER_TYPE_WEATHER));
+  to_produce.emplace_back(NewAnswerResult(
+      "https://example.com/answer", omnibox::AnswerType::ANSWER_TYPE_WEATHER));
   to_produce.emplace_back(NewOpenTabResult("https://example.com/open_tab"));
   result.AppendMatches(to_produce);
   ProduceResults(std::move(result));

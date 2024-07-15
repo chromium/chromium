@@ -908,11 +908,8 @@ bool SearchSuggestionParser::ParseSuggestResults(
                                 &numeric_answer_type)) {
             answer_type = AnswerTypeForNumber(numeric_answer_type);
           }
-          // TODO (327497146): Remove omnibox::ANSWER_TYPE_WEB_ANSWER check
-          // after fully deprecating SuggestionAnswer::AnswerType.
           if (answer_template_string &&
-              (answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED &&
-               answer_type != omnibox::ANSWER_TYPE_WEB_ANSWER)) {
+              answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED) {
             omnibox::RichSuggestTemplate suggest_template;
             template_parsed_successfully =
                 DecodeProtoFromBase64<omnibox::RichSuggestTemplate>(
@@ -928,8 +925,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
           if (!template_parsed_successfully && answer_json) {
             if (omnibox_feature_configs::SuggestionAnswerMigration::Get()
                     .enabled &&
-                (answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED &&
-                 answer_type != omnibox::ANSWER_TYPE_WEB_ANSWER) &&
+                answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED &&
                 omnibox::answer_data_parser::ParseJsonToAnswerData(
                     *answer_json, &answer_template)) {
             } else if (SuggestionAnswer::ParseAnswer(

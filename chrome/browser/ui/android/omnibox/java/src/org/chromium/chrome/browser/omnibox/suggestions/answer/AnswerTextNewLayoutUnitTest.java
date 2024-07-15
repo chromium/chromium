@@ -26,7 +26,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.components.omnibox.AnswerTextStyle;
 import org.chromium.components.omnibox.AnswerTextType;
-import org.chromium.components.omnibox.AnswerType;
+import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
 import org.chromium.components.omnibox.SuggestionAnswer;
 import org.chromium.components.omnibox.SuggestionAnswer.ImageLine;
 import org.chromium.components.omnibox.SuggestionAnswer.TextField;
@@ -88,7 +88,8 @@ public class AnswerTextNewLayoutUnitTest {
         SuggestionAnswer.ImageLine imageLine =
                 new ImageLine(List.of(text), additionalText, statusText, "");
         AnswerTextNewLayout layout =
-                new AnswerTextNewLayout(mContext, AnswerType.DICTIONARY, imageLine, true, false);
+                new AnswerTextNewLayout(
+                        mContext, AnswerType.ANSWER_TYPE_DICTIONARY, imageLine, true, false);
 
         Assert.assertEquals(layout.getText().toString(), "noun  verb  adverb");
         SpannableStringBuilder layoutText = layout.getText();
@@ -110,7 +111,10 @@ public class AnswerTextNewLayoutUnitTest {
         // Test for red text color.
         MetricAffectingSpan textAppearanceSpan1 =
                 AnswerTextNewLayout.getAppearanceForAnswerText(
-                        mContext, AnswerTextType.DESCRIPTION_NEGATIVE, AnswerType.FINANCE, false);
+                        mContext,
+                        AnswerTextType.DESCRIPTION_NEGATIVE,
+                        AnswerType.ANSWER_TYPE_FINANCE,
+                        false);
         verifyTextAppearanceSpan(textAppearanceSpan1);
 
         TextAppearanceSpan textAppearanceSpan1Converted = (TextAppearanceSpan) textAppearanceSpan1;
@@ -119,7 +123,10 @@ public class AnswerTextNewLayoutUnitTest {
         // Test for green text color.
         MetricAffectingSpan textAppearanceSpan2 =
                 AnswerTextNewLayout.getAppearanceForAnswerText(
-                        mContext, AnswerTextType.DESCRIPTION_POSITIVE, AnswerType.FINANCE, false);
+                        mContext,
+                        AnswerTextType.DESCRIPTION_POSITIVE,
+                        AnswerType.ANSWER_TYPE_FINANCE,
+                        false);
         verifyTextAppearanceSpan(textAppearanceSpan2);
 
         TextAppearanceSpan textAppearanceSpan2Converted = (TextAppearanceSpan) textAppearanceSpan2;
@@ -136,7 +143,10 @@ public class AnswerTextNewLayoutUnitTest {
         // Test for green text color.
         MetricAffectingSpan textAppearanceSpan1 =
                 AnswerTextNewLayout.getAppearanceForAnswerText(
-                        mContext, AnswerTextType.DESCRIPTION_NEGATIVE, AnswerType.FINANCE, true);
+                        mContext,
+                        AnswerTextType.DESCRIPTION_NEGATIVE,
+                        AnswerType.ANSWER_TYPE_FINANCE,
+                        true);
         verifyTextAppearanceSpan(textAppearanceSpan1);
 
         TextAppearanceSpan textAppearanceSpan1Converted = (TextAppearanceSpan) textAppearanceSpan1;
@@ -145,7 +155,10 @@ public class AnswerTextNewLayoutUnitTest {
         // Test for red text color.
         MetricAffectingSpan textAppearanceSpan2 =
                 AnswerTextNewLayout.getAppearanceForAnswerText(
-                        mContext, AnswerTextType.DESCRIPTION_POSITIVE, AnswerType.FINANCE, true);
+                        mContext,
+                        AnswerTextType.DESCRIPTION_POSITIVE,
+                        AnswerType.ANSWER_TYPE_FINANCE,
+                        true);
         verifyTextAppearanceSpan(textAppearanceSpan2);
 
         TextAppearanceSpan textAppearanceSpan2Converted = (TextAppearanceSpan) textAppearanceSpan2;

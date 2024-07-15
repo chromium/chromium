@@ -45,6 +45,7 @@
 #include "content/public/browser/web_ui.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
+#include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
 
@@ -58,31 +59,29 @@ namespace {
 
 std::string SuggestionAnswerTypeToString(int answer_type) {
   switch (answer_type) {
-    case SuggestionAnswer::ANSWER_TYPE_INVALID:
+    case omnibox::ANSWER_TYPE_UNSPECIFIED:
       return "invalid";
-    case SuggestionAnswer::ANSWER_TYPE_DICTIONARY:
+    case omnibox::ANSWER_TYPE_DICTIONARY:
       return "dictionary";
-    case SuggestionAnswer::ANSWER_TYPE_FINANCE:
+    case omnibox::ANSWER_TYPE_FINANCE:
       return "finance";
-    case SuggestionAnswer::ANSWER_TYPE_KNOWLEDGE_GRAPH:
+    case omnibox::ANSWER_TYPE_GENERIC_ANSWER:
       return "knowledge graph";
-    case SuggestionAnswer::ANSWER_TYPE_LOCAL:
-      return "local";
-    case SuggestionAnswer::ANSWER_TYPE_SPORTS:
+    case omnibox::ANSWER_TYPE_SPORTS:
       return "sports";
-    case SuggestionAnswer::ANSWER_TYPE_SUNRISE:
+    case omnibox::ANSWER_TYPE_SUNRISE_SUNSET:
       return "sunrise";
-    case SuggestionAnswer::ANSWER_TYPE_TRANSLATION:
+    case omnibox::ANSWER_TYPE_TRANSLATION:
       return "translation";
-    case SuggestionAnswer::ANSWER_TYPE_WEATHER:
+    case omnibox::ANSWER_TYPE_WEATHER:
       return "weather";
-    case SuggestionAnswer::ANSWER_TYPE_WHEN_IS:
+    case omnibox::ANSWER_TYPE_WHEN_IS:
       return "when is";
-    case SuggestionAnswer::ANSWER_TYPE_CURRENCY:
+    case omnibox::ANSWER_TYPE_CURRENCY:
       return "currency";
-    case SuggestionAnswer::ANSWER_TYPE_LOCAL_TIME:
+    case omnibox::ANSWER_TYPE_LOCAL_TIME:
       return "local time";
-    case SuggestionAnswer::ANSWER_TYPE_PLAY_INSTALL:
+    case omnibox::ANSWER_TYPE_PLAY_INSTALL:
       return "play install";
     default:
       return base::NumberToString(answer_type);

@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.collection.ArraySet;
 
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
+import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -31,7 +32,7 @@ public class AutocompleteMatchBuilder {
     private List<AutocompleteMatch.MatchClassification> mDescriptionClassifications;
     private SuggestionAnswer mAnswer;
     private byte[] mSerializedAnswerTemplate;
-    private @AnswerType int mAnswerType;
+    private AnswerType mAnswerType;
     private String mFillIntoEdit;
     private GURL mUrl;
     private GURL mImageUrl;
@@ -59,7 +60,7 @@ public class AutocompleteMatchBuilder {
                 .setIsSearch(true)
                 .setDisplayText("Placeholder Suggestion")
                 .setDescription("Placeholder Description")
-                .setAnswerType(AnswerType.INVALID)
+                .setAnswerType(AnswerType.ANSWER_TYPE_UNSPECIFIED)
                 .setUrl(JUnitTestGURLs.SEARCH_URL);
     }
 
@@ -83,7 +84,7 @@ public class AutocompleteMatchBuilder {
         mDescriptionClassifications = new ArrayList<>();
         mAnswer = null;
         mSerializedAnswerTemplate = null;
-        mAnswerType = AnswerType.INVALID;
+        mAnswerType = AnswerType.ANSWER_TYPE_UNSPECIFIED;
         mFillIntoEdit = null;
         mUrl = GURL.emptyGURL();
         mImageUrl = GURL.emptyGURL();
@@ -126,7 +127,7 @@ public class AutocompleteMatchBuilder {
                 mDescriptionClassifications,
                 mAnswer,
                 mSerializedAnswerTemplate,
-                mAnswerType,
+                mAnswerType.getNumber(),
                 mFillIntoEdit,
                 mUrl,
                 mImageUrl,
@@ -246,7 +247,7 @@ public class AutocompleteMatchBuilder {
      * @param answer The type of answer in the Omnibox suggestion.
      * @return Omnibox suggestion builder.
      */
-    public AutocompleteMatchBuilder setAnswerType(@AnswerType int answerType) {
+    public AutocompleteMatchBuilder setAnswerType(AnswerType answerType) {
         mAnswerType = answerType;
         return this;
     }

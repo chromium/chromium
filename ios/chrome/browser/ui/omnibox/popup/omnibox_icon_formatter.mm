@@ -19,29 +19,28 @@ OmniboxSuggestionIconType IconTypeFromMatch(const AutocompleteMatch& match) {
   // overall match type.
   int answer_type = match.answer.has_value() ? match.answer.value().type()
                                              : match.answer_type;
-  if (answer_type != SuggestionAnswer::ANSWER_TYPE_INVALID) {
+  if (answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED) {
     switch (answer_type) {
-      case SuggestionAnswer::ANSWER_TYPE_DICTIONARY:
+      case omnibox::ANSWER_TYPE_DICTIONARY:
         return OmniboxSuggestionIconType::kDictionary;
-      case SuggestionAnswer::ANSWER_TYPE_FINANCE:
+      case omnibox::ANSWER_TYPE_FINANCE:
         return OmniboxSuggestionIconType::kStock;
-      case SuggestionAnswer::ANSWER_TYPE_TRANSLATION:
+      case omnibox::ANSWER_TYPE_TRANSLATION:
         return OmniboxSuggestionIconType::kTranslation;
-      case SuggestionAnswer::ANSWER_TYPE_WHEN_IS:
+      case omnibox::ANSWER_TYPE_WHEN_IS:
         return OmniboxSuggestionIconType::kWhenIs;
-      case SuggestionAnswer::ANSWER_TYPE_CURRENCY:
+      case omnibox::ANSWER_TYPE_CURRENCY:
         return OmniboxSuggestionIconType::kConversion;
-      case SuggestionAnswer::ANSWER_TYPE_SUNRISE:
+      case omnibox::ANSWER_TYPE_SUNRISE_SUNSET:
         return OmniboxSuggestionIconType::kSunrise;
-      case SuggestionAnswer::ANSWER_TYPE_KNOWLEDGE_GRAPH:
-      case SuggestionAnswer::ANSWER_TYPE_LOCAL:
-      case SuggestionAnswer::ANSWER_TYPE_LOCAL_TIME:
-      case SuggestionAnswer::ANSWER_TYPE_PLAY_INSTALL:
-      case SuggestionAnswer::ANSWER_TYPE_SPORTS:
-      case SuggestionAnswer::ANSWER_TYPE_WEATHER:
+      case omnibox::ANSWER_TYPE_GENERIC_ANSWER:
+      case omnibox::ANSWER_TYPE_LOCAL_TIME:
+      case omnibox::ANSWER_TYPE_PLAY_INSTALL:
+      case omnibox::ANSWER_TYPE_SPORTS:
+      case omnibox::ANSWER_TYPE_WEATHER:
+      case omnibox::ANSWER_TYPE_WEB_ANSWER:
         return OmniboxSuggestionIconType::kFallbackAnswer;
-      case SuggestionAnswer::ANSWER_TYPE_INVALID:
-      case SuggestionAnswer::ANSWER_TYPE_TOTAL_COUNT:
+      case omnibox::ANSWER_TYPE_UNSPECIFIED:
         NOTREACHED_IN_MIGRATION();
         break;
     }

@@ -415,7 +415,7 @@ void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image,
           ? (match.answer_template.has_value() &&
              match.answer_type == omnibox::ANSWER_TYPE_WEATHER)
           : (match.answer &&
-             match.answer->type() == SuggestionAnswer::ANSWER_TYPE_WEATHER);
+             match.answer->type() == omnibox::ANSWER_TYPE_WEATHER);
 
   int width = image.width();
   int height = image.height();

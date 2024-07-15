@@ -14,7 +14,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.omnibox.AnswerTextType;
-import org.chromium.components.omnibox.AnswerType;
+import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.SuggestionAnswer;
@@ -28,7 +28,7 @@ import java.util.List;
 class AnswerTextNewLayout implements AnswerText {
     final Context mContext;
     private final boolean mIsAnswer;
-    private final @AnswerType int mAnswerType;
+    private final AnswerType mAnswerType;
     private final boolean mStockTextColorReverse;
 
     /** Content of the line of text in omnibox suggestion. */
@@ -77,7 +77,7 @@ class AnswerTextNewLayout implements AnswerText {
             assert suggestion.getType() == OmniboxSuggestionType.CALCULATOR;
             result[0] = new AnswerTextNewLayout(context, query, true);
             result[1] = new AnswerTextNewLayout(context, suggestion.getDisplayText(), false);
-        } else if (answer.getType() == AnswerType.DICTIONARY) {
+        } else if (answer.getType() == AnswerType.ANSWER_TYPE_DICTIONARY) {
             result[0] =
                     new AnswerTextNewLayout(
                             context,
@@ -132,7 +132,7 @@ class AnswerTextNewLayout implements AnswerText {
      */
     AnswerTextNewLayout(
             Context context,
-            @AnswerType int type,
+            AnswerType type,
             SuggestionAnswer.ImageLine line,
             boolean isAnswerLine,
             boolean stockTextColorReverse) {
@@ -153,7 +153,7 @@ class AnswerTextNewLayout implements AnswerText {
     AnswerTextNewLayout(Context context, String text, boolean isAnswerLine) {
         mContext = context;
         mIsAnswer = isAnswerLine;
-        mAnswerType = AnswerType.INVALID;
+        mAnswerType = AnswerType.ANSWER_TYPE_UNSPECIFIED;
         mStockTextColorReverse = false;
         appendAndStyleText(text, getAppearanceForText(AnswerTextType.SUGGESTION));
     }
@@ -226,9 +226,10 @@ class AnswerTextNewLayout implements AnswerText {
     static MetricAffectingSpan getAppearanceForAnswerText(
             Context context,
             @AnswerTextType int type,
-            @AnswerType int answerType,
+            AnswerType answerType,
             boolean stockTextColorReverse) {
-        if (answerType != AnswerType.DICTIONARY && answerType != AnswerType.FINANCE) {
+        if (answerType != AnswerType.ANSWER_TYPE_DICTIONARY
+                && answerType != AnswerType.ANSWER_TYPE_FINANCE) {
             return new TextAppearanceSpan(context, R.style.TextAppearance_TextLarge_Primary);
         }
 

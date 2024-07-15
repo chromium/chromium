@@ -17,7 +17,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString.ColorType;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString.FormattedStringFragment;
-import org.chromium.components.omnibox.AnswerType;
+import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
 
@@ -37,7 +37,7 @@ class RichAnswerText implements AnswerText {
     private final boolean mReverseStockTextColor;
     private String mAccessibilityDescription;
     private int mMaxLines = 1;
-    @AnswerType private final int mAnswerType;
+    private final AnswerType mAnswerType;
     private boolean mUseRichAnswerCard;
 
     @Override
@@ -59,13 +59,13 @@ class RichAnswerText implements AnswerText {
     static AnswerText[] from(
             @NonNull Context context,
             @NonNull RichAnswerTemplate richAnswerTemplate,
-            @AnswerType int answerType,
+            AnswerType answerType,
             boolean reverseStockTextColor,
             boolean useRichAnswerCard) {
         RichAnswerText[] result = new RichAnswerText[2];
 
         int maxLines = getMaxLinesForAnswerType(answerType);
-        if (answerType == AnswerType.DICTIONARY) {
+        if (answerType == AnswerType.ANSWER_TYPE_DICTIONARY) {
             result[0] =
                     new RichAnswerText(
                             context,
@@ -127,7 +127,7 @@ class RichAnswerText implements AnswerText {
     private RichAnswerText(
             Context context,
             FormattedString formattedString,
-            int answerType,
+            AnswerType answerType,
             boolean isAnswerLine,
             boolean reverseStockTextColor,
             boolean useRichAnswerCard) {
@@ -201,7 +201,7 @@ class RichAnswerText implements AnswerText {
     static MetricAffectingSpan getAppearanceForAnswerText(
             Context context,
             ColorType colorType,
-            @AnswerType int answerType,
+            AnswerType answerType,
             boolean reverseStockTextColor,
             boolean useRichAnswerCard) {
         @StyleRes
@@ -211,7 +211,8 @@ class RichAnswerText implements AnswerText {
                                 .TextAppearance_OmniboxAnswerCardPrimaryMedium
                         : org.chromium.chrome.browser.omnibox.R.style
                                 .TextAppearance_TextLarge_Primary;
-        if (answerType != AnswerType.DICTIONARY && answerType != AnswerType.FINANCE) {
+        if (answerType != AnswerType.ANSWER_TYPE_DICTIONARY
+                && answerType != AnswerType.ANSWER_TYPE_FINANCE) {
             return new TextAppearanceSpan(context, largeRes);
         }
 
@@ -252,8 +253,9 @@ class RichAnswerText implements AnswerText {
         return new TextAppearanceSpan(mContext, res);
     }
 
-    private static int getMaxLinesForAnswerType(int answerType) {
-        return (answerType == AnswerType.DICTIONARY || answerType == AnswerType.TRANSLATION)
+    private static int getMaxLinesForAnswerType(AnswerType answerType) {
+        return (answerType == AnswerType.ANSWER_TYPE_DICTIONARY
+                        || answerType == AnswerType.ANSWER_TYPE_TRANSLATION)
                 ? 3
                 : 1;
     }
@@ -264,11 +266,11 @@ class RichAnswerText implements AnswerText {
      * separately, but for the remainder we want to skip reversing the text but continue to swap
      * a11y content.
      */
-    private static boolean shouldSkipTextReversal(@AnswerType int answerType) {
+    private static boolean shouldSkipTextReversal(AnswerType answerType) {
         return OmniboxFeatures.shouldShowAnswerActions()
-                && (answerType == AnswerType.FINANCE
-                        || answerType == AnswerType.SPORTS
-                        || answerType == AnswerType.KNOWLEDGE_GRAPH
-                        || answerType == AnswerType.WEATHER);
+                && (answerType == AnswerType.ANSWER_TYPE_FINANCE
+                        || answerType == AnswerType.ANSWER_TYPE_SPORTS
+                        || answerType == AnswerType.ANSWER_TYPE_GENERIC_ANSWER
+                        || answerType == AnswerType.ANSWER_TYPE_WEATHER);
     }
 }

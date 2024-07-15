@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "build/build_config.h"
+#include "third_party/omnibox_proto/answer_type.pb.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -515,12 +516,12 @@ size_t SuggestionAnswer::EstimateMemoryUsage() const {
 
 void SuggestionAnswer::InterpretTextTypes() {
   switch (type()) {
-    case SuggestionAnswer::ANSWER_TYPE_WEATHER: {
+    case omnibox::ANSWER_TYPE_WEATHER: {
       second_line_.SetTextStyles(omnibox::answer_data_parser::TOP_ALIGNED,
                                  TextStyle::SUPERIOR);
       break;
     }
-    case SuggestionAnswer::ANSWER_TYPE_FINANCE: {
+    case omnibox::ANSWER_TYPE_FINANCE: {
       first_line_.SetTextStyles(
           omnibox::answer_data_parser::SUGGESTION_SECONDARY_TEXT_SMALL,
           TextStyle::SECONDARY);
@@ -548,19 +549,19 @@ void SuggestionAnswer::InterpretTextTypes() {
 }
 
 bool SuggestionAnswer::IsExceptedFromLineReversal() const {
-  return type() == SuggestionAnswer::ANSWER_TYPE_DICTIONARY;
+  return type() == omnibox::ANSWER_TYPE_DICTIONARY;
 }
 
 // static
 void SuggestionAnswer::LogAnswerUsed(
     const std::optional<SuggestionAnswer>& answer) {
-  auto answer_type = SuggestionAnswer::ANSWER_TYPE_INVALID;
+  auto answer_type = omnibox::ANSWER_TYPE_UNSPECIFIED;
   if (answer) {
-    answer_type = static_cast<SuggestionAnswer::AnswerType>(answer->type());
+    answer_type = static_cast<omnibox::AnswerType>(answer->type());
   }
   DCHECK_NE(-1, answer_type);  // just in case; |type_| is init'd to -1
   UMA_HISTOGRAM_ENUMERATION(kAnswerUsedUmaHistogramName, answer_type,
-                            SuggestionAnswer::ANSWER_TYPE_TOTAL_COUNT);
+                            omnibox::AnswerType_MAX);
 }
 
 // static
