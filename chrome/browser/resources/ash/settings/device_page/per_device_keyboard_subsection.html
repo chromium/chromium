@@ -1,8 +1,11 @@
 <style include="settings-shared input-device-settings-shared">
 </style>
-<h2 class="subsection-header" id="keyboardName">
-  [[getKeyboardName(keyboard.name)]]
-</h2>
+<per-device-subsection-header
+    id="subsectionHeader"
+    device-key="[[keyboard.deviceKey]]"
+    name="[[getKeyboardName(keyboard.name)]]"
+    battery-info="[[keyboard.batteryInfo]]">
+</per-device-subsection-header>
 <div class="subsection">
   <template is="dom-if" if="[[!isChromeOsKeyboard(keyboard)]]" restamp>
     <settings-toggle-button

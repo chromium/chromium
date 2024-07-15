@@ -4,7 +4,8 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {CrLinkRowElement, DevicePageBrowserProxyImpl, fakeKeyboards, fakeKeyboards2, Router, routes, SettingsPerDeviceKeyboardElement, SettingsSliderElement} from 'chrome://os-settings/os_settings.js';
+import {CrLinkRowElement, DevicePageBrowserProxyImpl, fakeKeyboards, fakeKeyboards2, PerDeviceSubsectionHeaderElement, Router, routes, SettingsPerDeviceKeyboardElement, SettingsSliderElement} from 'chrome://os-settings/os_settings.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
@@ -84,8 +85,11 @@ suite('<settings-per-device-keyboard>', () => {
         const subsections = perDeviceKeyboardPage.shadowRoot!.querySelectorAll(
             'settings-per-device-keyboard-subsection');
         for (let i = 0; i < subsections.length; i++) {
+          const subsectionHeader = strictQuery(
+              'per-device-subsection-header', subsections[i]!.shadowRoot,
+              PerDeviceSubsectionHeaderElement);
           const name =
-              subsections[i]!.shadowRoot!.querySelector('h2')!.textContent;
+              subsectionHeader.shadowRoot!.querySelector('h2')!.textContent;
           if (fakeKeyboards[i]!.isExternal) {
             assertEquals(fakeKeyboards[i]!.name, name!.trim());
           } else {

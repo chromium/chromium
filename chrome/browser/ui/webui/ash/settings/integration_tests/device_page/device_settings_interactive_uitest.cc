@@ -144,7 +144,8 @@ class DeviceSettingsInteractiveUiTest : public InteractiveAshTest {
       "settings-device-page",
       "settings-per-device-keyboard",
       "settings-per-device-keyboard-subsection",
-      "h2#keyboardName",
+      "per-device-subsection-header",
+      "h2#deviceName",
   };
 
   const DeepQuery kKeyboardRowQuery{
