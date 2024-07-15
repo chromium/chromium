@@ -11,6 +11,8 @@
 #include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_auth_page_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_base_test.h"
+#include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -65,9 +67,9 @@ class LoginUIShelfVisibilityTest : public MixinBasedInProcessBrowserTest {
         ->ShowSigninScreenForTest(kNewUserEmail, kNewUserGaiaId,
                                   FakeGaiaMixin::kEmptyUserServices);
 
-    // Consolidated consent is the first post-login screen shown when a new user
-    // signs in.
-    OobeScreenWaiter(ConsolidatedConsentScreenView::kScreenId).Wait();
+    // Wait for the exiting of the sign-in screen which will be followed
+    // by the showing of the first onboarding screen.
+    OobeScreenExitWaiter(OobeBaseTest::GetFirstSigninScreen()).Wait();
   }
 
  private:
@@ -112,8 +114,7 @@ IN_PROC_BROWSER_TEST_F(LoginUIShelfVisibilityTest, GaiaDialogOpen) {
 
 // Verifies that guest button and add user button are hidden on post-login
 // screens, after a user session is started.
-// TODO(b:342006373): Flaky
-IN_PROC_BROWSER_TEST_F(LoginUIShelfVisibilityTest, DISABLED_PostLoginScreen) {
+IN_PROC_BROWSER_TEST_F(LoginUIShelfVisibilityTest, PostLoginScreen) {
   StartOnboardingFlow();
 
   EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
