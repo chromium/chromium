@@ -47,6 +47,7 @@ enum class LanguageCode {
 struct LanguageData {
   int emoji_start_resource_id;
   int emoji_remaining_resource_id;
+  int symbols_resource_id;
 };
 
 constexpr auto kLangCodeStrToEnum =
@@ -65,34 +66,62 @@ constexpr auto kLangCodeStrToEnum =
 constexpr auto kLanguageToData =
     base::MakeFixedFlatMap<LanguageCode, LanguageData>({
         {LanguageCode::kDa,
-         {.emoji_start_resource_id = IDR_EMOJI_PICKER_DA_START,
-          .emoji_remaining_resource_id = IDR_EMOJI_PICKER_DA_REMAINING}},
+         {
+             .emoji_start_resource_id = IDR_EMOJI_PICKER_DA_START,
+             .emoji_remaining_resource_id = IDR_EMOJI_PICKER_DA_REMAINING,
+             .symbols_resource_id = IDR_EMOJI_PICKER_SYMBOL_DA,
+         }},
         {LanguageCode::kDe,
-         {.emoji_start_resource_id = IDR_EMOJI_PICKER_DE_START,
-          .emoji_remaining_resource_id = IDR_EMOJI_PICKER_DE_REMAINING}},
+         {
+             .emoji_start_resource_id = IDR_EMOJI_PICKER_DE_START,
+             .emoji_remaining_resource_id = IDR_EMOJI_PICKER_DE_REMAINING,
+             .symbols_resource_id = IDR_EMOJI_PICKER_SYMBOL_DE,
+         }},
         {LanguageCode::kEn,
-         {.emoji_start_resource_id =
-              IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_START,
-          .emoji_remaining_resource_id =
-              IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_REMAINING}},
+         {
+             .emoji_start_resource_id =
+                 IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_START,
+             .emoji_remaining_resource_id =
+                 IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_REMAINING,
+             .symbols_resource_id = IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON,
+         }},
         {LanguageCode::kEs,
-         {.emoji_start_resource_id = IDR_EMOJI_PICKER_ES_START,
-          .emoji_remaining_resource_id = IDR_EMOJI_PICKER_ES_REMAINING}},
+         {
+             .emoji_start_resource_id = IDR_EMOJI_PICKER_ES_START,
+             .emoji_remaining_resource_id = IDR_EMOJI_PICKER_ES_REMAINING,
+             .symbols_resource_id = IDR_EMOJI_PICKER_SYMBOL_ES,
+         }},
         {LanguageCode::kFi,
-         {.emoji_start_resource_id = IDR_EMOJI_PICKER_FI_START,
-          .emoji_remaining_resource_id = IDR_EMOJI_PICKER_FI_REMAINING}},
+         {
+             .emoji_start_resource_id = IDR_EMOJI_PICKER_FI_START,
+             .emoji_remaining_resource_id = IDR_EMOJI_PICKER_FI_REMAINING,
+             .symbols_resource_id = IDR_EMOJI_PICKER_SYMBOL_FI,
+         }},
         {LanguageCode::kFr,
-         {.emoji_start_resource_id = IDR_EMOJI_PICKER_FR_START,
-          .emoji_remaining_resource_id = IDR_EMOJI_PICKER_FR_REMAINING}},
+         {
+             .emoji_start_resource_id = IDR_EMOJI_PICKER_FR_START,
+             .emoji_remaining_resource_id = IDR_EMOJI_PICKER_FR_REMAINING,
+             .symbols_resource_id = IDR_EMOJI_PICKER_SYMBOL_FR,
+         }},
+
         {LanguageCode::kJa,
-         {.emoji_start_resource_id = IDR_EMOJI_PICKER_JA_START,
-          .emoji_remaining_resource_id = IDR_EMOJI_PICKER_JA_REMAINING}},
+         {
+             .emoji_start_resource_id = IDR_EMOJI_PICKER_JA_START,
+             .emoji_remaining_resource_id = IDR_EMOJI_PICKER_JA_REMAINING,
+             .symbols_resource_id = IDR_EMOJI_PICKER_SYMBOL_JA,
+         }},
         {LanguageCode::kNo,
-         {.emoji_start_resource_id = IDR_EMOJI_PICKER_NO_START,
-          .emoji_remaining_resource_id = IDR_EMOJI_PICKER_NO_REMAINING}},
+         {
+             .emoji_start_resource_id = IDR_EMOJI_PICKER_NO_START,
+             .emoji_remaining_resource_id = IDR_EMOJI_PICKER_NO_REMAINING,
+             .symbols_resource_id = IDR_EMOJI_PICKER_SYMBOL_NO,
+         }},
         {LanguageCode::kSv,
-         {.emoji_start_resource_id = IDR_EMOJI_PICKER_SV_START,
-          .emoji_remaining_resource_id = IDR_EMOJI_PICKER_SV_REMAINING}},
+         {
+             .emoji_start_resource_id = IDR_EMOJI_PICKER_SV_START,
+             .emoji_remaining_resource_id = IDR_EMOJI_PICKER_SV_REMAINING,
+             .symbols_resource_id = IDR_EMOJI_PICKER_SYMBOL_SV,
+         }},
     });
 
 // Map from keyword -> sum of position weightings
@@ -287,6 +316,9 @@ bool EmojiSearch::SetEmojiLanguage(std::string_view language_code) {
     emojis_.clear();
     AddDataFromFileToMap(it->second.emoji_start_resource_id, emojis_);
     AddDataFromFileToMap(it->second.emoji_remaining_resource_id, emojis_);
+
+    symbols_.clear();
+    AddDataFromFileToMap(it->second.symbols_resource_id, symbols_);
   }
 
   return !emojis_.empty();
