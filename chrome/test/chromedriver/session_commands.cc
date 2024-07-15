@@ -1303,7 +1303,7 @@ base::expected<base::Value::Dict, Status> ParseSensorUpdateParams(
 
 Status ExecuteUpdateVirtualSensor(Session* session,
                                   const base::Value::Dict& params,
-                                  std::unique_ptr<base::Value>* value) {
+                                  std::unique_ptr<base::Value>*) {
   WebView* web_view = nullptr;
   Status status = session->GetTargetWindow(&web_view);
   if (status.IsError()) {
@@ -1315,8 +1315,8 @@ Status ExecuteUpdateVirtualSensor(Session* session,
     return cdp_params.error();
   }
 
-  return web_view->SendCommandAndGetResult(
-      "Emulation.setSensorOverrideReadings", cdp_params.value(), value);
+  return web_view->SendCommand("Emulation.setSensorOverrideReadings",
+                               cdp_params.value());
 }
 
 Status ExecuteRemoveVirtualSensor(Session* session,
