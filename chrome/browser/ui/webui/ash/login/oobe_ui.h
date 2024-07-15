@@ -65,10 +65,10 @@ class OobeUI : public ui::MojoWebUIController {
  public:
   // List of known types of OobeUI. Type added as path in chrome://oobe url, for
   // example chrome://oobe/gaia-signin.
-  static const char kAppLaunchSplashDisplay[];
-  static const char kGaiaSigninDisplay[];
-  static const char kOobeDisplay[];
-  static const char kOobeTestLoader[];
+  static inline constexpr char kAppLaunchSplashDisplay[] = "app-launch-splash";
+  static inline constexpr char kGaiaSigninDisplay[] = "gaia-signin";
+  static inline constexpr char kOobeDisplay[] = "oobe";
+  static inline constexpr char kOobeTestLoader[] = "test_loader.html";
 
   class Observer {
    public:
