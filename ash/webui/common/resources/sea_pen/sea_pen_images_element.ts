@@ -23,7 +23,7 @@ import './sea_pen_zero_state_svg_element.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {QUERY, Query, SeaPenImageId} from './constants.js';
-import {isLacrosEnabled, isVcResizeThumbnailEnabled} from './load_time_booleans.js';
+import {isLacrosEnabled, isSeaPenTextInputEnabled, isVcResizeThumbnailEnabled} from './load_time_booleans.js';
 import {MantaStatusCode, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {clearSeaPenThumbnails, openFeedbackDialog, selectSeaPenThumbnail} from './sea_pen_controller.js';
 import {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
@@ -141,6 +141,13 @@ export class SeaPenImagesElement extends WithSeaPenStore {
         computed:
             'computeShowError_(thumbnailResponseStatusCode_, thumbnailsLoading_)',
       },
+
+      isSeaPenTextInputEnabled_: {
+        type: Boolean,
+        value() {
+          return isSeaPenTextInputEnabled();
+        },
+      },
     };
   }
 
@@ -153,6 +160,7 @@ export class SeaPenImagesElement extends WithSeaPenStore {
   private thumbnailResponseStatusCode_: MantaStatusCode|null;
   private showError_: boolean;
   private cameraFeed_: HTMLVideoElement|null;
+  private isSeaPenTextInputEnabled_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -207,6 +215,11 @@ export class SeaPenImagesElement extends WithSeaPenStore {
   private shouldShowImageThumbnails_(
       thumbnailsLoading: boolean, thumbnails: SeaPenThumbnail[]|null): boolean {
     return thumbnailsLoading || isNonEmptyArray(thumbnails);
+  }
+
+  private shouldShowImagesHeading_(
+      isSeaPenTextInputEnabled: boolean, templateId: SeaPenTemplateId|Query) {
+    return !isSeaPenTextInputEnabled || templateId !== QUERY;
   }
 
   private getPlaceholders_(x: number) {

@@ -306,4 +306,49 @@ suite('SeaPenImagesElementTest', function() {
         !!seaPenImagesElement.shadowRoot!.querySelector('.zero-state-message'),
         'zero state message is shown');
   });
+
+  test('show images heading', async () => {
+    personalizationStore.data.wallpaper.seaPen.loading.thumbnails = false;
+    personalizationStore.data.wallpaper.seaPen.thumbnails =
+        seaPenProvider.thumbnails;
+
+    // Initialize |seaPenImagesElement|.
+    seaPenImagesElement = initElement(SeaPenImagesElement);
+    await waitAfterNextRender(seaPenImagesElement);
+
+    assertTrue(
+        !!seaPenImagesElement.shadowRoot!.querySelector('#seaPenImagesHeading'),
+        'seaPenImagesHeading is shown');
+  });
+
+  test('show images heading for template query', async () => {
+    loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
+    personalizationStore.data.wallpaper.seaPen.loading.thumbnails = false;
+    personalizationStore.data.wallpaper.seaPen.thumbnails =
+        seaPenProvider.thumbnails;
+
+    // Initialize |seaPenImagesElement|.
+    seaPenImagesElement = initElement(SeaPenImagesElement, {templateId: 3});
+    await waitAfterNextRender(seaPenImagesElement);
+
+    assertTrue(
+        !!seaPenImagesElement.shadowRoot!.querySelector('#seaPenImagesHeading'),
+        'seaPenImagesHeading is shown');
+  });
+
+  test('hide images heading for freeform query', async () => {
+    loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
+    personalizationStore.data.wallpaper.seaPen.loading.thumbnails = false;
+    personalizationStore.data.wallpaper.seaPen.thumbnails =
+        seaPenProvider.thumbnails;
+
+    // Initialize |seaPenImagesElement|.
+    seaPenImagesElement =
+        initElement(SeaPenImagesElement, {templateId: 'Query'});
+    await waitAfterNextRender(seaPenImagesElement);
+
+    assertFalse(
+        !!seaPenImagesElement.shadowRoot!.querySelector('#seaPenImagesHeading'),
+        'seaPenImagesHeading is hidden');
+  });
 });

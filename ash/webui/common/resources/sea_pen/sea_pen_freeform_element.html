@@ -1,43 +1,71 @@
 <style include="common cros-button-style wallpaper">
   #tabStrip {
-    flex: 0 0 auto;
-    margin:
-      /*top=*/4px
-      /*horizontal=*/calc(var(--personalization-app-grid-item-spacing) / 2)
-      /*bottom=*/calc(var(--personalization-app-grid-item-spacing) / 2);
-    width: 100%;
+    display: flex;
+    margin: 0 calc(var(--personalization-app-grid-item-spacing) / 2);
   }
 
   #tabStrip cr-button {
-    border: 0;
-    border-radius: 16px;
+    background-color: transparent;
+    border-radius: 0 0 16px 16px;
+    height: 48px;
+    padding: 4px;
   }
 
-  #tabStrip cr-button + cr-button {
-    margin-inline-start: 8px;
+  #tabStrip cr-button[aria-pressed='true'] {
+    --text-color: var(--cros-sys-primary);
+  }
+
+  /* This pseudo-element is the line above the selected tab. */
+  #tabContainer cr-button[aria-pressed='true']::before {
+    background-color: var(--cros-sys-primary);
+    border-radius: 0 0 4px 4px;
+    /* content has a zero-width space so the line is visible. */
+    content: '​';
+    height: 4px;
+    position: absolute;
+    top: 0;
+    width: 80%;
   }
 
   #tabStrip cr-button[aria-pressed='false'] {
-    background-color: unset;
     color: var(--cros-text-color-secondary);
   }
 
   #tabStrip cr-button[aria-pressed='false']:hover {
     background-color: var(--cros-sys-hover_on_subtle);
   }
+
+  #tabContainer {
+    flex-grow: 1;
+  }
+
+  #samplesTitle,
+  #seaPenImagesHeading {
+    margin-top: 18px;
+    padding-inline-end: 0;
+  }
 </style>
 <template is="dom-if" if="[[isTabStripEnabled_(seaPenQuery_)]]" restamp>
   <div id="tabStrip">
-    <cr-button id="resultsTab"
-        aria-pressed="[[isResultsTabSelected_(freeformTab_)]]"
-        on-click="onTabSelected_">
-      <div class="text">Results</div>
-    </cr-button>
-    <cr-button id="samplePromptsTab"
-        aria-pressed="[[isSamplePromptsTabSelected_(freeformTab_)]]"
-        on-click="onTabSelected_">
-      <div class="text">Sample prompts</div>
-    </cr-button>
+    <div id="tabContainer">
+      <cr-button id="resultsTab"
+          aria-pressed="[[isResultsTabSelected_(freeformTab_)]]"
+          on-click="onTabSelected_">
+        <div class="text">Results</div>
+      </cr-button>
+      <cr-button id="samplePromptsTab"
+          aria-pressed="[[isSamplePromptsTabSelected_(freeformTab_)]]"
+          on-click="onTabSelected_">
+        <div class="text">Sample prompts</div>
+      </cr-button>
+    </div>
+    <div id="endElement">
+      <template is="dom-if" if="[[isResultsTabSelected_(freeformTab_)]]">
+        <h2 id="seaPenImagesHeading" class="wallpaper-collections-heading">
+          [[i18n('seaPenWallpaperPoweredByGoogle')]]
+        </h2>
+      </template>
+    </div>
   </div>
 </template>
 <template is="dom-if" if="[[!isTabStripEnabled_(seaPenQuery_)]]" restamp>

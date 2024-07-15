@@ -8,6 +8,7 @@
   }
 
   #seaPenImagesHeading {
+    margin-top: 10px;
     padding-top: 14px;
   }
 
@@ -140,9 +141,11 @@
     </div>
   </template>
   <template is="dom-if" if="[[shouldShowImageThumbnails_(thumbnailsLoading_, thumbnails_)]]" restamp>
-    <h2 id="seaPenImagesHeading" class="wallpaper-collections-heading">
-      [[getPoweredByGoogleMessage_()]]
-    </h2>
+    <template is="dom-if" if="[[shouldShowImagesHeading_(isSeaPenTextInputEnabled_, templateId)]]">
+      <h2 id="seaPenImagesHeading" class="wallpaper-collections-heading">
+        [[getPoweredByGoogleMessage_()]]
+      </h2>
+    </template>
     <iron-list id="grid"
         items="[[tiles_]]"
         grid
