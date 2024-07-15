@@ -28,6 +28,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
@@ -153,6 +154,7 @@ void StartServerOnIOThread(
       cmd_task_runner);
   int ipv4_status = temp_server->Start(port, allow_remote, true);
   if (ipv4_status == net::OK) {
+    port = temp_server->LocalAddress().port();
     server_ipv4 = temp_server.release();
   } else if (ipv4_status == net::ERR_ADDRESS_IN_USE) {
     // ERR_ADDRESS_IN_USE causes an immediate exit, since it indicates the port
@@ -171,6 +173,7 @@ void StartServerOnIOThread(
       cmd_task_runner);
   int ipv6_status = temp_server->Start(port, allow_remote, false);
   if (ipv6_status == net::OK) {
+    port = temp_server->LocalAddress().port();
     server_ipv6 = temp_server.release();
   } else if (ipv6_status == net::ERR_ADDRESS_IN_USE) {
     printf("IPv6 port not available. Exiting...\n");
@@ -239,7 +242,17 @@ void StartServerOnIOThread(
     printf("Unable to start server with either IPv4 or IPv6. Exiting...\n");
     exit(1);
   }
-  printf("%s was started successfully.\n", kChromeDriverProductShortName);
+
+  base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+  if (!cmd_line->HasSwitch("silent") &&
+      cmd_line->GetSwitchValueASCII("log-level") != "OFF") {
+    printf("%s was started successfully on port %u.\n",
+           kChromeDriverProductShortName, port);
+  }
+  if (cmd_line->HasSwitch("log-path")) {
+    VLOG(0) << kChromeDriverProductShortName
+            << " was started successfully on port " << port;
+  }
   fflush(stdout);
 }
 
@@ -295,7 +308,7 @@ int main(int argc, char *argv[]) {
 #endif
 
   // Parse command line flags.
-  uint16_t port = 9515;
+  uint16_t port = 0;
   int adb_port = 5037;
   bool allow_remote = false;
   std::vector<net::IPAddress> allowed_ips;
@@ -453,9 +466,15 @@ int main(int argc, char *argv[]) {
     fflush(stdout);
   }
 
-  if (!InitLogging(port)) {
+  if (!InitLogging()) {
     printf("Unable to initialize logging. Exiting...\n");
     return 1;
+  }
+
+  if (cmd_line->HasSwitch("log-path")) {
+    VLOG(0) << "Starting " << kChromeDriverProductFullName << " "
+            << kChromeDriverVersion << " on port " << port;
+    VLOG(0) << GetPortProtectionMessage();
   }
 
 // TODO(crbug.com/40118868): Revisit the macro expression once build flag switch

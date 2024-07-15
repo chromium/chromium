@@ -5,6 +5,7 @@
 #include "chrome/test/chromedriver/server/http_server.h"
 
 #include "base/task/single_thread_task_runner.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_interfaces.h"
 #include "net/base/sys_addrinfo.h"
@@ -192,14 +193,18 @@ int HttpServer::Start(uint16_t port, bool allow_remote, bool use_ipv4) {
       new net::TCPServerSocket(nullptr, net::NetLogSource()));
   int status = use_ipv4 ? ListenOnIPv4(server_socket.get(), port, allow_remote)
                         : ListenOnIPv6(server_socket.get(), port, allow_remote);
+
   if (status != net::OK) {
     VLOG(0) << "listen on " << (use_ipv4 ? "IPv4" : "IPv6")
             << " failed with error " << net::ErrorToShortString(status);
     return status;
   }
   server_ = std::make_unique<net::HttpServer>(std::move(server_socket), this);
-  net::IPEndPoint address;
-  return server_->GetLocalAddress(&address);
+  return server_->GetLocalAddress(&local_address_);
+}
+
+const net::IPEndPoint& HttpServer::LocalAddress() const {
+  return local_address_;
 }
 
 void HttpServer::OnConnect(int connection_id) {

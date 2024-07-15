@@ -277,7 +277,7 @@ Log::Level WebDriverLog::min_level() const {
   return min_level_;
 }
 
-bool InitLogging(uint16_t port) {
+bool InitLogging() {
   g_start_time = base::TimeTicks::Now().ToInternalValue();
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
 
@@ -289,13 +289,13 @@ bool InitLogging(uint16_t port) {
     if (cmd_line->HasSwitch("append-log")) {
       log_mode = FILE_PATH_LITERAL("a");
     }
-  if (cmd_line->HasSwitch("readable-timestamp")) {
-    readable_timestamp = true;
-  }
+    if (cmd_line->HasSwitch("readable-timestamp")) {
+      readable_timestamp = true;
+    }
 #if BUILDFLAG(IS_WIN)
-  FILE* redir_stderr = _wfreopen(log_path.value().c_str(), log_mode, stderr);
+    FILE* redir_stderr = _wfreopen(log_path.value().c_str(), log_mode, stderr);
 #else
-  FILE* redir_stderr = freopen(log_path.value().c_str(), log_mode, stderr);
+    FILE* redir_stderr = freopen(log_path.value().c_str(), log_mode, stderr);
 #endif
     if (!redir_stderr) {
       printf("Failed to redirect stderr to log file.\n");
@@ -346,13 +346,7 @@ bool InitLogging(uint16_t port) {
   logging::LoggingSettings logging_settings;
   logging_settings.logging_dest =
       logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
-  bool res = logging::InitLogging(logging_settings);
-  if (cmd_line->HasSwitch("log-path") && res) {
-    VLOG(0) << "Starting " << kChromeDriverProductFullName << " "
-            << kChromeDriverVersion << " on port " << port;
-    VLOG(0) << GetPortProtectionMessage();
-  }
-  return res;
+  return logging::InitLogging(logging_settings);
 }
 
 Status CreateLogs(
