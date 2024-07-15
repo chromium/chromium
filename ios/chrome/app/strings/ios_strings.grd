@@ -4811,7 +4811,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         After you sign out, unsaved data will be deleted from this device. This could include passwords, history, and more.
       </message>
       <message name="IDS_IOS_SIGNOUT_CLEARS_DATA_DIALOG_MESSAGE_WITH_MANAGED_ACCOUNT" desc="Text to inform the managed user about why their their device data is being cleared on signout. [iOS only]">
-          To protect your organization's security, unsaved data will be deleted from this device. This could include passwords, browsing history, cookies and more.
+          To protect your organization's security, unsaved data will be deleted from this device. This could include passwords, history, and more.
       </message>
       <message name="IDS_IOS_SIGNOUT_CLEARS_DATA_DIALOG_TITLE_WITH_MANAGED_ACCOUNT" desc="The signout dialog title. This is the new dialog that is used when the user have a managed account (other than gmail account) [iOS only].">
         Unsaved account data will be deleted
@@ -5984,7 +5984,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
           Idle timeout dialog
       </message>
       <message name="IDS_IOS_IDLE_TIMEOUT_SIGNOUT_TITLE" desc="Title of the idle timeout policy dialog when the user is about to be signed out.">
-          You will be signed out
+          You'll be signed out
       </message>
       <message name="IDS_IOS_IDLE_TIMEOUT_CLOSE_TABS_TITLE" desc="Title of the idle timeout policy dialog when tabs are about to be closed.">
           Your tabs will be closed
@@ -5993,16 +5993,16 @@ While in Incognito, sites can't use cookies to see your browsing activity across
           Your browsing data will be deleted
       </message>
       <message name="IDS_IOS_IDLE_TIMEOUT_CLOSE_TABS_AND_SIGNOUT_TITLE" desc="Title of the idle timeout policy dialog when tabs are about to be closed and the user to be signed out.">
-          You will be signed out and tabs will be closed
+          You'll be signed out and tabs will be closed
       </message>
       <message name="IDS_IOS_IDLE_TIMEOUT_CLOSE_TABS_AND_CLEAR_DATA_TITLE" desc="Title of the idle timeout policy dialog when tabs are about to be closed and browsing data about to be deleted.">
           Your tabs will be closed and browsing data deleted
       </message>
       <message name="IDS_IOS_IDLE_TIMEOUT_CLEAR_DATA_AND_SIGNOUT_TITLE" desc="Title of the idle timeout policy dialog when browsing data is about to be cleared and the user will be signed out.">
-          You will be signed out and browsing data will be deleted
+          You'll be signed out and browsing data will be deleted
       </message>
       <message name="IDS_IOS_IDLE_TIMEOUT_ALL_ACTIONS_TITLE" desc="Title of the idle timeout policy dialog when browsing data is about to be cleared, tabs will be closed and the user will be signed out.">
-          You will be signed out, tabs will be closed, browsing data deleted
+          You'll be signed out, tabs will be closed, browsing data deleted
       </message>
       <message name="IDS_IOS_IDLE_TIMEOUT_CONFIRMATION_DIALOG_REMAINING_TIME_LABEL" desc="Time remaining until the idle timeout confirmation dialog disappears">
           {TIME, plural,
