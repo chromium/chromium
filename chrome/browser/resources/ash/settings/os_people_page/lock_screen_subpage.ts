@@ -162,6 +162,18 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
           Setting.kDataRecovery,
         ]),
       },
+
+      /**
+       * Whether switch from Gaia password factor to local password factor are
+       * allowed by the feature flag.
+       */
+      changePasswordFactorSetupEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('changePasswordFactorSetupEnabled');
+        },
+        readOnly: true,
+      },
     };
   }
 
@@ -178,6 +190,7 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   private showPasswordSettings_: boolean;
   private showDisableRecoveryDialog_: boolean;
   private fingerprintBrowserProxy_: FingerprintBrowserProxy;
+  private changePasswordFactorSetupEnabled_: boolean;
 
   static get observers() {
     return [
@@ -432,10 +445,15 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     }
     assert(authToken === this.authToken);
 
-    this.showPasswordSettings_ =
-        (await this.authFactorConfig.isConfigured(
-             this.authToken, AuthFactor.kLocalPassword))
-            .configured;
+    const [{configured: hasGaiaPassword}, {configured: hasLocalPassword}] =
+        await Promise.all([
+          this.authFactorConfig.isConfigured(
+              this.authToken, AuthFactor.kGaiaPassword),
+          this.authFactorConfig.isConfigured(
+              this.authToken, AuthFactor.kLocalPassword),
+        ]);
+    this.showPasswordSettings_ = hasLocalPassword ||
+        (this.changePasswordFactorSetupEnabled_ && hasGaiaPassword);
   }
 
   /**

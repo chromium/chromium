@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/webui/ash/settings/test_support/os_settings_lock_screen_browser_test_base.h"
 #include "chrome/test/data/webui/chromeos/settings/os_people_page/password_settings_api.test-mojom-test-utils.h"
 #include "chrome/test/data/webui/chromeos/settings/test_api.test-mojom-test-utils.h"
@@ -28,11 +30,29 @@ class OSSettingsPasswordSetupTest : public OSSettingsLockScreenBrowserTestBase {
 };
 
 class OSSettingsPasswordSetupTestWithGaiaPassword
-    : public OSSettingsPasswordSetupTest {
+    : public OSSettingsPasswordSetupTest,
+      public testing::WithParamInterface<bool> {
  public:
   OSSettingsPasswordSetupTestWithGaiaPassword()
-      : OSSettingsPasswordSetupTest(ash::AshAuthFactor::kGaiaPassword) {}
+      : OSSettingsPasswordSetupTest(ash::AshAuthFactor::kGaiaPassword) {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam()) {
+      enabled_features.push_back(features::kChangePasswordFactorSetup);
+    } else {
+      disabled_features.push_back(features::kChangePasswordFactorSetup);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OSSettingsPasswordSetupTestWithGaiaPassword,
+                         testing::Bool());
+
 class OSSettingsPasswordSetupTestWithLocalPassword
     : public OSSettingsPasswordSetupTest {
  public:
@@ -40,11 +60,21 @@ class OSSettingsPasswordSetupTestWithLocalPassword
       : OSSettingsPasswordSetupTest(ash::AshAuthFactor::kLocalPassword) {}
 };
 
-// The control for changing passwords is not shown if user has Gaia password.
-IN_PROC_BROWSER_TEST_F(OSSettingsPasswordSetupTestWithGaiaPassword, NotShown) {
+// If user has Gaia password, the control for changing passwords is shown if
+// `kChangePasswordFactorSetup` feature is enabled; otherwise, it should not be
+// shown.
+IN_PROC_BROWSER_TEST_P(OSSettingsPasswordSetupTestWithGaiaPassword,
+                       Visibility) {
   mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
       OpenLockScreenSettingsAndAuthenticate();
-  lock_screen_settings.AssertPasswordControlVisibility(false);
+  bool should_show_password_control = GetParam();
+  lock_screen_settings.AssertPasswordControlVisibility(
+      should_show_password_control);
+  if (should_show_password_control) {
+    mojom::PasswordSettingsApiAsyncWaiter password_settings =
+        GoToPasswordSettings(lock_screen_settings);
+    password_settings.AssertCanOpenLocalPasswordDialog();
+  }
 }
 
 // The control for changing passwords is shown if user has local password.

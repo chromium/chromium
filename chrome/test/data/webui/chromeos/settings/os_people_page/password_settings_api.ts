@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {CrDialogElement} from 'chrome://os-settings/os_settings.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {PasswordSettingsApiInterface, PasswordSettingsApiReceiver, PasswordSettingsApiRemote, PasswordType} from '../password_settings_api.test-mojom-webui.js';
-import {assertAsync, assertForDuration, hasBooleanProperty} from '../utils.js';
+import {PasswordSettingsApiInterface, PasswordSettingsApiReceiver, PasswordSettingsApiRemote} from '../password_settings_api.test-mojom-webui.js';
+import {assertAsync, retryUntilSome} from '../utils.js';
 
 // The test API for the settings-password-settings element.
 export class PasswordSettingsApi implements PasswordSettingsApiInterface {
@@ -27,42 +28,29 @@ export class PasswordSettingsApi implements PasswordSettingsApiInterface {
     return shadowRoot;
   }
 
-  private queryGaiaRadio(): {checked: boolean}&HTMLElement {
-    const el = this.shadowRoot().querySelector('*[name="gaia"]');
-    assertTrue(el instanceof HTMLElement);
-    assertTrue(hasBooleanProperty(el, 'checked'));
-    return el;
+  private switchLocalPasswordButton(): HTMLElement {
+    const button =
+        this.shadowRoot().getElementById('switchLocalPasswordButton');
+    assertTrue(button instanceof HTMLElement);
+    return button;
   }
 
-  private queryLocalRadio(): {checked: boolean}&HTMLElement {
-    const el = this.shadowRoot().querySelector('*[name="local"]');
-    assertTrue(el instanceof HTMLElement);
-    assertTrue(hasBooleanProperty(el, 'checked'));
-    return el;
+  private setLocalPasswordDialog(): HTMLElement {
+    const dialog =
+        this.shadowRoot().querySelector('settings-set-local-password-dialog');
+    assertTrue(dialog instanceof HTMLElement);
+    return dialog;
   }
 
-  selectedPasswordType(): PasswordType|null {
-    const gaiaRadio = this.queryGaiaRadio();
-    const localRadio = this.queryLocalRadio();
-
-    assertTrue(
-        !(gaiaRadio.checked && localRadio.checked),
-        'There must be at most one selected password type');
-
-    if (gaiaRadio.checked) {
-      return PasswordType.kGaia;
-    }
-    if (localRadio.checked) {
-      return PasswordType.kLocal;
-    }
-
-    return null;
+  private isLocalPasswordDialogOpen(): boolean {
+    const dialog = this.setLocalPasswordDialog()
+                       .shadowRoot!.querySelector<CrDialogElement>('cr-dialog');
+    assertTrue(dialog instanceof CrDialogElement);
+    return dialog.open;
   }
 
-  async assertSelectedPasswordType(passwordType: PasswordType|
-                                   null): Promise<void> {
-    const isSelected = () => this.selectedPasswordType() === passwordType;
-    await assertAsync(isSelected);
-    await assertForDuration(isSelected);
+  async assertCanOpenLocalPasswordDialog(): Promise<void> {
+    (await retryUntilSome(() => this.switchLocalPasswordButton())).click();
+    await assertAsync(() => this.isLocalPasswordDialogOpen());
   }
 }

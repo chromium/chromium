@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {AuthFactor, AuthFactorConfig, FactorObserverReceiver} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -40,12 +41,21 @@ export class SettingsPasswordSettingsElement extends PolymerElement {
         type: Boolean,
         value: false,
       },
+
+      changePasswordFactorSetupEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('changePasswordFactorSetupEnabled');
+        },
+        readOnly: true,
+      },
     };
   }
 
   authToken: string|null;
   private hasGaiaPassword_: boolean;
   private hasLocalPassword_: boolean;
+  private changePasswordFactorSetupEnabled_: boolean;
 
   override ready(): void {
     super.ready();
@@ -126,6 +136,10 @@ export class SettingsPasswordSettingsElement extends PolymerElement {
 
   private openSetLocalPasswordDialog_(): void {
     this.setLocalPasswordDialog().showModal();
+  }
+
+  private canSwitchLocalPassword_(): boolean {
+    return this.hasGaiaPassword_ && this.changePasswordFactorSetupEnabled_;
   }
 }
 
