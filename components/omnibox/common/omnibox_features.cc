@@ -247,11 +247,6 @@ BASE_FEATURE(kClipboardSuggestionContentHidden,
              "ClipboardSuggestionContentHidden",
              enabled_by_default_android_only);
 
-// If enabled, company entity icons may be replaced by a search loupe.
-BASE_FEATURE(kCompanyEntityIconAdjustment,
-             "CompanyEntityIconAdjustment",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, uses the Chrome Refresh 2023 design's shape for action chips in
 // the omnibox suggestion popup.
 BASE_FEATURE(kCr2023ActionChips,

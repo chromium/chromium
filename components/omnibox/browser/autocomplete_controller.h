@@ -453,8 +453,8 @@ class AutocompleteController : public AutocompleteProviderListener,
       const TemplateURL* template_url,
       const TemplateURLRef::SearchTermsArgs& args) const;
 
-  // May remove company entity images if omnibox::kCompanyEntityIconAdjustment
-  // feature is enabled.
+  // Ablates company entity image when the first suggestion is a historical URL
+  // and its domain is equal to an entity suggestion's domain.
   void MaybeRemoveCompanyEntityImages(AutocompleteResult* result);
 
   // May remove actions from default suggestion to avoid interference with

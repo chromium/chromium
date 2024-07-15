@@ -6467,11 +6467,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "omnibox-company-entity-icon-adjustment",
-    "owners": ["jennserrano@google.com", "khalidpeer@chromium.org", "chrome-omnibox-team@google.com"],
-    "expiry_milestone": 125
-  },
-  {
     "name": "omnibox-cr23-action-chips",
     "owners": [
       "manukh@chromium.org", "chrome-omnibox-team@google.com"

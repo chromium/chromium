@@ -1349,26 +1349,6 @@ const FeatureEntry::FeatureVariation
          std::size(kSidePanelJourneysOpensFromOmniboxParams), nullptr},
 };
 
-const FeatureEntry::FeatureParam
-    kOmniboxCompanyEntityIconAdjustmentLeastAggressive[] = {
-        {"OmniboxCompanyEntityAdjustmentGroup", "least-aggressive"}};
-const FeatureEntry::FeatureParam kOmniboxCompanyEntityIconAdjustmentModerate[] =
-    {{"OmniboxCompanyEntityAdjustmentGroup", "moderate"}};
-const FeatureEntry::FeatureParam
-    kOmniboxCompanyEntityIconAdjustmentMostAggressive[] = {
-        {"OmniboxCompanyEntityAdjustmentGroup", "most-aggressive"}};
-
-const FeatureEntry::FeatureVariation
-    kOmniboxCompanyEntityIconAdjustmentVariations[] = {
-        {"Least Aggressive", kOmniboxCompanyEntityIconAdjustmentLeastAggressive,
-         std::size(kOmniboxCompanyEntityIconAdjustmentLeastAggressive),
-         nullptr},
-        {"Moderate", kOmniboxCompanyEntityIconAdjustmentModerate,
-         std::size(kOmniboxCompanyEntityIconAdjustmentModerate), nullptr},
-        {"Most Aggressive", kOmniboxCompanyEntityIconAdjustmentMostAggressive,
-         std::size(kOmniboxCompanyEntityIconAdjustmentMostAggressive), nullptr},
-};
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
 const FeatureEntry::FeatureParam kShortcutBoostSingleUrl[] = {
@@ -6671,13 +6651,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxGroupingFrameworkDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kGroupingFrameworkForNonZPS)},
 
-    {"omnibox-company-entity-icon-adjustment",
-     flag_descriptions::kOmniboxCompanyEntityIconAdjustmentName,
-     flag_descriptions::kOmniboxCompanyEntityIconAdjustmentDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         omnibox::kCompanyEntityIconAdjustment,
-         kOmniboxCompanyEntityIconAdjustmentVariations,
-         "OmniboxCompanyEntityIconAdjustment")},
 
     {"omnibox-calc-provider", flag_descriptions::kOmniboxCalcProviderName,
      flag_descriptions::kOmniboxCalcProviderDescription, kOsAll,

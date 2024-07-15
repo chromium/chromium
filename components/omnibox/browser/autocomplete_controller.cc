@@ -2374,51 +2374,30 @@ void AutocompleteController::
 
 void AutocompleteController::MaybeRemoveCompanyEntityImages(
     AutocompleteResult* result) {
-  if (result->size() == 0 ||
-      !base::FeatureList::IsEnabled(omnibox::kCompanyEntityIconAdjustment)) {
+  if (result->size() == 0) {
     return;
   }
-  // Least aggressive and moderate group will only have one iteration as the
-  // first match must be of history type.
-  size_t max_iterations =
-      OmniboxFieldTrial::kCompanyEntityIconAdjustmentGroup.Get() ==
-              omnibox::CompanyEntityIconAdjustmentGroup::kMostAggressive
-          ? result->size()
-          : 1;
-
-  std::unordered_set<std::u16string> history_domains;
-  // Find all history type matches.
-  for (size_t i = 0; i < max_iterations; i++) {
-    if (result->match_at(i)->type == AutocompleteMatchType::HISTORY_URL) {
-      history_domains.insert(GetDomain(*result->match_at(i)));
-    }
+  std::u16string history_domain;
+  // First match must be of history URL type to ablate entity image.
+  if (result->match_at(0)->type == AutocompleteMatchType::HISTORY_URL) {
+    history_domain = GetDomain(*result->match_at(0));
   }
-  if (history_domains.size() == 0) {
+  if (history_domain.empty()) {
     return;
   }
-  for (size_t i = 0; i < result->size(); i++) {
+  for (size_t i = 1; i < result->size(); i++) {
     // Do not attempt to change image to search loupe if not an entity
     // suggestion.
     if (result->match_at(i)->type !=
         AutocompleteMatchType::SEARCH_SUGGEST_ENTITY) {
       continue;
     }
-    if (OmniboxFieldTrial::kCompanyEntityIconAdjustmentGroup.Get() ==
-            omnibox::CompanyEntityIconAdjustmentGroup::kLeastAggressive &&
-        i > 1) {
-      break;
-    }
     // Check that entity domain has a matching history domain.
-    if (history_domains.contains(GetDomain(*result->match_at(i))) &&
+    if (history_domain == GetDomain(*result->match_at(i)) &&
         (!result->match_at(i)->image_url.is_empty() ||
          !result->match_at(i)->image_dominant_color.empty())) {
-      provider_client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
-          metrics::OmniboxEventProto_Feature_COMPANY_ENTITY_ADJUSTMENT);
-      if (!OmniboxFieldTrial::kCompanyEntityIconAdjustmentCounterfactual
-               .Get()) {
-        result->match_at(i)->image_url = GURL();
-        result->match_at(i)->image_dominant_color.clear();
-      }
+      result->match_at(i)->image_url = GURL();
+      result->match_at(i)->image_dominant_color.clear();
     }
   }
 }

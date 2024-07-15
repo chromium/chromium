@@ -204,25 +204,6 @@ const FeatureEntry::FeatureVariation kOmniboxMaxURLMatchesVariations[] = {
      nullptr},
 };
 
-const FeatureEntry::FeatureParam
-    kOmniboxCompanyEntityAdjustmentLeastAggressive[] = {
-        {"OmniboxCompanyEntityAdjustmentGroup", "least-aggressive"}};
-const FeatureEntry::FeatureParam kOmniboxCompanyEntityAdjustmentModerate[] = {
-    {"OmniboxCompanyEntityAdjustmentGroup", "moderate"}};
-const FeatureEntry::FeatureParam
-    kOmniboxCompanyEntityAdjustmentMostAggressive[] = {
-        {"OmniboxCompanyEntityAdjustmentGroup", "most-aggressive"}};
-
-const FeatureEntry::FeatureVariation
-    kOmniboxCompanyEntityAdjustmentVariations[] = {
-        {"Least Aggressive", kOmniboxCompanyEntityAdjustmentLeastAggressive,
-         std::size(kOmniboxCompanyEntityAdjustmentLeastAggressive), nullptr},
-        {"Moderate", kOmniboxCompanyEntityAdjustmentModerate,
-         std::size(kOmniboxCompanyEntityAdjustmentModerate), nullptr},
-        {"Most Aggressive", kOmniboxCompanyEntityAdjustmentMostAggressive,
-         std::size(kOmniboxCompanyEntityAdjustmentMostAggressive), nullptr},
-};
-
 // Uses int values from SigninPromoViewStyle enum.
 const FeatureEntry::FeatureParam kDiscoverFeedTopSyncPromoStandard[] = {
     {kDiscoverFeedTopSyncPromoStyle, "0"}};
@@ -1594,13 +1575,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"enable-save-to-drive", flag_descriptions::kIOSSaveToDriveName,
      flag_descriptions::kIOSSaveToDriveDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSSaveToDrive)},
-    {"omnibox-company-entity-icon-adjustment",
-     flag_descriptions::kOmniboxCompanyEntityIconAdjustmentName,
-     flag_descriptions::kOmniboxCompanyEntityIconAdjustmentDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kCompanyEntityIconAdjustment,
-                                    kOmniboxCompanyEntityAdjustmentVariations,
-                                    "OmniboxCompanyEntityAdjustment")},
     {"fullscreen-improvement", flag_descriptions::kFullscreenImprovementName,
      flag_descriptions::kFullscreenImprovementDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kFullscreenImprovement)},
