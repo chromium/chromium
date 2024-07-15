@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
@@ -130,7 +131,8 @@ class XdgForeignWrapperImpl
     auto exported_surface_it = base::ranges::find(
         self->exported_surfaces_, exported,
         [](const auto& item) { return item.exported.get(); });
-    DCHECK(exported_surface_it != self->exported_surfaces_.end());
+    CHECK(exported_surface_it != self->exported_surfaces_.end(),
+          base::NotFatalUntil::M130);
     exported_surface_it->exported_handle = handle;
 
     for (auto& cb : exported_surface_it->callbacks) {

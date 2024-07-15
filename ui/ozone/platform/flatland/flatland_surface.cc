@@ -12,6 +12,7 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -334,7 +335,7 @@ void FlatlandSurface::RemovePixmapResources(FlatlandPixmapId ids) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   auto iter = pixmap_ids_to_flatland_ids_.find(ids);
-  DCHECK(iter != pixmap_ids_to_flatland_ids_.end());
+  CHECK(iter != pixmap_ids_to_flatland_ids_.end(), base::NotFatalUntil::M130);
   flatland_.flatland()->ReleaseImage(iter->second.image_id);
   if (iter->second.transform_id.value) {
     flatland_.flatland()->ReleaseTransform(iter->second.transform_id);

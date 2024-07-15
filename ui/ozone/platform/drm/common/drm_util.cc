@@ -22,6 +22,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -714,7 +715,7 @@ GetDisplayInfosAndInvalidCrtcs(const DrmWrapper& drm) {
     ScopedDrmCrtcPtr crtc = drm.GetCrtc(best_crtc);
     auto connector_iter =
         base::ranges::find(connectors, c, &ScopedDrmConnectorPtr::get);
-    DCHECK(connector_iter != connectors.end());
+    CHECK(connector_iter != connectors.end(), base::NotFatalUntil::M130);
     // |connectors.size()| <= 256, so |index| should be between 0-255.
     const uint8_t index = connector_iter - connectors.begin();
     DCHECK_LT(index, connectors.size());
