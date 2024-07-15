@@ -74,7 +74,6 @@ const char* GetVizBreakdownToPresentationName(
     default:
       base::UmaHistogramEnumeration(
           "Compositing.VizBreakdownToPresentationUnexpected", breakdown);
-      NOTREACHED(base::NotFatalUntil::M129);
       return "Unknown";
   }
 }
