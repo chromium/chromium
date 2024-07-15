@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/path_service.h"
 #include "base/sequence_checker.h"
@@ -310,7 +311,8 @@ void PredictionManager::RemoveObserverForOptimizationTargetModel(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto registration_info =
       model_registration_info_map_.find(optimization_target);
-  DCHECK(registration_info != model_registration_info_map_.end());
+  CHECK(registration_info != model_registration_info_map_.end(),
+        base::NotFatalUntil::M130);
 
   auto& observers = registration_info->second.model_observers;
   DCHECK(observers.HasObserver(observer));
