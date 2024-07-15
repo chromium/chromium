@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
@@ -360,12 +359,8 @@ class RendererImplTest : public ::testing::Test {
   std::unique_ptr<StrictMock<MockDemuxerStream>> audio_stream_;
   std::unique_ptr<StrictMock<MockDemuxerStream>> video_stream_;
   std::vector<DemuxerStream*> streams_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION RendererClient* video_renderer_client_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION RendererClient* audio_renderer_client_;
+  raw_ptr<RendererClient, DanglingUntriaged> video_renderer_client_;
+  raw_ptr<RendererClient, DanglingUntriaged> audio_renderer_client_;
   VideoDecoderConfig video_decoder_config_;
   PipelineStatus initialization_status_;
   bool is_encrypted_ = false;
