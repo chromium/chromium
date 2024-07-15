@@ -175,7 +175,7 @@ const Display& DisplayManagerTestApi::GetSecondaryDisplay() const {
   auto primary_display_iter = base::ranges::find(
       display_manager_->active_display_list_, primary_display_id, &Display::id);
 
-  DCHECK(primary_display_iter != display_manager_->active_display_list_.end());
+  CHECK(primary_display_iter != display_manager_->active_display_list_.end());
 
   ++primary_display_iter;
 
