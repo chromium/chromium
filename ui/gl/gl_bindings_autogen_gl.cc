@@ -321,8 +321,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
       gfx::HasExtension(extensions, "GL_ANGLE_vulkan_image");
   ext.b_GL_ANGLE_webgl_compatibility =
       gfx::HasExtension(extensions, "GL_ANGLE_webgl_compatibility");
-  ext.b_GL_ARB_timer_query =
-      gfx::HasExtension(extensions, "GL_ARB_timer_query");
   ext.b_GL_CHROMIUM_bind_uniform_location =
       gfx::HasExtension(extensions, "GL_CHROMIUM_bind_uniform_location");
   ext.b_GL_CHROMIUM_copy_texture =
@@ -1484,10 +1482,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
             GetGLProcAddress("glGetQueryivRobustANGLE"));
   }
 
-  if (ext.b_GL_ARB_timer_query) {
-    fn.glGetQueryObjecti64vFn = reinterpret_cast<glGetQueryObjecti64vProc>(
-        GetGLProcAddress("glGetQueryObjecti64v"));
-  } else if (ext.b_GL_EXT_disjoint_timer_query || ext.b_GL_EXT_timer_query) {
+  if (ext.b_GL_EXT_disjoint_timer_query || ext.b_GL_EXT_timer_query) {
     fn.glGetQueryObjecti64vFn = reinterpret_cast<glGetQueryObjecti64vProc>(
         GetGLProcAddress("glGetQueryObjecti64vEXT"));
   }
@@ -1509,10 +1504,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
             GetGLProcAddress("glGetQueryObjectivRobustANGLE"));
   }
 
-  if (ext.b_GL_ARB_timer_query) {
-    fn.glGetQueryObjectui64vFn = reinterpret_cast<glGetQueryObjectui64vProc>(
-        GetGLProcAddress("glGetQueryObjectui64v"));
-  } else if (ext.b_GL_EXT_disjoint_timer_query || ext.b_GL_EXT_timer_query) {
+  if (ext.b_GL_EXT_disjoint_timer_query || ext.b_GL_EXT_timer_query) {
     fn.glGetQueryObjectui64vFn = reinterpret_cast<glGetQueryObjectui64vProc>(
         GetGLProcAddress("glGetQueryObjectui64vEXT"));
   }
@@ -2201,10 +2193,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
         GetGLProcAddress("glPushGroupMarkerEXT"));
   }
 
-  if (ext.b_GL_ARB_timer_query) {
-    fn.glQueryCounterFn = reinterpret_cast<glQueryCounterProc>(
-        GetGLProcAddress("glQueryCounter"));
-  } else if (ext.b_GL_EXT_disjoint_timer_query) {
+  if (ext.b_GL_EXT_disjoint_timer_query) {
     fn.glQueryCounterFn = reinterpret_cast<glQueryCounterProc>(
         GetGLProcAddress("glQueryCounterEXT"));
   }

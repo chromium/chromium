@@ -243,6 +243,13 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
                                DisallowedFeatures()),
             gpu::ContextResult::kSuccess);
 
+  // GPUTracer
+  if (group_->feature_info()->feature_flags().ext_disjoint_timer_query) {
+    EXPECT_CALL(*gl_, GetIntegerv(GL_GPU_DISJOINT_EXT, _))
+        .WillOnce(SetArgPointee<1>(0))
+        .RetiresOnSaturation();
+  }
+
   if (init.context_type == CONTEXT_TYPE_WEBGL2 ||
       init.context_type == CONTEXT_TYPE_OPENGLES3) {
     EXPECT_CALL(*gl_, GetIntegerv(GL_MAX_COLOR_ATTACHMENTS, _))
@@ -269,6 +276,13 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
   }
 
   AddExpectationsForBindVertexArrayOES();
+
+  // GLES2QueryManager
+  if (group_->feature_info()->feature_flags().ext_disjoint_timer_query) {
+    EXPECT_CALL(*gl_, GetIntegerv(GL_GPU_DISJOINT_EXT, _))
+        .WillOnce(SetArgPointee<1>(0))
+        .RetiresOnSaturation();
+  }
 
   static GLuint attrib_0_id[] = {
     kServiceAttrib0BufferId,

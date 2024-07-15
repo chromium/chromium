@@ -84,7 +84,6 @@ class BaseGpuTest : public GpuServiceTest {
     const char* gl_version = "OpenGL ES 3.0";
     const char* extensions = "";
     if (GetTimerType() == gl::GPUTiming::kTimerTypeDisjoint) {
-      gl_version = "OpenGL ES 3.0";
       extensions = "GL_EXT_disjoint_timer_query";
     }
     GpuServiceTest::SetUpWithGLVersion(gl_version, extensions);
@@ -109,7 +108,7 @@ class BaseGpuTest : public GpuServiceTest {
   void ExpectTraceQueryMocks() {
     if (gpu_timing_client_->IsAvailable()) {
       // Delegate query APIs used by GPUTrace to a GlFakeQueries
-      const bool elapsed = (GetTimerType() == gl::GPUTiming::kTimerTypeEXT);
+      const bool elapsed = false;
       gl_fake_queries_.ExpectGPUTimerQuery(*gl_, elapsed);
     }
   }
@@ -180,11 +179,7 @@ class BaseGpuTest : public GpuServiceTest {
   }
 
   void ExpectTracerOffsetQueryMocks() {
-    if (GetTimerType() != gl::GPUTiming::kTimerTypeARB) {
-      gl_fake_queries_.ExpectNoOffsetCalculationQuery(*gl_);
-    } else {
-      gl_fake_queries_.ExpectOffsetCalculationQuery(*gl_);
-    }
+    gl_fake_queries_.ExpectNoOffsetCalculationQuery(*gl_);
   }
 
   gl::GPUTiming::TimerType GetTimerType() { return test_timer_type_; }

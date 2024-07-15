@@ -55,8 +55,6 @@ class GPUTiming {
   enum TimerType {
     kTimerTypeInvalid = -1,
 
-    kTimerTypeEXT,      // EXT_timer_query
-    kTimerTypeARB,      // ARB_timer_query
     kTimerTypeDisjoint  // EXT_disjoint_timer_query
   };
 

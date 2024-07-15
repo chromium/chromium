@@ -48,10 +48,8 @@ class QueryManagerTest : public GpuServiceTest {
 
  protected:
   void SetUp() override {
-    GpuServiceTest::SetUpWithGLVersion("OpenGL ES 3.0",
-                                       "GL_ARB_occlusion_query, "
-                                       "GL_ARB_timer_query");
-    SetUpMockGL("GL_EXT_occlusion_query_boolean, GL_ARB_timer_query");
+    GpuServiceTest::SetUpWithGLVersion("OpenGL ES 3.0", "");
+    SetUpMockGL("");
   }
 
   void TearDown() override {
@@ -136,11 +134,16 @@ class QueryManagerTest : public GpuServiceTest {
   int32_t shared_memory2_id_ = 0;
 };
 
-class QueryManagerManualSetupTest : public QueryManagerTest {
+class QueryManagerTimerQueryTest : public QueryManagerTest {
  protected:
   void SetUp() override {
-    // Let test setup manually.
+    GpuServiceTest::SetUpWithGLVersion("OpenGL ES 3.0",
+                                       "GL_EXT_disjoint_timer_query");
+    fake_timing_queries_.ExpectDisjointCalls(*gl_);
+    SetUpMockGL("GL_EXT_disjoint_timer_query");
   }
+
+  gl::GPUTimingFake fake_timing_queries_;
 };
 
 // GCC requires these declarations, but MSVC requires they not be present
@@ -404,11 +407,10 @@ TEST_F(QueryManagerTest, ExitWithPendingQuery) {
   QueueQuery(query.get(), kService1Id, kSubmitCount);
 }
 
-TEST_F(QueryManagerTest, TimeElapsedQuery) {
+TEST_F(QueryManagerTimerQueryTest, TimeElapsedQuery) {
   const GLuint kClient1Id = 1;
   const GLenum kTarget = GL_TIME_ELAPSED_EXT;
   const base::subtle::Atomic32 kSubmitCount = 123;
-  gl::GPUTimingFake fake_timing_queries;
   decoder_->GetGLContext()->CreateGPUTimingClient()->SetCpuTimeForTesting(
       base::BindRepeating(&gl::GPUTimingFake::GetFakeCPUTime));
 
@@ -416,12 +418,12 @@ TEST_F(QueryManagerTest, TimeElapsedQuery) {
       kTarget, kClient1Id, shared_memory_id_, kSharedMemoryOffset, 0);
   ASSERT_TRUE(query != nullptr);
 
-  fake_timing_queries.ExpectGPUTimerQuery(*gl_, true);
-  fake_timing_queries.SetCurrentGLTime(
-      200 * base::Time::kNanosecondsPerMicrosecond);
+  fake_timing_queries_.ExpectGPUTimerQuery(*gl_, true);
+  fake_timing_queries_.SetCurrentGLTime(200 *
+                                        base::Time::kNanosecondsPerMicrosecond);
   manager_->BeginQuery(query);
-  fake_timing_queries.SetCurrentGLTime(
-      300 * base::Time::kNanosecondsPerMicrosecond);
+  fake_timing_queries_.SetCurrentGLTime(300 *
+                                        base::Time::kNanosecondsPerMicrosecond);
   manager_->EndQuery(query, kSubmitCount);
   manager_->ProcessPendingQueries(false);
 
@@ -436,11 +438,10 @@ TEST_F(QueryManagerTest, TimeElapsedQuery) {
   manager_->Destroy(false);
 }
 
-TEST_F(QueryManagerTest, TimeElapsedPauseResume) {
+TEST_F(QueryManagerTimerQueryTest, TimeElapsedPauseResume) {
   const GLuint kClient1Id = 1;
   const GLenum kTarget = GL_TIME_ELAPSED_EXT;
   const base::subtle::Atomic32 kSubmitCount = 123;
-  gl::GPUTimingFake fake_timing_queries;
   decoder_->GetGLContext()->CreateGPUTimingClient()->SetCpuTimeForTesting(
       base::BindRepeating(&gl::GPUTimingFake::GetFakeCPUTime));
 
@@ -448,22 +449,22 @@ TEST_F(QueryManagerTest, TimeElapsedPauseResume) {
       kTarget, kClient1Id, shared_memory_id_, kSharedMemoryOffset, 0);
   ASSERT_TRUE(query != nullptr);
 
-  fake_timing_queries.ExpectGPUTimerQuery(*gl_, true);
-  fake_timing_queries.SetCurrentGLTime(
-      200 * base::Time::kNanosecondsPerMicrosecond);
+  fake_timing_queries_.ExpectGPUTimerQuery(*gl_, true);
+  fake_timing_queries_.SetCurrentGLTime(200 *
+                                        base::Time::kNanosecondsPerMicrosecond);
   manager_->BeginQuery(query);
 
   // Pause and Resume here.
-  fake_timing_queries.SetCurrentGLTime(
-      300 * base::Time::kNanosecondsPerMicrosecond);
+  fake_timing_queries_.SetCurrentGLTime(300 *
+                                        base::Time::kNanosecondsPerMicrosecond);
   manager_->PauseQueries();
 
-  fake_timing_queries.SetCurrentGLTime(
-      400 * base::Time::kNanosecondsPerMicrosecond);
+  fake_timing_queries_.SetCurrentGLTime(400 *
+                                        base::Time::kNanosecondsPerMicrosecond);
   manager_->ResumeQueries();
 
-  fake_timing_queries.SetCurrentGLTime(
-      500 * base::Time::kNanosecondsPerMicrosecond);
+  fake_timing_queries_.SetCurrentGLTime(500 *
+                                        base::Time::kNanosecondsPerMicrosecond);
   manager_->EndQuery(query, kSubmitCount);
 
   manager_->ProcessPendingQueries(false);
@@ -476,11 +477,11 @@ TEST_F(QueryManagerTest, TimeElapsedPauseResume) {
   EXPECT_EQ(expected_result, uint64_t{sync->result});
 
   // Make sure next query works properly.
-  fake_timing_queries.SetCurrentGLTime(
-      600 * base::Time::kNanosecondsPerMicrosecond);
+  fake_timing_queries_.SetCurrentGLTime(600 *
+                                        base::Time::kNanosecondsPerMicrosecond);
   manager_->BeginQuery(query);
-  fake_timing_queries.SetCurrentGLTime(
-      700 * base::Time::kNanosecondsPerMicrosecond);
+  fake_timing_queries_.SetCurrentGLTime(700 *
+                                        base::Time::kNanosecondsPerMicrosecond);
   manager_->EndQuery(query, kSubmitCount + 1);
   manager_->ProcessPendingQueries(false);
 
@@ -493,13 +494,7 @@ TEST_F(QueryManagerTest, TimeElapsedPauseResume) {
   manager_->Destroy(false);
 }
 
-TEST_F(QueryManagerManualSetupTest, TimeElapsedDisjoint) {
-  GpuServiceTest::SetUpWithGLVersion("OpenGL ES 3.0",
-                                     "GL_EXT_disjoint_timer_query");
-  gl::GPUTimingFake fake_timing_queries;
-  fake_timing_queries.ExpectDisjointCalls(*gl_);
-  SetUpMockGL("GL_EXT_disjoint_timer_query");
-
+TEST_F(QueryManagerTimerQueryTest, TimeElapsedDisjoint) {
   DisjointValueSync* disjoint_sync =
       decoder_->GetSharedMemoryAs<DisjointValueSync*>(
           shared_memory2_id_, kSharedMemory2Offset, sizeof(*disjoint_sync));
@@ -517,9 +512,9 @@ TEST_F(QueryManagerManualSetupTest, TimeElapsedDisjoint) {
   ASSERT_TRUE(query != nullptr);
 
   // Disjoint happening before the query should not trigger a disjoint event.
-  fake_timing_queries.SetDisjoint();
+  fake_timing_queries_.SetDisjoint();
 
-  fake_timing_queries.ExpectGPUTimerQuery(*gl_, true);
+  fake_timing_queries_.ExpectGPUTimerQuery(*gl_, true);
   manager_->BeginQuery(query);
   manager_->EndQuery(query, kSubmitCount);
   manager_->ProcessPendingQueries(false);
@@ -528,9 +523,9 @@ TEST_F(QueryManagerManualSetupTest, TimeElapsedDisjoint) {
   EXPECT_EQ(current_disjoint_value, disjoint_sync->GetDisjointCount());
 
   // Disjoint happening during query should trigger disjoint event.
-  fake_timing_queries.ExpectGPUTimerQuery(*gl_, true);
+  fake_timing_queries_.ExpectGPUTimerQuery(*gl_, true);
   manager_->BeginQuery(query);
-  fake_timing_queries.SetDisjoint();
+  fake_timing_queries_.SetDisjoint();
   manager_->EndQuery(query, kSubmitCount);
   manager_->ProcessPendingQueries(false);
 
@@ -540,11 +535,10 @@ TEST_F(QueryManagerManualSetupTest, TimeElapsedDisjoint) {
   manager_->Destroy(false);
 }
 
-TEST_F(QueryManagerTest, TimeStampQuery) {
+TEST_F(QueryManagerTimerQueryTest, TimeStampQuery) {
   const GLuint kClient1Id = 1;
   const GLenum kTarget = GL_TIMESTAMP_EXT;
   const base::subtle::Atomic32 kSubmitCount = 123;
-  gl::GPUTimingFake fake_timing_queries;
 
   decoder_->GetGLContext()->CreateGPUTimingClient()->SetCpuTimeForTesting(
       base::BindRepeating(&gl::GPUTimingFake::GetFakeCPUTime));
@@ -555,8 +549,8 @@ TEST_F(QueryManagerTest, TimeStampQuery) {
 
   const uint64_t expected_result =
       100u * base::Time::kNanosecondsPerMicrosecond;
-  fake_timing_queries.SetCurrentGLTime(expected_result);
-  fake_timing_queries.ExpectGPUTimeStampQuery(*gl_, false);
+  fake_timing_queries_.SetCurrentGLTime(expected_result);
+  fake_timing_queries_.ExpectGPUTimeStampQuery(*gl_, false);
   manager_->QueryCounter(query, kSubmitCount);
   manager_->ProcessPendingQueries(false);
 
@@ -567,11 +561,10 @@ TEST_F(QueryManagerTest, TimeStampQuery) {
   manager_->Destroy(false);
 }
 
-TEST_F(QueryManagerTest, TimeStampQueryPending) {
+TEST_F(QueryManagerTimerQueryTest, TimeStampQueryPending) {
   const GLuint kClient1Id = 1;
   const GLenum kTarget = GL_TIMESTAMP_EXT;
   const base::subtle::Atomic32 kSubmitCount = 123;
-  gl::GPUTimingFake fake_timing_queries;
 
   decoder_->GetGLContext()->CreateGPUTimingClient()->SetCpuTimeForTesting(
       base::BindRepeating(&gl::GPUTimingFake::GetFakeCPUTime));
@@ -582,11 +575,11 @@ TEST_F(QueryManagerTest, TimeStampQueryPending) {
 
   const uint64_t expected_result =
       100u * base::Time::kNanosecondsPerMicrosecond;
-  fake_timing_queries.SetCurrentGLTime(expected_result);
-  fake_timing_queries.ExpectGPUTimeStampQuery(*gl_, false);
+  fake_timing_queries_.SetCurrentGLTime(expected_result);
+  fake_timing_queries_.ExpectGPUTimeStampQuery(*gl_, false);
   manager_->QueryCounter(query, kSubmitCount);
   EXPECT_TRUE(query->IsPending());
-  fake_timing_queries.ExpectGPUTimeStampQuery(*gl_, false);
+  fake_timing_queries_.ExpectGPUTimeStampQuery(*gl_, false);
   manager_->QueryCounter(query, kSubmitCount);
   manager_->ProcessPendingQueries(false);
 
@@ -597,13 +590,7 @@ TEST_F(QueryManagerTest, TimeStampQueryPending) {
   manager_->Destroy(false);
 }
 
-TEST_F(QueryManagerManualSetupTest, TimeStampDisjoint) {
-  GpuServiceTest::SetUpWithGLVersion("OpenGL ES 3.0",
-                                     "GL_EXT_disjoint_timer_query");
-  gl::GPUTimingFake fake_timing_queries;
-  fake_timing_queries.ExpectDisjointCalls(*gl_);
-  SetUpMockGL("GL_EXT_disjoint_timer_query");
-
+TEST_F(QueryManagerTimerQueryTest, TimeStampDisjoint) {
   DisjointValueSync* disjoint_sync =
       decoder_->GetSharedMemoryAs<DisjointValueSync*>(
           shared_memory2_id_, kSharedMemory2Offset, sizeof(*disjoint_sync));
@@ -621,9 +608,9 @@ TEST_F(QueryManagerManualSetupTest, TimeStampDisjoint) {
   ASSERT_TRUE(query != nullptr);
 
   // Disjoint happening before the query should not trigger a disjoint event.
-  fake_timing_queries.SetDisjoint();
+  fake_timing_queries_.SetDisjoint();
 
-  fake_timing_queries.ExpectGPUTimeStampQuery(*gl_, false);
+  fake_timing_queries_.ExpectGPUTimeStampQuery(*gl_, false);
   manager_->QueryCounter(query, kSubmitCount);
   manager_->ProcessPendingQueries(false);
 
@@ -631,9 +618,9 @@ TEST_F(QueryManagerManualSetupTest, TimeStampDisjoint) {
   EXPECT_EQ(current_disjoint_value, disjoint_sync->GetDisjointCount());
 
   // Disjoint happening during query should trigger disjoint event.
-  fake_timing_queries.ExpectGPUTimeStampQuery(*gl_, false);
+  fake_timing_queries_.ExpectGPUTimeStampQuery(*gl_, false);
   manager_->QueryCounter(query, kSubmitCount);
-  fake_timing_queries.SetDisjoint();
+  fake_timing_queries_.SetDisjoint();
   manager_->ProcessPendingQueries(false);
 
   EXPECT_TRUE(query->IsFinished());
@@ -642,13 +629,7 @@ TEST_F(QueryManagerManualSetupTest, TimeStampDisjoint) {
   manager_->Destroy(false);
 }
 
-TEST_F(QueryManagerManualSetupTest, DisjointContinualTest) {
-  GpuServiceTest::SetUpWithGLVersion("OpenGL ES 3.0",
-                                     "GL_EXT_disjoint_timer_query");
-  gl::GPUTimingFake fake_timing_queries;
-  fake_timing_queries.ExpectDisjointCalls(*gl_);
-  SetUpMockGL("GL_EXT_disjoint_timer_query");
-
+TEST_F(QueryManagerTimerQueryTest, DisjointContinualTest) {
   DisjointValueSync* disjoint_sync =
       decoder_->GetSharedMemoryAs<DisjointValueSync*>(
           shared_memory2_id_, kSharedMemory2Offset, sizeof(*disjoint_sync));
@@ -658,7 +639,7 @@ TEST_F(QueryManagerManualSetupTest, DisjointContinualTest) {
   ASSERT_EQ(0u, current_disjoint_value);
 
   // Disjoint value should not be updated until we have a timestamp query.
-  fake_timing_queries.SetDisjoint();
+  fake_timing_queries_.SetDisjoint();
   manager_->ProcessFrameBeginUpdates();
   EXPECT_EQ(current_disjoint_value, disjoint_sync->GetDisjointCount());
 
@@ -670,12 +651,12 @@ TEST_F(QueryManagerManualSetupTest, DisjointContinualTest) {
       kTarget, kClient1Id, shared_memory_id_, kSharedMemoryOffset, 0);
   ASSERT_TRUE(query != nullptr);
 
-  fake_timing_queries.ExpectGPUTimeStampQuery(*gl_, false);
+  fake_timing_queries_.ExpectGPUTimeStampQuery(*gl_, false);
   manager_->QueryCounter(query, kSubmitCount);
   manager_->ProcessPendingQueries(false);
 
   EXPECT_EQ(current_disjoint_value, disjoint_sync->GetDisjointCount());
-  fake_timing_queries.SetDisjoint();
+  fake_timing_queries_.SetDisjoint();
   manager_->ProcessFrameBeginUpdates();
   EXPECT_NE(current_disjoint_value, disjoint_sync->GetDisjointCount());
 
@@ -727,9 +708,8 @@ TEST_F(QueryManagerTest, OcclusionQuery) {
   const GLenum kTarget = GL_SAMPLES_PASSED_ARB;
   const base::subtle::Atomic32 kSubmitCount = 123;
 
-  TestHelper::SetupFeatureInfoInitExpectations(
-      gl_.get(),
-      "GL_ARB_occlusion_query");
+  TestHelper::SetupFeatureInfoInitExpectations(gl_.get(),
+                                               "GL_EXT_occlusion_query");
   scoped_refptr<FeatureInfo> feature_info(new FeatureInfo());
   feature_info->InitializeForTesting();
   std::unique_ptr<GLES2QueryManager> manager(

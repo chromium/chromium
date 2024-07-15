@@ -1917,7 +1917,6 @@ struct ExtensionsGL {
   bool b_GL_ANGLE_translated_shader_source;
   bool b_GL_ANGLE_vulkan_image;
   bool b_GL_ANGLE_webgl_compatibility;
-  bool b_GL_ARB_timer_query;
   bool b_GL_CHROMIUM_bind_uniform_location;
   bool b_GL_CHROMIUM_copy_texture;
   bool b_GL_CHROMIUM_gles_depth_binding_hack;

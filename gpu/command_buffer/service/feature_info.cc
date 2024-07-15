@@ -1000,11 +1000,8 @@ void FeatureInfo::InitializeFeatures() {
   // fallback to an implementation that does not depend on glGetInteger64v on
   // ES2. Thus we can enable GL_EXT_disjoint_timer_query on ES2 contexts even
   // though it does not support glGetInteger64v due to a specification bug.
-  feature_flags_.ext_disjoint_timer_query =
-      gfx::HasExtension(extensions, "GL_EXT_disjoint_timer_query");
-  if (feature_flags_.ext_disjoint_timer_query ||
-      gfx::HasExtension(extensions, "GL_ARB_timer_query") ||
-      gfx::HasExtension(extensions, "GL_EXT_timer_query")) {
+  if (gfx::HasExtension(extensions, "GL_EXT_disjoint_timer_query")) {
+    feature_flags_.ext_disjoint_timer_query = true;
     AddExtensionString("GL_EXT_disjoint_timer_query");
   }
 

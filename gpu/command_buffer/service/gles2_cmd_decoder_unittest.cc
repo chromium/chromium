@@ -701,9 +701,9 @@ static void CheckBeginEndQueryBadMemoryFails(GLES2DecoderTestBase* test,
   // We need to reset the decoder on each iteration, because we lose the
   // context every time.
   GLES2DecoderTestBase::InitState init;
-  init.extensions = "GL_EXT_occlusion_query_boolean"
-                    " GL_ARB_sync"
-                    " GL_ARB_timer_query";
+  init.extensions =
+      "GL_EXT_occlusion_query_boolean"
+      " GL_EXT_disjoint_timer_query";
   init.gl_version = "OpenGL ES 3.0";
   init.has_alpha = true;
   init.request_alpha = true;
@@ -754,9 +754,9 @@ TEST_P(GLES2DecoderManualInitTest, QueryReuseTest) {
     const QueryType& query_type = kQueryTypes[i];
 
     GLES2DecoderTestBase::InitState init;
-    init.extensions = "GL_EXT_occlusion_query_boolean"
-                      " GL_ARB_sync"
-                      " GL_ARB_timer_query";
+    init.extensions =
+        "GL_EXT_occlusion_query_boolean"
+        " GL_EXT_disjoint_timer_query";
     init.gl_version = "OpenGL ES 3.0";
     init.has_alpha = true;
     init.request_alpha = true;
@@ -764,6 +764,9 @@ TEST_P(GLES2DecoderManualInitTest, QueryReuseTest) {
     InitDecoder(init);
     ::testing::StrictMock<::gl::MockGLInterface>* gl = GetGLMock();
     ::gl::GPUTimingFake gpu_timing_queries;
+    if (query_type.type == GL_TIME_ELAPSED || query_type.type == GL_TIMESTAMP) {
+      gpu_timing_queries.ExpectDisjointCalls(*gl);
+    }
 
     ExecuteGenerateQueryCmd(this, gl, query_type.type,
                             kNewClientId, kNewServiceId);
@@ -1024,7 +1027,7 @@ TEST_P(GLES2DecoderManualInitTest, BeginInvalidTargetQueryFails) {
 
 TEST_P(GLES2DecoderManualInitTest, QueryCounterEXTTimeStamp) {
   InitState init;
-  init.extensions = "GL_ARB_timer_query";
+  init.extensions = "GL_EXT_disjoint_timer_query";
   init.gl_version = "OpenGL ES 3.0";
   init.has_alpha = true;
   init.request_alpha = true;
@@ -1041,6 +1044,9 @@ TEST_P(GLES2DecoderManualInitTest, QueryCounterEXTTimeStamp) {
       .RetiresOnSaturation();
   EXPECT_CALL(*gl_, QueryCounter(kNewServiceId, GL_TIMESTAMP))
       .Times(1)
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, GetIntegerv(GL_GPU_DISJOINT_EXT, _))
+      .WillOnce(SetArgPointee<1>(0))
       .RetiresOnSaturation();
   cmds::QueryCounterEXT query_counter_cmd;
   query_counter_cmd.Init(kNewClientId, GL_TIMESTAMP, shared_memory_id_,
