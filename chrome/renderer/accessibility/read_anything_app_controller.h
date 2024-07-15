@@ -352,15 +352,15 @@ class ReadAnythingAppController
   mojo::Remote<read_anything::mojom::UntrustedPageHandler> page_handler_;
   mojo::Receiver<read_anything::mojom::UntrustedPage> receiver_{this};
 
-  // Model that holds Reading mode state for this controller.
-  ReadAnythingAppModel model_;
-
   // Model that holds Read Aloud state for this controller.
   ReadAloudAppModel read_aloud_model_;
 
   // Set of nodes that will be deleted that are also displayed. A draw will
   // occur when the set becomes empty.
   std::set<ui::AXNodeID> displayed_nodes_pending_deletion_;
+
+  // Model that holds Reading mode state for this controller.
+  ReadAnythingAppModel model_;
 
   // For metrics logging
 
