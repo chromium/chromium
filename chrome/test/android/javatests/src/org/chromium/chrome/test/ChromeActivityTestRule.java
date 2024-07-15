@@ -23,7 +23,6 @@ import org.junit.runners.model.Statement;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
@@ -95,10 +94,6 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     protected void before() throws Throwable {
         super.before();
         ChromeApplicationTestUtils.setUp();
-        // Instrumentation infrastructure and tests often access variables from the
-        // instrumentation thread for asserts. See crbug.com/1173814 for more
-        // details.
-        ObservableSupplierImpl.setIgnoreThreadChecksForTesting(true);
 
         // Tests are run on bots that are offline by default. This might cause
         // offline UI to show and cause flakiness or failures in tests. Using this

@@ -27,7 +27,9 @@ public class ThreadUtils {
 
     private static volatile Handler sUiThreadHandler;
 
+    private static Throwable sUiThreadInitializer;
     private static boolean sThreadAssertsDisabledForTesting;
+    private static Thread sInstrumentationThreadForTesting;
 
     /**
      * A helper object to ensure that interactions with a particular object only happens on a
@@ -64,43 +66,63 @@ public class ThreadUtils {
          * on.
          */
         public void assertOnValidThread() {
+            assertOnValidThreadHelper(false);
+        }
+
+        /**
+         * Asserts that the current thread is the same as the one the ThreadChecker was constructed
+         * on, or the Instrumentation thread.
+         */
+        public void assertOnValidOrInstrumentationThread() {
+            assertOnValidThreadHelper(true);
+        }
+
+        private void assertOnValidThreadHelper(boolean allowInstrThread) {
             if (BuildConfig.ENABLE_ASSERTS && !sThreadAssertsDisabledForTesting) {
                 Thread curThread = Thread.currentThread();
-                if (curThread != mThread) {
-                    Thread uiThread = getUiThreadLooper().getThread();
-                    if (curThread == uiThread) {
-                        assert false
-                                : "Background-only class called from UI thread (expected: "
-                                        + mThread
-                                        + ")";
-                    } else if (mThread == uiThread) {
-                        assert false : "UI-only class called from background thread: " + curThread;
-                    }
-                    assert false
-                            : "Method called from wrong background thread. Expected: "
-                                    + mThread
-                                    + " Actual: "
-                                    + curThread;
+                if (curThread == mThread
+                        || (allowInstrThread && curThread == sInstrumentationThreadForTesting)) {
+                    return;
                 }
+                Thread uiThread = getUiThreadLooper().getThread();
+                if (curThread == uiThread) {
+                    assert false
+                            : "Background-only class called from UI thread (expected: "
+                                    + mThread
+                                    + ")";
+                } else if (mThread == uiThread) {
+                    assert false : "UI-only class called from background thread: " + curThread;
+                }
+                assert false
+                        : "Method called from wrong background thread. Expected: "
+                                + mThread
+                                + " Actual: "
+                                + curThread;
             }
         }
     }
 
     public static void setWillOverrideUiThread() {
         sWillOverride = true;
-        assert sUiThreadHandler == null;
+        if (BuildConfig.ENABLE_ASSERTS && sUiThreadHandler != null) {
+            throw new AssertionError("UI Thread already set", sUiThreadInitializer);
+        }
     }
 
     public static void clearUiThreadForTesting() {
         sWillOverride = false;
         PostTask.resetUiThreadForTesting(); // IN-TEST
         sUiThreadHandler = null;
+        sUiThreadInitializer = null;
     }
 
     public static void setUiThread(Looper looper) {
         assert looper != null;
         synchronized (sLock) {
             if (sUiThreadHandler == null) {
+                if (BuildConfig.ENABLE_ASSERTS) {
+                    sUiThreadInitializer = new Throwable("This is who set sUiThreadHandler.");
+                }
                 Handler uiThreadHandler = new Handler(looper);
                 // Set up the UI Thread TaskExecutor before signaling readiness.
                 PostTask.onUiThreadReady(uiThreadHandler);
@@ -110,15 +132,27 @@ public class ThreadUtils {
                 // Must come after PostTask is initialized since it uses PostTask.
                 TraceEvent.onUiThreadReady();
             } else if (sUiThreadHandler.getLooper() != looper) {
-                throw new RuntimeException(
-                        "UI thread looper is already set to "
-                                + sUiThreadHandler.getLooper()
-                                + " (Main thread looper is "
-                                + Looper.getMainLooper()
-                                + "), cannot set to new looper "
-                                + looper);
+                RuntimeException exception =
+                        new RuntimeException(
+                                "UI thread looper is already set to "
+                                        + sUiThreadHandler.getLooper()
+                                        + " (Main thread looper is "
+                                        + Looper.getMainLooper()
+                                        + "), cannot set to new looper "
+                                        + looper);
+                if (BuildConfig.ENABLE_ASSERTS) {
+                    exception.initCause(sUiThreadInitializer);
+                }
+                throw exception;
             }
         }
+    }
+
+    // Allows ThreadChecker to allowlist instrumentation thread calls.
+    public static void recordInstrumentationThreadForTesting() {
+        assert sInstrumentationThreadForTesting == null;
+        assert Looper.getMainLooper() != Looper.myLooper();
+        sInstrumentationThreadForTesting = Thread.currentThread();
     }
 
     public static Handler getUiThreadHandler() {

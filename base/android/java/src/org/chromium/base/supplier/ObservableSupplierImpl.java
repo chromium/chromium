@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
-import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ThreadUtils.ThreadChecker;
 
 import java.util.Objects;
 
@@ -18,19 +18,19 @@ import java.util.Objects;
  * Concrete implementation of {@link ObservableSupplier} to be used by classes owning the
  * ObservableSupplier and providing it as a dependency to others.
  *
- * This class must only be accessed from a single thread.
+ * <p>This class must only be accessed from a single thread.
  *
+ * <pre>
  * To use:
  *   1. Create a new ObservableSupplierImpl<E> to pass as a dependency
  *   2. Call {@link #set(Object)} when the real object becomes available. {@link #set(Object)} may
  *      be called multiple times. Observers will be notified each time a new object is set.
+ * </pre>
  *
  * @param <E> The type of the wrapped object.
  */
 public class ObservableSupplierImpl<E> implements ObservableSupplier<E> {
-    private static boolean sIgnoreThreadChecksForTesting;
-
-    private final Thread mThread = Thread.currentThread();
+    private final ThreadChecker mThreadChecker = new ThreadChecker();
     private final Handler mHandler = new Handler();
 
     private E mObject;
@@ -44,7 +44,7 @@ public class ObservableSupplierImpl<E> implements ObservableSupplier<E> {
 
     @Override
     public E addObserver(Callback<E> obs) {
-        checkThread();
+        // ObserverList has its own ThreadChecker.
         mObservers.addObserver(obs);
 
         if (mObject != null) {
@@ -61,7 +61,7 @@ public class ObservableSupplierImpl<E> implements ObservableSupplier<E> {
 
     @Override
     public void removeObserver(Callback<E> obs) {
-        checkThread();
+        // ObserverList has its own ThreadChecker.
         mObservers.removeObserver(obs);
     }
 
@@ -73,7 +73,7 @@ public class ObservableSupplierImpl<E> implements ObservableSupplier<E> {
      * @param object The object to supply.
      */
     public void set(E object) {
-        checkThread();
+        mThreadChecker.assertOnValidThread();
         if (Objects.equals(object, mObject)) {
             return;
         }
@@ -87,23 +87,15 @@ public class ObservableSupplierImpl<E> implements ObservableSupplier<E> {
 
     @Override
     public @Nullable E get() {
-        checkThread();
+        // Allow instrumentation thread access since tests often access variables for asserts.
+        // https://crbug.com/1173814
+        mThreadChecker.assertOnValidOrInstrumentationThread();
         return mObject;
     }
 
     /** Returns if there are any observers currently. */
     public boolean hasObservers() {
+        // ObserverList has its own ThreadChecker.
         return !mObservers.isEmpty();
-    }
-
-    private void checkThread() {
-        assert sIgnoreThreadChecksForTesting || mThread == Thread.currentThread()
-                : "ObservableSupplierImpl must only be used on a single Thread.";
-    }
-
-    /** Used to allow developers to access supplier values on the instrumentation thread. */
-    public static void setIgnoreThreadChecksForTesting(boolean ignoreThreadChecks) {
-        sIgnoreThreadChecksForTesting = ignoreThreadChecks;
-        ResettersForTesting.register(() -> sIgnoreThreadChecksForTesting = false);
     }
 }

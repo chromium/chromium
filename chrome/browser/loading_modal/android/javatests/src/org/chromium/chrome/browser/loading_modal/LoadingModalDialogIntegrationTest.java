@@ -83,7 +83,6 @@ public class LoadingModalDialogIntegrationTest {
 
     @Before
     public void setupTest() throws Exception {
-        ObservableSupplierImpl.setIgnoreThreadChecksForTesting(true);
         mObserver = new TestDialogManagerObserver();
         runOnUiThreadBlocking(() -> sActivity.getModalDialogManager().addObserver(mObserver));
     }

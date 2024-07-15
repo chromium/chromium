@@ -33,6 +33,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -175,12 +176,14 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
                             arguments.toString()));
             listTests(); // Intentionally not calling super.onStart() to avoid additional work.
         } else {
+            ThreadUtils.recordInstrumentationThreadForTesting();
             // Full name required because the super class has a nested class of the same name.
             org.chromium.base.test.ActivityFinisher.finishAll();
             super.onStart();
         }
     }
 
+    // Called on the UI thread.
     private void initTestRunner(Bundle arguments) {
         String timeoutScale = arguments.getString(EXTRA_TIMEOUT_SCALE);
         if (timeoutScale != null) {

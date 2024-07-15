@@ -65,7 +65,6 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
 
     @Before
     public void setUp() {
-        ObservableSupplierImpl.setIgnoreThreadChecksForTesting(true);
         createBackPressHandler();
     }
 
