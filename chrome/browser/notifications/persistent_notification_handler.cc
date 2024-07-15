@@ -53,9 +53,16 @@ void PersistentNotificationHandler::OnClose(
   // TODO(peter): Should we do permission checks prior to forwarding to the
   // NotificationEventDispatcher?
 
-  // If we programatically closed this notification, don't dispatch any event.
-  if (PlatformNotificationServiceFactory::GetForProfile(profile)
-          ->WasClosedProgrammatically(notification_id)) {
+  // If we programmatically closed this notification, don't dispatch any event.
+  //
+  // TODO(crbug.com/352329050): there are circular dependencies between
+  // NotificationMetricsLogger and PlatformNotificationService. Since the
+  // service are only created lazily, and creation fails after the shutdown
+  // phase, it is possible for the factory to return null. In that case, the
+  // notification cannot have been closed programmatically.
+  if (PlatformNotificationServiceImpl* service =
+          PlatformNotificationServiceFactory::GetForProfile(profile);
+      service && service->WasClosedProgrammatically(notification_id)) {
     std::move(completed_closure).Run();
     return;
   }
