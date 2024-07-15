@@ -482,7 +482,8 @@ class UniversalInstallAppMenuModelInteractiveTest
         webapps::WebappInstallSource::SYNC, result.GetCallback(), params);
     bool success = result.Wait();
     const webapps::AppId& app_id = result.Get<webapps::AppId>();
-    EXPECT_FALSE(provider->registrar_unsafe().IsLocallyInstalled(app_id));
+    EXPECT_EQ(provider->registrar_unsafe().GetInstallState(app_id),
+              web_app::proto::SUGGESTED_FROM_ANOTHER_DEVICE);
     return success;
   }
 

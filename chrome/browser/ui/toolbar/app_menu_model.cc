@@ -77,6 +77,7 @@
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -255,7 +256,9 @@ std::u16string GetInstallPWALabel(const Browser* browser) {
       web_app::WebAppTabHelper::GetAppId(web_contents);
   web_app::WebAppProvider* const provider =
       web_app::WebAppProvider::GetForLocalAppsUnchecked(browser->profile());
-  if (app_id && provider->registrar_unsafe().IsLocallyInstalled(*app_id) &&
+  if (app_id &&
+      provider->registrar_unsafe().IsInstallState(
+          *app_id, {web_app::proto::INSTALLED_WITH_OS_INTEGRATION}) &&
       provider->registrar_unsafe().GetAppUserDisplayMode(*app_id) !=
           web_app::mojom::UserDisplayMode::kBrowser) {
     return std::u16string();
