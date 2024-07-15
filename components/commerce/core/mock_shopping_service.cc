@@ -34,10 +34,10 @@ MockShoppingService::MockShoppingService()
                                 nullptr,
                                 nullptr) {
   product_specifications_service_ =
-      std::make_unique<MockProductSpecificationsService>();
+      std::make_unique<testing::NiceMock<MockProductSpecificationsService>>();
   ON_CALL(*this, GetProductSpecificationsService)
       .WillByDefault(testing::Return(product_specifications_service_.get()));
-  cluster_manager_ = std::make_unique<MockClusterManager>(
+  cluster_manager_ = std::make_unique<testing::NiceMock<MockClusterManager>>(
       product_specifications_service_.get());
   ON_CALL(*this, GetClusterManager)
       .WillByDefault(testing::Return(cluster_manager_.get()));
