@@ -16,7 +16,7 @@ export function getHtml(this: TabOrganizationResultsElement) {
       aria-relevant="all">
     ${this.getTitle_()}
   </div>
-  <div id="scrollable">
+  <div id="scrollable" class="scrolled-to-bottom">
     ${this.getOrganizations_().map(item => html`
       <tab-organization-group
         name="${this.getName_(item)}"
