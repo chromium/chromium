@@ -99,7 +99,7 @@ public class AutofillOptionsCoordinator {
                 new PropertyModel.Builder(AutofillOptionsProperties.ALL_KEYS)
                         .with(ON_THIRD_PARTY_TOGGLE_CHANGED, mMediator::onThirdPartyToggleChanged)
                         .build();
-        mMediator.initialize(model, mFragment.getReferrer());
+        mMediator.initialize(model, mFragment.getReferrer(), mFragment.getContext());
 
         PropertyModelChangeProcessor.create(model, mFragment, AutofillOptionsViewBinder::bind);
         return model;

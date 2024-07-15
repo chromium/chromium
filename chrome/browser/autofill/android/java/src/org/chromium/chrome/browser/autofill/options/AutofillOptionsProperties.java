@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.autofill.options;
 
+import android.text.SpannableString;
+
 import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Collection of properties that affect the autofill options settings screen. */
 class AutofillOptionsProperties {
@@ -17,12 +20,15 @@ class AutofillOptionsProperties {
             new WritableBooleanPropertyKey("third_party_toggle_is_read_only");
     static final ReadableObjectPropertyKey<Callback<Boolean>> ON_THIRD_PARTY_TOGGLE_CHANGED =
             new ReadableObjectPropertyKey<>("on_third_party_toggle_changed");
+    static final WritableObjectPropertyKey<SpannableString> THIRD_PARTY_TOGGLE_HINT =
+            new WritableObjectPropertyKey<>("third_party_toggle_hint");
 
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 THIRD_PARTY_AUTOFILL_ENABLED,
                 THIRD_PARTY_TOGGLE_IS_READ_ONLY,
                 ON_THIRD_PARTY_TOGGLE_CHANGED,
+                THIRD_PARTY_TOGGLE_HINT,
             };
 
     /**

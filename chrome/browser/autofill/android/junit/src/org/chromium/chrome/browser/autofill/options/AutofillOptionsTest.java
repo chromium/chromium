@@ -25,6 +25,7 @@ import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProper
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_AUTOFILL_ENABLED;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_TOGGLE_IS_READ_ONLY;
 
+import android.text.SpannableString;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -68,6 +69,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.SpanApplier;
 
 import java.util.Optional;
 
@@ -161,6 +164,9 @@ public class AutofillOptionsTest {
         assertFalse(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
         assertFalse(getRadioButtonComponent().isEnabled());
         assertTrue(getHint().isShown());
+        assertEquals(
+                getSpannableString(R.string.autofill_options_hint_3p_setting).toString(),
+                getHint().getSummary().toString()); // toString produces readable errors.
 
         // On resume, check again whether AwG isn't used anymore — e.g. coming back from Settings.
         setAutofillAvailabilityToUseForTesting(AVAILABLE);
@@ -188,6 +194,9 @@ public class AutofillOptionsTest {
         assertTrue(model.get(THIRD_PARTY_TOGGLE_IS_READ_ONLY));
         assertFalse(getRadioButtonComponent().isEnabled());
         assertTrue(getHint().isShown());
+        assertEquals(
+                getString(R.string.autofill_options_hint_policy),
+                getHint().getSummary().toString());
     }
 
     @Test
@@ -416,6 +425,16 @@ public class AutofillOptionsTest {
 
     private String getString(@StringRes int stringId) {
         return mFragment.getResources().getString(stringId);
+    }
+
+    private SpannableString getSpannableString(@StringRes int stringId) {
+        return SpanApplier.applySpans(
+                getString(stringId),
+                new SpanApplier.SpanInfo(
+                        "<link>",
+                        "</link>",
+                        new NoUnderlineClickableSpan(
+                                mFragment.getContext(), unusedView -> fail())));
     }
 
     private void verifyOptionReflectedInView(
