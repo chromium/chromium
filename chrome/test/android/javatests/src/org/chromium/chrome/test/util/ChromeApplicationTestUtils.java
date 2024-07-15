@@ -17,8 +17,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.omaha.OmahaBase;
-import org.chromium.chrome.browser.omaha.VersionNumberGetter;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.test.util.Coordinates;
 
@@ -35,12 +33,6 @@ public class ChromeApplicationTestUtils {
     // fully stop/start Chrome.
     private static final long CHROME_STOP_START_TIMEOUT_MS =
             Math.max(10000L, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
-
-    public static void setUp() {
-        // Disable Omaha related activities.
-        OmahaBase.setIsDisabledForTesting(true);
-        VersionNumberGetter.setEnableUpdateDetection(false);
-    }
 
     // TODO(bauerb): make this function throw more specific exception and update
     // StartupLoadingMetricsTest correspondingly.

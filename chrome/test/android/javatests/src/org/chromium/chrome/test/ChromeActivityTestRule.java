@@ -93,7 +93,6 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     @Override
     protected void before() throws Throwable {
         super.before();
-        ChromeApplicationTestUtils.setUp();
 
         // Tests are run on bots that are offline by default. This might cause
         // offline UI to show and cause flakiness or failures in tests. Using this

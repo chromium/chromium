@@ -6,6 +6,8 @@ package org.chromium.chrome.test;
 
 import org.junit.runners.model.InitializationError;
 
+import org.chromium.chrome.browser.omaha.OmahaBase;
+import org.chromium.chrome.browser.omaha.VersionNumberGetter;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 
@@ -20,6 +22,14 @@ public class ChromeJUnit4ClassRunner extends ContentJUnit4ClassRunner {
      */
     public ChromeJUnit4ClassRunner(final Class<?> klass) throws InitializationError {
         super(klass);
+    }
+
+    @Override
+    protected void onBeforeTestClass() {
+        super.onBeforeTestClass();
+        // Disable Omaha related activities.
+        OmahaBase.setIsDisabledForTesting(true);
+        VersionNumberGetter.setEnableUpdateDetectionForTesting(false);
     }
 
     @Override
