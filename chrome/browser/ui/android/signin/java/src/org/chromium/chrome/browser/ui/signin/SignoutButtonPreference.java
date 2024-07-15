@@ -73,6 +73,7 @@ public class SignoutButtonPreference extends Preference {
                             mDialogManager,
                             mSnackbarManager,
                             SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
+                            /* showConfirmDialog= */ false,
                             () -> {});
                 });
     }

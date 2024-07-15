@@ -54,6 +54,8 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -139,6 +141,7 @@ public class GoogleServicesSettingsTest {
 
     @Test
     @LargeTest
+    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void signOutUserWithoutShowingSignOutDialog() {
         mSigninTestRule.addTestAccountThenSignin();
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
@@ -168,7 +171,8 @@ public class GoogleServicesSettingsTest {
 
     @Test
     @LargeTest
-    public void showSignOutDialogBeforeSigningUserOut() {
+    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void showSignOutDialogBeforeSigningUserOutLegacy() {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
         ChromeSwitchPreference allowChromeSignin =
@@ -186,6 +190,44 @@ public class GoogleServicesSettingsTest {
                                 "Accepting the sign-out dialog should set SIGNIN_ALLOWED to false",
                                 UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                         .getBoolean(Pref.SIGNIN_ALLOWED)));
+        Assert.assertFalse("Chrome Signin should not be allowed", allowChromeSignin.isChecked());
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void showSignOutDialogBeforeSigningUserOut() {
+        mSigninTestRule.addAccountThenSignin(SigninTestRule.TEST_ACCOUNT_1);
+        final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
+        ChromeSwitchPreference allowChromeSignin =
+                (ChromeSwitchPreference)
+                        googleServicesSettings.findPreference(
+                                GoogleServicesSettings.PREF_ALLOW_SIGNIN);
+        Assert.assertTrue("Chrome Signin should be allowed", allowChromeSignin.isChecked());
+
+        onView(withText(R.string.allow_chrome_signin_title)).perform(click());
+        onView(withText(R.string.sign_out_title)).inRoot(isDialog()).check(matches(isDisplayed()));
+        // Accept the sign out Dialog
+        onView(withText(R.string.sign_out)).inRoot(isDialog()).perform(click());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SnackbarManager snackbarManager =
+                            mSettingsActivityTestRule.getActivity().getSnackbarManager();
+                    Assert.assertTrue(snackbarManager.isShowing());
+                    Snackbar currentSnackbar = snackbarManager.getCurrentSnackbarForTesting();
+                    Assert.assertEquals(
+                            currentSnackbar.getIdentifierForTesting(), Snackbar.UMA_SIGN_OUT);
+                    Assert.assertEquals(
+                            currentSnackbar.getTextForTesting(),
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getString(R.string.sign_out_snackbar_message));
+                    Assert.assertFalse(
+                            "Accepting the sign-out dialog should set SIGNIN_ALLOWED to false",
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
+                                    .getBoolean(Pref.SIGNIN_ALLOWED));
+                });
         Assert.assertFalse("Chrome Signin should not be allowed", allowChromeSignin.isChecked());
     }
 

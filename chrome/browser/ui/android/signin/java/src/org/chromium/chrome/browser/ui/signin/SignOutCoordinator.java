@@ -51,6 +51,7 @@ public class SignOutCoordinator {
      * @param fragmentManager FragmentManager used by {@link SignOutDialogCoordinator}.
      * @param dialogManager A ModalDialogManager that manages the dialog.
      * @param signOutReason The access point to sign out from.
+     * @param showConfirmDialog Whether a confirm dialog should be shown before sign-out.
      * @param onSignOut A {@link Runnable} to run when the user presses the confirm button. Will be
      *     called on the UI thread when the sign-out flow finishes. If sign-out fails it will not be
      *     called.
@@ -63,6 +64,7 @@ public class SignOutCoordinator {
             ModalDialogManager dialogManager,
             SnackbarManager snackbarManager,
             @SignoutReason int signOutReason,
+            boolean showConfirmDialog,
             Runnable onSignOut) {
         ThreadUtils.assertOnUiThread();
         assert snackbarManager != null;
@@ -78,7 +80,8 @@ public class SignOutCoordinator {
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
         syncService.getTypesWithUnsyncedData(
                 unsyncedTypes -> {
-                    switch (getUiState(identityManager, !unsyncedTypes.isEmpty())) {
+                    switch (getUiState(
+                            identityManager, !unsyncedTypes.isEmpty(), showConfirmDialog)) {
                         case UiState.SNACK_BAR -> signOutAndShowSnackbar(
                                 context,
                                 snackbarManager,
@@ -88,7 +91,14 @@ public class SignOutCoordinator {
                                 onSignOut);
                         case UiState.UNSAVED_DATA -> showUnsavedDataDialog(
                                 context, dialogManager, signinManager, signOutReason, onSignOut);
-                        case UiState.CLEAR_CHROME_DATA -> showSignOutDialog(context, dialogManager);
+                        case UiState.SHOW_CONFIRM_DIALOG -> showConfirmDialog(
+                                context,
+                                dialogManager,
+                                snackbarManager,
+                                signinManager,
+                                syncService,
+                                signOutReason,
+                                onSignOut);
                         case UiState.LEGACY_DIALOG -> SignOutDialogCoordinator.show(
                                 context,
                                 profile,
@@ -134,14 +144,14 @@ public class SignOutCoordinator {
     @IntDef({
         UiState.SNACK_BAR,
         UiState.UNSAVED_DATA,
-        UiState.CLEAR_CHROME_DATA,
+        UiState.SHOW_CONFIRM_DIALOG,
         UiState.LEGACY_DIALOG
     })
     @Retention(RetentionPolicy.SOURCE)
     private @interface UiState {
         int SNACK_BAR = 0;
         int UNSAVED_DATA = 1;
-        int CLEAR_CHROME_DATA = 2;
+        int SHOW_CONFIRM_DIALOG = 2;
         int LEGACY_DIALOG = 3;
     }
 
@@ -162,7 +172,7 @@ public class SignOutCoordinator {
     }
 
     private static @UiState int getUiState(
-            IdentityManager identityManager, boolean hasUnsavedData) {
+            IdentityManager identityManager, boolean hasUnsavedData, boolean showConfirmDialog) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
                 || identityManager.hasPrimaryAccount(ConsentLevel.SYNC)) {
             return UiState.LEGACY_DIALOG;
@@ -170,15 +180,10 @@ public class SignOutCoordinator {
         if (hasUnsavedData) {
             return UiState.UNSAVED_DATA;
         }
-        if (shouldShowSignOutDialog()) {
-            return UiState.CLEAR_CHROME_DATA;
+        if (showConfirmDialog) {
+            return UiState.SHOW_CONFIRM_DIALOG;
         }
         return UiState.SNACK_BAR;
-    }
-
-    private static boolean shouldShowSignOutDialog() {
-        // TODO(crbug.com/328395437): Implement clear data dialog.
-        return false;
     }
 
     private static void showUnsavedDataDialog(
@@ -210,6 +215,46 @@ public class SignOutCoordinator {
         dialogManager.showDialog(model, ModalDialogManager.ModalDialogType.APP);
     }
 
+    private static void showConfirmDialog(
+            Context context,
+            ModalDialogManager dialogManager,
+            SnackbarManager snackbarManager,
+            SigninManager signinManager,
+            SyncService syncService,
+            @SignoutReason int signOutReason,
+            Runnable onSignOut) {
+        ModalDialogProperties.Controller controller =
+                createController(
+                        dialogManager,
+                        signinManager,
+                        signOutReason,
+                        () -> {
+                            onSignOut.run();
+                            showSnackbar(context, snackbarManager, syncService);
+                        });
+        final PropertyModel model =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(
+                                ModalDialogProperties.TITLE,
+                                context.getString(R.string.sign_out_title))
+                        .with(
+                                ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                                context.getString(R.string.sign_out_message))
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                context.getString(R.string.sign_out))
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                context.getString(R.string.cancel))
+                        .with(
+                                ModalDialogProperties.BUTTON_STYLES,
+                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
+                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                        .with(ModalDialogProperties.CONTROLLER, controller)
+                        .build();
+        dialogManager.showDialog(model, ModalDialogManager.ModalDialogType.APP);
+    }
+
     private static ModalDialogProperties.Controller createController(
             ModalDialogManager dialogManager,
             SigninManager signinManager,
@@ -234,10 +279,6 @@ public class SignOutCoordinator {
             @Override
             public void onDismiss(PropertyModel model, int dismissalCause) {}
         };
-    }
-
-    private static void showSignOutDialog(Context context, ModalDialogManager dialogManager) {
-        // TODO(crbug.com/328395437): Implement clear data dialog.
     }
 
     private static void signOutAndShowSnackbar(

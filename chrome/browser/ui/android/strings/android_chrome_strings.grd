@@ -2389,6 +2389,12 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SIGN_OUT_UNSAVED_DATA_MESSAGE" desc="Body of a dialog shown to users when they sign out of Chrome but Chrome hasn't synced some data yet, which is permanently deleted if the user proceeds.">
         Some of your Chrome data hasn\u2019t been saved in your Google Account yet.\nTry waiting a few minutes before signing out. If you sign out now, this data will be deleted.
       </message>
+      <message name="IDS_SIGN_OUT_TITLE" desc="The text is displayed as the title of a dialog to confirm if the user wants to sign out of Chrome. The user can cancel and stay signed in, or confirm and sign out.">
+        Sign out of Chrome?
+      </message>
+      <message name="IDS_SIGN_OUT_MESSAGE" desc="Body of a dialog that is shown when the user starts to sign out. This string precedes the confirmation button 'Sign Out'. If the user chooses to continue to sign out, then the data in their Google Account (such as bookmarks, passwords, history, settings, and more) won't be available on their device. If they sign back in to their Google Account, their data will come back. The tone should be helpful and instructive.">
+        After you sign out, your bookmarks, passwords, and more in your Google Account will be removed from this device.
+      </message>
       <message name="IDS_SIGN_OUT_UNSAVED_DATA_PRIMARY_BUTTON" desc="Button title of a dialog shown to users when they sign out of Chrome but Chrome hasn't synced some data yet, which is parmanently deleted if the user proceeds by pressing this button">
         Delete and sign out
       </message>
@@ -2538,7 +2544,7 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_ACCOUNT_ANDROID_DEVICE_ACCOUNTS" desc="Title shown on the manage accounts on this device button item.">
         Manage accounts on this device
       </message>
-      <message name="IDS_SIGN_OUT" desc="The text for a preference row that signs out the user.">
+      <message name="IDS_SIGN_OUT" desc="Sign out button, visible if the user has authenticated. Clicking this clears authentication credentials and returns the web-app to the initial 'unauthenticated' state.">
         Sign out
       </message>
       <message name="IDS_SYNC_REVIEW_DATA" desc="Title for link to https://chrome.google.com/sync Dashboard to manage sync data.">

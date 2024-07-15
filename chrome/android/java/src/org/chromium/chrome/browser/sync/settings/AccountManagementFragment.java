@@ -254,6 +254,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                                             .getModalDialogManager(),
                                     mSnackbarManager,
                                     SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
+                                    /* showConfirmDialog= */ false,
                                     () -> {});
                         } else {
                             IdentityServicesProvider.get()

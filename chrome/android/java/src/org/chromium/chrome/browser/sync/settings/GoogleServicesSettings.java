@@ -235,6 +235,7 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
                 return true;
             }
 
+            // TODO(crbug.com/350699437): Use a different SignoutReason.
             SignOutCoordinator.startSignOutFlow(
                     requireContext(),
                     getProfile(),
@@ -242,6 +243,7 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
                     ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
                     mSnackbarManager,
                     SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
+                    /* showConfirmDialog= */ true,
                     () -> {
                         mPrefService.setBoolean(Pref.SIGNIN_ALLOWED, false);
                         updatePreferences();

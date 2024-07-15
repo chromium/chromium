@@ -808,6 +808,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
                 mSnackbarManager,
                 SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
+                /* showConfirmDialog= */ false,
                 () -> {});
     }
 
@@ -825,6 +826,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
                 mSnackbarManager,
                 SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS,
+                /* showConfirmDialog= */ false,
                 () -> {});
     }
 
@@ -1066,6 +1068,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                         profile.isChild()
                                 ? SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS
                                 : SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
+                        /* showConfirmDialog= */ false,
                         () -> {});
                 return;
             case SyncError.PASSPHRASE_REQUIRED:
