@@ -25,6 +25,15 @@ using HistoryItem = PickerEmojiHistoryModel::EmojiHistoryItem;
 
 constexpr std::string_view kDefaultSuggestedEmojis[] = {"🙂", "😂", "🤔",
                                                         "😢", "👏", "👍"};
+constexpr size_t kSuggestedEmojisSize = 6u;
+
+bool ContainsEmoji(const std::vector<HistoryItem>& vec,
+                   std::string_view emoji) {
+  return base::ranges::any_of(vec, [emoji](const HistoryItem& item) {
+    return item.category == ui::EmojiPickerCategory::kEmojis &&
+           item.text == emoji;
+  });
+}
 
 }  // namespace
 
@@ -41,8 +50,9 @@ std::vector<PickerSearchResult> PickerEmojiSuggester::GetSuggestedEmoji()
   std::vector<HistoryItem> recent_symbols =
       history_model_->GetRecentEmojis(ui::EmojiPickerCategory::kSymbols);
 
-  recent_emojis.reserve(recent_emojis.size() + recent_emoticons.size() +
-                        recent_symbols.size());
+  recent_emojis.reserve(std::max(
+      recent_emojis.size() + recent_emoticons.size() + recent_symbols.size(),
+      kSuggestedEmojisSize));
   recent_emojis.insert(recent_emojis.end(), recent_emoticons.begin(),
                        recent_emoticons.end());
   recent_emojis.insert(recent_emojis.end(), recent_symbols.begin(),
@@ -52,7 +62,20 @@ std::vector<PickerSearchResult> PickerEmojiSuggester::GetSuggestedEmoji()
               return a.timestamp > b.timestamp;
             });
 
+  // Fill with default emojis if history is not enough.
+  for (std::string_view emoji : kDefaultSuggestedEmojis) {
+    if (recent_emojis.size() >= kSuggestedEmojisSize) {
+      break;
+    }
+    if (!ContainsEmoji(recent_emojis, emoji)) {
+      recent_emojis.push_back({.text = std::string(emoji),
+                               .category = ui::EmojiPickerCategory::kEmojis,
+                               .timestamp = base::Time()});
+    }
+  }
+
   std::vector<PickerSearchResult> results;
+  results.reserve(recent_emojis.size());
   for (const auto& item : recent_emojis) {
     switch (item.category) {
       case ui::EmojiPickerCategory::kEmojis:
@@ -69,12 +92,6 @@ std::vector<PickerSearchResult> PickerEmojiSuggester::GetSuggestedEmoji()
         break;
       case ui::EmojiPickerCategory::kGifs:
         NOTREACHED_NORETURN();
-    }
-  }
-  if (results.empty()) {
-    // Fall back to a default set of suggested emojis.
-    for (std::string_view emoji : kDefaultSuggestedEmojis) {
-      results.push_back(PickerSearchResult::Emoji(base::UTF8ToUTF16(emoji)));
     }
   }
   return results;

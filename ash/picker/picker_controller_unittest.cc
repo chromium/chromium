@@ -679,7 +679,8 @@ TEST_F(PickerControllerTest, SuggestedEmojiReturnsDefaultEmojisWhenEmpty) {
           PickerSearchResult::Emoji(u"👏"), PickerSearchResult::Emoji(u"👍")));
 }
 
-TEST_F(PickerControllerTest, SuggestedEmojiReturnsRecentEmoji) {
+TEST_F(PickerControllerTest,
+       SuggestedEmojiReturnsRecentEmojiFollowedByDefaultEmojis) {
   PickerController controller;
   NiceMock<TestPickerClient> client(&controller);
   base::Value::List history_value;
@@ -690,9 +691,12 @@ TEST_F(PickerControllerTest, SuggestedEmojiReturnsRecentEmoji) {
 
   controller.ToggleWidget();
 
-  EXPECT_THAT(controller.GetSuggestedEmoji(),
-              ElementsAre(PickerSearchResult::Emoji(u"abc"),
-                          PickerSearchResult::Emoji(u"xyz")));
+  EXPECT_THAT(
+      controller.GetSuggestedEmoji(),
+      ElementsAre(
+          PickerSearchResult::Emoji(u"abc"), PickerSearchResult::Emoji(u"xyz"),
+          PickerSearchResult::Emoji(u"🙂"), PickerSearchResult::Emoji(u"😂"),
+          PickerSearchResult::Emoji(u"🤔"), PickerSearchResult::Emoji(u"😢")));
 }
 
 TEST_F(PickerControllerTest, AddsNewRecentEmoji) {
@@ -707,10 +711,12 @@ TEST_F(PickerControllerTest, AddsNewRecentEmoji) {
   controller.ToggleWidget();
   controller.InsertResultOnNextFocus(PickerSearchResult::Emoji(u"def"));
 
-  EXPECT_THAT(controller.GetSuggestedEmoji(),
-              ElementsAre(PickerSearchResult::Emoji(u"def"),
-                          PickerSearchResult::Emoji(u"abc"),
-                          PickerSearchResult::Emoji(u"xyz")));
+  EXPECT_THAT(
+      controller.GetSuggestedEmoji(),
+      ElementsAre(
+          PickerSearchResult::Emoji(u"def"), PickerSearchResult::Emoji(u"abc"),
+          PickerSearchResult::Emoji(u"xyz"), PickerSearchResult::Emoji(u"🙂"),
+          PickerSearchResult::Emoji(u"😂"), PickerSearchResult::Emoji(u"🤔")));
 }
 
 TEST_F(PickerControllerTest, AddsExistingRecentEmoji) {
@@ -725,9 +731,12 @@ TEST_F(PickerControllerTest, AddsExistingRecentEmoji) {
   controller.ToggleWidget();
   controller.InsertResultOnNextFocus(PickerSearchResult::Emoji(u"xyz"));
 
-  EXPECT_THAT(controller.GetSuggestedEmoji(),
-              ElementsAre(PickerSearchResult::Emoji(u"xyz"),
-                          PickerSearchResult::Emoji(u"abc")));
+  EXPECT_THAT(
+      controller.GetSuggestedEmoji(),
+      ElementsAre(
+          PickerSearchResult::Emoji(u"xyz"), PickerSearchResult::Emoji(u"abc"),
+          PickerSearchResult::Emoji(u"🙂"), PickerSearchResult::Emoji(u"😂"),
+          PickerSearchResult::Emoji(u"🤔"), PickerSearchResult::Emoji(u"😢")));
 }
 
 TEST_F(PickerControllerTest, AddsRecentEmojiEmptyHistory) {
@@ -737,8 +746,12 @@ TEST_F(PickerControllerTest, AddsRecentEmojiEmptyHistory) {
   controller.ToggleWidget();
   controller.InsertResultOnNextFocus(PickerSearchResult::Emoji(u"abc"));
 
-  EXPECT_THAT(controller.GetSuggestedEmoji(),
-              ElementsAre(PickerSearchResult::Emoji(u"abc")));
+  EXPECT_THAT(
+      controller.GetSuggestedEmoji(),
+      ElementsAre(
+          PickerSearchResult::Emoji(u"abc"), PickerSearchResult::Emoji(u"🙂"),
+          PickerSearchResult::Emoji(u"😂"), PickerSearchResult::Emoji(u"🤔"),
+          PickerSearchResult::Emoji(u"😢"), PickerSearchResult::Emoji(u"👏")));
 }
 
 TEST_F(PickerControllerTest,
