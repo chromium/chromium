@@ -485,7 +485,7 @@ scoped_refptr<CanvasResourceSharedImage> CanvasResourceSharedImage::Create(
 }
 
 bool CanvasResourceSharedImage::IsValid() const {
-  return client_shared_image() != nullptr;
+  return GetClientSharedImage() != nullptr;
 }
 
 void CanvasResourceSharedImage::BeginReadAccess() {
@@ -512,7 +512,7 @@ void CanvasResourceSharedImage::EndWriteAccess() {
 GrBackendTexture CanvasResourceSharedImage::CreateGrTexture() const {
   GrGLTextureInfo texture_info = {};
   texture_info.fID = GetTextureIdForWriteAccess();
-  texture_info.fTarget = client_shared_image()->GetTextureTarget();
+  texture_info.fTarget = GetClientSharedImage()->GetTextureTarget();
   texture_info.fFormat =
       context_provider_wrapper_->ContextProvider()->GetGrGLTextureFormat(
           GetSharedImageFormat());
@@ -621,7 +621,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
     std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping;
     void* memory = nullptr;
     size_t stride = 0;
-    mapping = client_shared_image()->Map();
+    mapping = GetClientSharedImage()->Map();
     if (!mapping) {
       LOG(ERROR) << "MapSharedImage Failed.";
       return nullptr;
@@ -675,8 +675,8 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
     owning_thread_data().mailbox_sync_mode = kUnverifiedSyncToken;
   }
   image = AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-      client_shared_image()->mailbox(), GetSyncToken(), texture_id_for_image,
-      image_info, client_shared_image()->GetTextureTarget(),
+      GetClientSharedImage()->mailbox(), GetSyncToken(), texture_id_for_image,
+      image_info, GetClientSharedImage()->GetTextureTarget(),
       is_origin_top_left_, context_provider_wrapper_, owning_thread_ref_,
       owning_thread_task_runner_, std::move(release_callback),
       supports_display_compositing_, is_overlay_candidate_);
@@ -697,7 +697,7 @@ void CanvasResourceSharedImage::CopyRenderingResultsToGpuMemoryBuffer(
   std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping;
   void* memory = nullptr;
   size_t stride = 0;
-  mapping = client_shared_image()->Map();
+  mapping = GetClientSharedImage()->Map();
   if (!mapping) {
     LOG(ERROR) << "MapSharedImage failed.";
     return;
@@ -712,7 +712,7 @@ void CanvasResourceSharedImage::CopyRenderingResultsToGpuMemoryBuffer(
 
   // Unmap the underlying buffer.
   mapping.reset();
-  sii->UpdateSharedImage(gpu::SyncToken(), client_shared_image()->mailbox());
+  sii->UpdateSharedImage(gpu::SyncToken(), GetClientSharedImage()->mailbox());
   owning_thread_data().sync_token = sii->GenUnverifiedSyncToken();
 }
 
@@ -724,8 +724,14 @@ void CanvasResourceSharedImage::SetMailboxSyncMode(MailboxSyncMode mode) {
 
 scoped_refptr<gpu::ClientSharedImage>
 CanvasResourceSharedImage::GetClientSharedImage() {
-  CHECK(client_shared_image());
-  return client_shared_image();
+  CHECK(owning_thread_data_.client_shared_image);
+  return owning_thread_data_.client_shared_image;
+}
+
+const scoped_refptr<gpu::ClientSharedImage>&
+CanvasResourceSharedImage::GetClientSharedImage() const {
+  CHECK(owning_thread_data_.client_shared_image);
+  return owning_thread_data_.client_shared_image;
 }
 
 const gpu::SyncToken CanvasResourceSharedImage::GetSyncToken() {
@@ -790,7 +796,7 @@ void CanvasResourceSharedImage::OnMemoryDump(
                   base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                   memory_size);
 
-  auto guid = client_shared_image()->GetGUIDForTracing();
+  auto guid = GetClientSharedImage()->GetGUIDForTracing();
   pmd->CreateSharedGlobalAllocatorDump(guid);
   pmd->AddOwnershipEdge(dump->guid(), guid,
                         static_cast<int>(gpu::TracingImportance::kClientOwner));

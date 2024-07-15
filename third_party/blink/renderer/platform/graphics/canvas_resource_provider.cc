@@ -296,7 +296,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
   }
 
   GLenum GetBackingTextureTarget() const override {
-    return resource()->client_shared_image()->GetTextureTarget();
+    return resource()->GetClientSharedImage()->GetTextureTarget();
   }
 
   uint32_t GetSharedImageUsageFlags() const override {

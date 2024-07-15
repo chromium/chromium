@@ -359,6 +359,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   bool UsesClientSharedImage() override { return true; }
   void SetMailboxSyncMode(MailboxSyncMode mode) override;
   scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() override;
+  const scoped_refptr<gpu::ClientSharedImage>& GetClientSharedImage() const;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                     const std::string& parent_path,
                     size_t bytes_per_pixel) const;
@@ -366,15 +367,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   // true, then the CanvasResourceProvider will not report data, to avoid
   // double-countintg.
   bool HasDetailedMemoryDumpProvider() const override { return true; }
-
-  // NOTE: This is guaranteed to be non-null for the lifetime of this instance:
-  // * CanvasResourceSharedImage::Create() (which is the only public way
-  // to create an instance of this class) returns null if the ClientSI couldn't
-  // be created.
-  // * The pointer is not cleared until the destructor.
-  gpu::ClientSharedImage* client_shared_image() const {
-    return owning_thread_data_.client_shared_image.get();
-  }
 
  private:
   // These members are either only accessed on the owning thread, or are only
