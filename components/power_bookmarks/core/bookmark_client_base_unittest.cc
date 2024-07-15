@@ -64,7 +64,6 @@ class TestBookmarkClientImpl : public BookmarkClientBase {
       const base::RepeatingClosure& schedule_save_closure) override {}
 
   void OnBookmarkNodeRemovedUndoable(
-      bookmarks::BookmarkModel* model,
       const bookmarks::BookmarkNode* parent,
       size_t index,
       std::unique_ptr<bookmarks::BookmarkNode> node) override {}

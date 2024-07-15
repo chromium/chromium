@@ -97,7 +97,6 @@ class TestBookmarkClient : public BookmarkClient {
       favicon_base::FaviconImageCallback callback,
       base::CancelableTaskTracker* tracker) override;
   void OnBookmarkNodeRemovedUndoable(
-      BookmarkModel* model,
       const BookmarkNode* parent,
       size_t index,
       std::unique_ptr<BookmarkNode> node) override;

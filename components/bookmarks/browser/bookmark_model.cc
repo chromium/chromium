@@ -315,7 +315,7 @@ void BookmarkModel::Remove(const BookmarkNode* node,
 
   std::unique_ptr<BookmarkNode> owned_node = RemoveNode(node, location);
 
-  client_->OnBookmarkNodeRemovedUndoable(this, parent, index.value(),
+  client_->OnBookmarkNodeRemovedUndoable(parent, index.value(),
                                          std::move(owned_node));
 
   metrics::RecordBookmarkRemoved(source);
@@ -372,7 +372,7 @@ void BookmarkModel::RemoveAllUserBookmarks(const base::Location& location) {
 
   BeginGroupedChanges();
   for (auto& removed_node_data : removed_node_data_list) {
-    client_->OnBookmarkNodeRemovedUndoable(this, removed_node_data.parent,
+    client_->OnBookmarkNodeRemovedUndoable(removed_node_data.parent,
                                            removed_node_data.index,
                                            std::move(removed_node_data.node));
   }

@@ -80,7 +80,6 @@ class ChromeBookmarkClient : public power_bookmarks::BookmarkClientBase {
       const std::string& metadata_str,
       const base::RepeatingClosure& schedule_save_closure) override;
   void OnBookmarkNodeRemovedUndoable(
-      bookmarks::BookmarkModel* model,
       const bookmarks::BookmarkNode* parent,
       size_t index,
       std::unique_ptr<bookmarks::BookmarkNode> node) override;

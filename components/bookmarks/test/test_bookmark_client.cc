@@ -142,7 +142,6 @@ TestBookmarkClient::GetFaviconImageForPageURL(
 }
 
 void TestBookmarkClient::OnBookmarkNodeRemovedUndoable(
-    BookmarkModel* model,
     const BookmarkNode* parent,
     size_t index,
     std::unique_ptr<BookmarkNode> node) {}

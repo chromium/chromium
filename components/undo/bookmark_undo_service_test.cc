@@ -33,12 +33,10 @@ class TestBookmarkClientWithUndo : public bookmarks::TestBookmarkClient {
 
   // BookmarkClient overrides.
   void OnBookmarkNodeRemovedUndoable(
-      BookmarkModel* model,
       const BookmarkNode* parent,
       size_t index,
       std::unique_ptr<BookmarkNode> node) override {
-    undo_service_->AddUndoEntryForRemovedNode(model, parent, index,
-                                              std::move(node));
+    undo_service_->AddUndoEntryForRemovedNode(parent, index, std::move(node));
   }
 
  private:

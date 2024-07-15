@@ -115,7 +115,6 @@ class BookmarkClient {
   // Similar to BookmarkModelObserver::BookmarkNodeRemoved(), but transfers
   // ownership of BookmarkNode, which allows undoing the operation.
   virtual void OnBookmarkNodeRemovedUndoable(
-      BookmarkModel* model,
       const BookmarkNode* parent,
       size_t index,
       std::unique_ptr<BookmarkNode> node) = 0;

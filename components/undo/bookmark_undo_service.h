@@ -7,9 +7,6 @@
 
 #include <map>
 
-#include "base/containers/flat_set.h"
-#include "base/memory/raw_ptr.h"
-#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -33,7 +30,7 @@ class BookmarkUndoService : public bookmarks::BaseBookmarkModelObserver,
 
   // Starts the BookmarkUndoService and register it as a BookmarkModelObserver.
   // Calling this method is optional, but the service will be inactive until it
-  // is called at least once. Can be called multiple times.
+  // is called at least once. Must be called at most once.
   void StartObservingBookmarkModel(bookmarks::BookmarkModel* model);
 
   UndoManager* undo_manager() { return &undo_manager_; }
@@ -44,9 +41,9 @@ class BookmarkUndoService : public bookmarks::BaseBookmarkModelObserver,
   // Pushes an undo operation to the stack that allows restoring a deleted
   // bookmark. As opposed to other operations, which reach this service via
   // BookmarkModelObserver, removals are special-cased to be able to transfer
-  // ownership of the removed node.
+  // ownership of the removed node. Both `parent` and `node` must belong to
+  // the BookmarkModel previously passed via StartObservingBookmarkModel().
   void AddUndoEntryForRemovedNode(
-      bookmarks::BookmarkModel* model,
       const bookmarks::BookmarkNode* parent,
       size_t index,
       std::unique_ptr<bookmarks::BookmarkNode> node);
@@ -68,12 +65,9 @@ class BookmarkUndoService : public bookmarks::BaseBookmarkModelObserver,
   void GroupedBookmarkChangesEnded() override;
 
   UndoManager undo_manager_;
-  base::flat_set<raw_ptr<bookmarks::BookmarkModel>> observed_models_;
-  // TODO(crbug.com/346918509): Switch to a single observation once the
-  // migration of iOS to a single BookmarkModel instance is complete.
-  base::ScopedMultiSourceObservation<bookmarks::BookmarkModel,
-                                     bookmarks::BookmarkModelObserver>
-      scoped_observations_{this};
+  base::ScopedObservation<bookmarks::BookmarkModel,
+                          bookmarks::BookmarkModelObserver>
+      scoped_observation_{this};
 };
 
 #endif  // COMPONENTS_UNDO_BOOKMARK_UNDO_SERVICE_H_

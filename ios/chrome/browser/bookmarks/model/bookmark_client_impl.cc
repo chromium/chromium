@@ -166,10 +166,9 @@ void BookmarkClientImpl::DecodeAccountBookmarkSyncMetadata(
 }
 
 void BookmarkClientImpl::OnBookmarkNodeRemovedUndoable(
-    bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* parent,
     size_t index,
     std::unique_ptr<bookmarks::BookmarkNode> node) {
-  bookmark_undo_service_->AddUndoEntryForRemovedNode(model, parent, index,
+  bookmark_undo_service_->AddUndoEntryForRemovedNode(parent, index,
                                                      std::move(node));
 }
