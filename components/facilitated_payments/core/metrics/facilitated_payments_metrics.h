@@ -22,6 +22,14 @@ enum class PaymentNotOfferedReason {
   kMaxValue = kInvalidCode
 };
 
+// Result of the transaction from the time payment was offered to the user.
+enum class TransactionResult {
+  kFailed = 0,
+  kSuccess = 1,
+  kAbandoned = 2,
+  kMaxValue = kAbandoned
+};
+
 // Log the result of whether the facilitated payments is available or not.
 void LogIsApiAvailableResult(bool result, base::TimeDelta duration);
 
@@ -43,6 +51,10 @@ void LogInitiatePurchaseActionResult(bool result, base::TimeDelta duration);
 // Log whether the request to show the FOP(form of payment) selector is
 // successful or not.
 void LogFopSelectorShown(bool shown);
+
+// Log the overall transaction result. The transactions is considered to have
+// started from the time payment was offered to the user.
+void LogTransactionResult(TransactionResult result, base::TimeDelta duration);
 
 }  // namespace payments::facilitated
 

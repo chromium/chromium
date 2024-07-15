@@ -30,6 +30,12 @@ reviewer.
   <int value="3" label="Invalid code"/>
 </enum>
 
+<enum name="FacilitatedPayments.TransactionResult">
+  <int value="0" label="Failed"/>
+  <int value="1" label="Succeeded"/>
+  <int value="2" label="Abandoned"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

@@ -91,4 +91,19 @@ TEST(FacilitatedPaymentsMetricsTest, LogFopSelectorShown) {
       /*expected_bucket_count=*/1);
 }
 
+TEST(FacilitatedPaymentsMetricsTest, LogTransactionResult) {
+  base::HistogramTester histogram_tester;
+
+  LogTransactionResult(TransactionResult::kSuccess, base::Milliseconds(10));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.Transaction.Result",
+      /*sample=*/TransactionResult::kSuccess,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.Transaction.Latency",
+      /*sample=*/10,
+      /*expected_bucket_count=*/1);
+}
+
 }  // namespace payments::facilitated

@@ -54,7 +54,18 @@ void LogInitiatePurchaseActionResult(bool result, base::TimeDelta duration) {
 }
 
 void LogFopSelectorShown(bool shown) {
+  // TODO(b/337929926): Remove hardcoding for Pix and use
+  // FacilitatedPaymentsType enum.
   UMA_HISTOGRAM_BOOLEAN("FacilitatedPayments.Pix.FopSelector.Shown", shown);
+}
+
+void LogTransactionResult(TransactionResult result, base::TimeDelta duration) {
+  // TODO(b/337929926): Remove hardcoding for Pix and use
+  // FacilitatedPaymentsType enum.
+  base::UmaHistogramEnumeration("FacilitatedPayments.Pix.Transaction.Result",
+                                result);
+  base::UmaHistogramLongTimes("FacilitatedPayments.Pix.Transaction.Latency",
+                              duration);
 }
 
 }  // namespace payments::facilitated
