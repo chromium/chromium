@@ -883,8 +883,7 @@
     [_customizationCoordinator start];
   }
   [_customizationCoordinator
-      presentCustomizationMenuAtPage:CustomizationMenuPage::
-                                         kCustomizationMenuPageMain];
+      presentCustomizationMenuAtPage:CustomizationMenuPage::kMain];
 }
 
 #pragma mark - FeedMenuCoordinatorDelegate

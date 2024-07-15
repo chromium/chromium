@@ -31,6 +31,7 @@
 - (void)start {
   _mainViewController = [[HomeCustomizationMainViewController alloc] init];
   _mediator = [[HomeCustomizationMediator alloc] init];
+  _mediator.mainPageConsumer = _mainViewController;
 
   [super start];
 }
@@ -47,6 +48,8 @@
 #pragma mark - Public
 
 - (void)presentCustomizationMenuAtPage:(CustomizationMenuPage)page {
+  [self.mediator configureMainPageData];
+
   // Configure the navigation controller.
   self.navigationController = [[UINavigationController alloc]
       initWithRootViewController:self.mainViewController];
@@ -82,7 +85,7 @@
                                       completion:nil];
 
   // Handle navigation if the initial page isn't the main one.
-  if (page != CustomizationMenuPage::kCustomizationMenuPageMain) {
+  if (page != CustomizationMenuPage::kMain) {
     [self navigateToPage:page];
   }
 }
@@ -92,11 +95,11 @@
 // Navigates to a given page within the customization menu.
 - (void)navigateToPage:(CustomizationMenuPage)page {
   switch (page) {
-    case CustomizationMenuPage::kCustomizationMenuPageMain:
+    case CustomizationMenuPage::kMain:
       [self.navigationController pushViewController:self.mainViewController
                                            animated:YES];
       break;
-    case CustomizationMenuPage::kCustomizationMenuPageMagicStack:
+    case CustomizationMenuPage::kMagicStack:
       // TODO(crbug.com/350990359): Push Magic Stack view controller.
       [self.navigationController pushViewController:self.mainViewController
                                            animated:YES];

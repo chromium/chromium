@@ -62,8 +62,7 @@ TEST_F(HomeCustomizationCoordinatorUnitTest, TestPresentMenuPage) {
   // properly.
   // TODO(crbug.com/350990359): Change this to the Magic Stack VC once it's
   // implemented.
-  [coordinator_ presentCustomizationMenuAtPage:CustomizationMenuPage::
-                                                   kCustomizationMenuPageMain];
+  [coordinator_ presentCustomizationMenuAtPage:CustomizationMenuPage::kMain];
   EXPECT_NSEQ(
       NSStringFromClass(
           [coordinator_.navigationController.visibleViewController class]),

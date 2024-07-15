@@ -11,3 +11,5 @@ NSString* const kBottomSheetDetentIdentifier = @"BottomSheetDetentIdentifier";
 
 NSString* const kNavigationBarDismissButtonIdentifier =
     @"NavigationBarDismissButtonIdentifier";
+
+const CGFloat kToggleIconPointSize = 18;

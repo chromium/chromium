@@ -4,20 +4,30 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_view_controller.h"
 
+#import <vector>
+
 #import "ios/chrome/browser/home_customization/ui/home_customization_toggle_cell.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
+#import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
-// The height of a toggle cell.
+// The dimensions of each toggle cell.
 // TODO(crbug.com/350990359): Update this once we have the finalized specs.
 const CGFloat kToggleCellHeight = 80;
+const CGFloat kToggleCellWidth = 343;
+
+// The vertical spacing between toggle cells.
+const CGFloat kSpacingBetweenToggles = 12;
 
 }  // namespace
 
 @interface HomeCustomizationMainViewController () <UICollectionViewDelegate>
+
+// Contains the types of HomeCustomizationToggleCells that should be shown.
+@property(nonatomic, assign) std::vector<CustomizationToggleType> toggleTypes;
 
 @end
 
@@ -26,7 +36,7 @@ const CGFloat kToggleCellHeight = 80;
   UICollectionView* _collectionView;
 
   // The diffable data source for the collection view.
-  UICollectionViewDiffableDataSource<CustomizationSection*, NSString*>*
+  UICollectionViewDiffableDataSource<CustomizationSection*, NSNumber*>*
       _diffableDataSource;
 
   // Registration for the HomeCustomizationToggleCells.
@@ -36,15 +46,36 @@ const CGFloat kToggleCellHeight = 80;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  [self registerCells];
+  [self createCollectionView];
+
   // The primary view is set as the collection view for better integration with
   // the UISheetPresentationController which presents it.
-  [self createCollectionView];
   self.view = _collectionView;
 
   [self configureNavigationBar];
 }
 
 #pragma mark - Private
+
+// Registers the different cells used by the collection view.
+- (void)registerCells {
+  __weak __typeof(self) weakSelf = self;
+  _toggleCellRegistration = [UICollectionViewCellRegistration
+      registrationWithCellClass:[HomeCustomizationToggleCell class]
+           configurationHandler:^(HomeCustomizationToggleCell* cell,
+                                  NSIndexPath* indexPath,
+                                  NSNumber* itemIdentifier) {
+             CustomizationToggleType toggleType =
+                 weakSelf.toggleTypes[indexPath.row];
+             [cell configureCellWithTitle:[HomeCustomizationHelper
+                                              titleForToggleType:toggleType]
+                                 subtitle:[HomeCustomizationHelper
+                                              subtitleForToggleType:toggleType]
+                                     icon:[HomeCustomizationHelper
+                                              iconForToggleType:toggleType]];
+           }];
+}
 
 // Creates and returns the collection view for the main menu page.
 - (void)createCollectionView {
@@ -53,15 +84,13 @@ const CGFloat kToggleCellHeight = 80;
                          collectionViewLayout:[self collectionViewLayout]];
   _collectionView.translatesAutoresizingMaskIntoConstraints = NO;
   _collectionView.delegate = self;
-  _collectionView.dataSource = [self createDiffableDataSource];
 
-  _toggleCellRegistration = [UICollectionViewCellRegistration
-      registrationWithCellClass:[HomeCustomizationToggleCell class]
-           configurationHandler:^(HomeCustomizationToggleCell* cell,
-                                  NSIndexPath* indexPath,
-                                  NSString* itemIdentifier){
-               // TODO(crbug.com/350990359): Configure cell.
-           }];
+  _diffableDataSource = [self createDiffableDataSource];
+  _collectionView.dataSource = _diffableDataSource;
+
+  // Sets initial data.
+  [_diffableDataSource applySnapshot:[self dataSnapshot]
+                animatingDifferences:NO];
 }
 
 // Defines the layout for the collection view.
@@ -103,6 +132,14 @@ const CGFloat kToggleCellHeight = 80;
 
     NSCollectionLayoutSection* togglesSection =
         [NSCollectionLayoutSection sectionWithGroup:togglesGroup];
+
+    // Adds spacing between toggles, as well as content insets so that the cells
+    // have the correct width.
+    togglesSection.interGroupSpacing = kSpacingBetweenToggles;
+    togglesSection.contentInsets = NSDirectionalEdgeInsetsMake(
+        0, (self.view.frame.size.width - kToggleCellWidth) / 2, 0,
+        (self.view.frame.size.width - kToggleCellWidth) / 2);
+
     return togglesSection;
   }
   return nil;
@@ -115,7 +152,7 @@ const CGFloat kToggleCellHeight = 80;
   __weak __typeof(self) weakSelf = self;
   auto cellProvider =
       ^UICollectionViewCell*(UICollectionView* collectionView,
-                             NSIndexPath* indexPath, NSString* itemIdentifier) {
+                             NSIndexPath* indexPath, NSNumber* itemIdentifier) {
         return [weakSelf configuredCellForIndexPath:indexPath
                                      itemIdentifier:itemIdentifier];
       };
@@ -124,16 +161,12 @@ const CGFloat kToggleCellHeight = 80;
           initWithCollectionView:_collectionView
                     cellProvider:cellProvider];
 
-  // Sets initial data.
-  [diffableDataSource applySnapshot:[self initialDataSnapshot]
-               animatingDifferences:NO];
-
   return diffableDataSource;
 }
 
 // Returns a configured cell for the given path in the collection view.
 - (UICollectionViewCell*)configuredCellForIndexPath:(NSIndexPath*)indexPath
-                                     itemIdentifier:(NSString*)itemIdentifier {
+                                     itemIdentifier:(NSNumber*)itemIdentifier {
   if (kCustomizationSectionToggles ==
       [_diffableDataSource.snapshot
           sectionIdentifierForSectionContainingItemIdentifier:itemIdentifier]) {
@@ -145,13 +178,19 @@ const CGFloat kToggleCellHeight = 80;
   return nil;
 }
 
-// Creates a data snapshot representing the initial content of the collection
-// view.
-- (NSDiffableDataSourceSnapshot<CustomizationSection*, NSString*>*)
-    initialDataSnapshot {
-  NSDiffableDataSourceSnapshot<CustomizationSection*, NSString*>* snapshot =
+// Creates a data snapshot representing the content of the collection view.
+- (NSDiffableDataSourceSnapshot<CustomizationSection*, NSNumber*>*)
+    dataSnapshot {
+  NSDiffableDataSourceSnapshot<CustomizationSection*, NSNumber*>* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
+
+  // Create toggles section and add items to it.
   [snapshot appendSectionsWithIdentifiers:@[ kCustomizationSectionToggles ]];
+  [snapshot
+      appendItemsWithIdentifiers:[self
+                                     identifiersForToggleTypes:self.toggleTypes]
+       intoSectionWithIdentifier:kCustomizationSectionToggles];
+
   return snapshot;
 }
 
@@ -172,6 +211,38 @@ const CGFloat kToggleCellHeight = 80;
 - (void)dismissCustomizationMenu {
   [self.presentingViewController dismissViewControllerAnimated:YES
                                                     completion:nil];
+}
+
+#pragma mark - HomeCustomizationMainConsumer
+
+- (void)populateTogglesWithTypes:(std::vector<CustomizationToggleType>)types {
+  _toggleTypes = types;
+
+  // Recreate the snapshot with the new items to take into account all the
+  // changes of items presence (add/remove).
+  NSDiffableDataSourceSnapshot<CustomizationSection*, NSNumber*>* snapshot =
+      [self dataSnapshot];
+
+  // Reconfigure all present items to ensure that they are updated in case their
+  // content changed.
+  [snapshot
+      reconfigureItemsWithIdentifiers:[self identifiersForToggleTypes:types]];
+
+  [_diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
+}
+
+#pragma mark - Helpers
+
+// Returns an array of identifiers for a vector of toggle types, which can be
+// used by the snapshot.
+- (NSMutableArray<NSNumber*>*)identifiersForToggleTypes:
+    (std::vector<CustomizationToggleType>)types {
+  NSMutableArray<NSNumber*>* toggleDataIdentifiers =
+      [[NSMutableArray alloc] init];
+  for (CustomizationToggleType type : types) {
+    [toggleDataIdentifiers addObject:@((int)type)];
+  }
+  return toggleDataIdentifiers;
 }
 
 @end

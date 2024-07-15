@@ -7,9 +7,16 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
+
 // A cell in the customization menu that allows users to toggle the visibility
 // of a module using a switch.
 @interface HomeCustomizationToggleCell : UICollectionViewCell
+
+// Configures the cell with the given text and icon.
+- (void)configureCellWithTitle:(NSString*)title
+                      subtitle:(NSString*)subtitle
+                          icon:(UIImage*)icon;
 
 @end
 

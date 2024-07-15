@@ -7,9 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/home_customization/ui/home_customization_main_consumer.h"
+
 // The view controller representing the first page of the Home customization
 // menu.
-@interface HomeCustomizationMainViewController : UIViewController
+@interface HomeCustomizationMainViewController
+    : UIViewController <HomeCustomizationMainConsumer>
 
 @end
 

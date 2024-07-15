@@ -7,8 +7,16 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol HomeCustomizationMainConsumer;
+
 // The mediator for the Home surface's customization menu.
 @interface HomeCustomizationMediator : NSObject
+
+// A consumer representing the main page's view controller.
+@property(nonatomic, weak) id<HomeCustomizationMainConsumer> mainPageConsumer;
+
+// Sets the data for the main page's cells and sends it to the `consumer`.
+- (void)configureMainPageData;
 
 @end
 

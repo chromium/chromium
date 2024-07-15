@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
-
 // Represents the section identifiers of the customization menu as an NSString.
 typedef NSString CustomizationSection;
 
@@ -21,10 +19,20 @@ extern NSString* const kBottomSheetDetentIdentifier;
 // The identifier for the dismiss button on the top right of the navigation bar.
 extern NSString* const kNavigationBarDismissButtonIdentifier;
 
+// The size of the toggle cell's icon.
+extern const CGFloat kToggleIconPointSize;
+
 // Enum representing the customization submenus that can be navigated to.
 enum class CustomizationMenuPage : NSInteger {
-  kCustomizationMenuPageMain,
-  kCustomizationMenuPageMagicStack,
+  kMain,
+  kMagicStack,
+};
+
+// Enum representing the toggle cells to control module visibility.
+enum class CustomizationToggleType : NSInteger {
+  kShortcuts,
+  kMagicStack,
+  kDiscover,
 };
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UTILS_HOME_CUSTOMIZATION_CONSTANTS_H_
