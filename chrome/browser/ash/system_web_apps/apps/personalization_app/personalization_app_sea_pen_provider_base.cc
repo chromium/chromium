@@ -42,6 +42,26 @@ namespace ash::personalization_app {
 namespace {
 
 constexpr int kSeaPenImageThumbnailSizeDip = 512;
+constexpr int kMaxTextQueryHistoryItemNum = 2;
+
+void AppendTextQueryHistory(
+    const std::map<uint32_t, const SeaPenImage>& images,
+    const mojom::SeaPenQueryPtr& query,
+    std::vector<mojom::TextQueryHistoryEntryPtr>& text_query_history) {
+  CHECK(query && query->is_text_query());
+  std::vector<mojom::SeaPenThumbnailPtr> thumbnails;
+  for (const auto& [id, image] : images) {
+    thumbnails.emplace_back(std::in_place, GetJpegDataUrl(image.jpg_bytes), id);
+  }
+  if (text_query_history.size() >= kMaxTextQueryHistoryItemNum) {
+    text_query_history.pop_back();
+  }
+
+  text_query_history.insert(
+      text_query_history.begin(),
+      mojom::TextQueryHistoryEntry::New(query->get_text_query(),
+                                        std::move(thumbnails)));
+}
 
 }  // namespace
 
@@ -94,14 +114,13 @@ void PersonalizationAppSeaPenProviderBase::GetSeaPenThumbnails(
         "GetSeaPenThumbnails exceeded maximum text length");
     return;
   }
-  last_query_ = query.Clone();
   auto* sea_pen_fetcher = GetOrCreateSeaPenFetcher();
   CHECK(sea_pen_fetcher);
   sea_pen_fetcher->FetchThumbnails(
       feature_name_, query,
       base::BindOnce(
           &PersonalizationAppSeaPenProviderBase::OnFetchThumbnailsDone,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback), query.Clone()));
 }
 
 void PersonalizationAppSeaPenProviderBase::SelectSeaPenThumbnail(
@@ -189,12 +208,18 @@ PersonalizationAppSeaPenProviderBase::GetOrCreateSeaPenFetcher() {
 
 void PersonalizationAppSeaPenProviderBase::OnFetchThumbnailsDone(
     GetSeaPenThumbnailsCallback callback,
+    const mojom::SeaPenQueryPtr& query,
     std::optional<std::vector<SeaPenImage>> images,
     manta::MantaStatusCode status_code) {
   if (!images) {
     std::move(callback).Run(std::nullopt, status_code);
     return;
   }
+  if (last_query_ && last_query_->is_text_query() && !sea_pen_images_.empty()) {
+    AppendTextQueryHistory(sea_pen_images_, last_query_, text_query_history_);
+  }
+
+  last_query_ = query.Clone();
   sea_pen_images_.clear();
   std::vector<ash::personalization_app::mojom::SeaPenThumbnailPtr> result;
   for (auto& image : images.value()) {
@@ -205,6 +230,8 @@ void PersonalizationAppSeaPenProviderBase::OnFetchThumbnailsDone(
                         image_id);
   }
   std::move(callback).Run(std::move(result), status_code);
+
+  NotifyTextQueryHistoryChanged();
 }
 
 void PersonalizationAppSeaPenProviderBase::OnFetchWallpaperDone(
@@ -256,6 +283,14 @@ void PersonalizationAppSeaPenProviderBase::OnGetRecentSeaPenImageThumbnail(
 
   std::move(callback).Run(mojom::RecentSeaPenThumbnailData::New(
       std::move(thumbnail_url), std::move(image_info)));
+}
+
+void PersonalizationAppSeaPenProviderBase::NotifyTextQueryHistoryChanged() {
+  std::vector<mojom::TextQueryHistoryEntryPtr> history;
+  for (auto& entry : text_query_history_) {
+    history.emplace_back(entry->Clone());
+  }
+  sea_pen_observer_remote_->OnTextQueryHistoryChanged(std::move(history));
 }
 
 void PersonalizationAppSeaPenProviderBase::OpenFeedbackDialog(

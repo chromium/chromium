@@ -215,6 +215,8 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
     sea_pen_provider_remote_.reset();
     sea_pen_provider_->BindInterface(
         sea_pen_provider_remote_.BindNewPipeAndPassReceiver());
+
+    SetSeaPenObserver();
   }
 
   TestSeaPenWallpaperManagerSessionDelegate*
@@ -487,8 +489,6 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, SelectThumbnailCallsObserver) {
   base::test::TestFuture<std::optional<uint32_t>> initial_id_future;
   test_sea_pen_observer().SetCallback(initial_id_future.GetCallback());
 
-  SetSeaPenObserver();
-
   // No SeaPen wallpaper set yet. But should still update the observer after it
   // is first bound.
   ASSERT_FALSE(initial_id_future.Get().has_value());
@@ -523,6 +523,58 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, SelectThumbnailCallsObserver) {
   EXPECT_EQ(kIdToSelect, sea_pen_id_future.Get());
   EXPECT_EQ(kIdToSelect, test_sea_pen_observer().GetCurrentId().value());
   EXPECT_EQ(2u, test_sea_pen_observer().id_updated_count());
+}
+
+TEST_F(PersonalizationAppSeaPenProviderImplTest,
+       GetTextQueryThumbnailsCallsObserver) {
+  base::test::TestFuture<
+      std::optional<
+          std::vector<ash::personalization_app::mojom::SeaPenThumbnailPtr>>,
+      manta::MantaStatusCode>
+      search_wallpaper_future;
+
+  SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());
+  test_wallpaper_controller()->SetCurrentUser(GetTestAccountId());
+
+  auto query = mojom::SeaPenQuery::NewTextQuery("search_query");
+  SetSeaPenFetcherResponse({246}, manta::MantaStatusCode::kOk, query);
+  sea_pen_provider_remote()->GetSeaPenThumbnails(
+      query->Clone(), search_wallpaper_future.GetCallback());
+  ASSERT_EQ(246u, search_wallpaper_future.Get<0>().value().front()->id);
+  search_wallpaper_future.Clear();
+  EXPECT_TRUE(test_sea_pen_observer().GetHistoryEntries()->empty());
+
+  query = mojom::SeaPenQuery::NewTextQuery("search_query_1");
+  SetSeaPenFetcherResponse({247}, manta::MantaStatusCode::kOk, query);
+  sea_pen_provider_remote()->GetSeaPenThumbnails(
+      query->Clone(), search_wallpaper_future.GetCallback());
+  ASSERT_EQ(247u, search_wallpaper_future.Get<0>().value().front()->id);
+  search_wallpaper_future.Clear();
+
+  query = mojom::SeaPenQuery::NewTextQuery("search_query_2");
+  SetSeaPenFetcherResponse({248}, manta::MantaStatusCode::kOk, query);
+  sea_pen_provider_remote()->GetSeaPenThumbnails(
+      query->Clone(), search_wallpaper_future.GetCallback());
+  ASSERT_EQ(248u, search_wallpaper_future.Get<0>().value().front()->id);
+  search_wallpaper_future.Clear();
+
+  query = mojom::SeaPenQuery::NewTextQuery("search_query_3");
+  SetSeaPenFetcherResponse({249}, manta::MantaStatusCode::kOk, query);
+  sea_pen_provider_remote()->GetSeaPenThumbnails(
+      query->Clone(), search_wallpaper_future.GetCallback());
+  ASSERT_EQ(249u, search_wallpaper_future.Get<0>().value().front()->id);
+  search_wallpaper_future.Clear();
+
+  auto history = test_sea_pen_observer().GetHistoryEntries();
+  EXPECT_EQ(2u, history->size());
+  EXPECT_EQ("search_query_2", history->at(0)->query);
+  EXPECT_THAT(history->at(0)->thumbnails,
+              testing::UnorderedElementsAre(
+                  testing::Pointee(testing::FieldsAre(testing::_, 248))));
+  EXPECT_EQ("search_query_1", history->at(1)->query);
+  EXPECT_THAT(history->at(1)->thumbnails,
+              testing::UnorderedElementsAre(
+                  testing::Pointee(testing::FieldsAre(testing::_, 247))));
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest, GetRecentSeaPenImageIds) {

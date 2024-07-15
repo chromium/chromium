@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {SeaPenImageId} from './constants.js';
-import {MantaStatusCode, RecentSeaPenThumbnailData, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
+import {MantaStatusCode, RecentSeaPenThumbnailData, SeaPenQuery, SeaPenThumbnail, TextQueryHistoryEntry} from './sea_pen.mojom-webui.js';
 import {SeaPenActionName, SeaPenActions} from './sea_pen_actions.js';
 import {SeaPenLoadingState, SeaPenState} from './sea_pen_state.js';
 
@@ -244,6 +244,17 @@ function errorReducer(state: string|null, action: SeaPenActions): string|null {
   }
 }
 
+function textQueryHistoryReducer(
+    state: TextQueryHistoryEntry[]|null,
+    action: SeaPenActions): TextQueryHistoryEntry[]|null {
+  switch (action.name) {
+    case SeaPenActionName.SET_SEA_PEN_TEXT_QUERY_HISTORY:
+      return action.history;
+    default:
+      return state;
+  }
+}
+
 export function seaPenReducer(
     state: SeaPenState, action: SeaPenActions): SeaPenState {
   const newState = {
@@ -262,6 +273,7 @@ export function seaPenReducer(
         shouldShowSeaPenIntroductionDialogReducer(
             state.shouldShowSeaPenIntroductionDialog, action),
     error: errorReducer(state.error, action),
+    textQueryHistory: textQueryHistoryReducer(state.textQueryHistory, action),
   };
   return newState;
 }

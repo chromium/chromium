@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import {SeaPenImageId} from './constants.js';
-import {SeaPenObserverInterface, SeaPenObserverReceiver, SeaPenProviderInterface} from './sea_pen.mojom-webui.js';
-import {setSelectedRecentSeaPenImageAction} from './sea_pen_actions.js';
+import {SeaPenObserverInterface, SeaPenObserverReceiver, SeaPenProviderInterface, TextQueryHistoryEntry} from './sea_pen.mojom-webui.js';
+import {setSeaPenTextQueryHistory, setSelectedRecentSeaPenImageAction} from './sea_pen_actions.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {getSeaPenStore} from './sea_pen_store.js';
 
@@ -34,5 +34,10 @@ export class SeaPenObserver implements SeaPenObserverInterface {
   onSelectedSeaPenImageChanged(id: SeaPenImageId|null): void {
     const store = getSeaPenStore();
     store.dispatch(setSelectedRecentSeaPenImageAction(id));
+  }
+
+  onTextQueryHistoryChanged(entries: TextQueryHistoryEntry[]|null): void {
+    const store = getSeaPenStore();
+    store.dispatch(setSeaPenTextQueryHistory(entries));
   }
 }

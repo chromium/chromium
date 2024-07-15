@@ -88,6 +88,13 @@ struct RecentSeaPenThumbnailData {
   RecentSeaPenImageInfo? image_info;
 };
 
+// Represents a single entry of text query history.
+struct TextQueryHistoryEntry {
+  string query;
+
+  array<SeaPenThumbnail> thumbnails;
+};
+
 // Maximum allowable query text length, in bytes.
 // When validating length in Javascript, be careful of the difference between
 // UTF-16 (Javascript) length and UTF-8 length.
@@ -117,6 +124,9 @@ interface SeaPenObserver {
   // changed. Called with null when SeaPen image is unset/removed, e.g. a
   // different type of wallpaper has been set.
   OnSelectedSeaPenImageChanged(uint32? id);
+
+  // Called whenever there is a change to the text query history.
+  OnTextQueryHistoryChanged(array<TextQueryHistoryEntry>? entries);
 };
 
 // Provides APIs to get thumbnails and full size images. Uses APIs in

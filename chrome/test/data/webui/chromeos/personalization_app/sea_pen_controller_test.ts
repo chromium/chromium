@@ -43,7 +43,7 @@ suite('SeaPen reducers', () => {
   });
 
   test('sets sea pen thumbnails in store', async () => {
-    const query = {textQuery: 'test_query'};
+    const query = seaPenProvider.seaPenQuery;
     await getSeaPenThumbnails(query, seaPenProvider, seaPenStore);
     assertDeepEquals(
         [
@@ -74,6 +74,7 @@ suite('SeaPen reducers', () => {
               currentSelected: null,
               shouldShowSeaPenIntroductionDialog: false,
               error: null,
+              textQueryHistory: null,
             }),
           },
           {
@@ -94,6 +95,7 @@ suite('SeaPen reducers', () => {
               currentSelected: null,
               shouldShowSeaPenIntroductionDialog: false,
               error: null,
+              textQueryHistory: null,
             }),
           },
           {
@@ -114,6 +116,7 @@ suite('SeaPen reducers', () => {
               currentSelected: null,
               shouldShowSeaPenIntroductionDialog: false,
               error: null,
+              textQueryHistory: null,
             }),
           },
           {
@@ -134,6 +137,7 @@ suite('SeaPen reducers', () => {
               currentSelected: null,
               shouldShowSeaPenIntroductionDialog: false,
               error: null,
+              textQueryHistory: null,
             }),
           },
         ],

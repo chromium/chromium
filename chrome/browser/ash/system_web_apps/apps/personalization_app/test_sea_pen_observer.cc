@@ -24,7 +24,9 @@ void TestSeaPenObserver::SetCallback(
 
 mojo::PendingRemote<personalization_app::mojom::SeaPenObserver>
 TestSeaPenObserver::GetPendingRemote() {
-  DCHECK(!sea_pen_observer_receiver_.is_bound());
+  if (sea_pen_observer_receiver_.is_bound()) {
+    sea_pen_observer_receiver_.reset();
+  }
   return sea_pen_observer_receiver_.BindNewPipeAndPassRemote();
 }
 
@@ -35,6 +37,14 @@ std::optional<uint32_t> TestSeaPenObserver::GetCurrentId() {
   return id_;
 }
 
+std::optional<std::vector<mojom::TextQueryHistoryEntryPtr>>
+TestSeaPenObserver::GetHistoryEntries() {
+  if (sea_pen_observer_receiver_.is_bound()) {
+    sea_pen_observer_receiver_.FlushForTesting();
+  }
+  return std::move(entries_);
+}
+
 void TestSeaPenObserver::OnSelectedSeaPenImageChanged(
     std::optional<uint32_t> id) {
   id_updated_count_++;
@@ -42,6 +52,11 @@ void TestSeaPenObserver::OnSelectedSeaPenImageChanged(
   if (callback_) {
     std::move(callback_).Run(id);
   }
+}
+
+void TestSeaPenObserver::OnTextQueryHistoryChanged(
+    std::optional<std::vector<mojom::TextQueryHistoryEntryPtr>> entries) {
+  entries_ = std::move(entries);
 }
 
 }  // namespace ash::personalization_app
