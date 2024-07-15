@@ -21,6 +21,7 @@ and with chrome_pgo_phase _not_ set. (It defaults to =2 in official builds.)
 
 import argparse
 import glob
+import logging
 import os
 import pathlib
 import shutil
@@ -44,9 +45,24 @@ LLVM_DIR = f'{ROOT_DIR}/third_party/llvm-build/Release+Asserts'
 PROFDATA = f'{LLVM_DIR}/bin/llvm-profdata' + exe_ext
 
 
+# Use this custom Namespace to provide type checking and type hinting.
+class OptionsNamespace(argparse.Namespace):
+    builddir: str
+    profiledir: str
+    keep_temps: bool
+    android_browser: str
+    android_device_path: str
+    skip_profdata: bool
+    run_public_benchmarks_only: bool
+    temporal_trace_length: int
+    repeats: int
+    verbose: int
+
+
 def parse_args():
     parser = argparse.ArgumentParser(
         epilog=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    # ▼▼▼▼▼ Please update OptionsNamespace when adding or modifying args. ▼▼▼▼▼
     parser.add_argument('-C',
                         '--builddir',
                         help='Path to build directory.',
@@ -93,8 +109,9 @@ def parse_args():
                         action='count',
                         default=0,
                         help='Increase verbosity level (repeat as needed)')
+    # ▲▲▲▲▲ Please update OptionsNamespace when adding or modifying args. ▲▲▲▲▲
 
-    args = parser.parse_args()
+    args = parser.parse_args(namespace=OptionsNamespace())
 
     # This is load-bearing:
     # - `open` (used by run_benchmark) needs absolute paths
@@ -119,7 +136,7 @@ def parse_args():
     return args
 
 
-def run_benchmark(benchmark_args: list[str], args):
+def run_benchmark(benchmark_args: list[str], args: OptionsNamespace):
     '''Puts profdata in {profiledir}/{args[0]}.profdata'''
     name = benchmark_args[0]
 
@@ -184,29 +201,30 @@ def run_benchmark(benchmark_args: list[str], args):
                        check=True)
 
 
-def run_benchmark_with_repeats(benchmark_args: list[str], args):
+def run_benchmark_with_repeats(benchmark_args: list[str],
+                               args: OptionsNamespace):
     assert args.repeats > 0, 'repeats must be at least 1'
     for idx in range(args.repeats):
         try:
-            print(f'Running attempt {idx} for {benchmark_args}')
+            logging.info(f'Running attempt {idx + 1} for {benchmark_args}')
             run_benchmark(benchmark_args, args)
             # Succeeded!
             return
         except subprocess.CalledProcessError as e:
             if idx < args.repeats - 1:
-                print(e)
-                print(f'Retrying... ')
+                logging.warning('%s', e)
+                logging.warning(f'Retrying... ')
             else:
-                print(f'Failed {args.repeats} times')
+                logging.error(f'Failed {args.repeats} times')
                 raise e
 
 
-def run_benchmarks(benchmarks: list[list[str]], args):
+def run_benchmarks(benchmarks: list[list[str]], args: OptionsNamespace):
     for benchmark_args in benchmarks:
         run_benchmark_with_repeats(benchmark_args, args)
 
 
-def merge_profdata(args):
+def merge_profdata(args: OptionsNamespace):
     merge_cmd = [PROFDATA, 'merge']
     if args.temporal_trace_length:
         merge_cmd += [
@@ -217,7 +235,7 @@ def merge_profdata(args):
     merge_cmd += ['-o', profile_output_path]
     profdata_files = glob.glob(f'{args.profiledir}/*.profdata')
     if not profdata_files:
-        print(f'No profdata files found in {args.profiledir}')
+        raise RuntimeError(f'No profdata files found in {args.profiledir}')
     subprocess.run(merge_cmd + profdata_files, check=True)
 
     if args.temporal_trace_length:
@@ -231,14 +249,23 @@ def merge_profdata(args):
 def main():
     args = parse_args()
 
+    if args.verbose >= 2:
+        level = logging.DEBUG
+    elif args.verbose == 1:
+        level = logging.INFO
+    else:
+        level = logging.WARNING
+    logging.basicConfig(
+        level=level, format='%(levelname).1s %(relativeCreated)6d %(message)s')
+
     if not os.path.exists(PROFDATA):
-        print(f'{PROFDATA} does not exist, downloading it')
+        logging.warning(f'{PROFDATA} does not exist, downloading it')
         subprocess.run([sys.executable, UPDATE_PY, '--package=coverage_tools'],
                        check=True)
     assert os.path.exists(PROFDATA), f'{PROFDATA} does not exist'
 
     if os.path.exists(args.profiledir):
-        print(f'Removing {args.profiledir}')
+        logging.warning('Removing %s', args.profiledir)
         shutil.rmtree(args.profiledir)
 
     # Run the shortest benchmarks first to fail early if anything is wrong.
@@ -275,7 +302,8 @@ def main():
         merge_profdata(args)
 
     if not args.keep_temps:
-        print(f'Cleaning up {args.profiledir}, use --keep-temps to keep it.')
+        logging.info('Cleaning up %s, use --keep-temps to keep it.',
+                     args.profiledir)
         shutil.rmtree(args.profiledir, ignore_errors=True)
 
 
