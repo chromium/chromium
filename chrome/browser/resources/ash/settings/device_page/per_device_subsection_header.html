@@ -1,3 +1,52 @@
 <style include="settings-shared input-device-settings-shared">
-</style>
-<div id="perDeviceSubsectionHeader"></div>
+    .device-info-header {
+      padding-block-end: 0;
+      padding-inline-start: 0;
+    }
+
+    .device-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .device-info {
+      align-items: center;
+      display: flex;
+      gap: 10px;
+      padding-inline-start: 18px;
+    }
+
+    .device-image {
+      border-radius: 50%;
+      height: 36px;
+      width: 36px;
+    }
+
+    .device-details {
+      display: flex;
+      flex-direction: column;
+    }
+  </style>
+  <template is="dom-if" if="[[isWelcomeExperienceEnabled]]">
+    <div class="device-info">
+      <img
+          class="device-image"
+          src="[[deviceImageDataUrl]]"
+          hidden="[[!deviceImageDataUrl]]">
+      <div class="device-details">
+        <h2 class="subsection-header device-info-header" id="deviceName">
+          [[name]]
+        </h2>
+        <template is="dom-if" if="[[showBatteryInfo(batteryInfo.*)]]">
+          <bluetooth-battery-icon-percentage
+              id="batteryIcon"
+              device="[[bluetoothDevice]]"
+              battery-type="[[getDefaultBatteryType()]]">
+          </bluetooth-battery-icon-percentage>
+        </template>
+      </div>
+    </div>
+  </template>
+  <template is="dom-if" if="[[!isWelcomeExperienceEnabled]]">
+    <h2 class="subsection-header" id="deviceName">[[name]]</h2>
+  </template>

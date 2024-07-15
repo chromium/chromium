@@ -511,10 +511,7 @@ export const fakeMice: Mouse[] = [
         },
       ],
     },
-    batteryInfo: {
-      chargeState: ChargeState.kCharging,
-      batteryPercentage: 10,
-    },
+    batteryInfo: null,
     appInfo: {
       packageId: '',
       appName: '',
