@@ -64,32 +64,7 @@ CanvasResource::CanvasResource(base::WeakPtr<CanvasResourceProvider> provider,
       info_(info),
       filter_quality_(filter_quality) {}
 
-CanvasResource::~CanvasResource() {
-#if DCHECK_IS_ON()
-  DCHECK(did_call_on_destroy_);
-#endif
-}
-
-bool CanvasResource::OnDestroy() {
-#if DCHECK_IS_ON()
-  did_call_on_destroy_ = true;
-#endif
-
-  if (is_cross_thread()) {
-    // Destroyed on wrong thread. This can happen when the thread of origin was
-    // torn down, in which case the GPU context owning any underlying resources
-    // no longer exists. This implies that no context associated cleanup can be
-    // done and any resources tied to the context may be leaked. As such, this
-    // case should arise only when the owning thread and its associated context
-    // were torn down before this resource could be deleted.
-    return false;
-  }
-
-  if (provider_) {
-    provider_->OnDestroyResource();
-  }
-  return true;
-}
+CanvasResource::~CanvasResource() {}
 
 void CanvasResource::Release() {
   if (last_unref_callback_ && HasOneRef()) {
@@ -292,9 +267,18 @@ CanvasResourceSharedBitmap::CanvasResourceSharedBitmap(
 }
 
 CanvasResourceSharedBitmap::~CanvasResourceSharedBitmap() {
-  if (!OnDestroy()) {
+  if (is_cross_thread()) {
+    // Destroyed on wrong thread. This can happen when the thread of origin was
+    // torn down, in which case the GPU context owning any underlying resources
+    // no longer exists and it is not possible to do cleanup of any GPU
+    // context-associated state.
     return;
   }
+
+  if (Provider()) {
+    Provider()->OnDestroyResource();
+  }
+
   CanvasResourceDispatcher* resource_dispatcher =
       Provider() ? Provider()->ResourceDispatcher() : nullptr;
   if (resource_dispatcher && !shared_bitmap_id_.IsZero()) {
@@ -537,11 +521,17 @@ GrBackendTexture CanvasResourceSharedImage::CreateGrTexture() const {
 }
 
 CanvasResourceSharedImage::~CanvasResourceSharedImage() {
-  if (!OnDestroy()) {
+  if (is_cross_thread()) {
+    // Destroyed on wrong thread. This can happen when the thread of origin was
+    // torn down, in which case the GPU context owning any underlying resources
+    // no longer exists and it is not possible to do cleanup of any GPU
+    // context-associated state.
     return;
   }
 
-  DCHECK(!is_cross_thread());
+  if (Provider()) {
+    Provider()->OnDestroyResource();
+  }
 
   // The context deletes all shared images on destruction which means no
   // cleanup is needed if the context was lost.
@@ -824,9 +814,18 @@ scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
 }
 
 ExternalCanvasResource::~ExternalCanvasResource() {
-  if (!OnDestroy()) {
+  if (is_cross_thread()) {
+    // Destroyed on wrong thread. This can happen when the thread of origin was
+    // torn down, in which case the GPU context owning any underlying resources
+    // no longer exists and it is not possible to do cleanup of any GPU
+    // context-associated state.
     return;
   }
+
+  if (Provider()) {
+    Provider()->OnDestroyResource();
+  }
+
   if (release_callback_) {
     std::move(release_callback_).Run(GetSyncToken(), resource_is_lost_);
   }
@@ -954,8 +953,16 @@ scoped_refptr<CanvasResourceSwapChain> CanvasResourceSwapChain::Create(
 }
 
 CanvasResourceSwapChain::~CanvasResourceSwapChain() {
-  if (!OnDestroy()) {
+  if (is_cross_thread()) {
+    // Destroyed on wrong thread. This can happen when the thread of origin was
+    // torn down, in which case the GPU context owning any underlying resources
+    // no longer exists and it is not possible to do cleanup of any GPU
+    // context-associated state.
     return;
+  }
+
+  if (Provider()) {
+    Provider()->OnDestroyResource();
   }
 
   // The context deletes all shared images on destruction which means no

@@ -261,9 +261,6 @@ class PLATFORM_EXPORT CanvasResource
   }
   const SkColorInfo& GetSkColorInfo() const { return info_; }
 
-  // Should be called from subclasses' destructors. Returns whether it is
-  // possible to do GPU context-related teardown.
-  bool OnDestroy();
   CanvasResourceProvider* Provider() { return provider_.get(); }
   base::WeakPtr<CanvasResourceProvider> WeakProvider() { return provider_; }
 
@@ -275,9 +272,6 @@ class PLATFORM_EXPORT CanvasResource
   SkColorInfo info_;
   cc::PaintFlags::FilterQuality filter_quality_;
   LastUnrefCallback last_unref_callback_;
-#if DCHECK_IS_ON()
-  bool did_call_on_destroy_ = false;
-#endif
 };
 
 // Resource type for SharedBitmaps
