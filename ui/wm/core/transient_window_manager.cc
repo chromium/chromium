@@ -9,6 +9,7 @@
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "ui/aura/client/transient_window_client.h"
@@ -116,7 +117,7 @@ void TransientWindowManager::AddTransientChild(Window* child) {
 
 void TransientWindowManager::RemoveTransientChild(Window* child) {
   auto i = base::ranges::find(transient_children_, child);
-  DCHECK(i != transient_children_.end());
+  CHECK(i != transient_children_.end(), base::NotFatalUntil::M130);
   transient_children_.erase(i);
   TransientWindowManager* child_manager = GetOrCreate(child);
   DCHECK_EQ(window_, child_manager->transient_parent_);
