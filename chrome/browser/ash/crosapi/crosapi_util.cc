@@ -795,17 +795,12 @@ void InjectBrowserInitParams(
       params->metrics_service_client_id = client_id;
     }
 
-    std::string_view limited_entropy_randomization_source;
-    if (variations::IsLimitedEntropyModeEnabled(ash::GetChannel()) &&
-        limited_entropy_synthetic_trial.IsEnabled()) {
-      limited_entropy_randomization_source =
-          metrics_service->GetLimitedEntropyRandomizationSource();
-    }
+    // TODO(crbug.com/352689349): Remove sync'ing of entropy values.
     params->entropy_source = crosapi::mojom::EntropySource::New(
         metrics_service->GetLowEntropySource(),
         metrics_service->GetOldLowEntropySource(),
         metrics_service->GetPseudoLowEntropySource(),
-        std::string(limited_entropy_randomization_source));
+        /*limited_entropy_randomization_source=*/std::string());
   }
 
   if (auto* metrics_services_manager =

@@ -111,9 +111,6 @@ class MetricsService {
   int GetOldLowEntropySource();
   int GetPseudoLowEntropySource();
 
-  // Get the limited entropy randomization source.
-  std::string_view GetLimitedEntropyRandomizationSource();
-
   // Set an external provided id for the metrics service. This method can be
   // set by a caller which wants to explicitly control the *next* id used by the
   // metrics service. Note that setting the external client id will *not* change

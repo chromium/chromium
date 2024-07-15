@@ -111,11 +111,6 @@ class MetricsStateManager final {
   int GetOldLowEntropySource();
   int GetPseudoLowEntropySource();
 
-  // Gets the limited entropy randomization source. For clients that only use
-  // the low entropy source (e.g. Android Webview), this will return the empty
-  // string.
-  std::string_view GetLimitedEntropyRandomizationSource();
-
   // The CleanExitBeacon, used to determine whether the previous Chrome browser
   // session terminated gracefully.
   CleanExitBeacon* clean_exit_beacon() { return &clean_exit_beacon_; }
@@ -310,6 +305,11 @@ class MetricsStateManager final {
 
   // Loads the client info via |load_client_info_|.
   std::unique_ptr<ClientInfo> LoadClientInfo();
+
+  // Gets the limited entropy randomization source. For clients that only use
+  // the low entropy source (e.g. Android Webview), this will return the empty
+  // string.
+  std::string_view GetLimitedEntropyRandomizationSource();
 
   // Returns the high entropy source for this client, which is composed of a
   // client ID and the low entropy source. This is intended to be unique for
