@@ -82,6 +82,18 @@ luci.bucket(
                 ci.gpu.SHADOW_SERVICE_ACCOUNT,
             ],
         ),
+        luci.binding(
+            roles = "role/buildbucket.triggerer",
+            groups = [
+                "mdb/chrome-build-access-sphinx",
+                "mdb/chrome-troopers",
+                "chromium-led-users",
+            ],
+            users = [
+                ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
+                ci.gpu.SHADOW_SERVICE_ACCOUNT,
+            ],
+        ),
         # TODO(crbug.com/40941662): Remove this binding after shadow bucket
         # could inherit the view permission from the actual bucket.
         luci.binding(
