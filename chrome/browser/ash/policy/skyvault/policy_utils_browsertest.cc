@@ -136,12 +136,14 @@ IN_PROC_BROWSER_TEST_F(ScreenCaptureDestinationUtilsTest,
             GetScreenCaptureDestination(browser()->profile()));
 }
 
-class DownloadsDestinationUtilsTestV2 : public DownloadsDestinationUtilsTest {
+class DownloadsDestinationUtilsTestWithSkyvault
+    : public DownloadsDestinationUtilsTest {
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_{features::kSkyVaultV2};
+  base::test::ScopedFeatureList scoped_feature_list_{features::kSkyVault};
 };
 
-IN_PROC_BROWSER_TEST_F(DownloadsDestinationUtilsTestV2, DownloadToTemp) {
+IN_PROC_BROWSER_TEST_F(DownloadsDestinationUtilsTestWithSkyvault,
+                       DownloadToTemp) {
   EXPECT_EQ(false, DownloadToTemp(browser()->profile()));
 
   SetDownloadsPolicy(kGoogleDrivePolicyVariableName);

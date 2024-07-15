@@ -62,7 +62,7 @@ FileSaveDestination GetScreenCaptureDestination(Profile* profile) {
 }
 
 bool DownloadToTemp(Profile* profile) {
-  return base::FeatureList::IsEnabled(features::kSkyVaultV2) &&
+  return base::FeatureList::IsEnabled(features::kSkyVault) &&
          GetDownloadsDestination(profile) == FileSaveDestination::kOneDrive;
 }
 

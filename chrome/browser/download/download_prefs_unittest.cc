@@ -5,6 +5,7 @@
 #include "chrome/browser/download/download_prefs.h"
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/json/values_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -13,9 +14,7 @@
 #include "chrome/browser/download/download_prompt_status.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
 #include "components/download/public/common/download_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -27,13 +26,10 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/test/bind.h"
 #include "base/test/scoped_running_on_chromeos.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
-#include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
-#include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
@@ -654,6 +650,18 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
                                    "/media/fuse/drivefs-something-else/root");
     EXPECT_EQ(prefs2.DownloadPath(), default_dir2);
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Temp for OneDrive.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(features::kSkyVault);
+
+    base::FilePath temp_path;
+    base::GetTempDir(&temp_path);
+    ExpectValidDownloadDir(&profile, &prefs, temp_path);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -717,132 +725,5 @@ TEST(DownloadPrefsTest, ManagedPromptForDownload) {
   EXPECT_FALSE(prefs.PromptForDownload());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS)
-
-class DownloadDirOneDrive : public testing::Test {
- protected:
-  void SetUp() override {
-    testing::Test::SetUp();
-    ASSERT_TRUE(profile_manager_.SetUp());
-    profile_ = profile_manager_.CreateTestingProfile("testing_profile");
-    download_prefs_ = std::make_unique<DownloadPrefs>(profile_);
-    default_download_dir_ =
-        download_prefs_->GetDefaultDownloadDirectoryForProfile();
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    file_manager::VolumeManagerFactory::GetInstance()->SetTestingFactory(
-        profile_,
-        base::BindLambdaForTesting([this](content::BrowserContext* context) {
-          return std::unique_ptr<KeyedService>(
-              std::make_unique<file_manager::VolumeManager>(
-                  Profile::FromBrowserContext(context), nullptr, nullptr,
-                  &disk_mount_manager_, nullptr,
-                  file_manager::VolumeManager::GetMtpStorageInfoCallback()));
-        }));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void AddOneDriveFuseboxVolume() {
-    auto* fake_provided_fs =
-        file_manager::test::MountFakeProvidedFileSystemOneDrive(profile_);
-
-    file_manager::VolumeManager* const volume_manager =
-        file_manager::VolumeManager::Get(profile_);
-    ASSERT_TRUE(volume_manager);
-
-    std::unique_ptr<file_manager::Volume> volume =
-        file_manager::Volume::CreateForProvidedFileSystem(
-            fake_provided_fs->GetFileSystemInfo(),
-            file_manager::MountContext::MOUNT_CONTEXT_USER, kOneDriveDir);
-
-    volume_manager->AddVolumeForTesting(std::move(volume));
-  }
-
-  ash::disks::FakeDiskMountManager disk_mount_manager_;
-
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  void SetLacrosDefaultPaths(base::FilePath onedrive_dir) {
-    // These values would normally be sent by ash during lacros startup.
-    const base::FilePath documents_path =
-        base::PathService::CheckedGet(chrome::DIR_USER_DOCUMENTS);
-    const base::FilePath removable_media_dir =
-        base::FilePath("/media/removable");
-    const base::FilePath android_files_dir =
-        base::FilePath("/run/arc/sdcard/write/emulated/0");
-    const base::FilePath linux_files_dir =
-        base::FilePath("/media/fuse/crostini_0123456789abcdef_termina_penguin");
-    const base::FilePath drivefs_dir;
-    const base::FilePath ash_resources_dir =
-        base::FilePath("/opt/google/chrome");
-    const base::FilePath share_cache_dir =
-        profile_->GetPath().AppendASCII("ShareCache");
-    base::FilePath preinstalled_web_app_config_dir;
-    base::FilePath preinstalled_web_app_extra_config_dir;
-    chrome::SetLacrosDefaultPaths(
-        documents_path, default_download_dir_, drivefs_dir, onedrive_dir,
-        removable_media_dir, android_files_dir, linux_files_dir,
-        ash_resources_dir, share_cache_dir, preinstalled_web_app_config_dir,
-        preinstalled_web_app_extra_config_dir);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  const base::FilePath kOneDriveDir =
-      base::FilePath("/media/fuse/fusebox/fsp.0123456789abcdef");
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-  content::BrowserTaskEnvironment task_environment_;
-  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
-  // Default download directory for `profile_`.
-  base::FilePath default_download_dir_;
-  // Download prefs for `profile_`.
-  std::unique_ptr<DownloadPrefs> download_prefs_ = nullptr;
-  // Externally owned raw pointers. Owned by TestingProfileManager.
-  raw_ptr<TestingProfile> profile_;
-};
-
-// Verifies that the download path is set to OneDrive when OneDrive is mounted
-// and the feature flag is enabled.
-TEST_F(DownloadDirOneDrive, OneDriveMounted) {
-  scoped_feature_list_.InitAndEnableFeature(features::kSkyVault);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  AddOneDriveFuseboxVolume();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  SetLacrosDefaultPaths(
-      base::FilePath("/media/fuse/fusebox/fsp.0123456789abcdef"));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  ExpectValidDownloadDir(profile_, download_prefs_.get(), kOneDriveDir);
-}
-
-// Verifies that the download path is set to Default Downloads directory when
-// the feature flag is not enabled.
-TEST_F(DownloadDirOneDrive, SkyVaultDisabled) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  AddOneDriveFuseboxVolume();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  SetLacrosDefaultPaths(kOneDriveDir);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  ExpectValidDownloadDir(profile_, download_prefs_.get(),
-                         default_download_dir_);
-}
-
-// Verifies that the download path is set to Default Downloads directory when
-// OneDrive is not mounted.
-TEST_F(DownloadDirOneDrive, OneDriveNotMounted) {
-  scoped_feature_list_.InitAndEnableFeature(features::kSkyVault);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  SetLacrosDefaultPaths(base::FilePath(""));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-  ExpectValidDownloadDir(profile_, download_prefs_.get(),
-                         default_download_dir_);
-}
-
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

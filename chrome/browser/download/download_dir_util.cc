@@ -89,15 +89,8 @@ bool ExpandOneDrivePolicyVariable(Profile* profile,
 
   base::FilePath onedrive_path;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(features::kSkyVaultV2)) {
-    if (!base::GetTempDir(&onedrive_path)) {
-      return false;
-    }
-  } else {
-    onedrive_path = ash::cloud_upload::GetODFSFuseboxMount(profile);
-    if (onedrive_path.empty()) {  // failed to get OneDrive path.
-      return false;
-    }
+  if (!base::GetTempDir(&onedrive_path)) {
+    return false;
   }
 
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)

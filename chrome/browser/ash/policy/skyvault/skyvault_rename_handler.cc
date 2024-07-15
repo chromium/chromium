@@ -20,7 +20,7 @@ namespace policy {
 // static
 std::unique_ptr<SkyvaultRenameHandler> SkyvaultRenameHandler::CreateIfNeeded(
     download::DownloadItem* download_item) {
-  if (!base::FeatureList::IsEnabled(features::kSkyVaultV2)) {
+  if (!base::FeatureList::IsEnabled(features::kSkyVault)) {
     return nullptr;
   }
 
