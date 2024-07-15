@@ -1750,13 +1750,12 @@ xsltSaveResultToFilename(const char *URL, xmlDocPtr result,
 
     XSLT_GET_IMPORT_PTR(encoding, style, encoding)
     if (encoding != NULL) {
-	xmlCharEncodingHandlerPtr encoder;
+	xmlCharEncodingHandlerPtr encoder = NULL;
 
-	encoder = xmlFindCharEncodingHandler((char *)encoding);
-	if ((encoder != NULL) &&
-	    (xmlStrEqual((const xmlChar *)encoder->name,
-			 (const xmlChar *) "UTF-8")))
-	    encoder = NULL;
+        /* Don't use UTF-8 dummy encoder */
+        if ((xmlStrcasecmp(encoding, BAD_CAST "UTF-8") != 0) &&
+            (xmlStrcasecmp(encoding, BAD_CAST "UTF8") != 0))
+	    encoder = xmlFindCharEncodingHandler((char *) encoding);
 	buf = xmlOutputBufferCreateFilename(URL, encoder, compression);
     } else {
 	buf = xmlOutputBufferCreateFilename(URL, NULL, compression);
@@ -1793,13 +1792,12 @@ xsltSaveResultToFile(FILE *file, xmlDocPtr result, xsltStylesheetPtr style) {
 
     XSLT_GET_IMPORT_PTR(encoding, style, encoding)
     if (encoding != NULL) {
-	xmlCharEncodingHandlerPtr encoder;
+	xmlCharEncodingHandlerPtr encoder = NULL;
 
-	encoder = xmlFindCharEncodingHandler((char *)encoding);
-	if ((encoder != NULL) &&
-	    (xmlStrEqual((const xmlChar *)encoder->name,
-			 (const xmlChar *) "UTF-8")))
-	    encoder = NULL;
+        /* Don't use UTF-8 dummy encoder */
+        if ((xmlStrcasecmp(encoding, BAD_CAST "UTF-8") != 0) &&
+            (xmlStrcasecmp(encoding, BAD_CAST "UTF8") != 0))
+	    encoder = xmlFindCharEncodingHandler((char *) encoding);
 	buf = xmlOutputBufferCreateFile(file, encoder);
     } else {
 	buf = xmlOutputBufferCreateFile(file, NULL);
@@ -1837,13 +1835,12 @@ xsltSaveResultToFd(int fd, xmlDocPtr result, xsltStylesheetPtr style) {
 
     XSLT_GET_IMPORT_PTR(encoding, style, encoding)
     if (encoding != NULL) {
-	xmlCharEncodingHandlerPtr encoder;
+	xmlCharEncodingHandlerPtr encoder = NULL;
 
-	encoder = xmlFindCharEncodingHandler((char *)encoding);
-	if ((encoder != NULL) &&
-	    (xmlStrEqual((const xmlChar *)encoder->name,
-			 (const xmlChar *) "UTF-8")))
-	    encoder = NULL;
+        /* Don't use UTF-8 dummy encoder */
+        if ((xmlStrcasecmp(encoding, BAD_CAST "UTF-8") != 0) &&
+            (xmlStrcasecmp(encoding, BAD_CAST "UTF8") != 0))
+	    encoder = xmlFindCharEncodingHandler((char *) encoding);
 	buf = xmlOutputBufferCreateFd(fd, encoder);
     } else {
 	buf = xmlOutputBufferCreateFd(fd, NULL);
@@ -1880,13 +1877,12 @@ xsltSaveResultToString(xmlChar **doc_txt_ptr, int * doc_txt_len,
 
     XSLT_GET_IMPORT_PTR(encoding, style, encoding)
     if (encoding != NULL) {
-	xmlCharEncodingHandlerPtr encoder;
+	xmlCharEncodingHandlerPtr encoder = NULL;
 
-	encoder = xmlFindCharEncodingHandler((char *)encoding);
-	if ((encoder != NULL) &&
-	    (xmlStrEqual((const xmlChar *)encoder->name,
-			 (const xmlChar *) "UTF-8")))
-	    encoder = NULL;
+        /* Don't use UTF-8 dummy encoder */
+        if ((xmlStrcasecmp(encoding, BAD_CAST "UTF-8") != 0) &&
+            (xmlStrcasecmp(encoding, BAD_CAST "UTF8") != 0))
+	    encoder = xmlFindCharEncodingHandler((char *) encoding);
 	buf = xmlAllocOutputBuffer(encoder);
         if (buf == NULL)
             xmlCharEncCloseFunc(encoder);

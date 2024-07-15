@@ -42,20 +42,10 @@ CLEANFILES = xsltConf.sh
 cleanup:
 	-@(find . -name .\#\* -exec rm {} \;)
 
-cleantar:
-	@(rm -f libxslt*.tar.gz)
-
-rpm: cleantar
-	@(unset CDPATH ; $(MAKE) dist && rpmbuild -ta $(distdir).tar.gz)
-
-
 pkgconfigdir=$(libdir)/pkgconfig
 pkgconfig_DATA = libxslt.pc libexslt.pc
 
 cmakedir = $(libdir)/cmake/libxslt
 dist_cmake_DATA = FindGcrypt.cmake
 cmake_DATA = libxslt-config.cmake
-
-m4datadir = $(datadir)/aclocal
-dist_m4data_DATA = libxslt.m4
 

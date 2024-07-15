@@ -422,6 +422,19 @@ xsltCheckRead(xsltSecurityPrefsPtr sec,
     xmlURIPtr uri;
     xsltSecurityCheck check;
 
+    if (xmlStrstr(URL, BAD_CAST "://") == NULL) {
+	check = xsltGetSecurityPrefs(sec, XSLT_SECPREF_READ_FILE);
+	if (check != NULL) {
+            ret = check(sec, ctxt, (const char *) URL);
+            if (ret == 0) {
+                xsltTransformError(ctxt, NULL, NULL,
+                             "Local file read for %s refused\n", URL);
+                return(0);
+            }
+        }
+        return(1);
+    }
+
     uri = xmlParseURI((const char *)URL);
     if (uri == NULL) {
 	xsltTransformError(ctxt, NULL, NULL,

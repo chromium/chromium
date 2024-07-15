@@ -20,21 +20,21 @@ extern "C" {
  *
  * the version string like "1.2.3"
  */
-#define LIBXSLT_DOTTED_VERSION "1.1.39"
+#define LIBXSLT_DOTTED_VERSION "1.1.42"
 
 /**
  * LIBXSLT_VERSION:
  *
  * the version number: 1.2.3 value is 10203
  */
-#define LIBXSLT_VERSION 10139
+#define LIBXSLT_VERSION 10142
 
 /**
  * LIBXSLT_VERSION_STRING:
  *
  * the version number string, 1.2.3 value is "10203"
  */
-#define LIBXSLT_VERSION_STRING "10139"
+#define LIBXSLT_VERSION_STRING "10142"
 
 /**
  * LIBXSLT_VERSION_EXTRA:
@@ -113,19 +113,6 @@ extern "C" {
 #define WITH_MODULES
 #endif
 #define LIBXSLT_DEFAULT_PLUGINS_PATH() "/usr/local/lib/libxslt-plugins"
-#endif
-
-/**
- * ATTRIBUTE_UNUSED:
- *
- * This macro is used to flag unused function parameters to GCC
- */
-#ifdef __GNUC__
-#ifndef ATTRIBUTE_UNUSED
-#define ATTRIBUTE_UNUSED __attribute__((unused))
-#endif
-#else
-#define ATTRIBUTE_UNUSED
 #endif
 
 /**

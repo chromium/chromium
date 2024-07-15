@@ -116,19 +116,6 @@ extern "C" {
 #endif
 
 /**
- * ATTRIBUTE_UNUSED:
- *
- * This macro is used to flag unused function parameters to GCC
- */
-#ifdef __GNUC__
-#ifndef ATTRIBUTE_UNUSED
-#define ATTRIBUTE_UNUSED __attribute__((unused))
-#endif
-#else
-#define ATTRIBUTE_UNUSED
-#endif
-
-/**
  * LIBXSLT_ATTR_FORMAT:
  *
  * This macro is used to indicate to GCC the parameters are printf-like
