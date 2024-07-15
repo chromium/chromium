@@ -123,8 +123,9 @@ void ThemeServiceAuraLinux::UseTheme(ui::SystemTheme system_theme) {
 }
 
 void ThemeServiceAuraLinux::UseSystemTheme() {
-  if (UsingSystemTheme())
+  if (UsingSystemTheme()) {
     return;
+  }
   if (auto* linux_ui_theme = ui::GetDefaultLinuxUiTheme()) {
     if (auto* native_theme = linux_ui_theme->GetNativeTheme()) {
       UseTheme(native_theme->system_theme());
@@ -158,11 +159,23 @@ void ThemeServiceAuraLinux::FixInconsistentPreferencesIfNeeded() {
   }
 }
 
+ThemeService::BrowserColorScheme ThemeServiceAuraLinux::GetBrowserColorScheme()
+    const {
+  // If using the system theme (GTK or QT), always use the system color scheme
+  // as well.  This prevents eg. setting the color scheme to light when the
+  // system theme is dark, which may lead to white text on white backgrounds.
+  if (UsingSystemTheme()) {
+    return ThemeService::BrowserColorScheme::kSystem;
+  }
+  return ThemeService::GetBrowserColorScheme();
+}
+
 // static
 ui::SystemTheme ThemeServiceAuraLinux::GetSystemThemeForProfile(
     const Profile* profile) {
-  if (!profile || profile->IsChild())
+  if (!profile || profile->IsChild()) {
     return ui::SystemTheme::kDefault;
+  }
   return ValidateSystemTheme(static_cast<ui::SystemTheme>(
       profile->GetPrefs()->GetInteger(prefs::kSystemTheme)));
 }

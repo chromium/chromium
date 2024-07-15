@@ -471,6 +471,13 @@ export class SettingsAppearancePageElement extends
     }
     this.appearanceBrowserProxy_.useQtTheme();
   }
+
+  /** @return Whether to show the color scheme mode toggle. */
+  private showColorSchemeMode_(themeId: string): boolean {
+    return !!themeId ||
+        this.systemTheme_ !== SystemTheme.GTK &&
+        this.systemTheme_ !== SystemTheme.QT;
+  }
   // </if>
 
   private themeChanged_(themeId: string) {
