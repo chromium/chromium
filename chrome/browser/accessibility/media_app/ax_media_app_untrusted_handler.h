@@ -205,6 +205,8 @@ class AXMediaAppUntrustedHandler
   base::TimeTicks start_reading_time_;
   // Records of most recent time when the user reads content in MediaApp.
   base::TimeTicks latest_reading_time_;
+  // Records the greatest page number to which the user has navigated.
+  size_t greatest_visited_page_number_ = 0;
 
   base::WeakPtrFactory<AXMediaAppUntrustedHandler> weak_ptr_factory_{this};
 };

@@ -1860,6 +1860,17 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.PdfOcr.MediaApp.PercentageReadingProgression"
+    units="%" expires_after="2025-06-30">
+  <owner>kyungjunlee@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the reading progression of a11y users in OCRed content in MediaApp
+    in percentage. The reading progression (RP) is calculated with the following
+    formula: RP = greatest visited page number / page count * 100.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.PdfOcr.MostDetectedLanguageInOcrData2"
     enum="LocaleCodeISO639" expires_after="2025-06-30">
   <owner>kyungjunlee@google.com</owner>

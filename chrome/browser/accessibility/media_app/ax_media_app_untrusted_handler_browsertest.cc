@@ -1534,6 +1534,99 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                               /*expected_count=*/0);
 }
 
+IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
+                       CheckReadingProgression100Percent) {
+  base::HistogramTester histograms;
+  handler_->DisableStatusNodesForTesting();
+  handler_->DisablePostamblePageForTesting();
+  const size_t kTestNumPages = 1u;
+  std::vector<PageMetadataPtr> fake_metadata =
+      CreateFakePageMetadata(kTestNumPages);
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  WaitForOcringPages(kTestNumPages);
+
+  // No metric has been recorded at this moment.
+  histograms.ExpectTotalCount(
+      "Accessibility.PdfOcr.MediaApp.PercentageReadingProgression",
+      /*expected_count=*/0);
+
+  ui::AXActionData scroll_action_data;
+  scroll_action_data.action = ax::mojom::Action::kScrollToMakeVisible;
+  scroll_action_data.target_tree_id =
+      handler_->GetPagesForTesting().at(fake_metadata[0]->id)->GetTreeID();
+  ASSERT_NE(nullptr,
+            handler_->GetPagesForTesting().at(fake_metadata[0]->id)->GetRoot());
+  scroll_action_data.target_node_id =
+      handler_->GetPagesForTesting().at(fake_metadata[0]->id)->GetRoot()->id();
+  // "Scroll to make visible" the target node, which should scroll forward.
+  handler_->PerformAction(scroll_action_data);
+
+  // Destroying handler will trigger recording the metric.
+  handler_.reset();
+
+  histograms.ExpectUniqueSample(
+      "Accessibility.PdfOcr.MediaApp.PercentageReadingProgression", 100, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
+                       CheckReadingProgression50Percent) {
+  base::HistogramTester histograms;
+  handler_->DisableStatusNodesForTesting();
+  handler_->DisablePostamblePageForTesting();
+  const size_t kTestNumPages = 2u;
+  std::vector<PageMetadataPtr> fake_metadata =
+      CreateFakePageMetadata(kTestNumPages);
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  WaitForOcringPages(kTestNumPages);
+
+  // No metric has been recorded at this moment.
+  histograms.ExpectTotalCount(
+      "Accessibility.PdfOcr.MediaApp.PercentageReadingProgression",
+      /*expected_count=*/0);
+
+  ui::AXActionData scroll_action_data;
+  scroll_action_data.action = ax::mojom::Action::kScrollToMakeVisible;
+  scroll_action_data.target_tree_id =
+      handler_->GetPagesForTesting().at(fake_metadata[0]->id)->GetTreeID();
+  ASSERT_NE(nullptr,
+            handler_->GetPagesForTesting().at(fake_metadata[0]->id)->GetRoot());
+  scroll_action_data.target_node_id =
+      handler_->GetPagesForTesting().at(fake_metadata[0]->id)->GetRoot()->id();
+  // "Scroll to make visible" the target node, which should scroll forward to
+  // the first page.
+  handler_->PerformAction(scroll_action_data);
+
+  // Destroying handler will trigger recording the metric.
+  handler_.reset();
+
+  // Out of two pages, the first page was visited, so 50% reading progression.
+  histograms.ExpectUniqueSample(
+      "Accessibility.PdfOcr.MediaApp.PercentageReadingProgression", 50, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
+                       CheckReadingProgression0Percent) {
+  base::HistogramTester histograms;
+  handler_->DisableStatusNodesForTesting();
+  handler_->DisablePostamblePageForTesting();
+  const size_t kTestNumPages = 1u;
+  std::vector<PageMetadataPtr> fake_metadata =
+      CreateFakePageMetadata(kTestNumPages);
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  WaitForOcringPages(kTestNumPages);
+
+  // No metric has been recorded at this moment.
+  histograms.ExpectTotalCount(
+      "Accessibility.PdfOcr.MediaApp.PercentageReadingProgression",
+      /*expected_count=*/0);
+
+  // Destroying handler will trigger recording the metric.
+  handler_.reset();
+
+  histograms.ExpectUniqueSample(
+      "Accessibility.PdfOcr.MediaApp.PercentageReadingProgression", 0, 1);
+}
+
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageBatching) {
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();

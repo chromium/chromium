@@ -122,6 +122,16 @@ AXMediaAppUntrustedHandler::~AXMediaAppUntrustedHandler() {
     base::UmaHistogramLongTimes100("Accessibility.PdfOcr.MediaApp.ActiveTime",
                                    active_time);
   }
+
+  if (page_metadata_.size()) {
+    const float reading_progression_in_ratio =
+        static_cast<float>(greatest_visited_page_number_) /
+        page_metadata_.size();
+    DCHECK_LE(reading_progression_in_ratio, 1.0f);
+    base::UmaHistogramPercentage(
+        "Accessibility.PdfOcr.MediaApp.PercentageReadingProgression",
+        reading_progression_in_ratio * 100);
+  }
 }
 
 void AXMediaAppUntrustedHandler::SetPdfOcrEnabledState() {
@@ -296,6 +306,14 @@ void AXMediaAppUntrustedHandler::PerformAction(
           break;
         }
         DCHECK(page_manager->ax_tree());
+
+        if (page_metadata_.contains(page.first) &&
+            page_metadata_.at(page.first).page_num >
+                greatest_visited_page_number_) {
+          greatest_visited_page_number_ =
+              page_metadata_.at(page.first).page_num;
+        }
+
         auto child_iter = target_node->UnignoredChildrenBegin();
         for (; child_iter != target_node->UnignoredChildrenEnd();
              ++child_iter) {
@@ -442,7 +460,8 @@ void AXMediaAppUntrustedHandler::PageMetadataUpdated(
       // Since `pages_` and `page_metadata_` are both populated from untrusted
       // code, mitigate potential security issues by never mutating the size of
       // these two containers. So when a page is 'deleted' by the user, keep it
-      // in memory.
+      // in memory. Also, no need to update `greatest_visited_page_number_` as
+      // `page_metadata_` still keeps the deleted page.
       page_info.page_num = 0;
     }
   }
