@@ -82,14 +82,14 @@ int Allocator::allocate(void* data,
 FunctorData& Allocator::get(int functor) {
   base::AutoLock lock(lock_);
   auto itr = map_.find(functor);
-  DCHECK(itr != map_.end());
+  CHECK(itr != map_.end());
   return itr->second;
 }
 
 void Allocator::MarkReleasedByFunctor(int functor) {
   base::AutoLock lock(lock_);
   auto itr = map_.find(functor);
-  DCHECK(itr != map_.end());
+  CHECK(itr != map_.end());
   DCHECK(!itr->second.released_by_functor);
   itr->second.released_by_functor = true;
   MaybeReleaseFunctorAlreadyLocked(functor);
@@ -98,7 +98,7 @@ void Allocator::MarkReleasedByFunctor(int functor) {
 void Allocator::MarkReleasedByManager(int functor) {
   base::AutoLock lock(lock_);
   auto itr = map_.find(functor);
-  DCHECK(itr != map_.end());
+  CHECK(itr != map_.end());
   DCHECK(!itr->second.released_by_manager);
   MaybeReleaseFunctorAlreadyLocked(functor);
 }
