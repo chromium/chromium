@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/frame/pagination_state.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_counter.h"
 #include "third_party/blink/renderer/core/layout/layout_quote.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
@@ -61,16 +62,20 @@ LogicalRect SnappedBorderBoxRect(const LogicalRect& rect) {
 PageContainerLayoutAlgorithm::PageContainerLayoutAlgorithm(
     const LayoutAlgorithmParams& params,
     wtf_size_t page_index,
+    wtf_size_t total_page_count,
     const AtomicString& page_name,
     const BlockNode& content_node,
     const PageAreaLayoutParams& page_area_params,
-    bool ignore_author_page_style)
+    bool ignore_author_page_style,
+    const PhysicalBoxFragment* existing_page_container)
     : LayoutAlgorithm(params),
       page_index_(page_index),
+      total_page_count_(total_page_count),
       page_name_(page_name),
       content_node_(content_node),
       page_area_params_(page_area_params),
-      ignore_author_page_style_(ignore_author_page_style) {}
+      ignore_author_page_style_(ignore_author_page_style),
+      existing_page_container_(existing_page_container) {}
 
 const LayoutResult* PageContainerLayoutAlgorithm::Layout() {
   DCHECK(!GetBreakToken());
@@ -177,6 +182,20 @@ const LayoutResult* PageContainerLayoutAlgorithm::Layout() {
 void PageContainerLayoutAlgorithm::LayoutPageBorderBox(
     LogicalSize containing_block_size,
     LogicalOffset target_offset) {
+  if (existing_page_container_) {
+    // A page container was created previously. But we had to come back and
+    // update the total page count (counter(pages)). We can just keep the old
+    // page border box (including all paginated content), though. No need for a
+    // re-layout.
+    const PhysicalBoxFragment& page_border_box_fragment =
+        GetPageBorderBox(*existing_page_container_);
+    const LayoutResult* existing_border_box_result =
+        page_border_box_fragment.OwnerLayoutBox()->GetLayoutResult(0);
+    container_builder_.AddResult(*existing_border_box_result, target_offset,
+                                 /*margins=*/std::nullopt);
+    return;
+  }
+
   Document& document = Node().GetDocument();
   const LayoutView& layout_view = *document.GetLayoutView();
   const ComputedStyle* content_scaled_style = &Style();
@@ -370,7 +389,7 @@ void PageContainerLayoutAlgorithm::LayoutEdgeMarginNodes(
 }
 
 BlockNode PageContainerLayoutAlgorithm::CreateBlockNodeIfNeeded(
-    const ComputedStyle* page_margin_style) const {
+    const ComputedStyle* page_margin_style) {
   if (!page_margin_style) {
     return BlockNode(nullptr);
   }
@@ -397,6 +416,25 @@ BlockNode PageContainerLayoutAlgorithm::CreateBlockNodeIfNeeded(
         quote->SetDepth(quote_depth);
         quote->UpdateText();
         quote_depth = quote->GetNextDepth();
+      } else if (auto* counter = DynamicTo<LayoutCounter>(child)) {
+        Vector<int> values;
+        const auto* counter_data = To<CounterContentData>(content);
+        if (counter_data->Identifier() == "pages") {
+          if (!total_page_count_) {
+            // Someone wants to output the total page count. In order to
+            // calculate a total page count, we first have to lay out all pages,
+            // and then come back for a second pass.
+            DCHECK(!existing_page_container_);
+            needs_total_page_count_ = true;
+          }
+          values.push_back(total_page_count_);
+        } else if (counter_data->Identifier() == "page") {
+          values.push_back(page_index_ + 1);
+        } else {
+          // TODO(mstensho): Implement counters, apart from "page" and "pages".
+          values.push_back(0);
+        }
+        counter->UpdateCounter(std::move(values));
       }
     } else {
       child->Destroy();

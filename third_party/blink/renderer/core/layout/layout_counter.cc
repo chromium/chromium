@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
-#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/html/html_directory_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_element.h"
 #include "third_party/blink/renderer/core/html/html_olist_element.h"
@@ -58,10 +57,10 @@ String GenerateCounterText(const CounterStyle* counter_style, int value) {
 
 }  // namespace
 
-LayoutCounter::LayoutCounter(PseudoElement& pseudo,
+LayoutCounter::LayoutCounter(Document& document,
                              const CounterContentData& counter)
     : LayoutText(nullptr, StringImpl::empty_), counter_(counter) {
-  SetDocumentForAnonymous(&pseudo.GetDocument());
+  SetDocumentForAnonymous(&document);
   View()->AddLayoutCounter();
 }
 

@@ -98,12 +98,15 @@ class CORE_EXPORT PaginatedRootLayoutAlgorithm
 
    public:
     PageContainerResult(const PhysicalBoxFragment& fragment,
-                        const BlockBreakToken* fragmentainer_break_token)
+                        const BlockBreakToken* fragmentainer_break_token,
+                        bool needs_total_page_count)
         : fragment(&fragment),
-          fragmentainer_break_token(fragmentainer_break_token) {}
+          fragmentainer_break_token(fragmentainer_break_token),
+          needs_total_page_count(needs_total_page_count) {}
 
     const PhysicalBoxFragment* fragment;
     const BlockBreakToken* fragmentainer_break_token;
+    bool needs_total_page_count;
   };
 
   explicit PaginatedRootLayoutAlgorithm(const LayoutAlgorithmParams& params);
@@ -121,23 +124,29 @@ class CORE_EXPORT PaginatedRootLayoutAlgorithm
       const BlockNode& node,
       const ConstraintSpace& parent_space,
       wtf_size_t page_index,
-      const PhysicalBoxFragment& previous_fragmentainer);
+      const PhysicalBoxFragment& previous_fragmentainer,
+      bool* needs_total_page_count);
 
  private:
   PageContainerResult LayoutPageContainer(
       wtf_size_t page_index,
+      wtf_size_t total_page_count,
       const AtomicString& page_name,
-      const PageAreaLayoutParams& params) const {
+      const PageAreaLayoutParams& params,
+      const PhysicalBoxFragment* existing_page_container = nullptr) const {
     return LayoutPageContainer(Node(), GetConstraintSpace(), page_index,
-                               page_name, params);
+                               total_page_count, page_name, params,
+                               existing_page_container);
   }
 
   static PageContainerResult LayoutPageContainer(
       const BlockNode& root_node,
       const ConstraintSpace& parent_space,
       wtf_size_t page_index,
+      wtf_size_t total_page_count,
       const AtomicString& page_name,
-      const PageAreaLayoutParams&);
+      const PageAreaLayoutParams&,
+      const PhysicalBoxFragment* existing_page_container = nullptr);
 };
 
 }  // namespace blink

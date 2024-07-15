@@ -109,6 +109,11 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   // Handle the layout of any OOF elements in a fragmentation context.
   void HandleFragmentation();
 
+  // Return true if we were invoked at a pagination root, and any additional
+  // pages that were laid out need to know the total page count (to support
+  // counter(pages) in page margin boxes).
+  bool NeedsTotalPageCount() { return needs_total_page_count_; }
+
   // Information needed to position descendant within a containing block.
   // Geometry expressed here is complicated:
   // There are two types of containing blocks:
@@ -460,6 +465,10 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   bool has_block_fragmentation_ = false;
   // A fixedpos containing block was found in an outer fragmentation context.
   bool outer_context_has_fixedpos_container_ = false;
+
+  // Set if any additional pages that were laid out need to know the total page
+  // count.
+  bool needs_total_page_count_ = false;
 };
 
 }  // namespace blink

@@ -89,12 +89,8 @@ LayoutObject* AltTextContentData::CreateLayoutObject(
 
 LayoutObject* CounterContentData::CreateLayoutObject(
     LayoutObject& owner) const {
-  // TODO(crbug.com/40341678): Implement for @page margins. No pseudo element
-  // then.
-  DCHECK(owner.IsPseudoElement());
-
-  LayoutObject* layout_object = MakeGarbageCollected<LayoutCounter>(
-      To<PseudoElement>(*owner.GetNode()), *this);
+  LayoutObject* layout_object =
+      MakeGarbageCollected<LayoutCounter>(owner.GetDocument(), *this);
   layout_object->SetPseudoElementStyle(owner);
   return layout_object;
 }

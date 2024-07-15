@@ -2532,8 +2532,11 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
         GetChildFragment(last_fragmentainer_index);
     const PhysicalBoxFragment* new_fragmentainer;
     if (node.IsPaginatedRoot()) {
+      bool needs_total_page_count;
       new_fragmentainer = &PaginatedRootLayoutAlgorithm::CreateEmptyPage(
-          node, GetConstraintSpace(), index, previous_fragmentainer);
+          node, GetConstraintSpace(), index, previous_fragmentainer,
+          &needs_total_page_count);
+      needs_total_page_count_ |= needs_total_page_count;
     } else {
       new_fragmentainer = &ColumnLayoutAlgorithm::CreateEmptyColumn(
           node, GetConstraintSpace(), previous_fragmentainer);

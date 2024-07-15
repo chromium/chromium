@@ -41,12 +41,15 @@ struct PageAreaLayoutParams;
 class CORE_EXPORT PageContainerLayoutAlgorithm
     : public LayoutAlgorithm<BlockNode, BoxFragmentBuilder, BlockBreakToken> {
  public:
-  PageContainerLayoutAlgorithm(const LayoutAlgorithmParams& params,
-                               wtf_size_t page_index,
-                               const AtomicString& page_name,
-                               const BlockNode& content_node,
-                               const PageAreaLayoutParams&,
-                               bool ignore_author_page_style);
+  PageContainerLayoutAlgorithm(
+      const LayoutAlgorithmParams& params,
+      wtf_size_t page_index,
+      wtf_size_t total_page_count,
+      const AtomicString& page_name,
+      const BlockNode& content_node,
+      const PageAreaLayoutParams&,
+      bool ignore_author_page_style,
+      const PhysicalBoxFragment* existing_page_container);
 
   const LayoutResult* Layout();
 
@@ -58,6 +61,8 @@ class CORE_EXPORT PageContainerLayoutAlgorithm
   const BlockBreakToken* FragmentainerBreakToken() const {
     return fragmentainer_break_token_;
   }
+
+  bool NeedsTotalPageCount() const { return needs_total_page_count_; }
 
  private:
   enum ProgressionDirection {
@@ -165,7 +170,7 @@ class CORE_EXPORT PageContainerLayoutAlgorithm
   // includes creating children for the content property. Will return
   // BlockNode(nullptr) if there's nothing to lay out for this margin box,
   // e.g. when there's no content property.
-  BlockNode CreateBlockNodeIfNeeded(const ComputedStyle*) const;
+  BlockNode CreateBlockNodeIfNeeded(const ComputedStyle*);
 
   // Calculate the preferred main size for one of the page margin boxes along
   // one of the four edges.
@@ -212,11 +217,25 @@ class CORE_EXPORT PageContainerLayoutAlgorithm
                                   PhysicalSize available_size,
                                   EdgeAdjacency) const;
 
+  // The current page being laid out.
   wtf_size_t page_index_;
+
+  // The total number of pages in the document. This number isn't known until
+  // all pages have been laid out, and will be 0 in the first pass. If anyone
+  // actually needs to know the total page count, we need to come back for
+  // another layout pass, with this value set correctly.
+  wtf_size_t total_page_count_;
+
   const AtomicString& page_name_;
   const BlockNode& content_node_;
   const PageAreaLayoutParams& page_area_params_;
   bool ignore_author_page_style_;
+  bool needs_total_page_count_ = false;
+
+  // Page container fragment from a previous layout pass. It's possible to
+  // re-use parts of it if we get a second layout pass, which happens if we need
+  // to output the total number of pages on at least one of the pages.
+  const PhysicalBoxFragment* existing_page_container_ = nullptr;
 
   const BlockBreakToken* fragmentainer_break_token_ = nullptr;
 };
