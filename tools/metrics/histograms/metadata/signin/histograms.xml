@@ -2155,6 +2155,9 @@ kept as long as profile signout is possible -->
     Note: the metric doesn't record when the user dismissed the screen in
     alternative way (eg. with Esc key or by swiping the application on mobile
     device).
+
+    Warning: Buckets related to the History Sync Screen are recorded incorrectly
+    on Android pre-M128, see https://crbug.com/352495951.
   </summary>
 </histogram>
 
