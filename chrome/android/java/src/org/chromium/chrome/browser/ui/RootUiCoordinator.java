@@ -110,6 +110,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteDelegateImpl;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
+import org.chromium.chrome.browser.readaloud.ReadAloudControllerSupplier;
 import org.chromium.chrome.browser.readaloud.ReadAloudToolbarButtonController;
 import org.chromium.chrome.browser.recent_tabs.RestoreTabsFeatureHelper;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -225,6 +226,9 @@ public class RootUiCoordinator
     protected final UnownedUserDataSupplier<ContextualSearchManager>
             mContextualSearchManagerSupplier = new ContextualSearchManagerSupplier();
 
+    protected final UnownedUserDataSupplier<ReadAloudController> mReadAloudControllerSupplier =
+            new ReadAloudControllerSupplier();
+
     protected AppCompatActivity mActivity;
     protected @Nullable AppMenuCoordinator mAppMenuCoordinator;
     private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
@@ -329,8 +333,6 @@ public class RootUiCoordinator
     @Nullable protected final BackPressManager mBackPressManager;
     private final boolean mIsIncognitoReauthPendingOnRestore;
     protected final ExpandedSheetHelper mExpandedBottomSheetHelper;
-    protected final ObservableSupplierImpl<ReadAloudController> mReadAloudControllerSupplier =
-            new ObservableSupplierImpl<>();
     protected final BottomControlsStacker mBottomControlsStacker;
     private final Supplier<Long> mLastUserInteractionTimeSupplier;
     @Nullable private ContextualSearchObserver mReadAloudContextualSearchObserver;
@@ -782,6 +784,7 @@ public class RootUiCoordinator
         mTabObscuringHandlerSupplier.attach(userDataHost);
         mDeviceLockActivityLauncherSupplier.attach(userDataHost);
         mContextualSearchManagerSupplier.attach(userDataHost);
+        mReadAloudControllerSupplier.attach(userDataHost);
     }
 
     private void destroyUnownedUserDataSuppliers() {
@@ -789,6 +792,7 @@ public class RootUiCoordinator
         mTabObscuringHandlerSupplier.destroy();
         mDeviceLockActivityLauncherSupplier.destroy();
         mContextualSearchManagerSupplier.destroy();
+        mReadAloudControllerSupplier.destroy();
     }
 
     @Override

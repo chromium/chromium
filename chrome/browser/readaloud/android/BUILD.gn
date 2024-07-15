@@ -9,6 +9,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/readaloud/BoyerMoore.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudController.java",
+    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudControllerSupplier.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudIPHController.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudMiniPlayerSceneLayer.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudPrefs.java",
