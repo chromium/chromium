@@ -1477,7 +1477,9 @@ chromium-metrics-reviews@google.com.
 <histogram name="Power.KernelResumeTimeOnAC" units="ms"
     expires_after="2024-12-08">
   <owner>puthik@chromium.org</owner>
+  <owner>mhiramat@google.com</owner>
   <owner>chromeos-platform-power@google.com</owner>
+  <owner>cros-suspend-resume@google.com</owner>
   <summary>
     The time that the kernel took to resume the Chrome OS device from
     suspend-to-RAM state when running on AC at pre-suspend time.
@@ -1485,31 +1487,47 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.KernelResumeTimeOnBattery" units="ms"
-    expires_after="2024-05-26">
-  <owner>tbroch@chromium.org</owner>
+    expires_after="2024-12-08">
+  <owner>puthik@chromium.org</owner>
   <owner>mhiramat@google.com</owner>
+  <owner>chromeos-platform-power@google.com</owner>
+  <owner>cros-suspend-resume@google.com</owner>
   <summary>
     The time that the kernel took to resume the Chrome OS device from
     suspend-to-RAM state when running on battery at pre-suspend time.
+
+    Warning: this histogram was expired from 2024-05-26 to 2024-07-15; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Power.KernelSuspendTimeOnAC" units="ms"
-    expires_after="2020-01-26">
-  <owner>tbroch@chromium.org</owner>
+    expires_after="2024-12-08">
+  <owner>puthik@chromium.org</owner>
+  <owner>mhiramat@google.com</owner>
+  <owner>chromeos-platform-power@google.com</owner>
+  <owner>cros-suspend-resume@google.com</owner>
   <summary>
     The time that the kernel took to suspend-to-RAM the Chrome OS device when
     running on AC.
+
+    Warning: this histogram was expired from 2020-01-26 to 2024-07-15; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Power.KernelSuspendTimeOnBattery" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2024-12-08">
   <owner>puthik@chromium.org</owner>
+  <owner>mhiramat@google.com</owner>
   <owner>chromeos-platform-power@google.com</owner>
+  <owner>cros-suspend-resume@google.com</owner>
   <summary>
     The time that the kernel took to suspend-to-RAM the Chrome OS device when
     running on battery.
+
+    Warning: this histogram was expired from 2022-04-10 to 2024-07-15; data may
+    be missing.
   </summary>
 </histogram>
 
