@@ -116,14 +116,14 @@ CREATE PERFETTO TABLE chrome_predictor_error(
   present_ts INT,
   -- The delta in raw coordinates between this presented EventLatency and the
   -- previous presented frame.
-  delta_y INT,
+  delta_y DOUBLE,
   -- The pixel offset of this presented EventLatency compared to the initial
   -- one.
-  relative_offset_y INT,
+  relative_offset_y DOUBLE,
   -- The delta in raw coordinates of the previous scroll update event.
-  prev_delta INT,
+  prev_delta DOUBLE,
   -- The delta in raw coordinates of the subsequent scroll update event.
-  next_delta INT,
+  next_delta DOUBLE,
   -- The jank value based on the discrepancy between scroll predictor
   -- coordinates and the actual deltas between scroll update events.
   predictor_jank DOUBLE,

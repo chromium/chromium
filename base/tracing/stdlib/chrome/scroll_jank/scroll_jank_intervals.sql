@@ -59,9 +59,9 @@ CREATE PERFETTO VIEW chrome_janky_frame_presentation_intervals(
   -- How many vsyncs this frame missed its deadline by.
   delayed_frame_count INT,
   -- The stage of EventLatency that the caused the jank.
-  cause_of_jank INT,
+  cause_of_jank STRING,
   -- The stage of cause_of_jank that caused the jank.
-  sub_cause_of_jank INT,
+  sub_cause_of_jank STRING,
   -- The id of the associated event latency in the slice table.
   event_latency_id INT
 ) AS

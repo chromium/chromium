@@ -613,7 +613,7 @@ CREATE PERFETTO VIEW chrome_tasks(
   -- Alias of |slice.track_id|.
   track_id INT,
   -- Alias of |slice.category|.
-  category INT,
+  category STRING,
   -- Alias of |slice.arg_set_id|.
   arg_set_id INT,
   -- Alias of |slice.thread_ts|.

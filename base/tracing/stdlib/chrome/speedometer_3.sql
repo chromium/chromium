@@ -72,20 +72,23 @@ WITH
   )
 SELECT suite_name, test_name FROM data;
 
-CREATE
-  PERFETTO MACRO _chrome_speedometer_iteration_slice()
-RETURNS TableOrSubquery
-AS (
+CREATE PERFETTO VIEW _chrome_speedometer_iteration_slice
+AS
+WITH data AS (
   SELECT
     *,
-    substr(name, 1 + length('iteration-')) AS iteration
+    substr(name, 1 + length('iteration-')) AS iteration_str
   FROM
     slice
   WHERE
     category = 'blink.user_timing'
     AND name GLOB 'iteration-*'
-    AND iteration = CAST(iteration AS INTEGER)
-);
+)
+SELECT
+  *,
+  CAST(iteration_str AS INT) as iteration
+FROM data
+WHERE iteration_str = iteration;
 
 -- Augmented slices for Speedometer measurements.
 -- These are the intervals of time Speedometer uses to compute the final score.
@@ -146,7 +149,7 @@ SELECT
   s.measure_type
 FROM
   measure_slice AS s,
-  _chrome_speedometer_iteration_slice !() AS i
+  _chrome_speedometer_iteration_slice i
 ON (s.ts >= i.ts AND s.ts < i.ts + i.dur)
 ORDER BY s.ts ASC;
 
@@ -192,7 +195,7 @@ SELECT
   i.iteration,
   i.geomean,
   1000.0 / i.geomean AS score
-FROM iteration AS i, _chrome_speedometer_iteration_slice !() AS s
+FROM iteration AS i, _chrome_speedometer_iteration_slice AS s
 USING (iteration);
 
 -- Returns the Speedometer 3 score for all iterations in the trace

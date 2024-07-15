@@ -99,9 +99,9 @@ CREATE PERFETTO TABLE chrome_scroll_input_offsets(
   ts INT,
   -- The delta in raw coordinates between this scroll update event and the
   -- previous.
-  delta_y INT,
+  delta_y DOUBLE,
   -- The pixel offset of this scroll update event compared to the initial one.
-  relative_offset_y INT
+  relative_offset_y DOUBLE
 ) AS
 SELECT
   scroll_id,
@@ -131,9 +131,9 @@ CREATE PERFETTO TABLE chrome_presented_scroll_offsets(
   ts INT,
   -- The delta in raw coordinates between this scroll update event and the
   -- previous.
-  delta_y INT,
+  delta_y DOUBLE,
   -- The pixel offset of this scroll update event compared to the initial one.
-  relative_offset_y INT
+  relative_offset_y DOUBLE
 ) AS
 SELECT
   scroll_id,
