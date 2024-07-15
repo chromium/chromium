@@ -50,4 +50,9 @@ public interface SafetyHubModuleDelegate {
      * @return Whether the Safe Browsing preference is managed.
      */
     boolean isSafeBrowsingManaged();
+
+    /**
+     * @return the total passwords count for Account-level passwords.
+     */
+    int getAccountPasswordsCount();
 }

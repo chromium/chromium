@@ -96,6 +96,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         CardPreference browserStatePreference = findPreference(PREF_BROWSER_STATE_INDICATOR);
         int compromisedPasswordsCount =
                 UserPrefs.get(getProfile()).getInteger(Pref.BREACHED_CREDENTIALS_COUNT);
+        int totalPasswordsCount = mDelegate.getAccountPasswordsCount();
         int sitesWithUnusedPermissionsCount =
                 mUnusedSitePermissionsBridge.getRevokedPermissions().length;
         int notificationPermissionsForReviewCount =
@@ -107,6 +108,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                         .with(
                                 SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
                                 compromisedPasswordsCount)
+                        .with(SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount)
                         .with(
                                 SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
                                 notificationPermissionsForReviewCount)
@@ -138,6 +140,9 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                         .with(
                                 SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
                                 compromisedPasswordsCount)
+                        .with(
+                                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT,
+                                mDelegate.getAccountPasswordsCount())
                         .with(
                                 SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
                                 v -> mDelegate.showPasswordCheckUI(getContext()))

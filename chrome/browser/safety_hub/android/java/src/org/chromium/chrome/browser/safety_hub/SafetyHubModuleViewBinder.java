@@ -35,7 +35,8 @@ public class SafetyHubModuleViewBinder {
             SafetyHubExpandablePreference preference,
             PropertyKey propertyKey) {
         bindCommonProperties(model, preference, propertyKey);
-        if (SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT == propertyKey) {
+        if (SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT == propertyKey
+                || SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT == propertyKey) {
             updatePasswordCheckModule(preference, model);
         }
     }
@@ -88,7 +89,8 @@ public class SafetyHubModuleViewBinder {
                         == propertyKey
                 || SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT == propertyKey
                 || SafetyHubModuleProperties.UPDATE_STATUS == propertyKey
-                || SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT == propertyKey) {
+                || SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT == propertyKey
+                || SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT == propertyKey) {
             updateBrowserStateModule(preference, model);
         }
     }
@@ -202,14 +204,26 @@ public class SafetyHubModuleViewBinder {
         int option = SafetyHubModuleProperties.ModuleOption.ACCOUNT_PASSWORDS;
         int compromisedPasswordsCount =
                 model.get(SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT);
+        int totalPasswordsCount = model.get(SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT);
         @SafetyHubModuleProperties.ModuleState int state = getModuleState(model, option);
         String title;
+        String summary = null;
         String primaryButtonText = null;
         String secondaryButtonText = null;
         View.OnClickListener primaryButtonListener = null;
         View.OnClickListener secondaryButtonListener = null;
+        boolean expanded = false;
 
-        if (compromisedPasswordsCount > 0) {
+        if (totalPasswordsCount == 0) {
+            title = preference.getContext().getString(R.string.safety_hub_no_passwords_title);
+            summary = preference.getContext().getString(R.string.safety_hub_no_passwords_summary);
+            secondaryButtonText =
+                    preference
+                            .getContext()
+                            .getString(R.string.safety_hub_passwords_navigation_button);
+            secondaryButtonListener =
+                    model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
+        } else if (compromisedPasswordsCount > 0) {
             title =
                     preference
                             .getContext()
@@ -234,6 +248,7 @@ public class SafetyHubModuleViewBinder {
                     model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
         }
         preference.setTitle(title);
+        preference.setSummary(summary);
         preference.setPrimaryButtonText(primaryButtonText);
         preference.setSecondaryButtonText(secondaryButtonText);
         preference.setPrimaryButtonClickListener(primaryButtonListener);
@@ -496,6 +511,11 @@ public class SafetyHubModuleViewBinder {
             case SafetyHubModuleProperties.ModuleOption.ACCOUNT_PASSWORDS:
                 int compromisedPasswordsCount =
                         model.get(SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT);
+                int totalPasswordsCount =
+                        model.get(SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT);
+                if (totalPasswordsCount == 0) {
+                    return SafetyHubModuleProperties.ModuleState.INFO;
+                }
                 return compromisedPasswordsCount > 0
                         ? SafetyHubModuleProperties.ModuleState.WARNING
                         : SafetyHubModuleProperties.ModuleState.SAFE;

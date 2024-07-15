@@ -127,7 +127,10 @@ public class SafetyHubModuleViewBinderTest {
 
     @Test
     public void testPasswordCheckModule_NoCompromisedPasswords() {
+        int totalPasswordsCount = 5;
         mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, 0);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
 
         String expectedTitle = mActivity.getString(R.string.safety_check_passwords_safe);
         String expectedSecondaryButtonText =
@@ -143,9 +146,12 @@ public class SafetyHubModuleViewBinderTest {
 
     @Test
     public void testPasswordCheckModule_CompromisedPasswordsExist() {
+        int totalPasswordsCount = 10;
         int compromisedPasswordsCount = 5;
         mPasswordCheckPropertyModel.set(
                 SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
 
         String expectedTitle =
                 mActivity
@@ -163,6 +169,24 @@ public class SafetyHubModuleViewBinderTest {
         assertEquals(expectedPrimaryButtonText, mPasswordCheckPreference.getPrimaryButtonText());
         assertNull(mPasswordCheckPreference.getSecondaryButtonText());
         assertTrue(mPasswordCheckPreference.isExpanded());
+    }
+
+    @Test
+    public void testPasswordCheckModule_NoPasswordsSaved() {
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, 0);
+
+        String expectedTitle = mActivity.getString(R.string.safety_hub_no_passwords_title);
+        String expectedSummary = mActivity.getString(R.string.safety_hub_no_passwords_summary);
+        String expectedSecondaryButtonText =
+                mActivity.getString(R.string.safety_hub_passwords_navigation_button);
+
+        assertEquals(expectedTitle, mPasswordCheckPreference.getTitle().toString());
+        assertEquals(expectedSummary, mPasswordCheckPreference.getSummary().toString());
+        assertEquals(INFO_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
+        assertNull(mPasswordCheckPreference.getPrimaryButtonText());
+        assertEquals(
+                expectedSecondaryButtonText, mPasswordCheckPreference.getSecondaryButtonText());
+        assertFalse(mPasswordCheckPreference.isExpanded());
     }
 
     @Test
@@ -429,6 +453,7 @@ public class SafetyHubModuleViewBinderTest {
         @SafeBrowsingState int safeBrowsingState = SafeBrowsingState.ENHANCED_PROTECTION;
         UpdateStatusProvider.UpdateStatus updateStatus = new UpdateStatusProvider.UpdateStatus();
         updateStatus.updateState = UpdateStatusProvider.UpdateState.UPDATE_AVAILABLE;
+        int totalPasswordsCount = 0;
         int compromisedPasswordsCount = 0;
         int sitesWithUnusedPermissionsCount = 3;
         int notificationPermissionsForReviewCount = 5;
@@ -438,6 +463,8 @@ public class SafetyHubModuleViewBinderTest {
         mBrowserStatePropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
         mBrowserStatePropertyModel.set(
                 SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
+        mBrowserStatePropertyModel.set(
+                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
         mBrowserStatePropertyModel.set(
                 SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
                 sitesWithUnusedPermissionsCount);
@@ -454,12 +481,15 @@ public class SafetyHubModuleViewBinderTest {
         mBrowserStatePropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
 
         safeBrowsingState = SafeBrowsingState.STANDARD_PROTECTION;
+        totalPasswordsCount = 5;
         compromisedPasswordsCount = 1;
 
         mBrowserStatePropertyModel.set(
                 SafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
         mBrowserStatePropertyModel.set(
                 SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
+        mBrowserStatePropertyModel.set(
+                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
 
         assertFalse(mBrowserStatePreference.isVisible());
     }
@@ -469,6 +499,7 @@ public class SafetyHubModuleViewBinderTest {
         @SafeBrowsingState int safeBrowsingState = SafeBrowsingState.NO_SAFE_BROWSING;
         UpdateStatusProvider.UpdateStatus updateStatus = new UpdateStatusProvider.UpdateStatus();
         updateStatus.updateState = UpdateStatusProvider.UpdateState.UPDATE_AVAILABLE;
+        int totalPasswordsCount = 10;
         int compromisedPasswordsCount = 5;
         int sitesWithUnusedPermissionsCount = 3;
         int notificationPermissionsForReviewCount = 5;
@@ -478,6 +509,8 @@ public class SafetyHubModuleViewBinderTest {
         mBrowserStatePropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
         mBrowserStatePropertyModel.set(
                 SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
+        mBrowserStatePropertyModel.set(
+                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
         mBrowserStatePropertyModel.set(
                 SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
                 sitesWithUnusedPermissionsCount);
@@ -494,6 +527,7 @@ public class SafetyHubModuleViewBinderTest {
         UpdateStatusProvider.UpdateStatus updateStatus = new UpdateStatusProvider.UpdateStatus();
         updateStatus.updateState = UpdateStatusProvider.UpdateState.NONE;
         updateStatus.latestVersion = "1.1.1.1";
+        int totalPasswordsCount = 0;
         int compromisedPasswordsCount = 0;
         int sitesWithUnusedPermissionsCount = 3;
         int notificationPermissionsForReviewCount = 0;
@@ -503,6 +537,8 @@ public class SafetyHubModuleViewBinderTest {
         mBrowserStatePropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
         mBrowserStatePropertyModel.set(
                 SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
+        mBrowserStatePropertyModel.set(
+                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
         mBrowserStatePropertyModel.set(
                 SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
                 sitesWithUnusedPermissionsCount);
@@ -519,6 +555,7 @@ public class SafetyHubModuleViewBinderTest {
         UpdateStatusProvider.UpdateStatus updateStatus = new UpdateStatusProvider.UpdateStatus();
         updateStatus.updateState = UpdateStatusProvider.UpdateState.NONE;
         updateStatus.latestVersion = "1.1.1.1";
+        int totalPasswordsCount = 0;
         int compromisedPasswordsCount = 0;
         int sitesWithUnusedPermissionsCount = 3;
         int notificationPermissionsForReviewCount = 0;
@@ -528,6 +565,8 @@ public class SafetyHubModuleViewBinderTest {
         mUpdateCheckPropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
         mPasswordCheckPropertyModel.set(
                 SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
         mPermissionsPropertyModel.set(
                 SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
                 sitesWithUnusedPermissionsCount);
@@ -563,6 +602,7 @@ public class SafetyHubModuleViewBinderTest {
         UpdateStatusProvider.UpdateStatus updateStatus = new UpdateStatusProvider.UpdateStatus();
         updateStatus.updateState = UpdateStatusProvider.UpdateState.NONE;
         updateStatus.latestVersion = "1.1.1.1";
+        int totalPasswordsCount = 10;
         int compromisedPasswordsCount = 5;
         int sitesWithUnusedPermissionsCount = 3;
         int notificationPermissionsForReviewCount = 5;
@@ -575,6 +615,8 @@ public class SafetyHubModuleViewBinderTest {
         mUpdateCheckPropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
         mPasswordCheckPropertyModel.set(
                 SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
         mPermissionsPropertyModel.set(
                 SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
                 sitesWithUnusedPermissionsCount);
@@ -609,6 +651,7 @@ public class SafetyHubModuleViewBinderTest {
         @SafeBrowsingState int safeBrowsingState = SafeBrowsingState.NO_SAFE_BROWSING;
         UpdateStatusProvider.UpdateStatus updateStatus = new UpdateStatusProvider.UpdateStatus();
         updateStatus.updateState = UpdateStatusProvider.UpdateState.UPDATE_AVAILABLE;
+        int totalPasswordsCount = 10;
         int compromisedPasswordsCount = 5;
         int sitesWithUnusedPermissionsCount = 3;
         int notificationPermissionsForReviewCount = 5;
@@ -618,6 +661,8 @@ public class SafetyHubModuleViewBinderTest {
         mUpdateCheckPropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
         mPasswordCheckPropertyModel.set(
                 SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
         mPermissionsPropertyModel.set(
                 SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
                 sitesWithUnusedPermissionsCount);

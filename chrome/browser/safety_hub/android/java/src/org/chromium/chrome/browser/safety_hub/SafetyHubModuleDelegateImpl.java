@@ -15,6 +15,7 @@ import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
+import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -89,5 +90,10 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
     @Override
     public boolean isSafeBrowsingManaged() {
         return new SafeBrowsingBridge(mProfile).isSafeBrowsingManaged();
+    }
+
+    @Override
+    public int getAccountPasswordsCount() {
+        return new PasswordStoreBridge(mProfile).getPasswordStoreCredentialsCountForAccountStore();
     }
 }

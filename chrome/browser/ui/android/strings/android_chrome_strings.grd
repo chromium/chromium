@@ -1834,6 +1834,12 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_CHECKED_RECENTLY" translateable="false">
         Checked recently
       </message>
+      <message name="IDS_SAFETY_HUB_NO_PASSWORDS_TITLE" translateable="false">
+        No saved passwords
+      </message>
+      <message name="IDS_SAFETY_HUB_NO_PASSWORDS_SUMMARY" translateable="false">
+        Chrome can check your passwords when you save them
+      </message>
 
        <!-- Safe Browsing preferences -->
       <message name="IDS_PREFS_SAFE_BROWSING_TITLE" desc="Title for the Safe Browsing preferences. [CHAR_LIMIT=32]">
