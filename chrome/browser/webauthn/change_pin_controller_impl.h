@@ -85,11 +85,8 @@ class ChangePinControllerImpl
 
   ~ChangePinControllerImpl() override;
 
-  // Checks whether changing PIN flow is available. Changing the PIN is only
-  // possible when the `EnclaveManager` is ready and has a wrapped PIN.
-  bool IsChangePinFlowAvailable() override;
-
-  // Starts the change PIN flow. Returns true if the flow has started.
+  // ChangePinController:
+  void IsChangePinFlowAvailable(PinAvailableCallback callback) override;
   void StartChangePin(SuccessCallback callback) override;
 
   // AuthenticatorRequestDialogModel::Observer
@@ -108,6 +105,7 @@ class ChangePinControllerImpl
 
   void OnGpmPinChanged(bool success);
   void Reset(bool success);
+  void NotifyPinAvailability(PinAvailableCallback callback);
 
   const bool enclave_enabled_;
   std::unique_ptr<AuthenticatorRequestDialogModel> model_;

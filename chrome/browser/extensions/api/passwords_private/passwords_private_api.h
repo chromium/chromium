@@ -492,6 +492,9 @@ class PasswordsPrivateIsPasswordManagerPinAvailableFunction
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
+
+ private:
+  void OnPasswordManagerPinAvailabilityReceived(bool is_available);
 };
 
 class PasswordsPrivateDisconnectCloudAuthenticatorFunction

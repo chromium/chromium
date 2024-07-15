@@ -450,9 +450,10 @@ void TestPasswordsPrivateDelegate::DeleteAllPasswordManagerData(
   std::move(success_callback).Run(true);
 }
 
-bool TestPasswordsPrivateDelegate::IsPasswordManagerPinAvailable(
-    content::WebContents* web_contents) {
-  return false;
+void TestPasswordsPrivateDelegate::IsPasswordManagerPinAvailable(
+    content::WebContents* web_contents,
+    base::OnceCallback<void(bool)> pin_available_callback) {
+  std::move(pin_available_callback).Run(false);
 }
 
 void TestPasswordsPrivateDelegate::DisconnectCloudAuthenticator(

@@ -981,14 +981,16 @@ void PasswordsPrivateDelegateImpl::ChangePasswordManagerPin(
   }
 }
 
-bool PasswordsPrivateDelegateImpl::IsPasswordManagerPinAvailable(
-    content::WebContents* web_contents) {
+void PasswordsPrivateDelegateImpl::IsPasswordManagerPinAvailable(
+    content::WebContents* web_contents,
+    base::OnceCallback<void(bool)> pin_available_callback) {
   ChangePinController* controller =
       ChangePinController::ForWebContents(web_contents);
   if (!controller) {
-    return false;
+    std::move(pin_available_callback).Run(false);
+    return;
   }
-  return controller->IsChangePinFlowAvailable();
+  controller->IsChangePinFlowAvailable(std::move(pin_available_callback));
 }
 
 void PasswordsPrivateDelegateImpl::DisconnectCloudAuthenticator(

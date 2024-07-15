@@ -169,7 +169,10 @@ class MockPasswordManagerPorter : public PasswordManagerPorterInterface {
 
 class MockChangePinController : public ChangePinController {
  public:
-  MOCK_METHOD(bool, IsChangePinFlowAvailable, (), (override));
+  MOCK_METHOD(void,
+              IsChangePinFlowAvailable,
+              (base::OnceCallback<void(bool)> pin_available_callback),
+              (override));
   MOCK_METHOD(void,
               StartChangePin,
               (base::OnceCallback<void(bool)>),
@@ -1891,11 +1894,13 @@ TEST_F(PasswordsPrivateDelegateImplTest, ShareNonExistentPassword) {
 TEST_F(PasswordsPrivateDelegateImplTest, IsChangePinFlowAvailable) {
   auto delegate = CreateDelegate();
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
 
+  EXPECT_CALL(mock_callback, Run(Eq(true)));
   EXPECT_CALL(change_pin_controller_, IsChangePinFlowAvailable)
-      .WillOnce(Return(true));
-
-  EXPECT_TRUE(delegate->IsPasswordManagerPinAvailable(web_contents.get()));
+      .WillOnce([&](auto callback) { std::move(callback).Run(true); });
+  delegate->IsPasswordManagerPinAvailable(web_contents.get(),
+                                          mock_callback.Get());
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, DisconnectCloudAuthenticator) {

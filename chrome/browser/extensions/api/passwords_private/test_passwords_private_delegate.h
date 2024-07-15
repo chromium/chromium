@@ -101,8 +101,9 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   void ChangePasswordManagerPin(
       content::WebContents* web_contents,
       base::OnceCallback<void(bool)> success_callback) override;
-  bool IsPasswordManagerPinAvailable(
-      content::WebContents* web_contents) override;
+  void IsPasswordManagerPinAvailable(
+      content::WebContents* web_contents,
+      base::OnceCallback<void(bool)> pin_available_callback) override;
   void DisconnectCloudAuthenticator(
       content::WebContents* web_contents,
       base::OnceCallback<void(bool)> success_callback) override;

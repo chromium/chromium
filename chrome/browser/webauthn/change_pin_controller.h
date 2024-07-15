@@ -17,6 +17,7 @@ class EnclaveManager;
 class ChangePinController {
  public:
   using SuccessCallback = base::OnceCallback<void(bool)>;
+  using PinAvailableCallback = base::OnceCallback<void(bool)>;
 
   static ChangePinController* ForWebContents(
       content::WebContents* web_contents);
@@ -24,8 +25,9 @@ class ChangePinController {
   virtual ~ChangePinController();
 
   // Checks whether changing PIN flow is available. Changing the PIN is only
-  // possible when the `EnclaveManager` is ready and has a wrapped PIN.
-  virtual bool IsChangePinFlowAvailable() = 0;
+  // possible when the `EnclaveManager` is ready and has a wrapped PIN. If
+  // `EnclaveManager` is not ready, it will be loaded.
+  virtual void IsChangePinFlowAvailable(PinAvailableCallback callback) = 0;
 
   // Starts the change PIN flow. The callback is run once the flow is completed.
   virtual void StartChangePin(SuccessCallback callback) = 0;

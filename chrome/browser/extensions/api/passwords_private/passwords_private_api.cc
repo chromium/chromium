@@ -680,13 +680,23 @@ void PasswordsPrivateChangePasswordManagerPinFunction::OnPinChangeCompleted(
   Respond(WithArguments(success));
 }
 
+// PasswordsPrivateIsPasswordManagerPinAvailableFunction
 ResponseAction PasswordsPrivateIsPasswordManagerPinAvailableFunction::Run() {
   if (auto delegate = GetDelegate(browser_context())) {
-    return RespondNow(WithArguments(
-        delegate->IsPasswordManagerPinAvailable(GetSenderWebContents())));
+    delegate->IsPasswordManagerPinAvailable(
+        GetSenderWebContents(),
+        base::BindOnce(&PasswordsPrivateIsPasswordManagerPinAvailableFunction::
+                           OnPasswordManagerPinAvailabilityReceived,
+                       this));
+    return did_respond() ? AlreadyResponded() : RespondLater();
   }
 
   return RespondNow(Error(kNoDelegateError));
+}
+
+void PasswordsPrivateIsPasswordManagerPinAvailableFunction::
+    OnPasswordManagerPinAvailabilityReceived(bool is_available) {
+  Respond(WithArguments(is_available));
 }
 
 // PasswordsPrivateDisconnectCloudAuthenticatorFunction

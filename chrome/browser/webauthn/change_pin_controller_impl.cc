@@ -47,16 +47,23 @@ ChangePinControllerImpl::~ChangePinControllerImpl() {
   }
 }
 
-bool ChangePinControllerImpl::IsChangePinFlowAvailable() {
+void ChangePinControllerImpl::IsChangePinFlowAvailable(
+    PinAvailableCallback callback) {
   if (!enclave_enabled_) {
-    return false;
+    std::move(callback).Run(false);
+    return;
   }
-  return enclave_enabled_ && enclave_manager_->is_registered() &&
-         enclave_manager_->is_ready() && enclave_manager_->has_wrapped_pin();
+  if (enclave_manager_->is_loaded()) {
+    NotifyPinAvailability(std::move(callback));
+    return;
+  }
+  enclave_manager_->Load(
+      base::BindOnce(&ChangePinControllerImpl::NotifyPinAvailability,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ChangePinControllerImpl::StartChangePin(SuccessCallback callback) {
-  if (!IsChangePinFlowAvailable()) {
+  if (notify_pin_change_callback_) {
     std::move(callback).Run(false);
     return;
   }
@@ -126,6 +133,13 @@ void ChangePinControllerImpl::OnGpmPinChanged(bool success) {
   }
   Reset(/*success=*/true);
   RecordHistogram(ChangePinEvent::kCompletedSuccessfully);
+}
+
+void ChangePinControllerImpl::NotifyPinAvailability(
+    PinAvailableCallback callback) {
+  std::move(callback).Run(enclave_manager_->is_registered() &&
+                          enclave_manager_->is_ready() &&
+                          enclave_manager_->has_wrapped_pin());
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(ChangePinControllerImpl);
