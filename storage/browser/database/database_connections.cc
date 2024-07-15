@@ -74,7 +74,8 @@ int64_t DatabaseConnections::GetOpenDatabaseSize(
     const std::string& origin_identifier,
     const std::u16string& database_name) const {
   auto origin_it = connections_.find(origin_identifier);
-  DCHECK(origin_it != connections_.end()) << "Database not opened";
+  CHECK(origin_it != connections_.end(), base::NotFatalUntil::M130)
+      << "Database not opened";
   auto it = origin_it->second.find(database_name);
   CHECK(it != origin_it->second.end(), base::NotFatalUntil::M130)
       << "Database not opened";
