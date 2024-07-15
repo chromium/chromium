@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
 #import "base/path_service.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 
 namespace {
@@ -23,18 +24,27 @@ NSString* GetDiscardedSessionsFilePath() {
 
 namespace sessions_storage_util {
 
-void MarkSessionsForRemoval(NSArray<NSString*>* session_ids) {
-  NSString* file_path = GetDiscardedSessionsFilePath();
-  NSMutableArray* sessions = [NSMutableArray arrayWithContentsOfFile:file_path];
-  if (!sessions) {
-    sessions = [[NSMutableArray alloc] init];
+void MarkSessionsForRemoval(std::set<std::string> session_ids) {
+  std::set<std::string> discarded_session_ids = GetDiscardedSessions();
+  discarded_session_ids.merge(std::move(session_ids));
+  if (discarded_session_ids.empty()) {
+    ResetDiscardedSessions();
+  } else {
+    NSMutableArray<NSString*>* sessions = [[NSMutableArray alloc] init];
+    for (const std::string& session_id : discarded_session_ids) {
+      [sessions addObject:base::SysUTF8ToNSString(session_id)];
+    }
+    [sessions writeToFile:GetDiscardedSessionsFilePath() atomically:YES];
   }
-  [sessions addObjectsFromArray:session_ids];
-  [sessions writeToFile:file_path atomically:YES];
 }
 
-NSArray<NSString*>* GetDiscardedSessions() {
-  return [NSArray arrayWithContentsOfFile:GetDiscardedSessionsFilePath()];
+std::set<std::string> GetDiscardedSessions() {
+  std::set<std::string> discarded_session_ids;
+  for (NSString* session_id in
+       [NSArray arrayWithContentsOfFile:GetDiscardedSessionsFilePath()]) {
+    discarded_session_ids.insert(base::SysNSStringToUTF8(session_id));
+  }
+  return discarded_session_ids;
 }
 
 void ResetDiscardedSessions() {

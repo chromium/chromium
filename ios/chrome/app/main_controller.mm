@@ -1467,27 +1467,46 @@ SEQUENCE_CHECKER(_sequenceChecker);
 }
 
 - (void)cleanupDiscardedSessions {
-  NSArray<NSString*>* sessionIDs =
+  const std::set<std::string> discardedSessionIDs =
       sessions_storage_util::GetDiscardedSessions();
-  if (!sessionIDs)
+  if (discardedSessionIDs.empty()) {
     return;
+  }
+
+  const std::set<std::string> connectedSessionIDs = [self connectedSessionIDs];
 
   std::set<std::string> identifiers;
-  for (NSString* sessionID in sessionIDs) {
-    // Need to remove storage for both regular and inactive Browser. Removing
-    // data does nothing if there are no data to delete, so there is no need
-    // to check whether inactive tabs are enabled here.
-    const std::string identifier = base::SysNSStringToUTF8(sessionID);
-    identifiers.insert(session_util::GetSessionIdentifier(identifier, false));
-    identifiers.insert(session_util::GetSessionIdentifier(identifier, true));
+  std::set<std::string> postponedRemovals;
+  for (const std::string& sessionID : discardedSessionIDs) {
+    // TODO(crbug.com/350946190): it looks like it is possible for the OS to
+    // inform the application that a scene is discarded even though the scene
+    // is still connected. If this happens, postpone the removal until the
+    // next execution of the application.
+    if (connectedSessionIDs.contains(sessionID)) {
+      postponedRemovals.insert(sessionID);
+    } else {
+      // Need to remove storage for both regular and inactive Browser. Removing
+      // data does nothing if there are no data to delete, so there is no need
+      // to check whether inactive tabs are enabled here.
+      identifiers.insert(session_util::GetSessionIdentifier(sessionID, false));
+      identifiers.insert(session_util::GetSessionIdentifier(sessionID, true));
+    }
   }
+
+  // If all sessions to discard are still mapped, postpone everything.
+  if (identifiers.empty()) {
+    return;
+  }
+
+  // Will execute the closure passed to `Done()` when all the callbacks have
+  // completed.
+  base::ConcurrentClosures concurrent;
 
   std::vector<ChromeBrowserState*> loadedBrowserStates =
       GetApplicationContext()
           ->GetChromeBrowserStateManager()
           ->GetLoadedBrowserStates();
 
-  base::ConcurrentClosures concurrent;
   for (ChromeBrowserState* browserState : loadedBrowserStates) {
     SessionRestorationServiceFactory::GetForBrowserState(browserState)
         ->DeleteDataForDiscardedSessions(identifiers,
@@ -1502,8 +1521,15 @@ SEQUENCE_CHECKER(_sequenceChecker);
     }
   }
 
-  std::move(concurrent)
-      .Done(base::BindOnce(&sessions_storage_util::ResetDiscardedSessions));
+  base::OnceClosure closure =
+      base::BindOnce(&sessions_storage_util::ResetDiscardedSessions);
+  if (!postponedRemovals.empty()) {
+    closure = std::move(closure).Then(
+        base::BindOnce(&sessions_storage_util::MarkSessionsForRemoval,
+                       std::move(postponedRemovals)));
+  }
+
+  std::move(concurrent).Done(std::move(closure));
 }
 
 - (void)pingDistributionServices {
@@ -1552,6 +1578,18 @@ SEQUENCE_CHECKER(_sequenceChecker);
   }
 
   [uiBlocker bringBlockerToFront:requestingScene];
+}
+
+#pragma mark - Private
+
+// Returns the set of Session identifiers for all connected scenes.
+- (std::set<std::string>)connectedSessionIDs {
+  std::set<std::string> connectedSessionIDs;
+  for (SceneState* sceneState in self.appState.connectedScenes) {
+    connectedSessionIDs.insert(
+        base::SysNSStringToUTF8(sceneState.sceneSessionID));
+  }
+  return connectedSessionIDs;
 }
 
 @end

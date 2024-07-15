@@ -18,6 +18,69 @@
 #import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/web_state.h"
 
+namespace {
+
+// An output iterator that counts how many time it has been incremented.
+// Allows to check if sets has non-empty intersection without allocating.
+template <typename T1, typename T2>
+struct CountingOutputIterator {
+  CountingOutputIterator& operator++() {
+    ++count;
+    return *this;
+  }
+  CountingOutputIterator& operator++(int) {
+    ++count;
+    return *this;
+  }
+
+  CountingOutputIterator& operator*() { return *this; }
+  CountingOutputIterator& operator=(const T1&) { return *this; }
+  CountingOutputIterator& operator=(const T2&) { return *this; }
+
+  uint32_t count = 0;
+};
+
+// Override of CountingOutputIterator<T1, T2> when types are identical.
+template <typename T>
+struct CountingOutputIterator<T, T> {
+  CountingOutputIterator& operator++() {
+    ++count;
+    return *this;
+  }
+  CountingOutputIterator& operator++(int) {
+    ++count;
+    return *this;
+  }
+
+  CountingOutputIterator& operator*() { return *this; }
+  CountingOutputIterator& operator=(const T&) { return *this; }
+
+  uint32_t count = 0;
+};
+
+// Returns whether the two sets have non-empty intersection.
+template <typename Range1, typename Range2>
+constexpr bool HasIntersection(Range1&& range1, Range2&& range2) {
+  auto result = base::ranges::set_intersection(
+      std::forward<Range1>(range1), std::forward<Range2>(range2),
+      CountingOutputIterator<decltype(*range1.begin()),
+                             decltype(*range2.begin())>{});
+  return result.count != 0;
+}
+
+// Returns the sessions identifiers for all `browsers`.
+std::set<std::string> GetSessionIdentifiers(
+    const std::set<Browser*>& browsers) {
+  std::set<std::string> result;
+  for (const Browser* browser : browsers) {
+    result.insert(base::SysNSStringToUTF8(
+        SessionRestorationBrowserAgent::FromBrowser(browser)->GetSessionID()));
+  }
+  return result;
+}
+
+}  // namespace
+
 LegacySessionRestorationService::LegacySessionRestorationService(
     bool enable_pinned_tabs,
     bool enable_tab_groups,
@@ -176,6 +239,7 @@ void LegacySessionRestorationService::DeleteDataForDiscardedSessions(
     const std::set<std::string>& identifiers,
     base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!HasIntersection(identifiers, GetSessionIdentifiers(browsers_)));
   NSMutableArray<NSString*>* sessions = [[NSMutableArray alloc] init];
   for (const std::string& identifier : identifiers) {
     [sessions addObject:base::SysUTF8ToNSString(identifier)];

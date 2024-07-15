@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/application_delegate/app_state+Testing.h"
 
 #import <utility>
 
@@ -16,11 +15,13 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/metrics/metrics_service.h"
 #import "components/previous_session_info/previous_session_info.h"
+#import "ios/chrome/app/application_delegate/app_state+Testing.h"
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
@@ -444,12 +445,11 @@ void FlushCookieStoreOnIOThread(
   // session is garbage collected.
   //
   // Thus it is always correct to use -persistentIdentifier here.
-  NSMutableArray<NSString*>* sessionIDs =
-      [NSMutableArray arrayWithCapacity:sceneSessions.count];
+  std::set<std::string> sessionIDs;
   for (UISceneSession* session in sceneSessions) {
-    [sessionIDs addObject:session.persistentIdentifier];
+    sessionIDs.insert(base::SysNSStringToUTF8(session.persistentIdentifier));
   }
-  sessions_storage_util::MarkSessionsForRemoval(sessionIDs);
+  sessions_storage_util::MarkSessionsForRemoval(std::move(sessionIDs));
   crash_keys::SetConnectedScenesCount([self connectedScenes].count);
 }
 
