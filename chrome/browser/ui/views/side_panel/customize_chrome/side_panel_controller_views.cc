@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_side_panel_controller.h"
+#include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_side_panel_controller.h"
+#include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
@@ -31,33 +31,35 @@ BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT<CustomizeChromeUI>,
                         SidePanelWebUIViewT)
 END_METADATA
 
-CustomizeChromeSidePanelController::CustomizeChromeSidePanelController(
-    tabs::TabInterface* tab)
+namespace customize_chrome {
+
+SidePanelControllerViews::SidePanelControllerViews(tabs::TabInterface& tab)
     : tab_(tab) {}
 
-CustomizeChromeSidePanelController::~CustomizeChromeSidePanelController() =
-    default;
+SidePanelControllerViews::~SidePanelControllerViews() = default;
 
-void CustomizeChromeSidePanelController::CreateAndRegisterEntry() {
+void SidePanelControllerViews::CreateAndRegisterEntry() {
   auto* registry = SidePanelRegistry::Get(tab_->GetContents());
 
-  if (!registry)
+  if (!registry) {
     return;
+  }
 
   auto entry = std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kCustomizeChrome,
       base::BindRepeating(
-          &CustomizeChromeSidePanelController::CreateCustomizeChromeWebView,
+          &SidePanelControllerViews::CreateCustomizeChromeWebView,
           base::Unretained(this)));
   entry->AddObserver(this);
   registry->Register(std::move(entry));
 }
 
-void CustomizeChromeSidePanelController::DeregisterEntry() {
+void SidePanelControllerViews::DeregisterEntry() {
   auto* registry = SidePanelRegistry::Get(tab_->GetContents());
 
-  if (!registry)
+  if (!registry) {
     return;
+  }
 
   if (auto* current_entry = registry->GetEntryForKey(
           SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome))) {
@@ -68,7 +70,7 @@ void CustomizeChromeSidePanelController::DeregisterEntry() {
       SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome));
 }
 
-void CustomizeChromeSidePanelController::SetCustomizeChromeSidePanelVisible(
+void SidePanelControllerViews::SetCustomizeChromeSidePanelVisible(
     bool visible,
     CustomizeChromeSection section) {
   auto* side_panel_ui = GetSidePanelUI();
@@ -89,31 +91,30 @@ void CustomizeChromeSidePanelController::SetCustomizeChromeSidePanelVisible(
   }
 }
 
-bool CustomizeChromeSidePanelController::IsCustomizeChromeEntryShowing() const {
+bool SidePanelControllerViews::IsCustomizeChromeEntryShowing() const {
   auto* side_panel_ui = GetSidePanelUI();
   return side_panel_ui && side_panel_ui->IsSidePanelShowing() &&
          (side_panel_ui->GetCurrentEntryId() ==
           SidePanelEntry::Id::kCustomizeChrome);
 }
 
-bool CustomizeChromeSidePanelController::IsCustomizeChromeEntryAvailable()
-    const {
+bool SidePanelControllerViews::IsCustomizeChromeEntryAvailable() const {
   auto* registry = SidePanelRegistry::Get(tab_->GetContents());
   return registry ? (registry->GetEntryForKey(SidePanelEntry::Key(
                          SidePanelEntry::Id::kCustomizeChrome)) != nullptr)
                   : false;
 }
 
-void CustomizeChromeSidePanelController::OnEntryShown(SidePanelEntry* entry) {
+void SidePanelControllerViews::OnEntryShown(SidePanelEntry* entry) {
   entry_state_changed_callback_.Run(true);
 }
 
-void CustomizeChromeSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
+void SidePanelControllerViews::OnEntryHidden(SidePanelEntry* entry) {
   entry_state_changed_callback_.Run(false);
 }
 
 std::unique_ptr<views::View>
-CustomizeChromeSidePanelController::CreateCustomizeChromeWebView() {
+SidePanelControllerViews::CreateCustomizeChromeWebView() {
   auto customize_chrome_web_view =
       std::make_unique<SidePanelWebUIViewT<CustomizeChromeUI>>(
           base::RepeatingClosure(), base::RepeatingClosure(),
@@ -137,11 +138,13 @@ CustomizeChromeSidePanelController::CreateCustomizeChromeWebView() {
   return customize_chrome_web_view;
 }
 
-SidePanelUI* CustomizeChromeSidePanelController::GetSidePanelUI() const {
+SidePanelUI* SidePanelControllerViews::GetSidePanelUI() const {
   return tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_ui();
 }
 
-void CustomizeChromeSidePanelController::SetCallback(
+void SidePanelControllerViews::SetEntryChangedCallback(
     StateChangedCallBack callback) {
   entry_state_changed_callback_ = std::move(callback);
 }
+
+}  // namespace customize_chrome

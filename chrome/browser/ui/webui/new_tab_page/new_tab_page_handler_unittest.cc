@@ -36,7 +36,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
-#include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_side_panel_controller.h"
+#include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/browser/ui/webui/webui_util_desktop.h"
@@ -199,16 +199,22 @@ class MockPromoService : public PromoService {
 };
 
 class MockCustomizeChromeTabHelper
-    : public CustomizeChromeSidePanelControllerBase {
+    : public customize_chrome::SidePanelController {
  public:
   ~MockCustomizeChromeTabHelper() override = default;
 
+  MOCK_METHOD(bool, IsCustomizeChromeEntryAvailable, (), (const, override));
+  MOCK_METHOD(void, CreateAndRegisterEntry, (), (override));
+  MOCK_METHOD(void, DeregisterEntry, (), (override));
   MOCK_METHOD(void,
               SetCustomizeChromeSidePanelVisible,
               (bool, CustomizeChromeSection),
               (override));
   MOCK_METHOD(bool, IsCustomizeChromeEntryShowing, (), (const, override));
-  MOCK_METHOD(void, SetCallback, (StateChangedCallBack), (override));
+  MOCK_METHOD(void,
+              SetEntryChangedCallback,
+              (StateChangedCallBack),
+              (override));
 };
 
 class MockFeaturePromoHelper : public NewTabPageFeaturePromoHelper {

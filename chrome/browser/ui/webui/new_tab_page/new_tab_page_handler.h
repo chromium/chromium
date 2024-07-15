@@ -40,7 +40,6 @@
 #include "ui/native_theme/native_theme_observer.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
-class CustomizeChromeSidePanelControllerBase;
 class GURL;
 class NtpBackgroundService;
 class Profile;
@@ -50,6 +49,10 @@ class NewTabPageFeaturePromoHelper;
 namespace content {
 class WebContents;
 }  // namespace content
+
+namespace customize_chrome {
+class SidePanelController;
+}  // namespace customize_chrome
 
 namespace search_provider_logos {
 class LogoService;
@@ -81,7 +84,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
           customize_chrome_feature_promo_helper,
       const base::Time& ntp_navigation_start_time,
       const std::vector<std::pair<const std::string, int>>* module_id_names,
-      CustomizeChromeSidePanelControllerBase*
+      customize_chrome::SidePanelController*
           customize_chrome_side_panel_controller);
 
   NewTabPageHandler(const NewTabPageHandler&) = delete;
@@ -262,7 +265,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
       promo_service_observation_{this};
   std::optional<base::TimeTicks> promo_load_start_time_;
   base::Value::Dict interaction_module_id_trigger_dict_;
-  raw_ptr<CustomizeChromeSidePanelControllerBase>
+  raw_ptr<customize_chrome::SidePanelController>
       customize_chrome_side_panel_controller_;
 
   // These are located at the end of the list of member variables to ensure the

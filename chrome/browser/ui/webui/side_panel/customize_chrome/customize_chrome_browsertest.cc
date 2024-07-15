@@ -7,8 +7,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/customize_chrome/side_panel_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_side_panel_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
@@ -28,7 +28,7 @@ class CustomizeChromeSidePanelBrowserTest : public InProcessBrowserTest {
   void AppendTab(Browser* browser, const GURL& url);
 
   // Returns the CustomizeChromeTabHelper associated with the tab
-  CustomizeChromeSidePanelController* GetTabHelper(Browser* browser);
+  customize_chrome::SidePanelController* GetTabHelper(Browser* browser);
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -44,7 +44,7 @@ void CustomizeChromeSidePanelBrowserTest::AppendTab(Browser* browser,
   chrome::AddTabAt(browser, url, -1, true);
 }
 
-CustomizeChromeSidePanelController*
+customize_chrome::SidePanelController*
 CustomizeChromeSidePanelBrowserTest::GetTabHelper(Browser* browser) {
   return browser->GetActiveTabInterface()
       ->GetTabFeatures()

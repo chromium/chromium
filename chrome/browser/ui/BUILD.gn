@@ -1161,6 +1161,7 @@ static_library("ui") {
       "content_settings/content_setting_image_model.h",
       "content_settings/content_setting_image_model_states.cc",
       "content_settings/content_setting_image_model_states.h",
+      "customize_chrome/side_panel_controller.h",
       "download/download_bubble_contents_view_info.cc",
       "download/download_bubble_contents_view_info.h",
       "download/download_bubble_info.cc",

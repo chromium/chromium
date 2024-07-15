@@ -54,7 +54,7 @@ TabModel::TabModel(std::unique_ptr<content::WebContents> contents,
   // Once tabs are pulled into a standalone module, TabFeatures and its
   // initialization will need to be delegated back to the main module.
   tab_features_->Init(
-      this, Profile::FromBrowserContext(contents_->GetBrowserContext()));
+      *this, Profile::FromBrowserContext(contents_->GetBrowserContext()));
 }
 
 TabModel::~TabModel() {

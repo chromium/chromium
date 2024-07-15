@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
-#include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_side_panel_controller.h"
+#include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/permissions/permission_indicators_tab_data.h"
 
@@ -49,14 +49,14 @@ void TabFeatures::ReplaceTabFeaturesForTesting(TabFeaturesFactory factory) {
   f = std::move(factory);
 }
 
-void TabFeatures::Init(TabInterface* tab, Profile* profile) {
+void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   CHECK(!initialized_);
   initialized_ = true;
 
   // Features that are only enabled for normal browser windows. By default most
   // features should be instantiated in this block.
-  if (tab->IsInNormalWindow()) {
-    lens_overlay_controller_ = CreateLensController(tab, profile);
+  if (tab.IsInNormalWindow()) {
+    lens_overlay_controller_ = CreateLensController(&tab, profile);
 
     // Each time a new tab is created, validate the topics calculation schedule
     // to help investigate a scheduling bug (crbug.com/343750866).
@@ -68,13 +68,11 @@ void TabFeatures::Init(TabInterface* tab, Profile* profile) {
 
     permission_indicators_tab_data_ =
         std::make_unique<permissions::PermissionIndicatorsTabData>(
-            tab->GetContents());
+            tab.GetContents());
   }
 
-  // TODO(crbug.com/346148554): Do not create a SidePanelRegistry or
-  // dependencies for non-normal browsers.
   customize_chrome_side_panel_controller_ =
-      std::make_unique<CustomizeChromeSidePanelController>(tab);
+      std::make_unique<customize_chrome::SidePanelControllerViews>(tab);
 }
 
 TabFeatures::TabFeatures() = default;

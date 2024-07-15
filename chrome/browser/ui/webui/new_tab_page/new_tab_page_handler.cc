@@ -50,8 +50,8 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
-#include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_side_panel_controller.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
+#include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/browser/ui/webui/webui_util_desktop.h"
@@ -440,7 +440,7 @@ NewTabPageHandler::NewTabPageHandler(
         customize_chrome_feature_promo_helper,
     const base::Time& ntp_navigation_start_time,
     const std::vector<std::pair<const std::string, int>>* module_id_names,
-    CustomizeChromeSidePanelControllerBase*
+    customize_chrome::SidePanelController*
         customize_chrome_side_panel_controller)
     : SettingsEnabledObserver(
           optimization_guide::UserVisibleFeatureKey::kWallpaperSearch),
@@ -510,9 +510,10 @@ NewTabPageHandler::NewTabPageHandler(
 
   page_->SetCustomizeChromeSidePanelVisibility(
       customize_chrome_side_panel_controller_->IsCustomizeChromeEntryShowing());
-  customize_chrome_side_panel_controller_->SetCallback(base::BindRepeating(
-      &NewTabPageHandler::NotifyCustomizeChromeSidePanelVisibilityChanged,
-      weak_ptr_factory_.GetWeakPtr()));
+  customize_chrome_side_panel_controller_->SetEntryChangedCallback(
+      base::BindRepeating(
+          &NewTabPageHandler::NotifyCustomizeChromeSidePanelVisibilityChanged,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 NewTabPageHandler::~NewTabPageHandler() {
