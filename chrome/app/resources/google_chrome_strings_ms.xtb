@@ -15,11 +15,13 @@
 <translation id="1149651794389918149">Log masuk ke Chrome. Jika anda mahu log masuk akaun satu kali sahaja, anda boleh <ph name="GUEST_LINK_BEGIN" />menggunakan peranti sebagai tetamu<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Perihal ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Buka dalam Chrome</translation>
+<translation id="1184145431117212167">Pemasangan gagal kerana versi Windows anda tidak disokong.</translation>
 <translation id="1194807384646768652">Chrome menyekat muat turun ini kerana jenis fail jarang dimuat turun dan mungkin berbahaya</translation>
 <translation id="1203500561924088507">Terima kasih kerana memasang. Anda perlu memulakan semula penyemak imbas anda sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1229096353876452996">Google mengesyorkan supaya Chrome ditetapkan sebagai lalai</translation>
 <translation id="1265739287306757398">Ketahui Caranya</translation>
 <translation id="1278833599417554002">Lancarkan semula untuk mengemas kini &amp;Chrome</translation>
+<translation id="1290883685122687410">Ralat persediaan: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Sila tunggu sementara Chrome memasang kemas kini sistem terkini.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> menghendaki anda membaca dan menerima Syarat Perkhidmatan berikut sebelum menggunakan peranti ini. Syarat ini tidak memperluas, mengubah suai atau mengehadkan Syarat Chrome OS Flex.</translation>
 <translation id="1341711321000856656">Anda boleh menukar profil untuk melihat kata laluan daripada profil Chrome yang lain</translation>
@@ -191,6 +193,7 @@
 <translation id="3583751698304738917">Anda telah log masuk sebagai <ph name="USER_EMAIL_ADDRESS" /> dalam profil Chrome yang lain</translation>
 <translation id="3595784445906693824">Log masuk ke Chrome dalam profil baharu?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Pentadbir anda menghendaki anda melancarkan semula Chrome untuk menggunakan kemas kini}=1{Pentadbir anda menghendaki anda melancarkan semula Chrome untuk menggunakan kemas kini. Tetingkap Inkognito anda tidak dapat dibuka semula.}other{Pentadbir anda menghendaki anda melancarkan semula Chrome untuk menggunakan kemas kini. # tetingkap Inkognito anda tidak dapat dibuka semula.}}</translation>
+<translation id="3597003331831379823">Gagal untuk menjalankan persediaan dengan keistimewaan dipertingkat. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Anda belum melawati laman web ini baru-baru ini. Chrome mengalih keluar <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="3622797965165704966">Kini lebih mudah menggunakan Chrome dengan Google Account anda dan pada komputer yang dikongsi.</translation>
 <translation id="3635073343384702370">Chrome boleh menyemak kata laluan anda apabila anda menyimpan kata laluan tersebut</translation>
@@ -233,6 +236,7 @@
 <translation id="4191857738314598978">{0,plural, =1{Lancarkan semula Chrome dalam masa sehari}other{Lancarkan semula Chrome dalam masa # hari}}</translation>
 <translation id="4205939740494406371">Chrome tidak dapat menyemak kata laluan anda. Cuba lagi selepas 24 jam atau <ph name="BEGIN_LINK" />semak kata laluan dalam Google Account anda<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Membatalkan…</translation>
+<translation id="4224210481850767180">Pemasangan telah dibatalkan.</translation>
 <translation id="4242034826641750751">Chrome memerlukan kebenaran kamera dan mikrofon untuk laman ini</translation>
 <translation id="424864128008805179">Log keluar daripada Chrome?</translation>
 <translation id="4251615635259297716">Paut data Chrome anda ke akaun ini?</translation>

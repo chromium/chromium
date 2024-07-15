@@ -22,6 +22,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1229096353876452996">Google raadt je aan Chrome in te stellen als standaard</translation>
 <translation id="1265739287306757398">Meer informatie</translation>
 <translation id="1278833599417554002">Opnieuw starten om &amp;Chrome te updaten</translation>
+<translation id="1290883685122687410">Configuratiefout: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Wacht terwijl Chrome de nieuwste systeemupdates installeert.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> vereist dat je de volgende Servicevoorwaarden leest en accepteert voordat je dit apparaat gebruikt. Deze voorwaarden zijn geen uitbreiding, aanpassing of beperking van de Voorwaarden van Google Chrome OS Flex.</translation>
 <translation id="1341711321000856656">Je kunt schakelen om wachtwoorden van een ander Chrome-profiel te bekijken</translation>
@@ -194,6 +195,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3583751698304738917">Je bent al ingelogd als <ph name="USER_EMAIL_ADDRESS" /> bij een ander Chrome-profiel</translation>
 <translation id="3595784445906693824">Inloggen bij Chrome in een nieuw profiel?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Je beheerder vereist dat je Chrome opnieuw start om een update uit te voeren.}=1{Je beheerder vereist dat je Chrome opnieuw start om een update uit te voeren. Je incognitovenster kan niet opnieuw worden geopend.}other{Je beheerder vereist dat je Chrome opnieuw start om een update uit te voeren. Je # incognitovensters kunnen niet opnieuw worden geopend.}}</translation>
+<translation id="3597003331831379823">Kan configuratie met rechten op hoger niveau niet uitvoeren. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Je bent hier niet recent geweest. Chrome heeft <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en <ph name="PERMISSION_3" /> verwijderd</translation>
 <translation id="3622797965165704966">Het is nu gemakkelijker om Chrome met je Google-account en op gedeelde computers te gebruiken.</translation>
 <translation id="3635073343384702370">Chrome kan je wachtwoorden controleren als je deze hebt opgeslagen</translation>

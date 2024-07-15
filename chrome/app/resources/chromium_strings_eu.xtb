@@ -27,6 +27,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1497802159252041924">Instalazio-errorea: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Partekatu Chromium-eko fitxa bat</translation>
 <translation id="1553461853655228091">Chromium-ek kamera erabiltzeko baimena behar du, ingurunearen hiru dimentsioko mapa bat sortzeko</translation>
+<translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Luzapena ez da onartzen jada. Kentzea gomendatzen dizu Chromium-ek.}other{Luzapen hauek ez dira onartzen jada. Kentzea gomendatzen dizu Chromium-ek.}}</translation>
 <translation id="1574377791422810894">Chromium-en segurtasun-tresnak</translation>
 <translation id="1591808205441691831">Chromium-ek zeu zarela egiaztatu behar du datu batzuk zure Google-ko kontuan gorde eta gailu guztietan erabili baino lehen. Saioa amaitzen baduzu, datuak gailu honetan geratuko dira.</translation>
 <translation id="1594928384848033697">Chromium-ek Pasahitz-kudeatzailea zerbitzuan dauzkazun datuak ezabatu behar ditu. Horretarako baimena emateko, idatzi Windows-eko pasahitza.</translation>

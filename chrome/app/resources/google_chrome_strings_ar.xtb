@@ -20,6 +20,7 @@
 <translation id="1229096353876452996">‏تنصح Google بضبط Chrome كمتصفِّح تلقائي</translation>
 <translation id="1265739287306757398">معرفة المزيد</translation>
 <translation id="1278833599417554002">‏إعادة تشغيل متصفِّح Chrome لتحديثه</translation>
+<translation id="1290883685122687410">حدث خطأ أثناء الإعداد: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">‏يُرجى الانتظار لحين تثبيت Chrome لآخر تحديثات النظام.</translation>
 <translation id="1335640173511558774">‏يطلب <ph name="MANAGER" /> منك قراءة بنود الخدمة التالية وقبولها قبل استخدام هذا الجهاز، مع العلم بأنّ هذه البنود لا توسِّع نطاق بنود نظام التشغيل ChromeOS Flex من Google ولا تعدلِّها ولا تفرض قيودًا عليها.</translation>
 <translation id="1341711321000856656">‏يمكنك التبديل للاطّلاع على كلمات المرور من ملف شخصي آخر في Chrome.</translation>
@@ -193,6 +194,7 @@
 <translation id="3583751698304738917">‏سبق أن سجّلت الدخول باستخدام <ph name="USER_EMAIL_ADDRESS" /> في ملف شخصي آخر على Chrome</translation>
 <translation id="3595784445906693824">‏هل تريد تسجيل الدخول إلى Chrome في ملف شخصي جديد؟</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق تحديث.}=1{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق تحديث. لن تتم إعادة فتح نافذة التصفح المتخفي.}two{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق تحديث. لن تتم إعادة فتح نافذتَي التصفح المتخفي.}few{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق تحديث. لن تتم إعادة فتح نوافذ التصفّح المتخفي البالغ عددها #.}many{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق تحديث. لن تتم إعادة فتح نوافذ التصفّح المتخفي البالغ عددها #.}other{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق تحديث. لن تتم إعادة فتح نوافذ التصفّح المتخفي البالغ عددها #.}}</translation>
+<translation id="3597003331831379823">تعذَّر إجراء عملية الإعداد باستخدام أذونات مميزة وعالية المستوى. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">‏لم تزر هذا الموقع الإلكتروني مؤخرًا، لذلك أزال Chrome أذونات <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="PERMISSION_3" /></translation>
 <translation id="3622797965165704966">‏الآن أصبح استخدام Chrome مع حسابك في Google وفي أجهزة الكمبيوتر المشتركة أكثر سهولة.</translation>
 <translation id="3635073343384702370">‏لا يستطيع Chrome التحقّق من كلمات المرور إلا عند حفظها.</translation>

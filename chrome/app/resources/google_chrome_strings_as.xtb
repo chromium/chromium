@@ -17,6 +17,7 @@
 <translation id="1149651794389918149">Chromeত ছাইন-ইন কৰক। আপুনি যদি এটা একাউণ্টত কেৱল এবাৰ ছাইন ইন কৰিবলৈ বিচাৰে, <ph name="GUEST_LINK_BEGIN" />আপুনি ডিভাইচটো অতিথি হিচাপে ব্যৱহাৰ কৰিব পাৰে<ph name="GUEST_LINK_END" />।</translation>
 <translation id="1152920704813762236">ChromeOSৰ বিষয়ে</translation>
 <translation id="1154147086299354128">Chromeত &amp;খোলক</translation>
+<translation id="1184145431117212167">ইনষ্টল কৰিব পৰা নগ’ল কাৰণ আপোনাৰ Windowsৰ সংস্কৰণটো সমৰ্থিত নহয়।</translation>
 <translation id="1194807384646768652">এই ফাইলৰ প্ৰকাৰটো সাধাৰণতে ডাউনল’ড কৰা নহয় আৰু ই বিপজ্জনক হ’ব পাৰে বাবে Chromeএ এই ডাউনল’ডটো অৱৰোধ কৰিছে</translation>
 <translation id="1203500561924088507">ইনষ্টল কৰাৰ বাবে ধন্যবাদ। আপুনি <ph name="BUNDLE_NAME" /> ব্যৱহাৰ কৰাৰ পূৰ্বে আপোনাৰ ব্ৰাউজাৰটো ৰিষ্টাৰ্ট কৰিবই লাগিব।</translation>
 <translation id="1229096353876452996">Googleএ Chromeক ডিফ’ল্ট ব্ৰাউজাৰ হিচাপে ছেট কৰাটো চুপাৰিছ কৰিছে</translation>
@@ -239,6 +240,7 @@
 <translation id="4191857738314598978">{0,plural, =1{এদিনৰ ভিতৰত Chrome পুনৰ লঞ্চ কৰক}one{# দিনৰ ভিতৰত Chrome পুনৰ লঞ্চ কৰক}other{# দিনৰ ভিতৰত Chrome পুনৰ লঞ্চ কৰক}}</translation>
 <translation id="4205939740494406371">Chromeএ আপোনাৰ পাছৱর্ডসমূহ পৰীক্ষা কৰিব নোৱাৰে। ২৪ ঘণ্টাৰ পাছত পুনৰ চেষ্টা কৰক অথবা <ph name="BEGIN_LINK" />আপোনাৰ Google একাউণ্টত পাছৱর্ডসমূহ পৰীক্ষা কৰক<ph name="END_LINK" />।</translation>
 <translation id="4222932583846282852">বাতিল কৰি থকা হৈছে...</translation>
+<translation id="4224210481850767180">ইনষ্টল কৰাটো বাতিল কৰা হৈছে।</translation>
 <translation id="4242034826641750751">Chromeক এই ছাইটটোৰ বাবে মাইক্ৰ’ফ’ন আৰু কেমেৰাৰ অনুমতিৰ আৱশ্যক</translation>
 <translation id="424864128008805179">Chromeৰ পৰা ছাইন আউট কৰিবনে?</translation>
 <translation id="4251615635259297716">এই একাউণ্টত আপোনাৰ Chrome ডেটা লিংক কৰিবনে?</translation>

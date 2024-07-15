@@ -265,7 +265,6 @@
 <translation id="1179902906564467236">អនុវត្តតាម​ការណែនាំ​នៅលើ​ទូរសព្ទ​របស់អ្នក ឬ​ប្រើកម្មវិធី​កាមេរ៉ា</translation>
 <translation id="118057123461613219">ការសន្សំសំចៃច្រើនខ្លាំង</translation>
 <translation id="1181037720776840403">ដកចេញ</translation>
-<translation id="1181366777303791449">នៅ <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1182876754474670069">home</translation>
 <translation id="1183237619868651138">មិនអាចតំឡើង <ph name="EXTERNAL_CRX_FILE" /> នៅក្នុងឃ្លាំងសម្ងាត់មូលដ្ឋានទេ។</translation>
 <translation id="1185924365081634987">អ្នកក៏អាចសាកល្បង <ph name="GUEST_SIGNIN_LINK_START" />រុករកជារបៀបភ្ញៀវ<ph name="GUEST_SIGNIN_LINK_END" /> ផងដែរដើម្បីដោះស្រាយកំហុសឆ្គងបណ្តាញនេះ។</translation>
@@ -872,20 +871,17 @@
 <translation id="1620307519959413822">ពាក្យសម្ងាត់​មិនត្រឹមត្រូវទេ។ សូម​ព្យាយាម​ម្ដងទៀត ឬ​ចុច "ភ្លេចពាក្យសម្ងាត់" ដើម្បី​កំណត់ពាក្យសម្ងាត់នេះ​ឡើងវិញ។</translation>
 <translation id="1620510694547887537">កាមេរ៉ា</translation>
 <translation id="1621382140075772850">ឧបករណ៍បញ្ចូលអក្សរ</translation>
-<translation id="1621485112342885423">រទេះ​របស់អ្នក</translation>
 <translation id="1621729191093924223">មុខងារដែលត្រូវការមីក្រូហ្វូននឹងមិនដំណើរការទេ</translation>
 <translation id="1621831347985899379">ទិន្នន័យ <ph name="DEVICE_TYPE" /> នឹងត្រូវលុប</translation>
 <translation id="1621984899599015181">ជម្រើសនៃការចែករំលែក​ស្ថិត​ក្រោម​ការ​គ្រប់គ្រង​របស់ស្ថាប័ន​អ្នក។ ទំនិញ​មួយចំនួន​អាចត្រូវបាន​លាក់។</translation>
 <translation id="1622054403950683339">បំភ្លេចបណ្តាញ Wi-Fi</translation>
 <translation id="1623723619460186680">ការកាត់បន្ថយ​ពន្លឺពណ៌ខៀវ</translation>
-<translation id="1624599281783425761">អ្នកនឹងមើលមិនឃើញ <ph name="MERCHANT" /> ទៀតទេ</translation>
 <translation id="1624863973697515675">ឯកសារនេះ​ធំពេកសម្រាប់​ឧបករណ៍​របស់អ្នក​ក្នុងការគ្រប់គ្រង។ សូមព្យាយាម​ទាញយកវា​នៅលើ​ឧបករណ៍​ផ្សេងទៀត</translation>
 <translation id="1626581272720526544">អ្នកអាច​ទាញយក​ហ្គេម និង​កម្មវិធី Android តាមរយៈ Play Store។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="1627276047960621195">អង្គពិពណ៌នាឯកសារ</translation>
 <translation id="1627408615528139100">បានទាញយក​រួចហើយ</translation>
 <translation id="1628948239858170093">ស្កេនឯកសារមុនពេលបើកឬ?</translation>
 <translation id="1629314197035607094">ពាក្យសម្ងាត់បាន​ផុតកំណត់ហើយ</translation>
-<translation id="1629451755632656601">អនុញ្ញាតឱ្យ Google រកមើលការបញ្ចុះតម្លៃដែលស្របនឹងអ្នកនៅក្នុងរទេះរបស់អ្នក​?</translation>
 <translation id="163072119192489970">អនុញ្ញាតឱ្យបញ្ចប់ការផ្ញើ និងការទទួលទិន្នន័យ</translation>
 <translation id="1630768113285622200">ចាប់ផ្ដើម​ឡើងវិញ និងបន្ត</translation>
 <translation id="1631503405579357839">ការមិនអាចបែងចែក​ពណ៌បាន</translation>
@@ -1116,7 +1112,6 @@
 <translation id="1790976235243700817">ដក​សិទ្ធិចូល​ប្រើប្រាស់​ចេញ</translation>
 <translation id="1791662854739702043">បាន​ដំឡើង</translation>
 <translation id="1792619191750875668">អេក្រង់បន្ថែម</translation>
-<translation id="1794051631868188691">កុំ​បង្ហាញ <ph name="MERCHANT" /> ឱ្យសោះ</translation>
 <translation id="1794212650797661990">លាក់​ពាក្យសម្ងាត់​សម្រាប់ <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">ផ្ញើមតិស្ថាបនាដើម្បីជួយឲ្យយើងដោះស្រាយបញ្ហានេះ។</translation>
 <translation id="1795214765651529549">ប្រើបែបធម្មតា</translation>
@@ -1170,7 +1165,6 @@
 <translation id="1824870205483790748">ខ្ទាស់​ក្រុម​ទៅ​របារចំណាំ</translation>
 <translation id="1825073796163165618">បើកតំណ</translation>
 <translation id="1825565032302550710">ច្រក​ត្រូវតែ​នៅចន្លោះ​ពី 1024 ទៅ 65535</translation>
-<translation id="182577151972096764">រូបមន្ត​ដែលបានមើល​ថ្មីៗនេះ</translation>
 <translation id="18260074040409954">អ្នកអាចប្រើ​ពាក្យសម្ងាត់​ដែលបានរក្សាទុក​នៅលើ​ឧបករណ៍ណាក៏បាន។ ពាក្យសម្ងាត់​ទាំងនោះ​ត្រូវបានរក្សាទុក​ទៅក្នុង <ph name="GOOGLE_PASSWORD_MANAGER" /> សម្រាប់ <ph name="EMAIL" />។</translation>
 <translation id="1826192255355608658">ធ្វើសមកាលកម្ម​ចំណាំ ពាក្យសម្ងាត់ ប្រវត្តិ​នៃកម្មវិធីរុករក​តាមអ៊ីនធឺណិត Chrome របស់អ្នក និង​អ្វីៗជាច្រើនទៀត</translation>
 <translation id="1826516787628120939">កំពុងពិនិត្យមើល</translation>
@@ -2014,7 +2008,6 @@
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{គណនី 1 លើ <ph name="DOMAIN_LINK" />, ពាក្យសម្ងាត់ត្រូវបានរក្សាទុកទៅក្នុងឧបករណ៍នេះតែប៉ុណ្ណោះ។ ព័ត៌មានលម្អិតបន្ថែម}other{គណនី {NUM_PASSWORDS} លើ <ph name="DOMAIN_LINK" />, ពាក្យសម្ងាត់ត្រូវបានរក្សាទុកទៅក្នុងឧបករណ៍នេះតែប៉ុណ្ណោះ។ ព័ត៌មានលម្អិតបន្ថែម}}</translation>
 <translation id="2428510569851653187">ពណ៌នាសកម្មភាពដែលអ្នកកំពុងធ្វើនៅពេលដែលផ្ទាំងនេះបានគាំង</translation>
 <translation id="2428939361789119025">បិទ Wi-Fi</translation>
-<translation id="2428978615149723410">រទេះ​ទាំងនេះ</translation>
 <translation id="2431027948063157455">Google ជំនួយការ​មិនអាច​ផ្ទុក​បាន​ទេ សូម​ពិនិត្យ​ការ​ភ្ជាប់​បណ្តាញ​របស់​អ្នក រួច​ព្យាយាម​ម្តង​ទៀត។</translation>
 <translation id="243179355394256322">ស្ថាប័នរបស់អ្នកអនុញ្ញាតឱ្យចុះឈ្មោះឧបករណ៍ដោយអ្នកប្រើប្រាស់ដែលមានសិទ្ធិតែប៉ុណ្ណោះ។ អ្នកប្រើប្រាស់នេះមិនមានសិទ្ធិចុះឈ្មោះឧបករណ៍ទេ។ សូមប្រាកដថា អ្នកប្រើប្រាស់នេះមានសិទ្ធិជាអ្នកគ្រប់គ្រងសម្រាប់ "ចុះឈ្មោះហាតវែរ Google Meet" នៅក្នុងផ្នែកអ្នកប្រើប្រាស់នៃកុងសូលអ្នកគ្រប់គ្រង។</translation>
 <translation id="243275146591958220">បោះបង់​ការ​ទាញ​យក</translation>
@@ -2126,7 +2119,6 @@
 <translation id="249330843868392562">បើកការកំណត់​ការបំប្លែងអត្ថបទទៅជាការនិយាយ</translation>
 <translation id="2494555621641843783">មិនអាចដំឡើង Steam បានទេ</translation>
 <translation id="2495141202137516054">ពីថាស​របស់អ្នក</translation>
-<translation id="2495524171012645395">រូបមន្ត​ដែលបានមើល​ថ្មីៗនេះ</translation>
 <translation id="2496180316473517155">ប្រវត្តិរុករក</translation>
 <translation id="2497229222757901769">ល្បឿនកណ្តុរ</translation>
 <translation id="2497852260688568942">សមកាលកម្មបានបិទដោយអ្នកគ្រប់គ្រងរបស់អ្នក</translation>
@@ -2524,7 +2516,6 @@
 <translation id="2779728796406650689">ការធ្វើបែបនេះអាច​ឱ្យ Google Assistant ផ្ដល់​ការឆ្លើយតប​ដែលស្រប​តាមអ្នក នៅពេលដែល​អ្នកសួរ​សំណួរ។</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">មានបញ្ហាក្នុង​ការដំឡើង​កម្មវិធី Linux</translation>
-<translation id="2783024642731649028">មុខទំនិញ 1 នៅក្នុង​កន្ត្រក​របស់អ្នក​មាន<ph name="DISCOUNT_TEXT" /> ពី <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, បានមើល <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">ត្រូវបានទាញយក</translation>
 <translation id="2783952358106015700">ប្រើ​សោសុវត្ថិភាព​របស់អ្នក​ជាមួយ <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">ការពិនិត្យពាក្យសម្ងាត់</translation>
@@ -3072,7 +3063,6 @@
     <ph name="BEGIN_PARAGRAPH4" />ប្រសិនបើការកំណត់​សកម្មភាពកម្មវិធី និងគេហទំព័រ​ត្រូវបានបើកសម្រាប់គណនី Google របស់កូនអ្នក ទិន្នន័យរបស់កូន​អ្នក​អាចត្រូវ​បានរក្សាទុក​ទៅគណនី Google របស់គាត់។ ស្វែងយល់​បន្ថែម​អំពី​ការកំណត់​ទាំងនេះ និងរបៀប​កែតម្រូវ​ការកំណត់ទាំងនេះតាមរយៈ families.google.com។<ph name="END_PARAGRAPH4" /></translation>
 <translation id="3199127022143353223">ម៉ាស៊ីនមេ</translation>
 <translation id="3199637719075529971">ផ្ទាំងនេះ​ត្រូវបានភ្ជាប់​ទៅរន្ធស៊េរី</translation>
-<translation id="3200061262156232574">នៅក្នុងរទេះ​ទិញទំនិញរបស់អ្នក</translation>
 <translation id="3201237270673604992">Z ទៅ A</translation>
 <translation id="3201422919974259695">ឧបករណ៍ USB ដែលអាចប្រើបាននឹងបង្ហាញនៅទីនេះ។</translation>
 <translation id="3202499879214571401">ផ្អាក​ការបញ្ជូន​អេក្រង់ទៅ <ph name="DEVICE_NAME" /></translation>
@@ -3210,7 +3200,6 @@
 <translation id="3304212451103136496">បញ្ចុះតម្លៃ <ph name="DISCOUNT_AMOUNT" /></translation>
 <translation id="3305389145870741612">ដំណើរការសម្អាតអាចចំណាយពេលបន្តិច។ សូមរង់ចាំ។</translation>
 <translation id="3305661444342691068">បើក PDF នៅក្នុងការពិនិត្យមើល</translation>
-<translation id="3307176291962384345">ទទួលបានការបញ្ចុះតម្លៃ​សម្រាប់ <ph name="MERCHANT_NAME" /></translation>
 <translation id="3307283429759317478">អ្នកកំពុង​មើលឃើញ​ផ្ទាំងពី​ឧបករណ៍​ផ្សេងទៀត ដើម្បី​ជួយអ្នក​ឱ្យត្រឡប់​ទៅកាន់​សកម្មភាពថ្មីៗ​បំផុត​របស់អ្នកវិញ​យ៉ាងងាយស្រួល។
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3417,7 +3406,6 @@
 <translation id="3462413494201477527">បោះបង់ការបង្កើតគណនី?</translation>
 <translation id="346298925039590474">អ្នកប្រើប្រាស់ទាំងអស់នៅលើឧបករណ៍នេះនឹងអាចប្រើបណ្ដាញ​ទូរសព្ទ​ចល័តនេះបាន</translation>
 <translation id="3464145797867108663">បញ្ចូលកម្រងព័ត៌មានការងារ</translation>
-<translation id="346546413339447252">ទទួលបានការបញ្ចុះតម្លៃសម្រាប់ <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> និងអ្វីៗ​ជាច្រើនទៀត</translation>
 <translation id="3468298837301810372">ស្លាក</translation>
 <translation id="3468999815377931311">ទូរសព្ទ Android</translation>
 <translation id="3469583217479686109">ឧបករណ៍ជ្រើសរើស</translation>
@@ -3842,7 +3830,6 @@
 <translation id="3763549179847864476">ប៊ូតុងថយក្រោយរបស់ការណែនាំអំពី​ឯកជនភាព</translation>
 <translation id="3764314093345384080">ព៏ត៌មានលម្អិតអំពីកំណែបង្កើត</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{ទាក់ទងជាមួយឧបករណ៍ USB}other{ទាក់ទងជាមួយឧបករណ៍ USB #}}</translation>
-<translation id="3764753550716962406">អនុញ្ញាតឱ្យ Google ប្រើរទេះ​របស់អ្នក ដើម្បីរកមើលការបញ្ចុះតម្លៃ​ដែលមានឬ?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{កំពុងផ្ញើ <ph name="ATTACHMENTS" /> ទៅ <ph name="DEVICE_NAME" />}other{កំពុងផ្ញើ <ph name="ATTACHMENTS" /> ទៅ <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765055238058255342">ប្រភេទ​កាត​នេះ</translation>
 <translation id="3765246971671567135">មិន​អាច​អានគោលការណ៍មុខងារ​សាកល្បងពេលគ្មានអ៊ីនធឺណិតបានទេ។</translation>
@@ -4012,7 +3999,6 @@
 <translation id="3878445208930547646">ការចម្លង​ពីគេហទំព័រនេះ​មិនត្រូវបាន​អនុញ្ញាតទេ</translation>
 <translation id="3879748587602334249">កម្មវិធីគ្រប់គ្រងការ​ទាញ​យក</translation>
 <translation id="3880513902716032002">ទំព័រ​មួយចំនួន​ដែលអ្នកចូលមើល​ត្រូវបានផ្ទុកជាមុន</translation>
-<translation id="3883482240657453056">ទទួលបាន​ការបញ្ចុះតម្លៃ​សម្រាប់ <ph name="MERCHANT_NAME_1" /> និង <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">ខ្លឹមសារបណ្ដាញ​ដែលមានជាច្រើន​ភាសា នឹងប្រើភាសាដែល​អាចប្រើបាន​ទីមួយនៅក្នុង​បញ្ជីនេះ។ ចំណូលចិត្តទាំងនេះ​ត្រូវបានធ្វើសមកាលកម្ម​ជាមួយការកំណត់​កម្មវិធីរុករកតាមអ៊ីនធឺណិត​របស់អ្នក។ <ph name="BEGIN_LINK_LEARN_MORE" />ស្វែងយល់បន្ថែម<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">កំណែថ្មីៗ​ស្ថិតក្រោម​ការគ្រប់គ្រង​របស់អ្នកគ្រប់គ្រង​អ្នក</translation>
 <translation id="3887022758415973389">បង្ហាញ​បញ្ជី​ឧបករណ៍</translation>
@@ -4559,7 +4545,6 @@
 <translation id="4290791284969893584">បន្ទាប់ពីបិទទំព័រ កិច្ចការដែលអ្នកបានចាប់ផ្ដើមអាចនឹងមិនបញ្ចប់ទេ</translation>
 <translation id="4290898381118933198">អូស ដើម្បី​រុករក​រវាង​ទំព័រនានា</translation>
 <translation id="4291265871880246274">ប្រអប់ចូល</translation>
-<translation id="429234155571566255">រូបមន្ត​ដែលបានមើល​ថ្មីៗនេះ​ទាំងនេះ</translation>
 <translation id="429312253194641664">គេហទំព័រ​កំពុង​ចាក់មេឌៀ</translation>
 <translation id="4294392694389031609">បានលុប <ph name="FILE_NAME" /> ពីប្រវត្តិទាញយក ប៉ុន្តែវានៅតែមានៅលើឧបករណ៍របស់អ្នក</translation>
 <translation id="4295072614469448764">កម្មវិធី​មាននៅក្នុង​ស្ថានីយ​​របស់អ្នក​ ហើយវា​ក៏​អាច​មានរូបតំណាង​នៅក្នុង​កម្មវិធី​ចាប់ផ្ដើម​របស់អ្នក​ផងដែរ។</translation>
@@ -4603,7 +4588,6 @@
 <translation id="4325237902968425115">កំពុងលុប <ph name="LINUX_APP_NAME" />...</translation>
 <translation id="4325433082696797523">ទំហំផ្ទុក និង​ថាមពល</translation>
 <translation id="4326146840124313313">សុវត្ថិភាព​ខ្លាំងបំផុត​របស់ Chrome ធ្វើបានកាន់តែច្រើន​ក្នុងការការពារអ្នកពី​កម្មវិធី​បន្ថែម ការទាញ​យក និង​គេហទំព័រដែល​គ្រោះថ្នាក់</translation>
-<translation id="4326484226728068206">មុខទំនិញនៅក្នុង​កន្ត្រក​របស់អ្នកមាន​<ph name="DISCOUNT_TEXT" /> ពី <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, បានមើល <ph name="RELATIVE_TIME" /></translation>
 <translation id="4327380114687339519">ម៉ឺនុយ​កម្មវិធី​បន្ថែម</translation>
 <translation id="4330191372652740264">ទឹកកក</translation>
 <translation id="4330387663455830245">កុំបកប្រែភាសា <ph name="LANGUAGE" /> ឲ្យសោះ</translation>
@@ -4821,7 +4805,6 @@
 <translation id="449126573531210296">អ៊ីនគ្រីប​ពាក្យសម្ងាត់​ដែលបាន​ធ្វើសមកាលកម្ម​ជាមួយគណនី Google របស់អ្នក</translation>
 <translation id="4492265221907525667">ដើម្បីប្រើមុខងារពិសោធន៍ថ្មីនេះ សូមចូលគណនី។</translation>
 <translation id="449232563137139956">ជាធម្មតា គេហទំព័របង្ហាញរូបភាព ដើម្បីផ្ដល់ទិដ្ឋភាពដូចជា រូបថតសម្រាប់ហាងនៅលើអ៊ីនធឺណិត ឬអត្ថបទព័ត៌មានជាដើម</translation>
-<translation id="4492698018379445570">ស្វែងរកអ្វីដែលអ្នកបានបញ្ចូលទៅក្នុងរទេះ​ទិញទំនិញ និងបង់ប្រាក់ចេញ នៅពេលរួចរាល់</translation>
 <translation id="4493167769966437077">ដកភាសា<ph name="LANGUAGE_NAME" />ចេញពី​ភាសា​ដែលមិន​ផ្ដល់ជូន​​ការ​បកប្រែ</translation>
 <translation id="4493468155686877504">បានណែនាំ (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495002167047709180">អនុញ្ញាត​កម្មវិធី​បន្ថែម​នេះ​នៅលើ <ph name="SITE" /> ឬ?</translation>
@@ -4849,7 +4832,6 @@
 <translation id="4509741852167209430">ប្រភេទ​ទិន្នន័យមួយចំនួនតូច​ត្រូវ​បាន​ចែករំលែក​រវាង​គេហទំព័រ​នានា ដើម្បី​វាស់ស្ទង់​លទ្ធផលប្រតិបត្តិការ​នៃ​ការផ្សាយពាណិជ្ជកម្ម​របស់​គេហទំព័រ​ទាំងនោះ ដូចជាថាតើអ្នកបានទិញបន្ទាប់ពីចូលមើលគេហទំព័រឬអត់</translation>
 <translation id="4510195992002502722">មិនអាចផ្ញើមតិកែលម្អបានទេ។ កំពុងព្យាយាមម្ដងទៀត...</translation>
 <translation id="4510479820467554003">បញ្ជី​គណនី​មាតាបិតា</translation>
-<translation id="451102079304155829">រទេះ​</translation>
 <translation id="4511344327646819192">ដើម្បីបញ្ឈប់អ្នកដទៃពីការប្រើប្រាស់ពាក្យសម្ងាត់របស់អ្នក សូមផ្លាស់ប្ដូរពាក្យសម្ងាត់នោះនៅលើ <ph name="WEBSITE" /></translation>
 <translation id="4513072860957814107">&amp;លុប​ទិន្នន័យរុករក...</translation>
 <translation id="4513872120116766993">ការសរសេរតាម​ការទស្សន៍ទាយ</translation>
@@ -5043,10 +5025,6 @@
 <translation id="4652935475563630866">ការផ្លាស់ប្ដូរ​នៅក្នុង​ការកំណត់​កាមេរ៉ា​តម្រូវឱ្យចាប់ផ្ដើម Parallels Desktop ឡើងវិញ។ ចាប់ផ្ដើម Parallels Desktop ឡើងវិញ ដើម្បីបន្ត។</translation>
 <translation id="4653116291358041820">ស្រមោល​តូច</translation>
 <translation id="4653405415038586100">មានបញ្ហាក្នុងការកំណត់រចនាសម្ព័ន្ធ Linux</translation>
-<translation id="465406513924180949">អ្នកកំពុងមើលឃើញរទេះ​ ដែលជួយឱ្យអ្នកត្រឡប់ទៅកាន់ទំនិញដែលអ្នកបានទុកនៅក្នុងរទេះ​ទិញទំនិញនៅលើអ៊ីនធឺណិតបានយ៉ាងងាយស្រួល។
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        អ្នកអាចគ្រប់គ្រងការកំណត់ពីម៉ឺនុយកាត ឬមើលជម្រើសច្រើនទៀតនៅក្នុង Customize Chrome។</translation>
 <translation id="4654236001025007561">ចែករំលែក​ឯកសារ​ជាមួយឧបករណ៍ Android និង Chromebook នៅជុំវិញអ្នក</translation>
 <translation id="4657914796247705218">ល្បឿន TrackPoint</translation>
 <translation id="4658285806588491142">រក្សាអេក្រង់របស់អ្នកជាលក្ខណៈឯកជន</translation>
@@ -5343,7 +5321,6 @@
 <translation id="4879491255372875719">ស្វ័យប្រវត្តិ (លំនាំដើម)</translation>
 <translation id="4880315242806573837">ការធ្វើ​បច្ចុប្បន្នភាព​ផ្នែក​សុវត្ថិភាពនឹងដល់ទីបញ្ចប់ឆាប់ៗនេះ។ ប្ដូរទៅ Chromebook ថ្មី។</translation>
 <translation id="4880827082731008257">ប្រវត្តិស្វែងរក</translation>
-<translation id="4881632956374597321">កម្មវិធី និង​គេហទំព័រ​ដែលមាន​ការអនុញ្ញាត​ឱ្យប្រើទីតាំង ក៏ដូចជាសេវាកម្ម​ប្រព័ន្ធ អាចប្រើ​ទីតាំង​របស់អ្នក​បាន។ <ph name="LINK_BEGIN" />ស្វែងយល់​បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="4881685975363383806">កុំរំលឹកខ្ញុំ​លើកក្រោយ</translation>
 <translation id="4881695831933465202">បើក</translation>
 <translation id="4882312758060467256">មានសិទ្ធិ​ចូល​ប្រើ​គេហទំព័រ​នេះ</translation>
@@ -5420,12 +5397,10 @@
 <translation id="4936042273057045735">មិនអាចធ្វើសមកាលកម្ម​ការជូនដំណឹងសម្រាប់ទូរសព្ទ​នៅក្នុងកម្រងព័ត៌មាន​ការងារបានទេ</translation>
 <translation id="4937676329899947885">កំពុងទទួលបណ្ដាញ Wi-Fi</translation>
 <translation id="4938052313977274277">ល្បឿន</translation>
-<translation id="4938788218358929252">​គំនិតថ្មីៗអំពីរូបមន្តទាំងនេះ</translation>
 <translation id="4939805055470675027">មិន​អាច​​ភ្ជាប់ <ph name="CARRIER_NAME" /> បាន​ទេ</translation>
 <translation id="4940364377601827259">មាន​ម៉ាស៊ីន​បោះពុម្ព​ <ph name="PRINTER_COUNT" /> សម្រាប់​រក្សាទុក​។</translation>
 <translation id="4940448324259979830">គណនីនេះស្ថិតក្រោមការគ្រប់គ្រងរបស់ <ph name="PROFILE_NAME" /></translation>
 <translation id="4940845626435830013">បម្រុងទុក​ទំហំ​ថាស</translation>
-<translation id="4941243352516004658">មុខទំនិញ <ph name="PRODUCT_ITEM_COUNT" /> នៅក្នុង​កន្ត្រក​របស់អ្នក​មាន<ph name="DISCOUNT_TEXT" /> ពី <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, បានមើល <ph name="RELATIVE_TIME" /></translation>
 <translation id="4941246025622441835">ប្រើការស្នើសុំឧបករណ៍នេះ នៅពេលចុះឈ្មោះឧបករណ៍សម្រាប់ការគ្រប់គ្រងសហគ្រាស។</translation>
 <translation id="4941627891654116707">ទំហំពុម្ពអក្សរ</translation>
 <translation id="4941963255146903244">មើលរូបថត មេឌៀ និងកម្មវិធី​របស់ទូរសព្ទអ្នក</translation>
@@ -5449,7 +5424,6 @@
 <translation id="4960020053211143927">មិនអាច​ប្រើបាន​ដោយកម្មវិធី​មួយចំនួនទេ</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">ខាសអេក្រង់</translation>
-<translation id="4961361269522589229">​គំនិតថ្មីៗអំពីរូបមន្ត</translation>
 <translation id="496185450405387901">អ្នកគ្រប់គ្រង​របស់អ្នក​បានដំឡើង​កម្មវិធីនេះ។</translation>
 <translation id="4963789650715167449">លុបផ្ទាំង​បច្ចុប្បន្ន</translation>
 <translation id="4964455510556214366">ការរៀបចំ</translation>
@@ -6089,7 +6063,6 @@
 <translation id="5444281205834970653">លុប រួចបន្ត</translation>
 <translation id="5445400788035474247">10x</translation>
 <translation id="5446983216438178612">បង្ហាញវិញ្ញាបនបត្រសម្រាប់ស្ថាប័ន</translation>
-<translation id="5447384712203291074">ទំនិញ <ph name="ITEM_COUNT_MULTIPLE" /></translation>
 <translation id="5448092089030025717">{NUM_REUSED,plural, =0{គ្មានពាក្យសម្ងាត់​ដែលបានប្រើឡើងវិញទេ}=1{មានពាក្យសម្ងាត់​ដែលប្រើឡើងវិញ 1}other{ពាក្យសម្ងាត់ដែលប្រើឡើងវិញ {NUM_REUSED}​}}</translation>
 <translation id="5448293924669608770">អូយ! មានបញ្ហាអ្វីមួយកើតឡើងក្នុងការចូល</translation>
 <translation id="5449551289610225147">ពាក្យ​សម្ងាត់​មិន​ត្រឹមត្រូវ</translation>
@@ -6494,7 +6467,6 @@
 <translation id="574209121243317957">កម្រិតកម្ពស់​សូរ</translation>
 <translation id="5742787970423162234">កម្មវិធីវេប​ជាកញ្ចប់​ដែលមាន​សមត្ថភាព​កាន់តែប្រសើរ។ <ph name="BEGIN_LINK_LEARN_MORE" />ស្វែងយល់បន្ថែម<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="5743501966138291117">កូដ PIN ត្រូវតែមាន 12 ខ្ទង់ ឬ​តិចជាងនេះ ទើបអាចប្រើ​ការដោះសោ​ដោយស្វ័យប្រវត្តិបាន</translation>
-<translation id="5745316408658560138">អនុញ្ញាតឱ្យ Chrome រកមើលការបញ្ចុះតម្លៃដែលស្របនឹងអ្នកនៅក្នុងរទេះរបស់អ្នកឬ?</translation>
 <translation id="5746169159649715125">រក្សាទុកជា PDF</translation>
 <translation id="5747785204778348146">អ្នកអភិវឌ្ឍន៍ - មិនថេរ</translation>
 <translation id="5747809636523347288">ដាក់ចូល ហើយចូលទៅកាន់ <ph name="URL" /></translation>
@@ -6987,10 +6959,6 @@
 <translation id="6119008366402292080">មិនមាន​ម៉ាស៊ីនបោះពុម្ពទេ</translation>
 <translation id="6119927814891883061">ដាក់ឈ្មោះឧបករណ៍ថា <ph name="DEVICE_NAME" /></translation>
 <translation id="6119972796024789243">ការកែតម្រូវ​ពណ៌</translation>
-<translation id="6120707837086723438">អ្នកកំពុងមើលឃើញរូបមន្តដែលបានណែនាំ ដោយផ្អែកលើសកម្មភាពស្វែងរកថ្មីៗរបស់អ្នកពាក់ព័ន្ធនឹងរូបមន្ត។
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        អ្នកអាចគ្រប់គ្រងការកំណត់ពីម៉ឺនុយកាត ឬមើលជម្រើសច្រើនទៀតនៅក្នុង Customize Chrome។</translation>
 <translation id="6121773125605585883">មើលពាក្យសម្ងាត់ជាមួយឈ្មោះអ្នកប្រើប្រាស់ <ph name="USERNAME" /> សម្រាប់ <ph name="WEBSITE" /></translation>
 <translation id="6122093587541546701">អ៊ីម៉ែល (ស្រេចចិត្ត)៖</translation>
 <translation id="6122095009389448667">បន្ត​ទប់ស្កាត់​ទំព័រ​នេះ​មិនឱ្យ​មើលអង្គ​ចងចាំ</translation>
@@ -7057,7 +7025,6 @@
 <translation id="6165508094623778733">ស្វែងយល់​បន្ថែម</translation>
 <translation id="6165850999903769629">ឥឡូវនេះ កម្មវិធី​ទាំងអស់​នៅលើ ChromeOS បើកនៅក្នុង​វិនដូ​កម្មវិធីទាំងនោះ​ផ្ទាល់​ជំនួសឱ្យ​ការបើក​នៅក្នុង Chrome។</translation>
 <translation id="6166185671393271715">នាំចូលពាក្យសម្ងាត់ទៅ Chrome</translation>
-<translation id="6166659775803431">នៅក្នុង​កន្ត្រក​របស់អ្នក</translation>
 <translation id="6169040057125497443">សូម​ពិនិត្យ​មីក្រូហ្វូន​របស់អ្នក។</translation>
 <translation id="6169967265765719844">ការអនុញ្ញាតសម្រាប់ហ្គេម និងកម្មវិធី​ដែលបានដំឡើងតាមរយៈ Steam អាចត្រូវបានគ្រប់​គ្រងនៅក្នុង<ph name="LINK_BEGIN" />ការកំណត់កម្មវិធី Steam<ph name="LINK_END" />។</translation>
 <translation id="6170470584681422115">សាំងវិច</translation>
@@ -7331,7 +7298,6 @@
 <translation id="637135143619858508">បន្ទាត់ឃ្លាតគ្នា</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">ព្យាយាមម្តងទៀត</translation>
-<translation id="6374635887697228982">ទទួលបាន​ការបញ្ចុះតម្លៃឬ?</translation>
 <translation id="637642201764944055">បន្ទាប់ពី​ខែធ្នូ ឆ្នាំ 2022 កំណែ​ចាស់ៗ​នៃកម្មវិធី Chrome នឹង​មិន​បើក​បាន​នៅលើ​ឧបករណ៍ Linux ទេ។ សូមទាក់ទង​ទៅ​អ្នក​គ្រប់គ្រង​របស់អ្នក ដើម្បី​ដំឡើង​ទៅ​កំណែ​ថ្មី ឬ​លុប​កម្មវិធី​នេះ​ចេញ។</translation>
 <translation id="6377268785556383139">លទ្ធផល 1 សម្រាប់ '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6378392501584240055">បើកនៅក្នុងបណ្ដាញ Wi-Fi</translation>
@@ -7423,7 +7389,6 @@
 <translation id="6451689256222386810">ប្រសិនបើអ្នកភ្លេចឃ្លាសម្ងាត់របស់អ្នក ឬចង់ប្តូរការកំណត់នេះ <ph name="BEGIN_LINK" />សូមកំណត់ការធ្វើសមកាលកម្មឡើងវិញ<ph name="END_LINK" />។</translation>
 <translation id="6452181791372256707">បដិសេធ</translation>
 <translation id="6452251728599530347">បញ្ចប់ <ph name="PERCENT" /></translation>
-<translation id="645286928527869380">​គំនិតថ្មីៗអំពីរូបមន្ត</translation>
 <translation id="6452961788130242735">បញ្ហាបណ្ដាញ ឬដែនមិនល្អ</translation>
 <translation id="6453191633103419909">គុណភាពនៃការបង្ហាញរបស់អេក្រង់/ផ្ទាំង</translation>
 <translation id="6453921811609336127">ដើម្បីប្ដូរទៅវិធីបញ្ចូលបន្ទាប់ សូមចុច <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
@@ -7770,6 +7735,7 @@
 <translation id="6713668088933662563">កុំ​ផ្ដល់​ជូន​ការ​បកប្រែ​ភាសា​ទាំង​នេះ</translation>
 <translation id="6715735940363172819">មិនអនុញ្ញាតឱ្យគេហទំព័រប្រើមីក្រូហ្វូនរបស់អ្នកទេ</translation>
 <translation id="6715803357256707211">មាន​បញ្ហាកើតឡើង អំឡុង​ពេល​ដំឡើង​កម្មវិធី Linux របស់អ្នក។ សូមចុច​លើ​ការជូន​ដំណឹង​សម្រាប់​ព័ត៌មាន​លម្អិត​។</translation>
+<translation id="6716049856796700977">គ្មានអ្វី​អាចប្រើ​ទីតាំង​របស់អ្នក​បានទេ។ ទោះយ៉ាងណាក៏ដោយ កម្មវិធី និង​គេហទំព័រ​ប្រហែលជា​នៅតែអាច​មើលឃើញ​ទីតាំង​របស់អ្នក​តាមរយៈ​អាសយដ្ឋាន IP របស់អ្នក។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">ការតភ្ជាប់​បណ្ដាញ​បានដាច់​។ សូមពិនិត្យមើល​ការតភ្ជាប់​បណ្ដាញ​របស់អ្នក ឬសាកល្បង​ប្រើបណ្ដាញ Wi-Fi ផ្សេងទៀត។</translation>
 <translation id="6718849325281682232">ពណ៌​ទម្រង់រចនា Chrome ត្រូវបានផ្ទុក​ឡើងវិញ ដើម្បីឱ្យ​ដំណើរការកាន់តែប្រសើរ​សម្រាប់អ្នកគ្រប់គ្នា មិនថាអ្នកប្រើ​មុខងារភ្លឺ ឬ​ងងឹតនោះទេ</translation>
 <translation id="671928215901716392">ចាក់សោរ</translation>
@@ -7844,7 +7810,6 @@
 <translation id="6778660707554364320">ឥឡូវនេះ <ph name="APP" /> បើកជា​កម្មវិធី</translation>
 <translation id="6779092717724412415">ដើម្បីបង្កើតការរំលេចបែបនេះ សូមជ្រើសរើសអត្ថបទណាមួយ រួចចុចកណ្ដុរខាងស្ដាំ។</translation>
 <translation id="6779348349813025131">កម្មវិធី​គ្រប់គ្រង​ពាក្យសម្ងាត់​ត្រូវការ​សិទ្ធិចូលប្រើ MacOS Keychain</translation>
-<translation id="6779447100905857289">រទេះ​របស់អ្នក</translation>
 <translation id="677965093459947883">តូច​ណាស់​</translation>
 <translation id="6781005693196527806">&amp;គ្រប់គ្រងម៉ាស៊ីន​ស្វែងរក...</translation>
 <translation id="6781284683813954823">តំណ Doodle</translation>
@@ -8084,10 +8049,6 @@
 <translation id="6945221475159498467">ជ្រើសរើស</translation>
 <translation id="694592694773692225">​បាន​ទប់ស្កាត់​ការបញ្ជូន​បន្ត​នៅលើ​ទំព័រនេះ។</translation>
 <translation id="6946231195377941116">{NUM_SITES,plural, =1{បានបិទ​កម្មវិធីបន្ថែម​ដែលគ្មាន​សុវត្ថិភាព​ចំនួន 1}other{បានបិទ​កម្មវិធីបន្ថែម​ដែលគ្មាន​សុវត្ថិភាព​ចំនួន {NUM_SITES}}}</translation>
-<translation id="6947015141909171112">អ្នក​កំពុង​មើលឃើញ​រូបមន្ត ដោយផ្អែកលើ​សកម្មភាព​ស្វែងរក​ថ្មីៗ​របស់អ្នក​ពាក់ព័ន្ធ​នឹងរូបមន្ត។
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        អ្នកអាចគ្រប់គ្រងការកំណត់ពីម៉ឺនុយកាត ឬមើលជម្រើសច្រើនទៀតនៅក្នុង "ប្ដូរ Chrome តាម​បំណង"។</translation>
 <translation id="6949089178006131285">អាន​ព័ត៌មានអំពី​បណ្ដាញ ChromeOS Flex</translation>
 <translation id="6949434160682548041">ពាក្យ​សម្ងាត់ (ជាជម្រើស)</translation>
 <translation id="6950143189069683062">ព័ត៌មានលម្អិត​អំពី​អង្គចងចាំ</translation>
@@ -8308,7 +8269,6 @@
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{បញ្ចូល​ផ្ទាំង​ទៅក្រុម}other{បញ្ចូល​ផ្ទាំង​ទៅក្រុម}}</translation>
 <translation id="7110684627876015299">ក្រុមដែលគ្មានឈ្មោះ - <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">ដាក់ឈ្មោះ​វិនដូនេះ</translation>
-<translation id="7113102733263608554">ទំនិញ <ph name="ITEM_COUNT_ONE" /></translation>
 <translation id="7113502843173351041">ស្គាល់អាសយដ្ឋានអ៊ីម៉ែលរបស់អ្នក</translation>
 <translation id="7113974454301513811">ឥឡូវនេះ បញ្ចូល​ផ្ទាំង​បច្ចុប្បន្ន​ទៅក្នុង​បញ្ជី​របស់​អ្នក</translation>
 <translation id="7114054701490058191">ពាក្យសម្ងាត់មិនត្រូវគ្នាទេ</translation>
@@ -8809,7 +8769,6 @@
 <translation id="7489761397368794366">ហៅ​ទូរសព្ទ​ពី​ឧបករណ៍​របស់អ្នក</translation>
 <translation id="749028671485790643">បុគ្គល <ph name="VALUE" /></translation>
 <translation id="7490683549040131791">ពិនិត្យមើល​ពាក្យសម្ងាត់​ដែលនៅសល់</translation>
-<translation id="7490938136316476492">ទីតាំងត្រូវបានបិទ។ ឧបករណ៍ ChromeOS របស់អ្នកមិនចូលប្រើទីតាំងរបស់អ្នកទេ។ ទោះយ៉ាងណាក៏ដោយ កម្មវិធី និង​គេហទំព័រ​ប្រហែលជា​នៅតែអាច​មើលឃើញ​តំបន់ទូទៅ​របស់អ្នក​តាមរយៈអ្វីៗ ដូចជាអាសយដ្ឋាន IP របស់អ្នកជាដើម។ <ph name="LINK_BEGIN" />ស្វែងយល់​បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="7491962110804786152">ផ្ទាំង</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{ខូគី 1}other{ខូគី {NUM_COOKIES}}}</translation>
 <translation id="7493386493263658176">ផ្នែកបន្ថែម <ph name="EXTENSION_NAME" /> អាចនឹងប្រមូលអត្ថបទទាំងអស់ដែលអ្នកវាយបញ្ចូល ដោយរាប់បញ្ចូលទាំងទិន្នន័យផ្ទាល់ខ្លួនដូចជាពាក្យសម្ងាត់ លេខកាតឥណទានជាដើម។ តើអ្នកចង់ប្រើផ្នែកបន្ថែមនេះឬទេ?</translation>
@@ -8827,7 +8786,6 @@
 <translation id="7504145862399276792">សំឡេង​របស់ផ្ទាំងនេះ​កំពុងត្រូវបានបិទ</translation>
 <translation id="750509436279396091">បើកថតឯកសារទាញយក</translation>
 <translation id="7505149250476994901">និយាយថា "អក្សរធំ" បន្ទាប់ពី​អក្សរ</translation>
-<translation id="7505717542095249632">លាក់ <ph name="MERCHANT" /></translation>
 <translation id="7506093026325926984">ពាក្យសម្ងាត់នេះនឹងត្រូវបានរក្សាទុកនៅលើឧបករណ៍នេះ</translation>
 <translation id="7506130076368211615">រៀបចំបណ្ដាញថ្មី</translation>
 <translation id="7506242536428928412">ដើម្បីប្រើសោសុវត្ថិភាព​ថ្មីរបស់អ្នក សូមកំណត់កូដ PIN ថ្មី</translation>
@@ -9281,7 +9239,6 @@
 <translation id="7829877209233347340">ស្នើសុំ​ឱ្យមាតាបិតា​ចូលគណនី ដើម្បីផ្ដល់ការអនុញ្ញាតឱ្យបញ្ចូល​គណនី​សាលារៀន</translation>
 <translation id="7830833461614351956">ចម្លងឯកសារចំនួន <ph name="NUM_OF_FILES" /> ទៅ <ph name="CLOUD_PROVIDER" /> ដើម្បីបើកឬ?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
-<translation id="783229689197954457">ប្រសិនបើ Google រកឃើញ​ការបញ្ចុះតម្លៃ នោះអ្នកនឹងឃើញ​ការបញ្ចុះតម្លៃនោះ​នៅលើ​ទំព័រនេះ</translation>
 <translation id="7833720883933317473">ពាក្យ​ផ្ទាល់ខ្លួន​ដែល​បាន​រក្សាទុក​នឹង​បង្ហាញ​នៅទីនេះ</translation>
 <translation id="7835178595033117206">បាន​លុប​​​ចំណាំ​</translation>
 <translation id="7836577093182643605">បញ្ជី​ប្រធានបទ​ដែល​អ្នក​បាន​ទប់ស្កាត់ ដែលអ្នក​​មិន​​ចង់​ឱ្យ​ចែករំលែក​ជា​មួយ​គេហទំព័រ</translation>
@@ -9638,7 +9595,6 @@
 <translation id="8082106343289440791">ផ្គូផ្គងជាមួយ "<ph name="DEVICE_NAME" />" ឬ?</translation>
 <translation id="8082390128630131497">ការបិទ​ការជួសជុល ADB នឹងកំណត់ <ph name="DEVICE_TYPE" /> នេះដូចដើមឡើងវិញ។ គណនីអ្នកប្រើប្រាស់ និងទិន្នន័យ​មូលដ្ឋានទាំងអស់​នឹងត្រូវបាន​លុប។</translation>
 <translation id="8084114998886531721">ពាក្យសម្ងាត់​ដែល​បានរក្សាទុក</translation>
-<translation id="8084225986310167317">បានទប់ស្កាត់សម្រាប់គ្រប់គ្នា</translation>
 <translation id="8084429490152575036">ការកំណត់ APN បណ្ដាញ​ចល័ត</translation>
 <translation id="8084510406207562688">ស្ដារផ្ទាំងទាំងអស់</translation>
 <translation id="8084628902026812045">គេហទំព័រនេះ​មិនកំពុងប្រើ​ការតភ្ជាប់​ដែលមានសុវត្ថិភាពទេ ហើយ​ឯកសារ​ប្រហែលបាន​រងការប៉ះពាល់</translation>
@@ -9828,6 +9784,7 @@
 <translation id="8224427620313426549">គណនី <ph name="DOMAIN_LINK" /> របស់​អ្នក​នឹង​មិន​ត្រូវ​បានលុប​ទេ</translation>
 <translation id="8225046344534779393">ពិនិត្យការតភ្ជាប់​អ៊ីនធឺណិត</translation>
 <translation id="8225265270453771718">ចែករំលែក​វិនដូ​កម្មវិធី</translation>
+<translation id="8225516926291976401">មានតែ​សេវាកម្ម​ប្រព័ន្ធ​ប៉ុណ្ណោះ ទើបអាចប្រើ​ទីតាំង​របស់អ្នក​បាន។ ទោះយ៉ាងណាក៏ដោយ កម្មវិធី និង​គេហទំព័រ​ប្រហែលជា​នៅតែអាច​មើលឃើញ​ទីតាំង​របស់អ្នក​តាមរយៈ​អាសយដ្ឋាន IP របស់អ្នក។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="8226222018808695353">ហាមឃាត់</translation>
 <translation id="8226619461731305576">ជួរ</translation>
 <translation id="8227119283605456246">ភ្ជាប់ឯកសារ</translation>
@@ -10177,7 +10134,6 @@
 <translation id="8469863130477774813">អាចបង្កើន​ល្បឿន​ប្រតិបត្តិការ​បាន</translation>
 <translation id="8470513973197838199">បាន​រក្សា​ទុកពាក្យ​សម្ងាត់​​សម្រាប់ <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">ជាធម្មតា គេហទំព័រភ្ជាប់ជាមួយឧបករណ៍ USB សម្រាប់មុខងារផ្សេងៗដូចជា ការបោះពុម្ពឯកសារ ឬការរក្សាទុកទៅក្នុងឧបករណ៍ផ្ទុកជាដើម</translation>
-<translation id="8471959340398751476">ការបញ្ចុះតម្លៃ​ត្រូវបានបិទ។ អ្នកអាចបើក​ការបញ្ចុះតម្លៃ​នៅក្នុង​ម៉ឺនុយ​ប្ដូរតាម​បំណង</translation>
 <translation id="8472563193954285009">{COUNT,plural, =0{ពាក្យសម្ងាត់របស់អ្នកមានលក្ខណៈខុសប្លែកពីគេ}=1{ពាក្យសម្ងាត់ដែលប្រើឡើងវិញ {COUNT}}other{ពាក្យសម្ងាត់ដែលប្រើឡើងវិញ {COUNT}​}}</translation>
 <translation id="8472623782143987204">ផ្នែករឹងបម្រុង</translation>
 <translation id="8473540203671727883">អានអត្ថបទនៅផ្នែកខាងក្រោម​កណ្ដុរ</translation>
@@ -10361,7 +10317,6 @@
 <translation id="8620206585293032550">រូបរាងផ្ទាំងអសកម្ម</translation>
 <translation id="8621979332865976405">ចែករំលែក​អេក្រង់​ទាំងមូល​របស់អ្នក</translation>
 <translation id="8624315169751085215">ចម្លងទៅឃ្លីបបត</translation>
-<translation id="8624354461147303341">ទទួលបាន​ការបញ្ចុះតម្លៃ</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />៖ <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">អាន​លេខស៊េរី​របស់សមាសធាតុ និង​ឧបករណ៍ ChromeOS</translation>
 <translation id="862542460444371744">កម្មវិធីបន្ថែម</translation>
@@ -10619,7 +10574,6 @@
 <translation id="8793390639824829328">គេហទំព័រ​ប្រើ​មុខងារនេះ ដើម្បី​រំកិល និង​ពង្រីកបង្រួម​ផ្ទាំង​ដែលបាន​ចែករំលែក</translation>
 <translation id="879413103056696865">ខណៈពេល​ដែល​ហតស្ប៉ត​បើក <ph name="PHONE_NAME" /> របស់​អ្នក​នឹង៖</translation>
 <translation id="8795916974678578410">ផ្ទាំងថ្មី</translation>
-<translation id="8796907593900732741">មានតែ​សេវាកម្ម​ប្រព័ន្ធ​ប៉ុណ្ណោះ ទើបអាចប្រើ​ទីតាំង​របស់អ្នក​បាន។ ទោះយ៉ាងណាក៏ដោយ កម្មវិធី និង​គេហទំព័រ​ប្រហែលជា​នៅតែអាច​មើលឃើញ​តំបន់ទូទៅ​របស់អ្នក​តាមរយៈអ្វីៗ ដូចជាអាសយដ្ឋាន IP របស់អ្នកជាដើម។ <ph name="LINK_BEGIN" />ស្វែងយល់​បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="8796919761992612392">&amp;ប្ដូរ Chrome របស់អ្នកតាមបំណង</translation>
 <translation id="8797459392481275117">កុំបកប្រែគេហទំទំព័រនេះឲ្យសោះ</translation>
 <translation id="8798099450830957504">លំនាំដើម</translation>
@@ -10808,7 +10762,6 @@
 <translation id="8931475688782629595">គ្រប់គ្រងអ្វី​ដែលអ្នក​ធ្វើសមកាលកម្ម</translation>
 <translation id="8931713990831679796">ម៉ាស៊ីន​បោះពុម្ព​ទាំងនេះ​ត្រូវបាន​ភ្ជាប់ និង​អាចប្រើប្រាស់​បានហើយ។ រក្សាទុក​ទៅ​កម្រងព័ត៌មាន​របស់អ្នក ដើម្បីកាន់តែងាយស្រួល​ចូលប្រើប្រាស់។</translation>
 <translation id="8932654652795262306">ព័ត៌មានលម្អិតអំពី​ការភ្ជាប់ភ្លាមៗ</translation>
-<translation id="893298445929867520">បានលាក់រទេះ​។ រទេះទាំងនេះ​នឹងបង្ហាញ​ឡើងវិញ នៅពេលអ្នក​ធ្វើការផ្លាស់ប្ដូរ។</translation>
 <translation id="8933314208895863334">ខូគី​អាចធ្វើឱ្យ​បទពិសោធ​ប្រើប្រាស់​លើអ៊ីនធឺណិត​របស់អ្នក​កាន់តែ​សម្បូរ​បែប ដែលអនុញ្ញាត​ឱ្យគេហទំព័រ​ផ្ដល់ជូន​មុខងារ​ដែលមានប្រយោជន៍​ដល់អ្នក</translation>
 <translation id="8933709832356869375">កម្មវិធី 1 ដែលបានដំឡើងនឹងត្រូវបានដកចេញ</translation>
 <translation id="8933960630081805351">បង្ហាញនៅក្នុងប្រអប់ស្វែងរក</translation>

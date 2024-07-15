@@ -679,6 +679,7 @@
 <translation id="2219658597883514593">إعادة تشغيل البرنامج التعليمي</translation>
 <translation id="2219735899272417925">مطلوب إعادة ضبط الجهاز</translation>
 <translation id="2221227930294879156">فعاليات حول أطعمة ومشروبات</translation>
+<translation id="2222604080869344662">‏يُرجى تسجيل الدخول إلى OneDrive لمواصلة عملية التنزيل</translation>
 <translation id="2224337661447660594">الاتصال بالإنترنت مقطوع</translation>
 <translation id="2225927550500503913">البطاقة الافتراضية مُفعّلة</translation>
 <translation id="2226636330183131181">‏<ph name="BEGIN_LINK" />تسجيل الدخول<ph name="END_LINK" /> إلى شبكة Wi-Fi</translation>
@@ -778,6 +779,7 @@
 <translation id="2399868464369312507">‏يحاول Google Chrome تعديل طُرق الدفع.</translation>
 <translation id="2400600116338235695">السماح للموقع الإلكتروني بطلب الاتصال بمنافذ تسلسلية</translation>
 <translation id="2404884497378469141">حاوِل نسخ ملفاتك مرة أخرى.</translation>
+<translation id="2412310121876768057">هل تريد ملء بيانات البطاقة تلقائيًا في المرة القادمة؟</translation>
 <translation id="2413155254802890957">القديم</translation>
 <translation id="2413528052993050574">هذا الخادم لم يتمكن من إثبات أن ذلك <ph name="DOMAIN" />؛ بل إنه شهادة أمان ربما تم إلغاء صلاحيتها. وربما يكون السبب في ذلك خطأ في التكوين أو مهاجمًا يعترض اتصالك.</translation>
 <translation id="2414886740292270097">داكن</translation>
@@ -1242,6 +1244,7 @@
 <translation id="3352881017886802007">ألعاب رياضية</translation>
 <translation id="3355823806454867987">تغيير إعدادات الخادم الوكيل...</translation>
 <translation id="335809815767823">اكتملت عملية التصدير.</translation>
+<translation id="3359387651158939842">‏يمكنك ملء بياناتك بطاقتك تلقائيًا لإجراء عمليات شراء مستقبلية في حال حفظ هذه البيانات لاستخدامها من خلال Google Pay</translation>
 <translation id="3359565626472459400">زواج</translation>
 <translation id="3360103848165129075">جدول بيانات معالج الدفع</translation>
 <translation id="3362968246557010467">تم نسخ هذه السياسة تلقائيًا من السياسة المتوقفة <ph name="OLD_POLICY" />. يمكنك استخدام هذه السياسة بدلاً من ذلك.</translation>
@@ -2058,6 +2061,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />، <ph name="TYPE_2" />، <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">أولمبياد</translation>
 <translation id="4898742041545089450">تمت إزالة حظر هذا الموضوع وقد يصبح نشطًا استنادًا إلى سجلّ التصفُّح</translation>
+<translation id="4899379435492347481">‏يمكنك حفظ هذه البطاقة لاستخدامها على الإنترنت من خلال Google Pay لإجراء عمليات شراء على جميع أجهزتك</translation>
 <translation id="4900217275619098670">اللفافة التاسعة</translation>
 <translation id="4901052769830245369">تصنيفات (شبه لامعة)</translation>
 <translation id="4901162432287938633">أدوات صحية وأدوات نظافة شخصية</translation>
@@ -2721,6 +2725,7 @@
 <translation id="6180316780098470077">الفاصل الزمني لإعادة المحاولة</translation>
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">‏يقيّد متصفّح Chrome تلقائيًا ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
+<translation id="6194139058731919563">‏يتم تشفير تفاصيل بطاقتك عند حفظها في حسابك على Google واستخدامها للدفع على الإنترنت</translation>
 <translation id="6194209731893739467">الاطّلاع هنا على جميع المنتجات التي يتمّ تتبّع أسعارها</translation>
 <translation id="6195163219142236913">ملفات تعريف الارتباط التابعة لجهات خارجية محدودة</translation>
 <translation id="6195371403461054755">جيولوجيا</translation>
@@ -3622,6 +3627,7 @@
 <translation id="7831993212387676366">ما هي "قائمة التسوّق"؟</translation>
 <translation id="7832078172950550575">‏يمكنك البحث في سجلّ التصفّح باستخدام لغة الحياة اليومية وعبارات مثل "مطاعم بيتزا بالقرب مني" أو "حدائق مناسبة للعائلة في وسط المدينة". يتم إرسال عمليات البحث وأفضل النتائج المطابِقة ومحتوى الصفحات إلى Google، وقد يطّلع عليها فريق من المراجعين لتحسين هذه الميزة. <ph name="BEGIN_LINK" />إدارة إعدادات البحث في السجلّ<ph name="END_LINK" /></translation>
 <translation id="7840103971441592723">تم تفعيل ميزة "لقطة الشاشة".</translation>
+<translation id="7840504603489703295">يتم تطبيق القيود التي تحدّدها المؤسسة المالية.</translation>
 <translation id="784137052867620416">ميزة "إحصاءات التسوّق"</translation>
 <translation id="784404208867107517">السجلّ المجمَّع</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{لا تتوفَّر تطبيقات}=1{تطبيق واحد (<ph name="EXAMPLE_APP_1" />)}=2{تطبيقان (<ph name="EXAMPLE_APP_1" />، و<ph name="EXAMPLE_APP_2" />)}few{# تطبيقات (<ph name="EXAMPLE_APP_1" />، و<ph name="EXAMPLE_APP_2" />، و<ph name="AND_MORE" /> من التطبيقات الأخرى)}many{# تطبيقات (<ph name="EXAMPLE_APP_1" />، و<ph name="EXAMPLE_APP_2" />، و<ph name="AND_MORE" /> من التطبيقات الأخرى)}other{# تطبيقات (<ph name="EXAMPLE_APP_1" />، و<ph name="EXAMPLE_APP_2" />، و<ph name="AND_MORE" /> من التطبيقات الأخرى)}}</translation>
@@ -3821,6 +3827,7 @@
 <translation id="8241712895048303527">الحظر على هذا الموقع</translation>
 <translation id="8242426110754782860">متابعة</translation>
 <translation id="8246482227229072868">خواتم</translation>
+<translation id="8248406213705193919">هل تريد حفظ بيانات البطاقة بشكل آمن؟</translation>
 <translation id="8249296373107784235">إلغاء</translation>
 <translation id="824968735947741546">جارٍ ترجمة اللغة <ph name="SOURCE" /> (التي تم رصدها تلقائيًا) إلى اللغة <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">‏تم حفظ هذا العنوان حاليًا على هذا الجهاز. لاستخدامه في جميع منتجات Google، عليك حفظه في حسابك على Google، <ph name="ACCOUNT" />.</translation>
@@ -4307,6 +4314,7 @@
 <translation id="9169664750068251925">الحظر دومًا على هذا الموقع</translation>
 <translation id="9169931577761441333">إضافة تطبيق <ph name="APP_NAME" /> إلى الشاشة الرئيسية</translation>
 <translation id="9170848237812810038">&amp;إلغاء</translation>
+<translation id="9170906125144697215">‏ادفع باستخدام Pix بدون التبديل بين التطبيقات</translation>
 <translation id="9171296965991013597">هل تريد مغادرة التطبيق؟</translation>
 <translation id="9173282814238175921">مستند واحد/ورقة جديدة</translation>
 <translation id="9173995187295789444">جارٍ البحث عن أجهزة بلوتوث...</translation>
@@ -4328,6 +4336,7 @@
 <translation id="9205078245616868884">يتم ترميز بياناتك باستخدام عبارة مرور المزامنة. أدخلها لبدء المزامنة.</translation>
 <translation id="920643408853370361">تأمين على السفر</translation>
 <translation id="9207861905230894330">تعذّرت إضافة مقالة.</translation>
+<translation id="9209339767782560829">حدثت مشكلة أثناء استخدام شهادة تسجيل الدخول.</translation>
 <translation id="9210825002219699214">سفر جوي</translation>
 <translation id="9211461151375991073">أدخِل علامة @ للبحث في <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">تخصيص المظهر</translation>

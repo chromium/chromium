@@ -17,6 +17,7 @@
 <translation id="1149651794389918149">შედით Chrome-ში. თუ ანგარიშში შესვლა მხოლოდ ერთჯერადად გსურთ, <ph name="GUEST_LINK_BEGIN" />მოწყობილობის გამოყენება სტუმრის სტატუსით<ph name="GUEST_LINK_END" /> შეგიძლიათ.</translation>
 <translation id="1152920704813762236">ChromeOS-ის შესახებ</translation>
 <translation id="1154147086299354128">Chrome-ში &amp;გახსნა</translation>
+<translation id="1184145431117212167">ინსტალაცია ვერ მოხერხდა, რადგან Windows-ის თქვენი ვერსია არ არის მხარდაჭერილი.</translation>
 <translation id="1194807384646768652">Chrome-მა დაბლოკა ეს ჩამოტვირთვა, რადგან ამ ტიპის ფაილს, როგორც წესი, არ ტვირთავენ ხოლმე და ის, შესაძლოა, სახიფათო იყოს</translation>
 <translation id="1203500561924088507">გმადლობთ დაინსტალირებისთვის. <ph name="BUNDLE_NAME" />-ის გამოყენებამდე თქვენი ბრაუზერი უნდა გადატვირთოთ.</translation>
 <translation id="1229096353876452996">Google გირჩევთ, დააყენოთ Chrome ნაგულისხმევად</translation>
@@ -238,6 +239,7 @@
 <translation id="4191857738314598978">{0,plural, =1{ხელახლა გაუშვით Chrome დღის განმავლობაში}other{ხელახლა გაუშვით Chrome # დღის განმავლობაში}}</translation>
 <translation id="4205939740494406371">Chrome ვერ ახერხებს პაროლების შემოწმებას. ცადეთ 24 საათში ან <ph name="BEGIN_LINK" />შეამოწმეთ პაროლები თქვენს Google ანგარიშში<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">მიმდინარეობს გაუქმება…</translation>
+<translation id="4224210481850767180">ინსტალაცია გაუქმდა.</translation>
 <translation id="4242034826641750751">Chrome საჭიროებს კამერისა და მიკროფონზე წვდომის ნებართვას ამ საიტისთვის</translation>
 <translation id="424864128008805179">გსურთ Chrome-იდან გამოსვლა?</translation>
 <translation id="4251615635259297716">მივამაგროთ Chrome-ის მონაცემები ამ ანგარიშზე?</translation>

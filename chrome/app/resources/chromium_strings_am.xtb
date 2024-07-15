@@ -27,6 +27,7 @@
 <translation id="1497802159252041924">የጭነት ስህተት፦ <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">የChromium ትር ያጋሩ</translation>
 <translation id="1553461853655228091">Chromium የዙሪያዎ 3ል ካርታ መፍጠር እንዲችል ካሜራዎን የመድረስ ፈቃድ ያስፈልገዋል</translation>
+<translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{ይህ ቅጥያ ከአሁን በኋላ አይደገፍም። Chromium እንዲያስወግዱት ይመክራል።}one{ይህ ቅጥያ ከአሁን በኋላ አይደገፍም። Chromium እንዲያስወግዱት ይመክራል።}other{እነዚህ ቅጥያዎች ከአሁን በኋላ አይደገፉም። Chromium እንዲያስወግዷቸው ይመክራል}}</translation>
 <translation id="1574377791422810894">የChromium የደህንነት መሣሪያዎች</translation>
 <translation id="1591808205441691831">የተወሰነ ውሂብ በGoogle መለያዎ ውስጥ መቀመጥ እና በሁሉም መሣሪያዎችዎ ላይ ጥቅም ላይ መዋል ከመቻሉ በፊት Chromium ማንነትዎን ማረጋገጥ አለበት። ዘግተው ከወጡ ይህ ውሂብ በዚህ መሣሪያ ላይ ይቆያል።</translation>
 <translation id="1594928384848033697">Chromium የእርስዎን የይለፍ ቃል አስተዳዳሪ ውሂብ መሰረዝ ይፈልጋል። ይህን ለመፍቀድ የWindows የይለፍ ቃልዎን ይተይቡ።</translation>

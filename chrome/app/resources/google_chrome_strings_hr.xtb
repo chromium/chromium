@@ -20,6 +20,7 @@
 <translation id="1229096353876452996">Google preporučuje postavljanje Chromea kao zadanog</translation>
 <translation id="1265739287306757398">Saznajte kako</translation>
 <translation id="1278833599417554002">Ponovo pokrenite da biste ažurirali &amp;Chrome</translation>
+<translation id="1290883685122687410">Pogreška pri postavljanju: <ph name="METAINSTALLER_EXIT_CODE" /> <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Pričekajte da Chrome instalira najnovija ažuriranja sustava.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> zahtijeva da pročitate i prihvatite sljedeće uvjete pružanja usluge prije upotrebe ovog uređaja. Ti uvjeti ne predstavljaju proširenje, izmjenu ili ograničenje uvjeta ChromeOS Flexa.</translation>
 <translation id="1341711321000856656">Možete se prebaciti da biste vidjeli zaporke s nekog drugog profila na Chromeu</translation>
@@ -191,6 +192,7 @@
 <translation id="3583751698304738917">Već ste prijavljeni kao <ph name="USER_EMAIL_ADDRESS" /> na drugom profilu u Chromeu</translation>
 <translation id="3595784445906693824">Želite li se prijaviti u Chrome s novim profilom?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Vaš administrator zahtijeva da ponovno pokrenete Chrome radi primjene ažuriranja}=1{Vaš administrator zahtijeva da ponovno pokrenete Chrome radi primjene ažuriranja. Anonimni se prozor neće ponovno otvoriti.}one{Vaš administrator zahtijeva da ponovno pokrenete Chrome radi primjene ažuriranja. Vaš # anonimni prozor neće se ponovno otvoriti.}few{Vaš administrator zahtijeva da ponovno pokrenete Chrome radi primjene ažuriranja. Vaša # anonimna prozora neće se ponovno otvoriti.}other{Vaš administrator zahtijeva da ponovno pokrenete Chrome radi primjene ažuriranja. Vaših # anonimnih prozora neće se ponovno otvoriti.}}</translation>
+<translation id="3597003331831379823">Pokretanje postavljanja s dodatnim ovlastima nije uspjelo. <ph name="METAINSTALLER_ERROR" />.</translation>
 <translation id="3609788354808247807">U posljednje vrijeme niste posjećivali web-lokaciju. Chrome je uklonio <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="3622797965165704966">Upotreba Chromea s vašim Google računom te na dijeljenim računalima sada je još jednostavnija.</translation>
 <translation id="3635073343384702370">Chrome može provjeriti vaše zaporke kad ih spremite</translation>

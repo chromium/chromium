@@ -679,6 +679,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2219658597883514593">Ponovo pokreni vodič</translation>
 <translation id="2219735899272417925">Uređaj je potrebno vratiti na zadano</translation>
 <translation id="2221227930294879156">Gastronomski, enološki i slični događaji</translation>
+<translation id="2222604080869344662">Prijavite se na OneDrive da biste nastavili s preuzimanjem</translation>
 <translation id="2224337661447660594">Nema interneta</translation>
 <translation id="2225927550500503913">Virtualna kartica je uključena</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Prijava<ph name="END_LINK" /> na Wi-Fi mrežu</translation>
@@ -778,6 +779,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2399868464369312507">Google Chrome pokušava urediti načine plaćanja.</translation>
 <translation id="2400600116338235695">Može tražiti dopuštenje za povezivanje sa serijski spojenim priključcima</translation>
 <translation id="2404884497378469141">Pokušajte ponovno kopirati datoteke</translation>
+<translation id="2412310121876768057">Želite li sljedeći put automatski popuniti karticu?</translation>
 <translation id="2413155254802890957">Stara</translation>
 <translation id="2413528052993050574">Poslužitelj nije mogao dokazati da je <ph name="DOMAIN" />; njegov sigurnosni certifikat možda je opozvan. To može biti uzrokovano pogrešnom konfiguracijom ili napadom na vašu vezu.</translation>
 <translation id="2414886740292270097">Tamno</translation>
@@ -1241,6 +1243,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3352881017886802007">Sportske igre</translation>
 <translation id="3355823806454867987">Promijeni proxy postavke...</translation>
 <translation id="335809815767823">Izvezeno</translation>
+<translation id="3359387651158939842">Automatski popunjavajte karticu za buduće kupnje kad je spremite za upotrebu s Google Payom</translation>
 <translation id="3359565626472459400">Brak</translation>
 <translation id="3360103848165129075">List rukovatelja plaćanjima</translation>
 <translation id="3362968246557010467">Pravilo je automatski kopirano iz ukinutog pravila <ph name="OLD_POLICY" />. Trebali biste koristiti ovo pravilo.</translation>
@@ -2054,6 +2057,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpijske igre</translation>
 <translation id="4898742041545089450">Tema je deblokirana i može postati aktivna na temelju vaše povijesti pregledavanja</translation>
+<translation id="4899379435492347481">Spremite tu karticu da biste je mogli upotrebljavati online s Google Payom za kupnje na svojim uređajima</translation>
 <translation id="4900217275619098670">Deveti kolut</translation>
 <translation id="4901052769830245369">Naljepnice (polusjajno)</translation>
 <translation id="4901162432287938633">Higijena i kozmetika</translation>
@@ -2717,6 +2721,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6180316780098470077">Interval između ponovnih pokušaja</translation>
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome automatski ograničava kolačiće trećih strana</translation>
+<translation id="6194139058731919563">Podaci o vašim karticama šifriraju se kad se spremaju na vaš Google račun i upotrebljavaju za plaćanje online</translation>
 <translation id="6194209731893739467">Ovdje pogledajte sve svoje praćene proizvode</translation>
 <translation id="6195163219142236913">Ograničeni kolačići treće strane</translation>
 <translation id="6195371403461054755">Geologija</translation>
@@ -3618,6 +3623,7 @@ Dodatne pojedinosti:
 <translation id="7831993212387676366">Što je popis za kupnju?</translation>
 <translation id="7832078172950550575">Povijest pregledavanja možete pretraživati pomoću svakodnevnih izraza kao što su "pizza u blizini" ili "parkovi prikladni za obitelj u centru grada". Vaša pretraživanja, najbolja podudaranja i sadržaj njihovih stranica šalju se Googleu i mogu ih vidjeti pregledavatelji radi poboljšanja te značajke. <ph name="BEGIN_LINK" />Upravljajte postavkom pretraživanja povijesti<ph name="END_LINK" /></translation>
 <translation id="7840103971441592723">Snimanje zaslona je počelo</translation>
+<translation id="7840504603489703295">Primjenjuju se ograničenja vaše financijske ustanove.</translation>
 <translation id="784137052867620416">Uvidi za Shopping</translation>
 <translation id="784404208867107517">Grupirana povijest</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ništa}=1{1 aplikacija (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikacije (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# aplikacija (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}few{# aplikacije (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# aplikacija (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -3816,6 +3822,7 @@ Dodatne pojedinosti:
 <translation id="8241712895048303527">Blokiraj na ovoj web-lokaciji</translation>
 <translation id="8242426110754782860">Nastavi</translation>
 <translation id="8246482227229072868">Prstenovi</translation>
+<translation id="8248406213705193919">Sigurno spremiti karticu?</translation>
 <translation id="8249296373107784235">Prekini</translation>
 <translation id="824968735947741546">Prevodi se <ph name="SOURCE" /> (automatski otkriveno) na <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Ta je adresa trenutačno spremljena na ovom uređaju. Da biste je upotrebljavali na Googleovim proizvodima, spremite je na svoj Google račun, <ph name="ACCOUNT" />.</translation>
@@ -4301,6 +4308,7 @@ i netočne vjerodajnice. To može značiti da se neki napadač pokušava predsta
 <translation id="9169664750068251925">Uvijek blokiraj na ovoj web-lokaciji</translation>
 <translation id="9169931577761441333">Dodajte <ph name="APP_NAME" /> na početni zaslon</translation>
 <translation id="9170848237812810038">&amp;Poništi</translation>
+<translation id="9170906125144697215">Plaćanje putem Pixa bez promjene aplikacije</translation>
 <translation id="9171296965991013597">Napustiti aplikaciju?</translation>
 <translation id="9173282814238175921">Jedan dokument/novi list</translation>
 <translation id="9173995187295789444">Traženje Bluetooth uređaja...</translation>
@@ -4322,6 +4330,7 @@ i netočne vjerodajnice. To može značiti da se neki napadač pokušava predsta
 <translation id="9205078245616868884">Vaši su podaci šifrirani vašom šifrom za sinkronizaciju. Unesite je da biste pokrenuli sinkronizaciju.</translation>
 <translation id="920643408853370361">Putno osiguranje</translation>
 <translation id="9207861905230894330">Dodavanje članka nije uspjelo.</translation>
+<translation id="9209339767782560829">Došlo je do problema s korištenjem vašeg certifikata za prijavu.</translation>
 <translation id="9210825002219699214">Putovanje zrakoplovom</translation>
 <translation id="9211461151375991073">Utipkajte @ za pretraživanje <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Prilagodi izgled</translation>

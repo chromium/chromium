@@ -262,7 +262,6 @@
 <translation id="1179902906564467236">Следуйте инструкциям на телефоне или используйте приложение "Камера".</translation>
 <translation id="118057123461613219">Очень большая экономия</translation>
 <translation id="1181037720776840403">Удалить</translation>
-<translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1182876754474670069">Home</translation>
 <translation id="1183237619868651138">Не удается установить файл <ph name="EXTERNAL_CRX_FILE" /> в локальный кеш.</translation>
 <translation id="1185924365081634987">Чтобы исправить данную сетевую ошибку, попробуйте <ph name="GUEST_SIGNIN_LINK_START" />войти в гостевом режиме<ph name="GUEST_SIGNIN_LINK_END" />.</translation>
@@ -870,20 +869,17 @@
 <translation id="1620307519959413822">Неверный пароль. Повторите попытку или нажмите "Забыли пароль?", чтобы сбросить его.</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1621382140075772850">Инструмент "Текст"</translation>
-<translation id="1621485112342885423">Корзины</translation>
 <translation id="1621729191093924223">Функции, которые используют микрофон, не будут работать</translation>
 <translation id="1621831347985899379">Данные на <ph name="DEVICE_TYPE" /> будут удалены</translation>
 <translation id="1621984899599015181">Настройками доступа управляет ваша организация. Некоторые объекты могут быть скрыты.</translation>
 <translation id="1622054403950683339">Удалить сеть Wi-Fi</translation>
 <translation id="1623723619460186680">Уменьшение синего света</translation>
-<translation id="1624599281783425761">Корзина "<ph name="MERCHANT" />" больше не будет показываться.</translation>
 <translation id="1624863973697515675">Файл слишком большой для этого устройства. Попробуйте скачать его на другое устройство.</translation>
 <translation id="1626581272720526544">Вы можете скачивать приложения и игры для Android в Google Play. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="1627276047960621195">Дескрипторы файлов</translation>
 <translation id="1627408615528139100">Файл уже скачан</translation>
 <translation id="1628948239858170093">Проверить файл перед открытием?</translation>
 <translation id="1629314197035607094">Срок действия пароля истек.</translation>
-<translation id="1629451755632656601">Разрешить Google искать персонализированные скидки на товары в корзине?</translation>
 <translation id="163072119192489970">Разрешить сайтам завершать отправку и получение данных</translation>
 <translation id="1630768113285622200">Перезапустить и продолжить</translation>
 <translation id="1631503405579357839">Дальтонизм</translation>
@@ -1105,7 +1101,6 @@
 <translation id="1790976235243700817">Запретить доступ</translation>
 <translation id="1791662854739702043">Установлено</translation>
 <translation id="1792619191750875668">Дополнительный монитор</translation>
-<translation id="1794051631868188691">Никогда не показывать корзину "<ph name="MERCHANT" />"</translation>
 <translation id="1794212650797661990">Скрыть пароль для <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Отправить отзыв, чтобы помочь устранить ошибку</translation>
 <translation id="1795214765651529549">Использовать классическую тему</translation>
@@ -1159,7 +1154,6 @@
 <translation id="1824870205483790748">Закрепить группу на панели закладок</translation>
 <translation id="1825073796163165618">Включить поддержку ссылок</translation>
 <translation id="1825565032302550710">Номер порта должен быть в диапазоне 1024–65535.</translation>
-<translation id="182577151972096764">недавно просмотренные рецепты</translation>
 <translation id="18260074040409954">Вы можете использовать сохраненные пароли на любом устройстве. Место хранения для аккаунта <ph name="EMAIL" />: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1826192255355608658">Синхронизируйте закладки, пароли, историю и другие данные в браузере Chrome</translation>
 <translation id="1826516787628120939">Проверка</translation>
@@ -1933,6 +1927,7 @@
 <translation id="237828693408258535">Перевести эту страницу?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Скоро мы можем прекратить поддержку этого расширения}one{Скоро мы можем прекратить поддержку этих расширений}few{Скоро мы можем прекратить поддержку этих расширений}many{Скоро мы можем прекратить поддержку этих расширений}other{Скоро мы можем прекратить поддержку этих расширений}}</translation>
 <translation id="2378982052244864789">Выберите каталог расширения</translation>
+<translation id="2379111564446699251">Чтобы изменить порядок кнопок на панели инструментов, перетащите их в нужное место.</translation>
 <translation id="2379281330731083556">Печатать с помощью системного диалогового окна <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Подключение к мобильной сети может быть прервано на несколько минут.</translation>
 <translation id="2381499968174336913">Предварительный просмотр демонстрируемой вкладки</translation>
@@ -1998,7 +1993,6 @@
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" />: 1 аккаунт, пароль сохранен только на этом устройстве. Подробнее…}one{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} аккаунт, пароль сохранен только на этом устройстве. Подробнее…}few{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} аккаунта, пароль сохранен только на этом устройстве. Подробнее…}many{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} аккаунтов, пароль сохранен только на этом устройстве. Подробнее…}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} аккаунта, пароль сохранен только на этом устройстве. Подробнее…}}</translation>
 <translation id="2428510569851653187">Опишите, что вы делали, когда произошел сбой</translation>
 <translation id="2428939361789119025">Отключить Wi-Fi</translation>
-<translation id="2428978615149723410">эти корзины</translation>
 <translation id="2431027948063157455">Не удалось загрузить Google Ассистента. Проверьте подключение к Интернету и повторите попытку.</translation>
 <translation id="243179355394256322">Регистрировать устройства в организации могут только авторизированные пользователи. У этого пользователя нет соответствующего разрешения. Право на регистрацию оборудования Google Meet должно быть указано в разделе "Пользователи" консоли администратора.</translation>
 <translation id="243275146591958220">Отменить скачивание</translation>
@@ -2110,7 +2104,6 @@
 <translation id="249330843868392562">Открыть настройки озвучивания текста</translation>
 <translation id="2494555621641843783">Не удается установить Steam</translation>
 <translation id="2495141202137516054">С вашего Диска</translation>
-<translation id="2495524171012645395">Недавно просмотренные рецепты</translation>
 <translation id="2496180316473517155">История браузера</translation>
 <translation id="2497229222757901769">Скорость указателя (для мыши)</translation>
 <translation id="2497852260688568942">Ваш администратор отключил синхронизацию</translation>
@@ -2507,7 +2500,6 @@
 <translation id="2779728796406650689">Это позволяет Google Ассистенту давать персонализированные ответы на ваши вопросы.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Не удалось установить приложение для Linux</translation>
-<translation id="2783024642731649028">1 товар в вашей корзине, к которому относится следующее: <ph name="DISCOUNT_TEXT" />, продавец <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, последний просмотр <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Сохранено</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" />: вход с помощью электронного ключа</translation>
 <translation id="2785267875302712148">Проверка паролей</translation>
@@ -3057,7 +3049,6 @@
     <ph name="BEGIN_PARAGRAPH4" />Если в аккаунте Google ребенка включена история приложений и веб-поиска, в нем могут сохраняться данные ребенка. Узнать больше об этих параметрах и об их настройке можно на странице families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="3199127022143353223">Серверы</translation>
 <translation id="3199637719075529971">Эта вкладка подключена к последовательному порту</translation>
-<translation id="3200061262156232574">Ваша корзина</translation>
 <translation id="3201237270673604992">в обратном алфавитном порядке</translation>
 <translation id="3201422919974259695">Здесь появятся доступные USB-устройства.</translation>
 <translation id="3202499879214571401">Приостановить трансляцию экрана на устройство "<ph name="DEVICE_NAME" />"</translation>
@@ -3195,7 +3186,6 @@
 <translation id="3304212451103136496">Скидка <ph name="DISCOUNT_AMOUNT" /></translation>
 <translation id="3305389145870741612">Форматирование займет несколько секунд. Подождите.</translation>
 <translation id="3305661444342691068">Открыть PDF для просмотра</translation>
-<translation id="3307176291962384345">Получайте скидки в магазине "<ph name="MERCHANT_NAME" />"</translation>
 <translation id="3307283429759317478">Вкладки с других устройств показаны, чтобы вам было проще возвращаться к недавним действиям.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3402,7 +3392,6 @@
 <translation id="3462413494201477527">Отменить создание аккаунта?</translation>
 <translation id="346298925039590474">Эта мобильная сеть будет доступна всем пользователям данного устройства.</translation>
 <translation id="3464145797867108663">Добавить рабочий профиль</translation>
-<translation id="346546413339447252">Получайте скидки в магазинах "<ph name="MERCHANT_NAME_1" />", "<ph name="MERCHANT_NAME_2" />" и не только.</translation>
 <translation id="3468298837301810372">Ярлык:</translation>
 <translation id="3468999815377931311">Телефон Android</translation>
 <translation id="3469583217479686109">Инструмент "Выделение"</translation>
@@ -3544,6 +3533,7 @@
 <translation id="3569614820047645079">Файлы из раздела "Мой диск" будут автоматически синхронизироваться с Chromebook, чтобы у вас был доступ к ним даже без подключения к интернету.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> может просматривать следующие файлы и папки:</translation>
 <translation id="3571734092741541777">Настроить</translation>
+<translation id="3572031449439748861">Расширения (<ph name="NUM_EXTENSIONS" />) отключены</translation>
 <translation id="3575121482199441727">Показывать уведомления с этого сайта</translation>
 <translation id="3575224072358507281">Сбор IP-адреса и результатов оценки сети для Measurement Lab в соответствии с политикой конфиденциальности этой платформы (measurementlab.net/privacy)</translation>
 <translation id="3577473026931028326">Произошла ошибка. Повторите попытку.</translation>
@@ -3826,7 +3816,6 @@
 <translation id="3763549179847864476">Кнопка "Назад" на странице руководства по конфиденциальности</translation>
 <translation id="3764314093345384080">Подробная информация о сборке</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Доступно 1 USB-устройство}one{Доступно # USB-устройство}few{Доступно # USB-устройства}many{Доступно # USB-устройств}other{Доступно # USB-устройства}}</translation>
-<translation id="3764753550716962406">Разрешить Google доступ к корзине, чтобы искать скидки?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}one{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}few{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}many{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}other{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}}</translation>
 <translation id="3765055238058255342">карточки этого типа</translation>
 <translation id="3765246971671567135">Не удалось прочитать политику работы офлайн в демонстрационном режиме.</translation>
@@ -3996,7 +3985,6 @@
 <translation id="3878445208930547646">Копировать материалы этого сайта запрещено</translation>
 <translation id="3879748587602334249">Менеджер скачивания</translation>
 <translation id="3880513902716032002">Некоторые страницы, которые вы посещаете, загружаются заранее</translation>
-<translation id="3883482240657453056">Получайте скидки в магазинах "<ph name="MERCHANT_NAME_1" />" и "<ph name="MERCHANT_NAME_2" />"</translation>
 <translation id="3884152383786131369">Для веб-контента, доступного на нескольких языках, будет использоваться первый подходящий вариант из списка ниже. Эти настройки синхронизированы с настройками браузера. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Обновлениями управляет администратор</translation>
 <translation id="3887022758415973389">Показать список устройств</translation>
@@ -4542,7 +4530,6 @@
 <translation id="4290791284969893584">После закрытия страницы активные задачи могут не завершиться</translation>
 <translation id="4290898381118933198">Перемещение между страницами пролистыванием</translation>
 <translation id="4291265871880246274">Диалоговое окно входа</translation>
-<translation id="429234155571566255">эти недавно просмотренные рецепты</translation>
 <translation id="429312253194641664">На сайте воспроизводятся медиафайлы</translation>
 <translation id="4294392694389031609">Файл "<ph name="FILE_NAME" />" удален из истории скачиваний, но он по-прежнему доступен на вашем устройстве.</translation>
 <translation id="4295072614469448764">Приложение доступно в терминале. Кроме того, на панель запуска мог быть добавлен значок.</translation>
@@ -4586,7 +4573,6 @@
 <translation id="4325237902968425115">Удаление приложения "<ph name="LINUX_APP_NAME" />"…</translation>
 <translation id="4325433082696797523">Хранилище и энергопотребление</translation>
 <translation id="4326146840124313313">Это самый высокий уровень защиты в Chrome, который позволяет обезопасить вас от угроз на сайтах, а также от вредоносных расширений и загрузок.</translation>
-<translation id="4326484226728068206">Товары в вашей корзине, к которым относится следующее: <ph name="DISCOUNT_TEXT" />, продавец <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, последний просмотр <ph name="RELATIVE_TIME" /></translation>
 <translation id="4327380114687339519">Меню расширений</translation>
 <translation id="4330191372652740264">Вода со льдом</translation>
 <translation id="4330387663455830245">Никогда не переводить <ph name="LANGUAGE" /></translation>
@@ -4804,7 +4790,6 @@
 <translation id="449126573531210296">Шифровать синхронизированные пароли с помощью учетных данных аккаунта Google</translation>
 <translation id="4492265221907525667">Чтобы использовать эту новую экспериментальную функцию, выполните вход.</translation>
 <translation id="449232563137139956">Обычно сайты показывают изображения в качестве иллюстраций, например фото в интернет-магазинах или новостных статьях.</translation>
-<translation id="4492698018379445570">Здесь можно найти товары, которые вы добавили в корзину, и оформить покупку.</translation>
 <translation id="4493167769966437077">Удалить <ph name="LANGUAGE_NAME" /> из языков, для которых никогда не предлагается перевод</translation>
 <translation id="4493468155686877504">Рекомендуемый размер (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495002167047709180">Разрешить это расширение на сайте <ph name="SITE" />?</translation>
@@ -4832,7 +4817,6 @@
 <translation id="4509741852167209430">Чтобы оценивать эффективность рекламы, сайты обмениваются некоторыми типами данных, например сведениями о том, сделали ли вы покупку после посещения сайта.</translation>
 <translation id="4510195992002502722">Не удалось отправить отзыв. Повторная попытка…</translation>
 <translation id="4510479820467554003">Аккаунты родителей</translation>
-<translation id="451102079304155829">корзины</translation>
 <translation id="4511344327646819192">Чтобы другие люди не могли использовать ваш пароль, измените его на сайте <ph name="WEBSITE" />.</translation>
 <translation id="4513072860957814107">&amp;Удалить данные о работе в браузере…</translation>
 <translation id="4513872120116766993">Подсказки</translation>
@@ -5026,10 +5010,6 @@
 <translation id="4652935475563630866">Изменено разрешение на доступ к камере. Чтобы продолжить, перезапустите Parallels Desktop.</translation>
 <translation id="4653116291358041820">Мелкая тень</translation>
 <translation id="4653405415038586100">Ошибка при настройке Linux</translation>
-<translation id="465406513924180949">Эти корзины помогут вам вернуться к товарам, которые вы добавляли в заказы в интернет-магазинах.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Вы можете управлять настройками в меню карточки. Чтобы посмотреть дополнительные параметры, выберите "Настроить Chrome".</translation>
 <translation id="4654236001025007561">Делитесь файлами с устройствами Chromebook и Android поблизости.</translation>
 <translation id="4657914796247705218">Скорость TrackPoint</translation>
 <translation id="4658285806588491142">Защитите данные на экране</translation>
@@ -5326,7 +5306,6 @@
 <translation id="4879491255372875719">Автоматически (по умолчанию)</translation>
 <translation id="4880315242806573837">Обновлений системы безопасности скоро не будет. Перейдите на новое устройство Chromebook</translation>
 <translation id="4880827082731008257">Искать в истории</translation>
-<translation id="4881632956374597321">Приложения, сайты и системные службы с этим разрешением могут использовать данные о вашем местоположении. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="4881685975363383806">Не напоминать в следующий раз</translation>
 <translation id="4881695831933465202">Открыть</translation>
 <translation id="4882312758060467256">У расширения есть доступ к этому сайту</translation>
@@ -5403,12 +5382,10 @@
 <translation id="4936042273057045735">Синхронизация уведомлений недоступна, если на телефоне используется рабочий профиль</translation>
 <translation id="4937676329899947885">Получение данных для подключения к сети Wi-Fi</translation>
 <translation id="4938052313977274277">Скорость</translation>
-<translation id="4938788218358929252">эти рецепты</translation>
 <translation id="4939805055470675027">Не удалось подключиться к сети "<ph name="CARRIER_NAME" />"</translation>
 <translation id="4940364377601827259">Принтеров, доступных для сохранения: <ph name="PRINTER_COUNT" />.</translation>
 <translation id="4940448324259979830">Этим аккаунтом управляет администратор домена <ph name="PROFILE_NAME" />.</translation>
 <translation id="4940845626435830013">Зарезервировать место на диске</translation>
-<translation id="4941243352516004658">Товары в вашей корзине (<ph name="PRODUCT_ITEM_COUNT" />), к которым относится следующее: <ph name="DISCOUNT_TEXT" />, продавец <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, последний просмотр <ph name="RELATIVE_TIME" /></translation>
 <translation id="4941246025622441835">Воспользуйтесь этой заявкой при регистрации устройства в домене предприятия:</translation>
 <translation id="4941627891654116707">Размер шрифта</translation>
 <translation id="4941963255146903244">Просмотр фотографий, медиафайлов и приложений с телефона</translation>
@@ -5432,7 +5409,6 @@
 <translation id="4960020053211143927">Не поддерживается некоторыми приложениями</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> (<ph name="PROFILE_NAME" />)</translation>
 <translation id="4961318399572185831">Трансляция экрана</translation>
-<translation id="4961361269522589229">рецепты</translation>
 <translation id="496185450405387901">Это приложение установлено администратором</translation>
 <translation id="4963789650715167449">Удалить вкладку</translation>
 <translation id="4964455510556214366">Расположение</translation>
@@ -6070,7 +6046,6 @@
 <translation id="5444281205834970653">Удалить и продолжить</translation>
 <translation id="5445400788035474247">10x</translation>
 <translation id="5446983216438178612">Показать сертификаты для организаций</translation>
-<translation id="5447384712203291074">Товаров: <ph name="ITEM_COUNT_MULTIPLE" /></translation>
 <translation id="5448092089030025717">{NUM_REUSED,plural, =0{Нет повторяющихся паролей}=1{1 повторяющийся пароль}one{{NUM_REUSED} повторяющийся пароль}few{{NUM_REUSED} повторяющихся пароля}many{{NUM_REUSED} повторяющихся паролей}other{{NUM_REUSED} повторяющегося пароля}}</translation>
 <translation id="5448293924669608770">Произошла ошибка входа</translation>
 <translation id="5449551289610225147">Неправильный пароль</translation>
@@ -6474,7 +6449,6 @@
 <translation id="574209121243317957">Высота звука</translation>
 <translation id="5742787970423162234">Пакетные веб-приложения с улучшенными возможностями. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="5743501966138291117">Чтобы включить автоматическую разблокировку, используйте PIN-код не длиннее 12 символов.</translation>
-<translation id="5745316408658560138">Разрешить Chrome искать персональные скидки на товары в корзине?</translation>
 <translation id="5746169159649715125">Сохранить как PDF</translation>
 <translation id="5747785204778348146">Для разработчиков (нестабильная)</translation>
 <translation id="5747809636523347288">Вс&amp;тавить и перейти на страницу <ph name="URL" /></translation>
@@ -6967,10 +6941,6 @@
 <translation id="6119008366402292080">Нет доступных принтеров</translation>
 <translation id="6119927814891883061">Присвоить название "<ph name="DEVICE_NAME" />"</translation>
 <translation id="6119972796024789243">Коррекция цвета</translation>
-<translation id="6120707837086723438">Эти рекомендованные рецепты показаны с учетом вашей истории поиска.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Вы можете управлять настройками в меню карточки. Чтобы посмотреть дополнительные параметры, выберите "Настроить Chrome".</translation>
 <translation id="6121773125605585883">Показать пароль для имени пользователя <ph name="USERNAME" /> на сайте <ph name="WEBSITE" /></translation>
 <translation id="6122093587541546701">Адрес эл. почты (необязательно):</translation>
 <translation id="6122095009389448667">Не открывать этому сайту доступ к буферу обмена</translation>
@@ -7037,7 +7007,6 @@
 <translation id="6165508094623778733">Подробнее</translation>
 <translation id="6165850999903769629">Все приложения в ChromeOS теперь будут открываться в собственных окнах, а не в Chrome.</translation>
 <translation id="6166185671393271715">Импорт паролей в Chrome</translation>
-<translation id="6166659775803431">В корзине</translation>
 <translation id="6169040057125497443">Проверьте микрофон.</translation>
 <translation id="6169967265765719844">Вы можете управлять разрешениями для игр и приложений, установленных через Steam, <ph name="LINK_BEGIN" />в настройках этой платформы<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Сэндвич</translation>
@@ -7311,7 +7280,6 @@
 <translation id="637135143619858508">Большой межстрочный интервал</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Повторить</translation>
-<translation id="6374635887697228982">Разрешить Chrome искать скидки?</translation>
 <translation id="637642201764944055">Старые версии приложений Chrome перестанут работать на устройствах с Linux после декабря 2022 года. Удалите это приложение или обратитесь к администратору, чтобы обновить его.</translation>
 <translation id="6377268785556383139">1 результат поиска по запросу "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6378392501584240055">Открыть список сетей Wi-Fi</translation>
@@ -7402,7 +7370,6 @@
 <translation id="6451689256222386810">Если вы забыли кодовую фразу или хотите изменить эту настройку, <ph name="BEGIN_LINK" />сбросьте параметры синхронизации<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Отклонить</translation>
 <translation id="6452251728599530347">Выполнено <ph name="PERCENT" /></translation>
-<translation id="645286928527869380">Рецепты</translation>
 <translation id="6452961788130242735">Ошибка сети или неверная область.</translation>
 <translation id="6453191633103419909">Качество видео на вкладке или экране</translation>
 <translation id="6453921811609336127">Чтобы переключиться на следующий способ ввода, нажмите <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Пробел<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
@@ -7755,6 +7722,7 @@
 <translation id="6713668088933662563">Никогда не предлагать перевести страницы на этих языках</translation>
 <translation id="6715735940363172819">У сайтов нет доступа к микрофону</translation>
 <translation id="6715803357256707211">При установке приложения для Linux произошла ошибка. Чтобы узнать больше, нажмите на уведомление.</translation>
+<translation id="6716049856796700977">Доступ к местоположению полностью закрыт. Однако сайты и приложения по-прежнему могут определять, где вы находитесь, по IP-адресу. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Сетевое подключение прервано. Проверьте его или используйте другую сеть Wi-Fi.</translation>
 <translation id="6718849325281682232">Мы изменили цвета светлой и тёмной темы Chrome, чтобы сделать браузер удобнее для всех.</translation>
 <translation id="671928215901716392">Блокировать экран</translation>
@@ -7829,7 +7797,6 @@
 <translation id="6778660707554364320">Приложение "<ph name="APP" />" теперь будет открываться в собственном окне</translation>
 <translation id="6779092717724412415">Чтобы задать такое же выделение, выберите текст и нажмите на него правой кнопкой мыши.</translation>
 <translation id="6779348349813025131">Google Менеджеру паролей необходим доступ к Связке ключей macOS</translation>
-<translation id="6779447100905857289">корзины</translation>
 <translation id="677965093459947883">Очень мелкий</translation>
 <translation id="6781005693196527806">&amp;Управление поисковыми системами…</translation>
 <translation id="6781284683813954823">Ссылка на дудл</translation>
@@ -8069,10 +8036,6 @@
 <translation id="6945221475159498467">Выбрать</translation>
 <translation id="694592694773692225">Попытка переадресации на этой странице заблокирована</translation>
 <translation id="6946231195377941116">{NUM_SITES,plural, =1{Отключено 1 небезопасное расширение}one{Отключено {NUM_SITES} небезопасных расширений}few{Отключены {NUM_SITES} небезопасных расширений}many{Отключены {NUM_SITES} небезопасных расширений}other{Отключены {NUM_SITES} небезопасных расширения}}</translation>
-<translation id="6947015141909171112">Эти рецепты показаны с учетом вашей истории поиска.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Вы можете изменить настройки в меню карточки. Чтобы посмотреть дополнительные параметры, выберите "Настроить Chrome".</translation>
 <translation id="6949089178006131285">Чтение данных сети ChromeOS Flex</translation>
 <translation id="6949434160682548041">Пароль (необязательно)</translation>
 <translation id="6950143189069683062">Использование памяти</translation>
@@ -8293,7 +8256,6 @@
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Добавить вкладку в группу}one{Добавить вкладки в группу}few{Добавить вкладки в группу}many{Добавить вкладки в группу}other{Добавить вкладки в группу}}</translation>
 <translation id="7110684627876015299"><ph name="OPENED_STATE" /> группа без названия</translation>
 <translation id="7111822978084196600">Добавьте название окна</translation>
-<translation id="7113102733263608554">Товаров: <ph name="ITEM_COUNT_ONE" /></translation>
 <translation id="7113502843173351041">Доступ к вашему адресу электронной почты</translation>
 <translation id="7113974454301513811">Теперь добавьте текущую вкладку в список</translation>
 <translation id="7114054701490058191">Пароли не совпадают</translation>
@@ -8792,7 +8754,6 @@
 <translation id="7489761397368794366">Позвонить с моего устройства</translation>
 <translation id="749028671485790643">Пользователь <ph name="VALUE" /></translation>
 <translation id="7490683549040131791">Проверить остальные пароли</translation>
-<translation id="7490938136316476492">Геолокация отключена. Устройство с ChromeOS не может использовать данные о вашем местоположении. Однако сайты и приложения могут определять ваше приблизительное местоположение с помощью IP-адреса и другой информации. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 файл cookie}one{{NUM_COOKIES} файл cookie}few{{NUM_COOKIES} файла cookie}many{{NUM_COOKIES} файлов cookie}other{{NUM_COOKIES} файла cookie}}</translation>
 <translation id="7493386493263658176">Расширение "<ph name="EXTENSION_NAME" />" может сохранять любой текст, который вы вводите, в том числе пароли и данные банковских карт. Начать работу?</translation>
@@ -8810,7 +8771,6 @@
 <translation id="7504145862399276792">Звук на этой вкладке отключен</translation>
 <translation id="750509436279396091">Открыть папку скачанных файлов</translation>
 <translation id="7505149250476994901">Произносить фразу "Прописная буква" перед прописной буквой</translation>
-<translation id="7505717542095249632">Скрыть корзину "<ph name="MERCHANT" />"</translation>
 <translation id="7506093026325926984">Пароль будет сохранен на этом устройстве</translation>
 <translation id="7506130076368211615">Добавьте новую сеть</translation>
 <translation id="7506242536428928412">Чтобы использовать электронный ключ, установите новый PIN-код.</translation>
@@ -9263,7 +9223,6 @@
 <translation id="7829877209233347340">Попросите родителя войти в систему, чтобы дать вам разрешение на добавление учебного аккаунта.</translation>
 <translation id="7830833461614351956">Скопировать файлы (<ph name="NUM_OF_FILES" />) в сервис "<ph name="CLOUD_PROVIDER" />" перед открытием?</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
-<translation id="783229689197954457">Если скидка будет найдена, она появится на этой странице.</translation>
 <translation id="7833720883933317473">Здесь появятся сохраненные специальные слова</translation>
 <translation id="7835178595033117206">Закладка удалена</translation>
 <translation id="7836577093182643605">Список заблокированных тем, которые не передаются сайтам</translation>
@@ -9620,7 +9579,6 @@
 <translation id="8082106343289440791">Подключиться к устройству "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">Если вы отключите отладку с ADB, настройки этого устройства <ph name="DEVICE_TYPE" /> будут сброшены до заводских. Все аккаунты пользователей и локальные данные будут удалены.</translation>
 <translation id="8084114998886531721">Сохраненный пароль</translation>
-<translation id="8084225986310167317">Запрещено полностью</translation>
 <translation id="8084429490152575036">Настройки мобильной точки доступа</translation>
 <translation id="8084510406207562688">Восстановить все вкладки</translation>
 <translation id="8084628902026812045">Этот сайт не защищен, поэтому файл мог быть изменен.</translation>
@@ -9810,6 +9768,7 @@
 <translation id="8224427620313426549">Ваш аккаунт на сайте <ph name="DOMAIN_LINK" /> не будет удален.</translation>
 <translation id="8225046344534779393">Проверьте подключение к интернету.</translation>
 <translation id="8225265270453771718">Откройте доступ к окну приложения</translation>
+<translation id="8225516926291976401">Доступ к местоположению вашего устройства есть только у системных служб. Однако сайты и приложения по-прежнему могут определять, где вы находитесь, по IP-адресу. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="8226222018808695353">Запрещено</translation>
 <translation id="8226619461731305576">Очередь</translation>
 <translation id="8227119283605456246">Прикрепить файл</translation>
@@ -10159,7 +10118,6 @@
 <translation id="8469863130477774813">Повысьте производительность</translation>
 <translation id="8470513973197838199">Сохраненные пароли для <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Обычно сайты подключаются к USB-устройствам, чтобы использовать некоторые функции, например печатать документы или сохранять данные на внешних накопителях.</translation>
-<translation id="8471959340398751476">Скидки отключены. Включить их можно в меню настройки.</translation>
 <translation id="8472563193954285009">{COUNT,plural, =0{Нет повторяющихся паролей}=1{{COUNT} повторяющийся пароль}one{{COUNT} повторяющийся пароль}few{{COUNT} повторяющихся пароля}many{{COUNT} повторяющихся паролей}other{{COUNT} повторяющегося пароля}}</translation>
 <translation id="8472623782143987204">требуется оборудование</translation>
 <translation id="8473540203671727883">Произносить текст под указателем мыши</translation>
@@ -10315,6 +10273,7 @@
 <translation id="8596540852772265699">Пользовательские файлы</translation>
 <translation id="8597845839771543242">Формат свойств:</translation>
 <translation id="8598249292448297523">печать</translation>
+<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Настроить расширение}one{Настроить расширения}few{Настроить расширения}many{Настроить расширения}other{Настроить расширения}}</translation>
 <translation id="8599681327221583254">Одно или несколько правил настроены неправильно. Обратитесь к администратору.</translation>
 <translation id="8599864823732014237">Пропустить корпоративную регистрацию?</translation>
 <translation id="8601206103050338563">Клиентская аутентификация TLS WWW</translation>
@@ -10341,7 +10300,6 @@
 <translation id="8620206585293032550">Внешний вид неактивных вкладок</translation>
 <translation id="8621979332865976405">Откройте доступ ко всему экрану</translation>
 <translation id="8624315169751085215">Копировать в буфер обмена</translation>
-<translation id="8624354461147303341">Разрешить</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="8625124982056504555">Чтение серийных номеров устройства с ChromeOS и его компонентов</translation>
 <translation id="862542460444371744">Расширения</translation>
@@ -10602,7 +10560,6 @@
 <translation id="8793390639824829328">Эта функция влияет на то, могут ли сайты изменять масштаб показанных вкладок и прокручивать их содержимое.</translation>
 <translation id="879413103056696865">Когда вы включите точку доступа, устройство "<ph name="PHONE_NAME" />":</translation>
 <translation id="8795916974678578410">Новое окно</translation>
-<translation id="8796907593900732741">Доступ к геоданным вашего устройства есть только у системных служб. Однако сайты и приложения могут определять ваше приблизительное местоположение с помощью IP-адреса и другой информации. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="8796919761992612392">&amp;Настройка Chrome</translation>
 <translation id="8797459392481275117">Никогда не переводить этот сайт</translation>
 <translation id="8798099450830957504">По умолчанию</translation>
@@ -10716,6 +10673,7 @@
 <translation id="887292602123626481">Подробнее о поисковых системах по умолчанию</translation>
 <translation id="8873075098103007382">Поддерживайте порядок с помощью групп вкладок</translation>
 <translation id="8874341931345877644">Трансляция на устройство:</translation>
+<translation id="8874448314264883207">Расширение "<ph name="EXTENSION_NAME" />" отключено</translation>
 <translation id="8874790741333031443">Попробуйте временно разрешить сторонние файлы cookie. Браузер будет хуже защищен, но функции сайта могут начать работать правильно.</translation>
 <translation id="8875520811099717934">Обновление Linux</translation>
 <translation id="8875736897340638404">Выберите подходящий для вас вариант</translation>
@@ -10774,6 +10732,7 @@
 <translation id="8918900204934259333">Установка приложения…</translation>
 <translation id="891931289445130855">Удалить данные и разрешения</translation>
 <translation id="8920133120839850939">Выберите вкладку с дополнительными жестами, а затем включите функцию "Пролистывание страниц" для перехода вперед или назад.</translation>
+<translation id="8922348435910470639">Пересекающиеся мероприятия</translation>
 <translation id="8922624386829239660">Перемещать экран, когда курсор касается его краев</translation>
 <translation id="8923880975836399332">Темно-бирюзовый</translation>
 <translation id="8925124370124776087">Строка заголовка теперь скрыта.</translation>
@@ -10789,7 +10748,6 @@
 <translation id="8931475688782629595">Управление данными для синхронизации</translation>
 <translation id="8931713990831679796">Эти принтеры подключены и готовы к работе. Для быстрого доступа сохраните их в профиле.</translation>
 <translation id="8932654652795262306">Сведения о мгновенной точке доступа</translation>
-<translation id="893298445929867520">Корзины скрыты. Они будут показаны снова, если вы внесете изменения.</translation>
 <translation id="8933314208895863334">Файлы cookie делают работу в интернете удобнее и позволяют сайтам предлагать вам полезные функции</translation>
 <translation id="8933709832356869375">Будет удалено 1 приложение</translation>
 <translation id="8933960630081805351">Показать в Finder</translation>

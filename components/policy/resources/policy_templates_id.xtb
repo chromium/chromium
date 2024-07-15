@@ -475,6 +475,31 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, setelan pemulihan penuh a
 <translation id="1372511977715560169">Kontrol pengaktifan fitur <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="1372618949173323717">Nonaktifkan JavaScript</translation>
 <translation id="1376119291123231789">Mengaktifkan mode pengisian daya baterai lanjutan</translation>
+<translation id="1376299650477150211">Memungkinkan Anda menetapkan daftar pola URL situs yang menentukan situs
+dengan pengoptimalan JavaScript lanjutan yang dinonaktifkan.
+
+Jika pengoptimalan JavaScript dinonaktifkan, <ph name="PRODUCT_NAME" /> mungkin akan merender konten web dengan lebih lambat.
+
+Untuk informasi selengkapnya tentang pola URL yang valid, lihat
+https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
+
+Pengecualian kebijakan pengoptimalan JavaScript hanya akan diterapkan pada perincian
+situs (eTLD+1). Kebijakan yang disetel hanya untuk subdomain.site.com tidak akan
+diterapkan dengan benar ke site.com atau subdomain.site.com karena keduanya me-resolve ke
+eTLD+1 (site.com) yang sama yang tidak memiliki kebijakan. Dalam hal ini, kebijakan
+harus disetel di site.com agar dapat diterapkan dengan benar untuk site.com dan
+subdomain.site.com.
+
+Kebijakan ini berlaku secara bingkai demi bingkai dan tidak berdasarkan URL asal
+tingkat atas saja. Dengan demikian, misalnya, jika site-one.com tercantum dalam kebijakan <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" /> tetapi site-one.com memuat
+bingkai yang berisi site-two.com, maka site-one.com akan menonaktifkan pengoptimalan
+JavaScript. Namun, site-two.com akan menggunakan kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, jika disetel, atau secara default
+mengaktifkan pengoptimalan JavaScript. Entri daftar yang tidak diizinkan memiliki prioritas lebih tinggi daripada entri daftar yang diizinkan,
+yang berarti bahwa entri daftar yang tidak diizinkan juga memiliki prioritas lebih tinggi daripada nilai default yang dikonfigurasi.
+
+Jika kebijakan ini tidak disetel untuk suatu situs, kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> akan berlaku untuk situs tersebut.
+Jika kebijakan ini disetel, pengoptimalan JavaScript akan diaktifkan untuk situs tersebut.</translation>
 <translation id="1376765488559847650">CloudUpload</translation>
 <translation id="1379689277107868399">Jika kebijakan ini disetel ke DoNotPrompt atau tidak disetel, <ph name="PRODUCT_NAME" /> tidak akan otomatis meminta pengguna untuk melakukan autentikasi ulang ke browser.
 
@@ -1096,6 +1121,7 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
       Jika <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" /> diaktifkan, selain akun yang ditetapkan dalam kebijakan ini, pengguna Family Link juga akan diizinkan.</translation>
 <translation id="18186215616223740">Saat membuka dokumen Office yang ditangani oleh <ph name="BASIC_EDITOR_NAME" />, otomatis download dokumen tersebut</translation>
 <translation id="1819272352048746487">Mengaktifkan atau menonaktifkan berbagai fitur di keyboard virtual</translation>
+<translation id="1820974289087266512">Fitur Generator Kode QR dinonaktifkan.</translation>
 <translation id="1822163547472114648">Setelan untuk Buat Tema dengan AI</translation>
 <translation id="1823974945066396306">Menentukan daftar pengguna yang diizinkan untuk login ke perangkat. Entri memiliki format <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, misalnya <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />. Untuk mengizinkan sembarang pengguna di suatu domain, gunakan entri berformat <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
 
@@ -2913,6 +2939,13 @@ Jika kebijakan disetel ke Nonaktif, pop-up Rating App Store tidak akan ditampilk
 <translation id="3177537290334203187">Gunakan perilaku default saat menentukan apakah situs dapat membuat permintaan ke endpoint jaringan.</translation>
 <translation id="3177802893484440532">Mewajibkan pemeriksaan OCSP/CRL online untuk trust anchor lokal</translation>
 <translation id="3179533009079100620">Tampilkan Pemilih Profil</translation>
+<translation id="3180633260411794645">Jika kebijakan ini disetel, Anda akan dapat menetapkan daftar pola URL yang menentukan situs yang tidak dapat menjalankan JavaScript.
+
+      Jika kebijakan ini tidak disetel, <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan berlaku.
+
+      Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
+
+      Perlu diperhatikan bahwa kebijakan ini memblokir JavaScript berdasarkan apakah asal dokumen tingkat atas (biasanya URL halaman yang juga ditampilkan di kolom URL) cocok dengan pola apa pun. Oleh karena itu, kebijakan ini tidak sesuai untuk memitigasi serangan supply-chain web. Misalnya, menyediakan pola "https://[*.]foo.com/" tidak akan mencegah halaman yang dihosting di, misalnya, https://example.com, untuk menjalankan skrip yang dimuat dari https://www.foo.com/example.js. Selain itu, menyediakan pola "https://example.com/" tidak akan mencegah dokumen dari https://example.com untuk menjalankan skrip jika dokumen tersebut bukan dokumen tingkat atas, tetapi disematkan sebagai sub-frame ke halaman yang dihosting di asal lain, misalnya, https://www.bar.com.</translation>
 <translation id="3180671894201217988">Jika kebijakan disetel ke Aktif atau tidak disetel, software pihak ketiga tidak dapat memasukkan kode yang dapat dieksekusi ke dalam proses <ph name="PRODUCT_NAME" />.
 
       Jika kebijakan disetel ke Nonaktif, software pihak ketiga akan diizinkan memasukkan kode tersebut ke dalam proses <ph name="PRODUCT_NAME" />.</translation>
@@ -5222,6 +5255,27 @@ Menyetel kebijakan ini akan mengontrol tampilan konten promosi, termasuk halaman
       Jika kebijakan ini disetel ke benar (true), pengguna akan dapat membuat dan menggunakan profil sekunder serta menggunakan mode tamu.
 
       Catatan: Jika kebijakan ini disetel ke benar (true) tetapi <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" /> disetel ke salah (false), pengguna tidak akan dapat membuat profil sekunder. Berlaku juga untuk <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" /> dan mode tamu.</translation>
+<translation id="4958911425563967203">Memungkinkan Anda menetapkan daftar pola URL situs yang menentukan situs
+dengan pengoptimalan JavaScript lanjutan yang diaktifkan.
+
+Untuk informasi selengkapnya tentang pola URL situs yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
+
+Pengecualian kebijakan pengoptimalan JavaScript hanya akan diterapkan pada perincian
+situs (eTLD+1). Kebijakan yang disetel hanya untuk subdomain.site.com tidak akan
+diterapkan dengan benar ke site.com atau subdomain.site.com karena keduanya me-resolve ke
+eTLD+1 (site.com) yang sama yang tidak memiliki kebijakan. Dalam hal ini, kebijakan
+harus disetel di site.com agar dapat diterapkan dengan benar untuk site.com dan
+subdomain.site.com.
+
+Kebijakan ini berlaku secara bingkai demi bingkai dan tidak berdasarkan URL asal
+tingkat atas saja. Dengan demikian, misalnya, jika site-one.com tercantum dalam kebijakan <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> tetapi site-one.com memuat bingkai yang berisi site-two.com, maka site-one.com akan mengaktifkan pengoptimalan
+JavaScript. Namun, site-two.com akan menggunakan kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, jika disetel, atau secara default
+mengaktifkan pengoptimalan JavaScript. Entri daftar yang tidak diizinkan memiliki prioritas lebih tinggi daripada entri daftar yang diizinkan,
+yang berarti bahwa entri daftar yang tidak diizinkan juga memiliki prioritas lebih tinggi daripada nilai default yang dikonfigurasi.
+
+Jika kebijakan ini tidak disetel untuk suatu situs, kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> akan berlaku untuk situs tersebut.
+Jika kebijakan ini disetel, pengoptimalan JavaScript akan diaktifkan untuk situs tersebut.</translation>
 <translation id="4960597185231686653">Tanda boolean menunjukkan apakah keyboard virtual dapat memberikan input suara.</translation>
 <translation id="4970046075219007744">Izinkan aplikasi web meminta pengguna memberikan akses ke berbagai jenis file melalui File Handling API</translation>
 <translation id="4970855112942626932">Nonaktifkan login browser</translation>
@@ -5420,6 +5474,11 @@ Jika kebijakan tidak disetel atau disetel ke nonaktif, cookie dan data dapat dig
           Jika setelan ini diaktifkan, <ph name="PRODUCT_NAME" /> akan mengabaikan semua opsi terkait proxy yang ditentukan dari command line.
 
           Jika kebijakan ini tidak ditetapkan, pengguna dapat memilih sendiri setelan proxy.</translation>
+<translation id="5169461017653366056">Kebijakan ini mengaktifkan fitur generator Kode QR di <ph name="PRODUCT_NAME" />.
+
+Jika kebijakan ini diaktifkan atau tidak dikonfigurasi, fitur Generator Kode QR akan diaktifkan.
+
+Jika Anda menonaktifkan kebijakan ini, fitur Generator Kode QR akan dinonaktifkan.</translation>
 <translation id="5170018694841697392">Jangan terapkan penggunaan SafeSearch di Google Penelusuran</translation>
 <translation id="5172841243186654432">Menyetel <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> memungkinkan Anda membuat daftar pola URL yang menentukan situs yang dapat dan tidak dapat menyetel cookie untuk satu sesi, kecuali jika kebijakan <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> disetel untuk memulihkan URL dari sesi sebelumnya secara permanen.
 
@@ -8058,6 +8117,7 @@ Jika disetel ke "hanya baca" atau tidak disetel: file lokal tetap berada dalam m
 
        Di <ph name="MS_WIN_NAME" />, fungsi ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dijalankan di Windows 10 Pro, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Di <ph name="MAC_OS_NAME" />, fungsi ini hanya tersedia di instance yang dikelola melalui MDM, atau dihubungkan ke domain melalui MCX.</translation>
 <translation id="6988791975283483023">Nonaktifkan Wi-Fi</translation>
+<translation id="6990546578776912554">Menentukan domain yang akan dikecualikan agar tidak di-resolve menggunakan DNS-over-HTTPS</translation>
 <translation id="6990736882800900101">Izinkan semua pop-up yang dibuka dengan target <ph name="BLANK_PAGE_NAME" /> untuk berinteraksi dengan halaman yang meminta pembukaan pop-up, kecuali jika halaman pembuka secara eksplisit memilih untuk melarang interaksi tersebut </translation>
 <translation id="6991623831629598930">Gunakan Nilai Default untuk perjanjian kunci pasca-kuantum Kyber untuk TLS</translation>
 <translation id="6992943675460798920">Izinkan pengguna mengambil screenshot dan rekaman video</translation>
@@ -8691,6 +8751,7 @@ baca lisan akan diaktifkan.</translation>
 
       Jika tidak disetel, layar pengantar <ph name="FEATURE_NAME" /> akan dilewati untuk pengguna yang dikelola perusahaan dan ditampilkan untuk pengguna yang tidak dikelola.</translation>
 <translation id="7469554574977894907">Aktifkan saran penelusuran</translation>
+<translation id="7472547030234093862">Menentukan domain yang akan di-resolve menggunakan DNS-over-HTTPS</translation>
 <translation id="747275827471712187">Mengembalikan cookie di situs ini ke perilaku <ph name="ATTRIBUTE_SAMESITE_NAME" /> lama</translation>
 <translation id="747517124419659622">Mengizinkan penelusuran histori yang didukung AI tanpa meningkatkan kualitas model AI</translation>
 <translation id="7476030153540156377">Memilih apakah fitur Perlindungan IP <ph name="PRIVACY_SANDBOX_NAME" /> harus diaktifkan.</translation>
@@ -10830,6 +10891,7 @@ tetapi dapat digunakan sebagai petunjuk untuk membuat jalur. Sertifikat harus di
 <translation id="9113058104383612727">Mengaktifkan alat pemecahan masalah Kios</translation>
 <translation id="9113065986946552397">Hasil dari pembersihan Pembersih Chrome selalu dibagikan ke Google</translation>
 <translation id="9113262510565261950">Waktu tunggu tidak ada aktivitas untuk screensaver layar login perangkat.</translation>
+<translation id="911448529868608648">Mengaktifkan Generator Kode QR</translation>
 <translation id="911605919007170833">Laporkan status keamanan</translation>
 <translation id="9117826695152538214">Jika kebijakan ditetapkan ke Benar (True), tombol lekat akan tetap diaktifkan. Jika kebijakan ditetapkan ke Salah (False), tombol lekat akan tetap dinonaktifkan.
 
@@ -10926,6 +10988,7 @@ Untuk mengetahui informasi selengkapnya tentang konteks aman, lihat https://www.
 <translation id="9142561920976791097">Perilaku baru pengiriman peristiwa pada kontrol formulir yang dinonaktifkan akan digunakan.</translation>
 <translation id="91459503271584213">Luncurkan langsung Host Pesan Native yang dapat dieksekusi di Windows</translation>
 <translation id="9148720248753722892">Larang sertifikat yang ditandatangani SHA-1</translation>
+<translation id="9149075762533142978">Fitur Generator Kode QR diaktifkan.</translation>
 <translation id="9149678135092892302">Nonaktifkan pelaporan informasi versi</translation>
 <translation id="9150416707757015439">Kebijakan ini sudah tidak digunakan lagi. Gunakan IncognitoModeAvailability sebagai gantinya. Aktifkan mode Samaran di <ph name="PRODUCT_NAME" />. Jika setelan ini diaktifkan atau tidak dikonfigurasi, pengguna dapat membuka halaman web dalam mode samaran. Jika setelan ini dinonaktifkan, pengguna tidak dapat membuka halaman web dalam mode samaran. Jika kebijakan ini dibiarkan tanpa disetel, kebijakan ini akan diaktifkan dan pengguna akan dapat menggunakan mode samaran.</translation>
 <translation id="9152473318295429890">Aktifkan saran kontekstual halaman terkait</translation>

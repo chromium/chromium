@@ -679,6 +679,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2219658597883514593">Training opnieuw starten</translation>
 <translation id="2219735899272417925">Apparaat moet worden gereset</translation>
 <translation id="2221227930294879156">Eet- en drinkevenementen</translation>
+<translation id="2222604080869344662">Log in bij OneDrive om door te gaan met downloaden</translation>
 <translation id="2224337661447660594">Geen internet</translation>
 <translation id="2225927550500503913">Virtuele kaart staat aan</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Inloggen<ph name="END_LINK" /> op het wifi-netwerk</translation>
@@ -778,6 +779,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2399868464369312507">Google Chrome probeert betaalmethoden te bewerken.</translation>
 <translation id="2400600116338235695">Kan vragen of deze site verbinding mag maken met seriële poorten</translation>
 <translation id="2404884497378469141">Probeer je bestanden opnieuw te kopiëren</translation>
+<translation id="2412310121876768057">Kaart volgende keer automatisch invullen?</translation>
 <translation id="2413155254802890957">Oud</translation>
 <translation id="2413528052993050574">De server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat van de server is mogelijk ingetrokken. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
 <translation id="2414886740292270097">Donker</translation>
@@ -1238,6 +1240,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3352881017886802007">Sportgames</translation>
 <translation id="3355823806454867987">Proxyinstellingen wijzigen...</translation>
 <translation id="335809815767823">Geëxporteerd</translation>
+<translation id="3359387651158939842">Je kaartgegevens automatisch invullen voor toekomstige aankopen als je de kaart opslaat voor gebruik met Google Pay</translation>
 <translation id="3359565626472459400">Huwelijk</translation>
 <translation id="3360103848165129075">Blad voor betalingshandler</translation>
 <translation id="3362968246557010467">Dit beleid is automatisch gekopieerd uit het beëindigde beleid: <ph name="OLD_POLICY" />. Gebruik dit beleid in plaats van het oude.</translation>
@@ -2050,6 +2053,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olympische Spelen</translation>
 <translation id="4898742041545089450">Dit onderwerp wordt niet meer geblokkeerd en kan actief worden op basis van je browsegeschiedenis</translation>
+<translation id="4899379435492347481">Sla deze kaart op voor online gebruik met Google Pay voor aankopen op alle apparaten</translation>
 <translation id="4900217275619098670">9e rol</translation>
 <translation id="4901052769830245369">Labels (zijdeglans)</translation>
 <translation id="4901162432287938633">Hygiëne en toiletartikelen</translation>
@@ -2712,6 +2716,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6180316780098470077">Interval voor nieuwe poging</translation>
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome beperkt automatisch cookies van derden</translation>
+<translation id="6194139058731919563">Je kaartgegevens worden versleuteld als ze worden opgeslagen in je Google-account en worden gebruikt om online te betalen</translation>
 <translation id="6194209731893739467">Bekijk hier al je gevolgde producten</translation>
 <translation id="6195163219142236913">Cookies van derden beperkt</translation>
 <translation id="6195371403461054755">Geologie</translation>
@@ -3613,6 +3618,7 @@ Aanvullende informatie:
 <translation id="7831993212387676366">Wat is het boodschappenlijstje?</translation>
 <translation id="7832078172950550575">Je kunt in alledaagse taal in je browsegeschiedenis zoeken met zinnen als 'pizzarestaurants in de buurt' of 'kindvriendelijke parken in het centrum'. Je zoekopdrachten, de beste overeenkomsten en de bijbehorende paginacontent worden naar Google gestuurd en kunnen door menselijke reviewers worden bekeken om deze functie te verbeteren. <ph name="BEGIN_LINK" />Je instelling voor zoekgeschiedenis beheren<ph name="END_LINK" /></translation>
 <translation id="7840103971441592723">Schermopname is gestart</translation>
+<translation id="7840504603489703295">Er worden limieten van je financiële instelling toegepast.</translation>
 <translation id="784137052867620416">Shopping-inzichten</translation>
 <translation id="784404208867107517">Gegroepeerde geschiedenis</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Geen}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -3811,6 +3817,7 @@ Aanvullende informatie:
 <translation id="8241712895048303527">Blokkeren op deze site</translation>
 <translation id="8242426110754782860">Doorgaan</translation>
 <translation id="8246482227229072868">Ringen</translation>
+<translation id="8248406213705193919">Kaart beveiligd opslaan?</translation>
 <translation id="8249296373107784235">Annuleren</translation>
 <translation id="824968735947741546"><ph name="SOURCE" /> (automatisch gedetecteerd) vertalen naar het <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Dit adres is momenteel opgeslagen op dit apparaat. Als je het wilt gebruiken in andere Google-producten, sla je het op in je Google-account (<ph name="ACCOUNT" />).</translation>
@@ -4294,6 +4301,7 @@ Aanvullende informatie:
 <translation id="9169664750068251925">Altijd blokkeren op deze site</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" /> toevoegen aan startscherm</translation>
 <translation id="9170848237812810038">&amp;Ongedaan maken</translation>
+<translation id="9170906125144697215">Betalen met Pix zonder van app te wisselen</translation>
 <translation id="9171296965991013597">App verlaten?</translation>
 <translation id="9173282814238175921">Eén document/nieuw blad</translation>
 <translation id="9173995187295789444">Scannen naar Bluetooth-apparaten...</translation>
@@ -4315,6 +4323,7 @@ Aanvullende informatie:
 <translation id="9205078245616868884">Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze op om de synchronisatie te starten.</translation>
 <translation id="920643408853370361">Reisverzekeringen</translation>
 <translation id="9207861905230894330">Kan artikel niet toevoegen.</translation>
+<translation id="9209339767782560829">Er is een probleem opgetreden bij het gebruik van je inlogcertificaat.</translation>
 <translation id="9210825002219699214">Vliegreizen</translation>
 <translation id="9211461151375991073">Typ @ om te zoeken op <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Weergave aanpassen</translation>

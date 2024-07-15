@@ -454,6 +454,18 @@
 <translation id="1372511977715560169">控管是否啟用 <ph name="PRODUCT_OS_NAME" /> 的「<ph name="GEN_AI_WALLPAPER_FEATURE_NAME" />」功能</translation>
 <translation id="1372618949173323717">停用 JavaScript</translation>
 <translation id="1376119291123231789">啟用進階充電模式</translation>
+<translation id="1376299650477150211">允許你設定網站網址模式清單，指定哪些網站能夠停用進階 JavaScript 最佳化。
+
+如果停用 JavaScript 最佳化，<ph name="PRODUCT_NAME" /> 顯示網路內容的速度可能會變慢。
+
+如要進一步瞭解有效的網址模式，請前往 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。
+指定時可使用萬用字元 (<ph name="WILDCARD_VALUE" />)。
+
+系統只會對網站細分層級 (eTLD+1) 強制執行 JavaScript 最佳化政策的例外狀況。如果只針對 subdomain.site.com 設定政策，系統就不會將政策正確套用到 site.com 或 subdomain.site.com，因為這兩個網址都會解析為相同的 eTLD+1 (site.com)，而解析後的網址並未設定任何政策。在此情況下，如要將政策正確套用到 site.com 與 subdomain.site.com，就必須針對 site.com 設定政策。
+
+這項政策是按照個別頁框逐一套用，而不是完全只是以頂層來源網址為依據。因此，如果 site-one.com 列在 <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" /> 政策清單，但 site-one.com 載入的頁框含有 site-two.com，site-one.com 就會停用 JavaScript 最佳化。不過，如果 <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> 已設定政策，site-two.com 將採用該政策；如未設定，site-two.com 會預設啟用 JavaScript 最佳化。封鎖清單項目的優先順序高於許可清單項目，而許可清單項目的優先順序高於預設值。
+
+如未針對網站設定這項政策，該網站就會套用 <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> 的政策；如果已設定這項政策，該網站就會啟用 JavaScript 最佳化。</translation>
 <translation id="1376765488559847650">CloudUpload</translation>
 <translation id="1379689277107868399">如果設為 DoNotPrompt 或未設定，<ph name="PRODUCT_NAME" /> 不會自動提示使用者重新驗證瀏覽器。
 
@@ -1017,6 +1029,7 @@
       如果已啟用 <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" />，除了這項政策中定義的帳戶以外，系統也會允許 Family Link 使用者登入裝置。</translation>
 <translation id="18186215616223740">瀏覽由<ph name="BASIC_EDITOR_NAME" />處理的 Office 文件時，強制下載這些文件</translation>
 <translation id="1819272352048746487">啟用或停用螢幕小鍵盤上的多項功能</translation>
+<translation id="1820974289087266512">QR code 產生器功能已停用。</translation>
 <translation id="1822163547472114648">「使用 AI 建立主題」設定</translation>
 <translation id="1823974945066396306">定義可登入裝置的使用者清單。輸入項目格式為 <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> (例如 <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />)。如要允許特定網域的任意使用者登入裝置，請使用 <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" /> 格式輸入項目。
 
@@ -2753,6 +2766,13 @@
 <translation id="3177537290334203187">在決定網站是否可以向網路端點發出要求時使用預設行為。</translation>
 <translation id="3177802893484440532">需要為本機信任錨點執行線上 OCSP/CRL 檢查</translation>
 <translation id="3179533009079100620">顯示設定檔選擇畫面</translation>
+<translation id="3180633260411794645">設定這項政策後，你可以使用網站網址模式清單，指定不得執行 JavaScript 的網站。
+
+      如果未設定這項政策，系統會針對所有網站套用 <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> 政策 (如果已設定)。否則系統會套用使用者的個人設定。
+
+      想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。系統允許使用萬用字元 (<ph name="WILDCARD_VALUE" />)。
+
+          請注意，這項政策會根據頂層文件來源 (通常是網址列中顯示的網頁網址) 是否有相符的模式來封鎖 JavaScript。因此，這項政策不適合用於減緩網路供應鏈攻擊。舉例來說，假設將模式設為「https://[*.]foo.com/」，並無法禁止由 https://example.com 代管的頁面執行從 https://www.foo.com/example.js 載入的指令碼。此外，如果 https://example.com 的文件不是頂層文件，而是以子頁框形式內嵌到由其他來源 (例如 https://www.bar.com) 代管的頁面，將模式設為「https://example.com/」無法禁止該文件執行指令碼。</translation>
 <translation id="3180671894201217988">如果將這項政策設為 Enabled 或不設定，第三方軟體將無法在 <ph name="PRODUCT_NAME" /> 的處理程序中置入可執行的程式碼。
 
       如果將這項政策設為 Disabled，第三方軟體將可在 <ph name="PRODUCT_NAME" /> 的處理程序中置入這類程式碼。</translation>
@@ -4906,6 +4926,15 @@
       如果將這項政策設為 True，代表使用者可以建立及使用次要設定檔，也可以使用訪客模式。
 
       但請注意，如果將這項政策設為 True，但將 <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" /> 設為 False，使用者便無法建立次要設定檔。這個原則也適用於 <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" /> 和訪客模式。</translation>
+<translation id="4958911425563967203">允許你設定網站網址模式清單，指定哪些網站能夠啟用進階 JavaScript 最佳化。
+
+如要進一步瞭解有效的網站網址模式，請前往 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。指定時可使用萬用字元 (<ph name="WILDCARD_VALUE" />)。
+
+系統只會對網站細分層級 (eTLD+1) 強制執行 JavaScript 最佳化政策的例外狀況。如果只針對 subdomain.site.com 設定政策，系統就不會將政策正確套用到 site.com 或 subdomain.site.com，因為這兩個網址都會解析為相同的 eTLD+1 (site.com)，而解析後的網址並未設定任何政策。在此情況下，如要將政策正確套用到 site.com 與 subdomain.site.com，就必須針對 site.com 設定政策。
+
+這項政策是按照個別頁框逐一套用，而不是完全只是以頂層來源網址為依據。因此，如果 site-one.com 列在 <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> 政策清單，但 site-one.com 載入的頁框含有 site-two.com，site-one.com 就會啟用 JavaScript 最佳化。不過，如果 <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> 已設定政策，site-two.com 將採用該政策；如未設定，site-two.com 會預設啟用 JavaScript 最佳化。封鎖清單項目的優先順序高於許可清單項目，而許可清單項目的優先順序高於預設值。
+
+如未針對網站設定這項政策，該網站就會套用 <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> 的政策；如果已設定這項政策，該網站就會啟用 JavaScript 最佳化。</translation>
 <translation id="4960597185231686653">布林值標記，表示螢幕小鍵盤是否能提供語音輸入功能。</translation>
 <translation id="4970046075219007744">允許網頁應用程式要求使用者授予透過 File Handling API 存取特定類型檔案的權限</translation>
 <translation id="4970855112942626932">禁止登入瀏覽器</translation>
@@ -5101,6 +5130,11 @@
           如果啟用這項設定，<ph name="PRODUCT_NAME" /> 會忽略所有從指令列指定的 Proxy 相關選項。
 
           如果不設定這項政策，使用者將可自行選擇 Proxy 設定。</translation>
+<translation id="5169461017653366056">這項政策會啟用 <ph name="PRODUCT_NAME" /> 中的 QR code 產生器功能。
+
+如果啟用或未設定這項政策，系統就會啟用 QR code 產生器功能。
+
+如果停用這項政策，系統就會停用這項功能。</translation>
 <translation id="5170018694841697392">不強制啟用 Google 搜尋的安全搜尋功能</translation>
 <translation id="5172841243186654432">除非將 <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> 政策設為一律還原先前工作階段的網址，否則你可以透過 <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> 政策建立網址模式清單，用來指定網站是否可為單一工作階段設定 Cookie。
 
@@ -7566,6 +7600,7 @@ M127 版預設會為企業版使用者停用這項政策。</translation>
 
        在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 軟體進行管理或透過 MCX 加入網域的執行個體。</translation>
 <translation id="6988791975283483023">停用 WiFi</translation>
+<translation id="6990546578776912554">指定不要使用 DNS-over-HTTPS 解析的網域</translation>
 <translation id="6990736882800900101">除非要求開啟彈出式視窗的網頁明確拒絕與該彈出式視窗互動，否則一律允許透過 <ph name="BLANK_PAGE_NAME" /> 連結目標開啟的彈出式視窗進行這類互動 </translation>
 <translation id="6991623831629598930">使用符合傳輸層安全標準 (TLS) 的 Kyber 後量子金鑰協議預設值</translation>
 <translation id="6992943675460798920">允許使用者錄影及拍攝螢幕截圖</translation>
@@ -8177,6 +8212,7 @@ M127 版預設會為企業版使用者停用這項政策。</translation>
 
       如未設定，系統會向非受管使用者顯示 <ph name="FEATURE_NAME" /> 簡介畫面，而不會向受企業管理使用者顯示。</translation>
 <translation id="7469554574977894907">啟用搜尋建議</translation>
+<translation id="7472547030234093862">指定要使用 DNS-over-HTTPS 解析的網域</translation>
 <translation id="747275827471712187">將這些網站上的 Cookie 還原成舊版的 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行為</translation>
 <translation id="747517124419659622">允許使用 AI 輔助歷史記錄搜尋功能，但不協助改善 AI 模型</translation>
 <translation id="7476030153540156377">選擇是否要啟用 <ph name="PRIVACY_SANDBOX_NAME" /> IP 保護功能。</translation>
@@ -10201,6 +10237,7 @@ M127 版預設會為企業版使用者停用這項政策。</translation>
 <translation id="9113058104383612727">啟用資訊站疑難排解工具</translation>
 <translation id="9113065986946552397">一律與 Google 分享 Chrome 清理功能的清理作業結果</translation>
 <translation id="9113262510565261950">裝置螢幕保護程式登入畫面閒置逾時。</translation>
+<translation id="911448529868608648">啟用 QR code 產生器</translation>
 <translation id="911605919007170833">回報安全性狀態</translation>
 <translation id="9117826695152538214">將這項政策設為 True 時，系統會讓相黏鍵保持在啟用狀態。將這項政策設為 False 時，系統會讓相黏鍵保持在停用狀態。
 
@@ -10277,6 +10314,7 @@ M127 版預設會為企業版使用者停用這項政策。</translation>
 <translation id="9142561920976791097">系統將使用在已停用表單控制項上傳送事件的新行為。</translation>
 <translation id="91459503271584213">直接在 Windows 上啟動可執行的內建訊息傳遞主機</translation>
 <translation id="9148720248753722892">停用 SHA-1 簽署的憑證</translation>
+<translation id="9149075762533142978">QR code 產生器功能已啟用。</translation>
 <translation id="9149678135092892302">停用版本資訊報告功能</translation>
 <translation id="9150416707757015439">這項政策已被取代，請改用 IncognitoModeAvailability。在「<ph name="PRODUCT_NAME" />」中啟用無痕模式。如果這項設定已啟用或尚未設定，使用者皆可在無痕模式中開啟網頁。如果這項設定已停用，使用者就無法在無痕模式中開啟網頁。如果未設定這項政策，系統會啟用這項設定，且使用者可以使用無痕模式。</translation>
 <translation id="9152473318295429890">允許根據目前網頁內容建議相關的網頁</translation>

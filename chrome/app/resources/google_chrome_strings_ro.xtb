@@ -65,6 +65,7 @@
 <translation id="1953553007165777902">Se descarcă… Timp rămas: <ph name="MINUTE" /> minute</translation>
 <translation id="1982647487457769627">Chrome funcționează pe toate platformele pentru a-ți oferi o experiență familiară, indiferent de dispozitiv</translation>
 <translation id="2001586581944147178">Împiedică persoanele care au acces la traficul tău de internet să vadă ce site-uri accesezi. Chrome folosește o conexiune securizată pentru a căuta adresa IP a unui site în DNS (Sistemul denumirilor de domenii).</translation>
+<translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Extensia nu mai este acceptată. Chrome recomandă să o elimini.}few{Aceste extensii nu mai sunt acceptate. Chrome recomandă să le elimini.}other{Aceste extensii nu mai sunt acceptate. Chrome recomandă să le elimini.}}</translation>
 <translation id="2018528049276128029">Fiecare profil conține propriile informații Chrome, cum ar fi marcaje, istoric, parole și altele</translation>
 <translation id="2018879682492276940">Nu s-a instalat. Încearcă din nou.</translation>
 <translation id="207902854391093810">În versiunile de încercare, Ad measurement le dă site-urilor pe care le accesezi posibilitatea de a solicita informații de la Chrome care le ajută să măsoare performanța anunțurilor asociate. Ad measurement restricționează urmărirea pe mai multe site-uri prin transferul câtor mai puține informații între site-uri.</translation>

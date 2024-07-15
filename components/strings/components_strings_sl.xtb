@@ -368,6 +368,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1650602712345345441">Upravljanje Chromovih nastavitev</translation>
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">Če želite Googlovega upravitelja gesel uporabljati s shrambo poverilnic sistema macOS, Keychain, znova zaženite Chromium in omogočite dostop do shrambe poverilnic Keychain. Zavihki se bodo po vnovičnem zagonu znova odprli.</translation>
+<translation id="1652887625750064647">Najboljše ujemanje z umetno inteligenco</translation>
 <translation id="1656024727720460136">Chrome je prilagodil to stran za lažje branje. Chrome je prenesel izvirno stran prek varne povezave.</translation>
 <translation id="1656489000284462475">Prevzem</translation>
 <translation id="1658111267661135323">TV in videoposnetki</translation>
@@ -678,6 +679,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2219658597883514593">Znova zaženi vadnico</translation>
 <translation id="2219735899272417925">Potrebna je ponastavitev naprave</translation>
 <translation id="2221227930294879156">Gastronomski dogodki</translation>
+<translation id="2222604080869344662">Če želite nadaljevati prenos, se prijavite v OneDrive</translation>
 <translation id="2224337661447660594">Ni internetne povezave</translation>
 <translation id="2225927550500503913">Virtualna kartica je vklopljena</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Prijava<ph name="END_LINK" /> v omrežje Wi-Fi</translation>
@@ -777,6 +779,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2399868464369312507">Google Chrome poskuša urediti plačilna sredstva.</translation>
 <translation id="2400600116338235695">Lahko zahteva vzpostavitev povezave s serijskimi vrati.</translation>
 <translation id="2404884497378469141">Poskusite znova kopirati datoteke</translation>
+<translation id="2412310121876768057">Želite naslednjič samodejno izpolniti kartico?</translation>
 <translation id="2413155254802890957">Staro</translation>
 <translation id="2413528052993050574">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />; njegovo varnostno potrdilo je bilo morda preklicano. Razlog za to je lahko napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
 <translation id="2414886740292270097">Temno</translation>
@@ -1240,6 +1243,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3352881017886802007">Športne igre</translation>
 <translation id="3355823806454867987">Spremeni nastavitve proxyja ...</translation>
 <translation id="335809815767823">Izvoženo</translation>
+<translation id="3359387651158939842">Samodejno izpolnjevanje kartice za prihodnje nakupe, ko jo shranite za uporabo z Googlom Pay</translation>
 <translation id="3359565626472459400">Zakon</translation>
 <translation id="3360103848165129075">List rutine za obravnavo plačil</translation>
 <translation id="3362968246557010467">Ta pravilnik je bil samodejno kopiran iz zastarelega pravilnika <ph name="OLD_POLICY" />. Uporabite ta pravilnik.</translation>
@@ -2054,6 +2058,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpijske igre</translation>
 <translation id="4898742041545089450">Ta tema je odblokirana in bo morda postala aktivna glede na vašo zgodovino brskanja</translation>
+<translation id="4899379435492347481">Shranite to kartico, da jo boste lahko v spletu uporabljali z Googlom Pay v različnih napravah</translation>
 <translation id="4900217275619098670">Kolut 9</translation>
 <translation id="4901052769830245369">Labels (Semi-Gloss)</translation>
 <translation id="4901162432287938633">Higiena in toaletne potrebščine</translation>
@@ -2717,6 +2722,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6180316780098470077">Interval vnovičnih poskusov</translation>
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome samodejno omejuje piškotke tretjih oseb</translation>
+<translation id="6194139058731919563">Podatki o kartici se šifrirajo, ko so shranjeni v računu Google in se uporabljajo za plačevanje v spletu.</translation>
 <translation id="6194209731893739467">Tukaj si lahko ogledate vse spremljane izdelke</translation>
 <translation id="6195163219142236913">Piškotki tretjih oseb so omejeni</translation>
 <translation id="6195371403461054755">Geologija</translation>
@@ -3618,6 +3624,7 @@ Dodatne podrobnosti:
 <translation id="7831993212387676366">Kaj je nakupovalni seznam?</translation>
 <translation id="7832078172950550575">V pogovornem jeziku lahko iščete po zgodovini brskanja z besednimi zvezami, kot so »picerija v moji bližini« ali »družinam prijazni parki v središču mesta«. Iskanja, najboljša ujemanja in njihova vsebina na strani se pošljejo Googlu in jih lahko vidijo pregledovalci zaradi izboljšanja te funkcije. <ph name="BEGIN_LINK" />Upravljanje nastavitve iskanja po zgodovini<ph name="END_LINK" /></translation>
 <translation id="7840103971441592723">Začel se je zajem zaslonske slike.</translation>
+<translation id="7840504603489703295">Veljajo omejitve vaše finančne ustanove.</translation>
 <translation id="784137052867620416">Vpogledi v Nakupovanje</translation>
 <translation id="784404208867107517">Združena zgodovina</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Brez}=1{1 aplikacija (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikaciji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# aplikacija (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}two{# aplikaciji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}few{# aplikacije (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# aplikacij (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -3816,6 +3823,7 @@ Dodatne podrobnosti:
 <translation id="8241712895048303527">Blokiraj na tem spletnem mestu</translation>
 <translation id="8242426110754782860">Naprej</translation>
 <translation id="8246482227229072868">Obroči</translation>
+<translation id="8248406213705193919">Želite varno shraniti kartico?</translation>
 <translation id="8249296373107784235">Prekini</translation>
 <translation id="824968735947741546">Prevajanje iz (samodejno zaznanega) jezika <ph name="SOURCE" /> v jezik <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Ta naslov je trenutno shranjen v tej napravi. Če ga želite uporabiti v Googlovih izdelkih, ga shranite v računu Google (<ph name="ACCOUNT" />).</translation>
@@ -4300,6 +4308,7 @@ Dodatne podrobnosti:
 <translation id="9169664750068251925">Vedno blokiraj na tem spletnem mestu</translation>
 <translation id="9169931577761441333">Dodajanje aplikacije <ph name="APP_NAME" /> na začetni zaslon</translation>
 <translation id="9170848237812810038">&amp;Razveljavi</translation>
+<translation id="9170906125144697215">Plačujte s storitvijo Pix brez preklapljanja aplikacij</translation>
 <translation id="9171296965991013597">Želite zapustiti aplikacijo?</translation>
 <translation id="9173282814238175921">Enojni dokument/nov list</translation>
 <translation id="9173995187295789444">Iskanje naprav Bluetooth ...</translation>
@@ -4321,6 +4330,7 @@ Dodatne podrobnosti:
 <translation id="9205078245616868884">Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite začeti sinhronizacijo.</translation>
 <translation id="920643408853370361">Potovalno zavarovanje</translation>
 <translation id="9207861905230894330">Članka ni bilo mogoče dodati.</translation>
+<translation id="9209339767782560829">Težava pri uporabi potrdila za prijavo.</translation>
 <translation id="9210825002219699214">Letalska potovanja</translation>
 <translation id="9211461151375991073">Vnesite @, če želite iskati <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Prilagajanje videza</translation>

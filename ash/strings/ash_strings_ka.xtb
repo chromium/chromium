@@ -521,6 +521,7 @@
 <translation id="2970920913501714344">აპების, გაფართოებებისა და თემების ინსტალაცია</translation>
 <translation id="2977598380246111477">შემდეგი ციფრი</translation>
 <translation id="2985148236010982088">ყველა აპის ნახვა</translation>
+<translation id="2992272421330787632">მედიის ყველა შემოთავაზების დამალვა</translation>
 <translation id="2992327365391326550">მოწყობილობის მიკროფონის ღილაკი გამორთულია.</translation>
 <translation id="3000461861112256445">მონო აუდიო</translation>
 <translation id="3001391739687111021">ეკრანის ზომის რედაქტირება</translation>
@@ -591,6 +592,7 @@
 <translation id="3255483164551725916">რისი გაკეთება შეგიძლია?</translation>
 <translation id="3256109297135787951">თაროზე ერთეულის გამოყოფის გაუქმება</translation>
 <translation id="3260969790895726815">მეტყველება მუშავდება ადგილობრივად, ხოლო კარნახი მუშაობს ხაზგარეშე რეჟიმში. ამასთან, ზოგიერთი ხმოვანი ბრძანება არ იმუშავებს.</translation>
+<translation id="3264031581203585083">Google Drive-ის ყველა შემოთავაზების დამალვა</translation>
 <translation id="3265032511221679826">გსურთ, ზუსტ მდებარეობაზე წვდომის ჩართვა?</translation>
 <translation id="3269597722229482060">მარჯვენა დაწკაპუნება</translation>
 <translation id="3274634049061007184">თქვენი ტელეფონის აპების ნახვა</translation>
@@ -742,6 +744,7 @@
 <translation id="3738664582935948253">ეკრანის ჩანაწერებში ამიერიდან შეგიძლიათ დაწკაპუნებებისა და კლავიატურის მალსახმობების ჩვენება</translation>
 <translation id="3742055079367172538">ეკრანის ანაბეჭდი გადაღებულია</translation>
 <translation id="3743775386021959186">ფოკუსირება ჩართულია, დარჩენილია <ph name="REMAINING_TIME" /></translation>
+<translation id="3750403286520637847">ამინდის შემოთავაზებების დამალვა</translation>
 <translation id="3756485814916578707">მიმდინარეობს ეკრანის ტრანსლირება</translation>
 <translation id="3765841382945324995">მალსახმობი <ph name="SIX_PACK_KEY_NAME" /> განახლდა (იყო <ph name="OLD_SHORTCUT" />, გახდა <ph name="NEW_SHORTCUT" />)</translation>
 <translation id="3765841986579723851">დღეს რედაქტირებული</translation>
@@ -781,6 +784,7 @@
 <translation id="3906954721959377182">ტაბლეტი</translation>
 <translation id="3923494859158167397">მობილური ქსელები დაყენებული არ არის</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, მომდინარეობს მოვლენების ჩატვირთვა.</translation>
+<translation id="3927049937406914450">ამინდი მიუწვდომელია, რადგან მდებარეობაზე წვდომა გამორთულია. ამის შეცვლა პარამეტრებიდან შეგიძლიათ.</translation>
 <translation id="3932043219784172185">დაკავშირებული მოწყობილობები არ არის</translation>
 <translation id="3934456833412894880">ადაპტირებადი დატენა ჩართულია. ბატარეის ვარგისიანობის გასახანგრძლივებლად ის დარჩება 80%-ზე და სრულად დაიტენება, როცა დაგჭირდებათ.</translation>
 <translation id="3943857333388298514">ჩასმა</translation>
@@ -897,6 +901,7 @@
 <translation id="4312840429157639164">კამერა მიზიდულია ზედა მარჯვენა კუთხეში. ის კონფლიქტშია სისტემის ზედაპირთან.</translation>
 <translation id="4316910396681052118">ყველა აპი</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">Chrome ბრაუზერის ყველა შემოთავაზების დამალვა</translation>
 <translation id="4322742403972824594">კლავიატურის მალსახმობი „Ctrl + Alt + ზემოთ მიმართული ისარი“ შეიცვალა. Home კლავიშით სარგებლობისთვის დააჭირეთ კლავიშს <ph name="LAUNCHER_KEY_NAME" /> + მარცხნივ მიმართულ ისარს.</translation>
 <translation id="4324840740119394760"><ph name="APP_NAME" />-ს, ასევე, ყველა აპსა და ვებსაიტს, რომლებსაც აქვს კამერის გამოყენების ნებართვა, მიენიჭება კამერაზე წვდომა</translation>
 <translation id="4327147325944669226">თამაშის ჩაწერა</translation>
@@ -930,6 +935,7 @@
 <translation id="4450893287417543264">აღარ გამოჩნდეს</translation>
 <translation id="4451374464530248585">კლავიატურის მალსახმობი „Alt + ქვემოთ მიმართული ისარი“ შეიცვალა. Page Down კლავიშით სარგებლობისთვის დააჭირეთ კლავიშს <ph name="LAUNCHER_KEY_NAME" /> + ქვემოთ მიმართულ ისარს.</translation>
 <translation id="4453876312474547652">კლავიშთა კომბინაციაზე Ctrl + V ხანგრძლივად დაჭერისას გაცვლის ბუფერს იხილავთ. ამ მალსახმობის გამორთვა შეგიძლიათ chrome://flags-ში (ან os://flags-ში, თუ Lacros-ს იყენებთ) #clipboard-history-longpress ალმის გათიშვით.</translation>
+<translation id="445765352722456792">შემოთავაზებების მორგება</translation>
 <translation id="445864333228800152">საღამო მშვიდობის,</translation>
 <translation id="4458688154122353284">ეკრანის ჩაწერის შეწყვეტა</translation>
 <translation id="445923051607553918">Wi-Fi ქსელთან შეერთება</translation>
@@ -1332,6 +1338,7 @@
 <translation id="5802516411616338943">სწრაფი პარამეტრების გახსნა</translation>
 <translation id="5804651031882187592">გამორთეთ „SIM ბარათის ჩაკეტვის“ პარამეტრი</translation>
 <translation id="5805809050170488595">დააწკაპუნეთ, <ph name="NETWORK_NAME" /> რომ გაააქტიუროთ</translation>
+<translation id="5819918159912280082">თქვენი Chromebook მოულოდნელად გადაიტვირთა. გახსენით ბოლო ფანჯრები და აპები.</translation>
 <translation id="5823239091726045201">Google Tasks ვებში</translation>
 <translation id="5825969630400862129">დაკავშირებული მოწყობილობების პარამეტრები</translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" />-ის შეწყვეტა „<ph name="RECEIVER_NAME" />“-ში</translation>
@@ -1512,6 +1519,7 @@
 <translation id="6469104339369989396">უსადენო ქსელის გადართვა</translation>
 <translation id="6477681113376365978">ფაილი ვერ ჩამოიტვირთა</translation>
 <translation id="6482559668224714696">სრულეკრანიანი ლუპა</translation>
+<translation id="6485086611007560630">ამინდი (მიუწვდომელი)</translation>
 <translation id="6490471652906364588">USB-C მოწყობილობა (მარჯვენა პორტი)</translation>
 <translation id="649452524636452238">სმარტ-ბარათის PIN-კოდი</translation>
 <translation id="6495322433318104734">ნაჩვენებია ეკრანმზოგი, გასასვლელად დააჭირეთ ნებისმიერ კლავიშს</translation>
@@ -1781,6 +1789,7 @@
 <translation id="7514365320538308">ჩამოტვირთვა</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
+<translation id="7518182783647693467">ტემპერატურის ერთეულის გადართვა (F ან C)</translation>
 <translation id="7519206258459640379">კამერის კადრირება ჩართულია.</translation>
 <translation id="7519649142417630956">გამორთვის შემდეგ ადმინისტრატორი სისტემიდან გასული იქნება და თქვენი მოწყობილობის კონტროლს ვერ შეძლებს.
 
@@ -1921,6 +1930,7 @@
 <translation id="7951630946012935453">კლავიატურის ჩაბნელება</translation>
 <translation id="7953994493035617347">დადასტურდეს ახალი გარჩევადობა?</translation>
 <translation id="795958884516058160">სრულეკრანიანი ლუპა ჩაირთო. გამოსართავად ხელახლა დააჭირეთ <ph name="ACCELERATOR" />-ს.</translation>
+<translation id="7962583092928373823">Google Calendar-ის ყველა შემოთავაზების დამალვა</translation>
 <translation id="7963689218131240420">„არ შემაწუხოთ“ რეჟიმი გამორთულია.</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" />-დან</translation>
 <translation id="7968693143708939792">აირჩიეთ საქაღალდე...</translation>
@@ -1993,6 +2003,7 @@
 <translation id="8214996719228530800">Canary არხი</translation>
 <translation id="8219451629189078428">თქვენი Chromebook ამ დროის განმავლობაში ჩართული და კვების წყაროსთან მიერთებული უნდა იყოს. დარწმუნდით, რომ დამტენის ან ადაპტერის კაბელები კარგად არის შეერთებული როგორც Chromebook-ში, ისე როზეტში. არ გამორთოთ Chromebook.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" />-ის დამატება</translation>
+<translation id="8228175756124063692">ამ შემოთავაზების დამალვა</translation>
 <translation id="8230305195727960608">ფერთა ინვერსიის რეჟიმი</translation>
 <translation id="8236042855478648955">შესვენების დროა</translation>
 <translation id="8237964652943995219">შემდეგი სამუშაო მაგიდა: <ph name="DESK_NAME" />. სამუშაო მაგიდა <ph name="DESK_INDEX" /> / <ph name="DESK_COUNT" />-დან.</translation>
@@ -2179,6 +2190,7 @@
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> მოსანიშნი ველი მოუნიშნავია.</translation>
 <translation id="8949925099261528566">დაკავშირებულია, ინტერნეტის გარეშე</translation>
 <translation id="8951539504029375108">თქვენს Chromebook-თან თავსებადია მხოლოდ დადასტურებული Thunderbolt მოწყობილობები</translation>
+<translation id="8956420987536947088">გახსენით ბოლო ფანჯრები და აპები</translation>
 <translation id="8959380109429710384">თქვენ დააჭირეთ სრულეკრანიანი ლუპის კლავიატურის მალსახმობს. გამოიყენეთ ctrl + alt + ისრები მოძრაობისა და მასშტაბის გადიდებისთვის.</translation>
 <translation id="8964525410783593407">1 სთ</translation>
 <translation id="8973885907461690937">მენიუს ხატულას ფოკუსში მოქცევა</translation>

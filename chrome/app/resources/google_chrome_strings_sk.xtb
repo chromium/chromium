@@ -22,6 +22,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1229096353876452996">Google odporúča nastaviť Chrome ako predvolený prehliadač</translation>
 <translation id="1265739287306757398">Ako na to</translation>
 <translation id="1278833599417554002">Znova spustiť a aktualizovať Chrome</translation>
+<translation id="1290883685122687410">Chyba nastavenia: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Počkajte, kým Chrome nainštaluje najnovšie aktualizácie systému.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> vyžaduje, aby ste si pred používaním tohto zariadenia prečítali nasledujúce zmluvné podmienky a vyjadrili s nimi súhlas. Tieto zmluvné podmienky nerozširujú, neupravujú ani neobmedzujú zmluvné podmienky systému Google Chrome OS Flex.</translation>
 <translation id="1341711321000856656">Môžete si zobraziť heslá z iného profilu Chromu</translation>
@@ -193,6 +194,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="3583751698304738917">Ako <ph name="USER_EMAIL_ADDRESS" /> ste sa už prihlásili v inom profile Chromu</translation>
 <translation id="3595784445906693824">Chcete sa prihlásiť do Chromu v novom profile?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Správca požaduje nové spustenie Chromu, aby sa použila aktualizácia}=1{Správca požaduje nové spustenie Chromu, aby sa použila aktualizácia. Vaše okno inkognito sa neotvorí.}few{Správca požaduje nové spustenie Chromu, aby sa použila aktualizácia. Vaše # okná inkognito sa neotvoria.}many{Správca požaduje nové spustenie Chromu, aby sa použila aktualizácia. Your # Incognito windows won't reopen.}other{Správca požaduje nové spustenie Chromu, aby sa použila aktualizácia. Vašich # okien inkognito sa neotvorí.}}</translation>
+<translation id="3597003331831379823">Nastavenie s vyššími oprávneniami sa nepodarilo spustiť. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Tento web ste v poslednom čase nenavštívili. Chrome odstránil povolenia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a <ph name="PERMISSION_3" />.</translation>
 <translation id="3622797965165704966">Teraz je používanie prehliadača Chrome s účtom Google a na zdieľaných počítačoch oveľa ľahšie.</translation>
 <translation id="3635073343384702370">Chrome môže skontrolovať heslá, keď ich uložíte</translation>

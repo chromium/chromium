@@ -66,6 +66,7 @@
 <translation id="1953553007165777902">Mendownload... <ph name="MINUTE" /> menit lagi</translation>
 <translation id="1982647487457769627">Chrome berfungsi di berbagai platform untuk memberi Anda pengalaman yang familier, apa pun perangkatnya</translation>
 <translation id="2001586581944147178">Persulit orang yang memiliki akses ke traffic internet Anda untuk melihat situs yang Anda kunjungi. Chrome menggunakan koneksi aman untuk mencari alamat IP situs di Domain Name System (DNS).</translation>
+<translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Ekstensi ini tidak lagi didukung. Chrome merekomendasikan agar Anda menghapusnya.}other{Ekstensi ini tidak lagi didukung. Chrome merekomendasikan agar Anda menghapusnya.}}</translation>
 <translation id="2018528049276128029">Setiap profil memiliki info Chrome tersendiri, seperti bookmark, histori, sandi, dan lainnya</translation>
 <translation id="2018879682492276940">Gagal menginstal. Coba lagi.</translation>
 <translation id="207902854391093810">Jika uji coba diaktifkan, Pengukuran iklan akan memungkinkan situs yang Anda buka untuk meminta informasi dari Chrome yang membantu situs mengukur performa iklannya. Pengukuran iklan membatasi pelacakan lintas situs dengan mentransfer sesedikit mungkin informasi antar-situs.</translation>

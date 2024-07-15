@@ -69,6 +69,7 @@
 <translation id="1953553007165777902">正在下載… 剩餘 <ph name="MINUTE" /> 分鐘</translation>
 <translation id="1982647487457769627">Chrome 支援多個平台，不論你使用何種裝置，都能帶來熟悉體驗</translation>
 <translation id="2001586581944147178">讓可存取你互聯網流量的使用者難以查看你瀏覽的網站。Chrome 會透過安全連線在 DNS (網域名稱系統) 中查詢網站的 IP 位址。</translation>
+<translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Chrome 不再支援此擴充程式，因此建議你移除。}other{Chrome 不再支援這些擴充程式，因此建議你移除。}}</translation>
 <translation id="2018528049276128029">每個設定檔都會保存本身專屬的 Chrome 資料，例如書籤、記錄、密碼等</translation>
 <translation id="2018879682492276940">無法安裝，請再試一次。</translation>
 <translation id="207902854391093810">在試用期間，「廣告評估」允許您瀏覽的網站向 Chrome 要求資料，以便評估廣告的效益。「廣告評估」會透過盡量減少在網站之間傳送的資料，從而限制跨網站追蹤功能。</translation>

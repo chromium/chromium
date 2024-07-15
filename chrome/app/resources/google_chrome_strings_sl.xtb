@@ -22,6 +22,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1229096353876452996">Google priporoča, da nastavite Chrome kot privzeto možnost</translation>
 <translation id="1265739287306757398">Več o tem</translation>
 <translation id="1278833599417554002">Znova zaženite, če želite posodobiti &amp;Chrome</translation>
+<translation id="1290883685122687410">Napaka pri nastavitvi: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Počakajte, da Chrome namesti najnovejše sistemske posodobitve.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> zahteva, da preberete in sprejmete pogoje storitve, preden začnete uporabljati napravo. Ti pogoji ne dopolnjujejo, spreminjajo ali omejujejo pogojev za Google ChromeOS Flex.</translation>
 <translation id="1341711321000856656">Če si želite ogledati gesla v drugem profilu za Chromium, lahko preklopite</translation>
@@ -70,6 +71,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1953553007165777902">Prenašanje … Še <ph name="MINUTE" /> min.</translation>
 <translation id="1982647487457769627">Chrome deluje v več okoljih in vam tako zagotavlja znano izkušnjo ne glede na napravo</translation>
 <translation id="2001586581944147178">Ljudem z dostopom do vašega internetnega prometa otežite ogled spletnih mest, ki jih obiskujete. Chrome uporablja varno povezavo za iskanje naslova IP spletnega mesta v DNS-ju (imenskem sistemu domen).</translation>
+<translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Ta razširitev ni več podprta. Chrome priporoča, da jo odstranite.}one{Te razširitve niso več podprte. Chrome priporoča, da jih odstranite.}two{Te razširitve niso več podprte. Chrome priporoča, da jih odstranite.}few{Te razširitve niso več podprte. Chrome priporoča, da jih odstranite.}other{Te razširitve niso več podprte. Chrome priporoča, da jih odstranite.}}</translation>
 <translation id="2018528049276128029">Vsak profil ima svoje podatke v Chromu, kot so zaznamki, zgodovina, gesla in drugo.</translation>
 <translation id="2018879682492276940">Namestitev ni uspela. Poskusite znova.</translation>
 <translation id="207902854391093810">Če so preizkusi vklopljeni, merjenje oglasov spletnim mestom omogoča, da od Chroma zahtevajo podatke, ki jim pomagajo pri merjenju učinkovitosti oglasov. Merjenje oglasov omejuje sledenje na več spletnih mestih s prenašanjem čim manj podatkov med spletnimi mesti.</translation>
@@ -194,6 +196,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3583751698304738917">V drugem profilu za Chrome ste že prijavljeni kot <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3595784445906693824">Se želite v Chromu prijaviti v novem profilu?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome.}=1{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. Anonimno okno se ne bo znova odprlo.}one{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimno okno se ne bo znova odprlo.}two{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimni okni se ne bosta znova odprli.}few{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimna okna se ne bodo znova odprla.}other{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimnih oken se ne bo znova odprlo.}}</translation>
+<translation id="3597003331831379823">Nastavitve s povečanimi pravicami ni bilo mogoče izvesti. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Nedavno niste obiskali tega mesta. Chrome je odstranil ta dovoljenja: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in <ph name="PERMISSION_3" />.</translation>
 <translation id="3622797965165704966">Zdaj je Chrome lažje uporabljati z Google Računom in v računalnikih, ki so v skupni rabi.</translation>
 <translation id="3635073343384702370">Chrome lahko preveri gesla, če jih shranite</translation>

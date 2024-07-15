@@ -22,6 +22,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="1229096353876452996">Google preporučuje da podesite Chrome kao podrazumevani pregledač</translation>
 <translation id="1265739287306757398">Saznajte kako</translation>
 <translation id="1278833599417554002">Ponovo pokreni da bi se &amp;Chrome ažurirao</translation>
+<translation id="1290883685122687410">Greška pri podešavanju: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Sačekajte da Chrome instalira najnovija ažuriranja sistema.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> zahteva da pročitate i prihvatite sledeće Uslove korišćenja usluge pre korišćenja ovog uređaja. Ovi uslovi ne proširuju, menjaju niti ograničavaju Uslove za Google Chrome OS Flex.</translation>
 <translation id="1341711321000856656">Možete da se prebacite da biste videli lozinke sa drugog Chrome profila</translation>
@@ -195,6 +196,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="3583751698304738917">Već ste prijavljeni kao <ph name="USER_EMAIL_ADDRESS" /> na drugom Chrome profilu</translation>
 <translation id="3595784445906693824">Želite li da se prijavite u Chrome na novom profilu?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Administrator zahteva da ponovo pokrenete Chrome da biste primenili ažuriranje}=1{Administrator zahteva da ponovo pokrenete Chrome da biste primenili ažuriranje. Prozor bez arhiviranja se neće ponovo otvoriti.}one{Administrator zahteva da ponovo pokrenete Chrome da biste primenili ažuriranje. # prozor bez arhiviranja se neće ponovo otvoriti.}few{Administrator zahteva da ponovo pokrenete Chrome da biste primenili ažuriranje. # prozora bez arhiviranja se neće ponovo otvoriti.}other{Administrator zahteva da ponovo pokrenete Chrome da biste primenili ažuriranje. # prozora bez arhiviranja se neće ponovo otvoriti.}}</translation>
+<translation id="3597003331831379823">Pokretanje podešavanja sa punim privilegijama nije uspelo. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Niste skoro posećivali sajt. Chrome je uklonio dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="PERMISSION_3" /></translation>
 <translation id="3622797965165704966">Sada možete lakše da koristite Chrome sa Google nalogom i na deljenim računarima.</translation>
 <translation id="3635073343384702370">Chrome može da proverava lozinke kada ih sačuvate</translation>

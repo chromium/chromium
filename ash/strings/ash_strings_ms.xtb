@@ -521,6 +521,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2970920913501714344">Pasang apl, sambungan dan tema</translation>
 <translation id="2977598380246111477">Nombor seterusnya</translation>
 <translation id="2985148236010982088">Lihat semua apl</translation>
+<translation id="2992272421330787632">Sembunyikan semua cadangan media</translation>
 <translation id="2992327365391326550">Butang mikrofon peranti dimatikan.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3001391739687111021">Edit saiz skrin</translation>
@@ -591,6 +592,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3255483164551725916">Apakah yang boleh anda lakukan?</translation>
 <translation id="3256109297135787951">Buang serlahan daripada item pada rak anda</translation>
 <translation id="3260969790895726815">Pertuturan diproses secara setempat dan pengimlakan berfungsi di luar talian, tetapi beberapa perintah suara tidak akan berfungsi.</translation>
+<translation id="3264031581203585083">Sembunyikan semua cadangan Google Drive</translation>
 <translation id="3265032511221679826">Hidupkan akses lokasi tepat?</translation>
 <translation id="3269597722229482060">Klik Kanan</translation>
 <translation id="3274634049061007184">Lihat apl telefon anda</translation>
@@ -742,6 +744,7 @@ Sambungkan peranti anda kepada sumber kuasa.</translation>
 <translation id="3738664582935948253">Kini anda boleh menunjukkan klik dan pintasan papan kekunci dalam rakaman skrin</translation>
 <translation id="3742055079367172538">Tangkapan skrin diambil</translation>
 <translation id="3743775386021959186">Fokus dihidupkan, masa berbaki <ph name="REMAINING_TIME" /> lagi</translation>
+<translation id="3750403286520637847">Sembunyikan cadangan cuaca</translation>
 <translation id="3756485814916578707">Menghantar skrin</translation>
 <translation id="3765841382945324995">Pintasan <ph name="SIX_PACK_KEY_NAME" /> dikemaskinikan kepada <ph name="NEW_SHORTCUT" /> daripada <ph name="OLD_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Diedit hari ini</translation>
@@ -782,6 +785,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3923494859158167397">Tiada rangkaian mudah alih disediakan</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Memuatkan acara.</translation>
+<translation id="3927049937406914450">Cuaca tidak tersedia kerana akses lokasi dimatikan. Anda boleh menghidupkan akses lokasi dalam tetapan.</translation>
 <translation id="3932043219784172185">Tiada peranti disambungkan</translation>
 <translation id="3934456833412894880">Pengecasan mudah suai dihidupkan. Bateri anda akan kekal pada 80% untuk memanjangkan hayat bateri dan mengecas sepenuhnya apabila anda memerlukannya.</translation>
 <translation id="3943857333388298514">Tampal</translation>
@@ -807,6 +811,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4002066346123236978">Tajuk</translation>
 <translation id="40062176907008878">Tulisan Tangan</translation>
 <translation id="4011112806063830608">Jangan Ganggu dihidupkan.</translation>
+<translation id="4015144849380506405">Jeda/sambung semula kekunci tetikus apabila tetikus dihidupkan</translation>
 <translation id="4017989525502048489">Penuding laser</translation>
 <translation id="401993194061514265">Penanda tidak tersedia. Buka semula Screencast.</translation>
 <translation id="4021716437419160885">Tatal ke bawah</translation>
@@ -896,6 +901,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4312840429157639164">Kamera diautojajar ke penjuru kanan sebelah atas. Bercanggah dengan permukaan sistem.</translation>
 <translation id="4316910396681052118">SEMUA APL</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">Sembunyikan semua cadangan Penyemak Imbas Chrome</translation>
 <translation id="4322742403972824594">Pintasan papan kekunci Ctrl + Alt + Anak Panah ke Atas telah berubah. Untuk menggunakan kekunci Home, tekan kekunci <ph name="LAUNCHER_KEY_NAME" /> + Anak Panah ke Kiri.</translation>
 <translation id="4324840740119394760">Ini membenarkan akses kamera untuk <ph name="APP_NAME" /> dan semua apl serta laman web dengan kebenaran kamera</translation>
 <translation id="4327147325944669226">Rakam permainan</translation>
@@ -929,6 +935,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4450893287417543264">Jangan tunjukkan lagi</translation>
 <translation id="4451374464530248585">Pintasan papan kekunci Alt + Anak Panah ke Bawah telah berubah. Untuk menggunakan kekunci Page Down, tekan kekunci <ph name="LAUNCHER_KEY_NAME" /> + Anak Panah ke Bawah.</translation>
 <translation id="4453876312474547652">Anda akan melihat papan keratan apabila anda menekan dan menahan Ctrl + V. Anda boleh mematikan pintasan ini dengan melumpuhkan bendera #clipboard-history-longpress dalam chrome://flags (os://flags jika anda menggunakan Lacros).</translation>
+<translation id="445765352722456792">Sesuaikan cadangan</translation>
 <translation id="445864333228800152">Selamat petang,</translation>
 <translation id="4458688154122353284">Hentikan rakaman skrin</translation>
 <translation id="445923051607553918">Sertai rangkaian Wi-Fi</translation>
@@ -1331,6 +1338,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="5802516411616338943">Buka Tetapan Pantas</translation>
 <translation id="5804651031882187592">Matikan tetapan "Kunci SIM"</translation>
 <translation id="5805809050170488595">Klik untuk aktifkan <ph name="NETWORK_NAME" /></translation>
+<translation id="5819918159912280082">Chromebook anda dimulakan semula secara tiba-tiba. Buka tetingkap dan apl anda sebelum ini.</translation>
 <translation id="5823239091726045201">Google Task pada web</translation>
 <translation id="5825969630400862129">Tetapan peranti yang bersambung</translation>
 <translation id="5837036133683224804">Hentikan <ph name="ROUTE_TITLE" /> pada <ph name="RECEIVER_NAME" /></translation>
@@ -1511,6 +1519,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="6469104339369989396">Togol tempat liputan</translation>
 <translation id="6477681113376365978">Tidak dapat memuat turun fail</translation>
 <translation id="6482559668224714696">Penggadang skrin penuh</translation>
+<translation id="6485086611007560630">Cuaca (tidak tersedia)</translation>
 <translation id="6490471652906364588">Peranti USB-C (port kanan)</translation>
 <translation id="649452524636452238">PIN kad pintar</translation>
 <translation id="6495322433318104734">Memaparkan penyelamat skrin, tekan sebarang kekunci untuk keluar</translation>
@@ -1780,6 +1789,7 @@ Pemasangan baharu</translation>
 <translation id="7514365320538308">Muat Turun</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
+<translation id="7518182783647693467">Togol unit suhu (F atau C)</translation>
 <translation id="7519206258459640379">Pembingkaian kamera dihidupkan.</translation>
 <translation id="7519649142417630956">Setelah peranti dimatikan, pentadbir akan log keluar dan tidak akan dapat mengawal peranti anda.
 
@@ -1920,6 +1930,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7951630946012935453">Malapkan papan kekunci</translation>
 <translation id="7953994493035617347">Sahkan peleraian baharu?</translation>
 <translation id="795958884516058160">Penggadang Skrin Penuh didayakan. Tekan <ph name="ACCELERATOR" /> sekali lagi untuk mematikan togol.</translation>
+<translation id="7962583092928373823">Sembunyikan semua cadangan Google Calendar</translation>
 <translation id="7963689218131240420">Jangan Ganggu dimatikan.</translation>
 <translation id="7963992254934562106">Daripada <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Pilih folder...</translation>
@@ -1992,6 +2003,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8214996719228530800">Saluran Canary</translation>
 <translation id="8219451629189078428">Chromebook anda perlu kekal hidup dan disambungkan kepada kuasa sepanjang tempoh ini. Pastikan kabel pengecas atau penyesuai telah dipalamkan sepenuhnya pada Chromebook dan soket kuasa anda. Jangan matikan Chromebook anda.</translation>
 <translation id="8220076512072059941">Tambahkan <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="8228175756124063692">Sembunyikan cadangan ini</translation>
 <translation id="8230305195727960608">Mod Penyongsangan Warna</translation>
 <translation id="8236042855478648955">Masa rehat</translation>
 <translation id="8237964652943995219">Meja seterusnya: <ph name="DESK_NAME" />. Meja <ph name="DESK_INDEX" /> daripada <ph name="DESK_COUNT" />.</translation>
@@ -2178,6 +2190,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Kotak pilihan tidak ditandai.</translation>
 <translation id="8949925099261528566">Disambungkan, tiada Internet</translation>
 <translation id="8951539504029375108">Hanya peranti Thunderbolt yang diluluskan serasi dengan Chromebook anda</translation>
+<translation id="8956420987536947088">Buka tetingkap dan apl anda sebelum ini</translation>
 <translation id="8959380109429710384">Anda menekan pintasan papan kekunci untuk mendapatkan penggadang skrin penuh. Gunakan ctrl + alt + anak panah untuk bergerak pada sekeliling paparan yang dizum masuk.</translation>
 <translation id="8964525410783593407">1 j</translation>
 <translation id="8973885907461690937">Letakkan fokus pada ikon menu</translation>
