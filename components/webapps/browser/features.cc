@@ -76,15 +76,6 @@ extern const base::FeatureParam<int> kMaxDaysForMLPromotionGuardrailStorage(
     "max_days_to_store_guardrails",
     kTotalDaysToStoreMLGuardrails);
 
-// Allows installing a web app with fallback manifest values.
-BASE_FEATURE(kUniversalInstallManifest,
-             "UniversalInstallManifest",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // Allows installing a web app with fallback manifest values on root scope pages
 // without manifest.
 BASE_FEATURE(kUniversalInstallRootScopeNoManifest,
@@ -94,18 +85,6 @@ BASE_FEATURE(kUniversalInstallRootScopeNoManifest,
 #else
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
-
-// Allows installing a web app when no icon provided by the manifest.
-BASE_FEATURE(kUniversalInstallIcon,
-             "UniversalInstallIcon",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
-extern const base::FeatureParam<int> kMinimumFaviconSize{&kUniversalInstallIcon,
-                                                         "size", 48};
 
 // Allow using default manifest URL.
 BASE_FEATURE(kUniversalInstallDefaultUrl,

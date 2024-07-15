@@ -84,8 +84,7 @@ int gTimeDeltaInDaysForTesting = 0;
 InstallableParams ParamsToGetManifest() {
   InstallableParams params;
   params.check_eligibility = true;
-  params.fetch_metadata =
-      base::FeatureList::IsEnabled(features::kUniversalInstallManifest);
+  params.fetch_metadata = true;
   return params;
 }
 

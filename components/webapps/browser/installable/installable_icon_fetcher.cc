@@ -87,7 +87,7 @@ int GetMinimumFaviconForPrimaryIconSizeInPx() {
 #if !BUILDFLAG(IS_ANDROID)
     NOTREACHED_IN_MIGRATION();
 #endif
-    return features::kMinimumFaviconSize.Get();
+    return features::kMinimumFaviconSize;
   }
 }
 

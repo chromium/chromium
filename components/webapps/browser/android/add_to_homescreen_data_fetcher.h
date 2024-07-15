@@ -20,10 +20,6 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
-namespace favicon_base {
-struct LargeIconResult;
-}
-
 namespace webapps {
 
 class InstallableManager;
@@ -93,11 +89,7 @@ class AddToHomescreenDataFetcher {
 
   // Called when installable check failed on any step and continue with the add
   // shortcut flow.
-  void PrepareToAddShortcut(bool fetch_favicon);
-
-  // Grabs the favicon for the current URL.
-  void FetchFavicon();
-  void OnFaviconFetched(const favicon_base::LargeIconResult& result);
+  void PrepareToAddShortcut();
 
   // Creates an icon to display to the user to confirm the add to home screen
   // from the given |base_icon|. If |use_for_launcher| is true, the created icon

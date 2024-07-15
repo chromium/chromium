@@ -528,37 +528,6 @@ TEST_F(AddToHomescreenDataFetcherTest, InstallableManifest) {
 }
 
 TEST_F(AddToHomescreenDataFetcherTest, ManifestNoNameNoShortName) {
-  scoped_feature_list_.InitWithFeatures(
-      {}, {features::kUniversalInstallManifest,
-           features::kUniversalInstallRootScopeNoManifest});
-  // Test that when the manifest does not provide either Manifest::short_name
-  // nor Manifest::name that:
-  //  - The page is not WebAPK compatible.
-  //  - WebAppInstallInfo::title is used as the "name".
-  //  - We still use the icons from the manifest.
-  blink::mojom::ManifestPtr manifest = BuildWebAPKManifest();
-  manifest->name = std::nullopt;
-  manifest->short_name = std::nullopt;
-
-  SetManifest(std::move(manifest));
-  ObserverWaiter waiter;
-  std::unique_ptr<AddToHomescreenDataFetcher> fetcher = BuildFetcher(&waiter);
-  RunFetcher(fetcher.get(), waiter, kWebAppInstallInfoTitle,
-             blink::mojom::DisplayMode::kStandalone,
-             AddToHomescreenParams::AppType::SHORTCUT,
-             InstallableStatusCode::MANIFEST_MISSING_NAME_OR_SHORT_NAME);
-
-  EXPECT_EQ(fetcher->shortcut_info().name, kWebAppInstallInfoTitle);
-  EXPECT_EQ(fetcher->shortcut_info().short_name, kWebAppInstallInfoTitle);
-  EXPECT_FALSE(fetcher->primary_icon().drawsNothing());
-  EXPECT_EQ(fetcher->shortcut_info().best_primary_icon_url,
-            GURL(kDefaultIconUrl));
-}
-
-TEST_F(AddToHomescreenDataFetcherTest,
-       UniversalInstallManifestNoNameNoShortName) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kUniversalInstallManifest);
   // Test that when the manifest does not provide either Manifest::short_name
   // nor Manifest::name but web page metadata provides a application-name.
   blink::mojom::ManifestPtr manifest = BuildWebAPKManifest();
@@ -582,10 +551,7 @@ TEST_F(AddToHomescreenDataFetcherTest,
             GURL(kDefaultIconUrl));
 }
 
-TEST_F(AddToHomescreenDataFetcherTest, UniversalInstallNoManifestIcons) {
-  scoped_feature_list_.InitWithFeatures(
-      {features::kUniversalInstallManifest, features::kUniversalInstallIcon},
-      {});
+TEST_F(AddToHomescreenDataFetcherTest, NoManifestIcons) {
   // Test that when the manifest does not provide any icon, we fallback to use
   // favicon.
   blink::mojom::ManifestPtr manifest = BuildWebAPKManifest();
@@ -616,9 +582,7 @@ TEST_F(AddToHomescreenDataFetcherTest, UniversalInstallNoManifestIcons) {
             GURL(kDefaultIconUrl));
 }
 
-TEST_F(AddToHomescreenDataFetcherTest, UniversalManifestDisplay) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kUniversalInstallManifest);
+TEST_F(AddToHomescreenDataFetcherTest, ManifestDisplayMode) {
   // Test that when the manifest does not provide display mode, we fallback to
   // install with DisplayMode::kMinimalUi.
   blink::mojom::ManifestPtr manifest = BuildWebAPKManifest();
@@ -644,10 +608,7 @@ TEST_F(AddToHomescreenDataFetcherTest, UniversalManifestDisplay) {
 TEST_F(AddToHomescreenDataFetcherTest,
        UniversalInstallEmptyManifestAtRootScope) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kUniversalInstallManifest,
-       features::kUniversalInstallRootScopeNoManifest,
-       features::kUniversalInstallIcon},
-      {});
+      {features::kUniversalInstallRootScopeNoManifest}, {});
 
   GURL document_url = GURL("https://www.example.com/index.html");
   NavigateAndCommit(document_url);
@@ -680,10 +641,7 @@ TEST_F(AddToHomescreenDataFetcherTest,
 TEST_F(AddToHomescreenDataFetcherTest,
        UniversalInstallEmptyManifestNotRootScope) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kUniversalInstallManifest,
-       features::kUniversalInstallRootScopeNoManifest,
-       features::kUniversalInstallIcon},
-      {});
+      {features::kUniversalInstallRootScopeNoManifest}, {});
 
   GURL document_url = GURL("https://www.example.com/scope/index.html");
   NavigateAndCommit(document_url);

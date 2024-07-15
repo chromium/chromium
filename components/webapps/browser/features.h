@@ -27,6 +27,9 @@ constexpr unsigned int kDefaultTotalEngagementToTrigger = 2;
 // `kMlPromoGuardrails` in web_app_pref_guardrails.h.
 inline constexpr int kTotalDaysToStoreMLGuardrails = 180;
 
+// Min icon size when using favicon to install webapp.
+inline constexpr int kMinimumFaviconSize = 48;
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kAddToHomescreenMessaging);
 BASE_DECLARE_FEATURE(kInstallPromptGlobalGuardrails);
@@ -54,10 +57,7 @@ extern const base::FeatureParam<double> kWebAppsMLGuardrailResultReportProb;
 extern const base::FeatureParam<double> kWebAppsMLModelUserDeclineReportProb;
 extern const base::FeatureParam<int> kMaxDaysForMLPromotionGuardrailStorage;
 
-BASE_DECLARE_FEATURE(kUniversalInstallManifest);
-BASE_DECLARE_FEATURE(kUniversalInstallIcon);
 BASE_DECLARE_FEATURE(kUniversalInstallRootScopeNoManifest);
-extern const base::FeatureParam<int> kMinimumFaviconSize;
 BASE_DECLARE_FEATURE(kUniversalInstallDefaultUrl);
 
 }  // namespace features

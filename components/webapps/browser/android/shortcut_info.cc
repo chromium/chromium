@@ -301,10 +301,6 @@ void ShortcutInfo::UpdateBestSplashIcon(
 }
 
 void ShortcutInfo::UpdateDisplayMode(bool webapk_compatible) {
-  if (!base::FeatureList::IsEnabled(features::kUniversalInstallManifest)) {
-    return;
-  }
-
   if (webapk_compatible) {
     if (!IsWebApkDisplayMode(display)) {
       display = DisplayMode::kMinimalUi;

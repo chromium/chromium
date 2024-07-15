@@ -107,10 +107,7 @@ AppBannerManagerDesktop::ParamsToPerformInstallableWebAppCheck() {
   InstallableParams params;
   params.valid_primary_icon = true;
   params.fetch_screenshots = true;
-  params.installable_criteria =
-      base::FeatureList::IsEnabled(features::kUniversalInstallManifest)
-          ? InstallableCriteria::kImplicitManifestFieldsHTML
-          : InstallableCriteria::kValidManifestWithIcons;
+  params.installable_criteria = InstallableCriteria::kValidManifestWithIcons;
   return params;
 }
 
