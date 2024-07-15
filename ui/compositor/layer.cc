@@ -440,7 +440,7 @@ void Layer::Remove(Layer* child) {
     child->ResetCompositorForAnimatorsInTree(compositor);
 
   auto i = base::ranges::find(children_, child);
-  DCHECK(i != children_.end());
+  CHECK(i != children_.end(), base::NotFatalUntil::M130);
   children_.erase(i);
   child->parent_ = nullptr;
   child->cc_layer_->RemoveFromParent();
