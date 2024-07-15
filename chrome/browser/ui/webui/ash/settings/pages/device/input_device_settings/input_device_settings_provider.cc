@@ -16,10 +16,18 @@
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/package_id_util.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings/input_device_settings_provider.mojom-forward.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
@@ -755,6 +763,22 @@ void InputDeviceSettingsProvider::GetDeviceIconImage(
       device_key,
       base::BindOnce(&InputDeviceSettingsProvider::OnReceiveDeviceImage,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void InputDeviceSettingsProvider::LaunchCompanionApp(
+    const std::string& package_id_str) {
+  CHECK(features::IsWelcomeExperienceEnabled());
+  auto* profile = ProfileManager::GetActiveUserProfile();
+  auto package_id = apps::PackageId::FromString(package_id_str);
+  CHECK(package_id.has_value());
+  auto app_id = apps_util::GetAppWithPackageId(&*profile, package_id.value());
+  CHECK(app_id.has_value());
+  apps::AppServiceProxyFactory::GetForProfile(
+      ProfileManager::GetActiveUserProfile())
+      ->LaunchAppWithParams(apps::AppLaunchParams(
+          app_id.value(), apps::LaunchContainer::kLaunchContainerWindow,
+          WindowOpenDisposition::NEW_WINDOW,
+          apps::LaunchSource::kFromManagementApi));
 }
 
 void InputDeviceSettingsProvider::

@@ -392,6 +392,8 @@ export class FakeInputDeviceSettingsProvider implements
     return this.methods.resolveMethod('fakeDeviceIconImage');
   }
 
+  launchCompanionApp(): void {}
+
   setFakeActionsForGraphicsTabletButtonCustomization(actionChoices:
                                                          ActionChoice[]): void {
     this.methods.setResult(

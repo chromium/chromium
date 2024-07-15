@@ -23,6 +23,7 @@ import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import {BatteryType} from 'chrome://resources/ash/common/bluetooth/bluetooth_types.js';
 import {CrLinkRowElement} from 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {BluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
@@ -453,8 +454,11 @@ export class SettingsPerDeviceMouseSubsectionElement extends
     return this.mouse.appInfo?.state === CompanionAppState.kInstalled;
   }
 
-  // TODO(b/329686601): Implement this.
-  private onCompanionAppRowClick(): void {}
+  private onCompanionAppRowClick(): void {
+    assert(this.mouse.appInfo);
+    this.inputDeviceSettingsProvider.launchCompanionApp(
+        this.mouse.appInfo.packageId || '');
+  }
 
   private computeOpenAppLabel(): string {
     if (!this.mouse?.appInfo) {

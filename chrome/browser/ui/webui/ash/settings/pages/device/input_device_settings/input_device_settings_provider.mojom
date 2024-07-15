@@ -192,4 +192,7 @@ interface InputDeviceSettingsProvider {
   // Returns the device image as a Data URL. Returns null if the device doesn't
   // have a corresponding image.
   GetDeviceIconImage(string device_key) => (string? data_url);
+
+  // Opens companion app for a connected peripheral.
+  LaunchCompanionApp(string package_id);
 };

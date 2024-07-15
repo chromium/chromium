@@ -152,6 +152,7 @@ class InputDeviceSettingsProvider
                           GetDeviceIconImageCallback callback) override;
   void GetActionsForGraphicsTabletButtonCustomization(
       GetActionsForGraphicsTabletButtonCustomizationCallback callback) override;
+  void LaunchCompanionApp(const std::string& package_id_str) override;
 
   // chromeos::PowerManagerClient observer:
   void KeyboardBrightnessChanged(
