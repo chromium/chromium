@@ -5,9 +5,10 @@
 import 'chrome://os-settings/os_settings.js';
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {CrLinkRowElement, CrToggleElement, FakeInputDeviceSettingsProvider, fakeMice, fakeMice2, Mouse, PolicyStatus, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsDropdownMenuElement, SettingsPerDeviceMouseSubsectionElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrLinkRowElement, CrToggleElement, FakeInputDeviceSettingsProvider, fakeMice, fakeMice2, Mouse, PerDeviceSubsectionHeaderElement, PolicyStatus, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsDropdownMenuElement, SettingsPerDeviceMouseSubsectionElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import type {BluetoothBatteryIconPercentageElement} from 'chrome://resources/ash/common/bluetooth/bluetooth_battery_icon_percentage.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -411,8 +412,11 @@ suite('<settings-per-device-mouse-subsection>', function() {
       'battery percentage displayed for connected bluetooth devices',
       async () => {
         await initializePerDeviceMouseSubsection(fakeMice);
+        const subsectionHeader = strictQuery(
+            '#subsectionHeader', subsection.shadowRoot,
+            PerDeviceSubsectionHeaderElement);
         const batteryIcon =
-            subsection.shadowRoot!
+            subsectionHeader.shadowRoot!
                 .querySelector<BluetoothBatteryIconPercentageElement>(
                     '#batteryIcon');
         assertTrue(isVisible(batteryIcon));

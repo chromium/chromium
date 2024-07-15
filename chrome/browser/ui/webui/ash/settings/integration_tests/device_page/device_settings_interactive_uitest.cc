@@ -341,7 +341,8 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest, AddNewMouse) {
       "settings-device-page",
       "settings-per-device-mouse",
       "settings-per-device-mouse-subsection",
-      "h2#mouseName",
+      "per-device-subsection-header",
+      "h2#deviceName",
   };
 
   SetMouseDevices({ui::InputDevice(
