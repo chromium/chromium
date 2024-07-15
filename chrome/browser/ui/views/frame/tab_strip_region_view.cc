@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -33,6 +34,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/vector_icons/vector_icons.h"
+#include "tab_strip_region_view.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -90,9 +92,12 @@ bool ShouldShowNewTabButton(const Browser* browser) {
 }  // namespace
 
 TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
-    : render_tab_search_before_tab_strip_(!tabs::GetTabSearchRightAligned(
-          tab_strip->GetBrowser() ? tab_strip->GetBrowser()->profile()
-                                  : nullptr)) {
+    : profile_(tab_strip->GetBrowser() ? tab_strip->GetBrowser()->profile()
+                                       : nullptr),
+      render_tab_search_before_tab_strip_(
+          !tabs::GetTabSearchTrailingTabstrip(profile_)),
+      tab_search_position_metrics_logger_(
+          std::make_unique<TabSearchPositionMetricsLogger>(profile_)) {
   views::SetCascadingColorProviderColor(
       this, views::kCascadingBackgroundColor,
       kColorTabBackgroundInactiveFrameInactive);
@@ -548,6 +553,56 @@ void TabStripRegionView::AdjustViewBoundsRect(View* view, int offset) {
   const gfx::Rect new_bounds = gfx::Rect(gfx::Point(x, 0), view_size);
   view->SetBoundsRect(new_bounds);
 }
+
+// Logger that periodically saves the tab search position. There should be 1
+// instance per tabstrip.
+class TabSearchPositionMetricsLogger {
+ public:
+  explicit TabSearchPositionMetricsLogger(
+      const Profile* profile,
+      base::TimeDelta logging_interval = base::Hours(1))
+      : profile_(profile),
+        logging_interval_(logging_interval),
+        weak_ptr_factory_(this) {
+    LogMetrics();
+    ScheduleNextLog();
+  }
+
+  ~TabSearchPositionMetricsLogger() = default;
+
+ private:
+  // Logs the UMA metric for the tab search position.
+  void LogMetrics() {
+    base::UmaHistogramEnumeration(
+        "Tabs.TabSearch.IsTrailingTabstrip",
+        tabs::GetTabSearchTrailingTabstrip(profile_)
+            ? TabStripRegionView::TabSearchPositionEnum::kTrailing
+            : TabStripRegionView::TabSearchPositionEnum::kLeading);
+  }
+
+  // Sets up a task runner that calls back into the logging data.
+  void ScheduleNextLog() {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&TabSearchPositionMetricsLogger::LogMetricAndReschedule,
+                       weak_ptr_factory_.GetWeakPtr()),
+        logging_interval_);
+  }
+
+  // Helper method for posting the task which logs and schedules the next log.
+  void LogMetricAndReschedule() {
+    LogMetrics();
+    ScheduleNextLog();
+  }
+
+  // Profile for checking the pref value.
+  const raw_ptr<const Profile> profile_;
+
+  // Time in which this metric should be logged. Default is hourly.
+  const base::TimeDelta logging_interval_;
+
+  base::WeakPtrFactory<TabSearchPositionMetricsLogger> weak_ptr_factory_;
+};
 
 BEGIN_METADATA(TabStripRegionView)
 END_METADATA

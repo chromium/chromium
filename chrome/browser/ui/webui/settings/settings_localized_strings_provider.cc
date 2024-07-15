@@ -454,7 +454,7 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean("showTabSearchPositionSettings",
                           tabs::CanShowTabSearchPositionSetting());
   html_source->AddBoolean("tabSearchIsRightAlignedAtStartup",
-                          tabs::GetTabSearchRightAligned(profile));
+                          tabs::GetTabSearchTrailingTabstrip(profile));
   html_source->AddBoolean("toolbarPinningEnabled",
                           features::IsToolbarPinningEnabled());
 

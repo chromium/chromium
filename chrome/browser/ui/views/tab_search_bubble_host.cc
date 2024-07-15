@@ -204,7 +204,7 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
     const gfx::Rect bounds = button_->GetWidget()->GetWorkAreaBoundsInScreen();
     const int offset = GetLayoutConstant(TAB_STRIP_PADDING);
 
-    const int x = tabs::GetTabSearchRightAligned(profile_)
+    const int x = tabs::GetTabSearchTrailingTabstrip(profile_)
                       ? bounds.right() - offset
                       : bounds.x() + offset;
 
@@ -220,7 +220,7 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
       },
       *bubble_created_time_));
   webui_bubble_manager_->ShowBubble(anchor,
-                                    tabs::GetTabSearchRightAligned(profile_)
+                                    tabs::GetTabSearchTrailingTabstrip(profile_)
                                         ? views::BubbleBorder::TOP_RIGHT
                                         : views::BubbleBorder::TOP_LEFT,
                                     kTabSearchBubbleElementId);

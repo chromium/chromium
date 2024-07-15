@@ -271,6 +271,15 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="User opened the Tab Search UI via touch gesture"/>
 </enum>
 
+<!-- LINT.IfChange(TabSearchPosition) -->
+
+<enum name="TabSearchPosition">
+  <int value="0" label="Leading"/>
+  <int value="1" label="Trailing"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/views/frame/tab_strip_region_view.h:TabSearchPositionEnum) -->
+
 <enum name="TabSearchRecentlyClosedItemOpenAction">
   <int value="0"
       label="Opened a recently closed item from an unfiltered item list"/>
