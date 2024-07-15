@@ -10,7 +10,7 @@ option java_outer_classname = 'EntityInfoProto';
 
 package omnibox;
 
-import "action_info.proto";
+import "chrome_searchbox_stats.proto";
 
 // Entity Suggest rendering data.
 message EntityInfo {
@@ -60,7 +60,7 @@ message ActionInfo {
   optional string action_uri = 3;
 
   // Action type for logging.
-  optional metrics.ActionType logs_action_type = 4;
+  optional .omnibox.metrics.ActionInfo.ActionType logs_action_type = 4;
 
   // Action type.
   optional ActionType action_type = 8;
