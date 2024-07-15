@@ -12,6 +12,7 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -65,6 +66,12 @@
 namespace media {
 namespace {
 
+// Kill switch for using MultiPlaneFormat that prefers external sampler for
+// hardware planes when default SharedImageFormatType::Legacy is used.
+BASE_FEATURE(kUseMultiPlaneFormatForLegacySIFType,
+             "UseMultiPlaneFormatForLegacySIFType",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool MediaSharedBitmapConversionEnabled() {
   return base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage) &&
          base::FeatureList::IsEnabled(kMediaSharedBitmapToSharedImage);
@@ -96,7 +103,11 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
     DCHECK(target == 0 || target == GL_TEXTURE_EXTERNAL_OES)
         << "Unsupported target " << gl::GLEnums::GetStringEnum(target);
     DCHECK_EQ(num_textures, 1u);
-    if (frame.shared_image_format_type() == SharedImageFormatType::kLegacy) {
+    // Use viz::LegacyMultiPlaneFormat when default
+    // SharedImageFormatType::Legacy is used and
+    // kUseMultiPlaneFormatForLegacySIFType feature is NOT enabled.
+    if (frame.shared_image_format_type() == SharedImageFormatType::kLegacy &&
+        !base::FeatureList::IsEnabled(kUseMultiPlaneFormatForLegacySIFType)) {
       switch (format) {
         case PIXEL_FORMAT_NV12:
           si_formats[0] = viz::LegacyMultiPlaneFormat::kNV12;
@@ -115,9 +126,6 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
       }
     } else {
 #if BUILDFLAG(IS_OZONE)
-      CHECK_EQ(frame.shared_image_format_type(),
-               SharedImageFormatType::kSharedImageFormatExternalSampler);
-
       // The format must be one of NV12/YV12/P010LE/NV12A, as these are the only
       // formats for which VideoFrame::RequiresExternalSampler() will return
       // true.
@@ -140,9 +148,8 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
       si_formats[0].SetPrefersExternalSampler();
 #else
       // MultiplanarSharedImage with external sampling is supported only on
-      // Ozone, and VideoFrames with format type
-      // kSharedImageFormatExternalSampler should not be created on other
-      // platforms.
+      // Ozone, and VideoFrames with external sampler should not be created on
+      // other platforms.
       NOTREACHED_NORETURN();
 #endif
     }
