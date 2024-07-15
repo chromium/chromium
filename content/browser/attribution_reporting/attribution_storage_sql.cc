@@ -2044,37 +2044,27 @@ bool AttributionStorageSql::UpdateReportForSendFailure(
   return statement.Run() && db_.GetLastChangeCount() == 1;
 }
 
-std::optional<base::Time> AttributionStorageSql::AdjustOfflineReportTimes() {
+bool AttributionStorageSql::AdjustOfflineReportTimes(
+    base::TimeDelta min_delay,
+    base::TimeDelta max_delay) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto delay = delegate_->GetOfflineReportDelayConfig();
-
-  // If no delay is being applied (i.e. debug mode is active), return the
-  // earliest report time nonetheless so that it is scheduled properly.
-  if (!delay.has_value()) {
-    return GetNextReportTime(base::Time::Min());
-  }
-
-  DCHECK_GE(delay->min, base::TimeDelta());
-  DCHECK_GE(delay->max, base::TimeDelta());
-  DCHECK_LE(delay->min, delay->max);
+  DCHECK_GE(min_delay, base::TimeDelta());
+  DCHECK_GE(max_delay, base::TimeDelta());
+  DCHECK_LE(min_delay, max_delay);
 
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent)) {
-    return std::nullopt;
+    return false;
   }
 
   base::Time now = base::Time::Now();
 
   sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kSetReportTimeSql));
-  statement.BindTime(0, now + delay->min);
-  statement.BindTimeDelta(1, delay->max - delay->min + base::Microseconds(1));
+  statement.BindTime(0, now + min_delay);
+  statement.BindTimeDelta(1, max_delay - min_delay + base::Microseconds(1));
   statement.BindTime(2, now);
-  if (!statement.Run()) {
-    return std::nullopt;
-  }
-
-  return GetNextReportTime(base::Time::Min());
+  return statement.Run();
 }
 
 void AttributionStorageSql::ClearDataWithFilter(

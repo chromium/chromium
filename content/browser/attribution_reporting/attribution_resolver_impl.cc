@@ -111,7 +111,12 @@ bool AttributionResolverImpl::UpdateReportForSendFailure(
 
 std::optional<base::Time> AttributionResolverImpl::AdjustOfflineReportTimes() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return storage_.AdjustOfflineReportTimes();
+
+  if (auto delay = delegate_->GetOfflineReportDelayConfig()) {
+    storage_.AdjustOfflineReportTimes(delay->min, delay->max);
+  }
+
+  return storage_.GetNextReportTime(base::Time::Min());
 }
 
 void AttributionResolverImpl::ClearData(

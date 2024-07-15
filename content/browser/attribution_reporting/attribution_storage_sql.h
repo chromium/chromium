@@ -154,7 +154,8 @@ class CONTENT_EXPORT AttributionStorageSql {
   bool DeleteReport(AttributionReport::Id report_id);
   bool UpdateReportForSendFailure(AttributionReport::Id report_id,
                                   base::Time new_report_time);
-  std::optional<base::Time> AdjustOfflineReportTimes();
+  bool AdjustOfflineReportTimes(base::TimeDelta min_delay,
+                                base::TimeDelta max_delay);
   void ClearAllDataAllTime(bool delete_rate_limit_data);
   void ClearDataWithFilter(base::Time delete_begin,
                            base::Time delete_end,
