@@ -367,7 +367,7 @@ int KombuchaInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
                   return Steps(
                       Do([this, target]() {
                         int actual_target =
-                            target % browser()->tab_strip_model()->count();
+                            abs(target % browser()->tab_strip_model()->count());
                         browser()->tab_strip_model()->AddToNewGroup(
                             {actual_target});
                       }),
