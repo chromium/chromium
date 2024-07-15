@@ -46,8 +46,8 @@ class TestWebUIContentsWrapper final : public WebUIContentsWrapper {
 class MakoRewriteViewTest : public ChromeViewsTestBase {
  public:
   void SetUp() override {
+    feature_list_.InitAndEnableFeature(features::kOrcaResizingSupport);
     ChromeViewsTestBase::SetUp();
-    GTEST_SKIP();
   }
 
  private:
