@@ -150,11 +150,7 @@ bool TabGroupHeader::OnKeyPressed(const ui::KeyEvent& event) {
       !editor_bubble_tracker_.is_open()) {
     tab_slot_controller_->ToggleTabGroupCollapsedState(
         group().value(), ToggleTabGroupCollapsedStateOrigin::kKeyboard);
-#if BUILDFLAG(IS_WIN)
     NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
-#else
-    NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
-#endif
     return true;
   }
 
