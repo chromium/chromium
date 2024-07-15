@@ -502,7 +502,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3570693105179140209">Atinge de două ori pentru mai multe parole.</translation>
 <translation id="3575234738189584619">Caută cu Lens</translation>
 <translation id="3575426792457739946">Această listă conține toate profilurile încărcate.</translation>
-<translation id="3581564640715911333">Oferă traducerea paginilor în alte limbi</translation>
+<translation id="3581564640715911333">Afișează traducerea paginilor în alte limbi</translation>
 <translation id="3585696901179982416">{count,plural, =1{{position} din {count} adresă}few{{position} din {count} adrese}other{{position} din {count} de adrese}}</translation>
 <translation id="3587885837929752825">Organizația ta limitează tipurile de conținut pe care îl poți salva în Contul Google.</translation>
 <translation id="3588820906588687999">Deschide imaginea într-o filă nouă</translation>
@@ -1199,7 +1199,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="6973630695168034713">Dosare</translation>
 <translation id="69739764870135975">Dacă Google este și motorul tău de căutare prestabilit, vei vedea sugestii mai bune și mai relevante din punct de vedere contextual</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6983306615164277634">Poți și să atingi lung bara de adrese pentru a schimba poziția.</translation>
+<translation id="6983306615164277634">Poți și să ții apăsat pe bara de adrese pentru a-i schimba poziția.</translation>
 <translation id="6986937292199604715">Activează...</translation>
 <translation id="6988572888918530647">Gestionează-ți Contul Google</translation>
 <translation id="6990519590575500580">Facetime</translation>
@@ -1284,7 +1284,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="7465351360025415755">Primește conținut relevant pentru tine</translation>
 <translation id="7470908168505178757">Un grup de file. Restrâns.</translation>
 <translation id="7472734401283673885">Numele companiei</translation>
-<translation id="7473891865547856676">Nu, Mulțumesc</translation>
+<translation id="7473891865547856676">Nu, mulțumesc</translation>
 <translation id="7488874549363591659">Livrat</translation>
 <translation id="7491131399623468277">Accesează Setările…</translation>
 <translation id="749854780843431406">Poți deschide o filă nouă apăsând pe butonul <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
@@ -1599,7 +1599,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="894191600409472540">Creează parole puternice</translation>
 <translation id="8952559610785099500">Adaugă parola</translation>
 <translation id="8953046091948372197">Aici vei vedea parolele</translation>
-<translation id="895541991026785598">Raportați o problemă</translation>
+<translation id="895541991026785598">Semnalează o problemă</translation>
 <translation id="8961757677053809960">Respingi avertismentul?</translation>
 <translation id="8971545611707025079">Verifică din nou</translation>
 <translation id="8974714402877957201">1. Deschide Setările dispozitivului iPad.</translation>
