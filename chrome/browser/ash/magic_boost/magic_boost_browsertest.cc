@@ -4,19 +4,25 @@
 
 #include <memory>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
+#include "ash/system/magic_boost/magic_boost_constants.h"
 #include "ash/system/magic_boost/magic_boost_disclaimer_view.h"
 #include "ash/test/ash_test_util.h"
 #include "base/command_line.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_opt_in_card.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_switches.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/events/test/event_generator.h"
@@ -75,6 +81,49 @@ class MagicBoostBrowserTest : public InProcessBrowserTest {
  protected:
   ui::test::EventGenerator& event_generator() { return *event_generator_; }
 
+  void RightClickOnWebContent() {
+    event_generator().MoveMouseTo(chrome_test_utils::GetActiveWebContents(this)
+                                      ->GetViewBounds()
+                                      .CenterPoint());
+    event_generator().ClickRightButton();
+  }
+
+  void LeftClickOnView(const views::View* view) {
+    ASSERT_TRUE(view);
+    event_generator().MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
+    event_generator().ClickLeftButton();
+  }
+
+  views::Widget* GetOptInCardWidget() const {
+    return FindWidgetWithNameAndWaitIfNeeded(
+        chromeos::MagicBoostOptInCard::GetWidgetNameForTest());
+  }
+
+  views::View* GetOptInCardAcceptButton() const {
+    return GetOptInCardWidget()->GetContentsView()->GetViewByID(
+        chromeos::magic_boost::ViewId::OptInCardPrimaryButton);
+  }
+
+  views::View* GetOptInCardDeclineButton() const {
+    return GetOptInCardWidget()->GetContentsView()->GetViewByID(
+        chromeos::magic_boost::ViewId::OptInCardSecondaryButton);
+  }
+
+  views::Widget* GetDisclaimerViewWidget() const {
+    return FindWidgetWithNameAndWaitIfNeeded(
+        MagicBoostDisclaimerView::GetWidgetName());
+  }
+
+  views::View* GetDisclaimerViewAcceptButton() const {
+    return GetDisclaimerViewWidget()->GetContentsView()->GetViewByID(
+        magic_boost::ViewId::DisclaimerViewAcceptButton);
+  }
+
+  views::View* GetDisclaimerViewDeclineButton() const {
+    return GetDisclaimerViewWidget()->GetContentsView()->GetViewByID(
+        magic_boost::ViewId::DisclaimerViewDeclineButton);
+  }
+
  private:
   // InProcessBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -94,69 +143,153 @@ class MagicBoostBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };
 
-IN_PROC_BROWSER_TEST_F(MagicBoostBrowserTest, ShowDisclaimerView) {
+IN_PROC_BROWSER_TEST_F(MagicBoostBrowserTest, AcceptOptInHmrOnly) {
   EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
   EXPECT_FALSE(FindWidgetWithName(
       chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
+  EXPECT_EQ(chromeos::MagicBoostState::Get()->hmr_consent_status(),
+            chromeos::HMRConsentStatus::kUnset);
+  EXPECT_TRUE(chromeos::MagicBoostState::Get()->hmr_enabled().value());
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kHmrEnabled));
+  EXPECT_EQ(prefs->GetInteger(prefs::kHMRConsentStatus),
+            base::to_underlying(chromeos::HMRConsentStatus::kUnset));
 
   // Right click on the web content to show the opt in card.
-  event_generator().MoveMouseTo(chrome_test_utils::GetActiveWebContents(this)
-                                    ->GetViewBounds()
-                                    .CenterPoint());
-  event_generator().ClickRightButton();
+  RightClickOnWebContent();
 
   // Finds the opt in card and still cannot find the disclaimer view.
-  views::Widget* opt_in_card_widget = FindWidgetWithNameAndWaitIfNeeded(
-      chromeos::MagicBoostOptInCard::GetWidgetNameForTest());
+  views::Widget* opt_in_card_widget = GetOptInCardWidget();
   EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
   ASSERT_TRUE(opt_in_card_widget);
 
   // Left click on the accept button in the opt in card.
-  const views::View* const accept_button =
-      opt_in_card_widget->GetContentsView()->GetViewByID(
-          chromeos::magic_boost::ViewId::OptInCardPrimaryButton);
-  ASSERT_TRUE(accept_button);
-  event_generator().MoveMouseTo(
-      accept_button->GetBoundsInScreen().CenterPoint());
-  event_generator().ClickLeftButton();
+  LeftClickOnView(GetOptInCardAcceptButton());
 
   // Closes the opt in card and shows the disclaimer view.
   WaitUntilViewClosed(opt_in_card_widget);
   EXPECT_TRUE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+  EXPECT_FALSE(FindWidgetWithName(
+      chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
+  views::Widget* disclaimer_view_widget = GetDisclaimerViewWidget();
+  ASSERT_TRUE(disclaimer_view_widget);
+
+  // Left click on the accept button in the disclaimer view.
+  LeftClickOnView(GetDisclaimerViewAcceptButton());
+
+  // Closes the disclaimer view and checks the corresponding prefs.
+  WaitUntilViewClosed(disclaimer_view_widget);
+  EXPECT_EQ(chromeos::MagicBoostState::Get()->hmr_consent_status(),
+            chromeos::HMRConsentStatus::kApproved);
+  EXPECT_TRUE(chromeos::MagicBoostState::Get()->hmr_enabled().value());
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kHmrEnabled));
+  EXPECT_EQ(prefs->GetInteger(prefs::kHMRConsentStatus),
+            base::to_underlying(chromeos::HMRConsentStatus::kApproved));
+
+  // Right click on the web content again.
+  RightClickOnWebContent();
+
+  // Cannot find the opt in card any more.
+  EXPECT_FALSE(FindWidgetWithName(
+      chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
+  EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
 }
 
-IN_PROC_BROWSER_TEST_F(MagicBoostBrowserTest, DeclineOptIn) {
+IN_PROC_BROWSER_TEST_F(MagicBoostBrowserTest, DeclineThroughOptInCardHmrOnly) {
   EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
   EXPECT_FALSE(FindWidgetWithName(
       chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
+  EXPECT_EQ(chromeos::MagicBoostState::Get()->hmr_consent_status(),
+            chromeos::HMRConsentStatus::kUnset);
+  EXPECT_EQ(chromeos::MagicBoostState::Get()->hmr_enabled().value(), true);
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kOrcaEnabled));
+  EXPECT_EQ(prefs->GetInteger(prefs::kHMRConsentStatus),
+            base::to_underlying(chromeos::HMRConsentStatus::kUnset));
 
   // Right click on the web content to show the opt in card.
-  event_generator().MoveMouseTo(chrome_test_utils::GetActiveWebContents(this)
-                                    ->GetViewBounds()
-                                    .CenterPoint());
-  event_generator().ClickRightButton();
+  RightClickOnWebContent();
 
   // Finds the opt in card and still cannot find the disclaimer view.
-  views::Widget* opt_in_card_widget = FindWidgetWithNameAndWaitIfNeeded(
-      chromeos::MagicBoostOptInCard::GetWidgetNameForTest());
-  EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+  views::Widget* opt_in_card_widget = GetOptInCardWidget();
   ASSERT_TRUE(opt_in_card_widget);
+  EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
 
   // Left click on the decline button in the opt in card.
-  const views::View* const decline_button =
-      opt_in_card_widget->GetContentsView()->GetViewByID(
-          chromeos::magic_boost::ViewId::OptInCardSecondaryButton);
-  ASSERT_TRUE(decline_button);
-  event_generator().MoveMouseTo(
-      decline_button->GetBoundsInScreen().CenterPoint());
-  event_generator().ClickLeftButton();
+  LeftClickOnView(GetOptInCardDeclineButton());
 
-  // Closes the opt in card. Not showing the disclaimer view.
+  // Closes the opt in card and checks the corresponding prefs. Not showing the
+  // disclaimer view.
   WaitUntilViewClosed(opt_in_card_widget);
   EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
 
-  // TODO(b/349852159): Check the pref value after clicking the decline button
-  // with both Orca included or not.
+  EXPECT_EQ(chromeos::MagicBoostState::Get()->hmr_consent_status(),
+            chromeos::HMRConsentStatus::kDeclined);
+  EXPECT_FALSE(chromeos::MagicBoostState::Get()->hmr_enabled().value());
+  EXPECT_FALSE(prefs->GetBoolean(prefs::kHmrEnabled));
+  EXPECT_EQ(prefs->GetInteger(prefs::kHMRConsentStatus),
+            base::to_underlying(chromeos::HMRConsentStatus::kDeclined));
+
+  // Right click on the web content again.
+  RightClickOnWebContent();
+
+  // Cannot find the opt in card any more.
+  EXPECT_FALSE(FindWidgetWithName(
+      chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
+  EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+}
+
+IN_PROC_BROWSER_TEST_F(MagicBoostBrowserTest,
+                       DeclineThroughDisclaimerViewHmrOnly) {
+  EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+  EXPECT_FALSE(FindWidgetWithName(
+      chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
+  EXPECT_EQ(chromeos::MagicBoostState::Get()->hmr_consent_status(),
+            chromeos::HMRConsentStatus::kUnset);
+  EXPECT_TRUE(chromeos::MagicBoostState::Get()->hmr_enabled().value());
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kHmrEnabled));
+  EXPECT_EQ(prefs->GetInteger(prefs::kHMRConsentStatus),
+            base::to_underlying(chromeos::HMRConsentStatus::kUnset));
+
+  // Right click on the web content to show the opt in card.
+  RightClickOnWebContent();
+
+  // Finds the opt in card and still cannot find the disclaimer view.
+  views::Widget* opt_in_card_widget = GetOptInCardWidget();
+  ASSERT_TRUE(opt_in_card_widget);
+  EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+
+  // Left click on the accept button in the opt in card.
+  LeftClickOnView(GetOptInCardAcceptButton());
+
+  // Closes the opt in card and shows the disclaimer view.
+  WaitUntilViewClosed(opt_in_card_widget);
+  EXPECT_TRUE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+  views::Widget* disclaimer_view_widget = GetDisclaimerViewWidget();
+  ASSERT_TRUE(disclaimer_view_widget);
+  EXPECT_FALSE(FindWidgetWithName(
+      chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
+
+  // Left click on the decline button in the disclaimer view.
+  LeftClickOnView(GetDisclaimerViewDeclineButton());
+
+  // Closes the disclaimer view and checks the corresponding prefs.
+  WaitUntilViewClosed(disclaimer_view_widget);
+  EXPECT_EQ(chromeos::MagicBoostState::Get()->hmr_consent_status(),
+            chromeos::HMRConsentStatus::kDeclined);
+  EXPECT_FALSE(chromeos::MagicBoostState::Get()->hmr_enabled().value());
+  EXPECT_FALSE(prefs->GetBoolean(prefs::kHmrEnabled));
+  EXPECT_EQ(prefs->GetInteger(prefs::kHMRConsentStatus),
+            base::to_underlying(chromeos::HMRConsentStatus::kDeclined));
+
+  // Right click on the web content again.
+  RightClickOnWebContent();
+
+  // Cannot find the opt in card any more.
+  EXPECT_FALSE(FindWidgetWithName(
+      chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
+  EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
 }
 
 }  // namespace ash
