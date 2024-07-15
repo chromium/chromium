@@ -20981,6 +20981,45 @@
         {}
        ]
       ],
+      "content-004-print.html": [
+       "cf593fb93cc4293c29556daad6b7a19cb34579dd",
+       [
+        null,
+        [
+         [
+          "/css/css-page/margin-boxes/content-004-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "content-005-print.html": [
+       "faca453fef8ce4928d3efda2fff8e402af9f0b82",
+       [
+        null,
+        [
+         [
+          "/css/css-page/margin-boxes/content-005-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "content-006-print.html": [
+       "68ece6326ae8795ef5a08a04faf564a202f7b602",
+       [
+        null,
+        [
+         [
+          "/css/css-page/margin-boxes/content-005-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "dimensions-001-print.html": [
        "20d4e3059e0df47c0e4f782bfce782c0184789f1",
        [
@@ -290685,6 +290724,32 @@
         {}
        ]
       ],
+      "text-bidi-controls-anchors-1.svg": [
+       "92a1ed1e3fb0426319934f739847dec9583f8cf4",
+       [
+        null,
+        [
+         [
+          "/svg/text/reftests/text-bidi-controls-anchors-1-ref.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-bidi-controls-anchors-2.svg": [
+       "b9a4a9b5e7df978775eb7c5c64d0a653a8c60006",
+       [
+        null,
+        [
+         [
+          "/svg/text/reftests/text-bidi-controls-anchors-2-ref.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "text-clipped-offscreen-move-onscreen.html": [
        "c29f790326537395d40f251d3a0be746014fbb5e",
        [
@@ -331987,6 +332052,14 @@
        "ba45b88cd4d84e429c97796d5941fe999e0143fd",
        []
       ],
+      "content-004-print-ref.html": [
+       "7159484f62c41a2f348646f861e43b96e2b1f2c4",
+       []
+      ],
+      "content-005-print-ref.html": [
+       "b49a84cf050696fece39e001d512fb833beebf2e",
+       []
+      ],
       "dimensions-001-print-ref.html": [
        "dca52cb8bc727c99bc941b24797255e89fbf1811",
        []
@@ -332539,6 +332612,10 @@
      "parsing": {
       "page-orientation-invalid.tentative-expected.txt": [
        "75e557371401720c2aad9c322a0c840d3b0c4b87",
+       []
+      ],
+      "page-rules-001-expected.txt": [
+       "abde3de3aaf7d90d137003fd7476a43e72513060",
        []
       ],
       "size-001-expected.txt": [
@@ -399013,6 +399090,14 @@
        "18c00ab332c73f5c033e37d4429872d07210ade4",
        []
       ],
+      "text-bidi-controls-anchors-1-ref.svg": [
+       "45c955b2b9fe8d5a5dd00ab1bf89eeb93d060d1f",
+       []
+      ],
+      "text-bidi-controls-anchors-2-ref.svg": [
+       "08862dc3e5ce99c1c8e39ce5111a1ddb12399a6c",
+       []
+      ],
       "text-clipped-offscreen-move-onscreen-ref.html": [
        "b03ac22aaa3155323ea1574e49241368ec1ad66c",
        []
@@ -465463,6 +465548,13 @@
       ],
       "page-orientation-invalid.tentative.html": [
        "e89b1f091764ed93098e8516ecc36adeb40d74dd",
+       [
+        null,
+        {}
+       ]
+      ],
+      "page-rules-001.html": [
+       "cac396e237f57d305e807fcaed46cfaf3ac69ddc",
        [
         null,
         {}
@@ -605024,6 +605116,13 @@
      ],
      "blur-filter.html": [
       "8cf63066e1cb28cf64e45b2e6bba85558fe6f12e",
+      [
+       null,
+       {}
+      ]
+     ],
+     "box-reflect.html": [
+      "41e072a587c9502c6ced30e80921ef6538a562c0",
       [
        null,
        {}
