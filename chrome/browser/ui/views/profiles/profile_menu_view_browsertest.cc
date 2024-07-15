@@ -1520,6 +1520,7 @@ constexpr ProfileMenuViewBase::ActionableItem
         ProfileMenuViewBase::ActionableItem::kAddressesButton,
         ProfileMenuViewBase::ActionableItem::kSigninAccountButton,
         ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+        ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
         ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
         ProfileMenuViewBase::ActionableItem::kExitProfileButton,
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1560,6 +1561,7 @@ constexpr ProfileMenuViewBase::ActionableItem
         ProfileMenuViewBase::ActionableItem::kAddressesButton,
         ProfileMenuViewBase::ActionableItem::kSigninReauthButton,
         ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+        ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
         ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
         ProfileMenuViewBase::ActionableItem::kExitProfileButton,
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)

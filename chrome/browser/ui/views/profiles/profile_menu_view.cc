@@ -775,6 +775,13 @@ void ProfileMenuView::BuildSyncInfo() {
 
 void ProfileMenuView::BuildFeatureButtons() {
   Profile* profile = browser()->profile();
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  bool has_sync_consent =
+      identity_manager &&
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
+  bool has_unconsented_account = HasUnconstentedProfile(profile);
+
   if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
       !profile->IsGuestSession()) {
     AddFeatureButton(
@@ -782,9 +789,23 @@ void ProfileMenuView::BuildFeatureButtons() {
         base::BindRepeating(&ProfileMenuView::OnEditProfileButtonClicked,
                             base::Unretained(this)),
         vector_icons::kEditChromeRefreshIcon);
+
+    // Show the settings button when signed in to Chrome or to the web. Do not
+    // show if sync is enabled.
+    bool should_show_settings_button =
+        !has_sync_consent && identity_manager &&
+        !identity_manager->GetExtendedAccountInfoForAccountsWithRefreshToken()
+             .empty();
+
+    if (should_show_settings_button) {
+      AddFeatureButton(
+          l10n_util::GetStringUTF16(IDS_PROFILE_MENU_OPEN_ACCOUNT_SETTINGS),
+          base::BindRepeating(&ProfileMenuView::OnSyncSettingsButtonClicked,
+                              base::Unretained(this)),
+          vector_icons::kSettingsChromeRefreshIcon);
+    }
   }
 
-  bool has_unconsented_account = HasUnconstentedProfile(profile);
   if (has_unconsented_account && !IsSyncPaused(profile)) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     // The Google G icon needs to be shrunk, so it won't look too big compared
@@ -831,11 +852,8 @@ void ProfileMenuView::BuildFeatureButtons() {
   }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
   const bool has_primary_account =
-      !profile->IsGuestSession() &&
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
+      !profile->IsGuestSession() && has_sync_consent;
 
   bool hide_signout_button_for_managed_profiles =
       chrome::enterprise_util::UserAcceptedAccountManagement(profile) &&
