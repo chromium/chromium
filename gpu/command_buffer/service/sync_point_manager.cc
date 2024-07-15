@@ -443,10 +443,15 @@ void SyncPointManager::DestroySyncPointClientState(
 }
 
 bool SyncPointManager::EnsureFenceSyncReleased(const SyncToken& release) {
-  base::AutoLock lock(lock_);
-  scoped_refptr<SyncPointClientState> client_state = GetSyncPointClientState(
-      release.namespace_id(), release.command_buffer_id());
+  scoped_refptr<SyncPointClientState> client_state;
+  {
+    base::AutoLock lock(lock_);
+    client_state = GetSyncPointClientState(release.namespace_id(),
+                                           release.command_buffer_id());
+  }
   if (client_state) {
+    // This must be called without holding `lock_`, because it may call release
+    // callbacks which are not supposed to be called under `lock_`.
     return client_state->EnsureFenceSyncReleased(release.release_count());
   }
   return false;
