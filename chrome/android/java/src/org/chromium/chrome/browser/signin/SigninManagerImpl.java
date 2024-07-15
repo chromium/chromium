@@ -1030,9 +1030,13 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         @Nullable
         String getManagementDomain(long nativeSigninManagerAndroid);
 
-        void wipeProfileData(long nativeSigninManagerAndroid, Runnable callback);
+        void wipeProfileData(
+                long nativeSigninManagerAndroid,
+                @JniType("base::RepeatingClosure") Runnable callback);
 
-        void wipeGoogleServiceWorkerCaches(long nativeSigninManagerAndroid, Runnable callback);
+        void wipeGoogleServiceWorkerCaches(
+                long nativeSigninManagerAndroid,
+                @JniType("base::RepeatingClosure") Runnable callback);
 
         void setUserAcceptedAccountManagement(
                 long nativeSigninManagerAndroid, boolean acceptedAccountManagement);

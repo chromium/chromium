@@ -51,9 +51,9 @@ class SigninManagerAndroid : public KeyedService {
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
-  jboolean IsSigninAllowedByPolicy(JNIEnv* env) const;
+  bool IsSigninAllowedByPolicy(JNIEnv* env) const;
 
-  jboolean IsForceSigninEnabled(JNIEnv* env);
+  bool IsForceSigninEnabled(JNIEnv* env);
 
   // Registers a CloudPolicyClient for fetching policy for a user and fetches
   // the policy if necessary.
@@ -73,16 +73,14 @@ class SigninManagerAndroid : public KeyedService {
   base::android::ScopedJavaLocalRef<jstring> GetManagementDomain(JNIEnv* env);
 
   // Delete all data for this profile.
-  void WipeProfileData(JNIEnv* env,
-                       const base::android::JavaParamRef<jobject>& j_callback);
+  void WipeProfileData(JNIEnv* env, const base::RepeatingClosure& callback);
 
   // Delete service worker caches for google.<eTLD>.
-  void WipeGoogleServiceWorkerCaches(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_callback);
+  void WipeGoogleServiceWorkerCaches(JNIEnv* env,
+                                     const base::RepeatingClosure& callback);
 
   void SetUserAcceptedAccountManagement(JNIEnv* env,
-                                        jboolean acceptedAccountManagement);
+                                        bool accepted_account_management);
 
   bool GetUserAcceptedAccountManagement(JNIEnv* env);
 
