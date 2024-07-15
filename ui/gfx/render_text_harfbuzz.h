@@ -194,6 +194,15 @@ class TextRunList {
   // Get the run index applicable to |position| (at or preceeding |position|).
   size_t GetRunIndexAt(size_t position) const;
 
+  // Returns the count of all missing glyphs across all runs.
+  size_t MissingGlyphCount() const {
+    size_t count = 0;
+    for (auto& run : runs_) {
+      count += run->shape.missing_glyph_count;
+    }
+    return count;
+  }
+
  private:
   // Text runs in logical order.
   std::vector<std::unique_ptr<TextRunHarfBuzz>> runs_;
