@@ -25,3 +25,7 @@ void TabListModel::RemovePageContext(resource_attribution::PageContext tab) {
 std::vector<resource_attribution::PageContext> TabListModel::page_contexts() {
   return page_contexts_;
 }
+
+int TabListModel::count() {
+  return page_contexts_.size();
+}

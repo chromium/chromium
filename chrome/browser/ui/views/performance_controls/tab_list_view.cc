@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/performance_controls/tab_list_view.h"
 
 #include "base/functional/bind.h"
+#include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/performance_controls/tab_list_model.h"
 #include "chrome/browser/ui/views/performance_controls/tab_list_row_view.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
@@ -34,6 +35,7 @@ void TabListView::RemoveRow(resource_attribution::PageContext context,
                             TabListRowView* row_view) {
   tab_list_model_->RemovePageContext(context);
   RemoveChildViewT(row_view);
+  RecordTabRemovedFromTabList(tab_list_model_->count());
 }
 
 BEGIN_METADATA(TabListView)

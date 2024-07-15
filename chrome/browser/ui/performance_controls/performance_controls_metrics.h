@@ -95,5 +95,8 @@ void RecordCpuHealthStatusAfterDiscard(
     performance_manager::user_tuning::PerformanceDetectionManager::HealthLevel
         health_level);
 void RecordCpuUsageBeforeDiscard(int cpu_usage);
+void RecordSuggestedTabShownCount(int count);
+void RecordTabRemovedFromTabList(int count_after_removal);
+void RecordNumberOfDiscardedTabs(int count);
 
 #endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_PERFORMANCE_CONTROLS_METRICS_H_

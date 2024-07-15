@@ -30589,6 +30589,16 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="PerformanceIntervention.Dialog.RemovedSuggestion">
+  <owner>stluong@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <description>
+    Recorded when the user clicks on X button next to a suggested tab in the
+    Performance Intervention dialog to remove that suggested tab from the list
+    of tabs to discard.
+  </description>
+</action>
+
 <action name="PerformanceIntervention.Toolbar.OpenDialog">
   <owner>stluong@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>

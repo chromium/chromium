@@ -195,3 +195,22 @@ void RecordCpuUsageBeforeDiscard(int cpu_usage) {
       "PerformanceControls.Intervention.DiscardedTabsPercentageUsage",
       cpu_usage);
 }
+
+void RecordSuggestedTabShownCount(int count) {
+  base::UmaHistogramCustomCounts(
+      "PerformanceControls.Intervention.SuggestedTabShownCount", count, 0, 10,
+      10);
+}
+
+void RecordTabRemovedFromTabList(int count_after_removal) {
+  base::RecordComputedAction(
+      "PerformanceIntervention.Dialog.RemovedSuggestion");
+  base::UmaHistogramCustomCounts(
+      "PerformanceControls.Intervention.Dialog.TabsAfterRemovalCount",
+      count_after_removal, 0, 10, 10);
+}
+
+void RecordNumberOfDiscardedTabs(int count) {
+  base::UmaHistogramCustomCounts(
+      "PerformanceControls.Intervention.DiscardedTabCount", count, 0, 10, 10);
+}

@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/performance_controls/performance_intervention_bubble_delegate.h"
 #include "chrome/browser/ui/performance_controls/performance_intervention_bubble_observer.h"
 #include "chrome/browser/ui/performance_controls/performance_intervention_button_controller.h"
@@ -53,6 +54,7 @@ views::BubbleDialogModelHost* PerformanceInterventionBubble::CreateBubble(
       std::make_unique<TabListModel>(button_controller->actionable_cpu_tabs());
   TabListModel* const tab_list_model = tab_list_model_unique.get();
 
+  RecordSuggestedTabShownCount(tab_list_model->count());
   auto bubble_delegate =
       std::make_unique<PerformanceInterventionBubbleDelegate>(
           browser, std::move(tab_list_model_unique), button_controller);

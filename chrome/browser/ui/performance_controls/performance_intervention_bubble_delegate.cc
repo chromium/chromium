@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/performance_controls/performance_intervention_bubble_observer.h"
 #include "chrome/browser/ui/performance_controls/tab_list_model.h"
 
@@ -38,6 +39,8 @@ void PerformanceInterventionBubbleDelegate::OnDeactivateButtonClicked() {
       performance_manager::user_tuning::PerformanceDetectionManager::
           GetInstance();
   CHECK(manager);
+
+  RecordNumberOfDiscardedTabs(tab_list_model_->count());
   manager->DiscardTabs(tab_list_model_->page_contexts());
   observer_->OnDeactivateButtonClicked();
 }

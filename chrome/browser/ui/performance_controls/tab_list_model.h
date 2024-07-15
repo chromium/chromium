@@ -21,6 +21,8 @@ class TabListModel {
 
   std::vector<resource_attribution::PageContext> page_contexts();
 
+  int count();
+
  private:
   std::vector<resource_attribution::PageContext> page_contexts_;
 };
