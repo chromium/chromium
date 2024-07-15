@@ -8,12 +8,12 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/picture_in_picture/document_picture_in_picture_mixin_test_base.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/test/web_app_picture_in_picture_mixin_test_base.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -320,7 +320,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 class PictureInPictureSimpleInstallDialogOcclusionTest
     : public MixinBasedInProcessBrowserTest {
  protected:
-  WebAppPictureInPictureMixinTestBase picture_in_picture_test_base_{
+  DocumentPictureInPictureMixinTestBase picture_in_picture_test_base_{
       &mixin_host_};
 
  private:

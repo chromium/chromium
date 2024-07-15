@@ -8,13 +8,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/picture_in_picture/document_picture_in_picture_mixin_test_base.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/web_applications/test/web_app_picture_in_picture_mixin_test_base.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -241,7 +241,7 @@ class PictureInPictureDiyDialogOcclusionTest
                             base::DoNothing(),
                             PwaInProductHelpState::kNotShown);
   }
-  WebAppPictureInPictureMixinTestBase picture_in_picture_test_base_{
+  DocumentPictureInPictureMixinTestBase picture_in_picture_test_base_{
       &mixin_host_};
 };
 

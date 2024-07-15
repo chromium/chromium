@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/web_applications/test/web_app_picture_in_picture_mixin_test_base.h"
+#include "chrome/browser/picture_in_picture/document_picture_in_picture_mixin_test_base.h"
 
 #include <string>
 
@@ -21,22 +21,20 @@
 #include "content/public/test/browser_test_utils.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace web_app {
-
-WebAppPictureInPictureMixinTestBase::WebAppPictureInPictureMixinTestBase(
+DocumentPictureInPictureMixinTestBase::DocumentPictureInPictureMixinTestBase(
     InProcessBrowserTestMixinHost* mixin_host)
     : InProcessBrowserTestMixin(mixin_host) {}
 
-WebAppPictureInPictureMixinTestBase::~WebAppPictureInPictureMixinTestBase() =
-    default;
+DocumentPictureInPictureMixinTestBase::
+    ~DocumentPictureInPictureMixinTestBase() = default;
 
-void WebAppPictureInPictureMixinTestBase::PostRunTestOnMainThread() {
+void DocumentPictureInPictureMixinTestBase::PostRunTestOnMainThread() {
   pip_window_controller_ = nullptr;
 }
 
-void WebAppPictureInPictureMixinTestBase::NavigateToURLAndEnterPictureInPicture(
-    Browser* browser,
-    const gfx::Size& window_size) {
+void DocumentPictureInPictureMixinTestBase::
+    NavigateToURLAndEnterPictureInPicture(Browser* browser,
+                                          const gfx::Size& window_size) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, GetPictureInPictureURL()));
 
   content::WebContents* active_web_contents =
@@ -60,19 +58,19 @@ void WebAppPictureInPictureMixinTestBase::NavigateToURLAndEnterPictureInPicture(
   ASSERT_TRUE(GetRenderWidgetHostView()->IsShowing());
 }
 
-void WebAppPictureInPictureMixinTestBase::WaitForPageLoad(
+void DocumentPictureInPictureMixinTestBase::WaitForPageLoad(
     content::WebContents* contents) {
   EXPECT_TRUE(WaitForLoadStop(contents));
   EXPECT_TRUE(WaitForRenderFrameReady(contents->GetPrimaryMainFrame()));
 }
 
-GURL WebAppPictureInPictureMixinTestBase::GetPictureInPictureURL() const {
+GURL DocumentPictureInPictureMixinTestBase::GetPictureInPictureURL() const {
   return ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kPictureInPictureDocumentPipPage));
 }
 
-bool WebAppPictureInPictureMixinTestBase::AwaitPipWindowClosedSuccessfully() {
+bool DocumentPictureInPictureMixinTestBase::AwaitPipWindowClosedSuccessfully() {
   auto* render_widget_host_view = GetRenderWidgetHostView();
   if (!render_widget_host_view) {
     return true;
@@ -87,7 +85,7 @@ bool WebAppPictureInPictureMixinTestBase::AwaitPipWindowClosedSuccessfully() {
 }
 
 content::RenderWidgetHostView*
-WebAppPictureInPictureMixinTestBase::GetRenderWidgetHostView() {
+DocumentPictureInPictureMixinTestBase::GetRenderWidgetHostView() {
   if (!window_controller()) {
     return nullptr;
   }
@@ -99,10 +97,8 @@ WebAppPictureInPictureMixinTestBase::GetRenderWidgetHostView() {
   return nullptr;
 }
 
-void WebAppPictureInPictureMixinTestBase::SetUpWindowController(
+void DocumentPictureInPictureMixinTestBase::SetUpWindowController(
     content::WebContents* web_contents) {
   pip_window_controller_ = content::PictureInPictureWindowController::
       GetOrCreateDocumentPictureInPictureController(web_contents);
 }
-
-}  // namespace web_app

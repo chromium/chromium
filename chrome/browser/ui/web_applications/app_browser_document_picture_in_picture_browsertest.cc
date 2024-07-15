@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/picture_in_picture/document_picture_in_picture_mixin_test_base.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/test/web_app_picture_in_picture_mixin_test_base.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -26,8 +26,8 @@ class AppBrowserDocumentPictureInPictureBrowserTest
   ~AppBrowserDocumentPictureInPictureBrowserTest() override = default;
 
  protected:
-  web_app::WebAppPictureInPictureMixinTestBase
-      picture_in_picture_mixin_test_base_{&mixin_host_};
+  DocumentPictureInPictureMixinTestBase picture_in_picture_mixin_test_base_{
+      &mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(AppBrowserDocumentPictureInPictureBrowserTest,

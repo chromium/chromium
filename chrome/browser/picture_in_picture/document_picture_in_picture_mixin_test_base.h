@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_WEB_APP_PICTURE_IN_PICTURE_MIXIN_TEST_BASE_H_
-#define CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_WEB_APP_PICTURE_IN_PICTURE_MIXIN_TEST_BASE_H_
+#ifndef CHROME_BROWSER_PICTURE_IN_PICTURE_DOCUMENT_PICTURE_IN_PICTURE_MIXIN_TEST_BASE_H_
+#define CHROME_BROWSER_PICTURE_IN_PICTURE_DOCUMENT_PICTURE_IN_PICTURE_MIXIN_TEST_BASE_H_
 
 #include "base/files/file_path.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -18,17 +18,20 @@ class WebContents;
 class GURL;
 class Browser;
 
-namespace web_app {
-
-class WebAppPictureInPictureMixinTestBase : public InProcessBrowserTestMixin {
+// DocumentPictureInPictureMixinTestBase is test base harness that can inherit
+// any InProcessBrowserTest to be used for writing basic automated tests for
+// document based picture in picture windows. This includes utilities that
+// trigger and wait for a picture in picture window to show up or close,
+// encapsulating asynchronous workflows.
+class DocumentPictureInPictureMixinTestBase : public InProcessBrowserTestMixin {
  public:
   inline static constexpr base::FilePath::CharType
       kPictureInPictureDocumentPipPage[] =
           FILE_PATH_LITERAL("media/picture-in-picture/document-pip.html");
 
-  explicit WebAppPictureInPictureMixinTestBase(
+  explicit DocumentPictureInPictureMixinTestBase(
       InProcessBrowserTestMixinHost* mixin_host);
-  ~WebAppPictureInPictureMixinTestBase() override;
+  ~DocumentPictureInPictureMixinTestBase() override;
 
   void PostRunTestOnMainThread() override;
 
@@ -52,6 +55,4 @@ class WebAppPictureInPictureMixinTestBase : public InProcessBrowserTestMixin {
       pip_window_controller_ = nullptr;
 };
 
-}  // namespace web_app
-
-#endif  // CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_WEB_APP_PICTURE_IN_PICTURE_MIXIN_TEST_BASE_H_
+#endif  // CHROME_BROWSER_PICTURE_IN_PICTURE_DOCUMENT_PICTURE_IN_PICTURE_MIXIN_TEST_BASE_H_
