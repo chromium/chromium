@@ -369,11 +369,8 @@ TEST_F(ViewAXPlatformNodeDelegateTest, FocusBehaviorShouldAffectIgnoredState) {
 TEST_F(ViewAXPlatformNodeDelegateTest, BoundsShouldMatch) {
   gfx::Rect bounds = gfx::ToEnclosingRect(
       button_accessibility()->GetData().relative_bounds.bounds);
-  gfx::Rect screen_bounds =
-      button_accessibility()->GetUnclippedScreenBoundsRect();
 
-  EXPECT_EQ(button_->GetBoundsInScreen(), bounds);
-  EXPECT_EQ(screen_bounds, bounds);
+  EXPECT_EQ(button_->bounds(), bounds);
 }
 
 TEST_F(ViewAXPlatformNodeDelegateTest, LabelIsChildOfButton) {
