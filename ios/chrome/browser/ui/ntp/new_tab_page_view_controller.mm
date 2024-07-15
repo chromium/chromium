@@ -515,13 +515,9 @@ const CGFloat kFeedContainerExtraHeight = 500;
 
   [self.overscrollActionsController invalidate];
 
-  if (!base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
+  // Only re-configure `overscrollActionsController`.
+  if (self.overscrollActionsController) {
     [self configureOverscrollActionsController];
-  } else {
-    // Only re-configure `overscrollActionsController`.
-    if (self.overscrollActionsController) {
-      [self configureOverscrollActionsController];
-    }
   }
 
   // Update NTP collection view constraints to ensure the layout adapts to
@@ -831,10 +827,8 @@ const CGFloat kFeedContainerExtraHeight = 500;
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
-    if (!self.overscrollActionsController) {
-      [self configureOverscrollActionsController];
-    }
+  if (!self.overscrollActionsController) {
+    [self configureOverscrollActionsController];
   }
 
   // User has interacted with the surface, so it is safe to assume that a saved
