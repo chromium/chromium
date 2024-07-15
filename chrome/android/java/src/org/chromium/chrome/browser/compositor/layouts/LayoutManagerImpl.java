@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.Context
 import org.chromium.chrome.browser.compositor.layouts.Layout.Orientation;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
@@ -638,7 +639,14 @@ public class LayoutManagerImpl
 
                     @Override
                     public void onBackgroundColorChanged(Tab tab, int color) {
-                        initLayoutTabFromHost(tab.getId());
+                        // The NavBarColorMatchesTabBackground increases the frequency of these
+                        // notifications, so Chrome should use a more targeted method to limit
+                        // performance impact.
+                        if (ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()) {
+                            updateLayoutTabBackgroundColor(tab.getId());
+                        } else {
+                            initLayoutTabFromHost(tab.getId());
+                        }
                     }
 
                     @Override
@@ -955,6 +963,20 @@ public class LayoutManagerImpl
                         mContext, tab, topUiTheme.calculateColor(tab, tab.getThemeColor())));
 
         mHost.requestRender();
+    }
+
+    private void updateLayoutTabBackgroundColor(final int tabId) {
+        if (getTabModelSelector() == null || getActiveLayout() == null) return;
+
+        TabModelSelector selector = getTabModelSelector();
+        Tab tab = selector.getTabById(tabId);
+        if (tab == null) return;
+
+        LayoutTab layoutTab = mTabCache.get(tabId);
+        if (layoutTab == null) return;
+
+        layoutTab.set(
+                LayoutTab.BACKGROUND_COLOR, mTopUiThemeColorProvider.get().getBackgroundColor(tab));
     }
 
     // Whether the tab is ready to display or it should be faded in as it loads.
