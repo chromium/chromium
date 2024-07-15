@@ -38,11 +38,6 @@ void SimpleDependencyManager::RegisterProfilePrefsForServices(
   RegisterPrefsForServices(pref_registry);
 }
 
-void SimpleDependencyManager::CreateServices(SimpleFactoryKey* key) {
-  TRACE_EVENT0("browser", "SimpleDependencyManager::CreateServices");
-  DependencyManager::CreateContextServices(key, false);
-}
-
 void SimpleDependencyManager::CreateServicesForTest(SimpleFactoryKey* key) {
   TRACE_EVENT0("browser", "SimpleDependencyManager::CreateServices");
   DependencyManager::CreateContextServices(key, true);

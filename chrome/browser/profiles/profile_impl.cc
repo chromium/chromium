@@ -1146,7 +1146,6 @@ void ProfileImpl::OnLocaleReady(CreateMode create_mode) {
 
   FullBrowserTransitionManager::Get()->OnProfileCreated(this);
 
-  SimpleDependencyManager::GetInstance()->CreateServices(GetProfileKey());
   BrowserContextDependencyManager::GetInstance()->CreateBrowserContextServices(
       this);
 

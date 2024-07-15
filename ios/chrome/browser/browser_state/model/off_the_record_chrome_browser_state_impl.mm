@@ -30,8 +30,6 @@ OffTheRecordChromeBrowserStateImpl::OffTheRecordChromeBrowserStateImpl(
       prefs_(CreateIncognitoBrowserStatePrefs(
           static_cast<sync_preferences::PrefServiceSyncable*>(
               original_chrome_browser_state->GetPrefs()))) {
-  BrowserStateDependencyManager::GetInstance()->MarkBrowserStateLive(this);
-
   user_prefs::UserPrefs::Set(this, GetPrefs());
   io_data_.reset(new OffTheRecordChromeBrowserStateIOData::Handle(this));
   BrowserStateDependencyManager::GetInstance()->CreateBrowserStateServices(

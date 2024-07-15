@@ -56,8 +56,6 @@ WebViewBrowserState::WebViewBrowserState(
           !recording_browser_state->IsOffTheRecord()));
   recording_browser_state_ = recording_browser_state;
 
-  BrowserStateDependencyManager::GetInstance()->MarkBrowserStateLive(this);
-
   profile_metrics::SetBrowserProfileType(
       this, off_the_record ? profile_metrics::BrowserProfileType::kIncognito
                            : profile_metrics::BrowserProfileType::kRegular);

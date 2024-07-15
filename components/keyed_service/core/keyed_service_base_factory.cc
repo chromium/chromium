@@ -54,11 +54,6 @@ void KeyedServiceBaseFactory::MarkContextLive(void* context) {
   dependency_manager_->MarkContextLive(context);
 }
 
-bool KeyedServiceBaseFactory::ServiceIsRequiredForContextInitialization()
-    const {
-  return false;
-}
-
 bool KeyedServiceBaseFactory::ServiceIsCreatedWithContext() const {
   return false;
 }

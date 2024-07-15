@@ -139,6 +139,8 @@ class KEYED_SERVICE_EXPORT SimpleKeyedServiceFactory
   void ContextShutdown(void* context) final;
   void ContextDestroyed(void* context) final;
   void RegisterPrefs(user_prefs::PrefRegistrySyncable* registry) final;
+  void SetEmptyTestingFactory(void* context) final;
+  bool HasTestingFactory(void* context) const final;
   void CreateServiceNow(void* context) final;
 };
 
