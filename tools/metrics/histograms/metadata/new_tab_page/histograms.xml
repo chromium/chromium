@@ -906,45 +906,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="NewTabPage.Modules.FreExplicitOptIn" units="count"
-    expires_after="2024-02-11">
-  <owner>danpeng@google.com</owner>
-  <owner>pauladedeji@google.com</owner>
-  <owner>chrome-desktop-ntp@google.com</owner>
-  <summary>
-    Logs how many time a user saw the FRE when they opt in. Only logged on the
-    1P NTP. Note that even if the user has Google as their default search
-    engine, Incognito and Guest mode NTPs are not considered 1P and don't log
-    this histogram.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.Modules.FreImplicitOptIn" enum="BooleanEnabled"
-    expires_after="2024-11-03">
-  <owner>danpeng@google.com</owner>
-  <owner>pauladedeji@google.com</owner>
-  <owner>chrome-desktop-ntp@google.com</owner>
-  <summary>
-    Logs when user is opted in to FRE without taking action. Only logged on the
-    1P NTP. Note that even if the user has Google as their default search
-    engine, Incognito and Guest mode NTPs are not considered 1P and don't log
-    this histogram.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.Modules.FreOptOut" units="count"
-    expires_after="2024-02-25">
-  <owner>danpeng@google.com</owner>
-  <owner>pauladedeji@google.com</owner>
-  <owner>chrome-desktop-ntp@google.com</owner>
-  <summary>
-    Logs how many time a user saw the FRE when they opt out. Only logged on the
-    1P NTP. Note that even if the user has Google as their default search
-    engine, Incognito and Guest mode NTPs are not considered 1P and don't log
-    this histogram.
-  </summary>
-</histogram>
-
 <histogram name="NewTabPage.Modules.Hover" enum="NtpModules"
     expires_after="2024-03-17">
   <owner>danpeng@google.com</owner>

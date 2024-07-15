@@ -87,7 +87,6 @@
 namespace {
 
 const int64_t kMaxDownloadBytes = 1024 * 1024;
-const int64_t kMaxModuleFreImpressions = 8;
 
 constexpr char kDisableInteraction[] = "disable";
 constexpr char kDismissInteraction[] = "dismiss";
@@ -537,9 +536,6 @@ void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kNtpDisabledModules);
   registry->RegisterListPref(prefs::kNtpModulesOrder);
   registry->RegisterBooleanPref(prefs::kNtpModulesVisible, true);
-  registry->RegisterIntegerPref(prefs::kNtpModulesShownCount, 0);
-  registry->RegisterTimePref(prefs::kNtpModulesFirstShownTime, base::Time());
-  registry->RegisterBooleanPref(prefs::kNtpModulesFreVisible, true);
   registry->RegisterIntegerPref(prefs::kNtpCustomizeChromeButtonOpenCount, 0);
   registry->RegisterDictionaryPref(prefs::kNtpModulesInteractedCountDict);
   registry->RegisterDictionaryPref(prefs::kNtpModulesLoadedCountDict);
@@ -846,71 +842,6 @@ void NewTabPageHandler::GetModulesOrder(GetModulesOrderCallback callback) {
                         });
 
   std::move(callback).Run(std::move(module_ids));
-}
-
-void NewTabPageHandler::IncrementModulesShownCount() {
-  const auto ntp_modules_shown_count =
-      profile_->GetPrefs()->GetInteger(prefs::kNtpModulesShownCount);
-
-  if (ntp_modules_shown_count == 0) {
-    profile_->GetPrefs()->SetTime(prefs::kNtpModulesFirstShownTime,
-                                  base::Time::Now());
-  }
-  profile_->GetPrefs()->SetInteger(prefs::kNtpModulesShownCount,
-                                   ntp_modules_shown_count + 1);
-}
-
-void NewTabPageHandler::SetModulesFreVisible(bool visible) {
-  profile_->GetPrefs()->SetBoolean(prefs::kNtpModulesFreVisible, visible);
-  page_->SetModulesFreVisibility(visible);
-}
-
-void NewTabPageHandler::UpdateModulesFreVisibility() {
-  const auto ntp_modules_shown_count =
-      profile_->GetPrefs()->GetInteger(prefs::kNtpModulesShownCount);
-  const auto ntp_modules_first_shown_time =
-      profile_->GetPrefs()->GetTime(prefs::kNtpModulesFirstShownTime);
-  auto ntp_modules_fre_visible =
-      profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesFreVisible);
-
-  if (ntp_modules_fre_visible &&
-      (ntp_modules_shown_count == kMaxModuleFreImpressions ||
-       (!ntp_modules_first_shown_time.is_null() &&
-        (base::Time::Now() - ntp_modules_first_shown_time) == base::Days(1)))) {
-    LogModulesFreOptInStatus(new_tab_page::mojom::OptInStatus::kImplicitOptIn);
-  }
-
-  // Hide Modular NTP Desktop v1 First Run Experience after
-  // |kMaxModuleFreImpressions| impressions or 1 day, whichever comes first.
-  if (ntp_modules_shown_count >= kMaxModuleFreImpressions ||
-      (!ntp_modules_first_shown_time.is_null() &&
-       (base::Time::Now() - ntp_modules_first_shown_time) > base::Days(1))) {
-    ntp_modules_fre_visible = false;
-    SetModulesFreVisible(ntp_modules_fre_visible);
-  } else {
-    page_->SetModulesFreVisibility(ntp_modules_fre_visible);
-  }
-}
-
-void NewTabPageHandler::LogModulesFreOptInStatus(
-    new_tab_page::mojom::OptInStatus opt_in_status) {
-  const auto ntp_modules_shown_count =
-      profile_->GetPrefs()->GetInteger(prefs::kNtpModulesShownCount);
-  switch (opt_in_status) {
-    case new_tab_page::mojom::OptInStatus::kExplicitOptIn:
-      base::UmaHistogramExactLinear("NewTabPage.Modules.FreExplicitOptIn",
-                                    ntp_modules_shown_count,
-                                    kMaxModuleFreImpressions);
-      break;
-    case new_tab_page::mojom::OptInStatus::kImplicitOptIn:
-      base::UmaHistogramBoolean("NewTabPage.Modules.FreImplicitOptIn", true);
-      break;
-
-    case new_tab_page::mojom::OptInStatus::kOptOut:
-      base::UmaHistogramExactLinear("NewTabPage.Modules.FreOptOut",
-                                    ntp_modules_shown_count,
-                                    kMaxModuleFreImpressions);
-  }
 }
 
 void NewTabPageHandler::SetCustomizeChromeSidePanelVisible(

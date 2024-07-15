@@ -2355,19 +2355,12 @@ inline constexpr char kNtpDisabledModules[] = "NewTabPage.DisabledModules";
 inline constexpr char kNtpModulesOrder[] = "NewTabPage.ModulesOrder";
 // Whether NTP modules are visible.
 inline constexpr char kNtpModulesVisible[] = "NewTabPage.ModulesVisible";
-// Number of times user has seen an NTP module.
-inline constexpr char kNtpModulesShownCount[] = "NewTabPage.ModulesShownCount";
 // Dictionary of number of times a module has loaded.
 inline constexpr char kNtpModulesLoadedCountDict[] =
     "NewTabPage.ModulesLoadedCountDict";
 // Dictionary of number of times the user has interacted with a module.
 inline constexpr char kNtpModulesInteractedCountDict[] =
     "NewTabPage.ModulesInteractedCountDict";
-// Time modules were first shown to user.
-inline constexpr char kNtpModulesFirstShownTime[] =
-    "NewTabPage.ModulesFirstShownTime";
-// Whether Modular NTP Desktop v1 First Run Experience is visible.
-inline constexpr char kNtpModulesFreVisible[] = "NewTabPage.ModulesFreVisible";
 // List of promos that the user has dismissed while on the NTP.
 inline constexpr char kNtpPromoBlocklist[] = "ntp.promo_blocklist";
 // Whether the promo is visible.

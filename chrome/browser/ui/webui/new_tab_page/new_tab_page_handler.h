@@ -135,11 +135,6 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void GetModulesIdNames(GetModulesIdNamesCallback callback) override;
   void SetModulesOrder(const std::vector<std::string>& module_ids) override;
   void GetModulesOrder(GetModulesOrderCallback callback) override;
-  void IncrementModulesShownCount() override;
-  void SetModulesFreVisible(bool visible) override;
-  void UpdateModulesFreVisibility() override;
-  void LogModulesFreOptInStatus(
-      new_tab_page::mojom::OptInStatus opt_in_status) override;
   void SetCustomizeChromeSidePanelVisible(
       bool visible,
       new_tab_page::mojom::CustomizeChromeSection section) override;

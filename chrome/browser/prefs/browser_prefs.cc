@@ -1082,9 +1082,14 @@ constexpr char kDefaultSearchProviderChoicePending[] =
 inline constexpr char kFirstRunStudyGroup[] = "browser.first_run_study_group";
 #endif
 
-// Deprecated 07/2024
 #if !BUILDFLAG(IS_ANDROID)
+// Deprecated 07/2024
 constexpr char kNtpRecipesDismissedTasks[] = "NewTabPage.DismissedRecipeTasks";
+
+// Deprecated 07/2024
+constexpr char kNtpModulesFirstShownTime[] = "NewTabPage.ModulesFirstShownTime";
+constexpr char kNtpModulesFreVisible[] = "NewTabPage.ModulesFreVisible";
+constexpr char kNtpModulesShownCount[] = "NewTabPage.ModulesShownCount";
 #endif
 
 // Register local state used only for migration (clearing or moving to a new
@@ -1512,9 +1517,14 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 06/2024.
   registry->RegisterBooleanPref(kDefaultSearchProviderChoicePending, false);
 
-  // Deprecated 07/2024
 #if !BUILDFLAG(IS_ANDROID)
+  // Deprecated 07/2024
   registry->RegisterListPref(kNtpRecipesDismissedTasks);
+
+  // Deprecated 07/2024
+  registry->RegisterBooleanPref(kNtpModulesFreVisible, true);
+  registry->RegisterIntegerPref(kNtpModulesShownCount, 0);
+  registry->RegisterTimePref(kNtpModulesFirstShownTime, base::Time());
 #endif
 }
 
@@ -2857,9 +2867,14 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 06/2024.
   profile_prefs->ClearPref(kDefaultSearchProviderChoicePending);
 
-  // Added 07/2024.
 #if !BUILDFLAG(IS_ANDROID)
+  // Added 07/2024.
   profile_prefs->ClearPref(kNtpRecipesDismissedTasks);
+
+  // Added 07/2024.
+  profile_prefs->ClearPref(kNtpModulesFirstShownTime);
+  profile_prefs->ClearPref(kNtpModulesFreVisible);
+  profile_prefs->ClearPref(kNtpModulesShownCount);
 #endif
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
