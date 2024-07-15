@@ -22,7 +22,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/not_fatal_until.h"
 #include "cc/slim/layer.h"
 #include "chrome/browser/android/compositor/layer/thumbnail_layer.h"
 #include "chrome/browser/android/tab_android.h"
@@ -164,7 +163,8 @@ ThumbnailLayer* TabContentManager::GetStaticLayer(int tab_id) {
     return nullptr;
   }
   auto it = static_layer_cache_.find(tab_id);
-  CHECK(it != static_layer_cache_.end(), base::NotFatalUntil::M130)
+  // DCHECK is safe as nullptr is returned if layer is not found.
+  DCHECK(it != static_layer_cache_.end())
       << "Missing " << tab_id << " in static_layer_cache_. "
       << "Call UpdateVisibleIds before using a static layer.";
   return it == static_layer_cache_.end() ? nullptr : it->second.get();
