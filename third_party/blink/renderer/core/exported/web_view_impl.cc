@@ -1913,14 +1913,17 @@ void WebViewImpl::SetPageFocus(bool enable) {
   if (enable) {
     LocalFrame* focused_frame = page_->GetFocusController().FocusedFrame();
     if (focused_frame) {
+      // TODO(editing-dev): The use of UpdateStyleAndLayout needs to be audited.
+      // See http://crbug.com/590369 for more details.
+      focused_frame->GetDocument()->UpdateStyleAndLayout(
+          DocumentUpdateReason::kFocus);
       Element* element = focused_frame->GetDocument()->FocusedElement();
       if (element && focused_frame->Selection()
-                         .ComputeVisibleSelectionInDOMTreeDeprecated()
+                         .ComputeVisibleSelectionInDOMTree()
                          .IsNone()) {
         // If the selection was cleared while the WebView was not
         // focused, then the focus element shows with a focus ring but
         // no caret and does respond to keyboard inputs.
-        focused_frame->GetDocument()->UpdateStyleAndLayoutTree();
         if (element->IsTextControl()) {
           element->UpdateSelectionOnFocus(SelectionBehaviorOnFocus::kRestore);
         } else if (IsEditable(*element)) {
