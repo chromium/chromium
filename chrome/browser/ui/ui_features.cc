@@ -449,19 +449,6 @@ BASE_FEATURE(kWebUITabStripContextMenuAfterTap,
 );
 
 #if BUILDFLAG(IS_MAC)
-// Enabled an experiment which increases the prominence to grant MacOS system
-// location permission to Chrome when location permissions have already been
-// approved. https://crbug.com/1211052
-BASE_FEATURE(kLocationPermissionsExperiment,
-             "LocationPermissionsExperiment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-constexpr base::FeatureParam<int>
-    kLocationPermissionsExperimentBubblePromptLimit{
-        &kLocationPermissionsExperiment, "bubble_prompt_count", 3};
-constexpr base::FeatureParam<int>
-    kLocationPermissionsExperimentLabelPromptLimit{
-        &kLocationPermissionsExperiment, "label_prompt_count", 5};
-
 BASE_FEATURE(kViewsFirstRunDialog,
              "ViewsFirstRunDialog",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -473,13 +460,6 @@ BASE_FEATURE(kViewsTaskManager,
 BASE_FEATURE(kViewsJSAppModalDialog,
              "ViewsJSAppModalDialog",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-int GetLocationPermissionsExperimentBubblePromptLimit() {
-  return kLocationPermissionsExperimentBubblePromptLimit.Get();
-}
-int GetLocationPermissionsExperimentLabelPromptLimit() {
-  return kLocationPermissionsExperimentLabelPromptLimit.Get();
-}
 #endif
 
 // Reduce resource usage when view is hidden by not rendering loading animation.

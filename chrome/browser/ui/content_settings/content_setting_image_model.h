@@ -127,8 +127,6 @@ class ContentSettingImageModel {
   bool ShouldShowPromo(content::WebContents* contents);
   virtual void SetPromoWasShown(content::WebContents* contents);
 
-  bool IsMacRestoreLocationPermissionExperimentActive();
-
   const gfx::VectorIcon* icon() const { return icon_; }
 
   bool should_auto_open_bubble() { return should_auto_open_bubble_; }

@@ -519,21 +519,6 @@ void ContentSettingImageModel::SetPromoWasShown(
                                                                   true);
 }
 
-bool ContentSettingImageModel::
-    IsMacRestoreLocationPermissionExperimentActive() {
-#if BUILDFLAG(IS_MAC)
-  return base::FeatureList::IsEnabled(
-             features::kLocationPermissionsExperiment) &&
-         g_browser_process->local_state()->GetInteger(
-             prefs::kMacRestoreLocationPermissionsExperimentCount) <
-             (features::GetLocationPermissionsExperimentBubblePromptLimit() +
-              features::GetLocationPermissionsExperimentLabelPromptLimit()) &&
-         explanatory_string_id() == IDS_GEOLOCATION_TURNED_OFF;
-#else
-  return false;
-#endif
-}
-
 bool ContentSettingImageModel::ShouldAutoOpenBubble(
     content::WebContents* contents) {
   return should_auto_open_bubble_ &&
@@ -543,13 +528,6 @@ bool ContentSettingImageModel::ShouldAutoOpenBubble(
 
 void ContentSettingImageModel::SetBubbleWasAutoOpened(
     content::WebContents* contents) {
-  // Do nothing if this is part of the Mac restore location permission
-  // experiment. In that case we do not want to restrict showing the bubble
-  // again.
-  if (image_type() == ImageType::GEOLOCATION &&
-      IsMacRestoreLocationPermissionExperimentActive()) {
-    return;
-  }
   ContentSettingImageModelStates::Get(contents)->SetBubbleWasAutoOpened(
       image_type(), true);
 }
@@ -680,39 +658,7 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
       // determined before displaying this message since it triggers an
       // animation that cannot be cancelled
       if (IsGeolocationPermissionDetermined()) {
-#if BUILDFLAG(IS_MAC)
-        if (base::FeatureList::IsEnabled(
-                features::kLocationPermissionsExperiment)) {
-          PrefService* prefs = g_browser_process->local_state();
-          int count = prefs->GetInteger(
-              prefs::kMacRestoreLocationPermissionsExperimentCount);
-          if (count <
-              features::GetLocationPermissionsExperimentBubblePromptLimit()) {
-            // Show the bubble when the location is denied.
-            set_should_auto_open_bubble(true);
-            prefs->SetInteger(
-                prefs::kMacRestoreLocationPermissionsExperimentCount, ++count);
-            prefs->CommitPendingWrite();
-          } else if (
-              count <
-              (features::GetLocationPermissionsExperimentBubblePromptLimit() +
-               features::GetLocationPermissionsExperimentLabelPromptLimit())) {
-            // Show a persistent label without a bubble when the location is
-            // denied.
-            set_explanatory_string_id(IDS_GEOLOCATION_TURNED_OFF);
-            prefs->SetInteger(
-                prefs::kMacRestoreLocationPermissionsExperimentCount, ++count);
-            prefs->CommitPendingWrite();
-          } else {
-            // Return to normal behavior.
-            set_explanatory_string_id(IDS_GEOLOCATION_TURNED_OFF);
-          }
-        } else {
-          set_explanatory_string_id(IDS_GEOLOCATION_TURNED_OFF);
-        }
-#else
         set_explanatory_string_id(IDS_GEOLOCATION_TURNED_OFF);
-#endif  // BUILDFLAG(IS_MAC)
       }
       return true;
     }
