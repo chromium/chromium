@@ -203,12 +203,6 @@ void TabStripModelObserver::OnTabWillBeRemoved(content::WebContents* contents,
 
 void TabStripModelObserver::OnTabGroupChanged(const TabGroupChange& change) {}
 
-void TabStripModelObserver::OnTabGroupAdded(
-    const tab_groups::TabGroupId& group_id) {}
-
-void TabStripModelObserver::OnTabGroupWillBeRemoved(
-    const tab_groups::TabGroupId& group_id) {}
-
 void TabStripModelObserver::TabChangedAt(WebContents* contents,
                                          int index,
                                          TabChangeType change_type) {
