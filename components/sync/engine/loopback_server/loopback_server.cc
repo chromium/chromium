@@ -15,6 +15,7 @@
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/clamped_math.h"
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
@@ -544,7 +545,7 @@ string LoopbackServer::CommitEntity(
     // NIGORI is the only permanent item type that should be updated by the
     // client.
     EntityMap::const_iterator iter = entities_.find(client_entity.id_string());
-    DCHECK(iter != entities_.end());
+    CHECK(iter != entities_.end(), base::NotFatalUntil::M130);
     entity = PersistentPermanentEntity::CreateUpdatedNigoriEntity(
         client_entity, *iter->second);
   } else if (type == syncer::BOOKMARKS) {
@@ -599,7 +600,7 @@ void LoopbackServer::BuildEntryResponseForSuccessfulCommit(
     const std::string& entity_id,
     sync_pb::CommitResponse_EntryResponse* entry_response) {
   EntityMap::const_iterator iter = entities_.find(entity_id);
-  DCHECK(iter != entities_.end());
+  CHECK(iter != entities_.end(), base::NotFatalUntil::M130);
   const LoopbackServerEntity& entity = *iter->second;
   entry_response->set_response_type(response_type_override_
                                         ? response_type_override_.Run(entity)
@@ -680,7 +681,7 @@ bool LoopbackServer::HandleCommitRequest(
     }
 
     EntityMap::const_iterator iter = entities_.find(entity_id);
-    DCHECK(iter != entities_.end());
+    CHECK(iter != entities_.end(), base::NotFatalUntil::M130);
     committed_model_types.Put(iter->second->GetModelType());
 
     // Notify observers about history having been synced.

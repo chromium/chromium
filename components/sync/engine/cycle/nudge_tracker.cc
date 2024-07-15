@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/not_fatal_until.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 
 namespace syncer {
@@ -33,7 +34,8 @@ bool NudgeTracker::IsSyncRequired(ModelTypeSet types) const {
 
   for (ModelType type : types) {
     TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToDebugString(type);
+    CHECK(tracker_it != type_trackers_.end(), base::NotFatalUntil::M130)
+        << ModelTypeToDebugString(type);
     if (tracker_it->second->IsSyncRequired()) {
       return true;
     }
@@ -53,7 +55,8 @@ bool NudgeTracker::IsGetUpdatesRequired(ModelTypeSet types) const {
 
   for (ModelType type : types) {
     TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToDebugString(type);
+    CHECK(tracker_it != type_trackers_.end(), base::NotFatalUntil::M130)
+        << ModelTypeToDebugString(type);
     if (tracker_it->second->IsGetUpdatesRequired()) {
       return true;
     }
@@ -76,7 +79,8 @@ bool NudgeTracker::IsRetryRequired() const {
 void NudgeTracker::RecordSuccessfulCommitMessage(ModelTypeSet types) {
   for (ModelType type : types) {
     TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToDebugString(type);
+    CHECK(tracker_it != type_trackers_.end(), base::NotFatalUntil::M130)
+        << ModelTypeToDebugString(type);
     tracker_it->second->RecordSuccessfulCommitMessage();
   }
 }
@@ -92,7 +96,8 @@ void NudgeTracker::RecordSuccessfulSyncCycleIfNotBlocked(ModelTypeSet types) {
 
   for (ModelType type : types) {
     TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToDebugString(type);
+    CHECK(tracker_it != type_trackers_.end(), base::NotFatalUntil::M130)
+        << ModelTypeToDebugString(type);
     tracker_it->second->RecordSuccessfulSyncCycleIfNotBlocked();
   }
 }
@@ -100,7 +105,8 @@ void NudgeTracker::RecordSuccessfulSyncCycleIfNotBlocked(ModelTypeSet types) {
 void NudgeTracker::RecordInitialSyncDone(ModelTypeSet types) {
   for (ModelType type : types) {
     TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToDebugString(type);
+    CHECK(tracker_it != type_trackers_.end(), base::NotFatalUntil::M130)
+        << ModelTypeToDebugString(type);
     tracker_it->second->RecordInitialSyncDone();
   }
 }
@@ -115,7 +121,8 @@ base::TimeDelta NudgeTracker::RecordLocalChange(ModelType type,
 base::TimeDelta NudgeTracker::RecordLocalRefreshRequest(ModelTypeSet types) {
   for (ModelType type : types) {
     TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToDebugString(type);
+    CHECK(tracker_it != type_trackers_.end(), base::NotFatalUntil::M130)
+        << ModelTypeToDebugString(type);
     tracker_it->second->RecordLocalRefreshRequest();
   }
   return kLocalRefreshDelay;
@@ -123,19 +130,19 @@ base::TimeDelta NudgeTracker::RecordLocalRefreshRequest(ModelTypeSet types) {
 
 base::TimeDelta NudgeTracker::GetRemoteInvalidationDelay(ModelType type) const {
   TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-  DCHECK(tracker_it != type_trackers_.end());
+  CHECK(tracker_it != type_trackers_.end(), base::NotFatalUntil::M130);
   return tracker_it->second->GetRemoteInvalidationDelay();
 }
 
 void NudgeTracker::RecordInitialSyncRequired(ModelType type) {
   TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-  DCHECK(tracker_it != type_trackers_.end());
+  CHECK(tracker_it != type_trackers_.end(), base::NotFatalUntil::M130);
   tracker_it->second->RecordInitialSyncRequired();
 }
 
 void NudgeTracker::RecordCommitConflict(ModelType type) {
   TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-  DCHECK(tracker_it != type_trackers_.end());
+  CHECK(tracker_it != type_trackers_.end(), base::NotFatalUntil::M130);
   tracker_it->second->RecordCommitConflict();
 }
 
@@ -161,7 +168,7 @@ void NudgeTracker::SetTypeBackedOff(ModelType type,
                                     base::TimeDelta length,
                                     base::TimeTicks now) {
   TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-  DCHECK(tracker_it != type_trackers_.end());
+  CHECK(tracker_it != type_trackers_.end(), base::NotFatalUntil::M130);
   tracker_it->second->BackOffType(length, now);
 }
 
@@ -174,7 +181,7 @@ void NudgeTracker::UpdateTypeThrottlingAndBackoffState() {
 void NudgeTracker::SetHasPendingInvalidations(ModelType type,
                                               bool has_invalidation) {
   TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-  DCHECK(tracker_it != type_trackers_.end());
+  CHECK(tracker_it != type_trackers_.end(), base::NotFatalUntil::M130);
   tracker_it->second->SetHasPendingInvalidations(has_invalidation);
 }
 
@@ -217,7 +224,7 @@ base::TimeDelta NudgeTracker::GetTimeUntilNextUnblock() const {
 
 base::TimeDelta NudgeTracker::GetTypeLastBackoffInterval(ModelType type) const {
   auto tracker_it = type_trackers_.find(type);
-  DCHECK(tracker_it != type_trackers_.end());
+  CHECK(tracker_it != type_trackers_.end(), base::NotFatalUntil::M130);
 
   return tracker_it->second->GetLastBackoffInterval();
 }

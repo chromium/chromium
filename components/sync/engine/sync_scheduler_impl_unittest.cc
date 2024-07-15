@@ -392,7 +392,7 @@ class SyncSchedulerImplTest : public testing::Test {
   base::TimeDelta GetTypeBlockingTime(ModelType type) {
     NudgeTracker::TypeTrackerMap::const_iterator tracker_it =
         scheduler_->nudge_tracker_.type_trackers_.find(type);
-    DCHECK(tracker_it != scheduler_->nudge_tracker_.type_trackers_.end());
+    CHECK(tracker_it != scheduler_->nudge_tracker_.type_trackers_.end());
     DCHECK(tracker_it->second->wait_interval_);
     return tracker_it->second->wait_interval_->length;
   }
@@ -400,7 +400,7 @@ class SyncSchedulerImplTest : public testing::Test {
   void SetTypeBlockingMode(ModelType type, WaitInterval::BlockingMode mode) {
     NudgeTracker::TypeTrackerMap::const_iterator tracker_it =
         scheduler_->nudge_tracker_.type_trackers_.find(type);
-    DCHECK(tracker_it != scheduler_->nudge_tracker_.type_trackers_.end());
+    CHECK(tracker_it != scheduler_->nudge_tracker_.type_trackers_.end());
     DCHECK(tracker_it->second->wait_interval_);
     tracker_it->second->wait_interval_->mode = mode;
   }
