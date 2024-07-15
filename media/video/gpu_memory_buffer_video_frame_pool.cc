@@ -313,7 +313,7 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
   uint32_t buffer_id_ = 0;
 
   const bool is_mappable_si_enabled_;
-  uint32_t si_usage_ = 0;
+  gpu::SharedImageUsageSet si_usage_;
 };
 
 namespace {

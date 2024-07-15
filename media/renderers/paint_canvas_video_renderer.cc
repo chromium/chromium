@@ -1722,8 +1722,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     // We copy the contents of the source VideoFrame into the intermediate SI
     // over the raster interface and read out the contents of the intermediate
     // SI into the destination GL texture via the GLES2 interface.
-    uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                     gpu::SHARED_IMAGE_USAGE_GLES2_READ;
+    gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+                                     gpu::SHARED_IMAGE_USAGE_GLES2_READ;
     if (raster_context_provider->ContextCapabilities().gpu_rasterization) {
       usage |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
     } else {
@@ -1952,7 +1952,7 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
 
         // This SI is used to cache the VideoFrame. We will eventually read out
         // its contents into a destination GL texture via the GLES2 interface.
-        uint32_t flags = gpu::SHARED_IMAGE_USAGE_GLES2_READ;
+        gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_GLES2_READ;
         // We copy the contents of the source VideoFrame *into* the
         // cached SI over the raster interface - the usage bits depend on
         // whether OOP-Raster is enabled.

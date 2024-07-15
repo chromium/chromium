@@ -85,7 +85,7 @@ class MojoStableVideoDecoder::SharedImageHolder
       return nullptr;
     }
 
-    uint32_t shared_image_usage =
+    gpu::SharedImageUsageSet shared_image_usage =
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
     if (frame_resource->metadata().is_webgpu_compatible &&
         !sii->GetCapabilities().disable_webgpu_shared_images) {

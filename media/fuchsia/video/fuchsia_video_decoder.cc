@@ -120,9 +120,9 @@ class FuchsiaVideoDecoder::OutputMailbox {
       : raster_context_provider_(raster_context_provider),
         size_(size),
         weak_factory_(this) {
-    uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                     gpu::SHARED_IMAGE_USAGE_SCANOUT |
-                     gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE;
+    gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                     gpu::SHARED_IMAGE_USAGE_SCANOUT |
+                                     gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE;
 
     // The GMB is either YUV_420_BIPLANAR (SIF kNV12) or YVU_420 (SIF kYV12).
     auto shared_image_format = viz::MultiPlaneFormat::kNV12;
