@@ -9,12 +9,45 @@
 
 #include "base/profiler/stack_copier.h"
 
+#include <vector>
+
 #include "base/bits.h"
 #include "base/compiler_specific.h"
+#include "base/profiler/stack_buffer.h"
 
 namespace base {
 
 StackCopier::~StackCopier() = default;
+
+std::unique_ptr<StackBuffer> StackCopier::CloneStack(
+    const StackBuffer& stack_buffer,
+    uintptr_t* stack_top,
+    RegisterContext* thread_context) {
+  const uintptr_t original_top = *stack_top;
+  const uintptr_t original_bottom =
+      reinterpret_cast<uintptr_t>(stack_buffer.buffer());
+  size_t stack_size = original_top - original_bottom;
+  auto cloned_stack_buffer = std::make_unique<StackBuffer>(stack_size);
+  const uint8_t* stack_copy_bottom = CopyStackContentsAndRewritePointers(
+      reinterpret_cast<const uint8_t*>(stack_buffer.buffer()),
+      reinterpret_cast<const uintptr_t*>(original_top),
+      StackBuffer::kPlatformStackAlignment, cloned_stack_buffer->buffer());
+
+  // `stack_buffer` is double pointer aligned by default so we should always
+  // get the same result.
+  CHECK(stack_copy_bottom ==
+        reinterpret_cast<uint8_t*>(cloned_stack_buffer->buffer()));
+  *stack_top =
+      reinterpret_cast<const uintptr_t>(stack_copy_bottom) + stack_size;
+
+  for (uintptr_t* reg : GetRegistersToRewrite(thread_context)) {
+    *reg = RewritePointerIfInOriginalStack(
+        reinterpret_cast<const uint8_t*>(original_bottom),
+        reinterpret_cast<const uintptr_t*>(original_top), stack_copy_bottom,
+        *reg);
+  }
+  return cloned_stack_buffer;
+}
 
 // static
 uintptr_t StackCopier::RewritePointerIfInOriginalStack(

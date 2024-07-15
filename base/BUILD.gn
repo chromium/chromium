@@ -572,6 +572,8 @@ component("base") {
     "profiler/stack_sampler.h",
     "profiler/stack_sampling_profiler.cc",
     "profiler/stack_sampling_profiler.h",
+    "profiler/stack_unwind_data.cc",
+    "profiler/stack_unwind_data.h",
     "profiler/suspendable_thread_delegate.h",
     "profiler/thread_delegate.h",
     "profiler/unwinder.cc",
@@ -3940,9 +3942,7 @@ test("base_unittests") {
       "CoreFoundation.framework",
       "Foundation.framework",
     ]
-    if (current_cpu == "x64") {
-      deps += [ ":base_profiler_test_support_library" ]
-    }
+    deps += [ ":base_profiler_test_support_library" ]
   }
 
   if (is_fuchsia || is_linux || is_chromeos) {
