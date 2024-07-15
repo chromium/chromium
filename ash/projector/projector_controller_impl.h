@@ -97,8 +97,6 @@ class ASH_EXPORT ProjectorControllerImpl
   // 3. Whether DriveFS is mounted or not.
   void OnNewScreencastPreconditionChanged();
 
-  void SetProjectorUiControllerForTest(
-      std::unique_ptr<ProjectorUiController> ui_controller);
   void SetProjectorMetadataControllerForTest(
       std::unique_ptr<ProjectorMetadataController> metadata_controller);
   void SetOnPathDeletedCallbackForTest(OnPathDeletedCallback callback);

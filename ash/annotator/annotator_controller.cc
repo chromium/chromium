@@ -4,6 +4,7 @@
 
 #include "ash/annotator/annotator_controller.h"
 
+#include "ash/annotator/annotation_source_watcher.h"
 #include "ash/annotator/annotation_tray.h"
 #include "ash/annotator/annotations_overlay_controller.h"
 #include "ash/annotator/annotator_metrics.h"
@@ -69,9 +70,12 @@ void SetAnnotationTrayVisibility(aura::Window* root, bool visible) {
 }
 }  // namespace
 
-AnnotatorController::AnnotatorController() = default;
+AnnotatorController::AnnotatorController() {
+  annotation_source_watcher_ = std::make_unique<AnnotationSourceWatcher>(this);
+}
 
 AnnotatorController::~AnnotatorController() {
+  annotation_source_watcher_.reset();
   annotations_overlay_controller_.reset();
   client_ = nullptr;
   current_root_ = nullptr;
@@ -92,8 +96,14 @@ void AnnotatorController::ResetTools() {
   }
 }
 
-void AnnotatorController::RegisterView(aura::Window* current_root) {
-  current_root_ = current_root;
+void AnnotatorController::RegisterView(aura::Window* new_root) {
+  // Make sure the annotator tray is only visible on one root window.
+  // TODO(b/342104047): Remove this check when annotator starts being used
+  // outside of the capture mode.
+  if (current_root_) {
+    UnregisterView(current_root_);
+  }
+  current_root_ = new_root;
   // Show the tray icon.
   SetAnnotationTrayVisibility(current_root_, /*visible=*/true);
 }
@@ -104,6 +114,19 @@ void AnnotatorController::UnregisterView(aura::Window* window) {
     annotation_tray->HideAnnotationTray();
   }
   current_root_ = nullptr;
+}
+
+void AnnotatorController::UpdateRootView(aura::Window* new_root) {
+  // Do nothing if the root window is the same.
+  if (new_root == current_root_) {
+    return;
+  }
+  UnregisterView(current_root_);
+  RegisterView(new_root);
+  current_root_ = new_root;
+  if (GetAnnotatorAvailability()) {
+    UpdateTrayEnabledState();
+  }
 }
 
 void AnnotatorController::EnableAnnotatorTool() {
@@ -161,15 +184,15 @@ void AnnotatorController::OnUndoRedoAvailabilityChanged(bool undo_available,
   // on the annotator tray.
 }
 
+std::unique_ptr<AnnotationsOverlayView>
+AnnotatorController::CreateAnnotationsOverlayView() const {
+  return client_->CreateAnnotationsOverlayView();
+}
+
 void AnnotatorController::UpdateTrayEnabledState() {
   if (auto* annotation_tray = GetAnnotationTrayForRoot(current_root_)) {
     annotation_tray->SetTrayEnabled(GetAnnotatorAvailability());
   }
-}
-
-std::unique_ptr<AnnotationsOverlayView>
-AnnotatorController::CreateAnnotationsOverlayView() const {
-  return client_->CreateAnnotationsOverlayView();
 }
 
 void AnnotatorController::ToggleAnnotatorCanvas() {

@@ -7,10 +7,9 @@
 #include <memory>
 #include <utility>
 
+#include "ash/annotator/annotator_controller.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/ime/ime_controller_impl.h"
-#include "ash/projector/projector_controller_impl.h"
-#include "ash/projector/projector_ui_controller.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -101,14 +100,13 @@ void StatusAreaInternalsHandler::ToggleAnnotationTray(bool visible) {
   DCHECK(root_window_controller);
   DCHECK(root_window_controller->GetStatusAreaWidget());
 
-  auto* projector_ui_controller =
-      Shell::Get()->projector_controller()->ui_controller();
+  auto* annotator_controller = Shell::Get()->annotator_controller();
 
   if (visible) {
-    projector_ui_controller->ShowAnnotationTray(
+    annotator_controller->RegisterView(
         /*current_root=*/root_window_controller->GetRootWindow());
   } else {
-    projector_ui_controller->HideAnnotationTray();
+    annotator_controller->DisableAnnotator();
   }
 }
 

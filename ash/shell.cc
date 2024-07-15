@@ -906,11 +906,14 @@ Shell::~Shell() {
   // Has to happen before ~MruWindowTracker.
   window_cycle_controller_.reset();
 
+  // As a client of `projector_controller_` and `capture_mode_controller_`,
+  // `annotator_controller_` needs to be destroyed first.
+  annotator_controller_.reset();
+
   // As clients of `capture_mode_controller_`, `projector_controller_` and
   // `game_dashboard_controller_` need to be destroyed before
   // `capture_mode_controller_`.
   projector_controller_.reset();
-  annotator_controller_.reset();
   game_dashboard_controller_.reset();
 
   // This must be called before `capture_mode_controller_` is destroyed. Note
@@ -1770,8 +1773,8 @@ void Shell::Init(
   post_login_glanceables_metrics_reporter_ =
       std::make_unique<PostLoginGlanceablesMetricsRecorder>();
 
-  annotator_controller_ = std::make_unique<AnnotatorController>();
   projector_controller_ = std::make_unique<ProjectorControllerImpl>();
+  annotator_controller_ = std::make_unique<AnnotatorController>();
 
   float_controller_ = std::make_unique<FloatController>();
   if (features::IsForestFeatureEnabled()) {

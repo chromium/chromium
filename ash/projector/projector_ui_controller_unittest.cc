@@ -7,8 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/annotator/annotation_tray.h"
-#include "ash/annotator/annotator_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/projector_metrics.h"
@@ -17,7 +15,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/webui/annotator/test/mock_annotator_client.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -37,9 +34,6 @@ namespace {
 
 constexpr char kProjectorCreationFlowErrorHistogramName[] =
     "Ash.Projector.CreationFlowError.ClamshellMode";
-constexpr char kProjectorToolbarHistogramName[] =
-    "Ash.Projector.Toolbar.ClamshellMode";
-
 }  // namespace
 
 class MockMessageCenterObserver : public message_center::MessageCenterObserver {
@@ -73,90 +67,12 @@ class ProjectorUiControllerTest : public AshTestBase {
     auto* projector_controller = Shell::Get()->projector_controller();
     projector_controller->SetClient(&projector_client_);
     controller_ = projector_controller->ui_controller();
-
-    auto* annotator_controller = Shell::Get()->annotator_controller();
-    annotator_controller->SetToolClient(&annotator_client_);
   }
 
  protected:
   raw_ptr<ProjectorUiController, DanglingUntriaged> controller_;
   MockProjectorClient projector_client_;
-  MockAnnotatorClient annotator_client_;
 };
-
-TEST_F(ProjectorUiControllerTest, ShowAndHideTray) {
-  auto* annotation_tray = Shell::GetPrimaryRootWindowController()
-                              ->GetStatusAreaWidget()
-                              ->annotation_tray();
-  controller_->ShowAnnotationTray(Shell::GetPrimaryRootWindow());
-  EXPECT_TRUE(annotation_tray->visible_preferred());
-  controller_->HideAnnotationTray();
-  EXPECT_FALSE(annotation_tray->visible_preferred());
-}
-
-TEST_F(ProjectorUiControllerTest, ShowAndHideTrayMultipleDisplays) {
-  UpdateDisplay("800x700,801+0-800x700");
-  aura::Window::Windows roots = Shell::GetAllRootWindows();
-  ASSERT_EQ(2u, roots.size());
-  auto* primary_display_tray = Shell::GetPrimaryRootWindowController()
-                                   ->GetStatusAreaWidget()
-                                   ->annotation_tray();
-  auto* external_display_tray = RootWindowController::ForWindow(roots[1])
-                                    ->GetStatusAreaWidget()
-                                    ->annotation_tray();
-
-  // Show tray on primary root window.
-  controller_->ShowAnnotationTray(Shell::GetPrimaryRootWindow());
-  EXPECT_TRUE(primary_display_tray->visible_preferred());
-  EXPECT_FALSE(external_display_tray->visible_preferred());
-
-  // Change the root window of the recorded window.
-  controller_->OnRecordedWindowChangingRoot(roots[1]);
-  EXPECT_FALSE(primary_display_tray->visible_preferred());
-  EXPECT_TRUE(external_display_tray->visible_preferred());
-
-  controller_->HideAnnotationTray();
-  EXPECT_FALSE(primary_display_tray->visible_preferred());
-  EXPECT_FALSE(external_display_tray->visible_preferred());
-}
-
-TEST_F(ProjectorUiControllerTest, HideTrayWhenAnnotatorIsEnabled) {
-  base::HistogramTester histogram_tester;
-
-  auto* annotation_tray = Shell::GetPrimaryRootWindowController()
-                              ->GetStatusAreaWidget()
-                              ->annotation_tray();
-  controller_->ShowAnnotationTray(Shell::GetPrimaryRootWindow());
-  EXPECT_TRUE(annotation_tray->visible_preferred());
-
-  Shell::Get()->annotator_controller()->CreateAnnotationOverlayForWindow(
-      Shell::GetPrimaryRootWindow(), std::nullopt);
-  Shell::Get()->annotator_controller()->EnableAnnotatorTool();
-  EXPECT_TRUE(Shell::Get()->annotator_controller()->is_annotator_enabled());
-
-  controller_->HideAnnotationTray();
-  EXPECT_FALSE(annotation_tray->visible_preferred());
-  EXPECT_FALSE(Shell::Get()->annotator_controller()->is_annotator_enabled());
-
-  histogram_tester.ExpectUniqueSample(kProjectorToolbarHistogramName,
-                                      ProjectorToolbar::kMarkerTool,
-                                      /*count=*/1);
-}
-
-// Tests that right clicking the AnnotationTray shows a bubble.
-// Disabled for being flaky. crbug.com/1418409
-TEST_F(ProjectorUiControllerTest, DISABLED_RightClickShowsBubble) {
-  controller_->ShowAnnotationTray(Shell::GetPrimaryRootWindow());
-  Shell::Get()->annotator_controller()->OnCanvasInitialized(true);
-
-  auto* annotation_tray = Shell::GetPrimaryRootWindowController()
-                              ->GetStatusAreaWidget()
-                              ->annotation_tray();
-
-  // Right click the tray item, it should show a bubble.
-  RightClickOn(annotation_tray);
-  EXPECT_TRUE(annotation_tray->GetBubbleWidget());
-}
 
 TEST_F(ProjectorUiControllerTest, ShowFailureNotification) {
   base::HistogramTester histogram_tester;

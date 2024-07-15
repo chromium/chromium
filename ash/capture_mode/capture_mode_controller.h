@@ -312,6 +312,14 @@ class ASH_EXPORT CaptureModeController
   void CheckScreenCaptureDlpRestrictions(
       OnCaptureModeDlpRestrictionChecked callback);
 
+  // Returns true if the video recording is in progress and annotating is
+  // supported.
+  bool ShouldAllowAnnotating() const;
+
+  // Returns true is annotating should be supported for the current capture mode
+  // behavior.
+  bool IsAnnotatingSupported() const;
+
   // recording::mojom::RecordingServiceClient:
   void OnRecordingEnded(recording::mojom::RecordingStatus status,
                         const gfx::ImageSkia& thumbnail) override;

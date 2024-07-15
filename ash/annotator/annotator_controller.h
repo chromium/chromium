@@ -31,6 +31,7 @@ struct AnnotatorTool;
 class AnnotatorClient;
 class AnnotationsOverlayView;
 class AnnotationsOverlayController;
+class AnnotationSourceWatcher;
 
 // The controller in charge of annotator UI.
 class ASH_EXPORT AnnotatorController : public AnnotatorControllerBase {
@@ -46,12 +47,15 @@ class ASH_EXPORT AnnotatorController : public AnnotatorControllerBase {
   virtual void SetAnnotatorTool(const AnnotatorTool& tool);
   // Resets annotator tools and clears the canvas.
   void ResetTools();
-  // Shows annotation tray for `current_root`.
-  void RegisterView(aura::Window* current_root);
+  // Shows annotation tray for `new_root`.
+  void RegisterView(aura::Window* new_root);
   // Hides annotation tray for `current_root` if it was previously registered
   // with the controller.
   void UnregisterView(aura::Window* current_root);
-  // Invoked when marker button is pressed. Enables annotating.
+  // Updates `current_root_` to be the given `new_root`. Updates annotation
+  // tray's enabled state.
+  void UpdateRootView(aura::Window* new_root);
+  // Invoked when marker button is pressed.
   void EnableAnnotatorTool();
   // Resets the canvas and disables the annotator functionality.
   void DisableAnnotator();
@@ -74,9 +78,6 @@ class ASH_EXPORT AnnotatorController : public AnnotatorControllerBase {
   void OnUndoRedoAvailabilityChanged(bool undo_available,
                                      bool redo_available) override;
 
-  // Updates the tray based on annotator availability.
-  void UpdateTrayEnabledState();
-
   // Returns a new instance of the concrete view that will be used as the
   // content view of the annotations overlay widget.
   std::unique_ptr<AnnotationsOverlayView> CreateAnnotationsOverlayView() const;
@@ -88,6 +89,8 @@ class ASH_EXPORT AnnotatorController : public AnnotatorControllerBase {
  private:
   friend class CaptureModeTestApi;
 
+  // Updates the tray based on annotator availability.
+  void UpdateTrayEnabledState();
   // Toggles annotation overlay widget on or off. When on, the annotations
   // overlay widget's window will be shown and can consume all the events
   // targeting the underlying window. Otherwise, it's hidden and cannot accept
@@ -105,6 +108,7 @@ class ASH_EXPORT AnnotatorController : public AnnotatorControllerBase {
   base::OnceClosure on_canvas_initialized_callback_for_test_;
   // Controls and owns the overlay widget, which is used to host annotations.
   std::unique_ptr<AnnotationsOverlayController> annotations_overlay_controller_;
+  std::unique_ptr<AnnotationSourceWatcher> annotation_source_watcher_;
 };
 
 }  // namespace ash

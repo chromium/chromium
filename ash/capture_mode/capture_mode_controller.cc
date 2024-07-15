@@ -1001,6 +1001,16 @@ void CaptureModeController::CheckScreenCaptureDlpRestrictions(
   delegate_->CheckCaptureModeInitRestrictionByDlp(std::move(callback));
 }
 
+bool CaptureModeController::ShouldAllowAnnotating() const {
+  return is_recording_in_progress() && IsAnnotatingSupported();
+}
+
+bool CaptureModeController::IsAnnotatingSupported() const {
+  return video_recording_watcher_ &&
+         video_recording_watcher_->active_behavior()
+             ->ShouldCreateAnnotationsOverlayController();
+}
+
 void CaptureModeController::OnRecordingEnded(
     recording::mojom::RecordingStatus status,
     const gfx::ImageSkia& thumbnail) {

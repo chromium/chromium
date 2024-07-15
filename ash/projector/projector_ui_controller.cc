@@ -93,42 +93,8 @@ void ProjectorUiController::ShowSaveFailureNotification() {
       message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
 }
 
-ProjectorUiController::ProjectorUiController(
-    ProjectorControllerImpl* projector_controller) {
-  projector_session_observation_.Observe(
-      projector_controller->projector_session());
-}
+ProjectorUiController::ProjectorUiController() = default;
 
 ProjectorUiController::~ProjectorUiController() = default;
-
-void ProjectorUiController::ShowAnnotationTray(aura::Window* current_root) {
-  current_root_ = current_root;
-
-  Shell::Get()->annotator_controller()->RegisterView(current_root_);
-}
-
-void ProjectorUiController::HideAnnotationTray() {
-  Shell::Get()->annotator_controller()->DisableAnnotator();
-
-  current_root_ = nullptr;
-}
-
-void ProjectorUiController::OnRecordedWindowChangingRoot(
-    aura::Window* new_root) {
-  DCHECK_NE(new_root, current_root_);
-  auto* annotator_controller = Shell::Get()->annotator_controller();
-  annotator_controller->UnregisterView(current_root_);
-  annotator_controller->RegisterView(new_root);
-  current_root_ = new_root;
-  if (annotator_controller->GetAnnotatorAvailability()) {
-    annotator_controller->UpdateTrayEnabledState();
-  }
-}
-
-void ProjectorUiController::OnProjectorSessionActiveStateChanged(bool active) {
-  if (!active) {
-    Shell::Get()->annotator_controller()->DisableAnnotator();
-  }
-}
 
 }  // namespace ash

@@ -127,6 +127,9 @@ TEST_F(AnnotatorControllerTest, UnregisterViewWhenAnnotatorIsEnabled) {
 
   annotator_controller()->UnregisterView(Shell::GetPrimaryRootWindow());
   EXPECT_FALSE(annotation_tray->visible_preferred());
+  histogram_tester.ExpectUniqueSample(kProjectorToolbarHistogramName,
+                                      ProjectorToolbar::kMarkerTool,
+                                      /*count=*/1);
 }
 
 TEST_F(AnnotatorControllerTest, EnableAnnotator) {
@@ -318,6 +321,57 @@ TEST_F(AnnotatorControllerTest, ToggleAnnotationTray) {
 TEST_F(AnnotatorControllerTest, CreateAnnotationsOverlayView) {
   auto overlay = annotator_controller()->CreateAnnotationsOverlayView();
   EXPECT_TRUE(overlay.get());
+}
+
+TEST_F(AnnotatorControllerTest, UpdateRootViewMultipleDisplays) {
+  UpdateDisplay("800x700,801+0-800x700");
+  aura::Window::Windows roots = Shell::GetAllRootWindows();
+  ASSERT_EQ(2u, roots.size());
+  auto* primary_display_tray = Shell::GetPrimaryRootWindowController()
+                                   ->GetStatusAreaWidget()
+                                   ->annotation_tray();
+  auto* external_display_tray = RootWindowController::ForWindow(roots[1])
+                                    ->GetStatusAreaWidget()
+                                    ->annotation_tray();
+
+  // Show tray on primary root window.
+  annotator_controller()->RegisterView(Shell::GetPrimaryRootWindow());
+  EXPECT_TRUE(primary_display_tray->visible_preferred());
+  EXPECT_FALSE(external_display_tray->visible_preferred());
+
+  // Change the root window of the recorded window.
+  annotator_controller()->UpdateRootView(roots[1]);
+  EXPECT_FALSE(primary_display_tray->visible_preferred());
+  EXPECT_TRUE(external_display_tray->visible_preferred());
+
+  annotator_controller()->DisableAnnotator();
+  EXPECT_FALSE(primary_display_tray->visible_preferred());
+  EXPECT_FALSE(external_display_tray->visible_preferred());
+}
+
+TEST_F(AnnotatorControllerTest, RegisterViewTwice) {
+  UpdateDisplay("800x700,801+0-800x700");
+  aura::Window::Windows roots = Shell::GetAllRootWindows();
+  ASSERT_EQ(2u, roots.size());
+  auto* primary_display_tray = Shell::GetPrimaryRootWindowController()
+                                   ->GetStatusAreaWidget()
+                                   ->annotation_tray();
+  auto* external_display_tray = RootWindowController::ForWindow(roots[1])
+                                    ->GetStatusAreaWidget()
+                                    ->annotation_tray();
+
+  // Register view twice on 2 different roots.
+  annotator_controller()->RegisterView(Shell::GetPrimaryRootWindow());
+  annotator_controller()->RegisterView(roots[1]);
+  // Expect the tray to be visible only on the second root window, as the first
+  // root window was unregistered. Annotator allows only one root window at a
+  // time.
+  EXPECT_FALSE(primary_display_tray->visible_preferred());
+  EXPECT_TRUE(external_display_tray->visible_preferred());
+
+  annotator_controller()->DisableAnnotator();
+  EXPECT_FALSE(primary_display_tray->visible_preferred());
+  EXPECT_FALSE(external_display_tray->visible_preferred());
 }
 
 }  // namespace ash

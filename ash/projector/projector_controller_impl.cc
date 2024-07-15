@@ -155,7 +155,7 @@ ProjectorControllerImpl::ProjectorControllerImpl()
     : projector_session_(std::make_unique<ash::ProjectorSessionImpl>()),
       metadata_controller_(
           std::make_unique<ash::ProjectorMetadataController>()) {
-  ui_controller_ = std::make_unique<ash::ProjectorUiController>(this);
+  ui_controller_ = std::make_unique<ash::ProjectorUiController>();
 
   projector_session_->AddObserver(this);
   CrasAudioHandler::Get()->AddAudioObserver(this);
@@ -355,11 +355,6 @@ void ProjectorControllerImpl::OnNewScreencastPreconditionChanged() {
   }
 }
 
-void ProjectorControllerImpl::SetProjectorUiControllerForTest(
-    std::unique_ptr<ProjectorUiController> ui_controller) {
-  ui_controller_ = std::move(ui_controller);
-}
-
 void ProjectorControllerImpl::SetProjectorMetadataControllerForTest(
     std::unique_ptr<ProjectorMetadataController> metadata_controller) {
   metadata_controller_ = std::move(metadata_controller);
@@ -385,10 +380,6 @@ void ProjectorControllerImpl::OnRecordingStarted(aura::Window* current_root) {
     return;
   }
 
-  if (ui_controller_) {
-    ui_controller_->ShowAnnotationTray(current_root);
-  }
-
   StartSpeechRecognition();
   metadata_controller_->OnRecordingStarted();
 
@@ -398,10 +389,6 @@ void ProjectorControllerImpl::OnRecordingStarted(aura::Window* current_root) {
 void ProjectorControllerImpl::OnRecordingEnded() {
   if (!projector_session_->is_active()) {
     return;
-  }
-
-  if (ui_controller_) {
-    ui_controller_->HideAnnotationTray();
   }
 
   MaybeStopSpeechRecognition();
@@ -437,11 +424,7 @@ void ProjectorControllerImpl::OnVideoFileFinalized(
 }
 
 void ProjectorControllerImpl::OnRecordedWindowChangingRoot(
-    aura::Window* new_root) {
-  if (projector_session_->is_active()) {
-    ui_controller_->OnRecordedWindowChangingRoot(new_root);
-  }
-}
+    aura::Window* new_root) {}
 
 void ProjectorControllerImpl::OnRecordingStartAborted() {
   if (!projector_session_->is_active()) {
