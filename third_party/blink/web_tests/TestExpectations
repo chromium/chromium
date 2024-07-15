@@ -7576,3 +7576,6 @@ crbug.com/349938120 [ Linux ] wpt_internal/webmidi/requestmidiaccess-basic.https
 # Gardener 2024-07-11
 crbug.com/352455679 [ Debug Linux ] virtual/threaded/external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/prefer-focused-nested-containers.html [ Pass Timeout ]
 crbug.com/41490706 [ Linux ] external/wpt/touch-events/multi-touch-interfaces.html [ Failure Pass ]
+
+# Gardener 2024-07-15
+crbug.com/353204670 [ Mac11-arm64 ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-copyImage.html [ Failure Pass ]
