@@ -1131,6 +1131,8 @@ chromium-metrics-reviews@google.com.
   <int value="44" label="InvalidPkcs12"/>
   <int value="45" label="Pkcs12WrongPassword"/>
   <int value="46" label="Pkcs12InvalidMac"/>
+  <int value="47" label="FailedToMakeCertNickname"/>
+  <int value="48" label="AlreadyExists"/>
 </enum>
 
 <enum name="KcerPkcs12ImportEvent">

@@ -1014,10 +1014,14 @@ void KcerTokenImpl::ImportPkcs12Cert(Pkcs12Blob pkcs12_blob,
   std::vector<CertData> certs_data;
   Pkcs12ReaderStatusCode prepare_certs_status = ValidateAndPrepareCertData(
       cert_cache_, pkcs12_reader, std::move(certs), key_data, certs_data);
+  if (prepare_certs_status == Pkcs12ReaderStatusCode::kAlreadyExists) {
+    return std::move(unblocking_callback)
+        .Run(base::unexpected(Error::kAlreadyExists));
+  }
   if ((prepare_certs_status != Pkcs12ReaderStatusCode::kSuccess) ||
       certs_data.empty()) {
     return std::move(unblocking_callback)
-        .Run(base::unexpected(ConvertPkcs12ParsingError(prepare_certs_status)));
+        .Run(base::unexpected(Error::kInvalidPkcs12));
   }
 
   auto import_callback = base::BindOnce(&KcerTokenImpl::DidImportPkcs12Cert,

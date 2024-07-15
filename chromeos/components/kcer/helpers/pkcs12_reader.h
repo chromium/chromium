@@ -67,6 +67,7 @@ enum class Pkcs12ReaderStatusCode {
   kPkcs12InvalidMac = 37,
   kPkcs12InvalidFile = 38,
   kPkcs12UnsupportedFile = 39,
+  kAlreadyExists = 40,
 };
 
 enum class Pkcs12ReaderCertSearchType {

@@ -207,6 +207,8 @@ Pkcs12ReaderStatusCode ValidateAndPrepareCertData(
         std::string_view(existing_cert->GetNickname()));
   }
 
+  int already_imported_cert_counter = 0;
+
   // Normal case if there is one private key and one certificate in pkcs12, but
   // it might be the whole chain included. All certs that are not directly
   // related to the key will be filtered out.
@@ -232,6 +234,7 @@ Pkcs12ReaderStatusCode ValidateAndPrepareCertData(
 
     if (cert_cache.FindCert(cert_der_typed.value())) {
       LOG(WARNING) << "Cert is already installed, skipping";
+      ++already_imported_cert_counter;
       continue;
     }
 
@@ -268,6 +271,9 @@ Pkcs12ReaderStatusCode ValidateAndPrepareCertData(
 
   if (valid_certs_data.size() > 0) {
     return Pkcs12ReaderStatusCode::kSuccess;
+  }
+  if (already_imported_cert_counter > 0) {
+    return Pkcs12ReaderStatusCode::kAlreadyExists;
   }
 
   return Pkcs12ReaderStatusCode::kPkcs12NoValidCertificatesFound;
