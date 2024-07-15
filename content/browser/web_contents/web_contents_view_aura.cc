@@ -804,13 +804,7 @@ void WebContentsViewAura::EndDrag(
   RenderWidgetHost* source_rwh = source_rwh_weak_ptr.get();
 
   aura::Window* window = GetContentNativeView();
-  // When the drag is cancelled after a portal activation, we would have already
-  // destroyed the page's RWHV (the predecessor page is now an orphaned portal),
-  // and GetContentNativeView() will return a nullptr.
-  if (!window) {
-    web_contents_->SystemDragEnded(source_rwh);
-    return;
-  }
+  CHECK(window);
 
   gfx::PointF screen_loc =
       gfx::PointF(display::Screen::GetScreen()->GetCursorScreenPoint());
@@ -1131,8 +1125,6 @@ void WebContentsViewAura::StartDragging(
   // that case.
   base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr =
       source_rwh->GetWeakPtr();
-  // It's also possible for portal activation and adoption to destroy `this`
-  // during the nested run loop. See https://crbug.com/1312144.
   base::WeakPtr<WebContentsViewAura> weak_this = weak_ptr_factory_.GetWeakPtr();
 
   drag_security_info_.OnDragInitiated(source_rwh, drop_data);
@@ -1175,13 +1167,8 @@ void WebContentsViewAura::StartDragging(
                                ConvertFromDragOperationsMask(operations),
                                event_info.source);
   }
-
-  if (!weak_this) {
-    if (source_rwh_weak_ptr) {
-      source_rwh_weak_ptr->DragSourceSystemDragEnded();
-    }
-    return;
-  }
+  // This should still be alive after the nested run loop above ends.
+  CHECK(weak_this);
 
   // Bail out immediately if the contents view window is gone. Note that it is
   // not safe to access any class members in this case since |this| may already
