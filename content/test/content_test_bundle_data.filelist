@@ -2004,6 +2004,8 @@ data/accessibility/css/reading-flow-display-contents-uniform-siblings-expected-b
 data/accessibility/css/reading-flow-display-contents-uniform-siblings.html
 data/accessibility/css/reading-flow-display-contents-shadow-host-expected-blink.txt
 data/accessibility/css/reading-flow-display-contents-shadow-host.html
+data/accessibility/css/reading-flow-pseudo-elements-expected-blink.txt
+data/accessibility/css/reading-flow-pseudo-elements.html
 data/accessibility/css/reading-flow-shadow-dom-slot-expected-blink.txt
 data/accessibility/css/reading-flow-shadow-dom-slot.html
 data/accessibility/css/table-cell-bad-parent-expected-blink.txt

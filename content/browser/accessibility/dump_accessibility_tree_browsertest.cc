@@ -459,6 +459,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityCSSReadingFlowPseudoElements) {
+  RunCSSTest(FILE_PATH_LITERAL("reading-flow-pseudo-elements.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityCSSReadingFlowShadowDomSlot) {
   RunCSSTest(FILE_PATH_LITERAL("reading-flow-shadow-dom-slot.html"));
 }

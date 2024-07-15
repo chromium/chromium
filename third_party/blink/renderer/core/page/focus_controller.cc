@@ -166,6 +166,11 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
     reading_flow_previous_elements_.ReserveCapacityForSize(children->size());
     Element* prev_element = nullptr;
     for (Element* child : *children) {
+      // Pseudo elements are not focusable and should not be included in
+      // reading flow elements to traverse.
+      if (child->IsPseudoElement()) {
+        continue;
+      }
       if (!IsOwnedByRoot(*child)) {
         continue;
       }
