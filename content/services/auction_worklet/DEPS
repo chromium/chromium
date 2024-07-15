@@ -3,6 +3,7 @@
 # to this service, make sure they're not inadvertently breaking these
 # isolation requirements.  Please thoroughly discuss additions with OWNERS.
 include_rules = [
+  "+components/cbor",
   "+gin",
   "+net",
   "+services/network/public",

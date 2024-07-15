@@ -208,6 +208,25 @@ class CONTENT_EXPORT TrustedSignals {
       scoped_refptr<AuctionV8Helper> v8_helper,
       LoadSignalsCallback load_signals_callback);
 
+  // Attempts to parse the `priorityVector` value in
+  // `v8_per_interest_group_data`,
+  // expecting it to be a string-to-number mapping. Returns the parsed mapping,
+  // or nullopt upon failure to find or parse the field. Any case where
+  // `priorityVector` exists and is an object is considered a success, even if
+  // it's empty, or some/all keys in it are mapped to things other than numbers.
+  // Must be called on `v8_helper`'s sequence.
+  static std::optional<TrustedSignals::Result::PriorityVector>
+  ParsePriorityVector(AuctionV8Helper* v8_helper,
+                      v8::Local<v8::Object> v8_per_interest_group_data);
+
+  // Attempts to parse the `updateIfOlderThanMs` value in
+  // `v8_per_interest_group_data`, expecting it to be a double duration in
+  // milliseconds. Returns the time delta, or nullopt upon failure to find or
+  // parse the value. Must be called on `v8_helper`'s sequence.
+  static std::optional<base::TimeDelta> ParseUpdateIfOlderThan(
+      AuctionV8Helper* v8_helper,
+      v8::Local<v8::Object> v8_per_interest_group_data);
+
  private:
   TrustedSignals(
       std::optional<std::set<std::string>> interest_group_names,

@@ -86,6 +86,8 @@ source_set("auction_worklet") {
     "shared_storage_bindings.h",
     "trusted_signals.cc",
     "trusted_signals.h",
+    "trusted_signals_kvv2_helper.cc",
+    "trusted_signals_kvv2_helper.h",
     "trusted_signals_request_manager.cc",
     "trusted_signals_request_manager.h",
     "webidl_compat.cc",
@@ -107,6 +109,7 @@ source_set("auction_worklet") {
   deps = [
     ":protocol_sources",
     "//base",
+    "//components/cbor:cbor",
     "//content:export",
     "//content/common",
     "//content/public/common:common_sources",
@@ -156,6 +159,7 @@ source_set("tests") {
     "direct_from_seller_signals_requester_unittest.cc",
     "public/cpp/auction_downloader_unittest.cc",
     "seller_worklet_unittest.cc",
+    "trusted_signals_kvv2_helper_unittest.cc",
     "trusted_signals_request_manager_unittest.cc",
     "trusted_signals_unittest.cc",
     "webidl_compat_unittest.cc",
@@ -179,6 +183,7 @@ source_set("tests") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//components/cbor:cbor",
     "//content/common:for_content_tests",
     "//content/public/common:common",
     "//gin",
