@@ -24,7 +24,7 @@ import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_b
 
 import {QUERY, Query, SeaPenImageId} from './constants.js';
 import {isLacrosEnabled, isSeaPenTextInputEnabled, isVcResizeThumbnailEnabled} from './load_time_booleans.js';
-import {MantaStatusCode, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
+import {MantaStatusCode, SeaPenQuery, SeaPenThumbnail, TextQueryHistoryEntry} from './sea_pen.mojom-webui.js';
 import {clearSeaPenThumbnails, openFeedbackDialog, selectSeaPenThumbnail} from './sea_pen_controller.js';
 import {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
 import {getTemplate} from './sea_pen_images_element.html.js';
@@ -148,6 +148,22 @@ export class SeaPenImagesElement extends WithSeaPenStore {
           return isSeaPenTextInputEnabled();
         },
       },
+
+      showHistory_: {
+        type: Boolean,
+        computed:
+            'computeShowHistory_(thumbnailsLoading_, seaPenQuery_, textQueryHistory_)',
+      },
+
+      seaPenQuery_: {
+        type: Object,
+        value: null,
+      },
+
+      textQueryHistory_: {
+        type: Array,
+        value: null,
+      },
     };
   }
 
@@ -161,6 +177,8 @@ export class SeaPenImagesElement extends WithSeaPenStore {
   private showError_: boolean;
   private cameraFeed_: HTMLVideoElement|null;
   private isSeaPenTextInputEnabled_: boolean;
+  private seaPenQuery_: SeaPenQuery|null;
+  private textQueryHistory_: TextQueryHistoryEntry[]|null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -175,6 +193,10 @@ export class SeaPenImagesElement extends WithSeaPenStore {
         'currentSelected_', state => state.currentSelected);
     this.watch<SeaPenImagesElement['pendingSelected_']>(
         'pendingSelected_', state => state.pendingSelected);
+    this.watch<SeaPenImagesElement['seaPenQuery_']>(
+        'seaPenQuery_', state => state.currentSeaPenQuery);
+    this.watch<SeaPenImagesElement['textQueryHistory_']>(
+        'textQueryHistory_', state => state.textQueryHistory);
     this.updateFromStore();
   }
 
@@ -464,6 +486,13 @@ export class SeaPenImagesElement extends WithSeaPenStore {
       generationSeed: event.detail.thumbnailId,
     };
     openFeedbackDialog(metadata, getSeaPenProvider());
+  }
+
+  private computeShowHistory_(
+      thumbnailsLoading: boolean, seaPenQuery: SeaPenQuery|null,
+      textQueryHistory: TextQueryHistoryEntry[]): boolean {
+    return !thumbnailsLoading && !!seaPenQuery?.textQuery &&
+        isNonEmptyArray(textQueryHistory);
   }
 }
 

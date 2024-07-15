@@ -123,6 +123,41 @@ suite('SeaPenImagesElementTest', function() {
     assertEquals(4, thumbnails!.length, 'should be 4 images available.');
   });
 
+  test('displays freeform history', async () => {
+    personalizationStore.data.wallpaper.seaPen.loading.thumbnails = false;
+    personalizationStore.data.wallpaper.seaPen.thumbnails =
+        seaPenProvider.thumbnails;
+    personalizationStore.data.wallpaper.seaPen.currentSeaPenQuery = {
+      textQuery: 'test freeform query',
+    };
+    personalizationStore.data.wallpaper.seaPen.textQueryHistory = [
+      {
+        query: 'test freeform query',
+        thumbnails: personalizationStore.data.wallpaper.seaPen.thumbnails =
+            seaPenProvider.thumbnails,
+      },
+      {
+        query: 'test freeform query 1',
+        thumbnails: personalizationStore.data.wallpaper.seaPen.thumbnails =
+            seaPenProvider.thumbnails,
+      },
+    ];
+
+    // Initialize |seaPenImagesElement|.
+    seaPenImagesElement = initElement(SeaPenImagesElement);
+    await waitAfterNextRender(seaPenImagesElement);
+
+    const lastQuery =
+        seaPenImagesElement.shadowRoot!.getElementById('queryHistoryHeading0');
+    assertTrue(!!lastQuery, 'last query is available');
+    assertEquals(
+        'test freeform query', lastQuery.textContent?.trim(),
+        'unexpected query');
+    const thumbnails = seaPenImagesElement.shadowRoot!.querySelectorAll(
+        'div:not([hidden]).thumbnail-item-container.history-item');
+    assertEquals(8, thumbnails!.length, 'should be 8 images available.');
+  });
+
   test('manages loading and selected when thumbnail clicked', async () => {
     personalizationStore.setReducersEnabled(true);
     seaPenImagesElement = initElement(SeaPenImagesElement, {templateId: 10});

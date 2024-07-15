@@ -129,6 +129,15 @@
     left: -4px;
     top: -4px;
   }
+
+  #historyTitle {
+    color: var(--cros-sys-on_surface);
+    font: var(--cros-body-0-font);
+    height: 24px;
+    margin-block-start: 0;
+    margin-block-end: 0;
+    padding: 6px 10px 6px;
+  }
 </style>
 <template is="dom-if" if="[[showError_]]" restamp>
   <sea-pen-error thumbnail-response-status-code="[[thumbnailResponseStatusCode_]]"></sea-pen-error>
@@ -193,5 +202,53 @@
         </div>
       </template>
     </iron-list>
+    <template is="dom-if" if="[[showHistory_]]" restamp>
+      <!-- TODO: b/345856242 - Finalize strings -->
+      <h2 id="historyTitle">Previous History</h2>
+      <template is="dom-repeat" items="[[textQueryHistory_]]">
+        <h2 id="queryHistoryHeading[[index]]"
+            class="wallpaper-collections-heading">
+          [[item.query]]
+        </h2>
+        <iron-list id="historyGrid[[index]]"
+            items="[[item.thumbnails]]"
+            grid
+            aria-labelledby="queryHistoryHeading[[index]]"
+            aria-setsize$="[[item.thumbnails.length]]"
+            role="listbox">
+          <template>
+            <div class="thumbnail-item-container history-item">
+              <template
+                  is="dom-if"
+                  if="[[isThumbnailPendingSelected_(item, pendingSelected_)]]"
+                  restamp>
+                <sea-pen-image-loading></sea-pen-image-loading>
+              </template>
+              <wallpaper-grid-item
+                  class="sea-pen-image fade-in-900ms"
+                  disabled="[[isThumbnailPendingSelected_(item, pendingSelected_)]]"
+                  index="[[index]]"
+                  data-sea-pen-image
+                  aria-description$="[[getAriaDescription_(item, currentSelected_, pendingSelected_)]]"
+                  aria-posinset$="[[getAriaIndex_(index)]]"
+                  role="option"
+                  selected="[[isThumbnailSelected_(item, currentSelected_, pendingSelected_)]]"
+                  src="[[item.image]]"
+                  tabindex$="[[tabIndex]]">
+              </wallpaper-grid-item>
+              <div class="feedback-icon-container">
+                <sea-pen-feedback
+                    inherit-tab-index="[[tabIndex]]"
+                    thumbnail="[[item]]"
+                    on-selected-feedback-changed="onSelectedFeedbackChanged_">
+                </sea-pen-feedback>
+                <div class="feedback-icon-container-shadow-left"></div>
+                <div class="feedback-icon-container-shadow-top"></div>
+              </div>
+            </div>
+          </template>
+        </iron-list>
+      </template>
+    </template>
   </template>
 </template>
