@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1058,7 +1059,8 @@ void GCMDriverDesktop::GetInstanceIDDataFinished(
     const std::string& instance_id,
     const std::string& extra_data) {
   auto iter = get_instance_id_data_callbacks_.find(app_id);
-  DCHECK(iter != get_instance_id_data_callbacks_.end());
+  CHECK(iter != get_instance_id_data_callbacks_.end(),
+        base::NotFatalUntil::M130);
 
   base::queue<GetInstanceIDDataCallback>& callbacks = iter->second;
   std::move(callbacks.front()).Run(instance_id, extra_data);

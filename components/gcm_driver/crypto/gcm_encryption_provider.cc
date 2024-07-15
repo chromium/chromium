@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
@@ -177,10 +178,10 @@ void GCMEncryptionProvider::DecryptMessage(const std::string& app_id,
     // the Encryption and Crypto-Key header values to derive the values.
 
     const auto& encryption_header = message.data.find(kEncryptionProperty);
-    DCHECK(encryption_header != message.data.end());
+    CHECK(encryption_header != message.data.end(), base::NotFatalUntil::M130);
 
     const auto& crypto_key_header = message.data.find(kCryptoKeyProperty);
-    DCHECK(crypto_key_header != message.data.end());
+    CHECK(crypto_key_header != message.data.end(), base::NotFatalUntil::M130);
 
     EncryptionHeaderIterator encryption_header_iterator(
         encryption_header->second.begin(), encryption_header->second.end());

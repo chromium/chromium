@@ -114,6 +114,7 @@ void GCMAccountTracker::OnAccessTokenFetchCompleteForAccount(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
   auto iter = account_infos_.find(account_id);
+  // DCHECK iter!=end() is sensible here as goal is to report missing values.
   DCHECK(iter != account_infos_.end());
   if (iter != account_infos_.end()) {
     DCHECK_EQ(GETTING_TOKEN, iter->second.state);
