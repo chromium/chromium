@@ -216,18 +216,20 @@ suite('ExtensionsMV2DeprecationPanel_WarningStage', function() {
       'keep action menu button triggers a warning dismissal for the extension' +
           'when clicked',
       async function() {
-        // Open the extension's action menu button.
+        // Open the extension's action menu.
         const extension = getExtension();
         const actionButton =
             extension.querySelector<CrIconButtonElement>('#actionMenuButton');
         assertTrue(!!actionButton);
         actionButton.click();
 
-        // Next, click on the "keep for now" button in the action menu, and
-        // verify its own call.
+        // Keep action is always visible.
         const keepAction =
             panelElement.shadowRoot!.querySelector<HTMLElement>('#keepAction');
         assertTrue(!!keepAction);
+        assertTrue(isVisible(keepAction));
+
+        // Click on keep action and verify it triggers the correct call.
         keepAction.click();
         await mockDelegate.whenCalled(
             'dismissMv2DeprecationNoticeForExtension');

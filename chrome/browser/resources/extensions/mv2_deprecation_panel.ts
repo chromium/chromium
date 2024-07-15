@@ -166,14 +166,6 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
   }
 
   /**
-   * Returns whether the keep button in the extension's action menu should be
-   * displayed.
-   */
-  private showExtensionKeepAction_(): boolean {
-    return this.mv2ExperimentStage === Mv2ExperimentStage.WARNING;
-  }
-
-  /**
    * Returns whether the remove button in the extension's action menu should be
    * displayed.
    */
@@ -296,13 +288,23 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
   }
 
   /**
-   * Dismisses the notice for a given extension in the warning experiment stage.
-   * It will not be shown again during this stage.
+   * Dismisses the notice for a given extension for the rest of the stage
+   * duration.
    */
   private onKeepExtensionActionClick_(): void {
-    assert(this.mv2ExperimentStage === Mv2ExperimentStage.WARNING);
-    chrome.metricsPrivate.recordUserAction(
-        'Extensions.Mv2Deprecation.Warning.DismissedForExtension');
+    switch (this.mv2ExperimentStage) {
+      case Mv2ExperimentStage.NONE:
+        assertNotReached();
+      case Mv2ExperimentStage.WARNING:
+        chrome.metricsPrivate.recordUserAction(
+            'Extensions.Mv2Deprecation.Warning.DismissedForExtension');
+        break;
+      case Mv2ExperimentStage.WARNING:
+        chrome.metricsPrivate.recordUserAction(
+            'Extensions.Mv2Deprecation.Disabled.DismissedForExtension');
+        break;
+    }
+
     this.$.actionMenu.close();
     this.delegate.dismissMv2DeprecationNoticeForExtension(
         this.extensionWithActionMenuOpened_.id);

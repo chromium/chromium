@@ -182,19 +182,35 @@ suite('ExtensionsMV2DeprecationPanel_DisabledStage', function() {
         assertDeepEquals([recommendationsUrl], mockDelegate.getArgs('openUrl'));
       });
 
-  test('keep action is always hidden', function() {
-    // Open the extension's action menu.
-    const extension = getExtension();
-    const actionButton =
-        extension.querySelector<CrIconButtonElement>('#actionMenuButton');
-    assertTrue(!!actionButton);
-    actionButton.click();
+  test(
+      'keep action menu button triggers a notice dismissal for the extension' +
+          'when clicked',
+      async function() {
+        // Open the extension's action menu.
+        const extension = getExtension();
+        const actionButton =
+            extension.querySelector<CrIconButtonElement>('#actionMenuButton');
+        assertTrue(!!actionButton);
+        actionButton.click();
 
-    // Keep action is always hidden.
-    const keepAction =
-        panelElement.shadowRoot!.querySelector<HTMLElement>('#keepAction');
-    assertFalse(isVisible(keepAction));
-  });
+        // Keep action is always visible.
+        const keepAction =
+            panelElement.shadowRoot!.querySelector<HTMLElement>('#keepAction');
+        assertTrue(!!keepAction);
+        assertTrue(isVisible(keepAction));
+
+        // Click on keep action and verify it triggers the correct call.
+        keepAction.click();
+        await mockDelegate.whenCalled(
+            'dismissMv2DeprecationNoticeForExtension');
+        assertEquals(
+            1,
+            mockDelegate.getCallCount(
+                'dismissMv2DeprecationNoticeForExtension'));
+        assertDeepEquals(
+            [panelElement.extensions[0]?.id],
+            mockDelegate.getArgs('dismissMv2DeprecationNoticeForExtension'));
+      });
 
   test('remove action is always hidden', function() {
     // Open the extension's action menu.
