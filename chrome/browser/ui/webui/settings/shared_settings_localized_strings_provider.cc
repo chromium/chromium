@@ -138,8 +138,7 @@ void AddLiveCaptionSectionStrings(content::WebUIDataSource* html_source) {
   const bool liveCaptionMultiLanguageEnabled =
       base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage);
 
-  const bool liveTranslateEnabled =
-      base::FeatureList::IsEnabled(media::kLiveTranslate);
+  const bool liveTranslateEnabled = media::IsLiveTranslateEnabled();
 
   const int live_caption_subtitle_message =
       GetLiveCaptionSubtitle(liveCaptionMultiLanguageEnabled);

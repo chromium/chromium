@@ -694,7 +694,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   captions::LiveCaptionControllerFactory::GetInstance();
 #endif
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+  if (media::IsLiveTranslateEnabled()) {
     captions::LiveTranslateControllerFactory::GetInstance();
   }
 #endif

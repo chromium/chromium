@@ -26,7 +26,9 @@ class LiveTranslateControllerTest : public InProcessBrowserTest {
   ~LiveTranslateControllerTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({media::kLiveTranslate}, {});
+    scoped_feature_list_.InitWithFeatures(
+        {media::kLiveTranslate, media::kFeatureManagementLiveTranslateCrOS},
+        {});
     InProcessBrowserTest::SetUp();
   }
 

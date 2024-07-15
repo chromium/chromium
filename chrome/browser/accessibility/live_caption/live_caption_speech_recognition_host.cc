@@ -132,8 +132,7 @@ LiveCaptionSpeechRecognitionHost::~LiveCaptionSpeechRecognitionHost() {
   LiveCaptionController* live_caption_controller = GetLiveCaptionController();
   if (live_caption_controller)
     live_caption_controller->OnAudioStreamEnd(context_.get());
-  if (base::FeatureList::IsEnabled(media::kLiveTranslate) &&
-      characters_translated_ > 0) {
+  if (media::IsLiveTranslateEnabled() && characters_translated_ > 0) {
     base::UmaHistogramCounts10M(
         "Accessibility.LiveTranslate.CharactersTranslated",
         characters_translated_);
@@ -162,7 +161,7 @@ void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionRecognitionEvent(
 
   std::string target_language =
       prefs_->GetString(prefs::kLiveTranslateTargetLanguageCode);
-  if (base::FeatureList::IsEnabled(media::kLiveTranslate) &&
+  if (media::IsLiveTranslateEnabled() &&
       prefs_->GetBoolean(prefs::kLiveTranslateEnabled) &&
       l10n_util::GetLanguage(target_language) !=
           l10n_util::GetLanguage(source_language_)) {
@@ -354,7 +353,7 @@ std::string LiveCaptionSpeechRecognitionHost::GetTextForDispatch(
     text = greedy_text_stabilizer_->UpdateText(text, is_final);
   }
 
-  if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+  if (media::IsLiveTranslateEnabled()) {
     translation_characters_erased_ += input_text.length() - text.length();
     partial_result_count_++;
   }

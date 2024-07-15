@@ -80,7 +80,7 @@ void SystemLiveCaptionService::OnSpeechResult(
   auto* prefs = profile_->GetPrefs();
   std::string target_language =
       prefs->GetString(prefs::kLiveTranslateTargetLanguageCode);
-  if (base::FeatureList::IsEnabled(media::kLiveTranslate) &&
+  if (media::IsLiveTranslateEnabled() &&
       prefs->GetBoolean(prefs::kLiveTranslateEnabled) &&
       l10n_util::GetLanguage(target_language) !=
           l10n_util::GetLanguage(source_language_)) {
@@ -273,8 +273,7 @@ void SystemLiveCaptionService::StopTimeoutFinished() {
   StopRecognizing();
   // At this point, we can count the number of chars translated for this
   // session.
-  if (base::FeatureList::IsEnabled(media::kLiveTranslate) &&
-      characters_translated_ > 0) {
+  if (media::IsLiveTranslateEnabled() && characters_translated_ > 0) {
     base::UmaHistogramCounts10M(
         "Accessibility.LiveTranslate.CharactersTranslatedChromeOS",
         characters_translated_);

@@ -662,6 +662,12 @@ BASE_FEATURE(kFallbackAfterDecodeError,
              "FallbackAfterDecodeError",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// FeatureManagement gate for Live Translate on ChromeOS devices. No impact
+// outside of CrOS.
+BASE_FEATURE(kFeatureManagementLiveTranslateCrOS,
+             "FeatureManagementLiveTranslateCrOS",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Show toolbar button that opens dialog for controlling media sessions.
 BASE_FEATURE(kGlobalMediaControls,
              "GlobalMediaControls",
@@ -1826,6 +1832,15 @@ int GetProcessingAudioFifoSize() {
 bool IsHardwareSecureDecryptionEnabled() {
   return base::FeatureList::IsEnabled(kHardwareSecureDecryption) ||
          base::FeatureList::IsEnabled(kHardwareSecureDecryptionExperiment);
+}
+
+bool IsLiveTranslateEnabled() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return base::FeatureList::IsEnabled(kLiveTranslate) &&
+         base::FeatureList::IsEnabled(kFeatureManagementLiveTranslateCrOS);
+#else
+  return base::FeatureList::IsEnabled(kLiveTranslate);
+#endif
 }
 
 bool IsVideoCaptureAcceleratedJpegDecodingEnabled() {

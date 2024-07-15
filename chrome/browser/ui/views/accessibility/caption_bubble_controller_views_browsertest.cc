@@ -55,7 +55,9 @@ namespace captions {
 class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
  public:
   CaptionBubbleControllerViewsTest() {
-    scoped_feature_list_.InitAndEnableFeature(media::kLiveTranslate);
+    scoped_feature_list_.InitWithFeatures(
+        {media::kLiveTranslate, media::kFeatureManagementLiveTranslateCrOS},
+        {});
   }
 
   ~CaptionBubbleControllerViewsTest() override = default;

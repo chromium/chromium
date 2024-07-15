@@ -35,6 +35,7 @@ namespace {
 std::vector<base::test::FeatureRef> RequiredFeatureFlags() {
   std::vector<base::test::FeatureRef> features = {
       media::kLiveCaption, media::kLiveTranslate,
+      media::kFeatureManagementLiveTranslateCrOS,
       media::kLiveCaptionAutomaticLanguageDownload};
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   features.push_back(ash::features::kOnDeviceSpeechRecognition);
