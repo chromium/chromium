@@ -56,13 +56,13 @@ class DesktopViewInputTest : public View {
 BEGIN_METADATA(DesktopViewInputTest)
 END_METADATA
 
-views::Widget* CreateWidget() {
-  views::Widget* widget = new views::Widget;
+std::unique_ptr<views::Widget> CreateWidget() {
+  auto widget = std::make_unique<views::Widget>();
   views::Widget::InitParams params(
-      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.accept_events = true;
-  params.native_widget = new DesktopNativeWidgetAura(widget);
+  params.native_widget = new DesktopNativeWidgetAura(widget.get());
   params.bounds = gfx::Rect(0, 0, 200, 100);
   widget->Init(std::move(params));
   widget->Show();
@@ -101,10 +101,9 @@ TEST_F(DesktopCaptureControllerTest, CaptureWindowInputEventTest) {
   std::unique_ptr<aura::client::ScreenPositionClient> desktop_position_client1;
   std::unique_ptr<aura::client::ScreenPositionClient> desktop_position_client2;
 
-  std::unique_ptr<Widget> widget1(new Widget());
-  Widget::InitParams params =
-      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                   Widget::InitParams::TYPE_POPUP);
+  auto widget1 = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
   std::unique_ptr<wm::ScopedCaptureClient> scoped_capture_client(
       new wm::ScopedCaptureClient(params.context->GetRootWindow()));
   aura::client::CaptureClient* capture_client = wm::CaptureController::Get();
@@ -125,9 +124,9 @@ TEST_F(DesktopCaptureControllerTest, CaptureWindowInputEventTest) {
   root1->AddChildView(v1);
   widget1->Show();
 
-  std::unique_ptr<Widget> widget2(new Widget());
+  auto widget2 = std::make_unique<Widget>();
 
-  params = CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+  params = CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
                         Widget::InitParams::TYPE_POPUP);
   params.bounds = gfx::Rect(50, 50, 650, 650);
   params.native_widget = test::CreatePlatformNativeWidgetImpl(
