@@ -1485,25 +1485,25 @@ const FeatureEntry::FeatureParam
         {"MlUrlPiecewiseMappedSearchBlending_GroupingThreshold", "1400"},
         {"MlUrlPiecewiseMappedSearchBlending_RelevanceBias", "0"}};
 const FeatureEntry::FeatureParam
-    kMlUrlPiecewiseMappedSearchBlendingAdjustedBy50[] = {
+    kMlUrlPiecewiseMappedSearchBlendingDemotedBy50[] = {
         {"MlUrlPiecewiseMappedSearchBlending", "true"},
         {"MlUrlPiecewiseMappedSearchBlending_BreakPoints",
          "0,550;0.018,1250;0.14,1348;1,1422"},
         {"MlUrlPiecewiseMappedSearchBlending_GroupingThreshold", "1350"},
         {"MlUrlPiecewiseMappedSearchBlending_RelevanceBias", "0"}};
 const FeatureEntry::FeatureParam
-    kMlUrlPiecewiseMappedSearchBlendingAdjustedBy100[] = {
+    kMlUrlPiecewiseMappedSearchBlendingPromotedBy50[] = {
         {"MlUrlPiecewiseMappedSearchBlending", "true"},
         {"MlUrlPiecewiseMappedSearchBlending_BreakPoints",
-         "0,550;0.018,1200;0.14,1298;1,1422"},
-        {"MlUrlPiecewiseMappedSearchBlending_GroupingThreshold", "1300"},
+         "0,550;0.018,1350;0.14,1448;1,1472"},
+        {"MlUrlPiecewiseMappedSearchBlending_GroupingThreshold", "1450"},
         {"MlUrlPiecewiseMappedSearchBlending_RelevanceBias", "0"}};
 const FeatureEntry::FeatureParam
-    kMlUrlPiecewiseMappedSearchBlendingAdjustedBy150[] = {
+    kMlUrlPiecewiseMappedSearchBlendingPromotedBy100[] = {
         {"MlUrlPiecewiseMappedSearchBlending", "true"},
         {"MlUrlPiecewiseMappedSearchBlending_BreakPoints",
-         "0,550;0.018,1150;0.14,1248;1,1422"},
-        {"MlUrlPiecewiseMappedSearchBlending_GroupingThreshold", "1250"},
+         "0,550;0.018,1400;0.14,1498;1,1522"},
+        {"MlUrlPiecewiseMappedSearchBlending_GroupingThreshold", "1500"},
         {"MlUrlPiecewiseMappedSearchBlending_RelevanceBias", "0"}};
 const FeatureEntry::FeatureParam
     kMlUrlPiecewiseMappedSearchBlendingMobileMapping[] = {
@@ -1517,12 +1517,12 @@ const FeatureEntry::FeatureVariation
     kMlUrlPiecewiseMappedSearchBlendingVariations[] = {
         {"adjusted by 0", kMlUrlPiecewiseMappedSearchBlendingAdjustedBy0,
          std::size(kMlUrlPiecewiseMappedSearchBlendingAdjustedBy0), nullptr},
-        {"adjusted by 50", kMlUrlPiecewiseMappedSearchBlendingAdjustedBy50,
-         std::size(kMlUrlPiecewiseMappedSearchBlendingAdjustedBy50), nullptr},
-        {"adjusted by 100", kMlUrlPiecewiseMappedSearchBlendingAdjustedBy100,
-         std::size(kMlUrlPiecewiseMappedSearchBlendingAdjustedBy100), nullptr},
-        {"adjusted by 150", kMlUrlPiecewiseMappedSearchBlendingAdjustedBy150,
-         std::size(kMlUrlPiecewiseMappedSearchBlendingAdjustedBy150), nullptr},
+        {"demoted by 50", kMlUrlPiecewiseMappedSearchBlendingDemotedBy50,
+         std::size(kMlUrlPiecewiseMappedSearchBlendingDemotedBy50), nullptr},
+        {"promoted by 50", kMlUrlPiecewiseMappedSearchBlendingPromotedBy50,
+         std::size(kMlUrlPiecewiseMappedSearchBlendingPromotedBy50), nullptr},
+        {"promoted by 100", kMlUrlPiecewiseMappedSearchBlendingPromotedBy100,
+         std::size(kMlUrlPiecewiseMappedSearchBlendingPromotedBy100), nullptr},
         {"mobile mapping", kMlUrlPiecewiseMappedSearchBlendingMobileMapping,
          std::size(kMlUrlPiecewiseMappedSearchBlendingMobileMapping), nullptr},
 };
