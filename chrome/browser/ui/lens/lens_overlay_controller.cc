@@ -529,11 +529,7 @@ void LensOverlayController::BindOverlay(
   state_ = State::kOverlay;
 
   // Add the toolbar entrypoint if it is not already pinned.
-  auto* entrypoint_controller = tab_->GetBrowserWindowInterface()
-                                    ->GetFeatures()
-                                    .lens_overlay_entry_point_controller();
-  CHECK(entrypoint_controller);
-  entrypoint_controller->SetToolbarEntrypointActionState(/*is_active=*/true);
+  SetToolbarEntrypointActionState(/*is_active=*/true);
 
   // Only start the query flow again if we don't already have a full image
   // response.
@@ -1227,6 +1223,7 @@ void LensOverlayController::ShowOverlay() {
 void LensOverlayController::BackgroundUI() {
   overlay_view_->SetVisible(false);
   HidePreselectionBubble();
+  SetToolbarEntrypointActionState(/*is_active=*/false);
   tab_contents_observer_.reset();
   state_ = State::kBackground;
 
@@ -1266,11 +1263,7 @@ void LensOverlayController::CloseUIPart2(
   ClosePreselectionBubble();
 
   // Remove the toolbar entrypoint if it is not pinned.
-  auto* entrypoint_controller = tab_->GetBrowserWindowInterface()
-                                    ->GetFeatures()
-                                    .lens_overlay_entry_point_controller();
-  CHECK(entrypoint_controller);
-  entrypoint_controller->SetToolbarEntrypointActionState(/*is_active=*/false);
+  SetToolbarEntrypointActionState(/*is_active=*/false);
 
   // A permission prompt may be suspended if the overlay was showing when the
   // permission was queued. Restore the suspended prompt if possible.
@@ -1408,6 +1401,14 @@ std::unique_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
 
   overlay_web_view_ = host_view->AddChildView(std::move(web_view));
   return host_view;
+}
+
+void LensOverlayController::SetToolbarEntrypointActionState(bool is_active) {
+  auto* entrypoint_controller = tab_->GetBrowserWindowInterface()
+                                    ->GetFeatures()
+                                    .lens_overlay_entry_point_controller();
+  CHECK(entrypoint_controller);
+  entrypoint_controller->SetToolbarEntrypointActionState(is_active);
 }
 
 bool LensOverlayController::HandleContextMenu(
@@ -1577,6 +1578,7 @@ void LensOverlayController::TabForegrounded(tabs::TabInterface* tab) {
   // If the overlay was backgrounded, reshow the overlay view.
   if (state_ == State::kBackground) {
     ShowOverlay();
+    SetToolbarEntrypointActionState(/*is_active=*/true);
     state_ = (results_side_panel_coordinator_ &&
               results_side_panel_coordinator_->IsEntryShowing())
                  ? State::kOverlayAndResults
