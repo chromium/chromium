@@ -5,7 +5,6 @@
 package org.chromium.chrome.test.transit.testhtmls;
 
 import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.Transition;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.PageStation;
 import org.chromium.chrome.test.transit.PopupBlockedMessageFacility;
@@ -50,7 +49,7 @@ public class PopupOnClickPageStation extends WebPageStation {
                         .withIsOpeningTabs(1)
                         .withIsSelectingTabs(1)
                         .build();
-        return travelToSync(newPage, Transition.retryOption(), mLinkToPopup::click);
+        return travelToSync(newPage, mLinkToPopup::click);
     }
 
     /**
@@ -59,6 +58,6 @@ public class PopupOnClickPageStation extends WebPageStation {
      */
     public PopupBlockedMessageFacility clickLinkAndExpectPopupBlockedMessage() {
         PopupBlockedMessageFacility infoBar = new PopupBlockedMessageFacility(this, 1);
-        return enterFacilitySync(infoBar, Transition.retryOption(), mLinkToPopup::click);
+        return enterFacilitySync(infoBar, mLinkToPopup::click);
     }
 }
