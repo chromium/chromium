@@ -130,6 +130,12 @@ class ReadAnythingAppModel {
     return display_node_ids_.empty() && selection_node_ids_.empty();
   }
 
+  bool screen_ai_service_ready_for_data_collection() {
+    return screen_ai_service_ready_for_data_collection_;
+  }
+  void set_screen_ai_service_ready_for_data_collection(bool value) {
+    screen_ai_service_ready_for_data_collection_ = value;
+  }
   bool page_finished_loading_for_data_collection() {
     return page_finished_loading_for_data_collection_;
   }
@@ -343,7 +349,9 @@ class ReadAnythingAppModel {
 
   // For screen2x data collection, Chrome is launched from the CLI to open one
   // webpage. We record the result of the distill() call for this entire
-  // webpage, so we only make the call once the webpage finished loading.
+  // webpage, so we only make the call once the webpage finished loading and
+  // screen ai has loaded.
+  bool screen_ai_service_ready_for_data_collection_ = false;
   bool page_finished_loading_for_data_collection_ = false;
 
   // Whether the webpage has finished loading or not.

@@ -576,7 +576,8 @@ void ReadAnythingAppController::Distill() {
   // to a local file. Distill should only be called once the page is finished
   // loading, so we have the proto representing the entire webpage.
   if (features::IsDataCollectionModeForScreen2xEnabled() &&
-      !model_.page_finished_loading_for_data_collection()) {
+      (!model_.page_finished_loading_for_data_collection() ||
+       !model_.screen_ai_service_ready_for_data_collection())) {
     return;
   }
 
@@ -749,6 +750,7 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
 }
 
 void ReadAnythingAppController::ScreenAIServiceReady() {
+  model_.set_screen_ai_service_ready_for_data_collection(true);
   distiller_->ScreenAIServiceReady(render_frame());
 }
 
