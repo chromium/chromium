@@ -5,14 +5,16 @@
 """Unit tests for //tools/licenses/licenses.py.
 """
 
+import argparse
+import contextlib
 import csv
 import io
 import os
+import re
 import pathlib
 import sys
 import unittest
 
-from unittest import mock
 
 REPOSITORY_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -482,6 +484,46 @@ class LicensesTest(unittest.TestCase):
         'lib3-v2 license text',
     ]) + '\n'  # extra new line to account for join not adding one to the end
     self.assertEqual(license_txt, expected)
+
+  def test_configuring_gen_license_file_warnings(self):
+    """
+    Tests that warnings are silenced in GenerateLicenseFile by default and
+    not logged unless enable_warnings is True.
+    """
+    root_dir = os.path.join(REPOSITORY_ROOT, 'tools', 'licenses')
+    args = argparse.Namespace(format="txt",
+                              gn_target=None,
+                              enable_warnings=True,
+                              output_file=None)
+
+    # Warnings enabled
+    args.extra_third_party_dirs = ["test_dir_invalid_metadata"]
+    with contextlib.redirect_stdout(io.StringIO()) as captured_output:
+      licenses.GenerateLicenseFile(args, root_dir=root_dir)
+    self.assertRegex(captured_output.getvalue(),
+                     r"Errors in test_dir_invalid_metadata")
+
+    args.extra_third_party_dirs = ["test_dir_with_missing_files"]
+    with contextlib.redirect_stdout(io.StringIO()) as captured_output:
+      licenses.GenerateLicenseFile(args, root_dir=root_dir)
+    self.assertRegex(
+        captured_output.getvalue(),
+        r"Error: missing third party .* test_dir_with_missing_files")
+
+    # # Warnings disabled
+    args.enable_warnings = False
+    args.extra_third_party_dirs = ["test_dir_invalid_metadata"]
+    with contextlib.redirect_stdout(io.StringIO()) as captured_output:
+      licenses.GenerateLicenseFile(args, root_dir=root_dir)
+    self.assertNotRegex(captured_output.getvalue(),
+                        r"Errors in test_dir_invalid_metadata")
+
+    args.extra_third_party_dirs = ["test_dir_with_missing_files"]
+    with contextlib.redirect_stdout(io.StringIO()) as captured_output:
+      licenses.GenerateLicenseFile(args, root_dir=root_dir)
+      self.assertNotRegex(
+          captured_output.getvalue(),
+          r"Error: missing third party .* test_dir_with_missing_files")
 
 
 if __name__ == '__main__':

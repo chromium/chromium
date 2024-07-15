@@ -1115,7 +1115,7 @@ def GenerateCredits(file_template_file,
   return True
 
 
-def GenerateLicenseFile(args: argparse.Namespace):
+def GenerateLicenseFile(args: argparse.Namespace, root_dir=_REPOSITORY_ROOT):
   """Top level function for the license file generation.
 
   Either saves the text to a file or prints it to stdout depending on if
@@ -1123,6 +1123,7 @@ def GenerateLicenseFile(args: argparse.Namespace):
 
   Args:
     args: parsed arguments passed from the cli
+    root_dir: The root directory to start the third party search
   """
   # Convert the path separators to the OS specific ones
   extra_third_party_dirs = args.extra_third_party_dirs
@@ -1143,25 +1144,26 @@ def GenerateLicenseFile(args: argparse.Namespace):
       raise RuntimeError("No deps found.")
 
   else:
-    third_party_dirs = FindThirdPartyDirs(_REPOSITORY_ROOT,
-                                          extra_third_party_dirs)
+    third_party_dirs = FindThirdPartyDirs(root_dir, extra_third_party_dirs)
 
   metadatas = {}
   for d in third_party_dirs:
     try:
       directory_metadata, errors = ParseDir(
           d,
-          _REPOSITORY_ROOT,
+          root_dir,
           require_license_file=True,
           enable_warnings=args.enable_warnings)
       if directory_metadata:
         metadatas[d] = directory_metadata
     except LicenseError as lic_exp:
       # TODO(phajdan.jr): Convert to fatal error (https://crbug.com/39240).
-      print(f"Error: {lic_exp}")
+      if args.enable_warnings:
+        print(f"Error: {lic_exp}")
       continue
 
-    LogParseDirErrors(errors)
+    if args.enable_warnings:
+      LogParseDirErrors(errors)
 
   if args.format == 'spdx':
     license_txt = GenerateLicenseFileSpdx(metadatas, args.spdx_link,
