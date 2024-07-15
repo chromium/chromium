@@ -221,17 +221,12 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, MAYBE_TabMoveTest) {
   browser2->tab_strip_model()->AppendTab(std::move(detached_tab), true);
   EXPECT_TRUE(dialog->GetWidget()->IsVisible());
 
-  // Close the first browser.
-  chrome::CloseWindow(browser());
-  content::RunAllPendingInMessageLoop();
-  // Layout can trigger changes in web content visibility which in turn
-  // affects the visibility of tab modal dialogs.
-  RunScheduledLayouts();
-  EXPECT_TRUE(dialog->GetWidget()->IsVisible());
-
-  // Close the dialog's browser window.
+  // Close the original hosting browser window, this should close the dialog.
+  // TODO(crbug.com/353174863): Update this test to instead close the browser
+  // currently hosting the dialog (browser2) once web modal dialogs are updated
+  // to allow reparenting to follow their associated WebContents.
   views::test::WidgetDestroyedWaiter destroyed_waiter(dialog->GetWidget());
-  CloseTabAndLayout(browser2);
+  chrome::CloseWindow(browser());
   destroyed_waiter.Wait();
   EXPECT_EQ(nullptr, tracker.view());
 }

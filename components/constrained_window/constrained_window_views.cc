@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "components/constrained_window/constrained_window_views.h"
-#include "base/memory/raw_ptr.h"
 
 #include <algorithm>
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/constrained_window/constrained_window_views_client.h"
 #include "components/guest_view/browser/guest_view_base.h"
@@ -32,6 +33,11 @@
 using web_modal::ModalDialogHost;
 using web_modal::ModalDialogHostObserver;
 
+DEFINE_UI_CLASS_PROPERTY_TYPE(ModalDialogHostObserver*)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ModalDialogHostObserver,
+                                   kModalDialogHostObserverKey,
+                                   nullptr)
+
 namespace constrained_window {
 
 const void* kConstrainedWindowWidgetIdentifier = "ConstrainedWindowWidget";
@@ -45,57 +51,50 @@ std::unique_ptr<ConstrainedWindowViewsClient>& CurrentBrowserModalClient() {
   return *client;
 }
 
-// The name of a key to store on the window handle to associate
-// WidgetModalDialogHostObserverViews with the Widget.
-const char* const kWidgetModalDialogHostObserverViewsKey =
-    "__WIDGET_MODAL_DIALOG_HOST_OBSERVER_VIEWS__";
-
-// Applies positioning changes from the ModalDialogHost to the Widget.
-class WidgetModalDialogHostObserverViews : public views::WidgetObserver,
-                                           public ModalDialogHostObserver {
+// Closes the dialog widget when the modal host has been destroyed and applies
+// positioning changes from the ModalDialogHost to the Widget.
+class ModalDialogHostObserverViews : public ModalDialogHostObserver {
  public:
-  WidgetModalDialogHostObserverViews(ModalDialogHost* host,
-                                     views::Widget* target_widget,
-                                     const char* const native_window_property)
+  ModalDialogHostObserverViews(ModalDialogHost* host,
+                               views::Widget* dialog_widget,
+                               bool auto_update_position)
       : host_(host),
-        target_widget_(target_widget),
-        native_window_property_(native_window_property) {
-    DCHECK(host_);
-    DCHECK(target_widget_);
-    host_->AddObserver(this);
-    target_widget_->AddObserver(this);
+        dialog_widget_(dialog_widget),
+        auto_update_position_(auto_update_position) {
+    CHECK(host_);
+    CHECK(dialog_widget_);
+    modal_dialog_host_observation_.Observe(host);
   }
+  ModalDialogHostObserverViews(const ModalDialogHostObserverViews&) = delete;
+  ModalDialogHostObserverViews& operator=(const ModalDialogHostObserverViews&) =
+      delete;
+  ~ModalDialogHostObserverViews() override = default;
 
-  WidgetModalDialogHostObserverViews(
-      const WidgetModalDialogHostObserverViews&) = delete;
-  WidgetModalDialogHostObserverViews& operator=(
-      const WidgetModalDialogHostObserverViews&) = delete;
-
-  ~WidgetModalDialogHostObserverViews() override {
-    if (host_)
-      host_->RemoveObserver(this);
-    target_widget_->RemoveObserver(this);
-    target_widget_->SetNativeWindowProperty(native_window_property_, nullptr);
-    CHECK(!IsInObserverList());
-  }
-
-  // WidgetObserver overrides
-  void OnWidgetDestroying(views::Widget* widget) override { delete this; }
-
-  // WebContentsModalDialogHostObserver overrides
+  // ModalDialogHostObserver:
   void OnPositionRequiresUpdate() override {
-    UpdateWidgetModalDialogPosition(target_widget_, host_);
+    if (auto_update_position_) {
+      CHECK(host_);
+      UpdateWidgetModalDialogPosition(dialog_widget_, host_);
+    }
   }
-
   void OnHostDestroying() override {
-    host_->RemoveObserver(this);
+    dialog_widget_->Close();
+    modal_dialog_host_observation_.Reset();
     host_ = nullptr;
   }
 
  private:
+  // The modal host for the widget that owns this observer.
   raw_ptr<ModalDialogHost> host_;
-  raw_ptr<views::Widget> target_widget_;
-  const char* const native_window_property_;
+
+  // Owns this observer.
+  raw_ptr<views::Widget> dialog_widget_;
+
+  // Applies positioning changes from the ModalDialogHost to the Widget if true.
+  const bool auto_update_position_;
+
+  base::ScopedObservation<ModalDialogHost, ModalDialogHostObserver>
+      modal_dialog_host_observation_{this};
 };
 
 gfx::Rect GetModalDialogBounds(views::Widget* widget,
@@ -250,6 +249,9 @@ std::unique_ptr<views::Widget> ShowWebModalDialogViewsOwned(
   return base::WrapUnique<views::Widget>(widget);
 }
 
+// TODO(crbug.com/353174863): This currently creates a constrained dialog
+// assumed to be constrained to the initial window hosting `web_contents`. This
+// should be updated to follow `web_contents` as it is moved across windows.
 views::Widget* CreateWebModalDialogViews(views::WidgetDelegate* dialog,
                                          content::WebContents* web_contents) {
   DCHECK_EQ(ui::MODAL_TYPE_CHILD, dialog->GetModalType());
@@ -269,6 +271,10 @@ views::Widget* CreateWebModalDialogViews(views::WidgetDelegate* dialog,
       manager->delegate()->GetWebContentsModalDialogHost();
   views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
       dialog, nullptr, dialog_host->GetHostView());
+  std::unique_ptr<ModalDialogHostObserver> observer =
+      std::make_unique<ModalDialogHostObserverViews>(
+          dialog_host, widget, /*auto_update_position=*/false);
+  widget->SetProperty(kModalDialogHostObserverKey, std::move(observer));
   ConfigureDesiredBoundsDelegate(dialog, dialog_host);
   widget->SetNativeWindowProperty(
       views::kWidgetIdentifierKey,
@@ -313,10 +319,12 @@ views::Widget* CreateBrowserModalDialogViews(views::DialogDelegate* dialog,
              : nullptr;
   if (host) {
     DCHECK_EQ(parent_view, host->GetHostView());
-    ModalDialogHostObserver* dialog_host_observer =
-        new WidgetModalDialogHostObserverViews(
-            host, widget, kWidgetModalDialogHostObserverViewsKey);
-    dialog_host_observer->OnPositionRequiresUpdate();
+    std::unique_ptr<ModalDialogHostObserver> observer =
+        std::make_unique<ModalDialogHostObserverViews>(
+            host, widget, /*auto_update_position=*/true);
+    widget->SetProperty(kModalDialogHostObserverKey, std::move(observer));
+    widget->GetProperty(kModalDialogHostObserverKey)
+        ->OnPositionRequiresUpdate();
     ConfigureDesiredBoundsDelegate(dialog, host);
   }
 
