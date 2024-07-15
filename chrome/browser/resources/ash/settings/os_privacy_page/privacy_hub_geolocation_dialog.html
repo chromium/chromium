@@ -1,4 +1,8 @@
 <style include="settings-shared">
+  #paragraph1 {
+    margin-block-start: 0px;
+  }
+
   #dialogBody {
     padding-top: 10px;
   }
@@ -13,7 +17,10 @@
     $i18n{systemGeolocationDialogTitle}
   </div>
   <div slot="body" id="dialogBody">
-    <localized-link localized-string="$i18n{systemGeolocationDialogBody}"
+    <p id="paragraph1">$i18n{systemGeolocationDialogBodyParagraph1}</p>
+    <localized-link
+        aria-describedby="paragraph1"
+        localized-string="$i18n{systemGeolocationDialogBodyParagraph2}"
         link-url="$i18n{geolocationAccuracyLearnMoreUrl}">
     </localized-link>
   </div>
