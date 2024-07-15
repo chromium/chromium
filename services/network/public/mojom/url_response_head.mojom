@@ -271,32 +271,6 @@ struct URLResponseHead {
   // matches the cached bytecode.
   bool should_use_source_hash_for_js_code_cache = false;
 
-  // Supports aggregatable reports in the Attribution Reporting API:
-  // https://github.com/WICG/attribution-reporting-api.
-  //
-  // The array will be non-empty for responses to trigger registration requests
-  // sent to reporting origin registered as private state token issuer which
-  // returned blind tokens verifying the validity of the trigger.
-  //
-  // The structure contains tokens that can be sent to a reporting origin
-  // alongside an aggregatable report for it to verify the validity of a
-  // trigger. A token is signed over the included aggregatable_report_id which
-  // must be used to create the aggregatable report.
-  //
-  // It is added as a property on the response to transfer the tokens from the
-  // network service (where they are generated) to blink where it is transferred
-  // to the browser alongside of the attribution data that it verifies. See:
-  // https://github.com/WICG/attribution-reporting-api/blob/main/report_verification.md
-  //
-  // It is an array as it is possible that multiple reports are created from a
-  // single trigger. The tokens are randomly assigned to the generated reports.
-  // see:
-  // https://wicg.github.io/attribution-reporting-api/#generating-randomized-null-reports
-  //
-  // TODO(crbug.com/40242339): Remove the property when attribution
-  // response parsing moves from blink to the network service.
-  array<TriggerVerification> trigger_verifications;
-
   // The result of any PNA preflight sent for this request, if any.
   //
   // This is used to record metrics in the client for compatibility risk

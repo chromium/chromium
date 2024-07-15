@@ -3,33 +3,29 @@
 // found in the LICENSE file.
 
 #include "services/network/public/cpp/attribution_mojom_traits.h"
-#include "base/uuid.h"
-#include "services/network/public/cpp/trigger_verification.h"
+
+#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/mojom/attribution.mojom-shared.h"
 
 namespace mojo {
 
-bool StructTraits<network::mojom::TriggerVerificationDataView,
-                  network::TriggerVerification>::
-    Read(network::mojom::TriggerVerificationDataView data,
-         network::TriggerVerification* out) {
-  std::string token;
-  if (!data.ReadToken(&token)) {
-    return false;
-  }
+// static
+bool StructTraits<network::mojom::AttributionReportingRuntimeFeaturesDataView,
+                  network::AttributionReportingRuntimeFeatures>::
+    cross_app_web_enabled(
+        network::AttributionReportingRuntimeFeatures runtime_features) {
+  return runtime_features.Has(
+      network::AttributionReportingRuntimeFeature::kCrossAppWeb);
+}
 
-  std::string aggregatable_report_id;
-  if (!data.ReadAggregatableReportId(&aggregatable_report_id)) {
-    return false;
+// static
+bool StructTraits<network::mojom::AttributionReportingRuntimeFeaturesDataView,
+                  network::AttributionReportingRuntimeFeatures>::
+    Read(network::mojom::AttributionReportingRuntimeFeaturesDataView data,
+         network::AttributionReportingRuntimeFeatures* out) {
+  if (data.cross_app_web_enabled()) {
+    out->Put(network::AttributionReportingRuntimeFeature::kCrossAppWeb);
   }
-
-  auto trigger_verification = network::TriggerVerification::Create(
-      std::move(token), base::Uuid::ParseLowercase(aggregatable_report_id));
-  if (!trigger_verification) {
-    return false;
-  }
-
-  *out = std::move(*trigger_verification);
   return true;
 }
 

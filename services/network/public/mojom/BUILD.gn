@@ -430,11 +430,6 @@ mojom("mojom_attribution") {
     {
       types = [
         {
-          mojom = "network.mojom.TriggerVerification"
-          cpp = "::network::TriggerVerification"
-          move_only = true
-        },
-        {
           mojom = "network.mojom.AttributionReportingRuntimeFeatures"
           cpp = "::network::AttributionReportingRuntimeFeatures"
           copyable_pass_by_value = true

@@ -4,16 +4,6 @@
 
 module network.mojom;
 
-// Structure containing a redemption token that can be sent to the reporting
-// origin alongside an aggregatable report for them to verify the validity of a
-// trigger. The token was signed over the included aggregatable_report_id which
-// must therefore be used when creating the report.
-struct TriggerVerification {
-  string token;
-  // TODO(crbug.com/40194244): replace with `guid` once a type-mapping exists.
-  string aggregatable_report_id;
-};
-
 // Indicates whether web or OS-level Attribution Reporting is supported.
 // See https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md.
 // These values are persisted to logs. Entries should not be renumbered and

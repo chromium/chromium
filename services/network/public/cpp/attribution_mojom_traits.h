@@ -8,47 +8,20 @@
 #include "base/component_export.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
-#include "services/network/public/cpp/trigger_verification.h"
 #include "services/network/public/mojom/attribution.mojom-shared.h"
 
 namespace mojo {
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_ATTRIBUTION_MOJOM_TRAITS)
-    StructTraits<network::mojom::TriggerVerificationDataView,
-                 network::TriggerVerification> {
-  static const std::string& token(
-      const network::TriggerVerification& verification) {
-    return verification.token();
-  }
-
-  static std::string aggregatable_report_id(
-      const network::TriggerVerification& verification) {
-    return verification.aggregatable_report_id().AsLowercaseString();
-  }
-
-  static bool Read(network::mojom::TriggerVerificationDataView data,
-                   network::TriggerVerification* out);
-};
-
-template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_ATTRIBUTION_MOJOM_TRAITS)
     StructTraits<network::mojom::AttributionReportingRuntimeFeaturesDataView,
                  network::AttributionReportingRuntimeFeatures> {
   static bool cross_app_web_enabled(
-      network::AttributionReportingRuntimeFeatures runtime_features) {
-    return runtime_features.Has(
-        network::AttributionReportingRuntimeFeature::kCrossAppWeb);
-  }
+      network::AttributionReportingRuntimeFeatures runtime_features);
 
   static bool Read(
       network::mojom::AttributionReportingRuntimeFeaturesDataView data,
-      network::AttributionReportingRuntimeFeatures* out) {
-    if (data.cross_app_web_enabled()) {
-      out->Put(network::AttributionReportingRuntimeFeature::kCrossAppWeb);
-    }
-    return true;
-  }
+      network::AttributionReportingRuntimeFeatures* out);
 };
 
 }  // namespace mojo

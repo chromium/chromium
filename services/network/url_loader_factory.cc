@@ -359,12 +359,9 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
             resource_request.trusted_params->accept_ch_frame_observer));
   }
 
-  std::unique_ptr<AttributionRequestHelper> attribution_request_helper;
-  if (context_->network_service()) {
-    attribution_request_helper = AttributionRequestHelper::CreateIfNeeded(
-        resource_request.attribution_reporting_eligibility,
-        context_->network_service()->trust_token_key_commitments());
-  }
+  std::unique_ptr<AttributionRequestHelper> attribution_request_helper =
+      AttributionRequestHelper::CreateIfNeeded(
+          resource_request.attribution_reporting_eligibility);
 
   auto loader = std::make_unique<URLLoader>(
       *this,
@@ -391,14 +388,16 @@ net::handles::NetworkHandle URLLoaderFactory::GetBoundNetworkForTesting()
 }
 
 mojom::DevToolsObserver* URLLoaderFactory::GetDevToolsObserver() const {
-  if (devtools_observer_)
+  if (devtools_observer_) {
     return devtools_observer_.get();
+  }
   return nullptr;
 }
 
 mojom::CookieAccessObserver* URLLoaderFactory::GetCookieAccessObserver() const {
-  if (cookie_observer_)
+  if (cookie_observer_) {
     return cookie_observer_.get();
+  }
   return nullptr;
 }
 
@@ -415,8 +414,9 @@ URLLoaderFactory::GetURLLoaderNetworkServiceObserver() const {
   if (cors_url_loader_factory_->url_loader_network_service_observer()) {
     return cors_url_loader_factory_->url_loader_network_service_observer();
   }
-  if (!context_->network_service())
+  if (!context_->network_service()) {
     return nullptr;
+  }
   return context_->network_service()
       ->GetDefaultURLLoaderNetworkServiceObserver();
 }
