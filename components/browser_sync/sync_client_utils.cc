@@ -48,7 +48,6 @@ syncer::LocalDataDescription CreateLocalDataDescription(syncer::ModelType type,
                                                         ContainerT&& items,
                                                         F&& url_extractor) {
   syncer::LocalDataDescription desc;
-  desc.type = type;
   desc.item_count = items.size();
   // Using a set to get only the distinct domains. This also ensures an
   // alphabetical ordering of the domains.

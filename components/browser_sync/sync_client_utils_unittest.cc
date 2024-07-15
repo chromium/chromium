@@ -54,7 +54,6 @@ syncer::LocalDataDescription CreateLocalDataDescription(
     const std::vector<std::string>& domains,
     int domain_count) {
   syncer::LocalDataDescription desc;
-  desc.type = type;
   desc.item_count = item_count;
   desc.domains = domains;
   desc.domain_count = domain_count;

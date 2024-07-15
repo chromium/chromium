@@ -13,7 +13,6 @@
 namespace syncer {
 
 struct LocalDataDescription {
-  ModelType type = syncer::UNSPECIFIED;
   // Actual count of local items.
   int item_count = 0;
   // Preferably contains up to 3 distinct domains corresponding to some of the

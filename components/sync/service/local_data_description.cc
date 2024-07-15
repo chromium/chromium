@@ -22,8 +22,7 @@ LocalDataDescription& LocalDataDescription::operator=(LocalDataDescription&&) =
 LocalDataDescription::~LocalDataDescription() = default;
 
 void PrintTo(const LocalDataDescription& desc, std::ostream* os) {
-  *os << "{ type:" << syncer::ModelTypeToDebugString(desc.type)
-      << ", item_count:" << desc.item_count << ", domains:[";
+  *os << "{ item_count:" << desc.item_count << ", domains:[";
   for (const auto& domain : desc.domains) {
     *os << domain << ",";
   }
