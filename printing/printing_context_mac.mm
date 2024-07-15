@@ -234,10 +234,11 @@ mojom::ResultCode CaptureSystemPrintDialogData(NSPrintInfo* print_info,
   return mojom::ResultCode::kSuccess;
 }
 
-void ApplySystemPrintSettings(const base::Value::Dict& system_print_dialog_data,
-                              NSPrintInfo* print_info,
-                              PMPrintSession& print_session,
-                              PMPrintSettings& print_settings) {
+mojom::ResultCode ApplySystemPrintSettings(
+    const base::Value::Dict& system_print_dialog_data,
+    NSPrintInfo* print_info,
+    PMPrintSession& print_session,
+    PMPrintSettings& print_settings) {
   const base::Value::BlobStorage* data =
       system_print_dialog_data.FindBlob(kMacSystemPrintDialogDataPrintSettings);
   CHECK(data);
@@ -252,21 +253,32 @@ void ApplySystemPrintSettings(const base::Value::Dict& system_print_dialog_data,
   ScopedPMType<PMPrintSettings> new_print_settings;
   OSStatus status = PMPrintSettingsCreateWithDataRepresentation(
       data_ref, new_print_settings.InitializeInto());
-  CHECK_EQ(status, noErr) << logging::DescriptionFromOSStatus(status);
+  if (status != noErr) {
+    OSSTATUS_LOG(ERROR, status) << "Failed to create print settings";
+    return mojom::ResultCode::kFailed;
+  }
 
   status = PMSessionValidatePrintSettings(
       print_session, new_print_settings.get(), kPMDontWantBoolean);
-  CHECK_EQ(status, noErr) << logging::DescriptionFromOSStatus(status);
+  if (status != noErr) {
+    OSSTATUS_LOG(ERROR, status) << "Failed to validate print settings";
+    return mojom::ResultCode::kFailed;
+  }
   status = PMCopyPrintSettings(new_print_settings.get(), print_settings);
-  CHECK_EQ(status, noErr) << logging::DescriptionFromOSStatus(status);
+  if (status != noErr) {
+    OSSTATUS_LOG(ERROR, status) << "Failed to copy print settings";
+    return mojom::ResultCode::kFailed;
+  }
 
   [print_info updateFromPMPrintSettings];
+  return mojom::ResultCode::kSuccess;
 }
 
-void ApplySystemPageFormat(const base::Value::Dict& system_print_dialog_data,
-                           NSPrintInfo* print_info,
-                           PMPrintSession& print_session,
-                           PMPageFormat& page_format) {
+mojom::ResultCode ApplySystemPageFormat(
+    const base::Value::Dict& system_print_dialog_data,
+    NSPrintInfo* print_info,
+    PMPrintSession& print_session,
+    PMPageFormat& page_format) {
   const base::Value::BlobStorage* data =
       system_print_dialog_data.FindBlob(kMacSystemPrintDialogDataPageFormat);
   CHECK(data);
@@ -280,19 +292,31 @@ void ApplySystemPageFormat(const base::Value::Dict& system_print_dialog_data,
   ScopedPMType<PMPageFormat> new_page_format;
   OSStatus status = PMPageFormatCreateWithDataRepresentation(
       data_ref, new_page_format.InitializeInto());
-  CHECK_EQ(status, noErr) << logging::DescriptionFromOSStatus(status);
+  if (status != noErr) {
+    OSSTATUS_LOG(ERROR, status) << "Failed to create page format";
+    return mojom::ResultCode::kFailed;
+  }
   status = PMSessionValidatePageFormat(print_session, page_format,
                                        kPMDontWantBoolean);
+  if (status != noErr) {
+    OSSTATUS_LOG(ERROR, status) << "Failed to validate page format";
+    return mojom::ResultCode::kFailed;
+  }
   status = PMCopyPageFormat(new_page_format.get(), page_format);
-  CHECK_EQ(status, noErr) << logging::DescriptionFromOSStatus(status);
+  if (status != noErr) {
+    OSSTATUS_LOG(ERROR, status) << "Failed to copy page format";
+    return mojom::ResultCode::kFailed;
+  }
 
   [print_info updateFromPMPageFormat];
+  return mojom::ResultCode::kSuccess;
 }
 
-void ApplySystemDestination(const std::u16string& device_name,
-                            const base::Value::Dict& system_print_dialog_data,
-                            PMPrintSession& print_session,
-                            PMPrintSettings& print_settings) {
+mojom::ResultCode ApplySystemDestination(
+    const std::u16string& device_name,
+    const base::Value::Dict& system_print_dialog_data,
+    PMPrintSession& print_session,
+    PMPrintSettings& print_settings) {
   std::optional<int> destination_type = system_print_dialog_data.FindInt(
       kMacSystemPrintDialogDataDestinationType);
 
@@ -325,18 +349,29 @@ void ApplySystemDestination(const std::u16string& device_name,
       base::SysUTF16ToCFStringRef(device_name));
   ScopedPMType<PMPrinter> printer(
       PMPrinterCreateFromPrinterID(destination_name.get()));
-  CHECK(printer);
+  if (!printer) {
+    LOG(ERROR) << "Unable to create printer from printer ID `" << device_name
+               << "`";
+    return mojom::ResultCode::kFailed;
+  }
   OSStatus status = PMSessionSetCurrentPMPrinter(print_session, printer.get());
-  CHECK_EQ(status, noErr) << logging::DescriptionFromOSStatus(status);
+  if (status != noErr) {
+    OSSTATUS_LOG(ERROR, status) << "Failed to set current printer";
+    return mojom::ResultCode::kFailed;
+  }
 
   status = PMSessionSetDestination(
       print_session, print_settings,
       static_cast<PMDestinationType>(*destination_type),
       destination_format.get(), destination_location.get());
-  CHECK_EQ(status, noErr) << logging::DescriptionFromOSStatus(status);
+  if (status != noErr) {
+    OSSTATUS_LOG(ERROR, status) << "Failed to set destination";
+    return mojom::ResultCode::kFailed;
+  }
+  return mojom::ResultCode::kSuccess;
 }
 
-void ApplySystemPrintDialogData(
+mojom::ResultCode ApplySystemPrintDialogData(
     const std::u16string& device_name,
     const base::Value::Dict& system_print_dialog_data,
     NSPrintInfo* print_info) {
@@ -347,12 +382,18 @@ void ApplySystemPrintDialogData(
   PMPageFormat page_format =
       static_cast<PMPageFormat>([print_info PMPageFormat]);
 
-  ApplySystemDestination(device_name, system_print_dialog_data, print_session,
-                         print_settings);
-  ApplySystemPrintSettings(system_print_dialog_data, print_info, print_session,
-                           print_settings);
-  ApplySystemPageFormat(system_print_dialog_data, print_info, print_session,
-                        page_format);
+  mojom::ResultCode result = ApplySystemDestination(
+      device_name, system_print_dialog_data, print_session, print_settings);
+  if (result != mojom::ResultCode::kSuccess) {
+    return result;
+  }
+  result = ApplySystemPrintSettings(system_print_dialog_data, print_info,
+                                    print_session, print_settings);
+  if (result != mojom::ResultCode::kSuccess) {
+    return result;
+  }
+  return ApplySystemPageFormat(system_print_dialog_data, print_info,
+                               print_session, page_format);
 }
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
 
@@ -783,9 +824,12 @@ mojom::ResultCode PrintingContextMac::NewDocument(
     // start with a clean slate.
     print_info_ = [[NSPrintInfo sharedPrintInfo] copy];
 
-    ApplySystemPrintDialogData(settings_->device_name(),
-                               settings_->system_print_dialog_data(),
-                               print_info_);
+    mojom::ResultCode result = ApplySystemPrintDialogData(
+        settings_->device_name(), settings_->system_print_dialog_data(),
+        print_info_);
+    if (result != mojom::ResultCode::kSuccess) {
+      return result;
+    }
   }
 #endif
 
