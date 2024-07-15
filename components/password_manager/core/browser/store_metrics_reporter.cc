@@ -768,7 +768,9 @@ void StoreMetricsReporter::OnGetPasswordStoreResultsFrom(
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-StoreMetricsReporter::~StoreMetricsReporter() = default;
+StoreMetricsReporter::~StoreMetricsReporter() {
+  prefs_ = nullptr;
+}
 
 void StoreMetricsReporter::OnBackgroundMetricsReportingCompleted(
     CredentialsCount credentials_count) {
