@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- certificate manager v2 strings strings (included from generated_resources.grd). -->
+<grit-part>
+  <if expr="chrome_root_store_cert_management_ui">
+    <!-- TODO(crbug.com/40928765): Make translatable once UI/strings are finalized. -->
+    <!-- Certificate Manager V2 Page -->
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_TITLE" desc="Label for the title of the certificate manager page." translateable="false">
+      Certificate Manager
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CLIENT_CERTIFICATES" desc="Label for the client certificates tab in certificate manager." translateable="false">
+      Your certificates
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_LOCAL_CERTIFICATES" desc="Label for the local certificates tab in certificate manager." translateable="false">
+      Local certificates
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CRS_CERTIFICATES" desc="Label for the Chrome Root Store certificates tab in certificate manager." translateable="false">
+      Chrome Root Store
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_HASH_COPIED_TOAST" desc="Label for the hash copied toast message in certificate manager." translateable="false">
+      Hash copied to clipboard
+    </message>
+
+    <if expr="is_win">
+      <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_TITLE" desc="Label for the title of the platform certs subpage." translateable="false">
+        Imported from Windows
+      </message>
+    </if>
+    <if expr="is_linux">
+      <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_TITLE" desc="Label for the title of the platform certs subpage." translateable="false">
+        Imported from Linux
+      </message>
+    </if>
+    <if expr="is_macosx">
+      <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_TITLE" desc="Label for the title of the platform certs subpage." translateable="false">
+        Imported from MacOS
+      </message>
+    </if>
+    <if expr="is_chromeos">
+      <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_TITLE" desc="Label for the title of the platform certs subpage." translateable="false">
+        Imported from ChromeOS
+      </message>
+    </if>
+
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_ADMIN_CERTS_TITLE" desc="Label for the title of the admin certs subpage." translateable="false">
+      Installed by your Administrator
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_TRUSTED_CERTS_LIST" desc="Label for a list of trusted certificates." translateable="false">
+      Trusted Certificates
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_INTERMEDIATE_CERTS_LIST" desc="Label for a list of certificates that are used for path building." translateable="false">
+      Intermediate Certificates
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_DISTRUSTED_CERTS_LIST" desc="Label for a list of distrusted certificates." translateable="false">
+      Distrusted Certificates
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_NO_CERTIFICATES_ROW" desc="Text for an entry indicating that a list of certificates is empty." translateable="false">
+      No certificates
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_EXPORT_BUTTON_LABEL" desc="Label for button that exports a list of certificates." translateable="false">
+      Export
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_NUM_CERTS" desc="Label describing a number of certificates." translateable="false">
+      {COUNT, plural,
+      =0 {No certificates}
+      =1 {1 certificate}
+      other {{COUNT} certificates}}
+    </message>
+  </if>
+</grit-part>

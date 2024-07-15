@@ -314,6 +314,10 @@ are declared in tools/grit/grit_rule.gni.
         <part file="shared_settings_strings.grdp"/>
       </if>
 
+      <if expr="chrome_root_store_cert_management_ui">
+        <part file="certificate_manager.grdp" />
+      </if>
+
       <!-- Support Tool strings -->
       <if expr="not is_android">
         <part file="support_tool_strings.grdp" />

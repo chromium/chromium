@@ -45,6 +45,8 @@ per-file vr_strings.grdp=file://chrome/browser/vr/OWNERS
 
 per-file password_manager_ui_strings.grdp=file://chrome/browser/password_manager/OWNERS
 
+per-file certificate_manager.grdp=file://net/cert/OWNERS
+
 # Non-GRD rules.
 
 # Translation artifacts:
