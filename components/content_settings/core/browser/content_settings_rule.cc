@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/not_fatal_until.h"
 
 namespace content_settings {
 
@@ -43,7 +44,7 @@ bool ConcatenationIterator::HasNext() const {
 
 std::unique_ptr<Rule> ConcatenationIterator::Next() {
   auto current_iterator = iterators_.begin();
-  DCHECK(current_iterator != iterators_.end());
+  CHECK(current_iterator != iterators_.end(), base::NotFatalUntil::M130);
   DCHECK((*current_iterator)->HasNext());
   std::unique_ptr<Rule> next_rule = (*current_iterator)->Next();
   if (!(*current_iterator)->HasNext()) {
