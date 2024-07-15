@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/not_fatal_until.h"
 #include "crypto/sha2.h"
 
 namespace policy {
@@ -77,7 +78,7 @@ bool ClientStorage::DeleteClient(const std::string& device_token) {
   const std::string& device_id = it->second;
   DCHECK(!device_id.empty());
   auto it_clients = clients_.find(device_id);
-  DCHECK(it_clients != clients_.end());
+  CHECK(it_clients != clients_.end(), base::NotFatalUntil::M130);
 
   clients_.erase(it_clients, clients_.end());
   registered_tokens_.erase(it, registered_tokens_.end());
