@@ -14,7 +14,6 @@ import("//chrome/android/chrome_java_resources.gni")
 import("//chrome/android/chrome_public_apk_tmpl.gni")
 import("//chrome/android/expectations/expectations.gni")
 import("//chrome/android/features/dev_ui/dev_ui_module.gni")
-import("//chrome/android/features/start_surface/start_surface_java_sources.gni")
 import("//chrome/android/features/tab_ui/tab_management_java_sources.gni")
 import("//chrome/android/feed/feed_java_sources.gni")
 import("//chrome/android/modules/chrome_bundle_tmpl.gni")
@@ -358,8 +357,8 @@ if (current_toolchain == default_toolchain) {
       "//cc/mojom:mojom_java",
       "//chrome/android/features/jank_tracker:jank_tracker_java",
       "//chrome/android/features/keyboard_accessory:public_java",
-      "//chrome/android/features/start_surface:java_resources",
       "//chrome/android/features/start_surface:public_java",
+      "//chrome/android/features/tab_ui:java_resources",
       "//chrome/android/features/tab_ui/public:java",
       "//chrome/android/features/tab_ui/public:ui_java_resources",
       "//chrome/android/modules/cablev2_authenticator/public:java",
@@ -789,9 +788,6 @@ if (current_toolchain == default_toolchain) {
     # TODO(crbug.com/40259582): Make tab_ui/ a module so that these sources can be included in "chrome_all_java".
     sources += internal_tab_management_java_sources
 
-    # Include sources for start_surface_java_sources.gni
-    sources += start_surface_java_sources
-
     srcjar_deps += [ ":chrome_jni_headers" ]
 
     # Add the actual implementation where necessary so that downstream targets
@@ -810,15 +806,6 @@ if (current_toolchain == default_toolchain) {
     ]
 
     processor_args_javac = [ "dagger.fastInit=enabled" ]
-
-    if (!is_java_debug) {
-      if (!defined(proguard_configs)) {
-        proguard_configs = []
-      }
-      proguard_enabled = true
-      proguard_configs +=
-          [ "//chrome/android/features/start_surface/proguard.flags" ]
-    }
 
     resources_package = "org.chromium.chrome"
 
@@ -1011,7 +998,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/android/features/android_library_factory:junit_tests",
       "//chrome/android/features/keyboard_accessory:internal_java",
       "//chrome/android/features/keyboard_accessory/public:public_java",
-      "//chrome/android/features/start_surface:java_resources",
       "//chrome/android/features/start_surface:public_java",
       "//chrome/android/features/tab_ui/public:java",
       "//chrome/android/webapk/libs/client:client_java",
@@ -1690,7 +1676,6 @@ if (current_toolchain == default_toolchain) {
       "//cc:cc_java",
       "//chrome/android:chrome_java",
       "//chrome/android/features/keyboard_accessory/public:public_java",
-      "//chrome/android/features/start_surface:java_resources",
       "//chrome/android/features/start_surface:public_java",
       "//chrome/android/features/tab_ui:java_resources",
       "//chrome/android/features/tab_ui:test_support_javalib",

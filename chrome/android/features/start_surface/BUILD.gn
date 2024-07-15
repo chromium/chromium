@@ -13,6 +13,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 android_resources("java_resources") {
   sources = [
     "java/res/drawable/fake_search_box_text_box_bg_incognito.xml",
+    "java/res/layout/incognito_description_container_layout.xml",
     "java/res/layout/query_tiles_layout.xml",
     "java/res/layout/tasks_view_layout.xml",
     "java/res/values/dimens.xml",
@@ -33,7 +34,6 @@ android_library("public_java") {
   ]
 
   deps = [
-    ":java_resources",
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/android:chrome_app_java_resources",
@@ -61,15 +61,4 @@ android_library("public_java") {
   ]
 
   resources_package = "org.chromium.chrome.start_surface"
-}
-
-android_library("test_support_java") {
-  resources_package = "org.chromium.chrome.start_surface"
-  sources = [
-    "javatests/src/org/chromium/chrome/features/start_surface/ViewIds.java",
-  ]
-  deps = [
-    ":java_resources",
-    "//chrome/android:chrome_java",
-  ]
 }
