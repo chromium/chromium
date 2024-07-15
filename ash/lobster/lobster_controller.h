@@ -16,7 +16,7 @@ namespace ash {
 
 class LobsterClient;
 class LobsterClientFactory;
-class LobsterSession;
+class LobsterSessionImpl;
 
 class ASH_EXPORT LobsterController {
  public:
@@ -63,7 +63,7 @@ class ASH_EXPORT LobsterController {
 
   // Only one session can exist at a time. If a trigger fires while a session
   // is active, the current session is ended and a new one is started.
-  std::unique_ptr<LobsterSession> active_session_;
+  std::unique_ptr<LobsterSessionImpl> active_session_;
 };
 
 }  // namespace ash

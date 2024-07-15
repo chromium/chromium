@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_LOBSTER_LOBSTER_CLIENT_IMPL_H_
 
 #include "ash/public/cpp/lobster/lobster_client.h"
+#include "ash/public/cpp/lobster/lobster_session.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/ash/lobster/lobster_service.h"
 #include "chrome/browser/ui/ash/lobster/lobster_system_state_provider.h"
@@ -20,6 +21,7 @@ class LobsterClientImpl : public ash::LobsterClient {
   ~LobsterClientImpl() override;
 
   // LobsterClient overrides
+  void SetActiveSession(ash::LobsterSession* session) override;
   ash::LobsterSystemState GetSystemState() override;
 
  private:

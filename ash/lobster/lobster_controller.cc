@@ -9,7 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/lobster/lobster_session.h"
+#include "ash/lobster/lobster_session_impl.h"
 #include "ash/public/cpp/lobster/lobster_client.h"
 #include "ash/public/cpp/lobster/lobster_client_factory.h"
 #include "ash/public/cpp/lobster/lobster_enums.h"
@@ -80,7 +80,7 @@ std::unique_ptr<LobsterController::Trigger> LobsterController::CreateTrigger() {
 
 void LobsterController::StartSession(std::unique_ptr<LobsterClient> client,
                                      std::optional<std::string> query) {
-  active_session_ = std::make_unique<LobsterSession>(std::move(client));
+  active_session_ = std::make_unique<LobsterSessionImpl>(std::move(client));
 }
 
 }  // namespace ash

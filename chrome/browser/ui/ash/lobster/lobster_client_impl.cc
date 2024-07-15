@@ -14,6 +14,10 @@ LobsterClientImpl::LobsterClientImpl(LobsterService* service)
 
 LobsterClientImpl::~LobsterClientImpl() = default;
 
+void LobsterClientImpl::SetActiveSession(ash::LobsterSession* session) {
+  service_->SetActiveSession(session);
+}
+
 ash::LobsterSystemState LobsterClientImpl::GetSystemState() {
   return service_->system_state_provider()->GetSystemState();
 }
