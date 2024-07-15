@@ -1266,6 +1266,11 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestFaceGazeEnabled,
   RunSettingsTest("os_a11y_page/facegaze_actions_card_test.js");
 }
 
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestFaceGazeEnabled,
+                       OsA11yPageFaceGazeActionsAddDialog) {
+  RunSettingsTest("os_a11y_page/facegaze_actions_add_dialog_test.js");
+}
+
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsA11yPageChangeDictationLocaleDialog) {
   RunSettingsTest("os_a11y_page/change_dictation_locale_dialog_test.js");

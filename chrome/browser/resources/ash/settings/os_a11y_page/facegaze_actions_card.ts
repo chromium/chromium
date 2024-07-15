@@ -12,6 +12,7 @@ import '../controls/settings_dropdown_menu.js';
 import '../os_settings_page/settings_card.js';
 import '../settings_shared.css.js';
 import '../os_settings_page/os_settings_animated_pages.js';
+import 'chrome://resources/cros_components/chip/chip.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_gestures.js';
@@ -37,6 +38,14 @@ export interface FaceGazeActionsCardElement {
 }
 
 export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
+  private showAddActionDialog_: boolean;
+  private configuredActions_: Array<{
+    action: MacroName,
+    actionDisplayText: string,
+    gesture: FacialGesture,
+    gestureDisplayText: string,
+  }> = [];
+
   static get is() {
     return 'facegaze-actions-card' as const;
   }
@@ -47,6 +56,14 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
 
   static get properties() {
     return {
+      configuredActions_: {
+        type: Array,
+        value: () => [],
+      },
+      showAddActionDialog_: {
+        type: Boolean,
+        value: false,
+      },
       leftClickMenuOptions_: {
         type: Array,
         value: () => [],
@@ -419,6 +436,14 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
     }
 
     this.attemptDeepLink();
+  }
+
+  private onAddActionButtonClick_(): void {
+    this.showAddActionDialog_ = true;
+  }
+
+  private onAddActionDialogClose_(): void {
+    this.showAddActionDialog_ = false;
   }
 
   // These values correspond to FacialGesture in

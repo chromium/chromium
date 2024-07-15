@@ -23,6 +23,12 @@
     changes as the observers are not triggered from dom-repeat sliders. Perhaps
     we can use cr-slider-value-changed. -->
 
+<template is="dom-if" if="[[showAddActionDialog_]]" restamp>
+  <facegaze-actions-add-dialog
+      on-close="onAddActionDialogClose_">
+  </facegaze-actions-add-dialog>
+</template>
+
 <settings-card header-text="Actions">
   <settings-toggle-button
       id="faceGazeActionsEnabledButton"
@@ -368,5 +374,32 @@
         label-min="$i18n{sliderLabel1}"
         label-max="$i18n{sliderLabel100}">
     </settings-slider>
+  </div>
+</settings-card>
+
+<!-- TODO(b:341770753): Connect this section to prefs directly. -->
+<!-- TODO(b:341770753): Localize strings. -->
+<!-- TODO(b:341770753): Remove style="display:none" when this section is ready. -->
+<settings-card aria-hidden="true" style="display:none"
+    header-text="$i18n{faceGazeActionsSectionTitle}">
+  <dom-repeat items="{{configuredActions_}}">
+    <template>
+      <div class="settings-box first">
+        <div class="start settings-box-text" aria-hidden="true">
+          <span>[[item.actionDisplayText]]</span>
+        </div>
+        <cros-chip type="input" label="[[item.gestureDisplayText]]"></cros-chip>
+        <cr-icon-button class="icon-clear" on-click="onRemoveActionButtonClick_">
+        </cr-icon-button>
+      </div>
+    </template>
+  </dom-repeat>
+  <div class="settings-box">
+    <cr-button
+        id="addActionButton"
+        class="button"
+        on-click="onAddActionButtonClick_">
+      $i18n{faceGazeActionsAddAction}
+    </cr-button>
   </div>
 </settings-card>
