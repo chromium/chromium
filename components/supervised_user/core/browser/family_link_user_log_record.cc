@@ -11,6 +11,7 @@
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/core/common/pref_names.h"
 #include "extensions/buildflags/buildflags.h"
 
 namespace supervised_user {
@@ -86,9 +87,18 @@ std::optional<ToggleState> GetPermissionsToggleState(
   content_settings::ProviderType provider;
   auto content_setting = content_settings_map.GetDefaultContentSetting(
       ContentSettingsType::GEOLOCATION, &provider);
-  if (provider != content_settings::ProviderType::kSupervisedProvider) {
-    return std::nullopt;
-  }
+  // Note: Do not check that the ProviderType is `kSupervisedProvider`. This
+  // is true only when the parent has disabled the "Permissions" FL switch.
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  bool block_geolocation =
+      content_setting == ContentSetting::CONTENT_SETTING_BLOCK;
+  bool permissions_allowed_pref = pref_service.GetBoolean(
+      prefs::kSupervisedUserExtensionsMayRequestPermissions);
+  // Cross-check the content setting against the preference that was the former
+  // source of truth for a similar metric.
+  DCHECK(permissions_allowed_pref != block_geolocation);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   return content_setting == ContentSetting::CONTENT_SETTING_BLOCK
              ? ToggleState::kDisabled

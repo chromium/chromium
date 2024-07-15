@@ -12,6 +12,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -80,6 +81,12 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
 
     if (is_subject_to_parental_controls) {
       supervised_user::EnableParentalControls(*profile->GetPrefs());
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      // Set Family Link `Permissions` switch (and its dependencies) to the default value.
+      // Mimics the assignment by the `SupervisedUserPrefStore`.
+      supervised_user_test_util::
+          SetSupervisedUserExtensionsMayRequestPermissionsPref(profile, true);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
     }
     return profile;
   }
@@ -96,16 +103,8 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
   }
 
   void SetPermissionsToggleForSupervisedUser(Profile* profile, bool enabled) {
-    auto supervised_content_provider =
-        std::make_unique<content_settings::MockProvider>();
-    content_settings::TestUtils::OverrideProvider(
-        HostContentSettingsMapFactory::GetForProfile(profile),
-        std::move(supervised_content_provider),
-        content_settings::ProviderType::kSupervisedProvider);
-    HostContentSettingsMapFactory::GetForProfile(profile)
-        ->SetDefaultContentSetting(
-            ContentSettingsType::GEOLOCATION,
-            enabled ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
+    supervised_user_test_util::
+        SetSupervisedUserGeolocationEnabledContentSetting(profile, enabled);
   }
 
  private:
@@ -321,8 +320,8 @@ class FamilyLinkUserMetricsProviderTestWithExtensionsPermissionsEnabled
 
   void SetExtensionToggleStateForSupervisedUser(Profile* profile,
                                                 bool toggle_state) {
-    profile->GetPrefs()->SetBoolean(
-        prefs::kSkipParentApprovalToInstallExtensions, toggle_state);
+    supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
+        profile, toggle_state);
   }
 
   base::test::ScopedFeatureList feature_list_;

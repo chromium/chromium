@@ -7,9 +7,12 @@
 #include <string>
 
 #include "base/check.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
@@ -41,6 +44,17 @@ void SetSupervisedUserExtensionsMayRequestPermissionsPref(Profile* profile,
                                     base::Value(!enabled));
   profile->GetPrefs()->SetBoolean(
       prefs::kSupervisedUserExtensionsMayRequestPermissions, enabled);
+
+  // Geolocation content setting is also set to the same value. See
+  // SupervisedUsePrefStore.
+  content_settings::ProviderType provider;
+  bool is_geolocation_allowed =
+      HostContentSettingsMapFactory::GetForProfile(profile)
+          ->GetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
+                                     &provider) == CONTENT_SETTING_ALLOW;
+  if (is_geolocation_allowed != enabled) {
+    SetSupervisedUserGeolocationEnabledContentSetting(profile, enabled);
+  }
 }
 
 void SetSkipParentApprovalToInstallExtensionsPref(Profile* profile,
@@ -56,6 +70,22 @@ void SetSkipParentApprovalToInstallExtensionsPref(Profile* profile,
       base::Value(enabled));
   profile->GetPrefs()->SetBoolean(prefs::kSkipParentApprovalToInstallExtensions,
                                   enabled);
+}
+
+void SetSupervisedUserGeolocationEnabledContentSetting(Profile* profile,
+                                                       bool enabled) {
+  HostContentSettingsMapFactory::GetForProfile(profile)
+      ->SetDefaultContentSetting(
+          ContentSettingsType::GEOLOCATION,
+          enabled ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (profile->GetPrefs()->GetBoolean(
+          prefs::kSupervisedUserExtensionsMayRequestPermissions) != enabled) {
+    // Permissions preference is also set to the same value. See
+    // SupervisedUsePrefStore.
+    SetSupervisedUserExtensionsMayRequestPermissionsPref(profile, enabled);
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 void PopulateAccountInfoWithName(AccountInfo& info,

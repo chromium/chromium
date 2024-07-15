@@ -24,6 +24,10 @@ void SetSupervisedUserExtensionsMayRequestPermissionsPref(Profile* profile,
 void SetSkipParentApprovalToInstallExtensionsPref(Profile* profile,
                                                   bool enabled);
 
+// Sets the Geolocation content setting value.
+void SetSupervisedUserGeolocationEnabledContentSetting(Profile* profile,
+                                                       bool enabled);
+
 // Populates account info with a `given_name` and other fake data needed for a
 // valid `AccountInfo` structure.
 void PopulateAccountInfoWithName(AccountInfo& info,
