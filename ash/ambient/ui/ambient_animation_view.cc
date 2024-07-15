@@ -377,9 +377,6 @@ void AmbientAnimationView::OnViewBoundsChanged(View* observed_view) {
 void AmbientAnimationView::OnViewAddedToWidget(View* observed_view) {
   DCHECK_EQ(observed_view, static_cast<View*>(animated_image_view_));
   DCHECK(observed_view->GetWidget());
-  if (!features::IsAmbientModeThrottleAnimationEnabled())
-    return;
-
   // Frame throttling requires a window with a valid FrameSinkId. Keep searching
   // up the window tree until one is found.
   auto* window_to_throttle = animated_image_view_->GetWidget()->GetNativeView();

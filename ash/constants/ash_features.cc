@@ -102,13 +102,6 @@ BASE_FEATURE(kAmbientModePhotoPreviewFeature,
              "ChromeOSAmbientModePhotoPreview",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether to throttle the frame rate of Lottie animations in ambient
-// mode. The slower frame rate may lead to power consumption savings, but also
-// may decrease the animation's smoothness if not done properly.
-BASE_FEATURE(kAmbientModeThrottleAnimation,
-             "ChromeOSAmbientModeThrottleAnimation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether the logic for managed screensaver is enabled or not.
 BASE_FEATURE(kAmbientModeManagedScreensaver,
              "ChromeOSAmbientModeManagedScreensaver",
@@ -3393,10 +3386,6 @@ bool IsAmbientModeManagedScreensaverEnabled() {
 
 bool IsAmbientModePhotoPreviewEnabled() {
   return base::FeatureList::IsEnabled(kAmbientModePhotoPreviewFeature);
-}
-
-bool IsAmbientModeThrottleAnimationEnabled() {
-  return base::FeatureList::IsEnabled(kAmbientModeThrottleAnimation);
 }
 
 bool IsAnnotatorModeEnabled() {
