@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/check_is_test.h"
+#include "base/not_fatal_until.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog.h"
@@ -134,7 +135,8 @@ void CardUnmaskAuthenticationSelectionDialogControllerImpl::
       base::ranges::find(challenge_options_, selected_challenge_option_id_,
                          &CardUnmaskChallengeOption::id);
 
-  DCHECK(selected_challenge_option != challenge_options_.end());
+  CHECK(selected_challenge_option != challenge_options_.end(),
+        base::NotFatalUntil::M130);
   selected_challenge_option_type_ = (*selected_challenge_option).type;
 
   DCHECK(selected_challenge_option_type_ !=

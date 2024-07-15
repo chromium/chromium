@@ -11,6 +11,7 @@
 #include "autofill_address_util.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -131,7 +132,7 @@ void ExtendAddressComponents(
           return component.literal.empty() &&
                  component.field == rule.placed_after;
         });
-    DCHECK(prev_component != components.end());
+    CHECK(prev_component != components.end(), base::NotFatalUntil::M130);
 
     // Insert the separator and `rule.type` after `prev_component`.
     if (include_literals) {
