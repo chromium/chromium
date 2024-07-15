@@ -82,7 +82,7 @@ void CallbackTracker::Remove(
   base::AutoLock acquire(lock_);
   CallbackSetMap::iterator map_it =
       pending_callbacks_.find(tracked_callback->resource_id());
-  DCHECK(map_it != pending_callbacks_.end());
+  CHECK(map_it != pending_callbacks_.end(), base::NotFatalUntil::M130);
   CallbackSet::iterator it = map_it->second.find(tracked_callback);
   CHECK(it != map_it->second.end(), base::NotFatalUntil::M130);
   map_it->second.erase(it);
