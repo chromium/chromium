@@ -58,6 +58,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/native_theme/native_theme.h"
 #include "url/url_canon.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -394,9 +395,14 @@ gfx::Image GetAvatarIconForNSMenu(const base::FilePath& profile_path) {
     return gfx::Image();
   }
 
+  PlaceholderAvatarIconParams icon_params =
+      GetPlaceholderAvatarIconParamsVisibleAgainstColor(
+          ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
+              ? SK_ColorBLACK
+              : SK_ColorWHITE);
   // Get a higher res than 16px so it looks good after cropping to a circle.
-  gfx::Image icon =
-      entry->GetAvatarIcon(kAvatarIconSize, /*download_high_res=*/false);
+  gfx::Image icon = entry->GetAvatarIcon(
+      kAvatarIconSize, /*download_high_res=*/false, icon_params);
   return profiles::GetSizedAvatarIcon(
       icon, kMenuAvatarIconSize, kMenuAvatarIconSize, profiles::SHAPE_CIRCLE);
 }
