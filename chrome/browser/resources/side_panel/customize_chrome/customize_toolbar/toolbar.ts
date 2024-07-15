@@ -6,6 +6,7 @@ import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 
 import type {SpHeadingElement} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -15,6 +16,8 @@ import {CustomizeToolbarApiProxy} from './customize_toolbar_api_proxy.js';
 import {getCss} from './toolbar.css.js';
 import {getHtml} from './toolbar.html.js';
 
+const ToolbarElementBase = WebUiListenerMixinLit(CrLitElement);
+
 export interface ToolbarElement {
   $: {
     heading: SpHeadingElement,
@@ -22,7 +25,7 @@ export interface ToolbarElement {
   };
 }
 
-export class ToolbarElement extends CrLitElement {
+export class ToolbarElement extends ToolbarElementBase {
   static get is() {
     return 'customize-chrome-toolbar';
   }
@@ -54,17 +57,7 @@ export class ToolbarElement extends CrLitElement {
     super();
     this.handler_ = CustomizeToolbarApiProxy.getInstance().handler;
 
-    this.handler_.listActions().then(({actions}) => {
-      this.actions_ = actions;
-      assert(this.actions_.every(
-          action => action.iconUrl.url.startsWith('data:')));
-    });
-
-    this.handler_.listCategories().then(({categories}) => {
-      this.categories_ = categories;
-    });
-
-    this.updateResetToDefaultDisabled();
+    this.populateUi_();
   }
 
   override connectedCallback() {
@@ -73,6 +66,8 @@ export class ToolbarElement extends CrLitElement {
         CustomizeToolbarApiProxy.getInstance().callbackRouter;
     this.listenerIds_.push(callbackRouter.setActionPinned.addListener(
         this.setActionPinned_.bind(this)));
+
+    this.addWebUiListener('theme-changed', this.populateUi_.bind(this));
   }
 
   override disconnectedCallback() {
@@ -107,6 +102,20 @@ export class ToolbarElement extends CrLitElement {
       }
 
       return action;
+    });
+
+    this.updateResetToDefaultDisabled();
+  }
+
+  private populateUi_() {
+    this.handler_.listActions().then(({actions}) => {
+      this.actions_ = actions;
+      assert(this.actions_.every(
+          action => action.iconUrl.url.startsWith('data:')));
+    });
+
+    this.handler_.listCategories().then(({categories}) => {
+      this.categories_ = categories;
     });
 
     this.updateResetToDefaultDisabled();
