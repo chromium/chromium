@@ -184,9 +184,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean(
       "modulesDragAndDropEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpModulesDragAndDrop));
-  source->AddBoolean("modulesFirstRunExperienceEnabled",
-                     base::FeatureList::IsEnabled(
-                         ntp_features::kNtpModulesFirstRunExperience));
   source->AddBoolean("modulesLoadEnabled", base::FeatureList::IsEnabled(
                                                ntp_features::kNtpModulesLoad));
   source->AddInteger("modulesLoadTimeout",
@@ -411,19 +408,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesPhotosNew", IDS_NTP_MODULES_PHOTOS_NEW},
       {"modulesTasksInfoTitle", IDS_NTP_MODULES_SHOPPING_TASKS_INFO_TITLE},
       {"modulesTasksInfoClose", IDS_NTP_MODULES_SHOPPING_TASKS_INFO_CLOSE},
-      {"modulesNewTagLabel", IDS_NTP_MODULES_NEW_TAG_LABEL},
-      {"modulesFirstRunExperienceTitle",
-       IDS_NTP_MODULES_FIRST_RUN_EXPERIENCE_TITLE},
-      {"modulesFirstRunExperienceBodyLine1",
-       IDS_NTP_MODULES_FIRST_RUN_EXPERIENCE_BODY_LINE_1},
-      {"modulesFirstRunExperienceBodyLine2",
-       IDS_NTP_MODULES_FIRST_RUN_EXPERIENCE_BODY_LINE_2},
-      {"modulesFirstRunExperienceOptIn",
-       IDS_NTP_MODULES_FIRST_RUN_EXPERIENCE_OPT_IN},
-      {"modulesFirstRunExperienceOptOut",
-       IDS_NTP_MODULES_FIRST_RUN_EXPERIENCE_OPT_OUT},
-      {"modulesFirstRunExperienceOptOutToast",
-       IDS_NTP_MODULES_FIRST_RUN_EXPERIENCE_OPT_OUT_TOAST},
       {"modulesJourneysShowAll", IDS_NTP_MODULES_SHOW_ALL},
       {"modulesJourneysInfo", IDS_NTP_MODULES_HISTORY_CLUSTERS_INFO},
       {"modulesHistoryDoneButton",

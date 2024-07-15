@@ -283,17 +283,6 @@
     }
   }
 
-  @media (max-width: 1020px) {
-    :host([modules-fre-shown]) .customize-button {
-      padding-inline-end: 0;
-      padding-inline-start: 8px;
-    }
-
-    :host([modules-fre-shown]) .customize-text {
-      display: none;
-    }
-  }
-
   :host([wallpaper-search-button-animation-enabled_])
       #wallpaperSearchButton {
     animation: 750ms forwards grow-container, 500ms forwards 300ms color-text;
@@ -478,7 +467,6 @@
       <template is="dom-if" if="[[modulesEnabled_]]">
         <template is="dom-if" if="[[!modulesRedesignedEnabled_]]">
           <ntp-modules id="modules"
-              modules-fre-shown="{{modulesFreShown}}"
               modules-shown-to-user="{{modulesShownToUser}}"
               on-customize-module="onCustomizeModule_"
               on-modules-loaded="onModulesLoaded_"

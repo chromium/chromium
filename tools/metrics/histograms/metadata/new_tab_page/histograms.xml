@@ -932,32 +932,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.Modules.FreImpression" enum="BooleanEnabled"
-    expires_after="2024-02-20">
-  <owner>danpeng@google.com</owner>
-  <owner>pauladedeji@google.com</owner>
-  <owner>chrome-desktop-ntp@google.com</owner>
-  <summary>
-    Logs if Modular NTP Desktop v1 First Run Experience is set to be visible and
-    on user's screen. Only logged on the 1P NTP. Note that even if the user has
-    Google as their default search engine, Incognito and Guest mode NTPs are not
-    considered 1P and don't log this histogram.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.Modules.FreLoaded" enum="BooleanEnabled"
-    expires_after="2024-06-30">
-  <owner>danpeng@google.com</owner>
-  <owner>pauladedeji@google.com</owner>
-  <owner>chrome-desktop-ntp@google.com</owner>
-  <summary>
-    Logs if Modular NTP Desktop v1 First Run Experience is set to be visible
-    whether or not it is on the user's screen. Only logged on the 1P NTP. Note
-    that even if the user has Google as their default search engine, Incognito
-    and Guest mode NTPs are not considered 1P and don't log this histogram.
-  </summary>
-</histogram>
-
 <histogram name="NewTabPage.Modules.FreOptOut" units="count"
     expires_after="2024-02-25">
   <owner>danpeng@google.com</owner>

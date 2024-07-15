@@ -3048,9 +3048,6 @@ extern const char kNtpMiddleSlotPromoDismissalDescription[];
 extern const char kNtpModulesDragAndDropName[];
 extern const char kNtpModulesDragAndDropDescription[];
 
-extern const char kNtpModulesFirstRunExperienceName[];
-extern const char kNtpModulesFirstRunExperienceDescription[];
-
 extern const char kNtpModulesHeaderIconName[];
 extern const char kNtpModulesHeaderIconDescription[];
 
