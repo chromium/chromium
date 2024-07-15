@@ -36,14 +36,17 @@ SparkyDelegateImpl::~SparkyDelegateImpl() = default;
 
 bool SparkyDelegateImpl::SetSettings(
     std::unique_ptr<manta::SettingsData> settings_data) {
+  if (!settings_data->val_set) {
+    return false;
+  }
   if (settings_data->pref_name == prefs::kDarkModeEnabled) {
     profile_->GetPrefs()->SetBoolean(settings_data->pref_name,
-                                     settings_data->value->GetBool());
+                                     settings_data->bool_val);
     return true;
   }
 
   SetPrefResult result = prefs_util_->SetPref(
-      settings_data->pref_name, base::to_address(settings_data->value));
+      settings_data->pref_name, base::to_address(settings_data->GetValue()));
 
   return result == SetPrefResult::SUCCESS;
 }

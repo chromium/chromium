@@ -37,14 +37,18 @@ struct COMPONENT_EXPORT(MANTA) SettingsData {
 
   ~SettingsData();
 
-  SettingsData(const SettingsData&) = delete;
-  SettingsData& operator=(const SettingsData&) = delete;
+  SettingsData(const SettingsData&);
+  SettingsData& operator=(const SettingsData&);
 
-  void UpdateValue(std::optional<base::Value> new_value);
+  std::optional<base::Value> GetValue() const;
 
   std::string pref_name;
   PrefType pref_type;
-  std::optional<base::Value> value;
+  bool val_set{false};
+  bool bool_val;
+  int int_val;
+  std::string string_val;
+  double double_val;
 };
 
 using ScreenshotDataCallback =

@@ -21,6 +21,7 @@
 #include "components/manta/proto/manta.pb.h"
 #include "components/manta/proto/sparky.pb.h"
 #include "components/manta/sparky/sparky_delegate.h"
+#include "components/manta/sparky/sparky_util.h"
 #include "components/manta/sparky/system_info_delegate.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -63,7 +64,7 @@ class FakeSparkyDelegate : public SparkyDelegate {
   bool SetSettings(std::unique_ptr<SettingsData> settings_data) override {
     current_prefs_[settings_data->pref_name] = std::make_unique<SettingsData>(
         settings_data->pref_name, settings_data->pref_type,
-        std::move(settings_data->value));
+        settings_data->GetValue());
     return true;
   }
   SettingsDataList* GetSettingsList() override {
@@ -76,7 +77,7 @@ class FakeSparkyDelegate : public SparkyDelegate {
   std::optional<base::Value> GetSettingValue(
       const std::string& setting_id) override {
     if (current_prefs_.contains(setting_id)) {
-      return current_prefs_[setting_id]->value->Clone();
+      return current_prefs_[setting_id]->GetValue();
     } else {
       return std::nullopt;
     }
@@ -145,8 +146,9 @@ TEST_F(SparkyProviderTest, SimpleRequestPayload) {
   manta::proto::OutputData& output_data = *response.add_output_data();
   manta::proto::SparkyResponse& sparky_response =
       *output_data.mutable_sparky_response();
-  auto* final_response = sparky_response.mutable_final_response();
-  final_response->set_answer("text answer");
+  auto* latest_reply = sparky_response.mutable_latest_reply();
+  latest_reply->set_message("text answer");
+  latest_reply->set_role(proto::ROLE_ASSISTANT);
 
   std::string response_data;
   response.SerializeToString(&response_data);
@@ -155,19 +157,20 @@ TEST_F(SparkyProviderTest, SimpleRequestPayload) {
                           net::OK);
   std::unique_ptr<FakeSparkyProvider> sparky_provider = CreateSparkyProvider();
   auto quit_closure = task_environment_.QuitClosure();
-  auto qa_history = std::vector<FakeSparkyProvider::SparkyQAPair>({
-      std::make_pair("Where is it?", "In Tokyo"),
-      std::make_pair("When is it?", "In July"),
-  });
+  auto dialog_turns = std::vector<DialogTurn>();
+
+  dialog_turns.emplace_back("Where is it?", Role::kUser);
+  dialog_turns.emplace_back("In Tokyo", Role::kAssistant);
+  dialog_turns.emplace_back("When is it?", Role::kUser);
+  dialog_turns.emplace_back("In July", Role::kAssistant);
 
   sparky_provider->QuestionAndAnswer(
-      "page content", qa_history, "What is the climate like then",
-      proto::Task::TASK_PLANNER, nullptr,
+      "page content", dialog_turns, "What is the climate like then",
+      proto::Task::TASK_PLANNER, nullptr, false,
       base::BindLambdaForTesting(
-          [&quit_closure](const std::string& answer_string,
-                          MantaStatus manta_status) {
+          [&quit_closure](MantaStatus manta_status, DialogTurn* latest_dialog) {
             ASSERT_EQ(manta_status.status_code, MantaStatusCode::kOk);
-            ASSERT_STREQ("text answer", answer_string.c_str());
+            ASSERT_EQ("text answer", latest_dialog->message);
             quit_closure.Run();
           }));
   task_environment_.RunUntilQuit();
@@ -188,19 +191,20 @@ TEST_F(SparkyProviderTest, EmptyResponseIfSparkyDataIsNotSet) {
   std::string response_data;
   response.SerializeToString(&response_data);
 
+  auto dialog_turns = std::vector<DialogTurn>();
+
   SetEndpointMockResponse(GURL{kMockEndpoint}, response_data, net::HTTP_OK,
                           net::OK);
   std::unique_ptr<FakeSparkyProvider> sparky_provider = CreateSparkyProvider();
   auto quit_closure = task_environment_.QuitClosure();
 
   sparky_provider->QuestionAndAnswer(
-      "page content", std::vector<FakeSparkyProvider::SparkyQAPair>(),
-      "my question", proto::Task::TASK_PLANNER, nullptr,
-      base::BindLambdaForTesting([&quit_closure](
-                                     const std::string& answer_string,
-                                     MantaStatus manta_status) {
+      "page content", dialog_turns, "my question", proto::Task::TASK_PLANNER,
+      nullptr, false,
+      base::BindLambdaForTesting([&quit_closure](MantaStatus manta_status,
+                                                 DialogTurn* latest_dialog) {
         ASSERT_EQ(manta_status.status_code, MantaStatusCode::kBlockedOutputs);
-        ASSERT_STREQ("", answer_string.c_str());
+        ASSERT_FALSE(latest_dialog);
         quit_closure.Run();
       }));
   task_environment_.RunUntilQuit();
@@ -216,17 +220,18 @@ TEST_F(SparkyProviderTest, EmptyResponseAfterIdentityManagerShutdown) {
 
   identity_test_env_.reset();
 
+  auto dialog_turns = std::vector<DialogTurn>();
+
   auto quit_closure = task_environment_.QuitClosure();
 
   sparky_provider->QuestionAndAnswer(
-      "page content", std::vector<FakeSparkyProvider::SparkyQAPair>(),
-      "my question", proto::Task::TASK_PLANNER, nullptr,
+      "page content", dialog_turns, "my question", proto::Task::TASK_PLANNER,
+      nullptr, false,
       base::BindLambdaForTesting(
-          [&quit_closure](const std::string& answer_string,
-                          MantaStatus manta_status) {
+          [&quit_closure](MantaStatus manta_status, DialogTurn* latest_dialog) {
             ASSERT_EQ(manta_status.status_code,
                       MantaStatusCode::kNoIdentityManager);
-            ASSERT_STREQ("", answer_string.c_str());
+            ASSERT_FALSE(latest_dialog);
             quit_closure.Run();
           }));
   task_environment_.RunUntilQuit();
@@ -244,17 +249,21 @@ TEST_F(SparkyProviderTest, SettingAction) {
   manta::proto::SparkyResponse& sparky_response =
       *output_data.mutable_sparky_response();
 
-  auto* final_response = sparky_response.mutable_final_response();
-  final_response->set_answer("text answer");
-  auto* action = final_response->mutable_action();
+  auto* latest_reply = sparky_response.mutable_latest_reply();
+  latest_reply->set_message("text answer");
+  latest_reply->set_role(proto::ROLE_ASSISTANT);
+  auto* action = latest_reply->add_action();
   auto* setting_data = action->mutable_update_setting();
   setting_data->set_type(proto::SETTING_TYPE_BOOL);
   setting_data->set_settings_id("power.adaptive_charging_enabled");
   auto* settings_value = setting_data->mutable_value();
   settings_value->set_bool_val(true);
+  action->set_all_done(true);
 
   std::string response_data;
   response.SerializeToString(&response_data);
+
+  auto dialog_turns = std::vector<DialogTurn>();
 
   SetEndpointMockResponse(GURL{kMockEndpoint}, response_data, net::HTTP_OK,
                           net::OK);
@@ -267,13 +276,12 @@ TEST_F(SparkyProviderTest, SettingAction) {
                        ->GetBool());
 
   sparky_provider->QuestionAndAnswer(
-      "page content", std::vector<FakeSparkyProvider::SparkyQAPair>(),
-      "Turn on adaptive charging", proto::Task::TASK_SETTINGS, nullptr,
+      "page content", dialog_turns, "Turn on adaptive charging",
+      proto::Task::TASK_SETTINGS, nullptr, true,
       base::BindLambdaForTesting(
-          [&quit_closure](const std::string& answer_string,
-                          MantaStatus manta_status) {
+          [&quit_closure](MantaStatus manta_status, DialogTurn* latest_dialog) {
             ASSERT_EQ(manta_status.status_code, MantaStatusCode::kOk);
-            ASSERT_STREQ("text answer", answer_string.c_str());
+            ASSERT_EQ("text answer", latest_dialog->message);
             quit_closure.Run();
           }));
   task_environment_.RunUntilQuit();
@@ -296,16 +304,23 @@ TEST_F(SparkyProviderTest, SettingActionWith2Actions) {
   manta::proto::SparkyResponse& sparky_response =
       *output_data.mutable_sparky_response();
 
-  auto* final_response = sparky_response.mutable_final_response();
-  final_response->set_answer("text answer");
-  auto* action = final_response->mutable_action();
-  auto* bool_setting = action->mutable_update_setting();
-  bool_setting->set_type(proto::SETTING_TYPE_BOOL);
-  bool_setting->set_settings_id("ash.night_light.enabled");
-  auto* bool_value = bool_setting->mutable_value();
-  bool_value->set_bool_val(true);
-  // TODO (b:351099209) Add in multiple actions into a response back so that
-  // multiple settings can be returned.
+  auto* latest_reply = sparky_response.mutable_latest_reply();
+  latest_reply->set_message("text answer");
+  latest_reply->set_role(proto::ROLE_ASSISTANT);
+  auto* action = latest_reply->add_action();
+  action->set_all_done(false);
+  auto* setting_data = action->mutable_update_setting();
+  setting_data->set_type(proto::SETTING_TYPE_BOOL);
+  setting_data->set_settings_id("ash.night_light.enabled");
+  auto* settings_value = setting_data->mutable_value();
+  settings_value->set_bool_val(true);
+  auto* action2 = latest_reply->add_action();
+  action2->set_all_done(true);
+  auto* double_setting = action2->mutable_update_setting();
+  double_setting->set_type(proto::SETTING_TYPE_DOUBLE);
+  double_setting->set_settings_id("ash.night_light.color_temperature");
+  auto* double_value = double_setting->mutable_value();
+  double_value->set_double_val(0.5);
 
   std::string response_data;
   response.SerializeToString(&response_data);
@@ -314,20 +329,23 @@ TEST_F(SparkyProviderTest, SettingActionWith2Actions) {
                           net::OK);
   std::unique_ptr<FakeSparkyProvider> sparky_provider = CreateSparkyProvider();
 
+  auto dialog_turns = std::vector<DialogTurn>();
   auto quit_closure = task_environment_.QuitClosure();
 
   ASSERT_EQ(
       false,
       sparky_provider->CheckSettingValue("ash.night_light.enabled")->GetBool());
+  ASSERT_EQ(0.1, sparky_provider
+                     ->CheckSettingValue("ash.night_light.color_temperature")
+                     ->GetDouble());
 
   sparky_provider->QuestionAndAnswer(
-      "page content", std::vector<FakeSparkyProvider::SparkyQAPair>(),
-      "Turn on adaptive charging", proto::Task::TASK_SETTINGS, nullptr,
+      "page content", dialog_turns, "Turn on adaptive charging",
+      proto::Task::TASK_SETTINGS, nullptr, false,
       base::BindLambdaForTesting(
-          [&quit_closure](const std::string& answer_string,
-                          MantaStatus manta_status) {
+          [&quit_closure](MantaStatus manta_status, DialogTurn* latest_dialog) {
             ASSERT_EQ(manta_status.status_code, MantaStatusCode::kOk);
-            ASSERT_STREQ("text answer", answer_string.c_str());
+            ASSERT_EQ("text answer", latest_dialog->message);
             quit_closure.Run();
           }));
   task_environment_.RunUntilQuit();
@@ -335,6 +353,9 @@ TEST_F(SparkyProviderTest, SettingActionWith2Actions) {
   ASSERT_EQ(
       true,
       sparky_provider->CheckSettingValue("ash.night_light.enabled")->GetBool());
+  ASSERT_EQ(0.5, sparky_provider
+                     ->CheckSettingValue("ash.night_light.color_temperature")
+                     ->GetDouble());
 
   // Metric is logged when response is successfully parsed.
   histogram_tester.ExpectTotalCount("Ash.MantaService.SparkyProvider.TimeCost",
@@ -350,18 +371,22 @@ TEST_F(SparkyProviderTest, SettingActionInvalidProto) {
   manta::proto::SparkyResponse& sparky_response =
       *output_data.mutable_sparky_response();
 
-  auto* final_response = sparky_response.mutable_final_response();
-  final_response->set_answer("text answer");
-  auto* action = final_response->mutable_action();
+  auto* latest_reply = sparky_response.mutable_latest_reply();
+  latest_reply->set_message("text answer");
+  latest_reply->set_role(proto::ROLE_ASSISTANT);
+  auto* action = latest_reply->add_action();
   auto* setting_data = action->mutable_update_setting();
   setting_data->set_type(proto::SETTING_TYPE_BOOL);
   setting_data->set_settings_id("power.adaptive_charging_enabled");
   auto* settings_value = setting_data->mutable_value();
   // Int value set for setting of type bool.
   settings_value->set_int_val(3);
+  action->set_all_done(true);
 
   std::string response_data;
   response.SerializeToString(&response_data);
+
+  auto dialog_turns = std::vector<DialogTurn>();
 
   SetEndpointMockResponse(GURL{kMockEndpoint}, response_data, net::HTTP_OK,
                           net::OK);
@@ -370,13 +395,12 @@ TEST_F(SparkyProviderTest, SettingActionInvalidProto) {
   auto quit_closure = task_environment_.QuitClosure();
 
   sparky_provider->QuestionAndAnswer(
-      "page content", std::vector<FakeSparkyProvider::SparkyQAPair>(),
-      "Turn on adaptive charging", proto::Task::TASK_SETTINGS, nullptr,
+      "page content", dialog_turns, "Turn on adaptive charging",
+      proto::Task::TASK_SETTINGS, nullptr, true,
       base::BindLambdaForTesting(
-          [&quit_closure](const std::string& answer_string,
-                          MantaStatus manta_status) {
+          [&quit_closure](MantaStatus manta_status, DialogTurn* latest_dialog) {
             ASSERT_EQ(manta_status.status_code, MantaStatusCode::kOk);
-            ASSERT_STREQ("", answer_string.c_str());
+            ASSERT_FALSE(latest_dialog);
             quit_closure.Run();
           }));
   task_environment_.RunUntilQuit();

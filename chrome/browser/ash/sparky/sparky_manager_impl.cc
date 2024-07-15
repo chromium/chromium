@@ -93,9 +93,10 @@ void SparkyManagerImpl::AnswerQuestion(const std::u16string& question,
                                        MahiAnswerQuestionCallback callback) {
   if (current_panel_content) {
     sparky_provider_->QuestionAndAnswer(
-        base::UTF16ToUTF8(current_panel_content_->page_content),
-        current_panel_qa_, base::UTF16ToUTF8(question),
-        manta::proto::Task::TASK_PLANNER, /*diagnostics_data=*/nullptr,
+        base::UTF16ToUTF8(current_panel_content_->page_content), dialog_turns_,
+        base::UTF16ToUTF8(question), manta::proto::Task::TASK_PLANNER,
+        /*diagnostics_data=*/nullptr,
+        /*collect_settings=*/false,
         base::BindOnce(&SparkyManagerImpl::OnSparkyProviderQAResponse,
                        weak_ptr_factory_.GetWeakPtr(), question,
                        std::move(callback)));
@@ -188,7 +189,6 @@ void SparkyManagerImpl::OnGetPageContentForSummary(
 
   // Assign current panel content and clear the current panel QA
   current_panel_content_ = std::move(mahi_content_ptr);
-  current_panel_qa_.clear();
 
   latest_response_status_ = MahiResponseStatus::kUnknownError;
   std::move(callback).Run(u"Couldn't get summary", latest_response_status_);
@@ -198,20 +198,39 @@ void SparkyManagerImpl::OnGetPageContentForSummary(
 void SparkyManagerImpl::OnSparkyProviderQAResponse(
     const std::u16string& question,
     MahiAnswerQuestionCallback callback,
-    const std::string& response,
-    manta::MantaStatus status) {
+    manta::MantaStatus status,
+    manta::DialogTurn* latest_turn) {
+  dialog_turns_.emplace_back(base::UTF16ToUTF8(question), manta::Role::kUser);
+  // Currently the history of dialogs will only refresh if the user closes the
+  // UI and then reopens it again.
+  // TODO (b/352651459): Add a refresh button to reset the dialog.
+
   if (status.status_code != manta::MantaStatusCode::kOk) {
     latest_response_status_ = MahiResponseStatus::kUnknownError;
-    current_panel_qa_.emplace_back(base::UTF16ToUTF8(question), "");
     std::move(callback).Run(std::nullopt, latest_response_status_);
     return;
   }
 
-  if (!response.empty()) {
+  if (latest_turn) {
     latest_response_status_ = MahiResponseStatus::kSuccess;
-    current_panel_qa_.emplace_back(base::UTF16ToUTF8(question), response);
-    std::move(callback).Run(base::UTF8ToUTF16(response),
+    std::move(callback).Run(base::UTF8ToUTF16(latest_turn->message),
                             latest_response_status_);
+
+    dialog_turns_.emplace_back(std::move(*latest_turn));
+    // If the latest action is not the final action from the server, then an
+    // additional request is made to the server.
+    if (!latest_turn->actions.empty() &&
+        !latest_turn->actions.back().all_done) {
+      sparky_provider_->QuestionAndAnswer(
+          base::UTF16ToUTF8(current_panel_content_->page_content),
+          dialog_turns_, base::UTF16ToUTF8(question),
+          manta::proto::Task::TASK_GENERIC,
+          /*diagnostics_data=*/nullptr, /*collect_settings=*/false,
+          base::BindOnce(&SparkyManagerImpl::OnSparkyProviderQAResponse,
+                         weak_ptr_factory_.GetWeakPtr(), question,
+                         std::move(callback)));
+    }
+
   } else {
     latest_response_status_ = MahiResponseStatus::kCantFindOutputData;
     std::move(callback).Run(std::nullopt, latest_response_status_);
@@ -230,12 +249,11 @@ void SparkyManagerImpl::OnGetPageContentForQA(
 
   // Assign current panel content and clear the current panel QA
   current_panel_content_ = std::move(mahi_content_ptr);
-  current_panel_qa_.clear();
 
   sparky_provider_->QuestionAndAnswer(
-      base::UTF16ToUTF8(current_panel_content_->page_content),
-      current_panel_qa_, base::UTF16ToUTF8(question),
-      manta::proto::Task::TASK_PLANNER, /*diagnostics_data=*/nullptr,
+      base::UTF16ToUTF8(current_panel_content_->page_content), dialog_turns_,
+      base::UTF16ToUTF8(question), manta::proto::Task::TASK_PLANNER,
+      /*diagnostics_data=*/nullptr, /*collect_settings=*/false,
       base::BindOnce(&SparkyManagerImpl::OnSparkyProviderQAResponse,
                      weak_ptr_factory_.GetWeakPtr(), question,
                      std::move(callback)));

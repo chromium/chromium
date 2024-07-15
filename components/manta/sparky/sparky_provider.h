@@ -24,6 +24,7 @@
 #include "components/manta/proto/sparky.pb.h"
 #include "components/manta/provider_params.h"
 #include "components/manta/sparky/sparky_delegate.h"
+#include "components/manta/sparky/sparky_util.h"
 #include "components/manta/sparky/system_info_delegate.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -52,21 +53,19 @@ class COMPONENT_EXPORT(MANTA) SparkyProvider : virtual public BaseProvider {
 
   ~SparkyProvider() override;
 
-  // TODO Update this with Sparky information
-  using SparkyQAPair = std::pair<std::string, std::string>;
-
   using SparkyShowAnswerCallback =
-      base::OnceCallback<void(const std::string&, MantaStatus)>;
+      base::OnceCallback<void(MantaStatus, DialogTurn*)>;
 
   using SparkyProtoResponseCallback =
       base::OnceCallback<void(std::unique_ptr<manta::proto::SparkyResponse>,
                               MantaStatus)>;
 
   void QuestionAndAnswer(const std::string& content,
-                         const std::vector<SparkyQAPair>& QAHistory,
+                         const std::vector<DialogTurn>& dialog,
                          const std::string& question,
                          proto::Task task,
                          std::unique_ptr<DiagnosticsData> diagnostics_data,
+                         bool collect_settings,
                          SparkyShowAnswerCallback done_callback);
 
  protected:
@@ -83,44 +82,47 @@ class COMPONENT_EXPORT(MANTA) SparkyProvider : virtual public BaseProvider {
   // additional call to QuestionAndAnswer.
   void RequestAdditionalInformation(proto::ContextRequest,
                                     const std::string& original_content,
-                                    const std::vector<SparkyQAPair>& QAHistory,
+                                    const std::vector<DialogTurn>& dialog,
                                     const std::string& question,
                                     SparkyShowAnswerCallback done_callback,
                                     manta::MantaStatus status);
 
   void OnScreenshotObtained(
       const std::string& content,
-      const std::vector<SparkyQAPair>& QAHistory,
+      const std::vector<DialogTurn>& dialog,
       const std::string& question,
       proto::Task task,
       std::unique_ptr<DiagnosticsData> diagnostics_data,
+      bool collect_settings,
       SparkyShowAnswerCallback done_callback,
       scoped_refptr<base::RefCountedMemory> jpeg_screenshot);
 
   void OnResponseReceived(
       SparkyShowAnswerCallback done_callback,
       const std::string& original_content,
-      const std::vector<SparkyQAPair>& QAHistory,
+      const std::vector<DialogTurn>& dialog,
       const std::string& question,
       std::unique_ptr<proto::SparkyResponse> sparky_response,
       manta::MantaStatus status);
 
-  // If the response back is the final response to show to the user.
-  void OnActionResponse(proto::FinalResponse,
+  // If the response back is a dialog response with a message to show to the
+  // user and potentially actions.
+  void OnDialogResponse(const std::string& original_content,
+                        const std::vector<DialogTurn>& dialog,
+                        const std::string& question,
+                        proto::Turn latest_reply,
                         SparkyShowAnswerCallback done_callback,
                         manta::MantaStatus status);
 
   void OnDiagnosticsReceived(const std::string& original_content,
-                             const std::vector<SparkyQAPair>& QAHistory,
+                             const std::vector<DialogTurn>& dialog,
                              const std::string& question,
                              SparkyShowAnswerCallback done_callback,
                              manta::MantaStatus status,
                              std::unique_ptr<DiagnosticsData> diagnostics_data);
 
   std::unique_ptr<SparkyDelegate> sparky_delegate_;
-
   std::unique_ptr<SystemInfoDelegate> system_info_delegate_;
-
   base::WeakPtrFactory<SparkyProvider> weak_ptr_factory_{this};
 };
 

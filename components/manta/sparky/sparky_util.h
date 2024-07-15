@@ -29,16 +29,15 @@ enum class ActionType {
 };
 
 struct COMPONENT_EXPORT(MANTA) Action {
-  explicit Action(std::unique_ptr<SettingsData> updated_setting, bool all_done);
+  explicit Action(SettingsData updated_setting, bool all_done);
   explicit Action(std::string launched_app, bool all_done);
 
   ~Action();
-
-  Action(Action&& other);
-  Action& operator=(Action&& other);
+  Action(const Action&);
+  Action& operator=(const Action&);
 
   std::string launched_app;
-  std::unique_ptr<SettingsData> updated_setting;
+  std::optional<SettingsData> updated_setting;
   ActionType type;
   bool all_done;
 };
@@ -51,8 +50,8 @@ struct COMPONENT_EXPORT(MANTA) DialogTurn {
 
   ~DialogTurn();
 
-  DialogTurn(DialogTurn&& other);
-  DialogTurn& operator=(DialogTurn&& other);
+  DialogTurn(const DialogTurn&);
+  DialogTurn& operator=(const DialogTurn&);
 
   void AppendAction(Action action);
 
@@ -87,6 +86,10 @@ std::unique_ptr<SettingsData> COMPONENT_EXPORT(MANTA)
 
 DialogTurn COMPONENT_EXPORT(MANTA)
     ConvertDialogToStruct(proto::Turn* turn_proto);
+
+void COMPONENT_EXPORT(MANTA)
+    AddDialogToSparkyContext(const std::vector<DialogTurn>& dialog,
+                             proto::SparkyContextData* sparky_context_proto);
 
 }  // namespace manta
 

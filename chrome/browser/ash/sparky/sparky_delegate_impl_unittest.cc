@@ -124,11 +124,10 @@ TEST_F(SparkyDelegateImplTest, AddPrefToMap) {
             manta::PrefType::kDouble);
   ASSERT_EQ(GetCurrentPrefs()->find("string pref")->second->pref_type,
             manta::PrefType::kString);
-  ASSERT_TRUE(GetCurrentPrefs()->find("bool pref")->second->value->GetBool());
-  ASSERT_EQ(GetCurrentPrefs()->find("int pref")->second->value->GetInt(), 1);
-  ASSERT_EQ(GetCurrentPrefs()->find("double pref")->second->value->GetDouble(),
-            0.5);
-  ASSERT_EQ(GetCurrentPrefs()->find("string pref")->second->value->GetString(),
+  ASSERT_TRUE(GetCurrentPrefs()->find("bool pref")->second->bool_val);
+  ASSERT_EQ(GetCurrentPrefs()->find("int pref")->second->int_val, 1);
+  ASSERT_EQ(GetCurrentPrefs()->find("double pref")->second->double_val, 0.5);
+  ASSERT_EQ(GetCurrentPrefs()->find("string pref")->second->string_val,
             "my string");
 }
 

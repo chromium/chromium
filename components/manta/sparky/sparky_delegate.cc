@@ -14,12 +14,51 @@ namespace manta {
 SettingsData::SettingsData(const std::string& pref_name,
                            const PrefType& pref_type,
                            std::optional<base::Value> value)
-    : pref_name(pref_name), pref_type(pref_type), value(std::move(value)) {}
+    : pref_name(pref_name), pref_type(pref_type) {
+  switch (pref_type) {
+    case PrefType::kBoolean:
+      bool_val = value->GetBool();
+      val_set = true;
+      break;
+    case PrefType::kInt:
+      int_val = value->GetInt();
+      val_set = true;
+      break;
+    case PrefType::kDouble:
+      double_val = value->GetDouble();
+      val_set = true;
+      break;
+    case PrefType::kString:
+      string_val = value->GetString();
+      val_set = true;
+      break;
+    default:
+      // TODO add in error message.
+      break;
+  }
+}
 
 SettingsData::~SettingsData() = default;
 
-void SettingsData::UpdateValue(std::optional<base::Value> new_value) {
-  value = std::move(new_value);
+SettingsData::SettingsData(const SettingsData&) = default;
+SettingsData& SettingsData::operator=(const SettingsData&) = default;
+
+std::optional<base::Value> SettingsData::GetValue() const {
+  if (!val_set) {
+    return std::nullopt;
+  }
+  switch (pref_type) {
+    case PrefType::kBoolean:
+      return std::make_optional<base::Value>(bool_val);
+    case PrefType::kInt:
+      return std::make_optional<base::Value>(int_val);
+    case PrefType::kDouble:
+      return std::make_optional<base::Value>(double_val);
+    case PrefType::kString:
+      return std::make_optional<base::Value>(string_val);
+    default:
+      return std::nullopt;
+  }
 }
 
 AppsData::AppsData(const std::string& name, const std::string& id)

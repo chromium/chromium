@@ -54,7 +54,7 @@ static constexpr auto diagnostic_map =
 // of the type specified.
 std::optional<SettingType> VerifyValueAndConvertPrefTypeToSettingType(
     PrefType pref_type,
-    base::Value* value) {
+    std::optional<base::Value> value) {
   if (!value) {
     return std::nullopt;
   }
@@ -116,8 +116,8 @@ std::optional<base::Value> GetSettingsValue(proto::SettingsValue value,
 
 }  // namespace
 
-Action::Action(std::unique_ptr<SettingsData> updated_setting, bool all_done)
-    : updated_setting(std::move(updated_setting)),
+Action::Action(SettingsData updated_setting, bool all_done)
+    : updated_setting(std::make_optional(updated_setting)),
       type(ActionType::kSetting),
       all_done(all_done) {}
 
@@ -128,24 +128,24 @@ Action::Action(std::string launched_app, bool all_done)
 
 Action::~Action() = default;
 
-Action::Action(Action&& other) = default;
-Action& Action::operator=(Action&& other) = default;
+Action::Action(const Action&) = default;
+Action& Action::operator=(const Action&) = default;
 
 DialogTurn::DialogTurn(const std::string& message,
                        Role role,
                        std::vector<Action> actions)
-    : message(message), role(role), actions(std::move(actions)) {}
+    : message(message), role(role), actions(actions) {}
 
 DialogTurn::DialogTurn(const std::string& message, Role role)
     : message(message), role(role) {}
 
 DialogTurn::~DialogTurn() = default;
 
-DialogTurn::DialogTurn(DialogTurn&& other) = default;
-DialogTurn& DialogTurn::operator=(DialogTurn&& other) = default;
+DialogTurn::DialogTurn(const DialogTurn&) = default;
+DialogTurn& DialogTurn::operator=(const DialogTurn&) = default;
 
 void DialogTurn::AppendAction(Action action) {
-  actions.emplace_back(std::move(action));
+  actions.emplace_back(action);
 }
 
 proto::Role GetRole(Role role) {
@@ -154,11 +154,10 @@ proto::Role GetRole(Role role) {
                                          : proto::ROLE_UNSPECIFIED;
 }
 
-void AddSettingProto(SettingsData& setting,
+void AddSettingProto(const SettingsData& setting,
                      ::manta::proto::Setting* setting_proto) {
   auto setting_type = VerifyValueAndConvertPrefTypeToSettingType(
-      setting.pref_type,
-      setting.value ? std::addressof(*setting.value) : nullptr);
+      setting.pref_type, setting.GetValue());
   if (setting_type == std::nullopt) {
     DVLOG(1) << "Invalid setting type for" << setting.pref_name;
     return;
@@ -167,13 +166,13 @@ void AddSettingProto(SettingsData& setting,
   setting_proto->set_settings_id(setting.pref_name);
   auto* settings_value = setting_proto->mutable_value();
   if (setting.pref_type == PrefType::kBoolean) {
-    settings_value->set_bool_val(setting.value->GetBool());
+    settings_value->set_bool_val(setting.bool_val);
   } else if (setting.pref_type == PrefType::kDouble) {
-    settings_value->set_double_val(setting.value->GetDouble());
+    settings_value->set_double_val(setting.double_val);
   } else if (setting.pref_type == PrefType::kInt) {
-    settings_value->set_int_val(setting.value->GetInt());
+    settings_value->set_int_val(setting.int_val);
   } else if (setting.pref_type == PrefType::kString) {
-    settings_value->set_text_val(setting.value->GetString());
+    settings_value->set_text_val(setting.string_val);
   }
 }
 
@@ -292,10 +291,30 @@ DialogTurn ConvertDialogToStruct(proto::Turn* turn_proto) {
         DVLOG(1) << "Invalid setting type for" << setting_proto.settings_id();
         continue;
       }
-      dialog.AppendAction(Action(std::move(setting_data), all_done));
+      dialog.AppendAction(Action(*setting_data.get(), all_done));
     }
   }
   return dialog;
+}
+
+void AddDialogToSparkyContext(const std::vector<DialogTurn>& dialog,
+                              proto::SparkyContextData* sparky_context_proto) {
+  for (const auto& dialog_turn : dialog) {
+    auto* dialog_proto = sparky_context_proto->add_conversation();
+    dialog_proto->set_message(dialog_turn.message);
+    dialog_proto->set_role(GetRole(dialog_turn.role));
+    for (const auto& action : dialog_turn.actions) {
+      auto* action_proto = dialog_proto->add_action();
+      action_proto->set_all_done(action.all_done);
+      if (action.type == ActionType::kLaunchApp) {
+        action_proto->set_launch_app_id(action.launched_app);
+      } else if (action.type == ActionType::kSetting &&
+                 action.updated_setting.has_value()) {
+        auto* setting_proto = action_proto->mutable_update_setting();
+        AddSettingProto(action.updated_setting.value(), setting_proto);
+      }
+    }
+  }
 }
 
 }  // namespace manta

@@ -28,24 +28,25 @@ class SparkyUtilTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   bool IsSameSetting(const proto::Setting& proto_setting,
-                     SettingsData* settings_data) {
+                     const SettingsData* settings_data) {
+    if (!settings_data->val_set) {
+      return false;
+    }
     if (proto_setting.settings_id() == settings_data->pref_name &&
         proto_setting.has_value()) {
       if (proto_setting.type() == proto::SETTING_TYPE_BOOL) {
         return (proto_setting.value().has_bool_val() &&
-                proto_setting.value().bool_val() ==
-                    settings_data->value->GetBool());
+                proto_setting.value().bool_val() == settings_data->bool_val);
       } else if (proto_setting.type() == proto::SETTING_TYPE_STRING) {
-        return (proto_setting.value().has_text_val() &&
-                (proto_setting.value().text_val() ==
-                 settings_data->value->GetString()));
+        return (
+            proto_setting.value().has_text_val() &&
+            (proto_setting.value().text_val() == settings_data->string_val));
       } else if (proto_setting.type() == proto::SETTING_TYPE_INTEGER) {
         return (proto_setting.value().has_int_val() &&
-                (proto_setting.value().int_val() ==
-                 settings_data->value->GetInt()));
+                (proto_setting.value().int_val() == settings_data->int_val));
       } else if (proto_setting.type() == proto::SETTING_TYPE_DOUBLE) {
         EXPECT_DOUBLE_EQ(proto_setting.value().double_val(),
-                         settings_data->value->GetDouble());
+                         settings_data->double_val);
         return true;
       }
     }
@@ -80,7 +81,9 @@ class SparkyUtilTest : public testing::Test {
     for (const Action& action : *actions) {
       if (action.updated_setting && action_proto.has_update_setting()) {
         if (IsSameSetting(action_proto.update_setting(),
-                          action.updated_setting.get())) {
+                          action.updated_setting.has_value()
+                              ? &action.updated_setting.value()
+                              : nullptr)) {
           return true;
         }
       } else if (action.launched_app.size() > 0 &&
@@ -89,6 +92,31 @@ class SparkyUtilTest : public testing::Test {
             action.all_done == action_proto.all_done()) {
           return true;
         }
+      }
+    }
+    return false;
+  }
+
+  bool ContainsDialog(const ::google::protobuf::RepeatedPtrField<
+                          ::manta::proto::Turn>& dialog_repeated,
+                      const std::string& dialog,
+                      Role role,
+                      std::vector<Action>* actions) {
+    for (const proto::Turn& proto_dialog : dialog_repeated) {
+      if (proto_dialog.message() == dialog &&
+          proto_dialog.role() == GetRole(role)) {
+        if (actions) {
+          if ((int)actions->size() != proto_dialog.action_size()) {
+            return false;
+          }
+          auto actions_proto = proto_dialog.action();
+          for (const proto::Action& action_proto : actions_proto) {
+            if (!ContainsAction(action_proto, actions)) {
+              return false;
+            }
+          }
+        }
+        return true;
       }
     }
     return false;
@@ -243,15 +271,51 @@ TEST_F(SparkyUtilTest, ConvertDialogToStruct) {
   DialogTurn dialog_reply_with_actions =
       ConvertDialogToStruct(&turn_with_settings);
   std::vector<Action> settings_actions;
-  settings_actions.emplace_back(
-      std::make_unique<SettingsData>("power.adaptive_charging_enabled",
-                                     PrefType::kBoolean,
-                                     std::make_optional<base::Value>(true)),
-      false);
+  SettingsData setting_val =
+      SettingsData("power.adaptive_charging_enabled", PrefType::kBoolean,
+                   std::make_optional<base::Value>(true));
+  settings_actions.emplace_back(setting_val, false);
 
   ASSERT_EQ(dialog_reply_with_actions.message, turn_with_settings.message());
   ASSERT_EQ(GetRole(dialog_reply_with_actions.role), turn_with_settings.role());
   ASSERT_TRUE(ContainsAction(*settings_action_proto, &settings_actions));
+}
+
+TEST_F(SparkyUtilTest, AddDialog) {
+  std::vector<DialogTurn> dialog;
+  dialog.emplace_back("Where is it?", Role::kUser);
+  dialog.emplace_back("In Tokyo", Role::kAssistant);
+  dialog.emplace_back("Turn on dark mode", Role::kUser);
+  std::vector<Action> settings_actions;
+  SettingsData setting_val =
+      SettingsData("ash.dark_mode.enabled", PrefType::kBoolean,
+                   std::make_optional<base::Value>(true));
+  settings_actions.emplace_back(setting_val, true);
+  dialog.emplace_back("Okay I have turned on dark mode", Role::kAssistant,
+                      settings_actions);
+  dialog.emplace_back("Create a new file with a poem about Platypuses",
+                      Role::kUser);
+  std::vector<Action> launch_actions;
+  launch_actions.emplace_back("text app", false);
+  dialog.emplace_back("Okay I have opened the text app", Role::kAssistant,
+                      launch_actions);
+
+  proto::SparkyContextData sparky_context_data;
+  AddDialogToSparkyContext(dialog, &sparky_context_data);
+  const ::google::protobuf::RepeatedPtrField<::manta::proto::Turn>&
+      dialog_proto = sparky_context_data.conversation();
+
+  ASSERT_TRUE(ContainsDialog(dialog_proto, "Where is it?", Role::kUser, {}));
+  ASSERT_TRUE(ContainsDialog(dialog_proto, "In Tokyo", Role::kAssistant, {}));
+  ASSERT_TRUE(
+      ContainsDialog(dialog_proto, "Turn on dark mode", Role::kUser, {}));
+  ASSERT_TRUE(ContainsDialog(dialog_proto, "Okay I have turned on dark mode",
+                             Role::kAssistant, &settings_actions));
+  ASSERT_TRUE(ContainsDialog(dialog_proto,
+                             "Create a new file with a poem about Platypuses",
+                             Role::kUser, {}));
+  ASSERT_TRUE(ContainsDialog(dialog_proto, "Okay I have opened the text app",
+                             Role::kAssistant, &launch_actions));
 }
 
 }  // namespace manta
