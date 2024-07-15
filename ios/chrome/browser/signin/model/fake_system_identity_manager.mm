@@ -251,6 +251,7 @@ void FakeSystemIdentityManager::ForgetIdentity(
     id<SystemIdentity> identity,
     ForgetIdentityCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK([storage_ containsIdentity:identity]);
   // Forgetting an identity is an asynchronous operation (as it requires some
   // network calls).
   PostClosure(FROM_HERE,
@@ -273,6 +274,7 @@ void FakeSystemIdentityManager::GetAccessToken(
     const std::set<std::string>& scopes,
     AccessTokenCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK([storage_ containsIdentity:identity]);
   // Fetching the access token is an asynchronous operation (as it requires
   // some network calls).
   PostClosure(FROM_HERE,
@@ -285,6 +287,7 @@ void FakeSystemIdentityManager::FetchAvatarForIdentity(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Fetching the avatar is an asynchronous operation (as it requires some
   // network calls).
+  DCHECK([storage_ containsIdentity:identity]);
   PostClosure(
       FROM_HERE,
       base::BindOnce(&FakeSystemIdentityManager::FetchAvatarForIdentityAsync,
@@ -302,6 +305,7 @@ UIImage* FakeSystemIdentityManager::GetCachedAvatarForIdentity(
 void FakeSystemIdentityManager::GetHostedDomain(id<SystemIdentity> identity,
                                                 HostedDomainCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK([storage_ containsIdentity:identity]);
   // Fetching the hosted domain is an asynchronous operation (as it requires
   // some network calls).
   PostClosure(FROM_HERE,
@@ -321,6 +325,7 @@ void FakeSystemIdentityManager::FetchCapabilities(
     const std::set<std::string>& names,
     FetchCapabilitiesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK([storage_ containsIdentity:identity]);
   // Fetching the hosted domain is an asynchronous operation (as it requires
   // some network calls).
   PostClosure(
@@ -365,7 +370,11 @@ void FakeSystemIdentityManager::ForgetIdentityAsync(
     ForgetIdentityCallback callback,
     bool notify_user) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK([storage_ containsIdentity:identity]);
+  if (![storage_ containsIdentity:identity]) {
+    // The identity was removed before async method was called. There is
+    // nothing to do.
+    return;
+  }
   [storage_ removeIdentity:identity];
 
   FireIdentityListChanged(notify_user);
@@ -377,7 +386,11 @@ void FakeSystemIdentityManager::GetAccessTokenAsync(
     id<SystemIdentity> identity,
     AccessTokenCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK([storage_ containsIdentity:identity]);
+  if (![storage_ containsIdentity:identity]) {
+    // The identity was removed before async method was called. There is
+    // nothing to do.
+    return;
+  }
   FakeSystemIdentityDetails* details = [storage_ detailsForIdentity:identity];
   if (details.error) {
     NSError* error = [NSError errorWithDomain:@"com.google.HTTPStatus"
@@ -396,7 +409,11 @@ void FakeSystemIdentityManager::GetAccessTokenAsync(
 void FakeSystemIdentityManager::FetchAvatarForIdentityAsync(
     id<SystemIdentity> identity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK([storage_ containsIdentity:identity]);
+  if (![storage_ containsIdentity:identity]) {
+    // The identity was removed before async method was called. There is
+    // nothing to do.
+    return;
+  }
   FakeSystemIdentityDetails* details = [storage_ detailsForIdentity:identity];
   if (!details.cachedAvatar) {
     details.cachedAvatar = ios::provider::GetSigninDefaultAvatar();
@@ -409,6 +426,11 @@ void FakeSystemIdentityManager::GetHostedDomainAsync(
     id<SystemIdentity> identity,
     HostedDomainCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (![storage_ containsIdentity:identity]) {
+    // The identity was removed before async method was called. There is
+    // nothing to do.
+    return;
+  }
   std::move(callback).Run(FakeGetHostedDomainForIdentity(identity), nil);
 }
 
@@ -417,7 +439,11 @@ void FakeSystemIdentityManager::FetchCapabilitiesAsync(
     const std::set<std::string>& names,
     FetchCapabilitiesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK([storage_ containsIdentity:identity]);
+  if (![storage_ containsIdentity:identity]) {
+    // The identity was removed before async method was called. There is
+    // nothing to do.
+    return;
+  }
   FakeSystemIdentityDetails* details = [storage_ detailsForIdentity:identity];
 
   // Simulates the action to refresh the internal capability state with
