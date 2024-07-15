@@ -1033,7 +1033,6 @@ void URLRequest::RetryWithStorageAccess() {
       CookieSettingOverride::kStorageAccessGrantEligibleViaHeader));
   CHECK(!cookie_setting_overrides().Has(
       CookieSettingOverride::kStorageAccessGrantEligible));
-  CHECK_EQ(storage_access_api_status(), StorageAccessApiStatus::kNone);
 
   net_log_.AddEvent(NetLogEventType::URL_REQUEST_RETRY_WITH_STORAGE_ACCESS);
   if (network_delegate()) {

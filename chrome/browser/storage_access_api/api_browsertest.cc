@@ -2985,6 +2985,28 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
   EXPECT_EQ(retry_path_fetch_count_, 2);
 }
 
+// Regression test for https://crbug.com/352722603. Same as
+// `RetryHeader_ABAContext`, except that the iframe calls
+// `document.requestStorageAccess()` before issuing the fetch.
+IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
+                       RetryHeader_ABAContext_WithIrrelevantApiCall) {
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(GetURL(kHostB, "/empty.html"));
+
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+
+  EXPECT_THAT(
+      ContentFromFetch(GetFrame(), kHostA, kRetryPath),
+      HeadersAre(UnorderedElementsAre(
+          Pair(net::HttpRequestHeaders::kCookie, "cross-site=a.test"),
+          Pair(net::HttpRequestHeaders::kSecFetchStorageAccess, "active"))));
+  EXPECT_EQ(retry_path_fetch_count_, 2);
+}
+
 IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest, LoadHeader) {
   SetBlockThirdPartyCookies(true);
 

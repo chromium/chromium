@@ -9670,6 +9670,64 @@ TEST_F(StorageAccessHeaderNetworkContextTest, StorageAccessHeader_Retry) {
   EXPECT_THAT(cookie_headers(), testing::ElementsAre("None", "3PCookie=1"));
 }
 
+// Regression test for https://crbug.com/352722603.
+TEST_F(StorageAccessHeaderNetworkContextTest,
+       StorageAccessHeader_Retry_ABA_WithStorageAccess) {
+  StartTestServerWithRequestHeaderMonitorAndRetryHandler();
+
+  const GURL request_url =
+      test_server()->GetURL("a.test", kStorageAccessRetryPath);
+  const GURL top_level_url = test_server()->GetURL("a.test", "/");
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  ASSERT_TRUE(
+      SetCookieHelper(network_context.get(), request_url, "3PCookie", "1"));
+
+  network_context->cookie_manager()->BlockThirdPartyCookies(true);
+  SetContentSettings(
+      network_context->cookie_manager(), ContentSettingsType::STORAGE_ACCESS,
+      {
+          {
+              ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                  request_url),
+              ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                  top_level_url),
+              CONTENT_SETTING_ALLOW,
+          },
+      });
+
+  ResourceRequest request;
+  request.url = request_url;
+  // The SiteForCookies makes this a cross-site context. Since the top-level
+  // site and request URL's site are same-site, this is an "ABA" fetch.
+  request.site_for_cookies = net::SiteForCookies();
+
+  // Note: just because the calling context has invoked the Storage Access API,
+  // doesn't mean that it has the ability to send credentialed requests to
+  // *arbitrary* sites. In particular, a credentialed fetch to the
+  // `top_level_url` will still require use of "Activate-Storage-Access: retry".
+  request.storage_access_api_status =
+      net::StorageAccessApiStatus::kAccessViaAPI;
+
+  auto params = mojom::URLLoaderFactoryParams::New();
+  params->is_trusted = true;
+  params->process_id = mojom::kBrowserProcessId;
+  params->is_orb_enabled = false;
+  params->isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther,
+      url::Origin::Create(top_level_url), url::Origin::Create(request.url),
+      request.site_for_cookies);
+  std::unique_ptr<TestURLLoaderClient> client =
+      FetchRequest(request, network_context.get(), mojom::kURLLoadOptionNone,
+                   mojom::kBrowserProcessId, std::move(params));
+
+  client->RunUntilComplete();
+
+  EXPECT_THAT(cookie_headers(), testing::ElementsAre("None", "3PCookie=1"));
+}
+
 TEST_F(StorageAccessHeaderNetworkContextTest, StorageAccessHeader_Load) {
   StartTestServerWithRequestHeaderMonitorAndRetryHandler();
 

@@ -1021,9 +1021,12 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Whether the request is allowed to send credentials in general. Set by
   // caller.
   bool allow_credentials_ = true;
-  // Whether the request is eligible for using storage access permission grant
-  // if one exists. Only set by caller when constructed and will not change
-  // during redirects.
+  // Whether the request is eligible for using a <request initiator's site,
+  // top-level site> storage access permission grant if one exists. Only set by
+  // caller when constructed and will not change during redirects.
+  //
+  // Note that this has no effect if the request initiator site and the request
+  // URL are not same-site to each other.
   StorageAccessApiStatus storage_access_api_status_ =
       StorageAccessApiStatus::kNone;
   SecureDnsPolicy secure_dns_policy_ = SecureDnsPolicy::kAllow;
