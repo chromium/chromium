@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
@@ -39,13 +40,21 @@ class MostRelevantTabResumptionPageHandlerTest
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
+    InitializeHandler();
+  }
 
+  void InitializeHandler() {
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile()));
     handler_ = std::make_unique<MostRelevantTabResumptionPageHandler>(
         mojo::PendingReceiver<
             ntp::most_relevant_tab_resumption::mojom::PageHandler>(),
         web_contents_.get());
+  }
+
+  void ClearHandler() {
+    handler_.reset();
+    web_contents_.reset();
   }
 
   std::vector<history::mojom::TabPtr> RunGetTabs() {
@@ -64,8 +73,7 @@ class MostRelevantTabResumptionPageHandlerTest
   }
 
   void TearDown() override {
-    handler_.reset();
-    web_contents_.reset();
+    ClearHandler();
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -88,6 +96,17 @@ class MostRelevantTabResumptionPageHandlerTest
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<MostRelevantTabResumptionPageHandler> handler_;
 };
+
+void ExpectURLTypesInFetchOptions(
+    const FetchOptions& options,
+    const std::set<FetchOptions::URLType>& expected_url_types) {
+  std::set<FetchOptions::URLType> url_type_set;
+  for (const auto& kv : options.result_sources) {
+    url_type_set.insert(kv.first);
+  }
+
+  EXPECT_EQ(expected_url_types, url_type_set);
+}
 
 }  // namespace
 
@@ -112,6 +131,64 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, GetFakeTabs) {
   }
 }
 
+TEST_F(MostRelevantTabResumptionPageHandlerTest, GetTabs_TabURLTypesOnly) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {
+          {ntp_features::kNtpMostRelevantTabResumptionModule,
+           {{ntp_features::kNtpMostRelevantTabResumptionModuleDataParam,
+             base::StringPrintf(
+                 "%d,%d",
+                 static_cast<int>(FetchOptions::URLType::kActiveLocalTab),
+                 static_cast<int>(FetchOptions::URLType::kActiveRemoteTab))}}},
+      },
+      {});
+  ClearHandler();
+  InitializeHandler();
+
+  visited_url_ranking::MockVisitedURLRankingService*
+      mock_visited_url_ranking_service =
+          static_cast<visited_url_ranking::MockVisitedURLRankingService*>(
+              VisitedURLRankingServiceFactory::GetForProfile(profile()));
+
+  EXPECT_CALL(*mock_visited_url_ranking_service, FetchURLVisitAggregates(_, _))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [](const FetchOptions& options,
+             VisitedURLRankingService::GetURLVisitAggregatesCallback callback) {
+            ExpectURLTypesInFetchOptions(
+                options, {FetchOptions::URLType::kActiveLocalTab,
+                          FetchOptions::URLType::kActiveRemoteTab});
+
+            std::vector<URLVisitAggregate> url_visit_aggregates = {};
+            url_visit_aggregates.emplace_back(
+                visited_url_ranking::CreateSampleURLVisitAggregate(
+                    GURL(visited_url_ranking::kSampleSearchUrl), 1.0f,
+                    base::Time::Now(), {Fetcher::kSession}));
+            url_visit_aggregates.emplace_back(
+                visited_url_ranking::CreateSampleURLVisitAggregate(
+                    GURL(visited_url_ranking::kSampleSearchUrl), 1.0f,
+                    base::Time::Now(), {Fetcher::kHistory}));
+
+            std::move(callback).Run(ResultStatus::kSuccess,
+                                    std::move(url_visit_aggregates));
+          }));
+
+  EXPECT_CALL(*mock_visited_url_ranking_service,
+              RankURLVisitAggregates(_, _, _))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [](const visited_url_ranking::Config& config,
+             std::vector<URLVisitAggregate> visits,
+             VisitedURLRankingService::RankURLVisitAggregatesCallback
+                 callback) {
+            std::move(callback).Run(ResultStatus::kSuccess, std::move(visits));
+          }));
+
+  auto tabs_mojom = RunGetTabs();
+  ASSERT_EQ(2u, tabs_mojom.size());
+}
+
 TEST_F(MostRelevantTabResumptionPageHandlerTest, GetTabs) {
   visited_url_ranking::MockVisitedURLRankingService*
       mock_visited_url_ranking_service =
@@ -123,6 +200,10 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, GetTabs) {
       .WillOnce(testing::Invoke(
           [](const FetchOptions& options,
              VisitedURLRankingService::GetURLVisitAggregatesCallback callback) {
+            ExpectURLTypesInFetchOptions(
+                options, {FetchOptions::URLType::kActiveRemoteTab,
+                          FetchOptions::URLType::kRemoteVisit});
+
             std::vector<URLVisitAggregate> url_visit_aggregates = {};
             url_visit_aggregates.emplace_back(
                 visited_url_ranking::CreateSampleURLVisitAggregate(

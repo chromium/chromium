@@ -2342,10 +2342,29 @@ const FeatureEntry::FeatureVariation kNtpSafeBrowsingModuleVariations[] = {
 
 const FeatureEntry::FeatureParam kNtpMostRelevantTabResumptionModuleFakeData[] =
     {{ntp_features::kNtpMostRelevantTabResumptionModuleDataParam, "Fake Data"}};
+const FeatureEntry::FeatureParam kNtpMostRelevantTabResumptionModuleTabData[] =
+    {{ntp_features::kNtpMostRelevantTabResumptionModuleDataParam, "1,2"}};
+const FeatureEntry::FeatureParam
+    kNtpMostRelevantTabResumptionModuleRemoteTabData[] = {
+        {ntp_features::kNtpMostRelevantTabResumptionModuleDataParam, "2"}};
+const FeatureEntry::FeatureParam
+    kNtpMostRelevantTabResumptionModuleVisitData[] = {
+        {ntp_features::kNtpMostRelevantTabResumptionModuleDataParam,
+         "1,2,3,4"}};
+// Most relevant tab resumption module data params may be expressed as a comma
+// separated value consisting of the integer representations of the
+// `FetchOptions::URLType` enumeration, to specify what URL types should be
+// provided as options to the Visited URL Ranking Service's APIs.
 const FeatureEntry::FeatureVariation
     kNtpMostRelevantTabResumptionModuleVariations[] = {
         {"- Fake Data", kNtpMostRelevantTabResumptionModuleFakeData,
          std::size(kNtpMostRelevantTabResumptionModuleFakeData), nullptr},
+        {"- Tabs Only", kNtpMostRelevantTabResumptionModuleTabData,
+         std::size(kNtpMostRelevantTabResumptionModuleTabData), nullptr},
+        {"- Remote Tabs Only", kNtpMostRelevantTabResumptionModuleRemoteTabData,
+         std::size(kNtpMostRelevantTabResumptionModuleRemoteTabData), nullptr},
+        {"- All Visits", kNtpMostRelevantTabResumptionModuleVisitData,
+         std::size(kNtpMostRelevantTabResumptionModuleVisitData), nullptr},
 };
 
 const FeatureEntry::FeatureParam kNtpTabResumptionModuleFakeData[] = {

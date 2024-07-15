@@ -126,9 +126,37 @@ URLVisitAggregate::Tab CreateSampleURLVisitAggregateTab(
       "Sample Session Tag", "Test Session");
 }
 
+FetchOptions::URLTypeSet AsURLTypeSet(
+    const std::vector<std::string>& url_type_entries) {
+  FetchOptions::URLTypeSet result_url_types = {};
+  for (const auto& url_type_entry : url_type_entries) {
+    int url_type;
+    if (base::StringToInt(url_type_entry, &url_type)) {
+      result_url_types.Put(static_cast<FetchOptions::URLType>(url_type));
+    }
+  }
+
+  return result_url_types;
+}
+
 // Return the desired fetch result types as specified via feature params or the
 // defaults if not specified.
 FetchOptions::URLTypeSet GetFetchResultURLTypes() {
+  const std::string module_data_param = base::GetFieldTrialParamValueByFeature(
+      ntp_features::kNtpMostRelevantTabResumptionModule,
+      ntp_features::kNtpMostRelevantTabResumptionModuleDataParam);
+  if (!module_data_param.empty() && module_data_param != "Fake Data") {
+    const std::vector<std::string> data_param_url_types =
+        base::SplitString(module_data_param, ",:;", base::TRIM_WHITESPACE,
+                          base::SPLIT_WANT_NONEMPTY);
+
+    FetchOptions::URLTypeSet result_url_types =
+        AsURLTypeSet(data_param_url_types);
+    if (!result_url_types.empty()) {
+      return result_url_types;
+    }
+  }
+
   auto url_type_entries = base::SplitString(
       base::GetFieldTrialParamValueByFeature(
           ntp_features::kNtpMostRelevantTabResumptionModule,
@@ -140,15 +168,7 @@ FetchOptions::URLTypeSet GetFetchResultURLTypes() {
             FetchOptions::URLType::kRemoteVisit};
   }
 
-  FetchOptions::URLTypeSet result_url_types = {};
-  for (const auto& url_type_entry : url_type_entries) {
-    int url_type;
-    if (base::StringToInt(url_type_entry, &url_type)) {
-      result_url_types.Put(static_cast<FetchOptions::URLType>(url_type));
-    }
-  }
-
-  return result_url_types;
+  return AsURLTypeSet(url_type_entries);
 }
 }  // namespace
 
@@ -168,11 +188,11 @@ MostRelevantTabResumptionPageHandler::~MostRelevantTabResumptionPageHandler() =
     default;
 
 void MostRelevantTabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
-  const std::string fake_data_param = base::GetFieldTrialParamValueByFeature(
+  const std::string data_type_param = base::GetFieldTrialParamValueByFeature(
       ntp_features::kNtpMostRelevantTabResumptionModule,
       ntp_features::kNtpMostRelevantTabResumptionModuleDataParam);
 
-  if (!fake_data_param.empty()) {
+  if (data_type_param == "Fake Data") {
     std::vector<history::mojom::TabPtr> tabs_mojom;
     const int kSampleVisitsCount = 3;
     for (int i = 0; i < kSampleVisitsCount; i++) {
