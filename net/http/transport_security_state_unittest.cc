@@ -1281,8 +1281,6 @@ TEST_F(TransportSecurityStateStaticTest, Preloaded) {
   EXPECT_TRUE(StaticShouldRedirect("epoxate.com"));
   EXPECT_FALSE(HasStaticState("foo.epoxate.com"));
 
-  EXPECT_FALSE(HasStaticState("foo.torproject.org"));
-
   EXPECT_TRUE(StaticShouldRedirect("www.moneybookers.com"));
   EXPECT_FALSE(HasStaticState("moneybookers.com"));
 
@@ -1363,21 +1361,6 @@ TEST_F(TransportSecurityStateStaticTest, PreloadedPins) {
   EXPECT_TRUE(OnlyPinningInStaticState("googlesyndication.com"));
   EXPECT_TRUE(OnlyPinningInStaticState("doubleclick.net"));
   EXPECT_TRUE(OnlyPinningInStaticState("googlegroups.com"));
-
-  EXPECT_TRUE(HasStaticPublicKeyPins("torproject.org"));
-  EXPECT_TRUE(HasStaticPublicKeyPins("www.torproject.org"));
-  EXPECT_TRUE(HasStaticPublicKeyPins("check.torproject.org"));
-  EXPECT_TRUE(HasStaticPublicKeyPins("blog.torproject.org"));
-  EXPECT_FALSE(HasStaticState("foo.torproject.org"));
-
-  EXPECT_TRUE(state.GetStaticPKPState("torproject.org", &pkp_state));
-  EXPECT_FALSE(pkp_state.spki_hashes.empty());
-  EXPECT_TRUE(state.GetStaticPKPState("www.torproject.org", &pkp_state));
-  EXPECT_FALSE(pkp_state.spki_hashes.empty());
-  EXPECT_TRUE(state.GetStaticPKPState("check.torproject.org", &pkp_state));
-  EXPECT_FALSE(pkp_state.spki_hashes.empty());
-  EXPECT_TRUE(state.GetStaticPKPState("blog.torproject.org", &pkp_state));
-  EXPECT_FALSE(pkp_state.spki_hashes.empty());
 
   // Facebook has pinning and hsts on facebook.com, but only pinning on
   // subdomains.
