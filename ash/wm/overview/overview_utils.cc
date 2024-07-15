@@ -52,6 +52,8 @@
 
 namespace ash {
 
+constexpr int kBirchBarHotseatSpacing = 10;
+
 bool IsInOverviewSession() {
   OverviewController* overview_controller = OverviewController::Get();
   return overview_controller && overview_controller->InOverviewSession();
@@ -305,9 +307,14 @@ gfx::Rect GetGridBoundsInScreen(
     if (!forest_enabled && hotseat_extended) {
       bounds.Inset(gfx::Insets::TLBR(0, 0, hotseat_bottom_inset, 0));
     } else if (forest_enabled && show_home_launcher) {
-      bounds.Inset(gfx::Insets::TLBR(
-          0, 0, hotseat_bottom_inset - ShelfConfig::Get()->in_app_shelf_size(),
-          0));
+      // If the home launcher is shown, add some extra spacing between the birch
+      // bar and the hotseat. Subtract the in app shelf size since it is already
+      // factored in the work area calculations.
+      bounds.Inset(
+          gfx::Insets::TLBR(0, 0,
+                            hotseat_bottom_inset + kBirchBarHotseatSpacing -
+                                ShelfConfig::Get()->in_app_shelf_size(),
+                            0));
     }
   }
 
