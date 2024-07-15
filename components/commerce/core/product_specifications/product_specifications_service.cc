@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/hash/sha1.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
@@ -85,6 +86,17 @@ std::vector<sync_pb::ProductComparisonSpecifics> CreateItemLevelSpecifics(
   return item_level_specifics;
 }
 
+void SortItemSpecifics(
+    std::vector<sync_pb::ProductComparisonSpecifics>& item_specifics) {
+  base::ranges::sort(
+      item_specifics, [](const auto& specifics_a, const auto& specifics_b) {
+        return syncer::UniquePosition::FromProto(
+                   specifics_a.product_comparison_item().unique_position())
+            .LessThan(syncer::UniquePosition::FromProto(
+                specifics_b.product_comparison_item().unique_position()));
+      });
+}
+
 }  // namespace
 
 namespace commerce {
@@ -128,14 +140,7 @@ ProductSpecificationsService::GetAllProductSpecifications() {
     }
     // Order items, as defined by UniquePosition.
     for (auto& [_, item_specifics] : items_lookup) {
-      std::sort(
-          item_specifics.begin(), item_specifics.end(),
-          [](const auto& specifics_a, const auto& specifics_b) {
-            return syncer::UniquePosition::FromProto(
-                       specifics_a.product_comparison_item().unique_position())
-                .LessThan(syncer::UniquePosition::FromProto(
-                    specifics_b.product_comparison_item().unique_position()));
-          });
+      SortItemSpecifics(item_specifics);
     }
     // Create ProductSpecificationSets.
     std::vector<ProductSpecificationsSet> sets;
@@ -194,6 +199,39 @@ void ProductSpecificationsService::GetAllProductSpecifications(
 
 const std::optional<ProductSpecificationsSet>
 ProductSpecificationsService::GetSetByUuid(const base::Uuid& uuid) {
+  if (base::FeatureList::IsEnabled(
+          commerce::kProductSpecificationsMultiSpecifics)) {
+    sync_pb::ProductComparisonSpecifics* top_level_specific =
+        GetTopLevelSpecific(uuid.AsLowercaseString(), bridge_->entries());
+    // If we can't find the top level entry (perhaps due to a sync failure -
+    // item level entries were synced, but the top level entry sync failed, the
+    // item level entries are considered orphaned and the
+    // ProductSpecificationsSet does not exist until the top level entry is
+    // synced.
+    if (!top_level_specific) {
+      return std::nullopt;
+    }
+    std::vector<sync_pb::ProductComparisonSpecifics> item_specifics =
+        GetItemSpecifics(uuid.AsLowercaseString(), bridge_->entries());
+    SortItemSpecifics(item_specifics);
+
+    std::vector<GURL> urls;
+    // The time the ProductSpecificationsSet was last updated is that recorded
+    // on the latest specific - be it an item level or top level.
+    long update_time = top_level_specific->update_time_unix_epoch_millis();
+    for (const auto& item_specific : item_specifics) {
+      urls.emplace_back(item_specific.product_comparison_item().url());
+      if (update_time < item_specific.update_time_unix_epoch_millis()) {
+        update_time = item_specific.update_time_unix_epoch_millis();
+      }
+    }
+    // TODO(crbug.com/353255087) Investigate if ProductSpecificationsSet
+    // should take a const ref.
+    return ProductSpecificationsSet(
+        top_level_specific->uuid(),
+        top_level_specific->creation_time_unix_epoch_millis(), update_time,
+        urls, top_level_specific->product_comparison().name());
+  }
   // TODO(b:337263623): Consider centralizing ID logic for product
   //                    specifications.
   auto it = bridge_->entries().find(uuid.AsLowercaseString());

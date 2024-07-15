@@ -774,4 +774,62 @@ TEST_F(ProductSpecificationsServiceTest,
   EXPECT_EQ(std::nullopt, service()->SetName(uuid_to_modify, "New name"));
 }
 
+TEST_F(ProductSpecificationsServiceTest, TestGetByUuidMultiSpecifics) {
+  EnableMultiSpecFlag();
+
+  std::vector<ProductSpecificationsSet> sets;
+  sets.push_back(service()
+                     ->AddProductSpecificationsSet(
+                         "Set 0", {GURL("https://a.example.com"),
+                                   GURL("https://b.example.com")})
+                     .value());
+  sets.push_back(service()
+                     ->AddProductSpecificationsSet(
+                         "Set 1", {GURL("https://c.example.com"),
+                                   GURL("https://d.example.com")})
+                     .value());
+  sets.push_back(service()
+                     ->AddProductSpecificationsSet(
+                         "Set 2", {GURL("https://e.example.com"),
+                                   GURL("https://f.example.com")})
+                     .value());
+
+  CheckProductSpecificationsExists(sets);
+
+  const base::Uuid& uuid_to_get = sets[1].uuid();
+  std::optional<ProductSpecificationsSet> set =
+      service()->GetSetByUuid(uuid_to_get);
+  EXPECT_NE(std::nullopt, set);
+  EXPECT_EQ("Set 1", set.value().name());
+  EXPECT_EQ(2u, set.value().urls().size());
+  EXPECT_EQ(GURL("https://c.example.com"), set.value().urls()[0]);
+  EXPECT_EQ(GURL("https://d.example.com"), set.value().urls()[1]);
+}
+
+TEST_F(ProductSpecificationsServiceTest,
+       TestGetByUuidMultiSpecificsTopLevelAbsent) {
+  // TODO(crbug.com/353256094) Ensure flag is set in constructor of test.
+  EnableMultiSpecFlag();
+
+  std::vector<ProductSpecificationsSet> sets;
+  for (int i = 0; i < 2; i++) {
+    sets.push_back(
+        service()
+            ->AddProductSpecificationsSet(
+                base::StringPrintf("Set %d", i),
+                {GURL("https://a.example.com"), GURL("https://b.example.com")})
+            .value());
+  }
+
+  CheckProductSpecificationsExists(sets);
+
+  const base::Uuid& uuid_to_get = sets[1].uuid();
+  auto it = entries().find(uuid_to_get.AsLowercaseString());
+  // Remove top level entry to simulate losing it (e.g. failed to sync
+  // top level entry). At this point we can't reconstruct a
+  // ProductSpecificationsSet so the GetSetByUuid API returns std:nullopt.
+  entries().erase(it);
+  EXPECT_EQ(std::nullopt, service()->GetSetByUuid(uuid_to_get));
+}
+
 }  // namespace commerce
