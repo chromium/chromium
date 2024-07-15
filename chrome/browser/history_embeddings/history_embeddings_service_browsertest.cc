@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
   service()->Search("A B C D e f g", {}, 1, search_future.GetCallback());
   SearchResult result = search_future.Take();
   EXPECT_EQ(result.scored_url_rows.size(), 1u);
-  EXPECT_EQ(result.scored_url_rows[0].scored_url.passage, "A a B C b a 2 D");
+  EXPECT_EQ(result.scored_url_rows[0].GetBestPassage(), "A a B C b a 2 D");
   EXPECT_EQ(result.scored_url_rows[0].row.url(), url);
 
   histogram_tester.ExpectUniqueSample(
@@ -155,6 +155,74 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
                                       1);
   histogram_tester.ExpectUniqueSample(
       "History.Embeddings.NumMatchedUrlsVisible", 1, 1);
+}
+
+class HistoryEmbeddingsWithLowAggregationBrowserTest
+    : public HistoryEmbeddingsBrowserTest {
+  void InitializeFeatureList() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kHistoryEmbeddings,
+          {{"UseMlEmbedder", "false"},
+           {"SendQualityLog", "true"},
+           {"PassageExtractionMaxWordsPerAggregatePassage", "10"}}},
+#if BUILDFLAG(IS_CHROMEOS)
+         {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+         {page_content_annotations::features::kPageContentAnnotations, {{}}}},
+        /*disabled_features=*/{});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsWithLowAggregationBrowserTest,
+                       PassageContextSelectionLimitedByWordCount) {
+  OverrideVisibilityScoresForTesting({
+      {"Paragraph one with link and more. Header one Paragraph two.", 0.99},
+      {"Paragraph three with link and more.", 0.99},
+      {"Header two Paragraph four that puts entire div over length.", 0.99},
+      {"Paragraph five with link and more. Paragraph six.", 0.99},
+      {"Paragraph seven that puts entire div over length.", 0.99},
+  });
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  base::test::TestFuture<UrlPassages> store_future;
+  callback_for_tests() = store_future.GetRepeatingCallback();
+
+  // This HTML has <br> tags to separate the passages with known word counts.
+  const GURL url = embedded_test_server()->GetURL("/inner_text/test2.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_TRUE(store_future.Wait());
+
+  // Search for the passage.
+  base::test::TestFuture<SearchResult> search_future;
+  service()->Search("A B C", {}, 1, search_future.GetCallback());
+  SearchResult result = search_future.Take();
+  EXPECT_EQ(result.scored_url_rows.size(), 1u);
+  EXPECT_EQ(result.scored_url_rows[0].GetBestPassage(),
+            "Header two Paragraph four that puts entire div over length.");
+  EXPECT_EQ(result.scored_url_rows[0].row.url(), url);
+
+  // Can't exceed available passage count.
+  EXPECT_EQ(result.scored_url_rows[0].GetBestScoreIndices(0, 0).size(), 0u);
+  EXPECT_EQ(result.scored_url_rows[0].GetBestScoreIndices(1, 0).size(), 1u);
+  EXPECT_EQ(result.scored_url_rows[0].GetBestScoreIndices(2, 0).size(), 2u);
+  EXPECT_EQ(result.scored_url_rows[0].GetBestScoreIndices(3, 0).size(), 3u);
+  EXPECT_EQ(result.scored_url_rows[0].GetBestScoreIndices(4, 0).size(), 4u);
+  EXPECT_EQ(result.scored_url_rows[0].GetBestScoreIndices(5, 0).size(), 5u);
+  EXPECT_EQ(result.scored_url_rows[0].GetBestScoreIndices(6, 0).size(), 5u);
+
+  // Check that increasing word count grows context to include more passages.
+  // Note that since scores are the same, higher word counts come first.
+  // For the known passages, we have these counts, in order: 10, 10, 8, 8, 6.
+  EXPECT_EQ(result.scored_url_rows[0].GetBestScoreIndices(0, 1).size(), 1u);
+  EXPECT_EQ(result.scored_url_rows[0].GetBestScoreIndices(0, 10).size(), 1u);
+  EXPECT_EQ(result.scored_url_rows[0].GetBestScoreIndices(0, 11).size(), 2u);
+  EXPECT_EQ(result.scored_url_rows[0].GetBestScoreIndices(0, 20).size(), 2u);
+  EXPECT_EQ(result.scored_url_rows[0].GetBestScoreIndices(0, 21).size(), 3u);
+  EXPECT_EQ(result.scored_url_rows[0].GetBestScoreIndices(0, 28).size(), 3u);
+  EXPECT_EQ(result.scored_url_rows[0].GetBestScoreIndices(0, 29).size(), 4u);
+  EXPECT_EQ(result.scored_url_rows[0].GetBestScoreIndices(0, 36).size(), 4u);
+  EXPECT_EQ(result.scored_url_rows[0].GetBestScoreIndices(0, 37).size(), 5u);
+  EXPECT_EQ(result.scored_url_rows[0].GetBestScoreIndices(0, 1000).size(), 5u);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -221,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest, LogDataIsPrepared) {
   base::HistogramTester histogram_tester;
   SearchResult result;
   result.scored_url_rows = {
-      ScoredUrlRow(ScoredUrl(0, 0, base::Time::Now(), 0.5f, 0, {})),
+      ScoredUrlRow(ScoredUrl(0, 0, base::Time::Now(), 0.5f)),
   };
   service()->SendQualityLog(
       result,
@@ -238,8 +306,7 @@ class HistoryEmbeddingsWithDatabaseCacheBrowserTest
         {{kHistoryEmbeddings,
           {{"UseMlEmbedder", "false"},
            {"SendQualityLog", "true"},
-           {"UseDatabaseBeforeEmbedder", "true"},
-           {"UseUrlFilter", "false"}}},
+           {"UseDatabaseBeforeEmbedder", "true"}}},
 #if BUILDFLAG(IS_CHROMEOS)
          {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}},
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -388,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsWithUrlFilterBrowserTest,
   service()->Search("A B C D e f g", {}, 1, search_future.GetCallback());
   SearchResult result = search_future.Take();
   EXPECT_EQ(result.scored_url_rows.size(), 1u);
-  EXPECT_EQ(result.scored_url_rows[0].scored_url.passage, "A a B C b a 2 D");
+  EXPECT_EQ(result.scored_url_rows[0].GetBestPassage(), "A a B C b a 2 D");
   EXPECT_EQ(result.scored_url_rows[0].row.url(), url);
 
   histogram_tester.ExpectUniqueSample(

@@ -255,30 +255,34 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchUsesCorrectThresholds) {
       {"passage", 1},
   });
 
-  auto create_scored_url = [&](history::VisitID visit_id, float score) {
+  auto create_scored_url_row = [&](history::VisitID visit_id, float score) {
     AddTestHistoryPage("http://test.com");
-    ScoredUrl scored_url{1, visit_id, {}, score, 0, {}};
-    scored_url.passage = "passage";
-    return scored_url;
+    ScoredUrlRow scored_url_row(ScoredUrl(1, visit_id, {}, score));
+    scored_url_row.passages_embeddings.url_passages.passages.add_passages(
+        "passage");
+    scored_url_row.passages_embeddings.url_embeddings.embeddings.emplace_back(
+        std::vector<float>(768, 1.0f));
+    scored_url_row.scores.push_back(score);
+    return scored_url_row;
   };
-  std::vector<ScoredUrl> scored_urls = {
-      create_scored_url(1, 1),
-      create_scored_url(2, .8),
-      create_scored_url(3, .6),
-      create_scored_url(4, .4),
+  std::vector<ScoredUrlRow> scored_url_rows = {
+      create_scored_url_row(1, 1),
+      create_scored_url_row(2, .8),
+      create_scored_url_row(3, .6),
+      create_scored_url_row(4, .4),
   };
 
   // Should default to .9 when neither the feature param nor metadata thresholds
   // are set.
   base::test::TestFuture<SearchResult> future;
-  service_->OnSearchCompleted(future.GetCallback(), {}, scored_urls);
+  service_->OnSearchCompleted(future.GetCallback(), {}, scored_url_rows);
   SearchResult result = future.Take();
   ASSERT_EQ(result.scored_url_rows.size(), 1u);
   EXPECT_EQ(result.scored_url_rows[0].scored_url.visit_id, 1);
 
   // Should use the metadata threshold when it's set.
   SetMetadataScoreThreshold(0.7);
-  service_->OnSearchCompleted(future.GetCallback(), {}, scored_urls);
+  service_->OnSearchCompleted(future.GetCallback(), {}, scored_url_rows);
   result = future.Take();
   ASSERT_EQ(result.scored_url_rows.size(), 2u);
   EXPECT_EQ(result.scored_url_rows[0].scored_url.visit_id, 1);
@@ -293,7 +297,7 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchUsesCorrectThresholds) {
                               {"SearchPassageMinimumWordCount", "3"},
                               {"SearchScoreThreshold", "0.5"},
                           });
-  service_->OnSearchCompleted(future.GetCallback(), {}, scored_urls);
+  service_->OnSearchCompleted(future.GetCallback(), {}, scored_url_rows);
   result = future.Take();
   ASSERT_EQ(result.scored_url_rows.size(), 3u);
   EXPECT_EQ(result.scored_url_rows[0].scored_url.visit_id, 1);

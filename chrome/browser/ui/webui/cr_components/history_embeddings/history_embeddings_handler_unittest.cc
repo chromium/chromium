@@ -151,7 +151,7 @@ TEST_F(HistoryEmbeddingsHandlerTest, Searches) {
 
 TEST_F(HistoryEmbeddingsHandlerTest, FormatsMojoResults) {
   history_embeddings::ScoredUrlRow scored_url_row(
-      history_embeddings::ScoredUrl(0, 0, {}, .5, 0u, {}));
+      history_embeddings::ScoredUrl(0, 0, {}, .5));
   scored_url_row.row = history::URLRow{GURL{"https://google.com"}};
   scored_url_row.row.set_title(u"my title");
   scored_url_row.row.set_last_visit(base::Time::Now() - base::Hours(1));

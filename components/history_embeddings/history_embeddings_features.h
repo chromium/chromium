@@ -33,6 +33,11 @@ extern const base::FeatureParam<int>
 extern const base::FeatureParam<int> kSearchQueryMinimumWordCount;
 extern const base::FeatureParam<int> kSearchPassageMinimumWordCount;
 
+// The minimum number of words to gather from several passages used as
+// context for the Answerer. Top passages will be included until the sum
+// of word counts meets this minimum.
+extern const base::FeatureParam<int> kContextPassagesMinimumWordCount;
+
 // Specifies the number of best matching items to take from the search.
 extern const base::FeatureParam<int> kSearchResultItemCount;
 

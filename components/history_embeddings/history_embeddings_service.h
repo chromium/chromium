@@ -66,15 +66,35 @@ size_t CountWords(const std::string& s);
 // A single item that forms part of a search result; combines metadata found in
 // the history embeddings database with additional info from history database.
 struct ScoredUrlRow {
-  explicit ScoredUrlRow(ScoredUrl scored_url)
-      : scored_url(std::move(scored_url)) {}
-  ScoredUrlRow(const ScoredUrlRow&) = default;
-  ScoredUrlRow(ScoredUrlRow&&) = default;
-  ScoredUrlRow& operator=(const ScoredUrlRow&) = default;
-  ScoredUrlRow& operator=(ScoredUrlRow&&) = default;
+  explicit ScoredUrlRow(ScoredUrl scored_url);
+  ScoredUrlRow(const ScoredUrlRow&);
+  ScoredUrlRow(ScoredUrlRow&&);
+  ~ScoredUrlRow();
+  ScoredUrlRow& operator=(const ScoredUrlRow&);
+  ScoredUrlRow& operator=(ScoredUrlRow&&);
 
+  // Returns the highest scored passage in `passages_embeddings`.
+  std::string GetBestPassage() const;
+
+  // Finds the indices of the top scores, ordered descending by score.
+  // This is useful for selecting a subset of `passages_embeddings` for use as
+  // answerer context. The size of the returned vector will be at least
+  // `min_count` provided there is sufficient data available. The
+  // `min_word_count` parameter will also be used to ensure the
+  // passages for returned indices have word counts adding up to at
+  // least this minimum.
+  std::vector<size_t> GetBestScoreIndices(size_t min_count,
+                                          size_t min_word_count) const;
+
+  // Basic scoring and history data for this URL.
   ScoredUrl scored_url;
   history::URLRow row;
+
+  // All passages and embeddings for this URL (i.e. not a partial set).
+  UrlPassagesEmbeddings passages_embeddings;
+
+  // All scores against the query for `passages_embeddings`.
+  std::vector<float> scores;
 };
 
 struct SearchResult {
@@ -176,7 +196,7 @@ class HistoryEmbeddingsService : public KeyedService,
                                  std::vector<Embedding> passages_embeddings);
 
     // Runs search on worker sequence.
-    std::vector<ScoredUrl> Search(
+    std::vector<ScoredUrlRow> Search(
         base::WeakPtr<std::atomic<size_t>> weak_latest_query_id,
         size_t query_id,
         Embedding query_embedding,
@@ -248,13 +268,13 @@ class HistoryEmbeddingsService : public KeyedService,
   // the history database.
   void OnSearchCompleted(SearchResultCallback callback,
                          SearchResult result,
-                         std::vector<ScoredUrl> scored_urls);
+                         std::vector<ScoredUrlRow> scored_url_rows);
 
   // Calls `page_content_annotation_service_` to determine whether the passage
   // of each ScoredUrl should be shown to the user.
   void DeterminePassageVisibility(SearchResultCallback callback,
                                   SearchResult result,
-                                  std::vector<ScoredUrl> scored_urls);
+                                  std::vector<ScoredUrlRow> scored_url_rows);
 
   // Called after `page_content_annotation_service_` has determined visibility
   // for the passage of each ScoredUrl. This will filter `scored_urls` to only
@@ -262,7 +282,7 @@ class HistoryEmbeddingsService : public KeyedService,
   void OnPassageVisibilityCalculated(
       SearchResultCallback callback,
       SearchResult result,
-      std::vector<ScoredUrl> scored_urls,
+      std::vector<ScoredUrlRow> scored_url_rows,
       const std::vector<page_content_annotations::BatchAnnotationResult>&
           annotation_results);
 

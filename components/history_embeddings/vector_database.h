@@ -79,13 +79,12 @@ struct UrlEmbeddings {
   UrlEmbeddings(UrlEmbeddings&&);
   UrlEmbeddings& operator=(UrlEmbeddings&&);
   UrlEmbeddings(const UrlEmbeddings&);
-  UrlEmbeddings& operator=(UrlEmbeddings&);
+  UrlEmbeddings& operator=(const UrlEmbeddings&);
   bool operator==(const UrlEmbeddings&) const;
 
-  // Finds score of embedding nearest to query, and also outputs its index.
-  std::pair<float, size_t> BestScoreWith(
-      const Embedding& query,
-      size_t search_minimum_word_count) const;
+  // Finds score of embedding nearest to query.
+  float BestScoreWith(const Embedding& query,
+                      size_t search_minimum_word_count) const;
 
   history::URLID url_id;
   history::VisitID visit_id;
@@ -97,9 +96,7 @@ struct ScoredUrl {
   ScoredUrl(history::URLID url_id,
             history::VisitID visit_id,
             base::Time visit_time,
-            float score,
-            size_t index,
-            Embedding passage_embedding);
+            float score);
   ~ScoredUrl();
   ScoredUrl(ScoredUrl&&);
   ScoredUrl& operator=(ScoredUrl&&);
@@ -113,17 +110,6 @@ struct ScoredUrl {
 
   // A measure of how closely the query matched the found data.
   float score;
-
-  // Index of the embedding, which also corresponds to the index of the source
-  // passage used to compute the embedding.
-  size_t index;
-
-  // The embedding for the source passage. Preserved during search.
-  Embedding passage_embedding;
-
-  // Source passage; may not be populated during search, but kept in this
-  // struct for convenience when passing finished results to service callers.
-  std::string passage;
 };
 
 struct SearchInfo {
@@ -149,6 +135,8 @@ struct UrlPassagesEmbeddings {
   UrlPassagesEmbeddings(history::URLID url_id,
                         history::VisitID visit_id,
                         base::Time visit_time);
+  UrlPassagesEmbeddings(const UrlPassagesEmbeddings&);
+  UrlPassagesEmbeddings& operator=(const UrlPassagesEmbeddings&);
 
   UrlPassages url_passages;
   UrlEmbeddings url_embeddings;

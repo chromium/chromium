@@ -93,7 +93,7 @@ void HistoryEmbeddingsHandler::OnReceivedSearchResult(
         nullptr, nullptr, nullptr));
 
     if (history_embeddings::kShowSourcePassages.Get()) {
-      item->source_passage = scored_url_row.scored_url.passage;
+      item->source_passage = scored_url_row.GetBestPassage();
     }
 
     mojom_search_result->items.push_back(std::move(item));
