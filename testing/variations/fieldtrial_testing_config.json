@@ -13586,6 +13586,7 @@
                     },
                     "enable_features": [
                         "MinorModeRestrictionsForHistorySyncOptIn",
+                        "PrefetchSystemCapabilitiesOnAppStartup",
                         "PrefetchSystemCapabilitiesOnFirstRun",
                         "UseSystemCapabilitiesForMinorModeRestrictions"
                     ]
