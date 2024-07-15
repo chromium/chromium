@@ -332,8 +332,6 @@ class TestBrowserWindow : public BrowserWindow {
 class TestBrowserWindowOwner : public BrowserListObserver {
  public:
   explicit TestBrowserWindowOwner(std::unique_ptr<TestBrowserWindow> window);
-  // Deprecated. Use ctor above.
-  explicit TestBrowserWindowOwner(TestBrowserWindow* window);
   TestBrowserWindowOwner(const TestBrowserWindowOwner&) = delete;
   TestBrowserWindowOwner& operator=(const TestBrowserWindowOwner&) = delete;
   ~TestBrowserWindowOwner() override;

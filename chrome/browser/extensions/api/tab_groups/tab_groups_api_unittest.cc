@@ -134,8 +134,6 @@ void TabGroupsApiUnitTest::SetUp() {
 
   // Create a browser window.
   browser_window_ = std::make_unique<TestBrowserWindow>();
-  // TestBrowserWindowOwner handles its own lifetime, and also cleans up
-  // |window2|.
   Browser::CreateParams params(profile(), /* user_gesture */ true);
   params.type = Browser::TYPE_NORMAL;
   params.window = browser_window_.get();
@@ -174,15 +172,17 @@ void TabGroupsApiUnitTest::TearDown() {
 // tests querying on a TabStripModel that doesnt support tab groups
 TEST_F(TabGroupsApiUnitTest, TabStripModelWithNoTabGroupFails) {
   // Create a new window that doesnt support groups and add a few tabs.
-  TestBrowserWindow* window2 = new TestBrowserWindow;
+  auto window2 = std::make_unique<TestBrowserWindow>();
+
+  Browser::CreateParams params(profile(), /* user_gesture */ true);
+  params.type = Browser::TYPE_NORMAL;
+  params.window = window2.get();
+  params.are_tab_groups_enabled = false;
 
   // TestBrowserWindowOwner handles its own lifetime, and also cleans up
   // |window2|.
-  new TestBrowserWindowOwner(window2);
-  Browser::CreateParams params(profile(), /* user_gesture */ true);
-  params.type = Browser::TYPE_NORMAL;
-  params.window = window2;
-  params.are_tab_groups_enabled = false;
+  new TestBrowserWindowOwner(std::move(window2));
+
   std::unique_ptr<Browser> browser2(Browser::Create(params));
   BrowserList::SetLastActive(browser2.get());
 
@@ -562,13 +562,15 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsMoveAcrossWindows) {
   int group_id = tab_groups_util::GetGroupId(group);
 
   // Create a new window and add a few tabs.
-  TestBrowserWindow* window2 = new TestBrowserWindow;
-  // TestBrowserWindowOwner handles its own lifetime, and also cleans up
-  // |window2|.
-  new TestBrowserWindowOwner(window2);
+  auto window2 = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), /* user_gesture */ true);
   params.type = Browser::TYPE_NORMAL;
-  params.window = window2;
+  params.window = window2.get();
+
+  // TestBrowserWindowOwner handles its own lifetime, and also cleans up
+  // |window2|.
+  new TestBrowserWindowOwner(std::move(window2));
+
   std::unique_ptr<Browser> browser2(Browser::Create(params));
   BrowserList::SetLastActive(browser2.get());
   int window_id2 = ExtensionTabUtil::GetWindowId(browser2.get());

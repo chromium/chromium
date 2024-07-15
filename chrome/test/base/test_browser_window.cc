@@ -428,11 +428,6 @@ TestBrowserWindow::SetFeaturePromoController(
 
 // TestBrowserWindowOwner -----------------------------------------------------
 
-TestBrowserWindowOwner::TestBrowserWindowOwner(TestBrowserWindow* window)
-    : window_(window) {
-  BrowserList::AddObserver(this);
-}
-
 TestBrowserWindowOwner::TestBrowserWindowOwner(
     std::unique_ptr<TestBrowserWindow> window)
     : window_(std::move(window)) {

@@ -6,6 +6,11 @@
 
 #include <stdint.h>
 
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/timer/mock_timer.h"
@@ -225,7 +230,8 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
     std::unique_ptr<Browser> browser =
         CreateBrowser(profile, type, false, window.get());
     BrowserList::SetLastActive(browser.get());
-    new TestBrowserWindowOwner(window.release());
+    // Self deleting.
+    new TestBrowserWindowOwner(std::move(window));
     return browser;
   }
 

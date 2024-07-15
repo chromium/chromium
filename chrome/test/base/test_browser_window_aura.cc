@@ -18,25 +18,29 @@ namespace chrome {
 std::unique_ptr<Browser> CreateBrowserWithAuraTestWindowForParams(
     std::unique_ptr<aura::Window> window,
     Browser::CreateParams* params) {
-  if (window.get() == nullptr) {
+  if (!window) {
     window = std::make_unique<aura::Window>(nullptr);
     window->SetId(0);
     window->SetType(aura::client::WINDOW_TYPE_NORMAL);
     window->Init(ui::LAYER_TEXTURED);
     window->Show();
   }
-  TestBrowserWindowAura* browser_window =
-      new TestBrowserWindowAura(std::move(window));
-  new TestBrowserWindowOwner(browser_window);
-  return browser_window->CreateBrowser(params);
+  auto browser_window =
+      std::make_unique<TestBrowserWindowAura>(std::move(window));
+  auto browser = browser_window->CreateBrowser(params);
+  // Self deleting.
+  new TestBrowserWindowOwner(std::move(browser_window));
+  return browser;
 }
 
 std::unique_ptr<Browser> CreateBrowserWithViewsTestWindowForParams(
     const Browser::CreateParams& params,
     aura::Window* parent) {
-  TestBrowserWindowViews* browser_window = new TestBrowserWindowViews(parent);
-  new TestBrowserWindowOwner(browser_window);
-  return browser_window->CreateBrowser(params);
+  auto browser_window = std::make_unique<TestBrowserWindowViews>(parent);
+  auto browser = browser_window->CreateBrowser(params);
+  // Self deleting.
+  new TestBrowserWindowOwner(std::move(browser_window));
+  return browser;
 }
 
 }  // namespace chrome

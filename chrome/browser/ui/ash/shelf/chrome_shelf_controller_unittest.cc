@@ -706,14 +706,17 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   }
 
   std::unique_ptr<BrowserWindow> CreateBrowserWindow() override {
-    return std::unique_ptr<TestBrowserWindow>(CreateTestBrowserWindowAura());
+    return CreateTestBrowserWindowAura();
   }
 
   std::unique_ptr<Browser> CreateBrowserWithTestWindowForProfile(
       Profile* profile) {
-    TestBrowserWindow* browser_window = CreateTestBrowserWindowAura();
-    new TestBrowserWindowOwner(browser_window);
-    return CreateBrowser(profile, Browser::TYPE_NORMAL, false, browser_window);
+    auto browser_window = CreateTestBrowserWindowAura();
+    auto browser = CreateBrowser(profile, Browser::TYPE_NORMAL, false,
+                                 browser_window.get());
+    // Self deleting.
+    new TestBrowserWindowOwner(std::move(browser_window));
+    return browser;
   }
 
   // Create an uninitialized controller instance.
@@ -1410,16 +1413,16 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
       app_registry_cache_observer_{this};
 
  private:
-  TestBrowserWindow* CreateTestBrowserWindowAura() {
-    std::unique_ptr<aura::Window> window(
-        new aura::Window(nullptr, aura::client::WINDOW_TYPE_NORMAL));
+  std::unique_ptr<TestBrowserWindow> CreateTestBrowserWindowAura() {
+    auto window = std::make_unique<aura::Window>(
+        nullptr, aura::client::WINDOW_TYPE_NORMAL);
     window->SetId(0);
     window->Init(ui::LAYER_TEXTURED);
     aura::client::ParentWindowWithContext(window.get(), GetContext(),
                                           gfx::Rect(200, 200),
                                           display::kInvalidDisplayId);
 
-    return new TestBrowserWindowAura(std::move(window));
+    return std::make_unique<TestBrowserWindowAura>(std::move(window));
   }
 
   apps::AppServiceTest app_service_test_;
