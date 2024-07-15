@@ -536,10 +536,13 @@ UncheckedConvertPairPtr(cros_healthd::mojom::SystemResultPtr input) {
   switch (input->which()) {
     case cros_healthd::mojom::SystemResult::Tag::kSystemInfo: {
       auto output = ConvertProbePairPtr(std::move(input->get_system_info()));
-      return std::make_pair(crosapi::mojom::ProbeCachedVpdResult::NewVpdInfo(
-                                std::move(output.first)),
-                            crosapi::mojom::ProbeSystemResult::NewSystemInfo(
-                                std::move(output.second)));
+      return std::make_pair(
+          crosapi::mojom::ProbeCachedVpdResult::NewVpdInfo(
+              output.first ? std::move(output.first)
+                           : crosapi::mojom::ProbeCachedVpdInfo::New()),
+          crosapi::mojom::ProbeSystemResult::NewSystemInfo(
+              output.second ? std::move(output.second)
+                            : crosapi::mojom::ProbeSystemInfo::New()));
     }
     case cros_healthd::mojom::SystemResult::Tag::kError: {
       auto system_error = ConvertProbePtr(std::move(input->get_error()));

@@ -1839,4 +1839,20 @@ TEST(ProbeServiceConverters, TelemetryInfoPtrWithNullFields) {
                 crosapi::mojom::ProbeDisplayResultPtr(nullptr)));
 }
 
+// The field `vpd_info` in `ProbeCachedVpdResult` cannot be null.
+TEST(ProbeServiceConverters, TelemetryInfoPtrWithNullVpdField) {
+  auto input = cros_healthd::mojom::TelemetryInfo::New();
+  auto system_info = cros_healthd::mojom::SystemInfo::New();
+  system_info->vpd_info = nullptr;
+  input->system_result =
+      cros_healthd::mojom::SystemResult::NewSystemInfo(std::move(system_info));
+
+  crosapi::mojom::ProbeTelemetryInfoPtr result =
+      ConvertProbePtr(std::move(input));
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->vpd_result);
+  ASSERT_TRUE(result->vpd_result->is_vpd_info());
+  EXPECT_TRUE(result->vpd_result->get_vpd_info());
+}
+
 }  // namespace ash::converters::telemetry
