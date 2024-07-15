@@ -113,7 +113,10 @@ bool ArcAppLauncher::MaybeLaunchApp(const std::string& app_id,
           readiness = update.Readiness();
         });
   }
-  if (readiness != apps::Readiness::kReady) {
+  // Launch requests disabled by local settings should go through to App service
+  // This is to ensure that the blocked app dialog is shown.
+  if (readiness != apps::Readiness::kReady &&
+      readiness != apps::Readiness::kDisabledByLocalSettings) {
     return false;
   }
 
