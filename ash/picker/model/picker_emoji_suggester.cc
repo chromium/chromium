@@ -23,7 +23,8 @@ namespace {
 
 using HistoryItem = PickerEmojiHistoryModel::EmojiHistoryItem;
 
-constexpr std::string_view kDefaultSuggestedEmojis[] = {"😀", "😃", "😄"};
+constexpr std::string_view kDefaultSuggestedEmojis[] = {"🙂", "😂", "🤔",
+                                                        "😢", "👏", "👍"};
 
 }  // namespace
 

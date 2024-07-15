@@ -34,10 +34,12 @@ TEST_F(PickerEmojiSuggesterTest, ReturnsDefaultEmojis) {
   PickerEmojiHistoryModel model(pref_service());
   PickerEmojiSuggester suggester(&model);
 
-  EXPECT_THAT(suggester.GetSuggestedEmoji(),
-              ElementsAre(PickerSearchResult::Emoji(u"😀"),
-                          PickerSearchResult::Emoji(u"😃"),
-                          PickerSearchResult::Emoji(u"😄")));
+  EXPECT_THAT(
+      suggester.GetSuggestedEmoji(),
+      ElementsAre(
+          PickerSearchResult::Emoji(u"🙂"), PickerSearchResult::Emoji(u"😂"),
+          PickerSearchResult::Emoji(u"🤔"), PickerSearchResult::Emoji(u"😢"),
+          PickerSearchResult::Emoji(u"👏"), PickerSearchResult::Emoji(u"👍")));
 }
 
 TEST_F(PickerEmojiSuggesterTest, SuggestedEmojiReturnsRecentEmoji) {

@@ -671,10 +671,12 @@ TEST_F(PickerControllerTest, SuggestedEmojiReturnsDefaultEmojisWhenEmpty) {
 
   controller.ToggleWidget();
 
-  EXPECT_THAT(controller.GetSuggestedEmoji(),
-              ElementsAre(PickerSearchResult::Emoji(u"😀"),
-                          PickerSearchResult::Emoji(u"😃"),
-                          PickerSearchResult::Emoji(u"😄")));
+  EXPECT_THAT(
+      controller.GetSuggestedEmoji(),
+      ElementsAre(
+          PickerSearchResult::Emoji(u"🙂"), PickerSearchResult::Emoji(u"😂"),
+          PickerSearchResult::Emoji(u"🤔"), PickerSearchResult::Emoji(u"😢"),
+          PickerSearchResult::Emoji(u"👏"), PickerSearchResult::Emoji(u"👍")));
 }
 
 TEST_F(PickerControllerTest, SuggestedEmojiReturnsRecentEmoji) {
