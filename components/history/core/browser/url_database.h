@@ -208,6 +208,13 @@ class URLDatabase {
                                    KeywordID keyword_id,
                                    const std::u16string& term);
 
+  // Retrieves aggregate values for a subset of fields across all URLs
+  // associated with the given `term`.
+  // Fills `url_info` with the relevant aggregate URL data.
+  // Returns true on success.
+  bool GetAggregateURLDataForKeywordSearchTerm(const std::u16string& term,
+                                               URLRow* url_info);
+
   // Looks up a keyword search term given a url id. Returns all the search terms
   // in `rows`. Returns true on success.
   bool GetKeywordSearchTermRow(URLID url_id, KeywordSearchTermRow* row);

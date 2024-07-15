@@ -528,6 +528,29 @@ bool URLDatabase::SetKeywordSearchTermsForURL(URLID url_id,
   return statement.Run();
 }
 
+bool URLDatabase::GetAggregateURLDataForKeywordSearchTerm(
+    const std::u16string& term,
+    URLRow* url_info) {
+  sql::Statement statement(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT SUM(u.visit_count), SUM(u.typed_count), MAX(u.last_visit_time) "
+      "FROM keyword_search_terms kst JOIN urls u ON kst.url_id = u.id "
+      "WHERE kst.normalized_term=? GROUP BY kst.normalized_term"));
+  statement.BindString16(
+      0, base::i18n::ToLower(base::CollapseWhitespace(term, false)));
+
+  if (!statement.Step()) {
+    return false;
+  }
+
+  if (url_info) {
+    url_info->set_visit_count(statement.ColumnInt(0));
+    url_info->set_typed_count(statement.ColumnInt(1));
+    url_info->set_last_visit(statement.ColumnTime(2));
+  }
+  return true;
+}
+
 bool URLDatabase::GetKeywordSearchTermRow(URLID url_id,
                                           KeywordSearchTermRow* row) {
   DCHECK(url_id);

@@ -6,6 +6,7 @@
 
 #include "base/test/task_environment.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
+#include "components/history/core/browser/keyword_id.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/history/core/test/history_service_test_util.h"
@@ -19,6 +20,8 @@
 using ::history::URLRow;
 
 namespace {
+
+const history::KeywordID kTestKeywordId = 42;
 
 URLRow CreateUrlRow(const std::string& url,
                     const std::u16string& title,
@@ -76,12 +79,27 @@ void HistoryScoringSignalsAnnotatorTest::SetUp() {
 
 void HistoryScoringSignalsAnnotatorTest::FillHistoryDbData() {
   const base::Time now = base::Time::Now();
+  // Add some regular web URL visits to the DB.
   history::URLRow row_1 = CreateUrlRow("http://test.com/", u"A Title", 2, 5,
                                        now - base::Days(1), 1);
   history::URLRow row_2 = CreateUrlRow(
       "http://test.com/path", u"A Title - Path", 1, 1, now - base::Days(2), 2);
   client_->GetHistoryService()->InMemoryDatabase()->AddURL(row_1);
   client_->GetHistoryService()->InMemoryDatabase()->AddURL(row_2);
+
+  // Add some SRP URL visits to the DB.
+  history::URLRow row_3 =
+      CreateUrlRow("https://google.com/search?q=hello&p=c3d4",
+                   u"hello - Google Search", 0, 4, now - base::Days(4), 3);
+  history::URLRow row_4 =
+      CreateUrlRow("https://google.com/search?q=hello&p=e5f6",
+                   u"hello - Google Search", 0, 2, now - base::Days(2), 4);
+  client_->GetHistoryService()->InMemoryDatabase()->AddURL(row_3);
+  client_->GetHistoryService()->InMemoryDatabase()->SetKeywordSearchTermsForURL(
+      row_3.id(), kTestKeywordId, u"hello");
+  client_->GetHistoryService()->InMemoryDatabase()->AddURL(row_4);
+  client_->GetHistoryService()->InMemoryDatabase()->SetKeywordSearchTermsForURL(
+      row_4.id(), kTestKeywordId, u"hello");
 }
 
 void HistoryScoringSignalsAnnotatorTest::CreateAutocompleteResult() {
@@ -93,8 +111,10 @@ void HistoryScoringSignalsAnnotatorTest::CreateAutocompleteResult() {
   url_match.destination_url = GURL("http://test.com/");
   url_match.type = AutocompleteMatchType::HISTORY_URL;
 
-  // Search matches will be skipped for annotation.
   AutocompleteMatch search_match;
+  search_match.contents = u"hello";
+  search_match.destination_url =
+      GURL("https://google.com/search?q=hello&p=a1b2");
   search_match.type = AutocompleteMatchType::SEARCH_HISTORY;
 
   std::vector<AutocompleteMatch> matches{url_match_not_in_db, url_match,
@@ -133,6 +153,14 @@ TEST_F(HistoryScoringSignalsAnnotatorTest, AnnotateResult) {
                 ->scoring_signals->num_input_terms_matched_by_title(),
             2);
 
-  // Search results are skipped for annotation.
-  EXPECT_FALSE(result()->match_at(2)->scoring_signals.has_value());
+  // Search results are also annotated with various history scoring signals.
+  EXPECT_TRUE(result()->match_at(2)->scoring_signals.has_value());
+  EXPECT_TRUE(result()
+                  ->match_at(2)
+                  ->scoring_signals->has_elapsed_time_last_visit_secs());
+  EXPECT_EQ(result()->match_at(2)->scoring_signals->typed_count(), 0);
+  EXPECT_EQ(result()->match_at(2)->scoring_signals->visit_count(), 6);
+  EXPECT_TRUE(
+      result()->match_at(2)->scoring_signals->elapsed_time_last_visit_secs() >
+      0);
 }
