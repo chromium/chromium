@@ -79,7 +79,7 @@ void InfoBarContainer::OnInfoBarStateChanged(bool is_animating) {
 void InfoBarContainer::RemoveInfoBar(InfoBar* infobar) {
   infobar->set_container(nullptr);
   auto i = base::ranges::find(infobars_, infobar);
-  DCHECK(i != infobars_.end());
+  CHECK(i != infobars_.end());
   PlatformSpecificRemoveInfoBar(infobar);
   infobars_.erase(i);
 }
@@ -107,7 +107,7 @@ void InfoBarContainer::OnInfoBarReplaced(InfoBar* old_infobar,
                                          InfoBar* new_infobar) {
   PlatformSpecificReplaceInfoBar(old_infobar, new_infobar);
   InfoBars::const_iterator i = base::ranges::find(infobars_, old_infobar);
-  DCHECK(i != infobars_.end());
+  CHECK(i != infobars_.end());
   size_t position = i - infobars_.begin();
   old_infobar->Hide(false);
   AddInfoBar(new_infobar, position, false);

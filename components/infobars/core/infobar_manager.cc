@@ -100,7 +100,7 @@ InfoBar* InfoBarManager::ReplaceInfoBar(InfoBar* old_infobar,
   }
 
   auto i = base::ranges::find(infobars_, old_infobar);
-  DCHECK(i != infobars_.end());
+  CHECK(i != infobars_.end());
 
   InfoBar* new_infobar_ptr = new_infobar.release();
   i = infobars_.insert(i, new_infobar_ptr);
