@@ -406,7 +406,10 @@ void BirchAttachmentItem::PerformSecondaryAction() {
 }
 
 void BirchAttachmentItem::LoadIcon(LoadIconCallback callback) const {
-  DownloadImageFromUrl(icon_url_, ui::ImageModel(), std::move(callback));
+  DownloadImageFromUrl(icon_url_,
+                       ui::ImageModel::FromImageSkia(chromeos::GetIconFromType(
+                           chromeos::IconType::kGeneric, true)),
+                       std::move(callback));
 }
 
 // static
@@ -456,7 +459,7 @@ std::string BirchFileItem::ToString() const {
      << ", title: " << base::UTF16ToUTF8(title())
      << ", file_path:" << file_path_ << ", timestamp: "
      << base::UTF16ToUTF8(base::TimeFormatShortDateAndTime(timestamp_))
-     << ", file_id: " << file_id_ << "}" << ", icon_url: " << icon_url_;
+     << ", file_id: " << file_id_ << "}" << ", icon_url: " << icon_url_ << "}";
   return ss.str();
 }
 
@@ -470,7 +473,10 @@ void BirchFileItem::PerformSecondaryAction() {
 }
 
 void BirchFileItem::LoadIcon(LoadIconCallback callback) const {
-  DownloadImageFromUrl(GURL(icon_url_), ui::ImageModel(), std::move(callback));
+  DownloadImageFromUrl(
+      GURL(icon_url_),
+      ui::ImageModel::FromImageSkia(chromeos::GetIconForPath(file_path_, true)),
+      std::move(callback));
 }
 
 // static

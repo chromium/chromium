@@ -176,12 +176,12 @@ class ASH_EXPORT BirchCalendarItem : public BirchItem {
 // separately (and ranks them independently).
 class ASH_EXPORT BirchAttachmentItem : public BirchItem {
  public:
-  explicit BirchAttachmentItem(const std::u16string& title,
-                               const GURL& file_url,
-                               const GURL& icon_url,
-                               const base::Time& start_time,
-                               const base::Time& end_time,
-                               const std::string& file_id);
+  BirchAttachmentItem(const std::u16string& title,
+                      const GURL& file_url,
+                      const GURL& icon_url,
+                      const base::Time& start_time,
+                      const base::Time& end_time,
+                      const std::string& file_id);
   BirchAttachmentItem(BirchAttachmentItem&&);
   BirchAttachmentItem& operator=(BirchAttachmentItem&&);
   BirchAttachmentItem(const BirchAttachmentItem&);
