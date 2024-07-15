@@ -436,7 +436,7 @@ gfx::ImageSkia NavButtonProviderGtk::GetImage(
   auto it = button_images_.find(type);
   CHECK(it != button_images_.end(), base::NotFatalUntil::M130);
   auto it2 = it->second.find(state);
-  DCHECK(it2 != it->second.end());
+  CHECK(it2 != it->second.end(), base::NotFatalUntil::M130);
   return it2->second;
 }
 
