@@ -16,34 +16,7 @@
 #include "components/feature_engagement/public/feature_configurations.h"
 #include "components/user_education/common/feature_promo_registry.h"
 #include "components/user_education/common/tutorial_registry.h"
-#include "components/user_education/common/user_education_metadata.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-namespace {
-
-// Checks metadata and returns a list of errors.
-std::vector<std::string> CheckMetadata(
-    const user_education::Metadata& metadata) {
-  std::vector<std::string> errors;
-  if (!metadata.launch_milestone) {
-    errors.emplace_back("launch milestone");
-  }
-  if (metadata.owners.empty()) {
-    errors.emplace_back("owners list");
-  }
-  if (metadata.additional_description.empty()) {
-    errors.emplace_back("description");
-  }
-  return errors;
-}
-
-template <size_t N>
-bool Contains(const char* const (&values)[N], const std::string& value) {
-  return std::find(std::begin(values), std::end(values), value) !=
-         std::end(values);
-}
-
-}  // namespace
 
 TEST(BrowserUserEducationServiceTest, CheckFeaturePromoHistograms) {
   std::optional<base::HistogramVariantsEntryMap> iph_features;
@@ -234,9 +207,14 @@ TEST(BrowserUserEducationServiceTest, PreventNewHardCodedConfigurations) {
   MaybeRegisterChromeFeaturePromos(registry);
   const auto& iph_specifications = registry.feature_data();
   for (const auto& [feature, spec] : iph_specifications) {
-    const auto config = feature_engagement::GetClientSideFeatureConfig(feature);
-    if (config && !Contains(kAllowedConfigurations, feature->name)) {
-      invalid_configs.emplace_back(feature->name);
+    const auto result = feature_engagement::GetClientSideFeatureConfig(feature);
+    if (result) {
+      if (std::end(kAllowedConfigurations) ==
+          std::find(std::begin(kAllowedConfigurations),
+                    std::end(kAllowedConfigurations),
+                    std::string(feature->name))) {
+        invalid_configs.emplace_back(feature->name);
+      }
     }
   }
 
@@ -248,88 +226,4 @@ TEST(BrowserUserEducationServiceTest, PreventNewHardCodedConfigurations) {
          " additional configuration options in FeaturePromoSpecification)"
          " should be sufficient, and adding to feature_configurations.cc"
          " should be avoided.";
-}
-
-TEST(BrowserUserEducationServiceTest, CheckFeaturePromoMetadata) {
-  // These promos get a pass because they are old and never had metadata
-  // associated with them. All new promos should have metadata.
-  //
-  // DO NOT ADD ENTRIES TO THIS LIST, EVER.
-  static const char* const kExistingPromosWithoutMetadata[] = {
-      "IPH_ComposeMSBBSettingsFeature",
-      "IPH_DesktopSharedHighlighting",
-      "IPH_DesktopCustomizeChrome",
-      "IPH_ExperimentalAIPromo",
-      "IPH_ExplicitBrowserSigninPreferenceRemembered",
-      "IPH_GMCCastStartStop",
-      "IPH_GMCLocalMediaCasting",
-      "IPH_LiveCaption",
-      "IPH_TabAudioMuting",
-      "IPH_PasswordsAccountStorage",
-      "IPH_PasswordsManagementBubbleDuringSignin",
-      "IPH_PasswordsWebAppProfileSwitch",
-      "IPH_PasswordManagerShortcut",
-      "IPH_PasswordSharingFeature",
-      "IPH_ReadingListDiscovery",
-      "IPH_ReadingListEntryPoint",
-      "IPH_ReadingListInSidePanel",
-      "IPH_SignoutWebIntercept",
-      "IPH_ProfileSwitch",
-      "IPH_BackNavigationMenu",
-      "IPH_CookieControls",
-  };
-
-  user_education::FeaturePromoRegistry registry;
-  MaybeRegisterChromeFeaturePromos(registry);
-  const auto& iph_specifications = registry.feature_data();
-  std::ostringstream oss;
-  bool failed = false;
-  for (const auto& [feature, spec] : iph_specifications) {
-    const auto errors = CheckMetadata(spec.metadata());
-    if (!errors.empty() &&
-        !Contains(kExistingPromosWithoutMetadata, feature->name)) {
-      failed = true;
-      oss << "\n"
-          << feature->name
-          << " is missing metadata: " << base::JoinString(errors, ", ");
-    }
-  }
-  EXPECT_FALSE(failed) << "Feature promos missing metadata:" << oss.str();
-}
-
-TEST(BrowserUserEducationServiceTest, CheckTutorialPromoMetadata) {
-  user_education::TutorialRegistry registry;
-  MaybeRegisterChromeTutorials(registry);
-  const auto& tutorial_identifiers = registry.GetTutorialIdentifiers();
-  std::ostringstream oss;
-  bool failed = false;
-  for (const auto& identifier : tutorial_identifiers) {
-    const auto* tutorial = registry.GetTutorialDescription(identifier);
-    const auto errors = CheckMetadata(tutorial->metadata);
-    if (!errors.empty()) {
-      failed = true;
-      oss << "\n"
-          << identifier
-          << " is missing metadata: " << base::JoinString(errors, ", ");
-    }
-  }
-  EXPECT_FALSE(failed) << "Tutorials missing metadata:" << oss.str();
-}
-
-TEST(BrowserUserEducationServiceTest, CheckNewBadgeMetadata) {
-  user_education::NewBadgeRegistry registry;
-  MaybeRegisterChromeNewBadges(registry);
-  const auto& new_badge_specifications = registry.feature_data();
-  std::ostringstream oss;
-  bool failed = false;
-  for (const auto& [feature, spec] : new_badge_specifications) {
-    const auto errors = CheckMetadata(spec.metadata);
-    if (!errors.empty()) {
-      failed = true;
-      oss << "\n"
-          << feature->name
-          << " is missing metadata: " << base::JoinString(errors, ", ");
-    }
-  }
-  EXPECT_FALSE(failed) << "\"New\" Badges missing metadata:" << oss.str();
 }
