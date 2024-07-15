@@ -4,6 +4,7 @@
 
 #include "chrome/browser/profiles/profile_io_data.h"
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
@@ -23,41 +24,39 @@
 // static
 bool ProfileIOData::IsHandledProtocol(const std::string& scheme) {
   DCHECK_EQ(scheme, base::ToLowerASCII(scheme));
-  static const char* const kProtocolList[] = {
-    url::kHttpScheme,
-    url::kHttpsScheme,
+
+  constexpr auto kProtocolList = base::MakeFixedFlatSet<std::string_view>({
+      url::kHttpScheme,
+      url::kHttpsScheme,
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
-    url::kWsScheme,
-    url::kWssScheme,
+      url::kWsScheme,
+      url::kWssScheme,
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
-    url::kFileScheme,
-    content::kChromeDevToolsScheme,
-    dom_distiller::kDomDistillerScheme,
+      url::kFileScheme,
+      content::kChromeDevToolsScheme,
+      dom_distiller::kDomDistillerScheme,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    extensions::kExtensionScheme,
+      extensions::kExtensionScheme,
 #endif
-    content::kChromeUIScheme,
-    content::kChromeUIUntrustedScheme,
-    url::kDataScheme,
+      content::kChromeUIScheme,
+      content::kChromeUIUntrustedScheme,
+      url::kDataScheme,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    content::kExternalFileScheme,
+      content::kExternalFileScheme,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_ANDROID)
-    url::kContentScheme,
+      url::kContentScheme,
 #endif  // BUILDFLAG(IS_ANDROID)
-    url::kAboutScheme,
-    url::kBlobScheme,
-    url::kFileSystemScheme,
-    chrome::kChromeSearchScheme,
+      url::kAboutScheme,
+      url::kBlobScheme,
+      url::kFileSystemScheme,
+      chrome::kChromeSearchScheme,
 #if !BUILDFLAG(IS_ANDROID)
-    chrome::kIsolatedAppScheme,
+      chrome::kIsolatedAppScheme,
 #endif  // !BUILDFLAG(IS_ANDROID)
-  };
-  for (const char* supported_protocol : kProtocolList) {
-    if (scheme == supported_protocol)
-      return true;
-  }
-  return false;
+  });
+
+  return kProtocolList.contains(scheme);
 }
 
 // static
