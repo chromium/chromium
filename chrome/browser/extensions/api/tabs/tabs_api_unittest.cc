@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
@@ -57,7 +58,7 @@ namespace {
 base::Value::List RunTabsQueryFunction(content::BrowserContext* browser_context,
                                        const Extension* extension,
                                        const std::string& query_info) {
-  scoped_refptr<TabsQueryFunction> function(new TabsQueryFunction());
+  auto function = base::MakeRefCounted<TabsQueryFunction>();
   function->set_extension(extension);
   std::optional<base::Value> value =
       api_test_utils::RunFunctionAndReturnSingleResult(
@@ -436,7 +437,7 @@ TEST_F(TabsApiUnitTest, PDFExtensionNavigation) {
   CreateSessionServiceTabHelper(raw_web_contents);
   int tab_id = sessions::SessionTabHelper::IdForTab(raw_web_contents).id();
 
-  scoped_refptr<TabsUpdateFunction> function = new TabsUpdateFunction();
+  auto function = base::MakeRefCounted<TabsUpdateFunction>();
   function->SetBrowserContextForTesting(profile());
   function->set_extension(extension.get());
   function->SetArgs(base::test::ParseJsonList(
@@ -460,8 +461,7 @@ TEST_F(TabsApiUnitTest, PDFExtensionNavigation) {
 TEST_F(TabsApiUnitTest, ExecuteScriptNoTabIsNonFatalError) {
   scoped_refptr<const Extension> extension_with_tabs_permission =
       CreateTabsExtension();
-  scoped_refptr<TabsExecuteScriptFunction> function(
-      new TabsExecuteScriptFunction());
+  auto function = base::MakeRefCounted<TabsExecuteScriptFunction>();
   function->set_extension(extension_with_tabs_permission);
   const char* kArgs = R"(["", {"code": ""}])";
   std::string error = api_test_utils::RunFunctionAndReturnError(
@@ -873,13 +873,13 @@ TEST_F(TabsApiUnitTest, TabsMoveAcrossWindows) {
   ASSERT_EQ(kNumTabs, browser()->tab_strip_model()->count());
 
   // Create a new window and add a few tabs, getting the ID of the last tab.
-  TestBrowserWindow* window2 = new TestBrowserWindow;
-  // TestBrowserWindowOwner handles its own lifetime, and also cleans up
-  // |window2|.
-  new TestBrowserWindowOwner(window2);
+  auto window2 = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), /* user_gesture */ true);
   params.type = Browser::TYPE_NORMAL;
-  params.window = window2;
+  params.window = window2.get();
+  // TestBrowserWindowOwner handles its own lifetime, and also cleans up
+  // |window2|.
+  new TestBrowserWindowOwner(std::move(window2));
   std::unique_ptr<Browser> browser2(Browser::Create(params));
   BrowserList::SetLastActive(browser2.get());
   int window_id2 = ExtensionTabUtil::GetWindowId(browser2.get());
@@ -1238,13 +1238,13 @@ TEST_F(TabsApiUnitTest, TabsGroupAcrossWindows) {
   ASSERT_EQ(kNumTabs, browser()->tab_strip_model()->count());
 
   // Create a new window and add a few tabs, adding one to a group.
-  TestBrowserWindow* window2 = new TestBrowserWindow;
-  // TestBrowserWindowOwner handles its own lifetime, and also cleans up
-  // |window2|.
-  new TestBrowserWindowOwner(window2);
+  auto window2 = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), /* user_gesture */ true);
   params.type = Browser::TYPE_NORMAL;
-  params.window = window2;
+  params.window = window2.get();
+  // TestBrowserWindowOwner handles its own lifetime, and also cleans up
+  // |window2|.
+  new TestBrowserWindowOwner(std::move(window2));
   std::unique_ptr<Browser> browser2(Browser::Create(params));
 
   constexpr int kNumTabs2 = 3;

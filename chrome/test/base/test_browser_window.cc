@@ -4,6 +4,8 @@
 
 #include "chrome/test/base/test_browser_window.h"
 
+#include <utility>
+
 #include "base/feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -25,15 +27,17 @@
 std::unique_ptr<Browser> CreateBrowserWithTestWindowForParams(
     Browser::CreateParams params) {
   DCHECK(!params.window);
-  TestBrowserWindow* window = new TestBrowserWindow;
-  new TestBrowserWindowOwner(window);
-  params.window = window;
-  window->set_is_minimized(params.initial_show_state ==
-                           ui::SHOW_STATE_MINIMIZED);
+  auto window = std::make_unique<TestBrowserWindow>();
+  auto* window_ptr = window.get();
+  new TestBrowserWindowOwner(std::move(window));
+  params.window = window_ptr;
+  window_ptr->set_is_minimized(params.initial_show_state ==
+                               ui::SHOW_STATE_MINIMIZED);
   // Tests generally expect TestBrowserWindows not to be active.
-  window->set_is_active(params.initial_show_state != ui::SHOW_STATE_INACTIVE &&
-                        params.initial_show_state != ui::SHOW_STATE_DEFAULT &&
-                        params.initial_show_state != ui::SHOW_STATE_MINIMIZED);
+  window_ptr->set_is_active(
+      params.initial_show_state != ui::SHOW_STATE_INACTIVE &&
+      params.initial_show_state != ui::SHOW_STATE_DEFAULT &&
+      params.initial_show_state != ui::SHOW_STATE_MINIMIZED);
 
   return std::unique_ptr<Browser>(Browser::Create(params));
 }
@@ -426,6 +430,12 @@ TestBrowserWindow::SetFeaturePromoController(
 
 TestBrowserWindowOwner::TestBrowserWindowOwner(TestBrowserWindow* window)
     : window_(window) {
+  BrowserList::AddObserver(this);
+}
+
+TestBrowserWindowOwner::TestBrowserWindowOwner(
+    std::unique_ptr<TestBrowserWindow> window)
+    : window_(std::move(window)) {
   BrowserList::AddObserver(this);
 }
 
