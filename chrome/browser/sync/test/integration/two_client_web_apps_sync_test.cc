@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -182,13 +183,20 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, IsLocallyInstalled) {
 
   webapps::AppId app_id = web_app::test::InstallDummyWebApp(
       GetProfile(0), "Test name", GURL("http://www.chromium.org/"));
-  EXPECT_TRUE(GetRegistrar(GetProfile(0)).IsLocallyInstalled(app_id));
+  EXPECT_EQ(GetRegistrar(GetProfile(0)).GetInstallState(app_id),
+            web_app::proto::INSTALLED_WITH_OS_INTEGRATION);
 
   EXPECT_EQ(install_observer.Wait(), app_id);
-  bool is_locally_installed =
-      GetRegistrar(GetProfile(1)).IsLocallyInstalled(app_id);
-  EXPECT_EQ(is_locally_installed, AreAppsLocallyInstalledBySync());
-
+  web_app::proto::InstallState expected_state;
+  // ChromeOS fully installs all synced apps, whereas desktop keeps them as
+  // "SUGGESTED_FROM_ANOTHER_DEVICE".
+#if BUILDFLAG(IS_CHROMEOS)
+  expected_state = proto::INSTALLED_WITH_OS_INTEGRATION;
+#else
+  expected_state = proto::SUGGESTED_FROM_ANOTHER_DEVICE;
+#endif
+  EXPECT_EQ(expected_state,
+            GetRegistrar(GetProfile(1)).GetInstallState(app_id));
   EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
 }
 
