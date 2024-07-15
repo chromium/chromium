@@ -489,7 +489,9 @@ def _run_bazel_cmd(args):
   Runs a bazel command in the form of bazel <args...>. Returns the stdout,
   raising an Exception if the command failed.
   """
-  exec_path = shutil.which("bazel")
+
+  # Use standard Bazel install instead of the one included with depot_tools.
+  exec_path = "/usr/bin/bazel"
   if not exec_path:
     raise Exception(
         "bazel is not installed. Please run `sudo apt-get install " +
