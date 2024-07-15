@@ -590,7 +590,12 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                                  itemIdentifier:
                                      (GridItemIdentifier*)itemIdentifier {
   switch (itemIdentifier.type) {
-    case GridItemType::Tab: {
+    case GridItemType::kInactiveTabsButton: {
+      CHECK(IsInactiveTabButtonRefactoringEnabled());
+      // TODO(crbug.com/352722446): return the item.
+      return nil;
+    }
+    case GridItemType::kTab: {
       UICollectionViewCellRegistration* registration =
           self.gridCellRegistration;
       return [self.collectionView
@@ -599,7 +604,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                                                    item:itemIdentifier
                                                             .tabSwitcherItem];
     }
-    case GridItemType::Group: {
+    case GridItemType::kGroup: {
       UICollectionViewCellRegistration* registration =
           self.groupGridCellRegistration;
       return [self.collectionView
@@ -608,7 +613,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                                                    item:itemIdentifier
                                                             .tabGroupItem];
     }
-    case GridItemType::SuggestedActions:
+    case GridItemType::kSuggestedActions:
       UICollectionViewCellRegistration* registration =
           self.suggestedActionsCellRegistration;
       return [self.collectionView
@@ -663,10 +668,11 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     return nil;
   }
 
-  // No context menu on suggested actions section.
-  if (indexPath.section ==
-      [self.diffableDataSource
-          indexForSectionIdentifier:kSuggestedActionsSectionIdentifier]) {
+  NSString* sectionIdentifier =
+      [self.diffableDataSource sectionIdentifierForIndex:indexPath.section];
+  // No context menu on suggested actions or inactive tabs section.
+  if ([sectionIdentifier isEqualToString:kSuggestedActionsSectionIdentifier] ||
+      [sectionIdentifier isEqualToString:kInactiveTabButtonSectionIdentifier]) {
     return nil;
   }
 
@@ -744,7 +750,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   self.localDragActionInProgress = YES;
 
   switch (_draggedItemIdentifier.type) {
-    case GridItemType::Tab: {
+    case GridItemType::kInactiveTabsButton:
+      NOTREACHED_NORETURN();
+    case GridItemType::kTab: {
       [self.dragDropHandler
           dragWillBeginForTabSwitcherItem:_draggedItemIdentifier
                                               .tabSwitcherItem];
@@ -753,15 +761,14 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       [self.delegate gridViewControllerDragSessionWillBeginForTab:self];
       break;
     }
-    case GridItemType::Group: {
+    case GridItemType::kGroup: {
       base::UmaHistogramEnumeration(kUmaGridViewDragDropGroupsEvent,
                                     DragDropItem::kDragBegin);
       [self.delegate gridViewControllerDragSessionWillBeginForTabGroup:self];
       break;
     }
-    case GridItemType::SuggestedActions:
-      NOTREACHED_IN_MIGRATION();
-      break;
+    case GridItemType::kSuggestedActions:
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -779,15 +786,16 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   }
 
   switch (_draggedItemIdentifier.type) {
-    case GridItemType::Tab:
+    case GridItemType::kInactiveTabsButton:
+      NOTREACHED_NORETURN();
+    case GridItemType::kTab:
       base::UmaHistogramEnumeration(kUmaGridViewDragDropTabsEvent, dragEvent);
       break;
-    case GridItemType::Group:
+    case GridItemType::kGroup:
       base::UmaHistogramEnumeration(kUmaGridViewDragDropGroupsEvent, dragEvent);
       break;
-    case GridItemType::SuggestedActions:
-      NOTREACHED_IN_MIGRATION();
-      break;
+    case GridItemType::kSuggestedActions:
+      NOTREACHED_NORETURN();
   }
 
   // Used to let the Taptic Engine return to its idle state.
@@ -812,11 +820,12 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     // TODO(crbug.com/40824160): Enable dragging items from search results.
     return @[];
   }
-  if (indexPath.section ==
-      [self.diffableDataSource
-          indexForSectionIdentifier:kSuggestedActionsSectionIdentifier]) {
-    // Return an empty array because ther suggested actions cell should not be
-    // dragged.
+  NSString* sectionIdentifier =
+      [self.diffableDataSource sectionIdentifierForIndex:indexPath.section];
+  if ([sectionIdentifier isEqualToString:kSuggestedActionsSectionIdentifier] ||
+      [sectionIdentifier isEqualToString:kInactiveTabButtonSectionIdentifier]) {
+    // Return an empty array because the suggested actions cell or the inactive
+    // tabs button should not be dragged.
     return @[];
   }
   GridItemIdentifier* draggedItem =
@@ -825,18 +834,19 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     UIDragItem* dragItem;
     _draggedItemIdentifier = draggedItem;
     switch (_draggedItemIdentifier.type) {
-      case GridItemType::Tab:
+      case GridItemType::kInactiveTabsButton:
+        NOTREACHED_NORETURN();
+      case GridItemType::kTab:
         dragItem = [self.dragDropHandler
             dragItemForItem:_draggedItemIdentifier.tabSwitcherItem];
         break;
 
-      case GridItemType::Group:
+      case GridItemType::kGroup:
         dragItem = [self.dragDropHandler
             dragItemForTabGroupItem:_draggedItemIdentifier.tabGroupItem];
         break;
-      case GridItemType::SuggestedActions:
-        NOTREACHED_IN_MIGRATION();
-        break;
+      case GridItemType::kSuggestedActions:
+        NOTREACHED_NORETURN();
     }
     if (!dragItem) {
       return @[];
@@ -895,6 +905,14 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
               collectionView:(UICollectionView*)collectionView
         dropSessionDidUpdate:(id<UIDropSession>)session
     withDestinationIndexPath:(NSIndexPath*)destinationIndexPath {
+  if ([[self.diffableDataSource
+          sectionIdentifierForIndex:destinationIndexPath.section]
+          isEqualToString:kInactiveTabButtonSectionIdentifier]) {
+    // Disallow dropping in the inactive tab section.
+    return [[UICollectionViewDropProposal alloc]
+        initWithDropOperation:UIDropOperationForbidden
+                       intent:UICollectionViewDropIntentUnspecified];
+  }
   // This is how the explicit forbidden icon or (+) copy icon is shown. Move has
   // no explicit icon.
   UIDropOperation dropOperation = [self.dragDropHandler
@@ -970,7 +988,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     dropSessionDidEnter:(id<UIDropSession>)session {
   if (IsPinnedTabsEnabled()) {
     if (_draggedItemIdentifier &&
-        _draggedItemIdentifier.type == GridItemType::Group) {
+        _draggedItemIdentifier.type == GridItemType::kGroup) {
       // Don't notify the delegate if the dragged item is a local tab group.
       return;
     }
@@ -1187,8 +1205,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 - (void)replaceItem:(GridItemIdentifier*)item
     withReplacementItem:(GridItemIdentifier*)replacementItem {
-  CHECK((item.type != GridItemType::SuggestedActions) &&
-        (replacementItem.type != GridItemType::SuggestedActions));
+  CHECK((item.type != GridItemType::kSuggestedActions) &&
+        (replacementItem.type != GridItemType::kSuggestedActions));
 
   NSIndexPath* existingItemIndexPath =
       [self.diffableDataSource indexPathForItemIdentifier:item];
@@ -1350,7 +1368,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                             selectedItemIdentifier:
                                 (GridItemIdentifier*)selectedItemIdentifier
                                           snapshot:(GridSnapshot*)snapshot {
-  CHECK(item.type == GridItemType::Tab || item.type == GridItemType::Group);
+  CHECK(item.type == GridItemType::kTab || item.type == GridItemType::kGroup);
   // TODO(crbug.com/40069795): There are crash reports that show there could be
   // cases where the open tabs section is not present in the snapshot. If so,
   // don't perform the update.
@@ -1366,9 +1384,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   CHECK(![self.diffableDataSource indexPathForItemIdentifier:item]);
 
   self.selectedItemIdentifier = selectedItemIdentifier;
-  if (item.type == GridItemType::Tab) {
+  if (item.type == GridItemType::kTab) {
     self.lastInsertedItemID = item.tabSwitcherItem.identifier;
-  } else if (item.type == GridItemType::Group) {
+  } else if (item.type == GridItemType::kGroup) {
     self.lastInsertedItemID = web::WebStateID();
   }
 
@@ -1735,8 +1753,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   GridItemIdentifier* itemIdentifier =
       [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
 
-  CHECK(itemIdentifier.type == GridItemType::Group ||
-        itemIdentifier.type == GridItemType::Tab);
+  CHECK(itemIdentifier.type == GridItemType::kInactiveTabsButton ||
+        itemIdentifier.type == GridItemType::kGroup ||
+        itemIdentifier.type == GridItemType::kTab);
 
   [self.mutator userTappedOnItemID:itemIdentifier];
   if (_mode == TabGridModeSelection) {
@@ -1745,21 +1764,25 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   }
 
   switch (itemIdentifier.type) {
-    case GridItemType::Tab: {
+    case GridItemType::kInactiveTabsButton: {
+      CHECK(IsInactiveTabButtonRefactoringEnabled());
+      // TODO(crbug.com/352722446): Open the inactive tab screen.
+      break;
+    }
+    case GridItemType::kTab: {
       web::WebStateID itemID = itemIdentifier.tabSwitcherItem.identifier;
       [self.delegate gridViewController:self didSelectItemWithID:itemID];
       break;
     }
-    case GridItemType::Group: {
+    case GridItemType::kGroup: {
       base::RecordAction(
           base::UserMetricsAction("MobileTabGridTabGroupCellTapped"));
       const TabGroup* group = itemIdentifier.tabGroupItem.tabGroup;
       [self.delegate gridViewController:self didSelectGroup:group];
       break;
     }
-    case GridItemType::SuggestedActions:
-      NOTREACHED_IN_MIGRATION();
-      break;
+    case GridItemType::kSuggestedActions:
+      NOTREACHED_NORETURN();
   }
 }
 

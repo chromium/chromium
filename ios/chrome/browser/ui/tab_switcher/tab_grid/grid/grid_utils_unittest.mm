@@ -68,7 +68,7 @@ TEST_F(GridUtilsTest, CreateValidItemsList) {
   ASSERT_EQ(base::checked_cast<NSUInteger>(web_state_list_->count()),
             [itemsList count]);
   for (NSUInteger i = 0; i < [itemsList count]; i++) {
-    EXPECT_EQ(GridItemType::Tab, itemsList[i].type);
+    EXPECT_EQ(GridItemType::kTab, itemsList[i].type);
     EXPECT_EQ(web_state_list_->GetWebStateAt(i)->GetUniqueIdentifier(),
               itemsList[i].tabSwitcherItem.identifier);
   }
@@ -94,7 +94,7 @@ TEST_F(GridUtilsTest, CreateValidItemsListWithoutPinnedTabs) {
     web::WebState* web_state =
         web_state_list_->GetWebStateAt(i + number_of_pinned_tabs);
     GridItemIdentifier* item = itemsList[i];
-    EXPECT_EQ(GridItemType::Tab, item.type);
+    EXPECT_EQ(GridItemType::kTab, item.type);
     EXPECT_EQ(web_state->GetUniqueIdentifier(),
               itemsList[i].tabSwitcherItem.identifier);
   }
@@ -121,13 +121,13 @@ TEST_F(GridUtilsTest, CreateItemsListWithGroup) {
   // The number of items should be equal to 7, 2 groups ({0, 1, 2} and {5, 6})
   // and 5 web states({3,4,7,8,9}).
   ASSERT_EQ(7, (int)[itemsList count]);
-  EXPECT_EQ(GridItemType::Group, itemsList[0].type);
-  EXPECT_EQ(GridItemType::Tab, itemsList[1].type);
-  EXPECT_EQ(GridItemType::Tab, itemsList[2].type);
-  EXPECT_EQ(GridItemType::Group, itemsList[3].type);
-  EXPECT_EQ(GridItemType::Tab, itemsList[4].type);
-  EXPECT_EQ(GridItemType::Tab, itemsList[5].type);
-  EXPECT_EQ(GridItemType::Tab, itemsList[6].type);
+  EXPECT_EQ(GridItemType::kGroup, itemsList[0].type);
+  EXPECT_EQ(GridItemType::kTab, itemsList[1].type);
+  EXPECT_EQ(GridItemType::kTab, itemsList[2].type);
+  EXPECT_EQ(GridItemType::kGroup, itemsList[3].type);
+  EXPECT_EQ(GridItemType::kTab, itemsList[4].type);
+  EXPECT_EQ(GridItemType::kTab, itemsList[5].type);
+  EXPECT_EQ(GridItemType::kTab, itemsList[6].type);
 }
 
 // Test that `WebStateIndexFromGridDropItemIndex:` returns the correct

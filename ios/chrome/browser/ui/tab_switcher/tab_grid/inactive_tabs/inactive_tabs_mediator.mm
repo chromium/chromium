@@ -475,7 +475,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 }
 
 - (void)closeItemWithIdentifier:(GridItemIdentifier*)identifier {
-  CHECK(identifier.type == GridItemType::Tab);
+  CHECK(identifier.type == GridItemType::kTab);
   [self closeItemWithID:identifier.tabSwitcherItem.identifier];
 }
 

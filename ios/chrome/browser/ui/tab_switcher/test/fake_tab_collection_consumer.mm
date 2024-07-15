@@ -35,13 +35,15 @@
   _items.clear();
   for (GridItemIdentifier* item in items) {
     switch (item.type) {
-      case GridItemType::Tab:
+      case GridItemType::kInactiveTabsButton:
+        NOTREACHED_NORETURN();
+      case GridItemType::kTab:
         _items.push_back(item.tabSwitcherItem.identifier);
         break;
-      case GridItemType::Group:
+      case GridItemType::kGroup:
         _groups.push_back(item.tabGroupItem.tabGroup);
         break;
-      case GridItemType::SuggestedActions:
+      case GridItemType::kSuggestedActions:
         NOTREACHED_NORETURN();
     }
   }

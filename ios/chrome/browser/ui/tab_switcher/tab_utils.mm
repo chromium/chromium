@@ -34,13 +34,15 @@ bool HasDuplicateGroupsAndTabsIdentifiers(NSArray<GridItemIdentifier*>* items) {
   std::set<const TabGroup*> groups;
   for (GridItemIdentifier* item in items) {
     switch (item.type) {
-      case GridItemType::Tab:
+      case GridItemType::kInactiveTabsButton:
+        NOTREACHED_NORETURN();
+      case GridItemType::kTab:
         identifiers.insert(item.tabSwitcherItem.identifier);
         break;
-      case GridItemType::Group:
+      case GridItemType::kGroup:
         groups.insert(item.tabGroupItem.tabGroup);
         break;
-      case GridItemType::SuggestedActions:
+      case GridItemType::kSuggestedActions:
         NOTREACHED_NORETURN();
     }
   }

@@ -40,7 +40,9 @@
     return;
   }
   switch (item.type) {
-    case GridItemType::Tab: {
+    case GridItemType::kInactiveTabsButton:
+      NOTREACHED_NORETURN();
+    case GridItemType::kTab: {
       [_itemsIdentifiers addObject:item];
       web::WebStateID webStateID = item.tabSwitcherItem.identifier;
       if ([self isItemWithIDShareable:webStateID]) {
@@ -49,7 +51,7 @@
       _tabsCount += 1;
       return;
     }
-    case GridItemType::Group: {
+    case GridItemType::kGroup: {
       [_itemsIdentifiers addObject:item];
       const TabGroup* group = item.tabGroupItem.tabGroup;
       const TabGroupRange range = group->range();
@@ -63,20 +65,22 @@
       _tabsCount += range.count();
       return;
     }
-    case GridItemType::SuggestedActions:
-      NOTREACHED_IN_MIGRATION();
+    case GridItemType::kSuggestedActions:
+      NOTREACHED_NORETURN();
   }
 }
 
 - (void)removeItem:(GridItemIdentifier*)item {
   switch (item.type) {
-    case GridItemType::Tab: {
+    case GridItemType::kInactiveTabsButton:
+      NOTREACHED_NORETURN();
+    case GridItemType::kTab: {
       [_itemsIdentifiers removeObject:item];
       _sharableItemsIDs.erase(item.tabSwitcherItem.identifier);
       _tabsCount -= 1;
       return;
     }
-    case GridItemType::Group: {
+    case GridItemType::kGroup: {
       const TabGroup* group = item.tabGroupItem.tabGroup;
       const TabGroupRange range = group->range();
       for (int i : range) {
@@ -88,8 +92,8 @@
       _tabsCount -= range.count();
       return;
     }
-    case GridItemType::SuggestedActions:
-      NOTREACHED_IN_MIGRATION();
+    case GridItemType::kSuggestedActions:
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -100,7 +104,7 @@
 }
 
 - (BOOL)containItem:(GridItemIdentifier*)item {
-  CHECK(item.type == GridItemType::Tab || item.type == GridItemType::Group);
+  CHECK(item.type == GridItemType::kTab || item.type == GridItemType::kGroup);
   return [_itemsIdentifiers containsObject:item];
 }
 
@@ -116,17 +120,19 @@
   std::set<web::WebStateID> tabs;
   for (GridItemIdentifier* item in _itemsIdentifiers) {
     switch (item.type) {
-      case GridItemType::Tab:
+      case GridItemType::kInactiveTabsButton:
+        NOTREACHED_NORETURN();
+      case GridItemType::kTab:
         tabs.insert(item.tabSwitcherItem.identifier);
         break;
-      case GridItemType::Group: {
+      case GridItemType::kGroup: {
         CHECK(item.tabGroupItem.tabGroup);
         for (int i : item.tabGroupItem.tabGroup->range()) {
           tabs.insert(_webStateList->GetWebStateAt(i)->GetUniqueIdentifier());
         }
         break;
       }
-      case GridItemType::SuggestedActions:
+      case GridItemType::kSuggestedActions:
         NOTREACHED_NORETURN();
     }
   }

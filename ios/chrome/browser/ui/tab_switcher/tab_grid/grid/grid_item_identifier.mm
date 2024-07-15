@@ -10,9 +10,21 @@
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
 #import "ios/web/public/web_state_id.h"
 
+namespace {
+// There is only one suggested actions or inactive tab button item in the app,
+// their hash can be manually chosen. Pick two different ones to avoid
+// collisions.
+constexpr NSUInteger kSuggestedActionHash = 0;
+constexpr NSUInteger kInactiveTabsButtonHash = 1;
+}  // namespace
+
 @implementation GridItemIdentifier {
   // The hash of this item identifier.
   NSUInteger _hash;
+}
+
++ (instancetype)inactiveTabsButtonIdentifier {
+  return [[self alloc] initForInactiveTabsButton];
 }
 
 + (instancetype)tabIdentifier:(web::WebState*)webState {
@@ -31,10 +43,19 @@
   return [[self alloc] initForSuggestedAction];
 }
 
+- (instancetype)initForInactiveTabsButton {
+  self = [super init];
+  if (self) {
+    _type = GridItemType::kInactiveTabsButton;
+    _hash = kInactiveTabsButtonHash;
+  }
+  return self;
+}
+
 - (instancetype)initWithTabItem:(TabSwitcherItem*)item {
   self = [super init];
   if (self) {
-    _type = GridItemType::Tab;
+    _type = GridItemType::kTab;
     _tabSwitcherItem = item;
     _hash = GetHashForTabSwitcherItem(item);
   }
@@ -44,7 +65,7 @@
 - (instancetype)initWithGroupItem:(TabGroupItem*)item {
   self = [super init];
   if (self) {
-    _type = GridItemType::Group;
+    _type = GridItemType::kGroup;
     _tabGroupItem = item;
     _hash = GetHashForTabGroupItem(item);
   }
@@ -54,8 +75,8 @@
 - (instancetype)initForSuggestedAction {
   self = [super init];
   if (self) {
-    _type = GridItemType::SuggestedActions;
-    _hash = 0;
+    _type = GridItemType::kSuggestedActions;
+    _hash = kSuggestedActionHash;
   }
   return self;
 }
@@ -82,11 +103,13 @@
 
 - (NSString*)description {
   switch (_type) {
-    case GridItemType::Tab:
+    case GridItemType::kInactiveTabsButton:
+      return @"Inactive tabs button";
+    case GridItemType::kTab:
       return self.tabSwitcherItem.description;
-    case GridItemType::Group:
+    case GridItemType::kGroup:
       return self.tabGroupItem.description;
-    case GridItemType::SuggestedActions:
+    case GridItemType::kSuggestedActions:
       return @"Suggested Action identifier.";
   }
 }
@@ -101,13 +124,15 @@
     return NO;
   }
   switch (_type) {
-    case GridItemType::Tab:
+    case GridItemType::kInactiveTabsButton:
+      return YES;
+    case GridItemType::kTab:
       return CompareTabSwitcherItems(self.tabSwitcherItem,
                                      itemIdentifier.tabSwitcherItem);
-    case GridItemType::Group:
+    case GridItemType::kGroup:
       return CompareTabGroupItems(self.tabGroupItem,
                                   itemIdentifier.tabGroupItem);
-    case GridItemType::SuggestedActions:
+    case GridItemType::kSuggestedActions:
       return YES;
   }
 }

@@ -106,7 +106,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
 - (NSArray<UIMenuElement*>*)menuElementsForTabCell:(TabCell*)cell
                                       menuScenario:
                                           (MenuScenarioHistogram)scenario {
-  CHECK(cell.itemIdentifier.type == GridItemType::Tab);
+  CHECK(cell.itemIdentifier.type == GridItemType::kTab);
   // Record that this context menu was shown to the user.
   RecordMenuShown(scenario);
 
@@ -307,7 +307,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
 - (NSArray<UIMenuElement*>*)menuElementsForTabGroupCell:(TabCell*)cell
                                            menuScenario:
                                                (MenuScenarioHistogram)scenario {
-  CHECK(cell.itemIdentifier.type == GridItemType::Group);
+  CHECK(cell.itemIdentifier.type == GridItemType::kGroup);
   // Record that this context menu was shown to the user.
   RecordMenuShown(scenario);
 
@@ -361,7 +361,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
 
 // Returns `YES` if the tab for the given `identifier` is pinned.
 - (BOOL)isTabPinnedForIdentifier:(GridItemIdentifier*)identifier {
-  if (!identifier || (identifier.type != GridItemType::Tab)) {
+  if (!identifier || (identifier.type != GridItemType::kTab)) {
     return NO;
   }
 

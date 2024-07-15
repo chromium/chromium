@@ -54,6 +54,7 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_id_wrapper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_storage_wrapper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/tabs_search/model/tabs_search_service.h"
 #import "ios/chrome/browser/tabs_search/model/tabs_search_service_factory.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
@@ -1134,7 +1135,11 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   NSMutableArray<UIDragItem*>* dragItems = [[NSMutableArray alloc] init];
   for (GridItemIdentifier* itemID in _selectedEditingItems.itemsIdentifiers) {
     switch (itemID.type) {
-      case GridItemType::Tab: {
+      case GridItemType::kInactiveTabsButton:
+        // Inactive Tabs button is not dragable and not stored in
+        // `_selectedEditingItems`.
+        NOTREACHED_NORETURN();
+      case GridItemType::kTab: {
         UIDragItem* dragItem =
             [self dragItemForItemWithID:itemID.tabSwitcherItem.identifier];
         if (dragItem) {
@@ -1142,7 +1147,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
         }
         break;
       }
-      case GridItemType::Group: {
+      case GridItemType::kGroup: {
         UIDragItem* dragItem =
             [self dragItemForTabGroupItem:itemID.tabGroupItem];
         if (dragItem) {
@@ -1150,7 +1155,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
         }
         break;
       }
-      case GridItemType::SuggestedActions:
+      case GridItemType::kSuggestedActions:
         // Suggested actions items are not dragable and not stored in
         // `_selectedEditingItems`.
         NOTREACHED_NORETURN();
@@ -1687,10 +1692,12 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   for (GridItemIdentifier* identifier in _selectedEditingItems
            .itemsIdentifiers) {
     switch (identifier.type) {
-      case GridItemType::Tab:
+      case GridItemType::kInactiveTabsButton:
+        NOTREACHED_NORETURN();
+      case GridItemType::kTab:
         selectedIDs.insert(identifier.tabSwitcherItem.identifier);
         break;
-      case GridItemType::Group: {
+      case GridItemType::kGroup: {
         CHECK(identifier.tabGroupItem.tabGroup);
         const TabGroupRange groupRange =
             identifier.tabGroupItem.tabGroup->range();
@@ -1700,7 +1707,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
         }
         break;
       }
-      case GridItemType::SuggestedActions:
+      case GridItemType::kSuggestedActions:
         NOTREACHED_NORETURN();
     }
   }
@@ -1731,8 +1738,11 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 #pragma mark - GridViewControllerMutator
 
 - (void)userTappedOnItemID:(GridItemIdentifier*)itemID {
-  CHECK(itemID.type == GridItemType::Group || itemID.type == GridItemType::Tab);
+  CHECK(itemID.type == GridItemType::kInactiveTabsButton ||
+        itemID.type == GridItemType::kGroup ||
+        itemID.type == GridItemType::kTab);
   if (self.currentMode == TabGridModeSelection) {
+    CHECK(itemID.type != GridItemType::kInactiveTabsButton);
     if ([self isItemSelected:itemID]) {
       [self removeFromSelectionItemID:itemID];
     } else {
@@ -1742,7 +1752,8 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 }
 
 - (void)addToSelectionItemID:(GridItemIdentifier*)itemID {
-  CHECK(itemID.type == GridItemType::Tab || itemID.type == GridItemType::Group);
+  CHECK(itemID.type == GridItemType::kTab ||
+        itemID.type == GridItemType::kGroup);
   if (self.currentMode != TabGridModeSelection) {
     base::debug::DumpWithoutCrashing();
     return;
@@ -1752,7 +1763,8 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 }
 
 - (void)removeFromSelectionItemID:(GridItemIdentifier*)itemID {
-  CHECK(itemID.type == GridItemType::Tab || itemID.type == GridItemType::Group);
+  CHECK(itemID.type == GridItemType::kTab ||
+        itemID.type == GridItemType::kGroup);
   if (self.currentMode != TabGridModeSelection) {
     return;
   }
@@ -1763,17 +1775,18 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 
 - (void)closeItemWithIdentifier:(GridItemIdentifier*)identifier {
   switch (identifier.type) {
-    case GridItemType::Tab:
+    case GridItemType::kInactiveTabsButton:
+      NOTREACHED_NORETURN();
+    case GridItemType::kTab:
       [self closeItemWithID:identifier.tabSwitcherItem.identifier];
       break;
-    case GridItemType::Group: {
+    case GridItemType::kGroup: {
       const TabGroup* group = identifier.tabGroupItem.tabGroup;
       [self closeTabGroup:group andDeleteGroup:NO];
       break;
     }
-    case GridItemType::SuggestedActions:
-      NOTREACHED_IN_MIGRATION();
-      break;
+    case GridItemType::kSuggestedActions:
+      NOTREACHED_NORETURN();
   }
 }
 
