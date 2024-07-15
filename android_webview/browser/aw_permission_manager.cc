@@ -16,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/task/thread_pool.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -505,16 +506,57 @@ PermissionStatus AwPermissionManager::GetPermissionStatus(
     PermissionType permission,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
-  // Method is called outside the Permissions API only for this permission.
-  if (permission == PermissionType::PROTECTED_MEDIA_IDENTIFIER) {
-    return result_cache_->GetResult(permission, requesting_origin,
-                                    embedding_origin);
-  } else if (permission == PermissionType::MIDI ||
-             permission == PermissionType::SENSORS) {
-    return PermissionStatus::GRANTED;
-  }
+  switch (permission) {
+    case blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER:
+      // Method is called outside the Permissions API only for this permission.
+      return result_cache_->GetResult(permission, requesting_origin,
+                                      embedding_origin);
+    case blink::PermissionType::MIDI:
+    case blink::PermissionType::SENSORS:
+      // These permissions are auto-granted by WebView.
+      return PermissionStatus::GRANTED;
 
-  return PermissionStatus::DENIED;
+    case blink::PermissionType::MIDI_SYSEX:
+    case blink::PermissionType::GEOLOCATION:
+    case blink::PermissionType::AUDIO_CAPTURE:
+    case blink::PermissionType::VIDEO_CAPTURE:
+      // These permissions are always forwarded to the app to handle.
+      return PermissionStatus::ASK;
+    case blink::PermissionType::CLIPBOARD_SANITIZED_WRITE:
+      // This permission depends on user_gesture, so should always ask.
+      return PermissionStatus::ASK;
+
+    case blink::PermissionType::ACCESSIBILITY_EVENTS:
+    case blink::PermissionType::AR:
+    case blink::PermissionType::AUTOMATIC_FULLSCREEN:
+    case blink::PermissionType::BACKGROUND_FETCH:
+    case blink::PermissionType::BACKGROUND_SYNC:
+    case blink::PermissionType::CAMERA_PAN_TILT_ZOOM:
+    case blink::PermissionType::CAPTURED_SURFACE_CONTROL:
+    case blink::PermissionType::CLIPBOARD_READ_WRITE:
+    case blink::PermissionType::DISPLAY_CAPTURE:
+    case blink::PermissionType::DURABLE_STORAGE:
+    case blink::PermissionType::IDLE_DETECTION:
+    case blink::PermissionType::KEYBOARD_LOCK:
+    case blink::PermissionType::LOCAL_FONTS:
+    case blink::PermissionType::NFC:
+    case blink::PermissionType::NOTIFICATIONS:
+    case blink::PermissionType::NUM:
+    case blink::PermissionType::PAYMENT_HANDLER:
+    case blink::PermissionType::PERIODIC_BACKGROUND_SYNC:
+    case blink::PermissionType::POINTER_LOCK:
+    case blink::PermissionType::SMART_CARD:
+    case blink::PermissionType::SPEAKER_SELECTION:
+    case blink::PermissionType::STORAGE_ACCESS_GRANT:
+    case blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS:
+    case blink::PermissionType::VR:
+    case blink::PermissionType::WAKE_LOCK_SCREEN:
+    case blink::PermissionType::WAKE_LOCK_SYSTEM:
+    case blink::PermissionType::WEB_PRINTING:
+    case blink::PermissionType::WINDOW_MANAGEMENT:
+      return PermissionStatus::DENIED;
+  }
+  NOTREACHED() << "Unhandled permission type: " << static_cast<int>(permission);
 }
 
 content::PermissionResult

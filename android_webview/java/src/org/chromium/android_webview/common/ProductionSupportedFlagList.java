@@ -1058,6 +1058,8 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_HYPERLINK_CONTEXT_MENU,
                 "Enables hyperlink context menu in WebView"),
         Flag.baseFeature("MojoUseBinder"),
+        Flag.baseFeature(
+                ContentFeatures.WEB_PERMISSIONS_API, "Enables navigator.permissions.query()"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
