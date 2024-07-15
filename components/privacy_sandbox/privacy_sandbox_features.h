@@ -236,6 +236,14 @@ BASE_DECLARE_FEATURE(kTrackingProtectionUserBypassPwaTrigger);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPsRedesignAdPrivacyPage);
 
+// Enabled Tracking Protection Onboarding for the full 3PCD rollout.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kTrackingProtectionOnboarding);
+
+// Enables Blocking Third Party Cookies as part of the full 3PCD rollout.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const base::FeatureParam<bool> kTrackingProtectionBlock3PC;
+
 // Enables setting the toggles on the top-level Ad Privacy page.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const base::FeatureParam<bool> kPsRedesignAdPrivacyPageEnableToggles;

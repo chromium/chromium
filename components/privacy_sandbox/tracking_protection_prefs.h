@@ -63,6 +63,10 @@ inline constexpr char kTrackingProtectionSilentEligibleSince[] =
 inline constexpr char kTrackingProtectionSilentOnboardedSince[] =
     "tracking_protection.tracking_protection_silent_onboarded_since";
 
+// Unsynced pref that indicates when the profile was onboarded onto full 3PCD.
+inline constexpr char kTrackingProtectionFull3PCDOnboarded[] =
+    "tracking_protection.tracking_protection_full_3pcd_onboarded";
+
 // Tracking Protection Reminder Prefs.
 
 // Unsynced pref that indicates the reminder status for a profile.
