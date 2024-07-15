@@ -64,7 +64,7 @@ CommandsHandler::~CommandsHandler() = default;
 bool CommandsHandler::Parse(Extension* extension, std::u16string* error) {
   if (!extension->manifest()->FindKey(keys::kCommands)) {
     std::unique_ptr<CommandsInfo> commands_info(new CommandsInfo);
-    MaybeSetBrowserActionDefault(extension, commands_info.get());
+    MaybeSetActionDefault(extension, commands_info.get());
     extension->SetManifestData(keys::kCommands, std::move(commands_info));
     return true;
   }
@@ -142,7 +142,7 @@ bool CommandsHandler::Parse(Extension* extension, std::u16string* error) {
         manifest_keys::kCommands));
   }
 
-  MaybeSetBrowserActionDefault(extension, commands_info.get());
+  MaybeSetActionDefault(extension, commands_info.get());
   extension->SetManifestData(keys::kCommands, std::move(commands_info));
   return true;
 }
@@ -153,8 +153,8 @@ bool CommandsHandler::AlwaysParseForType(Manifest::Type type) const {
          type == Manifest::TYPE_PLATFORM_APP;
 }
 
-void CommandsHandler::MaybeSetBrowserActionDefault(const Extension* extension,
-                                                   CommandsInfo* info) {
+void CommandsHandler::MaybeSetActionDefault(const Extension* extension,
+                                            CommandsInfo* info) {
   if (extension->manifest()->FindKey(keys::kAction) &&
       !info->action_command.get()) {
     info->action_command =

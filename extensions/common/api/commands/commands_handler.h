@@ -48,14 +48,12 @@ class CommandsHandler : public ManifestHandler {
   bool AlwaysParseForType(Manifest::Type type) const override;
 
  private:
-  // If the extension defines a browser action (or action in MV3), but no
-  // command for it, then we synthesize a generic one, so the user can
-  // configure a shortcut for it. No keyboard shortcut will be assigned to it,
-  // until the user selects one. A generic command is not set for extensions
-  // defining a page action.
-  // TODO(crbug.com/40858296): Change name to MaybeSetActionDefault.
-  void MaybeSetBrowserActionDefault(const Extension* extension,
-                                    CommandsInfo* info);
+  // If the extension defines an action (or browser action in manifest versions
+  // prior to 3), but no command for it, then we synthesize a generic one, so
+  // the user can configure a shortcut for it. No keyboard shortcut will be
+  // assigned to it, until the user selects one. A generic command is not set
+  // for extensions defining a page action.
+  void MaybeSetActionDefault(const Extension* extension, CommandsInfo* info);
 
   base::span<const char* const> Keys() const override;
 };

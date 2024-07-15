@@ -415,7 +415,7 @@ void CommandService::RemoveRelinquishedKeybindings(const Extension* extension) {
     // The shortcuts should be removed if there is no command specified in the
     // new extension, or the only command specified is synthesized (i.e.,
     // assigned to ui::VKEY_UNKNOWN), which happens for browser action commands.
-    // See CommandsHandler::MaybeSetBrowserActionDefault().
+    // See CommandsHandler::MaybeSetActionDefault().
     // TODO(devlin): Should this logic apply to ActionInfo::Type::kAction?
     // See https://crbug.com/893373.
     const bool should_relinquish =
@@ -541,7 +541,7 @@ void CommandService::UpdateExtensionSuggestedCommandPrefs(
       CommandsInfo::GetBrowserActionCommand(extension);
   // The browser action command may be defaulted to an unassigned accelerator if
   // a browser action is specified by the extension but a keybinding is not
-  // declared. See CommandsHandler::MaybeSetBrowserActionDefault.
+  // declared. See CommandsHandler::MaybeSetActionDefault.
   if (browser_action_command &&
       browser_action_command->accelerator().key_code() != ui::VKEY_UNKNOWN) {
     base::Value::Dict command_keys;
@@ -585,7 +585,7 @@ void CommandService::RemoveDefunctExtensionSuggestedCommandPrefs(
         // The browser action command may be defaulted to an unassigned
         // accelerator if a browser action is specified by the extension but a
         // keybinding is not declared. See
-        // CommandsHandler::MaybeSetBrowserActionDefault.
+        // CommandsHandler::MaybeSetActionDefault.
         if (!browser_action_command ||
             browser_action_command->accelerator().key_code() ==
                 ui::VKEY_UNKNOWN) {
