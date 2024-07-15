@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/whats_new/data_source/whats_new_data_source.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_mediator_consumer.h"
@@ -80,6 +81,11 @@
       // Handles actions that open ESB in Chrome settings.
       [self.applicationHandler
           showSafeBrowsingSettingsFromViewController:self.baseViewController];
+      break;
+    case WhatsNewPrimaryAction::kChromePasswordManager:
+      // Handles actions that open Chrome Password Manager.
+      [self.settingsHandler showSavedPasswordsSettingsFromViewController:nil
+                                                        showCancelButton:NO];
       break;
     case WhatsNewPrimaryAction::kNoAction:
     case WhatsNewPrimaryAction::kError:

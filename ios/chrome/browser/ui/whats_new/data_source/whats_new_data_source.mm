@@ -69,17 +69,15 @@ UIColor* GenerateColor(NSString* color) {
 NSString* GetPrimaryActionTitle(WhatsNewPrimaryAction action) {
   switch (action) {
     case WhatsNewPrimaryAction::kIOSSettings:
-      return l10n_util::GetNSString(IDS_IOS_OPEN_IOS_SETTINGS);
-    case WhatsNewPrimaryAction::kPrivacySettings:
-      return l10n_util::GetNSString(IDS_IOS_OPEN_CHROME_SETTINGS);
-    case WhatsNewPrimaryAction::kChromeSettings:
-      return l10n_util::GetNSString(IDS_IOS_OPEN_CHROME_SETTINGS);
     case WhatsNewPrimaryAction::kIOSSettingsPasswords:
       return l10n_util::GetNSString(IDS_IOS_OPEN_IOS_SETTINGS);
+    case WhatsNewPrimaryAction::kPrivacySettings:
+    case WhatsNewPrimaryAction::kChromeSettings:
+    case WhatsNewPrimaryAction::kSafeBrowsingSettings:
+    case WhatsNewPrimaryAction::kChromePasswordManager:
+      return l10n_util::GetNSString(IDS_IOS_OPEN_CHROME_SETTINGS);
     case WhatsNewPrimaryAction::kLens:
       return l10n_util::GetNSString(IDS_IOS_GO_TO_LENS);
-    case WhatsNewPrimaryAction::kSafeBrowsingSettings:
-      return l10n_util::GetNSString(IDS_IOS_OPEN_CHROME_SETTINGS);
     case WhatsNewPrimaryAction::kNoAction:
     case WhatsNewPrimaryAction::kError:
       return nil;

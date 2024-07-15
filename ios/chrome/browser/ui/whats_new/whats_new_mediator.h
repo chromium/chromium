@@ -12,6 +12,7 @@
 @protocol ApplicationCommands;
 @protocol BrowserCoordinatorCommands;
 @protocol LensCommands;
+@protocol SettingsCommands;
 
 class UrlLoadingBrowserAgent;
 
@@ -36,6 +37,9 @@ class UrlLoadingBrowserAgent;
 // Browser coordinator command handler.
 @property(nonatomic, weak) id<BrowserCoordinatorCommands>
     browserCoordinatorHandler;
+
+// Settings command handler.
+@property(nonatomic, weak) id<SettingsCommands> settingsHandler;
 
 // The view controller that presents the popup menu.
 @property(nonatomic, weak) UIViewController* baseViewController;
