@@ -1326,10 +1326,10 @@ void OverviewSession::UpdateAccessibilityFocus() {
         a11y_widgets.push_back(item->item_widget());
     }
 
-    // UI elements in faster split screen partial overview will be traversed
-    // right after the overview items.
-    if (auto* faster_splitview_widget = grid->faster_splitview_widget()) {
-      a11y_widgets.push_back(faster_splitview_widget);
+    // UI elements in split view overview will be traversed right after the
+    // overview items.
+    if (auto* split_view_setup_widget = grid->split_view_setup_widget()) {
+      a11y_widgets.push_back(split_view_setup_widget);
     }
 
     if (grid->desks_widget()) {

@@ -134,9 +134,9 @@ constexpr int kNoItemsIndicatorVerticalPaddingDp = 8;
 // the first overview item.
 constexpr int kSaveDeskAsTemplateOverviewItemSpacingDp = 45;
 
-// Distance from the bottom of the last overview item to the top of the faster
-// splitscreen toast widget.
-constexpr int kFasterSplitScreenToastSpacingDp = 40;
+// Distance from the bottom of the last overview item to the top of the split
+// view setup view toast widget.
+constexpr int kSplitViewSetupToastSpacingDp = 40;
 
 // Distance between the bottom of the toast and the bottom of the work area
 // which will be the top edge of the shelf if it is shown.
@@ -178,12 +178,6 @@ constexpr base::TimeDelta kOcclusionUnpauseDurationForScroll =
 
 constexpr base::TimeDelta kOcclusionUnpauseDurationForRotation =
     base::Milliseconds(300);
-
-// TODO(b/305980930): Replace with UX string when it is approved.
-const std::u16string kFasterSplitScreenToastNoWindows =
-    u"Create a window to use split screen, or click empty area to skip.";
-const std::u16string kFasterSplitScreenToast =
-    u"Choose a window to use split screen, or click empty area to skip.";
 
 // Toast id for the toast that is displayed when a user tries to move a window
 // that is visible on all desks to another desk.
@@ -2531,9 +2525,9 @@ bool OverviewGrid::IsSaveDeskForLaterButtonVisible() const {
 }
 
 void OverviewGrid::OnTabletModeChanged() {
-  // We may not show virtual desk bar in clamshell mode such as in faster split
-  // screen setup session, and the desk bar will be created in tablet mode
-  // either. In this case, we may need to init the virtual desk bar.
+  // We may not show virtual desk bar in clamshell mode such as in split view
+  // setup session, and the desk bar will be created in tablet mode either. In
+  // this case, we may need to init the virtual desk bar.
   MaybeInitDesksWidget();
 
   MaybeInitBirchBarWidget();
@@ -2573,16 +2567,16 @@ OverviewGrid::GetSaveDeskButtonContainer() const {
 }
 
 SplitViewSetupViewOld* OverviewGrid::GetSplitViewSetupViewOld() {
-  return faster_splitview_widget_
+  return split_view_setup_widget_
              ? views::AsViewClass<SplitViewSetupViewOld>(
-                   faster_splitview_widget_->GetContentsView())
+                   split_view_setup_widget_->GetContentsView())
              : nullptr;
 }
 
 const SplitViewSetupView* OverviewGrid::GetSplitViewSetupView() const {
-  return faster_splitview_widget_
+  return split_view_setup_widget_
              ? views::AsViewClass<SplitViewSetupView>(
-                   faster_splitview_widget_->GetContentsView())
+                   split_view_setup_widget_->GetContentsView())
              : nullptr;
 }
 
@@ -2743,7 +2737,7 @@ void OverviewGrid::OnSplitViewDividerPositionChanged() {
   if (overview_session_->is_shutting_down() ||
       window_util::IsInFasterSplitScreenSetupSession(root_window_)) {
     // `SplitViewOverviewSession` will manually update the bounds so we don't
-    // need to update here in faster split screen setup session.
+    // need to update here in split view setup session.
     return;
   }
 
@@ -3460,7 +3454,7 @@ void OverviewGrid::OnSettingsButtonPressed() {
 
 void OverviewGrid::UpdateSplitViewSetupViewWidget() {
   if (!SplitViewController::Get(root_window_)->InClamshellSplitViewMode()) {
-    // If we weren't started by faster splitview, don't show the widget.
+    // If we aren't in split view, don't show the widget.
     if (auto* split_view_setup_view = GetSplitViewSetupViewOld()) {
       auto* focus_cycler_old = overview_session_->focus_cycler_old();
       focus_cycler_old->OnViewDestroyingOrDisabling(
@@ -3468,11 +3462,11 @@ void OverviewGrid::UpdateSplitViewSetupViewWidget() {
       focus_cycler_old->OnViewDestroyingOrDisabling(
           split_view_setup_view->settings_button());
     }
-    faster_splitview_widget_.reset();
+    split_view_setup_widget_.reset();
     return;
   }
 
-  if (!faster_splitview_widget_) {
+  if (!split_view_setup_widget_) {
     views::Widget::InitParams params(
         views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
         views::Widget::InitParams::TYPE_POPUP);
@@ -3483,36 +3477,36 @@ void OverviewGrid::UpdateSplitViewSetupViewWidget() {
     params.name = "SplitViewSetupViewWidget";
     params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
     params.init_properties_container.SetProperty(kOverviewUiKey, true);
-    faster_splitview_widget_ =
+    split_view_setup_widget_ =
         std::make_unique<views::Widget>(std::move(params));
-    faster_splitview_widget_->GetLayer()->SetFillsBoundsOpaquely(false);
+    split_view_setup_widget_->GetLayer()->SetFillsBoundsOpaquely(false);
     if (features::IsOverviewNewFocusEnabled()) {
-      faster_splitview_widget_->SetContentsView(
+      split_view_setup_widget_->SetContentsView(
           std::make_unique<SplitViewSetupView>(
               base::BindRepeating(&OverviewGrid::OnSkipButtonPressed,
                                   weak_ptr_factory_.GetWeakPtr()),
               base::BindRepeating(&OverviewGrid::OnSettingsButtonPressed,
                                   weak_ptr_factory_.GetWeakPtr())));
     } else {
-      faster_splitview_widget_->SetContentsView(
+      split_view_setup_widget_->SetContentsView(
           std::make_unique<SplitViewSetupViewOld>(
               base::BindRepeating(&OverviewGrid::OnSkipButtonPressed,
                                   weak_ptr_factory_.GetWeakPtr()),
               base::BindRepeating(&OverviewGrid::OnSettingsButtonPressed,
                                   weak_ptr_factory_.GetWeakPtr())));
     }
-    faster_splitview_widget_->ShowInactive();
+    split_view_setup_widget_->ShowInactive();
   }
 
   const gfx::Rect grid_bounds = GetGridEffectiveBounds();
   gfx::Rect centered_bounds(grid_bounds);
   const gfx::Size preferred_size =
-      faster_splitview_widget_->GetContentsView()->GetPreferredSize();
+      split_view_setup_widget_->GetContentsView()->GetPreferredSize();
   centered_bounds.ClampToCenteredSize(preferred_size);
 
   // If there are no windows, set it in the center of the grid.
   if (item_list_.empty()) {
-    faster_splitview_widget_->SetBounds(centered_bounds);
+    split_view_setup_widget_->SetBounds(centered_bounds);
     return;
   }
 
@@ -3526,16 +3520,16 @@ void OverviewGrid::UpdateSplitViewSetupViewWidget() {
   // elements such as shelf. Under extreme condition, which should rarely
   // happen, if the bottom are of the partial overview grids is too small to
   // accommodate for both `kMinimumDistanceBetweenToastAndWorkAreaDp` and
-  // `kFasterSplitScreenToastSpacingDp`. We will prioritize the minimum
+  // `kSplitViewSetupToastSpacingDp`. We will prioritize the minimum
   // distance, under which condition the toast and settings button may appear
   // above the overview items.
   const int toast_y = std::min(
-      last_overview_item_bottom + kFasterSplitScreenToastSpacingDp,
+      last_overview_item_bottom + kSplitViewSetupToastSpacingDp,
       grid_bounds.bottom() - kMinimumDistanceBetweenToastAndWorkAreaDp -
           preferred_size.height());
 
   centered_bounds.set_y(toast_y);
-  faster_splitview_widget_->SetBounds(centered_bounds);
+  split_view_setup_widget_->SetBounds(centered_bounds);
 
   overview_session_->UpdateAccessibilityFocus();
 }

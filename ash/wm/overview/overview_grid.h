@@ -507,8 +507,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   views::Widget* birch_bar_widget() { return birch_bar_widget_.get(); }
 
-  views::Widget* faster_splitview_widget() {
-    return faster_splitview_widget_.get();
+  views::Widget* split_view_setup_widget() {
+    return split_view_setup_widget_.get();
   }
 
   views::Widget* saved_desk_library_widget() {
@@ -663,14 +663,14 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
                          size_t position,
                          bool animate);
 
-  // Called when the faster splitview toast skip button is pressed.
+  // Called when the split view setup view toast skip button is pressed.
   void OnSkipButtonPressed();
 
-  // Called when the faster splitview settings button is pressed.
+  // Called when the split view setup view settings button is pressed.
   void OnSettingsButtonPressed();
 
-  // Updates the visibility of `faster_splitview_widget_`. The widget will
-  // only be shown if faster splitview setup is in session.
+  // Updates the visibility of `split_view_setup_widget_`. The widget will
+  // only be shown if split view overview is in session.
   void UpdateSplitViewSetupViewWidget();
 
   // Updates the visibility of `feedback_widget_`. The widget is located in the
@@ -722,9 +722,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // The contents view of the `birch_bar_widget_` if created.
   raw_ptr<BirchBarView> birch_bar_view_ = nullptr;
 
-  // Widget that appears during faster splitview setup. Contains the faster
-  // splitview toast and the overview settings button.
-  std::unique_ptr<views::Widget> faster_splitview_widget_;
+  // Widget that appears during the split view setup. Contains the split view
+  // setup view toast and settings button.
+  std::unique_ptr<views::Widget> split_view_setup_widget_;
 
   // The widget that contains the view for all saved desks.
   std::unique_ptr<views::Widget> saved_desk_library_widget_;

@@ -457,7 +457,7 @@ TEST_F(FasterSplitScreenTest, Basic) {
   ToggleOverview();
   auto* overview_grid = GetOverviewGridForRoot(w1->GetRootWindow());
   EXPECT_FALSE(overview_grid->no_windows_widget());
-  EXPECT_FALSE(overview_grid->faster_splitview_widget());
+  EXPECT_FALSE(overview_grid->split_view_setup_widget());
 }
 
 // Tests that on one window snapped, `SnapGroupController` starts
@@ -1614,8 +1614,8 @@ TEST_F(FasterSplitScreenTest, NoCrashOnToastDestroyingOld) {
                     WindowSnapActionSource::kDragWindowToEdgeToSnap);
   ASSERT_TRUE(IsInOverviewSession());
   OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
-  auto* faster_splitview_widget = grid->faster_splitview_widget();
-  ASSERT_TRUE(faster_splitview_widget);
+  auto* split_view_setup_widget = grid->split_view_setup_widget();
+  ASSERT_TRUE(split_view_setup_widget);
 
   // Tab to the dismiss button.
   SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB, GetEventGenerator());
@@ -1765,8 +1765,8 @@ TEST_F(FasterSplitScreenTest, NoCrashOnToastDestroying) {
                     WindowSnapActionSource::kDragWindowToEdgeToSnap);
   ASSERT_TRUE(IsInOverviewSession());
   OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
-  auto* faster_splitview_widget = grid->faster_splitview_widget();
-  ASSERT_TRUE(faster_splitview_widget);
+  auto* split_view_setup_widget = grid->split_view_setup_widget();
+  ASSERT_TRUE(split_view_setup_widget);
 
   // Tab to the dismiss button.
   SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB, GetEventGenerator());
@@ -1860,20 +1860,20 @@ TEST_F(FasterSplitScreenTest, AccessibilityFocusAnnotator) {
   OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
   ASSERT_FALSE(grid->desks_widget());
   ASSERT_FALSE(grid->GetSaveDeskForLaterButton());
-  auto* faster_splitview_widget = grid->faster_splitview_widget();
-  ASSERT_TRUE(faster_splitview_widget);
+  auto* split_view_setup_widget = grid->split_view_setup_widget();
+  ASSERT_TRUE(split_view_setup_widget);
 
   // Overview items are in MRU order, so the expected order in the grid list is
   // the reverse creation order.
   auto* item_widget1 = GetOverviewItemForWindow(window1.get())->item_widget();
 
-  // Order should be [focus_widget, item_widget1, faster_splitview_widget].
+  // Order should be [focus_widget, item_widget1, split_view_setup_widget].
   CheckA11yOverrides("focus", focus_widget,
-                     /*expected_previous=*/faster_splitview_widget,
+                     /*expected_previous=*/split_view_setup_widget,
                      /*expected_next=*/item_widget1);
   CheckA11yOverrides("item1", item_widget1, /*expected_previous=*/focus_widget,
-                     /*expected_next=*/faster_splitview_widget);
-  CheckA11yOverrides("splitview", faster_splitview_widget,
+                     /*expected_next=*/split_view_setup_widget);
+  CheckA11yOverrides("splitview", split_view_setup_widget,
                      /*expected_previous=*/item_widget1,
                      /*expected_next=*/focus_widget);
 }

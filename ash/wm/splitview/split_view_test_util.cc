@@ -112,7 +112,7 @@ void VerifySplitViewOverviewSession(aura::Window* window) {
 
   if (!Shell::Get()->IsInTabletMode()) {
     auto* overview_grid = GetOverviewGridForRoot(window->GetRootWindow());
-    EXPECT_TRUE(overview_grid->faster_splitview_widget());
+    EXPECT_TRUE(overview_grid->split_view_setup_widget());
     EXPECT_FALSE(overview_grid->no_windows_widget());
     // TODO(b/345814268): Consider destroying the widgets.
     const auto* save_desk_widget =
