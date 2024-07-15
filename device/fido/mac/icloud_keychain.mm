@@ -296,7 +296,9 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
           // 1006 is ASAuthorizationErrorMatchedExcludedCredential but this
           // change is being made before the macOS 15 SDK is available in
           // Chromium.
-          (domain == "ASAuthorizationErrorDomain" && error.code == 1006)) {
+          (error.domain != nil &&
+           [error.domain isEqualToString:ASAuthorizationErrorDomain] &&
+           error.code == 1006)) {
         std::move(callback).Run(
             MakeCredentialStatus::kUserConsentButCredentialExcluded,
             std::nullopt);
