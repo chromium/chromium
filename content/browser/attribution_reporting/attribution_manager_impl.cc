@@ -32,6 +32,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/updateable_sequenced_task_runner.h"
@@ -40,6 +41,8 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "components/attribution_reporting/aggregatable_filtering_id_max_bytes.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registration.mojom.h"
 #include "components/attribution_reporting/source_registration.h"
@@ -433,6 +436,28 @@ void LogMetricsOnReportSent(const AttributionReport& report) {
   }
 }
 
+bool HasNonDefaultFilteringId(const AttributionTrigger& trigger) {
+  return base::ranges::any_of(
+      trigger.registration().aggregatable_values, [](const auto& value) {
+        return base::ranges::any_of(value.values(), [](const auto& val) {
+          return val.second.filtering_id() !=
+                 attribution_reporting::kDefaultFilteringId;
+        });
+      });
+}
+
+void RecordAggregatableFilteringIdUsage(const AttributionTrigger& trigger) {
+  base::UmaHistogramBoolean("Conversions.NonDefaultAggregatableFilteringId",
+                            HasNonDefaultFilteringId(trigger));
+
+  base::UmaHistogramExactLinear(
+      "Conversions.AggregatableFilteringIdMaxBytesValue",
+      trigger.registration()
+          .aggregatable_trigger_config.aggregatable_filtering_id_max_bytes()
+          .value(),
+      /*exclusive_max=8+1=*/9);
+}
+
 std::unique_ptr<AttributionResolverDelegate> MakeResolverDelegate(
     bool debug_mode) {
   if (debug_mode) {
@@ -728,6 +753,8 @@ void AttributionManagerImpl::OnSourceStored(
 void AttributionManagerImpl::HandleTrigger(
     AttributionTrigger trigger,
     GlobalRenderFrameHostId render_frame_id) {
+  RecordAggregatableFilteringIdUsage(trigger);
+
   MaybeEnqueueEvent(SourceOrTriggerRFH{.source_or_trigger = std::move(trigger),
                                        .rfh_id = render_frame_id});
 }

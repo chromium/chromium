@@ -4,6 +4,8 @@
 
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 
+#include <stddef.h>
+
 #include <initializer_list>
 #include <memory>
 #include <optional>
@@ -102,6 +104,8 @@ namespace content {
 namespace {
 
 using ::attribution_reporting::AggregatableDebugReportingConfig;
+using ::attribution_reporting::AggregatableValues;
+using ::attribution_reporting::AggregatableValuesValue;
 using ::attribution_reporting::OsRegistrationItem;
 using ::attribution_reporting::SourceAggregatableDebugReportingConfig;
 using ::attribution_reporting::SuitableOrigin;
@@ -1495,6 +1499,65 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_RecordsMetric) {
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.CreateReportStatus4",
       AttributionTrigger::AggregatableResult::kNotRegistered, 1);
+}
+
+TEST_F(AttributionManagerImplTest,
+       HandleTrigger_RecordsAggregatableFilteringIdMetrics) {
+  const struct {
+    const char* name;
+    AttributionTrigger trigger;
+    bool expected_non_default_filtering_id;
+    size_t expected_max_bytes_value;
+  } kTestCases[] = {
+      {
+          "default filtering id and max bytes",
+          DefaultTrigger(),
+          /*expected_non_default_filtering_id=*/false,
+          /*expected_max_bytes_value=*/1,
+      },
+      {
+          "non-default filtering id and default max bytes",
+          TriggerBuilder()
+              .SetAggregatableValues({*AggregatableValues::Create(
+                  /*values=*/{{"a", *AggregatableValuesValue::Create(1, 1)},
+                              {"b", *AggregatableValuesValue::Create(2, 2)}},
+                  attribution_reporting::FilterPair())})
+              .Build(),
+          /*expected_non_default_filtering_id=*/true,
+          /*expected_max_bytes_value=*/1,
+      },
+      {
+          "non-default filtering id and max bytes",
+          TriggerBuilder()
+              .SetSourceRegistrationTimeConfig(
+                  attribution_reporting::mojom::SourceRegistrationTimeConfig::
+                      kExclude)
+              .SetAggregatableValues({*AggregatableValues::Create(
+                  /*values=*/{{"a", *AggregatableValuesValue::Create(2, 2)}},
+                  attribution_reporting::FilterPair())})
+              .SetAggregatableFilteringIdMaxBytes(
+                  *attribution_reporting::AggregatableFilteringIdsMaxBytes::
+                      Create(2))
+              .Build(),
+          /*expected_non_default_filtering_id=*/true,
+          /*expected_max_bytes_value=*/2,
+      },
+  };
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.name);
+
+    base::HistogramTester histograms;
+    attribution_manager_->HandleTrigger(test_case.trigger, kFrameId);
+
+    histograms.ExpectUniqueSample(
+        "Conversions.NonDefaultAggregatableFilteringId",
+        /*sample=*/test_case.expected_non_default_filtering_id,
+        /*expected_bucket_count=*/1);
+    histograms.ExpectUniqueSample(
+        "Conversions.AggregatableFilteringIdMaxBytesValue",
+        /*sample=*/test_case.expected_max_bytes_value,
+        /*expected_bucket_count=*/1);
+  }
 }
 
 TEST_F(AttributionManagerImplTest, HandleSource_RecordsMetric) {

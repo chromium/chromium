@@ -215,6 +215,9 @@ class TriggerBuilder {
   TriggerBuilder& SetAggregatableDebugReportingConfig(
       attribution_reporting::AggregatableDebugReportingConfig);
 
+  TriggerBuilder& SetAggregatableFilteringIdMaxBytes(
+      attribution_reporting::AggregatableFilteringIdsMaxBytes);
+
   AttributionTrigger Build(bool generate_event_trigger_data = true) const;
 
  private:
@@ -238,6 +241,8 @@ class TriggerBuilder {
       source_registration_time_config_ =
           attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude;
   std::optional<std::string> trigger_context_id_;
+  attribution_reporting::AggregatableFilteringIdsMaxBytes
+      aggregatable_filtering_id_max_bytes_;
   attribution_reporting::AggregatableDebugReportingConfig
       aggregatable_debug_reporting_config_;
 };

@@ -78,6 +78,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.AggregatableFilteringIdMaxBytesValue"
+    units="count" expires_after="2024-12-27">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    When a trigger is received by the attribution manager, records the
+    configured aggregatable filtering id max bytes value. That value defaults to
+    1.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.AggregatableKeysPerSource" units="keys"
     expires_after="2024-11-17">
   <owner>linnan@chromium.org</owner>
@@ -777,6 +788,16 @@ chromium-metrics-reviews@google.com.
     Upon trying to register foreground navigation data, if the registration
     isn't available and prevents the data from being processed, records
     `kRegistrationMissingUponReceivingData`.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.NonDefaultAggregatableFilteringId" enum="Boolean"
+    expires_after="2024-12-27">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    When a trigger is received by the attribution manager, records whether it
+    includes a non-default aggregatable filtering id.
   </summary>
 </histogram>
 
