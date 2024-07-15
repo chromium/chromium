@@ -6,14 +6,16 @@
 #define IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_UI_CREDENTIAL_RESPONSE_HANDLER_H_
 
 #import <AuthenticationServices/AuthenticationServices.h>
-#import <UIKit/UIKit.h>
 
 // A handler to allow children to communicate selected credentials back to the
 // parent. This is essentially a wrapper for
 // `ASCredentialProviderExtensionContext` to force all calls through the parent.
 @protocol CredentialResponseHandler
 
-- (void)userSelectedCredential:(ASPasswordCredential*)credential;
+- (void)userSelectedPassword:(ASPasswordCredential*)credential;
+
+- (void)userSelectedPasskey:(ASPasskeyAssertionCredential*)credential
+    API_AVAILABLE(ios(17.0));
 
 - (void)userCancelledRequestWithErrorCode:(ASExtensionErrorCode)errorCode;
 

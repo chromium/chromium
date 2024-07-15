@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 @class ASCredentialServiceIdentifier;
+@class ASPasskeyCredentialRequestParameters;
 @protocol CredentialResponseHandler;
 @protocol CredentialStore;
 @class ReauthenticationHandler;
@@ -36,6 +37,11 @@
 
 // Stops the credential list.
 - (void)stop;
+
+// Set the request parameters for passkeys.
+- (void)setRequestParameters:
+    (ASPasskeyCredentialRequestParameters*)requestParameters
+    API_AVAILABLE(ios(17.0));
 
 @end
 

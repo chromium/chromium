@@ -361,6 +361,17 @@ UIColor* BackgroundColor() {
                                              completionHandler:nil];
 }
 
+// Convenience wrapper for
+// -completeAssertionRequestWithSelectedPasskeyCredential:completionHandler:.
+- (void)completeAssertionRequestWithSelectedPasskeyCredential:
+    (ASPasskeyAssertionCredential*)credential API_AVAILABLE(ios(17.0)) {
+  [self.listCoordinator stop];
+  self.listCoordinator = nil;
+  [self.extensionContext
+      completeAssertionRequestWithSelectedPasskeyCredential:credential
+                                          completionHandler:nil];
+}
+
 // Convenience wrapper for -cancelRequestWithError.
 - (void)exitWithErrorCode:(ASExtensionErrorCode)errorCode {
   [self.listCoordinator stop];
@@ -392,8 +403,17 @@ UIColor* BackgroundColor() {
 
 #pragma mark - CredentialResponseHandler
 
-- (void)userSelectedCredential:(ASPasswordCredential*)credential {
+- (void)userSelectedPassword:(ASPasswordCredential*)credential {
   [self completeRequestWithSelectedCredential:credential];
+}
+
+- (void)userSelectedPasskey:(ASPasskeyAssertionCredential*)credential
+    API_AVAILABLE(ios(17.0)) {
+  if (credential) {
+    [self completeAssertionRequestWithSelectedPasskeyCredential:credential];
+  } else {
+    [self exitWithErrorCode:ASExtensionErrorCodeCredentialIdentityNotFound];
+  }
 }
 
 - (void)userCancelledRequestWithErrorCode:(ASExtensionErrorCode)errorCode {

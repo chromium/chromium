@@ -159,7 +159,7 @@ using base::SysUTF16ToNSString;
   ASPasswordCredential* ASCredential =
       [ASPasswordCredential credentialWithUser:credential.username
                                       password:password];
-  [self.credentialResponseHandler userSelectedCredential:ASCredential];
+  [self.credentialResponseHandler userSelectedPassword:ASCredential];
 }
 
 - (NSString*)currentIdentifier {

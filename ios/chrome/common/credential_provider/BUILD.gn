@@ -46,6 +46,15 @@ source_set("ui") {
   frameworks = [ "Foundation.framework" ]
 }
 
+source_set("mock_credential_store") {
+  testonly = true
+  sources = [
+    "mock_credential_store.h",
+    "mock_credential_store.mm",
+  ]
+  deps = [ ":ui" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [

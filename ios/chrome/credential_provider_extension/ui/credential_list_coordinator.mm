@@ -43,6 +43,11 @@
 @property(nonatomic, strong)
     NSArray<ASCredentialServiceIdentifier*>* serviceIdentifiers;
 
+// Information about a passkey credential request.
+@property(nonatomic, strong)
+    ASPasskeyCredentialRequestParameters* requestParameters API_AVAILABLE(
+        ios(17.0));
+
 // Coordinator that shows a view for the user to create a new password.
 @property(nonatomic, strong) NewPasswordCoordinator* createPasswordCoordinator;
 
@@ -126,10 +131,16 @@
   [self reauthenticateIfNeededWithCompletionHandler:^(
             ReauthenticationResult result) {
     if (result != ReauthenticationResult::kFailure) {
-      ASPasswordCredential* ASCredential =
-          [ASPasswordCredential credentialWithUser:credential.username
-                                          password:credential.password];
-      [self.credentialResponseHandler userSelectedCredential:ASCredential];
+      if (!credential.isPasskey) {
+        ASPasswordCredential* ASCredential =
+            [ASPasswordCredential credentialWithUser:credential.username
+                                            password:credential.password];
+        [self.credentialResponseHandler userSelectedPassword:ASCredential];
+      } else if (@available(iOS 17.0, *)) {
+        // TODO(crbug.com/330355124): Perform passkey assertion.
+        ASPasskeyAssertionCredential* ASCredential = nil;
+        [self.credentialResponseHandler userSelectedPasskey:ASCredential];
+      }
     }
   }];
 }
@@ -151,6 +162,22 @@
        credentialResponseHandler:self.credentialResponseHandler];
   self.createPasswordCoordinator.delegate = self;
   [self.createPasswordCoordinator start];
+}
+
+- (NSArray<NSData*>*)allowedCredentials {
+  if (@available(iOS 17.0, *)) {
+    return self.requestParameters.allowedCredentials;
+  } else {
+    return nil;
+  }
+}
+
+- (BOOL)isRequestingPasskey {
+  if (@available(iOS 17.0, *)) {
+    return self.requestParameters != nil;
+  } else {
+    return NO;
+  }
 }
 
 #pragma mark - CredentialDetailsConsumerDelegate

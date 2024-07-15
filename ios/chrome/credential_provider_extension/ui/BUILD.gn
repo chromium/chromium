@@ -111,19 +111,57 @@ source_set("utils") {
   ]
 }
 
+source_set("mock_credential_list_consumer") {
+  testonly = true
+  sources = [
+    "mock_credential_list_consumer.h",
+    "mock_credential_list_consumer.mm",
+  ]
+  deps = [ ":ui" ]
+}
+
+source_set("mock_credential_list_ui_handler") {
+  testonly = true
+  sources = [
+    "mock_credential_list_ui_handler.h",
+    "mock_credential_list_ui_handler.mm",
+  ]
+  deps = [ ":ui" ]
+}
+
+source_set("mock_credential_response_handler") {
+  testonly = true
+  sources = [
+    "mock_credential_response_handler.h",
+    "mock_credential_response_handler.mm",
+  ]
+  deps = [ ":ui" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "credential_list_coordinator_unittest.mm",
+    "credential_list_mediator+Testing.h",
+    "credential_list_mediator_unittest.mm",
     "new_password_coordinator_unittest.mm",
     "new_password_mediator_unittest.mm",
   ]
   deps = [
+    ":feature_flags",
+    ":mock_credential_list_consumer",
+    ":mock_credential_list_ui_handler",
+    ":mock_credential_response_handler",
     ":ui",
     "//base",
     "//base/test:test_support",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/credential_provider",
+    "//ios/chrome/common/credential_provider:mock_credential_store",
+    "//ios/chrome/common/credential_provider:ui",
     "//ios/chrome/credential_provider_extension:password_util",
+    "//ios/chrome/credential_provider_extension:reauthentication_handler",
+    "//ios/chrome/test/app:test_support",
     "//testing/gtest",
   ]
 }
