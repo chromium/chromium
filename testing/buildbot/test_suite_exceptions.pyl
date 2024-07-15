@@ -5725,10 +5725,30 @@
       },
     },
   },
+  'webview_instrumentation_test_apk_mutations': {
+    'modifications': {
+      'android-webview-code-coverage-native': {
+        'swarming': {
+          # Shard number is increased for longer test execution time and added
+          # local coverage data merging time.
+          'shards': 60,
+        },
+      },
+    }
+  },
   'webview_instrumentation_test_apk_no_field_trial': {
     'remove_from': [
       'android-12-x64-rel', # These tests are not ready to run on a non FYI CI.
-    ]
+    ],
+    'modifications': {
+      'android-webview-code-coverage-native': {
+        'swarming': {
+          # Shard number is increased for longer test execution time and added
+          # local coverage data merging time.
+          'shards': 30,
+        },
+      },
+    }
   },
   'webview_trichrome_64_cts_hostside_tests full_mode': {
     'modifications': {
