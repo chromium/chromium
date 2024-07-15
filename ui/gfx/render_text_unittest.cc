@@ -20,6 +20,7 @@
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -194,7 +195,7 @@ DecoratedText::RangedAttribute CreateRangedAttribute(
       base::ranges::find_if(font_spans, [font_index](const FontSpan& span) {
         return IndexInRange(span.second, font_index);
       });
-  DCHECK(font_spans.end() != iter);
+  CHECK(font_spans.end() != iter);
   const Font& font = iter->first;
 
   int font_style = Font::NORMAL;
