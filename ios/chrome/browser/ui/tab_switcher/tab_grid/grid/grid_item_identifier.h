@@ -24,6 +24,7 @@ enum class GridItemType : NSUInteger {
   Tab,
   Group,
   SuggestedActions,
+  // TODO(crbug.com/352722446): Add new Inactive Button type.
 };
 
 // Represents grid items in a diffable data source. GridItemIdentifier equality

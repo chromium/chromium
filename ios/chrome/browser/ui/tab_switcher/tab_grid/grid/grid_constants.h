@@ -8,6 +8,13 @@
 #include <CoreGraphics/CoreGraphics.h>
 #import <UIKit/UIKit.h>
 
+// Identifier for the section containing the inactive tab button.
+extern NSString* const kInactiveTabButtonSectionIdentifier;
+// Identifier for the tabs section.
+extern NSString* const kGridOpenTabsSectionIdentifier;
+// Identifier for the section containing the suggested actions.
+extern NSString* const kSuggestedActionsSectionIdentifier;
+
 // Accessibility identifier prefix of a grid cell. To reference a specific cell,
 // concatenate `kGridCellIdentifierPrefix` with the index of the cell. For
 // example, [NSString stringWithFormat:@"%@%d", kGridCellIdentifierPrefix,

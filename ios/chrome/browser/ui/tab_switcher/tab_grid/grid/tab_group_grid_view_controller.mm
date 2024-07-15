@@ -64,13 +64,6 @@
   [super createRegistrations];
 }
 
-- (TabsSectionHeaderType)tabsSectionHeaderTypeForMode:(TabGridMode)mode {
-  if (mode == TabGridModeGroup) {
-    return TabsSectionHeaderType::kTabGroup;
-  }
-  return [super tabsSectionHeaderTypeForMode:mode];
-}
-
 #pragma mark - Private
 
 // Configures the tab group header according to the current state.

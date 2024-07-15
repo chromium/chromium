@@ -898,14 +898,6 @@ bool IsAppBackgroundRefreshEnabled() {
   return base::FeatureList::IsEnabled(kEnableAppBackgroundRefresh);
 }
 
-BASE_FEATURE(kInactiveTabButtonRefactoring,
-             "InactiveTabButtonRefactoring",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsInactiveTabButtonRefactoringEnabled() {
-  return base::FeatureList::IsEnabled(kInactiveTabButtonRefactoring);
-}
-
 BASE_FEATURE(kHomeMemoryImprovements,
              "HomeMemoryImprovements",
              base::FEATURE_DISABLED_BY_DEFAULT);

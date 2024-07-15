@@ -6,6 +6,7 @@
 
 #import "base/notreached.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ui/base/device_form_factor.h"
@@ -167,6 +168,14 @@ NSCollectionLayoutBoundarySupplementaryItem* TabGroupHeader() {
                                     alignment:NSRectAlignmentTopLeading];
 }
 
+// Returns a compositional layout grid section for the Inactive Tab button.
+NSCollectionLayoutSection* InactiveTabButtonSection(
+    id<NSCollectionLayoutEnvironment> layout_environment,
+    NSDirectionalEdgeInsets section_insets) {
+  // TODO(crbug.com/352722446): return a real section.
+  return nil;
+}
+
 // Returns a compositional layout grid section for opened tabs.
 NSCollectionLayoutSection* TabsSection(
     id<NSCollectionLayoutEnvironment> layout_environment,
@@ -196,19 +205,10 @@ NSCollectionLayoutSection* TabsSection(
   NSCollectionLayoutSize* group_size =
       [NSCollectionLayoutSize sizeWithWidthDimension:FractionalWidth(1.)
                                      heightDimension:group_height_dimension];
-  NSCollectionLayoutGroup* group;
-  if (@available(iOS 16, *)) {
-    group = [NSCollectionLayoutGroup horizontalGroupWithLayoutSize:group_size
-                                                  repeatingSubitem:item
-                                                             count:count];
-  }
-#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
-  else {
-    group = [NSCollectionLayoutGroup horizontalGroupWithLayoutSize:group_size
-                                                           subitem:item
-                                                             count:count];
-  }
-#endif
+  NSCollectionLayoutGroup* group =
+      [NSCollectionLayoutGroup horizontalGroupWithLayoutSize:group_size
+                                            repeatingSubitem:item
+                                                       count:count];
   const CGFloat spacing = Spacing(layout_environment);
   group.interItemSpacing = [NSCollectionLayoutSpacing fixedSpacing:spacing];
 
@@ -411,10 +411,16 @@ NSCollectionLayoutSection* SuggestedActionsSection(
 - (NSCollectionLayoutSection*)sectionAtIndex:(NSInteger)sectionIndex
                            layoutEnvironment:(id<NSCollectionLayoutEnvironment>)
                                                  layoutEnvironment {
-  if (sectionIndex == 0) {
+  NSString* sectionIdentifier =
+      [self.diffableDataSource sectionIdentifierForIndex:sectionIndex];
+  if ([sectionIdentifier isEqualToString:kInactiveTabButtonSectionIdentifier]) {
+    return InactiveTabButtonSection(layoutEnvironment, self.sectionInsets);
+  } else if ([sectionIdentifier
+                 isEqualToString:kGridOpenTabsSectionIdentifier]) {
     return TabsSection(layoutEnvironment, self.tabsSectionHeaderType,
                        self.sectionInsets, self.mode);
-  } else if (sectionIndex == 1) {
+  } else if ([sectionIdentifier
+                 isEqualToString:kSuggestedActionsSectionIdentifier]) {
     return SuggestedActionsSection(layoutEnvironment, self.sectionInsets);
   }
 

@@ -68,19 +68,9 @@ class ScopedScrollingTimeLogger {
   base::TimeTicks start_;
 };
 
-// Needed for subclassing.
-NSString* const kGridOpenTabsSectionIdentifier = @"OpenTabsSectionIdentifier";
-
 namespace {
-NSString* const kSuggestedActionsSectionIdentifier =
-    @"SuggestedActionsSectionIdentifier";
 NSString* const kCellIdentifier = @"GridCellIdentifier";
 NSString* const kGroupCellIdentifier = @"GroupGridCellIdentifier";
-
-// Creates an NSIndexPath with `index` in section 0.
-NSIndexPath* CreateIndexPath(NSInteger index) {
-  return [NSIndexPath indexPathForItem:index inSection:0];
-}
 
 // Returns the accessibility identifier to set on a GridCell when positioned at
 // the given index.
@@ -190,11 +180,12 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 #pragma mark - UIViewController
 
 - (void)loadView {
-  self.gridLayout = [[GridLayout alloc] initWithTabGridMode:_mode];
+  GridLayout* gridLayout = [[GridLayout alloc] initWithTabGridMode:_mode];
+  self.gridLayout = gridLayout;
 
   UICollectionView* collectionView =
       [[UICollectionView alloc] initWithFrame:CGRectZero
-                         collectionViewLayout:self.gridLayout];
+                         collectionViewLayout:gridLayout];
   // If this stays as the default `YES`, then cells aren't highlighted
   // immediately on touch, but after a short delay.
   collectionView.delaysContentTouches = NO;
@@ -204,26 +195,30 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   [self createRegistrations];
 
   __weak __typeof(self) weakSelf = self;
-  self.diffableDataSource = [[UICollectionViewDiffableDataSource alloc]
-      initWithCollectionView:collectionView
-                cellProvider:^UICollectionViewCell*(
-                    UICollectionView* innerCollectionView,
-                    NSIndexPath* indexPath,
-                    GridItemIdentifier* itemIdentifier) {
-                  return [weakSelf cellForItemAtIndexPath:indexPath
-                                           itemIdentifier:itemIdentifier];
-                }];
-  self.diffableDataSource.supplementaryViewProvider =
-      ^UICollectionReusableView*(UICollectionView* innerCollectionView,
-                                 NSString* elementKind,
-                                 NSIndexPath* indexPath) {
-        return [weakSelf headerForSectionAtIndexPath:indexPath];
-      };
-  collectionView.dataSource = self.diffableDataSource;
+  GridDiffableDataSource* diffableDataSource =
+      [[UICollectionViewDiffableDataSource alloc]
+          initWithCollectionView:collectionView
+                    cellProvider:^UICollectionViewCell*(
+                        UICollectionView* innerCollectionView,
+                        NSIndexPath* indexPath,
+                        GridItemIdentifier* itemIdentifier) {
+                      return [weakSelf cellForItemAtIndexPath:indexPath
+                                               itemIdentifier:itemIdentifier];
+                    }];
+  self.diffableDataSource = diffableDataSource;
+
+  gridLayout.diffableDataSource = diffableDataSource;
+
+  diffableDataSource.supplementaryViewProvider = ^UICollectionReusableView*(
+      UICollectionView* innerCollectionView, NSString* elementKind,
+      NSIndexPath* indexPath) {
+    return [weakSelf headerForSectionAtIndexPath:indexPath];
+  };
+  collectionView.dataSource = diffableDataSource;
 
   GridSnapshot* snapshot = [[GridSnapshot alloc] init];
   [snapshot appendSectionsWithIdentifiers:@[ kGridOpenTabsSectionIdentifier ]];
-  [self.diffableDataSource applySnapshotUsingReloadData:snapshot];
+  [diffableDataSource applySnapshotUsingReloadData:snapshot];
 
   // UICollectionViewDropPlaceholder uses a GridCell and needs the class to be
   // registered.
@@ -379,7 +374,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     // Scroll to the selected item here, so the action of reloading and
     // scrolling happens at once.
     [self.collectionView
-        scrollToItemAtIndexPath:CreateIndexPath(selectedIndex)
+        scrollToItemAtIndexPath:[self indexPathForTabIndex:selectedIndex]
                atScrollPosition:UICollectionViewScrollPositionTop
                        animated:NO];
   }
@@ -418,7 +413,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   if (selectedIndex == NSNotFound) {
     return NO;
   }
-  NSIndexPath* selectedIndexPath = CreateIndexPath(selectedIndex);
+  NSIndexPath* selectedIndexPath = [self indexPathForTabIndex:selectedIndex];
   return [self.collectionView.indexPathsForVisibleItems
       containsObject:selectedIndexPath];
 }
@@ -494,7 +489,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 - (TabGridTransitionItem*)transitionItemForActiveCell {
   [self.collectionView layoutIfNeeded];
 
-  NSIndexPath* selectedItemIndexPath = CreateIndexPath(self.selectedIndex);
+  NSIndexPath* selectedItemIndexPath =
+      [self indexPathForTabIndex:self.selectedIndex];
   if (![self.collectionView.indexPathsForVisibleItems
           containsObject:selectedItemIndexPath]) {
     return nil;
@@ -928,7 +924,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     }
     self.dragEndAtNewIndex = YES;
 
-    NSIndexPath* dropIndexPath = CreateIndexPath(destinationIndex);
+    NSIndexPath* dropIndexPath = [self indexPathForTabIndex:destinationIndex];
     // Drop synchronously if local object is available.
     if (item.dragItem.localObject) {
       _dropAnimationInProgress = YES;
@@ -1089,6 +1085,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   // Open Tabs section.
   [snapshot appendSectionsWithIdentifiers:@[ kGridOpenTabsSectionIdentifier ]];
   [snapshot appendItemsWithIdentifiers:items];
+
+  // Give subclasses the opportunity to contribute to the snapshot.
+  [self addAdditionalItemsToSnapshot:snapshot];
 
   // Optional Suggested Actions section.
   if (self.showingSuggestedActions) {
@@ -1514,12 +1513,16 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   UICollectionViewSupplementaryRegistration* registration;
   switch (_mode) {
     case TabGridModeNormal:
+      if (IsInactiveTabButtonRefactoringEnabled()) {
+        return nil;
+      } else {
+        NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
+      }
+    case TabGridModeGroup:
     case TabGridModeInactive:
       NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
     case TabGridModeSelection:
-    case TabGridModeGroup:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED_NORETURN() << "Should not happen.";
     case TabGridModeSearch:
       registration = self.gridHeaderRegistration;
       break;
@@ -1547,7 +1550,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       selectedIndex >= [self numberOfTabs]) {
     return;
   }
-  NSIndexPath* selectedIndexPath = CreateIndexPath(selectedIndex);
+  NSIndexPath* selectedIndexPath = [self indexPathForTabIndex:selectedIndex];
   UICollectionViewScrollPosition scrollPosition =
       shouldBringItemIntoView ? UICollectionViewScrollPositionTop
                               : UICollectionViewScrollPositionNone;
@@ -1580,6 +1583,10 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     case TabGridModeGroup:
       return TabsSectionHeaderType::kTabGroup;
   }
+}
+
+- (void)addAdditionalItemsToSnapshot:(GridSnapshot*)snapshot {
+  // Base class implementation is doing nothing.
 }
 
 #pragma mark - Private
@@ -1848,6 +1855,13 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       [[GridItemIdentifier alloc] initWithTabItem:tabItem];
   return
       [self.diffableDataSource indexPathForItemIdentifier:lookupItemIdentifier];
+}
+
+// Returns the indexPath for the tab at `index`.
+- (NSIndexPath*)indexPathForTabIndex:(NSInteger)index {
+  NSInteger sectionIndex = [_diffableDataSource
+      indexForSectionIdentifier:kGridOpenTabsSectionIdentifier];
+  return [NSIndexPath indexPathForItem:index inSection:sectionIndex];
 }
 
 // Sets the hover effect to a cell. The shape of the hover effect is exactly the

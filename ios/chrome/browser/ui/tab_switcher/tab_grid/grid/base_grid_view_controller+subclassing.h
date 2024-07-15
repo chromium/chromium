@@ -9,8 +9,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_layout.h"
 
-extern NSString* const kGridOpenTabsSectionIdentifier;
-
 // To ease the use of generics with the diffable data source, define a Snapshot
 // type.
 typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*>
@@ -60,6 +58,10 @@ typedef UICollectionViewDiffableDataSource<NSString*, GridItemIdentifier*>
 
 // Returns the number of tabs in the collection view.
 - (NSInteger)numberOfTabs;
+
+// Provides an opportunity to the subclasses to add items to `snapshot`.
+- (void)addAdditionalItemsToSnapshot:
+    (NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*>*)snapshot;
 
 @end
 
