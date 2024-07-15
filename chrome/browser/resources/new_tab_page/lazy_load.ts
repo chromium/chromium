@@ -30,8 +30,6 @@ export {ModuleHeaderElement} from './modules/module_header.js';
 export {ModuleRegistry} from './modules/module_registry.js';
 export {ModuleWrapperElement} from './modules/module_wrapper.js';
 export {DisableModuleEvent, DismissModuleEvent, ModulesElement} from './modules/modules.js';
-export {photosDescriptor, PhotosModuleElement} from './modules/photos/module.js';
-export {PhotosProxy} from './modules/photos/photos_module_proxy.js';
 export {CalendarElement} from './modules/v2/calendar/calendar.js';
 export {CalendarEventElement} from './modules/v2/calendar/calendar_event.js';
 export {googleCalendarDescriptor, GoogleCalendarModuleElement} from './modules/v2/calendar/google_calendar_module.js';

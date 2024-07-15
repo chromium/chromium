@@ -4,7 +4,6 @@
 
 import("./drive/drive.gni")
 import("./feed/feed.gni")
-import("./photos/photos.gni")
 import("./v2/calendar/calendar.gni")
 import("./v2/file_suggestion/file_suggestion.gni")
 import("./v2/most_relevant_tab_resumption/most_relevant_tab_resumption.gni")
@@ -21,8 +20,7 @@ modules_non_web_component_files =
       "modules/module_descriptors.ts",
       "modules/module_registry.ts",
     ] + calendar_v2_non_web_component_files + drive_non_web_component_files +
-    feed_non_web_component_files + photos_non_web_component_files +
-    tab_resumption_v2_non_web_component_files +
+    feed_non_web_component_files + tab_resumption_v2_non_web_component_files +
     most_relevant_tab_resumption_v2_non_web_component_files
 
 if (!is_official_build) {
@@ -40,7 +38,7 @@ modules_web_component_files =
       "modules/v2/modules.ts",
     ] + calendar_v2_web_component_files + drive_web_component_files +
     feed_web_component_files + file_suggestion_v2_web_component_files +
-    photos_web_component_files + tab_resumption_v2_web_component_files +
+    tab_resumption_v2_web_component_files +
     most_relevant_tab_resumption_v2_web_component_files
 
 modules_css_files = [ "modules/info_dialog.css" ]

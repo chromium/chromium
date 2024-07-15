@@ -13,7 +13,6 @@ import {driveDescriptor} from './drive/module.js';
 import {feedDescriptor} from './feed/module.js';
 import type {ModuleDescriptor} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
-import {photosDescriptor} from './photos/module.js';
 import {googleCalendarDescriptor} from './v2/calendar/google_calendar_module.js';
 import {outlookCalendarDescriptor} from './v2/calendar/outlook_calendar_module.js';
 // <if expr="not is_official_build">
@@ -28,7 +27,6 @@ const modulesRedesignedEnabled: boolean =
 export const descriptors: ModuleDescriptor[] = [];
 descriptors.push(
     modulesRedesignedEnabled ? fileSuggestionDescriptor : driveDescriptor);
-descriptors.push(photosDescriptor);
 descriptors.push(feedDescriptor);
 
 if (loadTimeData.getBoolean('mostRelevantTabResumptionEnabled')) {

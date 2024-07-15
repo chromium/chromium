@@ -104,10 +104,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, InfoDialog) {
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, DummyModule) {
   RunTest("new_tab_page/modules/v2/dummy/module_test.js", "mocha.run()");
 }
-
-IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, PhotosModule) {
-  RunTest("new_tab_page/modules/photos/module_test.js", "mocha.run()");
-}
 #endif  // !defined(OFFICIAL_BUILD)
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, Calendar) {
