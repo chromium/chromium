@@ -314,6 +314,13 @@ BASE_FEATURE(kWebAssemblyInlining,
              ("WebAssemblyInlining"),
              kFeatureDefaultStateControlledByV8);
 
+// Feature for WebAssembly speculative inlining of indirect calls (see
+// https://crbug.com/335082212; and https://crbug.com/40898108 for direct call
+// and call_ref inlining, which has already launched above). Not user visible.
+BASE_FEATURE(kWebAssemblyInliningCallIndirect,
+             "WebAssemblyInliningCallIndirect",
+             kFeatureDefaultStateControlledByV8);
+
 // Enable WebAssembly code flushing.
 BASE_FEATURE(kWebAssemblyLiftoffCodeFlushing,
              ("WebAssemblyLiftoffCodeFlushing"),
