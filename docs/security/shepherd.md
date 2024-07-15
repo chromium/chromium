@@ -383,6 +383,18 @@ pass it along to / include someone who can direct it more precisely.
   mfoltz@chromium.org. They are also working on holistic solutions to improving
   the security of fullscreen, so please remember to look for potential
   duplicates of ongoing work.
+* **BoringSSL** the BoringSSL project has moved into the Chromium tracker.
+  BoringSSL is a library, so security bugs that do not impact Chrome may still
+  be meaningful (e.g. server-side bugs). BoringSSL security issues should be
+  fully assessed by the BoringSSL team. If you come across a BoringSSL bug in
+  the triage queue:
+    * Set a provisional severity based on the issue the report proports; the
+      BoringSSL team may need to adjust based on their assessment.
+    * Set `Component` to: Chromium > BoringSSL.
+    * Assign to an appropriate owner based on `third_party/boringssl/OWNERS`;
+      Add owners to cc: on the bug to ensure visibility.
+    * Add `Security_Impact-None` hotlist; owner will update if this issue
+      does impact Chrome.
 * Report suspected malicious URLs to SafeBrowsing:
   * Public URLs:
     * [Report malware](https://safebrowsing.google.com/safebrowsing/report_badware/?hl=en)
