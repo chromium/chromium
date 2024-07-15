@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
@@ -837,6 +838,14 @@ class LensOverlayController : public LensSearchboxClient,
 
   // List of observers of this controller.
   base::ObserverList<Observer> observers_;
+
+  // Indicates whether a search has been performed in the current session. Used
+  // to record success/abandonment rate, as defined by whether or not a search
+  // was performed.
+  bool search_performed_in_session_{false};
+
+  // The time at which the overlay was invoked. Used to compute timing metrics.
+  base::TimeTicks invocation_time_;
 
   // ---------------Browser window scoped state: START---------------------
   // State that is scoped to the browser window must be reset when the tab is

@@ -2515,8 +2515,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(controller->get_search_query_history_for_testing().empty());
 }
 
+// TODO(346840584): Disabled due to flakiness on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_RecordHistogramsShowAndClose DISABLED_RecordHistogramsShowAndClose
+#else
+#define MAYBE_RecordHistogramsShowAndClose RecordHistogramsShowAndClose
+#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       RecordHistogramsShowAndClose) {
+                       MAYBE_RecordHistogramsShowAndClose) {
   base::HistogramTester histogram_tester;
   WaitForPaint();
 
@@ -2533,10 +2539,15 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                                     /*expected_count=*/0);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Dismissed",
                                     /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.InvocationResultedInSearch",
+                                    /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SessionDuration",
+                                    /*expected_count=*/0);
 
   // Showing the UI and then closing it should record an entry in the
-  // appropriate buckets and the total count of invocations and dismissals
-  // should be 1.
+  // appropriate buckets and the total count of invocations, dismissals,
+  // "resulted in search" and session duration should each be 1. In particular,
+  // the "resulted in search" metric should have an entry in the false bucket.
   controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
@@ -2546,6 +2557,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                                      /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
                                     /*expected_count=*/1);
+
   CloseOverlayAndWaitForOff(controller,
                             LensOverlayDismissalSource::kOverlayCloseButton);
   histogram_tester.ExpectBucketCount(
@@ -2553,6 +2565,89 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Dismissed",
                                     /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("Lens.Overlay.InvocationResultedInSearch",
+                                     false, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("Lens.Overlay.InvocationResultedInSearch",
+                                     true, /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.InvocationResultedInSearch",
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ByInvocationSource.AppMenu.InvocationResultedInSearch",
+      false, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ByInvocationSource.AppMenu.InvocationResultedInSearch",
+      true, /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ByInvocationSource.AppMenu.InvocationResultedInSearch",
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SessionDuration",
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ByInvocationSource.AppMenu.SessionDuration",
+      /*expected_count=*/1);
+}
+
+// TODO(346840584): Disabled due to flakiness on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_RecordHistogramsShowSearchAndClose \
+  DISABLED_RecordHistogramsShowSearchAndClose
+#else
+#define MAYBE_RecordHistogramsShowSearchAndClose \
+  RecordHistogramsShowSearchAndClose
+#endif
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       MAYBE_RecordHistogramsShowSearchAndClose) {
+  base::HistogramTester histogram_tester;
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // No metrics should be emitted before anything happens.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
+                                    /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.Dismissed",
+                                    /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.InvocationResultedInSearch",
+                                    /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SessionDuration",
+                                    /*expected_count=*/0);
+
+  // Showing the UI, issuing a search and then closing it should record
+  // an entry in the true bucket of the "resulted in search" metric.
+  controller->ShowUI(LensOverlayInvocationSource::kToolbar);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+  histogram_tester.ExpectBucketCount("Lens.Overlay.Invoked",
+                                     LensOverlayInvocationSource::kToolbar,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
+                                    /*expected_count=*/1);
+
+  // Issue a search.
+  controller->IssueTextSelectionRequestForTesting("oranges", 20, 200);
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  // Close the overlay and verify that a successful session was recorded.
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
+  histogram_tester.ExpectBucketCount("Lens.Overlay.InvocationResultedInSearch",
+                                     false, /*expected_count=*/0);
+  histogram_tester.ExpectBucketCount("Lens.Overlay.InvocationResultedInSearch",
+                                     true, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ByInvocationSource.Toolbar.InvocationResultedInSearch",
+      false, /*expected_count=*/0);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ByInvocationSource.Toolbar.InvocationResultedInSearch",
+      true, /*expected_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,

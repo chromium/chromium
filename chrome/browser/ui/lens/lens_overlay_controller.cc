@@ -422,6 +422,10 @@ void LensOverlayController::ShowUI(
   fullscreen_observation_.Observe(
       tab_browser->exclusive_access_manager()->fullscreen_controller());
 
+  if (!pending_region_) {
+    ShowPreselectionBubble();
+  }
+
   // Record invocation metrics.
   base::UmaHistogramEnumeration("Lens.Overlay.Invoked", invocation_source);
   ukm::SourceId source_id =
@@ -429,9 +433,10 @@ void LensOverlayController::ShowUI(
   ukm::builders::Lens_Overlay_Invoked(source_id)
       .SetSource(static_cast<int64_t>(invocation_source))
       .Record(ukm::UkmRecorder::Get());
-  if (!pending_region_) {
-    ShowPreselectionBubble();
-  }
+
+  // Establish data required for session metrics.
+  search_performed_in_session_ = false;
+  invocation_time_ = base::TimeTicks::Now();
 }
 
 void LensOverlayController::CloseUIAsync(
@@ -1328,7 +1333,31 @@ void LensOverlayController::CloseUIPart2(
 
   state_ = State::kOff;
 
+  // Record dismissal and session metrics.
   base::UmaHistogramEnumeration("Lens.Overlay.Dismissed", dismissal_source);
+
+  base::UmaHistogramBoolean("Lens.Overlay.InvocationResultedInSearch",
+                            search_performed_in_session_);
+  const auto sliced_search_performed_histogram_name =
+      "Lens.Overlay.ByInvocationSource." + GetInvocationSourceString() +
+      ".InvocationResultedInSearch";
+  base::UmaHistogramBoolean(sliced_search_performed_histogram_name,
+                            search_performed_in_session_);
+
+  DCHECK(!invocation_time_.is_null());
+  base::TimeDelta session_duration = base::TimeTicks::Now() - invocation_time_;
+  base::UmaHistogramCustomTimes("Lens.Overlay.SessionDuration",
+                                session_duration,
+                                /*min=*/base::Milliseconds(1),
+                                /*max=*/base::Minutes(10), /*buckets=*/50);
+  const auto sliced_session_duration_histogram_name =
+      "Lens.Overlay.ByInvocationSource." + GetInvocationSourceString() +
+      ".SessionDuration";
+  base::UmaHistogramCustomTimes(sliced_session_duration_histogram_name,
+                                session_duration,
+                                /*min=*/base::Milliseconds(1),
+                                /*max=*/base::Minutes(10), /*buckets=*/50);
+  invocation_time_ = base::TimeTicks();
 }
 
 void LensOverlayController::InitializeOverlayUI(
@@ -1623,6 +1652,7 @@ void LensOverlayController::DoLensRequest(
       region.Clone(), initialization_data_->additional_search_query_params_,
       region_bytes);
   results_side_panel_coordinator_->RegisterEntryAndShow();
+  search_performed_in_session_ = true;
   state_ = State::kOverlayAndResults;
 }
 
@@ -1745,6 +1775,7 @@ void LensOverlayController::IssueTextSelectionRequestInner(
       query, lens::TextOnlyQueryType::kLensTextSelection,
       initialization_data_->additional_search_query_params_);
   results_side_panel_coordinator_->RegisterEntryAndShow();
+  search_performed_in_session_ = true;
   state_ = State::kOverlayAndResults;
 }
 
@@ -1804,6 +1835,7 @@ void LensOverlayController::IssueSearchBoxRequest(
         initialization_data_->additional_search_query_params_);
   }
   results_side_panel_coordinator_->RegisterEntryAndShow();
+  search_performed_in_session_ = true;
   state_ = State::kOverlayAndResults;
 }
 
