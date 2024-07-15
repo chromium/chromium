@@ -227,8 +227,11 @@ if (use_blink) {
     sources = [
       "mock_privacy_sandbox_settings.cc",
       "mock_privacy_sandbox_settings.h",
+      "mock_tracking_protection_onboarding_delegate.cc",
+      "mock_tracking_protection_onboarding_delegate.h",
       "privacy_sandbox_test_util.cc",
       "privacy_sandbox_test_util.h",
+      "tracking_protection_onboarding.h",
     ]
     deps = [
       ":privacy_sandbox",
@@ -242,6 +245,7 @@ if (use_blink) {
       "//components/privacy_sandbox/privacy_sandbox_attestations",
       "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
       "//components/sync_preferences:test_support",
+      "//components/version_info",
       "//content/test:test_support",
       "//testing/gmock",
       "//testing/gtest:gtest",

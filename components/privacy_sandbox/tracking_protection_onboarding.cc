@@ -371,13 +371,16 @@ void ModeBSilentNoticeShown(PrefService* pref_service) {
 }  // namespace
 
 TrackingProtectionOnboarding::TrackingProtectionOnboarding(
+    std::unique_ptr<Delegate> delegate,
     PrefService* pref_service,
     version_info::Channel channel,
     bool is_silent_onboarding_enabled)
-    : pref_service_(pref_service),
+    : delegate_(std::move(delegate)),
+      pref_service_(pref_service),
       channel_(channel),
       is_silent_onboarding_enabled_(is_silent_onboarding_enabled) {
   CHECK(pref_service_);
+  CHECK(delegate_);
 
   pref_change_registrar_.Init(pref_service_);
   pref_change_registrar_.Add(
@@ -402,6 +405,7 @@ TrackingProtectionOnboarding::TrackingProtectionOnboarding(
 TrackingProtectionOnboarding::~TrackingProtectionOnboarding() = default;
 
 void TrackingProtectionOnboarding::Shutdown() {
+  delegate_.reset();
   observers_.Clear();
   pref_service_ = nullptr;
   pref_change_registrar_.Reset();
@@ -438,6 +442,10 @@ void TrackingProtectionOnboarding::OnSilentOnboardingPrefChanged() const {
     observer.OnTrackingProtectionSilentOnboardingUpdated(onboarding_status);
     observer.OnShouldShowNoticeUpdated();
   }
+}
+
+bool TrackingProtectionOnboarding::IsEnterpriseManaged() const {
+  return delegate_->IsEnterpriseManaged();
 }
 
 void TrackingProtectionOnboarding::MaybeMarkModeBEligible() {

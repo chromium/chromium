@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
+
 #include <memory>
+
 #include "base/no_destructor.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
@@ -36,6 +39,8 @@ TrackingProtectionOnboardingFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
 
   return std::make_unique<privacy_sandbox::TrackingProtectionOnboarding>(
+      std::make_unique<privacy_sandbox::TrackingProtectionOnboardingDelegate>(
+          profile),
       profile->GetPrefs(), chrome::GetChannel(),
       tpcd::experiment::kEnableSilentOnboarding.Get());
 }

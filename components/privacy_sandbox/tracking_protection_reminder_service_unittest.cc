@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/privacy_sandbox/mock_tracking_protection_onboarding_delegate.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -38,10 +39,13 @@ class TrackingProtectionReminderServiceTest : public testing::Test {
   }
 
   void SetUp() override {
+    auto delegate =
+        std::make_unique<MockTrackingProtectionOnboardingDelegate>();
     feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(), {});
+
     tracking_protection_onboarding_service_ =
         std::make_unique<TrackingProtectionOnboarding>(
-            prefs(), version_info::Channel::DEV);
+            std::move(delegate), prefs(), version_info::Channel::DEV);
     tracking_protection_reminder_service_ =
         std::make_unique<TrackingProtectionReminderService>(
             prefs(), onboarding_service());

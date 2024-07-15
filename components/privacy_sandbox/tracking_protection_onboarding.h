@@ -147,7 +147,8 @@ class TrackingProtectionOnboarding : public KeyedService {
     virtual bool IsEnterpriseManaged() const = 0;
   };
 
-  TrackingProtectionOnboarding(PrefService* pref_service,
+  TrackingProtectionOnboarding(std::unique_ptr<Delegate> delegate,
+                               PrefService* pref_service,
                                version_info::Channel channel,
                                bool is_silent_onboarding_enabled = false);
   ~TrackingProtectionOnboarding() override;
@@ -211,6 +212,8 @@ class TrackingProtectionOnboarding : public KeyedService {
 
  private:
   friend class tpcd::experiment::EligibilityServiceTest;
+
+  FRIEND_TEST(TrackingProtectionOnboardingTest, IsEnterpriseManaged);
   FRIEND_TEST(TrackingProtectionOnboardingNoticeBrowserTest,
               TreatsAsShownIfPreviouslyDismissed);
 
@@ -221,7 +224,11 @@ class TrackingProtectionOnboarding : public KeyedService {
   // Called when the underlying silent onboarding pref is changed.
   virtual void OnSilentOnboardingPrefChanged() const;
 
+  // Whether the current profile is managed by an enterprise or not.
+  virtual bool IsEnterpriseManaged() const;
+
   base::ObserverList<Observer>::Unchecked observers_;
+  std::unique_ptr<Delegate> delegate_;
   raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
   version_info::Channel channel_;
