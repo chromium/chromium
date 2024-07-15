@@ -36,6 +36,8 @@ per-file utility_process_sandbox_browsertest.cc=file://sandbox/linux/OWNERS
 # Utility sandbox delegate requires security review.
 per-file utility_sandbox_delegate.*=set noparent
 per-file utility_sandbox_delegate.*=file://sandbox/OWNERS
+per-file utility_sandbox_delegate_unittest.*=set noparent
+per-file utility_sandbox_delegate_unittest.*=file://sandbox/OWNERS
 per-file utility_sandbox_delegate_win.*=set noparent
 per-file utility_sandbox_delegate_win.*=file://sandbox/win/OWNERS
 

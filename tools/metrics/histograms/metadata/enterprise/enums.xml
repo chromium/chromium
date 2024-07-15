@@ -2151,6 +2151,7 @@ chromium-metrics-reviews@google.com.
   <int value="1285" label="DeletingUndecryptablePasswordsEnabled"/>
   <int value="1286" label="StandardizedBrowserZoomEnabled"/>
   <int value="1287" label="ReportingEndpoints"/>
+  <int value="1288" label="PrintingLPACSandboxEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

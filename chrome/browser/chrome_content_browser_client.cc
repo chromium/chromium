@@ -1051,7 +1051,7 @@ bool URLHasExtensionPermission(extensions::ProcessMap* process_map,
 // Returns true if |extension_id| is allowed to run as an Isolated Context,
 // giving it access to additional APIs.
 bool IsExtensionIdAllowedToUseIsolatedContext(std::string_view extension_id) {
-  static constexpr auto kAllowedIsolatedContextExtensionIds =
+  constexpr auto kAllowedIsolatedContextExtensionIds =
       base::MakeFixedFlatSet<std::string_view>({
           "algkcnfjnajfhgimadimbjhmpaeohhln",  // Secure Shell Extension (dev)
           "iodihamcpbpeioajjeobimgagajmlibd",  // Secure Shell Extension
@@ -5007,12 +5007,26 @@ std::wstring ChromeContentBrowserClient::GetAppContainerSidForSandboxType(
   }
 }
 
-bool ChromeContentBrowserClient::IsRendererAppContainerDisabled() {
+bool ChromeContentBrowserClient::IsAppContainerDisabled(
+    sandbox::mojom::Sandbox sandbox_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  constexpr auto kSandboxPolicyPrefMapping =
+      base::MakeFixedFlatMap<sandbox::mojom::Sandbox, std::string_view>({
+          {sandbox::mojom::Sandbox::kRenderer,
+           prefs::kRendererAppContainerEnabled},
+          {sandbox::mojom::Sandbox::kPrintCompositor,
+           prefs::kPrintingLPACSandboxEnabled},
+      });
+  auto iter = kSandboxPolicyPrefMapping.find(sandbox_type);
+
+  if (iter == kSandboxPolicyPrefMapping.end()) {
+    return false;
+  }
 
   PrefService* local_state = g_browser_process->local_state();
   const PrefService::Preference* pref =
-      local_state->FindPreference(prefs::kRendererAppContainerEnabled);
+      local_state->FindPreference(iter->second);
   // App Container is disabled if managed pref is set to false.
   if (pref && pref->IsManaged() && !pref->GetValue()->GetBool())
     return true;

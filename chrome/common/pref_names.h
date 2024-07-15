@@ -3613,6 +3613,12 @@ inline constexpr char kDynamicCodeSettings[] = "dynamic_code_settings";
 inline constexpr char kApplicationBoundEncryptionEnabled[] =
     "application_bound_encryption_enabled";
 
+// A boolean that controls whether or not the Printing LPAC Sandbox is enabled
+// or not. This is linked via a PolicyToPreferenceMapEntry to the underlying
+// policy PrintingLPACSandboxEnabled.
+inline constexpr char kPrintingLPACSandboxEnabled[] =
+    "printing_lpac_sandbox_enabled";
+
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)

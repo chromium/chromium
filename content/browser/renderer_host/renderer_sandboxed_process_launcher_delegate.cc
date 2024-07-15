@@ -65,7 +65,8 @@ RendererSandboxedProcessLauncherDelegateWin::
     : renderer_code_integrity_enabled_(
           GetContentClient()->browser()->IsRendererCodeIntegrityEnabled()),
       renderer_app_container_disabled_(
-          GetContentClient()->browser()->IsRendererAppContainerDisabled()),
+          GetContentClient()->browser()->IsAppContainerDisabled(
+              sandbox::mojom::Sandbox::kRenderer)),
       is_pdf_renderer_(is_pdf_renderer) {
   // PDF renderers must be jitless.
   CHECK(!is_pdf_renderer || is_jit_disabled);

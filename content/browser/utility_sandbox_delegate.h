@@ -11,6 +11,7 @@
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "build/build_config.h"
+#include "content/common/content_export.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "content/public/common/zygote/zygote_buildflags.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
@@ -24,7 +25,7 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace content {
-class UtilitySandboxedProcessLauncherDelegate
+class CONTENT_EXPORT UtilitySandboxedProcessLauncherDelegate
     : public SandboxedProcessLauncherDelegate {
  public:
   UtilitySandboxedProcessLauncherDelegate(sandbox::mojom::Sandbox sandbox_type,
@@ -76,7 +77,11 @@ class UtilitySandboxedProcessLauncherDelegate
   std::optional<raw_ptr<ZygoteCommunication>> zygote_;
 #endif  // BUILDFLAG(USE_ZYGOTE)
 
-  sandbox::mojom::Sandbox sandbox_type_;
+  const sandbox::mojom::Sandbox sandbox_type_;
+#if BUILDFLAG(IS_WIN)
+  // If true then App Container will not be used for this utility process.
+  const bool app_container_disabled_;
+#endif  // BUILDFLAG(IS_WIN)
   base::CommandLine cmd_line_;
 };
 }  // namespace content

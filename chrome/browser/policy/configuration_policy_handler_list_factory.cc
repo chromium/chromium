@@ -1773,6 +1773,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kApplicationBoundEncryptionEnabled,
     prefs::kApplicationBoundEncryptionEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kPrintingLPACSandboxEnabled,
+    prefs::kPrintingLPACSandboxEnabled,
+    base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)

@@ -1776,6 +1776,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kDynamicCodeSettings, /*Default=*/0);
   registry->RegisterBooleanPref(prefs::kApplicationBoundEncryptionEnabled,
                                 true);
+  registry->RegisterBooleanPref(prefs::kPrintingLPACSandboxEnabled, true);
   registry->RegisterBooleanPref(
       policy::policy_prefs::kNativeWindowOcclusionEnabled, true);
   MediaFoundationServiceMonitor::RegisterPrefs(registry);

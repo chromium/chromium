@@ -14,6 +14,11 @@
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(USE_ZYGOTE)
 #include "content/common/zygote/zygote_handle_impl_linux.h"
 #include "sandbox/policy/sandbox_type.h"
@@ -35,6 +40,10 @@ UtilitySandboxedProcessLauncherDelegate::
       env_(env),
 #endif
       sandbox_type_(sandbox_type),
+#if BUILDFLAG(IS_WIN)
+      app_container_disabled_(
+          GetContentClient()->browser()->IsAppContainerDisabled(sandbox_type)),
+#endif
       cmd_line_(cmd_line) {
 #if DCHECK_IS_ON()
   bool supported_sandbox_type =

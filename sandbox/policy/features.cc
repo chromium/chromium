@@ -59,7 +59,8 @@ BASE_FEATURE(kGpuLPAC,
              "GpuLPAC",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables Print Compositor Low Privilege AppContainer.
+// Enables Print Compositor Low Privilege AppContainer. Note, this might be
+// overridden and disabled by policy.
 BASE_FEATURE(kPrintCompositorLPAC,
              "PrintCompositorLPAC",
              base::FEATURE_ENABLED_BY_DEFAULT);
