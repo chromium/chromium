@@ -18,8 +18,19 @@ found in the LICENSE file.
         android:id="@+id/dialog_container_view"
         android:focusable="true"
         android:focusableInTouchMode="true"
+        android:clipToOutline="true"
         android:background="@drawable/tab_grid_dialog_background"
         android:contentDescription="@string/accessibility_tab_grid_dialog">
+        <FrameLayout
+            android:id="@+id/tab_grid_dialog_toolbar_container"
+            android:layout_alignParentTop="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <FrameLayout
+            android:id="@+id/tab_grid_dialog_recycler_view_container"
+            android:layout_below="@id/tab_grid_dialog_toolbar_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -33,7 +44,7 @@ found in the LICENSE file.
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:src="@drawable/toolbar_hairline"
-                tools:ignore="ContentDescription" />
+                android:importantForAccessibility="no"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/bottom_sheet_peek_height"
@@ -47,8 +58,7 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:id="@+id/dialog_snack_bar_container_view"
             android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true">
-        </FrameLayout>
+            android:layout_centerHorizontal="true"/>
     </RelativeLayout>
     <View
         android:layout_width="match_parent"

@@ -13,6 +13,9 @@ import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.hamcrest.MockitoHamcrest.intThat;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.DATA_SHARING_ANDROID;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.FORCE_LIST_TAB_SWITCHER;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUP_PARITY_ANDROID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.areAnimatorsEnabled;
 
 import android.content.res.ColorStateList;
@@ -29,6 +32,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import androidx.annotation.LayoutRes;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -71,6 +75,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Tests for {@link TabGridDialogViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@DisableFeatures(DATA_SHARING_ANDROID)
 @Batch(Batch.PER_CLASS)
 public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     private static final int CONTENT_TOP_MARGIN = 56;
@@ -112,13 +117,15 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
                                                     false);
                     mLayoutManager = spy(new GridLayoutManager(getActivity(), 2));
                     mContentView.setLayoutManager(mLayoutManager);
+                    @LayoutRes
+                    int toolbar_res_id =
+                            ChromeFeatureList.isEnabled(DATA_SHARING_ANDROID)
+                                    ? R.layout.tab_grid_dialog_toolbar_two_row
+                                    : R.layout.tab_grid_dialog_toolbar;
                     mToolbarView =
                             (TabGridDialogToolbarView)
                                     LayoutInflater.from(getActivity())
-                                            .inflate(
-                                                    R.layout.tab_grid_dialog_toolbar,
-                                                    mContentView,
-                                                    false);
+                                            .inflate(toolbar_res_id, mContentView, false);
                     LayoutInflater.from(getActivity())
                             .inflate(R.layout.tab_grid_dialog_layout, parentView, true);
                     mTabGridDialogView = parentView.findViewById(R.id.dialog_parent_view);
@@ -145,7 +152,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
                             PropertyModelChangeProcessor.create(
                                     mModel,
                                     new TabGridDialogViewBinder.ViewHolder(
-                                            mToolbarView, mContentView, mTabGridDialogView, null),
+                                            mToolbarView, mContentView, mTabGridDialogView),
                                     TabGridDialogViewBinder::bind);
                 });
     }
@@ -565,7 +572,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @UiThreadTest
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
+    @EnableFeatures(TAB_GROUP_PARITY_ANDROID)
     public void testSetTabGroupColorIdAndIncognito() {
         int color = TabGroupColorId.GREY;
 
@@ -583,7 +590,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @UiThreadTest
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
+    @EnableFeatures(TAB_GROUP_PARITY_ANDROID)
     public void testSetColorIconClickListener() {
         AtomicBoolean colorIconClicked = new AtomicBoolean();
         colorIconClicked.set(false);
@@ -601,7 +608,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @UiThreadTest
-    @EnableFeatures(ChromeFeatureList.FORCE_LIST_TAB_SWITCHER)
+    @EnableFeatures(FORCE_LIST_TAB_SWITCHER)
     public void testSetAnimationBackgroundColor() {
         int color = ContextCompat.getColor(getActivity(), R.color.baseline_primary_80);
 

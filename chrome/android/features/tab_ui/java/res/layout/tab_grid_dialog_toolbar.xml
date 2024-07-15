@@ -16,19 +16,14 @@ found in the LICENSE file.
     <LinearLayout
         android:id="@+id/main_content"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/bottom_sheet_peek_height"
+        android:layout_height="56dp"
         android:paddingLeft="@dimen/tab_grid_dialog_app_bar_padding"
         android:paddingRight="@dimen/tab_grid_dialog_app_bar_padding"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:focusable="true"
         android:focusableInTouchMode="true">
-        <org.chromium.ui.widget.ChromeImageView
-            android:id="@+id/toolbar_left_button"
-            style="@style/BottomToolbarButton"
-            android:src="@drawable/ic_arrow_back_24dp"
-            app:tint="@color/default_icon_color_tint_list"
-            android:contentDescription="@string/accessibility_bottom_tab_grid_close_tab_sheet" />
+        <include layout="@layout/toolbar_back_button"/>
         <FrameLayout
             android:id="@+id/tab_group_color_icon_container"
             android:layout_height="@dimen/min_touch_target_size"
@@ -59,18 +54,6 @@ found in the LICENSE file.
             android:theme="@style/TabGridDialogTitleTheme"
             android:gravity="start|center_vertical"
             android:selectAllOnFocus="true"/>
-        <org.chromium.ui.widget.ChromeImageView
-            android:id="@+id/toolbar_right_button"
-            style="@style/BottomToolbarButton"
-            android:src="@drawable/plus"
-            app:tint="@color/default_icon_color_tint_list"
-            android:contentDescription="@string/bottom_tab_grid_new_tab" />
-        <org.chromium.ui.widget.ChromeImageView
-            android:id="@+id/toolbar_menu_button"
-            style="@style/ToolbarMenuButton"
-            android:src="@drawable/ic_more_vert_24dp"
-            android:layout_gravity="center"
-            app:tint="@color/default_icon_color_tint_list"
-            android:contentDescription="@string/accessibility_toolbar_btn_menu" />
+        <include layout="@layout/toolbar_new_tab_and_menu_button"/>
    </LinearLayout>
 </org.chromium.chrome.browser.tasks.tab_management.TabGridDialogToolbarView>

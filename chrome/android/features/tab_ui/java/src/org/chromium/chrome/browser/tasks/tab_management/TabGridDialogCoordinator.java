@@ -14,6 +14,7 @@ import android.view.ViewStub;
 import android.widget.PopupWindow;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -96,6 +97,9 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             ViewGroup rootView,
             @Nullable ActionConfirmationManager actionConfirmationManager) {
         try (TraceEvent e = TraceEvent.scoped("TabGridDialogCoordinator.constructor")) {
+            boolean isDataSharingAndroidEnabled =
+                    ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID);
+
             mActivity = activity;
             mComponentName =
                     animationSourceViewProvider == null
@@ -128,7 +132,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                 mDialogView = containerView.findViewById(R.id.dialog_parent_view);
                 mDialogView.setupScrimCoordinator(scrimCoordinator);
 
-                if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID)) {
+                if (isDataSharingAndroidEnabled) {
                     LayoutInflater.from(activity)
                             .inflate(
                                     R.layout.data_sharing_group_bar,
@@ -213,17 +217,21 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             mTabListCoordinator.setOnLongPressTabItemEventListener(mMediator);
             TabListRecyclerView recyclerView = mTabListCoordinator.getContainerView();
 
+            @LayoutRes
+            int toolbar_res_id =
+                    isDataSharingAndroidEnabled
+                            ? R.layout.tab_grid_dialog_toolbar_two_row
+                            : R.layout.tab_grid_dialog_toolbar;
             TabGridDialogToolbarView toolbarView =
                     (TabGridDialogToolbarView)
                             LayoutInflater.from(activity)
-                                    .inflate(R.layout.tab_grid_dialog_toolbar, recyclerView, false);
+                                    .inflate(toolbar_res_id, recyclerView, false);
 
-            View shareBar = mDialogView.findViewById(R.id.dialog_data_sharing_group_bar);
             mModelChangeProcessor =
                     PropertyModelChangeProcessor.create(
                             mModel,
                             new TabGridDialogViewBinder.ViewHolder(
-                                    toolbarView, recyclerView, mDialogView, shareBar),
+                                    toolbarView, recyclerView, mDialogView),
                             TabGridDialogViewBinder::bind);
             mBackPressChangedSupplier.set(isVisible());
             mModel.addObserver((source, key) -> mBackPressChangedSupplier.set(isVisible()));

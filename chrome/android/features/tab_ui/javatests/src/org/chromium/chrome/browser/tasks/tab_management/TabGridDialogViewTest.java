@@ -44,7 +44,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogView.VisibilityListener;
 import org.chromium.chrome.tab_ui.R;
@@ -57,9 +56,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** BlankUiTestActivity Tests for the {@link TabGridDialogView}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@DisableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID})
 @Batch(Batch.UNIT_TESTS)
 public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
-    private int mToolbarHeight;
     private int mMinMargin;
     private int mMaxMargin;
     private FrameLayout mTestParent;
@@ -101,11 +100,6 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
                     mTabGridDialogView.setupScrimCoordinator(scrimCoordinator);
                     mTabGridDialogView.setScrimClickRunnable(() -> {});
 
-                    mToolbarHeight =
-                            (int)
-                                    getActivity()
-                                            .getResources()
-                                            .getDimension(R.dimen.tab_group_toolbar_height);
                     mMinMargin =
                             getActivity()
                                     .getResources()
@@ -167,43 +161,19 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
     @UiThreadTest
     @DisableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID})
     public void testResetDialog() {
-        mTabGridDialogContainer.removeAllViews();
         View toolbarView = new View(getActivity());
         View recyclerView = new View(getActivity());
         recyclerView.setVisibility(View.GONE);
 
-        mTabGridDialogView.resetDialog(toolbarView, recyclerView, null);
+        mTabGridDialogView.resetDialog(toolbarView, recyclerView);
 
-        // It should contain four child views: top tool bar, recyclerview, ungroup bar and undo bar
-        // container.
-        assertEquals(4, mTabGridDialogContainer.getChildCount());
+        assertEquals(
+                getActivity().findViewById(R.id.tab_grid_dialog_toolbar_container),
+                toolbarView.getParent());
+        assertEquals(
+                getActivity().findViewById(R.id.tab_grid_dialog_recycler_view_container),
+                recyclerView.getParent());
         assertEquals(View.VISIBLE, recyclerView.getVisibility());
-        RelativeLayout.LayoutParams params =
-                (RelativeLayout.LayoutParams) recyclerView.getLayoutParams();
-        assertEquals(mToolbarHeight, params.topMargin);
-        assertEquals(0, params.leftMargin);
-        assertEquals(0, params.rightMargin);
-        assertEquals(0, params.bottomMargin);
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    @EnableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID})
-    public void testResetDialogWithDataSharing() {
-        mTabGridDialogContainer.removeAllViews();
-        View toolbarView = new View(getActivity());
-        View recyclerView = new View(getActivity());
-        View shareBar =
-                LayoutInflater.from(getActivity()).inflate(R.layout.data_sharing_group_bar, null);
-        recyclerView.setVisibility(View.GONE);
-
-        mTabGridDialogView.updateShouldShowShare(true);
-        mTabGridDialogView.resetDialog(toolbarView, recyclerView, shareBar);
-
-        // It should contain five child views: top tool bar, recyclerview, ungroup bar, data sharing
-        // bar and undo bar container.
-        assertEquals(5, mTabGridDialogContainer.getChildCount());
     }
 
     @Test
@@ -215,10 +185,9 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
         // Initialize the dialog with stand-in views.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGridDialogContainer.removeAllViews();
                     View toolbarView = new View(getActivity());
                     View recyclerView = new View(getActivity());
-                    mTabGridDialogView.resetDialog(toolbarView, recyclerView, null);
+                    mTabGridDialogView.resetDialog(toolbarView, recyclerView);
                 });
 
         // From hide to show.

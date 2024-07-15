@@ -38,12 +38,12 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.DATA_SHARING_ANDROID;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUP_PARITY_ANDROID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.addBlankTabs;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
@@ -58,7 +58,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.f
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.getSwipeToDismissAction;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.getTabSwitcherAncestorId;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.leaveTabSwitcher;
-import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.mergeAllIncognitoTabsToAGroup;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.mergeAllNormalTabsToAGroup;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.prepareTabsWithThumbnail;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyAllTabsHaveThumbnail;
@@ -812,7 +811,7 @@ public class TabGridDialogTest {
         onView(
                         allOf(
                                 withId(R.id.tab_list_recycler_view),
-                                withParent(withId(R.id.dialog_container_view))))
+                                withParent(withId(R.id.tab_grid_dialog_recycler_view_container))))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, longClick()));
 
         mSelectionEditorRobot.resultRobot.verifyTabListEditorIsVisible();
@@ -841,7 +840,7 @@ public class TabGridDialogTest {
         onView(
                         allOf(
                                 withId(R.id.tab_list_recycler_view),
-                                withParent(withId(R.id.dialog_container_view))))
+                                withParent(withId(R.id.tab_grid_dialog_recycler_view_container))))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, longClick()));
 
         mSelectionEditorRobot.resultRobot.verifyTabListEditorIsVisible();
@@ -1202,7 +1201,7 @@ public class TabGridDialogTest {
         onView(
                         allOf(
                                 withId(R.id.tab_list_recycler_view),
-                                withParent(withId(R.id.dialog_container_view))))
+                                withParent(withId(R.id.tab_grid_dialog_recycler_view_container))))
                 .perform(
                         RecyclerViewActions.actionOnItemAtPosition(
                                 1, getSwipeToDismissAction(true)));
@@ -1210,7 +1209,7 @@ public class TabGridDialogTest {
         onView(
                         allOf(
                                 withId(R.id.tab_list_recycler_view),
-                                withParent(withId(R.id.dialog_container_view))))
+                                withParent(withId(R.id.tab_grid_dialog_recycler_view_container))))
                 .perform(
                         RecyclerViewActions.actionOnItemAtPosition(
                                 0, getSwipeToDismissAction(false)));
@@ -1371,7 +1370,8 @@ public class TabGridDialogTest {
                         .getQuantityString(R.plurals.bottom_tab_grid_title_placeholder, 3, 3));
 
         // Click on the title this should not save the title.
-        onView(allOf(withParent(withId(R.id.main_content)), withId(R.id.title))).perform(click());
+        onView(allOf(isDescendantOfA(withId(R.id.main_content)), withId(R.id.title)))
+                .perform(click());
         verifyTitleTextFocus(cta, true);
         Espresso.pressBack();
         verifyTitleTextFocus(cta, false);
@@ -1391,7 +1391,8 @@ public class TabGridDialogTest {
         openDialogFromTabSwitcherAndVerify(cta, 2, twoTabsString);
 
         // Click on the title.
-        onView(allOf(withParent(withId(R.id.main_content)), withId(R.id.title))).perform(click());
+        onView(allOf(isDescendantOfA(withId(R.id.main_content)), withId(R.id.title)))
+                .perform(click());
         verifyTitleTextFocus(cta, true);
         Espresso.pressBack();
         verifyTitleTextFocus(cta, false);
@@ -1940,7 +1941,7 @@ public class TabGridDialogTest {
         onView(
                         allOf(
                                 withId(R.id.toolbar_right_button),
-                                isDescendantOfA(withId(R.id.dialog_container_view))))
+                                isDescendantOfA(withId(R.id.tab_grid_dialog_toolbar_container))))
                 .perform(click());
         waitForDialogHidingAnimation(cta);
         enterTabSwitcher(cta);
@@ -1959,7 +1960,8 @@ public class TabGridDialogTest {
             onView(
                             allOf(
                                     withId(R.id.toolbar_right_button),
-                                    isDescendantOfA(withId(R.id.dialog_container_view))))
+                                    isDescendantOfA(
+                                            withId(R.id.tab_grid_dialog_toolbar_container))))
                     .perform(click());
             waitForDialogHidingAnimation(cta);
             LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
@@ -1970,54 +1972,27 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID})
-    @DisabledTest(
-            message =
-                    "Failing due to side-effects from testDataSharingIncognitoMode,"
-                            + " crbug.com/342638430")
-    public void testDataSharing() {
+    @Feature({"RenderTest"})
+    @EnableFeatures({DATA_SHARING_ANDROID, TAB_GROUP_PARITY_ANDROID})
+    @RequiresRestart("Group creation modal dialog is sometimes persistent when dismissing")
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testRenderDialog_TwoRows_Portrait(boolean nightModeEnabled) throws Exception {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
-        // Create a tab group.
-        createTabs(cta, false, 2);
+        prepareTabsWithThumbnail(sActivityTestRule, 3, 0, "about:blank");
         enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 3);
+        waitForThumbnailsToFetch(getRecyclerView(cta));
+        verifyAllTabsHaveThumbnail(cta.getCurrentTabModel());
+
+        // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
         verifyTabSwitcherCardCount(cta, 1);
+        openDialogFromTabSwitcherAndVerify(cta, 3, null);
 
-        // Open dialog from tab switcher and verify dialog is showing data sharing bar.
-        openDialogFromTabSwitcherAndVerifyDataSharing(cta, true);
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID})
-    public void testDataSharingIncognitoMode() {
-        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
-        // Create an incognito tab group.
-        createTabs(cta, true, 2);
-        enterTabSwitcher(cta);
-        mergeAllIncognitoTabsToAGroup(cta);
-        verifyTabSwitcherCardCount(cta, 1);
-
-        // Open dialog from tab switcher and verify dialog is not showing data sharing bar.
-        openDialogFromTabSwitcherAndVerifyDataSharing(cta, false);
-    }
-
-    private void openDialogFromTabSwitcherAndVerifyDataSharing(
-            ChromeTabbedActivity cta, boolean shouldShow) {
-        clickFirstCardFromTabSwitcher(cta);
-        onView(
-                        allOf(
-                                withId(R.id.dialog_data_sharing_group_bar),
-                                withParent(withId(R.id.dialog_container_view))))
-                .check(
-                        (v, noMatchException) -> {
-                            if (!shouldShow) {
-                                assertNotNull(noMatchException);
-                            } else {
-                                assertNotNull(v);
-                                assertEquals(v.getVisibility(), View.VISIBLE);
-                            }
-                        });
+        View dialogView = cta.findViewById(R.id.dialog_parent_view);
+        waitForThumbnailsToFetch(
+                (RecyclerView) dialogView.findViewById(R.id.tab_list_recycler_view));
+        mRenderTestRule.render(dialogView, "3_tabs_portrait_2_row_toolbar");
     }
 
     private void openDialogFromTabSwitcherAndVerify(
@@ -2039,12 +2014,12 @@ public class TabGridDialogTest {
         onView(
                         allOf(
                                 withId(R.id.tab_list_recycler_view),
-                                withParent(withId(R.id.dialog_container_view))))
+                                withParent(withId(R.id.tab_grid_dialog_recycler_view_container))))
                 .check(matches(isDisplayed()))
                 .check(TabUiTestHelper.ChildrenCountAssertion.havingTabCount(tabCount));
 
         // Check contents within dialog.
-        onView(allOf(withParent(withId(R.id.main_content)), withId(R.id.title)))
+        onView(allOf(isDescendantOfA(withId(R.id.main_content)), withId(R.id.title)))
                 .check(
                         (v, noMatchException) -> {
                             if (noMatchException != null) throw noMatchException;
@@ -2129,8 +2104,9 @@ public class TabGridDialogTest {
         onView(withId(R.id.tab_group_color_icon)).check(matches(isDisplayed()));
 
         // Try to grab focus of the title text field by clicking on it.
-        onView(allOf(withParent(withId(R.id.main_content)), withId(R.id.title))).perform(click());
-        onView(allOf(withParent(withId(R.id.main_content)), withId(R.id.title)))
+        onView(allOf(isDescendantOfA(withId(R.id.main_content)), withId(R.id.title)))
+                .perform(click());
+        onView(allOf(isDescendantOfA(withId(R.id.main_content)), withId(R.id.title)))
                 .check(
                         (v, noMatchException) -> {
                             if (noMatchException != null) throw noMatchException;
@@ -2272,7 +2248,7 @@ public class TabGridDialogTest {
     }
 
     private void editDialogTitle(ChromeTabbedActivity cta, String title) {
-        onView(allOf(withParent(withId(R.id.main_content)), withId(R.id.title)))
+        onView(allOf(isDescendantOfA(withId(R.id.main_content)), withId(R.id.title)))
                 .perform(click())
                 .check(
                         (v, e) -> {
@@ -2407,13 +2383,14 @@ public class TabGridDialogTest {
         onViewWaiting(
                         allOf(
                                 withId(R.id.toolbar_left_button),
-                                isDescendantOfA(withId(R.id.dialog_container_view))))
+                                isDescendantOfA(withId(R.id.tab_grid_dialog_toolbar_container))))
                 .check((v, e) -> assertEquals(s, v.getContentDescription()));
     }
 
     private void testTitleTextFocus(ChromeTabbedActivity cta) throws ExecutionException {
         // Click the text field to grab focus and click back button to lose focus.
-        onView(allOf(withParent(withId(R.id.main_content)), withId(R.id.title))).perform(click());
+        onView(allOf(isDescendantOfA(withId(R.id.main_content)), withId(R.id.title)))
+                .perform(click());
         verifyTitleTextFocus(cta, true);
         Espresso.pressBack();
         verifyTitleTextFocus(cta, false);
@@ -2428,7 +2405,8 @@ public class TabGridDialogTest {
         verifyShowingDialog(cta, 2, null);
 
         // Click the text field to grab focus and click scrim to lose focus.
-        onView(allOf(withParent(withId(R.id.main_content)), withId(R.id.title))).perform(click());
+        onView(allOf(isDescendantOfA(withId(R.id.main_content)), withId(R.id.title)))
+                .perform(click());
         verifyTitleTextFocus(cta, true);
         clickScrimToExitDialog(cta);
         waitForDialogHidingAnimation(cta);

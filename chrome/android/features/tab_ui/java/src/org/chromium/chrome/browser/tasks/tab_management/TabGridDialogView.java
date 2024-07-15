@@ -29,7 +29,6 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -83,9 +82,10 @@ public class TabGridDialogView extends FrameLayout {
     }
 
     private final Context mContext;
-    private final int mToolbarHeight;
     private final float mTabGridCardPadding;
     private FrameLayout mAnimationClip;
+    private FrameLayout mToolbarContainer;
+    private FrameLayout mRecyclerViewContainer;
     private View mBackgroundFrame;
     private View mAnimationCardView;
     private View mItemView;
@@ -130,8 +130,6 @@ public class TabGridDialogView extends FrameLayout {
         super(context, attrs);
         mContext = context;
         mTabGridCardPadding = TabUiThemeProvider.getTabGridCardMargin(mContext);
-        mToolbarHeight =
-                (int) mContext.getResources().getDimension(R.dimen.tab_group_toolbar_height);
         mBackgroundDrawableColor =
                 ContextCompat.getColor(mContext, R.color.tab_grid_dialog_background_color);
 
@@ -204,6 +202,8 @@ public class TabGridDialogView extends FrameLayout {
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         mDialogContainerView = findViewById(R.id.dialog_container_view);
         mDialogContainerView.setLayoutParams(mContainerParams);
+        mToolbarContainer = findViewById(R.id.tab_grid_dialog_toolbar_container);
+        mRecyclerViewContainer = findViewById(R.id.tab_grid_dialog_recycler_view_container);
         mUngroupBar = findViewById(R.id.dialog_ungroup_bar);
         mUngroupBarTextView = mUngroupBar.findViewById(R.id.dialog_ungroup_bar_text);
         mAnimationClip = findViewById(R.id.dialog_animation_clip);
@@ -214,7 +214,6 @@ public class TabGridDialogView extends FrameLayout {
         updateDialogWithOrientation(mContext.getResources().getConfiguration().orientation);
 
         prepareAnimation();
-        mDialogContainerView.setClipToOutline(true);
     }
 
     private void prepareAnimation() {
@@ -906,30 +905,13 @@ public class TabGridDialogView extends FrameLayout {
      *
      * @param toolbarView The toolbarview to be added to dialog.
      * @param recyclerView The recyclerview to be added to dialog.
-     * @param shareBar The sharing bottom toolbar to be added to dialog.
      */
-    void resetDialog(View toolbarView, View recyclerView, @Nullable View shareBar) {
-        mDialogContainerView.removeAllViews();
-        mDialogContainerView.addView(toolbarView);
-        mDialogContainerView.addView(recyclerView);
-        mDialogContainerView.addView(mUngroupBar);
+    void resetDialog(View toolbarView, View recyclerView) {
+        mToolbarContainer.removeAllViews();
+        mToolbarContainer.addView(toolbarView);
+        mRecyclerViewContainer.removeAllViews();
+        mRecyclerViewContainer.addView(recyclerView);
 
-        // The shareBar will not be initiated if the feature is not enabled.
-        if (shareBar != null && mShouldShowShare) {
-            // Add the data sharing bottom toolbar view.
-            mDialogContainerView.addView(shareBar);
-
-            // TODO(b/325082444): Update |mIsTabGroupShared| by asking data sharing service about if
-            // the tab group is shared.
-            refreshShareBar(mIsTabGroupShared);
-        }
-
-        // The snackbar need to be added last to appear on top of any bottom toolbar.
-        mDialogContainerView.addView(mSnackBarContainer);
-
-        RelativeLayout.LayoutParams params =
-                (RelativeLayout.LayoutParams) recyclerView.getLayoutParams();
-        params.setMargins(0, mToolbarHeight, 0, 0);
         recyclerView.setVisibility(View.VISIBLE);
     }
 

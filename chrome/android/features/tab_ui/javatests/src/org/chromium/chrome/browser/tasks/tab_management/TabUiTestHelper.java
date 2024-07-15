@@ -225,7 +225,7 @@ public class TabUiTestHelper {
         onView(
                         allOf(
                                 withId(R.id.tab_list_recycler_view),
-                                withParent(withId(R.id.dialog_container_view))))
+                                withParent(withId(R.id.tab_grid_dialog_recycler_view_container))))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(index, click()));
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
     }
@@ -246,7 +246,7 @@ public class TabUiTestHelper {
         onView(
                         allOf(
                                 withId(R.id.tab_list_recycler_view),
-                                withParent(withId(R.id.dialog_container_view))))
+                                withParent(withId(R.id.tab_grid_dialog_recycler_view_container))))
                 .perform(
                         new ViewAction() {
                             @Override
