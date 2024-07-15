@@ -123,6 +123,9 @@ BASE_DECLARE_FEATURE(kRefreshFeedOnRestart);
 // Feature that enables feed containment.
 BASE_DECLARE_FEATURE(kFeedContainment);
 
+// Kill-switch for the web feed feature.
+BASE_DECLARE_FEATURE(kWebFeedKillSwitch);
+
 bool IsWebFeedEnabledForLocale(const std::string& country);
 
 }  // namespace feed
