@@ -177,7 +177,7 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
     @VisibleForTesting
     public void maybeAddObservers() {
         Activity activity = mDelegate.getAttachedActivity();
-        if (activity == null) return;
+        if (activity == null || mWebContentsObserver != null) return;
 
         updateInsetObserver(mDelegate.getInsetObserverView());
         updateBrowserCutoutObserver(mDelegate.getBrowserDisplayCutoutModeSupplier());
