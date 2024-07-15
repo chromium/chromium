@@ -253,13 +253,6 @@ void FmRegistrationTokenUploader::OnRegistrationTokenUploaded(
         invalidation::InvalidationListener::RegistrationTokenUploadStatus::
             kFailed);
 
-    // TODO(b/341315018): Remove once DMServer supports the request.
-    if (result.GetDMServerError() == DM_STATUS_TEMPORARY_UNAVAILABLE) {
-      // Otherwise we keep spamming DMServer with request it does not support
-      // yet.
-      return;
-    }
-
     // Retry failed upload after timeout.
     DoAsyncUploadRegistrationToken(
         std::move(token_data),
