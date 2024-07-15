@@ -174,6 +174,36 @@ class ReadAloudAppModel {
   bool ShouldEndTextTraversal(
       a11y::ReadAloudCurrentGranularity current_granularity);
 
+  // Helper method for GetNextNodes.
+  // During text traversal for Read Aloud, adds text to the current Read Aloud
+  // segment from the start of the current node.
+  // for example, if:
+  //   node 1: This is sentence 1.
+  //   node 2: This is sentence 2.
+  //   ax_position_ points to node 2,
+  //   AddTextFromStartOfNode will add the text in node 2 to the current
+  //   segment
+  // Returns a TraversalState enum used to indicate if traversal should end,
+  // continue to the next node, or continue within the same node.
+  a11y::TraversalState AddTextFromStartOfNode(
+      bool is_pdf,
+      a11y::ReadAloudCurrentGranularity& current_granularity);
+
+  // Helper method for GetNextNodes.
+  // During text traversal for Read Aloud, adds text to the current Read Aloud
+  // segment from the middle of the current node.
+  // for example, if:
+  //   node 1: This is sentence 1.
+  //   node 2: Hello! This is sentence 2.
+  //   ax_position_ points to node 2 and current_text_index_ is 7.
+  //   AddTextFromMiddleOfNode will add the text in node 2 starting from the
+  //   current_text_index_ to the current speech segment
+  // Returns a TraversalState enum used to indicate if traversal should end,
+  // continue to the next node, or continue within the same node.
+  a11y::TraversalState AddTextFromMiddleOfNode(
+      bool is_pdf,
+      a11y::ReadAloudCurrentGranularity& current_granularity);
+
   bool PositionEndsWithOpeningPunctuation(
       bool is_superscript,
       int combined_sentence_index,

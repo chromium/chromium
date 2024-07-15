@@ -142,99 +142,23 @@ a11y::ReadAloudCurrentGranularity ReadAloudAppModel::GetNextNodes(
         return current_granularity;
       }
 
-      anchor_node = GetNextNodeFromPosition(ax_position_);
+      a11y::TraversalState traversal_state =
+          AddTextFromStartOfNode(is_pdf, current_granularity);
 
-      std::u16string base_text = anchor_node->GetTextContentUTF16();
-
-      bool is_superscript = a11y::IsSuperscript(anchor_node);
-
-      // Look at the text of the items we've already added to the
-      // current sentence (current_text) combined with the text of the next
-      // node (base_text).
-      const std::u16string& combined_text =
-          current_granularity.text + base_text;
-      // Get the index of the next sentence if we're looking at the combined
-      // previous and current node text. If we're currently in a superscript,
-      // no need to check for a combined sentence, as we want to add the
-      // entire superscript to the current text segment.
-      int combined_sentence_index =
-          is_superscript ? combined_text.length()
-                         : GetNextSentence(combined_text, is_pdf);
-
-      bool is_opening_punctuation = PositionEndsWithOpeningPunctuation(
-          is_superscript, combined_sentence_index, combined_text,
-          current_granularity);
-
-      // If the combined_sentence_index is the same as the current_text length,
-      // the new node should not be considered part of the current sentence.
-      // If these values differ, add the current node's text to the list of
-      // nodes in the current sentence.
-      // Consider these two examples:
-      // Example 1:
-      //  current text: Hello
-      //  current node's text: , how are you?
-      //    The current text length is 5, but the index of the next sentence of
-      //    the combined text is 19, so the current node should be added to
-      //    the current sentence.
-      // Example 2:
-      //  current text: Hello.
-      //  current node: Goodbye.
-      //    The current text length is 6, and the next sentence index of
-      //    "Hello. Goodbye." is still 6, so the current node's text shouldn't
-      //    be added to the current sentence.
-      if (((int)current_granularity.text.length() < combined_sentence_index) &&
-          !is_opening_punctuation) {
-        anchor_node = GetNextNodeFromPosition(ax_position_);
-        // Calculate the new sentence index.
-        int index_in_new_node =
-            combined_sentence_index - current_granularity.text.length();
-        // Add the current node to the list of nodes to be returned, with a
-        // text range from 0 to the start of the next sentence
-        // (index_in_new_node);
-        AddTextToCurrentGranularity(anchor_node, /* startIndex= */ 0,
-                                    /* end_index= */ index_in_new_node,
-                                    current_granularity);
-        current_text_index_ = index_in_new_node;
-        if (current_text_index_ != (int)base_text.length()) {
-          // If we're in the middle of the node, there's no need to attempt
-          // to find another segment, as we're at the end of the current
-          // segment.
+      switch (traversal_state) {
+        case a11y::TraversalState::EndOfSegment:
           return current_granularity;
-        }
-        continue;
-      } else if (current_granularity.node_ids.size() > 0) {
-        // If nothing has been added to the list of current nodes, we should
-        // look at the next sentence within the current node. However, if
-        // there have already been nodes added to the list of nodes to return
-        // and we determine that the next node shouldn't be added to the
-        // current sentence, we've completed the current sentence, so we can
-        // return the current list.
-        return current_granularity;
+        case a11y::TraversalState::ContinueToNextNode:
+          continue;
+        case a11y::TraversalState::ContinueInCurrentNode:
+          // Fall-through;
+        default:
+          break;
       }
     }
 
-    // Add the next granularity piece within the current node.
-    anchor_node = GetNextNodeFromPosition(ax_position_);
-    text = anchor_node->GetTextContentUTF16();
-    prev_index = current_text_index_;
-    text_substr = text.substr(current_text_index_);
-    // Find the next sentence within the current node.
-    int new_current_text_index =
-        GetNextSentence(text_substr, is_pdf) + prev_index;
-    int start_index = current_text_index_;
-    current_text_index_ = new_current_text_index;
-
-    // Add the current node to the list of nodes to be returned, with a
-    // text range from the starting index (the end of the previous piece of
-    // the sentence) to the start of the next sentence.
-    AddTextToCurrentGranularity(anchor_node, start_index,
-                                /* end_index= */ current_text_index_,
-                                current_granularity);
-
-    // After adding the most recent granularity segment, if we're not at the
-    //  end of the node, the current nodes can be returned, as we know there's
-    // no further segments remaining.
-    if ((size_t)current_text_index_ != text.length()) {
+    if (AddTextFromMiddleOfNode(is_pdf, current_granularity) ==
+        a11y::TraversalState::EndOfSegment) {
       return current_granularity;
     }
   }
@@ -288,6 +212,112 @@ bool ReadAloudAppModel::ShouldEndTextTraversal(
   return (ax_position_->IsNullPosition() || ax_position_->AtEndOfAXTree() ||
           !ax_position_->GetAnchor()) ||
          ShouldSplitAtParagraph(ax_position_, current_granularity);
+}
+
+a11y::TraversalState ReadAloudAppModel::AddTextFromStartOfNode(
+    bool is_pdf,
+    a11y::ReadAloudCurrentGranularity& current_granularity) {
+  ui::AXNode* anchor_node = GetNextNodeFromPosition(ax_position_);
+
+  std::u16string base_text = anchor_node->GetTextContentUTF16();
+
+  bool is_superscript = a11y::IsSuperscript(anchor_node);
+
+  // Look at the text of the items we've already added to the
+  // current sentence (current_text) combined with the text of the next
+  // node (base_text).
+  const std::u16string& combined_text = current_granularity.text + base_text;
+  // Get the index of the next sentence if we're looking at the combined
+  // previous and current node text. If we're currently in a superscript,
+  // no need to check for a combined sentence, as we want to add the
+  // entire superscript to the current text segment.
+  int combined_sentence_index = is_superscript
+                                    ? combined_text.length()
+                                    : GetNextSentence(combined_text, is_pdf);
+
+  bool is_opening_punctuation = PositionEndsWithOpeningPunctuation(
+      is_superscript, combined_sentence_index, combined_text,
+      current_granularity);
+
+  // If the combined_sentence_index is the same as the current_text length,
+  // the new node should not be considered part of the current sentence.
+  // If these values differ, add the current node's text to the list of
+  // nodes in the current sentence.
+  // Consider these two examples:
+  // Example 1:
+  //  current text: Hello
+  //  current node's text: , how are you?
+  //    The current text length is 5, but the index of the next sentence of
+  //    the combined text is 19, so the current node should be added to
+  //    the current sentence.
+  // Example 2:
+  //  current text: Hello.
+  //  current node: Goodbye.
+  //    The current text length is 6, and the next sentence index of
+  //    "Hello. Goodbye." is still 6, so the current node's text shouldn't
+  //    be added to the current sentence.
+  if (((int)current_granularity.text.length() < combined_sentence_index) &&
+      !is_opening_punctuation) {
+    anchor_node = GetNextNodeFromPosition(ax_position_);
+    // Calculate the new sentence index.
+    int index_in_new_node =
+        combined_sentence_index - current_granularity.text.length();
+    // Add the current node to the list of nodes to be returned, with a
+    // text range from 0 to the start of the next sentence
+    // (index_in_new_node);
+    AddTextToCurrentGranularity(anchor_node, /* startIndex= */ 0,
+                                /* end_index= */ index_in_new_node,
+                                current_granularity);
+    current_text_index_ = index_in_new_node;
+    if (current_text_index_ != (int)base_text.length()) {
+      // If we're in the middle of the node, there's no need to attempt
+      // to find another segment, as we're at the end of the current
+      // segment.
+      return a11y::TraversalState::EndOfSegment;
+    }
+    return a11y::TraversalState::ContinueToNextNode;
+  } else if (current_granularity.node_ids.size() > 0) {
+    // If nothing has been added to the list of current nodes, we should
+    // look at the next sentence within the current node. However, if
+    // there have already been nodes added to the list of nodes to return
+    // and we determine that the next node shouldn't be added to the
+    // current sentence, we've completed the current sentence, so we can
+    // return the current list.
+    return a11y::TraversalState::EndOfSegment;
+  }
+
+  return a11y::TraversalState::ContinueInCurrentNode;
+}
+
+a11y::TraversalState ReadAloudAppModel::AddTextFromMiddleOfNode(
+    bool is_pdf,
+    a11y::ReadAloudCurrentGranularity& current_granularity) {
+  // Add the next granularity piece within the current node.
+  ui::AXNode* anchor_node = GetNextNodeFromPosition(ax_position_);
+  std::u16string text = anchor_node->GetTextContentUTF16();
+  int prev_index = current_text_index_;
+  std::u16string text_substr = text.substr(current_text_index_);
+  // Find the next sentence within the current node.
+  int new_current_text_index =
+      GetNextSentence(text_substr, is_pdf) + prev_index;
+  int start_index = current_text_index_;
+  current_text_index_ = new_current_text_index;
+
+  // Add the current node to the list of nodes to be returned, with a
+  // text range from the starting index (the end of the previous piece of
+  // the sentence) to the start of the next sentence.
+  AddTextToCurrentGranularity(anchor_node, start_index,
+                              /* end_index= */ current_text_index_,
+                              current_granularity);
+
+  // After adding the most recent granularity segment, if we're not at the
+  //  end of the node, the current nodes can be returned, as we know there's
+  // no further segments remaining.
+  if ((size_t)current_text_index_ != text.length()) {
+    return a11y::TraversalState::EndOfSegment;
+  }
+
+  return a11y::TraversalState::ContinueToNextNode;
 }
 
 void ReadAloudAppModel::AddTextToCurrentGranularity(

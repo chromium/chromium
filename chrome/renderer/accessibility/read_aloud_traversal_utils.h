@@ -27,6 +27,17 @@ struct ReadAloudTextSegment {
 
 namespace a11y {
 
+// During text traversal when adding new text to the current speech segment,
+// this is used to indicate the next traversal steps.
+enum class TraversalState {
+  // The end of the current granularity segment.
+  EndOfSegment = 0,
+  // Traversal should continue to the next valid AXNode.
+  ContinueToNextNode = 1,
+  // Traversal should continue with text within the current node.
+  ContinueInCurrentNode = 2,
+};
+
 // A representation of multiple ReadAloudTextSegments that are processed
 // by Read Aloud at a single moment. For example, when using sentence
 // granularity, the list of ReadAloudTextSegments in a
