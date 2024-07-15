@@ -58,6 +58,9 @@ VolumeManagerFactory::VolumeManagerFactory()
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
               .WithGuest(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
   DependsOn(drive::DriveIntegrationServiceFactory::GetInstance());
   DependsOn(ash::file_system_provider::ServiceFactory::GetInstance());

@@ -26,6 +26,9 @@ PdfOcrControllerFactory::PdfOcrControllerFactory()
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
               .WithGuest(ProfileSelection::kOffTheRecordOnly)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {}
 
 PdfOcrControllerFactory::~PdfOcrControllerFactory() = default;

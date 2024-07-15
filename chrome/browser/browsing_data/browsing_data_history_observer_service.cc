@@ -169,10 +169,14 @@ BrowsingDataHistoryObserverService::Factory::GetInstance() {
 }
 
 BrowsingDataHistoryObserverService::Factory::Factory()
-    : ProfileKeyedServiceFactory("BrowsingDataHistoryObserverService",
-                                 ProfileSelections::Builder()
-                                     .WithGuest(ProfileSelection::kNone)
-                                     .Build()) {
+    : ProfileKeyedServiceFactory(
+          "BrowsingDataHistoryObserverService",
+          ProfileSelections::Builder()
+              .WithGuest(ProfileSelection::kNone)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(TabRestoreServiceFactory::GetInstance());
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)

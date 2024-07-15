@@ -293,6 +293,9 @@ ChromeExtensionsBrowserClient::GetContextRedirectedToOriginal(
   if (force_guest_profile) {
     builder.WithGuest(ProfileSelection::kRedirectedToOriginal);
   }
+  // TODO(crbug.com/41488885): Check if this service is needed for Ash
+  // Internals.
+  builder.WithAshInternals(ProfileSelection::kRedirectedToOriginal);
 
   const ProfileSelections selections = builder.Build();
   return selections.ApplyProfileSelection(Profile::FromBrowserContext(context));
@@ -306,6 +309,9 @@ content::BrowserContext* ChromeExtensionsBrowserClient::GetContextOwnInstance(
   if (force_guest_profile) {
     builder.WithGuest(ProfileSelection::kOwnInstance);
   }
+  // TODO(crbug.com/41488885): Check if this service is needed for Ash
+  // Internals.
+  builder.WithAshInternals(ProfileSelection::kOwnInstance);
 
   const ProfileSelections selections = builder.Build();
   return selections.ApplyProfileSelection(Profile::FromBrowserContext(context));
@@ -319,6 +325,9 @@ ChromeExtensionsBrowserClient::GetContextForOriginalOnly(
   if (force_guest_profile) {
     builder.WithGuest(ProfileSelection::kOriginalOnly);
   }
+  // TODO(crbug.com/41488885): Check if this service is needed for Ash
+  // Internals.
+  builder.WithAshInternals(ProfileSelection::kOriginalOnly);
 
   ProfileSelections selections = builder.Build();
   return selections.ApplyProfileSelection(Profile::FromBrowserContext(context));

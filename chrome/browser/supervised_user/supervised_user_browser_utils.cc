@@ -87,6 +87,8 @@ ProfileSelections BuildProfileSelectionsForRegularAndGuest() {
   return ProfileSelections::Builder()
       .WithRegular(ProfileSelection::kOriginalOnly)
       .WithGuest(ProfileSelection::kRedirectedToOriginal)
+      // TODO(crbug.com/41488885): Check if this is needed for Ash Internals.
+      .WithAshInternals(ProfileSelection::kOriginalOnly)
       .Build();
 }
 

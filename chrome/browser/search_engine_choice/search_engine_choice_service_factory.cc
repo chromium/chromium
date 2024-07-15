@@ -31,6 +31,9 @@ SearchEngineChoiceServiceFactory::SearchEngineChoiceServiceFactory()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               .WithSystem(ProfileSelection::kNone)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {}
 
 SearchEngineChoiceServiceFactory::~SearchEngineChoiceServiceFactory() = default;

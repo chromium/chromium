@@ -232,6 +232,9 @@ TrustedVaultServiceFactory::TrustedVaultServiceFactory()
               // (e.g. SyncService) that have similar TODO, if they stop being
               // used in Guest mode, this service could stop to be used as well.
               .WithGuest(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
 }

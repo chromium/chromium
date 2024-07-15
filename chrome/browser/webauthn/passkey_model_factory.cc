@@ -39,6 +39,9 @@ PasskeyModelFactory::PasskeyModelFactory()
               // never signed in so they don't have have access to GPM passkeys,
               // but this simplifies handling by clients.
               .WithGuest(ProfileSelection::kOffTheRecordOnly)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
   DependsOn(AffiliationServiceFactory::GetInstance());

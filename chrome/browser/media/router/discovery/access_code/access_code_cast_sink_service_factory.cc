@@ -57,6 +57,9 @@ AccessCodeCastSinkServiceFactory::AccessCodeCastSinkServiceFactory()
               // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
   // TODO(b/238212430): Add a browsertest case to ensure that all media router
   // objects are created before the ACCSS.

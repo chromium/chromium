@@ -27,6 +27,9 @@ GlobalErrorServiceFactory::GlobalErrorServiceFactory()
               // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {}
 
 GlobalErrorServiceFactory::~GlobalErrorServiceFactory() = default;

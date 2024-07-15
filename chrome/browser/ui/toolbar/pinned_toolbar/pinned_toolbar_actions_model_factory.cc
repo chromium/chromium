@@ -27,6 +27,9 @@ PinnedToolbarActionsModelFactory::PinnedToolbarActionsModelFactory()
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
               .WithGuest(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {}
 
 PinnedToolbarActionsModelFactory::~PinnedToolbarActionsModelFactory() = default;

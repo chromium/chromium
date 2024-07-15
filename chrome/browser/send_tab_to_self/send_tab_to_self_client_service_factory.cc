@@ -44,6 +44,9 @@ SendTabToSelfClientServiceFactory::SendTabToSelfClientServiceFactory()
               // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(NotificationDisplayServiceFactory::GetInstance());
   DependsOn(SendTabToSelfSyncServiceFactory::GetInstance());

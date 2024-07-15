@@ -34,6 +34,9 @@ InMemoryURLIndexFactory::InMemoryURLIndexFactory()
               // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
   DependsOn(BookmarkModelFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
@@ -49,13 +52,13 @@ InMemoryURLIndexFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   SchemeSet chrome_schemes_to_whitelist;
   chrome_schemes_to_whitelist.insert(content::kChromeUIScheme);
-  std::unique_ptr<InMemoryURLIndex> in_memory_url_index = 
-    std::make_unique<InMemoryURLIndex>(
-      BookmarkModelFactory::GetForBrowserContext(profile),
-      HistoryServiceFactory::GetForProfile(profile,
-                                           ServiceAccessType::IMPLICIT_ACCESS),
-      TemplateURLServiceFactory::GetForProfile(profile), profile->GetPath(),
-      chrome_schemes_to_whitelist);
+  std::unique_ptr<InMemoryURLIndex> in_memory_url_index =
+      std::make_unique<InMemoryURLIndex>(
+          BookmarkModelFactory::GetForBrowserContext(profile),
+          HistoryServiceFactory::GetForProfile(
+              profile, ServiceAccessType::IMPLICIT_ACCESS),
+          TemplateURLServiceFactory::GetForProfile(profile), profile->GetPath(),
+          chrome_schemes_to_whitelist);
   in_memory_url_index->Init();
   return in_memory_url_index;
 }

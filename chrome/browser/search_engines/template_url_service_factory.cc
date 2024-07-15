@@ -89,6 +89,9 @@ TemplateURLServiceFactory::TemplateURLServiceFactory()
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               // It's not possible for the user to search in a system profile.
               .WithSystem(ProfileSelection::kNone)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
   DependsOn(search_engines::SearchEngineChoiceServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());

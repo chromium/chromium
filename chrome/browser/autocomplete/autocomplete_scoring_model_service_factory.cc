@@ -38,6 +38,9 @@ AutocompleteScoringModelServiceFactory::AutocompleteScoringModelServiceFactory()
               // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode (likely not since local history is unavailable).
               .WithGuest(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
 }

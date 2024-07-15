@@ -46,6 +46,9 @@ EnclaveManagerFactory::EnclaveManagerFactory()
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
               .WithGuest(ProfileSelection::kNone)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
