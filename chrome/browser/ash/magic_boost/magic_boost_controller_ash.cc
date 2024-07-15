@@ -32,8 +32,10 @@ void MagicBoostControllerAsh::ShowDisclaimerUi(int64_t display_id,
                                                OptInFeatures opt_in_features) {
   opt_in_features_ = opt_in_features;
 
+  // Destroy the existing `disclaimer_widget_`, if any. We always create a new
+  // widget to ensure the correct disclaimer view position.
   if (disclaimer_widget_) {
-    return;
+    CloseDisclaimerUi();
   }
 
   disclaimer_widget_ = MagicBoostDisclaimerView::CreateWidget(

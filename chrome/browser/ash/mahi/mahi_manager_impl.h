@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/mahi/mahi_cache_manager.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "components/manta/mahi_provider.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -64,6 +65,13 @@ class MahiManagerImpl : public chromeos::MahiManager,
   // chromeos::MagicBoostState::Observer:
   void OnHMREnabledUpdated(bool enabled) override;
   void OnIsDeleting() override;
+
+  // Interrupts the flow of `context_menu_request` handling by showing a
+  // disclaimer view. The original flow will be resumed if the consent status
+  // becomes approved. NOTE: This function should be called only if the magic
+  // boost feature is enabled.
+  void InterrputRequestHandlingWithDisclaimerView(
+      crosapi::mojom::MahiContextMenuRequestPtr context_menu_request);
 
   // Initialize required provider if it is not initialized yet, and discard
   // pending requests to avoid racing condition.
@@ -131,6 +139,17 @@ class MahiManagerImpl : public chromeos::MahiManager,
   // If true, tries to get content from MediaAppContentManager instead.
   bool media_app_pdf_focused_ = false;
   base::UnguessableToken media_app_client_id_;
+
+  // Runs the specified closures when the consent state becomes approved or
+  // declined. Built when handling particular context menu actions without the
+  // Mahi feature approved by user. Destroyed when user responds to the
+  // disclaimer view.
+  // NOTE: It is used only when the magic boost feature is enabled.
+  std::unique_ptr<chromeos::MagicBoostState::Observer>
+      on_consent_state_update_closure_runner_;
+
+  base::WeakPtrFactory<MahiManagerImpl> weak_ptr_factory_for_closure_runner_{
+      this};
 
   base::WeakPtrFactory<MahiManagerImpl> weak_ptr_factory_for_requests_{this};
 };

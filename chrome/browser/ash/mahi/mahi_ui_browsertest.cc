@@ -10,6 +10,8 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
+#include "ash/system/magic_boost/magic_boost_constants.h"
+#include "ash/system/magic_boost/magic_boost_disclaimer_view.h"
 #include "ash/system/mahi/fake_mahi_manager.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_panel_widget.h"
@@ -27,6 +29,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "base/version_info/channel.h"
@@ -40,6 +43,7 @@
 #include "chrome/browser/ui/views/mahi/mahi_menu_view.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_switches.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/manta/mahi_provider.h"
@@ -75,6 +79,7 @@ namespace {
 using ::testing::ByMove;
 using ::testing::NiceMock;
 using ::testing::Return;
+using ::testing::WithParamInterface;
 
 // MockMahiProvider ------------------------------------------------------------
 
@@ -133,6 +138,19 @@ class MockMahiProvider : public manta::MahiProvider {
                const std::string&,
                manta::MantaGenericCallback),
               (override));
+};
+
+// MockMagicBoostStateObserver -------------------------------------------------
+
+class MockMagicBoostStateObserver : public chromeos::MagicBoostState::Observer {
+ public:
+  // chromeos::MagicBoostState::Observer:
+  MOCK_METHOD(void,
+              OnHMRConsentStatusUpdated,
+              (chromeos::HMRConsentStatus),
+              (override));
+  MOCK_METHOD(void, OnHMREnabledUpdated, (bool), (override));
+  MOCK_METHOD(void, OnIsDeleting, (), (override));
 };
 
 // MockMantaService ------------------------------------------------------------
@@ -249,13 +267,34 @@ std::unique_ptr<KeyedService> CreateMockMantaService(
   return std::make_unique<MockMantaService>();
 }
 
+// Applies the given HMR consent status and waits until the new status becomes
+// in effect. NOTE: This function should be called only when the magic boost
+// feature is enabled.
+void ApplyHMRConsentStatusAndWait(chromeos::HMRConsentStatus status) {
+  CHECK(chromeos::features::IsMagicBoostEnabled());
+
+  NiceMock<MockMagicBoostStateObserver> magic_boost_state_observer;
+  base::ScopedObservation<chromeos::MagicBoostState,
+                          MockMagicBoostStateObserver>
+      scoped_magic_boost_state_observation{&magic_boost_state_observer};
+  scoped_magic_boost_state_observation.Observe(
+      chromeos::MagicBoostState::Get());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(magic_boost_state_observer, OnHMRConsentStatusUpdated(status))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+
+  chromeos::MagicBoostState::Get()->AsyncWriteConsentStatus(status);
+  run_loop.Run();
+}
+
 }  // namespace
 
-class MahiUiBrowserTest : public SystemWebAppBrowserTestBase {
- protected:
-  ui::test::EventGenerator& event_generator() { return *event_generator_; }
+// MahiUiBrowserTestBase -------------------------------------------------------
 
- private:
+class MahiUiBrowserTestBase : public SystemWebAppBrowserTestBase {
+ protected:
+  // SystemWebAppBrowserTestBase:
   void SetUpOnMainThread() override {
     SystemWebAppBrowserTestBase::SetUpOnMainThread();
 
@@ -277,7 +316,38 @@ class MahiUiBrowserTest : public SystemWebAppBrowserTestBase {
         .Wait();
   }
 
-  base::test::ScopedFeatureList feature_list_{chromeos::features::kMahi};
+  void TypeStringToMahiMenuTextfield(views::Widget* mahi_menu_widget,
+                                     const std::u16string& input) {
+    ASSERT_TRUE(mahi_menu_widget);
+    const views::View* const textfield =
+        mahi_menu_widget->GetContentsView()->GetViewByID(
+            chromeos::mahi::ViewID::kTextfield);
+    ASSERT_TRUE(textfield);
+
+    // Ensure focus on `textfield`.
+    event_generator().MoveMouseTo(textfield->GetBoundsInScreen().CenterPoint());
+    event_generator().ClickLeftButton();
+
+    // Type `input_string`.
+    for (char16_t c : input) {
+      event_generator().PressAndReleaseKey(
+          static_cast<ui::KeyboardCode>(ui::VKEY_A + c - u'a'));
+    }
+  }
+
+  void WaitForSettingsToLoad() {
+    // Wait until the Settings app finishes loading.
+    ui_test_utils::AllBrowserTabAddedWaiter waiter;
+    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+        browser()->profile());
+    auto* const web_contents = waiter.Wait();
+    ASSERT_TRUE(web_contents);
+    content::WaitForLoadStop(web_contents);
+  }
+
+  ui::test::EventGenerator& event_generator() { return *event_generator_; }
+
+ private:
   ScopedFakeMahiManagerZeroDuration scoped_zero_duration_;
   base::AutoReset<bool> ignore_mahi_secret_key_ =
       ash::switches::SetIgnoreMahiSecretKeyForTest();
@@ -288,7 +358,44 @@ class MahiUiBrowserTest : public SystemWebAppBrowserTestBase {
       &fake_browser_delegate_};
 };
 
-IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, MahiMenuZOrder) {
+// MahiUiBrowserTest -----------------------------------------------------------
+
+// Tests Mahi UI features in the following scenarios:
+// 1. The magic boost feature is disabled.
+// 2. The magic boost feature is enabled and the Mahi feature is approved.
+class MahiUiBrowserTest
+    : public MahiUiBrowserTestBase,
+      public WithParamInterface</*magic_boost_enabled=*/bool> {
+ private:
+  // MahiUiBrowserTestBase:
+  void SetUp() override {
+    // Always enable the Mahi feature. Enable the magic boost feature or not
+    // depending on the test param.
+    feature_list_.InitWithFeatureStates(
+        {{chromeos::features::kMagicBoost, GetParam()},
+         {chromeos::features::kMahi, true}});
+
+    MahiUiBrowserTestBase::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    MahiUiBrowserTestBase::SetUpOnMainThread();
+
+    // Approve the Mahi feature if the magic boost feature is enabled.
+    if (GetParam()) {
+      ApplyHMRConsentStatusAndWait(chromeos::HMRConsentStatus::kApproved);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         MahiUiBrowserTest,
+                         /*magic_boost_enabled=*/::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(MahiUiBrowserTest, MahiMenuZOrder) {
   EXPECT_FALSE(FindWidgetWithName(MahiPanelWidget::GetName()));
 
   // Have both the mahi menu and mahi panel open.
@@ -324,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, MahiMenuZOrder) {
             mahi_menu_widget->GetNativeWindow()->parent());
 }
 
-IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, OnContextMenuClickedSettings) {
+IN_PROC_BROWSER_TEST_P(MahiUiBrowserTest, OnContextMenuClickedSettings) {
   // Ensure the Settings app installed.
   WaitForTestSystemAppInstall();
 
@@ -347,15 +454,7 @@ IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, OnContextMenuClickedSettings) {
       settings_button->GetBoundsInScreen().CenterPoint());
   event_generator().ClickLeftButton();
 
-  {
-    // Wait until the Settings app finishes loading.
-    ui_test_utils::AllBrowserTabAddedWaiter waiter;
-    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-        browser()->profile());
-    auto* const web_contents = waiter.Wait();
-    ASSERT_TRUE(web_contents);
-    content::WaitForLoadStop(web_contents);
-  }
+  WaitForSettingsToLoad();
 
   // Verify that the Settings page is opened in a new window.
   const Browser* const settings_browser =
@@ -368,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, OnContextMenuClickedSettings) {
       settings_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
-IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, OnContextMenuClickedSummary) {
+IN_PROC_BROWSER_TEST_P(MahiUiBrowserTest, OnContextMenuClickedSummary) {
   EXPECT_FALSE(FindWidgetWithName(MahiPanelWidget::GetName()));
 
   // Open the Mahi menu by mouse right click on the web contents.
@@ -436,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, OnContextMenuClickedSummary) {
   EXPECT_EQ(data->text(), kFakeSummary);
 }
 
-IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, OnContextMenuQuestionSent) {
+IN_PROC_BROWSER_TEST_P(MahiUiBrowserTest, OnContextMenuQuestionSent) {
   EXPECT_FALSE(FindWidgetWithName(MahiPanelWidget::GetName()));
 
   // Open the Mahi menu by mouse right click on the web contents.
@@ -448,21 +547,8 @@ IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, OnContextMenuQuestionSent) {
       chromeos::mahi::MahiMenuView::GetWidgetName());
   ASSERT_TRUE(mahi_menu_widget);
 
-  const views::View* const textfield =
-      mahi_menu_widget->GetContentsView()->GetViewByID(
-          chromeos::mahi::ViewID::kTextfield);
-  ASSERT_TRUE(textfield);
-
-  // Ensure focus on `textfield`.
-  event_generator().MoveMouseTo(textfield->GetBoundsInScreen().CenterPoint());
-  event_generator().ClickLeftButton();
-
-  // Type `question_text`.
   const std::u16string question_text(u"question");
-  for (char16_t c : question_text) {
-    event_generator().PressAndReleaseKey(
-        static_cast<ui::KeyboardCode>(ui::VKEY_A + c - u'a'));
-  }
+  TypeStringToMahiMenuTextfield(mahi_menu_widget, question_text);
 
   ui::ScopedAnimationDurationScaleMode zero_duration(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
@@ -501,7 +587,219 @@ IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, OnContextMenuQuestionSent) {
   EXPECT_TRUE(question_answer_view->GetVisible());
 
   // Verify the question label.
-  ASSERT_EQ(2u, question_answer_view->children().size());
+  ASSERT_EQ(question_answer_view->children().size(), 2u);
+  EXPECT_EQ(views::AsViewClass<views::Label>(
+                question_answer_view->children()[0]->GetViewByID(
+                    mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel))
+                ->GetText(),
+            question_text);
+
+  // Verify the answer label.
+  EXPECT_EQ(base::UTF16ToUTF8(
+                views::AsViewClass<views::Label>(
+                    question_answer_view->children()[1]->GetViewByID(
+                        mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel))
+                    ->GetText()),
+            kFakeAnswer);
+}
+
+// PendingConsentStatusMahiUiBrowserTest ---------------------------------------
+
+// Tests Mahi UI features when the magic boost feature is enabled and the
+// consent status before the test flow is kPending.
+class PendingConsentStatusMahiUiBrowserTest : public MahiUiBrowserTestBase {
+ private:
+  // MahiUiBrowserTestBase:
+  void SetUp() override {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kMahi,
+                              chromeos::features::kMagicBoost},
+        /*disabled_features=*/{});
+
+    MahiUiBrowserTestBase::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    MahiUiBrowserTestBase::SetUpOnMainThread();
+    ApplyHMRConsentStatusAndWait(chromeos::HMRConsentStatus::kPending);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Checks that the settings is accessible when the consent status is pending.
+IN_PROC_BROWSER_TEST_F(PendingConsentStatusMahiUiBrowserTest,
+                       OnContextMenuClickedSettings) {
+  // Ensure the Settings app installed.
+  WaitForTestSystemAppInstall();
+
+  // Open the Mahi menu by mouse right click on the web contents.
+  event_generator().MoveMouseTo(chrome_test_utils::GetActiveWebContents(this)
+                                    ->GetViewBounds()
+                                    .CenterPoint());
+  event_generator().ClickRightButton();
+  views::Widget* const mahi_menu_widget = FindWidgetWithNameAndWaitIfNeeded(
+      chromeos::mahi::MahiMenuView::GetWidgetName());
+  ASSERT_TRUE(mahi_menu_widget);
+
+  const views::View* const settings_button =
+      mahi_menu_widget->GetContentsView()->GetViewByID(
+          chromeos::mahi::ViewID::kSettingsButton);
+  ASSERT_TRUE(settings_button);
+
+  // Mouse click `settings_button` of the Mahi menu.
+  event_generator().MoveMouseTo(
+      settings_button->GetBoundsInScreen().CenterPoint());
+  event_generator().ClickLeftButton();
+
+  WaitForSettingsToLoad();
+
+  // Verify that the Settings page is opened in a new window.
+  const Browser* const settings_browser =
+      chrome::SettingsWindowManager::GetInstance()->FindBrowserForProfile(
+          browser()->profile());
+  ASSERT_TRUE(settings_browser);
+  EXPECT_NE(browser(), settings_browser);
+  EXPECT_EQ(
+      GURL(chrome::GetOSSettingsUrl(std::string())),
+      settings_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
+}
+
+// MahiUiWithDisclaimerViewBrowserTest -----------------------------------------
+
+class MahiUiWithDisclaimerViewBrowserTest
+    : public PendingConsentStatusMahiUiBrowserTest,
+      public WithParamInterface</*accept=*/bool> {
+ protected:
+  // Mouse clicks on the disclaimer view's accept button or the declination
+  // button, specified by `accept`.
+  void ClickDisclaimerViewButton(bool accept) {
+    views::Widget* const disclaimer_view_widget =
+        FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName());
+    ASSERT_TRUE(disclaimer_view_widget);
+
+    const views::View* const button =
+        disclaimer_view_widget->GetContentsView()->GetViewByID(
+            accept ? magic_boost::DisclaimerViewAcceptButton
+                   : magic_boost::DisclaimerViewDeclineButton);
+    ASSERT_TRUE(button);
+    event_generator().MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
+    event_generator().ClickLeftButton();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         MahiUiWithDisclaimerViewBrowserTest,
+                         /*accept=*/::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(MahiUiWithDisclaimerViewBrowserTest,
+                       OnContextMenuClickedSummary) {
+  EXPECT_FALSE(FindWidgetWithName(MahiPanelWidget::GetName()));
+
+  // Open the Mahi menu by mouse right click on the web contents.
+  event_generator().MoveMouseTo(chrome_test_utils::GetActiveWebContents(this)
+                                    ->GetViewBounds()
+                                    .CenterPoint());
+  event_generator().ClickRightButton();
+  views::Widget* const mahi_menu_widget = FindWidgetWithNameAndWaitIfNeeded(
+      chromeos::mahi::MahiMenuView::GetWidgetName());
+  ASSERT_TRUE(mahi_menu_widget);
+
+  ui::ScopedAnimationDurationScaleMode zero_duration(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  // Show the disclaimer view by left clicking the menu's summary button.
+  const views::View* const summary_button =
+      mahi_menu_widget->GetContentsView()->GetViewByID(
+          chromeos::mahi::ViewID::kSummaryButton);
+  ASSERT_TRUE(summary_button);
+  event_generator().MoveMouseTo(
+      summary_button->GetBoundsInScreen().CenterPoint());
+  event_generator().ClickLeftButton();
+
+  WaitUntilMahiMenuClosed(mahi_menu_widget);
+  EXPECT_TRUE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+
+  const bool accept = GetParam();
+  ClickDisclaimerViewButton(accept);
+
+  // If user clicks the declination button, the Mahi panel should not show.
+  if (!accept) {
+    EXPECT_FALSE(FindWidgetWithName(MahiPanelWidget::GetName()));
+    return;
+  }
+
+  // The code below checks the Mahi panel.
+
+  WaitUntilUiUpdateReceived(MahiUiUpdateType::kSummaryLoaded);
+  views::Widget* panel_widget =
+      FindWidgetWithNameAndWaitIfNeeded(MahiPanelWidget::GetName());
+  ASSERT_TRUE(panel_widget);
+
+  const auto* const summary_label = views::AsViewClass<views::Label>(
+      panel_widget->GetContentsView()->GetViewByID(
+          mahi_constants::ViewId::kSummaryLabel));
+  ASSERT_TRUE(summary_label);
+  EXPECT_EQ(base::UTF16ToUTF8(summary_label->GetText()), kFakeSummary);
+}
+
+IN_PROC_BROWSER_TEST_P(MahiUiWithDisclaimerViewBrowserTest,
+                       OnContextMenuQuestionSent) {
+  EXPECT_FALSE(FindWidgetWithName(MahiPanelWidget::GetName()));
+
+  // Open the Mahi menu by mouse right click on the web contents.
+  event_generator().MoveMouseTo(chrome_test_utils::GetActiveWebContents(this)
+                                    ->GetViewBounds()
+                                    .CenterPoint());
+  event_generator().ClickRightButton();
+  views::Widget* const mahi_menu_widget = FindWidgetWithNameAndWaitIfNeeded(
+      chromeos::mahi::MahiMenuView::GetWidgetName());
+  ASSERT_TRUE(mahi_menu_widget);
+
+  const std::u16string question_text(u"question");
+  TypeStringToMahiMenuTextfield(mahi_menu_widget, question_text);
+
+  ui::ScopedAnimationDurationScaleMode zero_duration(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  const views::View* question_submit_button =
+      mahi_menu_widget->GetContentsView()->GetViewByID(
+          chromeos::mahi::ViewID::kSubmitQuestionButton);
+  ASSERT_TRUE(question_submit_button);
+
+  // Mouse click on `question_submit_button`.
+  event_generator().MoveMouseTo(
+      question_submit_button->GetBoundsInScreen().CenterPoint());
+  event_generator().ClickLeftButton();
+
+  WaitUntilMahiMenuClosed(mahi_menu_widget);
+  EXPECT_TRUE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+
+  const bool accept = GetParam();
+  ClickDisclaimerViewButton(accept);
+
+  // If user clicks the declination button, the Mahi panel should not show.
+  if (!accept) {
+    EXPECT_FALSE(FindWidgetWithName(MahiPanelWidget::GetName()));
+    return;
+  }
+
+  // The code below checks the Mahi panel.
+
+  WaitUntilUiUpdateReceived(MahiUiUpdateType::kAnswerLoaded);
+  views::Widget* panel_widget =
+      FindWidgetWithNameAndWaitIfNeeded(MahiPanelWidget::GetName());
+  ASSERT_TRUE(panel_widget);
+
+  // Verify that `question_answer_view` is visible.
+  auto* const question_answer_view =
+      panel_widget->GetContentsView()->GetViewByID(
+          mahi_constants::ViewId::kQuestionAnswerView);
+  ASSERT_TRUE(question_answer_view);
+  EXPECT_TRUE(question_answer_view->GetVisible());
+
+  // Verify the question label.
+  ASSERT_EQ(question_answer_view->children().size(), 2u);
   EXPECT_EQ(views::AsViewClass<views::Label>(
                 question_answer_view->children()[0]->GetViewByID(
                     mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel))

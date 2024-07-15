@@ -7,8 +7,10 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
@@ -18,8 +20,11 @@
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/setting.mojom.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -27,6 +32,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 #include "chrome/browser/ash/mahi/mahi_browser_delegate_ash.h"
 #include "chrome/browser/ash/mahi/mahi_cache_manager.h"
 #include "chrome/browser/manta/manta_service_factory.h"
@@ -37,7 +43,9 @@
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
-#include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "chromeos/crosapi/mojom/magic_boost.mojom.h"
+#include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/feedback/feedback_constants.h"
 #include "components/manta/features.h"
@@ -69,6 +77,60 @@ enum class CacheHit {
   kSummary = 1,
   kContent = 2,
   kMaxValue = kContent,
+};
+
+// OnConsentStateUpdateClosureRunner -------------------------------------------
+
+// Runs the specified closures when the consent state becomes approved or
+// declined. NOTE: This class should be used only when the magic boost feature
+// is enabled.
+class OnConsentStateUpdateClosureRunner
+    : public chromeos::MagicBoostState::Observer {
+ public:
+  OnConsentStateUpdateClosureRunner(base::OnceClosure on_approved_closure,
+                                    base::OnceClosure on_declined_closure)
+      : on_approved_closure_(std::move(on_approved_closure)),
+        on_declined_closure_(std::move(on_declined_closure)) {
+    CHECK(chromeos::features::IsMagicBoostEnabled());
+    magic_boost_state_observation_.Observe(chromeos::MagicBoostState::Get());
+  }
+
+  OnConsentStateUpdateClosureRunner(const OnConsentStateUpdateClosureRunner&) =
+      delete;
+  OnConsentStateUpdateClosureRunner& operator=(
+      const OnConsentStateUpdateClosureRunner&) = delete;
+  ~OnConsentStateUpdateClosureRunner() override = default;
+
+ private:
+  // chromeos::MagicBoostState::Observer:
+  void OnHMRConsentStatusUpdated(chromeos::HMRConsentStatus status) override {
+    switch (status) {
+      case chromeos::HMRConsentStatus::kApproved:
+        magic_boost_state_observation_.Reset();
+        std::move(on_approved_closure_).Run();
+        return;
+      case chromeos::HMRConsentStatus::kDeclined:
+        magic_boost_state_observation_.Reset();
+        std::move(on_declined_closure_).Run();
+        return;
+      case chromeos::HMRConsentStatus::kPending:
+      case chromeos::HMRConsentStatus::kUnset:
+        return;
+    }
+  }
+
+  void OnIsDeleting() override { magic_boost_state_observation_.Reset(); }
+
+  // The closure that runs when the consent status becomes approved.
+  base::OnceClosure on_approved_closure_;
+
+  // The closure that runs when the consent status becomes declined.
+  // NOTE: `on_declined_closure_` could destroy this observer.
+  base::OnceClosure on_declined_closure_;
+
+  base::ScopedObservation<chromeos::MagicBoostState,
+                          chromeos::MagicBoostState::Observer>
+      magic_boost_state_observation_{this};
 };
 
 // Helpers ---------------------------------------------------------------------
@@ -121,6 +183,15 @@ std::unique_ptr<manta::MahiProvider> CreateProvider() {
   }
 
   return nullptr;
+}
+
+// Returns true if:
+// 1. The magic boost feature is disabled; OR
+// 2. The Mahi feature has been approved before.
+bool IsMahiApproved() {
+  return !chromeos::features::IsMagicBoostEnabled() ||
+         chromeos::MagicBoostState::Get()->hmr_consent_status() ==
+             chromeos::HMRConsentStatus::kApproved;
 }
 
 }  // namespace
@@ -294,7 +365,20 @@ void MahiManagerImpl::SetCurrentFocusedPageInfo(
 
 void MahiManagerImpl::OnContextMenuClicked(
     crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) {
-  switch (context_menu_request->action_type) {
+  const MahiContextMenuActionType action_type =
+      context_menu_request->action_type;
+
+  // Show a disclaimer view before fulfilling `context_menu_request` if:
+  // 1. Mahi is not approved by user; AND
+  // 2. `context_menu_request` is NOT related to the Mahi settings. User
+  //    is allowed to access the Mahi settings before approval.
+  if (!IsMahiApproved() &&
+      action_type != MahiContextMenuActionType::kSettings) {
+    InterrputRequestHandlingWithDisclaimerView(std::move(context_menu_request));
+    return;
+  }
+
+  switch (action_type) {
     case MahiContextMenuActionType::kSummary:
     case MahiContextMenuActionType::kOutline:
       // TODO(b/318565610): Update the behaviour of kOutline.
@@ -483,6 +567,43 @@ bool MahiManagerImpl::MaybeInitializeAndDiscardPendingRequests() {
   }
 
   return mahi_provider_ && mahi_browser_delegate_ash_;
+}
+
+void MahiManagerImpl::InterrputRequestHandlingWithDisclaimerView(
+    crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) {
+  CHECK(chromeos::features::IsMagicBoostEnabled());
+
+  // Cache the display id before moving `context_menu_request`.
+  const int64_t display_id = context_menu_request->display_id;
+
+  // Invalidate the closures of the existing closure runner, if any.
+  weak_ptr_factory_for_closure_runner_.InvalidateWeakPtrs();
+
+  // The closure that resets `on_consent_state_update_closure_runner_`.
+  base::RepeatingClosure reset_observer_closure = base::BindRepeating(
+      [](const base::WeakPtr<MahiManagerImpl>& weak_ptr) {
+        if (weak_ptr) {
+          weak_ptr->on_consent_state_update_closure_runner_.reset();
+        }
+      },
+      weak_ptr_factory_for_closure_runner_.GetWeakPtr());
+
+  on_consent_state_update_closure_runner_ =
+      std::make_unique<OnConsentStateUpdateClosureRunner>(
+          /*on_approved_closure=*/
+          base::BindOnce(&MahiManagerImpl::OnContextMenuClicked,
+                         weak_ptr_factory_for_closure_runner_.GetWeakPtr(),
+                         std::move(context_menu_request))
+              .Then(reset_observer_closure),
+          /*on_declined_closure=*/reset_observer_closure);
+
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->magic_boost_controller_ash()
+      ->ShowDisclaimerUi(
+          display_id,
+          crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
+          OptInFeatures::kOrcaAndHmr);
 }
 
 void MahiManagerImpl::OnGetPageContentForSummary(
