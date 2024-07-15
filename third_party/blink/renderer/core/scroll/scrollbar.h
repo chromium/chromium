@@ -134,7 +134,11 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   // Returns `true` if the scrollbar bounds are larger than the canvas'. In
   // this scenario, the scrollbar scaling will be done by using nine-patch
   // scaling in the compositor thread.
-  bool UsesNinePatchTrackAndCanSkipRepaint() const;
+  // If the scrollbar's thickness is being affected (height for horizontal
+  // scrollbars, width for vertical), the function returns `false` as scrollbars
+  // will need to re-paint the arrows.
+  bool UsesNinePatchTrackAndCanSkipRepaint(
+      const gfx::Rect& new_frame_rect) const;
 
   bool ShouldParticipateInHitTesting();
 

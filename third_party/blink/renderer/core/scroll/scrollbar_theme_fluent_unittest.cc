@@ -95,6 +95,28 @@ class ScrollbarThemeFluentTest : public ::testing::TestWithParam<float> {
   }
   float ScaleFromDIP() const { return GetParam(); }
 
+  void TestSetFrameRect(Scrollbar& scrollbar,
+                        const gfx::Rect& rect,
+                        bool thumb_expectation,
+                        bool track_expectation) {
+    scrollbar.SetFrameRect(rect);
+    EXPECT_EQ(scrollbar.TrackNeedsRepaint(), track_expectation);
+    EXPECT_EQ(scrollbar.ThumbNeedsRepaint(), thumb_expectation);
+    scrollbar.ClearTrackNeedsRepaint();
+    scrollbar.ClearThumbNeedsRepaint();
+  }
+
+  void TestSetProportion(Scrollbar& scrollbar,
+                         int proportion,
+                         bool thumb_expectation,
+                         bool track_expectation) {
+    scrollbar.SetProportion(proportion, proportion);
+    EXPECT_EQ(scrollbar.TrackNeedsRepaint(), track_expectation);
+    EXPECT_EQ(scrollbar.ThumbNeedsRepaint(), thumb_expectation);
+    scrollbar.ClearTrackNeedsRepaint();
+    scrollbar.ClearThumbNeedsRepaint();
+  }
+
   Persistent<MockScrollableArea> mock_scrollable_area() const {
     return mock_scrollable_area_;
   }
@@ -266,39 +288,43 @@ TEST_P(ScrollbarThemeFluentTest, NinePatchAperture) {
 TEST_P(ScrollbarThemeFluentTest, TestPaintInvalidationsWhenNinePatchScaled) {
   Scrollbar* scrollbar = Scrollbar::CreateForTesting(
       mock_scrollable_area(), kVerticalScrollbar, &(theme_->GetInstance()));
-  auto reset_flags = [&]() {
-    scrollbar->ClearTrackNeedsRepaint();
-    scrollbar->ClearThumbNeedsRepaint();
-  };
 
-  scrollbar->SetUsesNinePatchTrackAndButtonsResource(true);
   // Start the test with a scrollbar larger than the canvas size and clean
   // flags.
   scrollbar->SetFrameRect(
       gfx::Rect(0, 0, scrollbar->Width(), scrollbar->Width() * 5));
-  reset_flags();
+  scrollbar->SetUsesNinePatchTrackAndButtonsResource(true);
+  scrollbar->ClearTrackNeedsRepaint();
+  scrollbar->ClearThumbNeedsRepaint();
 
-  // Test that resizing the scrollbar while larger than the canvas
+  // Test that resizing the scrollbar's length while larger than the canvas
   // doesn't trigger a repaint.
-  scrollbar->SetFrameRect(
-      gfx::Rect(0, 0, scrollbar->Width(), scrollbar->Width() * 4));
-  EXPECT_FALSE(scrollbar->TrackNeedsRepaint());
-  EXPECT_FALSE(scrollbar->ThumbNeedsRepaint());
-  scrollbar->SetProportion(scrollbar->Width() * 4, scrollbar->Width() * 4);
-  EXPECT_FALSE(scrollbar->TrackNeedsRepaint());
-  EXPECT_TRUE(scrollbar->ThumbNeedsRepaint());
-  reset_flags();
+  TestSetFrameRect(*scrollbar,
+                   gfx::Rect(0, 0, scrollbar->Width(), scrollbar->Width() * 4),
+                   /*thumb_expectation=*/false, /*track_expectation=*/false);
+  TestSetProportion(*scrollbar, scrollbar->Width() * 4,
+                    /*thumb_expectation=*/true, /*track_expectation=*/false);
+
+  // Test that changing the width the scrollbar triggers a repaint.
+  TestSetFrameRect(*scrollbar,
+                   gfx::Rect(0, 0, scrollbar->Width() / 2, scrollbar->Height()),
+                   /*thumb_expectation=*/true, /*track_expectation=*/true);
+  // Set width back to normal (thickening).
+  TestSetFrameRect(*scrollbar,
+                   gfx::Rect(0, 0, scrollbar->Width() * 2, scrollbar->Height()),
+                   /*thumb_expectation=*/true, /*track_expectation=*/true);
 
   // Test that making the track smaller than the canvas size triggers a repaint.
-  scrollbar->SetFrameRect(
-      gfx::Rect(0, 0, scrollbar->Width(), scrollbar->Width() / 2));
-  EXPECT_TRUE(scrollbar->TrackNeedsRepaint());
-  EXPECT_TRUE(scrollbar->ThumbNeedsRepaint());
-  reset_flags();
+  TestSetFrameRect(*scrollbar,
+                   gfx::Rect(0, 0, scrollbar->Width(), scrollbar->Width() / 2),
+                   /*thumb_expectation=*/true, /*track_expectation=*/true);
+  TestSetProportion(*scrollbar, scrollbar->Width() / 2,
+                    /*thumb_expectation=*/true, /*track_expectation=*/true);
 
-  scrollbar->SetProportion(scrollbar->Width() / 2, scrollbar->Width() / 2);
-  EXPECT_TRUE(scrollbar->TrackNeedsRepaint());
-  EXPECT_TRUE(scrollbar->ThumbNeedsRepaint());
+  // Test that no paint invalidation is triggered when the dimensions stay the
+  // same.
+  TestSetFrameRect(*scrollbar, scrollbar->FrameRect(),
+                   /*thumb_expectation=*/false, /*track_expectation=*/false);
 }
 
 // Test that Scrollbar objects are correctly sized with Overlay Fluent theme
