@@ -7,7 +7,7 @@ import 'chrome://downloads/downloads.js';
 import type {DownloadsDangerousDownloadInterstitialElement} from 'chrome://downloads/downloads.js';
 import {BrowserProxy, loadTimeData} from 'chrome://downloads/downloads.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestDownloadsProxy} from './test_support.js';
 
@@ -48,5 +48,28 @@ suite('interstitial tests', function() {
         'cr-radio-button[name=TrustSite]');
     assertTrue(!!trustSiteRadioButton);
     assertEquals(trustSiteLineNoUrl, trustSiteRadioButton.textContent!.trim());
+  });
+
+  test('clicking back to safety cancels the interstitial', function() {
+    assertTrue(interstitial.$.dialog.open);
+
+    const backToSafetyButton =
+        interstitial!.shadowRoot!.querySelector<HTMLElement>(
+            '#back-to-safety-button');
+    assertTrue(!!backToSafetyButton);
+    backToSafetyButton.click();
+
+    assertFalse(interstitial.$.dialog.open);
+  });
+
+  test('clicking download closes the interstitial', function() {
+    assertTrue(interstitial.$.dialog.open);
+
+    const downloadButton = interstitial!.shadowRoot!.querySelector<HTMLElement>(
+        '#download-button');
+    assertTrue(!!downloadButton);
+    downloadButton.click();
+
+    assertFalse(interstitial.$.dialog.open);
   });
 });

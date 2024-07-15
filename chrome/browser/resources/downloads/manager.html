@@ -142,7 +142,9 @@
   <template is="dom-if" if="[[dangerousDownloadInterstitial_]]" restamp>
     <downloads-dangerous-download-interstitial
         trust-site-line=
-        "[[computeDangerousInterstitialTrustSiteLine_(bypassPromptItemId_)]]">
+        "[[computeDangerousInterstitialTrustSiteLine_(bypassPromptItemId_)]]"
+        on-cancel="onDangerousDownloadInterstitialCancel_"
+        on-close="onDangerousDownloadInterstitialClose_">
     </downloads-dangerous-download-interstitial>
   </template>
   <template is="dom-if" if="[[!dangerousDownloadInterstitial_]]" restamp>

@@ -102,7 +102,7 @@
         <cr-button class="secondary-button" id="continue-anyway-button">
           $i18n{warningBypassInterstitialContinue}
         </cr-button>
-        <cr-button id="back-to-safety-button">
+        <cr-button id="back-to-safety-button" on-click="onBackToSafetyClick_">
           $i18n{warningBypassInterstitialCancel}
         </cr-button>
       </div>
@@ -121,7 +121,8 @@
         </cr-radio-button>
       </cr-radio-group>
     </div>
-    <cr-button class="secondary-button" id="download-button">
+    <cr-button class="secondary-button" id="download-button"
+      on-click="onDownloadClick_">
       $i18n{warningBypassInterstitialDownload}
     </cr-button>
   </div>

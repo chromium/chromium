@@ -306,6 +306,24 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     this.hideBypassWarningPrompt_();
   }
 
+  private validateInterstitial_() {
+    const interstitial = this.shadowRoot!.querySelector(
+        'downloads-dangerous-download-interstitial');
+    assert(interstitial);
+    assert(this.bypassPromptItemId_ !== '');
+    assert(!!this.mojoHandler_);
+  }
+
+  private onDangerousDownloadInterstitialClose_() {
+    this.validateInterstitial_();
+    this.hideBypassWarningPrompt_();
+  }
+
+  private onDangerousDownloadInterstitialCancel_() {
+    this.validateInterstitial_();
+    this.hideBypassWarningPrompt_();
+  }
+
   private clearAll_() {
     this.set('items_', []);
   }

@@ -14,6 +14,7 @@ import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './bypass_warning_confirmation_interstitial.html.js';
@@ -46,6 +47,20 @@ export class DownloadsDangerousDownloadInterstitialElement extends
   override connectedCallback() {
     super.connectedCallback();
     this.$.dialog.showModal();
+  }
+
+  private onBackToSafetyClick_() {
+    this.$.dialog.close();
+    assert(!this.$.dialog.open);
+    this.dispatchEvent(
+        new CustomEvent('cancel', {bubbles: true, composed: true}));
+  }
+
+  private onDownloadClick_() {
+    this.$.dialog.close();
+    assert(!this.$.dialog.open);
+    this.dispatchEvent(
+        new CustomEvent('close', {bubbles: true, composed: true}));
   }
 }
 
