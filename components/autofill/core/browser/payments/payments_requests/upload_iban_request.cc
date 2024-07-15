@@ -12,7 +12,7 @@ namespace autofill::payments {
 namespace {
 
 const char kUploadIbanRequestPath[] =
-    "payments/apis-secure/chromepaymentsservice/saveiban"
+    "payments/apis-secure/chromepaymentsservice/createpaymentinstrument"
     "?s7e_suffix=chromewallet";
 const char kUploadIbanRequestFormat[] =
     "requestContentType=application/json; charset=utf-8&request=%s"
@@ -41,7 +41,11 @@ std::string UploadIbanRequest::GetRequestContentType() {
 
 std::string UploadIbanRequest::GetRequestContent() {
   base::Value::Dict request_dict;
-  request_dict.Set("value", "__param:s7e_443_value");
+
+  base::Value::Dict iban_info;
+  iban_info.Set("value", "__param:s7e_443_value");
+  request_dict.Set("iban_info", std::move(iban_info));
+
   base::Value::Dict context;
   if (!request_details_.nickname.empty()) {
     context.Set("nickname", request_details_.nickname);

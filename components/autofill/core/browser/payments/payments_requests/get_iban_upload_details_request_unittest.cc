@@ -51,7 +51,8 @@ class GetIbanUploadDetailsRequestTest : public testing::Test {
 TEST_F(GetIbanUploadDetailsRequestTest,
        GetRequestContent_ContainsExpectedData) {
   EXPECT_EQ(GetRequest()->GetRequestUrlPath(),
-            "payments/apis/chromepaymentsservice/getdetailsforiban");
+            "payments/apis/chromepaymentsservice/"
+            "getdetailsforcreatepaymentinstrument");
   EXPECT_FALSE(GetRequest()->GetRequestContent().empty());
   EXPECT_NE(GetRequest()->GetRequestContent().find("language_code"),
             std::string::npos);

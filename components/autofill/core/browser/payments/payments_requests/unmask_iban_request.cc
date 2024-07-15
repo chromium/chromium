@@ -12,7 +12,8 @@ namespace autofill::payments {
 
 namespace {
 const char kUnmaskIbanRequestPath[] =
-    "payments/apis-secure/ibanservice/getiban?s7e_suffix=chromewallet";
+    "payments/apis-secure/ibanservice/"
+    "getpaymentinstrument?s7e_suffix=chromewallet";
 
 const char kUnmaskIbanRequestFormat[] =
     "requestContentType=application/json; charset=utf-8&request=%s";
@@ -52,8 +53,11 @@ std::string UnmaskIbanRequest::GetRequestContent() {
   chrome_user_context.Set("full_sync_enabled", full_sync_enabled_);
 
   request_dict.Set("chrome_user_context", std::move(chrome_user_context));
-  request_dict.Set("instrument_id",
-                   base::NumberToString(request_details_.instrument_id));
+
+  base::Value::Dict iban_info;
+  iban_info.Set("instrument_id",
+                base::NumberToString(request_details_.instrument_id));
+  request_dict.Set("iban_info", std::move(iban_info));
 
   std::string json_request = base::WriteJson(request_dict).value();
   std::string request_content = base::StringPrintf(
@@ -63,8 +67,10 @@ std::string UnmaskIbanRequest::GetRequestContent() {
 }
 
 void UnmaskIbanRequest::ParseResponse(const base::Value::Dict& response) {
-  if (const std::string* value = response.FindString("value")) {
-    value_ = base::UTF8ToUTF16(*value);
+  if (const base::Value::Dict* iban_info = response.FindDict("iban_info")) {
+    if (const std::string* value = iban_info->FindString("value")) {
+      value_ = base::UTF8ToUTF16(*value);
+    }
   }
 }
 

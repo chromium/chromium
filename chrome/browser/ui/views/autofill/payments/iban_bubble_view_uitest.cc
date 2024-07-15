@@ -52,7 +52,7 @@ constexpr char kIbanValue[] = "DE91 1000 0000 0123 4567 89";
 constexpr char kIbanValueWithoutWhitespaces[] = "DE91100000000123456789";
 constexpr char kURLGetUploadDetailsRequest[] =
     "https://payments.google.com/payments/apis/chromepaymentsservice/"
-    "getdetailsforiban";
+    "getdetailsforcreatepaymentinstrument";
 constexpr char kResponseGetUploadDetailsSuccess[] =
     "{\"iban_details\":{\"validation_regex\":"
     "\"^[A-Z]{2}[0-9]{2}[A-Z0-9]{4}[0-9]{7}[A-Z0-9]{0,18}$\"},"
@@ -62,7 +62,7 @@ constexpr char kResponseGetUploadDetailsSuccess[] =
     "\"dummy_context_token\"}";
 constexpr char kURLUploadIbanRequest[] =
     "https://payments.google.com/payments/apis-secure/chromepaymentsservice/"
-    "saveiban"
+    "createpaymentinstrument"
     "?s7e_suffix=chromewallet";
 constexpr char kResponsePaymentsSuccess[] = "Success";
 constexpr char kResponsePaymentsFailure[] =

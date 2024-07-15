@@ -12,7 +12,7 @@ namespace autofill::payments {
 
 namespace {
 const char kGetIbanUploadDetailsRequestPath[] =
-    "payments/apis/chromepaymentsservice/getdetailsforiban";
+    "payments/apis/chromepaymentsservice/getdetailsforcreatepaymentinstrument";
 }  // namespace
 
 GetIbanUploadDetailsRequest::GetIbanUploadDetailsRequest(

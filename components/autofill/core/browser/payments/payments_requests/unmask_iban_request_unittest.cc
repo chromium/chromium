@@ -46,7 +46,8 @@ class UnmaskIbanRequestTest : public testing::Test {
 
 TEST_F(UnmaskIbanRequestTest, GetRequestContent) {
   EXPECT_EQ(GetRequest()->GetRequestUrlPath(),
-            "payments/apis-secure/ibanservice/getiban?s7e_suffix=chromewallet");
+            "payments/apis-secure/ibanservice/"
+            "getpaymentinstrument?s7e_suffix=chromewallet");
   ASSERT_FALSE(GetRequest()->GetRequestContent().empty());
   EXPECT_NE(GetRequest()->GetRequestContent().find("billable_service"),
             std::string::npos);
@@ -70,8 +71,8 @@ TEST_F(UnmaskIbanRequestTest, GetRequestContent) {
 }
 
 TEST_F(UnmaskIbanRequestTest, ParseResponse_ResponseIsComplete) {
-  base::Value::Dict response =
-      base::Value::Dict().Set("value", base::Value(u"DE75512108001245126199"));
+  base::Value::Dict response = base::Value::Dict().Set(
+      "iban_info", base::Value::Dict().Set("value", u"DE75512108001245126199"));
 
   ParseResponse(response);
 

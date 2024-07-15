@@ -43,7 +43,7 @@ class UploadIbanRequestTest : public testing::Test {
 
 TEST_F(UploadIbanRequestTest, GetRequestContent) {
   EXPECT_EQ(GetRequest().GetRequestUrlPath(),
-            "payments/apis-secure/chromepaymentsservice/saveiban"
+            "payments/apis-secure/chromepaymentsservice/createpaymentinstrument"
             "?s7e_suffix=chromewallet");
   ASSERT_TRUE(!GetRequest().GetRequestContent().empty());
   EXPECT_NE(GetRequest().GetRequestContent().find("language_code"),
