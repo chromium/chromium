@@ -41,6 +41,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
@@ -1161,7 +1162,7 @@ void HostResolverManager::CacheResult(HostCache* cache,
 
 std::unique_ptr<HostResolverManager::Job> HostResolverManager::RemoveJob(
     JobMap::iterator job_it) {
-  DCHECK(job_it != jobs_.end());
+  CHECK(job_it != jobs_.end(), base::NotFatalUntil::M130);
   DCHECK(job_it->second);
   DCHECK_EQ(1u, jobs_.count(job_it->first));
 

@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -412,7 +413,7 @@ void MDnsClientImpl::Core::RemoveListener(MDnsListenerImpl* listener) {
   ListenerKey key(listener->GetName(), listener->GetType());
   auto observer_list_iterator = listeners_.find(key);
 
-  DCHECK(observer_list_iterator != listeners_.end());
+  CHECK(observer_list_iterator != listeners_.end(), base::NotFatalUntil::M130);
   DCHECK(observer_list_iterator->second->HasObserver(listener));
 
   observer_list_iterator->second->RemoveObserver(listener);
