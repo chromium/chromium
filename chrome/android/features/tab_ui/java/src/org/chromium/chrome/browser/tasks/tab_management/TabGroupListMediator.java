@@ -4,21 +4,10 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ALL_KEYS;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ASYNC_FAVICON_BOTTOM_LEFT;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ASYNC_FAVICON_BOTTOM_RIGHT;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ASYNC_FAVICON_TOP_LEFT;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ASYNC_FAVICON_TOP_RIGHT;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.COLOR_INDEX;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.CREATION_MILLIS;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.PLUS_COUNT;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.TITLE_DATA;
-
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.core.util.Pair;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
@@ -26,7 +15,6 @@ import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.bookmarks.PendingRunnable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -35,7 +23,6 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
-import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.AsyncDrawable;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -47,7 +34,6 @@ import org.chromium.components.tab_group_sync.TriggerSource;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -77,13 +63,6 @@ public class TabGroupListMediator {
         int IN_ANOTHER = 2;
         int HIDDEN = 3;
     }
-
-    private static final WritableObjectPropertyKey[] FAVICON_ORDER = {
-        ASYNC_FAVICON_TOP_LEFT,
-        ASYNC_FAVICON_TOP_RIGHT,
-        ASYNC_FAVICON_BOTTOM_LEFT,
-        ASYNC_FAVICON_BOTTOM_RIGHT
-    };
 
     private final ModelList mModelList;
     private final PropertyModel mPropertyModel;
@@ -245,41 +224,14 @@ public class TabGroupListMediator {
     private void repopulateModelList() {
         mModelList.clear();
         for (SavedTabGroup savedTabGroup : getSortedGroupList()) {
-            PropertyModel.Builder builder = new PropertyModel.Builder(ALL_KEYS);
-            int numberOfTabs = savedTabGroup.savedTabs.size();
-            int numberOfCorners = FAVICON_ORDER.length;
-            int standardCorners = numberOfCorners - 1;
-            for (int i = 0; i < standardCorners; i++) {
-                if (numberOfTabs > i) {
-                    builder.with(
-                            FAVICON_ORDER[i], buildAsyncDrawable(savedTabGroup.savedTabs.get(i)));
-                } else {
-                    break;
-                }
-            }
-            if (numberOfTabs == numberOfCorners) {
-                builder.with(
-                        FAVICON_ORDER[standardCorners],
-                        buildAsyncDrawable(savedTabGroup.savedTabs.get(standardCorners)));
-            } else if (numberOfTabs > numberOfCorners) {
-                builder.with(PLUS_COUNT, numberOfTabs - standardCorners);
-            }
+            PropertyModel model =
+                    TabGroupRowMediator.buildModel(
+                            savedTabGroup,
+                            mFaviconResolver,
+                            () -> openGroup(savedTabGroup),
+                            () -> processDeleteGroup(savedTabGroup));
 
-            if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-                builder.with(COLOR_INDEX, savedTabGroup.color);
-            }
-
-            String userTitle = savedTabGroup.title;
-            Pair<String, Integer> titleData = new Pair<>(userTitle, numberOfTabs);
-            builder.with(TITLE_DATA, titleData);
-
-            builder.with(CREATION_MILLIS, savedTabGroup.creationTimeMs);
-
-            builder.with(TabGroupRowProperties.OPEN_RUNNABLE, () -> openGroup(savedTabGroup));
-            builder.with(
-                    TabGroupRowProperties.DELETE_RUNNABLE, () -> processDeleteGroup(savedTabGroup));
-
-            ListItem listItem = new ListItem(0, builder.build());
+            ListItem listItem = new ListItem(0, model);
             mModelList.add(listItem);
         }
 
@@ -359,9 +311,5 @@ public class TabGroupListMediator {
         } else {
             mTabGroupSyncService.removeGroup(savedTabGroup.syncId);
         }
-    }
-
-    private AsyncDrawable buildAsyncDrawable(SavedTabGroupTab tab) {
-        return (Callback<Drawable> callback) -> mFaviconResolver.accept(tab.url, callback);
     }
 }

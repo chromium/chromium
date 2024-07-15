@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -18,14 +17,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ASYNC_FAVICON_BOTTOM_LEFT;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ASYNC_FAVICON_BOTTOM_RIGHT;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ASYNC_FAVICON_TOP_LEFT;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ASYNC_FAVICON_TOP_RIGHT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.COLOR_INDEX;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DELETE_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.OPEN_RUNNABLE;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.PLUS_COUNT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.TITLE_DATA;
 
 import android.graphics.drawable.Drawable;
@@ -47,7 +41,6 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneId;
@@ -71,7 +64,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
-import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -103,10 +95,6 @@ public class TabGroupListMediatorUnitTest {
     @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
     @Mock private ActionConfirmationManager mActionConfirmationManager;
     @Mock private SyncService mSyncService;
-    @Mock private Callback<Drawable> mFaviconCallback1;
-    @Mock private Callback<Drawable> mFaviconCallback2;
-    @Mock private Callback<Drawable> mFaviconCallback3;
-    @Mock private Callback<Drawable> mFaviconCallback4;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
 
@@ -259,177 +247,6 @@ public class TabGroupListMediatorUnitTest {
         ShadowLooper.idleMainLooper();
 
         assertEquals(0, mModelList.size());
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
-    public void testNoParity() {
-        SavedTabGroup group = new SavedTabGroup();
-        group.syncId = SYNC_GROUP_ID1;
-        group.title = "Title";
-        group.color = TabGroupColorId.BLUE;
-        group.savedTabs = Arrays.asList(new SavedTabGroupTab());
-        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
-        when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(group);
-
-        createMediator();
-        assertEquals(1, mModelList.size());
-        // 0 is the default value.
-        assertEquals(0, mModelList.get(0).model.get(COLOR_INDEX));
-    }
-
-    @Test
-    @SmallTest
-    public void testFavicons_one() {
-        SavedTabGroupTab tab = new SavedTabGroupTab();
-        tab.url = JUnitTestGURLs.URL_1;
-        SavedTabGroup group = new SavedTabGroup();
-        group.syncId = SYNC_GROUP_ID1;
-        group.title = "Title";
-        group.color = TabGroupColorId.BLUE;
-        group.savedTabs = Arrays.asList(tab);
-        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
-        when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(group);
-
-        createMediator();
-
-        assertEquals(1, mModelList.size());
-        PropertyModel propertyModel = mModelList.get(0).model;
-        propertyModel.get(ASYNC_FAVICON_TOP_LEFT).accept(mFaviconCallback1);
-        assertNull(propertyModel.get(ASYNC_FAVICON_TOP_RIGHT));
-        assertNull(propertyModel.get(ASYNC_FAVICON_BOTTOM_LEFT));
-        assertNull(propertyModel.get(ASYNC_FAVICON_BOTTOM_RIGHT));
-        assertNull(propertyModel.get(PLUS_COUNT));
-        verify(mFaviconResolver).accept(eq(JUnitTestGURLs.URL_1), eq(mFaviconCallback1));
-    }
-
-    @Test
-    @SmallTest
-    public void testFavicons_two() {
-        SavedTabGroupTab tab1 = new SavedTabGroupTab();
-        tab1.url = JUnitTestGURLs.URL_1;
-        SavedTabGroupTab tab2 = new SavedTabGroupTab();
-        tab2.url = JUnitTestGURLs.URL_2;
-        SavedTabGroup group = new SavedTabGroup();
-        group.syncId = SYNC_GROUP_ID1;
-        group.title = "Title";
-        group.color = TabGroupColorId.BLUE;
-        group.savedTabs = Arrays.asList(tab1, tab2);
-        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
-        when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(group);
-
-        createMediator();
-
-        assertEquals(1, mModelList.size());
-        PropertyModel propertyModel = mModelList.get(0).model;
-        propertyModel.get(ASYNC_FAVICON_TOP_LEFT).accept(mFaviconCallback1);
-        propertyModel.get(ASYNC_FAVICON_TOP_RIGHT).accept(mFaviconCallback2);
-        assertNull(propertyModel.get(ASYNC_FAVICON_BOTTOM_LEFT));
-        assertNull(propertyModel.get(ASYNC_FAVICON_BOTTOM_RIGHT));
-        assertNull(propertyModel.get(PLUS_COUNT));
-        verify(mFaviconResolver).accept(eq(JUnitTestGURLs.URL_1), eq(mFaviconCallback1));
-        verify(mFaviconResolver).accept(eq(JUnitTestGURLs.URL_2), eq(mFaviconCallback2));
-    }
-
-    @Test
-    @SmallTest
-    public void testFavicons_three() {
-        SavedTabGroupTab tab1 = new SavedTabGroupTab();
-        tab1.url = JUnitTestGURLs.URL_1;
-        SavedTabGroupTab tab2 = new SavedTabGroupTab();
-        tab2.url = JUnitTestGURLs.URL_2;
-        SavedTabGroupTab tab3 = new SavedTabGroupTab();
-        tab3.url = JUnitTestGURLs.URL_3;
-        SavedTabGroup group = new SavedTabGroup();
-        group.syncId = SYNC_GROUP_ID1;
-        group.title = "Title";
-        group.color = TabGroupColorId.BLUE;
-        group.savedTabs = Arrays.asList(tab1, tab2, tab3);
-        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
-        when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(group);
-
-        createMediator();
-
-        assertEquals(1, mModelList.size());
-        PropertyModel propertyModel = mModelList.get(0).model;
-        propertyModel.get(ASYNC_FAVICON_TOP_LEFT).accept(mFaviconCallback1);
-        propertyModel.get(ASYNC_FAVICON_TOP_RIGHT).accept(mFaviconCallback2);
-        propertyModel.get(ASYNC_FAVICON_BOTTOM_LEFT).accept(mFaviconCallback3);
-        assertNull(propertyModel.get(ASYNC_FAVICON_BOTTOM_RIGHT));
-        assertNull(propertyModel.get(PLUS_COUNT));
-        verify(mFaviconResolver).accept(eq(JUnitTestGURLs.URL_1), eq(mFaviconCallback1));
-        verify(mFaviconResolver).accept(eq(JUnitTestGURLs.URL_2), eq(mFaviconCallback2));
-        verify(mFaviconResolver).accept(eq(JUnitTestGURLs.URL_3), eq(mFaviconCallback3));
-    }
-
-    @Test
-    @SmallTest
-    public void testFavicons_four() {
-        SavedTabGroupTab tab1 = new SavedTabGroupTab();
-        tab1.url = JUnitTestGURLs.URL_1;
-        SavedTabGroupTab tab2 = new SavedTabGroupTab();
-        tab2.url = JUnitTestGURLs.URL_2;
-        SavedTabGroupTab tab3 = new SavedTabGroupTab();
-        tab3.url = JUnitTestGURLs.URL_3;
-        SavedTabGroupTab tab4 = new SavedTabGroupTab();
-        tab4.url = JUnitTestGURLs.BLUE_1;
-        SavedTabGroup group = new SavedTabGroup();
-        group.syncId = SYNC_GROUP_ID1;
-        group.title = "Title";
-        group.color = TabGroupColorId.BLUE;
-        group.savedTabs = Arrays.asList(tab1, tab2, tab3, tab4);
-        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
-        when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(group);
-
-        createMediator();
-
-        assertEquals(1, mModelList.size());
-        PropertyModel propertyModel = mModelList.get(0).model;
-        propertyModel.get(ASYNC_FAVICON_TOP_LEFT).accept(mFaviconCallback1);
-        propertyModel.get(ASYNC_FAVICON_TOP_RIGHT).accept(mFaviconCallback2);
-        propertyModel.get(ASYNC_FAVICON_BOTTOM_LEFT).accept(mFaviconCallback3);
-        propertyModel.get(ASYNC_FAVICON_BOTTOM_RIGHT).accept(mFaviconCallback4);
-        assertNull(propertyModel.get(PLUS_COUNT));
-        verify(mFaviconResolver).accept(eq(JUnitTestGURLs.URL_1), eq(mFaviconCallback1));
-        verify(mFaviconResolver).accept(eq(JUnitTestGURLs.URL_2), eq(mFaviconCallback2));
-        verify(mFaviconResolver).accept(eq(JUnitTestGURLs.URL_3), eq(mFaviconCallback3));
-        verify(mFaviconResolver).accept(eq(JUnitTestGURLs.BLUE_1), eq(mFaviconCallback4));
-    }
-
-    @Test
-    @SmallTest
-    public void testFavicons_five() {
-        SavedTabGroupTab tab1 = new SavedTabGroupTab();
-        tab1.url = JUnitTestGURLs.URL_1;
-        SavedTabGroupTab tab2 = new SavedTabGroupTab();
-        tab2.url = JUnitTestGURLs.URL_2;
-        SavedTabGroupTab tab3 = new SavedTabGroupTab();
-        tab3.url = JUnitTestGURLs.URL_3;
-        SavedTabGroupTab tab4 = new SavedTabGroupTab();
-        tab4.url = JUnitTestGURLs.BLUE_1;
-        SavedTabGroupTab tab5 = new SavedTabGroupTab();
-        tab5.url = JUnitTestGURLs.BLUE_2;
-        SavedTabGroup group = new SavedTabGroup();
-        group.syncId = SYNC_GROUP_ID1;
-        group.title = "Title";
-        group.color = TabGroupColorId.BLUE;
-        group.savedTabs = Arrays.asList(tab1, tab2, tab3, tab4, tab5);
-        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
-        when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(group);
-
-        createMediator();
-
-        assertEquals(1, mModelList.size());
-        PropertyModel propertyModel = mModelList.get(0).model;
-        propertyModel.get(ASYNC_FAVICON_TOP_LEFT).accept(mFaviconCallback1);
-        propertyModel.get(ASYNC_FAVICON_TOP_RIGHT).accept(mFaviconCallback2);
-        propertyModel.get(ASYNC_FAVICON_BOTTOM_LEFT).accept(mFaviconCallback3);
-        assertNull(propertyModel.get(ASYNC_FAVICON_BOTTOM_RIGHT));
-        assertEquals(2, propertyModel.get(PLUS_COUNT).intValue());
-        verify(mFaviconResolver).accept(eq(JUnitTestGURLs.URL_1), eq(mFaviconCallback1));
-        verify(mFaviconResolver).accept(eq(JUnitTestGURLs.URL_2), eq(mFaviconCallback2));
-        verify(mFaviconResolver).accept(eq(JUnitTestGURLs.URL_3), eq(mFaviconCallback3));
     }
 
     @Test
