@@ -248,7 +248,7 @@ class SchedulerDfsTaskRunOrderTest : public SchedulerDfsTest {
     }
 
     auto info_it = sequence_info_.find(sequence_key);
-    DCHECK(info_it != sequence_info_.end());
+    CHECK(info_it != sequence_info_.end());
 
     auto closure = GetClosure([this, task_id, sequence_key, release] {
       if (release) {
