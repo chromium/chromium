@@ -5197,7 +5197,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.MultiDisplay.WindowsMovedAfterRemap.DisplayRotated"
-    enum="Boolean" expires_after="2024-07-28">
+    enum="Boolean" expires_after="2025-07-15">
   <owner>sammiequon@chromium.org</owner>
   <owner>yunchengs@google.com</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
@@ -5212,7 +5212,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.MultiDisplay.WindowsMovedAfterRemap.DisplayWorkAreaChanged"
-    enum="Boolean" expires_after="2024-07-28">
+    enum="Boolean" expires_after="2025-07-15">
   <owner>sammiequon@chromium.org</owner>
   <owner>yunchengs@google.com</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
@@ -6036,7 +6036,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.Enter.PresentationTime" units="ms"
-    expires_after="2024-10-13">
+    expires_after="2025-07-15">
   <owner>sammiequon@chromium.org</owner>
   <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
@@ -6048,7 +6048,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.Exit.PresentationTime" units="ms"
-    expires_after="2024-08-14">
+    expires_after="2025-07-15">
   <owner>sammiequon@chromium.org</owner>
   <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
@@ -6059,9 +6059,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Overview.Items" units="units" expires_after="2024-12-08">
+<histogram name="Ash.Overview.Items" units="units" expires_after="2025-07-15">
   <owner>sammiequon@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
     The number of items (single windows or groups of windows such as panels) in
     the overview mode, present at the start of each session.
@@ -6069,9 +6069,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.KeyPressesOverItemsRatio" units="%"
-    expires_after="2025-06-21">
+    expires_after="2025-07-15">
   <owner>sammiequon@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
     The ratio between the arrow key presses and the number of overview items,
     expressed as a percentage for a single session. Recorded when an overview
@@ -6080,9 +6080,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.OverviewClosedItems" units="units"
-    expires_after="2025-06-21">
+    expires_after="2025-07-15">
   <owner>sammiequon@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
     The number of items closed from the window overview for a single session.
     Recorded when exiting an overview session.
@@ -6090,7 +6090,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.Scroll.PresentationTime.MaxLatency.TabletMode"
-    units="ms" expires_after="2025-01-10">
+    units="ms" expires_after="2025-07-15">
   <owner>sammiequon@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <summary>
@@ -6100,7 +6100,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.Scroll.PresentationTime.TabletMode" units="ms"
-    expires_after="2025-01-10">
+    expires_after="2025-07-15">
   <owner>sammiequon@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <summary>
@@ -6111,10 +6111,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.SelectionDepth" units="items"
-    expires_after="2024-12-08">
+    expires_after="2025-07-15">
   <owner>sammiequon@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
-  <owner>tclaiborne@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
     When a window is selected in overview mode, records that window's position
     in the global MRU ordering. 1 represents the most-recently used window, 2
@@ -6133,9 +6132,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.TimeBetweenActiveWindowChanges" units="seconds"
-    expires_after="2024-12-08">
+    expires_after="2025-07-15">
   <owner>sammiequon@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
     The amount of time between endings of overview mode sessions which were
     caused by the user selecting a window which was not previously active. Only
@@ -6145,9 +6144,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.TimeBetweenUse" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-07-15">
   <owner>sammiequon@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
     The amount of time between uses of overview mode, recorded when overview
     mode is entered. Only recorded on the second and later times after startup
@@ -6156,9 +6155,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.TimeInOverview" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-07-15">
   <owner>sammiequon@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
     The amount of time spent in overview mode. Overview mode is engaged by
     pressing the overview accelerator, overview button tray or swiping up from
@@ -6490,7 +6489,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.PhantomWindowController.Show.PresentationTime" units="ms"
-    expires_after="2024-08-14">
+    expires_after="2025-07-15">
   <owner>sammiequon@chromium.org</owner>
   <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
@@ -6615,7 +6614,7 @@ chromium-metrics-reviews@google.com.
   <owner>minch@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
-  <summary>Emitted whenever the pine dialog closes.</summary>
+  <summary>Emitted whenever the informed restore dialog closes.</summary>
 </histogram>
 
 <histogram name="Ash.Pine.DialogScreenshotVisibility" enum="Boolean"
@@ -6624,8 +6623,9 @@ chromium-metrics-reviews@google.com.
   <owner>sammiequon@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
-    Emitted true if the pine dialog is shown with a shutdown screenshot inside.
-    Emitted false if the pine dialog is shown with the app lists view inside.
+    Emits true if the informed restore dialog is shown with a shutdown
+    screenshot inside. Emits false if the informed restore dialog is shown with
+    the app lists view inside.
   </summary>
 </histogram>
 
