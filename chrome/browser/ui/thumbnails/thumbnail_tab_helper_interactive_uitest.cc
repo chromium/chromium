@@ -236,14 +236,8 @@ class ThumbnailTabHelperUpdatedInteractiveTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/40883117): Failing on win-asan or ARM64.
-#if BUILDFLAG(IS_WIN) && (defined(ADDRESS_SANITIZER) || defined(ARCH_CPU_ARM64))
-#define MAYBE_TabLoadTriggersScreenshot DISABLED_TabLoadTriggersScreenshot
-#else
-#define MAYBE_TabLoadTriggersScreenshot TabLoadTriggersScreenshot
-#endif
 IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
-                       MAYBE_TabLoadTriggersScreenshot) {
+                       TabLoadTriggersScreenshot) {
   RunTestSequence(
       AddInstrumentedTab(kFirstTab, GURL(chrome::kChromeUINewTabURL), 0),
       WaitForWebContentsReady(kFirstTab), CheckTabHasThumbnailData(0, false),
