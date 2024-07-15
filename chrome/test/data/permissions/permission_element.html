@@ -1,5 +1,12 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <style>
+    permission {
+      font-size: xxx-large;
+    }
+  </style>
+</head>
 <body>
   <permission id="geolocation" type="geolocation">
   <permission id="microphone" type="microphone">
@@ -37,6 +44,11 @@
       }
     }
 
+    function setFontSizeSmall() {
+      document.querySelectorAll('permission').forEach((el) => {
+        el.style.fontSize = 'small';
+      });
+    }
   </script>
 </body>
 </html>

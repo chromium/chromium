@@ -39,20 +39,16 @@ void ClickElementWithId(content::WebContents* web_contents,
 
 }  // namespace
 
-class PermissionElementBrowserTest : public InProcessBrowserTest {
+class PermissionElementBrowserTestBase : public InProcessBrowserTest {
  public:
-  PermissionElementBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {blink::features::kPermissionElement,
-         blink::features::kBypassPepcSecurityForTesting},
-        {});
-  }
+  PermissionElementBrowserTestBase() = default;
 
-  PermissionElementBrowserTest(const PermissionElementBrowserTest&) = delete;
-  PermissionElementBrowserTest& operator=(const PermissionElementBrowserTest&) =
+  PermissionElementBrowserTestBase(const PermissionElementBrowserTestBase&) =
       delete;
+  PermissionElementBrowserTestBase& operator=(
+      const PermissionElementBrowserTestBase&) = delete;
 
-  ~PermissionElementBrowserTest() override = default;
+  ~PermissionElementBrowserTestBase() override = default;
 
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -106,9 +102,21 @@ class PermissionElementBrowserTest : public InProcessBrowserTest {
         "permission element.");
   }
 
- private:
+ protected:
   base::test::ScopedFeatureList feature_list_;
+
+ private:
   std::unique_ptr<content::WebContentsConsoleObserver> console_observer_;
+};
+
+class PermissionElementBrowserTest : public PermissionElementBrowserTestBase {
+ public:
+  PermissionElementBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {blink::features::kPermissionElement,
+         blink::features::kBypassPepcSecurityForTesting},
+        {});
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
@@ -296,33 +304,12 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest, TabSwitchingClosesPrompt) {
   WaitForDismissEvent("camera");
 }
 
-class PermissionElementWithSecurityBrowserTest : public InProcessBrowserTest {
+class PermissionElementWithSecurityBrowserTest
+    : public PermissionElementBrowserTestBase {
  public:
   PermissionElementWithSecurityBrowserTest() {
     feature_list_.InitWithFeatures({blink::features::kPermissionElement}, {});
   }
-
-  PermissionElementWithSecurityBrowserTest(
-      const PermissionElementWithSecurityBrowserTest&) = delete;
-  PermissionElementWithSecurityBrowserTest& operator=(
-      const PermissionElementWithSecurityBrowserTest&) = delete;
-
-  ~PermissionElementWithSecurityBrowserTest() override = default;
-
-  void SetUpOnMainThread() override {
-    ASSERT_TRUE(embedded_test_server()->Start());
-    ASSERT_TRUE(ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
-        browser(),
-        embedded_test_server()->GetURL("/permissions/permission_element.html"),
-        1));
-  }
-
-  content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PermissionElementWithSecurityBrowserTest,
@@ -373,3 +360,65 @@ IN_PROC_BROWSER_TEST_F(PermissionElementWithSecurityBrowserTest,
           ->Requests()[0]
           ->IsEmbeddedPermissionElementInitiated());
 }
+
+class PermissionElementStandardizedBrowserZoomTest
+    : public PermissionElementBrowserTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  PermissionElementStandardizedBrowserZoomTest() {
+    // Also enable/disable the StandardizedBrowserZoom feature.
+    if (GetParam()) {
+      feature_list_.InitWithFeatures(
+          {blink::features::kPermissionElement,
+           blink::features::kBypassPepcSecurityForTesting,
+           blink::features::kStandardizedBrowserZoom},
+          {});
+    } else {
+      feature_list_.InitWithFeatures(
+          {blink::features::kPermissionElement,
+           blink::features::kBypassPepcSecurityForTesting},
+          {blink::features::kStandardizedBrowserZoom});
+    }
+  }
+
+  void WaitForFontSizeTooLargeEvent(const std::string& id) {
+    auto type_attribute_value = content::EvalJs(
+        web_contents(),
+        content::JsReplace("document.getElementById($1).type", id));
+    EXPECT_TRUE(type_attribute_value.error.empty());
+    ExpectConsoleMessage("Font size of the permission element '" +
+                         type_attribute_value.ExtractString() +
+                         "' is too large");
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(PermissionElementStandardizedBrowserZoomTest,
+                       BrowserZoomDoesNotAffectValidation) {
+  SkipInvalidElementMessage();
+  permissions::PermissionRequestManager::FromWebContents(web_contents())
+      ->set_auto_response_for_test(
+          permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+  zoom::ZoomController* zoom_controller =
+      zoom::ZoomController::FromWebContents(web_contents());
+
+  // 2x zoom is enough since the font-size is already set to xxx-large which is
+  // the upper bound.
+  zoom_controller->SetZoomLevel(2);
+
+  for (const auto& id : {"camera", "microphone", "camera-microphone"}) {
+    // The permission element still works.
+    ClickElementWithId(web_contents(), id);
+    WaitForResolveEvent(id);
+    ExpectNoEvents();
+
+    // Now set the CSS "zoom" to 2x.
+    ASSERT_TRUE(content::ExecJs(
+        web_contents(),
+        content::JsReplace("document.getElementById($1).style.zoom = 2;", id)));
+    WaitForFontSizeTooLargeEvent(id);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PermissionElementStandardizedBrowserZoomTest,
+                         testing::Bool());
