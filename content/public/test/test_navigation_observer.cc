@@ -184,7 +184,7 @@ void TestNavigationObserver::OnWebContentsDestroyed(
     TestWebContentsObserver* observer,
     WebContents* web_contents) {
   auto web_contents_state_iter = web_contents_state_.find(web_contents);
-  DCHECK(web_contents_state_iter != web_contents_state_.end());
+  CHECK(web_contents_state_iter != web_contents_state_.end());
   DCHECK_EQ(web_contents_state_iter->second.observer.get(), observer);
 
   web_contents_state_.erase(web_contents_state_iter);
@@ -346,7 +346,7 @@ bool TestNavigationObserver::HasFilter() {
 TestNavigationObserver::WebContentsState*
 TestNavigationObserver::GetWebContentsState(WebContents* web_contents) {
   auto web_contents_state_iter = web_contents_state_.find(web_contents);
-  DCHECK(web_contents_state_iter != web_contents_state_.end());
+  CHECK(web_contents_state_iter != web_contents_state_.end());
   return &(web_contents_state_iter->second);
 }
 

@@ -111,7 +111,7 @@ HitTestRegionObserver::GetHitTestData() {
   const auto& hit_test_query_map =
       GetHostFrameSinkManager()->GetDisplayHitTestQuery();
   const auto iter = hit_test_query_map.find(frame_sink_id_);
-  DCHECK(iter != hit_test_query_map.end());
+  CHECK(iter != hit_test_query_map.end());
   return iter->second.get()->GetHitTestData();
 }
 

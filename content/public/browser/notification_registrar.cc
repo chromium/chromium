@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "content/browser/notification_service_impl.h"
 
@@ -61,7 +62,7 @@ void NotificationRegistrar::Remove(NotificationObserver* observer,
 
   Record record = { observer, type, source };
   RecordVector::iterator found = base::ranges::find(registered_, record);
-  DCHECK(found != registered_.end());
+  CHECK(found != registered_.end(), base::NotFatalUntil::M130);
 
   registered_.erase(found);
 
