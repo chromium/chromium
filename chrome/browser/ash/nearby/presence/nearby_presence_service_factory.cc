@@ -48,7 +48,14 @@ NearbyPresenceService* NearbyPresenceServiceFactory::GetForBrowserContext(
 }
 
 NearbyPresenceServiceFactory::NearbyPresenceServiceFactory()
-    : ProfileKeyedServiceFactory(kServiceName) {
+    : ProfileKeyedServiceFactory(
+          kServiceName,
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(ash::nearby::NearbyProcessManagerFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(push_notification::PushNotificationServiceFactory::GetInstance());
