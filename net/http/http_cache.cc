@@ -1088,7 +1088,7 @@ void HttpCache::DoneWithEntry(scoped_refptr<ActiveEntry>& entry,
   // Transaction is reading from the entry.
   DCHECK(!entry->HasWriters());
   auto readers_it = entry->readers().find(transaction);
-  DCHECK(readers_it != entry->readers().end());
+  CHECK(readers_it != entry->readers().end(), base::NotFatalUntil::M130);
   entry->readers().erase(readers_it);
   ProcessQueuedTransactions(entry);
 }
