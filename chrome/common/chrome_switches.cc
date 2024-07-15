@@ -438,13 +438,17 @@ const char kNoDefaultBrowserCheck[] = "no-default-browser-check";
 // then restart chrome without this switch again.
 const char kNoExperiments[] = "no-experiments";
 
-// Skip First Run tasks, whether or not it's actually the First Run, and the
-// What's New page. Overridden by kForceFirstRun (for FRE) and kForceWhatsNew
-// (for What's New). This does not drop the First Run sentinel and thus doesn't
-// prevent first run from occurring the next time chrome is launched without
-// this flag. It also does not update the last What's New milestone, so does not
-// prevent What's New from occurring the next time chrome is launched without
-// this flag.
+// Skip First Run tasks as well as not showing additional dialogs, prompts or
+// bubbles. Suppressing dialogs, prompts, and bubbles is important as this
+// switch is used by automation (including performance benchmarks) where it's
+// important only a browser window is shown.
+//
+// This may not actually be the first run or the What's New page. Overridden by
+// kForceFirstRun (for FRE) and kForceWhatsNew (for What's New). This does not
+// drop the First Run sentinel and thus doesn't prevent first run from
+// occurring the next time chrome is launched without this flag. It also does
+// not update the last What's New milestone, so does not prevent What's New
+// from occurring the next time chrome is launched without this flag.
 const char kNoFirstRun[] = "no-first-run";
 
 // Don't send hyperlink auditing pings
