@@ -521,6 +521,7 @@ bool WebContentsViewMac::PerformDragOperation(DraggingInfoPtr dragging_info,
 bool WebContentsViewMac::DragPromisedFileTo(const base::FilePath& file_path,
                                             const DropData& drop_data,
                                             const GURL& download_url,
+                                            const url::Origin& source_origin,
                                             base::FilePath* out_file_path) {
   *out_file_path = file_path;
   // This is called by -namesOfPromisedFilesDroppedAtDestination, which is
@@ -539,7 +540,7 @@ bool WebContentsViewMac::DragPromisedFileTo(const base::FilePath& file_path,
         *out_file_path, std::move(file), download_url,
         content::Referrer(web_contents_->GetLastCommittedURL(),
                           drop_data.referrer_policy),
-        web_contents_->GetEncoding(), web_contents_);
+        web_contents_->GetEncoding(), source_origin, web_contents_);
 
     DragDownloadFile* downloader = drag_file_downloader.get();
     // The finalizer will take care of closing and deletion.
@@ -616,9 +617,11 @@ void WebContentsViewMac::DragPromisedFileTo(
     const base::FilePath& file_path,
     const DropData& drop_data,
     const GURL& download_url,
+    const url::Origin& source_origin,
     DragPromisedFileToCallback callback) {
   base::FilePath actual_file_path;
-  DragPromisedFileTo(file_path, drop_data, download_url, &actual_file_path);
+  DragPromisedFileTo(file_path, drop_data, download_url, source_origin,
+                     &actual_file_path);
   std::move(callback).Run(actual_file_path);
 }
 

@@ -232,7 +232,7 @@ void PrepareDragForDownload(const DropData& drop_data,
   auto download_file = std::make_unique<DragDownloadFile>(
       download_path, base::File(), download_url,
       Referrer(page_url, drop_data.referrer_policy), page_encoding,
-      web_contents);
+      provider->GetRendererTaintedOrigin(), web_contents);
   ui::DownloadFileInfo file_download(base::FilePath(),
                                      std::move(download_file));
   provider->SetDownloadFileInfo(&file_download);

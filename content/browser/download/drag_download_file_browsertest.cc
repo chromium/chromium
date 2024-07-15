@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/download/drag_download_file.h"
+
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/threading/thread_restrictions.h"
 #include "content/browser/download/download_manager_impl.h"
-#include "content/browser/download/drag_download_file.h"
 #include "content/browser/download/drag_download_util.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -100,9 +103,9 @@ IN_PROC_BROWSER_TEST_F(DragDownloadFileTest, DragDownloadFileTest_NetError) {
   ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
   Referrer referrer;
   std::string referrer_encoding;
-  auto file = std::make_unique<DragDownloadFile>(name, base::File(), url,
-                                                 referrer, referrer_encoding,
-                                                 shell()->web_contents());
+  auto file = std::make_unique<DragDownloadFile>(
+      name, base::File(), url, referrer, referrer_encoding, std::nullopt,
+      shell()->web_contents());
   scoped_refptr<MockDownloadFileObserver> observer(
       new MockDownloadFileObserver());
   EXPECT_CALL(*observer.get(), OnDownloadAborted())
@@ -119,9 +122,9 @@ IN_PROC_BROWSER_TEST_F(DragDownloadFileTest, DragDownloadFileTest_Complete) {
   GURL url = embedded_test_server()->GetURL("/download/download-test.lib");
   Referrer referrer;
   std::string referrer_encoding;
-  auto file = std::make_unique<DragDownloadFile>(name, base::File(), url,
-                                                 referrer, referrer_encoding,
-                                                 shell()->web_contents());
+  auto file = std::make_unique<DragDownloadFile>(
+      name, base::File(), url, referrer, referrer_encoding, std::nullopt,
+      shell()->web_contents());
   scoped_refptr<MockDownloadFileObserver> observer(
       new MockDownloadFileObserver());
   EXPECT_CALL(*observer.get(), OnDownloadCompleted(_))
@@ -132,15 +135,48 @@ IN_PROC_BROWSER_TEST_F(DragDownloadFileTest, DragDownloadFileTest_Complete) {
   RunUntilSucceed();
 }
 
+IN_PROC_BROWSER_TEST_F(DragDownloadFileTest, DragDownloadFileTest_Initiator) {
+  base::FilePath name(
+      downloads_directory().AppendASCII("DragDownloadFileTest_Initiator.txt"));
+  GURL url = embedded_test_server()->GetURL("/echoheader?sec-fetch-site");
+  url::Origin initiator =
+      url::Origin::Create(GURL("https://initiator.example.com"));
+  Referrer referrer;
+  std::string referrer_encoding;
+  auto file = std::make_unique<DragDownloadFile>(
+      name, base::File(), url, referrer, referrer_encoding, initiator,
+      shell()->web_contents());
+  base::FilePath downloaded_path;
+  scoped_refptr<MockDownloadFileObserver> observer(
+      new MockDownloadFileObserver());
+  EXPECT_CALL(*observer.get(), OnDownloadCompleted(_))
+      .WillOnce([&](const base::FilePath& file_path) {
+        downloaded_path = file_path;
+        this->Succeed();
+      });
+  ON_CALL(*observer.get(), OnDownloadAborted())
+      .WillByDefault(InvokeWithoutArgs(this, &DragDownloadFileTest::FailFast));
+  file->Start(observer.get());
+  RunUntilSucceed();
+
+  std::string actual_sec_fetch_site_value;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(
+        base::ReadFileToString(downloaded_path, &actual_sec_fetch_site_value));
+  }
+  EXPECT_EQ("cross-site", actual_sec_fetch_site_value);
+}
+
 IN_PROC_BROWSER_TEST_F(DragDownloadFileTest, DragDownloadFileTest_ClosePage) {
   base::FilePath name(
       downloads_directory().AppendASCII("DragDownloadFileTest_Complete.txt"));
   GURL url = embedded_test_server()->GetURL("/download/download-test.lib");
   Referrer referrer;
   std::string referrer_encoding;
-  auto file = std::make_unique<DragDownloadFile>(name, base::File(), url,
-                                                 referrer, referrer_encoding,
-                                                 shell()->web_contents());
+  auto file = std::make_unique<DragDownloadFile>(
+      name, base::File(), url, referrer, referrer_encoding, std::nullopt,
+      shell()->web_contents());
   scoped_refptr<MockDownloadFileObserver> observer(
       new MockDownloadFileObserver());
   ON_CALL(*observer.get(), OnDownloadAborted())

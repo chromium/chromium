@@ -38,6 +38,7 @@ class DragDownloadFile::DragDownloadFileUI
   DragDownloadFileUI(const GURL& url,
                      const Referrer& referrer,
                      const std::string& referrer_encoding,
+                     std::optional<url::Origin> initiator_origin,
                      int render_process_id,
                      int render_frame_id,
                      OnCompleted on_completed)
@@ -45,6 +46,7 @@ class DragDownloadFile::DragDownloadFileUI
         url_(url),
         referrer_(referrer),
         referrer_encoding_(referrer_encoding),
+        initiator_origin_(initiator_origin),
         render_process_id_(render_process_id),
         render_frame_id_(render_frame_id) {
     DCHECK(on_completed_);
@@ -95,6 +97,7 @@ class DragDownloadFile::DragDownloadFileUI
     params->set_referrer_policy(
         Referrer::ReferrerPolicyForUrlRequest(referrer_.policy));
     params->set_referrer_encoding(referrer_encoding_);
+    params->set_initiator(initiator_origin_);
     params->set_callback(base::BindOnce(&DragDownloadFileUI::OnDownloadStarted,
                                         weak_ptr_factory_.GetWeakPtr()));
     params->set_file_path(file_path);
@@ -174,6 +177,7 @@ class DragDownloadFile::DragDownloadFileUI
   GURL url_;
   Referrer referrer_;
   std::string referrer_encoding_;
+  std::optional<url::Origin> initiator_origin_;
   int render_process_id_;
   int render_frame_id_;
   raw_ptr<download::DownloadItem> download_item_ = nullptr;
@@ -187,13 +191,14 @@ DragDownloadFile::DragDownloadFile(const base::FilePath& file_path,
                                    const GURL& url,
                                    const Referrer& referrer,
                                    const std::string& referrer_encoding,
+                                   std::optional<url::Origin> initiator_origin,
                                    WebContents* web_contents)
     : file_path_(file_path), file_(std::move(file)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RenderFrameHost* host = web_contents->GetPrimaryMainFrame();
   drag_ui_ = new DragDownloadFileUI(
-      url, referrer, referrer_encoding, host->GetProcess()->GetID(),
-      host->GetRoutingID(),
+      url, referrer, referrer_encoding, initiator_origin,
+      host->GetProcess()->GetID(), host->GetRoutingID(),
       base::BindOnce(&DragDownloadFile::DownloadCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
   DCHECK(!file_path_.empty());

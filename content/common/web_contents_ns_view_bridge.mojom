@@ -145,7 +145,8 @@ interface WebContentsNSViewHost {
   [Sync]
   DragPromisedFileTo(mojo_base.mojom.FilePath file_path,
                      content.mojom.DropData drop_data,
-                     url.mojom.Url download_url) =>
+                     url.mojom.Url download_url,
+                     url.mojom.Origin source_origin) =>
                          (mojo_base.mojom.FilePath file_path);
 
   // Called in to the -draggedImage: method being called on the NSView.

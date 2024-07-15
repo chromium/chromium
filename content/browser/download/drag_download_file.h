@@ -40,6 +40,7 @@ class CONTENT_EXPORT DragDownloadFile : public ui::DownloadFileProvider {
                    const GURL& url,
                    const Referrer& referrer,
                    const std::string& referrer_encoding,
+                   std::optional<url::Origin> initiator_origin,
                    WebContents* web_contents);
 
   DragDownloadFile(const DragDownloadFile&) = delete;
