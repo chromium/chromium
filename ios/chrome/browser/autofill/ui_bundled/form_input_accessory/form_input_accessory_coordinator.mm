@@ -510,11 +510,11 @@ const CGFloat kIPHVerticalOffset = -5;
 - (void)openPasswordDetailsInEditModeForCredential:
     (password_manager::CredentialUIEntry)credential {
   [self reset];
-  id<SettingsCommands> settingsCommandsHandler = HandlerForProtocol(
+  id<SettingsCommands> settingsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SettingsCommands);
-  [settingsCommandsHandler showPasswordDetailsForCredential:credential
-                                                 inEditMode:YES
-                                           showCancelButton:YES];
+  [settingsHandler showPasswordDetailsForCredential:credential
+                                         inEditMode:YES
+                                   showCancelButton:YES];
 }
 
 #pragma mark - ManualFillAllPasswordCoordinatorDelegate
@@ -561,12 +561,23 @@ const CGFloat kIPHVerticalOffset = -5;
   }
 
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  id<SettingsCommands> settingsCommandsHandler =
+  id<SettingsCommands> settingsHandler =
       HandlerForProtocol(dispatcher, SettingsCommands);
-  [settingsCommandsHandler showCreditCardDetails:card inEditMode:editMode];
+  [settingsHandler showCreditCardDetails:card inEditMode:editMode];
 }
 
 #pragma mark - AddressCoordinatorDelegate
+
+- (void)openAddressDetailsInEditMode:(const autofill::AutofillProfile*)address
+               offerMigrateToAccount:(BOOL)offerMigrateToAccount {
+  [self reset];
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  id<SettingsCommands> settingsHandler =
+      HandlerForProtocol(dispatcher, SettingsCommands);
+  [settingsHandler showAddressDetails:address
+                           inEditMode:YES
+                offerMigrateToAccount:offerMigrateToAccount];
+}
 
 - (void)openAddressSettings {
   [self reset];

@@ -9,6 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/profile_requirement_utils.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/address_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/address_list_delegate.h"
@@ -21,6 +22,8 @@
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -47,16 +50,22 @@ NSString* const ManageAddressAccessibilityIdentifier =
   // C++ to ObjC bridge for PersonalDataManagerObserver.
   std::unique_ptr<autofill::PersonalDataManagerObserverBridge>
       _personalDataManagerObserver;
+
+  // Service used to get the user's identity email address.
+  raw_ptr<AuthenticationService> _authenticationService;
 }
 
 - (instancetype)initWithPersonalDataManager:
-    (autofill::PersonalDataManager*)personalDataManager {
+                    (autofill::PersonalDataManager*)personalDataManager
+                      authenticationService:
+                          (AuthenticationService*)authenticationService {
   self = [super init];
   if (self) {
     _personalDataManager = personalDataManager;
     _personalDataManagerObserver =
         std::make_unique<autofill::PersonalDataManagerObserverBridge>(self);
     _personalDataManager->AddObserver(_personalDataManagerObserver.get());
+    _authenticationService = authenticationService;
     _addresses =
         _personalDataManager->address_data_manager().GetProfilesToSuggest();
   }
@@ -78,6 +87,7 @@ NSString* const ManageAddressAccessibilityIdentifier =
     _personalDataManagerObserver.reset();
   }
   _personalDataManager = nullptr;
+  _authenticationService = nullptr;
 }
 
 #pragma mark - PersonalDataManagerObserver
@@ -154,11 +164,44 @@ NSString* const ManageAddressAccessibilityIdentifier =
       initWithScenario:
           kMenuScenarioHistogramAutofillManualFallbackAddressEntry];
 
+  __weak __typeof(self) weakSelf = self;
   UIAction* editAction = [actionFactory actionToEditWithBlock:^{
-      // TODO(crbug.com/326413640): Handle tap.
+    BOOL offerMigrateToAccount =
+        [weakSelf offerMigrateToAccountForAddress:address];
+    [weakSelf.navigationDelegate
+        openAddressDetailsInEditMode:address
+               offerMigrateToAccount:offerMigrateToAccount];
   }];
 
   return editAction;
+}
+
+// Evaluates whether or not the option to move the address to the account should
+// be available when navigating to the details page of the given address.
+- (BOOL)offerMigrateToAccountForAddress:(const AutofillProfile*)address {
+  BOOL syncIsEnabled = _personalDataManager->address_data_manager()
+                           .IsSyncFeatureEnabledForAutofill();
+  BOOL addressIsLocalOrSyncable =
+      address->source() == autofill::AutofillProfile::Source::kLocalOrSyncable;
+  BOOL addressIsEligibleForAccountMigration =
+      addressIsLocalOrSyncable &&
+      IsEligibleForMigrationToAccount(
+          _personalDataManager->address_data_manager(), *address);
+  BOOL userEmailIsValid = [self userEmail] != nil;
+
+  return !syncIsEnabled && addressIsEligibleForAccountMigration &&
+         userEmailIsValid;
+}
+
+// Returns the user's identity email address.
+- (NSString*)userEmail {
+  id<SystemIdentity> identity =
+      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  if (identity) {
+    return identity.userEmail;
+  } else {
+    return nil;
+  }
 }
 
 @end

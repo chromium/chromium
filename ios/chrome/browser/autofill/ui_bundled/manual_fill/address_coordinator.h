@@ -7,9 +7,19 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/fallback_coordinator.h"
 
+namespace autofill {
+class AutofillProfile;
+}  // namespace autofill
+
 // Delegate for the coordinator actions.
 // TODO(crbug.com/40577448): revise delegate method names.
 @protocol AddressCoordinatorDelegate<FallbackCoordinatorDelegate>
+
+// Opens the details of the given address in edit mode. `offerMigrateToAccount`
+// indicates whether or not the option to migrate the address to the account
+// should be available in the details page.
+- (void)openAddressDetailsInEditMode:(const autofill::AutofillProfile*)address
+               offerMigrateToAccount:(BOOL)offerMigrateToAccount;
 
 // Opens the address settings.
 - (void)openAddressSettings;

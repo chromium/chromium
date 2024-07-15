@@ -11,6 +11,8 @@ namespace autofill {
 class PersonalDataManager;
 }  // namespace autofill
 
+class AuthenticationService;
+
 @protocol ManualFillContentInjector;
 @protocol ManualFillAddressConsumer;
 @protocol AddressListDelegate;
@@ -32,9 +34,12 @@ extern NSString* const ManageAddressAccessibilityIdentifier;
 // The delegate in charge of navigation.
 @property(nonatomic, weak) id<AddressListDelegate> navigationDelegate;
 
-// The designated initializer. `personalDataManager` must not be nil.
+// The designated initializer. `personalDataManager` and `authenticationService`
+// must not be nil.
 - (instancetype)initWithPersonalDataManager:
-    (autofill::PersonalDataManager*)personalDataManager
+                    (autofill::PersonalDataManager*)personalDataManager
+                      authenticationService:
+                          (AuthenticationService*)authenticationService
     NS_DESIGNATED_INITIALIZER;
 
 // Unavailable. Use `initWithProfiles:`.

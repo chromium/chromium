@@ -136,6 +136,19 @@ extern NSString* const kSettingsDoneButtonId;
                                          delegate
                     userFeedbackData:(UserFeedbackData*)userFeedbackData;
 
+// Creates a new AutofillProfileEditTableViewController and the
+// chrome around it. `browser` is the browser where settings are being displayed
+// and should not be nil. `delegate` may be nil. `address` is the address for
+// which the details should be opened.
++ (instancetype)
+    addressDetailsControllerForBrowser:(Browser*)browser
+                              delegate:
+                                  (id<SettingsNavigationControllerDelegate>)
+                                      delegate
+                               address:(const autofill::AutofillProfile*)address
+                            inEditMode:(BOOL)editMode
+                 offerMigrateToAccount:(BOOL)offerMigrateToAccount;
+
 // Creates a new AutofillProfileTableViewController and the chrome around
 // it. `browser` is the browser where settings are being displayed and should
 // not be nil. `delegate` may be nil.

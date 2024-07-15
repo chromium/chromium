@@ -403,6 +403,25 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 }
 
 + (instancetype)
+    addressDetailsControllerForBrowser:(Browser*)browser
+                              delegate:
+                                  (id<SettingsNavigationControllerDelegate>)
+                                      delegate
+                               address:(const autofill::AutofillProfile*)address
+                            inEditMode:(BOOL)editMode
+                 offerMigrateToAccount:(BOOL)offerMigrateToAccount {
+  SettingsNavigationController* navigationController =
+      [[SettingsNavigationController alloc]
+          initWithRootViewController:nil
+                             browser:browser
+                            delegate:delegate];
+  [navigationController showAddressDetails:address
+                                inEditMode:editMode
+                     offerMigrateToAccount:offerMigrateToAccount];
+  return navigationController;
+}
+
++ (instancetype)
     autofillProfileControllerForBrowser:(Browser*)browser
                                delegate:
                                    (id<SettingsNavigationControllerDelegate>)
@@ -1131,6 +1150,13 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
             (UIViewController*)baseViewController
                                     showCancelButton:(BOOL)showCancelButton {
   [self showSavedPasswordsAndShowCancelButton:showCancelButton];
+}
+
+- (void)showAddressDetails:(const autofill::AutofillProfile*)address
+                inEditMode:(BOOL)editMode
+     offerMigrateToAccount:(BOOL)offerMigrateToAccount {
+  // TODO(crbug.com/326413640): Set up and start a
+  // AutofillProfileEditCoordinator.
 }
 
 // TODO(crbug.com/41352590) : Do not pass `baseViewController` through
