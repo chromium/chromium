@@ -51,7 +51,7 @@
   for (const event of timelineEvents) {
     if (!eventNames.has(event.name)) {
         continue;
-    };
+    }
     if (!event.args.data.requestId) continue;
     const events = eventsByRequestId.get(event.args.data.requestId) || [];
     events.push(event);
@@ -59,17 +59,22 @@
 
     if (event.args.data.url) {
         requestIdToUrl.set(event.args.data.requestId, event.args.data.url);
-    };
+    }
   }
 
   const orderedKeys = Array.from(requestIdToUrl.entries())
     .sort((a, b) => a[1].localeCompare(b[1]))
     .map(r => r[0]);
   for (const key of orderedKeys) {
-    testRunner.log(`\nTrace events for URL: ${requestIdToUrl.get(key)}:`)
+    testRunner.log(`\nTrace events for URL: ${requestIdToUrl.get(key)}:`);
     const events = eventsByRequestId.get(key);
     for (const event of events) {
-      tracingHelper.logEventShape(event, [], ['name', 'resourceType', 'isLinkPreload', 'fetchPriorityHint', 'fetchType', 'protocol'])
+      tracingHelper.logEventShape(event, ['headers'], ['name', 'resourceType', 'isLinkPreload', 'fetchPriorityHint', 'fetchType', 'protocol']);
+      if(event.name === 'ResourceReceiveResponse') {
+        const headers = event.args.data.headers.sort((a, b) => a.name.localeCompare(b.name));
+        const headerNames = headers.map(h => h.name);
+        testRunner.log(`${event.name} headers: ${headerNames.join(', ')}\n`);
+      }
     }
   }
 

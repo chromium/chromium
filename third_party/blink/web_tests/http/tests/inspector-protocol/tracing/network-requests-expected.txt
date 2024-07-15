@@ -46,44 +46,6 @@ Object: {
 			frame: string
 			fromCache: boolean
 			fromServiceWorker: boolean
-			headers: [
-				{
-					name: Date
-					value: string
-				}
-				{
-					name: Last-Modified
-					value: string
-				}
-				{
-					name: Server
-					value: string
-				}
-				{
-					name: ETag
-					value: string
-				}
-				{
-					name: Content-Type
-					value: string
-				}
-				{
-					name: Connection
-					value: string
-				}
-				{
-					name: Accept-Ranges
-					value: string
-				}
-				{
-					name: Keep-Alive
-					value: string
-				}
-				{
-					name: Content-Length
-					value: string
-				}
-			]
 			mimeType: string
 			protocol: http/1.1
 			requestId: string
@@ -118,6 +80,8 @@ Object: {
 	tid: number
 	ts: number
 }
+ResourceReceiveResponse headers: Accept-Ranges, Connection, Content-Length, Content-Type, Date, ETag, Keep-Alive, Last-Modified, Server
+
 Object: {
 	args: {
 		data: {
@@ -192,32 +156,6 @@ Object: {
 			frame: string
 			fromCache: boolean
 			fromServiceWorker: boolean
-			headers: [
-				{
-					name: Date
-					value: string
-				}
-				{
-					name: Server
-					value: string
-				}
-				{
-					name: Connection
-					value: string
-				}
-				{
-					name: Keep-Alive
-					value: string
-				}
-				{
-					name: Content-Length
-					value: string
-				}
-				{
-					name: Content-Type
-					value: string
-				}
-			]
 			mimeType: string
 			protocol: http/1.1
 			requestId: string
@@ -252,6 +190,8 @@ Object: {
 	tid: number
 	ts: number
 }
+ResourceReceiveResponse headers: Connection, Content-Length, Content-Type, Date, Keep-Alive, Server
+
 Object: {
 	args: {
 		data: {
@@ -308,32 +248,6 @@ Object: {
 			frame: string
 			fromCache: boolean
 			fromServiceWorker: boolean
-			headers: [
-				{
-					name: Date
-					value: string
-				}
-				{
-					name: Server
-					value: string
-				}
-				{
-					name: Connection
-					value: string
-				}
-				{
-					name: Keep-Alive
-					value: string
-				}
-				{
-					name: Content-Length
-					value: string
-				}
-				{
-					name: Content-Type
-					value: string
-				}
-			]
 			mimeType: string
 			protocol: http/1.1
 			requestId: string
@@ -368,6 +282,8 @@ Object: {
 	tid: number
 	ts: number
 }
+ResourceReceiveResponse headers: Connection, Content-Length, Content-Type, Date, Keep-Alive, Server
+
 Object: {
 	args: {
 		data: {
@@ -442,32 +358,6 @@ Object: {
 			frame: string
 			fromCache: boolean
 			fromServiceWorker: boolean
-			headers: [
-				{
-					name: Date
-					value: string
-				}
-				{
-					name: Server
-					value: string
-				}
-				{
-					name: Connection
-					value: string
-				}
-				{
-					name: Keep-Alive
-					value: string
-				}
-				{
-					name: Content-Length
-					value: string
-				}
-				{
-					name: Content-Type
-					value: string
-				}
-			]
 			mimeType: string
 			protocol: http/1.1
 			requestId: string
@@ -502,6 +392,8 @@ Object: {
 	tid: number
 	ts: number
 }
+ResourceReceiveResponse headers: Connection, Content-Length, Content-Type, Date, Keep-Alive, Server
+
 Object: {
 	args: {
 		data: {
