@@ -491,6 +491,17 @@ bool AnimatingLayoutManager::OnViewRemoved(View* host, View* view) {
     return fade_info.child_view == view;
   });
 
+  // Also delete any references from other fade infos. This prevents dangling
+  // partition pointers when the layout is invariably invalidated later.
+  for (auto& fade_info : fade_infos_) {
+    if (fade_info.next_view == view) {
+      fade_info.next_view = nullptr;
+    }
+    if (fade_info.prev_view == view) {
+      fade_info.prev_view = nullptr;
+    }
+  }
+
   // Remove any elements in the current layout corresponding to the removed
   // view.
   std::erase_if(current_layout_.child_layouts,
