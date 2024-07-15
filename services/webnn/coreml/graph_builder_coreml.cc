@@ -43,6 +43,7 @@
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/cpp/webnn_errors.h"
+#include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/webnn_utils.h"
 #include "third_party/coremltools/mlmodel/format/FeatureTypes.pb.h"
@@ -110,6 +111,8 @@ constexpr char kPlaceholderOuputName[] = "placeholder_output";
 // op names
 constexpr char kOpConstTypeName[] = "const";
 // Generic operators.
+constexpr char kOpArgminTypeName[] = "reduce_argmin";
+constexpr char kOpArgmaxTypeName[] = "reduce_argmax";
 constexpr char kOpBatchNormalizationTypeName[] = "batch_norm";
 constexpr char kOpCastTypeName[] = "cast";
 constexpr char kOpClipTypeName[] = "clip";
@@ -185,6 +188,7 @@ constexpr char kOpParamAlpha[] = "alpha";
 constexpr char kOpParamBeta[] = "beta";
 constexpr char kOpParamEpsilon[] = "epsilon";
 constexpr char kOpParamAxis[] = "axis";
+constexpr char kOpParamKeepDims[] = "keep_dims";
 
 // Hard coded path used in the model file to point at the weight path.
 constexpr char kWeightsRelativeFilePath[] = "@model_path/weights/weights.bin";
@@ -604,18 +608,23 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
   static constexpr SupportedDataTypes kGatherIndicesSupportedDataTypes{
       OperandDataType::kInt32, OperandDataType::kInt8, OperandDataType::kUint8};
 
+  static constexpr SupportedDataTypes kArgMinMaxOutputSupportedDataTypes{
+      OperandDataType::kInt32};
+
   // TODO: crbug.com/345271830 - specify data types for all parameters.
-  return ContextProperties(
-      {/*conv2d_input_layout=*/InputOperandLayout::kNchw,
-       /*data_type_limits=*/{/*input=*/kFloatsAndInt32,
-                             /*constant=*/kFloatsAndInt32,
-                             /*concat_inputs=*/kFloatsAndInt32,
-                             /*gather_input=*/kGatherInputSupportedDataTypes,
-                             /*gather_indices=*/
-                             kGatherIndicesSupportedDataTypes,
-                             /*where_condition=*/{},
-                             /*where_true_value=*/{},
-                             /*where_false_value=*/{}}});
+  return ContextProperties(InputOperandLayout::kNchw,
+                           {/*input=*/kFloatsAndInt32,
+                            /*constant=*/kFloatsAndInt32,
+                            /*arg_min_max_input=*/kFloatsAndInt32,
+                            /*arg_min_max_output=*/
+                            kArgMinMaxOutputSupportedDataTypes,
+                            /*concat_inputs=*/kFloatsAndInt32,
+                            /*gather_input=*/kGatherInputSupportedDataTypes,
+                            /*gather_indices=*/
+                            kGatherIndicesSupportedDataTypes,
+                            /*where_condition=*/{},
+                            /*where_true_value=*/{},
+                            /*where_false_value=*/{}});
 }
 
 GraphBuilderCoreml::GraphBuilderCoreml(const mojom::GraphInfo& graph_info,
@@ -683,6 +692,11 @@ GraphBuilderCoreml::BuildCoreMLModel() {
   for (const mojom::OperationPtr& operation : graph_info_->operations) {
     std::string operand_op_name = GetOpName(*operation);
     switch (operation->which()) {
+      case mojom::Operation::Tag::kArgMinMax: {
+        RETURN_IF_ERROR(
+            AddOperationForArgMinMax(*operation->get_arg_min_max(), block));
+        break;
+      }
       case mojom::Operation::Tag::kBatchNormalization: {
         RETURN_IF_ERROR(AddOperationForBatchNormalization(
             *operation->get_batch_normalization(), block));
@@ -815,7 +829,6 @@ GraphBuilderCoreml::BuildCoreMLModel() {
             AddOperationForTranspose(*operation->get_transpose(), block));
         break;
       }
-      case mojom::Operation::Tag::kArgMinMax:
       case mojom::Operation::Tag::kExpand:
       case mojom::Operation::Tag::kGelu:
       case mojom::Operation::Tag::kGru:
@@ -1109,6 +1122,72 @@ GraphBuilderCoreml::AddUnaryFloatsOperationWithEpsilon(
   return AddUnaryFloatsOperationWithEpsilon(
       op_name, input_operand_info.coreml_name, input_operand_info.mil_data_type,
       operation.output_operand_id, epsilon, block, operand_op_name);
+}
+
+base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddOperationForArgMinMax(
+    const mojom::ArgMinMax& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+  CHECK(context_properties_.data_type_limits.arg_min_max_input.Has(
+      MILDataTypeToOperandType(input_operand_info.mil_data_type)));
+
+  const OperandInfo& output_operand_info =
+      GetOperandInfo(operation.output_operand_id);
+  CHECK(context_properties_.data_type_limits.arg_min_max_output.Has(
+      MILDataTypeToOperandType(output_operand_info.mil_data_type)));
+
+  uint64_t input_operand_id = operation.input_operand_id;
+  // CoreML doesn't support scalar input, in this case reshape to 1D then
+  // reshape back.
+  if (input_operand_info.dimensions.empty()) {
+    ASSIGN_OR_RETURN(input_operand_id, GenerateInternalOperandInfo(
+                                           input_operand_info.mil_data_type,
+                                           base::span<const uint32_t>({1})));
+    RETURN_IF_ERROR(AddOperationForReshape(operation.input_operand_id,
+                                           input_operand_id, block));
+  }
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  switch (operation.kind) {
+    case mojom::ArgMinMax_Kind::kMin:
+      op->set_type(kOpArgminTypeName);
+      break;
+    case mojom::ArgMinMax_Kind::kMax:
+      op->set_type(kOpArgmaxTypeName);
+      break;
+  }
+  SetInputWithName(*op->mutable_inputs(), kOpParamX,
+                   GetOperandInfo(input_operand_id).coreml_name);
+
+  // TODO - crbug.com/352359898: Change operation.axes to scalar axis.
+  if (operation.axes.size() != 1) {
+    return NewNotSupportedError(
+        "Unsupported axes for argMin/Max. Only support single axis.");
+  }
+  int32_t axis = base::checked_cast<int32_t>(operation.axes[0]);
+
+  SetInputsWithValues(*op->mutable_inputs(),
+                      {
+                          {kOpParamAxis, CreateScalarImmediateValue(axis)},
+                          {kOpParamKeepDims, CreateScalarImmediateValue(
+                                                 operation.keep_dimensions)},
+                      });
+
+  // No need to add a reshape when keep_dimensions=false as the output is
+  // already scalar.
+  if (input_operand_info.dimensions.empty() && operation.keep_dimensions) {
+    ASSIGN_OR_RETURN(
+        int64_t intermediate_output_operand_id,
+        GenerateInternalOperandInfo(output_operand_info.mil_data_type,
+                                    base::span<const uint32_t>({1})));
+    PopulateNamedValueType(intermediate_output_operand_id, *op->add_outputs());
+    RETURN_IF_ERROR(AddOperationForReshape(intermediate_output_operand_id,
+                                           operation.output_operand_id, block));
+  } else {
+    PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  }
+  return base::ok();
 }
 
 base::expected<void, mojom::ErrorPtr>
@@ -2097,7 +2176,6 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForReduce(
   }
 
   static constexpr char kParamAxes[] = "axes";
-  static constexpr char kParamKeepDims[] = "keep_dims";
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
 
   std::vector<int32_t> axes;
@@ -2107,7 +2185,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForReduce(
   SetInputsWithValues(
       *op->mutable_inputs(),
       {{kParamAxes, Create1DTensorImmediateValue<int32_t>(axes)},
-       {kParamKeepDims,
+       {kOpParamKeepDims,
         CreateScalarImmediateValue(operation.keep_dimensions)}});
   return base::ok();
 }

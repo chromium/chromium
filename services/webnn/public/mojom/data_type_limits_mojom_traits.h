@@ -22,6 +22,14 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.constant;
   }
+  static webnn::SupportedDataTypes arg_min_max_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.arg_min_max_input;
+  }
+  static webnn::SupportedDataTypes arg_min_max_output(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.arg_min_max_output;
+  }
   static webnn::SupportedDataTypes concat_inputs(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.concat_inputs;
@@ -50,6 +58,8 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
   static bool Read(webnn::mojom::DataTypeLimitsDataView data,
                    webnn::DataTypeLimits* out) {
     return data.ReadInput(&out->input) && data.ReadConstant(&out->constant) &&
+           data.ReadArgMinMaxInput(&out->arg_min_max_input) &&
+           data.ReadArgMinMaxOutput(&out->arg_min_max_output) &&
            data.ReadConcatInputs(&out->concat_inputs) &&
            data.ReadGatherInput(&out->gather_input) &&
            data.ReadGatherIndices(&out->gather_indices) &&

@@ -4,7 +4,9 @@
 
 component("cpp") {
   sources = [
+    "context_properties.cc",
     "context_properties.h",
+    "data_type_limits.cc",
     "data_type_limits.h",
     "graph_validation_utils.cc",
     "graph_validation_utils.h",

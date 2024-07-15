@@ -74,6 +74,8 @@ struct SupportedDataTypes {
 struct DataTypeLimits {
   SupportedDataTypes input;
   SupportedDataTypes constant;
+  SupportedDataTypes arg_min_max_input;
+  SupportedDataTypes arg_min_max_output;
   SupportedDataTypes concat_inputs;
   SupportedDataTypes gather_input;
   SupportedDataTypes gather_indices;

@@ -32,10 +32,12 @@ mojom_component("mojom") {
         {
           mojom = "webnn.mojom.ContextProperties"
           cpp = "::webnn::ContextProperties"
+          default_constructible = false
         },
         {
           mojom = "webnn.mojom.DataTypeLimits"
           cpp = "::webnn::DataTypeLimits"
+          default_constructible = false
         },
         {
           mojom = "webnn.mojom.OperandDescriptor"

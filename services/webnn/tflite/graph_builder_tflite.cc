@@ -257,16 +257,20 @@ GraphBuilderTflite::CreateAndBuild(const mojom::GraphInfo& graph_info) {
 // static
 ContextProperties GraphBuilderTflite::GetContextProperties() {
   // TODO: crbug.com/345271830 - specify data types for all parameters.
-  return ContextProperties(
-      {/*conv2d_input_layout=*/InputOperandLayout::kNhwc,
-       /*data_type_limits=*/{/*input=*/SupportedDataTypes::All(),
-                             /*constant=*/SupportedDataTypes::All(),
-                             /*cocnat_inputs=*/SupportedDataTypes::All(),
-                             /*gather_input=*/SupportedDataTypes::All(),
-                             /*gather_indices=*/SupportedDataTypes::All(),
-                             /*where_condition=*/{OperandDataType::kUint8},
-                             /*where_true_value=*/SupportedDataTypes::All(),
-                             /*where_false_value=*/SupportedDataTypes::All()}});
+  static constexpr SupportedDataTypes kArgMinMaxOutputSupportedDataTypes{
+      OperandDataType::kInt32, OperandDataType::kInt64};
+  return ContextProperties(InputOperandLayout::kNhwc,
+                           {/*input=*/SupportedDataTypes::All(),
+                            /*constant=*/SupportedDataTypes::All(),
+                            /*arg_min_max_input=*/SupportedDataTypes::All(),
+                            /*arg_min_max_output=*/
+                            kArgMinMaxOutputSupportedDataTypes,
+                            /*concat_inputs=*/SupportedDataTypes::All(),
+                            /*gather_input=*/SupportedDataTypes::All(),
+                            /*gather_indices=*/SupportedDataTypes::All(),
+                            /*where_condition=*/{OperandDataType::kUint8},
+                            /*where_input=*/SupportedDataTypes::All(),
+                            /*where_other=*/SupportedDataTypes::All()});
 }
 
 GraphBuilderTflite::GraphBuilderTflite(const mojom::GraphInfo& graph_info)
@@ -899,7 +903,15 @@ auto GraphBuilderTflite::SerializeArgMinMax(const mojom::ArgMinMax& arg_min_max)
   ::tflite::BuiltinOperator operator_code;
   ::tflite::BuiltinOptions builtin_options_type;
   flatbuffers::Offset<void> builtin_options;
+  const mojom::Operand& output_operand =
+      GetOperand(arg_min_max.output_operand_id);
+
   ::tflite::TensorType output_type = ::tflite::TensorType_INT64;
+  if (output_operand.descriptor.data_type() == OperandDataType::kInt32) {
+    output_type = ::tflite::TensorType_INT32;
+  } else {
+    CHECK_EQ(output_operand.descriptor.data_type(), OperandDataType::kInt64);
+  }
   switch (arg_min_max.kind) {
     case mojom::ArgMinMax::Kind::kMax: {
       operator_code = ::tflite::BuiltinOperator_ARG_MAX;

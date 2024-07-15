@@ -26,6 +26,8 @@ dictionary MLArgMinMaxOptions {
   sequence<[EnforceRange] unsigned long> axes;
   boolean keepDimensions = false;
   boolean selectLastIndex = false;
+  // See spec issue https://github.com/webmachinelearning/webnn/issues/653.
+  MLOperandDataType outputDataType = "int32";
 };
 
 // A spec file was issued for WG discussion:

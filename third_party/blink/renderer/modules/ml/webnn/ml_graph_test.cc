@@ -572,21 +572,24 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
         std::make_unique<FakeWebNNContext>(*helper_, std::move(client_remote)),
         blink_remote.InitWithNewPipeAndPassReceiver());
 
-    webnn::ContextProperties context_properties{
-        /*conv2d_input_layout=*/webnn::InputOperandLayout::kNchw,
-        /*data_type_limits=*/{/*input=*/webnn::SupportedDataTypes::All(),
-                              /*constant=*/webnn::SupportedDataTypes::All(),
-                              /*concat_inputs=*/
-                              webnn::SupportedDataTypes::All(),
-                              /*gather_input=*/webnn::SupportedDataTypes::All(),
-                              /*gather_indices=*/
-                              webnn::SupportedDataTypes::All(),
-                              /*where_condition=*/
-                              webnn::SupportedDataTypes::All(),
-                              /*where_true_value=*/
-                              webnn::SupportedDataTypes::All(),
-                              /*where_false_value=*/
-                              webnn::SupportedDataTypes::All()}};
+    webnn::ContextProperties context_properties(
+        webnn::InputOperandLayout::kNchw,
+        {/*input=*/webnn::SupportedDataTypes::All(),
+         /*constant=*/webnn::SupportedDataTypes::All(),
+         /*arg_min_max_input=*/
+         webnn::SupportedDataTypes::All(),
+         /*arg_min_max_output=*/
+         webnn::SupportedDataTypes::All(),
+         /*concat_input=*/webnn::SupportedDataTypes::All(),
+         /*gather_input=*/webnn::SupportedDataTypes::All(),
+         /*gather_indices=*/
+         webnn::SupportedDataTypes::All(),
+         /*where_condition=*/
+         webnn::SupportedDataTypes::All(),
+         /*where_true_value=*/
+         webnn::SupportedDataTypes::All(),
+         /*where_false_value=*/
+         webnn::SupportedDataTypes::All()});
     auto success = blink_mojom::CreateContextSuccess::New(
         std::move(blink_remote), std::move(client_receiver),
         std::move(context_properties), base::UnguessableToken::Create());

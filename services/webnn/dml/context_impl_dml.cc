@@ -24,6 +24,7 @@
 #include "services/webnn/dml/utils.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom.h"
 #include "services/webnn/webnn_context_impl.h"
 
@@ -53,23 +54,25 @@ ContextProperties GetProperties(DML_FEATURE_LEVEL feature_level) {
       OperandDataType::kInt32,   OperandDataType::kUint32};
 
   // TODO: crbug.com/345271830 - specify data types for all parameters.
-  ContextProperties properties = {
-      .conv2d_input_layout = InputOperandLayout::kNchw,
-      .data_type_limits = {
-          .input = SupportedDataTypes::All(),
-          .constant = SupportedDataTypes::All(),
+  ContextProperties properties(
+      /*conv2d_input_layout=*/InputOperandLayout::kNchw,
+      {/*input=*/SupportedDataTypes::All(),
+       /*constant=*/SupportedDataTypes::All(),
 
-          // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_join_operator_desc#tensor-support
-          .concat_inputs = kFloat16To32Ints8To32,
+       /*arg_min_max_input=*/SupportedDataTypes::All(),
+       /*arg_min_max_output=*/
+       {OperandDataType::kInt32, OperandDataType::kInt64},
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_join_operator_desc#tensor-support
+       /*concat_inputs=*/kFloat16To32Ints8To32,
 
-          // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gather_operator_desc#tensor-support
-          .gather_input = kFloat16To32Ints8To32,
-          .gather_indices = kGatherIndicesSupportedDataTypes,
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gather_operator_desc#tensor-support
+       /*gather_input=*/kFloat16To32Ints8To32,
+       /*gather_indices=*/kGatherIndicesSupportedDataTypes,
 
-          // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_if_operator_desc
-          .where_condition = {OperandDataType::kUint8},
-          .where_true_value = kFloat16To32Ints8To32,
-          .where_false_value = kFloat16To32Ints8To32}};
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_if_operator_desc
+       /*where_condition=*/{OperandDataType::kUint8},
+       /*where_true_value=*/kFloat16To32Ints8To32,
+       /*where_false_value=*/kFloat16To32Ints8To32});
 
   if (feature_level >= DML_FEATURE_LEVEL_4_1) {
     properties.data_type_limits.concat_inputs = SupportedDataTypes::All();

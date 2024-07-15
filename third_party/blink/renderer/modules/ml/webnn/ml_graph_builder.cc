@@ -512,8 +512,10 @@ MLOperand* BuildArgMinMax(MLGraphBuilder* builder,
   const auto axes = options->getAxesOr(CreateAllAxes(input->Rank()));
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
-      webnn::ValidateArgMinMaxAndInferOutput(input->Descriptor(), axes,
-                                             options->keepDimensions()));
+      webnn::ValidateArgMinMaxAndInferOutput(
+          builder->GetContext()->GetProperties(), input->Descriptor(), axes,
+          FromBlinkDataType(options->outputDataType().AsEnum()),
+          options->keepDimensions()));
 
   auto* arg_min_max = MakeGarbageCollected<MLOperator>(
       builder, /*kind=*/webnn::mojom::blink::Operation::Tag::kArgMinMax,

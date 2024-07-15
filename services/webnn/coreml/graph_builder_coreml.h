@@ -205,6 +205,9 @@ class GraphBuilderCoreml {
 
   // Serialization functions for members of the mojom::Operation union. Keep
   // these functions in the same order as in webnn_graph.mojom.
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForArgMinMax(
+      const mojom::ArgMinMax& operation,
+      CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddOperationForBatchNormalization(
       const mojom::BatchNormalization& operation,

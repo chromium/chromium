@@ -23,14 +23,13 @@ dictionary MLContextLostInfo {
   DOMString message;
 };
 
-dictionary MLOpSupportLimits {
-  MLSupportLimits input;
-  MLSupportLimits constant;
-  MLSupportLimits output;
+dictionary MLSupportLimits {
+  sequence<DOMString> dataTypes;
+};
 
-  MLConcatSupportLimits concat;
-  MLGatherSupportLimits gather;
-  MLWhereSupportLimits where;
+dictionary MLArgMinMaxSupportLimits {
+  MLSupportLimits input;
+  MLSupportLimits output;
 };
 
 dictionary MLConcatSupportLimits {
@@ -48,8 +47,16 @@ dictionary MLWhereSupportLimits {
   MLSupportLimits falseValue;
 };
 
-dictionary MLSupportLimits {
-  sequence<DOMString> dataTypes;
+dictionary MLOpSupportLimits {
+  MLSupportLimits input;
+  MLSupportLimits constant;
+  MLSupportLimits output;
+
+  MLArgMinMaxSupportLimits argMin;
+  MLArgMinMaxSupportLimits argMax;
+  MLConcatSupportLimits concat;
+  MLGatherSupportLimits gather;
+  MLWhereSupportLimits where;
 };
 
 typedef record<DOMString, MLBuffer> MLNamedBuffers;

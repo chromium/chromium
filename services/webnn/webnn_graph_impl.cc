@@ -617,7 +617,8 @@ bool ValidateBatchNormalization(
   return true;
 }
 
-bool ValidateArgMinMax(const IdToOperandMap& id_to_operand_map,
+bool ValidateArgMinMax(const ContextProperties& context_properties,
+                       const IdToOperandMap& id_to_operand_map,
                        const mojom::ArgMinMax& arg_min_max,
                        base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(arg_min_max.input_operand_id)) {
@@ -635,7 +636,8 @@ bool ValidateArgMinMax(const IdToOperandMap& id_to_operand_map,
   }
 
   const auto validated_output = ValidateArgMinMaxAndInferOutput(
-      input->descriptor, arg_min_max.axes, arg_min_max.keep_dimensions);
+      context_properties, input->descriptor, arg_min_max.axes,
+      output->descriptor.data_type(), arg_min_max.keep_dimensions);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1885,7 +1887,8 @@ bool ValidateOperation(const ContextProperties& context_properties,
                        base::flat_set<uint64_t>& processed_operands) {
   switch (operation.which()) {
     case mojom::Operation::Tag::kArgMinMax:
-      return ValidateArgMinMax(id_to_operand_map, *operation.get_arg_min_max(),
+      return ValidateArgMinMax(context_properties, id_to_operand_map,
+                               *operation.get_arg_min_max(),
                                processed_operands);
     case mojom::Operation::Tag::kBatchNormalization:
       return ValidateBatchNormalization(id_to_operand_map,

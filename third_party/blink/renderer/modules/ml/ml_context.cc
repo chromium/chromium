@@ -15,6 +15,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_concat_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_lost_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
@@ -184,6 +185,19 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
       SupportedDataTypesToSupportLimits(properties_.data_type_limits.constant));
   op_support_limits->setOutput(
       SupportedDataTypesToSupportLimits(properties_.data_type_limits.output()));
+
+  MLArgMinMaxSupportLimits* argmin = MLArgMinMaxSupportLimits::Create();
+  argmin->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.arg_min_max_input));
+  argmin->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.arg_min_max_output));
+  op_support_limits->setArgMin(argmin);
+  MLArgMinMaxSupportLimits* argmax = MLArgMinMaxSupportLimits::Create();
+  argmax->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.arg_min_max_input));
+  argmax->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.arg_min_max_output));
+  op_support_limits->setArgMax(argmax);
 
   MLConcatSupportLimits* concat = MLConcatSupportLimits::Create();
   concat->setInputs(SupportedDataTypesToSupportLimits(

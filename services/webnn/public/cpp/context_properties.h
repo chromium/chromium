@@ -14,7 +14,19 @@ namespace webnn {
 // the width of the tensor.
 enum class InputOperandLayout { kNchw, kNhwc };
 
-struct ContextProperties {
+struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) ContextProperties {
+  explicit ContextProperties(mojo::DefaultConstruct::Tag);
+
+  ContextProperties(InputOperandLayout conv2d_input_layout,
+                    DataTypeLimits data_type_limits);
+
+  // Copyable and movable.
+  ContextProperties(const ContextProperties&);
+  ContextProperties& operator=(const ContextProperties&);
+  ContextProperties(ContextProperties&&) noexcept;
+  ContextProperties& operator=(ContextProperties&&) noexcept;
+  ~ContextProperties();
+
   InputOperandLayout conv2d_input_layout;
   DataTypeLimits data_type_limits;
 };

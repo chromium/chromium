@@ -11,19 +11,22 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(ContextPropertiesMojomTraitsTest, Basic) {
-  auto input = webnn::ContextProperties{
+  auto input = webnn::ContextProperties(
       webnn::InputOperandLayout::kNchw,
       {webnn::SupportedDataTypes::All(),
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {webnn::OperandDataType::kInt32, webnn::OperandDataType::kInt64},
        {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
        {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
        {webnn::OperandDataType::kFloat16},
        {webnn::OperandDataType::kInt32, webnn::OperandDataType::kInt64},
        {webnn::OperandDataType::kUint8},
        {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32}},
-  };
+       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32}});
 
-  webnn::ContextProperties output = webnn::ContextProperties();
+  webnn::ContextProperties output =
+      webnn::ContextProperties(webnn::InputOperandLayout::kNhwc,
+                               {{}, {}, {}, {}, {}, {}, {}, {}, {}, {}});
   EXPECT_TRUE(
       mojo::test::SerializeAndDeserialize<webnn::mojom::ContextProperties>(
           input, output));

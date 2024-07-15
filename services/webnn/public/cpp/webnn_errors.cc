@@ -77,6 +77,13 @@ std::string NotSupportedInputTypeError(std::string_view input_name,
                        SupportedDataTypesString(supported_types)});
 }
 
+std::string NotSupportedOpOutputTypeError(OperandDataType type,
+                                          SupportedDataTypes supported_types) {
+  return base::StrCat({"Unsupported data type ", DataTypeToString(type),
+                       " for output",
+                       SupportedDataTypesString(supported_types)});
+}
+
 std::string NotSupportedOutputTypeError(std::string_view output_name,
                                         OperandDataType type,
                                         SupportedDataTypes supported_types) {

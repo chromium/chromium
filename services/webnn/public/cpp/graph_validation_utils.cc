@@ -349,14 +349,29 @@ base::expected<OperandDescriptor, std::string> ValidateSoftmaxAndInferOutput(
 }
 
 base::expected<OperandDescriptor, std::string> ValidateArgMinMaxAndInferOutput(
+    const ContextProperties& context_properties,
     const OperandDescriptor& input,
     base::span<const uint32_t> axes,
+    OperandDataType output_data_type,
     bool keep_dimensions) {
+  if (!context_properties.data_type_limits.arg_min_max_input.Has(
+          input.data_type())) {
+    return base::unexpected(NotSupportedInputArgumentTypeError(
+        input.data_type(),
+        context_properties.data_type_limits.arg_min_max_input));
+  }
+
+  if (!context_properties.data_type_limits.arg_min_max_output.Has(
+          output_data_type)) {
+    return base::unexpected(NotSupportedOpOutputTypeError(
+        output_data_type,
+        context_properties.data_type_limits.arg_min_max_output));
+  }
+
   ASSIGN_OR_RETURN(
       std::vector<uint32_t> output_shape,
       ValidateReduceAxesAndInferOutput(input.shape(), axes, keep_dimensions));
-
-  return OperandDescriptor::Create(OperandDataType::kInt64, output_shape);
+  return OperandDescriptor::Create(output_data_type, output_shape);
 }
 
 base::expected<std::vector<OperandDescriptor>, std::string>

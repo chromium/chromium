@@ -45,16 +45,19 @@ namespace {
 
 ContextProperties GetContextPropertiesForTesting() {
   // A default set of WebNNContext properties for testing purposes.
-  return WebNNContextImpl::IntersectWithBaseProperties(ContextProperties{
-      /*conv2d_input_layout=*/InputOperandLayout::kNchw,
-      /*data_type_limits=*/{/*input=*/SupportedDataTypes::All(),
-                            /*constant=*/SupportedDataTypes::All(),
-                            /*concat_inputs=*/SupportedDataTypes::All(),
-                            /*gather_input=*/SupportedDataTypes::All(),
-                            /*gather_indices=*/SupportedDataTypes::All(),
-                            /*where_condition=*/SupportedDataTypes::All(),
-                            /*where_true_value=*/SupportedDataTypes::All(),
-                            /*where_false_value=*/SupportedDataTypes::All()}});
+  return WebNNContextImpl::IntersectWithBaseProperties(
+      ContextProperties(InputOperandLayout::kNchw,
+                        {/*input=*/SupportedDataTypes::All(),
+                         /*constant=*/SupportedDataTypes::All(),
+                         /*arg_min_max_input=*/SupportedDataTypes::All(),
+                         /*arg_min_max_output=*/
+                         {OperandDataType::kInt32, OperandDataType::kInt64},
+                         /*concat_inputs=*/SupportedDataTypes::All(),
+                         /*gather_input=*/SupportedDataTypes::All(),
+                         /*gather_indices=*/SupportedDataTypes::All(),
+                         /*where_condition=*/SupportedDataTypes::All(),
+                         /*where_true_value=*/SupportedDataTypes::All(),
+                         /*where_false_value=*/SupportedDataTypes::All()}));
 }
 
 // A fake WebNNGraph Mojo interface implementation that binds a pipe for
@@ -455,7 +458,7 @@ TEST_F(WebNNGraphImplTest, ArgMinMaxTest) {
                                 .dimensions = {2, 3, 4, 5}},
                       .axes = {0},
                       .keep_dimensions = true,
-                      .output = {.type = OperandDataType::kInt64,
+                      .output = {.type = OperandDataType::kInt32,
                                  .dimensions = {1, 3, 4, 5}},
                       .expected = true}
           .Test();
@@ -468,7 +471,7 @@ TEST_F(WebNNGraphImplTest, ArgMinMaxTest) {
                     .dimensions = {2, 3, 4, 5}},
           .axes = {0, 1},
           .keep_dimensions = false,
-          .output = {.type = OperandDataType::kInt64, .dimensions = {4, 5}},
+          .output = {.type = OperandDataType::kInt32, .dimensions = {4, 5}},
           .expected = true}
           .Test();
     }
@@ -480,7 +483,7 @@ TEST_F(WebNNGraphImplTest, ArgMinMaxTest) {
                                 .dimensions = {2, 3, 4, 5}},
                       .axes = {4},
                       .keep_dimensions = true,
-                      .output = {.type = OperandDataType::kInt64,
+                      .output = {.type = OperandDataType::kInt32,
                                  .dimensions = {2, 3, 4, 1}},
                       .expected = false}
           .Test();
@@ -493,7 +496,7 @@ TEST_F(WebNNGraphImplTest, ArgMinMaxTest) {
                                 .dimensions = {2, 3, 4, 5}},
                       .axes = {1, 1},
                       .keep_dimensions = true,
-                      .output = {.type = OperandDataType::kInt64,
+                      .output = {.type = OperandDataType::kInt32,
                                  .dimensions = {1, 3, 4, 5}},
                       .expected = false}
           .Test();
@@ -517,7 +520,7 @@ TEST_F(WebNNGraphImplTest, ArgMinMaxTest) {
                                 .dimensions = {2, 3, 4, 5}},
                       .axes = {0},
                       .keep_dimensions = false,
-                      .output = {.type = OperandDataType::kInt64,
+                      .output = {.type = OperandDataType::kInt32,
                                  .dimensions = {1, 3, 4, 5}},
                       .expected = false}
           .Test();
@@ -527,7 +530,7 @@ TEST_F(WebNNGraphImplTest, ArgMinMaxTest) {
       auto context_properties = GetContextPropertiesForTesting();
       GraphInfoBuilder builder;
       uint64_t input_operand_id =
-          builder.BuildInput("input", {2, 3, 4, 5}, OperandDataType::kInt64);
+          builder.BuildInput("input", {2, 3, 4, 5}, OperandDataType::kInt32);
       builder.BuildArgMinMax(kind, input_operand_id, input_operand_id, {0},
                              true, false);
       EXPECT_FALSE(WebNNGraphImpl::IsValidForTesting(context_properties,

@@ -369,8 +369,10 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) SliceAttributes {
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-argminmax.
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidateArgMinMaxAndInferOutput(const OperandDescriptor& input,
+    ValidateArgMinMaxAndInferOutput(const ContextProperties& context_properties,
+                                    const OperandDescriptor& input,
                                     base::span<const uint32_t> axes,
+                                    OperandDataType output_data_type,
                                     bool keep_dimensions = false);
 
 // Validate softmax operator defined in WebIDL here:
