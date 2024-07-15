@@ -238,6 +238,11 @@ Suggestion PlusAddressService::GetManagePlusAddressSuggestion() const {
   return suggestion;
 }
 
+bool PlusAddressService::ShouldMixWithSingleFieldFormFillSuggestions() const {
+  return base::FeatureList::IsEnabled(
+      features::kPlusAddressAndSingleFieldFormFill);
+}
+
 void PlusAddressService::OnGetAffiliatedPlusProfiles(
     PasswordFormType focused_form_type,
     std::u16string_view focused_field_value,

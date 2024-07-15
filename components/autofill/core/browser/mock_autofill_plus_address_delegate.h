@@ -30,6 +30,10 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
               GetManagePlusAddressSuggestion,
               (),
               (const override));
+  MOCK_METHOD(bool,
+              ShouldMixWithSingleFieldFormFillSuggestions,
+              (),
+              (const override));
   MOCK_METHOD(void,
               RecordAutofillSuggestionEvent,
               (SuggestionEvent),

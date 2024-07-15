@@ -1377,11 +1377,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     return;
   }
 
-  // Try to show plus address suggestions. If manually triggered, only plus
-  // addresses suggestions are shown. Otherwise plus address suggestions are
-  // mixed with address suggestions.
-  const bool should_offer_plus_addresses =
-      IsPlusAddressesManuallyTriggered(trigger_source) ||
+  const bool field_is_relevant_for_plus_addresses =
       (!context.should_show_mixed_content_warning &&
        context.is_autofill_available &&
        !context.do_not_generate_autofill_suggestions &&
@@ -1389,7 +1385,22 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
        autofill_field->Type().group() == FieldTypeGroup::kEmail &&
        client().GetPlusAddressDelegate());
 
-  if (should_offer_plus_addresses) {
+  // Only offer plus address suggestions together with address suggestions if
+  // these exist. Otherwise, plus address suggestions will be queried and shown
+  // alongside single field form fill suggestions.
+  const bool should_offer_plus_addresses_with_profiles =
+      field_is_relevant_for_plus_addresses &&
+      (!suggestions.empty() ||
+       !client()
+            .GetPlusAddressDelegate()
+            ->ShouldMixWithSingleFieldFormFillSuggestions());
+
+  // Try to show plus address suggestions. If the user specifically requested
+  // plus addresses, disregard any other requirements (like having profile
+  // suggestions) and show only plus address suggestions. Otherwise plus address
+  // suggestions are mixed with profile suggestions if these exist.
+  if (IsPlusAddressesManuallyTriggered(trigger_source) ||
+      should_offer_plus_addresses_with_profiles) {
     const AutofillClient::PasswordFormType password_form_type =
         client().ClassifyAsPasswordForm(*this, form.global_id(),
                                         field.global_id());
@@ -1446,23 +1457,48 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
                                   context.suppress_reason);
   }
 
+  // Whether or not to request single field form fill suggestions.
   const bool should_offer_single_field_form_fill =
       should_offer_other_suggestions &&
       ShouldOfferSingleFieldFormFill(field, autofill_field, trigger_source,
                                      context.suppress_reason);
+
+  // Whether or not to request plus address suggestions and mix them with single
+  // field form fill suggestions.
+  const bool should_offer_plus_addresses_with_sfff =
+      field_is_relevant_for_plus_addresses &&
+      client()
+          .GetPlusAddressDelegate()
+          ->ShouldMixWithSingleFieldFormFillSuggestions();
+
   const size_t barrier_calls =
-      static_cast<size_t>(should_offer_single_field_form_fill);
+      static_cast<size_t>(should_offer_single_field_form_fill) +
+      static_cast<size_t>(should_offer_plus_addresses_with_sfff);
   if (barrier_calls == 0) {
     std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions));
     return;
   }
-  // TODO(crbug.com/324557560): Include plus addresses.
+
+  const AutofillClient::PasswordFormType password_form_type =
+      client().ClassifyAsPasswordForm(*this, form.global_id(),
+                                      field.global_id());
+  // The barrier callback bundles requests to generate suggestions for plus
+  // addresses and single field form fill suggestions.
   auto barrier_callback = base::BarrierCallback<std::vector<Suggestion>>(
       barrier_calls,
       base::BindOnce(
           &BrowserAutofillManager::
               OnGeneratedPlusAddressAndSingleFieldFormFillSuggestions,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+          weak_ptr_factory_.GetWeakPtr(),
+          AutofillPlusAddressDelegate::SuggestionContext::kAutocomplete,
+          password_form_type, form, field, std::move(callback)));
+
+  if (should_offer_plus_addresses_with_sfff) {
+    client().GetPlusAddressDelegate()->GetSuggestions(
+        client().GetLastCommittedPrimaryMainFrameOrigin(),
+        client().IsOffTheRecord(), password_form_type, field.value(),
+        trigger_source, barrier_callback);
+  }
 
   if (should_offer_single_field_form_fill) {
     bool handled_by_single_field_form_filler =
@@ -1485,6 +1521,10 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
 
 void BrowserAutofillManager::
     OnGeneratedPlusAddressAndSingleFieldFormFillSuggestions(
+        AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
+        AutofillClient::PasswordFormType password_form_type,
+        const FormData& form,
+        const FormFieldData& field,
         OnGenerateSuggestionsCallback callback,
         std::vector<std::vector<Suggestion>> suggestion_lists) {
   if (suggestion_lists.empty()) {
@@ -1499,7 +1539,55 @@ void BrowserAutofillManager::
                        std::make_move_iterator(suggestion_list.end()));
   }
 
-  // TODO(crbug.com/324557560): Handle plus address suggestions.
+  auto GetSuggestionPriority = [](autofill::FillingProduct product) {
+    switch (product) {
+      case FillingProduct::kAutocomplete:
+      case FillingProduct::kIban:
+      case FillingProduct::kMerchantPromoCode:
+        return 2;
+      case FillingProduct::kPlusAddresses:
+        return 1;
+      case FillingProduct::kNone:
+      case FillingProduct::kAddress:
+      case FillingProduct::kCompose:
+      case FillingProduct::kCreditCard:
+      case FillingProduct::kPassword:
+      case FillingProduct::kStandaloneCvc:
+        NOTREACHED_NORETURN();
+    }
+  };
+
+  // Prioritize plus address over single field form fill suggestions.
+  std::ranges::stable_sort(suggestions, [&](const Suggestion& s1,
+                                            const Suggestion& s2) {
+    return GetSuggestionPriority(GetFillingProductFromSuggestionType(s1.type)) <
+           GetSuggestionPriority(GetFillingProductFromSuggestionType(s2.type));
+  });
+
+  const bool has_pa_suggestions =
+      base::ranges::any_of(suggestions, [](const Suggestion& suggestion) {
+        return GetFillingProductFromSuggestionType(suggestion.type) ==
+               FillingProduct::kPlusAddresses;
+      });
+
+  if (has_pa_suggestions) {
+    client().GetPlusAddressDelegate()->OnPlusAddressSuggestionShown(
+        *this, form.global_id(), field.global_id(), suggestions_context,
+        password_form_type, suggestions[0].type);
+
+    const bool has_sfff_suggestions =
+        base::ranges::any_of(suggestions, [](const Suggestion& suggestion) {
+          return IsSingleFieldFormFillerFillingProduct(
+              GetFillingProductFromSuggestionType(suggestion.type));
+        });
+
+    if (!has_sfff_suggestions) {
+      suggestions.emplace_back(SuggestionType::kSeparator);
+      suggestions.push_back(
+          client().GetPlusAddressDelegate()->GetManagePlusAddressSuggestion());
+    }
+  }
+
   // Show the list of `suggestions`. These may include single field form field
   // and/or plus address suggestions.
   std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions));

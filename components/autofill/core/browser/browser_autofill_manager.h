@@ -546,6 +546,10 @@ class BrowserAutofillManager : public AutofillManager {
   // ensuring they appear first in the final combined list that's sent to
   // `OnGenerateSuggestionsCallback`.
   void OnGeneratedPlusAddressAndSingleFieldFormFillSuggestions(
+      AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
+      AutofillClient::PasswordFormType password_form_type,
+      const FormData& form,
+      const FormFieldData& field,
       OnGenerateSuggestionsCallback callback,
       std::vector<std::vector<Suggestion>> suggestion_lists);
 

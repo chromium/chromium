@@ -121,6 +121,7 @@ namespace {
 using ::base::Bucket;
 using ::base::BucketsAre;
 using ::base::UTF8ToUTF16;
+using ::base::test::RunCallback;
 using ::base::test::RunOnceCallback;
 using mojom::SubmissionIndicatorEvent;
 using mojom::SubmissionSource;
@@ -7968,6 +7969,8 @@ class BrowserAutofillManagerPlusAddressTest
         std::make_unique<NiceMock<MockAutofillPlusAddressDelegate>>();
     ON_CALL(*plus_address_delegate, GetManagePlusAddressSuggestion)
         .WillByDefault(Return(Suggestion(SuggestionType::kManagePlusAddress)));
+    ON_CALL(*plus_address_delegate, ShouldMixWithSingleFieldFormFillSuggestions)
+        .WillByDefault(Return(true));
     autofill_client_.set_plus_address_delegate(
         std::move(plus_address_delegate));
   }
@@ -8003,20 +8006,71 @@ TEST_F(BrowserAutofillManagerPlusAddressTest, NoPlusAddressesWithNameFields) {
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
 }
 
-// Tests that address suggestions are queried and shown for email fields.
+// Tests that plus address suggestions are queried and shown for email fields
+// when address suggestions are available. In this case, the option to manage
+// plus addresses is not offered.
+TEST_F(BrowserAutofillManagerPlusAddressTest,
+       CreatePlusAddressSuggestionShownWithAddressSuggestions) {
+  using enum AutofillPlusAddressDelegate::SuggestionContext;
+  using enum AutofillClient::PasswordFormType;
+
+  // Plus address suggestions request.
+  EXPECT_CALL(plus_address_delegate(), GetSuggestions)
+      .WillOnce(RunOnceCallback<5>(std::vector<Suggestion>{
+          Suggestion(SuggestionType::kFillExistingPlusAddress)}));
+  // No single field form fill suggestions requests.
+  EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
+      .Times(0);
+
+  EXPECT_CALL(
+      plus_address_delegate(),
+      OnPlusAddressSuggestionShown(
+          Ref(*browser_autofill_manager_), _, _, kAutofillProfileOnEmailField,
+          kNoPasswordForm, SuggestionType::kFillExistingPlusAddress));
+
+  // Set up our form data. Notably, the first field is an email address.
+  FormData form = test::GetFormData(
+      {.fields = {{.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"}}});
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
+
+  FormsSeen({form});
+
+  // Check that the plus address suggestion is offered together with address
+  // suggestions.
+  GetAutofillSuggestions(form, form.fields()[0]);
+  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
+  EXPECT_THAT(
+      external_delegate()->suggestions(),
+      ElementsAre(EqualsSuggestion(SuggestionType::kFillExistingPlusAddress),
+                  EqualsSuggestion(SuggestionType::kAddressEntry),
+                  EqualsSuggestion(SuggestionType::kAddressEntry),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(SuggestionType::kManageAddress)));
+}
+
+// Tests that plus address suggestions are queried and shown for email fields
+// when no single field form suggestions are available. In this case, a
+// ManagePlusAddress suggestion is also offered.
 TEST_F(BrowserAutofillManagerPlusAddressTest,
        CreatePlusAddressSuggestionShown) {
   using enum AutofillPlusAddressDelegate::SuggestionContext;
   using enum AutofillClient::PasswordFormType;
   personal_data().test_address_data_manager().ClearProfiles();
+
+  // Plus address suggestions request.
   EXPECT_CALL(plus_address_delegate(), GetSuggestions)
       .WillOnce(RunOnceCallback<5>(std::vector<Suggestion>{
           Suggestion(SuggestionType::kCreateNewPlusAddress)}));
-  EXPECT_CALL(
-      plus_address_delegate(),
-      OnPlusAddressSuggestionShown(
-          Ref(*browser_autofill_manager_), _, _, kAutofillProfileOnEmailField,
-          kNoPasswordForm, SuggestionType::kCreateNewPlusAddress));
+  // Single field form fill suggestions request - No results.
+  EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
+      .WillOnce(Return(false));
+
+  EXPECT_CALL(plus_address_delegate(),
+              OnPlusAddressSuggestionShown(
+                  Ref(*browser_autofill_manager_), _, _, kAutocomplete,
+                  kNoPasswordForm, SuggestionType::kCreateNewPlusAddress));
 
   // Set up our form data. Notably, the first field is an email address.
   FormData form = test::GetFormData(
@@ -8037,6 +8091,57 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
                   EqualsSuggestion(SuggestionType::kManagePlusAddress)));
 }
 
+// Tests that plus address suggestions are queried and shown for email fields
+// when single field form suggestions are available. Tests also that plus
+// address suggestions are prioritized over single field form fill suggestions.
+TEST_F(BrowserAutofillManagerPlusAddressTest,
+       CreatePlusAddressSuggestionShownWithSingleFieldFormFillSuggestions) {
+  using enum AutofillPlusAddressDelegate::SuggestionContext;
+  using enum AutofillClient::PasswordFormType;
+  personal_data().test_address_data_manager().ClearProfiles();
+
+  // Plus address suggestions request.
+  EXPECT_CALL(plus_address_delegate(), GetSuggestions)
+      .WillOnce(RunOnceCallback<5>(std::vector<Suggestion>{
+          Suggestion(SuggestionType::kFillExistingPlusAddress)}));
+  // Single field form fill suggestions request.
+  EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly([&](const FormStructure*, const FormFieldData& field,
+                          const AutofillField*, const AutofillClient&,
+                          SingleFieldFormFiller::OnSuggestionsReturnedCallback
+                              on_suggestions_returned) {
+        std::move(on_suggestions_returned)
+            .Run(field.global_id(),
+                 std::vector<Suggestion>{
+                     Suggestion(SuggestionType::kAutocompleteEntry),
+                     Suggestion(SuggestionType::kAutocompleteEntry)});
+        return true;
+      });
+
+  EXPECT_CALL(plus_address_delegate(),
+              OnPlusAddressSuggestionShown(
+                  Ref(*browser_autofill_manager_), _, _, kAutocomplete,
+                  kNoPasswordForm, SuggestionType::kFillExistingPlusAddress));
+
+  // Set up our form data. Notably, the first field is an email address.
+  FormData form = test::GetFormData(
+      {.fields = {{.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"}}});
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
+
+  FormsSeen({form});
+
+  // Check that the plus address suggestion is offered.
+  GetAutofillSuggestions(form, form.fields()[0]);
+  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
+  EXPECT_THAT(
+      external_delegate()->suggestions(),
+      ElementsAre(EqualsSuggestion(SuggestionType::kFillExistingPlusAddress),
+                  EqualsSuggestion(SuggestionType::kAutocompleteEntry),
+                  EqualsSuggestion(SuggestionType::kAutocompleteEntry)));
+}
+
 // Tests that a manage plus address suggestion is not added if there are no plus
 // address suggestions.
 TEST_F(BrowserAutofillManagerPlusAddressTest,
@@ -8048,6 +8153,9 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
       .WillOnce(RunOnceCallback<5>(std::vector<Suggestion>{}));
   EXPECT_CALL(plus_address_delegate(), GetManagePlusAddressSuggestion).Times(0);
   EXPECT_CALL(plus_address_delegate(), OnPlusAddressSuggestionShown).Times(0);
+  // Single field form fill suggestions request - No results.
+  EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
+      .WillOnce(Return(false));
 
   // Set up our form data. Notably, the first field is an email address.
   FormData form = test::GetFormData(
@@ -8080,6 +8188,8 @@ TEST_F(BrowserAutofillManagerPlusAddressTest, ManualFallbackPlusAddress) {
               OnPlusAddressSuggestionShown(
                   Ref(*browser_autofill_manager_), _, _, kManualFallback,
                   kNoPasswordForm, SuggestionType::kCreateNewPlusAddress));
+  EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
+      .Times(0);
 
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});

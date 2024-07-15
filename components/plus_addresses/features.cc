@@ -71,4 +71,11 @@ BASE_FEATURE(kPlusAddressUserOnboardingEnabled,
              "PlusAddressUserOnboardingEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, autofill stops overriding single field form fill suggestions
+// with plus address suggestions. Instead, it shows them together in the same
+// context menu.
+BASE_FEATURE(kPlusAddressAndSingleFieldFormFill,
+             "PlusAddressAndSingleFieldFormFill",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace plus_addresses::features
