@@ -32,6 +32,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/metrics/histogram.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -5115,7 +5116,7 @@ viz::ResourceId LayerTreeHostImpl::ResourceIdForUIResource(
 
 bool LayerTreeHostImpl::IsUIResourceOpaque(UIResourceId uid) const {
   auto iter = ui_resource_map_.find(uid);
-  DCHECK(iter != ui_resource_map_.end());
+  CHECK(iter != ui_resource_map_.end(), base::NotFatalUntil::M130);
   return iter->second.opaque;
 }
 

@@ -57,7 +57,7 @@ viz::ResourceId FakeUIResourceLayerTreeHostImpl::ResourceIdForUIResource(
 bool FakeUIResourceLayerTreeHostImpl::IsUIResourceOpaque(UIResourceId uid)
     const {
   auto iter = fake_ui_resource_map_.find(uid);
-  DCHECK(iter != fake_ui_resource_map_.end());
+  CHECK(iter != fake_ui_resource_map_.end());
   return iter->second.opaque;
 }
 

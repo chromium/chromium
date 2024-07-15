@@ -16,6 +16,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
@@ -372,7 +373,7 @@ void Layer::ReplaceChild(Layer* reference, scoped_refptr<Layer> new_layer) {
   auto& inputs = inputs_.Write(*this);
   auto reference_it = base::ranges::find(inputs.children, reference,
                                          &scoped_refptr<Layer>::get);
-  DCHECK(reference_it != inputs.children.end());
+  CHECK(reference_it != inputs.children.end(), base::NotFatalUntil::M130);
   size_t reference_index = reference_it - inputs.children.begin();
   reference->RemoveFromParent();
 

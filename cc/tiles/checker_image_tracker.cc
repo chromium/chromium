@@ -254,6 +254,7 @@ void CheckerImageTracker::DidFinishImageDecode(
   // would have also requested an invalidation, so we can just schedule the next
   // decode here.
   if (it->second.policy == DecodePolicy::SYNC) {
+    // Expensive DCHECK without immediate dereference.
     DCHECK(decoding_mode_map_.find(image_id) != decoding_mode_map_.end());
     DCHECK_EQ(decoding_mode_map_[image_id], PaintImage::DecodingMode::kSync);
 

@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/ostream_operators.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
@@ -316,7 +317,7 @@ void SoftwareImageDecodeCache::UnrefImage(const DrawImage& image) {
 
 void SoftwareImageDecodeCache::UnrefImage(const CacheKey& key) {
   auto decoded_image_it = decoded_images_.Peek(key);
-  DCHECK(decoded_image_it != decoded_images_.end());
+  CHECK(decoded_image_it != decoded_images_.end(), base::NotFatalUntil::M130);
   auto* entry = decoded_image_it->second.get();
   DCHECK_GT(entry->ref_count, 0);
   if (--entry->ref_count == 0) {
@@ -338,7 +339,7 @@ SoftwareImageDecodeCache::DecodeImageInTask(const CacheKey& key,
   base::AutoLock lock(lock_);
 
   auto image_it = decoded_images_.Peek(key);
-  DCHECK(image_it != decoded_images_.end());
+  CHECK(image_it != decoded_images_.end(), base::NotFatalUntil::M130);
   auto* cache_entry = image_it->second.get();
   // These two checks must be true because we're running this from a task, which
   // means that we've budgeted this entry when we got the task and the ref count
@@ -502,7 +503,8 @@ SoftwareImageDecodeCache::FindCachedCandidate(const CacheKey& key) {
   auto image_keys_it = frame_key_to_image_keys_.find(key.frame_key());
   // We know that we must have at least our own |entry| in this list, so it
   // won't be empty.
-  DCHECK(image_keys_it != frame_key_to_image_keys_.end());
+  CHECK(image_keys_it != frame_key_to_image_keys_.end(),
+        base::NotFatalUntil::M130);
 
   auto& available_keys = image_keys_it->second;
   std::sort(available_keys.begin(), available_keys.end(),
@@ -524,7 +526,7 @@ SoftwareImageDecodeCache::FindCachedCandidate(const CacheKey& key) {
       continue;
     }
     auto image_it = decoded_images_.Peek(available_key);
-    DCHECK(image_it != decoded_images_.end());
+    CHECK(image_it != decoded_images_.end(), base::NotFatalUntil::M130);
     auto* available_entry = image_it->second.get();
     if (available_entry->is_locked || available_entry->Lock()) {
       return available_key;
@@ -635,7 +637,7 @@ void SoftwareImageDecodeCache::ReduceCacheUsageUntilWithinLimit(size_t limit) {
     const CacheKey& key = it->first;
     auto vector_it = frame_key_to_image_keys_.find(key.frame_key());
     auto item_it = base::ranges::find(vector_it->second, key);
-    DCHECK(item_it != vector_it->second.end());
+    CHECK(item_it != vector_it->second.end(), base::NotFatalUntil::M130);
     vector_it->second.erase(item_it);
     if (vector_it->second.empty())
       frame_key_to_image_keys_.erase(vector_it);
@@ -664,7 +666,7 @@ void SoftwareImageDecodeCache::OnImageDecodeTaskCompleted(
   base::AutoLock hold(lock_);
 
   auto image_it = decoded_images_.Peek(key);
-  DCHECK(image_it != decoded_images_.end());
+  CHECK(image_it != decoded_images_.end(), base::NotFatalUntil::M130);
   CacheEntry* cache_entry = image_it->second.get();
   UMA_HISTOGRAM_BOOLEAN("Compositing.DecodeLCPCandidateImage.Software",
                         key.may_be_lcp_candidate());
