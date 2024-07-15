@@ -9,6 +9,9 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 
 namespace lens {
 
@@ -64,6 +67,18 @@ void LensOverlayEntryPointController::UpdateEntryPointsState(
       toolbar_entry_point->SetVisible(enabled);
     }
   }
+}
+
+void LensOverlayEntryPointController::SetToolbarEntrypointActionState(
+    bool is_active) {
+  auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+  CHECK(browser_view);
+  auto* toolbar_container =
+      browser_view->toolbar()->pinned_toolbar_actions_container();
+  CHECK(toolbar_container);
+
+  toolbar_container->UpdateActionState(kActionSidePanelShowLensOverlayResults,
+                                       is_active);
 }
 
 actions::ActionItem* LensOverlayEntryPointController::GetToolbarEntrypoint() {

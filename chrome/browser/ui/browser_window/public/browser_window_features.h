@@ -71,6 +71,10 @@ class BrowserWindowFeatures {
     return side_panel_coordinator_.get();
   }
 
+  lens::LensOverlayEntryPointController* lens_overlay_entry_point_controller() {
+    return lens_overlay_entry_point_controller_.get();
+  }
+
  protected:
   BrowserWindowFeatures();
 
