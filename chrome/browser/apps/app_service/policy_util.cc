@@ -19,6 +19,7 @@
 #include "components/crx_file/id_util.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/types_util.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/webui/system_apps/public/system_web_app_type.h"
@@ -136,6 +137,10 @@ bool IsPreinstalledWebAppPolicyId(std::string_view policy_id) {
     return base::Contains(*mapping, policy_id);
   }
   return base::Contains(kPreinstalledWebAppsMapping, policy_id);
+}
+
+bool IsIsolatedWebAppPolicyId(std::string_view policy_id) {
+  return web_package::SignedWebBundleId::Create(policy_id).has_value();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

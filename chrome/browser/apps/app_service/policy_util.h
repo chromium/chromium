@@ -13,6 +13,7 @@
 //    * Chrome Apps
 //    * System Web Apps
 //    * Preinstalled Web Apps
+//    * Isolated Web Apps
 
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_POLICY_UTIL_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_POLICY_UTIL_H_
@@ -55,6 +56,9 @@ bool IsSystemWebAppPolicyId(std::string_view policy_id);
 
 // Checks whether |policy_id| specifies a Preinstalled Web App.
 bool IsPreinstalledWebAppPolicyId(std::string_view policy_id);
+
+// Checks whether |policy_id| specifies an Isolated Web App.
+bool IsIsolatedWebAppPolicyId(std::string_view policy_id);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool IsFileManagerVirtualTaskPolicyId(std::string_view policy_id);
@@ -102,6 +106,13 @@ std::vector<std::string> GetAppIdsFromPolicyId(Profile*,
 // Camera app is "hfhhnacclhffhdffklopdkcgdhifgngh". Calling
 // GetPolicyIdsFromAppId() with "hfhhnacclhffhdffklopdkcgdhifgngh" will return
 // {"camera"}.
+//
+// Isolated Web App Example:
+// Admin installs an IWA with a signed web bundle ID
+// "r6k4zlabhxwmos2uryjxvhannczwxhs5fxwbzewxgbk7hkaagc6aaaic". Chrome assigns it
+// app_id "bhjeplndcdnnhljeppgkgokellahknlg". Then, calling
+// GetPolicyIdsFromAppId() with "bhjeplndcdnnhljeppgkgokellahknlg" will return
+// {"r6k4zlabhxwmos2uryjxvhannczwxhs5fxwbzewxgbk7hkaagc6aaaic"}.
 std::optional<std::vector<std::string>> GetPolicyIdsFromAppId(
     Profile*,
     const std::string& app_id);

@@ -61,6 +61,7 @@ source_set("app_service") {
     "//components/crx_file",
     "//components/keyed_service/content",
     "//components/services/app_service",
+    "//components/web_package",
     "//components/webapps/common",
     "//extensions/browser",
     "//extensions/common",

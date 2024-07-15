@@ -30,7 +30,10 @@
             "com.google.android.pm",
             "https://google.com",
             "camera",
-            "unknown_id_should_be_filtered"
+            "unknown_id_should_be_filtered",
+            "w2gqjem6b4m7vhiqpjr3btcpp7dxfyjt6h4uuyuxklcsmygtgncaaaac",
+            "egoxo6biqdjrk62rman4vvr5cbq2ozsyydig7jmdxcmohdob2ecaaaic",
+            "phngluimglwnafhcthulhurlyehwgahnaglfhtagniacthulhufhtagn"
           ]
         },
         "prefs": {
@@ -47,6 +50,12 @@
               },
               {
                 "id": "camera"
+              },
+              {
+                "id": "w2gqjem6b4m7vhiqpjr3btcpp7dxfyjt6h4uuyuxklcsmygtgncaaaac"
+              },
+              {
+                "id": "egoxo6biqdjrk62rman4vvr5cbq2ozsyydig7jmdxcmohdob2ecaaaic"
               }
             ]
           }

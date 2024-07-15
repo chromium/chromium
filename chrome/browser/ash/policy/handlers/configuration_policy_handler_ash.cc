@@ -157,7 +157,8 @@ bool IsSupportedAppTypePolicyId(std::string_view policy_id) {
          apps_util::IsArcAppPolicyId(policy_id) ||
          apps_util::IsSystemWebAppPolicyId(policy_id) ||
          apps_util::IsWebAppPolicyId(policy_id) ||
-         apps_util::IsPreinstalledWebAppPolicyId(policy_id);
+         apps_util::IsPreinstalledWebAppPolicyId(policy_id) ||
+         apps_util::IsIsolatedWebAppPolicyId(policy_id);
 }
 
 }  // namespace

@@ -74,6 +74,7 @@
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_metrics.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
+#include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/app_list/app_list_test_util.h"
@@ -131,7 +132,9 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -179,6 +182,7 @@
 #include "components/sync_preferences/pref_model_associator.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/viz/test/test_gpu_service_holder.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -1246,6 +1250,19 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
 
     ASSERT_EQ(installed_app_id, web_app_id);
     apps::AppReadinessWaiter(profile(), web_app_id).Await();
+  }
+
+  web_app::IsolatedWebAppUrlInfo AddIsolatedWebApp(const GURL& url) {
+    web_app::AddDummyIsolatedAppToRegistry(
+        profile(), url, "IWA",
+        web_app::WebApp::IsolationData(
+            web_app::IwaStorageOwnedBundle{"", false}, base::Version("1.0.0")),
+        webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
+    base::expected<web_app::IsolatedWebAppUrlInfo, std::string> url_info =
+        web_app::IsolatedWebAppUrlInfo::Create(url);
+    CHECK(url_info.has_value());
+    apps::AppReadinessWaiter(profile(), url_info->app_id()).Await();
+    return *url_info;
   }
 
   webapps::AppId InstallExternalWebApp(
@@ -4951,6 +4968,20 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinPolicy) {
   EXPECT_TRUE(shelf_controller_->IsAppPinned(example_app_id));
   EXPECT_EQ(AppListControllerDelegate::PIN_FIXED,
             GetPinnableForAppID(example_app_id, profile()));
+}
+
+TEST_F(ChromeShelfControllerWithArcTest, IwaPinPolicy) {
+  InitShelfControllerWithBrowser();
+
+  constexpr char kExampleIwaBundleId[] =
+      "w2gqjem6b4m7vhiqpjr3btcpp7dxfyjt6h4uuyuxklcsmygtgncaaaac";
+
+  const auto url_info = AddIsolatedWebApp(
+      GURL{base::StrCat({"isolated-app://", kExampleIwaBundleId})});
+  SetPinnedLauncherAppsPolicy(kExampleIwaBundleId);
+  EXPECT_TRUE(shelf_controller_->IsAppPinned(url_info.app_id()));
+  EXPECT_TRUE(AppListControllerDelegate::PIN_FIXED ==
+              GetPinnableForAppID(url_info.app_id(), profile()));
 }
 
 TEST_F(ChromeShelfControllerWithArcTest, ApkWebAppPinPolicy) {

@@ -322,6 +322,9 @@ class FileManagerFileTaskPolicyDefaultHandlersTest
   static constexpr char kChromeAppId[] = "chrome-app-id";
   static constexpr char kArcAppId[] = "arc-app-id";
   static constexpr char kNonExistentAppId[] = "null";
+  static constexpr char kIsolatedAppId[] = "ghgjflengkicinnmfeejkpjmcohegmid";
+  static constexpr char kIsolatedPolicyId[] =
+      "w2gqjem6b4m7vhiqpjr3btcpp7dxfyjt6h4uuyuxklcsmygtgncaaaac";
 
   static constexpr char kWebAppUrl[] = "https://web.app";
   static constexpr char kArcAppPackageName[] = "com.package.name";
@@ -329,7 +332,8 @@ class FileManagerFileTaskPolicyDefaultHandlersTest
   static constexpr AppIdPolicyIdPair kAppIdPolicyIdMapping[] = {
       {kWebAppId, kWebAppUrl},
       {kArcAppId, kArcAppPackageName},
-      {kChromeAppId, kChromeAppId}};
+      {kChromeAppId, kChromeAppId},
+      {kIsolatedAppId, kIsolatedPolicyId}};
 
  private:
   void CreateAppsAndTasks() {
@@ -351,6 +355,9 @@ class FileManagerFileTaskPolicyDefaultHandlersTest
     AddFakeAppToAppService(kArcAppId, /*package_name=*/kArcAppPackageName,
                            /*policy_ids=*/{kArcAppPackageName},
                            apps::AppType::kArc);
+    AddFakeAppToAppService(kIsolatedAppId, /*package_name=*/{},
+                           /*policy_ids=*/{kIsolatedPolicyId},
+                           apps::AppType::kWeb);
   }
 
   static bool IsDefaultTask(const FullTaskDescriptor& ftd) {

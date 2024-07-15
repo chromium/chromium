@@ -2,3 +2,9 @@ include_rules = [
   "+components/services/app_service/public",
   "+components/app_restore/full_restore_utils.h",
 ]
+specific_include_rules = {
+  "chrome_shelf_controller_unittest\.cc": [
+    "+chrome/browser/ui/web_applications/test",
+    "+chrome/browser/web_applications/isolated_web_apps",
+  ],
+}

@@ -1688,6 +1688,11 @@ std::vector<std::string> WebAppPublisherHelper::GetPolicyIds(
     const WebApp& web_app) const {
   const auto& app_id = web_app.app_id();
 
+  if (web_app.isolation_data() && registrar().IsInstalledByPolicy(app_id)) {
+    // This is an IWA - and thus, web_bundle_id == policy_id == URL hostname
+    return {web_app.start_url().host()};
+  }
+
   std::vector<std::string> policy_ids;
 
   if (std::optional<std::string_view> preinstalled_web_app_policy_id =

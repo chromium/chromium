@@ -3,6 +3,7 @@ include_rules = [
   "+components/app_constants",
   "+components/app_restore",
   "+components/webapk",
+  "+components/web_package/signed_web_bundles",
   "+chrome/grit/app_icon_resources.h",
   "+third_party/fuzztest"
 ]
