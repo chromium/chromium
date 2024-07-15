@@ -157,21 +157,11 @@ void AssociateDefaultFeatures(const Study& study,
   }
 }
 
-// Registers feature overrides for the chosen experiment in the specified study.
-void RegisterFeatureOverrides(const ProcessedStudy& processed_study,
+// Registers feature overrides `experiment` in the `study`.
+void RegisterFeatureOverrides(const Study& study,
+                              const Study::Experiment& experiment,
                               base::FieldTrial* trial,
                               base::FeatureList* feature_list) {
-  const std::string& group_name = trial->GetGroupNameWithoutActivation();
-  int experiment_index = processed_study.GetExperimentIndexByName(group_name);
-  // If the chosen experiment was not found in the study, simply return.
-  // Although not normally expected, but could happen if the trial was forced
-  // on the command line.
-  if (experiment_index == -1)
-    return;
-
-  const Study& study = *processed_study.study();
-  const Study::Experiment& experiment = study.experiment(experiment_index);
-
   // Process all the features to enable.
   int feature_count = experiment.feature_association().enable_feature_size();
   for (int i = 0; i < feature_count; ++i) {
@@ -378,8 +368,6 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
   bool has_overrides = false;
   bool enables_or_disables_features = false;
   for (const auto& experiment : study.experiment()) {
-    RegisterExperimentParams(study, experiment);
-
     // Groups with forcing flags have probability 0 and will never be selected.
     // Therefore, there's no need to add them to the field trial.
     if (experiment.has_forcing_flag() ||
@@ -402,8 +390,19 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
 
   trial->SetForced();
 
-  if (enables_or_disables_features)
-    RegisterFeatureOverrides(processed_study, trial.get(), feature_list);
+  {
+    const std::string& group_name = trial->GetGroupNameWithoutActivation();
+    int experiment_index = processed_study.GetExperimentIndexByName(group_name);
+    // If the trial was forced on the command line, we may not be able to find
+    // the experiment.
+    if (experiment_index != -1) {
+      const Study::Experiment& experiment = study.experiment(experiment_index);
+      RegisterExperimentParams(study, experiment);
+      if (enables_or_disables_features) {
+        RegisterFeatureOverrides(study, experiment, trial.get(), feature_list);
+      }
+    }
+  }
 
   if (study.activation_type() == Study::ACTIVATE_ON_STARTUP) {
     // This call must happen after all params have been registered for the
