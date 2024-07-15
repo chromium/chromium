@@ -52,7 +52,7 @@ const size_t kNumResourcesLimit = 10 * 1000 * 1000;
 
 class SoftwareDevice : public viz::SoftwareOutputDevice {
  public:
-  SoftwareDevice(SkCanvas** canvas) : canvas_(canvas) {}
+  explicit SoftwareDevice(raw_ptr<SkCanvas>* canvas) : canvas_(canvas) {}
   SoftwareDevice(const SoftwareDevice&) = delete;
   SoftwareDevice& operator=(const SoftwareDevice&) = delete;
 
@@ -66,7 +66,7 @@ class SoftwareDevice : public viz::SoftwareOutputDevice {
   void EndPaint() override {}
 
  private:
-  raw_ptr<SkCanvas*> canvas_;
+  raw_ptr<raw_ptr<SkCanvas>> canvas_;
 };
 
 // This is used with resourceless software draws.
@@ -477,7 +477,8 @@ void SynchronousLayerTreeFrameSink::DemandDrawSw(SkCanvas* canvas) {
   DCHECK(canvas);
   DCHECK(!current_sw_canvas_);
 
-  base::AutoReset<SkCanvas*> canvas_resetter(&current_sw_canvas_, canvas);
+  base::AutoReset<raw_ptr<SkCanvas>> canvas_resetter(&current_sw_canvas_,
+                                                     canvas);
 
   SkIRect canvas_clip = canvas->getDeviceClipBounds();
   gfx::Rect viewport = gfx::SkIRectToRect(canvas_clip);
