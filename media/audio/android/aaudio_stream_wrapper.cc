@@ -9,6 +9,11 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/audio_parameters.h"
+#include "media/base/channel_layout.h"
+
+// AAudioStreamBuilder_setChannelMask was not introduced until API version 32.
+#define AAUDIO_CHANNEL_MASK_MIN_API 32
 
 namespace media {
 
@@ -82,6 +87,67 @@ static REQUIRES_ANDROID_API(AAUDIO_MIN_API) void OnStreamErrorCallback(
   }
 
   destruction_helper->UnlockWrapper();
+}
+
+// Matches the ordering of media::Channels.
+static constexpr REQUIRES_ANDROID_API(AAUDIO_CHANNEL_MASK_MIN_API) uint32_t
+    kMediaChannelToAAudioChannel[] = {
+        AAUDIO_CHANNEL_FRONT_LEFT,
+        AAUDIO_CHANNEL_FRONT_RIGHT,
+        AAUDIO_CHANNEL_FRONT_CENTER,
+        AAUDIO_CHANNEL_LOW_FREQUENCY,
+        AAUDIO_CHANNEL_BACK_LEFT,
+        AAUDIO_CHANNEL_BACK_RIGHT,
+        AAUDIO_CHANNEL_FRONT_LEFT_OF_CENTER,
+        AAUDIO_CHANNEL_FRONT_RIGHT_OF_CENTER,
+        AAUDIO_CHANNEL_BACK_CENTER,
+        AAUDIO_CHANNEL_SIDE_LEFT,
+        AAUDIO_CHANNEL_SIDE_RIGHT,
+};
+
+REQUIRES_ANDROID_API(AAUDIO_CHANNEL_MASK_MIN_API)
+std::optional<aaudio_channel_mask_t> ChannelMaskFromChannelLayout(
+    ChannelLayout layout) {
+  // Note: ChannelLayout comments define mono as Front Center, but AAudio's
+  // AAUDIO_CHANNEL_MONO constant define it as Front Left. Returning Front
+  // Center here breaks mono playback, so prefer AAudio's definition.
+  if (layout == CHANNEL_LAYOUT_MONO) {
+    return AAUDIO_CHANNEL_MONO;
+  }
+
+  // Fast path for common case.
+  if (layout == CHANNEL_LAYOUT_STEREO) {
+    return AAUDIO_CHANNEL_STEREO;
+  }
+
+  aaudio_channel_mask_t mask = 0;
+
+  for (int ch = 0; ch <= Channels::CHANNELS_MAX; ++ch) {
+    // Ignore the ordering of the channels, only check whether a channel is
+    // present in a given layout.
+    if (ChannelOrder(layout, static_cast<Channels>(ch)) != -1) {
+      mask |= kMediaChannelToAAudioChannel[ch];
+    }
+  }
+
+  if (mask) {
+    return mask;
+  }
+
+  return std::nullopt;
+}
+
+REQUIRES_ANDROID_API(AAUDIO_CHANNEL_MASK_MIN_API)
+void SetChannelMask(AAudioStreamBuilder* builder,
+                    const AudioParameters& params) {
+  std::optional<aaudio_channel_mask_t> channel_mask =
+      ChannelMaskFromChannelLayout(params.channel_layout());
+
+  if (channel_mask.has_value()) {
+    AAudioStreamBuilder_setChannelMask(builder, channel_mask.value());
+  } else {
+    AAudioStreamBuilder_setChannelCount(builder, params.channels());
+  }
 }
 
 AAudioStreamWrapper::AAudioStreamWrapper(DataCallback* callback,
@@ -160,12 +226,17 @@ bool AAudioStreamWrapper::Open() {
       builder, (stream_type_ == StreamType::kInput ? AAUDIO_DIRECTION_INPUT
                                                    : AAUDIO_DIRECTION_OUTPUT));
   AAudioStreamBuilder_setSampleRate(builder, params_.sample_rate());
-  AAudioStreamBuilder_setChannelCount(builder, params_.channels());
   AAudioStreamBuilder_setFormat(builder, AAUDIO_FORMAT_PCM_FLOAT);
   AAudioStreamBuilder_setUsage(builder, usage_);
   AAudioStreamBuilder_setPerformanceMode(builder, performance_mode_);
   AAudioStreamBuilder_setFramesPerDataCallback(builder,
                                                params_.frames_per_buffer());
+
+  if (__builtin_available(android AAUDIO_CHANNEL_MASK_MIN_API, *)) {
+    SetChannelMask(builder, params_);
+  } else {
+    AAudioStreamBuilder_setChannelCount(builder, params_.channels());
+  }
 
   if (stream_type_ == StreamType::kInput) {
     // Set AAUDIO_INPUT_PRESET_VOICE_COMMUNICATION when we need echo
