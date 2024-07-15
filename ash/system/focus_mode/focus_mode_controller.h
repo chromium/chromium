@@ -205,6 +205,12 @@ class ASH_EXPORT FocusModeController
 
   void RequestTasksUpdateForTesting();
 
+  media_session::mojom::MediaSessionInfoPtr GetSystemMediaSessionInfo();
+  void SetSystemMediaSessionInfoForTesting(
+      media_session::mojom::MediaSessionInfoPtr media_session_info) {
+    test_media_session_info_ = std::move(media_session_info);
+  }
+
  private:
   // Starts a focus session by updating UI elements, starting `timer_`, and
   // setting `current_session_` to the desired session duration and end time.
@@ -284,6 +290,10 @@ class ASH_EXPORT FocusModeController
   // The media widget and its contents view.
   std::unique_ptr<views::Widget> media_widget_;
   raw_ptr<AshWebView> focus_mode_media_view_ = nullptr;
+
+  // The info about the current media session for testing. It will be null if
+  // there isn't a current media session.
+  media_session::mojom::MediaSessionInfoPtr test_media_session_info_;
 
   std::unique_ptr<FocusModeDelegate> delegate_;
 

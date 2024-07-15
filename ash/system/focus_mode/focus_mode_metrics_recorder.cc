@@ -212,6 +212,17 @@ void RecordSoundsPlayedDuringSessionHistogram(bool has_selected_soundscapes,
       /*sample=*/type);
 }
 
+void RecordExistingMediaPlayingOnStartHistogram() {
+  const auto system_media_session_info =
+      FocusModeController::Get()->GetSystemMediaSessionInfo();
+  base::UmaHistogramBoolean(
+      /*name=*/focus_mode_histogram_names::
+          kStartedWithExistingMediaPlayingHistogramName,
+      /*sample=*/system_media_session_info &&
+          system_media_session_info->playback_state ==
+              media_session::mojom::MediaPlaybackState::kPlaying);
+}
+
 }  // namespace
 
 FocusModeMetricsRecorder::FocusModeMetricsRecorder(
@@ -269,8 +280,10 @@ void FocusModeMetricsRecorder::RecordHistogramsOnStart(
   RecordInitialDurationHistogram(
       /*session_duration=*/initial_session_duration_);
   RecordStartSessionSourceHistogram(source);
+  // TODO(b/344594740): Remove `RecordHasSelectedTaskOnSessionStartHistogram()`.
   RecordHasSelectedTaskOnSessionStartHistogram();
   RecordStartedWithTaskHistogram(selected_task_id);
+  RecordExistingMediaPlayingOnStartHistogram();
 }
 
 void FocusModeMetricsRecorder::RecordHistogramsOnEnd() {

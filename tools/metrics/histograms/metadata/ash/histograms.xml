@@ -3845,6 +3845,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.FocusMode.StartSession.ExistingMediaPlaying"
+    enum="Boolean" expires_after="2025-07-01">
+  <owner>hongyulong@chromium.org</owner>
+  <owner>richui@chromium.org</owner>
+  <owner>skau@chromium.org</owner>
+  <owner>chromeos-wms@google.com</owner>
+  <summary>
+    Emits true when an existing media session is playing on the system on
+    session start; otherwise, emits false.
+  </summary>
+</histogram>
+
 <histogram name="Ash.FocusMode.StartSession.HasSelectedTask" enum="Boolean"
     expires_after="2025-02-01">
   <owner>hongyulong@chromium.org</owner>

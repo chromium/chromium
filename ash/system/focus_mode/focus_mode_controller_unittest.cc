@@ -50,6 +50,22 @@ AnchoredNudge* GetShownEndingMomentNudge() {
       focus_mode_util::kFocusModeEndingMomentNudgeId);
 }
 
+// Simulate a system media with the state of playing or paused based on
+// `is_playing`.
+void SimulatePlaybackState(bool is_playing) {
+  media_session::mojom::MediaSessionInfoPtr session_info(
+      media_session::mojom::MediaSessionInfo::New());
+
+  session_info->state =
+      media_session::mojom::MediaSessionInfo::SessionState::kActive;
+  session_info->playback_state =
+      is_playing ? media_session::mojom::MediaPlaybackState::kPlaying
+                 : media_session::mojom::MediaPlaybackState::kPaused;
+
+  FocusModeController::Get()->SetSystemMediaSessionInfoForTesting(
+      std::move(session_info));
+}
+
 }  // namespace
 
 class FocusModeControllerMultiUserTest : public NoSessionAshTestBase {
@@ -932,6 +948,47 @@ TEST_F(FocusModeControllerMultiUserTest, CheckStartedWithTaskHistogram) {
       /*sample=*/
       focus_mode_histogram_names::StartedWithTaskState::kPreviouslySelectedTask,
       /*expected_count=*/1);
+}
+
+// Tests that when starting a focus session, it records if there is an existing
+// media playing.
+TEST_F(FocusModeControllerMultiUserTest, CheckMediaPlayingOnStartsHistogram) {
+  base::HistogramTester histogram_tester;
+
+  // 1. Start a focus session without a system media.
+  auto* controller = FocusModeController::Get();
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  histogram_tester.ExpectBucketCount(
+      /*name=*/focus_mode_histogram_names::
+          kStartedWithExistingMediaPlayingHistogramName,
+      /*sample=*/false, /*expected_count=*/1);
+
+  // End the focus session.
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+
+  // 2. Start a focus session with a system media playing.
+  SimulatePlaybackState(/*is_playing=*/true);
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  histogram_tester.ExpectBucketCount(
+      /*name=*/focus_mode_histogram_names::
+          kStartedWithExistingMediaPlayingHistogramName,
+      /*sample=*/true, /*expected_count=*/1);
+
+  // End the focus session.
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+
+  // 3. Start a focus session with a system media paused.
+  SimulatePlaybackState(/*is_playing=*/false);
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  histogram_tester.ExpectBucketCount(
+      /*name=*/focus_mode_histogram_names::
+          kStartedWithExistingMediaPlayingHistogramName,
+      /*sample=*/false, /*expected_count=*/2);
 }
 
 }  // namespace ash

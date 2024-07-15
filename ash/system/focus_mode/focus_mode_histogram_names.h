@@ -20,6 +20,8 @@ constexpr char kStartSessionSourceHistogramName[] =
     "Ash.FocusMode.StartSession.ToggleSource";
 constexpr char kStartedWithTaskStatekHistogramName[] =
     "Ash.FocusMode.StartSession.TaskState";
+constexpr char kStartedWithExistingMediaPlayingHistogramName[] =
+    "Ash.FocusMode.StartSession.ExistingMediaPlaying";
 
 // Histograms recorded during a session.
 constexpr char kToggleEndButtonDuringSessionHistogramName[] =

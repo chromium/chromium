@@ -10,6 +10,7 @@
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/url_constants.h"
+#include "ash/media/media_controller_impl.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
@@ -507,6 +508,15 @@ const base::UnguessableToken& FocusModeController::GetMediaSessionRequestId() {
 
 void FocusModeController::RequestTasksUpdateForTesting() {
   tasks_model_.RequestUpdate();
+}
+
+media_session::mojom::MediaSessionInfoPtr
+FocusModeController::GetSystemMediaSessionInfo() {
+  if (test_media_session_info_) {
+    CHECK_IS_TEST();
+    return std::move(test_media_session_info_);
+  }
+  return Shell::Get()->media_controller()->GetMediaSessionInfo();
 }
 
 void FocusModeController::StartFocusSession(
