@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProc
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -150,13 +151,12 @@ public class EntitySuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    public void decorationTest_validHexColor() {
+    public void decorationTest_validHexColor_lowMemoryDevice() {
+        OmniboxFeatures.setIsLowMemoryDeviceForTesting(true);
         SuggestionTestHelper suggHelper = createSuggestion("", "", "#fedcba", SEARCH_URL);
         processSuggestion(suggHelper);
 
-        assertThat(suggHelper.getIcon(), instanceOf(ColorDrawable.class));
-        ColorDrawable icon = (ColorDrawable) suggHelper.getIcon();
-        Assert.assertEquals(icon.getColor(), 0xfffedcba);
+        assertThat(suggHelper.getIcon(), instanceOf(BitmapDrawable.class));
     }
 
     @Test
