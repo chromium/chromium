@@ -141,6 +141,7 @@ const constexpr char* const kStylusAppIds[] = {
     "ifeodkfobgahmoofeclbhkdacaaopkek",  // Google Keep ARC
     "gjcfgmjegppjhimhlldbhhkfgkdjngcc",  // Squid
     "afihfgfghkmdmggakhkgnfhlikhdpima",  // Infinite Painter
+    "ffhnkanmhmmnfebldhpffiopadhbeimp"   // Goodnotes
 };
 
 // Minimum velocity required for the shelf to process a gesture fling event.
