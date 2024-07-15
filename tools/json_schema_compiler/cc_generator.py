@@ -50,6 +50,7 @@ class _Generator(object):
       .Append('#include <optional>')
       .Append('#include <ostream>')
       .Append('#include <string>')
+      .Append('#include <string_view>')
       .Append('#include <utility>')
       .Append('#include <vector>')
       .Append()
@@ -559,7 +560,7 @@ class _Generator(object):
 
     c.Append()
 
-    c.Append('std::vector<base::StringPiece> error_path_reversed;')
+    c.Append('std::vector<std::string_view> error_path_reversed;')
     c.Append('const base::Value::Dict& dict = root_dict;')
 
     for prop in properties:
@@ -584,10 +585,10 @@ class _Generator(object):
     """
     params = [
       'const base::Value::Dict& root_dict',
-      'base::StringPiece key',
+      'std::string_view key',
       '%(classname)s& out',
       'std::u16string& error',
-      'std::vector<base::StringPiece>& error_path_reversed'
+      'std::vector<std::string_view>& error_path_reversed'
     ]
 
     c = Code()
@@ -1393,7 +1394,7 @@ class _Generator(object):
       c.Append('// static')
     maybe_namespace = '' if cpp_namespace is None else '%s::' % cpp_namespace
 
-    c.Sblock('%s%s %sParse%s(base::StringPiece enum_string) {' %
+    c.Sblock('%s%s %sParse%s(std::string_view enum_string) {' %
                  (maybe_namespace, classname, maybe_namespace, classname))
     for _, enum_value in enumerate(
           self._type_helper.FollowRef(type_).enum_values):
@@ -1422,7 +1423,7 @@ class _Generator(object):
     maybe_namespace = '' if cpp_namespace is None else '%s::' % cpp_namespace
 
     c.Sblock(
-        'std::u16string %sGet%sParseError(base::StringPiece enum_string) {' %
+        'std::u16string %sGet%sParseError(std::string_view enum_string) {' %
         (maybe_namespace, classname))
     error_message = (
         'u\"expected \\"' +

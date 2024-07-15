@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/json/json_reader.h"
@@ -30,8 +31,7 @@ static base::Value::Dict CreateTestTypeDictionary() {
   return dict;
 }
 
-void GetManifestParseError(base::StringPiece manifest_json,
-                           std::string* error) {
+void GetManifestParseError(std::string_view manifest_json, std::string* error) {
   std::optional<base::Value> manifest = base::JSONReader::Read(manifest_json);
   ASSERT_TRUE(manifest) << "Invalid json \n" << manifest_json;
 
@@ -44,7 +44,7 @@ void GetManifestParseError(base::StringPiece manifest_json,
   *error = base::UTF16ToASCII(error_16);
 }
 
-void PopulateManifestKeys(base::StringPiece manifest_json,
+void PopulateManifestKeys(std::string_view manifest_json,
                           simple_api::ManifestKeys* manifest_keys) {
   std::optional<base::Value> manifest = base::JSONReader::Read(manifest_json);
   ASSERT_TRUE(manifest.has_value());

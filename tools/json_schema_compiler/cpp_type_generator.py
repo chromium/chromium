@@ -234,14 +234,14 @@ class CppTypeGenerator(object):
     """
     c = Code()
 
-    # The inclusion of the StringPiece header is dependent on either the
+    # The inclusion of the std::string_view header is dependent on either the
     # presence of enums, or manifest keys.
-    include_string_piece = (self._default_namespace.manifest_keys or
+    include_string_view = (self._default_namespace.manifest_keys or
         any(type_.property_type is PropertyType.ENUM for type_ in
             self._default_namespace.types.values()))
 
-    if include_string_piece:
-      c.Append('#include "base/strings/string_piece.h"')
+    if include_string_view:
+      c.Append('#include <string_view>')
 
     # The header for `base::expected` should be included whenever error messages
     # are supposed to be returned, which only occurs with object, choices, or

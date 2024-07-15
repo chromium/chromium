@@ -131,10 +131,7 @@ template("generated_json_strings") {
   # Compute the contents of the library/source set.
   lib_sources = get_target_outputs(":$bundle_generator_schema_name")
   lib_deps = [ ":$bundle_generator_schema_name" ]
-  lib_public_deps = [
-    # For base::StringPiece.
-    "//base",
-  ]
+  lib_public_deps = [ "//base" ]
   lib_extra_configs = []
   if (defined(invoker.configs)) {
     lib_extra_configs += invoker.configs

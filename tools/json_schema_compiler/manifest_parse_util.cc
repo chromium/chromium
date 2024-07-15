@@ -4,6 +4,8 @@
 
 #include "tools/json_schema_compiler/manifest_parse_util.h"
 
+#include <string_view>
+
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -20,12 +22,12 @@ using ValueTypeConverter = T (base::Value::*)() const;
 
 template <typename T, typename U>
 bool ParseHelper(const base::Value::Dict& dict,
-                 base::StringPiece key,
+                 std::string_view key,
                  base::Value::Type expected_type,
                  ValueTypeConverter<U> type_converter,
                  T& out,
                  std::u16string& error,
-                 std::vector<base::StringPiece>& error_path_reversed) {
+                 std::vector<std::string_view>& error_path_reversed) {
   DCHECK(type_converter);
 
   const base::Value* value =
@@ -40,10 +42,10 @@ bool ParseHelper(const base::Value::Dict& dict,
 }  // namespace
 
 void PopulateInvalidEnumValueError(
-    base::StringPiece key,
-    base::StringPiece value,
+    std::string_view key,
+    std::string_view value,
     std::u16string& error,
-    std::vector<base::StringPiece>& error_path_reversed) {
+    std::vector<std::string_view>& error_path_reversed) {
   DCHECK(error.empty());
   DCHECK(error_path_reversed.empty());
 
@@ -53,9 +55,9 @@ void PopulateInvalidEnumValueError(
 }
 
 void PopulateInvalidChoiceValueError(
-    base::StringPiece key,
+    std::string_view key,
     std::u16string& error,
-    std::vector<base::StringPiece>& error_path_reversed) {
+    std::vector<std::string_view>& error_path_reversed) {
   DCHECK(error.empty());
   DCHECK(error_path_reversed.empty());
 
@@ -65,9 +67,9 @@ void PopulateInvalidChoiceValueError(
 }
 
 void PopulateKeyIsRequiredError(
-    base::StringPiece key,
+    std::string_view key,
     std::u16string& error,
-    std::vector<base::StringPiece>& error_path_reversed) {
+    std::vector<std::string_view>& error_path_reversed) {
   DCHECK(error.empty());
   DCHECK(error_path_reversed.empty());
 
@@ -83,7 +85,7 @@ std::u16string GetArrayParseError(size_t error_index,
 }
 
 void PopulateFinalError(std::u16string& error,
-                        std::vector<base::StringPiece>& error_path_reversed) {
+                        std::vector<std::string_view>& error_path_reversed) {
   DCHECK(!error.empty());
   DCHECK(!error_path_reversed.empty());
 
@@ -97,10 +99,10 @@ void PopulateFinalError(std::u16string& error,
 
 const base::Value* FindKeyOfType(
     const base::Value::Dict& dict,
-    base::StringPiece key,
+    std::string_view key,
     base::Value::Type expected_type,
     std::u16string& error,
-    std::vector<base::StringPiece>& error_path_reversed) {
+    std::vector<std::string_view>& error_path_reversed) {
   DCHECK(error.empty());
   DCHECK(error_path_reversed.empty());
 
@@ -123,37 +125,37 @@ const base::Value* FindKeyOfType(
 }
 
 bool ParseFromDictionary(const base::Value::Dict& dict,
-                         base::StringPiece key,
+                         std::string_view key,
                          int& out,
                          std::u16string& error,
-                         std::vector<base::StringPiece>& error_path_reversed) {
+                         std::vector<std::string_view>& error_path_reversed) {
   return ParseHelper(dict, key, base::Value::Type::INTEGER,
                      &base::Value::GetInt, out, error, error_path_reversed);
 }
 
 bool ParseFromDictionary(const base::Value::Dict& dict,
-                         base::StringPiece key,
+                         std::string_view key,
                          bool& out,
                          std::u16string& error,
-                         std::vector<base::StringPiece>& error_path_reversed) {
+                         std::vector<std::string_view>& error_path_reversed) {
   return ParseHelper(dict, key, base::Value::Type::BOOLEAN,
                      &base::Value::GetBool, out, error, error_path_reversed);
 }
 
 bool ParseFromDictionary(const base::Value::Dict& dict,
-                         base::StringPiece key,
+                         std::string_view key,
                          double& out,
                          std::u16string& error,
-                         std::vector<base::StringPiece>& error_path_reversed) {
+                         std::vector<std::string_view>& error_path_reversed) {
   return ParseHelper(dict, key, base::Value::Type::DOUBLE,
                      &base::Value::GetDouble, out, error, error_path_reversed);
 }
 
 bool ParseFromDictionary(const base::Value::Dict& dict,
-                         base::StringPiece key,
+                         std::string_view key,
                          std::string& out,
                          std::u16string& error,
-                         std::vector<base::StringPiece>& error_path_reversed) {
+                         std::vector<std::string_view>& error_path_reversed) {
   return ParseHelper(dict, key, base::Value::Type::STRING,
                      &base::Value::GetString, out, error, error_path_reversed);
 }

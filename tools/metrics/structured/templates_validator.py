@@ -13,10 +13,10 @@ HEADER_FILE_TEMPLATE = """\
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 
 #include "base/no_destructor.h"
-#include "base/strings/string_piece.h"
 #include "components/metrics/structured/project_validator.h"
 
 namespace metrics {{
@@ -34,9 +34,9 @@ public:
   void Initialize();
 
   const ProjectValidator*
-    GetProjectValidator(base::StringPiece project_name) const;
+    GetProjectValidator(std::string_view project_name) const;
 
-  std::optional<base::StringPiece>
+  std::optional<std::string_view>
     GetProjectName(uint64_t project_name_hash) const;
 
   static Validators* Get();
@@ -44,9 +44,9 @@ public:
 private:
   friend class base::NoDestructor<Validators>;
 
-  std::unordered_map<base::StringPiece, std::unique_ptr<ProjectValidator>>
+  std::unordered_map<std::string_view, std::unique_ptr<ProjectValidator>>
       validators_;
-  std::unordered_map<uint64_t, base::StringPiece> project_name_map_;
+  std::unordered_map<uint64_t, std::string_view> project_name_map_;
 }};
 
 }}  // namespace validator
@@ -97,14 +97,14 @@ void Validators::Initialize() {{
 }}
 
 const ProjectValidator*
-  Validators::GetProjectValidator(base::StringPiece project_name) const {{
+  Validators::GetProjectValidator(std::string_view project_name) const {{
     const auto it = validators_.find(project_name);
     if (it == validators_.end())
       return nullptr;
     return it->second.get();
 }}
 
-std::optional<base::StringPiece>
+std::optional<std::string_view>
   Validators::GetProjectName(uint64_t project_name_hash) const {{
     const auto it = project_name_map_.find(project_name_hash);
     if (it == project_name_map_.end())

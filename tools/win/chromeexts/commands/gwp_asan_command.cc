@@ -14,6 +14,7 @@
 #include <istream>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/json/json_reader.h"
@@ -264,8 +265,7 @@ HRESULT GwpAsanCommand::UseWinDbgSymbolize(uint64_t* stack_address,
       if (position != std::string::npos) {
         file_name_str = file_name_str.substr(position + 6, std::string::npos);
       }
-      base::ReplaceChars(base::StringPiece(file_name_str.c_str()), "\\", "/",
-                         &file_name_str);
+      base::ReplaceChars(file_name_str, "\\", "/", &file_name_str);
       Printf(" at %s:%d", file_name_str.c_str(), line);
     }
     Printf("\n");
@@ -311,7 +311,7 @@ HRESULT GwpAsanCommand::SymbolizeStackTrace(
   }
 
   std::optional<base::Value> symbolized_json =
-      base::JSONReader::Read(base::StringPiece(json_string));
+      base::JSONReader::Read(json_string);
   if (!symbolized_json.has_value() && !symbolized_json->is_list()) {
     return E_FAIL;
   }

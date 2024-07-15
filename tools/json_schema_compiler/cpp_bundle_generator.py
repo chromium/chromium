@@ -302,7 +302,7 @@ class _SchemasHGenerator(object):
 
   def Generate(self, _):  # namespace not relevant, this is a bundle
     c = code_util.Code()
-    c.Append('#include "base/strings/string_piece.h"')
+    c.Append('#include <string_view>')
     c.Append()
     c.Concat(cpp_util.OpenNamespace(self._bundle._cpp_namespace))
     c.Append()
@@ -310,10 +310,10 @@ class _SchemasHGenerator(object):
              self._bundle._GenerateBundleClass('GeneratedSchemas'))
     c.Sblock(' public:')
     c.Append('// Determines if schema named |name| is generated.')
-    c.Append('static bool IsGenerated(base::StringPiece name);')
+    c.Append('static bool IsGenerated(std::string_view name);')
     c.Append()
     c.Append('// Gets the API schema named |name|.')
-    c.Append('static base::StringPiece Get(base::StringPiece name);')
+    c.Append('static std::string_view Get(std::string_view name);')
     c.Eblock('};')
     c.Append()
     c.Concat(cpp_util.CloseNamespace(self._bundle._cpp_namespace))
@@ -344,9 +344,9 @@ class _SchemasCCGenerator(object):
     c.Append()
     c.Append('#include <algorithm>')
     c.Append('#include <iterator>')
+    c.Append('#include <string_view>')
     c.Append()
     c.Append('#include "base/containers/fixed_flat_map.h"')
-    c.Append('#include "base/strings/string_piece.h"')
     c.Append()
     c.Append('namespace {')
     for api in self._bundle._api_defs:
@@ -370,17 +370,17 @@ class _SchemasCCGenerator(object):
     c.Concat(cpp_util.OpenNamespace(self._bundle._cpp_namespace))
     c.Append()
     c.Append('// static')
-    c.Sblock('bool %s::IsGenerated(base::StringPiece name) {' %
+    c.Sblock('bool %s::IsGenerated(std::string_view name) {' %
              self._bundle._GenerateBundleClass('GeneratedSchemas'))
     c.Append('return !Get(name).empty();')
     c.Eblock('}')
     c.Append()
     c.Append('// static')
-    c.Sblock('base::StringPiece %s::Get(base::StringPiece name) {' %
+    c.Sblock('std::string_view %s::Get(std::string_view name) {' %
              self._bundle._GenerateBundleClass('GeneratedSchemas'))
 
     c.Append('static constexpr auto kSchemas = '
-             'base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>({')
+             'base::MakeFixedFlatMap<std::string_view, std::string_view>({')
     c.Sblock()
     namespaces = [self._bundle._model.namespaces[api.get('namespace')].name
                   for api in self._bundle._api_defs]
@@ -389,7 +389,7 @@ class _SchemasCCGenerator(object):
       c.Append('{"%s", %s},' % (namespace, schema_constant_name))
     c.Eblock('});')
     c.Append('auto it = kSchemas.find(name);')
-    c.Append('return it != kSchemas.end() ? it->second : base::StringPiece();')
+    c.Append('return it != kSchemas.end() ? it->second : std::string_view();')
     c.Eblock('}')
     c.Append()
     c.Concat(cpp_util.CloseNamespace(self._bundle._cpp_namespace))
