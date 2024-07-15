@@ -25,8 +25,6 @@
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/effect_model.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
-#include "third_party/blink/renderer/core/animation/keyframe_effect.h"
-#include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 #include "third_party/blink/renderer/core/animation/scroll_snapshot_timeline.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/animation/view_timeline.h"
@@ -49,7 +47,9 @@
 #include "third_party/blink/renderer/platform/crypto.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -644,6 +644,63 @@ void InspectorAnimationAgent::NotifyAnimationUpdated(
   GetFrontend()->animationUpdated(BuildObjectForAnimation(*animation));
 }
 
+bool InspectorAnimationAgent::CompareAndUpdateKeyframesSnapshot(
+    KeyframeEffect* keyframe_effect,
+    HeapVector<Member<AnimationKeyframeSnapshot>>*
+        animation_snapshot_keyframes) {
+  bool should_notify_frontend = false;
+  const KeyframeEffectModelBase* model = keyframe_effect->Model();
+  Vector<double> computed_offsets =
+      KeyframeEffectModelBase::GetComputedOffsets(model->GetFrames());
+  if (model->GetFrames().size() != animation_snapshot_keyframes->size()) {
+    // Notify frontend if there were previous keyframe snapshots and the
+    // size has changed. Otherwise we don't notify frontend as it means
+    // this is the first initialization of the `animation_snapshot_keyframes`
+    // vector.
+    if (animation_snapshot_keyframes->size() != 0) {
+      should_notify_frontend = true;
+    }
+
+    for (wtf_size_t i = 0; i < model->GetFrames().size(); i++) {
+      const Keyframe* keyframe = model->GetFrames().at(i);
+      if (!keyframe->IsStringKeyframe()) {
+        continue;
+      }
+
+      const auto* string_keyframe = To<StringKeyframe>(keyframe);
+      AnimationKeyframeSnapshot* keyframe_snapshot =
+          MakeGarbageCollected<AnimationKeyframeSnapshot>();
+      keyframe_snapshot->computed_offset = computed_offsets.at(i);
+      keyframe_snapshot->easing = string_keyframe->Easing().ToString();
+      animation_snapshot_keyframes->emplace_back(keyframe_snapshot);
+    }
+
+    return should_notify_frontend;
+  }
+
+  for (wtf_size_t i = 0; i < animation_snapshot_keyframes->size(); i++) {
+    AnimationKeyframeSnapshot* keyframe_snapshot =
+        animation_snapshot_keyframes->at(i);
+    const Keyframe* keyframe = model->GetFrames().at(i);
+    if (!keyframe->IsStringKeyframe()) {
+      continue;
+    }
+
+    const auto* string_keyframe = To<StringKeyframe>(keyframe);
+    if (keyframe_snapshot->computed_offset != computed_offsets.at(i)) {
+      keyframe_snapshot->computed_offset = computed_offsets.at(i);
+      should_notify_frontend = true;
+    }
+
+    if (keyframe_snapshot->easing != string_keyframe->Easing().ToString()) {
+      keyframe_snapshot->easing = string_keyframe->Easing().ToString();
+      should_notify_frontend = true;
+    }
+  }
+
+  return should_notify_frontend;
+}
+
 bool InspectorAnimationAgent::CompareAndUpdateInternalSnapshot(
     blink::Animation& animation,
     AnimationSnapshot* snapshot) {
@@ -669,6 +726,8 @@ bool InspectorAnimationAgent::CompareAndUpdateInternalSnapshot(
       double duration = NormalizedDuration(computed_timing->duration());
       double delay = AsDoubleOrZero(computed_timing->delay());
       double end_delay = AsDoubleOrZero(computed_timing->endDelay());
+      double iterations = computed_timing->iterations();
+      String easing = computed_timing->easing();
       if (snapshot->duration != duration) {
         snapshot->duration = duration;
         should_notify_frontend = true;
@@ -681,6 +740,24 @@ bool InspectorAnimationAgent::CompareAndUpdateInternalSnapshot(
 
       if (snapshot->end_delay != end_delay) {
         snapshot->end_delay = end_delay;
+        should_notify_frontend = true;
+      }
+
+      if (snapshot->iterations != iterations) {
+        snapshot->iterations = iterations;
+        should_notify_frontend = true;
+      }
+
+      if (snapshot->timing_function != easing) {
+        snapshot->timing_function = easing;
+        should_notify_frontend = true;
+      }
+    }
+
+    if (KeyframeEffect* keyframe_effect =
+            DynamicTo<KeyframeEffect>(animation.effect())) {
+      if (CompareAndUpdateKeyframesSnapshot(keyframe_effect,
+                                            &snapshot->keyframes)) {
         should_notify_frontend = true;
       }
     }

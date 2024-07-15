@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_ANIMATION_AGENT_H_
 
 #include "third_party/blink/renderer/core/animation/animation.h"
+#include "third_party/blink/renderer/core/animation/keyframe_effect.h"
+#include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 #include "third_party/blink/renderer/core/animation/scroll_snapshot_timeline.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
@@ -72,16 +74,26 @@ class CORE_EXPORT InspectorAnimationAgent final
   void Trace(Visitor*) const override;
 
  private:
+  struct AnimationKeyframeSnapshot
+      : public GarbageCollected<AnimationKeyframeSnapshot> {
+    double computed_offset;
+    String easing;
+
+    void Trace(Visitor* visitor) const {}
+  };
   struct AnimationSnapshot : public GarbageCollected<AnimationSnapshot> {
     double start_time;
     double duration;
     double delay;
     double end_delay;
+    double iterations;
+    String timing_function;
+    HeapVector<Member<AnimationKeyframeSnapshot>> keyframes;
     std::optional<double> start_offset;
     std::optional<double> end_offset;
     blink::Animation::AnimationPlayState play_state;
 
-    void Trace(Visitor* visitor) const {}
+    void Trace(Visitor* visitor) const { visitor->Trace(keyframes); }
   };
   using AnimationType = protocol::Animation::Animation::TypeEnum;
 
@@ -96,6 +108,9 @@ class CORE_EXPORT InspectorAnimationAgent final
   // returns whether any value of the snapshot is updated or not.
   bool CompareAndUpdateInternalSnapshot(blink::Animation& animation,
                                         AnimationSnapshot* snapshot);
+  bool CompareAndUpdateKeyframesSnapshot(
+      KeyframeEffect* keyframe_effect,
+      HeapVector<Member<AnimationKeyframeSnapshot>>* snapshot_keyframes);
   void NotifyAnimationUpdated(const String& animation_id);
 
   Member<InspectedFrames> inspected_frames_;
