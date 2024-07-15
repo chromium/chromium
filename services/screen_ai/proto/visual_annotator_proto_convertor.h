@@ -19,7 +19,7 @@ namespace screen_ai {
 // AXTreeUpdate. The argument `image_rect` is the bounding box of the image
 // from which the visual annotation was created.
 ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
-    const chrome_screen_ai::VisualAnnotation& visual_annotation,
+    chrome_screen_ai::VisualAnnotation& visual_annotation,
     const gfx::Rect& image_rect);
 
 // Resets the node id generator to start from 1 again.

@@ -70,7 +70,7 @@ OcrClientTypeForMetrics GetClientType(mojom::OcrClientType client_type) {
 }
 
 ui::AXTreeUpdate ConvertVisualAnnotationToTreeUpdate(
-    const std::optional<chrome_screen_ai::VisualAnnotation>& annotation_proto,
+    std::optional<chrome_screen_ai::VisualAnnotation>& annotation_proto,
     const gfx::Rect& image_rect) {
   if (!annotation_proto) {
     VLOG(0) << "Screen AI library could not process snapshot or no OCR data.";

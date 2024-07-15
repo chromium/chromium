@@ -54,6 +54,28 @@ ui::AXNodeID GetNextNegativeNodeID() {
   return next_negative_node_id--;
 }
 
+gfx::RectF ToGfxRect(const chrome_screen_ai::Rect& rect) {
+  return gfx::RectF(rect.x(), rect.y(), rect.width(), rect.height());
+}
+
+// The bounding box angle specifies the rotation around the bounding box's (x,y)
+// point.
+void UpdateBoundingBoxIfRotated(chrome_screen_ai::Rect* bounding_box) {
+  if (bounding_box->angle() == 0) {
+    return;
+  }
+
+  gfx::Transform transform;
+  transform.Rotate(bounding_box->angle());
+  transform.ApplyTransformOrigin(bounding_box->x(), bounding_box->y(), 0);
+
+  gfx::RectF rotated_rect = transform.MapRect(ToGfxRect(*bounding_box));
+  bounding_box->set_x(rotated_rect.x());
+  bounding_box->set_y(rotated_rect.y());
+  bounding_box->set_width(rotated_rect.width());
+  bounding_box->set_height(rotated_rect.height());
+}
+
 bool HaveIdenticalFormattingStyle(const chrome_screen_ai::WordBox& word_1,
                                   const chrome_screen_ai::WordBox& word_2) {
   if (word_1.language() != word_2.language())
@@ -89,15 +111,10 @@ bool HaveIdenticalFormattingStyle(const chrome_screen_ai::WordBox& word_1,
 void SerializeBoundingBox(const chrome_screen_ai::Rect& bounding_box,
                           const ui::AXNodeID& container_id,
                           ui::AXNodeData& out_data) {
-  out_data.relative_bounds.bounds =
-      gfx::RectF(bounding_box.x(), bounding_box.y(), bounding_box.width(),
-                 bounding_box.height());
+  out_data.relative_bounds.bounds = ToGfxRect(bounding_box);
+  // TODO(crbug.com/347622611): Instead of DCHECK, drop empty boxes in
+  // preprocessing.
   DCHECK(!out_data.relative_bounds.bounds.IsEmpty());
-
-  if (bounding_box.angle()) {
-    out_data.relative_bounds.transform = std::make_unique<gfx::Transform>();
-    out_data.relative_bounds.transform->Rotate(bounding_box.angle());
-  }
 }
 
 void SerializeDirection(const chrome_screen_ai::Direction& direction,
@@ -203,6 +220,8 @@ int GetSpaceWidth(chrome_screen_ai::Direction direction,
   }
 }
 
+// TODO(crbug.com/40918372): Consider either updating based on the angle of
+// line, word, and symbol, or dropping character offesets for rotated texts.
 void UpdateCharacterOffsets(const chrome_screen_ai::WordBox& word_box,
                             ui::AXNodeData& inline_text_box,
                             int next_space_width) {
@@ -256,13 +275,8 @@ void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
 
   // The boundaries of each `inline_text_box` is computed as the union of
   // the boundaries of all `word_box`es that are inside.
-  // TODO(crbug.com/40918372): What if the angles of orientation are
-  // different? Do we need to apply the related transform, or is the fact
-  // that the transform is the same between line and word boxes results in
-  // no difference?
-  inline_text_box.relative_bounds.bounds.Union(gfx::RectF(
-      word_box.bounding_box().x(), word_box.bounding_box().y(),
-      word_box.bounding_box().width(), word_box.bounding_box().height()));
+  inline_text_box.relative_bounds.bounds.Union(
+      ToGfxRect(word_box.bounding_box()));
 
   UpdateCharacterOffsets(word_box, inline_text_box, next_space_width);
 
@@ -474,7 +488,7 @@ void ResetNodeIDForTesting() {
 }
 
 ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
-    const chrome_screen_ai::VisualAnnotation& visual_annotation,
+    chrome_screen_ai::VisualAnnotation& visual_annotation,
     const gfx::Rect& image_rect) {
   ui::AXTreeUpdate update;
 
@@ -484,6 +498,24 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
 
   // TODO(https://crbug.com/327298772): Create an AXTreeSource and create the
   // update using AXTreeSerializer.
+
+  // TODO(crbug.com/347622611): Consider adding 'const' to `visual_annotation`
+  // argument when preprocessing step is added.
+  for (chrome_screen_ai::LineBox& line : *visual_annotation.mutable_lines()) {
+    if (line.has_bounding_box()) {
+      UpdateBoundingBoxIfRotated(line.mutable_bounding_box());
+    }
+    for (chrome_screen_ai::WordBox& word : *line.mutable_words()) {
+      if (word.has_bounding_box()) {
+        UpdateBoundingBoxIfRotated(word.mutable_bounding_box());
+      }
+      for (chrome_screen_ai::SymbolBox& symbol : *word.mutable_symbols()) {
+        if (symbol.has_bounding_box()) {
+          UpdateBoundingBoxIfRotated(symbol.mutable_bounding_box());
+        }
+      }
+    }
+  }
 
   // Each `UIComponent`, `LineBox`, as well as every `WordBox` that results in a
   // different formatting context, will take up one node in the accessibility
@@ -585,9 +617,7 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
 
       // Accumulate bounds of all lines for the paragraph.
       auto& bounding_box = line_box.bounding_box();
-      paragraph_node.relative_bounds.bounds.Union(
-          gfx::RectF(bounding_box.x(), bounding_box.y(), bounding_box.width(),
-                     bounding_box.height()));
+      paragraph_node.relative_bounds.bounds.Union(ToGfxRect(bounding_box));
     }
   }
 
