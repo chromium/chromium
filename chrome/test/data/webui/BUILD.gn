@@ -482,6 +482,12 @@ generate_grd("build_grd") {
     "$target_gen_dir/usb_internals/resources.grdp",
   ]
 
+  if (use_nss_certs || chrome_root_store_cert_management_ui) {
+    deps += [ "cr_components/certificate_manager:build_grdp" ]
+    grdp_files +=
+        [ "$target_gen_dir/cr_components/certificate_manager/resources.grdp" ]
+  }
+
   if (enable_extensions) {
     deps += [ "extensions:build_grdp" ]
     grdp_files += [ "$target_gen_dir/extensions/resources.grdp" ]

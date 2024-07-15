@@ -14,11 +14,14 @@
 
 typedef WebUIMochaBrowserTest CrComponentsTest;
 
+// TODO(crbug.com/40928765): move CertificateManager tests to their own
+// browsertest.cc file
 #if BUILDFLAG(USE_NSS_CERTS)
 IN_PROC_BROWSER_TEST_F(CrComponentsTest, CertificateManager) {
   // Loaded from a settings URL so that localized strings are present.
   set_test_loader_host(chrome::kChromeUISettingsHost);
-  RunTest("cr_components/certificate_manager_test.js", "mocha.run()");
+  RunTest("cr_components/certificate_manager/certificate_manager_test.js",
+          "mocha.run()");
 }
 #endif  // BUILDFLAG(USE_NSS_CERTS)
 
@@ -26,8 +29,10 @@ IN_PROC_BROWSER_TEST_F(CrComponentsTest, CertificateManager) {
 IN_PROC_BROWSER_TEST_F(CrComponentsTest, CertificateManagerProvisioning) {
   // Loaded from a settings URL so that localized strings are present.
   set_test_loader_host(chrome::kChromeUISettingsHost);
-  RunTest("cr_components/certificate_manager_provisioning_test.js",
-          "mocha.run()");
+  RunTest(
+      "cr_components/certificate_manager/"
+      "certificate_manager_provisioning_test.js",
+      "mocha.run()");
 }
 #endif  // BUILDFLAG(USE_NSS_CERTS) && BUILDFLAG(IS_CHROMEOS)
 
@@ -45,19 +50,23 @@ class CrComponentsCertManagerV2Test : public WebUIMochaBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(CrComponentsCertManagerV2Test, CertificateManagerV2) {
-  RunTest("cr_components/certificate_manager_v2_test.js", "mocha.run()");
+  RunTest("cr_components/certificate_manager/certificate_manager_v2_test.js",
+          "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrComponentsCertManagerV2Test, CertificateListV2) {
-  RunTest("cr_components/certificate_list_v2_test.js", "mocha.run()");
+  RunTest("cr_components/certificate_manager/certificate_list_v2_test.js",
+          "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrComponentsCertManagerV2Test, CertificateEntryV2) {
-  RunTest("cr_components/certificate_entry_v2_test.js", "mocha.run()");
+  RunTest("cr_components/certificate_manager/certificate_entry_v2_test.js",
+          "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrComponentsCertManagerV2Test, CertificateSubpageV2) {
-  RunTest("cr_components/certificate_subpage_v2_test.js", "mocha.run()");
+  RunTest("cr_components/certificate_manager/certificate_subpage_v2_test.js",
+          "mocha.run()");
 }
 
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)

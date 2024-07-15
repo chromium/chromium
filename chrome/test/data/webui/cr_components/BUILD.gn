@@ -28,24 +28,6 @@ build_webui_tests("build") {
     "theme_color_picker/theme_hue_slider_dialog_test.ts",
   ]
 
-  if (use_nss_certs) {
-    files += [ "certificate_manager_test.ts" ]
-    if (is_chromeos) {
-      files += [ "certificate_manager_provisioning_test.ts" ]
-    }
-  }
-
-  if (chrome_root_store_cert_management_ui) {
-    files += [
-      "certificate_entry_v2_test.ts",
-      "certificate_list_v2_test.ts",
-      "certificate_manager_v2_focus_test.ts",
-      "certificate_manager_v2_test.ts",
-      "certificate_manager_v2_test_support.ts",
-      "certificate_subpage_v2_test.ts",
-    ]
-  }
-
   ts_definitions = [
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/settings_private.d.ts",
@@ -75,9 +57,4 @@ build_webui_tests("build") {
       [ "chrome://new-tab-page/*|" +
         rebase_path("$root_gen_dir/chrome/browser/resources/new_tab_page/tsc/*",
                     target_gen_dir) ]
-
-  if (use_nss_certs || chrome_root_store_cert_management_ui) {
-    ts_deps +=
-        [ "//ui/webui/resources/cr_components/certificate_manager:build_ts" ]
-  }
 }

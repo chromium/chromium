@@ -29,6 +29,8 @@ class CrComponentsCertManagerV2FocusTest : public WebUIMochaBrowserTest {
 };
 IN_PROC_BROWSER_TEST_F(CrComponentsCertManagerV2FocusTest,
                        CertificateManagerV2) {
-  RunTest("cr_components/certificate_manager_v2_focus_test.js", "mocha.run()");
+  RunTest(
+      "cr_components/certificate_manager/certificate_manager_v2_focus_test.js",
+      "mocha.run()");
 }
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
