@@ -104,8 +104,6 @@ public class TrackingProtectionStatusPreferenceTest {
     public void testToggleTrackingProtection() {
         var preference = new TrackingProtectionStatusPreference(mActivity);
         mPreferenceScreen.addPreference(preference);
-        // 3PCD are limited and not completely blocked.
-        preference.setBlockAll3PC(false);
         // Simulate updates as if Tracking Protection is on.
         for (TestElement element : mTestElements) {
             preference.updateStatus(
@@ -146,8 +144,6 @@ public class TrackingProtectionStatusPreferenceTest {
         mPreferenceScreen.addPreference(preference);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    // 3PCD are limited and not completely blocked.
-                    preference.setBlockAll3PC(false);
                     // Set all the features to visible.
                     for (TestElement element : mTestElements) {
                         preference.updateStatus(
@@ -197,8 +193,6 @@ public class TrackingProtectionStatusPreferenceTest {
     @LargeTest
     public void testDelayedVisibility() {
         var preference = new TrackingProtectionStatusPreference(mActivity);
-        // 3PCD are limited and not completely blocked.
-        preference.setBlockAll3PC(false);
         // Set all the features to visible.
         for (TestElement element : mTestElements) {
             preference.updateStatus(

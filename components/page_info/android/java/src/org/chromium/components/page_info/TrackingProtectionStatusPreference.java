@@ -44,7 +44,6 @@ public class TrackingProtectionStatusPreference extends Preference {
     private Drawable mManagedIpIcon;
     private Drawable mManagedFingerprintIcon;
 
-    private boolean mBlockAll3PC;
     private boolean mStatus;
     private List<UpdateAction> mStatusUpdates;
 
@@ -57,7 +56,6 @@ public class TrackingProtectionStatusPreference extends Preference {
     public TrackingProtectionStatusPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         mStatusUpdates = new ArrayList<UpdateAction>();
-        mBlockAll3PC = false;
         mStatus = true;
         setLayoutResource(R.layout.tracking_protection_status);
     }
@@ -73,10 +71,6 @@ public class TrackingProtectionStatusPreference extends Preference {
             updateStatus(action.feature, action.visible);
         }
         mStatusUpdates.clear();
-    }
-
-    public void setBlockAll3PC(boolean block) {
-        mBlockAll3PC = block;
     }
 
     private Drawable managedIconForEnforcement(@CookieControlsEnforcement int enforcement) {
