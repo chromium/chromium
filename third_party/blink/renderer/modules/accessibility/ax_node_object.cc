@@ -5529,23 +5529,38 @@ void AXNodeObject::AddNodeChildren() {
           : element;
   if (closest_layout_parent &&
       closest_layout_parent->IsReadingFlowContainer()) {
-    HeapHashSet<Member<Node>> reading_flow_children;
+    HeapHashSet<Member<Node>> ax_children_added;
+    // Add all reading order items first, in the correct order.
     for (Element* reading_item :
          closest_layout_parent->GetLayoutBox()->ReadingFlowElements()) {
       // Filter to only add node child if it is a direct child of current
       // element.
       if (LayoutTreeBuilderTraversal::Parent(*reading_item) == element) {
         AddNodeChild(reading_item);
-        reading_flow_children.insert(reading_item);
+        ax_children_added.insert(reading_item);
       }
     }
     // Add all non-reading order items at the end of the reading flow.
     for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node_); child;
          child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
-      if (!reading_flow_children.Contains(child)) {
+      if (!ax_children_added.Contains(child)) {
         AddNodeChild(child);
+#if DCHECK_IS_ON()
+        ax_children_added.insert(child);
+#endif
       }
     }
+#if DCHECK_IS_ON()
+    // At this point, the number of AXObject children added should equal the
+    // number of LayoutTreeBuilderTraversal children.
+    size_t num_layout_tree_children = 0;
+    for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node_); child;
+         child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
+      DCHECK(ax_children_added.Contains(child));
+      ++num_layout_tree_children;
+    }
+    DCHECK_EQ(ax_children_added.size(), num_layout_tree_children);
+#endif
   } else {
     for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node_); child;
          child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
