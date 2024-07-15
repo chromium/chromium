@@ -200,6 +200,11 @@ constexpr base::FeatureParam<int> kAuxiliarySearchMaxTabsCountParam(
     "auxiliary_search_max_donation_tab",
     100);
 
+constexpr base::FeatureParam<std::string> kQuickDeleteAndroidFollowupTriggerId(
+    &kQuickDeleteAndroidFollowup,
+    "trigger_id",
+    /*default_value=*/"");
+
 }  // namespace android
 }  // namespace chrome
 

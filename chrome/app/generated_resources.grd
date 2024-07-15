@@ -17694,6 +17694,13 @@ Please help our engineers fix this problem. Tell us what happened right before y
           other {Chrome removed permissions for {NUM_SITES} ununsed sites}}
         </message>
     </if>
+
+    <!-- Quick Delete elements. -->
+    <if expr="is_android">
+        <message name ="IDS_QUICK_DELETE_PROMPT_SURVEY_CUSTOM_INVITATION" desc="The invitation shown to a user, which allows the user to accept taking a survey.">
+        You just deleted data in Chrome. We’d love to hear about your experience to improve Chrome.
+      </message>
+    </if>
   </messages>
 </release>
 </grit>

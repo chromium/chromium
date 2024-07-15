@@ -414,6 +414,8 @@ public class MessagesMetrics {
                 return "SaveCardFailure";
             case MessageIdentifier.VIRTUAL_CARD_ENROLL_FAILURE:
                 return "VirtualCardEnrollFailure";
+            case MessageIdentifier.PROMPT_HATS_QUICK_DELETE:
+                return "PromptHatsQuickDelete";
             default:
                 return "Unknown";
         }

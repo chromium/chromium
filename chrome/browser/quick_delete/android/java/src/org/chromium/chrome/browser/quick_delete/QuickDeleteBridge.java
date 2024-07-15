@@ -12,6 +12,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.content_public.browser.WebContents;
 
 /** The JNI bridge for Quick Delete on Android to fetch browsing history data. */
 class QuickDeleteBridge {
@@ -63,6 +64,15 @@ class QuickDeleteBridge {
                         mNativeQuickDeleteBridge, timePeriod, callback);
     }
 
+    /**
+     * Attempt to trigger the HaTS survey if appropriate.
+     *
+     * @param webContents web contents of the tab to trigger the survey on.
+     */
+    public void showSurvey(WebContents webContents) {
+        QuickDeleteBridgeJni.get().showSurvey(mNativeQuickDeleteBridge, webContents);
+    }
+
     @CalledByNative
     private static void onLastVisitedDomainAndUniqueDomainCountReady(
             DomainVisitsCallback callback, String lastVisitedDomain, int domainCount) {
@@ -77,5 +87,7 @@ class QuickDeleteBridge {
 
         void getLastVisitedDomainAndUniqueDomainCount(
                 long nativeQuickDeleteBridge, int timePeriod, DomainVisitsCallback callback);
+
+        void showSurvey(long nativeQuickDeleteBridge, WebContents webContents);
     }
 }

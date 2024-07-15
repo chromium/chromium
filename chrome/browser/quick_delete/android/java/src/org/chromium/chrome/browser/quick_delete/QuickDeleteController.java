@@ -23,6 +23,8 @@ import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.CurrentTabObserver;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -30,6 +32,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -51,6 +54,8 @@ public class QuickDeleteController {
     private final QuickDeleteMediator mQuickDeleteMediator;
     private final PropertyModel mPropertyModel;
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
+    private final TabModelSelector mTabModelSelector;
+    private CurrentTabObserver mCurrentTabObserver;
 
     /**
      * Constructor for the QuickDeleteController with a dialog and confirmation snackbar.
@@ -84,6 +89,7 @@ public class QuickDeleteController {
                                         .getTabModelFilter(/* incognito= */ false));
         mProfile = tabModelSelector.getCurrentModel().getProfile();
         mQuickDeleteBridge = new QuickDeleteBridge(mProfile);
+        mTabModelSelector = tabModelSelector;
 
         // MVC setup.
         View quickDeleteView =
@@ -116,6 +122,12 @@ public class QuickDeleteController {
 
     void destroy() {
         mPropertyModelChangeProcessor.destroy();
+        mQuickDeleteBridge.destroy();
+
+        if (mCurrentTabObserver != null) {
+            mCurrentTabObserver.destroy();
+            mCurrentTabObserver = null;
+        }
     }
 
     /**
@@ -149,13 +161,14 @@ public class QuickDeleteController {
             case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
                 QuickDeleteMetricsDelegate.recordHistogram(
                         QuickDeleteMetricsDelegate.QuickDeleteAction.CANCEL_CLICKED);
+                destroy();
                 break;
             default:
                 QuickDeleteMetricsDelegate.recordHistogram(
                         QuickDeleteMetricsDelegate.QuickDeleteAction.DIALOG_DISMISSED_IMPLICITLY);
+                destroy();
                 break;
         }
-        destroy();
     }
 
     private void onBrowsingDataDeletionFinished(
@@ -202,6 +215,29 @@ public class QuickDeleteController {
 
         if (trackerLock == null) return;
         trackerLock.release();
+
+        assert mCurrentTabObserver == null;
+        mCurrentTabObserver =
+                new CurrentTabObserver(
+                        mTabModelSelector.getCurrentTabSupplier(),
+                        new EmptyTabObserver() {
+                            @Override
+                            public void onLoadStarted(Tab tab, boolean toDifferentDocument) {
+                                WebContents webContents = tab.getWebContents();
+                                if (!tab.isOffTheRecord() && webContents != null) {
+                                    showSurvey(webContents);
+                                }
+                            }
+                        },
+                        /* swapCallback= */ null);
+    }
+
+    /**
+     * @see {@link QuickDeleteBridge#showSurvey(WebContents)}
+     */
+    private void showSurvey(@NonNull WebContents webContents) {
+        mQuickDeleteBridge.showSurvey(webContents);
+        destroy();
     }
 
     /** A method to navigate to tab switcher. */

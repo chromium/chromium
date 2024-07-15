@@ -123,6 +123,7 @@ constexpr char kHatsSurveyTriggerTrustSafetyV2SafeBrowsingInterstitial[] =
 constexpr char kHatsSurveyTriggerWallpaperSearch[] = "wallpaper-search";
 #else   // BUILDFLAG(IS_ANDROID)
 constexpr char kHatsSurveyTriggerAndroidStartupSurvey[] = "startup_survey";
+constexpr char kHatsSurveyTriggerQuickDelete[] = "quick_delete_survey";
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 
 constexpr char kHatsSurveyTriggerTesting[] = "testing";
@@ -548,6 +549,11 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
 #else
   survey_configs.emplace_back(&chrome::android::kChromeSurveyNextAndroid,
                               kHatsSurveyTriggerAndroidStartupSurvey);
+
+  survey_configs.emplace_back(
+      &chrome::android::kQuickDeleteAndroidFollowup,
+      kHatsSurveyTriggerQuickDelete,
+      chrome::android::kQuickDeleteAndroidFollowupTriggerId.Get());
 
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 

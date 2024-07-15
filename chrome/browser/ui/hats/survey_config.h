@@ -78,7 +78,8 @@ extern const char kHatsSurveyTriggerWallpaperSearch[];
 extern const char kHatsSurveyTriggerWhatsNew[];
 #else
 extern const char kHatsSurveyTriggerAndroidStartupSurvey[];
-#endif
+extern const char kHatsSurveyTriggerQuickDelete[];
+#endif  // #if !BUILDFLAG(IS_ANDROID)
 
 extern const char kHatsSurveyTriggerPermissionsPrompt[];
 

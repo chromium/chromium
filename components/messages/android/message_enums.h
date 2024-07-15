@@ -131,6 +131,7 @@ enum class MessageIdentifier {
   PERMISSION_BLOCKED = 48,
   SAVE_CARD_FAILURE = 49,
   VIRTUAL_CARD_ENROLL_FAILURE = 50,
+  PROMPT_HATS_QUICK_DELETE = 51,
   // Insert new values before this line.
   COUNT
 };
