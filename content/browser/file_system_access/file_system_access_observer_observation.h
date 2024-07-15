@@ -74,7 +74,11 @@ class FileSystemAccessObserverObservation
   // observation is in a non-recoverable state.
   void HandleError();
 
+  void RecordCallbackCountUMA();
+
   SEQUENCE_CHECKER(sequence_checker_);
+
+  int callback_count_ = 0;
 
   bool received_changes_while_in_bf_cache_ = false;
 

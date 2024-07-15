@@ -308,6 +308,17 @@ void FileSystemAccessObserverObservation::OnChanges(
         std::move(mojo_change_type)));
   }
 
+  // Report the number of events in a 1s time window.
+  if (callback_count_ == 0) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &FileSystemAccessObserverObservation::RecordCallbackCountUMA,
+            weak_factory_.GetWeakPtr()),
+        base::Seconds(1));
+  }
+  callback_count_++;
+
   remote_->OnFileChanges(std::move(mojo_changes));
 }
 
@@ -410,6 +421,13 @@ void FileSystemAccessObserverObservation::OnPermissionStatusChanged() {
   // The read permission has been revoked. Send an "errored" event and destroy
   // this observation.
   HandleError();
+}
+
+void FileSystemAccessObserverObservation::RecordCallbackCountUMA() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::UmaHistogramCounts1000(
+      "Storage.FileSystemAccess.ObservationCallbackRate", callback_count_);
+  callback_count_ = 0;
 }
 
 }  // namespace content
