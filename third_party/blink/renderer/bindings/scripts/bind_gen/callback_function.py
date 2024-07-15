@@ -16,10 +16,12 @@ from .code_node import SequenceNode
 from .code_node import SymbolNode
 from .code_node import SymbolScopeNode
 from .code_node import TextNode
+from .code_node import Likeliness
 from .code_node_cxx import CxxClassDefNode
 from .code_node_cxx import CxxForLoopNode
 from .code_node_cxx import CxxFuncDeclNode
 from .code_node_cxx import CxxFuncDefNode
+from .code_node_cxx import CxxIfElseNode
 from .code_node_cxx import CxxLikelyIfNode
 from .code_node_cxx import CxxNamespaceNode
 from .code_node_cxx import CxxUnlikelyIfNode
@@ -296,68 +298,97 @@ bindings::CallbackInvokeHelper<{template_params}> helper(
             ]),
     ])
 
+    # The maximum number of arguments to a variadic function that we're willing
+    # to allocate on the stack. If the function takes more, we'll use the heap
+    # instead.
+    max_stack_array_length = 10
     arguments = func_like.arguments
-    if not arguments:
-        body.append(T("const int argc = 0;"))
-        body.append(T("v8::Local<v8::Value>* argv = nullptr;"))
-    else:
-        is_variadic = arguments[-1].is_variadic
-        if is_variadic:
-            _, variadic_arg_name = arg_type_and_names[-1]
-            body.append(
-                T("const int argc = {} + {}.size();".format(
-                    len(arguments) - 1, variadic_arg_name)))
-        else:
-            body.append(T("const int argc = {};".format(len(arguments))))
-        if is_variadic and len(arguments) == 1:
-            body.append(T("v8::Local<v8::Value> argv[std::max(1, argc)];"))
-        else:
-            body.append(T("v8::Local<v8::Value> argv[argc];"))
-        for index, arg_type_and_name in enumerate(arg_type_and_names):
-            if arguments[index].is_variadic:
-                break
-            _, arg_name = arg_type_and_name
-            v8_arg_name = name_style.local_var_f("v8_arg{}_{}", index + 1,
-                                                 arguments[index].identifier)
-            body.register_code_symbol(
-                make_blink_to_v8_value(
-                    v8_arg_name,
-                    arg_name,
-                    arguments[index].idl_type,
-                    argument=arguments[index],
-                    error_exit_return_statement=(
-                        "return ${return_value_on_failure};")))
-            body.append(
-                F("argv[{index}] = ${{{v8_arg}}};",
-                  index=index,
-                  v8_arg=v8_arg_name))
-        if is_variadic:
-            v8_arg_name = name_style.local_var_f("v8_arg{}_{}", len(arguments),
-                                                 arguments[-1].identifier)
-            body.register_code_symbol(
-                make_blink_to_v8_value(
-                    v8_arg_name,
-                    "{}[i]".format(variadic_arg_name),
-                    arguments[-1].idl_type.unwrap(variadic=True),
-                    argument=arguments[-1],
-                    error_exit_return_statement=(
-                        "return ${return_value_on_failure};")))
-            body.append(
-                CxxForLoopNode(
-                    cond=F("wtf_size_t i = 0; i < {var_arg}.size(); ++i",
-                           var_arg=variadic_arg_name),
-                    body=[
-                        F("argv[{non_var_arg_size} + i] = ${{{v8_arg}}};",
-                          non_var_arg_size=len(arguments) - 1,
-                          v8_arg=v8_arg_name),
-                    ],
-                    weak_dep_syms=["isolate", "script_state"]))
 
+    is_variadic = arguments and arguments[-1].is_variadic
+    if is_variadic:
+        _, variadic_arg_name = arg_type_and_names[-1]
+
+    # The next step in the C++ code is to define an array containing all
+    # the arguments, and its length argc. Depending on how many args we have,
+    # argv will either be a regular array or a LocalVector. To hide the
+    # difference, we unify both of them into a single span type
+    if not arguments:
+        body.append(T("base::span<v8::Local<v8::Value>> argv;"))
+    elif not is_variadic:
+        body.append(
+            T("v8::Local<v8::Value> argv_arr[{}];".format(len(arguments))))
+        body.append(T("base::span<v8::Local<v8::Value>> argv(argv_arr);"))
+    else:
+        # Forward declare both possible representations of argv so they're in
+        # scope for the rest of the function. We use a span to hide the
+        # difference from the type system.
+        body.append(
+            T("v8::Local<v8::Value> argv_arr[{}];".format(
+                max_stack_array_length))),
+        body.append(T("v8::LocalVector<v8::Value> argv_vec(GetIsolate());")),
+        body.append(T("base::span<v8::Local<v8::Value>> argv;")),
+
+        body.append(
+            T("const size_t argc = {} + {}.size();".format(
+                len(arguments) - 1, variadic_arg_name)))
+        body.append(
+            CxxIfElseNode(
+                cond=T("argc <= {}".format(max_stack_array_length)),
+                # If argc is small, just use argv-arr
+                then=SymbolScopeNode(
+                    code_nodes=[T("argv = base::make_span(argv_arr, argc);")]),
+                then_likeliness=Likeliness.LIKELY,
+                # If argc is large, create a vector instead
+                else_=SymbolScopeNode(code_nodes=[
+                    T("argv_vec.resize(argc);"),
+                    T("argv = argv_vec;"),
+                ]),
+                else_likeliness=Likeliness.UNLIKELY))
+
+    for index, arg_type_and_name in enumerate(arg_type_and_names):
+        if arguments[index].is_variadic:
+            break
+        _, arg_name = arg_type_and_name
+        v8_arg_name = name_style.local_var_f("v8_arg{}_{}", index + 1,
+                                             arguments[index].identifier)
+        body.register_code_symbol(
+            make_blink_to_v8_value(v8_arg_name,
+                                   arg_name,
+                                   arguments[index].idl_type,
+                                   argument=arguments[index],
+                                   error_exit_return_statement=(
+                                       "return ${return_value_on_failure};")))
+        body.append(
+            F("argv[{index}] = ${{{v8_arg}}};",
+              index=index,
+              v8_arg=v8_arg_name))
+    if is_variadic:
+        v8_arg_name = name_style.local_var_f("v8_arg{}_{}", len(arguments),
+                                             arguments[-1].identifier)
+        body.register_code_symbol(
+            make_blink_to_v8_value(
+                v8_arg_name,
+                "{}[i]".format(variadic_arg_name),
+                arguments[-1].idl_type.unwrap(variadic=True),
+                argument=arguments[-1],
+                error_exit_return_statement=(
+                    "return ${return_value_on_failure};")))
+        body.append(
+            CxxForLoopNode(
+                cond=F("wtf_size_t i = 0; i < {var_arg}.size(); ++i",
+                       var_arg=variadic_arg_name),
+                body=[
+                    F("argv[{non_var_arg_size} + i] = ${{{v8_arg}}};",
+                      non_var_arg_size=len(arguments) - 1,
+                      v8_arg=v8_arg_name),
+                ],
+                weak_dep_syms=["isolate", "script_state"]))
     body.extend([
-        CxxUnlikelyIfNode(cond="!helper.Call(argc, argv)",
-                          body=[
-                              T("return ${return_value_on_failure};"),
-                          ]),
+        CxxUnlikelyIfNode(
+            cond="!helper.Call(static_cast<int>(argv.size()), argv.data())",
+            body=[
+                T("return ${return_value_on_failure};"),
+            ]),
         T("return ${return_value_on_success};"),
     ])
 
@@ -614,6 +645,7 @@ def generate_callback_function(callback_function_identifier):
         "third_party/blink/renderer/bindings/core/v8/callback_invoke_helper.h",
         "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h",
         "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h",
+        "base/containers/span.h",
     ])
     (
         header_forward_decls,
