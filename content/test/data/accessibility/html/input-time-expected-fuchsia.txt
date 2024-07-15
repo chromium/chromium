@@ -18,7 +18,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++UNKNOWN focusable label='AM/PM' actions='{SET_VALUE}' value='AM'
 ++++++++++++++++STATIC_TEXT label='AM'
 ++++++++++++++++++UNKNOWN label='AM'
-++++++++++UNKNOWN focusable label='Show time picker' actions='{DEFAULT}' secondary_label='Show time picker'
+++++++++++UNKNOWN focusable label='Show time picker' actions='{DEFAULT}'
 ++++++UNKNOWN focusable label='Breakfast' actions='{DEFAULT, SET_VALUE}' value='00:00:00'
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
@@ -36,4 +36,22 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++UNKNOWN focusable label='AM/PM Breakfast' actions='{SET_VALUE}' value='AM'
 ++++++++++++++++STATIC_TEXT label='AM'
 ++++++++++++++++++UNKNOWN label='AM'
-++++++++++UNKNOWN focusable label='Show time picker' actions='{DEFAULT}' secondary_label='Show time picker'
+++++++++++UNKNOWN focusable label='Show time picker' actions='{DEFAULT}'
+++++++TEXT_FIELD_WITH_COMBO_BOX focusable actions='{DEFAULT, SET_VALUE}'
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN
+++++++++++++UNKNOWN
+++++++++++++++UNKNOWN focusable label='Hours' actions='{SET_VALUE}'
+++++++++++++++++STATIC_TEXT label='--'
+++++++++++++++++++UNKNOWN label='--'
+++++++++++++++STATIC_TEXT label=':'
+++++++++++++++++UNKNOWN label=':'
+++++++++++++++UNKNOWN focusable label='Minutes' actions='{SET_VALUE}'
+++++++++++++++++STATIC_TEXT label='--'
+++++++++++++++++++UNKNOWN label='--'
+++++++++++++++STATIC_TEXT label=' '
+++++++++++++++++UNKNOWN label=' '
+++++++++++++++UNKNOWN focusable label='AM/PM' actions='{SET_VALUE}'
+++++++++++++++++STATIC_TEXT label='--'
+++++++++++++++++++UNKNOWN label='--'
+++++++++++UNKNOWN focusable label='Show time picker' actions='{DEFAULT}'

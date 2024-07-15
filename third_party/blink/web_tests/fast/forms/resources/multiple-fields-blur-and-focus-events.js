@@ -35,24 +35,26 @@ function startTestFor(typeName)
     shouldBeEqualToString('testInput.blur(); state()', 'blur=1 focus=1');
 
     if (window.eventSender) {
-        var numberOfFields;
+        // Note: the number of tab stops is the number of fields + 1 for the
+        // drop down button.
+        var numberOfTabStops;
         switch (typeName) {
         case 'week':
         case 'month':
-            numberOfFields = 2;
+            numberOfTabStops = 3;
             break;
         case 'datetime':
         case 'datetime-local':
-            numberOfFields = 6;
+            numberOfTabStops = 7;
             break;
         default:
-            numberOfFields = 3;
+            numberOfTabStops = 4;
             break;
         }
 
         beginTestCase('focus and Tab key to blur');
         document.getElementById("before").focus();
-        for (var i = 0; i < numberOfFields; i++)
+        for (var i = 0; i < numberOfTabStops; i++)
             shouldBeEqualToString('keyDown("\t"); state()', 'blur=0 focus=1');
         shouldBeEqualToString('keyDown("\t"); state()', 'blur=1 focus=1');
     } else {

@@ -127,6 +127,7 @@ keyDown('7');
 shouldBeEqualToString('input.value', '07:05');
 keyDown('\t');
 keyDown('\t');
+keyDown('\t');  // Focused on dropdown
 shouldBeEqualToString('document.activeElement.id', 'another');
 
 beginTest('Tab navigation should skip disabled inputs', '');
@@ -159,7 +160,8 @@ input.readOnly = false;
 
 beginTest('Shfit+Tab key', '03:00');
 another.focus();
-keyDown('\t', ['shiftKey']);
+keyDown('\t', ['shiftKey']);  // Focused on previous input's drop down button.
+keyDown('\t', ['shiftKey']);  // Focused on previous input's drop last field.
 keyDown('P');
 shouldBeEqualToString('input.value', '15:00');
 keyDown('\t', ['shiftKey']);

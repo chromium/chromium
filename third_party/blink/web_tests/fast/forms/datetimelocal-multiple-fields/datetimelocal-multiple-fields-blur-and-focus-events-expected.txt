@@ -12,6 +12,7 @@ PASS keyDown("	"); state() is "blur=0 focus=1"
 PASS keyDown("	"); state() is "blur=0 focus=1"
 PASS keyDown("	"); state() is "blur=0 focus=1"
 PASS keyDown("	"); state() is "blur=0 focus=1"
+PASS keyDown("	"); state() is "blur=0 focus=1"
 PASS keyDown("	"); state() is "blur=1 focus=1"
 
 

@@ -33,4 +33,4 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++UNKNOWN focusable label='AM/PM' actions='{SET_VALUE}'
 ++++++++++++++++STATIC_TEXT label='--'
 ++++++++++++++++++UNKNOWN label='--'
-++++++++++UNKNOWN focusable label='Show local date and time picker' actions='{DEFAULT}' secondary_label='Show local date and time picker'
+++++++++++UNKNOWN focusable label='Show local date and time picker' actions='{DEFAULT}'

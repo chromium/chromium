@@ -8,7 +8,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++++++++ROLE_SYSTEM_SPINBUTTON name='Day' value='01' FOCUSABLE
 ++++++++++ROLE_SYSTEM_STATICTEXT name='/'
 ++++++++++ROLE_SYSTEM_SPINBUTTON name='Year' value='2008' FOCUSABLE
-++++++ROLE_SYSTEM_BUTTONMENU name='Show date picker' FOCUSABLE HASPOPUP description-from:tooltip description='Show date picker'
+++++++ROLE_SYSTEM_BUTTONMENU name='Show date picker' FOCUSABLE HASPOPUP
 ++++IA2_ROLE_DATE_EDITOR value='2008-09-01' FOCUSABLE
 ++++++IA2_ROLE_SECTION
 ++++++++IA2_ROLE_SECTION
@@ -17,7 +17,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++++++++ROLE_SYSTEM_SPINBUTTON name='Day' value='01' FOCUSABLE
 ++++++++++ROLE_SYSTEM_STATICTEXT name='/'
 ++++++++++ROLE_SYSTEM_SPINBUTTON name='Year' value='2008' FOCUSABLE
-++++++ROLE_SYSTEM_BUTTONMENU name='Show date picker' FOCUSABLE HASPOPUP description-from:tooltip description='Show date picker'
+++++++ROLE_SYSTEM_BUTTONMENU name='Show date picker' FOCUSABLE HASPOPUP
 ++++IA2_ROLE_DATE_EDITOR name='Third date picker' value='2008-09-01' FOCUSABLE
 ++++++IA2_ROLE_SECTION
 ++++++++IA2_ROLE_SECTION
@@ -26,7 +26,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++++++++ROLE_SYSTEM_SPINBUTTON name='Day Third date picker' value='01' FOCUSABLE
 ++++++++++ROLE_SYSTEM_STATICTEXT name='/'
 ++++++++++ROLE_SYSTEM_SPINBUTTON name='Year Third date picker' value='2008' FOCUSABLE
-++++++ROLE_SYSTEM_BUTTONMENU name='Show date picker' FOCUSABLE HASPOPUP description-from:tooltip description='Show date picker'
+++++++ROLE_SYSTEM_BUTTONMENU name='Show date picker' FOCUSABLE HASPOPUP
 ++++++ROLE_SYSTEM_GROUPING
 ++++++++IA2_ROLE_SECTION
 ++++++++++IA2_ROLE_SECTION

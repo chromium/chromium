@@ -8,7 +8,7 @@
 ++++++++++[spin button] name='Day' current=1.000000 minimum=1.000000 maximum=31.000000
 ++++++++++[static] name='/'
 ++++++++++[spin button] name='Year' current=2008.000000 minimum=1.000000 maximum=275760.000000
-++++++[push button] name='Show date picker' description='Show date picker' description-from:tooltip
+++++++[push button] name='Show date picker'
 ++++[dateeditor]
 ++++++[section]
 ++++++++[section]
@@ -17,7 +17,7 @@
 ++++++++++[spin button] name='Day' current=1.000000 minimum=1.000000 maximum=31.000000
 ++++++++++[static] name='/'
 ++++++++++[spin button] name='Year' current=2008.000000 minimum=1.000000 maximum=275760.000000
-++++++[push button] name='Show date picker' description='Show date picker' description-from:tooltip
+++++++[push button] name='Show date picker'
 ++++[dateeditor] name='Third date picker' controller-for=[panel]
 ++++++[section]
 ++++++++[section]
@@ -26,7 +26,7 @@
 ++++++++++[spin button] name='Day Third date picker' current=1.000000 minimum=1.000000 maximum=31.000000
 ++++++++++[static] name='/'
 ++++++++++[spin button] name='Year Third date picker' current=2008.000000 minimum=1.000000 maximum=275760.000000
-++++++[push button] name='Show date picker' description='Show date picker' description-from:tooltip
+++++++[push button] name='Show date picker'
 ++++++[panel] controlled-by=[date editor] popup-for=[date editor]
 ++++++++[section]
 ++++++++++[section]

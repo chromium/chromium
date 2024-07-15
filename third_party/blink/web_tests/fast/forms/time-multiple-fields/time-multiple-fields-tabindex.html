@@ -27,13 +27,13 @@ shouldBeEqualToString('eventSender.keyDown(tab); document.activeElement.id', 'ta
 shouldBeEqualToString('eventSender.keyDown(tab); document.activeElement.id', 'time-with-tabindex20');
 shouldBe('internals.shadowPseudoId(shadowRoot.activeElement)', 'firstSubField');
 shouldBe('eventSender.keyDown(tab); eventSender.keyDown(tab); internals.shadowPseudoId(shadowRoot.activeElement)', 'lastSubField');
-shouldBeEqualToString('eventSender.keyDown(tab); document.activeElement.id', 'tabindex20-3');
+shouldBeEqualToString('eventSender.keyDown(tab); eventSender.keyDown(tab); document.activeElement.id', 'tabindex20-3');
 shouldBeEqualToString('eventSender.keyDown(tab); document.activeElement.id', 'tabindex30');
 
 debug('');
 debug('Backword:');
 shouldBeEqualToString('eventSender.keyDown(tab, shift); document.activeElement.id', 'tabindex20-3');
-shouldBeEqualToString('eventSender.keyDown(tab, shift); document.activeElement.id', 'time-with-tabindex20');
+shouldBeEqualToString('eventSender.keyDown(tab, shift);  eventSender.keyDown(tab, shift); document.activeElement.id', 'time-with-tabindex20');
 shouldBe('internals.shadowPseudoId(shadowRoot.activeElement)', 'lastSubField');
 shouldBe('eventSender.keyDown(tab, shift); eventSender.keyDown(tab, shift); internals.shadowPseudoId(shadowRoot.activeElement)', 'firstSubField');
 shouldBeEqualToString('eventSender.keyDown(tab, shift); document.activeElement.id', 'tabindex20-1');

@@ -62,8 +62,11 @@ instead of "initial value".
 |             shadow:pseudoId="-webkit-datetime-edit-year-field"
 |             "2014"
 |       <div>
+|         aria-haspopup="menu"
 |         id="picker"
 |         pseudo="-webkit-calendar-picker-indicator"
+|         role="button"
+|         tabindex="0"
 |         title="Show month picker"
 |         shadow:pseudoId="-webkit-calendar-picker-indicator"
 | <textarea>

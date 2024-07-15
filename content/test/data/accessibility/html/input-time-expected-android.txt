@@ -2,3 +2,4 @@ android.webkit.WebView focusable focused
 ++android.view.View
 ++++android.widget.Spinner role_description='time picker' clickable focusable name='00:00:00' input_type=36
 ++++android.widget.Spinner role_description='time picker' clickable focusable name='00:00:00' hint='Breakfast' input_type=36
+++++android.widget.EditText clickable editable_text focusable input_type=36

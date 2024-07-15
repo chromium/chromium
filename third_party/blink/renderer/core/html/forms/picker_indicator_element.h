@@ -78,6 +78,7 @@ class PickerIndicatorElement final : public HTMLDivElement,
   bool IsPickerIndicatorElement() const override;
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void DidNotifySubtreeInsertionsToDocument() override;
+  void SetAXProperties();
 
   Member<PickerIndicatorOwner> picker_indicator_owner_;
   Member<DateTimeChooser> chooser_;

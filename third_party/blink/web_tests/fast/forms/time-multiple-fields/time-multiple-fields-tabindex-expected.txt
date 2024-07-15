@@ -3,13 +3,13 @@ PASS eventSender.keyDown(tab); document.activeElement.id is "tabindex20-1"
 PASS eventSender.keyDown(tab); document.activeElement.id is "time-with-tabindex20"
 PASS internals.shadowPseudoId(shadowRoot.activeElement) is firstSubField
 PASS eventSender.keyDown(tab); eventSender.keyDown(tab); internals.shadowPseudoId(shadowRoot.activeElement) is lastSubField
-PASS eventSender.keyDown(tab); document.activeElement.id is "tabindex20-3"
+PASS eventSender.keyDown(tab); eventSender.keyDown(tab); document.activeElement.id is "tabindex20-3"
 PASS eventSender.keyDown(tab); document.activeElement.id is "tabindex30"
 
 
 Backword:
 PASS eventSender.keyDown(tab, shift); document.activeElement.id is "tabindex20-3"
-PASS eventSender.keyDown(tab, shift); document.activeElement.id is "time-with-tabindex20"
+PASS eventSender.keyDown(tab, shift);  eventSender.keyDown(tab, shift); document.activeElement.id is "time-with-tabindex20"
 PASS internals.shadowPseudoId(shadowRoot.activeElement) is lastSubField
 PASS eventSender.keyDown(tab, shift); eventSender.keyDown(tab, shift); internals.shadowPseudoId(shadowRoot.activeElement) is firstSubField
 PASS eventSender.keyDown(tab, shift); document.activeElement.id is "tabindex20-1"
