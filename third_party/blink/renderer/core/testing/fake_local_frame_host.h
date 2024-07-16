@@ -221,6 +221,9 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
           receiver) override;
   void NotifyStorageAccessed(blink::mojom::StorageTypeAccessed storageType,
                              bool blocked) override;
+  void RecordWindowProxyUsageMetrics(
+      const blink::FrameToken& target_frame_token,
+      blink::mojom::WindowProxyAccessType access_type) override;
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

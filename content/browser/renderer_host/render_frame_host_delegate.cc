@@ -195,4 +195,8 @@ RenderFrameHostDelegate::GetPermissionsPolicyForIsolatedWebApp(
   return blink::ParsedPermissionsPolicy();
 }
 
+bool RenderFrameHostDelegate::IsPopup() const {
+  return false;
+}
+
 }  // namespace content

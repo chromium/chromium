@@ -9,6 +9,7 @@
 #include "services/network/public/mojom/cross_origin_opener_policy.mojom-blink.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/messaging/delegated_capability.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/transferables.h"
@@ -168,7 +169,8 @@ class CORE_EXPORT DOMWindow : public WindowProperties {
   // Records metrics for cross-origin access to the WindowProxy properties,
   void RecordWindowProxyAccessMetrics(
       mojom::blink::WebFeature property_access,
-      mojom::blink::WebFeature property_access_from_other_page) const;
+      mojom::blink::WebFeature property_access_from_other_page,
+      mojom::blink::WindowProxyAccessType access_type) const;
 
   // Returns whether access should be limited by Cross-Origin-Opener-Policy:
   // restrict-properties. This is the case for pages in the same

@@ -196,6 +196,26 @@ enum StorageTypeAccessed {
     kSessionStorage
 };
 
+// This is directly cast to a UKM enum of the same name and logged,
+// be sure not to change ordering or delete lines.
+enum WindowProxyAccessType {
+    kLocation,
+    kClosed,
+    kLength,
+    kSelf,
+    kWindow,
+    kFrames,
+    kOpener,
+    kParent,
+    kTop,
+    kPostMessage,
+    kAnonymousIndexedGetter,
+    kClose,
+    kFocus,
+    kBlur,
+    kAnonymousNamedGetter
+};
+
 // The maximum number of characters of the document's title that we're willing
 // to accept in the browser process.
 const uint16 kMaxTitleChars = 4096; // 4 * 1024;
@@ -782,6 +802,10 @@ interface LocalFrameHost {
 
   // Used to tell the browser that storage access was requested and whether it was allowed.
   NotifyStorageAccessed(StorageTypeAccessed storageType, bool blocked);
+
+  // Used to tell the browser to record metrics. This method should not be trusted except for metrics purposes.
+  RecordWindowProxyUsageMetrics(blink.mojom.FrameToken target_frame_token,
+                                WindowProxyAccessType access_type);
 };
 
 // Implemented in Browser, this interface defines frame-specific methods
