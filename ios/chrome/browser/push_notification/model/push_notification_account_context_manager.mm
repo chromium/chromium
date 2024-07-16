@@ -68,6 +68,11 @@ struct PermissionsPref {
 - (BOOL)removeAccount:(const std::string&)gaiaID {
   auto iterator = _contextMap.find(gaiaID);
   DCHECK(iterator != _contextMap.end());
+  if (iterator == _contextMap.end()) {
+    // The account was unexpectedly not found, so return NO to indicate that
+    // it was not removed.
+    return NO;
+  }
   size_t& occurrencesAcrossBrowserStates = iterator->second;
 
   occurrencesAcrossBrowserStates--;
