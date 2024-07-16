@@ -94,8 +94,10 @@ DriveSearchProvider::FileInfo::FileInfo(
 
 DriveSearchProvider::FileInfo::~FileInfo() = default;
 
-DriveSearchProvider::DriveSearchProvider(Profile* profile)
+DriveSearchProvider::DriveSearchProvider(Profile* profile,
+                                         bool should_filter_shared_files)
     : SearchProvider(SearchCategory::kFiles),
+      should_filter_shared_files_(should_filter_shared_files),
       profile_(profile),
       drive_service_(
           drive::DriveIntegrationServiceFactory::GetForProfile(profile)) {
@@ -154,8 +156,10 @@ void DriveSearchProvider::OnSearchDriveByFileName(
     return;
   }
 
-  // Filter out shared files if the query length is below a threshold.
-  if (last_query_.size() < kMinQuerySizeForSharedFiles) {
+  // Filter out shared files if it was not disabled in the ctor, and the query
+  // length is below a threshold.
+  if (should_filter_shared_files_ &&
+      last_query_.size() < kMinQuerySizeForSharedFiles) {
     std::vector<drivefs::mojom::QueryItemPtr> filtered_items;
     for (auto& item : items) {
       if (!item->metadata->shared)

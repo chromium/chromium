@@ -43,7 +43,8 @@ class DriveSearchProvider : public SearchProvider {
     FileInfo& operator=(const FileInfo&) = delete;
   };
 
-  explicit DriveSearchProvider(Profile* profile);
+  explicit DriveSearchProvider(Profile* profile,
+                               bool should_filter_shared_files = true);
   ~DriveSearchProvider() override;
 
   DriveSearchProvider(const DriveSearchProvider&) = delete;
@@ -65,6 +66,8 @@ class DriveSearchProvider : public SearchProvider {
                                          double relevance,
                                          FileResult::Type type,
                                          const GURL& url);
+
+  bool should_filter_shared_files_;
 
   // When the query began.
   base::TimeTicks query_start_time_;
