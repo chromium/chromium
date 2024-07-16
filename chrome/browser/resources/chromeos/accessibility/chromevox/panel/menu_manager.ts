@@ -36,7 +36,8 @@ export class MenuManager {
   private activeMenu_: PanelMenu | null = null;
   private lastMenu_ = '';
   private menus_: PanelMenu[] = [];
-  private nodeMenuDictionary_: Record<PanelNodeMenuId, PanelNodeMenu> = {};
+  private nodeMenuDictionary_:
+      Partial<Record<PanelNodeMenuId, PanelNodeMenu>> = {};
   private searchMenu_: PanelSearchMenu | null = null;
 
   static disableMissingMsgsErrorsForTesting = false;
@@ -162,7 +163,7 @@ export class MenuManager {
   }
 
   addNodeMenuItem(itemData: PanelNodeMenuItemData): void {
-    this.nodeMenuDictionary_[itemData.menuId].addItemFromData(itemData);
+    this.nodeMenuDictionary_[itemData.menuId]?.addItemFromData(itemData);
   }
 
   /**
@@ -682,7 +683,7 @@ export class MenuManager {
     return this.menus_;
   }
 
-  get nodeMenuDictionary(): Record<PanelNodeMenuId, PanelNodeMenu> {
+  get nodeMenuDictionary(): Partial<Record<PanelNodeMenuId, PanelNodeMenu>> {
     return this.nodeMenuDictionary_;
   }
 

@@ -11,38 +11,34 @@ import {AutomationPredicate} from '/common/automation_predicate.js';
 import {BridgeCallbackId} from '/common/bridge_callback_manager.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-/** @enum {number} */
-export const PanelNodeMenuId = {
-  HEADING: 1,
-  LANDMARK: 2,
-  LINK: 3,
-  FORM_CONTROL: 4,
-  TABLE: 5,
-};
+export enum PanelNodeMenuId {
+  HEADING = 1,
+  LANDMARK = 2,
+  LINK = 3,
+  FORM_CONTROL = 4,
+  TABLE = 5,
+}
 
-/**
- * @typedef {{
- *     menuId: !PanelNodeMenuId,
- *     titleId: string,
- *     predicate: !AutomationPredicate.Unary
- * }}
- */
-export let PanelNodeMenuData;
+export interface PanelNodeMenuData {
+  menuId: PanelNodeMenuId;
+  titleId: string;
+  predicate: AutomationPredicate.Unary;
+}
 
-/**
- * @typedef {{
- *     title: string,
- *     callbackId: ?BridgeCallbackId,
- *     isActive: boolean,
- *     menuId: !PanelNodeMenuId
- * }}
- */
-export let PanelNodeMenuItemData;
+export interface PanelNodeMenuItemData {
+  title: string;
+  callbackId: BridgeCallbackId | null;
+  isActive: boolean;
+  menuId: PanelNodeMenuId;
+}
 
-/** @typedef {{title: string, windowId: number, tabId: number}} */
-export let PanelTabMenuItemData;
+export interface PanelTabMenuItemData {
+  title: string;
+  windowId: number;
+  tabId: number;
+}
 
-export const ALL_PANEL_MENU_NODE_DATA = [
+export const ALL_PANEL_MENU_NODE_DATA: PanelNodeMenuData[] = [
   {
     menuId: PanelNodeMenuId.HEADING,
     titleId: 'role_heading',
