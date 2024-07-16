@@ -3815,15 +3815,17 @@ const flags_ui::FeatureEntry::FeatureVariation
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
 const flags_ui::FeatureEntry::FeatureParam
-    kDesktopPWAsLinkCapturingDefaultOn[] = {{"on_by_default", "true"}};
+    kDesktopPWAsLinkCapturingDefaultOn[] = {
+        {"link_capturing_state", "on_by_default"}};
 const flags_ui::FeatureEntry::FeatureParam
-    kDesktopPWAsLinkCapturingDefaultOff[] = {{"off_by_default", "false"}};
+    kDesktopPWAsLinkCapturingDefaultOff[] = {
+        {"link_capturing_state", "off_by_default"}};
 const flags_ui::FeatureEntry::FeatureParam
     kDesktopPWAsLinkCapturingReimplDefaultOn[] = {
-        {"reimpl_default_on", "true"}};
+        {"link_capturing_state", "reimpl_default_on"}};
 const flags_ui::FeatureEntry::FeatureParam
     kDesktopPWAsLinkCapturingReimplDefaultOff[] = {
-        {"reimpl_default_off", "false"}};
+        {"link_capturing_state", "reimpl_default_off"}};
 const flags_ui::FeatureEntry::FeatureVariation
     kDesktopPWAsLinkCapturingVariations[] = {
         {"On by default", kDesktopPWAsLinkCapturingDefaultOn,
