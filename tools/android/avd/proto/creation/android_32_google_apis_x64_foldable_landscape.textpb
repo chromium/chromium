@@ -35,8 +35,6 @@ avd_settings {
     key: "GLESDynamicVersion"
     value: "on"
   }
-  # Assign 4GB RAM size to speed up booting.
-  ram_size: 4096
   avd_properties {
     key: "hw.sensor.hinge"
     value: "yes"
