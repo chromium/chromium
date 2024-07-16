@@ -2,103 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Model, ModelId, ModelState} from './on_device_model/types.js';
 import {ReadonlySignal} from './reactive/signal.js';
-import {SodaEvent} from './soda/types.js';
+import {SodaSession} from './soda/types.js';
 import {assertExists} from './utils/assert.js';
-import {Observer, Unsubscribe} from './utils/observer_list.js';
-
-export enum ModelId {
-  // TODO(pihsun): Abstract the "uuid" part of model.
-  GEMINI_XXS_IT_BASE = 'ee7c31c2-18e5-405a-b54e-f2607130a15d',
-  SUMMARY = '73caa678-45cb-4007-abb9-f04e431376da',
-}
-
-// prettier-ignore
-export type ModelState = {
-  kind: 'error'|'installed'|'notInstalled'|'unavailable',
-}|{
-  kind: 'installing',
-
-  /**
-   * A number between 0 to 100 indicating the progress of the download / install
-   * of SODA or on-device model.
-   */
-  progress: number,
-};
-
-export enum ModelResponseError {
-  // General error.
-  GENERAL = 'GENERAL',
-
-  // Filtered by T&S on the request or response string.
-  UNSAFE = 'UNSAFE',
-}
-
-// prettier-ignore
-export type ModelResponse<T = string> = {
-  kind: 'error',
-  error: ModelResponseError,
-}|{
-  kind: 'success',
-  result: T,
-};
-
-export interface Model {
-  /**
-   * Returns the suggested titles based on content.
-   */
-  // TODO(pihsun): method to set input options.
-  suggestTitles(content: string): Promise<ModelResponse<string[]>>;
-
-  /**
-   * Generates a short summarization of the given content.
-   */
-  summarize(content: string): Promise<ModelResponse<string>>;
-
-  /**
-   * Closes the model connection.
-   *
-   * This should release resources used by the model, and no further call of
-   * other calls should happen after this.
-   */
-  close(): void;
-}
-
-export interface SodaSession {
-  /**
-   * Starts the session.
-   *
-   * Each session can be started at most once.
-   */
-  start(): Promise<void>;
-
-  /**
-   * Adds audio sample to the session.
-   *
-   * `start` must be called before this.
-   *
-   * @param samples Array of sample of the audio. Each sample value is in the
-   *     range of [-1, 1].
-   */
-  addAudio(samples: Float32Array): void;
-
-  /**
-   * Stops the session and waits for all audio samples to be processed.
-   *
-   * This can only be called at most once, and `start` must be called before
-   * this.
-   */
-  stop(): Promise<void>;
-
-  /**
-   * Add an observer for the result SodaEvent.
-   *
-   * Since events before subscriptions are not passed to observer on subscribe,
-   * this should be called before audio samples are added to ensure that no
-   * event is dropped.
-   */
-  subscribeEvent(observer: Observer<SodaEvent>): Unsubscribe;
-}
 
 export abstract class PlatformHandler {
   /**

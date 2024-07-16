@@ -18,7 +18,7 @@ import {
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
-import {ModelResponse} from '../core/platform_handler.js';
+import {ModelResponse} from '../core/on_device_model/types.js';
 import {
   ComputedState,
   ReactiveLitElement,

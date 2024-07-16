@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Observer, Unsubscribe} from '../utils/observer_list.js';
 import {Infer, z} from '../utils/schema.js';
 
 // The type is manually constructed from the .mojo at
@@ -58,3 +59,39 @@ export type SpeechRecognizerEvent = Infer<typeof speechRecognizerEventSchema>;
 export const sodaEventSchema = speechRecognizerEventSchema;
 
 export type SodaEvent = Infer<typeof sodaEventSchema>;
+
+export interface SodaSession {
+  /**
+   * Starts the session.
+   *
+   * Each session can be started at most once.
+   */
+  start(): Promise<void>;
+
+  /**
+   * Adds audio sample to the session.
+   *
+   * `start` must be called before this.
+   *
+   * @param samples Array of sample of the audio. Each sample value is in the
+   *     range of [-1, 1].
+   */
+  addAudio(samples: Float32Array): void;
+
+  /**
+   * Stops the session and waits for all audio samples to be processed.
+   *
+   * This can only be called at most once, and `start` must be called before
+   * this.
+   */
+  stop(): Promise<void>;
+
+  /**
+   * Add an observer for the result SodaEvent.
+   *
+   * Since events before subscriptions are not passed to observer on subscribe,
+   * this should be called before audio samples are added to ensure that no
+   * event is dropped.
+   */
+  subscribeEvent(observer: Observer<SodaEvent>): Unsubscribe;
+}

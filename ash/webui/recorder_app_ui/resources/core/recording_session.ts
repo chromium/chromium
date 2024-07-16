@@ -7,9 +7,10 @@ import {
   SAMPLE_RATE,
   SAMPLES_PER_SLICE,
 } from './audio_constants.js';
-import {PlatformHandler, SodaSession} from './platform_handler.js';
+import {PlatformHandler} from './platform_handler.js';
 import {computed, effect, signal} from './reactive/signal.js';
 import {SodaEventTransformer, TextToken} from './soda/soda.js';
+import {SodaSession} from './soda/types.js';
 import {
   assert,
   assertExhaustive,

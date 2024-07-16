@@ -23,7 +23,7 @@ import {
   usePlatformHandler,
   useRecordingDataManager,
 } from '../core/lit/context.js';
-import {ModelId} from '../core/platform_handler.js';
+import {ModelId} from '../core/on_device_model/types.js';
 import {
   ReactiveLitElement,
   ScopedAsyncComputed,

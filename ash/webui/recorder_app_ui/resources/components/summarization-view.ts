@@ -21,7 +21,7 @@ import {
 
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
-import {ModelId, ModelResponse} from '../core/platform_handler.js';
+import {ModelId, ModelResponse} from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
 import {concatTextTokens, TextToken} from '../core/soda/soda.js';

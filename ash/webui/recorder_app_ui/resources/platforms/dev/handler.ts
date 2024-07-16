@@ -19,11 +19,12 @@ import {
   ModelId,
   ModelResponse,
   ModelState,
+} from '../../core/on_device_model/types.js';
+import {
   PlatformHandler as PlatformHandlerBase,
-  SodaSession,
 } from '../../core/platform_handler.js';
 import {signal} from '../../core/reactive/signal.js';
-import {SodaEvent, TimeDelta} from '../../core/soda/types.js';
+import {SodaEvent, SodaSession, TimeDelta} from '../../core/soda/types.js';
 import {
   assert,
   assertEnumVariant,

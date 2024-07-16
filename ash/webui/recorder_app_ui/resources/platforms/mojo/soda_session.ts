@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SodaSession} from '../../core/platform_handler.js';
-import {SodaEvent} from '../../core/soda/types.js';
+import {SodaEvent, SodaSession} from '../../core/soda/types.js';
 import {
   Observer,
   ObserverList,

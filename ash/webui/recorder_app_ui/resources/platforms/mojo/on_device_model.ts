@@ -6,7 +6,7 @@ import {
   Model,
   ModelResponse,
   ModelResponseError,
-} from '../../core/platform_handler.js';
+} from '../../core/on_device_model/types.js';
 import {shorten} from '../../core/utils/utils.js';
 
 import {

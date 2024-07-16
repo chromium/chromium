@@ -20,7 +20,11 @@ import {
   usePlatformHandler,
   useRecordingDataManager,
 } from '../core/lit/context.js';
-import {Model, ModelId, ModelResponse} from '../core/platform_handler.js';
+import {
+  Model,
+  ModelId,
+  ModelResponse,
+} from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
 

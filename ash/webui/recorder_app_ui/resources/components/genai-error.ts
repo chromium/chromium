@@ -13,7 +13,7 @@ import {
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
-import {ModelResponseError} from '../core/platform_handler.js';
+import {ModelResponseError} from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 
 export class GenaiError extends ReactiveLitElement {
