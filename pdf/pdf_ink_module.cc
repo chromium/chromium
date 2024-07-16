@@ -548,15 +548,10 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
   PdfInkBrush::Params params;
   params.color = SkColorSetRGB(color_r, color_g, color_b);
 
-  // TODO(crbug.com/341282609): Properly scale the brush size here. The
-  // extension uses values from range [0, 1], which will be translated to range
-  // [1, 8] for now.
-  CHECK_GE(size, 0);
-  CHECK_LE(size, 1);
-
-  constexpr float kSizeScaleFactor = 7.0f;
-  constexpr float kMinSize = 1.0f;
-  params.size = (static_cast<float>(size) * kSizeScaleFactor) + kMinSize;
+  // TODO(crbug.com/341282609): Check that the size value is in range, once
+  // support for the Ink annotation bar is deprecated. The original Ink uses
+  // values from range [0, 1], while Ink2 uses values from [1, 16].
+  params.size = size;
 
   std::optional<PdfInkBrush::Type> brush_type =
       PdfInkBrush::StringToType(brush_type_string);
