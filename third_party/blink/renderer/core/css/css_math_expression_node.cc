@@ -2783,6 +2783,13 @@ double CSSMathExpressionOperation::EvaluateOperator(
       }
       double minimum = operands[0];
       for (double operand : operands) {
+        // std::min(0.0, -0.0) returns 0.0, manually check for such situation
+        // and set result to -0.0.
+        if (minimum == 0 && operand == 0 &&
+            std::signbit(minimum) != std::signbit(operand)) {
+          minimum = -0.0;
+          continue;
+        }
         minimum = std::min(minimum, operand);
       }
       return minimum;
@@ -2793,6 +2800,13 @@ double CSSMathExpressionOperation::EvaluateOperator(
       }
       double maximum = operands[0];
       for (double operand : operands) {
+        // std::max(-0.0, 0.0) returns -0.0, manually check for such situation
+        // and set result to 0.0.
+        if (maximum == 0 && operand == 0 &&
+            std::signbit(maximum) != std::signbit(operand)) {
+          maximum = 0.0;
+          continue;
+        }
         maximum = std::max(maximum, operand);
       }
       return maximum;
