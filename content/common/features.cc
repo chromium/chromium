@@ -422,6 +422,15 @@ BASE_FEATURE(kPrivacySandboxAdsAPIsM1Override,
              "PrivacySandboxAdsAPIsM1Override",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// When disabled("legacy behavior") it resets ongoing gestures when window loses
+// focus. In split screen scenario this means we can't continue scroll on a
+// chrome window, when we start interacting with another window.
+BASE_FEATURE(kContinueGestureOnLosingFocus,
+             "ContinueGestureOnLosingFocus",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // Enables reporting ResourceTiming entries for document, who initiated a
 // cancelled navigation in one of their <iframe>.
 BASE_FEATURE(kResourceTimingForCancelledNavigationInFrame,

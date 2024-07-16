@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.blink.mojom.EventType;
@@ -40,6 +41,7 @@ import org.chromium.ui.base.ViewAndroidDelegate;
 
 /** Unit test for {@link GestureListenerManagerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures({ContentFeatureList.CONTINUE_GESTURE_ON_LOSING_FOCUS})
 @EnableFeatures({ContentFeatureList.HIDE_PASTE_POPUP_ON_GSB})
 public class GestureListenerManagerImplUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -156,6 +158,6 @@ public class GestureListenerManagerImplUnitTest {
                             return factory.create(mWebContents);
                         })
                 .when(mWebContents)
-                .getOrSetUserData(/* key= */ any(), /*userDataFactory*/ any());
+                .getOrSetUserData(/* key= */ any(), /* userDataFactory= */ any());
     }
 }
