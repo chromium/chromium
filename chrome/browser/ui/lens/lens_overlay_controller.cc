@@ -48,6 +48,7 @@
 #include "components/viz/common/frame_timing_details.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -1247,6 +1248,12 @@ void LensOverlayController::ShowOverlay() {
   // receiving key events.
   CHECK(overlay_web_view_);
   overlay_web_view_->RequestFocus();
+
+  // Listen to the render process housing out overlay.
+  overlay_web_view_->GetWebContents()
+      ->GetPrimaryMainFrame()
+      ->GetProcess()
+      ->AddObserver(this);
 }
 
 void LensOverlayController::BackgroundUI() {
@@ -1312,6 +1319,14 @@ void LensOverlayController::CloseUIPart2(
 
   side_panel_state_observer_.Reset();
   side_panel_coordinator_ = nullptr;
+
+  if (overlay_web_view_) {
+    // Remove render frame observer.
+    overlay_web_view_->GetWebContents()
+        ->GetPrimaryMainFrame()
+        ->GetProcess()
+        ->RemoveObserver(this);
+  }
 
   if (overlay_view_) {
     auto* contents_web_view = tab_->GetBrowserWindowInterface()->GetWebView();
@@ -1609,6 +1624,18 @@ void LensOverlayController::OnSidePanelDidClose() {
     // closed so we can now take the screenshot of the page.
     CaptureScreenshot();
   }
+}
+
+void LensOverlayController::RenderProcessExited(
+    content::RenderProcessHost* host,
+    const content::ChildProcessTerminationInfo& info) {
+  // Exit early if the overlay is already closing.
+  if (IsOverlayClosing()) {
+    return;
+  }
+  // The renderer has exited unexpectedly. Close the overlay so the user does
+  // not get into a broken state.
+  CloseUISync(lens::LensOverlayDismissalSource::kRendererClosed);
 }
 
 void LensOverlayController::TabForegrounded(tabs::TabInterface* tab) {
