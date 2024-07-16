@@ -96,9 +96,11 @@ std::unique_ptr<syncer::DataBatch> FloatingSsoSyncBridge::GetDataForCommit(
 
 std::unique_ptr<syncer::DataBatch>
 FloatingSsoSyncBridge::GetAllDataForDebugging() {
-  // TODO: b/346354358 - implement.
-  NOTIMPLEMENTED();
-  return nullptr;
+  auto batch = std::make_unique<syncer::MutableDataBatch>();
+  for (const auto& entry : store_->in_memory_data()) {
+    batch->Put(entry.first, CreateEntityData(entry.second));
+  }
+  return batch;
 }
 
 const FloatingSsoSyncBridge::CookieSpecificsEntries&

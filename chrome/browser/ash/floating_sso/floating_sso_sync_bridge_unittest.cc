@@ -111,4 +111,23 @@ TEST_F(FloatingSsoSyncBridgeTest, GetDataForCommit) {
   EXPECT_FALSE(data_batch->HasNext());
 }
 
+TEST_F(FloatingSsoSyncBridgeTest, GetDataForDebugging) {
+  std::unique_ptr<syncer::DataBatch> data_batch =
+      bridge().GetAllDataForDebugging();
+  ASSERT_TRUE(data_batch);
+  const auto& entries = bridge().CookieSpecificsEntriesForTest();
+  size_t batch_size = 0;
+  // Check that `data_batch` and `entries` contain the same data.
+  while (data_batch->HasNext()) {
+    batch_size += 1;
+    const syncer::KeyAndData key_and_data = data_batch->Next();
+    auto it = entries.find(key_and_data.first);
+    ASSERT_NE(it, entries.end());
+    EXPECT_EQ(key_and_data.second->name, it->first);
+    EXPECT_THAT(key_and_data.second->specifics.cookie(),
+                base::test::EqualsProto(it->second));
+  }
+  EXPECT_EQ(batch_size, entries.size());
+}
+
 }  // namespace ash::floating_sso
