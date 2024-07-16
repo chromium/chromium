@@ -54,6 +54,11 @@ import org.chromium.ui.widget.LoadingView;
     /** The button that cancels the enrollment. */
     final Button mCancelButton;
 
+    /**
+     * Contains the loading view. Needed for proper a11y announcement of the content description.
+     */
+    final View mLoadingViewContainer;
+
     /** The view shown while enrolling the card. */
     final LoadingView mLoadingView;
 
@@ -78,6 +83,7 @@ import org.chromium.ui.widget.LoadingView;
         mIssuerLegalMessage = mContentView.findViewById(R.id.issuer_legal_message);
         mAcceptButton = mContentView.findViewById(R.id.accept_button);
         mCancelButton = mContentView.findViewById(R.id.cancel_button);
+        mLoadingViewContainer = mContentView.findViewById(R.id.loading_view_container);
         mLoadingView = mContentView.findViewById(R.id.loading_view);
     }
 }

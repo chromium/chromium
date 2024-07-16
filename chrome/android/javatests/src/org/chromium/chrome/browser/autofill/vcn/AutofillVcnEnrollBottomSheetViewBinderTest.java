@@ -348,6 +348,7 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
         LoadingViewObserver observer = new LoadingViewObserver();
         mView.mLoadingView.addObserver(observer);
 
+        assertEquals(View.GONE, mView.mLoadingViewContainer.getVisibility());
         assertEquals(View.GONE, mView.mLoadingView.getVisibility());
         assertEquals(View.VISIBLE, mView.mAcceptButton.getVisibility());
         assertEquals(View.VISIBLE, mView.mCancelButton.getVisibility());
@@ -357,6 +358,7 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mModel.set(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE, true));
         observer.getOnShowLoadingUICompleteHelper().waitForCallback(onShowLoadingUICompleteCount);
+        assertEquals(View.VISIBLE, mView.mLoadingViewContainer.getVisibility());
         assertEquals(View.VISIBLE, mView.mLoadingView.getVisibility());
         assertEquals(View.GONE, mView.mAcceptButton.getVisibility());
         assertEquals(View.GONE, mView.mCancelButton.getVisibility());
@@ -366,8 +368,26 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mModel.set(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE, false));
         observer.getOnHideLoadingUICompleteHelper().waitForCallback(onHideLoadingUICompleteCount);
+        assertEquals(View.GONE, mView.mLoadingViewContainer.getVisibility());
         assertEquals(View.GONE, mView.mLoadingView.getVisibility());
         assertEquals(View.VISIBLE, mView.mAcceptButton.getVisibility());
         assertEquals(View.VISIBLE, mView.mCancelButton.getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    public void testLoadingAccessibilityDescription() {
+        ReadableObjectPropertyKey<String> loadingDescription =
+                AutofillVcnEnrollBottomSheetProperties.LOADING_DESCRIPTION;
+
+        bind(mModelBuilder.with(loadingDescription, ""));
+        assertThat(
+                String.valueOf(mView.mLoadingViewContainer.getContentDescription()),
+                isEmptyString());
+
+        bind(mModelBuilder.with(loadingDescription, "Loading description"));
+        assertThat(
+                String.valueOf(mView.mLoadingViewContainer.getContentDescription()),
+                equalTo("Loading description"));
     }
 }

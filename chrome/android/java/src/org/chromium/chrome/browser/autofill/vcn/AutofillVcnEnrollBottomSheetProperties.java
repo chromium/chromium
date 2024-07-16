@@ -156,7 +156,12 @@ import java.util.LinkedList;
     static final ReadableObjectPropertyKey<String> CANCEL_BUTTON_LABEL =
             new ReadableObjectPropertyKey<>();
 
+    /** Indicates whether the bottom sheet is in a loading state. */
     static final WritableBooleanPropertyKey SHOW_LOADING_STATE = new WritableBooleanPropertyKey();
+
+    /** The description for the loading view. */
+    static final ReadableObjectPropertyKey<String> LOADING_DESCRIPTION =
+            new ReadableObjectPropertyKey<>();
 
     static final PropertyKey[] ALL_KEYS = {
         MESSAGE_TEXT,
@@ -170,6 +175,7 @@ import java.util.LinkedList;
         ACCEPT_BUTTON_LABEL,
         CANCEL_BUTTON_LABEL,
         SHOW_LOADING_STATE,
+        LOADING_DESCRIPTION
     };
 
     /** Do not instantiate. */

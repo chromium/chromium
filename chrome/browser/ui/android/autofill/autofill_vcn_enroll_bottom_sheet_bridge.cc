@@ -64,7 +64,9 @@ bool AutofillVCNEnrollBottomSheetBridge::RequestShowContent(
       LegalMessageLineAndroid::ConvertToJavaLinkedList(
           delegate_->GetIssuerLegalMessage()),
       delegate_->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK),
-      delegate_->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_CANCEL));
+      delegate_->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_CANCEL),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_LOADING_THROBBER_ACCESSIBLE_NAME));
 }
 
 void AutofillVCNEnrollBottomSheetBridge::Hide() {

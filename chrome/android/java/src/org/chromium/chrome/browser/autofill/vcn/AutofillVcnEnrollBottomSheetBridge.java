@@ -71,6 +71,7 @@ import java.util.LinkedList;
      * @param issuerLegalMessages Legal messages from the issuer bank.
      * @param acceptButtonLabel The label for the button that enrolls a virtual card.
      * @param cancelButtonLabel The label for the button that cancels enrollment.
+     * @param loadingDescription The description for the loading view.
      * @return True if shown.
      */
     @CalledByNative
@@ -88,7 +89,8 @@ import java.util.LinkedList;
             LinkedList<LegalMessageLine> googleLegalMessages,
             LinkedList<LegalMessageLine> issuerLegalMessages,
             @JniType("std::u16string") String acceptButtonLabel,
-            @JniType("std::u16string") String cancelButtonLabel) {
+            @JniType("std::u16string") String cancelButtonLabel,
+            @JniType("std::u16string") String loadingDescription) {
         if (webContents == null || webContents.isDestroyed()) return false;
 
         WindowAndroid window = webContents.getTopLevelNativeWindow();
@@ -150,7 +152,10 @@ import java.util.LinkedList;
                         .with(
                                 AutofillVcnEnrollBottomSheetProperties.CANCEL_BUTTON_LABEL,
                                 cancelButtonLabel)
-                        .with(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE, false);
+                        .with(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE, false)
+                        .with(
+                                AutofillVcnEnrollBottomSheetProperties.LOADING_DESCRIPTION,
+                                loadingDescription);
 
         mCoordinator =
                 new AutofillVcnEnrollBottomSheetCoordinator(

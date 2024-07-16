@@ -124,7 +124,8 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
                 googleLegalMessages,
                 issuerLegalMessages,
                 "Accept button label",
-                "Cancel button label");
+                "Cancel button label",
+                "Loading description");
     }
 
     @Test
@@ -261,6 +262,11 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
                 mBridge.getCoordinatorForTesting()
                         .getPropertyModelForTesting()
                         .get(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE));
+        assertEquals(
+                "Loading description",
+                mBridge.getCoordinatorForTesting()
+                        .getPropertyModelForTesting()
+                        .get(AutofillVcnEnrollBottomSheetProperties.LOADING_DESCRIPTION));
     }
 
     @Test
