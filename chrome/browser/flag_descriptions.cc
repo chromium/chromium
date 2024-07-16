@@ -4650,6 +4650,11 @@ const char kTabGroupSyncAndroidName[] = "Tab Group Sync on Android";
 const char kTabGroupSyncAndroidDescription[] =
     "Enables syncing of tab groups on Android with other devices.";
 
+const char kTabGroupSyncDisableNetworkLayerName[] =
+    "Tab Group Sync Disable Network Layer";
+const char kTabGroupSyncDisableNetworkLayerDescription[] =
+    "Disables network layer of tab group sync.";
+
 const char kTabGroupSyncForceOffName[] = "Tab Group Sync Force Off";
 const char kTabGroupSyncForceOffDescription[] =
     "Disables syncing of tab groups on the device even if user has enabled "

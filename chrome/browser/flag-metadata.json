@@ -8328,6 +8328,14 @@
     "expiry_milestone": 132
   },
   {
+    "name": "tab-group-sync-disable-network-layer",
+    "owners": [
+      "shaktisahu@chromium.org",
+      "clank-tab-dev@google.com"
+    ],
+    "expiry_milestone": 132
+  },
+  {
     "name": "tab-group-sync-force-off",
     "owners": [
       "qinmin@chromium.org",
