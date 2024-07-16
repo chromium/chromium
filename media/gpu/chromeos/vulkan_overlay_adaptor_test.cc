@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <linux/videodev2.h>
 #include <sys/mman.h>
 #include <sys/poll.h>
 
 #include <cstdint>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "base/bits.h"
@@ -47,12 +50,45 @@
 #include "ui/gl/test/gl_surface_test_support.h"
 #include "ui/ozone/public/ozone_platform.h"
 
-static constexpr size_t kMM21TileWidth = 16;
-static constexpr size_t kMM21TileHeight = 32;
-static constexpr int kRandomFrameSeed = 1000;
+// Not all versions of the V4L2 headers define these FourCCs, so we add them
+// here for backwards compatibility.
+#ifndef V4L2_PIX_FMT_MT2T
+#define V4L2_PIX_FMT_MT2T v4l2_fourcc('M', 'T', '2', 'T')
+#endif
+#ifndef V4L2_PIX_FMT_ARGB2101010
+#define V4L2_PIX_FMT_ARGB2101010 v4l2_fourcc('A', 'R', '3', '0')
+#endif
+#ifndef V4L2_PIX_FMT_I010
+#define V4L2_PIX_FMT_I010 v4l2_fourcc('I', '0', '1', '0')
+#endif
 
 namespace media {
 namespace {
+
+struct FrameState {
+  uint32_t fourcc;
+  bool is_scaled;
+
+  friend constexpr bool operator==(const FrameState& lhs,
+                                   const FrameState& rhs) = default;
+};
+
+}  // namespace
+}  // namespace media
+
+template <>
+struct std::hash<media::FrameState> {
+  size_t operator()(const media::FrameState& f) const {
+    return static_cast<size_t>(f.fourcc) | static_cast<size_t>(f.is_scaled);
+  }
+};
+
+namespace media {
+namespace {
+
+static constexpr size_t kMM21TileWidth = 16;
+static constexpr size_t kMM21TileHeight = 32;
+static constexpr int kRandomFrameSeed = 1000;
 
 const char* usage_msg =
     "usage: vulkan_overlay_adaptor_test\n"
@@ -75,6 +111,309 @@ const base::FilePath::CharType* kMM21Image =
 // Files for MT2T Vulkan detile test.
 const base::FilePath::CharType* kMT2TImage =
     FILE_PATH_LITERAL("crowd_run_1080x512.mt2t");
+
+constexpr int kLibYUVSuccess = 0;
+
+scoped_refptr<VideoFrame> ConvMM21ToI420(const VideoFrame& in_frame) {
+  CHECK_EQ(in_frame.format(), VideoPixelFormat::PIXEL_FORMAT_NV12);
+
+  scoped_refptr<VideoFrame> out_frame = VideoFrame::CreateFrame(
+      VideoPixelFormat::PIXEL_FORMAT_I420, in_frame.coded_size(),
+      in_frame.visible_rect(), in_frame.coded_size(), base::TimeDelta());
+  CHECK_EQ(
+      libyuv::MM21ToI420(
+          in_frame.visible_data(VideoFrame::Plane::kY),
+          in_frame.stride(VideoFrame::Plane::kY),
+          in_frame.visible_data(VideoFrame::Plane::kUV),
+          in_frame.stride(VideoFrame::Plane::kUV),
+          out_frame->GetWritableVisibleData(VideoFrame::Plane::kY),
+          out_frame->stride(VideoFrame::Plane::kY),
+          out_frame->GetWritableVisibleData(VideoFrame::Plane::kU),
+          out_frame->stride(VideoFrame::Plane::kU),
+          out_frame->GetWritableVisibleData(VideoFrame::Plane::kV),
+          out_frame->stride(VideoFrame::Plane::kV),
+          out_frame->coded_size().width(), out_frame->coded_size().height()),
+      kLibYUVSuccess);
+
+  return out_frame;
+}
+
+scoped_refptr<VideoFrame> ConvMT2TToP010(const VideoFrame& in_frame) {
+  constexpr size_t bpp_numerator = 5;
+  constexpr size_t bpp_denom = 4;
+
+  CHECK_EQ(in_frame.format(), VideoPixelFormat::PIXEL_FORMAT_NV12);
+
+  gfx::Size out_size =
+      gfx::Size(in_frame.coded_size().width(),
+                in_frame.coded_size().height() / bpp_numerator * bpp_denom);
+
+  scoped_refptr<VideoFrame> out_frame = VideoFrame::CreateFrame(
+      VideoPixelFormat::PIXEL_FORMAT_P010LE, out_size, in_frame.visible_rect(),
+      out_size, base::TimeDelta());
+  CHECK_EQ(
+      libyuv::MT2TToP010(
+          in_frame.visible_data(VideoFrame::Plane::kY),
+          in_frame.stride(VideoFrame::Plane::kY) * bpp_numerator / bpp_denom,
+          in_frame.visible_data(VideoFrame::Plane::kUV),
+          in_frame.stride(VideoFrame::Plane::kUV) * bpp_numerator / bpp_denom,
+          reinterpret_cast<uint16_t*>(
+              out_frame->GetWritableVisibleData(VideoFrame::Plane::kY)),
+          out_frame->stride(VideoFrame::Plane::kY) / 2,
+          reinterpret_cast<uint16_t*>(
+              out_frame->GetWritableVisibleData(VideoFrame::Plane::kUV)),
+          out_frame->stride(VideoFrame::Plane::kUV) / 2,
+          out_frame->coded_size().width(), out_frame->coded_size().height()),
+      kLibYUVSuccess);
+
+  return out_frame;
+}
+
+scoped_refptr<VideoFrame> ConvP010ToI010(const VideoFrame& in_frame) {
+  CHECK_EQ(in_frame.format(), VideoPixelFormat::PIXEL_FORMAT_P010LE);
+
+  scoped_refptr<VideoFrame> out_frame = VideoFrame::CreateFrame(
+      VideoPixelFormat::PIXEL_FORMAT_YUV420P10, in_frame.coded_size(),
+      in_frame.visible_rect(), in_frame.coded_size(), base::TimeDelta());
+  CHECK_EQ(libyuv::P010ToI010(
+               reinterpret_cast<const uint16_t*>(
+                   in_frame.visible_data(VideoFrame::Plane::kY)),
+               in_frame.stride(VideoFrame::Plane::kY) / 2,
+               reinterpret_cast<const uint16_t*>(
+                   in_frame.visible_data(VideoFrame::Plane::kUV)),
+               in_frame.stride(VideoFrame::Plane::kUV) / 2,
+               reinterpret_cast<uint16_t*>(
+                   out_frame->GetWritableVisibleData(VideoFrame::Plane::kY)),
+               out_frame->stride(VideoFrame::Plane::kY) / 2,
+               reinterpret_cast<uint16_t*>(
+                   out_frame->GetWritableVisibleData(VideoFrame::Plane::kU)),
+               out_frame->stride(VideoFrame::Plane::kU) / 2,
+               reinterpret_cast<uint16_t*>(
+                   out_frame->GetWritableVisibleData(VideoFrame::Plane::kV)),
+               out_frame->stride(VideoFrame::Plane::kV) / 2,
+               out_frame->visible_rect().width(),
+               out_frame->visible_rect().height()),
+           kLibYUVSuccess);
+
+  return out_frame;
+}
+
+scoped_refptr<VideoFrame> ConvI420ToARGB(const VideoFrame& in_frame) {
+  CHECK_EQ(in_frame.format(), VideoPixelFormat::PIXEL_FORMAT_I420);
+
+  scoped_refptr<VideoFrame> out_frame = VideoFrame::CreateFrame(
+      VideoPixelFormat::PIXEL_FORMAT_ARGB, in_frame.coded_size(),
+      in_frame.visible_rect(), in_frame.coded_size(), base::TimeDelta());
+
+  CHECK_EQ(libyuv::I420ToARGB(
+               in_frame.visible_data(VideoFrame::Plane::kY),
+               in_frame.stride(VideoFrame::Plane::kY),
+               in_frame.visible_data(VideoFrame::Plane::kU),
+               in_frame.stride(VideoFrame::Plane::kU),
+               in_frame.visible_data(VideoFrame::Plane::kV),
+               in_frame.stride(VideoFrame::Plane::kV),
+               out_frame->GetWritableVisibleData(VideoFrame::Plane::kARGB),
+               out_frame->stride(VideoFrame::Plane::kARGB),
+               out_frame->visible_rect().width(),
+               out_frame->visible_rect().height()),
+           kLibYUVSuccess);
+
+  return out_frame;
+}
+
+scoped_refptr<VideoFrame> ConvI010ToAR30(const VideoFrame& in_frame) {
+  CHECK_EQ(in_frame.format(), VideoPixelFormat::PIXEL_FORMAT_YUV420P10);
+
+  scoped_refptr<VideoFrame> out_frame = VideoFrame::CreateFrame(
+      VideoPixelFormat::PIXEL_FORMAT_XR30, in_frame.coded_size(),
+      in_frame.visible_rect(), in_frame.coded_size(), base::TimeDelta());
+
+  CHECK_EQ(libyuv::I010ToAR30(
+               reinterpret_cast<const uint16_t*>(
+                   in_frame.visible_data(VideoFrame::Plane::kY)),
+               in_frame.stride(VideoFrame::Plane::kY) / 2,
+               reinterpret_cast<const uint16_t*>(
+                   in_frame.visible_data(VideoFrame::Plane::kU)),
+               in_frame.stride(VideoFrame::Plane::kU) / 2,
+               reinterpret_cast<const uint16_t*>(
+                   in_frame.visible_data(VideoFrame::Plane::kV)),
+               in_frame.stride(VideoFrame::Plane::kV) / 2,
+               out_frame->GetWritableVisibleData(VideoFrame::Plane::kARGB),
+               out_frame->stride(VideoFrame::Plane::kARGB),
+               out_frame->visible_rect().width(),
+               out_frame->visible_rect().height()),
+           kLibYUVSuccess);
+
+  return out_frame;
+}
+
+scoped_refptr<VideoFrame> ScaleI420(const gfx::Size& dst_size,
+                                    const VideoFrame& in_frame) {
+  CHECK_EQ(in_frame.format(), VideoPixelFormat::PIXEL_FORMAT_I420);
+
+  scoped_refptr<VideoFrame> out_frame =
+      VideoFrame::CreateFrame(VideoPixelFormat::PIXEL_FORMAT_I420, dst_size,
+                              gfx::Rect(dst_size), dst_size, base::TimeDelta());
+
+  CHECK_EQ(
+      libyuv::I420Scale(
+          in_frame.visible_data(VideoFrame::Plane::kY),
+          in_frame.stride(VideoFrame::Plane::kY),
+          in_frame.visible_data(VideoFrame::Plane::kU),
+          in_frame.stride(VideoFrame::Plane::kU),
+          in_frame.visible_data(VideoFrame::Plane::kV),
+          in_frame.stride(VideoFrame::Plane::kV),
+          in_frame.visible_rect().width(), in_frame.visible_rect().height(),
+          out_frame->GetWritableVisibleData(VideoFrame::Plane::kY),
+          out_frame->stride(VideoFrame::Plane::kY),
+          out_frame->GetWritableVisibleData(VideoFrame::Plane::kU),
+          out_frame->stride(VideoFrame::Plane::kU),
+          out_frame->GetWritableVisibleData(VideoFrame::Plane::kV),
+          out_frame->stride(VideoFrame::Plane::kV),
+          out_frame->visible_rect().width(), out_frame->visible_rect().height(),
+          libyuv::kFilterBilinear),
+      kLibYUVSuccess);
+
+  return out_frame;
+}
+
+scoped_refptr<VideoFrame> ScaleI010(const gfx::Size& dst_size,
+                                    const VideoFrame& in_frame) {
+  CHECK_EQ(in_frame.format(), VideoPixelFormat::PIXEL_FORMAT_YUV420P10);
+
+  scoped_refptr<VideoFrame> out_frame = VideoFrame::CreateFrame(
+      VideoPixelFormat::PIXEL_FORMAT_YUV420P10, dst_size, gfx::Rect(dst_size),
+      dst_size, base::TimeDelta());
+
+  CHECK_EQ(
+      libyuv::I420Scale_16(
+          reinterpret_cast<const uint16_t*>(
+              in_frame.visible_data(VideoFrame::Plane::kY)),
+          in_frame.stride(VideoFrame::Plane::kY) / 2,
+          reinterpret_cast<const uint16_t*>(
+              in_frame.visible_data(VideoFrame::Plane::kU)),
+          in_frame.stride(VideoFrame::Plane::kU) / 2,
+          reinterpret_cast<const uint16_t*>(
+              in_frame.visible_data(VideoFrame::Plane::kV)),
+          in_frame.stride(VideoFrame::Plane::kV) / 2,
+          in_frame.visible_rect().width(), in_frame.visible_rect().height(),
+          reinterpret_cast<uint16_t*>(
+              out_frame->GetWritableVisibleData(VideoFrame::Plane::kY)),
+          out_frame->stride(VideoFrame::Plane::kY) / 2,
+          reinterpret_cast<uint16_t*>(
+              out_frame->GetWritableVisibleData(VideoFrame::Plane::kU)),
+          out_frame->stride(VideoFrame::Plane::kU) / 2,
+          reinterpret_cast<uint16_t*>(
+              out_frame->GetWritableVisibleData(VideoFrame::Plane::kV)),
+          out_frame->stride(VideoFrame::Plane::kV) / 2,
+          out_frame->visible_rect().width(), out_frame->visible_rect().height(),
+          libyuv::kFilterBilinear),
+      kLibYUVSuccess);
+
+  return out_frame;
+}
+
+// Convenience function for handling multi-step LibYUV conversions with pivots.
+scoped_refptr<VideoFrame> ProcessFrameLibyuv(scoped_refptr<VideoFrame> in_frame,
+                                             uint32_t in_fourcc,
+                                             const gfx::Size& in_size,
+                                             uint32_t out_fourcc,
+                                             const gfx::Size& out_size) {
+  // Assemble a graph of the available LibYUV conversion functions.
+  std::unordered_multimap<
+      uint32_t, std::pair<base::RepeatingCallback<scoped_refptr<VideoFrame>(
+                              const VideoFrame&)>,
+                          FrameState>>
+      frame_process_graph = {
+          {V4L2_PIX_FMT_MM21,
+           std::make_pair(base::BindRepeating(&ConvMM21ToI420),
+                          FrameState(V4L2_PIX_FMT_YUV420, false))},
+          {V4L2_PIX_FMT_MT2T,
+           std::make_pair(base::BindRepeating(&ConvMT2TToP010),
+                          FrameState(V4L2_PIX_FMT_P010, false))},
+          {V4L2_PIX_FMT_P010,
+           std::make_pair(base::BindRepeating(&ConvP010ToI010),
+                          FrameState(V4L2_PIX_FMT_I010, false))},
+          {V4L2_PIX_FMT_YUV420,
+           std::make_pair(base::BindRepeating(&ConvI420ToARGB),
+                          FrameState(V4L2_PIX_FMT_ARGB32, false))},
+          {V4L2_PIX_FMT_I010,
+           std::make_pair(base::BindRepeating(&ConvI010ToAR30),
+                          FrameState(V4L2_PIX_FMT_ARGB2101010, false))},
+          {V4L2_PIX_FMT_YUV420,
+           std::make_pair(base::BindRepeating(&ScaleI420, out_size),
+                          FrameState(V4L2_PIX_FMT_YUV420, true))},
+          {V4L2_PIX_FMT_I010,
+           std::make_pair(base::BindRepeating(&ScaleI010, out_size),
+                          FrameState(V4L2_PIX_FMT_I010, true))}};
+
+  FrameState target_state = {out_fourcc, in_size != out_size};
+  std::vector<
+      base::RepeatingCallback<scoped_refptr<VideoFrame>(const VideoFrame&)>>
+      path;
+  bool found_path = false;
+
+  // Simple BFS implementation for finding the minimal number of processing
+  // steps for a given frame. Some of these conversions are not completely
+  // lossless, so we want to minimize distortion.
+  std::vector<FrameState> frame_states = {FrameState(in_fourcc, false)};
+  std::unordered_set<FrameState> seen_states;
+  std::vector<std::vector<
+      base::RepeatingCallback<scoped_refptr<VideoFrame>(const VideoFrame&)>>>
+      paths = {{}};
+  constexpr int kMaxPivots = 5;
+  int search_radius;
+  for (search_radius = 0; search_radius < kMaxPivots; search_radius++) {
+    if (found_path) {
+      break;
+    }
+
+    std::vector<FrameState> updated_states;
+    std::vector<std::vector<
+        base::RepeatingCallback<scoped_refptr<VideoFrame>(const VideoFrame&)>>>
+        updated_paths;
+
+    for (size_t i = 0; i < frame_states.size(); i++) {
+      if (found_path) {
+        break;
+      }
+
+      const auto& curr_state = frame_states[i];
+      const auto& curr_path = paths[i];
+      auto range = frame_process_graph.equal_range(curr_state.fourcc);
+      for (auto itr = range.first; itr != range.second; itr++) {
+        FrameState candidate_state(
+            itr->second.second.fourcc,
+            itr->second.second.is_scaled | curr_state.is_scaled);
+        if (seen_states.contains(candidate_state)) {
+          continue;
+        }
+
+        seen_states.insert(candidate_state);
+        updated_states.push_back(candidate_state);
+        updated_paths.push_back(curr_path);
+        updated_paths.back().push_back(itr->second.first);
+
+        if (candidate_state == target_state) {
+          path = updated_paths.back();
+          found_path = true;
+          break;
+        }
+      }
+    }
+
+    frame_states = std::move(updated_states);
+    paths = std::move(updated_paths);
+  }
+  CHECK_NE(search_radius, kMaxPivots);
+
+  auto frame = in_frame;
+  for (auto& process : path) {
+    frame = process.Run(*frame);
+  }
+
+  return frame;
+}
 
 void InitWithImage(const uint8_t* img_data,
                    const gfx::Size size,
@@ -136,6 +475,7 @@ class VulkanImageProcessorTest
   scoped_refptr<VideoFrame> CreateVideoFrame(
       gpu::Mailbox mailbox,
       const gfx::Size& coded_size,
+      const gfx::Rect& visible_rect,
       base::OnceCallback<void(gfx::Size, uint8_t*, size_t, uint8_t*, size_t)>
           frame_init_cb,
       bool is_10bit);
@@ -204,6 +544,7 @@ void VulkanImageProcessorTest::ProcessMailboxes(
 scoped_refptr<VideoFrame> VulkanImageProcessorTest::CreateVideoFrame(
     gpu::Mailbox mailbox,
     const gfx::Size& coded_size,
+    const gfx::Rect& visible_rect,
     base::OnceCallback<
         void(const gfx::Size, uint8_t*, size_t, uint8_t*, size_t)>
         frame_init_cb,
@@ -219,8 +560,8 @@ scoped_refptr<VideoFrame> VulkanImageProcessorTest::CreateVideoFrame(
           bpp_numerator / bpp_denom);
 
   scoped_refptr<VideoFrame> frame = CreateGpuMemoryBufferVideoFrame(
-      VideoPixelFormat::PIXEL_FORMAT_NV12, alloc_size, gfx::Rect(alloc_size),
-      alloc_size, kNullTimestamp, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+      VideoPixelFormat::PIXEL_FORMAT_NV12, alloc_size, visible_rect, alloc_size,
+      kNullTimestamp, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
 
   std::unique_ptr<VideoFrameMapper> frame_mapper =
       VideoFrameMapperFactory::CreateMapper(
@@ -291,8 +632,6 @@ scoped_refptr<VideoFrame> VulkanImageProcessorTest::CreateFramebuffer(
 
 TEST_P(VulkanImageProcessorTest, Correctness) {
   bool is_10bit = GetParam() == kMT2T;
-  const size_t bpp_numerator = is_10bit ? 5 : 1;
-  const size_t bpp_denom = is_10bit ? 4 : 1;
 
   auto in_mailbox = gpu::Mailbox::Generate();
   auto out_mailbox = gpu::Mailbox::Generate();
@@ -307,7 +646,8 @@ TEST_P(VulkanImageProcessorTest, Correctness) {
                           kMM21TileHeight));
   auto init_cb = base::BindOnce(&InitWithImage, image.Data());
   auto in_frame =
-      CreateVideoFrame(in_mailbox, image.Size(), std::move(init_cb), is_10bit);
+      CreateVideoFrame(in_mailbox, image.Size(), image.VisibleRect(),
+                       std::move(init_cb), is_10bit);
 
   gfx::Size output_size(1000, 1000);
   auto out_frame = CreateFramebuffer(out_mailbox, output_size, is_10bit);
@@ -325,130 +665,43 @@ TEST_P(VulkanImageProcessorTest, Correctness) {
       ->GetFenceHelper()
       ->PerformImmediateCleanup();
 
-  // Replicate Vulkan image processing with LibYUV to check our results.
-  uint8_t* argb_framebuf = reinterpret_cast<uint8_t*>(
-      mmap(nullptr, output_size.GetArea() * 4, PROT_READ | PROT_WRITE,
-           MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+  const uint32_t in_fourcc = is_10bit ? V4L2_PIX_FMT_MT2T : V4L2_PIX_FMT_MM21;
+  const uint32_t out_fourcc =
+      is_10bit ? V4L2_PIX_FMT_ARGB2101010 : V4L2_PIX_FMT_ARGB32;
+  // TODO(b/328227651): We have to keep the 10-bit PSNR threshold pretty low
+  // because LibYUV produces inaccurate results in the 10-bit YUV->ARGB
+  // conversion. We should try to fix this discrepancy though.
+  const double psnr_threshold = is_10bit ? 25.0 : 35.0;
+  double psnr = 0.0;
+  // GPU memory buffers have some unusual stride requirements that don't play
+  // nicely with the libyuv implementation of some functions. So instead of
+  // using the regular input VideoFrame, we create a new one that just wraps the
+  // raw, packed image data.
+  auto packed_in_frame = VideoFrame::WrapExternalData(
+      VideoPixelFormat::PIXEL_FORMAT_NV12, in_frame->coded_size(),
+      in_frame->visible_rect(), in_frame->coded_size(), image.Data(),
+      in_frame->coded_size().GetArea() * 3 / 2, base::TimeDelta());
+
+  auto libyuv_out_frame = ProcessFrameLibyuv(
+      packed_in_frame, in_fourcc, image.Size(), out_fourcc, output_size);
   if (is_10bit) {
-    uint16_t* p010_y = reinterpret_cast<uint16_t*>(
-        mmap(nullptr, size.GetArea() * 2, PROT_READ | PROT_WRITE,
-             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
-    uint16_t* p010_uv = reinterpret_cast<uint16_t*>(
-        mmap(nullptr, size.GetArea(), PROT_READ | PROT_WRITE,
-             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
-    ASSERT_FALSE(libyuv::MT2TToP010(
-        image.Data(), size.width() * bpp_numerator / bpp_denom,
-        image.Data() + size.GetArea() * bpp_numerator / bpp_denom,
-        size.width() * bpp_numerator / bpp_denom, p010_y, size.width(), p010_uv,
-        size.width(), size.width(), size.height()));
-
-    uint16_t* small_i010_y = reinterpret_cast<uint16_t*>(
-        mmap(nullptr, size.GetArea() * 2, PROT_READ | PROT_WRITE,
-             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
-    uint16_t* small_i010_u = reinterpret_cast<uint16_t*>(
-        mmap(nullptr, size.GetArea() / 2, PROT_READ | PROT_WRITE,
-             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
-    uint16_t* small_i010_v = reinterpret_cast<uint16_t*>(
-        mmap(nullptr, size.GetArea() / 2, PROT_READ | PROT_WRITE,
-             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
-    ASSERT_FALSE(libyuv::P010ToI010(
-        p010_y, size.width(), p010_uv, size.width(), small_i010_y, size.width(),
-        small_i010_u, size.width() / 2, small_i010_v, size.width() / 2,
-        image.VisibleRect().width(), image.VisibleRect().height()));
-
-    uint16_t* i010_y = reinterpret_cast<uint16_t*>(
-        mmap(nullptr, output_size.GetArea() * 2, PROT_READ | PROT_WRITE,
-             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
-    uint16_t* i010_u = reinterpret_cast<uint16_t*>(
-        mmap(nullptr, output_size.GetArea() / 2, PROT_READ | PROT_WRITE,
-             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
-    uint16_t* i010_v = reinterpret_cast<uint16_t*>(
-        mmap(nullptr, output_size.GetArea() / 2, PROT_READ | PROT_WRITE,
-             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
-    ASSERT_FALSE(libyuv::I420Scale_16(
-        small_i010_y, size.width(), small_i010_u, size.width() / 2,
-        small_i010_v, size.width() / 2, image.VisibleRect().width(),
-        image.VisibleRect().height(), i010_y, output_size.width(), i010_u,
-        output_size.width() / 2, i010_v, output_size.width() / 2,
-        output_size.width(), output_size.height(), libyuv::kFilterBilinear));
-
-    ASSERT_FALSE(libyuv::I010ToAR30(
-        i010_y, output_size.width(), i010_u, output_size.width() / 2, i010_v,
-        output_size.width() / 2, argb_framebuf, output_size.width() * 4,
-        output_size.width(), output_size.height()));
-
-    double psnr = test::ComputeAR30PSNR(
+    psnr = test::ComputeAR30PSNR(
         reinterpret_cast<const uint32_t*>(
             out_frame->visible_data(VideoFrame::Plane::kARGB)),
         out_frame->stride(VideoFrame::Plane::kARGB) / 4,
-        reinterpret_cast<const uint32_t*>(argb_framebuf), output_size.width(),
+        reinterpret_cast<const uint32_t*>(
+            libyuv_out_frame->visible_data(VideoFrame::Plane::kARGB)),
+        libyuv_out_frame->stride(VideoFrame::Plane::kARGB) / 4,
         output_size.width(), output_size.height());
-
-    // TODO(b/328227651): We have to keep this PSNR threshold pretty low
-    // because LibYUV produces inaccurate results in the 10-bit YUV->ARGB
-    // conversion. We should try to fix this discrepancy though.
-    constexpr double kPsnrThreshold = 25.0;
-    ASSERT_TRUE(psnr >= kPsnrThreshold);
-
-    munmap(p010_y, size.GetArea() * 2);
-    munmap(p010_uv, size.GetArea());
-    munmap(small_i010_y, size.GetArea() * 2);
-    munmap(small_i010_u, size.GetArea() / 2);
-    munmap(small_i010_v, size.GetArea() / 2);
-    munmap(i010_y, output_size.GetArea() * 2);
-    munmap(i010_u, output_size.GetArea() / 2);
-    munmap(i010_v, output_size.GetArea() / 2);
   } else {
-    uint8_t* small_i420_y = reinterpret_cast<uint8_t*>(
-        mmap(nullptr, size.GetArea(), PROT_READ | PROT_WRITE,
-             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
-    uint8_t* small_i420_u = reinterpret_cast<uint8_t*>(
-        mmap(nullptr, size.GetArea() / 4, PROT_READ | PROT_WRITE,
-             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
-    uint8_t* small_i420_v = reinterpret_cast<uint8_t*>(
-        mmap(nullptr, size.GetArea() / 4, PROT_READ | PROT_WRITE,
-             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
-    ASSERT_FALSE(libyuv::MM21ToI420(
-        image.Data(), size.width(), image.Data() + size.GetArea(), size.width(),
-        small_i420_y, size.width(), small_i420_u, size.width() / 2,
-        small_i420_v, size.width() / 2, size.width(), size.height()));
-
-    uint8_t* i420_y = reinterpret_cast<uint8_t*>(
-        mmap(nullptr, output_size.GetArea(), PROT_READ | PROT_WRITE,
-             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
-    uint8_t* i420_u = reinterpret_cast<uint8_t*>(
-        mmap(nullptr, output_size.GetArea() / 4, PROT_READ | PROT_WRITE,
-             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
-    uint8_t* i420_v = reinterpret_cast<uint8_t*>(
-        mmap(nullptr, output_size.GetArea() / 4, PROT_READ | PROT_WRITE,
-             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
-    ASSERT_FALSE(libyuv::I420Scale(
-        small_i420_y, size.width(), small_i420_u, size.width() / 2,
-        small_i420_v, size.width() / 2, image.VisibleRect().width(),
-        image.VisibleRect().height(), i420_y, output_size.width(), i420_u,
-        output_size.width() / 2, i420_v, output_size.width() / 2,
-        output_size.width(), output_size.height(), libyuv::kFilterBilinear));
-
-    ASSERT_FALSE(libyuv::I420ToARGB(
-        i420_y, output_size.width(), i420_u, output_size.width() / 2, i420_v,
-        output_size.width() / 2, argb_framebuf, output_size.width() * 4,
-        output_size.width(), output_size.height()));
-
-    double psnr = libyuv::CalcFramePsnr(
+    psnr = libyuv::CalcFramePsnr(
         out_frame->visible_data(VideoFrame::Plane::kARGB),
-        out_frame->stride(VideoFrame::Plane::kARGB), argb_framebuf,
-        output_size.width() * 4, output_size.width(), output_size.height());
-    constexpr double kPsnrThreshold = 35.0;
-    ASSERT_TRUE(psnr >= kPsnrThreshold);
-
-    munmap(small_i420_y, size.GetArea());
-    munmap(small_i420_u, size.GetArea() / 4);
-    munmap(small_i420_v, size.GetArea() / 4);
-    munmap(i420_y, output_size.GetArea());
-    munmap(i420_u, output_size.GetArea() / 4);
-    munmap(i420_v, output_size.GetArea() / 4);
+        out_frame->stride(VideoFrame::Plane::kARGB),
+        libyuv_out_frame->visible_data(VideoFrame::Plane::kARGB),
+        libyuv_out_frame->stride(VideoFrame::Plane::kARGB), output_size.width(),
+        output_size.height());
   }
-  munmap(argb_framebuf, output_size.GetArea() * 4);
+  ASSERT_TRUE(psnr >= psnr_threshold);
 }
 
 TEST_P(VulkanImageProcessorTest, Performance) {
@@ -474,6 +727,7 @@ TEST_P(VulkanImageProcessorTest, Performance) {
     auto init_cb = base::BindOnce(&InitWithRandom);
     in_mailboxes[i] = gpu::Mailbox::Generate();
     in_frames[i] = CreateVideoFrame(in_mailboxes[i], test_coded_size,
+                                    gfx::Rect(test_coded_size),
                                     std::move(init_cb), is_10bit);
 
     out_mailboxes[i] = gpu::Mailbox::Generate();
@@ -541,7 +795,7 @@ int main(int argc, char** argv) {
       return EXIT_FAILURE;
     }
   }
-  srand(kRandomFrameSeed);
+  srand(media::kRandomFrameSeed);
   testing::InitGoogleTest(&argc, argv);
 
   auto* const test_environment = new media::test::VideoTestEnvironment;
