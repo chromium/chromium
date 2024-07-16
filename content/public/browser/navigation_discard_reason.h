@@ -14,10 +14,12 @@ namespace content {
 enum class NavigationDiscardReason {
   // A new navigation will start and replace a pre-existing navigation. This
   // resets any NavigationRequest and speculative RenderFrameHost on the
-  // targeted FrameTreeNode.
-  // TODO(https://crbug.com/347706997): Break this down into the type of the new
-  // navigation (e.g. history, reload, browser- vs renderer-initiated).
-  kNewNavigation,
+  // targeted FrameTreeNode. We use different enum values depending on the
+  // type of the navigation.
+  kNewReloadNavigation,
+  kNewHistoryNavigation,
+  kNewOtherNavigationBrowserInitiated,
+  kNewOtherNavigationRendererInitiated,
   // The FrameTreeNode the navigation targets is being removed, e.g. user closed
   // the tab or script removed the frame owner element from its container
   // document.

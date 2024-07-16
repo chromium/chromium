@@ -1101,7 +1101,7 @@ void Navigator::OnBeginNavigation(
     // Preemptively clear this local pointer before deleting the request.
     ongoing_navigation_request = nullptr;
     frame_tree_node->ResetNavigationRequest(
-        NavigationDiscardReason::kNewNavigation);
+        NavigationDiscardReason::kNewOtherNavigationRendererInitiated);
   }
 
   // Verify this navigation has precedence.

@@ -1355,6 +1355,8 @@ class CONTENT_EXPORT NavigationRequest
     navigation_discard_reason_ = navigation_discard_reason;
   }
 
+  NavigationDiscardReason GetTypeForNavigationDiscardReason();
+
   void set_force_no_https_upgrade() { force_no_https_upgrade_ = true; }
 
  private:

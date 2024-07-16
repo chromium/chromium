@@ -18,9 +18,10 @@ namespace {
 std::string DiscardReasonToString(
     content::NavigationDiscardReason discard_reason) {
   switch (discard_reason) {
-    case content::NavigationDiscardReason::kNewNavigation:
-      // TODO(https://crbug.com/347706997): Get the type of the new navigation
-      // and expand the discard reason.
+    case content::NavigationDiscardReason::kNewReloadNavigation:
+    case content::NavigationDiscardReason::kNewHistoryNavigation:
+    case content::NavigationDiscardReason::kNewOtherNavigationBrowserInitiated:
+    case content::NavigationDiscardReason::kNewOtherNavigationRendererInitiated:
       return internal::kAbandonReasonNewNavigation;
     case content::NavigationDiscardReason::kWillRemoveFrame:
       return internal::kAbandonReasonFrameRemoved;

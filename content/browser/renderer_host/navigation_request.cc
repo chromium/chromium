@@ -10735,6 +10735,21 @@ NavigationRequest::GetNavigationDiscardReason() {
   return navigation_discard_reason_;
 }
 
+NavigationDiscardReason NavigationRequest::GetTypeForNavigationDiscardReason() {
+  if (NavigationTypeUtils::IsReload(common_params_->navigation_type)) {
+    return NavigationDiscardReason::kNewReloadNavigation;
+  }
+
+  if (NavigationTypeUtils::IsHistory(common_params_->navigation_type)) {
+    return NavigationDiscardReason::kNewHistoryNavigation;
+  }
+
+  if (IsRendererInitiated()) {
+    return NavigationDiscardReason::kNewOtherNavigationRendererInitiated;
+  }
+  return NavigationDiscardReason::kNewOtherNavigationBrowserInitiated;
+}
+
 void NavigationRequest::MaybeRecordTraceEventsAndHistograms() {
   if (navigation_handle_timing_.navigation_commit_sent_time.is_null()) {
     return;

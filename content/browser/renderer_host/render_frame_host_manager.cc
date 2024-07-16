@@ -1250,7 +1250,7 @@ void RenderFrameHostManager::ActivatePrerender(
     std::unique_ptr<StoredPage> stored_page) {
   if (speculative_render_frame_host_) {
     DiscardUnusedFrame(UnsetSpeculativeRenderFrameHost(
-        NavigationDiscardReason::kNewNavigation));
+        NavigationDiscardReason::kInternalCancellation));
   }
 
   // Reset the swap result of BrowsingInstance as prerender activation always
@@ -1361,11 +1361,12 @@ void RenderFrameHostManager::DidCreateNavigationRequest(
       // speculative RFH if it is unused. In particular, this means that a
       // speculative RFH with a pending-commit navigation won't be deleted
       // anymore.
-      DiscardSpeculativeRFHIfUnused(NavigationDiscardReason::kNewNavigation);
+      DiscardSpeculativeRFHIfUnused(
+          request->GetTypeForNavigationDiscardReason());
     } else {
       // When the flag is disabled, always delete the speculative RFH, even if
       // it means cancelling a pending commit navigation in that RFH.
-      DiscardSpeculativeRFH(NavigationDiscardReason::kNewNavigation);
+      DiscardSpeculativeRFH(request->GetTypeForNavigationDiscardReason());
     }
   } else {
     base::ElapsedTimer timer;
@@ -1723,11 +1724,12 @@ RenderFrameHostManager::GetFrameHostForNavigation(
     if (ShouldAvoidRedundantNavigationCancellations()) {
       // When avoiding redundant navigation cancellations, only delete the
       // speculative RFH if it is unused.
-      DiscardSpeculativeRFHIfUnused(NavigationDiscardReason::kNewNavigation);
+      DiscardSpeculativeRFHIfUnused(
+          request->GetTypeForNavigationDiscardReason());
     } else {
       // When the flag is disabled, always delete the speculative RFH, even if
       // it means cancelling a pending commit navigation in that RFH.
-      DiscardSpeculativeRFH(NavigationDiscardReason::kNewNavigation);
+      DiscardSpeculativeRFH(request->GetTypeForNavigationDiscardReason());
     }
   } else {
     // If the current RenderFrameHost cannot be used a speculative one is
@@ -1754,7 +1756,7 @@ RenderFrameHostManager::GetFrameHostForNavigation(
         dest_site_instance->GetProcess()->IncrementPendingReuseRefCount();
       }
 
-      DiscardSpeculativeRFH(NavigationDiscardReason::kNewNavigation);
+      DiscardSpeculativeRFH(request->GetTypeForNavigationDiscardReason());
       bool success = CreateSpeculativeRenderFrameHost(
           current_site_instance, dest_site_instance.get(),
           recovering_without_early_commit);

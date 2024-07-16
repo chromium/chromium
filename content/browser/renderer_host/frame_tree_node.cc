@@ -575,10 +575,11 @@ void FrameTreeNode::TakeNavigationRequest(
       // Mark the old request as aborted.
       navigation_request_->set_net_error(net::ERR_ABORTED);
     }
-    ResetNavigationRequestButKeepState(NavigationDiscardReason::kNewNavigation);
+    ResetNavigationRequestButKeepState(
+        navigation_request->GetTypeForNavigationDiscardReason());
   } else if (navigation_request_) {
     navigation_request_->set_navigation_discard_reason(
-        NavigationDiscardReason::kNewNavigation);
+        navigation_request->GetTypeForNavigationDiscardReason());
   }
 
   // Cancel any task that will restart BackForwardCache navigation that was
@@ -1315,7 +1316,7 @@ void FrameTreeNode::RestartBackForwardCachedNavigationAsync(int nav_entry_id) {
   CHECK_EQ(navigation_request_->nav_entry_id(), nav_entry_id);
   // Reset the `NavigationRequest` since the BFCache navigation will be
   // restarted.
-  ResetNavigationRequest(NavigationDiscardReason::kNewNavigation);
+  ResetNavigationRequest(NavigationDiscardReason::kInternalCancellation);
 
   // Post a task to restart the navigation asynchronously.
   restart_back_forward_cached_navigation_tracker_.PostTask(
