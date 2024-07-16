@@ -507,14 +507,16 @@ void AutofillDriverIOS::FormsRemoved(
                                         .renderer_id = FormRendererId(0)};
     if (FormStructure* form =
             GetAutofillManager().FindCachedFormById(synthetic_global_id)) {
+      std::set<FieldRendererId> form_fields;
+      base::ranges::transform(form->fields(),
+                              std::inserter(form_fields, form_fields.begin()),
+                              [](const std::unique_ptr<AutofillField>& field) {
+                                return field->renderer_id();
+                              });
       // If the synthetic form fields are a subset of the removed fields, it
       // means that all the synthetic form fields were removed.
-      const bool is_deleted = base::ranges::includes(
-          removed_unowned_fields, form->fields(), /*comp=*/{},
-          /*proj1=*/{},
-          /*proj2=*/[](const std::unique_ptr<AutofillField>& field) {
-            return field->renderer_id();
-          });
+      const bool is_deleted =
+          base::ranges::includes(removed_unowned_fields, form_fields);
       if (is_deleted) {
         forms_to_report.emplace_back(synthetic_global_id);
       }
