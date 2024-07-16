@@ -3003,6 +3003,24 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.PushNotification.Client.Disabled"
+    enum="PushNotificationClientId" expires_after="2025-07-15">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Logs that a particular Push Notification Client was disabled by the user.
+  </summary>
+</histogram>
+
+<histogram name="IOS.PushNotification.Client.Enabled"
+    enum="PushNotificationClientId" expires_after="2025-07-15">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Logs that a particular Push Notification Client was enabled by the user.
+  </summary>
+</histogram>
+
 <histogram name="IOS.PushNotification.EnabledPermisisons"
     enum="PushNotificationPermissionPromptStatus" expires_after="2024-12-15">
   <owner>ajuma@google.com</owner>

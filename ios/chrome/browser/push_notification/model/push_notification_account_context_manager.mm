@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_account_context_manager.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
@@ -94,6 +95,8 @@ struct PermissionsPref {
   }
   ScopedDictPrefUpdate update(pref.service, pref.key);
   update->Set(pref.client_key, true);
+  base::UmaHistogramEnumeration("IOS.PushNotification.Client.Enabled",
+                                clientID);
 }
 
 - (void)disablePushNotification:(PushNotificationClientId)clientID
@@ -106,6 +109,8 @@ struct PermissionsPref {
   }
   ScopedDictPrefUpdate update(pref.service, pref.key);
   update->Set(pref.client_key, false);
+  base::UmaHistogramEnumeration("IOS.PushNotification.Client.Disabled",
+                                clientID);
 }
 
 - (BOOL)isPushNotificationEnabledForClient:(PushNotificationClientId)clientID
