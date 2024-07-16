@@ -95,7 +95,8 @@ std::vector<ash::PickerSearchResult> CreateSearchResultsForRecentDriveFiles(
 
 std::unique_ptr<app_list::SearchProvider> CreateDriveSearchProvider(
     Profile* profile) {
-  auto provider = std::make_unique<app_list::DriveSearchProvider>(profile);
+  auto provider = std::make_unique<app_list::DriveSearchProvider>(
+      profile, /*should_filter_shared_files=*/false);
   if (base::FeatureList::IsEnabled(ash::features::kPickerCloud)) {
     provider->SetQuerySource(
         drivefs::mojom::QueryParameters::QuerySource::kCloudOnly);
