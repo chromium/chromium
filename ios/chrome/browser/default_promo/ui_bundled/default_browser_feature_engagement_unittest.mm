@@ -463,6 +463,7 @@ TEST_F(DefaultBrowserFeatureEngagementTest, TailoredDefaultBrowserGroupTest) {
       feature_engagement::kIPHiOSPromoStaySafeFeature));
 }
 
+// Test that blue dot keeps necessary cooldown period from FRE
 TEST_F(DefaultBrowserFeatureEngagementTest,
        BlueDotOverflowMenuFeatureFRECooldown) {
   std::unique_ptr<feature_engagement::Tracker> tracker = CreateAndInitTracker();
@@ -479,17 +480,19 @@ TEST_F(DefaultBrowserFeatureEngagementTest,
   EXPECT_FALSE(tracker->WouldTriggerHelpUI(
       feature_engagement::kIPHiOSDefaultBrowserOverflowMenuBadgeFeature));
 
-  // After 5 days it should still not trigger.
-  test_clock_.Advance(base::Days(5));
+  // After 15 days it should still not trigger.
+  test_clock_.Advance(base::Days(15));
   EXPECT_FALSE(tracker->WouldTriggerHelpUI(
       feature_engagement::kIPHiOSDefaultBrowserOverflowMenuBadgeFeature));
 
-  // After another 10 days it should trigger.
-  test_clock_.Advance(base::Days(10));
+  // After another 7 days it should trigger.
+  test_clock_.Advance(base::Days(7));
   EXPECT_TRUE(tracker->WouldTriggerHelpUI(
       feature_engagement::kIPHiOSDefaultBrowserOverflowMenuBadgeFeature));
 }
 
+// Test that blue dot keeps necessary cooldown period from default browser
+// promos.
 TEST_F(DefaultBrowserFeatureEngagementTest,
        BlueDotSettingsFeatureFullscreenPromoCooldown) {
   std::unique_ptr<feature_engagement::Tracker> tracker = CreateAndInitTracker();

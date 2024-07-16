@@ -1993,6 +1993,10 @@ using UserFeedbackDataCallback =
     }
   }
 
+  if (hasDefaultBrowserBlueDot) {
+    RecordDefaultBrowserBlueDotFirstDisplay();
+  }
+
   [self showSettingsFromViewController:baseViewController
               hasDefaultBrowserBlueDot:hasDefaultBrowserBlueDot];
 }

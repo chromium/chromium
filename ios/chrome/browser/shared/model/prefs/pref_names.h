@@ -214,6 +214,10 @@ inline constexpr char
     kIosCredentialProviderPromoHasRegisteredWithPromoManager[] =
         "ios.credential_provider_promo.has_registered_with_promo_manager";
 
+// The timestamp of the first time default browser blue dot promo was shown.
+inline constexpr char kIosDefaultBrowserBlueDotPromoFirstDisplay[] =
+    "ios.default_browser_blue_dot_promo.first_display";
+
 // The last action that the user took when a Default Browser promo was
 // presented.
 inline constexpr char kIosDefaultBrowserPromoLastAction[] =

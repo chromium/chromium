@@ -15,6 +15,7 @@ class Tracker;
 }
 namespace base {
 class Time;
+class TimeDelta;
 }
 
 // Enum for the different types of default browser modal promo. These are stored
@@ -140,6 +141,12 @@ extern NSString* const kTailoredPromoInteractionCount;
 // started.
 extern NSString* const kTimestampTriggerCriteriaExperimentStarted;
 
+// Specifies how long blue dot occurrence should last.
+extern base::TimeDelta const kBlueDotPromoDuration;
+
+// Specifies how often blue dot should reoccur.
+extern base::TimeDelta const kBlueDotPromoReoccurrancePeriod;
+
 // Loads from NSUserDefaults the time of the non-expired events for the
 // given promo type.
 std::vector<base::Time> LoadTimestampsForPromoType(DefaultPromoType type);
@@ -162,6 +169,16 @@ void LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoType type);
 
 // Logs to the FET that a default browser promo has been shown.
 void LogToFETDefaultBrowserPromoShown(feature_engagement::Tracker* tracker);
+
+// Returns whether blue dot display timestamp has already been set.
+bool HasDefaultBrowserBlueDotDisplayTimestamp();
+
+// Resets  blue dot display timestamp to its default value when needed.
+void ResetDefaultBrowserBlueDotDisplayTimestampIfNeeded();
+
+// Set the current timestamp as blue dot first display timestamp if this was the
+// first instance.
+void RecordDefaultBrowserBlueDotFirstDisplay();
 
 // Returns true if the default browser blue dot should be shown.
 bool ShouldTriggerDefaultBrowserHighlightFeature(
@@ -243,10 +260,6 @@ void LogAutofillUseForCriteriaExperiment();
 
 // Logs that the user has used remote tabs.
 void LogRemoteTabsUseForCriteriaExperiment();
-
-// Returns YES if the last timestamp passed as `eventKey` is part of the current
-// user session (default 6 hours). If not, it records the timestamp.
-bool HasRecentTimestampForKey(NSString* eventKey);
 
 // Returns true if the last URL open is within the specified number of `days`
 // which would indicate Chrome is likely still the default browser. Returns

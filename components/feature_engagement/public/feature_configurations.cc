@@ -1887,17 +1887,23 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
     config->session_rate_impact.type = SessionRateImpact::Type::NONE;
-    config->used = EventConfig("blue_dot_promo_overflow_menu_dismissed",
-                               Comparator(EQUAL, 0), 30, 360);
     config->trigger = EventConfig("blue_dot_promo_overflow_menu_shown",
                                   Comparator(ANY, 0), 360, 360);
-    config->event_configs.insert(
-        EventConfig("blue_dot_promo_overflow_menu_shown_new_session",
-                    Comparator(LESS_THAN_OR_EQUAL, 2), 360, 360));
+    // Stop showing blue dot promo if settings was tapped at least 3 times.
+    config->used = EventConfig("blue_dot_promo_overflow_menu_dismissed",
+                               Comparator(LESS_THAN, 3), 360, 360);
+    // Stop showing blue dot promo if default browser settings was opened at
+    // least once.
+    config->event_configs.insert(EventConfig(
+        "blue_dot_promo_settings_dismissed", Comparator(EQUAL, 0), 360, 360));
+    // TODO(crbug.com/338249422): Stop showing blue dot promo if overflow menu
+    // was customized while blue dot was showing.
+
+    // Cooldowns from other default browser promos.
     config->event_configs.insert(EventConfig("default_browser_promo_shown",
                                              Comparator(EQUAL, 0), 14, 360));
     config->event_configs.insert(EventConfig("default_browser_fre_shown",
-                                             Comparator(EQUAL, 0), 14, 360));
+                                             Comparator(EQUAL, 0), 21, 360));
     config->event_configs.insert(EventConfig(
         "default_browser_promos_group_trigger", Comparator(EQUAL, 0), 14, 360));
     config->event_configs.insert(
@@ -1906,8 +1912,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
     // Continue checking deprecated settings badge conditions to not show blue
     // dot at all if user would not have qualified for settings badge.
-    config->event_configs.insert(EventConfig(
-        "blue_dot_promo_settings_dismissed", Comparator(EQUAL, 0), 30, 360));
     config->event_configs.insert(
         EventConfig("blue_dot_promo_settings_shown_new_session",
                     Comparator(LESS_THAN_OR_EQUAL, 2), 360, 360));

@@ -109,11 +109,6 @@ using experimental_flags::IsSpotlightDebuggingEnabled;
 
 namespace {
 
-// Key used for storing NSUserDefault entry to keep track of the last timestamp
-// we've shown the default browser blue dot promo.
-NSString* const kMostRecentTimestampBlueDotPromoShownInOverflowMenu =
-    @"MostRecentTimestampBlueDotPromoShownInOverflowMenu";
-
 // Approximate number of visible page actions by default.
 const unsigned int kDefaultVisiblePageActionCount = 3u;
 
@@ -1219,16 +1214,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   if (self.engagementTracker &&
       ShouldTriggerDefaultBrowserHighlightFeature(self.engagementTracker)) {
     self.settingsDestination.badge = BadgeTypePromo;
-    // If we've only started showing the blue dot recently (<6 hours), don't
-    // notify the FET again that the promo is being shown, since we're not in a
-    // new user session. We record the badge being shown per user session,
-    // instead of per time it is shown since the badge needs to be shown accross
-    // 3 user sessions.
-    if (!HasRecentTimestampForKey(
-            kMostRecentTimestampBlueDotPromoShownInOverflowMenu)) {
-      self.engagementTracker->NotifyEvent(
-          feature_engagement::events::kBlueDotPromoOverflowMenuShownNewSession);
-    }
+    RecordDefaultBrowserBlueDotFirstDisplay();
   }
 }
 

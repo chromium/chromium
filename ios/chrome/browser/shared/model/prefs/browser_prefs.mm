@@ -526,6 +526,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kIosCredentialProviderPromoPolicyEnabled,
                                 true);
 
+  registry->RegisterTimePref(prefs::kIosDefaultBrowserBlueDotPromoFirstDisplay,
+                             base::Time());
+
   registry->RegisterIntegerPref(prefs::kIosDefaultBrowserPromoLastAction, -1);
 
   // Preferences related to tab grid.
@@ -1187,4 +1190,10 @@ void MigrateObsoleteUserDefault() {
   // Added 06/2024.
   [defaults removeObjectForKey:@"TimestampAppLastOpenedViaFirstPartyIntent"];
   [defaults removeObjectForKey:@"TimestampLastValidURLPasted"];
+
+  // Added 07/2024.
+  [defaults
+      removeObjectForKey:@"MostRecentTimestampBlueDotPromoShownInOverflowMenu"];
+  [defaults
+      removeObjectForKey:@"MostRecentTimestampBlueDotPromoShownInSettingsMenu"];
 }

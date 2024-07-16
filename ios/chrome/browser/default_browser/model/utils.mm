@@ -405,6 +405,8 @@ NSString* const kDisplayedFullscreenPromoCount = @"displayedPromoCount";
 NSString* const kGenericPromoInteractionCount = @"genericPromoInteractionCount";
 NSString* const kTailoredPromoInteractionCount =
     @"tailoredPromoInteractionCount";
+constexpr base::TimeDelta kBlueDotPromoDuration = base::Days(15);
+constexpr base::TimeDelta kBlueDotPromoReoccurrancePeriod = base::Days(360);
 
 // Migration to FET keys.
 NSString* const kFRETimestampMigrationDone = @"fre_timestamp_migration_done";
@@ -448,10 +450,53 @@ void LogToFETDefaultBrowserPromoShown(feature_engagement::Tracker* tracker) {
   tracker->NotifyEvent(feature_engagement::events::kDefaultBrowserPromoShown);
 }
 
+bool HasDefaultBrowserBlueDotDisplayTimestamp() {
+  return !GetApplicationContext()
+              ->GetLocalState()
+              ->FindPreference(
+                  prefs::kIosDefaultBrowserBlueDotPromoFirstDisplay)
+              ->IsDefaultValue();
+}
+
+void ResetDefaultBrowserBlueDotDisplayTimestampIfNeeded() {
+  BOOL has_timestamp = HasDefaultBrowserBlueDotDisplayTimestamp();
+
+  if (!has_timestamp) {
+    return;
+  }
+
+  base::Time timestamp = GetApplicationContext()->GetLocalState()->GetTime(
+      prefs::kIosDefaultBrowserBlueDotPromoFirstDisplay);
+
+  // If more than `kBlueDotPromoReoccurrancePeriod` past since previous blue
+  // dot display, user should again become eligible for blue dot promo.
+  if (base::Time::Now() - timestamp >= kBlueDotPromoReoccurrancePeriod) {
+    GetApplicationContext()->GetLocalState()->ClearPref(
+        prefs::kIosDefaultBrowserBlueDotPromoFirstDisplay);
+  }
+}
+
+void RecordDefaultBrowserBlueDotFirstDisplay() {
+  if (!HasDefaultBrowserBlueDotDisplayTimestamp()) {
+    GetApplicationContext()->GetLocalState()->SetTime(
+        prefs::kIosDefaultBrowserBlueDotPromoFirstDisplay, base::Time::Now());
+  }
+}
+
 bool ShouldTriggerDefaultBrowserHighlightFeature(
     feature_engagement::Tracker* tracker) {
   if (IsChromeLikelyDefaultBrowser()) {
     return false;
+  }
+
+  ResetDefaultBrowserBlueDotDisplayTimestampIfNeeded();
+
+  if (HasDefaultBrowserBlueDotDisplayTimestamp()) {
+    base::Time timestamp = GetApplicationContext()->GetLocalState()->GetTime(
+        prefs::kIosDefaultBrowserBlueDotPromoFirstDisplay);
+    if (base::Time::Now() - timestamp >= kBlueDotPromoDuration) {
+      return false;
+    }
   }
 
   // We ask the appropriate FET feature if it should trigger, i.e. if we
@@ -637,17 +682,6 @@ void LogRemoteTabsUseForCriteriaExperiment() {
   }
 
   StoreCurrentTimestampForKey(kSpecialTabsUseCount);
-}
-
-bool HasRecentTimestampForKey(NSString* eventKey) {
-  const base::TimeDelta max_session_time = base::Hours(6);
-
-  if (HasRecordedEventForKeyLessThanDelay(eventKey, max_session_time)) {
-    return YES;
-  }
-
-  SetObjectIntoStorageForKey(eventKey, [NSDate date]);
-  return NO;
 }
 
 bool IsChromeLikelyDefaultBrowserXDays(int days) {

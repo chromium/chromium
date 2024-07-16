@@ -156,11 +156,6 @@ const NSInteger kMaxShowCountNewIPHBadge = 3;
 // IPH badge on fresh installs.
 const base::TimeDelta kFreshInstallTimeDelta = base::Days(1);
 
-// Key used for storing NSUserDefault entry to keep track of the last timestamp
-// we've shown the default browser blue dot promo.
-NSString* const kMostRecentTimestampBlueDotPromoShownInSettingsMenu =
-    @"MostRecentTimestampBlueDotPromoShownInSettingsMenu";
-
 #if BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
 NSString* kDevViewSourceKey = @"DevViewSource";
 #endif  // BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
@@ -2013,30 +2008,9 @@ struct EnhancedSafeBrowsingActivePromoData
 // the blue dot badge to the right settings row if it is.
 - (void)maybeActivateDefaultBrowserBlueDotPromo:
     (TableViewDetailIconItem*)defaultBrowserCellItem {
-  if (!_browserState) {
-    return;
-  }
-
-  feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(_browserState);
-  if (!tracker) {
-    return;
-  }
-
   if (self.showingDefaultBrowserNotificationDot) {
     // Add the blue dot promo badge to the default browser row.
     defaultBrowserCellItem.badgeType = BadgeType::kNotificationDot;
-
-    // If we've only started showing the blue dot recently (<6 hours), don't
-    // notify the FET again that the promo is being shown, since we're not in a
-    // new user session. We record the badge being shown per user session,
-    // instead of per time it is shown since the badge needs to be shown accross
-    // 3 user sessions.
-    if (!HasRecentTimestampForKey(
-            kMostRecentTimestampBlueDotPromoShownInSettingsMenu)) {
-      tracker->NotifyEvent(
-          feature_engagement::events::kBlueDotPromoSettingsShownNewSession);
-    }
   }
 }
 
