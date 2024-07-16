@@ -370,6 +370,8 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       browsingDataCell.userInteractionEnabled = YES;
       browsingDataCell.backgroundColor =
           [UIColor colorNamed:kSecondaryBackgroundColor];
+      browsingDataCell.accessibilityIdentifier =
+          kQuickDeleteBrowsingDataButtonIdentifier;
       return browsingDataCell;
     }
   }

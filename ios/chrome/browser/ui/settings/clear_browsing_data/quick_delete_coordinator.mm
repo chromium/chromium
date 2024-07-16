@@ -19,11 +19,13 @@
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/browsing_data_counter_wrapper_producer.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_ui_constants.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_browsing_data_coordinator.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_browsing_data_delegate.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_mediator.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_presentation_commands.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_view_controller.h"
 
-@interface QuickDeleteCoordinator () <QuickDeletePresentationCommands,
+@interface QuickDeleteCoordinator () <QuickDeleteBrowsingDataDelegate,
+                                      QuickDeletePresentationCommands,
                                       UIAdaptivePresentationControllerDelegate>
 @end
 
@@ -109,6 +111,7 @@
                              browser:self.browser];
   _browsingDataCoordinator = browsingDataCoordinator;
   [_browsingDataCoordinator start];
+  _browsingDataCoordinator.delegate = self;
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -117,6 +120,13 @@
     (UIPresentationController*)presentationController {
   [self disconnect];
   [self dismissQuickDelete];
+}
+
+#pragma mark - QuickDeleteBrowsingDataDelegate
+
+- (void)stopBrowsingDataPage {
+  [_browsingDataCoordinator stop];
+  _browsingDataCoordinator = nil;
 }
 
 #pragma mark - Private
@@ -132,6 +142,7 @@
   [_mediator disconnect];
   _mediator = nil;
 
+  _browsingDataCoordinator.delegate = nil;
   [_browsingDataCoordinator stop];
   _browsingDataCoordinator = nil;
 }

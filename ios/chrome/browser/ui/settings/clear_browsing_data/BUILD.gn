@@ -18,8 +18,10 @@ source_set("clear_browsing_data") {
     "pop_up_menu_control.mm",
     "quick_delete_browsing_data_coordinator.h",
     "quick_delete_browsing_data_coordinator.mm",
+    "quick_delete_browsing_data_delegate.h",
     "quick_delete_browsing_data_view_controller.h",
     "quick_delete_browsing_data_view_controller.mm",
+    "quick_delete_browsing_data_view_controller_delegate.h",
     "quick_delete_consumer.h",
     "quick_delete_coordinator.h",
     "quick_delete_coordinator.mm",
@@ -175,6 +177,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [
     "clear_browsing_data_egtest.mm",
+    "quick_delete_browing_data_egtest.mm",
     "quick_delete_egtest.mm",
   ]
   deps = [

@@ -7,8 +7,13 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-// Coordinator for Quick Delete Browsing Data sub-page.
+@protocol QuickDeleteBrowsingDataDelegate;
+
+// Coordinator for Quick Delete Browsing Data page.
 @interface QuickDeleteBrowsingDataCoordinator : ChromeCoordinator
+
+// Delegate for this coordinator.
+@property(nonatomic, weak) id<QuickDeleteBrowsingDataDelegate> delegate;
 
 @end
 

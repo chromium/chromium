@@ -9,7 +9,13 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 
+@protocol QuickDeleteBrowsingDataViewControllerDelegate;
+
 @interface QuickDeleteBrowsingDataViewController : ChromeTableViewController
+
+// Local dispatcher for this `QuickDeleteBrowsingDataViewController`.
+@property(nonatomic, weak) id<QuickDeleteBrowsingDataViewControllerDelegate>
+    delegate;
 
 @end
 
