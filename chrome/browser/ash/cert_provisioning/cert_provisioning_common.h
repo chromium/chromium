@@ -153,6 +153,7 @@ const char kCertProfileRenewalPeroidSec[] = "renewal_period_seconds";
 const char kCertProfilePolicyVersionKey[] = "policy_version";
 const char kCertProfileProtocolVersion[] = "protocol_version";
 const char kCertProfileIsVaEnabledKey[] = "enable_remote_attestation_check";
+const char kCertProfileKeyType[] = "key_algorithm";
 
 // The version of the certificate provisioning protocol between ChromeOS client
 // and device management server.

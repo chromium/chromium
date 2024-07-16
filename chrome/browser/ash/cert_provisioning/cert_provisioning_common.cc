@@ -162,6 +162,7 @@ std::optional<CertProfile> CertProfile::MakeFromValue(
   const std::string* name = value.FindString(kCertProfileNameKey);
   const std::string* policy_version =
       value.FindString(kCertProfilePolicyVersionKey);
+  const std::string* key_type = value.FindString(kCertProfileKeyType);
   std::optional<bool> is_va_enabled =
       value.FindBool(kCertProfileIsVaEnabledKey);
   std::optional<int> renewal_period_sec =
@@ -170,6 +171,11 @@ std::optional<CertProfile> CertProfile::MakeFromValue(
       value.FindInt(kCertProfileProtocolVersion);
 
   if (!id || !policy_version) {
+    return std::nullopt;
+  }
+
+  if (key_type && *key_type != "rsa") {
+    LOG(ERROR) << "Unsupported key type received: " << *key_type;
     return std::nullopt;
   }
 
