@@ -82,12 +82,10 @@ class RequestHandler:
         return _stub_chrome_url(request_path, js)
 
     def _transform_init_js(self, request_path: _RequestPath, js: str) -> str:
-        # Add an extra space before the "dev" import string, so the source map
-        # would still have the correct offset.
         # TODO(pihsun): The inline source would still be wrong, have some hacky
         # way to fix that too.
-        js = js.replace("'./platforms/mojo/handler.js'",
-                        " './platforms/dev/handler.js'")
+        js = js.replace("'./platforms/swa/handler.js'",
+                        "'./platforms/dev/handler.js'")
         return self._transform_js(request_path, js)
 
     def _load_grd_strings(self) -> dict[str, str]:

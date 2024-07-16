@@ -4,7 +4,7 @@
 
 import {init} from './core/init.js';
 import {RecorderApp} from './pages/recorder-app.js';
-import {PlatformHandler} from './platforms/mojo/handler.js';
+import {PlatformHandler} from './platforms/swa/handler.js';
 
 // The error for the promise is handled by the global unhandledrejection
 // handler.

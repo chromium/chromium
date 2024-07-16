@@ -6,7 +6,7 @@
  * All possible model IDs.
  *
  * TODO(pihsun): Abstract the "uuid" part of model, so the real uuid can be put
- * into platform/mojo.
+ * into platform/swa.
  */
 export enum ModelId {
   GEMINI_XXS_IT_BASE = 'ee7c31c2-18e5-405a-b54e-f2607130a15d',
