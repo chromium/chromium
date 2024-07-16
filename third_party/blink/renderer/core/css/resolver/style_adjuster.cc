@@ -663,6 +663,12 @@ static void AdjustStyleForDisplay(ComputedStyleBuilder& builder,
     }
   }
 
+  // TODO(332396355): Remove temporary blockifing of ::scroll-marker pseudo
+  // elements.
+  if (builder.StyleType() == kPseudoIdScrollMarker) {
+    builder.SetDisplay(EquivalentBlockDisplay(builder.Display()));
+  }
+
   if (builder.Display() == EDisplay::kBlock) {
     return;
   }
