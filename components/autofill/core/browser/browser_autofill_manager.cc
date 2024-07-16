@@ -612,6 +612,37 @@ bool ShouldOfferSingleFieldFormFill(
   return suppress_reason != SuppressReason::kInsecureForm;
 }
 
+// Returns whether suggestions should be suppressed for the given reason.
+bool ShouldSuppressSuggestions(SuppressReason suppress_reason,
+                               LogManager* log_manager) {
+  switch (suppress_reason) {
+    case SuppressReason::kNotSuppressed:
+      return false;
+
+    case SuppressReason::kAblation:
+      LOG_AF(log_manager) << LoggingScope::kFilling
+                          << LogMessage::kSuggestionSuppressed
+                          << " Reason: Ablation experiment";
+      return true;
+
+    case SuppressReason::kInsecureForm:
+      LOG_AF(log_manager) << LoggingScope::kFilling
+                          << LogMessage::kSuggestionSuppressed
+                          << " Reason: Insecure form";
+      return true;
+    case SuppressReason::kAutocompleteOff:
+      LOG_AF(log_manager) << LoggingScope::kFilling
+                          << LogMessage::kSuggestionSuppressed
+                          << " Reason: autocomplete=off";
+      return true;
+    case SuppressReason::kAutocompleteUnrecognized:
+      LOG_AF(log_manager) << LoggingScope::kFilling
+                          << LogMessage::kSuggestionSuppressed
+                          << " Reason: autocomplete=unrecognized";
+      return true;
+  }
+}
+
 }  // namespace
 
 BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver,
@@ -1316,40 +1347,14 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
       GetAvailableAddressAndCreditCardSuggestions(
           form, form_structure, field, autofill_field, trigger_source, context);
 
-  auto ShouldSuppressSuggestions = [&] {
-    switch (context.suppress_reason) {
-      case SuppressReason::kNotSuppressed:
-        return false;
-
-      case SuppressReason::kAblation:
-        CHECK(suggestions.empty());
-        single_field_form_fill_router_->CancelPendingQueries();
-        std::move(callback).Run(/*show_suggestions=*/true,
-                                std::move(suggestions));
-        LOG_AF(log_manager())
-            << LoggingScope::kFilling << LogMessage::kSuggestionSuppressed
-            << " Reason: Ablation experiment";
-        return true;
-
-      case SuppressReason::kInsecureForm:
-        LOG_AF(log_manager())
-            << LoggingScope::kFilling << LogMessage::kSuggestionSuppressed
-            << " Reason: Insecure form";
-        return true;
-      case SuppressReason::kAutocompleteOff:
-        LOG_AF(log_manager())
-            << LoggingScope::kFilling << LogMessage::kSuggestionSuppressed
-            << " Reason: autocomplete=off";
-        return true;
-      case SuppressReason::kAutocompleteUnrecognized:
-        LOG_AF(log_manager())
-            << LoggingScope::kFilling << LogMessage::kSuggestionSuppressed
-            << " Reason: autocomplete=unrecognized";
-        return true;
+  if (context.is_autofill_available &&
+      ShouldSuppressSuggestions(context.suppress_reason, log_manager())) {
+    if (context.suppress_reason == SuppressReason::kAblation) {
+      CHECK(suggestions.empty());
+      single_field_form_fill_router_->CancelPendingQueries();
+      std::move(callback).Run(/*show_suggestions=*/true,
+                              std::move(suggestions));
     }
-  };
-
-  if (context.is_autofill_available && ShouldSuppressSuggestions()) {
     return;
   }
 
