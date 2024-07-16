@@ -142,6 +142,33 @@ class PortTest(LoggingTestCase):
             port.output_filename(test_file, '-actual', '.png'),
             'fast/test_include=HTML._-actual.png')
 
+    def test_parse_output_filename(self):
+        port = self.make_port()
+
+        location, base_path = port.parse_output_filename('passes/text.html')
+        self.assertEqual(location.platform, '')
+        self.assertEqual(location.flag_specific, '')
+        self.assertEqual(location.virtual_suite, '')
+        self.assertEqual(base_path, 'passes/text.html')
+
+        location, base_path = port.parse_output_filename(
+            '/mock-checkout/third_party/blink/web_tests/'
+            'flag-specific/fake-flag')
+        self.assertEqual(location.platform, '')
+        self.assertEqual(location.flag_specific, 'fake-flag')
+        self.assertEqual(location.virtual_suite, '')
+        self.assertEqual(base_path, '')
+
+        location, base_path = port.parse_output_filename(
+            'platform/mac/virtual/fake-vts/passes/text.html')
+        self.assertEqual(location.platform, 'mac')
+        self.assertEqual(location.flag_specific, '')
+        self.assertEqual(location.virtual_suite, 'fake-vts')
+        self.assertEqual(base_path, 'passes/text.html')
+
+        with self.assertRaises(ValueError):
+            port.parse_output_filename('/mock-checkout/not/web_tests')
+
     def test_test_from_output_filename_html(self):
         port = self.make_port()
         virtual_suite = {
