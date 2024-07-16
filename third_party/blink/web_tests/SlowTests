@@ -1268,7 +1268,7 @@ crbug.com/1195814 [ Mac11 Release ] external/wpt/IndexedDB/idb-explicit-commit.a
 crbug.com/1195814 [ Mac12 Release ] external/wpt/IndexedDB/idb-explicit-commit.any.html [ Slow ]
 crbug.com/1195814 [ Mac12-arm64 Release ] external/wpt/IndexedDB/idb-explicit-commit.any.html [ Slow ]
 crbug.com/1195814 [ Mac13 Release ] external/wpt/IndexedDB/idb-explicit-commit.any.html [ Slow ]
-crbug.com/1418947 [ Mac ] virtual/third-party-storage-partitioning/external/wpt/IndexedDB/idb-partitioned-coverage.tentative.sub.html [ Slow ]
+crbug.com/1418947 [ Mac ] virtual/third-party-storage-partitioning/external/wpt/IndexedDB/idb-partitioned-coverage.sub.html [ Slow ]
 
 crbug.com/1263580 editing/deleting/delete-many-lines-of-text.html [ Slow ]
 

@@ -5540,7 +5540,7 @@ crbug.com/1347675 virtual/fenced-frame-mparch/external/wpt/fenced-frame/fragment
 crbug.com/1225773 external/wpt/html/webappapis/scripting/processing-model-2/unhandled-promise-rejections/promise-rejection-event-during-parse.html [ Failure ]
 
 # Flaky timeouts on WebKit Linux MSAN
-crbug.com/1218100 [ Linux ] external/wpt/IndexedDB/idb-partitioned-coverage.tentative.sub.html [ Pass Timeout ]
+crbug.com/1218100 [ Linux ] external/wpt/IndexedDB/idb-partitioned-coverage.sub.html [ Pass Timeout ]
 
 # Sheriff 2022-08-06
 crbug.com/1350337 [ Linux ] external/wpt/web-locks/query-ordering.tentative.https.html [ Failure Pass ]
@@ -6356,7 +6356,7 @@ crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.
 [ Debug Mac13 ] external/wpt/preload/preload-dynamic-csp.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded-no-composited-antialiasing/animations/svg-attribute-composition/svg-y-composition.html [ Skip Timeout ]
 [ Debug Mac13 ] http/tests/devtools/runtime/runtime-es6-setSymbolPropertyValue.js [ Skip Timeout ]
-[ Debug Mac13 ] external/wpt/IndexedDB/idb-partitioned-coverage.tentative.sub.html [ Skip Timeout ]
+[ Debug Mac13 ] external/wpt/IndexedDB/idb-partitioned-coverage.sub.html [ Skip Timeout ]
 [ Debug Mac13 ] http/tests/devtools/network/network-initiator.js [ Failure ]
 [ Debug Mac13 ] external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/inflight-fetch-1.html [ Failure ]
 [ Debug Mac13 ] virtual/threaded-prefer-compositing/fast/scroll-behavior/overflow-scroll-scrollTo.html [ Skip Timeout ]
@@ -7284,7 +7284,7 @@ crbug.com/626703 [ Mac ] external/wpt/pointerevents/pointerevent_after_target_ap
 [ Mac14 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/document-activeelement.https.html [ Failure Pass ]
 [ Mac14 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/sandbox-attribute.https.html [ Failure Pass ]
 [ Mac14 ] virtual/pna-workers-disabled/external/wpt/fetch/private-network-access/redirect.tentative.https.window.html [ Timeout ]
-[ Mac14 ] virtual/third-party-storage-partitioning/external/wpt/IndexedDB/idb-partitioned-coverage.tentative.sub.html [ Skip Timeout ]
+[ Mac14 ] virtual/third-party-storage-partitioning/external/wpt/IndexedDB/idb-partitioned-coverage.sub.html [ Skip Timeout ]
 [ Mac14 ] virtual/threaded/external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/prefer-focused-nested-containers.html [ Timeout ]
 [ Mac14 ] virtual/unified-autoplay/external/wpt/feature-policy/feature-policy-frame-policy-allowed-for-all.https.sub.html [ Crash ]
 [ Mac14 ] virtual/unified-autoplay/external/wpt/feature-policy/feature-policy-frame-policy-disallowed-for-all.https.sub.html [ Crash ]
