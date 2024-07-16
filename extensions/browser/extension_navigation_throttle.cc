@@ -226,8 +226,8 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
   if (url_has_extension_scheme && guest) {
     // Check whether the guest is allowed to load the extension URL. This is
     // usually allowed only for the guest's owner extension resources, and only
-    // if those resources are marked as webview-accessible. This check is
-    // needed for both navigations and subresources. The code below handles
+    // if those resources are marked as webview-accessible. This check is needed
+    // for both navigations and subresources. The code below handles
     // navigations, and url_request_util::AllowCrossRendererResourceLoad()
     // handles subresources.
     const std::string& owner_extension_id = guest->owner_host();
@@ -307,10 +307,15 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
     return content::NavigationThrottle::CANCEL;
   }
 
-  // Cross-origin-initiator navigations require that the |url| is in the
-  // manifest's "web_accessible_resources" section.
-  if (!WebAccessibleResourcesInfo::IsResourceWebAccessible(
-          target_extension, url.path(), &initiator_origin)) {
+  // Cross-origin-initiator navigations require that the `url` is in the
+  // manifest's "web_accessible_resources" section. The last GURL in
+  // `redirect_chain` is the current page and each one before is an ancestor.
+  auto redirect_chain = navigation_handle()->GetRedirectChain();
+  GURL upstream_url = redirect_chain.size() > 1
+                          ? redirect_chain[redirect_chain.size() - 2]
+                          : GURL();
+  if (!WebAccessibleResourcesInfo::IsResourceWebAccessibleRedirect(
+          target_extension, url, initiator_origin, upstream_url)) {
     return content::NavigationThrottle::BLOCK_REQUEST;
   }
 

@@ -244,8 +244,7 @@ void ChromeExtensionsRendererClient::WillSendRequest(
 
   if (target_url.ProtocolIs(extensions::kExtensionScheme) &&
       !resource_request_policy_->CanRequestResource(
-          upstream_url, GURL(target_url), frame, transition_type,
-          initiator_origin)) {
+          upstream_url, target_url, frame, transition_type, initiator_origin)) {
     *new_url = GURL(chrome::kExtensionInvalidRequestURL);
   }
 

@@ -200,7 +200,7 @@ bool ResourceRequestPolicy::CanRequestResource(
   // `upstream_url` might be set to GURL() in some cases, if it's not available.
   auto opt_initiator_origin = base::OptionalFromPtr(initiator_origin);
   if (!WebAccessibleResourcesInfo::IsResourceWebAccessibleRedirect(
-          extension, opt_initiator_origin, upstream_url, target_url) &&
+          extension, target_url, opt_initiator_origin, upstream_url) &&
       !WebviewInfo::IsResourceWebviewAccessible(
           extension,
           dispatcher_->webview_partition_id().value_or(std::string()),

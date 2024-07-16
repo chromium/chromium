@@ -124,7 +124,7 @@ bool AllowCrossRendererResourceLoad(
   // subresources/sub-frames.
   if (url.SchemeIs(extensions::kExtensionScheme) &&
       WebAccessibleResourcesInfo::IsResourceWebAccessibleRedirect(
-          extension, request.request_initiator, upstream_url, url)) {
+          extension, url, request.request_initiator, upstream_url)) {
     *allowed = true;
     return true;
   }

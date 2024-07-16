@@ -709,7 +709,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
                 .GetURL());
         bool is_web_accessible_resource =
             WebAccessibleResourcesInfo::IsResourceWebAccessibleRedirect(
-                extension.get(), origin, upstream_url_, request_.url);
+                extension.get(), request_.url, origin, upstream_url_);
         base::UmaHistogramBoolean(
             "Extensions.SandboxedPageLoad.IsWebAccessibleResource",
             is_web_accessible_resource);

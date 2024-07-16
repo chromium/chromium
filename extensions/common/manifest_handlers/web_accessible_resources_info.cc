@@ -188,8 +188,8 @@ bool IsResourceWebAccessibleImpl(
     if (extension.ResourceMatches(entry.resources, relative_path)) {
       bool result = true;
 
-      // Prior to MV3, web-accessible resources were accessible by any
-      // site. Preserve this behavior.
+      // Prior to MV3, web-accessible resources were accessible by any site.
+      // Preserve this behavior.
       if (extension.manifest_version() < 3) {
         return result;
       }
@@ -206,7 +206,7 @@ bool IsResourceWebAccessibleImpl(
         }
       }
 
-      // Match patterns.
+      // Determine if the `intiator_url` is allowed to access this resource.
       if (entry.matches.MatchesURL(initiator_url)) {
         return result;
       }
@@ -240,21 +240,19 @@ bool WebAccessibleResourcesInfo::IsResourceWebAccessible(
     const url::Origin* initiator_origin) {
   CHECK(extension);
   return IsResourceWebAccessibleImpl(
-      *extension, base::OptionalFromPtr(initiator_origin), GURL(),
-      extension->GetResourceURL(relative_path));
+      *extension, base::OptionalFromPtr(initiator_origin),
+      /*upstream_url=*/GURL(),
+      /*target_url=*/extension->GetResourceURL(relative_path));
 }
 
 // static
 bool WebAccessibleResourcesInfo::IsResourceWebAccessibleRedirect(
     const Extension* extension,
+    const GURL& target_url,
     const std::optional<url::Origin>& initiator_origin,
-    const GURL& upstream_url,
-    const GURL& target_url) {
+    const GURL& upstream_url) {
   CHECK(extension);
   CHECK(target_url.SchemeIs(kExtensionScheme));
-  if (!upstream_url.is_empty() && !upstream_url.SchemeIs(kExtensionScheme)) {
-    return false;
-  }
 
   return IsResourceWebAccessibleImpl(*extension, initiator_origin, upstream_url,
                                      target_url);

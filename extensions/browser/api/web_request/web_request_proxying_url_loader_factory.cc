@@ -1423,7 +1423,7 @@ bool WebRequestProxyingURLLoaderFactory::InProgressRequest::IsRedirectSafe(
       return false;
     }
     return WebAccessibleResourcesInfo::IsResourceWebAccessibleRedirect(
-        extension, original_initiator_, upstream_url, target_url);
+        extension, target_url, original_initiator_, upstream_url);
   }
   return content::IsSafeRedirectTarget(upstream_url, target_url);
 }

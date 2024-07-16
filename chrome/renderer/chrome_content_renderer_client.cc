@@ -1803,8 +1803,8 @@ bool ChromeContentRendererClient::IsSafeRedirectTarget(const GURL& upstream_url,
     }
     // TODO(solomonkinard): Use initiator_origin and add tests.
     if (extensions::WebAccessibleResourcesInfo::IsResourceWebAccessibleRedirect(
-            extension, /*initiator_origin=*/std::nullopt, upstream_url,
-            target_url)) {
+            extension, target_url, /*initiator_origin=*/std::nullopt,
+            upstream_url)) {
       return true;
     }
     return extension->guid() == upstream_url.host();

@@ -22,6 +22,7 @@ namespace extensions {
 namespace {
 
 // Test dynamic origins in web accessible resources.
+// TODO(crbug.com/352267920): Move to web_accessible_resources_browsertest.cc?
 class DynamicOriginBrowserTest : public ExtensionBrowserTest {
  public:
   DynamicOriginBrowserTest() {
@@ -151,20 +152,21 @@ IN_PROC_BROWSER_TEST_F(DynamicOriginBrowserTest, FetchGuidFromFrame) {
   };
 
   const struct {
+    const char* title;
     GURL frame_url;
     GURL expected_frame_url;
     GURL fetch_url;
     const char* expected_fetch_url_contents;
   } test_cases[] = {
-      // Fetch web accessible resource from extension resource.
       {
+          "Fetch web accessible resource from extension resource.",
           extension->url().Resolve("extension_resource.html"),
           extension->url().Resolve("extension_resource.html"),
           extension->url().Resolve("web_accessible_resource.html"),
           "web_accessible_resource.html",
       },
-      // Fetch dynamic web accessible resource from extension resource.
       {
+          "Fetch dynamic web accessible resource from extension resource.",
           extension->url().Resolve("extension_resource.html"),
           extension->url().Resolve("extension_resource.html"),
           extension->dynamic_url().Resolve("web_accessible_resource.html"),
@@ -173,6 +175,7 @@ IN_PROC_BROWSER_TEST_F(DynamicOriginBrowserTest, FetchGuidFromFrame) {
   };
 
   for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(testing::Message() << test_case.title);
     test_frame_with_fetch(test_case.frame_url, test_case.expected_frame_url,
                           test_case.fetch_url,
                           test_case.expected_fetch_url_contents);
