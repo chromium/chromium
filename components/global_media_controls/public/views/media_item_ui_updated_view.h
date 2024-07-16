@@ -122,6 +122,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   // Helper functions for testing:
   views::ImageView* GetArtworkViewForTesting();
   views::ImageView* GetFaviconViewForTesting();
+  views::ImageView* GetCastingIndicatorViewForTesting();
   views::Label* GetSourceLabelForTesting();
   views::Label* GetTitleLabelForTesting();
   views::Label* GetArtistLabelForTesting();
@@ -200,6 +201,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
 
   raw_ptr<views::ImageView> artwork_view_ = nullptr;
   raw_ptr<views::ImageView> favicon_view_ = nullptr;
+  raw_ptr<views::ImageView> casting_indicator_view_ = nullptr;
   raw_ptr<views::Label> source_label_ = nullptr;
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::Label> artist_label_ = nullptr;

@@ -250,7 +250,8 @@ TEST_F(MediaItemUIUpdatedViewTest, UpdateWithMediaArtwork) {
 }
 
 TEST_F(MediaItemUIUpdatedViewTest, UpdateWithFavicon) {
-  EXPECT_TRUE(view()->GetFaviconViewForTesting()->GetImageModel().IsEmpty());
+  EXPECT_TRUE(
+      view()->GetFaviconViewForTesting()->GetImageModel().IsVectorIcon());
 
   SkBitmap image;
   image.allocN32Pixels(10, 10);
@@ -343,11 +344,13 @@ TEST_F(MediaItemUIUpdatedViewTest, FooterViewCheck) {
   auto* pip_button = view()->GetMediaActionButtonForTesting(
       MediaSessionAction::kEnterPictureInPicture);
   EXPECT_TRUE(pip_button->GetVisible());
+  EXPECT_FALSE(view()->GetCastingIndicatorViewForTesting()->GetVisible());
 
   auto footer_view = std::make_unique<NiceMock<MockMediaItemUIFooter>>();
   auto* footer_ptr = footer_view.get();
   view()->UpdateFooterView(std::move(footer_view));
   EXPECT_FALSE(pip_button->GetVisible());
+  EXPECT_TRUE(view()->GetCastingIndicatorViewForTesting()->GetVisible());
   EXPECT_EQ(footer_ptr, view()->GetFooterForTesting());
 }
 

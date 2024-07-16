@@ -118,13 +118,14 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
   source_row->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  // Create the media favicon view.
+  // Create the media favicon view and initialize it with the default icon.
   favicon_view_ =
       source_row->AddChildView(std::make_unique<views::ImageView>());
   favicon_view_->SetPreferredSize(kFaviconSize);
   favicon_view_->SetClipPath(
       SkPath().addRoundRect(RectToSkRect(gfx::Rect(kFaviconSize)),
                             kFaviconCornerRadius, kFaviconCornerRadius));
+  UpdateWithFavicon(gfx::ImageSkia());
 
   // Create the media source label.
   source_label_ = source_row->AddChildView(std::make_unique<views::Label>(
@@ -148,6 +149,16 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
       source_row, static_cast<int>(MediaSessionAction::kEnterPictureInPicture),
       vector_icons::kPictureInPictureAltIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_ENTER_PIP);
+
+  // Create the casting indicator view which is visible when footer view is
+  // shown.
+  casting_indicator_view_ =
+      source_row->AddChildView(std::make_unique<views::ImageView>());
+  casting_indicator_view_->SetPreferredSize(kMediaActionButtonSize);
+  casting_indicator_view_->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kCastIcon,
+      media_color_theme_.device_selector_foreground_color_id,
+      kMediaActionButtonIconSize));
 
   // |metadata_row| inside |info_column| holds the |metadata_column| and
   // |play_pause_button_container|.
@@ -497,6 +508,8 @@ void MediaItemUIUpdatedView::UpdateFooterView(
   if (footer_view) {
     footer_view_ = AddChildView(std::move(footer_view));
   }
+  // Casting indicator view should only show when the footer view is shown.
+  casting_indicator_view_->SetVisible(footer_view_);
   // Footer view changes can change the picture-in-picture button's visibility.
   UpdateMediaActionButtonsVisibility();
 }
@@ -709,6 +722,10 @@ views::ImageView* MediaItemUIUpdatedView::GetArtworkViewForTesting() {
 
 views::ImageView* MediaItemUIUpdatedView::GetFaviconViewForTesting() {
   return favicon_view_;
+}
+
+views::ImageView* MediaItemUIUpdatedView::GetCastingIndicatorViewForTesting() {
+  return casting_indicator_view_;
 }
 
 views::Label* MediaItemUIUpdatedView::GetSourceLabelForTesting() {
