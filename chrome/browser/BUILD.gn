@@ -2276,6 +2276,7 @@ static_library("browser") {
     "//components/language/core/language_model",
     "//components/lens",
     "//components/lens:buildflags",
+    "//components/lens:enterprise_policy",
     "//components/leveldb_proto",
     "//components/live_caption:constants",
     "//components/live_caption:utils",

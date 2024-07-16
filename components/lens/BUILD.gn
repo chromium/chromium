@@ -73,3 +73,14 @@ source_set("unit_tests") {
     "//url",
   ]
 }
+
+source_set("enterprise_policy") {
+  public = [ "lens_overlay_permission_utils.h" ]
+  sources = [ "lens_overlay_permission_utils.cc" ]
+  deps = [
+    "//components/prefs",
+    "//components/sync/service",
+    "//components/sync_preferences",
+    "//components/unified_consent",
+  ]
+}
