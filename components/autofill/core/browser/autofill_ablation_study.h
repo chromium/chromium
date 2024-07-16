@@ -65,10 +65,10 @@ class AutofillAblationStudy {
   // cannot participate in the ablation study and end-up in
   // AblationGroup::kDefault.
   explicit AutofillAblationStudy(std::string_view seed);
-  // Constructs an ablation study with entropy stored in a preference in the
-  // PrefService. `pref_service` may be a nullptr in which case, the study
+  // Constructs an ablation study with entropy stored in a preference in
+  // `local_state`. `local_state`` may be a nullptr in which case, the study
   // always returns the `AblationGroup::kDefault`.
-  explicit AutofillAblationStudy(PrefService* pref_service);
+  explicit AutofillAblationStudy(PrefService* local_state);
   ~AutofillAblationStudy();
   AutofillAblationStudy(const AutofillAblationStudy&) = delete;
   AutofillAblationStudy& operator=(const AutofillAblationStudy&) = delete;

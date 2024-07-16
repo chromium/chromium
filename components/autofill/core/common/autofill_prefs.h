@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "google_apis/gaia/core_account_id.h"
 
+class PrefRegistrySimple;
 class PrefService;
 
 namespace user_prefs {
@@ -150,6 +151,7 @@ enum Flags {
 
 // Registers Autofill prefs.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 // Migrates deprecated Autofill prefs values.
 void MigrateDeprecatedAutofillPrefs(PrefService* prefs);

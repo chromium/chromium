@@ -89,7 +89,7 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
       log_manager_(LogManager::Create(
           AutofillLogRouterFactory::GetForBrowserState(browser_state),
           base::RepeatingClosure())),
-      ablation_study_(browser_state->GetPrefs()) {}
+      ablation_study_(GetApplicationContext()->GetLocalState()) {}
 
 ChromeAutofillClientIOS::~ChromeAutofillClientIOS() {
   HideAutofillSuggestions(SuggestionHidingReason::kTabGone);

@@ -817,9 +817,7 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
           LogManager::Create(AutofillLogRouterFactory::GetForBrowserContext(
                                  web_contents->GetBrowserContext()),
                              base::NullCallback())),
-      ablation_study_(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext())
-              ->GetPrefs()) {
+      ablation_study_(g_browser_process->local_state()) {
   // Initialize StrikeDatabase so its cache will be loaded and ready to use
   // when requested by other Autofill classes.
   GetStrikeDatabase();

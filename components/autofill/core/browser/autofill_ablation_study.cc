@@ -130,8 +130,8 @@ int GetDayInAblationWindow(base::Time now) {
 
 AutofillAblationStudy::AutofillAblationStudy(std::string_view seed)
     : seed_(seed) {}
-AutofillAblationStudy::AutofillAblationStudy(PrefService* pref_service)
-    : seed_(GetSeed(pref_service)) {}
+AutofillAblationStudy::AutofillAblationStudy(PrefService* local_state)
+    : seed_(GetSeed(local_state)) {}
 AutofillAblationStudy::~AutofillAblationStudy() = default;
 
 // static
