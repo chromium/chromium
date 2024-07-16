@@ -242,8 +242,7 @@ class HeadlessBrowserTestWithProxy : public HeadlessBrowserTest {
   net::EmbeddedTestServer proxy_server_;
 };
 
-#if (BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)) || BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/40694526): Disabled due to flakiness on Mac ASAN.
+#if BUILDFLAG(IS_FUCHSIA)
 // TODO(crbug.com/40697469): Fix this test on Fuchsia and re-enable.
 #define MAYBE_SetProxyConfig DISABLED_SetProxyConfig
 #else
@@ -259,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTestWithProxy, MAYBE_SetProxyConfig) {
           .SetProxyConfig(std::move(proxy_config))
           .Build();
 
-  // Load a page which doesn't actually exist, but for which the our proxy
+  // Load a page which doesn't actually exist, but for which our proxy
   // returns valid content anyway.
   HeadlessWebContents* web_contents =
       browser_context->CreateWebContentsBuilder()
