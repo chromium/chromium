@@ -1150,7 +1150,7 @@ void PrefetchService::SendPrefetchRequest(
                      base::Unretained(this), prefetch_container),
       base::BindRepeating(&PrefetchService::OnPrefetchRedirect,
                           base::Unretained(this), prefetch_container),
-      base::BindOnce(&PrefetchContainer::OnReceivedHead, prefetch_container),
+      base::BindOnce(&PrefetchContainer::OnDeterminedHead, prefetch_container),
       prefetch_container->GetResponseReaderForCurrentPrefetch());
   prefetch_container->SetStreamingURLLoader(std::move(streaming_loader));
 
@@ -1551,13 +1551,14 @@ PrefetchService::HandlePrefetchContainerToServe(
         return HandlePrefetchContainerResult::kWaitForHead;
       }
       prefetch_container.OnGetPrefetchToServe(/*blocked_until_head=*/true);
-      auto on_received_head = base::BindOnce(
-          &PrefetchService::OnReceivedHead, weak_method_factory_.GetWeakPtr(),
-          key, prefetch_match_resolver.GetWeakPtr());
+      auto on_maybe_determined_head =
+          base::BindOnce(&PrefetchService::OnMaybeDeterminedHead,
+                         weak_method_factory_.GetWeakPtr(), key,
+                         prefetch_match_resolver.GetWeakPtr());
       base::TimeDelta timeout =
           PrefetchBlockUntilHeadTimeout(prefetch_container.GetPrefetchType());
-      prefetch_container.StartBlockUntilHead(std::move(on_received_head),
-                                             std::move(timeout));
+      prefetch_container.StartBlockUntilHead(
+          std::move(on_maybe_determined_head), std::move(timeout));
       prefetch_match_resolver.WaitForPrefetch(prefetch_container);
       return HandlePrefetchContainerResult::kWaitForHead;
     }
@@ -1611,13 +1612,13 @@ void PrefetchService::GetPrefetchToServe(
   ReturnPrefetchToServe({}, {}, prefetch_match_resolver);
 }
 
-void PrefetchService::OnReceivedHead(
+void PrefetchService::OnMaybeDeterminedHead(
     const PrefetchContainer::Key& key,
     base::WeakPtr<PrefetchMatchResolver> prefetch_match_resolver,
     PrefetchContainer& prefetch_container) {
   const GURL& prefetch_url = prefetch_container.GetURL();
 
-  DVLOG(1) << "PrefetchService::OnReceivedHead:" << "prefetch_url = "
+  DVLOG(1) << "PrefetchService::OnMaybeDeterminedHead:" << "prefetch_url = "
            << prefetch_url;
 
   if (!prefetch_match_resolver) {
@@ -1636,19 +1637,19 @@ void PrefetchService::OnReceivedHead(
   CHECK(!prefetch_match_resolver->IsWaitingForPrefetch(prefetch_url));
 
   if (prefetch_container.is_in_dtor()) {
-    DVLOG(1) << "PrefetchService::OnReceivedHead(" << key
+    DVLOG(1) << "PrefetchService::OnMaybeDeterminedHead(" << key
              << "): deleted while waiting for head";
     ReturnPrefetchToServe(prefetch_url, {}, *prefetch_match_resolver);
     return;
   }
 
-  DVLOG(1) << "PrefetchService::OnReceivedHead(" << key
+  DVLOG(1) << "PrefetchService::OnMaybeDeterminedHead(" << key
            << "): PrefetchContainer head received for " << prefetch_url << "!";
 
   switch (prefetch_container.GetServableState(PrefetchCacheableDuration())) {
     case PrefetchContainer::ServableState::kNotServable:
     case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived: {
-      DVLOG(1) << "PrefetchService::OnReceivedHead(" << key
+      DVLOG(1) << "PrefetchService::OnMaybeDeterminedHead(" << key
                << "): " << prefetch_container << " not servable!";
       prefetch_container.OnReturnPrefetchToServe(/*served=*/false);
       ReturnPrefetchToServe(prefetch_url, {}, *prefetch_match_resolver);
@@ -1666,7 +1667,7 @@ void PrefetchService::OnReceivedHead(
   }
 
   // No-Vary-Search response header is already populated by
-  // PrefetchContainer::OnReceivedHead.
+  // `PrefetchContainer::OnDeterminedHead()`.
   auto no_vary_search_data = prefetch_container.GetNoVarySearchData();
   if (!no_vary_search_data.has_value() ||
       !no_vary_search_data.value().AreEquivalent(nav_url,
@@ -1676,7 +1677,7 @@ void PrefetchService::OnReceivedHead(
     ReturnPrefetchToServe(prefetch_url, {}, *prefetch_match_resolver);
     return;
   }
-  DVLOG(1) << "PrefetchService::OnReceivedHead::" << "url = " << nav_url
+  DVLOG(1) << "PrefetchService::OnMaybeDeterminedHead::" << "url = " << nav_url
            << "::" << "matches by NVS header the prefetch "
            << prefetch_container.GetURL();
   if (auto attempt = prefetch_container.preloading_attempt()) {

@@ -34,7 +34,7 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
       OnPrefetchResponseCompletedCallback
           on_prefetch_response_completed_callback,
       OnPrefetchRedirectCallback on_prefetch_redirect_callback,
-      base::OnceClosure on_received_head_callback,
+      base::OnceClosure on_determined_head_callback,
       base::WeakPtr<PrefetchResponseReader> response_reader);
 
   // Must be called only from `CreateAndStart()`.
@@ -43,7 +43,7 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
       OnPrefetchResponseCompletedCallback
           on_prefetch_response_completed_callback,
       OnPrefetchRedirectCallback on_prefetch_redirect_callback,
-      base::OnceClosure on_received_head_callback);
+      base::OnceClosure on_determined_head_callback);
 
   ~PrefetchStreamingURLLoader() override;
 
@@ -136,10 +136,9 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   OnPrefetchResponseCompletedCallback on_prefetch_response_completed_callback_;
   OnPrefetchRedirectCallback on_prefetch_redirect_callback_;
 
-  // Called once it is determined whether or not the prefetch is servable, i.e.
-  // either when non-redirect response head is received, or when determined not
-  // servable.
-  base::OnceClosure on_received_head_callback_;
+  // Called once non-redirect header is determined, i.e. successfully received
+  // or fetch failed.
+  base::OnceClosure on_determined_head_callback_;
 
   // Called when deletion is scheduled. Only for testing corner cases around
   // deletion.

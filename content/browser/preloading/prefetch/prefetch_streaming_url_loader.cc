@@ -19,13 +19,13 @@ PrefetchStreamingURLLoader::PrefetchStreamingURLLoader(
     OnPrefetchResponseStartedCallback on_prefetch_response_started_callback,
     OnPrefetchResponseCompletedCallback on_prefetch_response_completed_callback,
     OnPrefetchRedirectCallback on_prefetch_redirect_callback,
-    base::OnceClosure on_received_head_callback)
+    base::OnceClosure on_determined_head_callback)
     : on_prefetch_response_started_callback_(
           std::move(on_prefetch_response_started_callback)),
       on_prefetch_response_completed_callback_(
           std::move(on_prefetch_response_completed_callback)),
       on_prefetch_redirect_callback_(std::move(on_prefetch_redirect_callback)),
-      on_received_head_callback_(std::move(on_received_head_callback)) {}
+      on_determined_head_callback_(std::move(on_determined_head_callback)) {}
 
 void PrefetchStreamingURLLoader::Start(
     network::mojom::URLLoaderFactory* url_loader_factory,
@@ -85,14 +85,14 @@ PrefetchStreamingURLLoader::CreateAndStart(
     OnPrefetchResponseStartedCallback on_prefetch_response_started_callback,
     OnPrefetchResponseCompletedCallback on_prefetch_response_completed_callback,
     OnPrefetchRedirectCallback on_prefetch_redirect_callback,
-    base::OnceClosure on_received_head_callback,
+    base::OnceClosure on_determined_head_callback,
     base::WeakPtr<PrefetchResponseReader> response_reader) {
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
           std::move(on_prefetch_response_started_callback),
           std::move(on_prefetch_response_completed_callback),
           std::move(on_prefetch_redirect_callback),
-          std::move(on_received_head_callback));
+          std::move(on_determined_head_callback));
 
   streaming_loader->SetResponseReader(std::move(response_reader));
 
@@ -179,8 +179,8 @@ void PrefetchStreamingURLLoader::OnReceiveResponse(
                                         std::move(body));
   }
 
-  if (on_received_head_callback_) {
-    std::move(on_received_head_callback_).Run();
+  if (on_determined_head_callback_) {
+    std::move(on_determined_head_callback_).Run();
   }
 }
 
@@ -219,8 +219,8 @@ void PrefetchStreamingURLLoader::HandleRedirect(
       break;
     case PrefetchRedirectStatus::kFail:
       DisconnectPrefetchURLLoaderMojo();
-      if (on_received_head_callback_) {
-        std::move(on_received_head_callback_).Run();
+      if (on_determined_head_callback_) {
+        std::move(on_determined_head_callback_).Run();
       }
       break;
   }
@@ -255,10 +255,9 @@ void PrefetchStreamingURLLoader::OnComplete(
   }
 
   if (completion_status.error_code != net::OK) {
-    // Note that we may have already started serving the prefetch if it was
-    // marked as servable in |OnReceiveResponse|.
-    if (on_received_head_callback_) {
-      std::move(on_received_head_callback_).Run();
+    // Notify a failure if the callback is not consumed yet.
+    if (on_determined_head_callback_) {
+      std::move(on_determined_head_callback_).Run();
     }
   }
 

@@ -331,9 +331,12 @@ class CONTENT_EXPORT PrefetchContainer {
 
   bool IsStreamingURLLoaderDeletionScheduledForTesting() const;
 
-  // Returns the PrefetchResponseReader corresponding to the last non-redirect
-  // response, if already received its head, or otherwise nullptr.
+  // Returns the PrefetchResponseReader of the prefetched non-redirect response
+  // if already received its head. Ruturns nullptr otherwise.
   const PrefetchResponseReader* GetNonRedirectResponseReader() const;
+  // Returns the head of the prefetched non-redirect response if already
+  // received. Ruturns nullptr otherwise.
+  const network::mojom::URLResponseHead* GetNonRedirectHead() const;
 
   // Clears |streaming_loader_| and cancels its loading, if any of its
   // corresponding `PrefetchResponseReader` does NOT start serving. Currently
@@ -383,29 +386,30 @@ class CONTENT_EXPORT PrefetchContainer {
   // `PrefetchResponseReader::CreateRequestHandler()`.
   ServableState GetServableState(base::TimeDelta cacheable_duration) const;
 
-  // Starts blocking `PrefetchMatchResolver` until receiving response header or
-  // timeout. `on_received_head_callback` will be called when
+  // Starts blocking `PrefetchMatchResolver` until non-redirect response header
+  // is determined or timeouted. `on_maybe_determined_head_callback` will be
+  // called when
   //
-  // - Non-redircet response header received.
-  // - Fetch failed.
+  // - `PrefetchStreamingURLLoader` succeeded/failed to fetch non-redirect
+  //   response header.
   // - The argument `timeout` is positive and timeouted.
   // - `PrefetchContainer` dtor if `kPrefetchUnblockOnCancel` enabled.
-  void StartBlockUntilHead(
-      base::OnceCallback<void(PrefetchContainer&)> on_received_head_callback,
-      base::TimeDelta timeout);
-  // Note that `PrefetchStreamingURLLoader` calls `OnReceivedHead()` even for
-  // failure case.
+  void StartBlockUntilHead(base::OnceCallback<void(PrefetchContainer&)>
+                               on_maybe_determined_head_callback,
+                           base::TimeDelta timeout);
+  // Called when non-redirect response header is determined, i.e.
+  // `GetNonRedirectHead()` becomes immutable.
   //
-  // TODO: Merge these if possible.
-  void OnReceivedHead();
-  void OnReceivedHeadFailed();
+  // This method must be called at most once in the lifecycle of
+  // `PrefetchContainer`.
+  void OnDeterminedHead();
+  // Unblocks waiting `PrefetchMatchResolver`.
+  //
+  // This method can be called multiple times.
+  void UnblockPrefetchMatchResolver();
 
   void StartTimeoutTimer(base::TimeDelta timeout,
                          base::OnceClosure on_timeout_callback);
-
-  // Returns the head of the prefetched response. If there is no valid response,
-  // then returns null.
-  const network::mojom::URLResponseHead* GetHead();
 
   // Returns the time between the prefetch request was sent and the time the
   // response headers were received. Not set if the prefetch request hasn't been
@@ -458,7 +462,7 @@ class CONTENT_EXPORT PrefetchContainer {
   // Sets `no_vary_search_data_` from `GetHead()`. Exposed for tests.
   // RenderFrameHost is being used on no_vary_search::ProcessHead() to put
   // message to DevTools console and can be null.
-  void SetNoVarySearchData(RenderFrameHost* rfh);
+  void MaybeSetNoVarySearchData(RenderFrameHost* rfh);
 
   // Called when cookies changes are detected via
   // `HaveDefaultContextCookiesChanged()`, either for `this` or other
@@ -762,8 +766,11 @@ class CONTENT_EXPORT PrefetchContainer {
   // blocked waiting for the head of this prefetch to be received.
   std::unique_ptr<base::OneShotTimer> block_until_head_timer_;
 
-  // Called when `OnReceivedHead()` is called.
-  base::OnceCallback<void(PrefetchContainer&)> on_received_head_callback_;
+  // Callback for non-blocking call `StartBlockUntilHead()`.
+  //
+  // TODO(https://crbug.com/353490734): Remove it.
+  base::OnceCallback<void(PrefetchContainer&)>
+      on_maybe_determined_head_callback_;
 
   std::unique_ptr<base::OneShotTimer> timeout_timer_;
 

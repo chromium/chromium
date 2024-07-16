@@ -528,8 +528,7 @@ PrefetchContainer::~PrefetchContainer() {
     prefetch_document_manager_->PrefetchWillBeDestroyed(this);
   }
 
-  // If anything was blocked on head, it no longer is.
-  OnReceivedHeadFailed();
+  UnblockPrefetchMatchResolver();
 }
 
 PrefetchContainer::Key::Key(
@@ -960,6 +959,13 @@ const PrefetchResponseReader* PrefetchContainer::GetNonRedirectResponseReader()
   return redirect_chain_.back()->response_reader_.get();
 }
 
+const network::mojom::URLResponseHead* PrefetchContainer::GetNonRedirectHead()
+    const {
+  return GetNonRedirectResponseReader()
+             ? GetNonRedirectResponseReader()->GetHead()
+             : nullptr;
+}
+
 PrefetchRequestHandler PrefetchContainer::Reader::CreateRequestHandler() {
   // Create a `PrefetchRequestHandler` from the current `SinglePrefetch` (==
   // `reader`) and its corresponding `PrefetchStreamingURLLoader`.
@@ -1024,20 +1030,12 @@ void PrefetchContainer::Reader::OnPrefetchProbeResult(
   }
 }
 
-void PrefetchContainer::SetNoVarySearchData(RenderFrameHost* rfh) {
-  CHECK(!no_vary_search_data_);
-  // Check `GetHead()` here, because `OnReceivedHead()` can be called in
-  // non-servable cases when response headers are not available.
-  if (!GetHead()) {
-    return;
-  }
-  no_vary_search_data_ = no_vary_search::ProcessHead(*GetHead(), GetURL(), rfh);
-}
-
 void PrefetchContainer::StartBlockUntilHead(
-    base::OnceCallback<void(PrefetchContainer&)> on_received_head_callback,
+    base::OnceCallback<void(PrefetchContainer&)>
+        on_maybe_determined_head_callback,
     base::TimeDelta timeout) {
-  on_received_head_callback_ = std::move(on_received_head_callback);
+  on_maybe_determined_head_callback_ =
+      std::move(on_maybe_determined_head_callback);
 
   if (timeout.is_positive()) {
     // TODO(https://crbug.com/40274818): See the comment on
@@ -1045,31 +1043,42 @@ void PrefetchContainer::StartBlockUntilHead(
     block_until_head_timer_ = std::make_unique<base::OneShotTimer>();
     block_until_head_timer_->Start(
         FROM_HERE, timeout,
-        base::BindOnce(&PrefetchContainer::OnReceivedHeadFailed, GetWeakPtr()));
+        base::BindOnce(&PrefetchContainer::UnblockPrefetchMatchResolver,
+                       GetWeakPtr()));
   }
 }
 
-void PrefetchContainer::OnReceivedHead() {
+void PrefetchContainer::OnDeterminedHead() {
+  // Propagates the header to `no_vary_search_data_` if a non-redirect response
+  // header is got.
+  //
   // TODO(crbug.com/40946257): Current code doesn't support NVS for
   // browser-initated triggers.
   if (IsRendererInitiated()) {
     auto* rfhi_can_be_null =
         RenderFrameHostImpl::FromID(referring_render_frame_host_id_);
-    SetNoVarySearchData(rfhi_can_be_null);
+    MaybeSetNoVarySearchData(rfhi_can_be_null);
   }
 
-  block_until_head_timer_.reset();
-
-  if (on_received_head_callback_) {
-    std::move(on_received_head_callback_).Run(*this);
-  }
+  UnblockPrefetchMatchResolver();
 }
 
-void PrefetchContainer::OnReceivedHeadFailed() {
+void PrefetchContainer::MaybeSetNoVarySearchData(RenderFrameHost* rfh) {
+  CHECK(!no_vary_search_data_);
+
+  if (!GetNonRedirectHead()) {
+    return;
+  }
+
+  no_vary_search_data_ =
+      no_vary_search::ProcessHead(*GetNonRedirectHead(), GetURL(), rfh);
+}
+
+void PrefetchContainer::UnblockPrefetchMatchResolver() {
   block_until_head_timer_.reset();
 
-  if (on_received_head_callback_) {
-    std::move(on_received_head_callback_).Run(*this);
+  if (on_maybe_determined_head_callback_) {
+    std::move(on_maybe_determined_head_callback_).Run(*this);
   }
 }
 
@@ -1234,12 +1243,6 @@ PrefetchContainer::Reader::GetCurrentSinglePrefetchToServe() const {
 
 const GURL& PrefetchContainer::Reader::GetCurrentURLToServe() const {
   return GetCurrentSinglePrefetchToServe().url_;
-}
-
-const network::mojom::URLResponseHead* PrefetchContainer::GetHead() {
-  return GetNonRedirectResponseReader()
-             ? GetNonRedirectResponseReader()->GetHead()
-             : nullptr;
 }
 
 void PrefetchContainer::SetServingPageMetrics(

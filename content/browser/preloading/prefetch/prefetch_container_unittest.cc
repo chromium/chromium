@@ -300,7 +300,7 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer) {
 
   EXPECT_EQ(prefetch_container.GetPrefetchContainerKey(),
             PrefetchContainer::Key(document_token, GURL("https://test.com")));
-  EXPECT_FALSE(prefetch_container.GetHead());
+  EXPECT_FALSE(prefetch_container.GetNonRedirectHead());
 }
 
 TEST_P(PrefetchContainerTest, CreatePrefetchContainer_Embedder) {
@@ -324,7 +324,7 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer_Embedder) {
 
   EXPECT_EQ(prefetch_container.GetPrefetchContainerKey(),
             PrefetchContainer::Key(std::nullopt, GURL("https://test.com")));
-  EXPECT_FALSE(prefetch_container.GetHead());
+  EXPECT_FALSE(prefetch_container.GetNonRedirectHead());
 }
 
 TEST_P(PrefetchContainerTest, PrefetchStatus) {
@@ -364,7 +364,7 @@ TEST_P(PrefetchContainerTest, Servable) {
             PrefetchContainer::ServableState::kServable);
   EXPECT_EQ(prefetch_container->GetServableState(base::Minutes(3)),
             PrefetchContainer::ServableState::kServable);
-  EXPECT_TRUE(prefetch_container->GetHead());
+  EXPECT_TRUE(prefetch_container->GetNonRedirectHead());
 }
 
 TEST_P(PrefetchContainerTest, CookieListener) {
@@ -1051,13 +1051,13 @@ TEST_P(PrefetchContainerTest, MultipleStreamingURLLoaders) {
 
   EXPECT_NE(prefetch_container->GetServableState(base::TimeDelta::Max()),
             PrefetchContainer::ServableState::kServable);
-  EXPECT_FALSE(prefetch_container->GetHead());
+  EXPECT_FALSE(prefetch_container->GetNonRedirectHead());
 
   MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
       prefetch_container.get(), kTestUrl1, kTestUrl2);
   EXPECT_EQ(prefetch_container->GetServableState(base::TimeDelta::Max()),
             PrefetchContainer::ServableState::kServable);
-  EXPECT_TRUE(prefetch_container->GetHead());
+  EXPECT_TRUE(prefetch_container->GetNonRedirectHead());
 
   // As the prefetch is already completed, the streaming loader is deleted
   // asynchronously.
@@ -1080,7 +1080,7 @@ TEST_P(PrefetchContainerTest, MultipleStreamingURLLoaders) {
   // non-servable.
   EXPECT_EQ(prefetch_container->GetServableState(base::TimeDelta::Max()),
             PrefetchContainer::ServableState::kServable);
-  EXPECT_TRUE(prefetch_container->GetHead());
+  EXPECT_TRUE(prefetch_container->GetNonRedirectHead());
 
   std::unique_ptr<PrefetchTestURLLoaderClient> first_serving_url_loader_client =
       std::make_unique<PrefetchTestURLLoaderClient>();
@@ -1305,7 +1305,7 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
 
   EXPECT_NE(prefetch_container->GetServableState(base::TimeDelta::Max()),
             PrefetchContainer::ServableState::kServable);
-  EXPECT_FALSE(prefetch_container->GetHead());
+  EXPECT_FALSE(prefetch_container->GetNonRedirectHead());
 
   pending_request.client->OnReceiveResponse(
       network::mojom::URLResponseHead::New(), std::move(consumer_handle),
@@ -1314,7 +1314,7 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
 
   EXPECT_EQ(prefetch_container->GetServableState(base::TimeDelta::Max()),
             PrefetchContainer::ServableState::kServable);
-  EXPECT_TRUE(prefetch_container->GetHead());
+  EXPECT_TRUE(prefetch_container->GetNonRedirectHead());
 
   PrefetchContainer::Reader reader = prefetch_container->CreateReader();
 

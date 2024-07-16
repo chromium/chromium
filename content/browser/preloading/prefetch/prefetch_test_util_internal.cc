@@ -83,7 +83,7 @@ void MakeServableStreamingURLLoaderForTest(
                              network::mojom::URLResponseHeadPtr response_head) {
         NOTREACHED_IN_MIGRATION();
       }),
-      base::BindOnce(&PrefetchContainer::OnReceivedHead,
+      base::BindOnce(&PrefetchContainer::OnDeterminedHead,
                      prefetch_container->GetWeakPtr()),
       weak_response_reader);
 
@@ -126,7 +126,7 @@ MakeManuallyServableStreamingURLLoaderForTest(
                              network::mojom::URLResponseHeadPtr response_head) {
         NOTREACHED_IN_MIGRATION();
       }),
-      base::BindOnce(&PrefetchContainer::OnReceivedHead,
+      base::BindOnce(&PrefetchContainer::OnDeterminedHead,
                      prefetch_container->GetWeakPtr()),
       prefetch_container->GetResponseReaderForCurrentPrefetch());
 
@@ -190,7 +190,7 @@ void MakeServableStreamingURLLoaderWithRedirectForTest(
           &on_response_complete_loop),
       CreatePrefetchRedirectCallbackForTest(&on_receive_redirect_loop,
                                             &redirect_info, &redirect_head),
-      base::BindOnce(&PrefetchContainer::OnReceivedHead,
+      base::BindOnce(&PrefetchContainer::OnDeterminedHead,
                      prefetch_container->GetWeakPtr()),
       weak_first_response_reader);
 
@@ -264,7 +264,7 @@ void MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
           }),
       CreatePrefetchRedirectCallbackForTest(&on_receive_redirect_loop,
                                             &redirect_info, &redirect_head),
-      base::BindOnce(&PrefetchContainer::OnReceivedHead,
+      base::BindOnce(&PrefetchContainer::OnDeterminedHead,
                      prefetch_container->GetWeakPtr()),
       prefetch_container->GetResponseReaderForCurrentPrefetch());
 
@@ -325,7 +325,7 @@ void MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
                  network::mojom::URLResponseHeadPtr response_head) {
                 NOTREACHED_IN_MIGRATION();
               }),
-          base::BindOnce(&PrefetchContainer::OnReceivedHead,
+          base::BindOnce(&PrefetchContainer::OnDeterminedHead,
                          prefetch_container->GetWeakPtr()),
           weak_second_response_reader);
 

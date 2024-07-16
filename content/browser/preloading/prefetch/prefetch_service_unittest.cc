@@ -943,9 +943,9 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
               PrefetchStatus::kPrefetchSuccessful);
     EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
               PrefetchContainer::ServableState::kServable);
-    ASSERT_TRUE(serveable_reader.GetPrefetchContainer()->GetHead());
+    ASSERT_TRUE(serveable_reader.GetPrefetchContainer()->GetNonRedirectHead());
     EXPECT_TRUE(serveable_reader.GetPrefetchContainer()
-                    ->GetHead()
+                    ->GetNonRedirectHead()
                     ->was_in_prefetch_cache);
   }
 
@@ -2887,9 +2887,9 @@ TEST_F(PrefetchServiceStreamingURLLoaderTest,
             PrefetchStatus::kPrefetchNotFinishedInTime);
   EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
             PrefetchContainer::ServableState::kServable);
-  EXPECT_TRUE(serveable_reader.GetPrefetchContainer()->GetHead());
+  EXPECT_TRUE(serveable_reader.GetPrefetchContainer()->GetNonRedirectHead());
   EXPECT_TRUE(serveable_reader.GetPrefetchContainer()
-                  ->GetHead()
+                  ->GetNonRedirectHead()
                   ->was_in_prefetch_cache);
 
   ExpectServingMetrics(PrefetchStatus::kPrefetchNotFinishedInTime);
