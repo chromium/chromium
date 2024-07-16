@@ -118,6 +118,10 @@ class WaylandTestBase {
 
   wl::TestWaylandServerThread server_;
 
+#if BUILDFLAG(USE_XKBCOMMON)
+  XkbEvdevCodes xkb_evdev_code_converter_;
+#endif
+
   ::testing::NiceMock<MockWaylandPlatformWindowDelegate> delegate_;
   std::unique_ptr<ScopedKeyboardLayoutEngine> scoped_keyboard_layout_engine_;
   std::unique_ptr<WaylandSurfaceFactory> surface_factory_;
@@ -132,11 +136,6 @@ class WaylandTestBase {
 
  private:
   bool initialized_ = false;
-
-#if BUILDFLAG(USE_XKBCOMMON)
-  XkbEvdevCodes xkb_evdev_code_converter_;
-#endif
-
   std::unique_ptr<KeyboardLayoutEngine> keyboard_layout_engine_;
   base::test::ScopedFeatureList feature_list_;
 };
