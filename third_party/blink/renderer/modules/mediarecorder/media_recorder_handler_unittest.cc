@@ -586,7 +586,7 @@ TEST_P(MediaRecorderHandlerTest, EncodeVideoFrames) {
 
   if (GetParam().use_mp4_muxer) {
     {
-      const size_t kMfraBoxSize = 48u;
+      const size_t kMfraBoxSize = 76u;
       base::RunLoop run_loop;
       // WriteData is called as many as fragments (`moof` box) in addition
       // to 3 times of `ftyp`, `moov`, `mfra` boxes.

@@ -27,6 +27,13 @@ uint32_t BuildFlags(const std::vector<T>& build_flags) {
   return flags;
 }
 
+// It uses the default track index for audio and video regardless of the
+// actual track index. Correction of the track index will be done in the
+// `Finalize` function that the caller MUST call before writing
+// the fragment.
+inline constexpr int kDefaultAudioIndex = 0;
+inline constexpr int kDefaultVideoIndex = 1;
+
 // This class is responsible for creating and managing the fragment that holds
 // audio and video data. It is also responsible for creating the moof and mdat
 // boxes that will be written to the file.

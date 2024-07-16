@@ -79,7 +79,7 @@ Mp4MovieFragmentHeaderBoxWriter::~Mp4MovieFragmentHeaderBoxWriter() = default;
 void Mp4MovieFragmentHeaderBoxWriter::Write(BoxByteStream& writer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  writer.StartFullBox(mp4::FOURCC_MFHD, /*flags=*/0, /*version=*/0);
+  writer.StartFullBox(mp4::FOURCC_MFHD, /*flags=*/0);
 
   writer.WriteU32(box_->sequence_number);
 
@@ -126,7 +126,7 @@ Mp4TrackFragmentHeaderBoxWriter::~Mp4TrackFragmentHeaderBoxWriter() = default;
 void Mp4TrackFragmentHeaderBoxWriter::Write(BoxByteStream& writer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  writer.StartFullBox(mp4::FOURCC_TFHD, box_->flags, /*version=*/0);
+  writer.StartFullBox(mp4::FOURCC_TFHD, box_->flags);
 
   writer.WriteU32(box_->track_id);
 
@@ -176,7 +176,7 @@ Mp4TrackFragmentDecodeTimeBoxWriter::~Mp4TrackFragmentDecodeTimeBoxWriter() =
 void Mp4TrackFragmentDecodeTimeBoxWriter::Write(BoxByteStream& writer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  writer.StartFullBox(mp4::FOURCC_TFDT);
+  writer.StartFullBox(mp4::FOURCC_TFDT, /*flags=*/0, /*version=*/1);
 
   uint32_t timescale = 0;
   if (IsVideoTrackBox(context(), box_->track_id)) {
@@ -203,7 +203,7 @@ Mp4TrackFragmentRunBoxWriter::~Mp4TrackFragmentRunBoxWriter() = default;
 void Mp4TrackFragmentRunBoxWriter::Write(BoxByteStream& writer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  writer.StartFullBox(mp4::FOURCC_TRUN, box_->flags, /*version=*/0);
+  writer.StartFullBox(mp4::FOURCC_TRUN, box_->flags, /*version=*/1);
 
   writer.WriteU32(box_->sample_count);
 
@@ -351,7 +351,7 @@ Mp4TrackFragmentRandomAccessBoxWriter::
 void Mp4TrackFragmentRandomAccessBoxWriter::Write(BoxByteStream& writer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  writer.StartFullBox(mp4::FOURCC_TFRA);
+  writer.StartFullBox(mp4::FOURCC_TFRA, /*flags=*/0, /*version=*/1);
 
   // `length_size_of_traf_num`, `length_size_of_trun_num` and
   // `length_size_of_sample_num` size is 4 (uint32_t size).
@@ -389,7 +389,7 @@ Mp4FragmentRandomAccessOffsetBoxBoxWriter::
 void Mp4FragmentRandomAccessOffsetBoxBoxWriter::Write(BoxByteStream& writer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  writer.StartFullBox(mp4::FOURCC_MFRO);
+  writer.StartFullBox(mp4::FOURCC_MFRO, /*flags=*/0, /*version=*/1);
 
   // `size` property of the `mfro` box is the total size of the `mfra` box.
   writer.WriteU32(writer.size() + 4);

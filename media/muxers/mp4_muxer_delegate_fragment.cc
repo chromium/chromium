@@ -15,13 +15,6 @@ using mp4::writable_boxes::FragmentSampleFlags;
 using mp4::writable_boxes::TrackFragmentHeaderFlags;
 using mp4::writable_boxes::TrackFragmentRunFlags;
 
-// It uses the default track index for audio and video regardless of the
-// actual track index. Correction of the track index will be done in the
-// `Finalize` function that the caller MUST call before writing
-// the fragment.
-constexpr int kDefaultAudioIndex = 0;
-constexpr int kDefaultVideoIndex = 1;
-
 }  // namespace
 
 Mp4MuxerDelegateFragment::Mp4MuxerDelegateFragment(Mp4MuxerContext& context,

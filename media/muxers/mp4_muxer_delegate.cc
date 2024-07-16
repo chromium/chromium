@@ -46,10 +46,9 @@ void BuildTrack(
     const mp4::writable_boxes::SampleDescription& sample_description) {
   mp4::writable_boxes::Track& track = moov.tracks[track_index];
   // `tkhd`.
-  track.header.flags = BuildFlags<TrackHeaderFlags>(
-      {TrackHeaderFlags::kTrackEnabled, TrackHeaderFlags::kTrackInMovie});
-
   mp4::writable_boxes::TrackHeader track_header(track_index + 1, is_audio);
+  track_header.flags = BuildFlags<TrackHeaderFlags>(
+      {TrackHeaderFlags::kTrackEnabled, TrackHeaderFlags::kTrackInMovie});
   track.header = std::move(track_header);
 
   // `mdhd`
@@ -403,7 +402,7 @@ size_t Mp4MuxerDelegate::MaybeFlushFileTypeBoxForStartup() {
 
   // Build and write `FTYP` box.
   mp4::writable_boxes::FileType mp4_file_type_box(
-      /*major_brand=*/mp4::FOURCC_MP41, 0);
+      /*major_brand=*/mp4::FOURCC_ISOM, 512);
   BuildFileTypeBox(mp4_file_type_box);
   Mp4FileTypeBoxWriter file_type_box_writer(*context_, mp4_file_type_box);
   written_file_type_box_size_ = file_type_box_writer.WriteAndFlush();
@@ -476,15 +475,19 @@ void Mp4MuxerDelegate::MaybeFlushMoofAndMfraBoxes(size_t written_offset) {
 
   // Write `mfra` box as a last box for mp4 file.
   if (video_track_index_.has_value()) {
+    video_track_random_access.track_id = video_track_index_.value() + 1;
+
     mp4::writable_boxes::FragmentRandomAccess fragment_random_access;
-    // Add empty audio random access by its index position.
     mp4::writable_boxes::TrackFragmentRandomAccess audio_random_access;
 
+    // Add audio random access first as it is 0 index by default.
     fragment_random_access.tracks.emplace_back(std::move(audio_random_access));
-
-    video_track_random_access.track_id = video_track_index_.value() + 1;
     fragment_random_access.tracks.emplace_back(
         std::move(video_track_random_access));
+    if (video_track_index_.value() == 0) {
+      std::swap(fragment_random_access.tracks[kDefaultAudioIndex],
+                fragment_random_access.tracks[kDefaultVideoIndex]);
+    }
 
     // Flush at requested.
     Mp4FragmentRandomAccessBoxWriter fragment_random_access_box_writer(
@@ -498,7 +501,10 @@ void Mp4MuxerDelegate::MaybeFlushMoofAndMfraBoxes(size_t written_offset) {
 void Mp4MuxerDelegate::BuildFileTypeBox(
     mp4::writable_boxes::FileType& mp4_file_type_box) {
   mp4_file_type_box.compatible_brands.emplace_back(mp4::FOURCC_ISOM);
+  mp4_file_type_box.compatible_brands.emplace_back(mp4::FOURCC_ISO6);
+  mp4_file_type_box.compatible_brands.emplace_back(mp4::FOURCC_ISO2);
   mp4_file_type_box.compatible_brands.emplace_back(mp4::FOURCC_AVC1);
+  mp4_file_type_box.compatible_brands.emplace_back(mp4::FOURCC_MP41);
 }
 
 void Mp4MuxerDelegate::BuildMovieBox() {

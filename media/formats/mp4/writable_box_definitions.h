@@ -147,6 +147,7 @@ struct MEDIA_EXPORT VisualSampleEntry : Box {
   std::optional<AV1CodecConfiguration> av1_decoder_configuration;
 
   PixelAspectRatioBox pixel_aspect_ratio;
+  BitRate bit_rate;
 };
 
 // Opus media data ('dOps') box.
