@@ -107,6 +107,15 @@ std::unique_ptr<SendHeartbeatRequest> GetSendHeartbeatRequest(
   return std::make_unique<SendHeartbeatRequest>();
 }
 
+std::string GetUpdateRemoteAccessHostRequestPath() {
+  return "";
+}
+
+std::unique_ptr<UpdateRemoteAccessHostRequest> GetUpdateRemoteAccessHostRequest(
+    const std::string& host_id) {
+  return std::make_unique<UpdateRemoteAccessHostRequest>();
+}
+
 std::string GetReportSessionDisconnectedRequestPath() {
   return "";
 }

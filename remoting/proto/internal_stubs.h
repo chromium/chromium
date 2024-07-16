@@ -40,6 +40,7 @@ using ProvisionCorpMachineResponse = DoNothingProto;
 using RemoteAccessHostV1Proto = DoNothingProto;
 using ReportProvisioningErrorRequest = DoNothingProto;
 using SendHeartbeatRequest = DoNothingProto;
+using UpdateRemoteAccessHostRequest = DoNothingProto;
 using GenerateHostTokenRequest = DoNothingProto;
 using GenerateHostTokenResponse = DoNothingProto;
 using VerifySessionTokenRequest = DoNothingProto;
@@ -94,6 +95,9 @@ GetReauthorizeHostResponseStruct(const ReauthorizeHostResponse&);
 extern std::string GetSendHeartbeatRequestPath();
 extern std::unique_ptr<SendHeartbeatRequest> GetSendHeartbeatRequest(
     const std::string& host_id);
+extern std::string GetUpdateRemoteAccessHostRequestPath();
+extern std::unique_ptr<UpdateRemoteAccessHostRequest>
+GetUpdateRemoteAccessHostRequest(const std::string& host_id);
 
 // LoggingService helpers.
 extern std::string GetReportSessionDisconnectedRequestPath();
