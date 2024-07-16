@@ -434,6 +434,31 @@ two_byte_arrays(array, val_span.data());
 two_byte_spans(base::span(array), base::byte_span_from_ref(val));
 ```
 
+### Avoid std::next() for silencing warnings, use ranges
+
+When we convert `pointer + index` to `std::next(pointer, index)` we silence the
+`Wunsafe-buffer-usage` warning by pushing the unsafe pointer arithmetic into
+the `std::next()` function in a system header, but we have the same unsafety.
+`std::next()` does no additional bounds checking.
+
+Instead of using `std::next()`, rewrite away from using pointers (or iterators)
+entirely by using ranges. `span()` allows us to take a subset of a contiguous
+range without having to use iterators that we move with arithmetic or
+`std::next()`.
+
+Instead of using pointer/iterator arithmetic:
+```cc
+// Unsafe buffers warning on the unchecked arithmetic.
+auto it = std::find(vec.begin() + offset, vec.end(), 20);
+// No warning... But has the same security risk!
+auto it = std::find(std::next(vec.begin(), offset), vec.end(), 20);
+```
+
+Use a range, with `span()` providing a view of a subset of the range:
+```cc
+auto it = std::ranges::find(base::span(vec).subspan(offset), 20);
+```
+
 # Functions with array pointer parameters
 
 Functions that receive a pointer argument into an array may read
