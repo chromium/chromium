@@ -9,6 +9,8 @@
 
 namespace chrome {
 
+extern const char kNonTabWebUIRequestToFCPHistogramName[];
+
 // Records Page Load Metrics for non-tab chrome:// pages such as side-panel
 // content and webUI based bubbles. This covers any webUI that goes through
 // `WebUIContentsWrapperT`

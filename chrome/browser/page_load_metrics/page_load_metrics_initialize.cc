@@ -28,7 +28,6 @@
 #include "chrome/browser/page_load_metrics/observers/local_network_requests_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/multi_tab_loading_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/new_tab_page_page_load_metrics_observer.h"
-#include "chrome/browser/page_load_metrics/observers/non_tab_webui_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/omnibox_suggestion_used_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/optimization_guide_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/page_anchors_metrics_observer.h"
@@ -63,6 +62,11 @@
 #include "chrome/browser/page_load_metrics/observers/android_page_load_metrics_observer.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/page_load_metrics/observers/non_tab_webui_page_load_metrics_observer.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"
 #endif
@@ -71,6 +75,28 @@
 #include "chrome/browser/page_load_metrics/observers/side_search_page_load_metrics_observer.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
 #endif  // defined(TOOLKIT_VIEWS)
+
+namespace {
+
+#if !BUILDFLAG(IS_ANDROID)
+bool IsNonTabWebUI(content::WebContents* web_contents) {
+  return !!TopChromeWebUIConfig::From(web_contents->GetBrowserContext(),
+                                      web_contents->GetVisibleURL());
+}
+
+std::string GetNonTabWebUIName(content::WebContents* web_contents) {
+  CHECK(IsNonTabWebUI(web_contents));
+  return TopChromeWebUIConfig::From(web_contents->GetBrowserContext(),
+                                    web_contents->GetVisibleURL())
+      ->GetWebUIName();
+}
+#else
+bool IsNonTabWebUI(content::WebContents* web_contents) {
+  return false;
+}
+#endif
+
+}  // namespace
 
 namespace chrome {
 
@@ -83,8 +109,7 @@ std::string GetApplicationLocale() {
 class PageLoadMetricsEmbedder
     : public page_load_metrics::PageLoadMetricsEmbedderBase {
  public:
-  PageLoadMetricsEmbedder(content::WebContents* web_contents,
-                          std::optional<std::string> webui_name = std::nullopt);
+  explicit PageLoadMetricsEmbedder(content::WebContents* web_contents);
 
   PageLoadMetricsEmbedder(const PageLoadMetricsEmbedder&) = delete;
   PageLoadMetricsEmbedder& operator=(const PageLoadMetricsEmbedder&) = delete;
@@ -105,15 +130,11 @@ class PageLoadMetricsEmbedder
   // page_load_metrics::PageLoadMetricsEmbedderBase:
   void RegisterEmbedderObservers(
       page_load_metrics::PageLoadTracker* tracker) override;
-
- private:
-  std::optional<std::string> webui_name_;
 };
 
 PageLoadMetricsEmbedder::PageLoadMetricsEmbedder(
-    content::WebContents* web_contents,
-    std::optional<std::string> webui_name)
-    : PageLoadMetricsEmbedderBase(web_contents), webui_name_(webui_name) {}
+    content::WebContents* web_contents)
+    : PageLoadMetricsEmbedderBase(web_contents) {}
 
 PageLoadMetricsEmbedder::~PageLoadMetricsEmbedder() = default;
 
@@ -131,16 +152,18 @@ void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
     return;
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   if (IsNonTabWebUI()) {
     // This embedder is for a non-tab chrome:// page. Other observers don't get
     // installed because they measure things that don't apply to this type of
     // page, rely on invariants that aren't true about non-tab chrome pages
     // (such as visibility-related things), or because they depend on objects
     // that don't exist for non-tab pages (namely `TabHelper`s).
-    tracker->AddObserver(
-        std::make_unique<NonTabPageLoadMetricsObserver>(webui_name_.value()));
+    tracker->AddObserver(std::make_unique<NonTabPageLoadMetricsObserver>(
+        GetNonTabWebUIName(web_contents())));
     return;
   }
+#endif
 
   if (!IsNoStatePrefetch(web_contents())) {
     tracker->AddObserver(std::make_unique<AMPPageLoadMetricsObserver>());
@@ -255,7 +278,7 @@ bool PageLoadMetricsEmbedder::IsSidePanel(content::WebContents* web_contents) {
 }
 
 bool PageLoadMetricsEmbedder::IsNonTabWebUI() {
-  return webui_name_.has_value();
+  return ::IsNonTabWebUI(web_contents());
 }
 
 page_load_metrics::PageLoadMetricsMemoryTracker*
@@ -278,13 +301,6 @@ void InitializePageLoadMetricsForWebContents(
   // as well.
   page_load_metrics::MetricsWebContentsObserver::CreateForWebContents(
       web_contents, std::make_unique<PageLoadMetricsEmbedder>(web_contents));
-}
-
-void InitializePageLoadMetricsForNonTabWebUI(content::WebContents* web_contents,
-                                             const std::string& webui_name) {
-  page_load_metrics::MetricsWebContentsObserver::CreateForWebContents(
-      web_contents,
-      std::make_unique<PageLoadMetricsEmbedder>(web_contents, webui_name));
 }
 
 }  // namespace chrome

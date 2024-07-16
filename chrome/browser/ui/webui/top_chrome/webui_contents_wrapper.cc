@@ -21,20 +21,20 @@
 
 namespace {
 
-using MakeContentsResult = WebUIContentsPreloadManager::MakeContentsResult;
+using RequestResult = WebUIContentsPreloadManager::RequestResult;
 
 bool IsEscapeEvent(const input::NativeWebKeyboardEvent& event) {
   return event.GetType() == input::NativeWebKeyboardEvent::Type::kRawKeyDown &&
          event.windows_key_code == ui::VKEY_ESCAPE;
 }
 
-MakeContentsResult MakeContents(const GURL& webui_url,
-                                content::BrowserContext* browser_context) {
+RequestResult Request(const GURL& webui_url,
+                      content::BrowserContext* browser_context) {
   // Currently we will always use the preload manager because it is always
   // available, but we make a fallback just in case this assumption no longer
   // holds.
   if (auto* preload_manager = WebUIContentsPreloadManager::GetInstance()) {
-    return preload_manager->MakeContents(webui_url, browser_context);
+    return preload_manager->Request(webui_url, browser_context);
   }
 
   // Fallback when the preloaded manager is not available.
@@ -43,7 +43,7 @@ MakeContentsResult MakeContents(const GURL& webui_url,
   create_params.site_instance =
       content::SiteInstance::CreateForURL(browser_context, webui_url);
 
-  MakeContentsResult result;
+  RequestResult result;
   result.web_contents = content::WebContents::Create(create_params),
   result.is_ready_to_show = false;
   return result;
@@ -104,8 +104,7 @@ WebUIContentsWrapper::WebUIContentsWrapper(
     : webui_resizes_host_(webui_resizes_host),
       esc_closes_ui_(esc_closes_ui),
       supports_draggable_regions_(supports_draggable_regions) {
-  MakeContentsResult make_contents_result =
-      MakeContents(webui_url, browser_context);
+  RequestResult make_contents_result = Request(webui_url, browser_context);
   web_contents_ = std::move(make_contents_result.web_contents);
   is_ready_to_show_ = make_contents_result.is_ready_to_show;
 
@@ -113,8 +112,7 @@ WebUIContentsWrapper::WebUIContentsWrapper(
   WebContentsObserver::Observe(web_contents_.get());
 
   PrefsTabHelper::CreateForWebContents(web_contents_.get());
-  chrome::InitializePageLoadMetricsForNonTabWebUI(web_contents_.get(),
-                                                  webui_name);
+  chrome::InitializePageLoadMetricsForWebContents(web_contents_.get());
   task_manager::WebContentsTags::CreateForToolContents(web_contents_.get(),
                                                        task_manager_string_id);
   if (site_engagement::SiteEngagementService::IsEnabled()) {

@@ -174,6 +174,30 @@ chromium-metrics-reviews@google.com.
       summary="from the Tab resumption module on the NTP"/>
 </variants>
 
+<variants name="TopChromeWebUIName">
+<!-- This should be in sync with ../page/histograms.xml:WebUIName
+  TODO(crbug.com/40802368): share <variants> across histograms.xml files -->
+
+  <variant name=""/>
+  <variant name=".BookmarksSidePanel"/>
+  <variant name=".CompanionSidePanelUntrusted"/>
+  <variant name=".Compose"/>
+  <variant name=".CustomizeChrome"/>
+  <variant name=".DataSharingBubble"/>
+  <variant name=".Emoji"/>
+  <variant name=".Feed"/>
+  <variant name=".HistoryClustersSidePanel"/>
+  <variant name=".LensSearchBubble"/>
+  <variant name=".LensUntrusted"/>
+  <variant name=".MakoUntrusted"/>
+  <variant name=".PerformanceSidePanel"/>
+  <variant name=".ReadAnythingUntrusted"/>
+  <variant name=".ReadingList"/>
+  <variant name=".ShoppingInsightsSidePanel"/>
+  <variant name=".TabSearch"/>
+  <variant name=".UserNotesSidePanel"/>
+</variants>
+
 <variants name="WebContentsObserverMethods">
   <variant name="DidChangeVisibleSecurityState"/>
   <variant name="DidFinishLoad"/>
@@ -10310,6 +10334,19 @@ regressions. -->
     The result of attempting to use a preloaded WebUI when a new Top Chrome
     WebUI is requested.
   </summary>
+</histogram>
+
+<histogram name="WebUI.TopChrome.RequestToFCP{WebUIName}" units="ms"
+    expires_after="2024-10-01">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>chrome-webui-for-features@google.com</owner>
+  <summary>
+    Measures the time elapsed from the initiation of a WebUI request to its
+    first contentful paint. This metric applies to the main frame documents of
+    top-chrome WebUI pages, such as side-panel content. The request initiation
+    is marked by the call to WebUIContentsPreloadManager::Request().
+  </summary>
+  <token key="WebUIName" variants="TopChromeWebUIName"/>
 </histogram>
 
 <histogram name="WebUI.WebUIURLLoaderFactory.URLRequestLoadTime" units="ms"

@@ -6,23 +6,33 @@
 
 #include "base/strings/strcat.h"
 #include "base/trace_event/named_trigger.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/common/url_constants.h"
 
 namespace chrome {
 
-const char kLCPHistogramName[] =
+const char kNonTabWebUINavigationToLCPHistogramName[] =
     "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.NonTabWebUI";
 
-const char kFCPHistogramName[] =
+const char kNonTabWebUINavigationToFCPHistogramName[] =
     "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.NonTabWebUI";
 
-std::string GetSuffixedLCPHistogram(const std::string& webui_name) {
-  return base::StrCat({kLCPHistogramName, ".", webui_name});
+const char kNonTabWebUIRequestToFCPHistogramName[] =
+    "WebUI.TopChrome.RequestToFCP";
+
+std::string GetSuffixedLCPHistogram(std::string_view webui_name) {
+  return base::StrCat(
+      {kNonTabWebUINavigationToLCPHistogramName, ".", webui_name});
 }
 
-std::string GetSuffixedFCPHistogram(const std::string& webui_name) {
-  return base::StrCat({kFCPHistogramName, ".", webui_name});
+std::string GetSuffixedFCPHistogram(std::string_view webui_name) {
+  return base::StrCat(
+      {kNonTabWebUINavigationToFCPHistogramName, ".", webui_name});
+}
+
+std::string GetSuffixedRequestToFCPHistogram(std::string_view webui_name) {
+  return base::StrCat({kNonTabWebUIRequestToFCPHistogramName, ".", webui_name});
 }
 
 NonTabPageLoadMetricsObserver::NonTabPageLoadMetricsObserver(
@@ -35,10 +45,36 @@ void NonTabPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   CHECK(timing.paint_timing->first_contentful_paint.has_value());
 
-  PAGE_LOAD_HISTOGRAM(kFCPHistogramName,
-                      timing.paint_timing->first_contentful_paint.value());
+  base::TimeDelta first_contentful_paint =
+      timing.paint_timing->first_contentful_paint.value();
+  // Time from navigation to LCP and FCP. They can be very large for preloaded
+  // WebUIs because the LCP and FCP are not recorded until the WebUI is actually
+  // shown.
+  PAGE_LOAD_HISTOGRAM(kNonTabWebUINavigationToFCPHistogramName,
+                      first_contentful_paint);
   PAGE_LOAD_HISTOGRAM(GetSuffixedFCPHistogram(webui_name_),
-                      timing.paint_timing->first_contentful_paint.value());
+                      first_contentful_paint);
+
+  // Time from request to LCP and FCP. These metrics exclude the time when the
+  // preloaded WebUI is in the background.
+  const std::optional<base::TimeTicks> request_time =
+      WebUIContentsPreloadManager().GetInstance()->GetRequestTime(
+          GetDelegate().GetWebContents());
+  if (!request_time.has_value()) {
+    return;
+  }
+
+  const base::TimeTicks last_navigation_time =
+      GetDelegate().GetNavigationStart();
+  // The request time is earlier than the last navigation time if the page
+  // refreshes or redirects. In this case the page is never in the background
+  // since last navigation.
+  const base::TimeDelta background_time =
+      std::max(*request_time - last_navigation_time, base::TimeDelta());
+  PAGE_LOAD_SHORT_HISTOGRAM(kNonTabWebUIRequestToFCPHistogramName,
+                            first_contentful_paint - background_time);
+  PAGE_LOAD_SHORT_HISTOGRAM(GetSuffixedRequestToFCPHistogram(webui_name_),
+                            first_contentful_paint - background_time);
 }
 
 void NonTabPageLoadMetricsObserver::OnComplete(
@@ -50,7 +86,7 @@ void NonTabPageLoadMetricsObserver::OnComplete(
               .MainFrameLargestContentfulPaint();
   // It's possible to get here and for LCP timing to not be available.
   if (main_frame_largest_contentful_paint.ContainsValidTime()) {
-    PAGE_LOAD_HISTOGRAM(kLCPHistogramName,
+    PAGE_LOAD_HISTOGRAM(kNonTabWebUINavigationToLCPHistogramName,
                         main_frame_largest_contentful_paint.Time().value());
     PAGE_LOAD_HISTOGRAM(GetSuffixedLCPHistogram(webui_name_),
                         main_frame_largest_contentful_paint.Time().value());

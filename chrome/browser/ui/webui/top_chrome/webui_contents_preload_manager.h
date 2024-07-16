@@ -7,8 +7,8 @@
 
 #include <optional>
 
-#include "base/callback_list.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/webui/top_chrome/per_profile_webui_tracker.h"
 #include "chrome/browser/ui/webui/top_chrome/preload_candidate_selector.h"
@@ -40,13 +40,13 @@ class WebUIContentsPreloadManager : public ProfileObserver,
     kPreloadOnMakeContents = 1,
   };
 
-  struct MakeContentsResult {
-    MakeContentsResult();
-    MakeContentsResult(MakeContentsResult&&);
-    MakeContentsResult& operator=(MakeContentsResult&&);
-    MakeContentsResult(const MakeContentsResult&) = delete;
-    MakeContentsResult& operator=(const MakeContentsResult&) = delete;
-    ~MakeContentsResult();
+  struct RequestResult {
+    RequestResult();
+    RequestResult(RequestResult&&);
+    RequestResult& operator=(RequestResult&&);
+    RequestResult(const RequestResult&) = delete;
+    RequestResult& operator=(const RequestResult&) = delete;
+    ~RequestResult();
 
     std::unique_ptr<content::WebContents> web_contents;
     // True if `web_contents` is ready to be shown on screen. This boolean only
@@ -72,8 +72,12 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   // Reuses the preloaded contents if it is under the same `browser_context`.
   // A new preloaded contents will be created, unless we are under heavy
   // memory pressure.
-  MakeContentsResult MakeContents(const GURL& webui_url,
-                                  content::BrowserContext* browser_context);
+  RequestResult Request(const GURL& webui_url,
+                        content::BrowserContext* browser_context);
+
+  // Returns the timeticks when the specific `web_contents` was requested.
+  std::optional<base::TimeTicks> GetRequestTime(
+      content::WebContents* web_contents);
 
   content::WebContents* preloaded_web_contents() {
     return preloaded_web_contents_.get();
@@ -160,6 +164,9 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   bool is_setting_preloaded_web_contents_ = false;
 
   std::unique_ptr<content::WebContents> preloaded_web_contents_;
+
+  // Tracks the timeticks when Request() is called.
+  std::map<raw_ptr<content::WebContents>, base::TimeTicks> request_time_map_;
 
   // Tracks the WebUI presence state under a profile.
   std::unique_ptr<PerProfileWebUITracker> webui_tracker_;
