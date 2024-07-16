@@ -11,6 +11,8 @@
 
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
+#include "mojo/public/cpp/system/data_pipe.h"
+#include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/crypto.h"
@@ -89,6 +91,61 @@ class CORE_EXPORT ScriptDecoder {
   Digestor digestor_{kHashAlgorithmSha256};
   scoped_refptr<base::SequencedTaskRunner> client_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> decoding_task_runner_;
+  StringBuilder builder_;
+
+  SegmentedBuffer raw_data_;
+};
+
+class DataPipeScriptDecoder;
+struct CORE_EXPORT DataPipeScriptDecoderDeleter {
+  void operator()(const DataPipeScriptDecoder* ptr);
+};
+
+using DataPipeScriptDecoderPtr =
+    std::unique_ptr<DataPipeScriptDecoder, DataPipeScriptDecoderDeleter>;
+
+// DataPipeScriptDecoder decodes and hashes the script source of a Mojo data
+// pipe on a worker thread. The OnDecodeFinishedCallback will receive the raw
+// data and the decoded data.
+// Currently this class is used only when BackgroundCodeCacheDecoderStart
+// feature is enabled.
+class CORE_EXPORT DataPipeScriptDecoder final
+    : public mojo::DataPipeDrainer::Client {
+ public:
+  using OnDecodeFinishedCallback =
+      CrossThreadOnceFunction<void(ScriptDecoder::Result)>;
+
+  // Creates a DataPipeScriptDecoder.
+  static DataPipeScriptDecoderPtr Create(
+      std::unique_ptr<TextResourceDecoder> decoder,
+      scoped_refptr<base::SequencedTaskRunner> client_task_runner,
+      OnDecodeFinishedCallback on_decode_finished_callback);
+
+  void Start(mojo::ScopedDataPipeConsumerHandle source);
+
+ private:
+  friend struct DataPipeScriptDecoderDeleter;
+
+  DataPipeScriptDecoder(
+      std::unique_ptr<TextResourceDecoder> decoder,
+      scoped_refptr<base::SequencedTaskRunner> client_task_runner,
+      OnDecodeFinishedCallback on_decode_finished_callback);
+  void Delete() const;
+
+  // implements mojo::DataPipeDrainer::Client
+  void OnDataAvailable(base::span<const uint8_t> data) override;
+  void OnDataComplete() override;
+
+  void AppendData(const String& data);
+
+  std::unique_ptr<TextResourceDecoder> decoder_;
+  scoped_refptr<base::SequencedTaskRunner> client_task_runner_;
+  OnDecodeFinishedCallback on_decode_finished_callback_;
+  scoped_refptr<base::SequencedTaskRunner> decoding_task_runner_;
+
+  std::unique_ptr<mojo::DataPipeDrainer> drainer_;
+  Digestor digestor_{kHashAlgorithmSha256};
+  DigestValue digest_value_;
   StringBuilder builder_;
 
   SegmentedBuffer raw_data_;

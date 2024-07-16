@@ -9,6 +9,9 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_decoder.h"
 
+#include <memory>
+
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/platform/loader/fetch/response_body_loader_client.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -27,6 +30,13 @@ struct CrossThreadCopier<blink::ScriptDecoder::Result> {
   static Type Copy(Type&& value) { return std::move(value); }
 };
 
+template <>
+struct CrossThreadCopier<mojo::ScopedDataPipeConsumerHandle> {
+  STATIC_ONLY(CrossThreadCopier);
+  using Type = mojo::ScopedDataPipeConsumerHandle;
+  static Type Copy(Type&& value) { return std::move(value); }
+};
+
 }  // namespace WTF
 
 namespace blink {
@@ -38,6 +48,10 @@ ScriptDecoder::Result::Result(
     : raw_data(std::move(raw_data)),
       decoded_data(std::move(decoded_data)),
       digest(std::move(digest)) {}
+
+////////////////////////////////////////////////////////////////////////
+// ScriptDecoder
+////////////////////////////////////////////////////////////////////////
 
 ScriptDecoder::ScriptDecoder(
     std::unique_ptr<TextResourceDecoder> decoder,
@@ -113,6 +127,82 @@ ScriptDecoderPtr ScriptDecoder::Create(
   return ScriptDecoderPtr(
       new ScriptDecoder(std::move(decoder), std::move(client_task_runner)));
 }
+
+////////////////////////////////////////////////////////////////////////
+// DataPipeScriptDecoder
+////////////////////////////////////////////////////////////////////////
+
+DataPipeScriptDecoder::DataPipeScriptDecoder(
+    std::unique_ptr<TextResourceDecoder> decoder,
+    scoped_refptr<base::SequencedTaskRunner> client_task_runner,
+    OnDecodeFinishedCallback on_decode_finished_callback)
+    : decoder_(std::move(decoder)),
+      client_task_runner_(std::move(client_task_runner)),
+      on_decode_finished_callback_(std::move(on_decode_finished_callback)),
+      decoding_task_runner_(worker_pool::CreateSequencedTaskRunner(
+          {base::TaskPriority::USER_BLOCKING})) {
+  CHECK(features::kBackgroundCodeCacheDecoderStart.Get());
+}
+
+void DataPipeScriptDecoder::Start(mojo::ScopedDataPipeConsumerHandle source) {
+  if (!decoding_task_runner_->RunsTasksInCurrentSequence()) {
+    PostCrossThreadTask(
+        *decoding_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&DataPipeScriptDecoder::Start,
+                            CrossThreadUnretained(this), std::move(source)));
+    return;
+  }
+  drainer_ = std::make_unique<mojo::DataPipeDrainer>(this, std::move(source));
+}
+
+void DataPipeScriptDecoder::OnDataAvailable(base::span<const uint8_t> data) {
+  AppendData(decoder_->Decode(reinterpret_cast<const char*>(data.data()),
+                              data.size()));
+  raw_data_.Append(data);
+}
+
+void DataPipeScriptDecoder::OnDataComplete() {
+  AppendData(decoder_->Flush());
+  digestor_.Finish(digest_value_);
+  PostCrossThreadTask(
+      *client_task_runner_, FROM_HERE,
+      CrossThreadBindOnce(
+          std::move(on_decode_finished_callback_),
+          ScriptDecoder::Result(
+              std::move(raw_data_), builder_.ReleaseString(),
+              std::make_unique<ParkableStringImpl::SecureDigest>(
+                  digest_value_))));
+}
+
+void DataPipeScriptDecoder::AppendData(const String& data) {
+  digestor_.Update(base::as_bytes(base::make_span(
+      static_cast<const char*>(data.Bytes()), data.CharactersSizeInBytes())));
+  builder_.Append(data);
+}
+
+void DataPipeScriptDecoder::Delete() const {
+  decoding_task_runner_->DeleteSoon(FROM_HERE, this);
+}
+
+void DataPipeScriptDecoderDeleter::operator()(
+    const DataPipeScriptDecoder* ptr) {
+  if (ptr) {
+    ptr->Delete();
+  }
+}
+
+DataPipeScriptDecoderPtr DataPipeScriptDecoder::Create(
+    std::unique_ptr<TextResourceDecoder> decoder,
+    scoped_refptr<base::SequencedTaskRunner> client_task_runner,
+    OnDecodeFinishedCallback on_decode_finished_callback) {
+  return DataPipeScriptDecoderPtr(new DataPipeScriptDecoder(
+      std::move(decoder), std::move(client_task_runner),
+      std::move(on_decode_finished_callback)));
+}
+
+////////////////////////////////////////////////////////////////////////
+// ScriptDecoderWithClient
+////////////////////////////////////////////////////////////////////////
 
 ScriptDecoderWithClient::ScriptDecoderWithClient(
     ResponseBodyLoaderClient* response_body_loader_client,

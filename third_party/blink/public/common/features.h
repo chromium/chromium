@@ -168,6 +168,8 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kBackgroundFontResponseProcessor;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kBackgroundScriptResponseProcessor;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kBackgroundCodeCacheDecoderStart;
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBakedGamutMapping);
 

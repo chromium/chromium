@@ -349,26 +349,30 @@ class CORE_EXPORT InlineScriptStreamer final : public ScriptStreamer {
 class CORE_EXPORT BackgroundResourceScriptStreamer : public ScriptStreamer {
  public:
   // This is an utility structure to hold the decoded data and the streamed
-  // source which are passed from the background thread to the main thread.
-  class CORE_EXPORT DecodedDataAndStreamedSource {
+  // source or consume code cache task which are passed from the background
+  // thread to the main thread.
+  class CORE_EXPORT Result {
    public:
-    DecodedDataAndStreamedSource(
-        String decoded_data,
-        std::unique_ptr<ParkableStringImpl::SecureDigest> digest,
-        std::unique_ptr<v8::ScriptCompiler::StreamedSource> streamed_source);
-    ~DecodedDataAndStreamedSource() = default;
+    Result(String decoded_data,
+           std::unique_ptr<ParkableStringImpl::SecureDigest> digest,
+           std::unique_ptr<v8::ScriptCompiler::StreamedSource> streamed_source);
+    Result(String decoded_data,
+           std::unique_ptr<ParkableStringImpl::SecureDigest> digest,
+           std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask>
+               consume_code_cache_task);
+    ~Result() = default;
 
-    DecodedDataAndStreamedSource(const DecodedDataAndStreamedSource&) = delete;
-    DecodedDataAndStreamedSource& operator=(
-        const DecodedDataAndStreamedSource&) = delete;
+    Result(const Result&) = delete;
+    Result& operator=(const Result&) = delete;
 
-    DecodedDataAndStreamedSource(DecodedDataAndStreamedSource&&) = default;
-    DecodedDataAndStreamedSource& operator=(DecodedDataAndStreamedSource&&) =
-        default;
+    Result(Result&&) = default;
+    Result& operator=(Result&&) = default;
 
     String decoded_data;
     std::unique_ptr<ParkableStringImpl::SecureDigest> digest;
     std::unique_ptr<v8::ScriptCompiler::StreamedSource> streamed_source;
+    std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask>
+        consume_code_cache_task;
   };
 
   explicit BackgroundResourceScriptStreamer(ScriptResource* script_resource);
@@ -394,19 +398,26 @@ class CORE_EXPORT BackgroundResourceScriptStreamer : public ScriptStreamer {
   std::unique_ptr<BackgroundResponseProcessorFactory>
   CreateBackgroundResponseProcessorFactory();
 
+  bool HasDecodedData() const { return !!result_; }
+  bool HasConsumeCodeCacheTask() const {
+    return result_ && result_->consume_code_cache_task;
+  }
+
   ParkableString TakeDecodedData();
+  std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask>
+  TakeConsumeCodeCacheTask();
 
  private:
   class BackgroundProcessor;
   class BackgroundProcessorFactory;
 
-  void OnResult(std::unique_ptr<DecodedDataAndStreamedSource> result,
+  void OnResult(std::unique_ptr<Result> result,
                 NotStreamingReason suppressed_reason);
 
   Member<ScriptResource> script_resource_;
   const v8::ScriptType script_type_;
 
-  std::unique_ptr<DecodedDataAndStreamedSource> result_;
+  std::unique_ptr<Result> result_;
   // The reason that streaming is disabled
   NotStreamingReason suppressed_reason_ = NotStreamingReason::kInvalid;
 };

@@ -286,6 +286,8 @@ const base::FeatureParam<bool> kBackgroundFontResponseProcessor{
     &kBackgroundResourceFetch, "background-font-response-processor", true};
 const base::FeatureParam<bool> kBackgroundScriptResponseProcessor{
     &kBackgroundResourceFetch, "background-script-response-processor", true};
+const base::FeatureParam<bool> kBackgroundCodeCacheDecoderStart{
+    &kBackgroundResourceFetch, "background-code-cache-decoder-start", true};
 
 // Redefine the oklab and oklch spaces to have gamut mapping baked into them.
 // https://crbug.com/1508329
