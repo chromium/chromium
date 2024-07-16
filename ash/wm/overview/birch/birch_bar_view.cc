@@ -160,7 +160,7 @@ bool IsValidStateTransition(State current_state, State new_state) {
 }  // namespace
 
 BirchBarView::BirchBarView(aura::Window* root_window)
-    : root_window_(root_window), chip_size_(GetChipSize()) {
+    : chip_size_(GetChipSize(root_window)) {
   // Build up a 2 levels nested box layout hierarchy.
   using MainAxisAlignment = views::BoxLayout::MainAxisAlignment;
   using CrossAxisAlignment = views::BoxLayout::CrossAxisAlignment;
@@ -375,9 +375,9 @@ int BirchBarView::GetMaximumHeight() const {
              : 2 * kChipHeight + kChipSpacing;
 }
 
-gfx::Size BirchBarView::GetChipSize() const {
+gfx::Size BirchBarView::GetChipSize(aura::Window* root_window) const {
   const gfx::Rect display_bounds = display::Screen::GetScreen()
-                                       ->GetDisplayNearestWindow(root_window_)
+                                       ->GetDisplayNearestWindow(root_window)
                                        .bounds();
   // Always use the longest side of the display to calculate the chip width.
   const int max_display_dim =
@@ -391,7 +391,7 @@ gfx::Size BirchBarView::GetChipSize() const {
   // Otherwise, the bar tends to fill the longest side of the display with 4
   // chips.
   const ShelfAlignment shelf_alignment =
-      Shelf::ForWindow(root_window_)->alignment();
+      Shelf::ForWindow(root_window)->alignment();
 
   const int left_inset = shelf_alignment == ShelfAlignment::kLeft
                              ? kContainerHorizontalPaddingWithShelf

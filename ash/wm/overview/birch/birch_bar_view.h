@@ -130,7 +130,7 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
 
   // Calculates the chip size according to current shelf position and display
   // size.
-  gfx::Size GetChipSize() const;
+  gfx::Size GetChipSize(aura::Window* root_window) const;
 
   // Gets expected layout types according to the given number of chips and
   // current available space.
@@ -162,9 +162,6 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
 
   // Called after chips fading-out animations are done during shutting down.
   void OnShutdownEnded();
-
-  // The root window hosting the birch bar.
-  const raw_ptr<aura::Window> root_window_;
 
   // Cached chip size.
   const gfx::Size chip_size_;
