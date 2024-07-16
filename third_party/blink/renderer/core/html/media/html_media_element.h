@@ -459,6 +459,9 @@ class CORE_EXPORT HTMLMediaElement
 
   void UpdateLayoutObject();
 
+  virtual void RecordVideoOcclusionState(
+      std::string_view occlusion_state) const {}
+
  private:
   // Friend class for testing.
   friend class ContextMenuControllerTest;

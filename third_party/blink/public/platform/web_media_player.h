@@ -386,6 +386,11 @@ class WebMediaPlayer {
   // Adjusts the frame sink hierarchy for the media frame sink.
   virtual void RegisterFrameSinkHierarchy() {}
   virtual void UnregisterFrameSinkHierarchy() {}
+
+  // Records the `MediaVideoVisibilityTracker` occlusion state, at the time that
+  // HTMLVideoElement visibility is reported. The state is recorded using
+  // `MediaLogEvent` s.
+  virtual void RecordVideoOcclusionState(std::string_view occlusion_state) {}
 };
 
 }  // namespace blink

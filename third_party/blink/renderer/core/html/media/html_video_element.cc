@@ -822,6 +822,15 @@ void HTMLVideoElement::OnWebMediaPlayerCleared() {
   UpdateVideoVisibilityTracker();
 }
 
+void HTMLVideoElement::RecordVideoOcclusionState(
+    std::string_view occlusion_state) const {
+  if (!GetWebMediaPlayer()) {
+    return;
+  }
+
+  GetWebMediaPlayer()->RecordVideoOcclusionState(occlusion_state);
+}
+
 void HTMLVideoElement::AttributeChanged(
     const AttributeModificationParams& params) {
   HTMLElement::AttributeChanged(params);

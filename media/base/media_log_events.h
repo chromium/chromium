@@ -67,6 +67,20 @@ enum class MediaLogEvent {
   // An internal-only event that the media log sends when it is created, and
   // includes a wall-clock timestamp.
   kMediaLogCreated,
+
+  // The media player video "occlusion state" has changed, where "occlusion
+  // state" represents the `MediaVideoVisibilityTracker` state related to
+  // occlusion computations. This is recorded at the time that the video
+  // visibility is reported, not for every occlusion computation.
+  //
+  // "Visibility" in the context of the `MediaVideoVisibilityTracker` is defined
+  // as having an `HTMLVideoElement` that is intersecting with the viewport and
+  // is not occluded by other html elements within the page, with the exception
+  // of MediaControls.
+  //
+  // These logs only apply to HTMLVideoElement. Other media elements will not
+  // log these events.
+  kVideoOcclusionState,
 };
 
 // Sometimes URLs can have encoded data that can be exteremly large.
@@ -92,6 +106,9 @@ MEDIA_LOG_EVENT_NAMED_DATA_OP(kWebMediaPlayerCreated,
                               "origin_url",
                               TruncateUrlString);
 MEDIA_LOG_EVENT_NAMED_DATA(kMediaLogCreated, base::Time, "created");
+MEDIA_LOG_EVENT_NAMED_DATA(kVideoOcclusionState,
+                           std::string,
+                           "video_occlusion_state");
 
 // Each type of buffering state gets a different name.
 MEDIA_LOG_EVENT_NAMED_DATA(

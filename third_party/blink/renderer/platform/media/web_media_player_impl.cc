@@ -4037,6 +4037,12 @@ void WebMediaPlayerImpl::UnregisterFrameSinkHierarchy() {
     bridge_->UnregisterFrameSinkHierarchy();
 }
 
+void WebMediaPlayerImpl::RecordVideoOcclusionState(
+    std::string_view occlusion_state) {
+  media_log_->AddEvent<MediaLogEvent::kVideoOcclusionState>(
+      std::string(occlusion_state));
+}
+
 void WebMediaPlayerImpl::ReportSessionUMAs() const {
   if (renderer_type_ != media::RendererType::kRendererImpl &&
       renderer_type_ != media::RendererType::kMediaFoundation) {

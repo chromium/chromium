@@ -330,6 +330,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void RegisterFrameSinkHierarchy() override;
   void UnregisterFrameSinkHierarchy() override;
 
+  void RecordVideoOcclusionState(std::string_view occlusion_state) override;
+
   bool IsBackgroundMediaSuspendEnabled() const {
     return is_background_suspend_enabled_;
   }
