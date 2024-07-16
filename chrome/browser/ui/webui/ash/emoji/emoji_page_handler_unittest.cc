@@ -30,6 +30,10 @@ using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Pointee;
 
+base::Time TimeFromSeconds(int64_t seconds) {
+  return base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(seconds));
+}
+
 class EmojiPageHandlerTest : public ::testing::Test {
  public:
   void SetUp() override {
@@ -51,8 +55,8 @@ TEST_F(EmojiPageHandlerTest, UpdatesEmojiHistoryInPrefs) {
                            kEmojis, "");
 
   std::vector<HistoryItemPtr> history;
-  history.push_back(HistoryItem::New("abc", base::Seconds(10)));
-  history.push_back(HistoryItem::New("xyz", base::Seconds(5)));
+  history.push_back(HistoryItem::New("abc", TimeFromSeconds(10)));
+  history.push_back(HistoryItem::New("xyz", TimeFromSeconds(5)));
   handler.UpdateHistoryInPrefs(kEmojis, std::move(history));
 
   const base::Value::List* emoji_history =
@@ -63,13 +67,11 @@ TEST_F(EmojiPageHandlerTest, UpdatesEmojiHistoryInPrefs) {
 
   auto& item0 = (*emoji_history)[0].GetDict();
   EXPECT_EQ(item0.Find("text")->GetString(), "abc");
-  EXPECT_EQ(base::ValueToTime(item0.Find("timestamp")),
-            base::Time::UnixEpoch() + base::Seconds(10));
+  EXPECT_EQ(base::ValueToTime(item0.Find("timestamp")), TimeFromSeconds(10));
 
   auto& item1 = (*emoji_history)[1].GetDict();
   EXPECT_EQ(item1.Find("text")->GetString(), "xyz");
-  EXPECT_EQ(base::ValueToTime(item1.Find("timestamp")),
-            base::Time::UnixEpoch() + base::Seconds(5));
+  EXPECT_EQ(base::ValueToTime(item1.Find("timestamp")), TimeFromSeconds(5));
 }
 
 TEST_F(EmojiPageHandlerTest, UpdatesPerferredVariantsInPrefs) {
@@ -95,8 +97,8 @@ TEST_F(EmojiPageHandlerTest, GetsHistoryFromPrefs) {
   EmojiPageHandler handler(std::move(receiver), &web_ui_, nullptr, false, false,
                            kEmojis, "");
   std::vector<HistoryItemPtr> history;
-  history.push_back(HistoryItem::New("abc", base::Seconds(10)));
-  history.push_back(HistoryItem::New("xyz", base::Seconds(5)));
+  history.push_back(HistoryItem::New("abc", TimeFromSeconds(10)));
+  history.push_back(HistoryItem::New("xyz", TimeFromSeconds(5)));
   handler.UpdateHistoryInPrefs(kEmojis, std::move(history));
 
   base::test::TestFuture<std::vector<HistoryItemPtr>> future;
@@ -106,13 +108,11 @@ TEST_F(EmojiPageHandlerTest, GetsHistoryFromPrefs) {
   EXPECT_THAT(
       future.Get(),
       ElementsAre(Pointee(AllOf(Field("text", &HistoryItem::emoji, "abc"),
-                                Field("time_since_unix_epoch",
-                                      &HistoryItem::time_since_unix_epoch,
-                                      base::Seconds(10)))),
+                                Field("timestamp", &HistoryItem::timestamp,
+                                      TimeFromSeconds(10)))),
                   Pointee(AllOf(Field("text", &HistoryItem::emoji, "xyz"),
-                                Field("time_since_unix_epoch",
-                                      &HistoryItem::time_since_unix_epoch,
-                                      base::Seconds(5))))));
+                                Field("timestamp", &HistoryItem::timestamp,
+                                      TimeFromSeconds(5))))));
 }
 
 TEST_F(EmojiPageHandlerTest, GetsEmptyHistoryFromEmptyPrefs) {

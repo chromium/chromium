@@ -8,7 +8,6 @@ import {EmojiPickerApiProxy} from './emoji_picker_api_proxy.js';
 import {CategoryEnum, Emoji, EmojiHistoryItem, EmojiVariants, Gender, PreferenceMapping, Tone, VisualContent} from './types.js';
 
 const MAX_RECENTS = EMOJI_PER_ROW * 2;
-const MILLISEC_TO_MICROSEC_MULTIPLIER = 1000n;
 
 // Covert CategoryEnum to Category type.
 function convertCategoryEnum(category: CategoryEnum) {
@@ -95,9 +94,7 @@ export class RecentlyUsedStore {
     const mergedHistory: EmojiHistoryItem[] =
         prefsHistory.history.map((item) => ({
                                    base: {string: item.emoji},
-                                   timestamp: Number(
-                                       item.timeSinceUnixEpoch.microseconds /
-                                       MILLISEC_TO_MICROSEC_MULTIPLIER),
+                                   timestamp: item.timestamp.msec,
                                    alternates: [],
                                  }));
     for (const item of this.store.data.history) {
@@ -243,14 +240,12 @@ export class RecentlyUsedStore {
     if (this.category !== CategoryEnum.GIF) {
       EmojiPickerApiProxy.getInstance().updateHistoryInPrefs(
           convertCategoryEnum(this.category),
-          this.store.data.history.map(
-              (x) => ({
-                emoji: x.base.string!,
-                timeSinceUnixEpoch: {
-                  microseconds: BigInt(x.timestamp || 0) *
-                      MILLISEC_TO_MICROSEC_MULTIPLIER,
-                },
-              })));
+          this.store.data.history.map((x) => ({
+                                        emoji: x.base.string!,
+                                        timestamp: {
+                                          msec: x.timestamp || 0,
+                                        },
+                                      })));
     }
   }
 

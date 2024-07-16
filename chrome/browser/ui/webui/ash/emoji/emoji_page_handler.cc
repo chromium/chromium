@@ -444,12 +444,10 @@ void EmojiPageHandler::UpdateHistoryInPrefs(
     std::vector<emoji_picker::mojom::HistoryItemPtr> history) {
   base::Value::List history_value;
   for (const auto& item : history) {
-    history_value.Append(
-        base::Value::Dict()
-            .Set(kPrefsHistoryTextFieldName, item->emoji)
-            .Set(kPrefsHistoryTimestampFieldName,
-                 base::TimeToValue(base::Time::UnixEpoch() +
-                                   item->time_since_unix_epoch)));
+    history_value.Append(base::Value::Dict()
+                             .Set(kPrefsHistoryTextFieldName, item->emoji)
+                             .Set(kPrefsHistoryTimestampFieldName,
+                                  base::TimeToValue(item->timestamp)));
   }
   ScopedDictPrefUpdate update(profile_->GetPrefs(), prefs::kEmojiPickerHistory);
   update->Set(ConvertCategoryToPrefString(category), std::move(history_value));
@@ -494,8 +492,7 @@ void EmojiPageHandler::GetHistoryFromPrefs(
 
     if (text != nullptr) {
       results.push_back(emoji_picker::mojom::HistoryItem::New(
-          *text, timestamp.has_value() ? *timestamp - base::Time::UnixEpoch()
-                                       : base::Seconds(0)));
+          *text, timestamp.has_value() ? *timestamp : base::Time::UnixEpoch()));
     }
   }
   std::move(callback).Run(std::move(results));

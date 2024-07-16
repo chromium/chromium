@@ -75,8 +75,7 @@ struct EmojiVariant {
 
 struct HistoryItem {
   string emoji;
-  // TODO(crbug.com/350457796): use mojo_base.mojom.JSTime instead.
-  mojo_base.mojom.TimeDelta time_since_unix_epoch;
+  mojo_base.mojom.JSTime timestamp;
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.
