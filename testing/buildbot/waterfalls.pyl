@@ -1157,6 +1157,23 @@
           'gtest_tests': 'android_13_emulator_gtests',
         }
       },
+      'android-14-arm64-fyi-rel': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'isolate_profile_data',
+          'panther_on_14',
+        ],
+        'os_type': 'android',
+        # TODO(crbug.com/352811552): Use the same test suites as Pie arm64
+        # until the builder is stable.
+        'test_suites': {
+          'gtest_tests': 'android_pie_rel_gtests',
+          # TODO(crbug.com/40142574): Re-enable this if/when additional capacity
+          # has been deployed.
+          #'isolated_scripts': 'marshmallow_nougat_pie_isolated_scripts_with_proguard',
+          'scripts': 'chromium_android_scripts',
+        }
+      },
       'android-15-x64-fyi-rel': {
         'mixins': [
           '15-x64-emulator',

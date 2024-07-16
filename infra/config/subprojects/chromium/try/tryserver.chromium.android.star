@@ -135,6 +135,23 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-14-arm64-fyi-rel",
+    mirrors = [
+        "ci/android-14-arm64-fyi-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-14-arm64-fyi-rel",
+            "release_try_builder",
+        ],
+    ),
+    contact_team_email = "clank-engprod@google.com",
+    coverage_test_types = ["unit", "overall"],
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+    use_clang_coverage = True,
+)
+
+try_.builder(
     name = "android-14-x64-rel",
     mirrors = [
         "ci/android-14-x64-rel",

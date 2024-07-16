@@ -1138,6 +1138,15 @@
       '${ISOLATED_OUTDIR}',
     ],
   },
+  'panther_on_14': {
+    'swarming': {
+      'dimensions': {
+        'device_type': 'panther',
+        'device_os': 'AP2A.240705.004',
+        'os': 'Android',
+      },
+    },
+  },
   'pie-x86-emulator': {
     'args': [
       '--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb',

@@ -1487,6 +1487,17 @@ targets.mixin(
     ],
 )
 
+# Pixel 7 on Android 14
+targets.mixin(
+    name = "panther_on_14",
+    swarming = targets.swarming(
+        dimensions = {
+            "device_type": "panther",
+            "device_os": "AP2A.240705.004",  # Android 14
+            "os": "Android",
+        },
+    ),
+)
 targets.mixin(
     name = "pie-x86-emulator",
     args = [
