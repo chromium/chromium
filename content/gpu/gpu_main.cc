@@ -248,8 +248,9 @@ int GpuMain(MainFunctionParams parameters) {
   base::win::ScopedCOMInitializer com_initializer(
       base::win::ScopedCOMInitializer::kMTA);
 
-  if (base::FeatureList::IsEnabled(features::kGpuProcessHighPriorityWin))
-    ::SetPriorityClass(::GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS);
+  // A higher priority class is used for the GPU process so that it remains at
+  // a higher priority than renderer processes.
+  ::SetPriorityClass(::GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS);
 #endif
 
   // Installs a base::LogMessageHandlerFunction which ensures messages are sent

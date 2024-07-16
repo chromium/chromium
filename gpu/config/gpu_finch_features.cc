@@ -199,11 +199,6 @@ BASE_FEATURE(kDawnSIRepsUseClientProvidedInternalUsages,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)
-// Use a high priority for GPU process on Windows.
-BASE_FEATURE(kGpuProcessHighPriorityWin,
-             "GpuProcessHighPriorityWin",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Disable overlay promotion for clear video quads when their MPO quad would
 // move.
 BASE_FEATURE(kDisableVideoOverlayIfMoving,
