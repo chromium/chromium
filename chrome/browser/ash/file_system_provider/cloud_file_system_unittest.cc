@@ -126,13 +126,10 @@ class MockContentCache : public ContentCache {
                const std::string& version_tag),
               (override));
   MOCK_METHOD(void, Evict, (const base::FilePath& file_path), (override));
-  MOCK_METHOD(const SizeInfo, GetSize, (), (const override));
-  MOCK_METHOD(void, SetMaxBytesOnDisk, (int64_t), (override));
   MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));
-  MOCK_METHOD(base::WeakPtr<ContentCache>, GetWeakPtr, (), (override));
 
-  base::WeakPtr<MockContentCache> GetMockWeakPtr() {
+  base::WeakPtr<MockContentCache> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
@@ -362,7 +359,7 @@ class FileSystemProviderCloudFileSystemTest : public testing::Test,
     std::unique_ptr<MockContentCache> mock_content_cache =
         std::make_unique<MockContentCache>();
     base::WeakPtr<MockContentCache> cache_weak_ptr =
-        mock_content_cache->GetMockWeakPtr();
+        mock_content_cache->GetWeakPtr();
     EXPECT_CALL(mock_cache_manager_,
                 InitializeForProvider(_, IsNotNullCallback()))
         .WillOnce(RunOnceCallback<1>(std::move(mock_content_cache)));

@@ -11,10 +11,8 @@
 #include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -22,15 +20,10 @@
 #include "chrome/browser/ash/file_system_provider/content_cache/cache_manager.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/content_cache.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/context_database.h"
-#include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 
 namespace ash::file_system_provider {
 
-// The max size of each individual content cache in bytes, i.e. 5GB.
-inline constexpr int64_t kMaxAllowedCacheSizeInBytes = int64_t(5) << 30;
-
-class CacheManagerImpl : public CacheManager,
-                         public ash::SpacedClient::Observer {
+class CacheManagerImpl : public CacheManager {
  public:
   explicit CacheManagerImpl(const base::FilePath& profile_path);
 
@@ -52,13 +45,10 @@ class CacheManagerImpl : public CacheManager,
   bool IsProviderInitialized(
       const ProvidedFileSystemInfo& file_system_info) override;
 
-  void AddObserver(CacheManager::Observer* observer) override;
-  void RemoveObserver(CacheManager::Observer* observer) override;
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(FileSystemProviderCacheManagerImplTest,
-                           OnSpaceUpdate);
-
   // Attempt to initialize the context database if the directory creation was
   // successful of the in_memory_only boolean is true.
   void OnProviderDirectoryCreationComplete(
@@ -94,23 +84,9 @@ class CacheManagerImpl : public CacheManager,
       FileErrorOrContentCacheCallback callback,
       FileErrorOrContentCache error_or_content_cache);
 
-  // Retrieves free space (either on-demand or via the spaced observer) and
-  // updates the max available size for every initialized content cache.
-  void GetFreeSpaceAndResizeInitializedCaches();
-  void OnFreeSpace(int64_t free_space_in_bytes);
-
-  // ash::SpacedClient overrides.
-  void OnSpaceUpdate(const SpaceEvent& event) override;
-
   const base::FilePath root_content_cache_directory_;
-
-  // A map (keyed by a base64 encoded provider mount path) of weak pointers to
-  // content caches.
-  std::map<base::FilePath, base::WeakPtr<ContentCache>> initialized_caches_;
-  base::ObserverList<CacheManager::Observer> observers_;
-
-  base::ScopedObservation<ash::SpacedClient, ash::SpacedClient::Observer>
-      spaced_client_{this};
+  std::set<base::FilePath> initialized_providers_;
+  base::ObserverList<Observer> observers_;
 
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_{
       base::ThreadPool::CreateSequencedTaskRunner(

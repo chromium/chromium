@@ -78,14 +78,14 @@ void CacheManagerImpl::UninitializeForProvider(
   }
   const base::FilePath base64_encoded_provider_folder_name =
       cache_directory_path.BaseName();
-  if (!initialized_caches_.contains(base64_encoded_provider_folder_name)) {
+  if (!initialized_providers_.contains(base64_encoded_provider_folder_name)) {
     OnUninitializeForProvider(base64_encoded_provider_folder_name,
                               base::File::FILE_ERROR_NOT_FOUND);
     return;
   }
 
-  // Remove the provider from the map.
-  initialized_caches_.erase(base64_encoded_provider_folder_name);
+  // Remove the provider from the set.
+  initialized_providers_.erase(base64_encoded_provider_folder_name);
 
   // Attempt to delete the cache directory to ensure dead files don't remain
   // on the user's disk as the logic changes in this experimental design phase.
@@ -112,15 +112,15 @@ bool CacheManagerImpl::IsProviderInitialized(
   }
   const base::FilePath base64_encoded_provider_folder_name =
       cache_directory_path.BaseName();
-  return initialized_caches_.contains(base64_encoded_provider_folder_name);
+  return initialized_providers_.contains(base64_encoded_provider_folder_name);
 }
 
-void CacheManagerImpl::AddObserver(CacheManager::Observer* observer) {
+void CacheManagerImpl::AddObserver(Observer* observer) {
   DCHECK(observer);
   observers_.AddObserver(observer);
 }
 
-void CacheManagerImpl::RemoveObserver(CacheManager::Observer* observer) {
+void CacheManagerImpl::RemoveObserver(Observer* observer) {
   DCHECK(observer);
   observers_.RemoveObserver(observer);
 }
@@ -182,37 +182,16 @@ void CacheManagerImpl::OnProviderFilesLoadedFromDisk(
     std::unique_ptr<ContentCache> content_cache,
     const base::FilePath& base64_encoded_provider_folder_name,
     FileErrorOrContentCacheCallback callback) {
-  SpacedClient* const spaced = ash::SpacedClient::Get();
-  initialized_caches_.emplace(base64_encoded_provider_folder_name,
-                              content_cache->GetWeakPtr());
-
-  GetFreeSpaceAndResizeInitializedCaches();
-  // If we're not already observing spaced then start so the disk space can be
-  // retrieved.
-  if (!spaced_client_.IsObserving() && spaced && spaced->IsConnected()) {
-    spaced_client_.Observe(spaced);
-  }
+  initialized_providers_.emplace(base64_encoded_provider_folder_name);
   OnProviderInitializationComplete(base64_encoded_provider_folder_name,
                                    std::move(callback),
                                    std::move(content_cache));
 }
-
 void CacheManagerImpl::OnUninitializeForProvider(
     const base::FilePath& base64_encoded_provider_folder_name,
     base::File::Error result) {
   LOG_IF(ERROR, result != base::File::FILE_OK)
       << "Failed to uninitialize provider";
-  // In the instance that the provider has uninitialized, the remaining caches
-  // should be resized to take up the free space and if not more caches are
-  // initialized after this one, stop observing the free space.
-  if (initialized_caches_.size() > 0) {
-    GetFreeSpaceAndResizeInitializedCaches();
-  } else {
-    SpacedClient* const spaced = ash::SpacedClient::Get();
-    if (spaced_client_.IsObserving() && spaced && spaced->IsConnected()) {
-      spaced_client_.Reset();
-    }
-  }
   // Notify all observers.
   for (auto& observer : observers_) {
     observer.OnProviderUninitialized(base64_encoded_provider_folder_name,
@@ -249,89 +228,10 @@ void CacheManagerImpl::OnProviderInitializationComplete(
       error_or_content_cache.error_or(base::File::FILE_OK);
   std::move(callback).Run(std::move(error_or_content_cache));
 
-  for (CacheManager::Observer& observer : observers_) {
+  for (Observer& observer : observers_) {
     observer.OnProviderInitializationComplete(
         base64_encoded_provider_folder_name, result);
   }
-}
-
-void CacheManagerImpl::GetFreeSpaceAndResizeInitializedCaches() {
-  ash::SpacedClient::Get()->GetFreeDiskSpace(
-      root_content_cache_directory_.value(),
-      base::BindOnce(
-          [](base::WeakPtr<CacheManagerImpl> weak_ptr,
-             std::optional<int64_t> free_space_in_bytes) {
-            LOG_IF(ERROR, !free_space_in_bytes.has_value())
-                << "Failed getting free space";
-            if (weak_ptr && free_space_in_bytes.has_value()) {
-              weak_ptr->OnFreeSpace(free_space_in_bytes.value());
-            }
-          },
-          weak_ptr_factory_.GetWeakPtr()));
-}
-
-void CacheManagerImpl::OnFreeSpace(int64_t free_space_in_bytes) {
-  if (initialized_caches_.empty()) {
-    return;
-  }
-  VLOG(1) << "Free space: " << free_space_in_bytes;
-
-  // TODO(b/339540246): The logic below currently just divides the space up by
-  // the number of initialized caches. For now, as ODFS is the only expected
-  // content cache, this is ok. However, this should be smarter and allow for
-  // variable size caches.
-  int64_t total_bytes_of_all_caches = 0;
-  for (auto it = initialized_caches_.begin(); it != initialized_caches_.end();
-       ++it) {
-    base::WeakPtr<ContentCache> cache_weak_ptr = it->second;
-    if (!cache_weak_ptr) {
-      initialized_caches_.erase(it);
-      continue;
-    }
-    total_bytes_of_all_caches += cache_weak_ptr->GetSize().total_bytes_on_disk;
-  }
-
-  // The max size of all caches should not exceed the total size of (free space
-  // + used space of all caches) * 0.6.
-  int64_t max_size_of_all_caches_in_bytes =
-      (total_bytes_of_all_caches + free_space_in_bytes) * 0.6;
-
-  // The max size of each individual cache should never go past 5GB either.
-  int64_t max_bytes_per_cache =
-      std::min(static_cast<int64_t>(max_size_of_all_caches_in_bytes) /
-                   static_cast<int64_t>(initialized_caches_.size()),
-               kMaxAllowedCacheSizeInBytes);
-
-  for (const auto& [base64_encoded_provider_folder_name, content_cache] :
-       initialized_caches_) {
-    if (!content_cache) {
-      continue;
-    }
-    int64_t old_max_size = content_cache->GetSize().max_bytes_on_disk;
-    if (old_max_size == max_bytes_per_cache) {
-      VLOG(2) << "No cache resize needed: "
-              << base64_encoded_provider_folder_name;
-      VLOG(2) << " > Old max bytes: " << old_max_size;
-      VLOG(2) << " > New max bytes: " << max_bytes_per_cache;
-      continue;
-    }
-
-    // TODO(b/330602540): Move these logs into the `ContentCache` once
-    // eviction has been implemented.
-    VLOG(1) << "Potential cache resize event: "
-            << base64_encoded_provider_folder_name;
-    VLOG(1) << " > Old max bytes: " << old_max_size;
-    VLOG(1) << " > New max bytes: " << max_bytes_per_cache;
-    content_cache->SetMaxBytesOnDisk(max_bytes_per_cache);
-  }
-}
-
-void CacheManagerImpl::OnSpaceUpdate(const SpaceEvent& event) {
-  if (event.free_space_bytes() < 0) {
-    LOG(ERROR) << "Free space is negative";
-    return;
-  }
-  OnFreeSpace(event.free_space_bytes());
 }
 
 }  // namespace ash::file_system_provider

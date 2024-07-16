@@ -100,19 +100,6 @@ class ContentCache {
   // completes with `CloseFile()`.
   virtual void Evict(const base::FilePath& file_path) = 0;
 
-  // A struct of size information pertaining to this cache instance.
-  struct SizeInfo {
-    int64_t max_bytes_on_disk = 0;
-    int64_t total_bytes_on_disk = 0;
-  };
-
-  // Helper methods to get and set size information.
-  virtual const SizeInfo GetSize() const = 0;
-  virtual void SetMaxBytesOnDisk(int64_t max_bytes_on_disk) = 0;
-
-  // Returns a `base::WeakPtr`.
-  virtual base::WeakPtr<ContentCache> GetWeakPtr() = 0;
-
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 };

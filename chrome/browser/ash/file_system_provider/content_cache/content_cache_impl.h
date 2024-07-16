@@ -65,11 +65,6 @@ class ContentCacheImpl : public ContentCache {
 
   void Evict(const base::FilePath& file_path) override;
 
-  const SizeInfo GetSize() const override;
-  void SetMaxBytesOnDisk(int64_t max_bytes_on_disk) override;
-
-  base::WeakPtr<ContentCache> GetWeakPtr() override;
-
   void AddObserver(ContentCache::Observer* observer) override;
   void RemoveObserver(ContentCache::Observer* observer) override;
 
@@ -166,10 +161,7 @@ class ContentCacheImpl : public ContentCache {
   // Number of evicted items that will be removed on the next removal cycle.
   size_t evicted_cache_items_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
-  SizeInfo size_;
-
   base::ObserverList<ContentCache::Observer> observers_;
-
   base::WeakPtrFactory<ContentCacheImpl> weak_ptr_factory_{this};
 };
 
