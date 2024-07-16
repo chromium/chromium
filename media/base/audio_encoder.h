@@ -27,7 +27,6 @@ struct MEDIA_EXPORT EncodedAudioBuffer {
   EncodedAudioBuffer();
   EncodedAudioBuffer(const AudioParameters& params,
                      base::HeapArray<uint8_t> data,
-                     size_t size,
                      base::TimeTicks timestamp,
                      base::TimeDelta duration = media::kNoTimestamp);
   EncodedAudioBuffer(EncodedAudioBuffer&&);
@@ -41,13 +40,6 @@ struct MEDIA_EXPORT EncodedAudioBuffer {
 
   // The buffer containing the encoded data.
   base::HeapArray<uint8_t> encoded_data;
-
-  // The size of the encoded data in the above buffer. Note that this is not
-  // necessarily equal to the capacity of the buffer. Some encoders allocate a
-  // bigger buffer and fill it only with |encoded_data_size| data without
-  // bothering to allocate another shrunk buffer and copy the data in, since the
-  // number of encoded bytes may not be known in advance.
-  size_t encoded_data_size = 0;
 
   // The capture time of the first sample of the current AudioBus, or a previous
   // AudioBus If this output was generated because of a call to Flush().

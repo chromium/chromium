@@ -34,8 +34,8 @@ bool StructTraits<media::mojom::EncodedAudioBufferDataView,
     return false;
 
   *output = media::EncodedAudioBuffer(
-      params, base::HeapArray<uint8_t>::CopiedFrom(data_view), data_view.size(),
-      timestamp, duration);
+      params, base::HeapArray<uint8_t>::CopiedFrom(data_view), timestamp,
+      duration);
   return true;
 }
 

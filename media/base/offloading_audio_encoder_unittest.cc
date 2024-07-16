@@ -83,7 +83,7 @@ TEST_F(OffloadingAudioEncoderTest, Initialize) {
                               AudioEncoder::EncoderStatusCB done_cb) {
         EXPECT_TRUE(work_runner_->RunsTasksInCurrentSequence());
         AudioParameters params;
-        EncodedAudioBuffer buf(params, base::HeapArray<uint8_t>(), 0,
+        EncodedAudioBuffer buf(params, base::HeapArray<uint8_t>(),
                                base::TimeTicks());
         std::move(done_cb).Run(EncoderStatus::Codes::kOk);
 

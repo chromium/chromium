@@ -381,11 +381,11 @@ void AudioToolboxAudioEncoder::DoEncode(const AudioBus* input_bus) {
       }
     }
 
-    int adts_header_size = 0;
     base::HeapArray<uint8_t> packet_buffer;
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     if (format == AudioEncoder::AacOutputFormat::ADTS) {
+      int adts_header_size = 0;
       packet_buffer = aac_config_parser_.CreateAdtsFromEsds(temp_output_buf_,
                                                             &adts_header_size);
       adts_conversion_ok = !packet_buffer.empty();
@@ -400,21 +400,14 @@ void AudioToolboxAudioEncoder::DoEncode(const AudioBus* input_bus) {
     }
 
     if (packet_buffer.empty()) {
-      // There was no ADTS conversion, we should copy `temp_output_buf_` as is.
-      CHECK_EQ(adts_header_size, 0);
-      packet_buffer = base::HeapArray<uint8_t>::Uninit(temp_output_buf_.size());
-      std::memcpy(packet_buffer.data(), temp_output_buf_.data(),
-                  temp_output_buf_.size());
+      packet_buffer = base::HeapArray<uint8_t>::CopiedFrom(temp_output_buf_);
     }
-
-    const size_t packet_buffer_size =
-        temp_output_buf_.size() + adts_header_size;
 
     EncodedAudioBuffer encoded_buffer(
         AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
                         ChannelLayoutConfig::Guess(channel_count_),
                         sample_rate_, num_frames),
-        std::move(packet_buffer), packet_buffer_size,
+        std::move(packet_buffer),
         base::TimeTicks() + timestamp_helper_->GetTimestamp(),
         timestamp_helper_->GetFrameDuration(num_frames));
 

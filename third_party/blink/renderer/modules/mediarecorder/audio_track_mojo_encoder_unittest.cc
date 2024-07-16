@@ -57,8 +57,7 @@ class TestAudioEncoder final : public media::mojom::AudioEncoder {
     const std::vector<uint8_t> description;
     client_->OnEncodedBufferReady(
         media::EncodedAudioBuffer(media::TestAudioParameters::Normal(),
-                                  std::move(data), kDataSize,
-                                  base::TimeTicks::Now()),
+                                  std::move(data), base::TimeTicks::Now()),
         description);
     std::move(callback).Run(media::EncoderStatus::Codes::kOk);
   }

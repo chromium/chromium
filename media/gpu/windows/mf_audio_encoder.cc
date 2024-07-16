@@ -893,12 +893,11 @@ HRESULT MFAudioEncoder::ProcessOutput(EncodedAudioBuffer& encoded_audio) {
   RETURN_IF_FAILED(output_sample_->GetTotalLength(&total_length));
 
   // Copy the data from `output_buffer` into `encoded_data`.
-  size_t encoded_data_size = static_cast<size_t>(total_length);
   BYTE* output_buffer_ptr = nullptr;
-  auto encoded_data = base::HeapArray<uint8_t>::Uninit(encoded_data_size);
   RETURN_IF_FAILED(output_buffer->Lock(&output_buffer_ptr, 0, 0));
 
-  memcpy(encoded_data.data(), output_buffer_ptr, encoded_data_size);
+  auto encoded_data =
+      base::HeapArray<uint8_t>::CopiedFrom({output_buffer_ptr, total_length});
   RETURN_IF_FAILED(output_buffer->Unlock());
 
   LONGLONG sample_duration = 0;
@@ -914,7 +913,7 @@ HRESULT MFAudioEncoder::ProcessOutput(EncodedAudioBuffer& encoded_audio) {
   output_timestamp_tracker_->AddFrames(kSamplesPerFrame);
 
   encoded_audio = EncodedAudioBuffer(audio_params_, std::move(encoded_data),
-                                     encoded_data_size, timestamp, duration);
+                                     timestamp, duration);
   return S_OK;
 }
 

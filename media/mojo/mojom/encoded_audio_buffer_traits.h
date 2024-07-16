@@ -17,7 +17,7 @@ struct StructTraits<media::mojom::EncodedAudioBufferDataView,
                     media::EncodedAudioBuffer> {
   static const base::span<const uint8_t> data(
       const media::EncodedAudioBuffer& input) {
-    if (input.encoded_data.empty() || input.encoded_data_size == 0) {
+    if (input.encoded_data.empty()) {
       return base::span<const uint8_t>();
     }
 

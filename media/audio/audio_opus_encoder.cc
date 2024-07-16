@@ -24,12 +24,6 @@ namespace media {
 
 namespace {
 
-// Recommended value for opus_encode_float(), according to documentation in
-// third_party/opus/src/include/opus.h, so that the Opus encoder does not
-// degrade the audio due to memory constraints, and is independent of the
-// duration of the encoded buffer.
-constexpr int kOpusMaxDataBytes = 4000;
-
 // Opus preferred sampling rate for encoding. This is also the one WebM likes
 // to have: https://wiki.xiph.org/MatroskaOpus.
 constexpr int kOpusPreferredSamplingRate = 48000;
@@ -271,10 +265,9 @@ void AudioOpusEncoder::DoEncode(const AudioBus* audio_bus) {
   if (!current_done_cb_)
     return;
 
-  auto encoded_data = base::HeapArray<uint8_t>::Uninit(kOpusMaxDataBytes);
   auto result = opus_encode_float(opus_encoder_.get(), buffer_.data(),
                                   converted_params_.frames_per_buffer(),
-                                  encoded_data.data(), kOpusMaxDataBytes);
+                                  encoding_buffer_.data(), kOpusMaxDataBytes);
 
   if (result < 0) {
     DCHECK(current_done_cb_);
@@ -309,9 +302,11 @@ void AudioOpusEncoder::DoEncode(const AudioBus* audio_bus) {
       return;
     }
 
-    EncodedAudioBuffer encoded_buffer(converted_params_,
-                                      std::move(encoded_data),
-                                      encoded_data_size, ts, duration);
+    EncodedAudioBuffer encoded_buffer(
+        converted_params_,
+        base::HeapArray<uint8_t>::CopiedFrom(
+            base::span(encoding_buffer_).first(encoded_data_size)),
+        ts, duration);
     output_cb_.Run(std::move(encoded_buffer), desc);
   }
   timestamp_tracker_->AddFrames(converted_params_.frames_per_buffer());

@@ -175,11 +175,8 @@ void AudioTrackMojoEncoder::OnEncodeOutput(
     return;
   }
 
-  // Don't use encoded_buffer.encoded_data.end() as the encoded data size could
-  // be smaller than the allocated encoded_data.
-  std::string encoded_data(
-      encoded_buffer.encoded_data.begin(),
-      encoded_buffer.encoded_data.begin() + encoded_buffer.encoded_data_size);
+  std::string encoded_data(encoded_buffer.encoded_data.begin(),
+                           encoded_buffer.encoded_data.end());
   on_encoded_audio_cb_.Run(encoded_buffer.params, encoded_data,
                            std::move(codec_desc), encoded_buffer.timestamp);
 }
