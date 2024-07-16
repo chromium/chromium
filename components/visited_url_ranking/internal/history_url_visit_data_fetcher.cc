@@ -74,8 +74,11 @@ void HistoryURLVisitDataFetcher::OnGotAnnotatedVisits(
     } else {
       auto& history = url_annotations.at(url_key);
       history.visit_count += 1;
-      history.total_foreground_duration +=
-          annotated_visit.context_annotations.total_foreground_duration;
+      if (annotated_visit.context_annotations.total_foreground_duration
+              .InMilliseconds() > 0) {
+        history.total_foreground_duration +=
+            annotated_visit.context_annotations.total_foreground_duration;
+      }
 
       if (!history.last_app_id.has_value() &&
           annotated_visit.visit_row.app_id.has_value()) {
