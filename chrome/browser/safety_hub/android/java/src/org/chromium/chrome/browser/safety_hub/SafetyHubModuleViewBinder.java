@@ -36,7 +36,8 @@ public class SafetyHubModuleViewBinder {
             PropertyKey propertyKey) {
         bindCommonProperties(model, preference, propertyKey);
         if (SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT == propertyKey
-                || SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT == propertyKey) {
+                || SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT == propertyKey
+                || SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY == propertyKey) {
             updatePasswordCheckModule(preference, model);
         }
     }
@@ -205,6 +206,7 @@ public class SafetyHubModuleViewBinder {
         int compromisedPasswordsCount =
                 model.get(SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT);
         int totalPasswordsCount = model.get(SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT);
+        boolean managed = model.get(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY);
         @SafetyHubModuleProperties.ModuleState int state = getModuleState(model, option);
         String title;
         String summary = null;
@@ -212,7 +214,6 @@ public class SafetyHubModuleViewBinder {
         String secondaryButtonText = null;
         View.OnClickListener primaryButtonListener = null;
         View.OnClickListener secondaryButtonListener = null;
-        boolean expanded = false;
 
         if (totalPasswordsCount == 0) {
             title = preference.getContext().getString(R.string.safety_hub_no_passwords_title);
@@ -247,6 +248,18 @@ public class SafetyHubModuleViewBinder {
             secondaryButtonListener =
                     model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
         }
+
+        if (managed) {
+            summary =
+                    preference
+                            .getContext()
+                            .getString(R.string.safety_hub_no_passwords_summary_managed);
+
+            // Only show the primary button if applicable in the managed state.
+            secondaryButtonText = null;
+            secondaryButtonListener = null;
+        }
+
         preference.setTitle(title);
         preference.setSummary(summary);
         preference.setPrimaryButtonText(primaryButtonText);
@@ -254,9 +267,9 @@ public class SafetyHubModuleViewBinder {
         preference.setPrimaryButtonClickListener(primaryButtonListener);
         preference.setSecondaryButtonClickListener(secondaryButtonListener);
 
-        preference.setExpanded(shouldExpandModule(state, false));
-        preference.setIcon(getIconForModuleState(preference.getContext(), state, false));
-        preference.setOrder(getOrderForModuleState(option, state, false));
+        preference.setExpanded(shouldExpandModule(state, managed));
+        preference.setIcon(getIconForModuleState(preference.getContext(), state, managed));
+        preference.setOrder(getOrderForModuleState(option, state, managed));
     }
 
     private static void updateUpdateCheckModule(

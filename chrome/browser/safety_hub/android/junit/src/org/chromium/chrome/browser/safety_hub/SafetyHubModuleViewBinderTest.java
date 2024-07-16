@@ -142,6 +142,18 @@ public class SafetyHubModuleViewBinderTest {
         assertEquals(
                 expectedSecondaryButtonText, mPasswordCheckPreference.getSecondaryButtonText());
         assertFalse(mPasswordCheckPreference.isExpanded());
+
+        // Verify the managed state.
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
+        String expectedManagedSummary =
+                mActivity.getString(R.string.safety_hub_no_passwords_summary_managed);
+
+        assertEquals(expectedTitle, mPasswordCheckPreference.getTitle().toString());
+        assertEquals(expectedManagedSummary, mPasswordCheckPreference.getSummary().toString());
+        assertEquals(SAFE_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
+        assertNull(mPasswordCheckPreference.getPrimaryButtonText());
+        assertNull(mPasswordCheckPreference.getSecondaryButtonText());
+        assertFalse(mPasswordCheckPreference.isExpanded());
     }
 
     @Test
@@ -169,6 +181,18 @@ public class SafetyHubModuleViewBinderTest {
         assertEquals(expectedPrimaryButtonText, mPasswordCheckPreference.getPrimaryButtonText());
         assertNull(mPasswordCheckPreference.getSecondaryButtonText());
         assertTrue(mPasswordCheckPreference.isExpanded());
+
+        // Verify the managed state.
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
+        String expectedManagedSummary =
+                mActivity.getString(R.string.safety_hub_no_passwords_summary_managed);
+
+        assertEquals(expectedTitle, mPasswordCheckPreference.getTitle().toString());
+        assertEquals(expectedManagedSummary, mPasswordCheckPreference.getSummary().toString());
+        assertEquals(INFO_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
+        assertEquals(expectedPrimaryButtonText, mPasswordCheckPreference.getPrimaryButtonText());
+        assertNull(mPasswordCheckPreference.getSecondaryButtonText());
+        assertFalse(mPasswordCheckPreference.isExpanded());
     }
 
     @Test
@@ -186,6 +210,18 @@ public class SafetyHubModuleViewBinderTest {
         assertNull(mPasswordCheckPreference.getPrimaryButtonText());
         assertEquals(
                 expectedSecondaryButtonText, mPasswordCheckPreference.getSecondaryButtonText());
+        assertFalse(mPasswordCheckPreference.isExpanded());
+
+        // Verify the managed state.
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
+        String expectedManagedSummary =
+                mActivity.getString(R.string.safety_hub_no_passwords_summary_managed);
+
+        assertEquals(expectedTitle, mPasswordCheckPreference.getTitle().toString());
+        assertEquals(expectedManagedSummary, mPasswordCheckPreference.getSummary().toString());
+        assertEquals(INFO_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
+        assertNull(mPasswordCheckPreference.getPrimaryButtonText());
+        assertNull(mPasswordCheckPreference.getSecondaryButtonText());
         assertFalse(mPasswordCheckPreference.isExpanded());
     }
 
@@ -376,6 +412,7 @@ public class SafetyHubModuleViewBinderTest {
         assertEquals(expectedSecondaryButtonText, mSafeBrowsingPreference.getSecondaryButtonText());
         assertFalse(mSafeBrowsingPreference.isExpanded());
 
+        // Verify the managed state.
         mSafeBrowsingPropertyModel.set(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
         String expectedManagedSummary =
                 mActivity.getString(R.string.safety_hub_safe_browsing_on_summary_managed);
@@ -407,6 +444,7 @@ public class SafetyHubModuleViewBinderTest {
         assertEquals(expectedSecondaryButtonText, mSafeBrowsingPreference.getSecondaryButtonText());
         assertFalse(mSafeBrowsingPreference.isExpanded());
 
+        // Verify the managed state.
         mSafeBrowsingPropertyModel.set(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
         String expectedManagedSummary =
                 mActivity.getString(R.string.safety_hub_safe_browsing_enhanced_summary_managed);
@@ -437,6 +475,7 @@ public class SafetyHubModuleViewBinderTest {
         assertNull(mSafeBrowsingPreference.getSecondaryButtonText());
         assertTrue(mSafeBrowsingPreference.isExpanded());
 
+        // Verify the managed state.
         mSafeBrowsingPropertyModel.set(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
         String expectedManagedSummary =
                 mActivity.getString(R.string.safety_hub_safe_browsing_off_summary_managed);

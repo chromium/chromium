@@ -130,6 +130,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         SafetyHubExpandablePreference passwordCheckPreference = findPreference(PREF_PASSWORDS);
         int compromisedPasswordsCount =
                 UserPrefs.get(getProfile()).getInteger(Pref.BREACHED_CREDENTIALS_COUNT);
+        boolean disabledByPolicy =
+                UserPrefs.get(getProfile()).isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE);
 
         PropertyModel passwordCheckPropertyModel =
                 new PropertyModel.Builder(
@@ -143,6 +145,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                         .with(
                                 SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT,
                                 mDelegate.getAccountPasswordsCount())
+                        .with(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, disabledByPolicy)
                         .with(
                                 SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
                                 v -> mDelegate.showPasswordCheckUI(getContext()))
