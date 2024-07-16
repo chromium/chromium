@@ -223,21 +223,12 @@ void PlusAddressService::GetSuggestions(
     return;
   }
 
-  // TODO: crbug.com/353240084 - move check to OnGetAffiliatedPlusProfiles to
-  // make it affiliations-aware.
-  if (is_off_the_record &&
-      !GetPlusProfile(OriginToFacet(last_committed_primary_main_frame_origin))
-           .has_value()) {
-    std::move(callback).Run({});
-    return;
-  }
-
   plus_address_match_helper_.GetAffiliatedPlusProfiles(
       OriginToFacet(last_committed_primary_main_frame_origin),
       base::BindOnce(&PlusAddressService::OnGetAffiliatedPlusProfiles,
                      weak_factory_.GetWeakPtr(), focused_form_type,
                      std::u16string(focused_field_value), trigger_source,
-                     std::move(callback)));
+                     is_off_the_record, std::move(callback)));
 }
 
 Suggestion PlusAddressService::GetManagePlusAddressSuggestion() const {
@@ -257,6 +248,7 @@ void PlusAddressService::OnGetAffiliatedPlusProfiles(
     PasswordFormType focused_form_type,
     std::u16string_view focused_field_value,
     autofill::AutofillSuggestionTriggerSource trigger_source,
+    bool is_off_the_record,
     GetSuggestionsCallback callback,
     std::vector<PlusProfile> affiliated_profiles) {
   using enum autofill::AutofillSuggestionTriggerSource;
@@ -264,6 +256,11 @@ void PlusAddressService::OnGetAffiliatedPlusProfiles(
       autofill::RemoveDiacriticsAndConvertToLowerCase(focused_field_value);
 
   if (affiliated_profiles.empty()) {
+    // Do not offer creation in incognito mode.
+    if (is_off_the_record) {
+      std::move(callback).Run({});
+      return;
+    }
     // Do not offer creation on non-empty fields and certain form types (e.g.
     // login forms).
     if (trigger_source != kManualFallbackPlusAddresses &&

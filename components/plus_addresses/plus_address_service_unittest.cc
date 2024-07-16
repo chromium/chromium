@@ -1525,6 +1525,31 @@ TEST_F(PlusAddressAffiliationsTest, GetAffiliatedGroupSuggestions) {
       IsSingleFillPlusAddressSuggestion(group_profile.plus_address)));
 }
 
+// Tests that filling suggestions are returned even if they are affiliated
+// matches and the profile is off the record.
+TEST_F(PlusAddressAffiliationsTest,
+       GetSuggestionsIsAffiliationAwareWhenOffTheRecord) {
+  PlusProfile group_profile = test::CreatePlusProfileWithFacet(
+      FacetURI::FromCanonicalSpec("https://group.affiliated.com"));
+  service().SavePlusProfile(group_profile);
+  ASSERT_THAT(service().GetPlusProfiles(), ElementsAre(group_profile));
+
+  ON_CALL(*mock_affiliation_service(), GetPSLExtensions)
+      .WillByDefault(RunOnceCallback<0>(std::vector<std::string>()));
+  affiliations::GroupedFacets group;
+  group.facets.emplace_back(absl::get<FacetURI>(group_profile.facet));
+  ON_CALL(*mock_affiliation_service(), GetGroupingInfo)
+      .WillByDefault(
+          RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
+
+  const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+  EXPECT_TRUE(ExpectServiceToReturnSuggestions(
+      origin, /*is_off_the_record=*/true, PasswordFormType::kNoPasswordForm,
+      /*focused_field_value=*/u"",
+      AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      IsSingleFillPlusAddressSuggestion(group_profile.plus_address)));
+}
+
 // Verifies that no affiliated suggestions are returned when there are no
 // matches. Instead, the creation chip is offered.
 TEST_F(PlusAddressAffiliationsTest, GetEmptyAffiliatedSuggestionMatches) {

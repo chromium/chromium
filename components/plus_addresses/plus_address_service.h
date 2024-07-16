@@ -222,6 +222,7 @@ class PlusAddressService : public KeyedService,
       autofill::AutofillClient::PasswordFormType focused_form_type,
       std::u16string_view focused_field_value,
       autofill::AutofillSuggestionTriggerSource trigger_source,
+      bool is_off_the_record,
       GetSuggestionsCallback callback,
       std::vector<PlusProfile> affiliated_profiles);
 
