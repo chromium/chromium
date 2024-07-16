@@ -74,6 +74,13 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
+    name = "android_12l_landscape_emulator_gtests",
+    basic_suites = {
+        "android_emulator_specific_chrome_public_tests": None,
+    },
+)
+
+targets.legacy_matrix_compound_suite(
     name = "android_13_emulator_gtests",
     basic_suites = {
         "android_ci_only_fieldtrial_webview_tests": None,

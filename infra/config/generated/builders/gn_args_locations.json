@@ -549,6 +549,7 @@
     "android-11-x86-rel": "try/android-11-x86-rel/gn-args.json",
     "android-12-x64-dbg": "try/android-12-x64-dbg/gn-args.json",
     "android-12-x64-rel": "try/android-12-x64-rel/gn-args.json",
+    "android-12l-landscape-x64-dbg": "try/android-12l-landscape-x64-dbg/gn-args.json",
     "android-12l-x64-dbg": "try/android-12l-x64-dbg/gn-args.json",
     "android-13-x64-rel": "try/android-13-x64-rel/gn-args.json",
     "android-14-arm64-fyi-rel": "try/android-14-arm64-fyi-rel/gn-args.json",

@@ -6615,6 +6615,10 @@
       'webview_ui_instrumentation_tests': {},
     },
 
+    'android_12l_landscape_emulator_gtests': {
+      'android_emulator_specific_chrome_public_tests': {},
+    },
+
     'android_13_emulator_gtests': {
       'android_ci_only_fieldtrial_webview_tests': {},
       'android_emulator_specific_chrome_public_tests': {},

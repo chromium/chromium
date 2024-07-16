@@ -96,6 +96,24 @@
       ],
     },
   },
+  '12l-landscape-x64-emulator': {
+    'args': [
+      '--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable_landscape.textpb',
+    ],
+    'swarming': {
+      'optional_dimensions': {
+        '60': {
+          'caches': 'android_32_google_apis_x64_foldable_landscape',
+        },
+      },
+      'named_caches': [
+        {
+          'name': 'android_32_google_apis_x64_foldable_landscape',
+          'path': '.android_emulator/android_32_google_apis_x64_foldable_landscape',
+        },
+      ],
+    },
+  },
   '12l-x64-emulator': {
     'args': [
       '--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb',

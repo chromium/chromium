@@ -565,6 +565,19 @@
           'isolated_scripts': 'private_code_failure_test_isolated_scripts',
         }
       },
+      'android-12l-landscape-x64-dbg-tests': {
+        'mixins': [
+          '12l-landscape-x64-emulator',
+          'emulator-8-cores',
+          'has_native_resultdb_integration',
+          'linux-jammy',
+          'x86-64',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'android_12l_landscape_emulator_gtests',
+        }
+      },
       'android-12l-x64-dbg-tests': {
         'mixins': [
           '12l-x64-emulator',

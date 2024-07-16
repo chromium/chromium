@@ -132,6 +132,27 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "12l-landscape-x64-emulator",
+    args = [
+        "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable_landscape.textpb",
+    ],
+    swarming = targets.swarming(
+        # soft affinity so that bots with caches will be picked first
+        optional_dimensions = {
+            60: {
+                "caches": "android_32_google_apis_x64_foldable_landscape",
+            },
+        },
+        named_caches = [
+            swarming.cache(
+                name = "android_32_google_apis_x64_foldable_landscape",
+                path = ".android_emulator/android_32_google_apis_x64_foldable_landscape",
+            ),
+        ],
+    ),
+)
+
+targets.mixin(
     name = "13-google-atd-x64-emulator",
     args = [
         "--avd-config=../../tools/android/avd/proto/android_33_google_atd_x64.textpb",
