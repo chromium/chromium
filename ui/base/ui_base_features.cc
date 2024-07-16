@@ -271,7 +271,7 @@ BASE_FEATURE(kExperimentalFlingAnimation,
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kClipboardFiles,
              "ClipboardFiles",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
