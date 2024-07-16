@@ -105,6 +105,13 @@ BASE_FEATURE(kNetworkQualityEstimator,
              "NetworkQualityEstimator",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<int> kRecentHTTPThresholdInSeconds{
+    &kNetworkQualityEstimator, "RecentHTTPThresholdInSeconds", -1};
+const base::FeatureParam<int> kRecentTransportThresholdInSeconds{
+    &kNetworkQualityEstimator, "RecentTransportThresholdInSeconds", -1};
+const base::FeatureParam<int> kRecentEndToEndThresholdInSeconds{
+    &kNetworkQualityEstimator, "RecentEndToEndThresholdInSeconds", -1};
+
 BASE_FEATURE(kSplitCacheByIncludeCredentials,
              "SplitCacheByIncludeCredentials",
              base::FEATURE_DISABLED_BY_DEFAULT);

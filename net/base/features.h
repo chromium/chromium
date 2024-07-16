@@ -121,6 +121,23 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableTLS13EarlyData);
 // quality estimator (NQE).
 NET_EXPORT BASE_DECLARE_FEATURE(kNetworkQualityEstimator);
 
+// The maximum age in seconds of observations to be used for calculating the
+// HTTP RTT from the historical data.
+// Negative value means infinite. i.e. all data are used.
+NET_EXPORT extern const base::FeatureParam<int> kRecentHTTPThresholdInSeconds;
+
+// The maximum age in seconds of observations to be used for calculating the
+// transport RTT from the historical data.
+// Negative value means infinite. i.e. all data are used.
+NET_EXPORT extern const base::FeatureParam<int>
+    kRecentTransportThresholdInSeconds;
+
+// The maximum age in seconds of observations to be used for calculating the
+// end to end RTT from the historical data.
+// Negative value means infinite. i.e. all data are used.
+NET_EXPORT extern const base::FeatureParam<int>
+    kRecentEndToEndThresholdInSeconds;
+
 // Splits cache entries by the request's includeCredentials.
 NET_EXPORT BASE_DECLARE_FEATURE(kSplitCacheByIncludeCredentials);
 

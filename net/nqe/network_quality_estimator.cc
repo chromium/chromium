@@ -103,6 +103,36 @@ const char* CategoryToString(nqe::internal::ObservationCategory category) {
   }
 }
 
+base::TimeTicks GetStartTimeFromThreshold(int threshold) {
+  if (threshold < 0) {
+    return base::TimeTicks();
+  }
+  return base::TimeTicks::Now() - base::Seconds(threshold);
+}
+
+base::TimeTicks GetHTTPStartTime() {
+  static const int threshold = features::kRecentHTTPThresholdInSeconds.Get();
+  return GetStartTimeFromThreshold(threshold);
+}
+
+base::TimeTicks GetTransportStartTime() {
+  static const int threshold =
+      features::kRecentTransportThresholdInSeconds.Get();
+  return GetStartTimeFromThreshold(threshold);
+}
+
+base::TimeTicks GetEndToEndStartTime() {
+  static const int threshold =
+      features::kRecentEndToEndThresholdInSeconds.Get();
+  return GetStartTimeFromThreshold(threshold);
+}
+
+void RecordFallbackSuccess(std::string_view category, bool fallback_success) {
+  base::UmaHistogramBoolean(
+      base::StrCat({"NQE.RTT.HittingThreshold.", category, ".FallbackSuccess"}),
+      fallback_success);
+}
+
 }  // namespace
 
 NetworkQualityEstimator::NetworkQualityEstimator(
@@ -792,21 +822,41 @@ NetworkQualityEstimator::GetRecentEffectiveConnectionTypeUsingMetrics(
     return EFFECTIVE_CONNECTION_TYPE_SLOW_2G;
   }
 
-  if (!GetRecentRTT(nqe::internal::OBSERVATION_CATEGORY_HTTP, base::TimeTicks(),
-                    http_rtt, nullptr)) {
-    *http_rtt = nqe::internal::InvalidRTT();
+  if (!GetRecentRTT(nqe::internal::OBSERVATION_CATEGORY_HTTP,
+                    GetHTTPStartTime(), http_rtt, nullptr)) {
+    bool fallback_success = true;
+    if (!GetRecentRTT(nqe::internal::OBSERVATION_CATEGORY_HTTP,
+                      base::TimeTicks(), http_rtt, nullptr)) {
+      *http_rtt = nqe::internal::InvalidRTT();
+      fallback_success = false;
+    }
+    RecordFallbackSuccess("HTTP", fallback_success);
   }
 
   if (!GetRecentRTT(nqe::internal::OBSERVATION_CATEGORY_TRANSPORT,
-                    base::TimeTicks(), transport_rtt,
+                    GetTransportStartTime(), transport_rtt,
                     transport_rtt_observation_count)) {
-    *transport_rtt = nqe::internal::InvalidRTT();
+    bool fallback_success = true;
+    if (!GetRecentRTT(nqe::internal::OBSERVATION_CATEGORY_TRANSPORT,
+                      base::TimeTicks(), transport_rtt,
+                      transport_rtt_observation_count)) {
+      *transport_rtt = nqe::internal::InvalidRTT();
+      fallback_success = false;
+    }
+    RecordFallbackSuccess("Transport", fallback_success);
   }
 
   if (!GetRecentRTT(nqe::internal::OBSERVATION_CATEGORY_END_TO_END,
-                    base::TimeTicks(), end_to_end_rtt,
+                    GetEndToEndStartTime(), end_to_end_rtt,
                     end_to_end_rtt_observation_count)) {
-    *end_to_end_rtt = nqe::internal::InvalidRTT();
+    bool fallback_success = true;
+    if (!GetRecentRTT(nqe::internal::OBSERVATION_CATEGORY_END_TO_END,
+                      base::TimeTicks(), end_to_end_rtt,
+                      end_to_end_rtt_observation_count)) {
+      *end_to_end_rtt = nqe::internal::InvalidRTT();
+      fallback_success = false;
+    }
+    RecordFallbackSuccess("EndToEnd", fallback_success);
   }
 
   UpdateHttpRttUsingAllRttValues(http_rtt, *transport_rtt, *end_to_end_rtt);

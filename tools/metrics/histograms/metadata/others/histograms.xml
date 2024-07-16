@@ -6125,7 +6125,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-loading@google.com</owner>
   <summary>
     True if estimation and observation are the same. Recorded when HTTP RTT is
-    going to be updated. computed.
+    going to be updated.
   </summary>
 </histogram>
 
@@ -6135,7 +6135,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Error between estimation and observation. Only recorded if observed value is
     smaller than estimation. Recorded when HTTP RTT is going to be updated.
-    computed.
   </summary>
 </histogram>
 
@@ -6146,6 +6145,27 @@ chromium-metrics-reviews@google.com.
     Error between estimation and observation. Only recorded if observed value is
     larger than estimation. Recorded when HTTP RTT is going to be updated.
   </summary>
+</histogram>
+
+<histogram name="NQE.RTT.HittingThreshold.{Category}.FallbackSuccess"
+    enum="Boolean" expires_after="2025-02-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    True if GetRecentRTT() for {Category} returns invalid RTT under the given
+    threshold but success without the threshold. Recorded when RTT is going to
+    be calculated for updating the effective connection type.
+  </summary>
+  <token key="Category">
+    <variant name="EndToEnd"
+        summary="EndToEnd ObservationBuffer (lifetime of the end to end
+                 category)"/>
+    <variant name="HTTP"
+        summary="HTTP ObservationBuffer (lifetime of the HTTP category)"/>
+    <variant name="Transport"
+        summary="Transport ObservationBuffer (lifetime of the transport
+                 category)"/>
+  </token>
 </histogram>
 
 <histogram name="NQE.RTT.ObservationBufferLifeTime.{Category}" units="ms"
