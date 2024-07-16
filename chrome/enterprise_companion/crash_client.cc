@@ -60,9 +60,25 @@ namespace enterprise_companion {
 namespace {
 
 constexpr char kNoRateLimitSwitch[] = "no-rate-limit";
-// Environment variables.
-constexpr char kUsageStatsEnabled[] = "GOOGLE_USAGE_STATS_ENABLED";
-constexpr char kUsageStatsEnabledValueEnabled[] = "1";
+constexpr char kUsageStatsEnabledEnvVar[] = "GOOGLE_USAGE_STATS_ENABLED";
+constexpr char kUsageStatsEnabledEnvVarValueEnabled[] = "1";
+
+// Determines if crash dump uploading should be enabled.
+bool ShouldEnableCrashUploads() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kEnableUsageStatsSwitch)) {
+    return true;
+  }
+
+  std::string env_usage_stats;
+  if (base::Environment::Create()->GetVar(kUsageStatsEnabledEnvVar,
+                                          &env_usage_stats) &&
+      env_usage_stats == kUsageStatsEnabledEnvVarValueEnabled) {
+    return true;
+  }
+
+  return false;
+}
 
 std::vector<std::string> MakeCrashHandlerArgs() {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
@@ -152,11 +168,8 @@ class CrashClient {
       LOG(ERROR) << "Failed to fetch pending crash reports: " << status_pending;
     }
 
-    // TODO(crbug.com/c/344887294): Determine usagestats opt-in from other apps.
-    std::string env_usage_stats;
-    if (base::Environment::Create()->GetVar(kUsageStatsEnabled,
-                                            &env_usage_stats) &&
-        env_usage_stats == kUsageStatsEnabledValueEnabled) {
+    if (ShouldEnableCrashUploads()) {
+      VLOG(2) << "Crash uploading is enabled.";
       crashpad::Settings* crashpad_settings = database_->GetSettings();
       CHECK(crashpad_settings);
       LOG_IF(ERROR, !crashpad_settings->SetUploadsEnabled(true))

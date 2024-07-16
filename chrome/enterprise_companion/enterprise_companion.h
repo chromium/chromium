@@ -17,6 +17,8 @@ extern const char kLoggingModuleSwitch[];
 extern const char kCrashHandlerSwitch[];
 // Crash the program for testing purposes.
 extern const char kCrashMeSwitch[];
+// Controls the transmission of usage stats (i.e. crash reports).
+extern const char kEnableUsageStatsSwitch[];
 
 int EnterpriseCompanionMain(int argc, const char* const* argv);
 
