@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/time/time.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -41,6 +43,18 @@ class MockMigrationObserver : public LocalFilesMigrationManager::Observer {
   ~MockMigrationObserver() = default;
 
   MOCK_METHOD(void, OnMigrationSucceeded, (), (override));
+};
+
+// Mock implementation of MigrationNotificationManager.
+class MockMigrationNotificationManager : public MigrationNotificationManager {
+ public:
+  explicit MockMigrationNotificationManager(Profile* profile)
+      : MigrationNotificationManager(profile) {}
+
+  MOCK_METHOD(void,
+              ShowMigrationInfoDialog,
+              (CloudProvider, base::TimeDelta, base::OnceClosure),
+              (override));
 };
 
 // Mock implementation of MigrationUploadHandler.
@@ -137,18 +151,90 @@ class LocalFilesMigrationManagerLocationTest
 };
 
 IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
-                       MigrationNotifiesObservers) {
+                       MigrationNotifiesObservers_Timeout) {
   base::ScopedMockTimeMessageLoopTaskRunner task_runner;
   MockMigrationObserver observer;
   EXPECT_CALL(observer, OnMigrationSucceeded).Times(1);
-  LocalFilesMigrationManager manager(browser()->profile());
+
+  std::unique_ptr<MockMigrationNotificationManager> notification_manager =
+      std::make_unique<MockMigrationNotificationManager>(browser()->profile());
+  auto notification_manager_ptr = notification_manager.get();
+  EXPECT_CALL(*notification_manager_ptr,
+              ShowMigrationInfoDialog(testing::_, base::Hours(24), testing::_));
+  EXPECT_CALL(*notification_manager_ptr,
+              ShowMigrationInfoDialog(testing::_, base::Hours(1), testing::_));
+
+  LocalFilesMigrationManager manager =
+      LocalFilesMigrationManager::CreateLocalFilesMigrationManagerForTesting(
+          browser()->profile(), std::move(notification_manager),
+          std::make_unique<MigrationCoordinator>(browser()->profile()));
   manager.AddObserver(&observer);
 
   // Changing the LocalUserFilesAllowed policy should trigger the migration and
   // update, after the timeout.
   SetMigrationPolicies(/*local_user_files_allowed=*/false,
                        /*destination=*/MigrationDestination());
+  // Fast forward to start automatically.
   task_runner->FastForwardBy(base::TimeDelta(base::Hours(24)));
+}
+
+IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
+                       MigrationNotifiesObservers_UploadNowFirstDialog) {
+  base::ScopedMockTimeMessageLoopTaskRunner task_runner;
+  MockMigrationObserver observer;
+  EXPECT_CALL(observer, OnMigrationSucceeded).Times(1);
+
+  std::unique_ptr<MockMigrationNotificationManager> notification_manager =
+      std::make_unique<MockMigrationNotificationManager>(browser()->profile());
+  auto notification_manager_ptr = notification_manager.get();
+
+  EXPECT_CALL(*notification_manager_ptr,
+              ShowMigrationInfoDialog(testing::_, base::Hours(24), testing::_))
+      .WillOnce([](CloudProvider provider, base::TimeDelta migration_delay,
+                   base::OnceClosure migration_callback) {
+        std::move(migration_callback).Run();
+      });
+
+  LocalFilesMigrationManager manager =
+      LocalFilesMigrationManager::CreateLocalFilesMigrationManagerForTesting(
+          browser()->profile(), std::move(notification_manager),
+          std::make_unique<MigrationCoordinator>(browser()->profile()));
+  manager.AddObserver(&observer);
+
+  SetMigrationPolicies(/*local_user_files_allowed=*/false,
+                       /*destination=*/MigrationDestination());
+  task_runner->FastForwardBy(base::TimeDelta(base::Hours(5)));
+}
+
+IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
+                       MigrationNotifiesObservers_UploadNowSecondDialog) {
+  base::ScopedMockTimeMessageLoopTaskRunner task_runner;
+  MockMigrationObserver observer;
+  EXPECT_CALL(observer, OnMigrationSucceeded).Times(1);
+
+  std::unique_ptr<MockMigrationNotificationManager> notification_manager =
+      std::make_unique<MockMigrationNotificationManager>(browser()->profile());
+  auto notification_manager_ptr = notification_manager.get();
+
+  EXPECT_CALL(*notification_manager_ptr,
+              ShowMigrationInfoDialog(testing::_, base::Hours(24), testing::_));
+  EXPECT_CALL(*notification_manager_ptr,
+              ShowMigrationInfoDialog(testing::_, base::Hours(1), testing::_))
+      .WillOnce([](CloudProvider provider, base::TimeDelta migration_delay,
+                   base::OnceClosure migration_callback) {
+        std::move(migration_callback).Run();
+      });
+
+  LocalFilesMigrationManager manager =
+      LocalFilesMigrationManager::CreateLocalFilesMigrationManagerForTesting(
+          browser()->profile(), std::move(notification_manager),
+          std::make_unique<MigrationCoordinator>(browser()->profile()));
+  manager.AddObserver(&observer);
+
+  SetMigrationPolicies(/*local_user_files_allowed=*/false,
+                       /*destination=*/MigrationDestination());
+  // Fast forward only to the second dialog.
+  task_runner->FastForwardBy(base::TimeDelta(base::Hours(23)));
 }
 
 IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,

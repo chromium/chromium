@@ -21,14 +21,15 @@ constexpr char kSkyVaultMigrationNotificationId[] = "skyvault-migration";
 class MigrationNotificationManager {
  public:
   explicit MigrationNotificationManager(Profile* profile);
-  ~MigrationNotificationManager();
+  virtual ~MigrationNotificationManager();
 
   // Shows a dialog informing the user that the migration will happen after
   // `migration_delay` (e.g. 24 h or 1 h). From the dialog, the user can select
   // to start the migration immediately which executes the `migration_callback`.
-  void ShowMigrationInfoDialog(CloudProvider provider,
-                               base::TimeDelta migration_delay,
-                               base::OnceClosure migration_callback);
+  // Virtual to override in tests.
+  virtual void ShowMigrationInfoDialog(CloudProvider provider,
+                                       base::TimeDelta migration_delay,
+                                       base::OnceClosure migration_callback);
 
   // Shows the migration in progress notification.
   void ShowMigrationProgressNotification(CloudProvider provider);
