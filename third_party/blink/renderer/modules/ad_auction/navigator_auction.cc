@@ -3095,6 +3095,8 @@ NavigatorAuction::AuctionHandle::DirectFromSellerSignalsResolved::CallImpl(
   if (!context) {
     return ScriptValue();
   }
+  UseCounter::Count(context,
+                    WebFeature::kProtectedAudienceDirectFromSellerSignals);
 
   ExceptionState exception_state(script_state->GetIsolate(),
                                  ExceptionContextType::kOperationInvoke,

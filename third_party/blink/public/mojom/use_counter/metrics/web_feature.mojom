@@ -4400,6 +4400,7 @@ enum WebFeature {
   kV8ConsoleContext = 5031,
   kButtonTypeAttrInvalid = 5032,
   kButtonTypeAttrEmptyString = 5033,
+  kProtectedAudienceDirectFromSellerSignals = 5034,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

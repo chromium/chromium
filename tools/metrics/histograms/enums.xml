@@ -11230,6 +11230,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5031" label="V8ConsoleContext"/>
   <int value="5032" label="ButtonTypeAttrInvalid"/>
   <int value="5033" label="ButtonTypeAttrEmptyString"/>
+  <int value="5034" label="ProtectedAudienceDirectFromSellerSignals"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
