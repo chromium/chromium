@@ -35,12 +35,17 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/** Handles history overscroll navigation controlling the underlying UI widget. */
+/**
+ * Handles history overscroll navigation controlling the underlying UI widget. Note: used only from
+ * 3-button navigation mode. For gestural navigation mode, see {@link
+ * ToolbarManager#OnBackPressHandler}
+ */
 class NavigationHandler implements TouchEventObserver {
     // Width of a rectangluar area in dp on the left/right edge used for navigation.
     // Swipe beginning from a point within these rects triggers the operation.
@@ -232,8 +237,13 @@ class NavigationHandler implements TouchEventObserver {
         mInitialY = y;
         mInitiatingEdge = initiatingEdge;
 
-        // TODO(crbug.com/331778964): This will soon account for UI writing direction.
         boolean forward = initiatingEdge == BackGestureEventSwipeEdge.RIGHT;
+
+        // If the UI uses an RTL layout, it may be necessary to flip the meaning of each edge so
+        // that the left edge goes forward and the right goes back.
+        if (LocalizationUtils.shouldMirrorBackForwardGestures()) {
+            forward = !forward;
+        }
 
         mModel.set(DIRECTION, forward);
         if (canNavigate(forward)) {

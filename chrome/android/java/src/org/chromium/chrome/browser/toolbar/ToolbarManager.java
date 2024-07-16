@@ -459,6 +459,10 @@ public class ToolbarManager
             mBackGestureInProgress = true;
             if (!ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)) return;
             mHandler = TabOnBackGestureHandler.from(mActivityTabProvider.get());
+
+            // Gestural navigation navigates backwards from both edges since this is an OS-level
+            // gesture; users expect both edges to take them back.
+            boolean navigatesForward = false;
             mHandler.onBackStarted(
                     backEvent.getTouchX(),
                     backEvent.getTouchY(),
@@ -466,7 +470,7 @@ public class ToolbarManager
                     backEvent.getSwipeEdge() == BackEventCompat.EDGE_LEFT
                             ? BackGestureEventSwipeEdge.LEFT
                             : BackGestureEventSwipeEdge.RIGHT,
-                    false);
+                    navigatesForward);
         }
     }
 

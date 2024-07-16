@@ -66,8 +66,19 @@ public class LocalizationUtils {
         ResettersForTesting.register(() -> sIsLayoutRtlForTesting = null);
     }
 
+    /** Returns whether navigation gestures should be mirrored due to the UI language. */
+    @CalledByNative
+    public static boolean shouldMirrorBackForwardGestures() {
+        if (!UiAndroidFeatureMap.isEnabled(UiAndroidFeatures.MIRROR_BACK_FORWARD_GESTURES_IN_RTL)) {
+            return false;
+        }
+
+        return LocalizationUtils.isLayoutRtl();
+    }
+
     /**
      * Jni binding to base::i18n::GetFirstStrongCharacterDirection
+     *
      * @param string String to decide the direction.
      * @return One of the UNKNOWN_DIRECTION, RIGHT_TO_LEFT, and LEFT_TO_RIGHT.
      */

@@ -44,6 +44,12 @@ bool IsLayoutRtl() {
   return layout_rtl_cache;
 }
 
+bool ShouldMirrorBackForwardGestures() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return static_cast<bool>(
+      Java_LocalizationUtils_shouldMirrorBackForwardGestures(env));
+}
+
 namespace {
 
 // Common prototype of ICU uloc_getXXX() functions.

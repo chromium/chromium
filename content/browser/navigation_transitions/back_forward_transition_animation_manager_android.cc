@@ -12,6 +12,7 @@
 #include "content/public/browser/back_forward_transition_animation_manager.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "ui/base/l10n/l10n_util_android.h"
 
 namespace content {
 
@@ -26,12 +27,16 @@ using SwipeEdge = ui::BackGestureEventSwipeEdge;
 bool ShouldSkipDefaultNavTransitionForPendingUX(
     NavigationDirection nav_direction,
     SwipeEdge edge) {
+  SwipeEdge back_edge = !l10n_util::ShouldMirrorBackForwardGestures()
+                            ? SwipeEdge::LEFT
+                            : SwipeEdge::RIGHT;
+
   // Currently we only have approved UX for the history back navigation on the
-  // left edge, in both gesture mode and 3-button mode.
-  if (nav_direction == NavigationDirection::kBackward &&
-      edge == SwipeEdge::LEFT) {
+  // back edge (left in LTR), in both gesture mode and 3-button mode.
+  if (nav_direction == NavigationDirection::kBackward && edge == back_edge) {
     return false;
   }
+
   return true;
 }
 
