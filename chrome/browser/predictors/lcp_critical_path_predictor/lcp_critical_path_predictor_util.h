@@ -145,6 +145,47 @@ T* UpdateFrequencyStatAndTryGetEntry(
   return &(map[new_entry]);
 }
 
+// Aligns `frequency_stat` elements and `map` elements.
+// Clears both if `frequency_stat` has invalid parameters too.
+template <typename T>
+bool CanonicalizeFrequencyData(size_t max_histogram_buckets,
+                               LcppStringFrequencyStatData& frequency_stat,
+                               google::protobuf::Map<std::string, T>& map) {
+  bool is_canonicalized = false;
+  auto* frequency_main_buckets = frequency_stat.mutable_main_buckets();
+  std::vector<std::string> remove_from_map;
+  for (const auto& it : map) {
+    if (auto pos = frequency_main_buckets->find(it.first);
+        pos == frequency_main_buckets->end()) {
+      remove_from_map.push_back(it.first);
+    }
+  }
+  for (std::string& str : remove_from_map) {
+    map.erase(str);
+  }
+  is_canonicalized |= !remove_from_map.empty();
+
+  std::vector<std::string> remove_from_frequency_stat;
+  for (const auto& it : *frequency_main_buckets) {
+    if (auto pos = map.find(it.first); pos == map.end()) {
+      remove_from_frequency_stat.push_back(it.first);
+    }
+  }
+  for (std::string& str : remove_from_frequency_stat) {
+    frequency_main_buckets->erase(str);
+  }
+  is_canonicalized |= !remove_from_frequency_stat.empty();
+  CHECK_EQ(frequency_main_buckets->size(), map.size());
+
+  if (frequency_stat.other_bucket_frequency() < 0 ||
+      frequency_stat.main_buckets().size() > max_histogram_buckets) {
+    frequency_stat.Clear();
+    map.clear();
+    is_canonicalized = true;
+  }
+  return is_canonicalized;
+}
+
 // Returns true if the LcppData is valid. i.e. looks not corrupted.
 // Otherwise, data might be corrupted.
 bool IsValidLcppStat(const LcppStat& lcpp_stat);

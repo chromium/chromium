@@ -46,6 +46,34 @@ class Updater {
 };
 
 template <typename T>
+bool IsCanonicalizedFrequencyData(
+    size_t max_histogram_buckets,
+    const LcppStringFrequencyStatData& frequency_stat,
+    const google::protobuf::Map<std::string, T>& map) {
+  const auto& frequency_main_buckets = frequency_stat.main_buckets();
+  std::vector<std::string> remove_from_map;
+  for (const auto& it : map) {
+    if (auto pos = frequency_main_buckets.find(it.first);
+        pos == frequency_main_buckets.end()) {
+      return false;
+    }
+  }
+
+  for (const auto& it : frequency_main_buckets) {
+    if (auto pos = map.find(it.first); pos == map.end()) {
+      return false;
+    }
+  }
+  CHECK_EQ(frequency_main_buckets.size(), map.size());
+
+  if (frequency_stat.other_bucket_frequency() < 0 ||
+      frequency_stat.main_buckets().size() > max_histogram_buckets) {
+    return false;
+  }
+  return true;
+}
+
+template <typename T>
 class MapUpdater {
  public:
   MapUpdater(size_t sliding_window_size, size_t max_histogram_buckets)
@@ -59,15 +87,49 @@ class MapUpdater {
                                              stat_data_, map_);
   }
 
+  void InitializeWith(const LcppStringFrequencyStatData& data) {
+    for (auto& [key, freq] : data.main_buckets()) {
+      for (size_t i = 0; i < freq; i++) {
+        UpdateAndTryGetEntry(key);
+      }
+    }
+    stat_data_ = data;
+  }
+
+  bool CanonicalizeFrequencyData() {
+    return ::predictors::CanonicalizeFrequencyData(max_histogram_buckets_,
+                                                   stat_data_, map_);
+  }
+
+  bool IsCanonicalFrequencyData() {
+    return IsCanonicalizedFrequencyData(max_histogram_buckets_, stat_data_,
+                                        map_);
+  }
+
   const LcppStringFrequencyStatData& Data() { return stat_data_; }
 
   google::protobuf::Map<std::string, T> map_;
+  LcppStringFrequencyStatData stat_data_;
 
  private:
-  LcppStringFrequencyStatData stat_data_;
   const size_t sliding_window_size_;
   const size_t max_histogram_buckets_;
 };
+
+template <typename T>
+std::string ToStr(const google::protobuf::Map<std::string, T>& map) {
+  std::ostringstream os;
+  os << "[";
+  size_t i = 0;
+  for (const auto& it : map) {
+    os << "{" << it.first << "," << it.second << "}";
+    if (i++ != map.size() - 1) {
+      os << ", ";
+    }
+  }
+  os << "]";
+  return os.str();
+}
 
 LcppStringFrequencyStatData MakeData(std::map<std::string, double> main_buckets,
                                      double others) {
@@ -247,6 +309,71 @@ TEST(UpdateFrequencyStatAndTryGetEntryTest, AddNewEntryToFullBuckets) {
       << updater.Data();
   EXPECT_THAT(updater.map_,
               UnorderedElementsAre(Pair("foo", 42), Pair("qux", 0)));
+}
+
+TEST(LcppCanonicalizeFrequencyDataTest, BadFrequency) {
+  MapUpdater<int> updater(/*sliding_window_size=*/5u,
+                          /*max_histogram_buckets=*/2u);
+  const LcppStringFrequencyStatData data =
+      MakeData({{"foo", 2}, {"bar", 1}}, 1.3);
+  updater.InitializeWith(data);
+  EXPECT_EQ(updater.Data(), data) << updater.Data();
+  EXPECT_THAT(updater.map_,
+              UnorderedElementsAre(Pair("foo", 0), Pair("bar", 0)))
+      << ToStr(updater.map_);
+  EXPECT_TRUE(updater.IsCanonicalFrequencyData());
+
+  updater.stat_data_.set_other_bucket_frequency(-1.0);
+  EXPECT_FALSE(updater.IsCanonicalFrequencyData());
+
+  EXPECT_TRUE(updater.CanonicalizeFrequencyData());
+  EXPECT_TRUE(updater.IsCanonicalFrequencyData());
+  EXPECT_EQ(updater.Data(), MakeData({}, 0)) << updater.Data();
+  EXPECT_THAT(updater.map_, IsEmpty());
+}
+
+TEST(LcppCanonicalizeFrequencyDataTest, LessFrequencyData) {
+  MapUpdater<int> updater(/*sliding_window_size=*/5u,
+                          /*max_histogram_buckets=*/2u);
+  const LcppStringFrequencyStatData data =
+      MakeData({{"foo", 2}, {"bar", 1}}, 1.3);
+  updater.InitializeWith(data);
+  EXPECT_EQ(updater.Data(), data) << updater.Data();
+  EXPECT_THAT(updater.map_,
+              UnorderedElementsAre(Pair("foo", 0), Pair("bar", 0)))
+      << ToStr(updater.map_);
+  EXPECT_TRUE(updater.IsCanonicalFrequencyData());
+
+  updater.stat_data_.mutable_main_buckets()->erase("bar");
+  EXPECT_FALSE(updater.IsCanonicalFrequencyData());
+
+  EXPECT_TRUE(updater.CanonicalizeFrequencyData());
+  EXPECT_TRUE(updater.IsCanonicalFrequencyData());
+  EXPECT_EQ(updater.Data(), MakeData({{"foo", 2}}, 1.3)) << updater.Data();
+  EXPECT_THAT(updater.map_, UnorderedElementsAre(Pair("foo", 0)))
+      << ToStr(updater.map_);
+}
+
+TEST(LcppCanonicalizeFrequencyDataTest, LessMap) {
+  MapUpdater<int> updater(/*sliding_window_size=*/5u,
+                          /*max_histogram_buckets=*/2u);
+  const LcppStringFrequencyStatData data =
+      MakeData({{"foo", 2}, {"bar", 1}}, 1.3);
+  updater.InitializeWith(data);
+  EXPECT_EQ(updater.Data(), data) << updater.Data();
+  EXPECT_THAT(updater.map_,
+              UnorderedElementsAre(Pair("foo", 0), Pair("bar", 0)))
+      << ToStr(updater.map_);
+  EXPECT_TRUE(updater.IsCanonicalFrequencyData());
+
+  updater.map_.erase("bar");
+  EXPECT_FALSE(updater.IsCanonicalFrequencyData());
+
+  EXPECT_TRUE(updater.CanonicalizeFrequencyData());
+  EXPECT_TRUE(updater.IsCanonicalFrequencyData());
+  EXPECT_EQ(updater.Data(), MakeData({{"foo", 2}}, 1.3)) << updater.Data();
+  EXPECT_THAT(updater.map_, UnorderedElementsAre(Pair("foo", 0)))
+      << ToStr(updater.map_);
 }
 
 TEST(IsValidLcppStatTest, Empty) {
@@ -1898,8 +2025,24 @@ class LcppInitiatorOriginTest : public LcppDataMapTest {
 
  protected:
   void TearDown() override {
-    lcpp_data_map_->origin_map_->DeleteAllData();
+    if (lcpp_data_map_) {
+      for (const auto& it : GetOriginMap()) {
+        const LcppOrigin& lcpp_origin = it.second;
+        EXPECT_TRUE(IsCanonicalFrequencyData(lcpp_origin)) << it.first;
+      }
+      lcpp_data_map_->origin_map_->DeleteAllData();
+    }
     LcppDataMapTest::TearDown();
+  }
+
+  LcppDataMap::OriginMap* OriginMap() {
+    return lcpp_data_map_ ? lcpp_data_map_->origin_map_.get() : nullptr;
+  }
+
+  bool IsCanonicalFrequencyData(const LcppOrigin& lcpp_origin) {
+    return IsCanonicalizedFrequencyData(
+        config_.lcpp_initiator_origin_max_histogram_buckets,
+        lcpp_origin.key_frequency_stat(), lcpp_origin.origin_data_map());
   }
 
  private:
@@ -2053,6 +2196,47 @@ TEST_F(LcppInitiatorOriginTest, DeleteURL) {
   EXPECT_FALSE(GetLcppStat(origin2, url1));
   EXPECT_FALSE(GetLcppStat(origin3, url1));
   EXPECT_FALSE(GetLcppStat(std::nullopt, url2));
+}
+
+TEST_F(LcppInitiatorOriginTest, CanonicalizeBrokenDataOnStartUp) {
+  LoadingPredictorConfig config;
+  PopulateTestConfig(&config);
+
+  const GURL url("http://a.test");
+  const url::Origin origin1 = CreateOrigin("origin1.test");
+  const url::Origin origin2 = CreateOrigin("origin2.test");
+  {
+    InitializeDB(config);
+
+    LearnElementLocator(origin1, url, "/#lcp1");
+    EXPECT_EQ(*GetLcppStat(origin1, url),
+              MakeLcppStatWithLCPElementLocator("/#lcp1"));
+    LearnElementLocator(origin2, url, "/#lcp2");
+    EXPECT_EQ(*GetLcppStat(origin2, url),
+              MakeLcppStatWithLCPElementLocator("/#lcp2"));
+
+    LcppOrigin lcpp_origin;
+    OriginMap()->TryGetData(url.host(), &lcpp_origin);
+    EXPECT_TRUE(!lcpp_origin.origin_data_map().empty());
+    EXPECT_TRUE(IsCanonicalFrequencyData(lcpp_origin));
+    lcpp_origin.mutable_origin_data_map()->erase(origin2.host());
+    EXPECT_FALSE(IsCanonicalFrequencyData(lcpp_origin));
+    OriginMap()->UpdateData(url.host(), lcpp_origin);
+    TearDownDB();
+  }
+
+  {
+    InitializeDB(config);
+    for (const auto& it : GetOriginMap()) {
+      const LcppOrigin& lcpp_origin = it.second;
+      EXPECT_TRUE(IsCanonicalFrequencyData(lcpp_origin)) << it.first;
+    }
+
+    EXPECT_EQ(*GetLcppStat(origin1, url),
+              MakeLcppStatWithLCPElementLocator("/#lcp1"));
+    EXPECT_FALSE(GetLcppStat(origin2, url));
+    TearDownDB();
+  }
 }
 
 TEST_F(LcppDataMapTest, ResetInitiatorOriginDBOverFlag) {

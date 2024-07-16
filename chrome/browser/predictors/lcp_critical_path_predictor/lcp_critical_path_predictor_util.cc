@@ -1003,8 +1003,21 @@ void LcppDataMap::InitializeOnDBSequence() {
   data_map_.InitializeOnDBSequence();
   if (IsInitiatorOriginEnabled()) {
     origin_map_->InitializeOnDBSequence();
-    // TODO(crbug.com/343093433): Add LcppOrigin sanitizer between
-    // 'origin_data_map' and 'key_frequency_stat'.
+    std::map<std::string, LcppOrigin> needs_update;
+    for (const auto& it : origin_map_->GetAllCached()) {
+      const std::string& key = it.first;
+      LcppOrigin lcpp_origin = it.second;
+      const bool is_canonicalized = CanonicalizeFrequencyData(
+          config_.lcpp_initiator_origin_max_histogram_buckets,
+          *lcpp_origin.mutable_key_frequency_stat(),
+          *lcpp_origin.mutable_origin_data_map());
+      if (is_canonicalized) {
+        needs_update[key] = std::move(lcpp_origin);
+      }
+    }
+    for (const auto& it : needs_update) {
+      origin_map_->UpdateData(it.first, it.second);
+    }
   }
 }
 
