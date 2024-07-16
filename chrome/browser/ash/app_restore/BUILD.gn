@@ -114,6 +114,11 @@ static_library("app_restore") {
     "//ui/gfx",
     "//ui/gfx:color_utils",
     "//ui/wm",
+
+    # TODO(crbug.com/353449958): Use //chrome/browser/ui instead after fixing cyclic
+    # dependency from
+    # obj/chrome/browser/ash/app_restore/app_restore/arc_app_queue_restore_handler.o.
+    "//chrome/browser/apps/app_preload_service/proto",
   ]
 
   allow_circular_includes_from = [
