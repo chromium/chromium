@@ -1484,10 +1484,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 // from disk is an NTP that can be reused for Start.
                 Callback<String> onStandardActiveIndexRead = null;
                 shouldShowNtpAsHomeSurfaceAtStartup = shouldShowNtpHomeSurfaceOnStartup();
-                boolean skipSavingNonActiveNtps = skipSavingNonActiveNtps();
-                if (skipSavingNonActiveNtps) {
-                    mHomeSurfaceTracker = new HomeSurfaceTracker();
-                }
+                mHomeSurfaceTracker = new HomeSurfaceTracker();
                 if (shouldShowNtpAsHomeSurfaceAtStartup) {
                     onStandardActiveIndexRead =
                             url -> {
@@ -1499,7 +1496,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             };
                 }
                 mTabModelOrchestrator.loadState(ignoreIncognitoFiles, onStandardActiveIndexRead);
-                mTabModelOrchestrator.setSkipSavingNonActiveNtps(skipSavingNonActiveNtps);
             }
 
             getProfileProviderSupplier()
@@ -3541,14 +3537,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         assert mInactivityTracker != null;
         return ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
                 isTablet(), getIntent(), getSavedInstanceState(), mInactivityTracker);
-    }
-
-    /**
-     * Returns whether to skip saving non-active Ntps on tablet. Note: if a NTP is the last active
-     * Tab, it won't be skipped.
-     */
-    private boolean skipSavingNonActiveNtps() {
-        return StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(isTablet());
     }
 
     /**

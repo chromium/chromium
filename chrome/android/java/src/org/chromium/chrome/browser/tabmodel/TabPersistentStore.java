@@ -96,7 +96,6 @@ public class TabPersistentStore {
 
     private TabModelObserver mTabModelObserver;
     private TabModelSelectorTabRegistrationObserver mTabRegistrationObserver;
-    private boolean mSkipSavingNonActiveNtps;
 
     @IntDef({ActiveTabState.OTHER, ActiveTabState.NTP, ActiveTabState.EMPTY})
     @Retention(RetentionPolicy.SOURCE)
@@ -811,18 +810,6 @@ public class TabPersistentStore {
             }
 
         } else {
-            if (!mSkipSavingNonActiveNtps
-                    && UrlUtilities.isNtpUrl(tabToRestore.url)
-                    && !setAsActive
-                    && !tabToRestore.fromMerge) {
-                Log.i(TAG, "Skipping restore of non-selected NTP.");
-                RecordHistogram.recordEnumeratedHistogram(
-                        "Tabs.TabRestoreMethod",
-                        TabRestoreMethod.SKIPPED_NTP,
-                        TabRestoreMethod.NUM_ENTRIES);
-                return;
-            }
-
             Log.w(TAG, "Failed to restore TabState; creating Tab with last known URL.");
             Tab fallbackTab =
                     mTabCreatorManager
@@ -1051,8 +1038,7 @@ public class TabPersistentStore {
             tabsToRestore.add(details);
         }
 
-        return saveTabModelSelectorMetadata(
-                mTabModelSelector, tabsToRestore, mSkipSavingNonActiveNtps);
+        return saveTabModelSelectorMetadata(mTabModelSelector, tabsToRestore);
     }
 
     /**
@@ -1060,22 +1046,19 @@ public class TabPersistentStore {
      *
      * @param selector The {@link TabModelSelector} to process.
      * @param tabsBeingRestored Tabs that are in the process of being restored.
-     * @param skipNonActiveNtps Whether to skip saving non active Ntps.
      * @return {@link TabModelSelectorMetadata} containing the meta data of {@code selector}.
      */
     @VisibleForTesting
     public static TabModelSelectorMetadata saveTabModelSelectorMetadata(
-            TabModelSelector selector,
-            List<TabRestoreDetails> tabsBeingRestored,
-            boolean skipNonActiveNtps)
+            TabModelSelector selector, List<TabRestoreDetails> tabsBeingRestored)
             throws IOException {
         ThreadUtils.assertOnUiThread();
 
         // TODO(crbug.com/40549331): Convert TabModelMetadata to use GURL.
-        TabModelMetadata incognitoInfo = metadataFromModel(selector, true, skipNonActiveNtps);
+        TabModelMetadata incognitoInfo = metadataFromModel(selector, true);
 
         TabModel normalModel = selector.getModel(false);
-        TabModelMetadata normalInfo = metadataFromModel(selector, false, skipNonActiveNtps);
+        TabModelMetadata normalInfo = metadataFromModel(selector, false);
 
         // Cache the active tab id to be pre-loaded next launch.
         int activeTabId = Tab.INVALID_TAB_ID;
@@ -1142,10 +1125,9 @@ public class TabPersistentStore {
      *
      * @param selector The object of {@link TabModelSelector}
      * @param isIncognito Whether the TabModel is incognito.
-     * @param skipNonActiveNtps Whether to skip non active NTPs.
      */
     private static TabModelMetadata metadataFromModel(
-            TabModelSelector selector, boolean isIncognito, boolean skipNonActiveNtps) {
+            TabModelSelector selector, boolean isIncognito) {
         TabModel tabModel = selector.getModel(isIncognito);
         TabModelMetadata modelInfo = new TabModelMetadata(tabModel.index());
 
@@ -1163,14 +1145,12 @@ public class TabPersistentStore {
                 continue;
             }
 
-            if (skipNonActiveNtps) {
-                if (i == activeIndex) {
-                    // If any non-active NTPs have been skipped, the serialized tab model index
-                    // needs to be adjusted.
-                    modelInfo.index = modelInfo.ids.size();
-                } else if (shouldSkipTab(tab)) {
-                    continue;
-                }
+            if (i == activeIndex) {
+                // If any non-active NTPs have been skipped, the serialized tab model index
+                // needs to be adjusted.
+                modelInfo.index = modelInfo.ids.size();
+            } else if (shouldSkipTab(tab)) {
+                continue;
             }
             modelInfo.ids.add(tab.getId());
             modelInfo.urls.add(tab.getUrl().getSpec());
@@ -2093,13 +2073,5 @@ public class TabPersistentStore {
 
     public AsyncTask<TabState> getPrefetchTabStateActiveTabTaskForTesting() {
         return mPrefetchTabStateActiveTabTask;
-    }
-
-    /**
-     * Sets whether to skip saving all of the non-active Ntps when serializing the Tab model meta
-     * data.
-     */
-    public void setSkipSavingNonActiveNtps(boolean skipSavingNonActiveNtps) {
-        mSkipSavingNonActiveNtps = skipSavingNonActiveNtps;
     }
 }

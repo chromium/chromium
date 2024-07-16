@@ -217,17 +217,8 @@ public abstract class TabModelOrchestrator {
     }
 
     /**
-     * Sets whether to skip saving all of the non-active Ntps when serializing the Tab model meta
-     * data.
-     */
-    public void setSkipSavingNonActiveNtps(boolean skipSavingNonActiveNtps) {
-        if (!mTabPersistentStoreDestroyedEarly) {
-            mTabPersistentStore.setSkipSavingNonActiveNtps(skipSavingNonActiveNtps);
-        }
-    }
-
-    /**
      * Sets the supplier for {@link TabModelStartupInfo} on startup.
+     *
      * @param observableSupplier The {@link TabModelStartupInfo} supplier.
      */
     public void setStartupInfoObservableSupplier(

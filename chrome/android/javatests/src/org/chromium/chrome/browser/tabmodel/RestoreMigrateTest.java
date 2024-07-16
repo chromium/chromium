@@ -59,7 +59,7 @@ public class RestoreMigrateTest {
                             @Override
                             public TabModelSelectorMetadata call() throws Exception {
                                 return TabPersistentStore.saveTabModelSelectorMetadata(
-                                        selector, null, false);
+                                        selector, null);
                             }
                         });
 
