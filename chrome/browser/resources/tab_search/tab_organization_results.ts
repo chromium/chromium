@@ -69,7 +69,12 @@ export class TabOrganizationResultsElement extends CrLitElement {
     super.willUpdate(changedProperties);
 
     if (changedProperties.has('session')) {
-      this.feedbackSelectedOption_ = CrFeedbackOption.UNSPECIFIED;
+      const changedSession = changedProperties.get('session');
+      if (changedSession &&
+          (!this.session ||
+           changedSession.sessionId !== this.session.sessionId)) {
+        this.feedbackSelectedOption_ = CrFeedbackOption.UNSPECIFIED;
+      }
     }
   }
 

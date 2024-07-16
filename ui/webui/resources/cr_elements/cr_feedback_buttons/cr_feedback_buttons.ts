@@ -40,7 +40,7 @@ export class CrFeedbackButtonsElement extends CrLitElement {
 
   static override get properties() {
     return {
-      selectedOption: {type: String},
+      selectedOption: {type: Number},
       thumbsDownLabel_: {type: String},
       thumbsUpLabel_: {type: String},
       disabled: {type: Boolean},
