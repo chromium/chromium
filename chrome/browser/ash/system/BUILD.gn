@@ -74,8 +74,15 @@ static_library("system") {
 
     # TODO(crbug.com/353408109): Use //chrome/browser/ash/login instead after fixing cyclic
     # dependency.
+    "//chrome/browser/apps/almanac_api_client/proto",
+    "//chrome/browser/ash/login/oobe_apps_service/proto",
+    "//chrome/browser/ui/webui/ash/login/mojom",
+    "//chromeos/ash/components/drivefs",
     "//chromeos/ash/components/kiosk/vision",
+    "//chromeos/ash/services/auth_factor_config/public/mojom",
     "//components/paint_preview/buildflags",
+    "//services/accessibility/public/mojom",
+    "//ui/webui/resources/cr_components/color_change_listener:mojom",
   ]
 }
 
