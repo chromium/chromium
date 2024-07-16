@@ -258,7 +258,7 @@ void EditorMediator::CacheContext() {
   }
 }
 
-void EditorMediator::FetchAndUpdateInputContext() {
+void EditorMediator::FetchAndUpdateInputContextForTesting() {
   GetTextFieldContextualInfo(
       base::BindOnce(&EditorMediator::OnTextFieldContextualInfoChanged,
                      weak_ptr_factory_.GetWeakPtr()));

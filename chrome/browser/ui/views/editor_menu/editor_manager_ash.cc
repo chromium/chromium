@@ -93,6 +93,10 @@ void EditorManagerAsh::NotifyEditorModeChanged(const EditorMode& mode) {
   }
 }
 
+void EditorManagerAsh::RequestCacheContext() {
+  panel_manager_->RequestCacheContext();
+}
+
 void EditorManagerAsh::OnEditorPanelContextResult(
     base::OnceCallback<void(EditorContext)> callback,
     crosapi::mojom::EditorPanelContextPtr panel_context) {

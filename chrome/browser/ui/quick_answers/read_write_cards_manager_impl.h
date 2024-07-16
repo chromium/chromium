@@ -49,6 +49,8 @@ class ReadWriteCardsManagerImpl : public ReadWriteCardsManager {
                        content::BrowserContext* context,
                        editor_menu::FetchControllersCallback callback) override;
   void SetContextMenuBounds(const gfx::Rect& context_menu_bounds) override;
+  void TryCreatingEditorSession(const content::ContextMenuParams& params,
+                                content::BrowserContext* context) override;
 
   chromeos::editor_menu::EditorMenuControllerImpl* editor_menu_for_testing() {
     return editor_menu_controller_.get();

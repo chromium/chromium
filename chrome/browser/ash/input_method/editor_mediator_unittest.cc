@@ -36,7 +36,7 @@ TEST_F(EditorMediatorTest,
 
   IMEBridge::Get()->SetCurrentInputContext(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT));
-  mediator.FetchAndUpdateInputContext();
+  mediator.FetchAndUpdateInputContextForTesting();
 
   mediator.OnSurroundingTextChanged(u"a", gfx::Range(0, 1));
 
@@ -50,7 +50,7 @@ TEST_F(EditorMediatorTest, CacheContextChangesSelectedTextLength) {
 
   IMEBridge::Get()->SetCurrentInputContext(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT));
-  mediator.FetchAndUpdateInputContext();
+  mediator.FetchAndUpdateInputContextForTesting();
   mediator.OnSurroundingTextChanged(u"a", gfx::Range(0, 1));
 
   mediator.CacheContext();

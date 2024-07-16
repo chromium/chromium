@@ -47,7 +47,6 @@ class EditorPanelManager : public crosapi::mojom::EditorPanelManager {
     virtual EditorOpportunityMode GetEditorOpportunityMode() const = 0;
     virtual std::vector<EditorBlockedReason> GetBlockedReasons() const = 0;
 
-    virtual void FetchAndUpdateInputContext() = 0;
     virtual void CacheContext() = 0;
   };
 
@@ -81,6 +80,7 @@ class EditorPanelManager : public crosapi::mojom::EditorPanelManager {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
   void NotifyEditorModeChanged(const EditorMode& mode);
+  void RequestCacheContext();
 
   // Used by the Magic Boost opt-in flow. Virtual for testing.
   virtual void OnConsentApproved();

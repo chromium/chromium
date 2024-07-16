@@ -90,18 +90,6 @@ void EditorPanelManager::BindEditorClient() {
 
 void EditorPanelManager::GetEditorPanelContext(
     GetEditorPanelContextCallback callback) {
-  // Force fetching and updating the input context.
-  // TODO: b:332605855 - Remove this hack after input context is fetched within
-  // GetEditorPanelMode / GetEditorMode.
-  if (base::FeatureList::IsEnabled(
-          ash::features::kOrcaForceFetchContextOnGetEditorPanelContext)) {
-    delegate_->FetchAndUpdateInputContext();
-  }
-
-  // Cache the current text context, so that any input fields that are part of
-  // the editor panel do not interfere with the context.
-  delegate_->CacheContext();
-
   const auto editor_panel_mode = GetEditorPanelMode(delegate_->GetEditorMode());
 
   if (editor_panel_mode != crosapi::mojom::EditorPanelMode::kBlocked &&
@@ -217,6 +205,10 @@ void EditorPanelManager::NotifyEditorModeChanged(const EditorMode& mode) {
   for (EditorPanelManager::Observer& obs : observers_) {
     obs.OnEditorModeChanged(mode);
   }
+}
+
+void EditorPanelManager::RequestCacheContext() {
+  delegate_->CacheContext();
 }
 
 void EditorPanelManager::OnConsentApproved() {

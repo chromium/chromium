@@ -42,6 +42,10 @@ class ReadWriteCardsManager {
       content::BrowserContext* context,
       editor_menu::FetchControllersCallback callback) = 0;
 
+  virtual void TryCreatingEditorSession(
+      const content::ContextMenuParams& params,
+      content::BrowserContext* context) = 0;
+
   virtual void SetContextMenuBounds(const gfx::Rect& context_menu_bounds) = 0;
 };
 

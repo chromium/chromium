@@ -102,4 +102,6 @@ void EditorManagerLacros::OnEditorPanelContextResult(
   std::move(callback).Run(FromMojoEditorContext(std::move(panel_context)));
 }
 
+void EditorManagerLacros::RequestCacheContext() {}
+
 }  // namespace chromeos::editor_menu

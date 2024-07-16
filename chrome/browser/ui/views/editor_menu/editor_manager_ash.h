@@ -37,6 +37,7 @@ class EditorManagerAsh : public EditorManager {
   void AddObserver(EditorManager::Observer* observer) override;
   void RemoveObserver(EditorManager::Observer* observer) override;
   void NotifyEditorModeChanged(const EditorMode& mode) override;
+  void RequestCacheContext() override;
 
  private:
   class AshObserver : public ash::input_method::EditorPanelManager::Observer {

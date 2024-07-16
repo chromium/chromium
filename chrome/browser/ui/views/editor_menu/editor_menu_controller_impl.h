@@ -53,6 +53,7 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
   void LogEditorMode(const EditorMode& editor_mode);
   void GetEditorMode(base::OnceCallback<void(const EditorMode)> callback);
   void DismissCard();
+  void TryCreatingEditorSession();
 
   views::Widget* editor_menu_widget_for_testing() {
     return editor_menu_widget_.get();

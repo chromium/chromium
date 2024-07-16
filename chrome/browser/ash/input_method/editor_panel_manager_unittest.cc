@@ -66,7 +66,6 @@ class EditorPanelManagerDelegateForTesting
     return blocked_reasons_;
   }
   void CacheContext() override {}
-  void FetchAndUpdateInputContext() override {}
   EditorMetricsRecorder* GetMetricsRecorder() override {
     return &metrics_recorder_;
   }

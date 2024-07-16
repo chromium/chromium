@@ -160,6 +160,13 @@ void EditorMenuControllerImpl::DismissCard() {
   }
 }
 
+void EditorMenuControllerImpl::TryCreatingEditorSession() {
+  if (!card_session_) {
+    return;
+  }
+  card_session_->manager().RequestCacheContext();
+}
+
 void EditorMenuControllerImpl::LogEditorMode(const EditorMode& editor_mode) {
   if (!card_session_) {
     return;

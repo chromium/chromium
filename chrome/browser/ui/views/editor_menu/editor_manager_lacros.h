@@ -50,6 +50,7 @@ class EditorManagerLacros : public EditorManager {
   void AddObserver(EditorManager::Observer* observer) override;
   void RemoveObserver(EditorManager::Observer* observer) override;
   void NotifyEditorModeChanged(const EditorMode& mode) override;
+  void RequestCacheContext() override;
 
  private:
   void OnEditorPanelContextResult(

@@ -74,7 +74,6 @@ void ReadWriteCardsManagerImpl::FetchController(
     return;
   }
 
-  editor_menu_controller_->SetBrowserContext(context);
   editor_menu_controller_->GetEditorMode(
       base::BindOnce(&ReadWriteCardsManagerImpl::OnGetEditorModeResult,
                      weak_factory_.GetWeakPtr(), params, std::move(callback)));
@@ -83,6 +82,15 @@ void ReadWriteCardsManagerImpl::FetchController(
 void ReadWriteCardsManagerImpl::SetContextMenuBounds(
     const gfx::Rect& context_menu_bounds) {
   ui_controller_.SetContextMenuBounds(context_menu_bounds);
+}
+
+void ReadWriteCardsManagerImpl::TryCreatingEditorSession(
+    const content::ContextMenuParams& params,
+    content::BrowserContext* context) {
+  if (editor_menu_controller_) {
+    editor_menu_controller_->SetBrowserContext(context);
+    editor_menu_controller_->TryCreatingEditorSession();
+  }
 }
 
 void ReadWriteCardsManagerImpl::OnGetEditorModeResult(

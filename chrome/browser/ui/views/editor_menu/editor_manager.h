@@ -34,6 +34,7 @@ class EditorManager {
   virtual void AddObserver(EditorManager::Observer* observer) = 0;
   virtual void RemoveObserver(EditorManager::Observer* observer) = 0;
   virtual void NotifyEditorModeChanged(const EditorMode& mode) = 0;
+  virtual void RequestCacheContext() = 0;
 };
 
 }  // namespace chromeos::editor_menu

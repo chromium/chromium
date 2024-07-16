@@ -88,7 +88,6 @@ class EditorMediator : public EditorContext::Observer,
   EditorOpportunityMode GetEditorOpportunityMode() const override;
   std::vector<EditorBlockedReason> GetBlockedReasons() const override;
   void CacheContext() override;
-  void FetchAndUpdateInputContext() override;
   EditorMetricsRecorder* GetMetricsRecorder() override;
 
   // display::DisplayObserver overrides
@@ -119,6 +118,7 @@ class EditorMediator : public EditorContext::Observer,
 
   bool SetTextQueryProviderResponseForTesting(
       const std::vector<std::string>& mock_results);
+  void FetchAndUpdateInputContextForTesting();
   void OverrideEditorModeForTesting(EditorMode editor_mode);
 
  private:
