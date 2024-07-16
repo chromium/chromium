@@ -303,11 +303,6 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     self.release = kwargs.get('release') or False
     self.test_results['path_delimiter'] = '/'
 
-    # TODO(crbug.com/40933880): For simulators, the record_video_option
-    # is always None right now, because we are still using our own video
-    # plugin. Currently native Xcode15+ video recording is only supported
-    # on iOS17+, but we should aim to migrate to the native solution so
-    # that we don't need to maintain our own.
     self.record_video_option = kwargs.get('record_video_option')
 
     self.all_eg_test_names = []
@@ -315,6 +310,8 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     self.resolve_eg_test_cases()
 
     # initializing test plugin service
+    # TODO(crbug.com/40933880): remove the legacy code of video recording
+    # support as we have migrated to native xcode video recording.
     self.test_plugin_service = None
     enabled_plugins = init_plugins_from_args(
         os.path.join(self.out_dir, self.udid), **kwargs)

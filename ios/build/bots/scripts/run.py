@@ -132,7 +132,7 @@ class Runner():
             test_args=self.test_args,
             use_clang_coverage=self.args.use_clang_coverage,
             env_vars=env_vars,
-            video_plugin_option=self.args.record_video,
+            record_video_option=self.args.record_video,
             output_disabled_tests=self.args.output_disabled_tests,
         )
       elif self.args.variations_seed_path != 'NO_PATH':
