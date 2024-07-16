@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/fileapi/file_reader_data.h"
 
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
@@ -40,10 +35,7 @@ String ToDataURL(ArrayBufferContents raw_data, const String& data_type) {
 
   if (raw_data.DataLength()) {
     Vector<char> out;
-    Base64Encode(
-        base::make_span(static_cast<const uint8_t*>(raw_data.Data()),
-                        base::checked_cast<unsigned>(raw_data.DataLength())),
-        out);
+    Base64Encode(raw_data.ByteSpan(), out);
     builder.Append(out.data(), out.size());
   }
 
