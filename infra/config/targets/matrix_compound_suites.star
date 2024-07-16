@@ -204,6 +204,9 @@ targets.legacy_matrix_compound_suite(
     name = "chromeos_vmlab_tests",
     basic_suites = {
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
+            mixins = [
+                "shards-20",
+            ],
             variants = [
                 "CROS_RELEASE_LKGM",
             ],

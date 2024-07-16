@@ -6944,6 +6944,9 @@
 
     'chromeos_vmlab_tests': {
       'chromeos_chrome_all_tast_tests': {
+        'mixins': [
+          'shards-20',
+        ],
         'variants': [
           'CROS_RELEASE_LKGM',
         ],
