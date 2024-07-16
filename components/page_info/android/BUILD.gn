@@ -153,6 +153,7 @@ android_library("javatests") {
     "//components/content_settings/android:content_settings_enums_java",
     "//components/content_settings/android:java",
     "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_test_espresso_espresso_core_java",
     "//third_party/androidx:androidx_test_runner_java",

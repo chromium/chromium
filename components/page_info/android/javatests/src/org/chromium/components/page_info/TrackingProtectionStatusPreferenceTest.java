@@ -7,16 +7,24 @@ package org.chromium.components.page_info;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.not;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
+import android.view.View;
+import android.widget.TextView;
 
+import androidx.annotation.IntDef;
 import androidx.preference.PreferenceScreen;
 import androidx.test.filters.LargeTest;
 
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -210,5 +218,71 @@ public class TrackingProtectionStatusPreferenceTest {
         for (TestElement element : mTestElements) {
             onView(withText(containsString(element.protectionOn))).check(matches(isDisplayed()));
         }
+    }
+
+    @IntDef({
+        CompoundDrawable.START,
+        CompoundDrawable.TOP,
+        CompoundDrawable.END,
+        CompoundDrawable.BOTTOM
+    })
+    private @interface CompoundDrawable {
+        int START = 0;
+        int TOP = 1;
+        int END = 2;
+        int BOTTOM = 3;
+    }
+
+    private static Matcher<View> compoundDrawableVisible(@CompoundDrawable int position) {
+        return new TypeSafeMatcher<View>() {
+            @Override
+            public boolean matchesSafely(View view) {
+                if (!(view instanceof TextView)) {
+                    return false;
+                }
+                Drawable[] compoundDrawables = ((TextView) view).getCompoundDrawablesRelative();
+                Drawable endDrawable = compoundDrawables[position];
+                return endDrawable != null;
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("with drawable in position " + position);
+            }
+        };
+    }
+
+    @Test
+    @LargeTest
+    public void testManagedIcons() {
+        var preference = new TrackingProtectionStatusPreference(mActivity);
+        // Cookies allowed by policy; IPP disabled by setting, FPP enabled.
+        preference.updateStatus(
+                new TrackingProtectionFeature(
+                        TrackingProtectionFeatureType.THIRD_PARTY_COOKIES,
+                        CookieControlsEnforcement.ENFORCED_BY_POLICY,
+                        TrackingProtectionBlockingStatus.ALLOWED),
+                true);
+        preference.updateStatus(
+                new TrackingProtectionFeature(
+                        TrackingProtectionFeatureType.IP_PROTECTION,
+                        CookieControlsEnforcement.ENFORCED_BY_COOKIE_SETTING,
+                        TrackingProtectionBlockingStatus.VISIBLE),
+                true);
+        preference.updateStatus(
+                new TrackingProtectionFeature(
+                        TrackingProtectionFeatureType.FINGERPRINTING_PROTECTION,
+                        CookieControlsEnforcement.NO_ENFORCEMENT,
+                        TrackingProtectionBlockingStatus.LIMITED),
+                true);
+        mPreferenceScreen.addPreference(preference);
+
+        // Verify the managed icons.
+        onView(withId(R.id.cookie_status))
+                .check(matches(compoundDrawableVisible(CompoundDrawable.END)));
+        onView(withId(R.id.ip_status))
+                .check(matches(compoundDrawableVisible(CompoundDrawable.END)));
+        onView(withId(R.id.fingerprint_status))
+                .check(matches(not(compoundDrawableVisible(CompoundDrawable.END))));
     }
 }
