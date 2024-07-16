@@ -12,6 +12,7 @@
 #include "base/observer_list.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
@@ -30,15 +31,27 @@ TabGroupServiceWrapper::TabGroupServiceWrapper(
 TabGroupServiceWrapper::~TabGroupServiceWrapper() = default;
 
 void TabGroupServiceWrapper::AddGroup(SavedTabGroup group) {
-  NOTIMPLEMENTED();
+  if (ShouldUseSyncService()) {
+    sync_service_->AddGroup(std::move(group));
+  } else {
+    saved_keyed_service_->model()->Add(std::move(group));
+  }
 }
 
 void TabGroupServiceWrapper::RemoveGroup(const LocalTabGroupID& local_id) {
-  NOTIMPLEMENTED();
+  if (ShouldUseSyncService()) {
+    sync_service_->RemoveGroup(local_id);
+  } else {
+    saved_keyed_service_->model()->Remove(local_id);
+  }
 }
 
 void TabGroupServiceWrapper::RemoveGroup(const base::Uuid& sync_id) {
-  NOTIMPLEMENTED();
+  if (ShouldUseSyncService()) {
+    sync_service_->RemoveGroup(sync_id);
+  } else {
+    saved_keyed_service_->model()->Remove(sync_id);
+  }
 }
 
 void TabGroupServiceWrapper::UpdateVisualData(
