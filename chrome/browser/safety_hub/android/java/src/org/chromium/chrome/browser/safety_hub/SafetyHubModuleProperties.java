@@ -21,12 +21,13 @@ public class SafetyHubModuleProperties {
      * Order reflects state severity. Lowest being the most severe state and highest being the
      * safest state.
      */
-    @IntDef({ModuleState.WARNING, ModuleState.INFO, ModuleState.SAFE})
+    @IntDef({ModuleState.WARNING, ModuleState.UNAVAILABLE, ModuleState.INFO, ModuleState.SAFE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ModuleState {
         int WARNING = 0;
-        int INFO = 1;
-        int SAFE = 2;
+        int UNAVAILABLE = 1;
+        int INFO = 2;
+        int SAFE = 3;
         int MAX_VALUE = SAFE;
     }
 

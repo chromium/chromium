@@ -1843,6 +1843,15 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_NO_PASSWORDS_SUMMARY_MANAGED" translateable="false">
         Your organization turned off saving passwords
       </message>
+      <message name="IDS_SAFETY_HUB_UPDATES_OUTDATED_SUMMARY" translateable="false">
+        New version of Chrome is available
+      </message>
+      <message name="IDS_SAFETY_HUB_VERSION_SUMMARY" translateable="false">
+        Version <ph name="VERSION_NUMBER">%1$s<ex>123.0.5678.90</ex></ph>
+      </message>
+      <message name="IDS_SAFETY_HUB_UPDATE_UNAVAILABLE_TITLE" translateable="false">
+        Can’t check Chrome version
+      </message>
 
        <!-- Safe Browsing preferences -->
       <message name="IDS_PREFS_SAFE_BROWSING_TITLE" desc="Title for the Safe Browsing preferences. [CHAR_LIMIT=32]">

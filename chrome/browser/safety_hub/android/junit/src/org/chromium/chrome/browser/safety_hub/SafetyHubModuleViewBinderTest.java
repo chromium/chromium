@@ -234,7 +234,9 @@ public class SafetyHubModuleViewBinderTest {
         mUpdateCheckPropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
 
         String expectedTitle = mActivity.getString(R.string.safety_check_updates_updated);
-        String expectedSummary = updateStatus.latestVersion;
+        String expectedSummary =
+                mActivity.getString(
+                        R.string.safety_hub_version_summary, updateStatus.latestVersion);
         String expectedSecondaryButtonText =
                 mActivity.getString(R.string.safety_hub_go_to_google_play_button);
 
@@ -272,9 +274,9 @@ public class SafetyHubModuleViewBinderTest {
 
         mUpdateCheckPropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
 
-        String expectedTitle =
+        String expectedTitle = mActivity.getString(R.string.menu_update_unsupported);
+        String expectedSummary =
                 mActivity.getString(R.string.menu_update_unsupported_summary_default);
-        String expectedSummary = updateStatus.latestUnsupportedVersion;
 
         assertEquals(expectedTitle, mUpdateCheckPreference.getTitle().toString());
         assertEquals(expectedSummary, mUpdateCheckPreference.getSummary().toString());
@@ -287,13 +289,13 @@ public class SafetyHubModuleViewBinderTest {
     public void testUpdateCheckModule_StatusNotReady() {
         mUpdateCheckPropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, null);
 
-        String expectedTitle = mActivity.getString(R.string.safety_check_updates_updated);
+        String expectedTitle = mActivity.getString(R.string.safety_hub_update_unavailable_title);
         String expectedSecondaryButtonText =
                 mActivity.getString(R.string.safety_hub_go_to_google_play_button);
 
         assertEquals(expectedTitle, mUpdateCheckPreference.getTitle().toString());
         assertNull(mUpdateCheckPreference.getSummary());
-        assertEquals(SAFE_ICON, shadowOf(mUpdateCheckPreference.getIcon()).getCreatedFromResId());
+        assertEquals(INFO_ICON, shadowOf(mUpdateCheckPreference.getIcon()).getCreatedFromResId());
         assertNull(mUpdateCheckPreference.getPrimaryButtonText());
         assertEquals(expectedSecondaryButtonText, mUpdateCheckPreference.getSecondaryButtonText());
         assertFalse(mUpdateCheckPreference.isExpanded());
@@ -536,8 +538,7 @@ public class SafetyHubModuleViewBinderTest {
     @Test
     public void testBrowserStateModule_MultipleUnSafeState() {
         @SafeBrowsingState int safeBrowsingState = SafeBrowsingState.NO_SAFE_BROWSING;
-        UpdateStatusProvider.UpdateStatus updateStatus = new UpdateStatusProvider.UpdateStatus();
-        updateStatus.updateState = UpdateStatusProvider.UpdateState.UPDATE_AVAILABLE;
+        UpdateStatusProvider.UpdateStatus updateStatus = null;
         int totalPasswordsCount = 10;
         int compromisedPasswordsCount = 5;
         int sitesWithUnusedPermissionsCount = 3;

@@ -287,7 +287,7 @@ public class SafetyHubModuleViewBinder {
         View.OnClickListener secondaryButtonListener = null;
 
         if (updateStatus == null) {
-            title = preference.getContext().getString(R.string.safety_check_updates_updated);
+            title = preference.getContext().getString(R.string.safety_hub_update_unavailable_title);
             secondaryButtonText =
                     preference.getContext().getString(R.string.safety_hub_go_to_google_play_button);
             secondaryButtonListener =
@@ -295,17 +295,21 @@ public class SafetyHubModuleViewBinder {
         } else {
             switch (updateStatus.updateState) {
                 case UpdateStatusProvider.UpdateState.UNSUPPORTED_OS_VERSION:
-                    title =
+                    title = preference.getContext().getString(R.string.menu_update_unsupported);
+                    summary =
                             preference
                                     .getContext()
                                     .getString(R.string.menu_update_unsupported_summary_default);
-                    summary = updateStatus.latestUnsupportedVersion;
                     break;
                 case UpdateStatusProvider.UpdateState.UPDATE_AVAILABLE:
                     title =
                             preference
                                     .getContext()
                                     .getString(R.string.safety_check_updates_outdated);
+                    summary =
+                            preference
+                                    .getContext()
+                                    .getString(R.string.safety_hub_updates_outdated_summary);
                     primaryButtonText = preference.getContext().getString(R.string.menu_update);
                     primaryButtonListener =
                             model.get(SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
@@ -315,7 +319,14 @@ public class SafetyHubModuleViewBinder {
                             preference
                                     .getContext()
                                     .getString(R.string.safety_check_updates_updated);
-                    summary = updateStatus.latestVersion;
+                    if (updateStatus.latestVersion != null) {
+                        summary =
+                                preference
+                                        .getContext()
+                                        .getString(
+                                                R.string.safety_hub_version_summary,
+                                                updateStatus.latestVersion);
+                    }
                     secondaryButtonText =
                             preference
                                     .getContext()
@@ -469,6 +480,7 @@ public class SafetyHubModuleViewBinder {
                 return SettingsUtils.getTintedIcon(
                         context, R.drawable.ic_checkmark_24dp, R.color.default_green);
             case SafetyHubModuleProperties.ModuleState.INFO:
+            case SafetyHubModuleProperties.ModuleState.UNAVAILABLE:
                 return SettingsUtils.getTintedIcon(
                         context,
                         R.drawable.btn_info,
@@ -491,6 +503,7 @@ public class SafetyHubModuleViewBinder {
         switch (state) {
             case SafetyHubModuleProperties.ModuleState.SAFE:
             case SafetyHubModuleProperties.ModuleState.INFO:
+            case SafetyHubModuleProperties.ModuleState.UNAVAILABLE:
                 return false;
             case SafetyHubModuleProperties.ModuleState.WARNING:
                 return !managed;
@@ -510,6 +523,7 @@ public class SafetyHubModuleViewBinder {
         switch (state) {
             case SafetyHubModuleProperties.ModuleState.SAFE:
             case SafetyHubModuleProperties.ModuleState.INFO:
+            case SafetyHubModuleProperties.ModuleState.UNAVAILABLE:
                 return option + SafetyHubModuleProperties.ModuleOption.NUM_ENTRIES;
             case SafetyHubModuleProperties.ModuleState.WARNING:
                 return option + (managed ? SafetyHubModuleProperties.ModuleOption.NUM_ENTRIES : 0);
@@ -535,12 +549,12 @@ public class SafetyHubModuleViewBinder {
             case SafetyHubModuleProperties.ModuleOption.UPDATE_CHECK:
                 UpdateStatusProvider.UpdateStatus updateStatus =
                         model.get(SafetyHubModuleProperties.UPDATE_STATUS);
-                if (updateStatus != null
-                        && (updateStatus.updateState
-                                        == UpdateStatusProvider.UpdateState.UPDATE_AVAILABLE
-                                || updateStatus.updateState
-                                        == UpdateStatusProvider.UpdateState
-                                                .UNSUPPORTED_OS_VERSION)) {
+                if (updateStatus == null) {
+                    return SafetyHubModuleProperties.ModuleState.UNAVAILABLE;
+                }
+                if (updateStatus.updateState == UpdateStatusProvider.UpdateState.UPDATE_AVAILABLE
+                        || updateStatus.updateState
+                                == UpdateStatusProvider.UpdateState.UNSUPPORTED_OS_VERSION) {
                     return SafetyHubModuleProperties.ModuleState.WARNING;
                 }
                 return SafetyHubModuleProperties.ModuleState.SAFE;
