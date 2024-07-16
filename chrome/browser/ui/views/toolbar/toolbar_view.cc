@@ -982,9 +982,8 @@ void ToolbarView::InitLayout() {
     pinned_toolbar_actions_container_->SetProperty(
         views::kFlexBehaviorKey,
         views::FlexSpecification(
-            base::BindRepeating(
-                &PinnedToolbarActionsContainer::CustomFlexRule,
-                base::Unretained(pinned_toolbar_actions_container_)))
+            pinned_toolbar_actions_container_->GetAnimatingLayoutManager()
+                ->GetDefaultFlexRule())
             .WithOrder(kToolbarActionsFlexOrder));
   }
 

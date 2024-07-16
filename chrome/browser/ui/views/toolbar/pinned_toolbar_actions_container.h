@@ -45,10 +45,7 @@ class PinnedToolbarActionsContainer
   // Updates whether the button is shown ephemerally in the toolbar (in the
   // popped out region unless also pinned) regardless of whether it is active.
   void ShowActionEphemerallyInToolbar(actions::ActionId id, bool show);
-  void UpdateDividerFlexSpecification();
   void MovePinnedActionBy(actions::ActionId action_id, int delta);
-  gfx::Size CustomFlexRule(const views::View* view,
-                           const views::SizeBounds& size_bounds);
 
   // ToolbarIconContainerView:
   void UpdateAllIcons() override;

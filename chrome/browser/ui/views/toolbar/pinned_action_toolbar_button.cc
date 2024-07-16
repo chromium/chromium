@@ -36,6 +36,8 @@ namespace {
 const gfx::VectorIcon kEmptyIcon;
 }  // namespace
 
+DEFINE_UI_CLASS_PROPERTY_KEY(int, kToolbarButtonFlexWeightKey, 2)
+
 PinnedActionToolbarButton::PinnedActionToolbarButton(
     Browser* browser,
     actions::ActionId action_id,
@@ -48,6 +50,9 @@ PinnedActionToolbarButton::PinnedActionToolbarButton(
               kPinnedActionToolbarButtonElementId);
   ConfigureInkDropForToolbar(this);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
+  SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::VH(0, GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN)));
   set_drag_controller(container);
   GetViewAccessibility().SetDescription(
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
@@ -239,12 +244,15 @@ PinnedActionToolbarButton::CreateMenuModel() {
 void PinnedActionToolbarButton::OnAnchorCountChanged(size_t anchor_count) {
   // If there is something anchored to the button we want to make sure the
   // button will be visible in the toolbar in cases where the window might be
-  // small enough that icons must overflow. Update the kFlexBehaviorKey to make
-  // sure icons are forced visible or able to overflow.
+  // small enough that icons must overflow. Update the
+  // kToolbarButtonFlexWeightKey to make sure icons are forced visible or able
+  // to overflow.
   if (anchor_count > 0) {
-    SetProperty(views::kFlexBehaviorKey, views::FlexSpecification());
+    SetProperty(kToolbarButtonFlexWeightKey, 0);
+    InvalidateLayout();
   } else {
-    ClearProperty(views::kFlexBehaviorKey);
+    SetProperty(kToolbarButtonFlexWeightKey, 2);
+    InvalidateLayout();
   }
 }
 

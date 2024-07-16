@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container_layout.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_button_status_indicator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -182,16 +183,18 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
 
 TEST_F(PinnedToolbarActionsContainerTest, ContainerMargins) {
   // Verify margins are correctly set.
-  ASSERT_EQ(container()
-                ->GetTargetLayoutManager()
-                ->GetDefaultForTesting(views::kMarginsKey)
-                ->left(),
-            GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN));
-  ASSERT_EQ(container()
-                ->GetTargetLayoutManager()
-                ->GetDefaultForTesting(views::kMarginsKey)
-                ->right(),
-            GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN));
+  ASSERT_EQ(
+      static_cast<PinnedToolbarActionsContainerLayout*>(
+          container()->GetAnimatingLayoutManager()->target_layout_manager())
+          ->interior_margin()
+          .left(),
+      -GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN));
+  ASSERT_EQ(
+      static_cast<PinnedToolbarActionsContainerLayout*>(
+          container()->GetAnimatingLayoutManager()->target_layout_manager())
+          ->interior_margin()
+          .right(),
+      -GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN));
 }
 
 TEST_F(PinnedToolbarActionsContainerTest, PinningAndUnpinning) {

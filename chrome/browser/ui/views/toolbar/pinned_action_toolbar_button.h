@@ -116,4 +116,6 @@ class PinnedActionToolbarButtonActionViewInterface
   raw_ptr<PinnedActionToolbarButton> action_view_;
 };
 
+extern const ui::ClassProperty<int>* const kToolbarButtonFlexWeightKey;
+
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_PINNED_ACTION_TOOLBAR_BUTTON_H_

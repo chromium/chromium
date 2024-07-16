@@ -19,15 +19,16 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 #include "chrome/browser/ui/views/extensions/browser_action_drag_data.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container_layout.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/actions/action_id.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -38,6 +39,7 @@
 #include "ui/base/models/dialog_model_menu_model_adapter.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/compositor/layer_tree_owner.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -79,7 +81,8 @@ PinnedToolbarActionsContainer::DropInfo::DropInfo(actions::ActionId action_id,
 
 PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
     BrowserView* browser_view)
-    : ToolbarIconContainerView(/*uses_highlight=*/false),
+    : ToolbarIconContainerView(/*uses_highlight=*/false,
+                               /*use_default_target_layout=*/false),
       browser_view_(browser_view),
       model_(PinnedToolbarActionsModel::Get(browser_view->GetProfile())) {
   SetProperty(views::kElementIdentifierKey,
@@ -90,40 +93,36 @@ PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
   SetNotifyEnterExitOnChild(true);
 
   model_observation_.Observe(model_.get());
-
-  const int default_margin = GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN);
   const views::FlexSpecification hide_icon_flex_specification =
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
                                views::MinimumFlexSizeRule::kPreferredSnapToZero,
                                views::MaximumFlexSizeRule::kPreferred)
           .WithWeight(0);
 
+  PinnedToolbarActionsContainerLayout* layout =
+      GetAnimatingLayoutManager()->SetTargetLayoutManager(
+          std::make_unique<PinnedToolbarActionsContainerLayout>());
   // Set the interior margins to ensure the default margins are negated if there
   // is a button at the end of the container or if the divider is at the end
   // (which has a different margin than the default). This ensures the container
   // is the same size regardless of where and if the divider is in the
   // container.
-  GetTargetLayoutManager()
-      ->SetFlexAllocationOrder(views::FlexAllocationOrder::kReverse)
-      .SetDefault(views::kFlexBehaviorKey,
-                  hide_icon_flex_specification.WithOrder(1))
-      .SetDefault(views::kMarginsKey, gfx::Insets::VH(0, default_margin))
-      .SetIgnoreDefaultMainAxisMargins(false)
-      .SetInteriorMargin(gfx::Insets::VH(0, -default_margin));
-  GetTargetLayoutManager()->SetCrossAxisAlignment(
-      views::LayoutAlignment::kCenter);
+  layout->SetInteriorMargin(
+      gfx::Insets::VH(0, -GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN)));
 
   // Create the toolbar divider.
-  toolbar_divider_ = AddChildView(std::make_unique<views::View>());
-  toolbar_divider_->SetProperty(views::kElementIdentifierKey,
-                                kPinnedToolbarActionsContainerDividerElementId);
-  toolbar_divider_->SetPreferredSize(
+  std::unique_ptr<views::View> toolbar_divider =
+      std::make_unique<views::View>();
+  toolbar_divider->SetProperty(views::kElementIdentifierKey,
+                               kPinnedToolbarActionsContainerDividerElementId);
+  toolbar_divider->SetPreferredSize(
       gfx::Size(GetLayoutConstant(TOOLBAR_DIVIDER_WIDTH),
                 GetLayoutConstant(TOOLBAR_DIVIDER_HEIGHT)));
-  toolbar_divider_->SetProperty(
+  toolbar_divider->SetProperty(
       views::kMarginsKey,
       gfx::Insets::VH(0, GetLayoutConstant(TOOLBAR_DIVIDER_SPACING)));
-  toolbar_divider_->SetVisible(false);
+  toolbar_divider->SetVisible(false);
+  toolbar_divider_ = AddChildView(std::move(toolbar_divider));
 
   // Initialize the pinned action buttons.
   action_view_controller_ = std::make_unique<views::ActionViewController>();
@@ -142,46 +141,6 @@ PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
   }
 
   UpdateViews();
-}
-
-// TODO(b/320464365): Explore possibilities to not rely on properties set on
-// views and instead use flex calculations.
-gfx::Size PinnedToolbarActionsContainer::CustomFlexRule(
-    const views::View* view,
-    const views::SizeBounds& size_bounds) {
-  // If `pinned_buttons_` are empty the divider is hidden. There is no need for
-  // additional calculation. The other conditions are boundary conditions with
-  // `size_bounds`.
-  if (pinned_buttons_.empty() || !size_bounds.width().is_bounded() ||
-      size_bounds.width() <= 0) {
-    return DefaultFlexRule(size_bounds);
-  }
-
-  // The `toolbar_divider_` margins are added since it is more than the button's
-  // margin.
-  const int minimum_pinned_container_width =
-      pinned_buttons_[pinned_buttons_.size() - 1]->GetPreferredSize().width() +
-      toolbar_divider_->GetPreferredSize().width() +
-      toolbar_divider_->GetProperty(views::kMarginsKey)->left() +
-      toolbar_divider_->GetProperty(views::kMarginsKey)->right();
-
-  bool shrink_to_hide_divider = !std::any_of(
-      pinned_buttons_.begin(), pinned_buttons_.end(),
-      [](PinnedActionToolbarButton* button) { return button->IsActive(); });
-
-  // Assume popped out buttons to be visible and take their space into
-  // consideration for the constraint.
-  const int popped_out_buttons_width = CalculatePoppedOutButtonsWidth();
-  const int remaining_pinned_available_width =
-      size_bounds.width().value() - popped_out_buttons_width;
-
-  if ((remaining_pinned_available_width > 0) &&
-      (remaining_pinned_available_width < minimum_pinned_container_width) &&
-      shrink_to_hide_divider && !GetAnimatingLayoutManager()->is_animating()) {
-    return gfx::Size(popped_out_buttons_width,
-                     DefaultFlexRule(size_bounds).height());
-  }
-  return DefaultFlexRule(size_bounds);
 }
 
 int PinnedToolbarActionsContainer::CalculatePoppedOutButtonsWidth() {
@@ -242,7 +201,6 @@ void PinnedToolbarActionsContainer::UpdateActionState(actions::ActionId id,
     MaybeRemovePoppedOutButtonFor(id);
   }
 
-  UpdateDividerFlexSpecification();
   InvalidateLayout();
 }
 
@@ -263,24 +221,6 @@ void PinnedToolbarActionsContainer::ShowActionEphemerallyInToolbar(
   if (!show) {
     MaybeRemovePoppedOutButtonFor(id);
   }
-}
-
-void PinnedToolbarActionsContainer::UpdateDividerFlexSpecification() {
-  bool force_divider_visibility = false;
-  for (PinnedActionToolbarButton* const pinned_button : pinned_buttons_) {
-    if (pinned_button->IsActive()) {
-      force_divider_visibility = true;
-      break;
-    }
-  }
-
-  if (force_divider_visibility) {
-    toolbar_divider_->SetProperty(views::kFlexBehaviorKey,
-                                  views::FlexSpecification());
-  } else {
-    toolbar_divider_->ClearProperty(views::kFlexBehaviorKey);
-  }
-  InvalidateLayout();
 }
 
 void PinnedToolbarActionsContainer::MovePinnedActionBy(actions::ActionId id,
@@ -527,9 +467,6 @@ void PinnedToolbarActionsContainer::AddPinnedActionButtonFor(
     (*iter)->SetPinned(true);
     pinned_buttons_.push_back(*iter);
     popped_out_buttons_.erase(iter);
-    // Flex specification of the divider might need to be updated when an active
-    // button moves from popped out to pinned state.
-    UpdateDividerFlexSpecification();
   } else {
     auto button = std::make_unique<PinnedActionToolbarButton>(
         browser_view_->browser(), id, this);
@@ -558,10 +495,6 @@ void PinnedToolbarActionsContainer::RemovePinnedActionButtonFor(
     popped_out_buttons_.push_back(*iter);
   }
   pinned_buttons_.erase(iter);
-
-  // Flex specification of the divider needs to be updated when an active pinned
-  // button moves to popped out state.
-  UpdateDividerFlexSpecification();
 }
 
 PinnedActionToolbarButton* PinnedToolbarActionsContainer::GetPinnedButtonFor(
@@ -600,8 +533,13 @@ void PinnedToolbarActionsContainer::RemoveButton(
     // that triggers its removal to run to completion.
     base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, RemoveChildViewT(button));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PinnedToolbarActionsContainer::InvalidateLayout,
+                       weak_ptr_factory_.GetWeakPtr()));
   } else {
     RemoveChildViewT(button);
+    InvalidateLayout();
   }
 }
 

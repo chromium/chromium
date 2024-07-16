@@ -109,7 +109,9 @@ class ToolbarIconContainerView::WidgetRestoreObserver
       this};
 };
 
-ToolbarIconContainerView::ToolbarIconContainerView(bool uses_highlight)
+ToolbarIconContainerView::ToolbarIconContainerView(
+    bool uses_highlight,
+    bool use_default_target_layout)
     : uses_highlight_(uses_highlight) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -122,13 +124,15 @@ ToolbarIconContainerView::ToolbarIconContainerView(bool uses_highlight)
       views::AnimatingLayoutManager::BoundsAnimationMode::kAnimateBothAxes);
   animating_layout->SetDefaultFadeMode(
       views::AnimatingLayoutManager::FadeInOutMode::kSlideFromTrailingEdge);
-  auto* flex_layout = animating_layout->SetTargetLayoutManager(
-      std::make_unique<views::FlexLayout>());
-  flex_layout->SetCollapseMargins(true)
-      .SetIgnoreDefaultMainAxisMargins(true)
-      .SetDefault(
-          views::kMarginsKey,
-          gfx::Insets::VH(0, GetLayoutConstant(TOOLBAR_ELEMENT_PADDING)));
+  if (use_default_target_layout) {
+    auto* flex_layout = animating_layout->SetTargetLayoutManager(
+        std::make_unique<views::FlexLayout>());
+    flex_layout->SetCollapseMargins(true)
+        .SetIgnoreDefaultMainAxisMargins(true)
+        .SetDefault(
+            views::kMarginsKey,
+            gfx::Insets::VH(0, GetLayoutConstant(TOOLBAR_ELEMENT_PADDING)));
+  }
 }
 
 ToolbarIconContainerView::~ToolbarIconContainerView() {
