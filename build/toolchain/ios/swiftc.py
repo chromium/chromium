@@ -436,6 +436,13 @@ def invoke_swift_compiler(args, extras_args, build_cache_dir, output_file_map):
         f'-j{num_threads}',
     ])
 
+  # Handle -file-prefix-map flag.
+  if args.file_prefix_map:
+    swiftc_args.extend([
+        '-file-prefix-map',
+        args.file_prefix_map,
+    ])
+
   swift_toolchain_path = args.swift_toolchain_path
   if not swift_toolchain_path:
     swift_toolchain_path = os.path.join(os.path.dirname(args.sdk_path),
@@ -624,8 +631,9 @@ def main(args):
                       default='5',
                       help='version of the Swift language')
 
-  parser.add_argument('-file-compilation-dir',
-                      help='compilation directory to embed in debug info')
+  parser.add_argument(
+      '-file-prefix-map',
+      help='remap source paths in debug, coverage, and index info')
 
   # Positional arguments.
   parser.add_argument('sources',

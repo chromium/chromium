@@ -1559,7 +1559,13 @@ config("compiler_deterministic") {
       # -ffile-compilation-dir is an alias for both -fdebug-compilation-dir=
       # and -fcoverage-compilation-dir=.
       cflags += [ "-ffile-compilation-dir=." ]
-      swiftflags += [ "-file-compilation-dir=." ]
+
+      # Convert absolute paths to relative paths. Expands to, for example:
+      #   -file-prefix-map /path/to/chromium/src=../..
+      swiftflags += [
+        "-file-prefix-map",
+        rebase_path("//.", "") + "=" + rebase_path("//.", root_build_dir),
+      ]
     }
     if (!is_win) {
       # We don't use clang -cc1as on Windows (yet? https://crbug.com/762167)
