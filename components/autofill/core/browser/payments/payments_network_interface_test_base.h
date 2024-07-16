@@ -76,15 +76,6 @@ class PaymentsNetworkInterfaceTestBase {
   net::HttpRequestHeaders intercepted_headers_;
   bool has_variations_header_;
   std::string intercepted_body_;
-  std::vector<AutofillProfile> BuildTestProfiles();
-
-  AutofillProfile BuildProfile(std::string_view first_name,
-                               std::string_view last_name,
-                               std::string_view address_line,
-                               std::string_view city,
-                               std::string_view state,
-                               std::string_view zip,
-                               std::string_view phone_number);
 };
 
 }  // namespace autofill::payments

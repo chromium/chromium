@@ -909,6 +909,8 @@ static_library("test_support") {
     "payments/mock_test_payments_network_interface.h",
     "payments/payments_network_interface_test_base.cc",
     "payments/payments_network_interface_test_base.h",
+    "payments/test/autofill_payments_test_utils.cc",
+    "payments/test/autofill_payments_test_utils.h",
     "payments/test/mock_mandatory_reauth_manager.cc",
     "payments/test/mock_mandatory_reauth_manager.h",
     "payments/test/mock_payments_window_manager.cc",
