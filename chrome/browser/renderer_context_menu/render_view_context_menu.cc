@@ -4373,9 +4373,12 @@ void RenderViewContextMenu::OpenLensOverlayWithPreselectedRegion(
 void RenderViewContextMenu::ExecRegionSearch(
     int event_flags,
     bool is_google_default_search_provider) {
-  if (LensOverlayController::IsEnabled(GetBrowser())) {
+  Browser* browser = GetBrowser();
+  CHECK(browser);
+
+  if (LensOverlayController::IsEnabled(browser)) {
     LensOverlayController* const controller =
-        LensOverlayController::GetController(source_web_contents_);
+        LensOverlayController::GetController(embedder_web_contents_);
     CHECK(controller);
     controller->ShowUI(
         lens::LensOverlayInvocationSource::kContentAreaContextMenuPage);
@@ -4385,17 +4388,11 @@ void RenderViewContextMenu::ExecRegionSearch(
   }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  Browser* browser = GetBrowser();
-  CHECK(browser);
   if (lens::features::IsLensRegionSearchStaticPageEnabled()) {
     lens::OpenLensStaticPage(browser);
     return;
   }
 
-  // We don't use `source_web_contents_` here because it doesn't work with the
-  // PDF reader.
-  WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
   // If Lens fullscreen search is enabled, we want to send every region search
   // as a fullscreen capture.
   bool use_fullscreen_capture =
@@ -4406,7 +4403,8 @@ void RenderViewContextMenu::ExecRegionSearch(
       companion::CompanionTabHelper::FromWebContents(embedder_web_contents_);
   if (companion_helper &&
       companion::IsSearchImageInCompanionSidePanelSupported(browser)) {
-    companion_helper->StartRegionSearch(web_contents, use_fullscreen_capture);
+    companion_helper->StartRegionSearch(embedder_web_contents_,
+                                        use_fullscreen_capture);
     return;
   }
 
@@ -4419,9 +4417,9 @@ void RenderViewContextMenu::ExecRegionSearch(
           ? lens::AmbientSearchEntryPoint::
                 CONTEXT_MENU_SEARCH_REGION_WITH_GOOGLE_LENS
           : lens::AmbientSearchEntryPoint::CONTEXT_MENU_SEARCH_REGION_WITH_WEB;
-  lens_region_search_controller_->Start(web_contents, use_fullscreen_capture,
-                                        is_google_default_search_provider,
-                                        entry_point);
+  lens_region_search_controller_->Start(
+      embedder_web_contents_, use_fullscreen_capture,
+      is_google_default_search_provider, entry_point);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 

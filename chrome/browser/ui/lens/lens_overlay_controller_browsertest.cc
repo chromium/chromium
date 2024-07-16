@@ -13,13 +13,16 @@
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/polygon.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
+#include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -55,6 +58,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
@@ -72,6 +76,8 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/url_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "pdf/pdf_features.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/compositor/compositor_switches.h"
@@ -89,6 +95,7 @@ constexpr char kDocumentWithNamedElementWithFragment[] =
     "/select.html#fragment";
 constexpr char kDocumentWithImage[] = "/test_visual.html";
 constexpr char kDocumentWithDynamicColor[] = "/lens/dynamic_color.html";
+constexpr char kPdfDocument[] = "/pdf/test.pdf";
 
 using State = LensOverlayController::State;
 using LensOverlayInvocationSource = lens::LensOverlayInvocationSource;
@@ -3164,6 +3171,75 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserFullscreenDisabled,
         IDC_CONTENT_CONTEXT_LENS_OVERLAY);
   }));
 }
+
+class LensOverlayControllerBrowserPDFTest
+    : public base::test::WithFeatureOverride,
+      public PDFExtensionTestBase {
+ public:
+  LensOverlayControllerBrowserPDFTest()
+      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
+
+  void SetUpOnMainThread() override {
+    PDFExtensionTestBase::SetUpOnMainThread();
+
+    // Permits sharing the page screenshot by default. This disables the
+    // permission dialog.
+    PrefService* prefs = browser()->profile()->GetPrefs();
+    prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
+  }
+
+  bool UseOopif() const override { return GetParam(); }
+
+  std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
+    auto enabled = PDFExtensionTestBase::GetEnabledFeatures();
+    enabled.push_back(lens::features::kLensOverlay);
+    return enabled;
+  }
+
+  void SimulateOpenOverlayFromContextMenu(
+      content::RenderFrameHost* extension_host,
+      const GURL& url) {
+    // Simulate opening the overlay from the context menu "Search with Google
+    // Lens".
+    content::ContextMenuParams context_menu_params;
+    context_menu_params.media_type =
+        blink::mojom::ContextMenuDataMediaType::kPlugin;
+    context_menu_params.src_url = url;
+    context_menu_params.page_url = url;
+
+    content::WaitForHitTestData(extension_host);
+    TestRenderViewContextMenu menu(*extension_host, context_menu_params);
+    menu.Init();
+    menu.ExecuteCommand(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, 0);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
+                       ContextMenuOpensOverlay) {
+  // Open the PDF document and wait for it to finish loading.
+  const GURL url = embedded_test_server()->GetURL(kPdfDocument);
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(url);
+  ASSERT_TRUE(extension_host);
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay on the PDF using the context menu.
+  SimulateOpenOverlayFromContextMenu(extension_host, url);
+
+  // Verify the overlay eventually opens.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+}
+
+// TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
+// launches.
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(LensOverlayControllerBrowserPDFTest);
 
 // Test with --enable-pixel-output-in-tests enabled, required to actually grab
 // screenshots for color extraction.
