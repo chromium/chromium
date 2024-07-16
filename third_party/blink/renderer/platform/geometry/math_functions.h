@@ -162,11 +162,18 @@ ValueType EvaluateSteppedValueFunction(OperatorType op,
       // std::fmod - the returned value has the same sign as A
       // and is less than B in magnitude.
       ValueType result = std::fmod(a, b);
-      // If the result is on opposite side of zero from B,
-      // put it between 0 and B. As the result of std::fmod is less
-      // than B in magnitude, adding B would perform a correct shift.
       if (std::signbit(result) != std::signbit(b)) {
-        result += b;
+        // When the absolute values of arguments are the same, but they
+        // appear on different sides from zero, the result of std::fmod will be
+        // either -0 (e.g. mod(-1, 1)), or +0 (e.g. mod(1, -1)), we need to swap
+        // the sign of the resulting zero to match the sign of the B.
+        if (std::abs(a) == std::abs(b)) {
+          return -result;
+        }
+        // If the result is on opposite side of zero from B,
+        // put it between 0 and B. As the result of std::fmod is less
+        // than B in magnitude, adding B would perform a correct shift.
+        return result + b;
       }
       return result;
     }
