@@ -77,6 +77,7 @@
 #include "ash/wm/desks/scroll_arrow_button.h"
 #include "ash/wm/desks/templates/saved_desk_test_helper.h"
 #include "ash/wm/desks/templates/saved_desk_test_util.h"
+#include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_focus_cycler_old.h"
@@ -9324,6 +9325,49 @@ class DeskBarTest
     }
   }
 
+  // TODO(http://b/350771229): Fully replace `CloseDeskWithButton` with this
+  // function once Forest is enabled by default (including touch gestures).
+  // Closes the desk at `index` using the "Combine desk" option in the desk
+  // context menu, accessed using the context menu button. Only available if the
+  // Forest feature is enabled.
+  void CombineDeskWithMenu(size_t index,
+                           aura::Window* root,
+                           DeskBarViewBase::Type bar_type) {
+    CHECK(features::IsForestFeatureEnabled());
+
+    // Hover the mouse over the mini view to make the desk action buttons
+    // visible.
+    const auto* desk_bar_view = GetDeskBarView(root, bar_type);
+    ASSERT_LT(index, desk_bar_view->mini_views().size());
+    auto* target_mini_view = desk_bar_view->mini_views()[index].get();
+    auto* event_generator = GetEventGenerator();
+    event_generator->MoveMouseTo(
+        target_mini_view->desk_preview()->GetBoundsInScreen().CenterPoint());
+    auto* menu_button =
+        target_mini_view->desk_action_view()->context_menu_button();
+    ASSERT_TRUE(menu_button->GetVisible());
+
+    // Click the context menu button.
+    ClickOnView(menu_button, event_generator);
+    ash::DeskActionContextMenu* menu = target_mini_view->context_menu();
+    ASSERT_TRUE(menu);
+
+    // Get the menu option to save the desk as a template and click it.
+    views::MenuItemView* menu_item =
+        ash::DesksTestApi::GetDeskActionContextMenuItem(
+            menu, ash::DeskActionContextMenu::CommandId::kCombineDesks);
+    ASSERT_TRUE(menu_item);
+
+    if (bar_type == DeskBarViewBase::Type::kDeskButton &&
+        target_mini_view->desk()->is_active()) {
+      DeskSwitchAnimationWaiter waiter;
+      ClickOnView(menu_item, event_generator);
+      waiter.Wait();
+    } else {
+      ClickOnView(menu_item, event_generator);
+    }
+  }
+
   bool use_touch_gestures_;
   bool use_16_desks_;
   bool use_overview_new_focus_;
@@ -10457,10 +10501,15 @@ TEST_P(DeskBarTest, DeskBarActionMetrics) {
           : kOverviewDeskBarReorderDeskHistogramName,
       1);
 
-  auto* root_window = Shell::Get()->GetPrimaryRootWindow();
-
   // Combine desks.
-  CloseDeskWithButton(/*index=*/0, /*close_all=*/false, root_window, bar_type_);
+  auto* root_window = Shell::Get()->GetPrimaryRootWindow();
+  if (features::IsForestFeatureEnabled()) {
+    CombineDeskWithMenu(/*index=*/0, root_window, bar_type_);
+  } else {
+    CloseDeskWithButton(/*index=*/0, /*close_all=*/false, root_window,
+                        bar_type_);
+  }
+
   histogram_tester.ExpectTotalCount(
       bar_type_ == DeskBarViewBase::Type::kDeskButton
           ? kDeskButtonDeskBarCombineDesksHistogramName
@@ -10523,7 +10572,14 @@ TEST_P(DeskBarTest, DeskBarSwitchMetrics) {
 
   OpenDeskBar();
 
-  CloseDeskWithButton(/*index=*/0, /*close_all=*/false, root_window, bar_type_);
+  // Combine desks.
+  if (features::IsForestFeatureEnabled()) {
+    CombineDeskWithMenu(/*index=*/0, root_window, bar_type_);
+  } else {
+    CloseDeskWithButton(/*index=*/0, /*close_all=*/false, root_window,
+                        bar_type_);
+  }
+
   histogram_tester.ExpectBucketCount(
       kDeskSwitchHistogramName,
       bar_type_ == DeskBarViewBase::Type::kDeskButton
@@ -10565,7 +10621,14 @@ TEST_P(DeskBarTest, DeskCreationRemovalMetrics) {
 
   OpenDeskBar();
 
-  CloseDeskWithButton(/*index=*/0, /*close_all=*/false, root_window, bar_type_);
+  // Combine desks.
+  if (features::IsForestFeatureEnabled()) {
+    CombineDeskWithMenu(/*index=*/0, root_window, bar_type_);
+  } else {
+    CloseDeskWithButton(/*index=*/0, /*close_all=*/false, root_window,
+                        bar_type_);
+  }
+
   histogram_tester.ExpectBucketCount(
       kRemoveDeskHistogramName,
       bar_type_ == DeskBarViewBase::Type::kDeskButton

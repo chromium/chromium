@@ -269,6 +269,8 @@ void ClickSaveDeskAsTemplateButton() {
   SendKey(ui::VKEY_RETURN, &event_generator);
 }
 
+// TODO(hewer): Combine with `ClickSaveDeskAsTemplateButton` in
+// `desks_client_browsertest.cc`.
 void SelectSaveDeskAsTemplateMenuItem(int index) {
   // Get the mini view for the given desk `index`.
   aura::Window* root_window = Shell::GetPrimaryRootWindow();

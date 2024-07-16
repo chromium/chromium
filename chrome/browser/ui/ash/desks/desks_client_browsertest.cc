@@ -355,6 +355,8 @@ void ClickView(const views::View* view) {
   event_generator.ClickLeftButton();
 }
 
+// TODO(hewer): Combine with `SelectSaveDeskAsTemplateButton` in
+// `full_restore_app_launch_handler_browsertest.cc`.
 // If `wait_for_ui` is true, wait for the callback from the model to update the
 // UI.
 void ClickSaveDeskAsTemplateButton(bool wait_for_ui) {

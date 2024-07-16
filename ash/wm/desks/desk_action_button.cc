@@ -35,6 +35,18 @@ const gfx::VectorIcon* GetVectorIconForType(DeskActionButton::Type type) {
   }
 }
 
+// Returns true if the desk controller exists and there is more than one desk.
+bool CanRemoveDesks() {
+  auto* desk_controller = DesksController::Get();
+  return desk_controller && desk_controller->CanRemoveDesks();
+}
+
+// Returns true if the desk contains app windows or there are all desk windows.
+bool CanCombineDesks(DeskActionView* action_view) {
+  return action_view->mini_view()->desk()->ContainsAppWindows() ||
+         !DesksController::Get()->visible_on_all_desks_windows().empty();
+}
+
 constexpr int kDeskCloseButtonSize = 24;
 
 }  // namespace
@@ -97,26 +109,19 @@ void DeskActionButton::OnFocusableViewBlurred() {
 }
 
 bool DeskActionButton::CanShow() const {
-  // The context menu button will only show if the given desk should show the
-  // save desk options.
   DeskMiniView* mini_view = desk_action_view_->mini_view();
-  if (type_ == Type::kContextMenu) {
-    return saved_desk_util::ShouldShowSavedDesksOptionsForDesk(
-        mini_view->desk(), mini_view->owner_bar());
+  switch (type_) {
+    case DeskActionButton::Type::kContextMenu:
+      // The context menu button will only show if the given desk should show
+      // the save desk options, or the combine desk option should show.
+      return saved_desk_util::ShouldShowSavedDesksOptionsForDesk(
+                 mini_view->desk(), mini_view->owner_bar()) ||
+             (CanRemoveDesks() && CanCombineDesks(desk_action_view_));
+    case DeskActionButton::Type::kCloseDesk:
+      return CanRemoveDesks();
+    case DeskActionButton::Type::kCombineDesk:
+      return CanRemoveDesks() && CanCombineDesks(desk_action_view_);
   }
-
-  // The close desk and combine desk buttons should not show if there is only
-  // one desk.
-  auto* desk_controller = DesksController::Get();
-  if (!desk_controller || !desk_controller->CanRemoveDesks()) {
-    return false;
-  }
-
-  // The close desk button can always show, while the combine desk button shows
-  // when its desk contains app windows or there are all desk windows.
-  return type_ == Type::kCloseDesk ||
-         desk_action_view_->mini_view()->desk()->ContainsAppWindows() ||
-         !desk_controller->visible_on_all_desks_windows().empty();
 }
 
 void DeskActionButton::UpdateTooltip(const std::u16string& tooltip) {
