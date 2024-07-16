@@ -19,7 +19,7 @@ export enum RecordingSortType {
  * Whether the transcription is available / ready should be queried from the
  * platform handler.
  *
- * The following transitions are possible:
+ * Valid state transitions:
  * * ENABLED -> DISABLED
  * * DISABLED -> ENABLED
  * * DISABLED_FIRST -> ENABLED
@@ -48,6 +48,34 @@ export enum TranscriptionEnableState {
 
   /**
    * The transcription preference for user is still unknown.
+   */
+  UNKNOWN = 'UNKNOWN',
+}
+
+/**
+ * The state of whether user have enabled summary.
+ *
+ * Whether the summary model is available / ready should be queried from the
+ * platform handler, and this state only reflects the user choice.
+ *
+ * Valid state transitions:
+ * * ENABLED -> DISABLED
+ * * DISABLED -> ENABLED
+ * * UNKNOWN -> DISABLED, ENABLED.
+ */
+export enum SummaryEnableState {
+  /**
+   * Summary is enabled by user.
+   */
+  ENABLED = 'ENABLED',
+
+  /**
+   * Summary is disabled by user.
+   */
+  DISABLED = 'DISABLED',
+
+  /**
+   * Summary enable/disable preference is still unknown.
    */
   UNKNOWN = 'UNKNOWN',
 }
@@ -85,6 +113,7 @@ export const settingsSchema = z.object({
   onboardingDone: z.boolean(),
   recordingSortType: z.nativeEnum(RecordingSortType),
   transcriptionEnabled: z.nativeEnum(TranscriptionEnableState),
+  summaryEnabled: z.nativeEnum(SummaryEnableState),
 });
 
 type Settings = Infer<typeof settingsSchema>;
@@ -100,6 +129,7 @@ const defaultSettings: Settings = {
   onboardingDone: false,
   recordingSortType: RecordingSortType.DATE,
   transcriptionEnabled: TranscriptionEnableState.UNKNOWN,
+  summaryEnabled: SummaryEnableState.UNKNOWN,
 };
 
 export const settings = signal(defaultSettings);

@@ -17,6 +17,7 @@ export const devSettingsSchema = z.object({
   forceTheme: z.optional(z.nativeEnum(ColorTheme)),
   // Simulate first time soda installation cross session.
   sodaInstalled: z.boolean(),
+  // TODO(pihsun): Persist summary model installation progress.
 });
 
 type DevSettings = Infer<typeof devSettingsSchema>;

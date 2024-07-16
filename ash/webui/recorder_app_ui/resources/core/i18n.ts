@@ -73,11 +73,19 @@ const noArgStrings = [
   'settingsOptionsKeepScreenOnLabel',
   'settingsOptionsSpeakerIdDescription',
   'settingsOptionsSpeakerIdLabel',
+  'settingsOptionsSummaryDescription',
+  'settingsOptionsSummaryDownloadButton',
+  'settingsOptionsSummaryDownloadingButton',
+  'settingsOptionsSummaryLabel',
   'settingsOptionsTranscriptionDownloadButton',
   'settingsOptionsTranscriptionDownloadingButton',
   'settingsOptionsTranscriptionLabel',
   'settingsSectionGeneralHeader',
   'settingsSectionTranscriptionSummaryHeader',
+  'summaryDownloadModelDescription',
+  'summaryDownloadModelDisableButton',
+  'summaryDownloadModelDownloadButton',
+  'summaryDownloadModelHeader',
   'summaryHeader',
   'titleGenerationHeader',
   'titleRenameTooltip',
@@ -93,8 +101,10 @@ const withArgsStrings = {
   // Usage example:
   // Add `fooBar: withArgs<[number, string]>(),` here,
   // then `i18n.fooBar(1, '2')` works.
+  settingsOptionsSummaryDownloadingProgressDescription: withArgs<[number]>(),
   settingsOptionsTranscriptionDownloadingProgressDescription:
     withArgs<[number]>(),
+  summaryDownloadingProgressDescription: withArgs<[number]>(),
 } satisfies Record<string, I18nArgType[]>;
 type WithArgsStrings = typeof withArgsStrings;
 

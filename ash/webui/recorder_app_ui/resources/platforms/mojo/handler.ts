@@ -18,11 +18,12 @@ import {nothing} from 'chrome://resources/mwc/lit/index.js';
 
 import {
   Model,
+  ModelId,
+  ModelState,
   PlatformHandler as PlatformHandlerBase,
   SodaSession,
-  SodaState,
 } from '../../core/platform_handler.js';
-import {signal} from '../../core/reactive/signal.js';
+import {Signal, signal} from '../../core/reactive/signal.js';
 import {
   assertExhaustive,
   assertExists,
@@ -33,31 +34,31 @@ import {OnDeviceModel} from './on_device_model.js';
 import {MojoSodaSession} from './soda_session.js';
 import {
   LoadModelResult,
+  ModelState as MojoModelState,
+  ModelStateMonitorReceiver,
+  ModelStateType,
   OnDeviceModelRemote,
   PageHandler as MojoPageHandler,
   SodaClientReceiver,
   SodaRecognizerRemote,
-  SodaState as MojoSodaState,
-  SodaStateMonitorReceiver,
-  SodaStateType,
 } from './types.js';
 
-function mojoSodaStateToSodaState(state: MojoSodaState): SodaState {
+function mojoModelStateToModelState(state: MojoModelState): ModelState {
   switch (state.type) {
-    case SodaStateType.kNotInstalled:
+    case ModelStateType.kNotInstalled:
       return {kind: 'notInstalled'};
-    case SodaStateType.kInstalling:
+    case ModelStateType.kInstalling:
       return {kind: 'installing', progress: assertExists(state.progress)};
-    case SodaStateType.kInstalled:
+    case ModelStateType.kInstalled:
       return {kind: 'installed'};
-    case SodaStateType.kError:
+    case ModelStateType.kError:
       return {kind: 'error'};
-    case SodaStateType.kUnavailable:
+    case ModelStateType.kUnavailable:
       return {kind: 'unavailable'};
-    case SodaStateType.MIN_VALUE:
-    case SodaStateType.MAX_VALUE:
+    case ModelStateType.MIN_VALUE:
+    case ModelStateType.MAX_VALUE:
       return assertNotReached(
-        `Got MIN_VALUE or MAX_VALUE from mojo SodaStateType: ${state.type}`,
+        `Got MIN_VALUE or MAX_VALUE from mojo ModelStateType: ${state.type}`,
       );
     default:
       assertExhaustive(state.type);
@@ -67,30 +68,55 @@ function mojoSodaStateToSodaState(state: MojoSodaState): SodaState {
 export class PlatformHandler extends PlatformHandlerBase {
   private readonly remote = MojoPageHandler.getRemote();
 
-  readonly sodaState = signal<SodaState>({kind: 'unavailable'});
+  readonly sodaState = signal<ModelState>({kind: 'unavailable'});
+
+  readonly modelStates = new Map<ModelId, Signal<ModelState>>();
+
+  constructor() {
+    super();
+
+    for (const modelId of Object.values(ModelId)) {
+      this.modelStates.set(modelId, signal({kind: 'unavailable'}));
+    }
+  }
 
   override async init(): Promise<void> {
     ColorChangeUpdater.forDocument().start();
 
-    const monitor = new SodaStateMonitorReceiver({
-      update: (state) => {
-        this.sodaState.value = mojoSodaStateToSodaState(state);
-      },
-    });
+    const update = (state: MojoModelState) => {
+      this.sodaState.value = mojoModelStateToModelState(state);
+    };
+    const monitor = new ModelStateMonitorReceiver({update});
     // This should be relatively quick since in recorder_app_ui.cc we just
-    // return the cached state here.
-    // TODO(pihsun): Only do this after the first `getSodaState` if performance
-    // is an issue.
+    // return the cached state here, but we await here to avoid UI showing
+    // temporary unavailabe state.
     const {state} = await this.remote.addSodaMonitor(
       monitor.$.bindNewPipeAndPassRemote(),
     );
-    this.sodaState.value = mojoSodaStateToSodaState(state);
+    update(state);
+
+    for (const modelId of this.modelStates.keys()) {
+      const update = (state: MojoModelState) => {
+        assertExists(this.modelStates.get(modelId)).value =
+          mojoModelStateToModelState(state);
+      };
+      const monitor = new ModelStateMonitorReceiver({update});
+
+      // This should be relatively quick since in recorder_app_ui.cc we just
+      // return the cached state here, but we await here to avoid UI showing
+      // temporary unavailabe state.
+      const {state} = await this.remote.addModelMonitor(
+        {value: modelId},
+        monitor.$.bindNewPipeAndPassRemote(),
+      );
+      update(state);
+    }
   }
 
-  override async loadModel(uuid: string): Promise<Model> {
+  override async loadModel(modelId: ModelId): Promise<Model> {
     const newModel = new OnDeviceModelRemote();
     const {result} = await this.remote.loadModel(
-      {value: uuid},
+      {value: modelId},
       newModel.$.bindNewPipeAndPassReceiver(),
     );
     if (result !== LoadModelResult.kSuccess) {

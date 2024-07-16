@@ -16,9 +16,10 @@ import {CraDropdown} from '../../components/cra/cra-dropdown.js';
 import {SAMPLE_RATE} from '../../core/audio_constants.js';
 import {
   Model,
+  ModelId,
+  ModelState,
   PlatformHandler as PlatformHandlerBase,
   SodaSession,
-  SodaState,
 } from '../../core/platform_handler.js';
 import {signal} from '../../core/reactive/signal.js';
 import {SodaEvent, TimeDelta} from '../../core/soda/types.js';
@@ -242,16 +243,39 @@ function substituteI18nString(label: string, ...args: Array<number|string>):
 }
 
 export class PlatformHandler extends PlatformHandlerBase {
-  readonly sodaState = signal<SodaState>({kind: 'notInstalled'});
+  readonly sodaState = signal<ModelState>({kind: 'notInstalled'});
+
+  readonly modelStates = new Map([
+    [ModelId.SUMMARY, signal<ModelState>({kind: 'notInstalled'})],
+    [ModelId.GEMINI_XXS_IT_BASE, signal<ModelState>({kind: 'notInstalled'})],
+  ]);
 
   override async init(): Promise<void> {
     settingsInit();
     if (devSettings.value.sodaInstalled) {
+      // TODO(pihsun): Remember the whole state in devSettings instead?
       this.sodaState.value = {kind: 'installed'};
     }
   }
 
-  override async loadModel(_uuid: string): Promise<Model> {
+  override async loadModel(modelId: ModelId): Promise<Model> {
+    console.log('model installation requested');
+    const state = assertExists(this.modelStates.get(modelId));
+    if (state.value.kind === 'notInstalled') {
+      state.value = {kind: 'installing', progress: 0};
+      // Simulate the loading of model.
+      let progress = 0;
+      while (true) {
+        await sleep(200);
+        // 4% per 200 ms -> simulate 5 seconds for the whole installation.
+        progress += 4;
+        if (progress >= 100) {
+          state.value = {kind: 'installed'};
+          break;
+        }
+        state.value = {kind: 'installing', progress};
+      }
+    }
     return new ModelDev();
   }
 
@@ -265,9 +289,9 @@ export class PlatformHandler extends PlatformHandlerBase {
       void (async () => {
         let progress = 0;
         while (true) {
-          await sleep(200);
-          // 4% per 200 ms -> simulate 5 seconds for the whole installation.
-          progress += 4;
+          await sleep(100);
+          // 5% per 100 ms -> simulate 2 seconds for the whole installation.
+          progress += 5;
           if (progress >= 100) {
             devSettings.mutate((s) => {
               s.sodaInstalled = true;

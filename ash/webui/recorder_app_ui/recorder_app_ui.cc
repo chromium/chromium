@@ -99,14 +99,14 @@ RecorderAppUI::RecorderAppUI(content::WebUI* web_ui,
     auto* soda_installer = speech::SodaInstaller::GetInstance();
     speech::SodaInstaller::GetInstance()->AddObserver(this);
     if (soda_installer->IsSodaInstalled(kLanguageCode)) {
-      soda_state_ = {recorder_app::mojom::SodaStateType::kInstalled,
+      soda_state_ = {recorder_app::mojom::ModelStateType::kInstalled,
                      std::nullopt};
     } else {
-      soda_state_ = {recorder_app::mojom::SodaStateType::kNotInstalled,
+      soda_state_ = {recorder_app::mojom::ModelStateType::kNotInstalled,
                      std::nullopt};
     }
   } else {
-    soda_state_ = {recorder_app::mojom::SodaStateType::kUnavailable,
+    soda_state_ = {recorder_app::mojom::ModelStateType::kUnavailable,
                    std::nullopt};
   }
 }
@@ -141,14 +141,108 @@ RecorderAppUI::GetOnDeviceModelService() {
   return *remote;
 }
 
+void RecorderAppUI::AddModelMonitor(
+    const base::Uuid& model_id,
+    ::mojo::PendingRemote<recorder_app::mojom::ModelStateMonitor> monitor,
+    AddModelMonitorCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  recorder_app::mojom::ModelState model_state;
+
+  auto model_state_iter = model_states_.find(model_id);
+  if (model_state_iter == model_states_.end()) {
+    model_state = {recorder_app::mojom::ModelStateType::kUnavailable,
+                   std::nullopt};
+    model_states_.insert({model_id, model_state});
+    GetOnDeviceModelService().GetPlatformModelState(
+        model_id, base::BindOnce(&RecorderAppUI::GetPlatformModelStateCallback,
+                                 weak_ptr_factory_.GetWeakPtr(), model_id));
+  } else {
+    model_state = model_state_iter->second;
+  }
+  model_monitors_[model_id].Add(std::move(monitor));
+  std::move(callback).Run(model_state.Clone());
+}
+
 void RecorderAppUI::LoadModel(
     const base::Uuid& uuid,
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
     LoadModelCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  mojo::PendingReceiver<on_device_model::mojom::PlatformModelProgressObserver>
+      progress_receiver;
+
   GetOnDeviceModelService().LoadPlatformModel(
-      uuid, std::move(model), mojo::NullRemote(), std::move(callback));
+      uuid, std::move(model), progress_receiver.InitWithNewPipeAndPassRemote(),
+      std::move(callback));
+
+  model_progress_receivers_.Add(this, std::move(progress_receiver), uuid);
+}
+
+void RecorderAppUI::Progress(double progress) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto model_id = model_progress_receivers_.current_context();
+  // The progress reported from ML service is in [0, 1], and use 1 as
+  // installation done, but we want to report [0, 100].
+  int scaled_progress = static_cast<int>(progress * 100);
+
+  if (scaled_progress == 100) {
+    UpdateModelState(model_id, {recorder_app::mojom::ModelStateType::kInstalled,
+                                std::nullopt});
+  } else {
+    UpdateModelState(
+        model_id,
+        {recorder_app::mojom::ModelStateType::kInstalling, scaled_progress});
+  }
+}
+
+void RecorderAppUI::GetPlatformModelStateCallback(
+    const base::Uuid& model_id,
+    on_device_model::mojom::PlatformModelState state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  switch (state) {
+    case on_device_model::mojom::PlatformModelState::kInstalledOnDisk:
+      UpdateModelState(
+          model_id,
+          {recorder_app::mojom::ModelStateType::kInstalled, std::nullopt});
+      break;
+    case on_device_model::mojom::PlatformModelState::kInvalidDlcVerifiedState:
+      // Not installed is classified as "not verified" in DLC.
+      UpdateModelState(
+          model_id,
+          {recorder_app::mojom::ModelStateType::kNotInstalled, std::nullopt});
+      break;
+    case on_device_model::mojom::PlatformModelState::kInvalidDlcPackage:
+      // TODO(pihsun): Check the condition of when the model is unavailable.
+      UpdateModelState(
+          model_id,
+          {recorder_app::mojom::ModelStateType::kUnavailable, std::nullopt});
+      break;
+    case on_device_model::mojom::PlatformModelState::kUnknownState:
+    case on_device_model::mojom::PlatformModelState::kInvalidUuid:
+    case on_device_model::mojom::PlatformModelState::kInvalidDlcClient:
+    case on_device_model::mojom::PlatformModelState::kInvalidDlcInstall:
+    case on_device_model::mojom::PlatformModelState::kInvalidModelFormat:
+    case on_device_model::mojom::PlatformModelState::kInvalidModelDescriptor:
+    case on_device_model::mojom::PlatformModelState::
+        kInvalidBaseModelDescriptor:
+      UpdateModelState(model_id, {recorder_app::mojom::ModelStateType::kError,
+                                  std::nullopt});
+      break;
+  }
+}
+
+void RecorderAppUI::UpdateModelState(const base::Uuid& model_id,
+                                     recorder_app::mojom::ModelState state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  for (const auto& monitor : model_monitors_[model_id]) {
+    monitor->Update(state.Clone());
+  }
+  model_states_.insert_or_assign(model_id, state);
 }
 
 mojo::Remote<chromeos::machine_learning::mojom::MachineLearningService>&
@@ -163,7 +257,7 @@ RecorderAppUI::GetMlService() {
 }
 
 void RecorderAppUI::AddSodaMonitor(
-    ::mojo::PendingRemote<recorder_app::mojom::SodaStateMonitor> monitor,
+    ::mojo::PendingRemote<recorder_app::mojom::ModelStateMonitor> monitor,
     AddSodaMonitorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -176,18 +270,18 @@ void RecorderAppUI::InstallSoda(InstallSodaCallback callback) {
 
   if (speech::IsOnDeviceSpeechRecognitionSupported()) {
     auto state = soda_state_.type;
-    if (state == recorder_app::mojom::SodaStateType::kNotInstalled ||
-        state == recorder_app::mojom::SodaStateType::kError) {
+    if (state == recorder_app::mojom::ModelStateType::kNotInstalled ||
+        state == recorder_app::mojom::ModelStateType::kError) {
       // Update SODA state to installing so the UI will show downloading
       // immediately, since the DLC download might start later.
-      UpdateSodaState({recorder_app::mojom::SodaStateType::kInstalling, 0});
+      UpdateSodaState({recorder_app::mojom::ModelStateType::kInstalling, 0});
       delegate_->InstallSoda(kLanguageCode);
     }
   }
   std::move(callback).Run();
 }
 
-void RecorderAppUI::UpdateSodaState(recorder_app::mojom::SodaState state) {
+void RecorderAppUI::UpdateSodaState(recorder_app::mojom::ModelState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   soda_state_ = state;
@@ -206,7 +300,7 @@ void RecorderAppUI::OnSodaInstallError(
 
   LOG(ERROR) << "Failed to install Soda library DLC with error "
              << SodaInstallerErrorCodeToString(error_code);
-  UpdateSodaState({recorder_app::mojom::SodaStateType::kError, std::nullopt});
+  UpdateSodaState({recorder_app::mojom::ModelStateType::kError, std::nullopt});
 }
 
 void RecorderAppUI::OnSodaProgress(speech::LanguageCode language_code,
@@ -216,7 +310,7 @@ void RecorderAppUI::OnSodaProgress(speech::LanguageCode language_code,
     return;
   }
 
-  UpdateSodaState({recorder_app::mojom::SodaStateType::kInstalling, progress});
+  UpdateSodaState({recorder_app::mojom::ModelStateType::kInstalling, progress});
 }
 
 void RecorderAppUI::OnSodaInstalled(speech::LanguageCode language_code) {
@@ -226,7 +320,7 @@ void RecorderAppUI::OnSodaInstalled(speech::LanguageCode language_code) {
   }
 
   UpdateSodaState(
-      {recorder_app::mojom::SodaStateType::kInstalled, std::nullopt});
+      {recorder_app::mojom::ModelStateType::kInstalled, std::nullopt});
 }
 
 void RecorderAppUI::LoadSpeechRecognizer(

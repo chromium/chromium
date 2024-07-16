@@ -52,13 +52,19 @@ export class TranscriptionView extends ReactiveLitElement {
 
     #container {
       box-sizing: border-box;
-      display: grid;
+      display: flex;
+      flex-flow: column;
       gap: 12px;
-      grid-template-columns: minmax(calc(12px + 40px + 10px), max-content) 1fr;
       max-height: 100%;
       overflow-y: auto;
       padding: 12px 0 64px;
       width: 100%;
+    }
+
+    #transcript {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: minmax(calc(12px + 40px + 10px), max-content) 1fr;
     }
 
     .row {
@@ -411,19 +417,24 @@ export class TranscriptionView extends ReactiveLitElement {
       seekable: this.seekable,
       autoscroll: this.autoscrollEnabled.value,
     };
-    // TODO(pihsun): This is a performance optimization to only have the click
-    // handler on the outmost container. Need to adjust this accordingly when
-    // we have other clickable things inside the container (speaker ID).
+    // TODO(pihsun): @click on #transcript is a performance optimization to
+    // only have the click handler on the container. Need to adjust this
+    // accordingly when we have other clickable things inside the container
+    // (speaker ID).
     return html`<div
         id="container"
         class=${classMap(classes)}
         ${ref(this.containerRef)}
-        @click=${this.seekable ? this.onTextClick : nothing}
         @scroll=${this.onContainerScroll}
         @scrollend=${this.onContainerScrollEnd}
       >
         <slot></slot>
-        ${content}
+        <div
+          id="transcript"
+          @click=${this.seekable ? this.onTextClick : nothing}
+        >
+          ${content}
+        </div>
       </div>
       <cros-button
         button-style="secondary"

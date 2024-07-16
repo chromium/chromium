@@ -264,15 +264,6 @@ export class PlaybackPage extends ReactiveLitElement {
     }
 
     summarization-view {
-      /*
-       * summarization-view is a child of the scrolling box in
-       * transcription-view, which has a grid layout.
-       *
-       * TODO(pihsun): Having this here is weird since it's not clear that
-       * summarization-view is in a grid container. Consider changing the CSS
-       * to have the grid container separate from the scrolling container.
-       */
-      grid-column: span 2;
       padding: 0 12px;
     }
 
@@ -349,7 +340,6 @@ export class PlaybackPage extends ReactiveLitElement {
     return powers;
   });
 
-  // TODO: b/336963138 - Handle when transcription isn't available.
   private readonly showTranscription = signal(false);
 
   // TODO(pihsun): Move export functions out of the component.

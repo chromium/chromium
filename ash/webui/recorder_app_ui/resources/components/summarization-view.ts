@@ -3,15 +3,18 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cros_components/badge/badge.js';
+import 'chrome://resources/mwc/@material/web/progress/circular-progress.js';
 import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
 import './genai-placeholder.js';
+import './summary-consent-card.js';
 
 import {
   classMap,
   css,
   CSSResultGroup,
   html,
+  nothing,
   PropertyDeclarations,
 } from 'chrome://resources/mwc/lit/index.js';
 
@@ -21,11 +24,22 @@ import {ModelId} from '../core/platform_handler.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
 import {concatTextTokens, TextToken} from '../core/soda/soda.js';
+import {settings, SummaryEnableState} from '../core/state/settings.js';
+import {assertExhaustive} from '../core/utils/assert.js';
 
 export class SummarizationView extends ReactiveLitElement {
   static override styles: CSSResultGroup = css`
     :host {
       display: block;
+    }
+
+    /*
+     * Set display: none when there's nothing to show, so this won't introduce
+     * an additional "blank" box to the parent and result in e.g. one more row
+     * in the flex layout.
+     */
+    :host(.empty) {
+      display: none;
     }
 
     #container {
@@ -66,6 +80,17 @@ export class SummarizationView extends ReactiveLitElement {
         background-color: var(--cros-sys-complement);
         color: var(--cros-sys-on_surface);
         margin: 0;
+      }
+
+      & > md-circular-progress {
+        --md-circular-progress-size: 24px;
+
+        margin: -2px;
+      }
+
+      & > .progress {
+        font: var(--cros-annotation-1-font);
+        margin: 0 4px 0 auto;
       }
     }
 
@@ -212,7 +237,7 @@ export class SummarizationView extends ReactiveLitElement {
     `;
   }
 
-  private renderSummary() {
+  private renderSummaryContent() {
     if (this.summary.value === null) {
       return html`<genai-placeholder></genai-placeholder>`;
     }
@@ -220,12 +245,14 @@ export class SummarizationView extends ReactiveLitElement {
       ${this.renderSummaryFooter()}`;
   }
 
-  override render(): RenderResult {
+  private renderSummary() {
     const classes = {
       open: this.summaryOpened.value,
     };
+    const expandIconName =
+      this.summaryOpened.value ? 'chevron_up' : 'chevron_down';
 
-    // TODO: b/336963138 - Implement consent UI / download UI / ...
+    // TODO: b/336963138 - Implement error state.
     return html`
       <div id="container">
         <div id="header" class="sheet">
@@ -236,17 +263,67 @@ export class SummarizationView extends ReactiveLitElement {
             @click=${this.onSummaryOpenClick}
             buttonstyle="floating"
           >
-            <cra-icon
-              name=${this.summaryOpened.value ? 'chevron_up' : 'chevron_down'}
-              slot="icon"
-            ></cra-icon>
+            <cra-icon name=${expandIconName} slot="icon"></cra-icon>
           </cra-icon-button>
         </div>
         <div id="main" class="sheet ${classMap(classes)}">
-          ${this.renderSummary()}
+          ${this.renderSummaryContent()}
         </div>
       </div>
     `;
+  }
+
+  private renderSummaryInstalling(progress: number) {
+    return html`
+      <div id="container">
+        <div id="header" class="sheet">
+          <cra-icon name="summarize_auto"></cra-icon>
+          <span>${i18n.summaryHeader}</span>
+          <cros-badge>${i18n.genAiExperimentBadge}</cros-badge>
+          <span class="progress">
+            ${i18n.summaryDownloadingProgressDescription(progress)}
+          </span>
+          <md-circular-progress indeterminate></md-circular-progress>
+        </div>
+      </div>
+    `;
+  }
+
+  override render(): RenderResult {
+    const summaryModelState = this.platformHandler.getModelState(
+      ModelId.SUMMARY,
+    );
+    const summaryEnabled = settings.value.summaryEnabled;
+
+    if (summaryEnabled === SummaryEnableState.DISABLED ||
+        summaryModelState.value.kind === 'unavailable') {
+      this.classList.add('empty');
+      return nothing;
+    }
+
+    this.classList.remove('empty');
+
+    if (summaryEnabled === SummaryEnableState.UNKNOWN) {
+      return html`<summary-consent-card></summary-consent-card>`;
+    }
+
+    if (summaryEnabled === SummaryEnableState.ENABLED) {
+      switch (summaryModelState.value.kind) {
+        case 'error':
+          // TODO(pihsun): Handle error
+          return nothing;
+        case 'installing':
+          return this.renderSummaryInstalling(summaryModelState.value.progress);
+        case 'installed':
+          return this.renderSummary();
+        case 'notInstalled':
+          return html`<summary-consent-card></summary-consent-card>`;
+        default:
+          assertExhaustive(summaryModelState.value.kind);
+      }
+    }
+
+    assertExhaustive(summaryEnabled);
   }
 }
 

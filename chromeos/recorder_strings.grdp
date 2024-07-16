@@ -172,6 +172,21 @@ You can turn this off at anytime in Settings.
   <message desc="Label of the speaker ID toggle in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_SPEAKER_ID_LABEL">
     Allow speaker identification
   </message>
+  <message desc="Description of the summary setting in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_SUMMARY_DESCRIPTION">
+    This will take up to 2GB of storage
+  </message>
+  <message desc="Button when summary model is donwloading in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_SUMMARY_DOWNLOADING_BUTTON">
+    Downloading…
+  </message>
+  <message desc="Description of the summary setting when summary model is downloading in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_SUMMARY_DOWNLOADING_PROGRESS_DESCRIPTION">
+    <ph name="PROGRESS_PERCENTAGE">$1<ex>42</ex></ph>% downloaded
+  </message>
+  <message desc="Button to download summary model in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_SUMMARY_DOWNLOAD_BUTTON">
+    Download
+  </message>
+  <message desc="Label of the summary setting in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_SUMMARY_LABEL">
+    Recording summary, powered by Google AI
+  </message>
   <message desc="Button when transcription model is downloading in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_DOWNLOADING_BUTTON">
     Downloading…
   </message>
@@ -189,6 +204,21 @@ You can turn this off at anytime in Settings.
   </message>
   <message desc="Header of the transcription and summary section in settings." name="IDS_RECORDER_SETTINGS_SECTION_TRANSCRIPTION_SUMMARY_HEADER">
     Transcription and summary
+  </message>
+  <message desc="Description of the download progress when the summary model is downloading in summary." name="IDS_RECORDER_SUMMARY_DOWNLOADING_PROGRESS_DESCRIPTION">
+    <ph name="PROGRESS_PERCENTAGE">$1<ex>42</ex></ph>% downloaded
+  </message>
+  <message desc="Description of the download summary model card." name="IDS_RECORDER_SUMMARY_DOWNLOAD_MODEL_DESCRIPTION">
+    The Gemini model requires 2GB of storage to process transcripts and create summaries
+  </message>
+  <message desc="Button to disable summary in the download summary model card." name="IDS_RECORDER_SUMMARY_DOWNLOAD_MODEL_DISABLE_BUTTON">
+    No thanks
+  </message>
+  <message desc="Button to download summary model in the download summary model card." name="IDS_RECORDER_SUMMARY_DOWNLOAD_MODEL_DOWNLOAD_BUTTON">
+    Download
+  </message>
+  <message desc="Header of the download summary model card." name="IDS_RECORDER_SUMMARY_DOWNLOAD_MODEL_HEADER">
+    Download Gemini model to summarize recordings?
   </message>
   <message desc="Header of the summary." name="IDS_RECORDER_SUMMARY_HEADER">
     Summary

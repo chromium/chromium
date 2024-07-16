@@ -8,40 +8,44 @@ import "chromeos/services/machine_learning/public/mojom/soda.mojom";
 import "mojo/public/mojom/base/uuid.mojom";
 import "services/on_device_model/public/mojom/on_device_model.mojom";
 
-// The state of the SODA installation.
-enum SodaStateType {
-  // SODA isn't available on this platform.
+// The state of the SODA or on-device model installation.
+enum ModelStateType {
+  // The model isn't available on this platform.
   kUnavailable,
 
-  // SODA is available but either the library or the language pack aren't
-  // installed yet.
+  // The model is available but aren't fully installed yet (Can be either
+  // language pack / library not installed for SODA, or base model / LoRA layer
+  // not installed for on-device models).
   kNotInstalled,
 
-  // SODA is currently downloading and installing.
+  // The model is currently downloading and installing.
   kInstalling,
 
-  // SODA is installed and ready to be used.
+  // The model is installed and ready to be used.
   kInstalled,
 
-  // There is an error while trying to install SODA.
+  // There is an error while trying to install The model.
   kError,
 };
 
-// The state of the SODA installation, including download progress.
-struct SodaState {
-  // Current state of SODA installation.
-  SodaStateType type;
+// The state of the model installation, including download progress.
+struct ModelState {
+  // Current state of the model installation.
+  ModelStateType type;
 
   // The install progress. Only available when the state is `kInstalling`.
-  // Progress is the weighted average of the combined download percentage of
-  // the SODA binary and the language pack, in a range of [0, 100].
+  // Progress is the weighted average of the combined download percentage,
+  // in a range of [0, 100].
   uint8? progress;
 };
 
-// Interface for listening to SODA installation state.
-interface SodaStateMonitor {
-  // Update when SODA state is changed.
-  Update(SodaState state);
+// Interface for listening to SODA or on-device model installation state.
+interface ModelStateMonitor {
+  // Update when state of the model is changed.
+  // The initial state are returned by the AddSodaMonitor/AddModelMonitor call
+  // when the `ModelStateMonitor` is added, and this method is only called on
+  // subsequent state updates.
+  Update(ModelState state);
 };
 
 
@@ -49,13 +53,23 @@ interface SodaStateMonitor {
 interface PageHandler {
   // Binds a new OnDeviceModel interface if possible using model from DLC
   // specified by `model_id`.
+  // The list of possible IDs are listed in core/platform_handler.ts, and
+  // corresponds to the DLC ID on platform side.
   LoadModel(
       mojo_base.mojom.Uuid model_id,
       pending_receiver<on_device_model.mojom.OnDeviceModel> model)
       => (on_device_model.mojom.LoadModelResult result);
 
+  // Adds a new monitor for model state change.
+  // Returns the current state.
+  AddModelMonitor(
+      mojo_base.mojom.Uuid model_id,
+      pending_remote<ModelStateMonitor> monitor)
+      => (ModelState state);
+
   // Adds a new monitor for SODA state change.
-  AddSodaMonitor(pending_remote<SodaStateMonitor> monitor) => (SodaState state);
+  // Returns the current state.
+  AddSodaMonitor(pending_remote<ModelStateMonitor> monitor) => (ModelState state);
 
   // Requests installation for SODA.
   InstallSoda() => ();

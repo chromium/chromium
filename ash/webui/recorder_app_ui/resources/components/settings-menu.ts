@@ -23,8 +23,13 @@ import {
 
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
+import {ModelId} from '../core/platform_handler.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
-import {settings, TranscriptionEnableState} from '../core/state/settings.js';
+import {
+  settings,
+  SummaryEnableState,
+  TranscriptionEnableState,
+} from '../core/state/settings.js';
 import {
   assertExhaustive,
   assertInstanceof,
@@ -144,6 +149,120 @@ export class SettingsMenu extends ReactiveLitElement {
     this.dialog?.show();
   }
 
+  private get summaryEnabled() {
+    return settings.value.summaryEnabled === SummaryEnableState.ENABLED;
+  }
+
+  private onDownloadSummaryClick() {
+    settings.mutate((s) => {
+      s.summaryEnabled = SummaryEnableState.ENABLED;
+    });
+    this.platformHandler.downloadModel(ModelId.SUMMARY);
+  }
+
+  private onSummaryToggle(ev: Event) {
+    const target = assertInstanceof(ev.target, CrosSwitch);
+    settings.mutate((s) => {
+      s.summaryEnabled = target.selected ? SummaryEnableState.ENABLED :
+                                           SummaryEnableState.DISABLED;
+    });
+  }
+
+  private renderSummaryModelDescriptionAndAction() {
+    const state = this.platformHandler.getModelState(ModelId.SUMMARY).value;
+    if (state.kind === 'notInstalled') {
+      // Shows the "download" button when the summary model is not installed,
+      // even if it's already enabled by user. This shouldn't happen in normal
+      // case, but might happen if DLC is cleared manually by any mean.
+      return html`
+        <span slot="description">
+          ${i18n.settingsOptionsSummaryDescription}
+        </span>
+        <cra-button
+          slot="action"
+          button-style="secondary"
+          .label=${i18n.settingsOptionsSummaryDownloadButton}
+          @click=${this.onDownloadSummaryClick}
+        ></cra-button>
+      `;
+    }
+
+    const summaryToggle = html`
+      <cros-switch
+        slot="action"
+        .selected=${this.summaryEnabled}
+        @change=${this.onSummaryToggle}
+      >
+      </cros-switch>
+    `;
+    if (!this.summaryEnabled) {
+      return summaryToggle;
+    }
+
+    switch (state.kind) {
+      case 'unavailable':
+        return assertNotReached(
+          'Summary model unavailable but the setting is rendered.',
+        );
+      case 'error':
+        // TODO: b/344784638 - Render error state.
+        return nothing;
+      case 'installing': {
+        const progressDescription =
+          i18n.settingsOptionsSummaryDownloadingProgressDescription(
+            state.progress,
+          );
+        return html`
+          <span slot="description">${progressDescription}</span>
+          <cra-button
+            slot="action"
+            button-style="secondary"
+            .label=${i18n.settingsOptionsSummaryDownloadingButton}
+            disabled
+          >
+            <md-circular-progress indeterminate slot="leading-icon">
+            </md-circular-progress>
+          </cra-button>
+        `;
+      }
+      case 'installed':
+        return summaryToggle;
+      default:
+        assertExhaustive(state.kind);
+    }
+  }
+
+  private renderSummaryModelSettings() {
+    if (this.platformHandler.getModelState(ModelId.SUMMARY).value.kind ===
+        'unavailable') {
+      return nothing;
+    }
+    return html`
+      <settings-row>
+        <span slot="label">${i18n.settingsOptionsSummaryLabel}</span>
+        ${this.renderSummaryModelDescriptionAndAction()}
+      </settings-row>
+    `;
+  }
+
+  private renderTranscriptionDetailSettings() {
+    if (!this.transcriptionEnabled ||
+        this.platformHandler.sodaState.value.kind === 'notInstalled') {
+      return nothing;
+    }
+    return html`
+      <settings-row>
+        <span slot="label">${i18n.settingsOptionsSpeakerIdLabel}</span>
+        <span slot="description">
+          ${i18n.settingsOptionsSpeakerIdDescription}
+        </span>
+        <cros-switch slot="action"></cros-switch>
+      </settings-row>
+      <!-- TODO: b/336963138 - Add transcription language. -->
+      ${this.renderSummaryModelSettings()}
+    `;
+  }
+
   private onCloseClick() {
     this.dialog?.close();
   }
@@ -182,22 +301,6 @@ export class SettingsMenu extends ReactiveLitElement {
     return (
       settings.value.transcriptionEnabled === TranscriptionEnableState.ENABLED
     );
-  }
-
-  private renderTranscriptionDetailSettings() {
-    if (!this.transcriptionEnabled ||
-        this.platformHandler.sodaState.value.kind === 'notInstalled') {
-      return nothing;
-    }
-    return html`
-      <settings-row>
-        <span slot="label">${i18n.settingsOptionsSpeakerIdLabel}</span>
-        <span slot="description">
-          ${i18n.settingsOptionsSpeakerIdDescription}
-        </span>
-        <cros-switch slot="action"></cros-switch>
-      </settings-row>
-    `;
   }
 
   private renderTranscriptionDescriptionAndAction() {
@@ -278,9 +381,6 @@ export class SettingsMenu extends ReactiveLitElement {
             ${this.renderTranscriptionDescriptionAndAction()}
           </settings-row>
           ${this.renderTranscriptionDetailSettings()}
-          <!--
-            TODO: b/336963138 - Add transcription language and summary.
-          -->
         </div>
       </div>
     `;
