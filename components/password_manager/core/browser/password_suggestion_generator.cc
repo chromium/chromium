@@ -62,15 +62,6 @@ std::u16string GetHumanReadableRealm(const std::string& signon_realm) {
   return base::UTF8ToUTF16(signon_realm);
 }
 
-// Returns a string representing the icon of either the account store or the
-// local password store.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-Suggestion::Icon CreateStoreIcon(bool for_account_store) {
-  return for_account_store ? Suggestion::Icon::kGoogle
-                           : Suggestion::Icon::kNoIcon;
-}
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 Suggestion CreateWebAuthnEntry(bool listed_passkeys) {
   return Suggestion(
@@ -196,12 +187,6 @@ void AppendSuggestionIfMatching(const std::u16string& field_suggestion,
     suggestion.custom_icon = custom_icon;
     // The UI code will pick up an icon from the resources based on the string.
     suggestion.icon = Suggestion::Icon::kGlobe;
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    if (!base::FeatureList::IsEnabled(
-            password_manager::features::kButterOnDesktopFollowup)) {
-      suggestion.trailing_icon = CreateStoreIcon(from_account_store);
-    }
-#endif
     suggestions->emplace_back(std::move(suggestion));
   }
 }

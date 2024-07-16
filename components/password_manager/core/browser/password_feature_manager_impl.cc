@@ -123,9 +123,7 @@ bool PasswordFeatureManagerImpl::
 
 bool PasswordFeatureManagerImpl::ShouldChangeDefaultPasswordStore() const {
   return IsOptedInForAccountStorage() && IsDefaultPasswordStoreSet() &&
-         GetDefaultPasswordStore() == PasswordForm::Store::kProfileStore &&
-         base::FeatureList::IsEnabled(
-             password_manager::features::kButterOnDesktopFollowup);
+         GetDefaultPasswordStore() == PasswordForm::Store::kProfileStore;
 }
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 

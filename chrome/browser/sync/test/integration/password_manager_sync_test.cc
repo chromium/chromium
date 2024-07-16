@@ -164,9 +164,7 @@ class PasswordManagerSyncTest : public SyncTest {
     // updating a password become flaky.
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{password_manager::features::kFillOnAccountSelect,
-                              switches::kExplicitBrowserSigninUIOnDesktop,
-                              password_manager::features::
-                                  kButterOnDesktopFollowup},
+                              switches::kExplicitBrowserSigninUIOnDesktop},
         /*disabled_features=*/{});
   }
 
@@ -484,27 +482,16 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, ChooseDestinationStore) {
 
     // Save the password and check the store.
     BubbleObserver bubble_observer(web_contents);
-    // TODO: crbug.com/40943570 - Remove this flag check after feature is fully rolled out.
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kButterOnDesktopFollowup)) {
-      EXPECT_TRUE(
-          bubble_observer.IsDefaultStoreChangedPromptShownAutomatically());
-      bubble_observer.AcknowledgeDefaultStoreChange();
 
-      ASSERT_TRUE(bubble_observer.IsSavePromptShownAutomatically());
-      bubble_observer.AcceptSavePrompt();
+    EXPECT_TRUE(
+        bubble_observer.IsDefaultStoreChangedPromptShownAutomatically());
+    bubble_observer.AcknowledgeDefaultStoreChange();
 
-      EXPECT_THAT(GetAllLoginsFromAccountPasswordStore(),
-                  testing::Contains(MatchesLogin("localuser", "localpass")));
-    } else {
-      ASSERT_TRUE(bubble_observer.IsSavePromptShownAutomatically());
-      bubble_observer.AcceptSavePrompt();
+    ASSERT_TRUE(bubble_observer.IsSavePromptShownAutomatically());
+    bubble_observer.AcceptSavePrompt();
 
-      std::vector<std::unique_ptr<password_manager::PasswordForm>>
-          profile_credentials = GetAllLoginsFromProfilePasswordStore();
-      EXPECT_THAT(profile_credentials,
-                  ElementsAre(MatchesLogin("localuser", "localpass")));
-    }
+    EXPECT_THAT(GetAllLoginsFromAccountPasswordStore(),
+                testing::Contains(MatchesLogin("localuser", "localpass")));
   }
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)

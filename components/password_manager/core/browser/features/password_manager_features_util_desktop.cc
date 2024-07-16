@@ -217,12 +217,9 @@ void OptInToAccountStorage(PrefService* pref_service,
 
   // Since opting out using toggle in settings explicitly sets the default store
   // to kProfileStore, opt in needs to explicitly set it to kAccountStore.
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kButterOnDesktopFollowup)) {
-    ScopedAccountStorageSettingsUpdate(pref_service,
-                                       GaiaIdHash::FromGaiaId(gaia_id))
-        .SetDefaultStore(PasswordForm::Store::kAccountStore);
-  }
+  ScopedAccountStorageSettingsUpdate(pref_service,
+                                     GaiaIdHash::FromGaiaId(gaia_id))
+      .SetDefaultStore(PasswordForm::Store::kAccountStore);
 
   // Record the total number of (now) opted-in accounts.
   base::UmaHistogramExactLinear(
@@ -234,8 +231,6 @@ void OptOutOfAccountStorage(PrefService* pref_service,
                             syncer::SyncService* sync_service) {
   CHECK(pref_service);
   CHECK(sync_service);
-  CHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kButterOnDesktopFollowup));
 
   std::string gaia_id = sync_service->GetAccountInfo().gaia;
   if (gaia_id.empty()) {

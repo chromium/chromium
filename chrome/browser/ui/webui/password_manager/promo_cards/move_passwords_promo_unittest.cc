@@ -60,11 +60,6 @@ class PromoCardMovePasswordsTest : public ChromeRenderViewHostTestHarness {
         pref_service(), fake_sync_service_.get()));
   }
 
-  void InitButterOnDesktopFollowupFeatureWithState(bool state) {
-    scoped_feature_list_.InitWithFeatureState(
-        password_manager::features::kButterOnDesktopFollowup, state);
-  }
-
   void SavePassword(password_manager::PasswordForm::Store store_type =
                         password_manager::PasswordForm::Store::kProfileStore) {
     password_manager::PasswordForm form;
@@ -88,7 +83,6 @@ class PromoCardMovePasswordsTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(PromoCardMovePasswordsTest, NoPromoIfNoPasswords) {
-  InitButterOnDesktopFollowupFeatureWithState(true);
   EnableAccountStorage();
 
   ASSERT_THAT(pref_service()->GetList(
@@ -100,22 +94,7 @@ TEST_F(PromoCardMovePasswordsTest, NoPromoIfNoPasswords) {
   EXPECT_FALSE(promo->ShouldShowPromo());
 }
 
-TEST_F(PromoCardMovePasswordsTest, NoPromoIfFeatureDisabled) {
-  InitButterOnDesktopFollowupFeatureWithState(false);
-  EnableAccountStorage();
-  SavePassword();
-
-  ASSERT_THAT(pref_service()->GetList(
-                  password_manager::prefs::kPasswordManagerPromoCardsList),
-              IsEmpty());
-  std::unique_ptr<password_manager::PasswordPromoCardBase> promo =
-      std::make_unique<MovePasswordsPromo>(profile(), delegate());
-
-  EXPECT_FALSE(promo->ShouldShowPromo());
-}
-
-TEST_F(PromoCardMovePasswordsTest, NoPromoIfButterDisabled) {
-  InitButterOnDesktopFollowupFeatureWithState(true);
+TEST_F(PromoCardMovePasswordsTest, NoPromoIfAccountStorageDisabled) {
   SavePassword();
 
   ASSERT_THAT(pref_service()->GetList(
@@ -128,7 +107,6 @@ TEST_F(PromoCardMovePasswordsTest, NoPromoIfButterDisabled) {
 }
 
 TEST_F(PromoCardMovePasswordsTest, NoPromoIfNoLocalPasswords) {
-  InitButterOnDesktopFollowupFeatureWithState(true);
   EnableAccountStorage();
   SavePassword(password_manager::PasswordForm::Store::kAccountStore);
 
@@ -142,7 +120,6 @@ TEST_F(PromoCardMovePasswordsTest, NoPromoIfNoLocalPasswords) {
 }
 
 TEST_F(PromoCardMovePasswordsTest, PromoShownWithSavedLocalPasswords) {
-  InitButterOnDesktopFollowupFeatureWithState(true);
   EnableAccountStorage();
   SavePassword();
 
@@ -157,7 +134,6 @@ TEST_F(PromoCardMovePasswordsTest, PromoShownWithSavedLocalPasswords) {
 
 TEST_F(PromoCardMovePasswordsTest, PromoShownIn7DaysAfterDismiss) {
   base::HistogramTester histogram_tester;
-  InitButterOnDesktopFollowupFeatureWithState(true);
   EnableAccountStorage();
   SavePassword();
 

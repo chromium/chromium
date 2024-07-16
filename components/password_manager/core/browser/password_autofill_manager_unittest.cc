@@ -1384,13 +1384,6 @@ TEST_F(PasswordAutofillManagerTest, DisplayAccountSuggestionsIndicatorIcon) {
       std::u16string(), ShowWebAuthnCredentials(false), element_bounds);
   ASSERT_THAT(open_args.suggestions.size(),
               testing::Ge(1u));  // No footer on Android.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kButterOnDesktopFollowup)) {
-    EXPECT_THAT(open_args.suggestions[0].trailing_icon,
-                Suggestion::Icon::kGoogle);
-  }
-#endif
   EXPECT_EQ(open_args.trigger_source,
             autofill::AutofillSuggestionTriggerSource::kPasswordManager);
 }

@@ -147,8 +147,6 @@ TEST_F(PasswordManagerFeaturesUtilWithoutAccountStorageTest,
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
        AccountStorageOptIn) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::kButterOnDesktopFollowup};
   CoreAccountInfo account;
   account.email = "foo@account.com";
   account.gaia = "foo";
@@ -280,9 +278,7 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
        NoOptInOfferedIfExplicitSigninUIEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{password_manager::features::
-                                kButterOnDesktopFollowup,
-                            switches::kExplicitBrowserSigninUIOnDesktop},
+      /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop},
       /*disabled_features=*/{});
   pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
   CoreAccountInfo account;
@@ -343,11 +339,6 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
 
 TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
        SyncDisablesAccountStorage) {
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::kButterOnDesktopFollowup};
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-
   CoreAccountInfo account;
   account.email = "name@account.com";
   account.gaia = "name";
@@ -469,8 +460,6 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
 
 TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
        OptOutSetsProfileStorePreference) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::kButterOnDesktopFollowup};
   CoreAccountInfo account;
   account.email = "name@account.com";
   account.gaia = "name";

@@ -477,18 +477,7 @@ bool PasswordsPrivateDelegateImpl::AddPassword(
   credential.password = password;
   credential.note = note;
   credential.stored_in = {store_to_use};
-  bool success = saved_passwords_presenter_.AddCredential(credential);
-
-  auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
-  DCHECK(client);
-  // Update the default store to the last used one.
-  if (success &&
-      client->GetPasswordFeatureManager()->IsOptedInForAccountStorage() &&
-      !base::FeatureList::IsEnabled(
-          password_manager::features::kButterOnDesktopFollowup)) {
-    client->GetPasswordFeatureManager()->SetDefaultPasswordStore(store_to_use);
-  }
-  return success;
+  return saved_passwords_presenter_.AddCredential(credential);
 }
 
 bool PasswordsPrivateDelegateImpl::ChangeCredential(
@@ -726,12 +715,8 @@ void PasswordsPrivateDelegateImpl::MovePasswordsToAccount(
 
   saved_passwords_presenter_.MoveCredentialsToAccount(
       credentials_to_move,
-      base::FeatureList::IsEnabled(
-          password_manager::features::kButterOnDesktopFollowup)
-          ? password_manager::metrics_util::MoveToAccountStoreTrigger::
-                kExplicitlyTriggeredInSettings
-          : password_manager::metrics_util::MoveToAccountStoreTrigger::
-                kExplicitlyTriggeredForMultiplePasswordsInSettings);
+      password_manager::metrics_util::MoveToAccountStoreTrigger::
+          kExplicitlyTriggeredInSettings);
 }
 
 void PasswordsPrivateDelegateImpl::FetchFamilyMembers(
@@ -788,15 +773,6 @@ void PasswordsPrivateDelegateImpl::ImportPasswords(
   password_manager_porter_->Import(
       web_contents, store_to_use,
       base::BindOnce(&ConvertImportResults).Then(std::move(results_callback)));
-
-  auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
-  DCHECK(client);
-  // Update the default store to the last used one.
-  if (client->GetPasswordFeatureManager()->IsOptedInForAccountStorage() &&
-      !base::FeatureList::IsEnabled(
-          password_manager::features::kButterOnDesktopFollowup)) {
-    client->GetPasswordFeatureManager()->SetDefaultPasswordStore(store_to_use);
-  }
 }
 
 void PasswordsPrivateDelegateImpl::ContinueImport(
@@ -869,13 +845,7 @@ void PasswordsPrivateDelegateImpl::SetAccountStorageOptIn(
     return;
   }
   if (!opt_in) {
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kButterOnDesktopFollowup)) {
-      client->GetPasswordFeatureManager()->OptOutOfAccountStorage();
-    } else {
-      client->GetPasswordFeatureManager()
-          ->OptOutOfAccountStorageAndClearSettings();
-    }
+    client->GetPasswordFeatureManager()->OptOutOfAccountStorage();
     return;
   }
 

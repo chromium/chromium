@@ -204,9 +204,6 @@ TEST_F(PasswordFeatureManagerImplTest, GenerationDisabledIfSyncPaused) {
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordFeatureManagerImplTest, ShouldChangeDefaultPasswordStore) {
-  base::test::ScopedFeatureList features(
-      password_manager::features::kButterOnDesktopFollowup);
-
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_);
 
   password_feature_manager_.SetDefaultPasswordStore(
@@ -215,9 +212,6 @@ TEST_F(PasswordFeatureManagerImplTest, ShouldChangeDefaultPasswordStore) {
 }
 
 TEST_F(PasswordFeatureManagerImplTest, ShouldNotChangeDefaultPasswordStore) {
-  base::test::ScopedFeatureList features(
-      password_manager::features::kButterOnDesktopFollowup);
-
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_);
 
   password_feature_manager_.SetDefaultPasswordStore(
