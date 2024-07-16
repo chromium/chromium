@@ -25,13 +25,13 @@ If you are adding a **new TestSuite**, be sure to add it to `include_index.py` s
 
 ### Adding New Test Data
 
-If your test requires modifying or adding new test data i.e. a new trace in `base/tracing/test/data`, you will need to upload this to the GCS bucket.
+If your test requires modifying or adding new test data i.e. a new trace in `base/tracing/test/data`, you will need to perform the following steps:
 
+**1**. Upload the file to the GCS bucket:
 ```
-$ base/tracing/test/test_data.py upload <path_to_file>
+   $ base/tracing/test/test_data.py upload <path_to_file>
 ```
-
-This script will output a deps entry which you will need to add to the [DEPS file](../../../DEPS) (see examples in the `src/base/tracing/test/data` entry).
+**2**. Add the deps entry produced by the above script to the [DEPS file](../../../DEPS) (see examples in the `src/base/tracing/test/data` entry).
 ```
 {
   "path": {
@@ -50,7 +50,9 @@ This script will output a deps entry which you will need to add to the [DEPS fil
 ```
 You will need to **manually** add this to the deps entry. After adding this entry, running `gclient sync` will download the test files in your local repo. See these [docs](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/gcs_dependencies.md) for the GCS dependency workflow.
 
-Perfetto has it's own way to download GCS objects with the [test_data](../../../third_party/perfetto/tools/test_data) script. This script uses .sha256 files to download. The `test_data.py upload` command will also generate the `file_name-a1b2c3f4.sha256` in `base/tracing/test/data`. You will need to check-in these files in the codebase so they can by rolled to Perfetto, so the tests can work there too.
+**Note:** you can get the DEPS entry separately from the upload step by calling `base/tracing/test/test_data.py get_deps <file_name>` or `base/tracing/test/test_data.py get_all_deps`.
+
+**3**. Check in the .sha256 files produced by the `test_data.py upload` command (`file_name-a1b2c3f4.sha256` in `base/tracing/test/data`). These files will be rolled to Perfetto and used to download the GCS objects by Perfetto's own [test_data](../../../third_party/perfetto/tools/test_data) script.
 
 ## Writing TestTraceProcessor Tests
 
