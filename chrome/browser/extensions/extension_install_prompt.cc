@@ -157,7 +157,9 @@ std::u16string ExtensionInstallPrompt::Prompt::GetDialogTitle() const {
       NOTREACHED_IN_MIGRATION();
   }
 
-  return l10n_util::GetStringFUTF16(id, base::UTF8ToUTF16(extension_->name()));
+  return l10n_util::GetStringFUTF16(
+      id,
+      extensions::util::GetFixupExtensionNameForUIDisplay(extension_->name()));
 }
 
 int ExtensionInstallPrompt::Prompt::GetDialogButtons() const {
