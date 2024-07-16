@@ -125,6 +125,11 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       this.categoryList_.push(ContentSettingsTypes.CAPTURED_SURFACE_CONTROL);
     }
 
+    if (loadTimeData.getBoolean('enableKeyboardAndPointerLockPrompt')) {
+      this.categoryList_.push(ContentSettingsTypes.KEYBOARD_LOCK);
+      this.categoryList_.push(ContentSettingsTypes.POINTER_LOCK);
+    }
+
     this.prefs_ = createSiteSettingsPrefs([], [], []);
   }
 

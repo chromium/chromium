@@ -63,6 +63,10 @@ class KeyboardLockController : public ExclusiveAccessControllerBase {
   // event was handled by the KeyboardLockController.
   bool HandleKeyEvent(const input::NativeWebKeyboardEvent& event);
 
+  void set_lock_state_callback_for_test(base::OnceClosure callback) {
+    lock_state_callback_for_test_ = std::move(callback);
+  }
+
  private:
   friend class ExclusiveAccessTest;
   friend class FullscreenControlViewTest;
@@ -86,6 +90,8 @@ class KeyboardLockController : public ExclusiveAccessControllerBase {
   // Displays the exit instructions if the user presses escape rapidly.
   void ReShowExitBubbleIfNeeded();
 
+  void NotifyLockRequestResult();
+
   // Called after the bubble is hidden in tests, if set.
   ExclusiveAccessBubbleHideCallbackForTest bubble_hide_callback_for_test_;
 
@@ -102,7 +108,10 @@ class KeyboardLockController : public ExclusiveAccessControllerBase {
 
   base::circular_deque<base::TimeTicks> esc_keypress_tracker_;
 
+  // Called when a page acquires, fails to acquire, or loses keyboard lock.
+  base::OnceClosure lock_state_callback_for_test_;
+
   base::WeakPtrFactory<KeyboardLockController> weak_ptr_factory_{this};
 };
 
-#endif  //  CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_KEYBOARD_LOCK_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_KEYBOARD_LOCK_CONTROLLER_H_

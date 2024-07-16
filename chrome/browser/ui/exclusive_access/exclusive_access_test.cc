@@ -28,6 +28,7 @@
 #include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/mock_permission_controller.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "exclusive_access_controller_base.h"
 #include "exclusive_access_manager.h"
@@ -68,6 +69,22 @@ ExclusiveAccessTest::ExclusiveAccessTest() {
 ExclusiveAccessTest::~ExclusiveAccessTest() = default;
 
 void ExclusiveAccessTest::SetUpOnMainThread() {
+  permission_controller_ =
+      std::make_unique<content::MockPermissionController>();
+  ON_CALL(*permission_controller_, RequestPermissionsFromCurrentDocument)
+      .WillByDefault(
+          [](content::RenderFrameHost* render_frame_host,
+             content::PermissionRequestDescription request_description,
+             base::OnceCallback<void(
+                 const std::vector<content::PermissionStatus>&)> callback) {
+            std::move(callback).Run(std::vector<content::PermissionStatus>(
+                request_description.permissions.size(),
+                content::PermissionStatus::GRANTED));
+          });
+
+  GetExclusiveAccessManager()
+      ->permission_manager()
+      .set_permission_controller_for_test(permission_controller_.get());
   GetExclusiveAccessManager()
       ->pointer_lock_controller()
       ->bubble_hide_callback_for_test_ = base::BindRepeating(
@@ -122,23 +139,18 @@ bool ExclusiveAccessTest::RequestKeyboardLock(bool esc_key_locked) {
     codes = base::flat_set<ui::DomCode>({ui::DomCode::US_A});
 
   bool success = false;
-  bool callback_called = false;
+  base::RunLoop run_loop;
   base::OnceCallback<void(blink::mojom::KeyboardLockRequestResult)> callback =
       base::BindOnce(
-          [](bool* success, bool* callback_called,
+          [](bool* success, base::RunLoop* run_loop,
              blink::mojom::KeyboardLockRequestResult result) {
             *success =
                 result == blink::mojom::KeyboardLockRequestResult::kSuccess;
-            *callback_called = true;
+            run_loop->Quit();
           },
-          &success, &callback_called);
+          &success, &run_loop);
   content::RequestKeyboardLock(tab, std::move(codes), std::move(callback));
-  // We currently assume that content::RequestKeyboardLock() calls the callback
-  // synchronously. We'd need to change the test code here if the assumption no
-  // longer holds. However, we cannot use base::RunLoop as-is, since this code
-  // may be used with base::TestMockTimeTaskRunner::ScopedContext, which cannot
-  // be used together with base::RunLoop.
-  CHECK(callback_called);
+  run_loop.Run();
   return success;
 }
 
@@ -148,7 +160,11 @@ void ExclusiveAccessTest::RequestToLockPointer(bool user_gesture,
   PointerLockController* pointer_lock_controller =
       GetExclusiveAccessManager()->pointer_lock_controller();
   pointer_lock_controller->fake_pointer_lock_for_test_ = true;
+  base::RunLoop run_loop;
+  pointer_lock_controller->set_lock_state_callback_for_test(
+      run_loop.QuitClosure());
   browser()->RequestPointerLock(tab, user_gesture, last_unlocked_by_target);
+  run_loop.Run();
   pointer_lock_controller->fake_pointer_lock_for_test_ = false;
 }
 
@@ -287,4 +303,11 @@ void ExclusiveAccessTest::SetUserEscapeTimestampForTest(
 void ExclusiveAccessTest::ExpectMockControllerReceivedEscape(int count) {
   EXPECT_EQ(count, mock_controller()->escape_pressed_count());
   mock_controller()->reset_escape_pressed_count();
+}
+
+void ExclusiveAccessTest::Wait(base::TimeDelta duration) {
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), duration);
+  run_loop.Run();
 }

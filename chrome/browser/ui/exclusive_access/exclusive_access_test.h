@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_hide_callback.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/mock_permission_controller.h"
 #include "content/public/test/test_utils.h"
 #include "exclusive_access_controller_base.h"
 #include "exclusive_access_manager.h"
@@ -106,6 +107,10 @@ class ExclusiveAccessTest : public InProcessBrowserTest {
 
   void ExpectMockControllerReceivedEscape(int count);
 
+  // Wait for the given `duration` by running a base::RunLoop until a delayed
+  // task is executed.
+  static void Wait(base::TimeDelta duration);
+
   MockExclusiveAccessController* mock_controller() {
     return mock_controller_.get();
   }
@@ -124,6 +129,8 @@ class ExclusiveAccessTest : public InProcessBrowserTest {
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen_window_;
 #endif
   std::unique_ptr<MockExclusiveAccessController> mock_controller_;
+
+  std::unique_ptr<content::MockPermissionController> permission_controller_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 

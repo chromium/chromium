@@ -26,6 +26,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/mock_permission_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/base/ui_base_features.h"
@@ -76,6 +77,19 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
         std::make_unique<aura::test::TestCursorClient>(root_window);
     cursor_client_->DisableMouseEvents();
 #endif
+    GetExclusiveAccessManager()
+        ->permission_manager()
+        .set_permission_controller_for_test(&permission_controller_);
+    ON_CALL(permission_controller_, RequestPermissionsFromCurrentDocument)
+        .WillByDefault(
+            [](content::RenderFrameHost* render_frame_host,
+               content::PermissionRequestDescription request_description,
+               base::OnceCallback<void(
+                   const std::vector<content::PermissionStatus>&)> callback) {
+              std::move(callback).Run(std::vector<content::PermissionStatus>(
+                  request_description.permissions.size(),
+                  content::PermissionStatus::GRANTED));
+            });
   }
 
   void TearDownOnMainThread() override {
@@ -178,6 +192,7 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  content::MockPermissionController permission_controller_;
 
 #if defined(USE_AURA)
   std::unique_ptr<aura::test::TestCursorClient> cursor_client_;

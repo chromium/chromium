@@ -12,6 +12,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "url/gurl.h"
 
@@ -51,8 +52,17 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessManagerTest,
   ExpectMockControllerReceivedEscape(2);
 }
 
+// TODO: crbug.com/352244303 - For some reason the test fails on
+// linux_wayland_rel when kKeyboardAndPointerLockPrompt is disabled. Re-enable
+// the test when the feature is enabled by default.
+#if BUILDFLAG(IS_OZONE_WAYLAND)
+#define MAYBE_HandleKeyEvent_KeyboardLocked \
+  DISABLED_HandleKeyEvent_KeyboardLocked
+#else
+#define MAYBE_HandleKeyEvent_KeyboardLocked HandleKeyEvent_KeyboardLocked
+#endif
 IN_PROC_BROWSER_TEST_F(ExclusiveAccessManagerTest,
-                       HandleKeyEvent_KeyboardLocked) {
+                       MAYBE_HandleKeyEvent_KeyboardLocked) {
   // Esc key pressed while keyboard is locked without Esc key should be handled.
   EnterActiveTabFullscreen();
   RequestKeyboardLock(/*esc_key_locked=*/false);

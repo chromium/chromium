@@ -167,6 +167,7 @@ void KeyboardLockController::LockKeyboard(
     base::WeakPtr<content::WebContents> web_contents,
     bool esc_key_locked) {
   if (!web_contents) {
+    NotifyLockRequestResult();
     return;
   }
   // Call GotResponseToKeyboardLockRequest() to notify `web_contents` of the
@@ -191,17 +192,21 @@ void KeyboardLockController::LockKeyboard(
             ? base::BindOnce(bubble_hide_callback_for_test_)
             : base::NullCallback());
   }
+  NotifyLockRequestResult();
 }
 
 void KeyboardLockController::UnlockKeyboard() {
-  if (!exclusive_access_tab())
+  if (!exclusive_access_tab()) {
+    NotifyLockRequestResult();
     return;
+  }
 
   keyboard_lock_state_ = KeyboardLockState::kUnlocked;
 
   exclusive_access_tab()->GotResponseToKeyboardLockRequest(false);
   SetTabWithExclusiveAccess(nullptr);
   exclusive_access_manager()->UpdateBubble(base::NullCallback());
+  NotifyLockRequestResult();
 }
 
 void KeyboardLockController::HandleUserHeldEscapeDeprecated() {
@@ -234,5 +239,11 @@ void KeyboardLockController::ReShowExitBubbleIfNeeded() {
 
     if (esc_repeat_triggered_for_test_)
       std::move(esc_repeat_triggered_for_test_).Run();
+  }
+}
+
+void KeyboardLockController::NotifyLockRequestResult() {
+  if (lock_state_callback_for_test_) {
+    std::move(lock_state_callback_for_test_).Run();
   }
 }
