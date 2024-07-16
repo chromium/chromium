@@ -10,6 +10,7 @@ import type {AppMap} from 'chrome://resources/cr_components/app_management/const
 import {castExists} from 'chrome://resources/cr_components/app_management/util.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app_management_shared_style.css.js';
@@ -60,6 +61,7 @@ export class SupportedLinksOverlappingAppsDialogElement extends
 
     switch (appNames.length) {
       case 1:
+        assert(appNames[0]);
         return this.i18n(
             'appManagementIntentOverlapDialogText1App', appTitle, appNames[0]);
       case 2:

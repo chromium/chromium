@@ -20,6 +20,7 @@ import type {LocalizedLinkElement} from 'chrome://resources/cr_components/locali
 import type {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import type {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -167,6 +168,7 @@ export class SupportedLinksItemElement extends SupportedLinksItemElementBase {
 
     switch (appNames.length) {
       case 1:
+        assert(appNames[0]);
         this.overlappingAppsWarning_ = this.i18n(
             'appManagementIntentOverlapWarningText1App', appNames[0]);
         break;
