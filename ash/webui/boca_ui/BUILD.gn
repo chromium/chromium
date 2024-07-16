@@ -10,6 +10,8 @@ assert(is_chromeos_ash, "Coba App is ash-chrome only")
 
 static_library("boca_ui") {
   sources = [
+    "boca_app_client.cc",
+    "boca_app_client.h",
     "boca_ui.cc",
     "boca_ui.h",
     "url_constants.h",
