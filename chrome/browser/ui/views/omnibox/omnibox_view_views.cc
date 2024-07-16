@@ -847,6 +847,12 @@ void OmniboxViewViews::SetAccessibilityLabel(const std::u16string& display_text,
     friendly_suggestion_text_ =
         model()->GetPopupAccessibilityLabelForCurrentSelection(
             display_text, true, &friendly_suggestion_text_prefix_length_);
+
+    // If the line immediately after the current selection is the
+    // informational IPH row, append its accessibility label at the end of
+    // this selection's accessibility label.
+    friendly_suggestion_text_ +=
+        model()->MaybeGetPopupAccessibilityLabelForIPHSuggestion();
   }
 
   if (notify_text_changed)

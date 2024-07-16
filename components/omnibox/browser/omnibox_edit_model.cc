@@ -2007,10 +2007,12 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
       label_prefix_length);
 }
 
-std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForIPHSuggestion() {
+std::u16string
+OmniboxEditModel::MaybeGetPopupAccessibilityLabelForIPHSuggestion() {
   DCHECK(popup_view_);
   DCHECK_NE(popup_selection_.line, OmniboxPopupSelection::kNoMatch)
-      << "GetPopupAccessibilityLabelForIPHSuggestion should never be called "
+      << "MaybeGetPopupAccessibilityLabelForIPHSuggestion should never be "
+         "called "
          "if the current selection is kNoMatch.";
 
   std::u16string label = u"";
@@ -2021,14 +2023,19 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForIPHSuggestion() {
     if (next_match.IsIPHSuggestion()) {
       label =
           l10n_util::GetStringFUTF16(IDS_ACC_CHROME_TIP, next_match.contents);
-    }
-    if (!label.empty() &&
-        OmniboxPopupSelection(
-            next_line, OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION)
-            .IsControlPresentOnMatch(autocomplete_controller()->result(),
-                                     GetPrefService())) {
-      label =
-          l10n_util::GetStringFUTF16(IDS_ACC_DISMISS_CHROME_TIP_SUFFIX, label);
+
+      // Iff the next selection (the next time the user presses tab) is the
+      // remove suggestion button for the IPH row, also append its a11y label.
+      auto next_selection = popup_selection_.GetNextSelection(
+          autocomplete_controller()->result(), GetPrefService(),
+          controller_->client()->GetTemplateURLService(),
+          OmniboxPopupSelection::kForward, OmniboxPopupSelection::kStateOrLine);
+      if (next_selection.line == next_line &&
+          next_selection.state ==
+              OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION) {
+        label = l10n_util::GetStringFUTF16(IDS_ACC_DISMISS_CHROME_TIP_SUFFIX,
+                                           label);
+      }
     }
   }
 

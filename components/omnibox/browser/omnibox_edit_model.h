@@ -433,7 +433,7 @@ class OmniboxEditModel {
   // has to be read at the end of the last suggestion.  Returns the label for
   // the IPH row if the current selection is the one right before the IPH row.
   // Otherwise, returns an empty string.
-  std::u16string GetPopupAccessibilityLabelForIPHSuggestion();
+  std::u16string MaybeGetPopupAccessibilityLabelForIPHSuggestion();
 
   // Invoked any time the result set of the controller changes.
   // TODO(orinj): This method seems like a good candidate for removal; it is

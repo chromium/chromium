@@ -572,8 +572,8 @@ void OmniboxResultView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       // If the line immediately after the current selection is the
       // informational IPH row, append its accessibility label at the end of
       // this selection's accessibility label.
-      label +=
-          popup_view_->model()->GetPopupAccessibilityLabelForIPHSuggestion();
+      label += popup_view_->model()
+                   ->MaybeGetPopupAccessibilityLabelForIPHSuggestion();
     } else {
       label = AutocompleteMatchType::ToAccessibilityLabel(raw_match,
                                                           raw_match.contents);
