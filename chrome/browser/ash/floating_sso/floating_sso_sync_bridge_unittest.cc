@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/floating_sso/cookie_sync_test_util.h"
+#include "components/sync/model/data_batch.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/protocol/cookie_specifics.pb.h"
@@ -37,9 +38,10 @@ class FloatingSsoSyncBridgeTest : public testing::Test {
     store_ = syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
     std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
         store_->CreateWriteBatch();
-    sync_pb::CookieSpecifics sync_specifics = DefaultCookieSpecificsForTest();
-    batch->WriteData(sync_specifics.unique_key(),
-                     sync_specifics.SerializeAsString());
+    for (size_t i = 0; i < kNamesForTests.size(); ++i) {
+      sync_pb::CookieSpecifics specifics = CookieSpecificsForTest(i);
+      batch->WriteData(specifics.unique_key(), specifics.SerializeAsString());
+    }
     CommitToStoreAndWait(std::move(batch));
 
     // Create a bridge and then wait until it finishes reading initial data from
@@ -85,11 +87,28 @@ TEST_F(FloatingSsoSyncBridgeTest, GetClientTag) {
 
 TEST_F(FloatingSsoSyncBridgeTest, InitialEntities) {
   const auto& entries = bridge().CookieSpecificsEntriesForTest();
-  EXPECT_EQ(entries.size(), 1u);
-  const auto& [key, specifics] = *entries.begin();
-  EXPECT_EQ(key, specifics.unique_key());
-  EXPECT_THAT(specifics,
-              base::test::EqualsProto(DefaultCookieSpecificsForTest()));
+  EXPECT_EQ(entries.size(), kNamesForTests.size());
+  for (size_t i = 0; i < kNamesForTests.size(); ++i) {
+    EXPECT_THAT(entries.at(kUniqueKeysForTests[i]),
+                base::test::EqualsProto(CookieSpecificsForTest(i)));
+  }
+}
+
+TEST_F(FloatingSsoSyncBridgeTest, GetDataForCommit) {
+  std::unique_ptr<syncer::DataBatch> data_batch = bridge().GetDataForCommit(
+      {kUniqueKeysForTests[1], kUniqueKeysForTests[3]});
+
+  ASSERT_TRUE(data_batch);
+  for (size_t i : {1, 3}) {
+    ASSERT_TRUE(data_batch->HasNext());
+    syncer::KeyAndData key_and_data = data_batch->Next();
+    EXPECT_EQ(kUniqueKeysForTests[i], key_and_data.first);
+    EXPECT_EQ(kUniqueKeysForTests[i], key_and_data.second->name);
+    EXPECT_THAT(key_and_data.second->specifics.cookie(),
+                base::test::EqualsProto(CookieSpecificsForTest(i)));
+  }
+  // Batch should have no other elements except for the two handled above.
+  EXPECT_FALSE(data_batch->HasNext());
 }
 
 }  // namespace ash::floating_sso

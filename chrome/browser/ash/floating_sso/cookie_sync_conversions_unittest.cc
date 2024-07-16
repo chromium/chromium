@@ -32,7 +32,7 @@ TEST(CookieSyncConversionsTest, CookieToProtoAndBack) {
   // cookies.
   for (bool is_partitioned : {false, true}) {
     std::string cookie_line = base::StrCat(
-        {kNameForTests, "=", kValueForTests, " Path=", kPathForTests,
+        {kNamesForTests[0], "=", kValueForTests, " Path=", kPathForTests,
          "; Secure", is_partitioned ? "; Partitioned;" : ""});
     base::Time creation_time = base::Time::Now();
     std::optional<base::Time> server_time = std::nullopt;
@@ -63,7 +63,7 @@ TEST(CookieSyncConversionsTest, CookieToProtoAndBack) {
 // Verify that reading a cookie from Sync proto and then writing it back
 // without changes results in the same proto.
 TEST(CookieSyncConversionsTest, ProtoToCookieAndBack) {
-  sync_pb::CookieSpecifics sync_specifics = DefaultCookieSpecificsForTest();
+  sync_pb::CookieSpecifics sync_specifics = CookieSpecificsForTest();
 
   std::unique_ptr<net::CanonicalCookie> cookie = FromSyncProto(sync_specifics);
   ASSERT_TRUE(cookie);
@@ -78,9 +78,9 @@ TEST(CookieSyncConversionsTest, ProtoToCookieAndBack) {
 // Verify that a cookie with non-serializable partition key can't be
 // saved in a Sync proto.
 TEST(CookieSyncConversionsTest, PartitionKeyShouldBeSerializable) {
-  std::string cookie_line = std::string(kNameForTests) + "=" + kValueForTests +
-                            "; Partitioned;" + " Path=" + kPathForTests +
-                            "; Secure";
+  std::string cookie_line = std::string(kNamesForTests[0]) + "=" +
+                            kValueForTests + "; Partitioned;" +
+                            " Path=" + kPathForTests + "; Secure";
   base::Time creation_time = base::Time::Now();
   std::optional<base::Time> server_time = std::nullopt;
   // Partition key with a nonce can't be serialized.
@@ -104,7 +104,7 @@ TEST(CookieSyncConversionsTest, PartitionKeyShouldBeSerializable) {
 // Verify that we don't build a CanonicalCookie object if the cookie
 // saved in Sync proto is not canonical.
 TEST(CookieSyncConversionsTest, NonCanonicalCookieInProto) {
-  sync_pb::CookieSpecifics sync_specifics = DefaultCookieSpecificsForTest();
+  sync_pb::CookieSpecifics sync_specifics = CookieSpecificsForTest();
   // Overwrite creation time to be null while keeping last_access time a valid
   // value. This should result in a failure when trying to build a
   // CanonicalCookie object.

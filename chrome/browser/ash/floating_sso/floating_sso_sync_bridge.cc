@@ -17,9 +17,23 @@
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_store_with_in_memory_cache.h"
 #include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/cookie_specifics.pb.h"
+#include "components/sync/protocol/entity_data.h"
 
 namespace ash::floating_sso {
+
+namespace {
+
+std::unique_ptr<syncer::EntityData> CreateEntityData(
+    const sync_pb::CookieSpecifics& specifics) {
+  auto entity_data = std::make_unique<syncer::EntityData>();
+  entity_data->specifics.mutable_cookie()->CopyFrom(specifics);
+  entity_data->name = specifics.unique_key();
+  return entity_data;
+}
+
+}  // namespace
 
 FloatingSsoSyncBridge::FloatingSsoSyncBridge(
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
@@ -69,9 +83,15 @@ std::string FloatingSsoSyncBridge::GetClientTag(
 
 std::unique_ptr<syncer::DataBatch> FloatingSsoSyncBridge::GetDataForCommit(
     StorageKeyList storage_keys) {
-  // TODO: b/346354248 - implement.
-  NOTIMPLEMENTED();
-  return nullptr;
+  auto batch = std::make_unique<syncer::MutableDataBatch>();
+  const CookieSpecificsEntries& in_memory_data = store_->in_memory_data();
+  for (const std::string& storage_key : storage_keys) {
+    auto it = in_memory_data.find(storage_key);
+    if (it != in_memory_data.end()) {
+      batch->Put(it->first, CreateEntityData(it->second));
+    }
+  }
+  return batch;
 }
 
 std::unique_ptr<syncer::DataBatch>

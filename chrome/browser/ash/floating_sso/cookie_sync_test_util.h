@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_FLOATING_SSO_COOKIE_SYNC_TEST_UTIL_H_
 #define CHROME_BROWSER_ASH_FLOATING_SSO_COOKIE_SYNC_TEST_UTIL_H_
 
+#include <array>
 #include <cstdint>
+#include <string>
 
 namespace sync_pb {
 class CookieSpecifics;
@@ -13,9 +15,8 @@ class CookieSpecifics;
 
 namespace ash::floating_sso {
 
-inline constexpr char kUniqueKeyForTests[] =
-    "https://toplevelsite.comtrueTestNamewww.example.com/baz219";
-inline constexpr char kNameForTests[] = "TestName";
+extern const std::array<std::string, 4> kUniqueKeysForTests;
+extern const std::array<std::string, 4> kNamesForTests;
 inline constexpr char kValueForTests[] = "TestValue";
 inline constexpr char kDomainForTests[] = "www.example.com";
 inline constexpr char kPathForTests[] = "/baz";
@@ -28,7 +29,10 @@ inline constexpr int64_t kCreationTimeForTesting = 13357418862798591;
 inline constexpr int64_t kLastUpdateTimeForTesting = 13357418862799017;
 inline constexpr int kPortForTests = 19;
 
-sync_pb::CookieSpecifics DefaultCookieSpecificsForTest();
+// Returns a cookie proto with a name `kNamesForTests[i]` and a key
+// `kUniqueKeysForTests[i]`, other fields will always be the same regardless of
+// the value of `i`.
+sync_pb::CookieSpecifics CookieSpecificsForTest(size_t i = 0);
 
 }  // namespace ash::floating_sso
 

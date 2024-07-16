@@ -4,14 +4,32 @@
 
 #include "chrome/browser/ash/floating_sso/cookie_sync_test_util.h"
 
+#include <array>
+#include <string>
+
+#include "base/check.h"
 #include "components/sync/protocol/cookie_specifics.pb.h"
 
 namespace ash::floating_sso {
 
-sync_pb::CookieSpecifics DefaultCookieSpecificsForTest() {
+const std::array<std::string, 4> kUniqueKeysForTests{
+    "https://toplevelsite.comtrueFirstNamewww.example.com/baz219",
+    "https://toplevelsite.comtrueSecondNamewww.example.com/baz219",
+    "https://toplevelsite.comtrueThirdNamewww.example.com/baz219",
+    "https://toplevelsite.comtrueFourthNamewww.example.com/baz219"};
+
+const std::array<std::string, 4> kNamesForTests{"FirstName", "SecondName",
+                                                "ThirdName", "FourthName"};
+
+// Assert that we have the same number of names and keys.
+static_assert(std::tuple_size_v<decltype(kUniqueKeysForTests)> ==
+              std::tuple_size_v<decltype(kNamesForTests)>);
+
+sync_pb::CookieSpecifics CookieSpecificsForTest(size_t i) {
+  CHECK(i < kNamesForTests.size());
   sync_pb::CookieSpecifics sync_specifics;
-  sync_specifics.set_unique_key(kUniqueKeyForTests);
-  sync_specifics.set_name(kNameForTests);
+  sync_specifics.set_unique_key(kUniqueKeysForTests[i]);
+  sync_specifics.set_name(kNamesForTests[i]);
   sync_specifics.set_value(kValueForTests);
   sync_specifics.set_domain(kDomainForTests);
   sync_specifics.set_path(kPathForTests);
