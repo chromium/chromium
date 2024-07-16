@@ -1201,6 +1201,8 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kPreloadingModelTimerInterval;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kPreloadingModelOneExecutionPerHover;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kPreloadingModelMaxHoverTime;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kPreloadingModelEnactCandidates;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>

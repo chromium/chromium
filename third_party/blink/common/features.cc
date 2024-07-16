@@ -1845,6 +1845,10 @@ const base::FeatureParam<int> kPreloadingModelTimerInterval{
     &kPreloadingHeuristicsMLModel, "timer_interval", 100};
 const base::FeatureParam<bool> kPreloadingModelOneExecutionPerHover{
     &kPreloadingHeuristicsMLModel, "one_execution_per_hover", true};
+// The default max hover time of 10s covers the 98th percentile of hovering
+// cases that are relevant to the model.
+const base::FeatureParam<base::TimeDelta> kPreloadingModelMaxHoverTime{
+    &kPreloadingHeuristicsMLModel, "max_hover_time", base::Seconds(10)};
 const base::FeatureParam<bool> kPreloadingModelEnactCandidates{
     &kPreloadingHeuristicsMLModel, "enact_candidates", false};
 const base::FeatureParam<int> kPreloadingModelPrefetchModerateThreshold{

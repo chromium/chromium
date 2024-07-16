@@ -106,6 +106,12 @@ bool MLModelOneExecutionPerHover() {
   return one_execution_per_hover;
 }
 
+base::TimeDelta MLModelMaxHoverTime() {
+  static const base::TimeDelta max_hover_time =
+      blink::features::kPreloadingModelMaxHoverTime.Get();
+  return max_hover_time;
+}
+
 bool MaySendTraffic() {
   // TODO(b/290223353): Due to concerns about the amount of traffic this feature
   // would create on desktop, we'll just enable for a random sample of clients.
@@ -433,10 +439,9 @@ void NavigationPredictor::OnMLModelExecutionTimerFired() {
   // repeated executions wasteful. So we only do one execution per mouse over.
   // As we iterate on the model, multiple executions may become useful, but we
   // need to take care to not produce a large amount of redundant predictions
-  // (as seen in crbug.com/338200075 ). Other ideas here could be to only report
-  // when the score differs from the previous execution and/or to have a fixed
-  // limit on the number of executions while dwelling.
+  // (as seen in crbug.com/338200075 ).
   if (!MLModelOneExecutionPerHover() &&
+      inputs.hover_dwell_time < MLModelMaxHoverTime() &&
       !ml_model_execution_timer_.IsRunning()) {
     ml_model_execution_timer_.Start(
         FROM_HERE, MLModelExecutionTimerInterval(),
