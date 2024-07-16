@@ -93,7 +93,7 @@ impl<T, P> Punctuated<T, P> {
     }
 
     /// Borrows the element at the given index.
-    pub fn get(&mut self, index: usize) -> Option<&T> {
+    pub fn get(&self, index: usize) -> Option<&T> {
         if let Some((value, _punct)) = self.inner.get(index) {
             Some(value)
         } else if index == self.inner.len() {

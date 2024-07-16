@@ -13,6 +13,7 @@ pub(crate) struct FixupContext {
     //
     //     match x {};  // not when its own statement
     //
+    #[cfg(feature = "full")]
     stmt: bool,
 
     // This is the difference between:
@@ -44,6 +45,7 @@ pub(crate) struct FixupContext {
     //     Example: `$match;`
     //
     //     No parentheses required.
+    #[cfg(feature = "full")]
     leftmost_subexpression_in_stmt: bool,
 
     // Print expression such that it can be parsed as a match arm.
@@ -59,6 +61,7 @@ pub(crate) struct FixupContext {
     //         _ => m! {} - 1,  // binary subtraction operator
     //     }
     //
+    #[cfg(feature = "full")]
     match_arm: bool,
 
     // This is almost equivalent to `leftmost_subexpression_in_stmt`, other than
@@ -74,6 +77,7 @@ pub(crate) struct FixupContext {
     //         _ => m! {} - 1,  // no parens
     //     }
     //
+    #[cfg(feature = "full")]
     leftmost_subexpression_in_match_arm: bool,
 
     // This is the difference between:
@@ -84,22 +88,61 @@ pub(crate) struct FixupContext {
     //         () if let _ = Struct {} => {}  // no parens
     //     }
     //
+    #[cfg(feature = "full")]
     parenthesize_exterior_struct_lit: bool,
+
+    // This is the difference between:
+    //
+    //     let _ = 1 + return 1;  // no parens if rightmost subexpression
+    //
+    //     let _ = 1 + (return 1) + 1;  // needs parens
+    //
+    #[cfg(feature = "full")]
+    parenthesize_exterior_jump: bool,
+
+    // This is the difference between:
+    //
+    //     let _ = (return) - 1;  // without paren, this would return -1
+    //
+    //     let _ = return + 1;  // no paren because '+' cannot begin expr
+    //
+    #[cfg(feature = "full")]
+    next_operator_can_begin_expr: bool,
+
+    // This is the difference between:
+    //
+    //     let _ = x as u8 + T;
+    //
+    //     let _ = (x as u8) < T;
+    //
+    // Without parens, the latter would want to parse `u8<T...` as a type.
+    next_operator_can_begin_generics: bool,
 }
 
 impl FixupContext {
     /// The default amount of fixing is minimal fixing. Fixups should be turned
     /// on in a targeted fashion where needed.
     pub const NONE: Self = FixupContext {
+        #[cfg(feature = "full")]
         stmt: false,
+        #[cfg(feature = "full")]
         leftmost_subexpression_in_stmt: false,
+        #[cfg(feature = "full")]
         match_arm: false,
+        #[cfg(feature = "full")]
         leftmost_subexpression_in_match_arm: false,
+        #[cfg(feature = "full")]
         parenthesize_exterior_struct_lit: false,
+        #[cfg(feature = "full")]
+        parenthesize_exterior_jump: false,
+        #[cfg(feature = "full")]
+        next_operator_can_begin_expr: false,
+        next_operator_can_begin_generics: false,
     };
 
     /// Create the initial fixup for printing an expression in statement
     /// position.
+    #[cfg(feature = "full")]
     pub fn new_stmt() -> Self {
         FixupContext {
             stmt: true,
@@ -109,6 +152,7 @@ impl FixupContext {
 
     /// Create the initial fixup for printing an expression as the right-hand
     /// side of a match arm.
+    #[cfg(feature = "full")]
     pub fn new_match_arm() -> Self {
         FixupContext {
             match_arm: true,
@@ -120,6 +164,7 @@ impl FixupContext {
     /// of an `if` or `while`. There are a few other positions which are
     /// grammatically equivalent and also use this, such as the iterator
     /// expression in `for` and the scrutinee in `match`.
+    #[cfg(feature = "full")]
     pub fn new_condition() -> Self {
         FixupContext {
             parenthesize_exterior_struct_lit: true,
@@ -140,11 +185,17 @@ impl FixupContext {
     /// `-$a` nor `[$a]` have one.
     pub fn leftmost_subexpression(self) -> Self {
         FixupContext {
+            #[cfg(feature = "full")]
             stmt: false,
+            #[cfg(feature = "full")]
             leftmost_subexpression_in_stmt: self.stmt || self.leftmost_subexpression_in_stmt,
+            #[cfg(feature = "full")]
             match_arm: false,
+            #[cfg(feature = "full")]
             leftmost_subexpression_in_match_arm: self.match_arm
                 || self.leftmost_subexpression_in_match_arm,
+            #[cfg(feature = "full")]
+            parenthesize_exterior_jump: true,
             ..self
         }
     }
@@ -155,11 +206,33 @@ impl FixupContext {
     /// subexpressions.
     pub fn leftmost_subexpression_with_dot(self) -> Self {
         FixupContext {
+            #[cfg(feature = "full")]
             stmt: self.stmt || self.leftmost_subexpression_in_stmt,
+            #[cfg(feature = "full")]
             leftmost_subexpression_in_stmt: false,
+            #[cfg(feature = "full")]
             match_arm: self.match_arm || self.leftmost_subexpression_in_match_arm,
+            #[cfg(feature = "full")]
             leftmost_subexpression_in_match_arm: false,
+            #[cfg(feature = "full")]
+            parenthesize_exterior_jump: true,
             ..self
+        }
+    }
+
+    /// Transform this fixup into the one that should apply when printing a
+    /// leftmost subexpression followed by punctuation that is legal as the
+    /// first token of an expression.
+    pub fn leftmost_subexpression_with_begin_operator(
+        self,
+        #[cfg(feature = "full")] next_operator_can_begin_expr: bool,
+        next_operator_can_begin_generics: bool,
+    ) -> Self {
+        FixupContext {
+            #[cfg(feature = "full")]
+            next_operator_can_begin_expr,
+            next_operator_can_begin_generics,
+            ..self.leftmost_subexpression()
         }
     }
 
@@ -173,9 +246,13 @@ impl FixupContext {
     /// `$a.f($b)`.
     pub fn subsequent_subexpression(self) -> Self {
         FixupContext {
+            #[cfg(feature = "full")]
             stmt: false,
+            #[cfg(feature = "full")]
             leftmost_subexpression_in_stmt: false,
+            #[cfg(feature = "full")]
             match_arm: false,
+            #[cfg(feature = "full")]
             leftmost_subexpression_in_match_arm: false,
             ..self
         }
@@ -186,8 +263,10 @@ impl FixupContext {
     ///
     /// The documentation on `FixupContext::leftmost_subexpression_in_stmt` has
     /// examples.
+    #[cfg(feature = "full")]
     pub fn would_cause_statement_boundary(self, expr: &Expr) -> bool {
         (self.leftmost_subexpression_in_stmt && !classify::requires_semi_to_be_stmt(expr))
+            || ((self.stmt || self.leftmost_subexpression_in_stmt) && matches!(expr, Expr::Let(_)))
             || (self.leftmost_subexpression_in_match_arm
                 && !classify::requires_comma_to_be_match_arm(expr))
     }
@@ -203,9 +282,59 @@ impl FixupContext {
     ///
     ///   - `true && false`, because otherwise this would be misinterpreted as a
     ///     "let chain".
+    #[cfg(feature = "full")]
     pub fn needs_group_as_let_scrutinee(self, expr: &Expr) -> bool {
         self.parenthesize_exterior_struct_lit && classify::confusable_with_adjacent_block(expr)
-            || Precedence::of_rhs(expr) <= Precedence::And
+            || self.trailing_precedence(expr) < Precedence::Let
+    }
+
+    /// Determines the effective precedence of a left subexpression. Some
+    /// expressions have lower precedence when adjacent to particular operators.
+    pub fn leading_precedence(self, expr: &Expr) -> Precedence {
+        #[cfg(feature = "full")]
+        if self.next_operator_can_begin_expr {
+            // Decrease precedence of value-less jumps when followed by an
+            // operator that would otherwise get interpreted as beginning a
+            // value for the jump.
+            if let Expr::Break(_) | Expr::Return(_) | Expr::Yield(_) = expr {
+                return Precedence::Jump;
+            }
+        }
+        self.precedence(expr)
+    }
+
+    /// Determines the effective precedence of a right subexpression. Some
+    /// expressions have higher precedence on the right side of a binary
+    /// operator than on the left.
+    pub fn trailing_precedence(self, expr: &Expr) -> Precedence {
+        #[cfg(feature = "full")]
+        if !self.parenthesize_exterior_jump {
+            match expr {
+                // Increase precedence of expressions that extend to the end of
+                // current statement or group.
+                Expr::Break(_)
+                | Expr::Closure(_)
+                | Expr::Let(_)
+                | Expr::Return(_)
+                | Expr::Yield(_) => {
+                    return Precedence::Prefix;
+                }
+                Expr::Range(e) if e.start.is_none() => return Precedence::Prefix,
+                _ => {}
+            }
+        }
+        self.precedence(expr)
+    }
+
+    fn precedence(self, expr: &Expr) -> Precedence {
+        if self.next_operator_can_begin_generics {
+            if let Expr::Cast(cast) = expr {
+                if classify::trailing_unparameterized_path(&cast.ty) {
+                    return Precedence::MIN;
+                }
+            }
+        }
+        Precedence::of(expr)
     }
 }
 

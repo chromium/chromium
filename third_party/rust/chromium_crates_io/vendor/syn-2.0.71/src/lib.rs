@@ -249,7 +249,7 @@
 //!   dynamic library libproc_macro from rustc toolchain.
 
 // Syn types in rustdoc of other crates get linked to here.
-#![doc(html_root_url = "https://docs.rs/syn/2.0.69")]
+#![doc(html_root_url = "https://docs.rs/syn/2.0.71")]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![deny(unsafe_op_in_unsafe_fn)]
 #![allow(non_camel_case_types)]
@@ -285,6 +285,7 @@
     clippy::must_use_candidate,
     clippy::needless_doctest_main,
     clippy::needless_pass_by_value,
+    clippy::needless_update,
     clippy::never_loop,
     clippy::range_plus_one,
     clippy::redundant_else,
@@ -386,7 +387,7 @@ mod file;
 #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
 pub use crate::file::File;
 
-#[cfg(all(feature = "full", feature = "printing"))]
+#[cfg(all(any(feature = "full", feature = "derive"), feature = "printing"))]
 mod fixup;
 
 #[cfg(any(feature = "full", feature = "derive"))]

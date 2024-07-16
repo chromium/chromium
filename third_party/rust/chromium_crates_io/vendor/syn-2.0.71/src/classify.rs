@@ -1,10 +1,16 @@
+#[cfg(feature = "full")]
 use crate::expr::Expr;
+#[cfg(any(feature = "printing", feature = "full"))]
 use crate::generics::TypeParamBound;
+#[cfg(any(feature = "printing", feature = "full"))]
 use crate::path::{Path, PathArguments};
+#[cfg(any(feature = "printing", feature = "full"))]
 use crate::punctuated::Punctuated;
+#[cfg(any(feature = "printing", feature = "full"))]
 use crate::ty::{ReturnType, Type};
 #[cfg(feature = "full")]
 use proc_macro2::{Delimiter, TokenStream, TokenTree};
+#[cfg(any(feature = "printing", feature = "full"))]
 use std::ops::ControlFlow;
 
 #[cfg(feature = "full")]
@@ -146,84 +152,37 @@ pub(crate) fn confusable_with_adjacent_block(mut expr: &Expr) -> bool {
 }
 
 #[cfg(feature = "printing")]
-pub(crate) fn confusable_with_adjacent_lt(mut expr: &Expr) -> bool {
+pub(crate) fn trailing_unparameterized_path(mut ty: &Type) -> bool {
     loop {
-        match expr {
-            Expr::Binary(e) => expr = &e.right,
-            Expr::Cast(e) => return trailing_unparameterized_path(&e.ty),
-            Expr::Reference(e) => expr = &e.expr,
-            Expr::Unary(e) => expr = &e.expr,
+        match ty {
+            Type::BareFn(t) => match &t.output {
+                ReturnType::Default => return false,
+                ReturnType::Type(_, ret) => ty = ret,
+            },
+            Type::ImplTrait(t) => match last_type_in_bounds(&t.bounds) {
+                ControlFlow::Break(trailing_path) => return trailing_path,
+                ControlFlow::Continue(t) => ty = t,
+            },
+            Type::Path(t) => match last_type_in_path(&t.path) {
+                ControlFlow::Break(trailing_path) => return trailing_path,
+                ControlFlow::Continue(t) => ty = t,
+            },
+            Type::Ptr(t) => ty = &t.elem,
+            Type::Reference(t) => ty = &t.elem,
+            Type::TraitObject(t) => match last_type_in_bounds(&t.bounds) {
+                ControlFlow::Break(trailing_path) => return trailing_path,
+                ControlFlow::Continue(t) => ty = t,
+            },
 
-            Expr::Array(_)
-            | Expr::Assign(_)
-            | Expr::Async(_)
-            | Expr::Await(_)
-            | Expr::Block(_)
-            | Expr::Break(_)
-            | Expr::Call(_)
-            | Expr::Closure(_)
-            | Expr::Const(_)
-            | Expr::Continue(_)
-            | Expr::Field(_)
-            | Expr::ForLoop(_)
-            | Expr::Group(_)
-            | Expr::If(_)
-            | Expr::Index(_)
-            | Expr::Infer(_)
-            | Expr::Let(_)
-            | Expr::Lit(_)
-            | Expr::Loop(_)
-            | Expr::Macro(_)
-            | Expr::Match(_)
-            | Expr::MethodCall(_)
-            | Expr::Paren(_)
-            | Expr::Path(_)
-            | Expr::Range(_)
-            | Expr::Repeat(_)
-            | Expr::Return(_)
-            | Expr::Struct(_)
-            | Expr::Try(_)
-            | Expr::TryBlock(_)
-            | Expr::Tuple(_)
-            | Expr::Unsafe(_)
-            | Expr::Verbatim(_)
-            | Expr::While(_)
-            | Expr::Yield(_) => return false,
-        }
-    }
-
-    fn trailing_unparameterized_path(mut ty: &Type) -> bool {
-        loop {
-            match ty {
-                Type::BareFn(t) => match &t.output {
-                    ReturnType::Default => return false,
-                    ReturnType::Type(_, ret) => ty = ret,
-                },
-                Type::ImplTrait(t) => match last_type_in_bounds(&t.bounds) {
-                    ControlFlow::Break(trailing_path) => return trailing_path,
-                    ControlFlow::Continue(t) => ty = t,
-                },
-                Type::Path(t) => match last_type_in_path(&t.path) {
-                    ControlFlow::Break(trailing_path) => return trailing_path,
-                    ControlFlow::Continue(t) => ty = t,
-                },
-                Type::Ptr(t) => ty = &t.elem,
-                Type::Reference(t) => ty = &t.elem,
-                Type::TraitObject(t) => match last_type_in_bounds(&t.bounds) {
-                    ControlFlow::Break(trailing_path) => return trailing_path,
-                    ControlFlow::Continue(t) => ty = t,
-                },
-
-                Type::Array(_)
-                | Type::Group(_)
-                | Type::Infer(_)
-                | Type::Macro(_)
-                | Type::Never(_)
-                | Type::Paren(_)
-                | Type::Slice(_)
-                | Type::Tuple(_)
-                | Type::Verbatim(_) => return false,
-            }
+            Type::Array(_)
+            | Type::Group(_)
+            | Type::Infer(_)
+            | Type::Macro(_)
+            | Type::Never(_)
+            | Type::Paren(_)
+            | Type::Slice(_)
+            | Type::Tuple(_)
+            | Type::Verbatim(_) => return false,
         }
     }
 

@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.61"
 name = "syn"
-version = "2.0.69"
+version = "2.0.71"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = false
 include = [
@@ -161,6 +161,10 @@ path = "tests/test_token_trees.rs"
 [[test]]
 name = "test_ty"
 path = "tests/test_ty.rs"
+
+[[test]]
+name = "test_unparenthesize"
+path = "tests/test_unparenthesize.rs"
 
 [[test]]
 name = "test_visibility"

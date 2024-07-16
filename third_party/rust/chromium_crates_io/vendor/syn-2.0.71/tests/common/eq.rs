@@ -166,7 +166,7 @@ use rustc_ast::token::{
     self, CommentKind, Delimiter, IdentIsRaw, Lit, Nonterminal, Token, TokenKind,
 };
 use rustc_ast::tokenstream::{
-    AttrTokenStream, AttrTokenTree, AttributesData, DelimSpacing, DelimSpan, LazyAttrTokenStream,
+    AttrTokenStream, AttrTokenTree, AttrsTarget, DelimSpacing, DelimSpan, LazyAttrTokenStream,
     Spacing, TokenStream, TokenTree,
 };
 use rustc_data_structures::packed::Pu128;
@@ -470,7 +470,7 @@ spanless_eq_struct!(AssocItemConstraint; id ident gen_args kind span);
 spanless_eq_struct!(AttrItem; unsafety path args tokens);
 spanless_eq_struct!(AttrTokenStream; 0);
 spanless_eq_struct!(Attribute; kind id style span);
-spanless_eq_struct!(AttributesData; attrs tokens);
+spanless_eq_struct!(AttrsTarget; attrs tokens);
 spanless_eq_struct!(BareFnTy; safety ext generic_params decl decl_span);
 spanless_eq_struct!(BindingMode; 0 1);
 spanless_eq_struct!(Block; stmts id rules span tokens could_be_bare_literal);
@@ -546,7 +546,7 @@ spanless_eq_enum!(AssocItemKind; Const(0) Fn(0) Type(0) MacCall(0) Delegation(0)
 spanless_eq_enum!(AttrArgs; Empty Delimited(0) Eq(0 1));
 spanless_eq_enum!(AttrArgsEq; Ast(0) Hir(0));
 spanless_eq_enum!(AttrStyle; Outer Inner);
-spanless_eq_enum!(AttrTokenTree; Token(0 1) Delimited(0 1 2 3) Attributes(0));
+spanless_eq_enum!(AttrTokenTree; Token(0 1) Delimited(0 1 2 3) AttrsTarget(0));
 spanless_eq_enum!(BinOpKind; Add Sub Mul Div Rem And Or BitXor BitAnd BitOr Shl Shr Eq Lt Le Ne Ge Gt);
 spanless_eq_enum!(BlockCheckMode; Default Unsafe(0));
 spanless_eq_enum!(BorrowKind; Ref Raw);

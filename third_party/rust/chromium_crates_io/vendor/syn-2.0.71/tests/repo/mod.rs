@@ -6,7 +6,9 @@ use self::progress::Progress;
 use anyhow::Result;
 use flate2::read::GzDecoder;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
+use rayon::ThreadPoolBuilder;
 use std::collections::BTreeSet;
+use std::env;
 use std::ffi::OsStr;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -382,6 +384,25 @@ pub fn edition(path: &Path) -> &'static str {
     } else {
         "2021"
     }
+}
+
+#[allow(dead_code)]
+pub fn abort_after() -> usize {
+    match env::var("ABORT_AFTER_FAILURE") {
+        Ok(s) => s.parse().expect("failed to parse ABORT_AFTER_FAILURE"),
+        Err(_) => usize::MAX,
+    }
+}
+
+pub fn rayon_init() {
+    let stack_size = match env::var("RUST_MIN_STACK") {
+        Ok(s) => s.parse().expect("failed to parse RUST_MIN_STACK"),
+        Err(_) => 1024 * 1024 * if cfg!(debug_assertions) { 40 } else { 20 },
+    };
+    ThreadPoolBuilder::new()
+        .stack_size(stack_size)
+        .build_global()
+        .unwrap();
 }
 
 pub fn clone_rust() {

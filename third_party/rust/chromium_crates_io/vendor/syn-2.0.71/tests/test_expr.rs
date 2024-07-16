@@ -660,7 +660,7 @@ fn test_fixup() {
         quote! { 0 + (0 + 0) },
         quote! { (a = b) = c },
         quote! { (x as i32) < 0 },
-        quote! { (1 + x as i32) < 0 },
+        quote! { 1 + (x as i32) < 0 },
         quote! { (1 + 1).abs() },
         quote! { (lo..hi)[..] },
         quote! { (a..b)..(c..d) },
@@ -673,6 +673,14 @@ fn test_fixup() {
         quote! { if let _ = (a && b) && c {} },
         quote! { if let _ = (S {}) {} },
         quote! { break ('a: loop { break 'a 1 } + 1) },
+        quote! { a + (|| b) + c },
+        quote! { if let _ = ((break) - 1 || true) {} },
+        quote! { if let _ = (break + 1 || true) {} },
+        quote! { (break)() },
+        quote! { (..) = () },
+        quote! { (..) += () },
+        quote! { (1 < 2) == (3 < 4) },
+        quote! { { (let _ = ()) } },
     ] {
         let original: Expr = syn::parse2(tokens).unwrap();
 
