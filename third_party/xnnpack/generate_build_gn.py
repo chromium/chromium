@@ -687,6 +687,16 @@ def MakeXNNPACKSourceSet(ss):
   return target
 
 
+# Generates the `build_identifier.c` using bazel and copies to the correct directory.
+def GenerateBuildIdentifier():
+  _run_bazel_cmd(['build', 'generate_build_identifier'])
+  bazel_bin_dir =_run_bazel_cmd(['info', 'bazel-bin']).strip()
+  build_identifier_src = os.path.join(bazel_bin_dir, 'src', 'build_identifier.c')
+  assert os.path.exists(build_identifier_src)
+  build_identifier_dst = os.path.join(_xnnpack_dir(), 'build_identifier.c')
+  logging.info(f'Copying {build_identifier_src} to {build_identifier_dst}')
+  shutil.copyfile(build_identifier_src, build_identifier_dst)
+
 def main():
   logging.basicConfig(level=logging.INFO)
 
@@ -749,6 +759,8 @@ def main():
         f.write(target)
         f.write('\n\n')
       f.write('}\n')
+
+  GenerateBuildIdentifier()
 
   logging.info('Running `git cl format` for you.')
 
