@@ -12,7 +12,6 @@ import org.chromium.chrome.browser.tab.Tab;
 /** Helper class for Tabs created from the Start surface. */
 public class StartSurfaceUserData implements UserData {
     private static final Class<StartSurfaceUserData> USER_DATA_KEY = StartSurfaceUserData.class;
-    private boolean mOpenedFromStart;
     // Saves the Feeds instance state.
     private String mFeedsInstanceState;
 
@@ -44,33 +43,6 @@ public class StartSurfaceUserData implements UserData {
         if (sHasInstance) {
             getInstance().saveFeedInstanceState(null);
         }
-    }
-
-    /**
-     * Sets the flag of whether the given tab is opened from the Start surface. Note: should only
-     * call this function in the code path that Start surface is enabled, otherwise may cause the
-     * StartSurfaceUserData is created without Start surface.
-     */
-    public static void setOpenedFromStart(Tab tab) {
-        if (tab == null || !StartSurfaceConfiguration.isStartSurfaceFlagEnabled()) return;
-
-        StartSurfaceUserData startSurfaceUserData = get(tab);
-        if (startSurfaceUserData == null) {
-            startSurfaceUserData = new StartSurfaceUserData();
-        }
-
-        if (startSurfaceUserData.mOpenedFromStart) return;
-
-        startSurfaceUserData.mOpenedFromStart = true;
-        tab.getUserDataHost().setUserData(USER_DATA_KEY, startSurfaceUserData);
-    }
-
-    /**
-     * @return Whether the given tab is opened from the Start surface.
-     */
-    public static boolean isOpenedFromStart(Tab tab) {
-        StartSurfaceUserData startSurfaceUserData = get(tab);
-        return startSurfaceUserData == null ? false : startSurfaceUserData.mOpenedFromStart;
     }
 
     private static StartSurfaceUserData get(Tab tab) {

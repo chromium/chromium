@@ -3536,7 +3536,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         assert mInactivityTracker != null;
         return ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                isTablet(), getIntent(), getSavedInstanceState(), mInactivityTracker);
+                getIntent(), getSavedInstanceState(), mInactivityTracker);
     }
 
     /**

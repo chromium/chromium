@@ -34,7 +34,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.START_SURFACE_ANDROID;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.ARCHIVED_TABS_MESSAGE;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.FOR_TESTING;
@@ -187,7 +186,6 @@ import java.util.stream.Collectors;
         })
 @LooperMode(LooperMode.Mode.LEGACY)
 @EnableFeatures({ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS})
-@DisableFeatures({START_SURFACE_ANDROID})
 public class TabListMediatorUnitTest {
 
     @Rule public JniMocker mMocker = new JniMocker();

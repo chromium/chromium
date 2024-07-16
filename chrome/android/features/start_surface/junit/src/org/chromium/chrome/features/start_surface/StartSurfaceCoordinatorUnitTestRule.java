@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
 import org.chromium.chrome.browser.feed.FeedSurfaceMediator;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.init.ActivityLifecycleDispatcherImpl;
@@ -61,7 +60,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilterFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogView;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
@@ -141,9 +139,6 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
         return new Statement() {
             @Override
             public void evaluate() {
-                ChromeFeatureList.sStartSurfaceAndroid.setForTesting(true);
-                ChromeFeatureList.sShowNtpAtStartupAndroid.setForTesting(false);
-
                 mProfile = Mockito.mock(Profile.class);
                 mIncogonitoProfile = Mockito.mock(Profile.class);
                 mTabModelSelector = Mockito.mock(TabModelSelector.class);
@@ -159,7 +154,6 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
                         .when(mTabModelSelector)
                         .getTabModelFilterProvider();
 
-                Assert.assertTrue(ReturnToChromeUtil.isStartSurfaceEnabled(mActivity));
                 setUpCoordinator();
             }
         };
@@ -274,6 +268,5 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
 
         Assert.assertFalse(LibraryLoader.getInstance().isLoaded());
         when(mLibraryLoader.isInitialized()).thenReturn(true);
-        Assert.assertTrue(ReturnToChromeUtil.isStartSurfaceEnabled(mActivity));
     }
 }

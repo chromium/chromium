@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.hub;
 import static org.junit.Assert.assertEquals;
 
 import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestination;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.START_SURFACE_RETURN_TIME;
 
 import android.os.Build;
@@ -116,7 +115,7 @@ public class HubLayoutPublicTransitTest {
 
     @Test
     @LargeTest
-    @EnableFeatures({SHOW_NTP_AT_STARTUP_ANDROID, START_SURFACE_RETURN_TIME})
+    @EnableFeatures({START_SURFACE_RETURN_TIME})
     public void testExitHubOnStartSurfaceAsNtp() {
         StartSurfaceConfiguration.HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
 

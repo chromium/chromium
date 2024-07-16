@@ -456,13 +456,11 @@ public abstract class ChromeFeatureList {
     public static final String SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2 =
             "SegmentationPlatformAndroidHomeModuleRankerV2";
     public static final String SEND_TAB_TO_SELF_V2 = "SendTabToSelfV2";
-    public static final String SHOW_NTP_AT_STARTUP_ANDROID = "ShowNtpAtStartupAndroid";
     public static final String SMALLER_TAB_STRIP_TITLE_LIMIT = "SmallerTabStripTitleLimit";
     public static final String SMART_SUGGESTION_FOR_LARGE_DOWNLOADS =
             "SmartSuggestionForLargeDownloads";
     public static final String SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY =
             "SplitCacheByNetworkIsolationKey";
-    public static final String START_SURFACE_ANDROID = "StartSurfaceAndroid";
     public static final String START_SURFACE_RETURN_TIME = "StartSurfaceReturnTime";
     public static final String STOP_APP_INDEXING_REPORT = "StopAppIndexingReport";
     public static final String SUGGESTION_ANSWERS_COLOR_REVERSE = "SuggestionAnswersColorReverse";
@@ -666,12 +664,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(SAFE_BROWSING_CALL_NEW_GMS_API_ON_STARTUP, false);
     public static final CachedFlag sSearchEngineChoice = newCachedFlag(SEARCH_ENGINE_CHOICE, false);
     public static final CachedFlag sSearchInCCT = newCachedFlag(SEARCH_IN_CCT, false);
-    public static final CachedFlag sShowNtpAtStartupAndroid =
-            newCachedFlag(SHOW_NTP_AT_STARTUP_ANDROID, true);
     public static final CachedFlag sSmallerTabStripTitleLimit =
             newCachedFlag(SMALLER_TAB_STRIP_TITLE_LIMIT, true);
-    public static final CachedFlag sStartSurfaceAndroid =
-            newCachedFlag(START_SURFACE_ANDROID, true);
     public static final CachedFlag sStartSurfaceReturnTime =
             newCachedFlag(START_SURFACE_RETURN_TIME, true);
     public static final CachedFlag sStopAppIndexingReport =
@@ -788,9 +782,7 @@ public abstract class ChromeFeatureList {
                     sSafeBrowsingCallNewGmsApiOnStartup,
                     sSearchEngineChoice,
                     sSearchInCCT,
-                    sShowNtpAtStartupAndroid,
                     sSmallerTabStripTitleLimit,
-                    sStartSurfaceAndroid,
                     sStartSurfaceReturnTime,
                     sStopAppIndexingReport,
                     sSurfacePolish,

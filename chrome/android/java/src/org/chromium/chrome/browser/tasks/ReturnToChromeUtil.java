@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tasks;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Point;
@@ -28,9 +27,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.locale.LocaleManager;
-import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -47,12 +44,10 @@ import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
-import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 
 import java.lang.annotation.Retention;
@@ -97,9 +92,6 @@ public final class ReturnToChromeUtil {
 
     public static final String LAST_ACTIVE_TAB_IS_NTP_WHEN_OVERVIEW_IS_SHOWN_AT_LAUNCH_UMA =
             "StartSurface.ColdStartup.IsLastActiveTabNtp";
-    public static final String SHOWN_FROM_BACK_NAVIGATION_UMA =
-            "StartSurface.ShownFromBackNavigation.";
-    public static final String START_SHOW_STATE_UMA = "StartSurface.Show.State";
 
     public static final String HOME_SURFACE_SHOWN_AT_STARTUP_UMA =
             "NewTabPage.AsHomeSurface.ShownAtStartup";
@@ -254,9 +246,6 @@ public final class ReturnToChromeUtil {
                                         ? TabLaunchType.FROM_LONGPRESS_BACKGROUND
                                         : TabLaunchType.FROM_CHROME_UI,
                                 parentTab);
-        if (isBackground) {
-            StartSurfaceUserData.setOpenedFromStart(newTab);
-        }
 
         int transitionAfterMask = params.getTransitionType() & PageTransition.CORE_MASK;
         if (transitionAfterMask == PageTransition.TYPED
@@ -296,21 +285,6 @@ public final class ReturnToChromeUtil {
     }
 
     /**
-     * Returns whether Start Surface is enabled in the given context. This includes checks of: 1)
-     * whether home page is enabled; 2) whether it is on phone; 3) whether show NTP at start up is
-     * not enabled.
-     *
-     * @param context The activity context.
-     */
-    public static boolean isStartSurfaceEnabled(Context context) {
-        return (!ChromeFeatureList.sShowNtpAtStartupAndroid.isEnabled())
-                && (!DseNewTabUrlManager.isNewTabSearchEngineUrlAndroidEnabled()
-                        || DseNewTabUrlManager.isDefaultSearchEngineGoogle())
-                && StartSurfaceConfiguration.isStartSurfaceFlagEnabled()
-                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
-    }
-
-    /**
      * @param tabModelSelector The tab model selector.
      * @return the total tab count, and works before native initialization.
      */
@@ -330,14 +304,7 @@ public final class ReturnToChromeUtil {
      * enabled on Tablet.
      */
     public static boolean shouldShowNtpAsHomeSurfaceAtStartup(
-            boolean isTablet,
-            Intent intent,
-            Bundle bundle,
-            ChromeInactivityTracker inactivityTracker) {
-        // If "Start surface on tablet" isn't enabled, or
-        // ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID isn't enabled, return false.
-        if (!StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(isTablet)) return false;
-
+            Intent intent, Bundle bundle, ChromeInactivityTracker inactivityTracker) {
         // If the current session is due to recreated, don't show a NTP homepage.
         if (isFromRecreate(bundle)) {
             return false;

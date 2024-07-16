@@ -47,7 +47,6 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
@@ -82,7 +81,6 @@ import org.chromium.url.JUnitTestGURLs;
         manifest = Config.NONE,
         shadows = {ShadowHomepagePolicyManager.class})
 @CommandLineFlags.Add({BaseSwitches.DISABLE_LOW_END_DEVICE_MODE})
-@DisableFeatures({ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID})
 public class ReturnToChromeUtilUnitTest {
     @Implements(HomepagePolicyManager.class)
     static class ShadowHomepagePolicyManager {
@@ -116,8 +114,6 @@ public class ReturnToChromeUtilUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         doReturn(JUnitTestGURLs.NTP_NATIVE_URL).when(mNtpTab).getUrl();
-
-        ChromeFeatureList.sStartSurfaceAndroid.setForTesting(true);
 
         // HomepageManager:
         HomepageManager.setInstanceForTesting(mHomepageManager);
@@ -163,9 +159,7 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    public void testShouldShowNtpAsHomeSurfaceAtStartupOnTablet() {
-        assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
-
+    public void testShouldShowNtpAsHomeSurfaceAtStartup() {
         // Sets main intent from launcher:
         Intent intent = createMainIntentFromLauncher();
 
@@ -176,35 +170,26 @@ public class ReturnToChromeUtilUnitTest {
         HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
         assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(0));
 
-        // Tests the case when there isn't any Tab. Verifies that Start is only shown on tablets.
+        // Tests the case when there isn't any Tab. Verifies that home surface NTP is shown.
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         doReturn(0).when(mTabModelSelector).getTotalTabCount();
         assertTrue(HomepagePolicyManager.isInitializedWithNative());
 
         assertTrue(IntentUtils.isMainIntentFromLauncher(intent));
-        Assert.assertFalse(
-                ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                        false, intent, null, mInactivityTracker));
         assertTrue(
                 ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                        true, intent, null, mInactivityTracker));
+                        intent, null, mInactivityTracker));
 
-        // Tests the case when the total tab count > 0. Verifies that Start is only shown on
-        // tablets.
+        // Tests the case when the total tab count > 0. Verifies that home surface NTP is shown
         doReturn(1).when(mTabModelSelector).getTotalTabCount();
-        Assert.assertFalse(
-                ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                        false, intent, null, mInactivityTracker));
         assertTrue(
                 ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                        true, intent, null, mInactivityTracker));
+                        intent, null, mInactivityTracker));
     }
 
     @Test
     @SmallTest
     public void testShowNtpAsHomeSurfaceAtResumeOnTabletWithExistingNtp() {
-        assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
-
         doReturn(2).when(mCurrentTabModel).getCount();
         doReturn(JUnitTestGURLs.URL_1).when(mTab1).getUrl();
         doReturn(mTab1).when(mCurrentTabModel).getTabAt(0);
@@ -279,8 +264,6 @@ public class ReturnToChromeUtilUnitTest {
     @Test
     @SmallTest
     public void testShowNtpAsHomeSurfaceAtResumeOnTabletWithoutAnyExistingNtp() {
-        assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
-
         doReturn(1).when(mCurrentTabModel).getCount();
         doReturn(JUnitTestGURLs.URL_1).when(mTab1).getUrl();
         doReturn(mTab1).when(mCurrentTabModel).getTabAt(0);
@@ -324,8 +307,6 @@ public class ReturnToChromeUtilUnitTest {
     @Test
     @SmallTest
     public void testShowNtpAsHomeSurfaceAtResumeOnTabletWithMixedNtps() {
-        assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
-
         doReturn(3).when(mCurrentTabModel).getCount();
         doReturn(JUnitTestGURLs.URL_1).when(mTab1).getUrl();
         doReturn(mTab1).when(mCurrentTabModel).getTabAt(0);
@@ -388,8 +369,6 @@ public class ReturnToChromeUtilUnitTest {
     @Test
     @SmallTest
     public void testNoAnyTabCase() {
-        assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
-
         doReturn(0).when(mCurrentTabModel).getCount();
 
         // Verifies that if there isn't any existing Tab, we don't create a home surface NTP.
@@ -407,7 +386,6 @@ public class ReturnToChromeUtilUnitTest {
     @SmallTest
     @EnableFeatures({ChromeFeatureList.MAGIC_STACK_ANDROID})
     public void testColdStartupWithOnlyLastActiveTabUrl_MagicStack() {
-        assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
         assertTrue(StartSurfaceConfiguration.useMagicStack());
 
         when(mTab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
@@ -437,8 +415,6 @@ public class ReturnToChromeUtilUnitTest {
     @Test
     @SmallTest
     public void testShouldNotShowNtpOnRecreate() {
-        assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
-
         // Sets main intent from launcher:
         Intent intent = createMainIntentFromLauncher();
 
@@ -457,21 +433,21 @@ public class ReturnToChromeUtilUnitTest {
         assertTrue(IntentUtils.isMainIntentFromLauncher(intent));
         assertTrue(
                 ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                        true, intent, mSaveInstanceState, mInactivityTracker));
+                        intent, mSaveInstanceState, mInactivityTracker));
 
         doReturn(true)
                 .when(mSaveInstanceState)
                 .getBoolean(ChromeActivity.IS_FROM_RECREATING, false);
         assertFalse(
                 ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                        true, intent, mSaveInstanceState, mInactivityTracker));
+                        intent, mSaveInstanceState, mInactivityTracker));
 
         doReturn(false)
                 .when(mSaveInstanceState)
                 .getBoolean(ChromeActivity.IS_FROM_RECREATING, false);
         assertTrue(
                 ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                        true, intent, mSaveInstanceState, mInactivityTracker));
+                        intent, mSaveInstanceState, mInactivityTracker));
     }
 
     @Test

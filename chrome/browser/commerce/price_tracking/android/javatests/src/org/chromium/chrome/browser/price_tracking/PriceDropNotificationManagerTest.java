@@ -41,7 +41,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
@@ -71,7 +70,6 @@ import org.chromium.components.commerce.core.ShoppingService;
     "force-fieldtrials=Study/Group",
     "force-fieldtrial-params=Study.Group:user_managed_notification_max_number/2"
 })
-@DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
 public class PriceDropNotificationManagerTest {
     private static final String ACTION_APP_NOTIFICATION_SETTINGS =
             "android.settings.APP_NOTIFICATION_SETTINGS";

@@ -7,7 +7,6 @@ package org.chromium.chrome.features.start_surface;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
-import org.chromium.base.SysUtils;
 import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.base.metrics.RecordHistogram;
@@ -42,22 +41,6 @@ public class StartSurfaceConfiguration {
                     ChromeFeatureList.LOGO_POLISH, LOGO_POLISH_MEDIUM_SIZE_PARAM, false);
 
     private static final String STARTUP_UMA_PREFIX = "Startup.Android.";
-
-    /**
-     * @return Whether the Start Surface feature flag is enabled.
-     * @deprecated Use {@link
-     *     org.chromium.chrome.browser.tasks.ReturnToChromeUtil#isStartSurfaceEnabled} instead.
-     */
-    public static boolean isStartSurfaceFlagEnabled() {
-        return ChromeFeatureList.sStartSurfaceAndroid.isEnabled() && !SysUtils.isLowEndDevice();
-    }
-
-    /** Returns whether showing a NTP as the home surface is enabled in the given context. */
-    public static boolean isNtpAsHomeSurfaceEnabled(boolean isTablet) {
-        // ReturnToChromeUtil#isStartSurfaceEnabled() will return false when
-        // ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID is enabled.
-        return isTablet || !isTablet && ChromeFeatureList.sShowNtpAtStartupAndroid.isEnabled();
-    }
 
     /** Returns whether a magic stack is enabled on Start surface. */
     public static boolean useMagicStack() {

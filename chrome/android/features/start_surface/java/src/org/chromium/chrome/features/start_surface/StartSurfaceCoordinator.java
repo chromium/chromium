@@ -15,18 +15,15 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import com.google.android.material.appbar.AppBarLayout;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -54,7 +51,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
@@ -97,9 +93,6 @@ public class StartSurfaceCoordinator implements StartSurface {
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final TabCreatorManager mTabCreatorManager;
     private final Supplier<Toolbar> mToolbarSupplier;
-
-    @VisibleForTesting
-    static final String START_SHOWN_AT_STARTUP_UMA = "Startup.Android.StartSurfaceShownAtStartup";
 
     private static final String TAG = "StartSurface";
 
@@ -228,7 +221,7 @@ public class StartSurfaceCoordinator implements StartSurface {
             @NonNull OneshotSupplier<ModuleRegistry> moduleRegistrySupplier) {
         mConstructedTimeNs = SystemClock.elapsedRealtimeNanos();
         mActivity = activity;
-        mIsStartSurfaceEnabled = ReturnToChromeUtil.isStartSurfaceEnabled(mActivity);
+        mIsStartSurfaceEnabled = false;
         mBottomSheetController = sheetController;
         mParentTabSupplier = parentTabSupplier;
         mWindowAndroid = windowAndroid;
@@ -437,14 +430,6 @@ public class StartSurfaceCoordinator implements StartSurface {
             boolean isOverviewShownOnStartup, long activityCreationTimeMs) {
         if (isOverviewShownOnStartup) {
             mStartSurfaceMediator.onOverviewShownAtLaunch(activityCreationTimeMs);
-        }
-        if (ReturnToChromeUtil.isStartSurfaceEnabled(mActivity)) {
-            if (isOverviewShownOnStartup) {
-                ReturnToChromeUtil.recordHistogramsWhenOverviewIsShownAtLaunch();
-            }
-            Log.i(TAG, "Recorded %s = %b", START_SHOWN_AT_STARTUP_UMA, isOverviewShownOnStartup);
-            RecordHistogram.recordBooleanHistogram(
-                    START_SHOWN_AT_STARTUP_UMA, isOverviewShownOnStartup);
         }
     }
 

@@ -31,7 +31,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -83,7 +82,6 @@ public class LogoMediatorUnitTest {
 
         mJniMocker.mock(LogoBridgeJni.TEST_HOOKS, mLogoBridgeJniMock);
 
-        Assert.assertTrue(ChromeFeatureList.sStartSurfaceAndroid.isEnabled());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> HomepageManager.getInstance().setPrefHomepageEnabled(true));
 

@@ -184,7 +184,6 @@ public class NewTabPage
 
     private final Activity mActivity;
     @Nullable private final HomeSurfaceTracker mHomeSurfaceTracker;
-    private final boolean mIsNtpAsHomeSurfaceEnabled;
     private boolean mSnapshotSingleTabCardChanged;
     private final boolean mIsInNightMode;
     @Nullable private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
@@ -443,7 +442,6 @@ public class NewTabPage
         mIsTablet = isTablet;
         mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
         mTemplateUrlService.addObserver(this);
-        mIsNtpAsHomeSurfaceEnabled = StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(mIsTablet);
 
         mTabObserver =
                 new EmptyTabObserver() {

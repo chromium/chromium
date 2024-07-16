@@ -282,7 +282,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSearchInCCT,
     &kSearchResumptionModuleAndroid,
     &kShareCustomActionsInCCT,
-    &kShowNtpAtStartupAndroid,
     &kSmallerTabStripTitleLimit,
     &kStopAppIndexingReport,
     &kSuppressToolbarCaptures,
@@ -305,7 +304,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabWindowManagerReportIndicesMismatch,
     &kTestDefaultDisabled,
     &kTestDefaultEnabled,
-    &kStartSurfaceAndroid,
     &kStartSurfaceReturnTime,
     &kAccountReauthenticationRecentTimeWindow,
     &kSurfacePolish,
@@ -899,10 +897,6 @@ BASE_FEATURE(kShareCustomActionsInCCT,
              "ShareCustomActionsInCCT",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kShowNtpAtStartupAndroid,
-             "ShowNtpAtStartupAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSmallerTabStripTitleLimit,
              "SmallerTabStripTitleLimit",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -994,10 +988,6 @@ BASE_FEATURE(kSearchEnginesPromoV3,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSearchInCCT, "SearchInCCT", base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kStartSurfaceAndroid,
-             "StartSurfaceAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFeedPositionAndroid,
              "FeedPositionAndroid",

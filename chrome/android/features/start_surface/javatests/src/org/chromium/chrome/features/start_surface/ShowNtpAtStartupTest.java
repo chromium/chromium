@@ -43,7 +43,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
@@ -73,10 +72,7 @@ import java.util.concurrent.TimeoutException;
 /** Integration tests of showing a NTP with Start surface UI at startup. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-@EnableFeatures({
-    ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID,
-    ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study"
-})
+@EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study"})
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "force-fieldtrials=Study/Group"
@@ -88,21 +84,6 @@ public class ShowNtpAtStartupTest {
 
     private static final String TAB_URL = "https://foo.com/";
     private static final String TAB_URL_1 = "https://bar.com/";
-
-    @Test
-    @MediumTest
-    @Feature({"StartSurface"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
-    @CommandLineFlags.Add({IMMEDIATE_RETURN_TEST_PARAMS})
-    @DisableFeatures(ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID)
-    public void testShowNtpAtStartupDisabled_phones() throws IOException {
-        StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
-        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
-        StartSurfaceTestUtils.waitForTabModel(mActivityTestRule.getActivity());
-
-        verifyTabCountAndActiveTabUrl(
-                mActivityTestRule.getActivity(), 1, TAB_URL, /* expectHomeSurfaceUiShown= */ null);
-    }
 
     @Test
     @MediumTest
@@ -189,10 +170,7 @@ public class ShowNtpAtStartupTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @EnableFeatures({
-        ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID,
-        ChromeFeatureList.MAGIC_STACK_ANDROID + "<Study"
-    })
+    @EnableFeatures({ChromeFeatureList.MAGIC_STACK_ANDROID + "<Study"})
     @CommandLineFlags.Add({IMMEDIATE_RETURN_TEST_PARAMS})
     public void testSingleTabCardGoneAfterTabClosed_MagicStack() throws IOException {
         StartSurfaceTestUtils.prepareTabStateMetadataFile(
@@ -264,10 +242,7 @@ public class ShowNtpAtStartupTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @EnableFeatures({
-        ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID,
-        ChromeFeatureList.MAGIC_STACK_ANDROID + "<Study"
-    })
+    @EnableFeatures({ChromeFeatureList.MAGIC_STACK_ANDROID + "<Study"})
     @CommandLineFlags.Add({IMMEDIATE_RETURN_TEST_PARAMS})
     public void testSingleTabModule_MagicStack() throws IOException {
         StartSurfaceTestUtils.prepareTabStateMetadataFile(
@@ -378,7 +353,6 @@ public class ShowNtpAtStartupTest {
     @Feature({"StartSurface"})
     @EnableFeatures({
         ChromeFeatureList.MAGIC_STACK_ANDROID,
-        ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID
     })
     @CommandLineFlags.Add({IMMEDIATE_RETURN_TEST_PARAMS})
     public void testClickSingleTabCardCloseNtpHomeSurface() throws IOException {

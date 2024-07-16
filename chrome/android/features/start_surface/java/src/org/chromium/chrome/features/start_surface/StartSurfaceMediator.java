@@ -599,11 +599,10 @@ class StartSurfaceMediator
 
     /**
      * Show Start Surface home view. Note: this should be called only when refactor flag is enabled.
+     *
      * @param animate Whether to play an entry animation.
      */
     void show(boolean animate) {
-        assert ReturnToChromeUtil.isStartSurfaceEnabled(mContext);
-
         // This null check is for testing.
         if (mPropertyModel == null) return;
 
@@ -993,10 +992,6 @@ class StartSurfaceMediator
 
     @VisibleForTesting
     boolean shouldInterceptBackPress() {
-        if (ReturnToChromeUtil.isStartSurfaceEnabled(mContext)) {
-            return false;
-        }
-
         return false;
     }
 
@@ -1047,7 +1042,6 @@ class StartSurfaceMediator
                             // and the logo click events are processed in NewTabPageLayout. This
                             // callback passed into TopToolbarCoordinator will only be used for
                             // StartSurfaceToolbar, so add an assertion here.
-                            assert ReturnToChromeUtil.isStartSurfaceEnabled(mContext);
                             ReturnToChromeUtil.handleLoadUrlFromStartSurface(
                                     urlParams, /* incognito= */ false, mParentTabSupplier.get());
                         });
