@@ -665,7 +665,7 @@ public final class SafetyHubTest {
                         .getString(R.string.safety_hub_safety_tips_safety_tools_title);
         onView(withText(safetyToolsTitle)).check(matches(isDisplayed()));
         clickOnPreferenceWithTextAndWaitForActivity(
-                safetyToolsTitle, SafetyHubFragment.SAFETY_TOOLS_LEARN_MORE_URL);
+                withText(safetyToolsTitle), SafetyHubFragment.SAFETY_TOOLS_LEARN_MORE_URL);
         pressBack();
     }
 
@@ -685,7 +685,7 @@ public final class SafetyHubTest {
                         .getString(R.string.safety_hub_safety_tips_incognito_title);
         onViewWaiting(withText(incognitoTitle)).check(matches(isDisplayed()));
         clickOnPreferenceWithTextAndWaitForActivity(
-                incognitoTitle, SafetyHubFragment.INCOGNITO_LEARN_MORE_URL);
+                withText(incognitoTitle), SafetyHubFragment.INCOGNITO_LEARN_MORE_URL);
         pressBack();
     }
 
@@ -705,17 +705,30 @@ public final class SafetyHubTest {
                         .getString(R.string.safety_hub_safety_tips_safe_browsing_title);
         onView(withText(safeBrowsingTitle)).check(matches(isDisplayed()));
         clickOnPreferenceWithTextAndWaitForActivity(
-                safeBrowsingTitle, SafetyHubFragment.SAFE_BROWSING_LEARN_MORE_URL);
+                withText(safeBrowsingTitle), SafetyHubFragment.SAFE_BROWSING_LEARN_MORE_URL);
+        pressBack();
+    }
+
+    @Test
+    @MediumTest
+    public void testHelpCenterArticle() {
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+
+        // Verify the help center info button is displayed and clicking on it opens the correct
+        // link in CCT.
+        onView(withId(R.id.menu_id_targeted_help)).check(matches(isDisplayed()));
+        clickOnPreferenceWithTextAndWaitForActivity(
+                withId(R.id.menu_id_targeted_help), SafetyHubFragment.HELP_CENTER_URL);
         pressBack();
     }
 
     private void clickOnPreferenceWithTextAndWaitForActivity(
-            String preferenceTitle, String expectedUrl) {
+            Matcher<View> matcher, String expectedUrl) {
         CustomTabActivity cta =
                 ActivityTestUtils.waitForActivity(
                         InstrumentationRegistry.getInstrumentation(),
                         CustomTabActivity.class,
-                        () -> onView(withText(preferenceTitle)).perform(click()));
+                        () -> onView(matcher).perform(click()));
 
         CriteriaHelper.pollUiThread(
                 () -> {

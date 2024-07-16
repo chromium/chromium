@@ -9,6 +9,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Browser;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -23,6 +26,7 @@ import org.chromium.components.browser_ui.settings.CardPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
+import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -65,6 +69,9 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     static final String SAFE_BROWSING_LEARN_MORE_URL =
             "https://support.google.com/chrome?p=safe_browsing_preferences";
 
+    @VisibleForTesting
+    static final String HELP_CENTER_URL = "https://support.google.com/chrome?p=safety_check";
+
     private SafetyHubModuleDelegate mDelegate;
     private UnusedSitePermissionsBridge mUnusedSitePermissionsBridge;
     private PropertyModel mPermissionsModel;
@@ -90,6 +97,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         setUpSafeBrowsingModule();
         setUpSafetyTipsModule();
         setUpBrowserStateModule();
+        setHasOptionsMenu(true);
     }
 
     private void setUpBrowserStateModule() {
@@ -320,6 +328,25 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                             openUrlInCct(SAFE_BROWSING_LEARN_MORE_URL);
                             return true;
                         });
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        MenuItem help =
+                menu.add(Menu.NONE, R.id.menu_id_targeted_help, Menu.NONE, R.string.menu_help);
+        help.setIcon(
+                TraceEventVectorDrawableCompat.create(
+                        getResources(), R.drawable.ic_help_and_feedback, getActivity().getTheme()));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_id_targeted_help) {
+            openUrlInCct(HELP_CENTER_URL);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /** Sets the {@link CustomTabIntentHelper} to open urls in CCT. */
