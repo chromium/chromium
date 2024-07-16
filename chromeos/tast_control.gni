@@ -103,6 +103,10 @@ tast_disabled_tests_from_chrome_all = [
   # b/347713587, b/347111366
   "crostini.TaskManager.bookworm_stable",
 
+  # b/352371706 betty-pi-arc builder is getting removed, and these tests are blocking LKGM.
+  "network.ConfigBaseline.login@betty-pi-arc",
+  "network.ConfigBaseline.oobe@betty-pi-arc",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
