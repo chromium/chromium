@@ -21,7 +21,7 @@ export interface LifetimeBrowserProxy {
   // Returns the description of the relaunch confirmation dialog.
   // A null value can be returned if the condition to show the relaunch dialog
   // is no longer true.
-  getRelaunchConfirmationDialogDescription(alwaysShowDialog: boolean):
+  getRelaunchConfirmationDialogDescription(isVersionUpdate: boolean):
       Promise<string|null>;
   // </if>
 
@@ -52,9 +52,9 @@ export class LifetimeBrowserProxyImpl implements LifetimeBrowserProxy {
         'shouldShowRelaunchConfirmationDialog', alwaysShowDialog);
   }
 
-  getRelaunchConfirmationDialogDescription(alwaysShowDialog: boolean) {
+  getRelaunchConfirmationDialogDescription(isVersionUpdate: boolean) {
     return sendWithPromise(
-        'getRelaunchConfirmationDialogDescription', alwaysShowDialog);
+        'getRelaunchConfirmationDialogDescription', isVersionUpdate);
   }
   // </if>
 

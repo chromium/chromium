@@ -147,21 +147,25 @@ void BrowserLifetimeHandler::HandleGetRelaunchConfirmationDialogDescription(
   CHECK_EQ(2U, args.size());
   const base::Value& callback_id = args[0];
   CHECK(args[1].is_bool());
-  const bool alwaysShowDialog = args[1].GetBool();
+  const bool is_version_update = args[1].GetBool();
 
   size_t incognito_count = BrowserList::GetIncognitoBrowserCount();
   base::Value description;
 
-  if (incognito_count > 0) {
+  // The caller can specify if this is a confirmation dialog for browser version
+  // update relaunch.
+  if (is_version_update) {
+    // The dialog description informs about a browser update after relaunch and
+    // warns about incognito windows closure if any is open.
+    description = base::Value(l10n_util::GetPluralStringFUTF16(
+        IDS_UPDATE_RECOMMENDED, incognito_count));
+  } else if (incognito_count > 0) {
     // The dialog description warns about incognito windows being closed after
     // relaunch.
     description = base::Value(l10n_util::GetPluralStringFUTF16(
         IDS_RELAUNCH_CONFIRMATION_DIALOG_BODY, incognito_count));
-  } else if (alwaysShowDialog) {
-    // The dialog description informs about chrome update after relaunch.
-    description = base::Value(
-        l10n_util::GetPluralStringFUTF16(IDS_UPDATE_RECOMMENDED, 0));
   }
+
   ResolveJavascriptCallback(callback_id, description);
 }
 

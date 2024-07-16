@@ -51,9 +51,9 @@ export class TestLifetimeBrowserProxy extends TestBrowserProxy implements
     this.relaunchConfirmationDialogDescription_ = value;
   }
 
-  getRelaunchConfirmationDialogDescription(alwaysShowDialog: boolean) {
+  getRelaunchConfirmationDialogDescription(isVersionUpdate: boolean) {
     this.methodCalled(
-        'getRelaunchConfirmationDialogDescription', alwaysShowDialog);
+        'getRelaunchConfirmationDialogDescription', isVersionUpdate);
     return Promise.resolve(this.relaunchConfirmationDialogDescription_);
   }
   // </if>
