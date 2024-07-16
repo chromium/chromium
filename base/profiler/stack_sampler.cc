@@ -80,7 +80,7 @@ class StackCopierDelegate : public StackCopier::Delegate {
   const MetadataRecorder::MetadataProvider* const metadata_provider_;
 };
 
-bool g_use_thread_pool = false;
+bool g_use_thread_pool = true;
 
 }  // namespace
 
