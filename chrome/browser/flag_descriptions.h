@@ -1818,6 +1818,11 @@ extern const char kReadLaterDescription[];
 extern const char kRecordWebAppDebugInfoName[];
 extern const char kRecordWebAppDebugInfoDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kRecordPermissionExpirationTimestampsName[];
+extern const char kRecordPermissionExpirationTimestampsDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_MAC)
 extern const char kReduceIPAddressChangeNotificationName[];
 extern const char kReduceIPAddressChangeNotificationDescription[];

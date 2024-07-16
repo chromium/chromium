@@ -10224,6 +10224,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSafetyHubDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kSafetyHub)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"record-permissions-expiration-timestamp",
+     flag_descriptions::kRecordPermissionExpirationTimestampsName,
+     flag_descriptions::kRecordPermissionExpirationTimestampsDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         permissions::features::kRecordPermissionExpirationTimestamps)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     {"safety-hub-abusive-notification-revocation",
      flag_descriptions::kSafetyHubAbusiveNotificationRevocationName,
      flag_descriptions::kSafetyHubAbusiveNotificationRevocationDescription,
