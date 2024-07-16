@@ -130,6 +130,7 @@ void ProcessPriorityPolicy::OnTakenFromGraph(Graph* graph) {
 
 void ProcessPriorityPolicy::OnProcessNodeAdded(
     const ProcessNode* process_node) {
+  CHECK_NE(process_node->GetPriority(), base::TaskPriority::USER_VISIBLE);
   // Set the initial process priority.
   // TODO(chrisha): Get provisional nodes working so we can make an informed
   // choice in the graph (processes launching ads-to-be, or extensions, or

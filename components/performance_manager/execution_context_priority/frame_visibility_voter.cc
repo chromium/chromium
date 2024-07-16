@@ -28,10 +28,10 @@ Vote GetVote(FrameNode::Visibility visibility) {
   base::TaskPriority priority;
   switch (visibility) {
     case FrameNode::Visibility::kUnknown:
-      priority = base::TaskPriority::USER_VISIBLE;
+      priority = base::TaskPriority::USER_BLOCKING;
       break;
     case FrameNode::Visibility::kVisible:
-      priority = base::TaskPriority::USER_VISIBLE;
+      priority = base::TaskPriority::USER_BLOCKING;
       break;
     case FrameNode::Visibility::kNotVisible:
       priority = base::TaskPriority::LOWEST;

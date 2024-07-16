@@ -95,7 +95,7 @@ TEST_F(FrameAudibleVoterTest, AudibleChanged) {
       voter_id(), GetExecutionContext(frame_node.get()),
       base::TaskPriority::LOWEST, FrameAudibleVoter::kFrameAudibleReason));
 
-  // Make the frame visible. This should increase the priority.
+  // Make the frame audible. This should increase the priority.
   mock_graph.frame->SetIsAudible(true);
   EXPECT_EQ(observer().GetVoteCount(), 1u);
   EXPECT_TRUE(observer().HasVote(voter_id(),

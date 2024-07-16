@@ -14,7 +14,7 @@ namespace execution_context_priority {
 
 // This voter tracks frame nodes and casts a vote for each of them, whose value
 // depends on their visibility. A visible frame will receive a
-// TaskPriority::USER_VISIBLE vote, while a non-visible frame will receive a
+// TaskPriority::USER_BLOCKING vote, while a non-visible frame will receive a
 // TaskPriority::LOWEST vote.
 // Note: Uses `InitializingFrameNodeObserver` because it can affect the initial
 // priority of a frame.

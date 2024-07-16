@@ -12,10 +12,10 @@
 namespace performance_manager {
 namespace execution_context_priority {
 
-// This voter casts a TaskPriority::USER_VISIBLE vote to all audible frames, and
-// a TaskPriority::LOWEST vote to non-audible frames.
-// Note: Uses `InitializingFrameNodeObserver` because it can affect the initial
-// priority of a frame.
+// This voter casts a TaskPriority::USER_BLOCKING vote to all audible frames,
+// and a TaskPriority::LOWEST vote to non-audible frames. Note: Uses
+// `InitializingFrameNodeObserver` because it can affect the initial priority of
+// a frame.
 class FrameAudibleVoter : public VoterBase,
                           public InitializingFrameNodeObserver {
  public:

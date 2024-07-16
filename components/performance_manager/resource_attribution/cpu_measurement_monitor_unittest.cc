@@ -1783,9 +1783,10 @@ TEST_F(ResourceAttrCPUMonitorTest, BackgroundCPU) {
   task_env().FastForwardBy(kTimeBetweenMeasurements / 3);
   mock_graph.process->set_priority(base::TaskPriority::BEST_EFFORT);
 
-  // Set process' priority to `USER_VISIBLE` at 2/3 of the measurement interval.
+  // Set process' priority to `USER_BLOCKING` at 2/3 of the measurement
+  // interval.
   task_env().FastForwardBy(kTimeBetweenMeasurements / 3);
-  mock_graph.process->set_priority(base::TaskPriority::USER_VISIBLE);
+  mock_graph.process->set_priority(base::TaskPriority::USER_BLOCKING);
 
   task_env().FastForwardBy(kTimeBetweenMeasurements / 3);
   UpdateAndGetCPUMeasurements();

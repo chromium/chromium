@@ -11,7 +11,7 @@
 
 namespace performance_manager::execution_context_priority {
 
-// This voter casts a TaskPriority::USER_VISIBLE vote to all frames that are
+// This voter casts a TaskPriority::USER_BLOCKING vote to all frames that are
 // capturing a media stream (audio or video), and a TaskPriority::LOWEST vote
 // otherwise.
 // Note: Uses `InitializingFrameNodeObserver` because it can affect the initial

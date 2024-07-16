@@ -67,20 +67,20 @@ ExecutionContextPriorityDecorator::ExecutionContextPriorityDecorator() {
 
   // --- Set up voters. ---
 
-  // Casts a USER_VISIBLE vote when a frame is visible.
+  // Casts a USER_BLOCKING vote when a frame is visible.
   AddVoter<FrameVisibilityVoter>(max_vote_aggregator_.GetVotingChannel());
 
-  // Casts a USER_VISIBLE vote when a frame is audible.
+  // Casts a USER_BLOCKING vote when a frame is audible.
   AddVoter<FrameAudibleVoter>(max_vote_aggregator_.GetVotingChannel());
 
-  // Casts a USER_VISIBLE vote when a frame is capturing a media stream.
+  // Casts a USER_BLOCKING vote when a frame is capturing a media stream.
   AddVoter<FrameCapturingMediaStreamVoter>(
       max_vote_aggregator_.GetVotingChannel());
 
   // Casts a vote for each child worker with the client's priority.
   AddVoter<InheritClientPriorityVoter>(max_vote_aggregator_.GetVotingChannel());
 
-  // Casts a USER_VISIBLE vote for all frames in a loading page.
+  // Casts a USER_BLOCKING vote for all frames in a loading page.
   if (base::FeatureList::IsEnabled(features::kPMLoadingPageVoter)) {
     AddVoter<LoadingPageVoter>(max_vote_aggregator_.GetVotingChannel());
   }
