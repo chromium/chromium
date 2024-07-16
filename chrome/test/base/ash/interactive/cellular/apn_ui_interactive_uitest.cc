@@ -9,7 +9,8 @@
 #include "chrome/test/base/ash/interactive/cellular/esim_interactive_uitest_base.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/base/ash/interactive/settings/interactive_uitest_elements.h"
-#include "chromeos/ash/components/dbus/shill/shill_service_client.h"
+#include "chromeos/ash/components/dbus/hermes/fake_hermes_euicc_client.h"
+#include "chromeos/ash/components/dbus/shill/fake_shill_service_client.h"
 #include "dbus/object_path.h"
 #include "ui/base/interaction/element_identifier.h"
 
@@ -18,9 +19,9 @@ namespace {
 
 const char kNewApnName[] = "newApnName";
 
-class ApnRevampInteractiveUiTest : public EsimInteractiveUiTestBase {
+class ApnUiInteractiveUiTest : public EsimInteractiveUiTestBase {
  protected:
-  ApnRevampInteractiveUiTest() {
+  ApnUiInteractiveUiTest() {
     scoped_feature_list_.InitAndEnableFeature(ash::features::kApnRevamp);
   }
 
@@ -28,7 +29,49 @@ class ApnRevampInteractiveUiTest : public EsimInteractiveUiTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ApnRevampInteractiveUiTest, CreateDefaultCustomApn) {
+IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest,
+                       NonConnectedCellularHasNoApn) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOSSettingsId);
+
+  ui::ElementContext context =
+      LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
+
+  // Run the following steps with the OS Settings context set as the default.
+  RunTestSequenceInContext(
+      context,
+
+      Log("Navigating to the internet page"),
+
+      NavigateToInternetDetailsPage(kOSSettingsId,
+                                    NetworkTypePattern::Cellular(),
+                                    esim_info().nickname()),
+
+      Log("Navigate to the APN revamp details page"),
+
+      NavigateToApnRevampDetailsPage(kOSSettingsId),
+
+      Log("Verify it connects to the auto detected APN"),
+
+      WaitForElementTextContains(
+          kOSSettingsId, settings::cellular::ApnListFirstItemName(),
+          /*text=*/FakeHermesEuiccClient::kFakeDefaultApn),
+
+      Log("Disconnect cellular network"),
+
+      Do([&]() { DisconnectEsimService(); }),
+
+      Log("Verify Zero state message shows and no APN shows in the list when "
+          "not connected"),
+
+      WaitForElementExists(kOSSettingsId,
+                           settings::cellular::ApnSubpageZeroStateContent()),
+      WaitForElementHasAttribute(
+          kOSSettingsId, settings::cellular::ApnListFirstItem(), "hidden"),
+
+      Log("Test complete"));
+}
+
+IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, CreateDefaultCustomApn) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOSSettingsId);
 
   ui::ElementContext context =
@@ -93,7 +136,8 @@ IN_PROC_BROWSER_TEST_F(ApnRevampInteractiveUiTest, CreateDefaultCustomApn) {
       ClickElement(kOSSettingsId,
                    settings::cellular::ApnDialogAddActionButton()),
 
-      Log("Wait for the newly created custom APN appear in list"),
+      Log("Wait for the newly created custom APN appear at the top of the "
+          "list"),
 
       WaitForElementExists(kOSSettingsId,
                            settings::cellular::ApnListFirstItem()),

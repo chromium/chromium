@@ -598,6 +598,16 @@ bool FakeShillServiceClient::SetServiceProperty(const std::string& service_path,
       profile_test->UpdateService(*profile_path, service_path);
   }
 
+  if (property == shill::kCellularCustomApnListProperty) {
+    const std::string* type = dict->FindString(shill::kTypeProperty);
+    if (type && *type == shill::kTypeCellular && value.GetList().size() > 0) {
+      // Set connected APN to the latest custom APN to simulate the behavior in
+      // Shill.
+      dict->Set(shill::kCellularLastGoodApnProperty,
+                value.GetList().front().Clone());
+    }
+  }
+
   // Notify the Manager if the state changed (affects DefaultService).
   if (property == shill::kStateProperty) {
     ShillManagerClient::Get()->GetTestInterface()->ServiceStateChanged(

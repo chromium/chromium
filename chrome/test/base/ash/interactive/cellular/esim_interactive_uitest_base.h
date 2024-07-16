@@ -17,6 +17,9 @@ class EsimInteractiveUiTestBase : public InteractiveAshTest {
   // InteractiveAshTest:
   void SetUpOnMainThread() override;
 
+  // Disconnect the active esim service.
+  void DisconnectEsimService();
+
   const SimInfo& esim_info() { return esim_info_; }
   const EuiccInfo& euicc_info() { return euicc_info_; }
 

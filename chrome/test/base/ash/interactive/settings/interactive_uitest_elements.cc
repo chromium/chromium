@@ -76,6 +76,10 @@ WebContentsInteractionTestUtil::DeepQuery ApnSubpageCreateApnButton() {
   return InternetPage() + "button#createCustomApnButton";
 }
 
+WebContentsInteractionTestUtil::DeepQuery ApnSubpageZeroStateContent() {
+  return InternetPage() + "apn-subpage" + "apn-list" + "div#zeroStateContent";
+}
+
 WebContentsInteractionTestUtil::DeepQuery CellularSummaryItem() {
   return InternetPage() + "network-summary" + "network-summary-item#Cellular" +
          "div#networkSummaryItemRow";

@@ -45,9 +45,15 @@ void EsimInteractiveUiTestBase::SetUpOnMainThread() {
       HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
           kAddProfileWithService);
 
-  ShillServiceClient::Get()->GetTestInterface()->SetServiceProperty(
-      esim_info_.service_path(), shill::kStateProperty,
-      base::Value(shill::kStateOnline));
+  ShillServiceClient::Get()->Connect(
+      dbus::ObjectPath(esim_info_.service_path()), base::DoNothing(),
+      base::DoNothing());
+}
+
+void EsimInteractiveUiTestBase::DisconnectEsimService() {
+  ShillServiceClient::Get()->Disconnect(
+      dbus::ObjectPath(esim_info_.service_path()), base::DoNothing(),
+      base::DoNothing());
 }
 
 }  // namespace ash

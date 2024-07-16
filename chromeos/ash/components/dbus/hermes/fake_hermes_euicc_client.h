@@ -34,6 +34,9 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesEuiccClient
              dbus::PropertySet::SetCallback callback) override;
   };
 
+  // Constants used for testing.
+  static constexpr char kFakeDefaultApn[] = "default_apn";
+
   FakeHermesEuiccClient();
   FakeHermesEuiccClient(const FakeHermesEuiccClient&) = delete;
   FakeHermesEuiccClient& operator=(const FakeHermesEuiccClient&) = delete;

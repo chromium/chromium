@@ -62,6 +62,9 @@ WebContentsInteractionTestUtil::DeepQuery ApnSubpageActionMenuButton();
 // The "Create new APN" button in the action menu in APN subpage.
 WebContentsInteractionTestUtil::DeepQuery ApnSubpageCreateApnButton();
 
+// The "Zero" state banner in APN subpage when there're no APNs.
+WebContentsInteractionTestUtil::DeepQuery ApnSubpageZeroStateContent();
+
 // The cellular "row" on the top-level internet page.
 WebContentsInteractionTestUtil::DeepQuery CellularSummaryItem();
 
