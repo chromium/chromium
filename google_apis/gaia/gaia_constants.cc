@@ -60,6 +60,11 @@ const char kParentApprovalOAuth2Scope[] =
 const char kPeopleApiReadOnlyOAuth2Scope[] =
     "https://www.googleapis.com/auth/peopleapi.readonly";
 
+// OAuth2 scope for access to the people API person's locale preferences
+// (read-only).
+const char kProfileLanguageReadOnlyOAuth2Scope[] =
+    "https://www.googleapis.com/auth/profile.language.read";
+
 // OAuth2 scope for access to the programmatic challenge API (read-only).
 const char kProgrammaticChallengeOAuth2Scope[] =
     "https://www.googleapis.com/auth/accounts.programmaticchallenge";
