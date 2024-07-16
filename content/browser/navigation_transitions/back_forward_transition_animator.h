@@ -299,6 +299,9 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   // A copy of old surface, covering the entire old page from when the
   // navigation commits to the end of the invoke animation (where the old page
   // is completely out of the viewport).
+  // - For cross-RFH navigations, it is cloned before RFH swap;
+  // - For same-RFH and same-doc navigations, it is cloned immediately after we
+  //   tell the renderer to commit the navigation.
   scoped_refptr<cc::slim::SurfaceLayer> old_surface_clone_;
 
   // The pre-captured screenshot used for previewing. The ownership of the
@@ -339,8 +342,13 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   // immediately after the invoke animation.
   bool viz_has_activated_first_frame_ = false;
 
-  // The widget host for the new page. Only set after the new page's widget is
-  // swapped in. This class listens to the first
+  // The widget host for the new page.
+  // - For cross-doc navigations, it is set when the browser receives the
+  //   "DidCommit" message.
+  // - For same-doc navigations, it is set immediately after we tell the
+  //   renderer to commit the navigation.
+  //
+  // It listens to the first
   // `OnRenderFrameMetadataChangedAfterActivation()` on the new widget host.
   // This first notification signals that viz has processed a frame submitted by
   // the renderer, at which we can safely cross-fade from the screenshot to the

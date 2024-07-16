@@ -578,7 +578,13 @@ class BackForwardTransitionAnimationManagerBrowserTest
     : public ContentBrowserTest,
       public ::testing::WithParamInterface<GestureNavType> {
  public:
-  BackForwardTransitionAnimationManagerBrowserTest() = default;
+  BackForwardTransitionAnimationManagerBrowserTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {blink::features::kBackForwardTransitions, {}}};
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        enabled_features,
+        /*disabled_features=*/{});
+  }
   ~BackForwardTransitionAnimationManagerBrowserTest() override = default;
 
   void SetUp() override {
@@ -588,15 +594,7 @@ class BackForwardTransitionAnimationManagerBrowserTest
       // native fence support on Android emulators but it doesn't work properly.
       GTEST_SKIP();
     }
-
     EnablePixelOutput();
-
-    std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {blink::features::kBackForwardTransitions, {}}};
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        enabled_features,
-        /*disabled_features=*/{});
-
     ContentBrowserTest::SetUp();
   }
 
@@ -2613,6 +2611,120 @@ IN_PROC_BROWSER_TEST_P(
 INSTANTIATE_TEST_SUITE_P(
     All,
     BackForwardTransitionAnimationManagerWithRedirectBrowserTest,
+    ::testing::ValuesIn(kGestureNavTypes),
+    &DescribeGestureNavType);
+
+namespace {
+
+class BackForwardTransitionAnimationManagerBrowserTestSameDocument
+    : public BackForwardTransitionAnimationManagerBrowserTest {
+ public:
+  BackForwardTransitionAnimationManagerBrowserTestSameDocument() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {blink::features::kIncrementLocalSurfaceIdForMainframeSameDocNavigation,
+         {}}};
+    scoped_feature_list_for_same_doc_.InitWithFeaturesAndParameters(
+        enabled_features,
+        /*disabled_features=*/{});
+  }
+  ~BackForwardTransitionAnimationManagerBrowserTestSameDocument() override =
+      default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Disable the vertical scroll bar, otherwise they might show up on the
+    // screenshot, making the test flaky.
+    command_line->AppendSwitch(switches::kHideScrollbars);
+    BackForwardTransitionAnimationManagerBrowserTest::SetUpCommandLine(
+        command_line);
+  }
+
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+
+    host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_test_server()->ServeFilesFromSourceDirectory(
+        GetTestDataFilePath());
+    net::test_server::RegisterDefaultHandlers(embedded_test_server());
+
+    ASSERT_TRUE(embedded_test_server()->Start());
+
+    // Load the red portion of the page.
+    ASSERT_TRUE(NavigateToURL(web_contents(), embedded_test_server()->GetURL(
+                                                  "/changing_color.html")));
+    WaitForCopyableViewInWebContents(web_contents());
+
+    auto* manager =
+        BrowserContextImpl::From(web_contents()->GetBrowserContext())
+            ->GetNavigationEntryScreenshotManager();
+    ASSERT_TRUE(manager);
+    ASSERT_EQ(manager->GetCurrentCacheSize(), 0U);
+    ASSERT_TRUE(web_contents()->GetRenderWidgetHostView());
+
+    // Limit three screenshots.
+    manager->SetMemoryBudgetForTesting(4 * GetViewportSize().Area64() * 3);
+
+    auto& controller = web_contents()->GetController();
+    // Navigate to the green portion of the page.
+    const int num_request_before_nav =
+        NavigationTransitionUtils::GetNumCopyOutputRequestIssuedForTesting();
+    const int entries_count_before_nav = controller.GetEntryCount();
+    {
+      ScopedScreenshotCapturedObserverForTesting observer(
+          controller.GetLastCommittedEntryIndex());
+      ASSERT_TRUE(NavigateToURL(
+          web_contents(),
+          embedded_test_server()->GetURL("/changing_color.html#green")));
+      observer.Wait();
+    }
+    ASSERT_EQ(controller.GetEntryCount(), entries_count_before_nav + 1);
+    ASSERT_EQ(
+        NavigationTransitionUtils::GetNumCopyOutputRequestIssuedForTesting(),
+        num_request_before_nav + 1);
+
+    auto* animation_manager = GetAnimationManager(web_contents());
+    animation_manager->set_animator_factory_for_testing(
+        std::make_unique<FactoryForTesting>());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_for_same_doc_;
+};
+
+}  // namespace
+
+// Basic test for the animated transition on same-doc navigations. The
+// transition is from a green portion of a page to a red portion of the same
+// page.
+IN_PROC_BROWSER_TEST_P(
+    BackForwardTransitionAnimationManagerBrowserTestSameDocument,
+    SmokeTest) {
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  base::RunLoop invoke_displayed;
+  GetAnimatorForTesting()->set_on_invoke_animation_displayed(
+      invoke_displayed.QuitClosure());
+  base::RunLoop crossfade_displayed;
+  GetAnimatorForTesting()->set_on_cross_fade_animation_displayed(
+      crossfade_displayed.QuitClosure());
+  base::RunLoop destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
+
+  TestNavigationManager back_to_red(
+      web_contents(), embedded_test_server()->GetURL("/changing_color.html"));
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+
+  ASSERT_TRUE(back_to_red.WaitForNavigationFinished());
+  invoke_displayed.Run();
+  crossfade_displayed.Run();
+  destroyed.Run();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BackForwardTransitionAnimationManagerBrowserTestSameDocument,
     ::testing::ValuesIn(kGestureNavTypes),
     &DescribeGestureNavType);
 
