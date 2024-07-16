@@ -2608,7 +2608,6 @@ crbug.com/353583078 external/wpt/trusted-types/block-text-node-insertion-into-sv
 crbug.com/353583105 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/config-cross-origin-apis.https.html [ Timeout ]
 crbug.com/353228154 [ Mac12 ] external/wpt/css/css-writing-modes/forms/select-multiple-options-visual-order.html [ Timeout ]
 crbug.com/353228155 [ Mac ] external/wpt/svg/text/reftests/textpath-letter-spacing-01.svg [ Failure ]
-crbug.com/352414603 external/wpt/html/canvas/offscreen/text/2d.text.measure.getActualBoundingBox-exceptions.tentative.worker.html [ Timeout ]
 crbug.com/352390129 [ Win11-arm64 ] external/wpt/permissions-policy/reporting/xr-report-only.https.html [ Timeout ]
 crbug.com/352407781 external/wpt/svg/painting/reftests/non-scaling-stroke-003.html [ Failure ]
 crbug.com/352390127 [ Win11-arm64 ] external/wpt/webcodecs/video-encoder-config.https.any.worker.html [ Failure Timeout ]
