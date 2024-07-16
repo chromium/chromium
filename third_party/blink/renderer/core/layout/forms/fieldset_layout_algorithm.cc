@@ -436,7 +436,7 @@ LayoutUnit FieldsetLayoutAlgorithm::FragmentainerSpaceAvailable() const {
   // The legend may have extended past the end of the fragmentainer. Clamp to
   // zero if this is the case.
   return std::max(LayoutUnit(),
-                  FragmentainerSpaceLeft() - intrinsic_block_size_);
+                  FragmentainerSpaceLeftForChildren() - intrinsic_block_size_);
 }
 
 void FieldsetLayoutAlgorithm::ConsumeRemainingFragmentainerSpace() {

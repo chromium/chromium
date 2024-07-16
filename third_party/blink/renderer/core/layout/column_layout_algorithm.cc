@@ -550,7 +550,7 @@ BreakStatus ColumnLayoutAlgorithm::LayoutChildren() {
     // We broke in the main flow. Let this multicol container take up any
     // remaining space.
     intrinsic_block_size_ =
-        std::max(intrinsic_block_size_, FragmentainerSpaceLeft());
+        std::max(intrinsic_block_size_, FragmentainerSpaceLeftForChildren());
 
     // Go through any remaining parts that we didn't get to, and push them as
     // break tokens for the next (outer) fragmentainer to handle.
@@ -635,8 +635,9 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
   bool may_resume_in_next_outer_fragmentainer = false;
   LayoutUnit available_outer_space = kIndefiniteSize;
   if (is_constrained_by_outer_fragmentation_context_) {
-    available_outer_space = std::max(minimum_column_block_size,
-                                     FragmentainerSpaceLeft() - row_offset);
+    available_outer_space =
+        std::max(minimum_column_block_size,
+                 FragmentainerSpaceLeftForChildren() - row_offset);
     DCHECK_GE(available_outer_space, LayoutUnit());
 
     // Determine if we should resume layout in the next outer fragmentation
@@ -843,7 +844,8 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
             LogicalBoxFragment(GetConstraintSpace().GetWritingDirection(),
                                column)
                 .BlockEndScrollableOverflow();
-        if (row_offset + block_end_overflow > FragmentainerSpaceLeft()) {
+        if (row_offset + block_end_overflow >
+            FragmentainerSpaceLeftForChildren()) {
           if (GetConstraintSpace().IsInsideBalancedColumns() &&
               !container_builder_.IsInitialColumnBalancingPass()) {
             container_builder_.PropagateSpaceShortage(minimal_space_shortage);

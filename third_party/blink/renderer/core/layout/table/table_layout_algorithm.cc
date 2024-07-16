@@ -918,7 +918,8 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
   const TableBreakTokenData* incoming_table_break_data = nullptr;
   LogicalBoxSides border_padding_sides_to_include;
   const auto& constraint_space = GetConstraintSpace();
-  const LayoutUnit fragmentainer_space_at_start = FragmentainerSpaceLeft();
+  const LayoutUnit fragmentainer_space_at_start =
+      FragmentainerSpaceLeftForChildren();
   LayoutUnit previously_consumed_block_size;
   LayoutUnit previously_consumed_table_box_block_size;
 
@@ -1500,7 +1501,8 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
       // be a negative offset, since the fragmentainer offset may be on a
       // subsequent page, after the monolithic content).
       LayoutUnit footer_offset_at_end_of_page =
-          FragmentainerCapacity() - GetConstraintSpace().FragmentainerOffset() -
+          FragmentainerCapacityForChildren() -
+          GetConstraintSpace().FragmentainerOffset() -
           repeated_footer_block_size;
       adjusted_child_block_offset =
           std::min(adjusted_child_block_offset, footer_offset_at_end_of_page);

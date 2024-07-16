@@ -3735,7 +3735,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
   const auto container_writing_direction =
       constraint_space.GetWritingDirection();
 
-  LayoutUnit fragmentainer_block_size = FragmentainerCapacity();
+  LayoutUnit fragmentainer_block_size = FragmentainerCapacityForChildren();
 
   // The following roughly comes from:
   // https://drafts.csswg.org/css-grid-1/#fragmentation-alg
@@ -3806,7 +3806,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     breakpoint_row_set_index = row_set_index;
   };
 
-  LayoutUnit fragmentainer_space = FragmentainerSpaceLeft();
+  LayoutUnit fragmentainer_space = FragmentainerSpaceLeftForChildren();
   base::span<const Member<const BreakToken>> child_break_tokens;
   if (GetBreakToken()) {
     child_break_tokens = GetBreakToken()->ChildBreakTokens();
@@ -4214,7 +4214,7 @@ void GridLayoutAlgorithm::PlaceOutOfFlowItems(
     // items or items with a grid-area that is not in the first or last
     // fragment, we could end up with an incorrect static position.
     if (should_process_block_end ||
-        child_offset.block_offset <= FragmentainerCapacity()) {
+        child_offset.block_offset <= FragmentainerCapacityForChildren()) {
       container_builder_.AddOutOfFlowChildCandidate(
           out_of_flow_item.node, child_offset, inline_edge, block_edge);
     } else {

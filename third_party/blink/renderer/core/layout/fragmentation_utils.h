@@ -139,13 +139,17 @@ BreakAppeal CalculateBreakAppealInside(
 inline LayoutUnit ClampedToValidFragmentainerCapacity(LayoutUnit length) {
   return std::max(length, LayoutUnit(1));
 }
+// This function is most commonly used to figure out space available to children
+// of a builder, but if it's used to figure out the minimum valid fragmentainer
+// size for the fragment itself, `is_for_children` may be cleared, so that any
+// cloned box decorations are included. Such box decorations will otherwise be
+// subtracted, since children should steer clear of them.
 inline LayoutUnit ClampedToValidFragmentainerCapacity(
     const BoxFragmentBuilder& builder,
     LayoutUnit length,
-    bool include_cloned_block_end_decorations) {
+    bool is_for_children) {
   LayoutUnit minimum(1);
-  if (builder.ShouldCloneBoxEndDecorations() &&
-      include_cloned_block_end_decorations) {
+  if (builder.ShouldCloneBoxEndDecorations() && !is_for_children) {
     minimum += builder.BorderScrollbarPadding().BlockSum();
   }
   return std::max(length, minimum);
@@ -162,21 +166,24 @@ LogicalSize FragmentainerLogicalCapacity(
 // than 0 (even if the final fragentainer size may very well be 0). The spec
 // says that fragmentainers have to accept at least 1px of content. See
 // https://www.w3.org/TR/css-break-3/#breaking-rules
-inline LayoutUnit FragmentainerCapacity(
-    const BoxFragmentBuilder& builder,
-    bool include_cloned_block_end_decorations = false) {
+//
+// This function is most commonly used to figure out space available to children
+// of a builder, but if it's used to figure out the space available the fragment
+// itself, `is_for_children` may be cleared, so that any cloned box decorations
+// are included. Such box decorations will otherwise be subtracted, since
+// children should steer clear of them.
+inline LayoutUnit FragmentainerCapacity(const BoxFragmentBuilder& builder,
+                                        bool is_for_children) {
   const ConstraintSpace& space = builder.GetConstraintSpace();
   if (!space.HasKnownFragmentainerBlockSize())
     return kIndefiniteSize;
   LayoutUnit size = space.FragmentainerBlockSize();
-  if (builder.ShouldCloneBoxEndDecorations() &&
-      !include_cloned_block_end_decorations) {
+  if (builder.ShouldCloneBoxEndDecorations() && is_for_children) {
     // Having cloned box decorations effectively shrinks the fragmentainer space
     // available to children.
     size -= builder.BorderScrollbarPadding().block_end;
   }
-  return ClampedToValidFragmentainerCapacity(
-      builder, size, include_cloned_block_end_decorations);
+  return ClampedToValidFragmentainerCapacity(builder, size, is_for_children);
 }
 
 inline LayoutUnit FragmentainerSpaceLeft(const ConstraintSpace& space,
@@ -195,18 +202,16 @@ inline LayoutUnit FragmentainerSpaceLeft(const ConstraintSpace& space,
 //
 // This function is most commonly used to figure out space available to children
 // of a builder, but if it's used to figure out the space available the fragment
-// itself, `include_cloned_block_end_decorations` may be set, so that any cloned
-// box decorations are included. Such box decorations will otherwise be
-// subtracted, since children should steer clear of them.
-inline LayoutUnit FragmentainerSpaceLeft(
-    const BoxFragmentBuilder& builder,
-    bool include_cloned_block_end_decorations = false) {
+// itself, `is_for_children` may be cleared, so that any cloned box decorations
+// are included. Such box decorations will otherwise be subtracted, since
+// children should steer clear of them.
+inline LayoutUnit FragmentainerSpaceLeft(const BoxFragmentBuilder& builder,
+                                         bool is_for_children) {
   const ConstraintSpace& space = builder.GetConstraintSpace();
   if (!space.HasKnownFragmentainerBlockSize())
     return kIndefiniteSize;
   return FragmentainerSpaceLeft(
-      space,
-      FragmentainerCapacity(builder, include_cloned_block_end_decorations));
+      space, FragmentainerCapacity(builder, is_for_children));
 }
 
 // Return the border edge block-offset from the block-start of the fragmentainer
@@ -535,7 +540,8 @@ inline LayoutUnit AdjustedMarginAfterFinalChildFragment(
     const BoxFragmentBuilder& builder,
     LayoutUnit block_offset,
     LayoutUnit block_end_margin) {
-  LayoutUnit space_left = FragmentainerSpaceLeft(builder) - block_offset;
+  LayoutUnit space_left =
+      FragmentainerSpaceLeft(builder, /*is_for_children=*/true) - block_offset;
   return std::min(block_end_margin, space_left.ClampNegativeToZero());
 }
 

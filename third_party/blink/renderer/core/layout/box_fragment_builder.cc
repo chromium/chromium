@@ -441,7 +441,8 @@ void BoxFragmentBuilder::PropagateBreakInfo(
     }
     LayoutUnit fragment_block_end = offset.block_offset + block_size;
     LayoutUnit fragmentainer_overflow =
-        fragment_block_end - FragmentainerSpaceLeft(*this);
+        fragment_block_end -
+        FragmentainerSpaceLeft(*this, /*is_for_children=*/true);
     if (fragmentainer_overflow > LayoutUnit()) {
       // This child overflows the page, because there's something monolithic
       // inside.

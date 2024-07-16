@@ -146,12 +146,12 @@ class CORE_EXPORT LayoutAlgorithm {
     return container_builder_.GetExclusionSpace();
   }
 
-  LayoutUnit FragmentainerCapacity() const {
-    return ::blink::FragmentainerCapacity(container_builder_);
+  LayoutUnit FragmentainerCapacityForChildren() const {
+    return FragmentainerCapacity(container_builder_, /*is_for_children=*/true);
   }
 
-  LayoutUnit FragmentainerSpaceLeft() const {
-    return ::blink::FragmentainerSpaceLeft(container_builder_);
+  LayoutUnit FragmentainerSpaceLeftForChildren() const {
+    return FragmentainerSpaceLeft(container_builder_, /*is_for_children=*/true);
   }
 
   BreakStatus BreakBeforeChildIfNeeded(LayoutInputNode child,
@@ -160,7 +160,8 @@ class CORE_EXPORT LayoutAlgorithm {
                                        bool has_container_separation) {
     return ::blink::BreakBeforeChildIfNeeded(
         GetConstraintSpace(), child, layout_result, fragmentainer_block_offset,
-        FragmentainerCapacity(), has_container_separation, &container_builder_);
+        FragmentainerCapacityForChildren(), has_container_separation,
+        &container_builder_);
   }
 
   bool MovePastBreakpoint(LayoutInputNode child,
@@ -169,7 +170,7 @@ class CORE_EXPORT LayoutAlgorithm {
                           BreakAppeal appeal_before) {
     return ::blink::MovePastBreakpoint(
         GetConstraintSpace(), child, layout_result, fragmentainer_block_offset,
-        FragmentainerCapacity(), appeal_before, &container_builder_);
+        FragmentainerCapacityForChildren(), appeal_before, &container_builder_);
   }
 
   bool MovePastBreakpoint(const LayoutResult& layout_result,
@@ -177,7 +178,7 @@ class CORE_EXPORT LayoutAlgorithm {
                           BreakAppeal appeal_before) {
     return ::blink::MovePastBreakpoint(
         GetConstraintSpace(), layout_result, fragmentainer_block_offset,
-        FragmentainerCapacity(), appeal_before, &container_builder_);
+        FragmentainerCapacityForChildren(), appeal_before, &container_builder_);
   }
 
   // Lay out again, this time with a predefined good breakpoint that we

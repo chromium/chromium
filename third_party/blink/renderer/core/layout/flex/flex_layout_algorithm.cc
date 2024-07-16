@@ -252,8 +252,8 @@ void FlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
           total_intrinsic_block_size_, container_builder_.InlineSize());
     } else {
       LayoutUnit center = total_block_size_ / 2;
-      should_process_block_center =
-          center - previous_consumed_block_size <= FragmentainerCapacity();
+      should_process_block_center = center - previous_consumed_block_size <=
+                                    FragmentainerCapacityForChildren();
     }
   }
 
@@ -1515,7 +1515,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
                                                   false);
   bool needs_earlier_break_in_column = false;
   LayoutResult::EStatus status = LayoutResult::kSuccess;
-  LayoutUnit fragmentainer_space = FragmentainerSpaceLeft();
+  LayoutUnit fragmentainer_space = FragmentainerSpaceLeftForChildren();
 
   HeapVector<FlexColumnBreakInfo> column_break_info;
   if (is_column_) {
@@ -2238,7 +2238,8 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizes(
 
 LayoutUnit FlexLayoutAlgorithm::FragmentainerSpaceAvailable(
     LayoutUnit block_offset) const {
-  return (FragmentainerSpaceLeft() - block_offset).ClampNegativeToZero();
+  return (FragmentainerSpaceLeftForChildren() - block_offset)
+      .ClampNegativeToZero();
 }
 
 void FlexLayoutAlgorithm::ConsumeRemainingFragmentainerSpace(
@@ -2280,7 +2281,7 @@ BreakStatus FlexLayoutAlgorithm::BreakBeforeRowIfNeeded(
 
   LayoutUnit fragmentainer_block_offset =
       GetConstraintSpace().FragmentainerOffset() + row_block_offset;
-  LayoutUnit fragmentainer_block_size = FragmentainerCapacity();
+  LayoutUnit fragmentainer_block_size = FragmentainerCapacityForChildren();
 
   if (has_container_separation) {
     if (IsForcedBreakValue(GetConstraintSpace(), row_break_between)) {
@@ -2331,7 +2332,8 @@ bool FlexLayoutAlgorithm::MovePastRowBreakPoint(
     return true;
   }
 
-  LayoutUnit space_left = FragmentainerCapacity() - fragmentainer_block_offset;
+  LayoutUnit space_left =
+      FragmentainerCapacityForChildren() - fragmentainer_block_offset;
 
   // If the row starts past the end of the fragmentainer, we must break before
   // it.
@@ -2345,7 +2347,7 @@ bool FlexLayoutAlgorithm::MovePastRowBreakPoint(
   }
   if (must_break_before) {
 #if DCHECK_IS_ON()
-    bool refuse_break_before = space_left >= FragmentainerCapacity();
+    bool refuse_break_before = space_left >= FragmentainerCapacityForChildren();
     DCHECK(!refuse_break_before);
 #endif
     return false;

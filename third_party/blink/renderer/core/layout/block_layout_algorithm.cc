@@ -1517,7 +1517,8 @@ void BlockLayoutAlgorithm::HandleFloat(
   UnpositionedFloat unpositioned_float(
       child, child_break_token, ChildAvailableSize(), child_percentage_size_,
       replaced_child_percentage_size_, origin_bfc_offset, constraint_space,
-      Style(), FragmentainerCapacity(), line_clamp_data_.ShouldHideForPaint());
+      Style(), FragmentainerCapacityForChildren(),
+      line_clamp_data_.ShouldHideForPaint());
 
   if (!container_builder_.BfcBlockOffset()) {
     container_builder_.AddAdjoiningObjectTypes(
@@ -2744,7 +2745,7 @@ void BlockLayoutAlgorithm::ConsumeRemainingFragmentainerSpace(
     // monolithic content).
     previous_inflow_position->logical_block_offset =
         std::max(previous_inflow_position->logical_block_offset,
-                 FragmentainerSpaceLeft());
+                 FragmentainerSpaceLeftForChildren());
   }
 }
 
@@ -2810,8 +2811,8 @@ BreakStatus BlockLayoutAlgorithm::BreakBeforeChildIfNeeded(
         CalculateBreakBetweenValue(child, layout_result, container_builder_);
     if (IsForcedBreakValue(GetConstraintSpace(), break_between)) {
       BreakBeforeChild(GetConstraintSpace(), child, &layout_result,
-                       fragmentainer_block_offset, FragmentainerCapacity(),
-                       kBreakAppealPerfect,
+                       fragmentainer_block_offset,
+                       FragmentainerCapacityForChildren(), kBreakAppealPerfect,
                        /* is_forced_break */ true, &container_builder_);
       ConsumeRemainingFragmentainerSpace(previous_inflow_position);
       return BreakStatus::kBrokeBefore;
@@ -2861,9 +2862,9 @@ BreakStatus BlockLayoutAlgorithm::BreakBeforeChildIfNeeded(
       // require an additional piece of machinery. This case should be rare
       // enough (to worry about performance), so let's focus on code
       // simplicity instead.
-      PropagateSpaceShortage(GetConstraintSpace(), &layout_result,
-                             fragmentainer_block_offset,
-                             FragmentainerCapacity(), &container_builder_);
+      PropagateSpaceShortage(
+          GetConstraintSpace(), &layout_result, fragmentainer_block_offset,
+          FragmentainerCapacityForChildren(), &container_builder_);
     }
     // Attempt to honor orphans and widows requests.
     if (int line_count = container_builder_.LineCount()) {
@@ -2913,8 +2914,9 @@ BreakStatus BlockLayoutAlgorithm::BreakBeforeChildIfNeeded(
   }
 
   if (!AttemptSoftBreak(GetConstraintSpace(), child, &layout_result,
-                        fragmentainer_block_offset, FragmentainerCapacity(),
-                        appeal_before, &container_builder_)) {
+                        fragmentainer_block_offset,
+                        FragmentainerCapacityForChildren(), appeal_before,
+                        &container_builder_)) {
     return BreakStatus::kNeedsEarlierBreak;
   }
 
