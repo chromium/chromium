@@ -2,17 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../info_card/cpu_card.js';
 import '../info_card/power_thermal_card.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {HealthdApiTelemetryResult} from '../externs.js';
+import type {HealthdInternalsCpuCardElement} from '../info_card/cpu_card.js';
 import type {HealthdInternalsPowerThermalCardElement} from '../info_card/power_thermal_card.js';
 
 import {getTemplate} from './telemetry.html.js';
 
 export interface HealthdInternalsTelemetryElement {
   $: {
+    cpuCard: HealthdInternalsCpuCardElement,
     powerThermalCard: HealthdInternalsPowerThermalCardElement,
   };
 }
@@ -27,6 +30,7 @@ export class HealthdInternalsTelemetryElement extends PolymerElement {
   }
 
   updateTelemetryData(data: HealthdApiTelemetryResult) {
+    this.$.cpuCard.updateTelemetryData(data);
     this.$.powerThermalCard.updateTelemetryData(data);
   }
 }

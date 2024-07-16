@@ -44,6 +44,12 @@ export class HealthdInternalsInfoCardElement extends PolymerElement {
     });
   }
 
+  // Refresh card components for new rows added after the UI is rendered.
+  refreshComponents() {
+    // Create a copy to trigger a change.
+    this.set('displayedInfoList', this.displayedInfoList.slice());
+  }
+
   // Update the data at the assigned row.
   updateDisplayedInfo(rowIndex: number, data: any) {
     if (rowIndex > this.displayedInfoList.length) {

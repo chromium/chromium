@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
@@ -33,6 +34,19 @@ std::string Convert(mojom::ThermalSensorInfo::ThermalSensorSource source) {
   }
 }
 
+std::string Convert(mojom::CpuArchitectureEnum source) {
+  switch (source) {
+    case mojom::CpuArchitectureEnum::kX86_64:
+      return "x86_64";
+    case mojom::CpuArchitectureEnum::kAArch64:
+      return "aarch64";
+    case mojom::CpuArchitectureEnum::kArmv7l:
+      return "armv7l";
+    case mojom::CpuArchitectureEnum::kUnknown:
+      return "Unknown";
+  }
+}
+
 base::Value::Dict ConvertBatteryValue(const mojom::BatteryInfoPtr& info) {
   base::Value::Dict out_battery;
   if (info) {
@@ -41,6 +55,60 @@ base::Value::Dict ConvertBatteryValue(const mojom::BatteryInfoPtr& info) {
     out_battery.Set("chargeNow", info->charge_now);
   }
   return out_battery;
+}
+
+base::Value::List ConvertLogicalCpus(
+    const std::vector<mojom::LogicalCpuInfoPtr>& logical_cpus) {
+  base::Value::List out_logical_cpus;
+  for (const auto& logical_cpu : logical_cpus) {
+    if (!logical_cpu) {
+      continue;
+    }
+    base::Value::Dict out_logical_cpu;
+    out_logical_cpu.Set("coreId", base::NumberToString(logical_cpu->core_id));
+    out_logical_cpu.SetByDottedPath(
+        "frequency.current",
+        base::NumberToString(logical_cpu->scaling_current_frequency_khz));
+    out_logical_cpu.SetByDottedPath(
+        "frequency.max",
+        base::NumberToString(logical_cpu->scaling_max_frequency_khz));
+    out_logical_cpu.SetByDottedPath(
+        "executionTime.user",
+        base::NumberToString(logical_cpu->user_time_user_hz));
+    out_logical_cpu.SetByDottedPath(
+        "executionTime.system",
+        base::NumberToString(logical_cpu->system_time_user_hz));
+    out_logical_cpu.SetByDottedPath(
+        "executionTime.idle",
+        base::NumberToString(logical_cpu->idle_time_user_hz));
+    out_logical_cpus.Append(std::move(out_logical_cpu));
+  }
+  return out_logical_cpus;
+}
+
+base::Value::Dict ConvertCpuValue(const mojom::CpuInfoPtr& info) {
+  base::Value::Dict out_cpu;
+  if (info) {
+    out_cpu.Set("architecture", Convert(info->architecture));
+    out_cpu.Set("numTotalThreads",
+                base::NumberToString(info->num_total_threads));
+
+    base::Value::List out_physical_cpus;
+    for (const auto& physical_cpu : info->physical_cpus) {
+      if (!physical_cpu) {
+        continue;
+      }
+      base::Value::Dict out_physical_cpu;
+      if (physical_cpu->model_name.has_value()) {
+        out_physical_cpu.Set("modelName", physical_cpu->model_name.value());
+      }
+      out_physical_cpu.Set("logicalCpus",
+                           ConvertLogicalCpus(physical_cpu->logical_cpus));
+      out_physical_cpus.Append(std::move(out_physical_cpu));
+    }
+    out_cpu.Set("physicalCpus", (std::move(out_physical_cpus)));
+  }
+  return out_cpu;
 }
 
 base::Value::List ConvertThermalValue(const mojom::ThermalInfoPtr& info) {
@@ -89,7 +157,8 @@ void HealthdInternalsMessageHandler::HandleGetHealthdTelemetryInfo(
   }
 
   service->ProbeTelemetryInfo(
-      {mojom::ProbeCategoryEnum::kBattery, mojom::ProbeCategoryEnum::kThermal},
+      {mojom::ProbeCategoryEnum::kBattery, mojom::ProbeCategoryEnum::kCpu,
+       mojom::ProbeCategoryEnum::kThermal},
       base::BindOnce(&HealthdInternalsMessageHandler::HandleTelemetryResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback_id)));
 }
@@ -107,6 +176,9 @@ void HealthdInternalsMessageHandler::HandleTelemetryResult(
   if (info->battery_result && info->battery_result->is_battery_info()) {
     result.Set("battery",
                ConvertBatteryValue(info->battery_result->get_battery_info()));
+  }
+  if (info->cpu_result && info->cpu_result->is_cpu_info()) {
+    result.Set("cpu", ConvertCpuValue(info->cpu_result->get_cpu_info()));
   }
   if (info->thermal_result && info->thermal_result->is_thermal_info()) {
     result.Set("thermals",

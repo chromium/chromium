@@ -16,6 +16,37 @@ export interface HealthdApiBatteryResult {
 }
 
 /**
+ * `getHealthdTelemetryInfo` battery result.
+ */
+export interface HealthdApiCpuResult {
+  architecture: string;
+  numTotalThreads: string;
+  physicalCpus: HealthdApiPhysicalCpuResult[];
+}
+
+export interface HealthdApiPhysicalCpuResult {
+  modelName: string|undefined;
+  logicalCpus: HealthdApiLogicalCpuResult[];
+}
+
+export interface HealthdApiLogicalCpuResult {
+  coreId: string;
+  frequency: HealthdApiCpuScalingFrequencyKhz;
+  executionTime: HealthdApiCpuExecutionTimeUserHz;
+}
+
+export interface HealthdApiCpuScalingFrequencyKhz {
+  current: string;
+  max: string;
+}
+
+export interface HealthdApiCpuExecutionTimeUserHz {
+  user: string;
+  system: string;
+  idle: string;
+}
+
+/**
  * `getHealthdTelemetryInfo` thermal result.
  */
 export interface HealthdApiThermalResult {
@@ -29,5 +60,6 @@ export interface HealthdApiThermalResult {
  */
 export interface HealthdApiTelemetryResult {
   battery: HealthdApiBatteryResult;
+  cpu: HealthdApiCpuResult;
   thermals: HealthdApiThermalResult[];
 }
