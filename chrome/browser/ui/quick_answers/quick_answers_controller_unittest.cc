@@ -4,15 +4,19 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 #include "chrome/browser/ui/quick_answers/test/chrome_quick_answers_test_base.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_view.h"
 #include "chrome/browser/ui/quick_answers/ui/user_consent_view.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
+#include "chromeos/components/magic_boost/test/fake_magic_boost_state.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -78,8 +82,8 @@ class QuickAnswersControllerTest : public ChromeQuickAnswersTestBase {
   void ShowConsentView() {
     // We can only show the consent view if the consent has not been
     // granted, so we add a sanity check here.
-    EXPECT_TRUE(QuickAnswersState::Get()->consent_status() ==
-                quick_answers::prefs::ConsentStatus::kUnknown)
+    EXPECT_EQ(QuickAnswersState::GetConsentStatus(),
+              quick_answers::prefs::ConsentStatus::kUnknown)
         << "Can not show consent view as the user consent has already "
            "been given.";
     ShowView();
@@ -199,6 +203,32 @@ TEST_F(QuickAnswersControllerTest, DismissUserConsentView) {
   DismissQuickAnswers();
 
   EXPECT_FALSE(ui_controller()->IsShowingUserConsentView());
+}
+
+TEST_F(QuickAnswersControllerTest, NoUserConsentView) {
+  // `chromeos::features::kMagicBoost` is only accessible from Ash build. This
+  // test code is currently only included by Ash build.
+  base::test::ScopedFeatureList scoped_feature_list_(
+      chromeos::features::kMagicBoost);
+
+  chromeos::test::FakeMagicBoostState fake_magic_boost_state;
+  fake_magic_boost_state.AsyncWriteConsentStatus(
+      chromeos::HMRConsentStatus::kUnset);
+
+  ASSERT_EQ(QuickAnswersState::FeatureType::kHmr,
+            QuickAnswersState::GetFeatureType());
+  ASSERT_EQ(quick_answers::prefs::ConsentStatus::kUnknown,
+            QuickAnswersState::GetConsentStatusAs(
+                QuickAnswersState::FeatureType::kQuickAnswers));
+  ASSERT_EQ(quick_answers::prefs::ConsentStatus::kUnknown,
+            QuickAnswersState::GetConsentStatusAs(
+                QuickAnswersState::FeatureType::kHmr));
+
+  ShowConsentView();
+
+  EXPECT_FALSE(ui_controller()->IsShowingUserConsentView())
+      << "No consent UI should be shown for kHmr as it should be handled by "
+         "MagicBoost";
 }
 
 TEST_F(QuickAnswersControllerTest, DismissQuickAnswersView) {

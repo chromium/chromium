@@ -41,9 +41,32 @@ QuickAnswersState::Error ToQuickAnswersStateError(
   CHECK(false) << "Unknown MagicBoostState::Error enum class value provided.";
 }
 
+quick_answers::prefs::ConsentStatus ToQuickAnswersPrefsConsentStatus(
+    chromeos::HMRConsentStatus consent_status) {
+  switch (consent_status) {
+    case chromeos::HMRConsentStatus::kApproved:
+      return quick_answers::prefs::ConsentStatus::kAccepted;
+    case chromeos::HMRConsentStatus::kDeclined:
+      return quick_answers::prefs::ConsentStatus::kRejected;
+    case chromeos::HMRConsentStatus::kPending:
+    case chromeos::HMRConsentStatus::kUnset:
+      return quick_answers::prefs::ConsentStatus::kUnknown;
+  }
+
+  CHECK(false) << "Unknown HMRConsentStatus enum class value provided.";
+}
+
 base::expected<bool, QuickAnswersState::Error> ToQuickAnswersStateIsEnabled(
     base::expected<bool, chromeos::MagicBoostState::Error> is_enabled) {
   return is_enabled.transform_error(&ToQuickAnswersStateError);
+}
+
+base::expected<quick_answers::prefs::ConsentStatus, QuickAnswersState::Error>
+ToQuickAnswersStateConsentStatus(
+    base::expected<chromeos::HMRConsentStatus, chromeos::MagicBoostState::Error>
+        consent_status) {
+  return consent_status.transform_error(&ToQuickAnswersStateError)
+      .transform(&ToQuickAnswersPrefsConsentStatus);
 }
 
 }  // namespace
@@ -92,6 +115,23 @@ bool QuickAnswersState::IsEnabledAs(FeatureType feature_type) {
   return quick_answers_state->IsEnabledExpectedAs(feature_type).value_or(false);
 }
 
+// static
+base::expected<quick_answers::prefs::ConsentStatus, QuickAnswersState::Error>
+QuickAnswersState::GetConsentStatus() {
+  return GetConsentStatusAs(GetFeatureType());
+}
+
+// static
+base::expected<quick_answers::prefs::ConsentStatus, QuickAnswersState::Error>
+QuickAnswersState::GetConsentStatusAs(FeatureType feature_type) {
+  QuickAnswersState* quick_answers_state = Get();
+  if (!quick_answers_state) {
+    return base::unexpected(QuickAnswersState::Error::kUninitialized);
+  }
+
+  return quick_answers_state->GetConsentStatusExpectedAs(feature_type);
+}
+
 QuickAnswersState::QuickAnswersState() {
   CHECK(!g_quick_answers_state);
   g_quick_answers_state = this;
@@ -120,6 +160,11 @@ void QuickAnswersState::RemoveObserver(QuickAnswersStateObserver* observer) {
 
 void QuickAnswersState::OnHMREnabledUpdated(bool enabled) {
   MaybeNotifyIsEnabledChanged();
+}
+
+void QuickAnswersState::OnHMRConsentStatusUpdated(
+    chromeos::HMRConsentStatus consent_status) {
+  MaybeNotifyConsentStatusChanged();
 }
 
 void QuickAnswersState::OnIsDeleting() {
@@ -200,6 +245,15 @@ QuickAnswersState::IsEnabledExpectedAs(
     return false;
   }
 
+  // Quick Answers capability should not be enabled without kAccepted consent
+  // status. Note that there is a combination of IsEnabled=false and
+  // ConsentStatus=kAccepted if a user has turned off a feature after they have
+  // enabled/consented.
+  if (GetConsentStatusAs(feature_type) !=
+      quick_answers::prefs::ConsentStatus::kAccepted) {
+    return false;
+  }
+
   switch (feature_type) {
     case QuickAnswersState::FeatureType::kHmr: {
       chromeos::MagicBoostState* magic_boost_state =
@@ -220,17 +274,48 @@ QuickAnswersState::IsEnabledExpectedAs(
   }
 }
 
+base::expected<quick_answers::prefs::ConsentStatus, QuickAnswersState::Error>
+QuickAnswersState::GetConsentStatusExpected() const {
+  return GetConsentStatusExpectedAs(GetFeatureType());
+}
+
+base::expected<quick_answers::prefs::ConsentStatus, QuickAnswersState::Error>
+QuickAnswersState::GetConsentStatusExpectedAs(
+    QuickAnswersState::FeatureType feature_type) const {
+  switch (feature_type) {
+    case QuickAnswersState::FeatureType::kHmr: {
+      chromeos::MagicBoostState* magic_boost_state =
+          chromeos::MagicBoostState::Get();
+      if (!magic_boost_state) {
+        return base::unexpected(QuickAnswersState::Error::kUninitialized);
+      }
+
+      return ToQuickAnswersStateConsentStatus(
+          magic_boost_state->hmr_consent_status());
+    }
+    case QuickAnswersState::FeatureType::kQuickAnswers: {
+      return quick_answers_consent_status_;
+    }
+  }
+}
+
 void QuickAnswersState::SetEligibilityForTesting(bool is_eligible) {
   CHECK_IS_TEST();
   is_eligible_for_testing_ = is_eligible;
   MaybeNotifyEligibilityChanged();
 }
 
+void QuickAnswersState::SetQuickAnswersFeatureConsentStatus(
+    quick_answers::prefs::ConsentStatus consent_status) {
+  quick_answers_consent_status_ = consent_status;
+
+  MaybeNotifyConsentStatusChanged();
+}
+
 void QuickAnswersState::InitializeObserver(
     QuickAnswersStateObserver* observer) {
   if (prefs_initialized_) {
     observer->OnPrefsInitialized();
-    observer->OnConsentStatusUpdated(consent_status_);
     observer->OnApplicationLocaleReady(resolved_application_locale_);
     observer->OnPreferredLanguagesChanged(preferred_languages_);
   }
@@ -245,6 +330,12 @@ void QuickAnswersState::InitializeObserver(
       IsEligibleExpected();
   if (maybe_is_eligible.has_value()) {
     observer->OnEligibilityChanged(maybe_is_eligible.value());
+  }
+
+  base::expected<quick_answers::prefs::ConsentStatus, QuickAnswersState::Error>
+      maybe_consent_status = GetConsentStatusExpected();
+  if (maybe_consent_status.has_value()) {
+    observer->OnConsentStatusUpdated(maybe_consent_status.value());
   }
 }
 
@@ -288,4 +379,27 @@ void QuickAnswersState::MaybeNotifyIsEnabledChanged() {
   for (auto& observer : observers_) {
     observer.OnSettingsEnabled(last_notified_is_enabled_.value());
   }
+}
+
+void QuickAnswersState::MaybeNotifyConsentStatusChanged() {
+  base::expected<quick_answers::prefs::ConsentStatus, Error> consent_status =
+      GetConsentStatusExpected();
+
+  if (last_notified_consent_status_ == consent_status) {
+    return;
+  }
+
+  last_notified_consent_status_ = consent_status;
+
+  // TODO(b/340628526): Change other MaybeNotify methods to notify a value
+  // change to dependent values for error value case.
+  if (last_notified_consent_status_.has_value()) {
+    for (auto& observer : observers_) {
+      observer.OnConsentStatusUpdated(last_notified_consent_status_.value());
+    }
+  }
+
+  // `IsEnabled` depends on `GetConsentStatus`. Maybe notify if consent status
+  // has changed.
+  MaybeNotifyIsEnabledChanged();
 }

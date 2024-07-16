@@ -100,11 +100,28 @@ bool ShouldShowQuickAnswers() {
     return false;
   }
 
-  bool settings_enabled = QuickAnswersState::IsEnabled();
+  if (QuickAnswersState::IsEnabled()) {
+    return true;
+  }
 
-  bool should_show_consent = QuickAnswersState::Get()->consent_status() ==
-                             quick_answers::prefs::ConsentStatus::kUnknown;
-  return settings_enabled || should_show_consent;
+  // If feature type is `kQuickAnswers`, return `true` for the case `kUnknown`
+  // to show a consent UI.
+  if (QuickAnswersState::GetFeatureType() ==
+      QuickAnswersState::FeatureType::kQuickAnswers) {
+    base::expected<quick_answers::prefs::ConsentStatus,
+                   QuickAnswersState::Error>
+        maybe_consent_status = QuickAnswersState::GetConsentStatus();
+    if (!maybe_consent_status.has_value()) {
+      return false;
+    }
+
+    if (maybe_consent_status.value() ==
+        quick_answers::prefs::ConsentStatus::kUnknown) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 bool IsActiveUserInternal() {
@@ -135,6 +152,8 @@ bool IsNoResult(
          ResultType::kNoResult;
 }
 
+// TODO(b/340628526): This can be IsEnabled waiter as IsEnabled is gated by a
+// consent status now.
 class PerformOnConsentAccepted : public QuickAnswersStateObserver {
  public:
   explicit PerformOnConsentAccepted(base::OnceCallback<void()> action)
@@ -160,16 +179,15 @@ class PerformOnConsentAccepted : public QuickAnswersStateObserver {
       return;
     }
 
-    QuickAnswersState* quick_answers_state = QuickAnswersState::Get();
-    CHECK(quick_answers_state->prefs_initialized());
-
     bool settings_enabled = QuickAnswersState::IsEnabledAs(
         QuickAnswersState::FeatureType::kQuickAnswers);
-    quick_answers::prefs::ConsentStatus consent_status =
-        quick_answers_state->consent_status();
+    if (!settings_enabled) {
+      return;
+    }
 
-    if (!settings_enabled ||
-        consent_status != quick_answers::prefs::ConsentStatus::kAccepted) {
+    if (QuickAnswersState::GetConsentStatusAs(
+            QuickAnswersState::FeatureType::kQuickAnswers) !=
+        quick_answers::prefs::ConsentStatus::kAccepted) {
       return;
     }
 
@@ -333,23 +351,27 @@ void QuickAnswersControllerImpl::DismissQuickAnswers(
 
 void QuickAnswersControllerImpl::HandleQuickAnswerRequest(
     const quick_answers::QuickAnswersRequest& request) {
-  switch (QuickAnswersState::Get()->consent_status()) {
+  base::expected<quick_answers::prefs::ConsentStatus, QuickAnswersState::Error>
+      maybe_consent_status = QuickAnswersState::GetConsentStatus();
+  if (!maybe_consent_status.has_value()) {
+    // No UI should be shown at this point, i.e., there should be no need to
+    // reset UI. Reset is done in `OnTextAvailable` by a next request.
+    // TODO(b/352469160): move those states to `QuickAnswersSession` as we can
+    // easily reset a state.
+    return;
+  }
+
+  switch (maybe_consent_status.value()) {
     case quick_answers::prefs::ConsentStatus::kRejected:
       CHECK(false) << "No request should be made if kRejected.";
       return;
     case quick_answers::prefs::ConsentStatus::kUnknown:
-      switch (QuickAnswersState::GetFeatureType()) {
-        case QuickAnswersState::FeatureType::kQuickAnswers:
-          ShowUserConsent(
-              IntentTypeToString(
-                  request.preprocessed_output.intent_info.intent_type),
-              base::UTF8ToUTF16(
-                  request.preprocessed_output.intent_info.intent_text));
-          return;
-        case QuickAnswersState::FeatureType::kHmr:
-          // QA consent is handled by MagicBoost.
-          return;
-      }
+      MaybeShowUserConsent(
+          IntentTypeToString(
+              request.preprocessed_output.intent_info.intent_type),
+          base::UTF8ToUTF16(
+              request.preprocessed_output.intent_info.intent_text));
+      return;
     case quick_answers::prefs::ConsentStatus::kAccepted:
       visibility_ = QuickAnswersVisibility::kQuickAnswersVisible;
       // TODO(b/327501381): Use `ReadWriteCardsUiController` for this view.
@@ -557,16 +579,27 @@ QuickAnswersControllerImpl::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-void QuickAnswersControllerImpl::ShowUserConsent(
+bool QuickAnswersControllerImpl::MaybeShowUserConsent(
     const std::u16string& intent_type,
     const std::u16string& intent_text) {
-  // Show consent informing user about the feature if required.
-  if (!quick_answers_ui_controller_->IsShowingUserConsentView()) {
-    quick_answers_ui_controller_->CreateUserConsentView(
-        anchor_bounds_, intent_type, intent_text);
-    consent_ui_shown_ = GetTimeTicksNow();
-    visibility_ = QuickAnswersVisibility::kUserConsentVisible;
+  // For non-QuickAnswers case (i.e., HMR), user consent is handled outside of
+  // QuickAnswers code.
+  if (QuickAnswersState::GetFeatureType() !=
+      QuickAnswersState::FeatureType::kQuickAnswers) {
+    return false;
   }
+
+  if (quick_answers_ui_controller_->IsShowingUserConsentView()) {
+    return false;
+  }
+
+  quick_answers_ui_controller_->CreateUserConsentView(anchor_bounds_,
+                                                      intent_type, intent_text);
+
+  consent_ui_shown_ = GetTimeTicksNow();
+  visibility_ = QuickAnswersVisibility::kUserConsentVisible;
+
+  return true;
 }
 
 QuickAnswersRequest QuickAnswersControllerImpl::BuildRequest() {

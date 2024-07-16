@@ -125,12 +125,8 @@ void QuickAnswersStateLacros::OnSettingsEnabledChanged(base::Value value) {
 
 void QuickAnswersStateLacros::OnConsentStatusChanged(base::Value value) {
   DCHECK(value.is_int());
-  consent_status_ =
-      static_cast<quick_answers::prefs::ConsentStatus>(value.GetInt());
-
-  for (auto& observer : observers_) {
-    observer.OnConsentStatusUpdated(consent_status_);
-  }
+  SetQuickAnswersFeatureConsentStatus(
+      static_cast<quick_answers::prefs::ConsentStatus>(value.GetInt()));
 }
 
 void QuickAnswersStateLacros::OnDefinitionEnabledChanged(base::Value value) {

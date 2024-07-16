@@ -80,7 +80,7 @@ class COMPONENT_EXPORT(MAGIC_BOOST) MagicBoostState {
 
   base::expected<bool, Error> hmr_enabled() const { return hmr_enabled_; }
 
-  std::optional<HMRConsentStatus> hmr_consent_status() const {
+  base::expected<HMRConsentStatus, Error> hmr_consent_status() const {
     return hmr_consent_status_;
   }
 
@@ -100,8 +100,8 @@ class COMPONENT_EXPORT(MAGIC_BOOST) MagicBoostState {
   // conversion: https://abseil.io/tips/141.
   base::expected<bool, Error> hmr_enabled_ =
       base::unexpected(Error::kUninitialized);
-  std::optional<HMRConsentStatus> hmr_consent_status_ =
-      HMRConsentStatus::kUnset;
+  base::expected<HMRConsentStatus, Error> hmr_consent_status_ =
+      base::unexpected(Error::kUninitialized);
   int32_t hmr_consent_window_dismiss_count_ = 0;
 
   base::ObserverList<Observer> observers_;

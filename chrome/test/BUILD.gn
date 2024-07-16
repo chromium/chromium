@@ -8839,6 +8839,7 @@ test("unit_tests") {
       "//chromeos/components/editor_menu/public/cpp",
       "//chromeos/components/kiosk:kiosk",
       "//chromeos/components/magic_boost/public/cpp:cpp",
+      "//chromeos/components/magic_boost/test:fake_magic_boost_state",
       "//chromeos/components/onc",
       "//chromeos/components/quick_answers:quick_answers",
       "//chromeos/components/quick_answers/public/cpp:cpp",

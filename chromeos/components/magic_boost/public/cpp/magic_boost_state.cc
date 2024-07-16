@@ -49,7 +49,7 @@ void MagicBoostState::UpdateHMREnabled(bool enabled) {
 }
 
 void MagicBoostState::UpdateHMRConsentStatus(HMRConsentStatus consent_status) {
-  hmr_consent_status_ = std::make_optional(consent_status);
+  hmr_consent_status_ = consent_status;
 
   for (auto& observer : observers_) {
     observer.OnHMRConsentStatusUpdated(hmr_consent_status_.value());

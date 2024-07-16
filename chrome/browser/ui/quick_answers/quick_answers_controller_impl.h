@@ -113,10 +113,10 @@ class QuickAnswersControllerImpl : public chromeos::ReadWriteCardController,
   void HandleQuickAnswerRequest(
       const quick_answers::QuickAnswersRequest& request);
 
-  // Show the user consent view. Does nothing if the view is already
-  // visible.
-  void ShowUserConsent(const std::u16string& intent_type,
-                       const std::u16string& intent_text);
+  // Returns true if a consent view has shown by a call. Otherwise returns
+  // false.
+  bool MaybeShowUserConsent(const std::u16string& intent_type,
+                            const std::u16string& intent_text);
   void OnUserConsent(ConsentResultType consent_result_type);
 
   base::TimeTicks GetTimeTicksNow();

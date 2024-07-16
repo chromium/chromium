@@ -82,6 +82,14 @@ class QuickAnswersState : chromeos::MagicBoostState::Observer {
   static bool IsEligibleAs(FeatureType feature_type);
   static bool IsEnabled();
   static bool IsEnabledAs(FeatureType feature_type);
+  // `GetConsentStatus` returns `base::expected` instead of falling back to a
+  // fail-safe value. `kUnknown` is not a desired fallback value for some cases.
+  static base::expected<quick_answers::prefs::ConsentStatus,
+                        QuickAnswersState::Error>
+  GetConsentStatus();
+  static base::expected<quick_answers::prefs::ConsentStatus,
+                        QuickAnswersState::Error>
+  GetConsentStatusAs(FeatureType feature_type);
 
   QuickAnswersState();
 
@@ -96,6 +104,8 @@ class QuickAnswersState : chromeos::MagicBoostState::Observer {
 
   // chromeos::MagicBoostState::Observer:
   void OnHMREnabledUpdated(bool enabled) override;
+  void OnHMRConsentStatusUpdated(
+      chromeos::HMRConsentStatus consent_status) override;
   void OnIsDeleting() override;
 
   // Write consent status and a respective enabled state to the pref. Note that
@@ -116,9 +126,6 @@ class QuickAnswersState : chromeos::MagicBoostState::Observer {
 
   bool IsSupportedLanguage(const std::string& language) const;
 
-  quick_answers::prefs::ConsentStatus consent_status() const {
-    return consent_status_;
-  }
   bool definition_enabled() const { return definition_enabled_; }
   bool translation_enabled() const { return translation_enabled_; }
   bool unit_conversion_enabled() const { return unit_conversion_enabled_; }
@@ -145,6 +152,10 @@ class QuickAnswersState : chromeos::MagicBoostState::Observer {
       quick_answers::prefs::ConsentStatus consent_status) = 0;
   virtual void AsyncWriteEnabled(bool enabled) = 0;
 
+  // Set consent status of Quick Answers capability as a Quick Answers feature.
+  void SetQuickAnswersFeatureConsentStatus(
+      quick_answers::prefs::ConsentStatus consent_status);
+
   void InitializeObserver(QuickAnswersStateObserver* observer);
 
   // Notify eligibility change to observers in the current feature type if it
@@ -157,10 +168,6 @@ class QuickAnswersState : chromeos::MagicBoostState::Observer {
   void RecordConsentResult(ConsentResultType type,
                            int nth_impression,
                            const base::TimeDelta duration);
-
-  // Status of the user's consent for the Quick Answers feature.
-  quick_answers::prefs::ConsentStatus consent_status_ =
-      quick_answers::prefs::ConsentStatus::kUnknown;
 
   // Whether the Quick Answers definition is enabled.
   bool definition_enabled_ = true;
@@ -197,23 +204,43 @@ class QuickAnswersState : chromeos::MagicBoostState::Observer {
   base::ObserverList<QuickAnswersStateObserver> observers_;
 
  private:
+  void MaybeNotifyConsentStatusChanged();
+
+  // Holds consent status of Quick Answers capability as a Quick Answers
+  // feature.
+  base::expected<quick_answers::prefs::ConsentStatus, Error>
+      quick_answers_consent_status_ = base::unexpected(Error::kUninitialized);
+
   // Use `base::expected` instead of `std::optional` to avoid implicit bool
   // conversion: https://abseil.io/tips/141.
   // TODO(b/340628526): Implement functions for:
-  // - GetConsentStatus
   // - IsIntentEnabled
+  //
+  // Dependencies:
+  // - IsEligible <- ApplicationLocale
+  // - IsEnabled <- IsEligible, GetConsentStatus
+  // - GetConsentStatus <- none
+  //
+  // Remember to call dependent values notify method if a value has changed,
+  // e.g., call `MaybeNotifyIsEnabled` from `MaybeNotifyGetConsentStatus`.
   base::expected<bool, Error> IsEligibleExpected() const;
   base::expected<bool, Error> IsEligibleExpectedAs(
       FeatureType feature_type) const;
   base::expected<bool, Error> IsEnabledExpected() const;
   base::expected<bool, Error> IsEnabledExpectedAs(
       FeatureType feature_type) const;
+  base::expected<quick_answers::prefs::ConsentStatus, Error>
+  GetConsentStatusExpected() const;
+  base::expected<quick_answers::prefs::ConsentStatus, Error>
+  GetConsentStatusExpectedAs(FeatureType feature_type) const;
 
   // Last notified values in the current feature type.
   base::expected<bool, Error> last_notified_is_eligible_ =
       base::unexpected(Error::kUninitialized);
   base::expected<bool, Error> last_notified_is_enabled_ =
       base::unexpected(Error::kUninitialized);
+  base::expected<quick_answers::prefs::ConsentStatus, Error>
+      last_notified_consent_status_ = base::unexpected(Error::kUninitialized);
 
   base::ScopedObservation<chromeos::MagicBoostState,
                           chromeos::MagicBoostState::Observer>

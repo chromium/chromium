@@ -57,15 +57,7 @@ void FakeQuickAnswersState::AsyncWriteConsentUiImpressionCount(int32_t count) {
 
 void FakeQuickAnswersState::AsyncWriteConsentStatus(
     quick_answers::prefs::ConsentStatus consent_status) {
-  if (consent_status_ == consent_status) {
-    return;
-  }
-
-  consent_status_ = consent_status;
-
-  for (auto& observer : observers_) {
-    observer.OnConsentStatusUpdated(consent_status_);
-  }
+  SetQuickAnswersFeatureConsentStatus(consent_status);
 }
 
 void FakeQuickAnswersState::AsyncWriteEnabled(bool enabled) {

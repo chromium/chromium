@@ -193,11 +193,7 @@ void QuickAnswersStateAsh::UpdateConsentStatus() {
   auto consent_status = static_cast<ConsentStatus>(
       pref_change_registrar_->prefs()->GetInteger(kQuickAnswersConsentStatus));
 
-  consent_status_ = consent_status;
-
-  for (auto& observer : observers_) {
-    observer.OnConsentStatusUpdated(consent_status_);
-  }
+  SetQuickAnswersFeatureConsentStatus(consent_status);
 }
 
 void QuickAnswersStateAsh::UpdateDefinitionEnabled() {

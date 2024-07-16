@@ -32,9 +32,10 @@ class QuickAnswersUiControllerTest : public ChromeQuickAnswersTestBase {
         QuickAnswersController::Get());
   }
 
-  void ShowConsentView() {
-    GetQuickAnswersController()->ShowUserConsent(/*intent_type=*/u"",
-                                                 /*intent_text=*/u"");
+  bool MaybeShowConsentView() {
+    return GetQuickAnswersController()->MaybeShowUserConsent(
+        /*intent_type=*/u"",
+        /*intent_text=*/u"");
   }
 
   // Currently instantiated QuickAnswersView instance.
@@ -67,7 +68,7 @@ TEST_F(QuickAnswersUiControllerTest, ShowAndHideConsentView) {
 
   auto* quick_answers_controller = GetQuickAnswersController();
 
-  ShowConsentView();
+  EXPECT_TRUE(MaybeShowConsentView());
 
   EXPECT_TRUE(ui_controller()->IsShowingUserConsentView());
 
@@ -94,7 +95,7 @@ TEST_F(QuickAnswersUiControllerTest, TearDownWhileConsentViewShowing) {
   CreateAndShowBasicMenu();
   GetQuickAnswersController()->OnContextMenuShown(GetProfile());
 
-  ShowConsentView();
+  EXPECT_TRUE(MaybeShowConsentView());
 
   EXPECT_TRUE(ui_controller()->IsShowingUserConsentView());
 }

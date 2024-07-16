@@ -164,6 +164,7 @@ if (is_chromeos_ash) {
       "//base/test:test_support",
       "//chromeos/components/kiosk:test_support",
       "//chromeos/components/magic_boost/public/cpp:cpp",
+      "//chromeos/components/magic_boost/test:fake_magic_boost_state",
       "//chromeos/components/quick_answers/public/cpp:cpp",
       "//chromeos/components/quick_answers/public/cpp:prefs",
       "//chromeos/constants:constants",

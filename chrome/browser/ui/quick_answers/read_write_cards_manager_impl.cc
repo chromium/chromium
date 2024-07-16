@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/hash/sha1.h"
+#include "base/types/expected.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
@@ -125,7 +126,8 @@ ReadWriteCardsManagerImpl::GetControllers(
 
   // Otherwise, use Quick Answers and Mahi if available.
 
-  std::optional<HMRConsentStatus> hmr_consent_status;
+  base::expected<HMRConsentStatus, MagicBoostState::Error> hmr_consent_status =
+      base::unexpected(MagicBoostState::Error::kUninitialized);
   if (chromeos::features::IsMagicBoostEnabled()) {
     hmr_consent_status = MagicBoostState::Get()->hmr_consent_status();
   }
@@ -138,7 +140,7 @@ ReadWriteCardsManagerImpl::GetControllers(
     return {};
   }
 
-  if (hmr_consent_status) {
+  if (hmr_consent_status.has_value()) {
     CHECK(hmr_consent_status == HMRConsentStatus::kApproved ||
           hmr_consent_status == HMRConsentStatus::kPending);
   }
@@ -204,7 +206,8 @@ ReadWriteCardsManagerImpl::GetMagicBoostOptInFeatures(
 
   // Check if we should go through Magic Boost opt-in flow when we should show
   // Quick Answers and/or Mahi card.
-  std::optional<HMRConsentStatus> hmr_consent_status;
+  base::expected<HMRConsentStatus, MagicBoostState::Error> hmr_consent_status =
+      base::unexpected(MagicBoostState::Error::kUninitialized);
   if (chromeos::features::IsMagicBoostEnabled()) {
     hmr_consent_status = MagicBoostState::Get()->hmr_consent_status();
   }

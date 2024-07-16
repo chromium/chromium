@@ -11,6 +11,7 @@
 #include "base/types/expected.h"
 #include "chromeos/components/kiosk/kiosk_test_utils.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
+#include "chromeos/components/magic_boost/test/fake_magic_boost_state.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/test/fake_quick_answers_state.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -25,23 +26,22 @@ class FakeObserver : public QuickAnswersStateObserver {
  public:
   void OnEligibilityChanged(bool eligible) override { is_eligible_ = eligible; }
   void OnSettingsEnabled(bool enabled) override { is_enabled_ = enabled; }
+  void OnConsentStatusUpdated(
+      quick_answers::prefs::ConsentStatus consent_status) override {
+    consent_status_ = consent_status;
+  }
 
   bool is_eligible() const { return is_eligible_; }
   bool is_enabled() const { return is_enabled_; }
+  quick_answers::prefs::ConsentStatus consent_status() const {
+    return consent_status_;
+  }
 
  private:
   bool is_eligible_ = false;
   bool is_enabled_ = false;
-};
-
-class FakeMagicBoostState : public chromeos::MagicBoostState {
- public:
-  int32_t AsyncIncrementHMRConsentWindowDismissCount() override { return 0; }
-  void AsyncWriteConsentStatus(chromeos::HMRConsentStatus) override {}
-  void AsyncWriteHMREnabled(bool) override {}
-  void DisableOrcaFeature() override {}
-
-  void SetHMREnabledForTesting(bool enabled) { UpdateHMREnabled(enabled); }
+  quick_answers::prefs::ConsentStatus consent_status_ =
+      quick_answers::prefs::ConsentStatus::kUnknown;
 };
 
 std::unique_ptr<base::test::ScopedFeatureList> MaybeEnableMagicBoost() {
@@ -93,7 +93,7 @@ TEST(QuickAnswersStateTest, IsEligibleFeatureType) {
   ASSERT_TRUE(magic_boost_enabled)
       << "This *test* code does not support Lacros. See MaybeEnableMagicBoost.";
 
-  FakeMagicBoostState magic_boost_state;
+  chromeos::test::FakeMagicBoostState magic_boost_state;
   FakeQuickAnswersState quick_answers_state;
   quick_answers_state.SetApplicationLocale("en");
 
@@ -112,6 +112,9 @@ TEST(QuickAnswersStateTest, IsEnabled) {
   EXPECT_FALSE(QuickAnswersState::IsEnabled());
 
   quick_answers_state.SetSettingsEnabled(true);
+  quick_answers_state.AsyncSetConsentStatus(
+      quick_answers::prefs::ConsentStatus::kAccepted);
+
   EXPECT_TRUE(QuickAnswersState::IsEnabled());
   EXPECT_TRUE(observer.is_enabled());
 
@@ -136,6 +139,8 @@ TEST(QuickAnswersStateTest, EnabledButKiosk) {
   FakeQuickAnswersState quick_answers_state;
   quick_answers_state.SetApplicationLocale("en");
   quick_answers_state.SetSettingsEnabled(true);
+  quick_answers_state.AsyncSetConsentStatus(
+      quick_answers::prefs::ConsentStatus::kAccepted);
 
   EXPECT_FALSE(QuickAnswersState::IsEnabled());
 }
@@ -144,6 +149,8 @@ TEST(QuickAnswersStateTest, IsEnabledObserverInit) {
   FakeQuickAnswersState quick_answers_state;
   quick_answers_state.SetApplicationLocale("en");
   quick_answers_state.SetSettingsEnabled(true);
+  quick_answers_state.AsyncSetConsentStatus(
+      quick_answers::prefs::ConsentStatus::kAccepted);
 
   FakeObserver observer;
   quick_answers_state.AddObserver(&observer);
@@ -156,7 +163,7 @@ TEST(QuickAnswersStateTest, IsEnabledUnderMagicBoost) {
   ASSERT_TRUE(magic_boost_enabled)
       << "This *test* code does not support Lacros. See MaybeEnableMagicBoost.";
 
-  FakeMagicBoostState magic_boost_state;
+  chromeos::test::FakeMagicBoostState magic_boost_state;
   FakeQuickAnswersState quick_answers_state;
   quick_answers_state.SetApplicationLocale("en");
   quick_answers_state.SetSettingsEnabled(true);
@@ -170,7 +177,9 @@ TEST(QuickAnswersStateTest, IsEnabledUnderMagicBoost) {
       QuickAnswersState::IsEnabledAs(QuickAnswersState::FeatureType::kHmr));
   EXPECT_FALSE(observer.is_enabled());
 
-  magic_boost_state.SetHMREnabledForTesting(true);
+  magic_boost_state.AsyncWriteHMREnabled(true);
+  magic_boost_state.AsyncWriteConsentStatus(
+      chromeos::HMRConsentStatus::kApproved);
 
   EXPECT_TRUE(
       QuickAnswersState::IsEnabledAs(QuickAnswersState::FeatureType::kHmr));
@@ -184,8 +193,82 @@ TEST(QuickAnswersStateTest, IsEnabledAsMagicBoostUnderQuickAnswers) {
   FakeQuickAnswersState quick_answers_state;
   quick_answers_state.SetApplicationLocale("en");
   quick_answers_state.SetSettingsEnabled(true);
+  quick_answers_state.AsyncSetConsentStatus(
+      quick_answers::prefs::ConsentStatus::kAccepted);
+
   EXPECT_FALSE(
       QuickAnswersState::IsEnabledAs(QuickAnswersState::FeatureType::kHmr));
+}
+
+TEST(QuickAnswersStateTest, IsEnabledGatedByConsentStatus) {
+  FakeQuickAnswersState quick_answers_state;
+  quick_answers_state.SetApplicationLocale("en");
+  quick_answers_state.SetSettingsEnabled(true);
+  quick_answers_state.AsyncSetConsentStatus(
+      quick_answers::prefs::ConsentStatus::kAccepted);
+  EXPECT_TRUE(QuickAnswersState::IsEnabled());
+
+  quick_answers_state.AsyncSetConsentStatus(
+      quick_answers::prefs::ConsentStatus::kRejected);
+  EXPECT_FALSE(QuickAnswersState::IsEnabled())
+      << "IsEnabled requires kAccepted consent status";
+}
+
+TEST(QuickAnswersStateTest, GetConsentStatus) {
+  EXPECT_EQ(base::unexpected(QuickAnswersState::Error::kUninitialized),
+            QuickAnswersState::GetConsentStatus());
+
+  FakeObserver observer;
+  FakeQuickAnswersState quick_answers_state;
+  quick_answers_state.AddObserver(&observer);
+  quick_answers_state.SetApplicationLocale("en");
+  quick_answers_state.SetSettingsEnabled(true);
+
+  EXPECT_EQ(base::unexpected(QuickAnswersState::Error::kUninitialized),
+            QuickAnswersState::GetConsentStatus());
+
+  quick_answers_state.AsyncSetConsentStatus(
+      quick_answers::prefs::ConsentStatus::kUnknown);
+  EXPECT_EQ(quick_answers::prefs::ConsentStatus::kUnknown,
+            QuickAnswersState::GetConsentStatus());
+  EXPECT_EQ(quick_answers::prefs::ConsentStatus::kUnknown,
+            observer.consent_status());
+
+  quick_answers_state.AsyncSetConsentStatus(
+      quick_answers::prefs::ConsentStatus::kAccepted);
+  EXPECT_EQ(quick_answers::prefs::ConsentStatus::kAccepted,
+            QuickAnswersState::GetConsentStatus());
+  EXPECT_EQ(quick_answers::prefs::ConsentStatus::kAccepted,
+            observer.consent_status());
+}
+
+TEST(QuickAnswersStateTest, GetConsentStatusUnderMagicBoost) {
+  std::unique_ptr<base::test::ScopedFeatureList> magic_boost_enabled =
+      MaybeEnableMagicBoost();
+  ASSERT_TRUE(magic_boost_enabled)
+      << "This *test* code does not support Lacros. See MaybeEnableMagicBoost.";
+
+  chromeos::test::FakeMagicBoostState magic_boost_state;
+  FakeObserver observer;
+  FakeQuickAnswersState quick_answers_state;
+  quick_answers_state.AddObserver(&observer);
+  quick_answers_state.SetApplicationLocale("en");
+
+  EXPECT_EQ(base::unexpected(QuickAnswersState::Error::kUninitialized),
+            QuickAnswersState::GetConsentStatus());
+
+  magic_boost_state.AsyncWriteConsentStatus(chromeos::HMRConsentStatus::kUnset);
+  EXPECT_EQ(quick_answers::prefs::ConsentStatus::kUnknown,
+            QuickAnswersState::GetConsentStatus());
+  EXPECT_EQ(quick_answers::prefs::ConsentStatus::kUnknown,
+            observer.consent_status());
+
+  magic_boost_state.AsyncWriteConsentStatus(
+      chromeos::HMRConsentStatus::kApproved);
+  EXPECT_EQ(quick_answers::prefs::ConsentStatus::kAccepted,
+            QuickAnswersState::GetConsentStatus());
+  EXPECT_EQ(quick_answers::prefs::ConsentStatus::kAccepted,
+            observer.consent_status());
 }
 
 }  // namespace quick_answers

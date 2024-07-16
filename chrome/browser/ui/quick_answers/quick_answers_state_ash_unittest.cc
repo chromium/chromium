@@ -107,8 +107,7 @@ class QuickAnswersStateAshTest : public ChromeQuickAnswersTestBase,
 
 TEST_F(QuickAnswersStateAshTest, InitObserver) {
   EXPECT_FALSE(QuickAnswersState::IsEnabled());
-  EXPECT_EQ(QuickAnswersState::Get()->consent_status(),
-            ConsentStatus::kUnknown);
+  EXPECT_EQ(QuickAnswersState::GetConsentStatus(), ConsentStatus::kUnknown);
   EXPECT_EQ(QuickAnswersState::Get()->application_locale(), std::string());
 
   prefs()->SetBoolean(quick_answers::prefs::kQuickAnswersEnabled, true);
@@ -118,8 +117,7 @@ TEST_F(QuickAnswersStateAshTest, InitObserver) {
   prefs()->SetString(language::prefs::kApplicationLocale, application_locale);
 
   EXPECT_TRUE(QuickAnswersState::IsEnabled());
-  EXPECT_EQ(QuickAnswersState::Get()->consent_status(),
-            ConsentStatus::kAccepted);
+  EXPECT_EQ(QuickAnswersState::GetConsentStatus(), ConsentStatus::kAccepted);
   EXPECT_EQ(QuickAnswersState::Get()->application_locale(), application_locale);
 
   // The observer class should get an instant notification about the current
@@ -141,7 +139,7 @@ TEST_F(QuickAnswersStateAshTest, NotifySettingsEnabled) {
 
   EXPECT_FALSE(QuickAnswersState::IsEnabled());
   EXPECT_FALSE(observer()->settings_enabled());
-  EXPECT_EQ(QuickAnswersState::Get()->consent_status(),
+  EXPECT_EQ(QuickAnswersState::GetConsentStatus(),
             quick_answers::prefs::ConsentStatus::kUnknown);
 
   // The observer class should get an notification when the pref value changes.
@@ -151,7 +149,7 @@ TEST_F(QuickAnswersStateAshTest, NotifySettingsEnabled) {
 
   // Consent status should also be set to accepted since the feature is
   // explicitly enabled.
-  EXPECT_EQ(QuickAnswersState::Get()->consent_status(),
+  EXPECT_EQ(QuickAnswersState::GetConsentStatus(),
             quick_answers::prefs::ConsentStatus::kAccepted);
 
   QuickAnswersState::Get()->RemoveObserver(observer());
@@ -160,7 +158,7 @@ TEST_F(QuickAnswersStateAshTest, NotifySettingsEnabled) {
 TEST_F(QuickAnswersStateAshTest, UpdateConsentStatus) {
   QuickAnswersState::Get()->AddObserver(observer());
 
-  EXPECT_EQ(QuickAnswersState::Get()->consent_status(),
+  EXPECT_EQ(QuickAnswersState::GetConsentStatus(),
             quick_answers::prefs::ConsentStatus::kUnknown);
   EXPECT_EQ(observer()->consent_status(),
             quick_answers::prefs::ConsentStatus::kUnknown);
@@ -168,14 +166,14 @@ TEST_F(QuickAnswersStateAshTest, UpdateConsentStatus) {
   // The observer class should get an notification when the pref value changes.
   prefs()->SetInteger(quick_answers::prefs::kQuickAnswersConsentStatus,
                       quick_answers::prefs::ConsentStatus::kRejected);
-  EXPECT_EQ(QuickAnswersState::Get()->consent_status(),
+  EXPECT_EQ(QuickAnswersState::GetConsentStatus(),
             quick_answers::prefs::ConsentStatus::kRejected);
   EXPECT_EQ(observer()->consent_status(),
             quick_answers::prefs::ConsentStatus::kRejected);
 
   prefs()->SetInteger(quick_answers::prefs::kQuickAnswersConsentStatus,
                       quick_answers::prefs::ConsentStatus::kAccepted);
-  EXPECT_EQ(QuickAnswersState::Get()->consent_status(),
+  EXPECT_EQ(QuickAnswersState::GetConsentStatus(),
             quick_answers::prefs::ConsentStatus::kAccepted);
   EXPECT_EQ(observer()->consent_status(),
             quick_answers::prefs::ConsentStatus::kAccepted);
