@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 # Configuration for an Android-12L (S_V2, API 32) AVD on google_apis on x86_64
-# Should be kept in sync with foldable proto except the screen size
+# This should be kept in sync with foldable proto except the screen size
 
 emulator_package {
   package_name: "chromium/third_party/android_sdk/public/emulator"
@@ -20,9 +20,9 @@ system_image_name: "system-images;android-32;google_apis;x86_64"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-32/google_apis/x86_64"
-  # Created in https://ci.chromium.org/ui/b/8742293395973948481
+  # Created in https://ci.chromium.org/ui/b/8742750746881767185
   # Patched gmscore version 24.33.35 in https://crrev.com/c/5669066
-  version: "oi9UuYZUlTARGE4HslAvYCw7Nggr9YRZcXt9FQn4wmoC"
+  version: "m3lmxut5F_NVYXertAZ23zlLGu9K8so9RDuYOsxoX0UC"
   dest_path: "android_32_google_apis_x64_foldable_landscape"
 }
 avd_name: "android_32_google_apis_x64_foldable_landscape"
