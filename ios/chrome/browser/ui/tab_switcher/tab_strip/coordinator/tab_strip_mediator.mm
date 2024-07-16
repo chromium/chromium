@@ -729,8 +729,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 }
 
 - (UIDragItem*)dragItemForTabGroupItem:(TabGroupItem*)tabGroupItem {
-  return CreateTabGroupDragItem(tabGroupItem.tabGroup,
-                                self.browserState->IsOffTheRecord());
+  return CreateTabGroupDragItem(tabGroupItem.tabGroup, self.browserState);
 }
 
 - (void)dragWillBeginForTabSwitcherItem:(TabSwitcherItem*)item {
@@ -770,8 +769,11 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   // asynchronous drops.
   if ([dragItem.localObject isKindOfClass:[TabInfo class]]) {
     TabInfo* tabInfo = static_cast<TabInfo*>(dragItem.localObject);
+    if (tabInfo.browserState != self.browserState) {
+      // Tabs from different profiles cannot be dropped.
+      return UIDropOperationForbidden;
+    }
 
-    // TODO(crbug.com/333502177) : Fix this when implementing multi profiles.
     if (_browserState->IsOffTheRecord() == tabInfo.incognito) {
       return UIDropOperationMove;
     }
@@ -786,7 +788,10 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   if ([dragItem.localObject isKindOfClass:[TabGroupInfo class]]) {
     TabGroupInfo* tabGroupInfo =
         base::apple::ObjCCast<TabGroupInfo>(dragItem.localObject);
-
+    if (tabGroupInfo.browserState != self.browserState) {
+      // Tabs from different profiles cannot be dropped.
+      return UIDropOperationForbidden;
+    }
     if (_dragItems && destinationItemIndex < _dragItems.count &&
         _dragItems[destinationItemIndex].tabSwitcherItem) {
       // If the drop originates from the same collection, then it is forbidden
@@ -804,7 +809,6 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
       }
     }
 
-    // TODO(crbug.com/333502177) : Fix this when implementing multi profiles.
     if (self.browserState->IsOffTheRecord() == tabGroupInfo.incognito) {
       return UIDropOperationMove;
     }

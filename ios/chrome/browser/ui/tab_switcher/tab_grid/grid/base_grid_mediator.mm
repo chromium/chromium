@@ -1165,8 +1165,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 }
 
 - (UIDragItem*)dragItemForTabGroupItem:(TabGroupItem*)tabGroupItem {
-  return CreateTabGroupDragItem(tabGroupItem.tabGroup,
-                                self.browserState->IsOffTheRecord());
+  return CreateTabGroupDragItem(tabGroupItem.tabGroup, self.browserState);
 }
 
 - (UIDragItem*)dragItemForItem:(TabSwitcherItem*)item {
@@ -1198,6 +1197,11 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   // asynchronous drops.
   if ([dragItem.localObject isKindOfClass:[TabInfo class]]) {
     TabInfo* tabInfo = static_cast<TabInfo*>(dragItem.localObject);
+    if (tabInfo.browserState != self.browserState) {
+      // Tabs from different profiles cannot be dropped.
+      return UIDropOperationForbidden;
+    }
+
     // If the dropped tab is from the same Chrome window and has been removed,
     // cancel the drop operation.
     if (_dragItemID == tabInfo.tabID &&
@@ -1208,7 +1212,6 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
                          }) == WebStateList::kInvalidIndex) {
       return UIDropOperationCancel;
     }
-    // TODO(crbug.com/333502177) : Fix this when implementing multi profiles.
     if (self.browserState->IsOffTheRecord() == tabInfo.incognito) {
       return UIDropOperationMove;
     }
@@ -1219,7 +1222,10 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   if ([dragItem.localObject isKindOfClass:[TabGroupInfo class]]) {
     TabGroupInfo* tabGroupInfo =
         static_cast<TabGroupInfo*>(dragItem.localObject);
-    // TODO(crbug.com/333502177) : Fix this when implementing multi profiles.
+    if (tabGroupInfo.browserState != self.browserState) {
+      // Tabs from different profiles cannot be dropped.
+      return UIDropOperationForbidden;
+    }
     if (self.browserState->IsOffTheRecord() == tabGroupInfo.incognito) {
       if (self.currentMode == TabGridModeGroup) {
         // Can't drop a group in a group.

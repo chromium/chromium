@@ -86,9 +86,8 @@ TEST_F(TabGroupMediatorTest, DropLocalTab) {
   web::WebStateID web_state_id =
       web_state_list->GetWebStateAt(4)->GetUniqueIdentifier();
 
-  id local_object = [[TabInfo alloc]
-      initWithTabID:web_state_id
-          incognito:browser_->GetBrowserState()->IsOffTheRecord()];
+  id local_object = [[TabInfo alloc] initWithTabID:web_state_id
+                                      browserState:browser_->GetBrowserState()];
   NSItemProvider* item_provider = [[NSItemProvider alloc] init];
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:item_provider];
@@ -108,9 +107,8 @@ TEST_F(TabGroupMediatorTest, DropFromTabGrid) {
   // Drop "F" before "A".
   web::WebStateID web_state_id =
       web_state_list->GetWebStateAt(0)->GetUniqueIdentifier();
-  id local_object = [[TabInfo alloc]
-      initWithTabID:web_state_id
-          incognito:browser_->GetBrowserState()->IsOffTheRecord()];
+  id local_object = [[TabInfo alloc] initWithTabID:web_state_id
+                                      browserState:browser_->GetBrowserState()];
   NSItemProvider* item_provider = [[NSItemProvider alloc] init];
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:item_provider];
@@ -121,9 +119,8 @@ TEST_F(TabGroupMediatorTest, DropFromTabGrid) {
 
   // Drop "D" before "B".
   web_state_id = web_state_list->GetWebStateAt(4)->GetUniqueIdentifier();
-  local_object = [[TabInfo alloc]
-      initWithTabID:web_state_id
-          incognito:browser_->GetBrowserState()->IsOffTheRecord()];
+  local_object = [[TabInfo alloc] initWithTabID:web_state_id
+                                   browserState:browser_->GetBrowserState()];
   item_provider = [[NSItemProvider alloc] init];
   drag_item = [[UIDragItem alloc] initWithItemProvider:item_provider];
   drag_item.localObject = local_object;
@@ -151,9 +148,8 @@ TEST_F(TabGroupMediatorTest, DropCrossWindowTab) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   ASSERT_EQ(6, web_state_list->count());
 
-  id local_object = [[TabInfo alloc]
-      initWithTabID:other_id
-          incognito:browser_->GetBrowserState()->IsOffTheRecord()];
+  id local_object = [[TabInfo alloc] initWithTabID:other_id
+                                      browserState:browser_->GetBrowserState()];
   NSItemProvider* item_provider = [[NSItemProvider alloc] init];
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:item_provider];
