@@ -29,7 +29,7 @@ constexpr CGFloat kDataTypeIconSize = 18;
 // Bottom padding for the header view.
 constexpr CGFloat kHeaderViewBottomPadding = 12;
 // Leading and trailing padding for the header view.
-constexpr CGFloat kHeaderViewHorizontalPadding = 20;
+constexpr CGFloat kHeaderViewHorizontalPadding = 16;
 // Top padding for the header view.
 constexpr CGFloat kHeaderViewTopPadding = 8;
 // Height of the segmented control.
@@ -95,6 +95,12 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
   // Header view's height constraint. Used for the wide layout only.
   NSLayoutConstraint* _headerViewHeightConstraint;
 
+  // Header view's leading constraint.
+  NSLayoutConstraint* _headerViewLeadingConstraint;
+
+  // Header view's trailing constraint.
+  NSLayoutConstraint* _headerViewTrailingConstraint;
+
   // Image view containing the Chrome logo.
   UIImageView* _chromeLogo;
 
@@ -104,6 +110,11 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
   // Initial data type to present in the view. Reflects the type of the form the
   // user wants to fill.
   ManualFillDataType _initialDataType;
+
+  // The leading and trailing inset of the child view controller's table view
+  // cells. Used to constraint the leading and trailing sides of the header view
+  // so that they horizontally align with the cells.
+  CGFloat _tableViewCellHorizontalInset;
 }
 
 - (instancetype)initWithDelegate:
@@ -150,16 +161,18 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
                    headerTopView:_headerTopView];
   [self.view addSubview:_headerView];
 
+  // `_headerView` constraints.
+  _headerViewLeadingConstraint = [_headerView.leadingAnchor
+      constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
+                     constant:kHeaderViewHorizontalPadding];
+  _headerViewTrailingConstraint = [_headerView.trailingAnchor
+      constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
+                     constant:-kHeaderViewHorizontalPadding];
   [NSLayoutConstraint activateConstraints:@[
-    // `_headerView` constraints.
     [_headerView.topAnchor constraintEqualToAnchor:self.view.topAnchor
                                           constant:kHeaderViewTopPadding],
-    [_headerView.leadingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
-                       constant:kHeaderViewHorizontalPadding],
-    [_headerView.trailingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
-                       constant:-kHeaderViewHorizontalPadding],
+    _headerViewLeadingConstraint,
+    _headerViewTrailingConstraint,
   ]];
 }
 
@@ -179,6 +192,25 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
       UIAccessibilityAnnouncementNotification,
       l10n_util::GetNSString(
           IDS_IOS_EXPANDED_MANUAL_FILL_VIEW_ACCESSIBILITY_ANNOUNCEMENT));
+}
+
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+
+  UITableView* tableView = self.childViewController.tableView;
+  UITableViewStyle style = tableView.style;
+  CGFloat tableViewCellHorizontalInset =
+      tableView.visibleCells.firstObject.layoutMargins.left;
+
+  // If needed, update the horizontal contraints of the header view so that it
+  // is horizontally aligned with the table view cells.
+  if (style == UITableViewStyleInsetGrouped && tableViewCellHorizontalInset &&
+      _tableViewCellHorizontalInset != tableViewCellHorizontalInset) {
+    _tableViewCellHorizontalInset = tableViewCellHorizontalInset;
+    [self updateHeaderViewHorizontalConstraints:_headerViewLeadingConstraint
+                             trailingConstraint:_headerViewTrailingConstraint
+                                       constant:_tableViewCellHorizontalInset];
+  }
 }
 
 #pragma mark - UITraitEnvironment
@@ -441,6 +473,17 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
                      closeButton:closeButton
                 segmentedControl:segmentedControl
                    headerTopView:headerTopView];
+}
+
+// Updates the horizontal constraints of the header view with the given
+// `constant`.
+- (void)updateHeaderViewHorizontalConstraints:
+            (NSLayoutConstraint*)leadingConstraint
+                           trailingConstraint:
+                               (NSLayoutConstraint*)trailingConstraint
+                                     constant:(CGFloat)constant {
+  leadingConstraint.constant = constant;
+  trailingConstraint.constant = -constant;
 }
 
 // Handles taps on the close button.
