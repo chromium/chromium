@@ -21,23 +21,56 @@
     </message>
 
     <if expr="is_win">
+      <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM" desc="Label for the OS platform." translateable="false">
+        Windows
+      </message>
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_TITLE" desc="Label for the title of the platform certs subpage." translateable="false">
         Imported from Windows
       </message>
+      <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_MANAGE_LINK" desc="Label for a link opening the platform cert manager." translateable="false">
+        Manage imported certificates from Windows
+      </message>
+      <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_VIEW_LINK" desc="Label for a link to view the imported platform certs." translateable="false">
+        View imported certificates from Windows
+      </message>
     </if>
+
     <if expr="is_linux">
+      <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM" desc="Label for the OS platform." translateable="false">
+        Linux
+      </message>
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_TITLE" desc="Label for the title of the platform certs subpage." translateable="false">
         Imported from Linux
       </message>
+      <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_VIEW_LINK" desc="Label for a link to view the imported platform certs." translateable="false">
+        View imported certificates from Linux
+      </message>
     </if>
+
     <if expr="is_macosx">
+      <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM" desc="Label for the OS platform." translateable="false">
+        MacOS
+      </message>
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_TITLE" desc="Label for the title of the platform certs subpage." translateable="false">
         Imported from MacOS
       </message>
+      <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_MANAGE_LINK" desc="Label for a link opening the platform cert manager." translateable="false">
+        Manage imported certificates from MacOS
+      </message>
+      <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_VIEW_LINK" desc="Label for a link to view the imported platform certs." translateable="false">
+        View imported certificates from MacOS
+      </message>
     </if>
+
     <if expr="is_chromeos">
+      <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM" desc="Label for the OS platform." translateable="false">
+        ChromeOS
+      </message>
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_TITLE" desc="Label for the title of the platform certs subpage." translateable="false">
         Imported from ChromeOS
+      </message>
+      <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_VIEW_LINK" desc="Label for a link to view the imported platform certs." translateable="false">
+        View imported certificates from ChromeOS
       </message>
     </if>
 
@@ -64,6 +97,22 @@
       =0 {No certificates}
       =1 {1 certificate}
       other {{COUNT} certificates}}
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CLIENT_CERTIFICATES_DESCRIPTION" desc="Description of the client certificates section of cert manager." translateable="false">
+      Client certificates are certificates that identify you to other servers.
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_LOCAL_CERTIFICATES_DESCRIPTION" desc="Description of the local certificates section of cert manager." translateable="false">
+      Local certificates that have been added by your operating system or your administrator.
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CRS_CERTIFICATES_DESCRIPTION" desc="Description of the Chrome Root Store certificates section of cert manager." translateable="false">
+      The Chrome Root Store contains certificates from Certificate Authorities trusted by the
+      Chrome Root Program, and is continually reviewed on an ongoing basis.
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_TOGGLE_LABEL" desc="Label for a toggle controlling if platform certs are imported or not." translateable="false">
+      Use imported local certificates from your operating system
+    </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CUSTOM_CERTS_TITLE" desc="Title for the Custom certificates section." translateable="false">
+      Custom
     </message>
   </if>
 </grit-part>
