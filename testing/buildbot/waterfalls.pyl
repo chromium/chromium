@@ -5285,25 +5285,6 @@
           'isolated_scripts': 'ios_asan_tests',
         }
       },
-      'linux-lacros-asan-lsan-rel': {
-        'mixins': [
-          'x86-64',
-          'isolate_profile_data',
-          'linux-jammy',
-        ],
-        'additional_compile_targets': [
-          'chrome',
-          'chrome_sandbox',
-        ],
-        'test_suites': {
-          'gtest_tests': 'linux_lacros_gtests',
-        },
-        'args': [
-          '--test-launcher-print-test-stdio=always',
-          '--combine-ash-logs-on-bots',
-          '--asan-symbolize-output',
-        ],
-      },
       'linux-ubsan-vptr': {
         'mixins': [
           'linux-jammy',

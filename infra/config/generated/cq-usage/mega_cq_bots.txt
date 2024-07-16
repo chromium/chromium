@@ -104,7 +104,6 @@ chromium/try/linux-dcheck-off-rel
 chromium/try/linux-extended-tracing-rel
 chromium/try/linux-full-remote-rel
 chromium/try/linux-gcc-rel
-chromium/try/linux-lacros-asan-lsan-rel
 chromium/try/linux-lacros-dbg
 chromium/try/linux-lacros-rel
 chromium/try/linux-libfuzzer-asan-rel

@@ -405,48 +405,6 @@ linux_memory_builder(
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
-linux_memory_builder(
-    name = "linux-lacros-asan-lsan-rel",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "chromeos",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_arch = builder_config.target_arch.INTEL,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.CHROMEOS,
-        ),
-        build_gs_bucket = "chromium-memory-archive",
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "asan",
-            "lsan",
-            "release_try_builder",
-            "minimal_symbols",
-            "remoteexec",
-            "lacros_on_linux",
-            "also_build_ash_chrome",
-            "x64",
-        ],
-    ),
-    cores = 16,
-    ssd = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "lacros|asan",
-        short_name = "asan",
-    ),
-    execution_timeout = 4 * time.hour,
-)
-
 ci.builder(
     name = "Mac ASan 64 Builder",
     triggering_policy = scheduler.greedy_batching(

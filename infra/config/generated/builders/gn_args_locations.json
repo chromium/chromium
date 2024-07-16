@@ -404,7 +404,6 @@
     "WebKit Linux MSAN": "ci/WebKit Linux MSAN/gn-args.json",
     "android-asan": "ci/android-asan/gn-args.json",
     "ios-asan": "ci/ios-asan/gn-args.json",
-    "linux-lacros-asan-lsan-rel": "ci/linux-lacros-asan-lsan-rel/gn-args.json",
     "linux-ubsan-vptr": "ci/linux-ubsan-vptr/gn-args.json",
     "win-asan": "ci/win-asan/gn-args.json"
   },
@@ -792,7 +791,6 @@
     "linux-headless-shell-rel": "try/linux-headless-shell-rel/gn-args.json",
     "linux-js-code-coverage": "try/linux-js-code-coverage/gn-args.json",
     "linux-js-coverage-rel": "try/linux-js-coverage-rel/gn-args.json",
-    "linux-lacros-asan-lsan-rel": "try/linux-lacros-asan-lsan-rel/gn-args.json",
     "linux-lacros-code-coverage": "try/linux-lacros-code-coverage/gn-args.json",
     "linux-lacros-fyi-rel": "try/linux-lacros-fyi-rel/gn-args.json",
     "linux-layout-tests-edit-ng": "try/linux-layout-tests-edit-ng/gn-args.json",

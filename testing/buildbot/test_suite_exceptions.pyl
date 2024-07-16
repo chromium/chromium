@@ -202,7 +202,6 @@
       # Times out listing tests crbug.com/1167314
       'android-asan',
       # Does not currently work on Lacros configurations.
-      'linux-lacros-asan-lsan-rel',
       'linux-lacros-code-coverage',
       'linux-lacros-rel-dangling-ptr-fyi',
       'linux-lacros-tester-rel',
@@ -1136,16 +1135,6 @@
         'swarming': {
           'shards': 50,
         },
-      },
-      # asan tests is slower.
-      'linux-lacros-asan-lsan-rel': {
-        'swarming': {
-          'shards': 30,
-        },
-        # TODO(crbug.com/40224958): Enable tests.
-        'args': [
-          '--gtest_filter=-All/MultiActionAPITest.SessionStorageDoesNotPersistBetweenOpenings/*:All/MultiActionAPITest.PopupCreation/*'
-        ],
       },
       'linux-lacros-rel-dangling-ptr-fyi': {
         # Only retry the individual failed tests instead of rerunning entire
@@ -2683,12 +2672,6 @@
       'Win10 Tests x64 (dbg)': {
         'experiment_percentage': 100, # https://crbug.com/876615
       },
-      # https://crbug.com/1111979
-      'linux-lacros-asan-lsan-rel': {
-        'args': [
-          '--gtest_filter=-BluetoothShellApiTest.ApiSanityCheck:BluetoothSocketApiTest.Listen:BluetoothSocketApiTest.PermissionDenied',
-        ],
-      },
       # https://crbug.com/1111979,
       'linux-lacros-code-coverage': {
         'args': [
@@ -2731,13 +2714,6 @@
       'fuchsia-fyi-x64-asan': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.lsan.extensions_unittests.filter',
-        ],
-      },
-      # https://crbug.com/1111979
-      'linux-lacros-asan-lsan-rel': {
-        'args': [
-          '--gtest_filter=-NativeExtensionBindingsSystemUnittest.AccessToAliasDoesntGiveAliasSourceAccess:'
-          'NativeExtensionBindingsSystemUnittest.AliasedAPIsAreDifferentObjects',
         ],
       },
       # https://crbug.com/1111979,
@@ -3327,11 +3303,6 @@
           'shards': 10,
         },
       },
-      'linux-lacros-asan-lsan-rel': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
       'linux-lacros-tester-rel': {
         # Only retry the individual failed tests instead of rerunning entire
         # shards.
@@ -3431,42 +3402,6 @@
       },
     },
   },
-  'interactive_ui_tests Lacros version skew testing ash beta': {
-    'modifications': {
-      'linux-lacros-asan-lsan-rel': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
-    },
-  },
-  'interactive_ui_tests Lacros version skew testing ash canary': {
-    'modifications': {
-      'linux-lacros-asan-lsan-rel': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
-    },
-  },
-  'interactive_ui_tests Lacros version skew testing ash dev': {
-    'modifications': {
-      'linux-lacros-asan-lsan-rel': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
-    },
-  },
-  'interactive_ui_tests Lacros version skew testing ash stable': {
-    'modifications': {
-      'linux-lacros-asan-lsan-rel': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
-    },
-  },
   'interactive_ui_tests_no_field_trial': {
     'modifications': {
       'Win10 Tests x64': {
@@ -3493,51 +3428,6 @@
       'android-asan': {
         'swarming': {
           'shards': 2,
-        },
-      },
-    },
-  },
-  'lacros_chrome_browsertests': {
-    'modifications': {
-      'linux-lacros-asan-lsan-rel': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
-    },
-  },
-  'lacros_chrome_browsertests Lacros version skew testing ash beta': {
-    'modifications': {
-      'linux-lacros-asan-lsan-rel': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
-    },
-  },
-  'lacros_chrome_browsertests Lacros version skew testing ash canary': {
-    'modifications': {
-      'linux-lacros-asan-lsan-rel': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
-    },
-  },
-  'lacros_chrome_browsertests Lacros version skew testing ash dev': {
-    'modifications': {
-      'linux-lacros-asan-lsan-rel': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
-    },
-  },
-  'lacros_chrome_browsertests Lacros version skew testing ash stable': {
-    'modifications': {
-      'linux-lacros-asan-lsan-rel': {
-        'swarming': {
-          'shards': 10,
         },
       },
     },
@@ -4862,17 +4752,6 @@
       'fuchsia-fyi-arm64-dbg': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.debug.views_unittests.filter',
-        ],
-      },
-      # https://crbug.com/1111979
-      'linux-lacros-asan-lsan-rel': {
-        'args': [
-          '--gtest_filter=-DesktopWidgetFocusManagerTest.AnchoredDialogInDesktopNativeWidgetAura:'
-          'DesktopWidgetTest*:'
-          'DesktopWindowTreeHostPlatformTest*:'
-          'EditableComboboxTest*:'
-          'MenuRunnerTest*:'
-          'TextfieldTest*:'
         ],
       },
       # https://crbug.com/1111979,

@@ -29,6 +29,5 @@ ci/Win ASan Release Media
 ci/android-asan
 ci/chromeos-amd64-generic-asan-rel
 ci/ios-asan
-ci/linux-lacros-asan-lsan-rel
 ci/linux-ubsan-vptr
 ci/win-asan
