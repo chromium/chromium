@@ -249,7 +249,7 @@ LensOverlayController::SearchQuery::SearchQuery(const SearchQuery& other) {
   selected_region_thumbnail_uri_ = other.selected_region_thumbnail_uri_;
   search_query_url_ = other.search_query_url_;
   selected_text_ = other.selected_text_;
-  multimodal_selection_type_ = other.multimodal_selection_type_;
+  lens_selection_type_ = other.lens_selection_type_;
 }
 
 LensOverlayController::SearchQuery&
@@ -263,7 +263,7 @@ LensOverlayController::SearchQuery::operator=(
   selected_region_thumbnail_uri_ = other.selected_region_thumbnail_uri_;
   search_query_url_ = other.search_query_url_;
   selected_text_ = other.selected_text_;
-  multimodal_selection_type_ = other.multimodal_selection_type_;
+  lens_selection_type_ = other.lens_selection_type_;
   return *this;
 }
 
@@ -551,7 +551,9 @@ void LensOverlayController::BindOverlay(
         device_scale_factor * page_scale_factor);
   }
   if (pending_region_) {
-    DoLensRequest(std::move(pending_region_),
+    // If there is a pending region (i.e. for image right click)
+    // use INJECTED_IMAGE as the selection type.
+    DoLensRequest(std::move(pending_region_), lens::INJECTED_IMAGE,
                   std::make_optional<SkBitmap>(pending_region_bitmap_));
     pending_region_bitmap_.reset();
   }
@@ -704,7 +706,7 @@ void LensOverlayController::AddQueryToHistory(std::string query,
     initialization_data_->selected_text_.reset();
     initialization_data_->additional_search_query_params_.clear();
     selected_region_thumbnail_uri_.clear();
-    multimodal_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
+    lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
     page_->ClearAllSelections();
     SetSearchboxThumbnail(std::string());
   }
@@ -726,7 +728,7 @@ void LensOverlayController::AddQueryToHistory(std::string query,
   if (initialization_data_->selected_text_.has_value()) {
     search_query.selected_text_ = initialization_data_->selected_text_.value();
   }
-  search_query.multimodal_selection_type_ = multimodal_selection_type_;
+  search_query.lens_selection_type_ = lens_selection_type_;
   search_query.additional_search_query_params_ =
       initialization_data_->additional_search_query_params_;
 
@@ -795,7 +797,7 @@ void LensOverlayController::PopAndLoadQueryFromHistory() {
     // If the query also has text, we should send it as a multimodal query.
     if (query.search_query_text_.empty()) {
       DoLensRequest(
-          query.selected_region_->Clone(),
+          query.selected_region_->Clone(), query.lens_selection_type_,
           query.selected_region_bitmap_.drawsNothing()
               ? std::nullopt
               : std::make_optional<SkBitmap>(query.selected_region_bitmap_));
@@ -804,7 +806,7 @@ void LensOverlayController::PopAndLoadQueryFromHistory() {
       // in the multimodal request.
       lens_overlay_query_controller_->SendMultimodalRequest(
           initialization_data_->selected_region_.Clone(),
-          query.search_query_text_, query.multimodal_selection_type_,
+          query.search_query_text_, query.lens_selection_type_,
           initialization_data_->additional_search_query_params_);
     }
     return;
@@ -857,9 +859,10 @@ tabs::TabInterface* LensOverlayController::GetTabInterface() {
   return tab_;
 }
 
-void LensOverlayController::IssueLensRequestForTesting(
-    lens::mojom::CenterRotatedBoxPtr region) {
-  IssueLensRequest(std::move(region));
+void LensOverlayController::IssueLensRegionRequestForTesting(
+    lens::mojom::CenterRotatedBoxPtr region,
+    bool is_click) {
+  IssueLensRegionRequest(std::move(region), is_click);
 }
 
 void LensOverlayController::IssueTextSelectionRequestForTesting(
@@ -1337,7 +1340,7 @@ void LensOverlayController::CloseUIPart2(
   pending_region_.reset();
   fullscreen_observation_.Reset();
 
-  multimodal_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
+  lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
 
   for (Observer& observer : observers_) {
     observer.OnLensOverlayDidClose();
@@ -1523,7 +1526,7 @@ void LensOverlayController::OnTextModified() {
 
 void LensOverlayController::OnThumbnailRemoved() {
   selected_region_thumbnail_uri_.clear();
-  multimodal_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
+  lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
   initialization_data_->selected_region_.reset();
   initialization_data_->selected_region_bitmap_.reset();
   page_->ClearRegionSelection();
@@ -1659,6 +1662,7 @@ void LensOverlayController::WillDetach(
 
 void LensOverlayController::DoLensRequest(
     lens::mojom::CenterRotatedBoxPtr region,
+    lens::LensOverlaySelectionType selection_type,
     std::optional<SkBitmap> region_bytes) {
   CHECK(initialization_data_);
   CHECK(region);
@@ -1666,6 +1670,7 @@ void LensOverlayController::DoLensRequest(
   initialization_data_->selected_region_ = region.Clone();
   initialization_data_->selected_text_.reset();
   initialization_data_->additional_search_query_params_.clear();
+  lens_selection_type_ = selection_type;
   if (region_bytes) {
     initialization_data_->selected_region_bitmap_ = region_bytes.value();
   } else {
@@ -1674,8 +1679,8 @@ void LensOverlayController::DoLensRequest(
 
   // TODO(b/332787629): Append the 'mactx' param.
   lens_overlay_query_controller_->SendRegionSearch(
-      region.Clone(), initialization_data_->additional_search_query_params_,
-      region_bytes);
+      region.Clone(), selection_type,
+      initialization_data_->additional_search_query_params_, region_bytes);
   results_side_panel_coordinator_->RegisterEntryAndShow();
   search_performed_in_session_ = true;
   state_ = State::kOverlayAndResults;
@@ -1755,9 +1760,20 @@ void LensOverlayController::InfoRequestedByOverlay(
           WindowOpenDisposition::NEW_FOREGROUND_TAB));
 }
 
-void LensOverlayController::IssueLensRequest(
-    lens::mojom::CenterRotatedBoxPtr region) {
-  DoLensRequest(std::move(region), std::nullopt);
+void LensOverlayController::IssueLensRegionRequest(
+    lens::mojom::CenterRotatedBoxPtr region,
+    bool is_click) {
+  DoLensRequest(std::move(region),
+                is_click ? lens::TAP_ON_EMPTY : lens::REGION_SEARCH,
+                std::nullopt);
+}
+
+void LensOverlayController::IssueLensObjectRequest(
+    lens::mojom::CenterRotatedBoxPtr region,
+    bool is_mask_click) {
+  DoLensRequest(std::move(region),
+                is_mask_click ? lens::TAP_ON_REGION_GLEAM : lens::TAP_ON_OBJECT,
+                std::nullopt);
 }
 
 void LensOverlayController::IssueTextSelectionRequest(const std::string& query,
@@ -1789,7 +1805,7 @@ void LensOverlayController::IssueTextSelectionRequestInner(
   initialization_data_->selected_region_.reset();
   initialization_data_->selected_region_bitmap_.reset();
   selected_region_thumbnail_uri_.clear();
-  multimodal_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
+  lens_selection_type_ = lens::SELECT_TEXT_HIGHLIGHT;
   initialization_data_->selected_text_ =
       std::make_pair(selection_start_index, selection_end_index);
 
@@ -1841,22 +1857,23 @@ void LensOverlayController::IssueSearchBoxRequest(
       additional_query_params;
 
   if (initialization_data_->selected_region_.is_null()) {
+    lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
     lens_overlay_query_controller_->SendTextOnlyQuery(
         search_box_text, lens::TextOnlyQueryType::kSearchBoxQuery,
         initialization_data_->additional_search_query_params_);
   } else {
     if (is_zero_prefix_suggestion) {
-      multimodal_selection_type_ = lens::MULTIMODAL_SUGGEST_ZERO_PREFIX;
+      lens_selection_type_ = lens::MULTIMODAL_SUGGEST_ZERO_PREFIX;
     } else if (match_type ==
                AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED) {
-      multimodal_selection_type_ = lens::MULTIMODAL_SEARCH;
+      lens_selection_type_ = lens::MULTIMODAL_SEARCH;
     } else {
-      multimodal_selection_type_ = lens::MULTIMODAL_SUGGEST_TYPEAHEAD;
+      lens_selection_type_ = lens::MULTIMODAL_SUGGEST_TYPEAHEAD;
     }
 
     lens_overlay_query_controller_->SendMultimodalRequest(
         initialization_data_->selected_region_.Clone(), search_box_text,
-        multimodal_selection_type_,
+        lens_selection_type_,
         initialization_data_->additional_search_query_params_);
   }
   results_side_panel_coordinator_->RegisterEntryAndShow();

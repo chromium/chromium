@@ -123,12 +123,14 @@ suite('PostSelectionRenderer', () => {
             '--selection-height')));
   }
 
-  // Verifies the a Lens request was issues with the given percentage values
+  // Verifies that a Lens request was issued with the given percentage values
   // between 0-1.
-  async function assertLensRequest(
+  async function assertLensRegionRequest(
       expectedLeft: number, expectedTop: number, expectedWidth: number,
       expectedHeight: number): Promise<void> {
-    const rect = await testBrowserProxy.handler.whenCalled('issueLensRequest');
+    await testBrowserProxy.handler.whenCalled('issueLensRegionRequest');
+    const rect =
+        testBrowserProxy.handler.getArgs('issueLensRegionRequest')[0][0];
     assertWithinThreshold(expectedLeft + expectedWidth / 2, rect.box.x);
     assertWithinThreshold(expectedTop + expectedHeight / 2, rect.box.y);
     assertWithinThreshold(expectedWidth, rect.box.width);
@@ -212,10 +214,7 @@ suite('PostSelectionRenderer', () => {
         metrics.count(
             'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
             UserAction.kRegionSelectionChange));
-    const action = await testBrowserProxy.handler.whenCalled(
-        'recordUkmLensOverlayInteraction');
-    assertEquals(UserAction.kRegionSelectionChange, action);
-    await assertLensRequest(
+    await assertLensRegionRequest(
         expectedLeft, expectedTop, expectedWidth, expectedHeight);
   });
 
@@ -238,7 +237,7 @@ suite('PostSelectionRenderer', () => {
 
     assertPostSelectionRender(
         expectedLeft, expectedTop, expectedWidth, expectedHeight);
-    await assertLensRequest(
+    await assertLensRegionRequest(
         expectedLeft, expectedTop, expectedWidth, expectedHeight);
   });
 
@@ -261,7 +260,7 @@ suite('PostSelectionRenderer', () => {
 
     assertPostSelectionRender(
         expectedLeft, expectedTop, expectedWidth, expectedHeight);
-    await assertLensRequest(
+    await assertLensRegionRequest(
         expectedLeft, expectedTop, expectedWidth, expectedHeight);
   });
 
@@ -284,7 +283,7 @@ suite('PostSelectionRenderer', () => {
 
     assertPostSelectionRender(
         expectedLeft, expectedTop, expectedWidth, expectedHeight);
-    await assertLensRequest(
+    await assertLensRegionRequest(
         expectedLeft, expectedTop, expectedWidth, expectedHeight);
   });
 
@@ -307,7 +306,7 @@ suite('PostSelectionRenderer', () => {
 
     assertPostSelectionRender(
         expectedLeft, expectedTop, expectedWidth, expectedHeight);
-    await assertLensRequest(
+    await assertLensRegionRequest(
         expectedLeft, expectedTop, expectedWidth, expectedHeight);
   });
 
@@ -332,7 +331,7 @@ suite('PostSelectionRenderer', () => {
 
     assertPostSelectionRender(
         expectedLeft, expectedTop, expectedWidth, expectedHeight);
-    await assertLensRequest(
+    await assertLensRegionRequest(
         expectedLeft, expectedTop, expectedWidth, expectedHeight);
   });
 
@@ -355,7 +354,7 @@ suite('PostSelectionRenderer', () => {
 
     assertPostSelectionRender(
         expectedLeft, expectedTop, expectedWidth, expectedHeight);
-    await assertLensRequest(
+    await assertLensRegionRequest(
         expectedLeft, expectedTop, expectedWidth, expectedHeight);
   });
 
@@ -378,7 +377,7 @@ suite('PostSelectionRenderer', () => {
 
     assertPostSelectionRender(
         expectedLeft, expectedTop, expectedWidth, expectedHeight);
-    await assertLensRequest(
+    await assertLensRegionRequest(
         expectedLeft, expectedTop, expectedWidth, expectedHeight);
   });
 
@@ -404,7 +403,7 @@ suite('PostSelectionRenderer', () => {
 
     assertPostSelectionRender(
         expectedLeft, expectedTop, expectedWidth, expectedHeight);
-    await assertLensRequest(
+    await assertLensRegionRequest(
         expectedLeft, expectedTop, expectedWidth, expectedHeight);
   });
 
@@ -427,7 +426,7 @@ suite('PostSelectionRenderer', () => {
 
     assertPostSelectionRender(
         expectedLeft, expectedTop, expectedWidth, expectedHeight);
-    await assertLensRequest(
+    await assertLensRegionRequest(
         expectedLeft, expectedTop, expectedWidth, expectedHeight);
   });
 
@@ -450,7 +449,7 @@ suite('PostSelectionRenderer', () => {
 
     assertPostSelectionRender(
         expectedLeft, expectedTop, expectedWidth, expectedHeight);
-    await assertLensRequest(
+    await assertLensRegionRequest(
         expectedLeft, expectedTop, expectedWidth, expectedHeight);
   });
 
@@ -475,7 +474,7 @@ suite('PostSelectionRenderer', () => {
 
     assertPostSelectionRender(
         expectedLeft, expectedTop, expectedWidth, expectedHeight);
-    await assertLensRequest(
+    await assertLensRegionRequest(
         expectedLeft, expectedTop, expectedWidth, expectedHeight);
   });
 

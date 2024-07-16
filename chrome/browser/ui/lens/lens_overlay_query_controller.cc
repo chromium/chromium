@@ -437,10 +437,11 @@ void LensOverlayQueryController::EndQuery() {
 
 void LensOverlayQueryController::SendRegionSearch(
     lens::mojom::CenterRotatedBoxPtr region,
+    lens::LensOverlaySelectionType lens_selection_type,
     std::map<std::string, std::string> additional_search_query_params,
     std::optional<SkBitmap> region_bytes) {
   SendInteraction(/*region=*/std::move(region), /*query_text=*/std::nullopt,
-                  /*object_id=*/std::nullopt, lens::REGION_SEARCH,
+                  /*object_id=*/std::nullopt, lens_selection_type,
                   additional_search_query_params, region_bytes);
 }
 

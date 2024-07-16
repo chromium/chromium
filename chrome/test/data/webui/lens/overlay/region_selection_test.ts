@@ -11,7 +11,7 @@ import type {CenterRotatedBox} from 'chrome-untrusted://lens/geometry.mojom-webu
 import {UserAction} from 'chrome-untrusted://lens/lens.mojom-webui.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome-untrusted://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome-untrusted://webui-test/metrics_test_support.js';
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
@@ -99,11 +99,16 @@ suite('ManualRegionSelection', function() {
       fromPoint: Point, toPoint: Point, expectedRect: CenterRotatedBox) {
     // Ensures the whenCalled method returns because of our drag, not a leftover
     // call that already happened.
-    testBrowserProxy.handler.resetResolver('issueLensRequest');
+    testBrowserProxy.handler.resetResolver('issueLensRegionRequest');
 
     await simulateDrag(selectionOverlayElement, fromPoint, toPoint);
-    const rect = await testBrowserProxy.handler.whenCalled('issueLensRequest');
-    assertDeepEquals(expectedRect, rect);
+    await testBrowserProxy.handler.whenCalled('issueLensRegionRequest');
+    const requestRegion =
+        testBrowserProxy.handler.getArgs('issueLensRegionRequest')[0][0];
+    const isClick =
+        testBrowserProxy.handler.getArgs('issueLensRegionRequest')[0][1];
+    assertDeepEquals(expectedRect, requestRegion);
+    assertFalse(isClick);
     assertEquals(1, metrics.count('Lens.Overlay.Overlay.UserAction'));
     assertEquals(
         1,
@@ -124,15 +129,21 @@ suite('ManualRegionSelection', function() {
       point: Point, expectedRect: CenterRotatedBox) {
     // Ensures the whenCalled method returns because of our drag, not a leftover
     // call that already happened.
-    testBrowserProxy.handler.resetResolver('issueLensRequest');
+    testBrowserProxy.handler.resetResolver('issueLensRegionRequest');
 
     await simulateClick(selectionOverlayElement, point);
-    const rect = await testBrowserProxy.handler.whenCalled('issueLensRequest');
+    await testBrowserProxy.handler.whenCalled('issueLensRegionRequest');
+    const requestRegion =
+        testBrowserProxy.handler.getArgs('issueLensRegionRequest')[0][0];
+    const isClick =
+        testBrowserProxy.handler.getArgs('issueLensRegionRequest')[0][1];
 
     // Since tap to select can scale depending on the size of the canvas causing
     // slight inaccuracies in our expected rectangle, compare the rectangles to
     // a degree of precision rather than a deep equals.
-    assertEquivalentRectangles(expectedRect, rect, /*precision=*/ 0.0001);
+    assertEquivalentRectangles(
+        expectedRect, requestRegion, /*precision=*/ 0.0001);
+    assertTrue(isClick);
     assertEquals(1, metrics.count('Lens.Overlay.Overlay.UserAction'));
     assertEquals(
         1,

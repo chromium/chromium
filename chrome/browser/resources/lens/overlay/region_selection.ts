@@ -103,9 +103,10 @@ export class RegionSelectionElement extends PolymerElement {
   }
 
   handleUpGesture(event: GestureEvent): boolean {
-    // Issue the Lens request
-    this.browserProxy.handler.issueLensRequest(
-        this.getNormalizedCenterRotatedBoxFromGesture(event));
+    // Issue the Lens request.
+    const isClick = event.state === GestureState.STARTING;
+    this.browserProxy.handler.issueLensRegionRequest(
+        this.getNormalizedCenterRotatedBoxFromGesture(event), isClick);
 
     // Relinquish control from the shimmer.
     unfocusShimmer(this, ShimmerControlRequester.MANUAL_REGION);

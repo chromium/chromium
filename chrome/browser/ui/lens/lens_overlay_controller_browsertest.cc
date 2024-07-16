@@ -304,13 +304,16 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
 
   void SendRegionSearch(
       lens::mojom::CenterRotatedBoxPtr region,
+      lens::LensOverlaySelectionType selection_type,
       std::map<std::string, std::string> additional_search_query_params,
       std::optional<SkBitmap> region_bytes) override {
     Reset();
     last_queried_region_ = region->Clone();
     last_queried_region_bytes_ = region_bytes;
+    last_lens_selection_type_ = selection_type;
     LensOverlayQueryController::SendRegionSearch(
-        std::move(region), additional_search_query_params, region_bytes);
+        std::move(region), selection_type, additional_search_query_params,
+        region_bytes);
   }
 
   void SendMultimodalRequest(
@@ -322,7 +325,7 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
     Reset();
     last_queried_region_ = region.Clone();
     last_queried_text_ = query_text;
-    last_multimodal_selection_type_ = multimodal_selection_type;
+    last_lens_selection_type_ = multimodal_selection_type;
   }
 
   void SetShouldReturnError(bool full_image_request_should_return_error) {
@@ -331,7 +334,7 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
   }
 
   void Reset() {
-    last_multimodal_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
+    last_lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
     last_queried_region_.reset();
     last_queried_text_.clear();
     last_queried_region_bytes_ = std::nullopt;
@@ -339,7 +342,7 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
 
   bool full_image_request_should_return_error_ = false;
   std::string last_queried_text_;
-  lens::LensOverlaySelectionType last_multimodal_selection_type_;
+  lens::LensOverlaySelectionType last_lens_selection_type_;
   lens::mojom::CenterRotatedBoxPtr last_queried_region_;
   std::optional<SkBitmap> last_queried_region_bytes_;
 };
@@ -1043,6 +1046,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(fake_controller);
   EXPECT_EQ(kTestRegion,
             fake_controller->fake_overlay_page_.post_region_selection_);
+  auto* fake_query_controller = static_cast<LensOverlayQueryControllerFake*>(
+      controller->get_lens_overlay_query_controller_for_testing());
+  EXPECT_EQ(fake_query_controller->last_lens_selection_type_,
+            lens::INJECTED_IMAGE);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CloseSidePanel) {
@@ -1978,6 +1985,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(loaded_search_query->selected_region_thumbnail_uri_.empty());
   EXPECT_FALSE(loaded_search_query->selected_region_);
   EXPECT_FALSE(loaded_search_query->selected_text_);
+  EXPECT_EQ(loaded_search_query->lens_selection_type_,
+            lens::UNKNOWN_SELECTION_TYPE);
 
   // Loading a second url in the side panel should show the results page.
   const GURL second_search_url(
@@ -2003,6 +2012,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(loaded_search_query->selected_region_thumbnail_uri_.empty());
   EXPECT_FALSE(loaded_search_query->selected_region_);
   EXPECT_FALSE(loaded_search_query->selected_text_);
+  EXPECT_EQ(loaded_search_query->lens_selection_type_,
+            lens::UNKNOWN_SELECTION_TYPE);
   VerifySearchQueryParameters(observer.last_navigation_url());
   VerifyTextQueriesAreEqual(observer.last_navigation_url(), second_search_url);
   // Popping the query should load the previous query into the results frame.
@@ -2023,6 +2034,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(loaded_search_query->selected_region_thumbnail_uri_.empty());
   EXPECT_FALSE(loaded_search_query->selected_region_);
   EXPECT_FALSE(loaded_search_query->selected_text_);
+  EXPECT_EQ(loaded_search_query->lens_selection_type_,
+            lens::UNKNOWN_SELECTION_TYPE);
   VerifySearchQueryParameters(pop_observer.last_navigation_url());
   VerifyTextQueriesAreEqual(pop_observer.last_navigation_url(),
                             first_search_url);
@@ -2079,6 +2092,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(loaded_search_query->selected_text_->second, 200);
   EXPECT_TRUE(loaded_search_query->selected_region_thumbnail_uri_.empty());
   EXPECT_FALSE(loaded_search_query->selected_region_);
+  EXPECT_EQ(loaded_search_query->lens_selection_type_,
+            lens::SELECT_TEXT_HIGHLIGHT);
 
   // Issuing a region selection request should update the results page.
   const GURL second_search_url(
@@ -2089,7 +2104,8 @@ IN_PROC_BROWSER_TEST_F(
   // navigation was already successful.
   content::TestNavigationObserver second_search_observer(
       controller->GetSidePanelWebContentsForTesting());
-  controller->IssueLensRequestForTesting(kTestRegion->Clone());
+  controller->IssueLensRegionRequestForTesting(kTestRegion->Clone(),
+                                               /*is_click=*/false);
   // The full sequnce of events necessary to load Lens search results is not
   // currently testable, so load the expected URL manually.
   controller->LoadURLInResultsFrame(second_search_url);
@@ -2105,6 +2121,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(loaded_search_query->selected_text_);
   EXPECT_FALSE(loaded_search_query->selected_region_thumbnail_uri_.empty());
   EXPECT_TRUE(loaded_search_query->selected_region_);
+  EXPECT_EQ(loaded_search_query->lens_selection_type_, lens::REGION_SEARCH);
 
   // Loading another url in the side panel should update the results page.
   const GURL third_search_url(
@@ -2131,6 +2148,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(loaded_search_query->selected_text_->second, 100);
   EXPECT_TRUE(loaded_search_query->selected_region_thumbnail_uri_.empty());
   EXPECT_FALSE(loaded_search_query->selected_region_);
+  EXPECT_EQ(loaded_search_query->lens_selection_type_,
+            lens::SELECT_TEXT_HIGHLIGHT);
   url_without_start_time_or_size =
       RemoveStartTimeAndSizeParams(third_search_observer.last_navigation_url());
   EXPECT_EQ(url_without_start_time_or_size, third_search_url);
@@ -2146,6 +2165,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(controller->get_selected_text_for_region());
   EXPECT_EQ(fake_query_controller->last_queried_region_, kTestRegion);
   EXPECT_FALSE(fake_query_controller->last_queried_region_bytes_.has_value());
+  EXPECT_EQ(fake_query_controller->last_lens_selection_type_,
+            lens::REGION_SEARCH);
 
   // The full sequence of events necessary to load Lens search results is not
   // currently testable, so load the expected URL manually.
@@ -2164,6 +2185,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(loaded_search_query->selected_text_);
   EXPECT_FALSE(loaded_search_query->selected_region_thumbnail_uri_.empty());
   EXPECT_EQ(loaded_search_query->selected_region_, kTestRegion);
+  EXPECT_EQ(loaded_search_query->lens_selection_type_, lens::REGION_SEARCH);
 
   // Popping another query should load the original query into the results
   // frame.
@@ -2185,6 +2207,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(loaded_search_query->selected_region_thumbnail_uri_.empty());
   EXPECT_FALSE(loaded_search_query->selected_region_);
   EXPECT_TRUE(loaded_search_query->selected_text_);
+  EXPECT_EQ(loaded_search_query->lens_selection_type_,
+            lens::SELECT_TEXT_HIGHLIGHT);
   EXPECT_EQ(loaded_search_query->selected_text_->first, 20);
   EXPECT_EQ(loaded_search_query->selected_text_->second, 200);
   url_without_start_time_or_size =
@@ -2222,6 +2246,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       [&]() { return controller->state() == State::kOverlayAndResults; }));
   EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
   EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
+  auto* fake_query_controller = static_cast<LensOverlayQueryControllerFake*>(
+      controller->get_lens_overlay_query_controller_for_testing());
+  EXPECT_EQ(fake_query_controller->last_lens_selection_type_,
+            lens::INJECTED_IMAGE);
 
   // Loading a url in the side panel should show the results page.
   const GURL first_search_url(
@@ -2247,6 +2275,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(loaded_search_query->selected_region_bitmap_.width(), 100);
   EXPECT_EQ(loaded_search_query->selected_region_bitmap_.height(), 100);
   EXPECT_FALSE(loaded_search_query->selected_text_);
+  EXPECT_EQ(loaded_search_query->lens_selection_type_, lens::INJECTED_IMAGE);
 
   // Loading a second url in the side panel should show the results page.
   const GURL second_search_url(
@@ -2274,13 +2303,13 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_FALSE(loaded_search_query->selected_region_);
   EXPECT_TRUE(loaded_search_query->selected_region_bitmap_.drawsNothing());
   EXPECT_TRUE(loaded_search_query->selected_text_);
+  EXPECT_EQ(loaded_search_query->lens_selection_type_,
+            lens::SELECT_TEXT_HIGHLIGHT);
   GURL url_without_start_time_or_size =
       RemoveStartTimeAndSizeParams(observer.last_navigation_url());
   EXPECT_EQ(url_without_start_time_or_size, second_search_url);
 
   // Popping a query with a region should resend a region search request.
-  auto* fake_query_controller = static_cast<LensOverlayQueryControllerFake*>(
-      controller->get_lens_overlay_query_controller_for_testing());
   fake_query_controller->Reset();
   controller->PopAndLoadQueryFromHistory();
 
@@ -2291,6 +2320,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(fake_query_controller->last_queried_region_bytes_);
   EXPECT_EQ(fake_query_controller->last_queried_region_bytes_->width(), 100);
   EXPECT_EQ(fake_query_controller->last_queried_region_bytes_->height(), 100);
+  EXPECT_EQ(fake_query_controller->last_lens_selection_type_,
+            lens::INJECTED_IMAGE);
 
   // The full sequence of events necessary to load Lens search results is not
   // currently testable, so load the expected URL manually.
@@ -2315,6 +2346,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(loaded_search_query->selected_region_bitmap_.width(), 100);
   EXPECT_EQ(loaded_search_query->selected_region_bitmap_.height(), 100);
   EXPECT_FALSE(loaded_search_query->selected_text_);
+  EXPECT_EQ(loaded_search_query->lens_selection_type_, lens::INJECTED_IMAGE);
   VerifySearchQueryParameters(pop_observer.last_navigation_url());
   VerifyTextQueriesAreEqual(pop_observer.last_navigation_url(),
                             first_search_url);
@@ -2365,9 +2397,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_FALSE(loaded_search_query->selected_region_bitmap_.drawsNothing());
   EXPECT_EQ(loaded_search_query->selected_region_bitmap_.width(), 100);
   EXPECT_EQ(loaded_search_query->selected_region_bitmap_.height(), 100);
-  EXPECT_EQ(loaded_search_query->multimodal_selection_type_,
-            lens::UNKNOWN_SELECTION_TYPE);
   EXPECT_FALSE(loaded_search_query->selected_text_);
+  EXPECT_EQ(loaded_search_query->lens_selection_type_, lens::INJECTED_IMAGE);
 
   // Loading a second url in the side panel should show the results page.
   const GURL second_search_url(
@@ -2398,8 +2429,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_FALSE(loaded_search_query->selected_region_thumbnail_uri_.empty());
   EXPECT_TRUE(loaded_search_query->selected_region_);
   EXPECT_FALSE(loaded_search_query->selected_text_);
-  EXPECT_EQ(loaded_search_query->multimodal_selection_type_,
-            lens::MULTIMODAL_SEARCH);
+  EXPECT_EQ(loaded_search_query->lens_selection_type_, lens::MULTIMODAL_SEARCH);
 
   // Loading a third search url in the side panel should show the results page.
   const GURL third_search_url(
@@ -2429,7 +2459,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_FALSE(loaded_search_query->selected_region_thumbnail_uri_.empty());
   EXPECT_TRUE(loaded_search_query->selected_region_);
   EXPECT_FALSE(loaded_search_query->selected_text_);
-  EXPECT_EQ(loaded_search_query->multimodal_selection_type_,
+  EXPECT_EQ(loaded_search_query->lens_selection_type_,
             lens::MULTIMODAL_SUGGEST_ZERO_PREFIX);
 
   // Popping a query with a region should resend a multimodal request.
@@ -2446,7 +2476,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(fake_query_controller->last_queried_region_, kTestRegion);
   EXPECT_FALSE(fake_query_controller->last_queried_region_bytes_);
   EXPECT_EQ(fake_query_controller->last_queried_text_, "green");
-  EXPECT_EQ(fake_query_controller->last_multimodal_selection_type_,
+  EXPECT_EQ(fake_query_controller->last_lens_selection_type_,
             lens::MULTIMODAL_SEARCH);
 
   // The full sequence of events necessary to load Lens search results is not
@@ -2460,8 +2490,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   fake_query_controller->Reset();
   controller->PopAndLoadQueryFromHistory();
 
-  // Verify that the last queried data did not contain any query text or
-  // multimodal selection type.
+  // Verify that the last queried data did not contain any query text.
   EXPECT_EQ(controller->get_selected_region_for_testing(), kTestRegion);
   EXPECT_FALSE(controller->get_selected_text_for_region());
   EXPECT_EQ(fake_query_controller->last_queried_region_, kTestRegion);
@@ -2469,8 +2498,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(fake_query_controller->last_queried_region_bytes_->width(), 100);
   EXPECT_EQ(fake_query_controller->last_queried_region_bytes_->height(), 100);
   EXPECT_TRUE(fake_query_controller->last_queried_text_.empty());
-  EXPECT_EQ(fake_query_controller->last_multimodal_selection_type_,
-            lens::UNKNOWN_SELECTION_TYPE);
+  EXPECT_EQ(fake_query_controller->last_lens_selection_type_,
+            lens::INJECTED_IMAGE);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,

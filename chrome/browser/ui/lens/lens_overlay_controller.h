@@ -134,8 +134,8 @@ class LensOverlayController : public LensSearchboxClient,
     std::map<std::string, std::string> additional_search_query_params_;
     // The url that the search query loaded into the results frame.
     GURL search_query_url_;
-    // The multimodal selection type of the current multimodal request, if any.
-    lens::LensOverlaySelectionType multimodal_selection_type_;
+    // The selection type of the current Lens request, if any.
+    lens::LensOverlaySelectionType lens_selection_type_;
   };
 
   // Returns whether the Lens Overlay feature is enabled for this user profile
@@ -366,8 +366,9 @@ class LensOverlayController : public LensSearchboxClient,
   // hides the widget associated with the bubble.
   void HidePreselectionBubble();
 
-  // Testing function to issue a Lens (region selection) request.
-  void IssueLensRequestForTesting(lens::mojom::CenterRotatedBoxPtr region);
+  // Testing function to issue a Lens region selection request.
+  void IssueLensRegionRequestForTesting(lens::mojom::CenterRotatedBoxPtr region,
+                                        bool is_click);
 
   // Testing function to issue a text request.
   void IssueTextSelectionRequestForTesting(const std::string& text_query,
@@ -677,6 +678,7 @@ class LensOverlayController : public LensSearchboxClient,
   // region_bitmap is provided, it will use those bytes to send to the Lens
   // server instead of cropping the region from the full page screenshot.
   void DoLensRequest(lens::mojom::CenterRotatedBoxPtr region,
+                     lens::LensOverlaySelectionType selection_type,
                      std::optional<SkBitmap> region_bitmap);
 
   // lens::mojom::LensPageHandler overrides.
@@ -690,8 +692,10 @@ class LensOverlayController : public LensSearchboxClient,
       GetOverlayInvocationSourceCallback callback) override;
   void InfoRequestedByOverlay(
       ui::mojom::ClickModifiersPtr click_modifiers) override;
-  // TODO: rename this to IssueRegionSearchRequest.
-  void IssueLensRequest(lens::mojom::CenterRotatedBoxPtr region) override;
+  void IssueLensObjectRequest(lens::mojom::CenterRotatedBoxPtr region,
+                              bool is_mask_click) override;
+  void IssueLensRegionRequest(lens::mojom::CenterRotatedBoxPtr region,
+                              bool is_click) override;
   void IssueTextSelectionRequest(const std::string& text_query,
                                  int selection_start_index,
                                  int selection_end_index) override;
@@ -803,10 +807,10 @@ class LensOverlayController : public LensSearchboxClient,
   // selection this will contain an empty string. Returned by GetThumbnail().
   std::string selected_region_thumbnail_uri_;
 
-  // The multimodal selection type of the current multimodal request. If the
-  // user is not currently viewing results for a multimodal query, this will be
+  // The selection type of the current Lens request. If the
+  // user is not currently viewing results for a Lens query, this will be
   // set to UNKNOWN_SELECTION_TYPE.
-  lens::LensOverlaySelectionType multimodal_selection_type_ =
+  lens::LensOverlaySelectionType lens_selection_type_ =
       lens::UNKNOWN_SELECTION_TYPE;
 
   // Connections to and from the overlay WebUI. Only valid while
