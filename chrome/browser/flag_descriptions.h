@@ -2648,9 +2648,6 @@ extern const char kMessagesForAndroidAdsBlockedDescription[];
 extern const char kMessagesForAndroidSaveCardName[];
 extern const char kMessagesForAndroidSaveCardDescription[];
 
-extern const char kMobilePWAInstallPromptMlName[];
-extern const char kMobilePWAInstallPromptMlDescription[];
-
 extern const char kMouseAndTrackpadDropdownMenuName[];
 extern const char kMouseAndTrackpadDropdownMenuDescription[];
 

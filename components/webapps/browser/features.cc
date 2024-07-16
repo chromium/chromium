@@ -58,7 +58,8 @@ extern const base::FeatureParam<int> kBannerParamsDaysAfterBannerIgnoredKey{
 // promotion model. Kill switches are required for all ML model-backed features.
 BASE_FEATURE(kWebAppsEnableMLModelForPromotion,
              "WebAppsEnableMLModelForPromotion",
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
              base::FEATURE_DISABLED_BY_DEFAULT);

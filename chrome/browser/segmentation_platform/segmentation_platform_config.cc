@@ -141,6 +141,7 @@ std::unique_ptr<Config> GetConfigForDesktopNtpModule() {
 
 }  // namespace
 
+// Note: Do not remove feature flag for models that are served on the server.
 std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
     content::BrowserContext* context) {
   std::vector<std::unique_ptr<Config>> configs;
@@ -160,7 +161,6 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   configs.emplace_back(TabletProductivityUserModel::GetConfig());
   configs.emplace_back(MostVisitedTilesUser::GetConfig());
   configs.emplace_back(AndroidHomeModuleRanker::GetConfig());
-  configs.emplace_back(GetConfigForWebAppInstallationPromo());
 #endif
   configs.emplace_back(LowUserEngagementModel::GetConfig());
   configs.emplace_back(SearchUserModel::GetConfig());
@@ -181,12 +181,11 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   // Model used for testing.
   configs.emplace_back(OptimizationTargetSegmentationDummy::GetConfig());
 
-#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           webapps::features::kWebAppsEnableMLModelForPromotion)) {
     configs.emplace_back(GetConfigForWebAppInstallationPromo());
   }
-#endif
+
   if (base::FeatureList::IsEnabled(ntp_features::kNtpDriveModuleSegmentation)) {
     configs.emplace_back(GetConfigForDesktopNtpModule());
   }

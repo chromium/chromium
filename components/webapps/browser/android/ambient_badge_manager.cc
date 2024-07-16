@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/public/constants.h"
@@ -20,6 +21,7 @@
 #include "components/webapps/browser/android/install_prompt_prefs.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
+#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "components/webapps/browser/webapps_client.h"
 #include "content/public/browser/web_contents.h"
@@ -73,7 +75,10 @@ void AmbientBadgeManager::MaybeShow(
   maybe_show_pwa_bottom_sheet_ = std::move(maybe_show_pwa_bottom_sheet);
 
   UpdateState(State::kActive);
-  MaybeShowAmbientBadgeSmart();
+  if (base::FeatureList::IsEnabled(
+          features::kWebAppsEnableMLModelForPromotion)) {
+    MaybeShowAmbientBadgeSmart();
+  }
 }
 
 void AmbientBadgeManager::AddToHomescreenFromBadge() {
