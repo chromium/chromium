@@ -510,7 +510,10 @@ void FilePathWatcherImpl::BufferOverflowed() {
 void FilePathWatcherImpl::WatchedDirectoryDeleted(
     base::FilePath watched_path,
     base::HeapArray<uint8_t> notification_batch) {
-  if (SetupWatchHandleForTarget() != WatchWithChangeInfoResult::kSuccess) {
+  WatchWithChangeInfoResult result = SetupWatchHandleForTarget();
+
+  if (result != WatchWithChangeInfoResult::kSuccess) {
+    RecordCallbackErrorUma(result);
     // `this` may be deleted after `callback_` is run.
     callback_.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/true);
     return;

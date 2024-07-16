@@ -19,6 +19,8 @@ enum class WatchWithChangeInfoResult {
 
 void RecordWatchWithChangeInfoResultUma(WatchWithChangeInfoResult result);
 
+void RecordCallbackErrorUma(WatchWithChangeInfoResult result);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_PATH_WATCHER_FILE_PATH_WATCHER_HISTOGRAM_H_
