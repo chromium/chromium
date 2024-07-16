@@ -88,14 +88,20 @@ v8::Local<v8::Value> DOMWindow::Wrap(ScriptState* script_state) {
   if (!frame)
     return v8::Null(script_state->GetIsolate());
 
-  // TODO(yukishiino): Make this function always return the non-empty handle
-  // even if the frame is detached because the global proxy must always exist
-  // per spec.
+  // TODO(yukishiino): We'd like to return a global proxy instead of undefined
+  // regardless of whether it's detached or not, in order to conform to spec.
   //
   // Getting the proxy also results in initializing it and eventually yields in
   // `SetupWindowPrototypeChain()` calls for the window proxy.
-  return frame->GetWindowProxy(script_state->World())
-      ->GlobalProxyIfNotDetached();
+  v8::MaybeLocal<v8::Object> proxy =
+      frame->GetWindowProxy(script_state->World())->GlobalProxyIfNotDetached();
+  if (proxy.IsEmpty()) {
+    // Return Undefined instead of an empty to avoid crashes further along the
+    // way, as `Wrap()` is expected to return a non-empty value.
+    return v8::Undefined(script_state->GetIsolate());
+  } else {
+    return proxy.ToLocalChecked();
+  }
 }
 
 v8::Local<v8::Object> DOMWindow::AssociateWithWrapper(

@@ -80,7 +80,7 @@ void WindowProxy::ClearForV8MemoryPurge() {
   DisposeContext(Lifecycle::kV8MemoryIsForciblyPurged, kFrameWillNotBeReused);
 }
 
-v8::Local<v8::Object> WindowProxy::GlobalProxyIfNotDetached() {
+v8::MaybeLocal<v8::Object> WindowProxy::GlobalProxyIfNotDetached() {
   if (lifecycle_ == Lifecycle::kContextIsInitialized) {
     DLOG_IF(FATAL, !is_global_object_attached_)
         << "Context is initialized but global object is detached!";

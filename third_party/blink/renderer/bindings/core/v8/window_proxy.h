@@ -154,7 +154,7 @@ class CORE_EXPORT WindowProxy : public GarbageCollected<WindowProxy> {
   void ClearForSwap();
   void ClearForV8MemoryPurge();
 
-  v8::Local<v8::Object> GlobalProxyIfNotDetached();
+  v8::MaybeLocal<v8::Object> GlobalProxyIfNotDetached();
   v8::Local<v8::Object> ReleaseGlobalProxy();
   // This does not initialize the window proxy, either Initialize or
   // InitializeIfNeeded needs to be called after this method.
