@@ -96,6 +96,8 @@ const char kBlueDotPromoOverflowMenuDismissed[] =
     "blue_dot_promo_overflow_menu_dismissed";
 const char kBlueDotPromoSettingsDismissed[] =
     "blue_dot_promo_settings_dismissed";
+const char kBlueDotOverflowMenuCustomized[] =
+    "blue_dot_overflow_menu_customized";
 const char kCredentialProviderExtensionPromoSnoozed[] =
     "credential_provider_extension_promo_snoozed";
 const char kDockingPromoRemindMeLater[] = "docking_promo_remind_me_later";

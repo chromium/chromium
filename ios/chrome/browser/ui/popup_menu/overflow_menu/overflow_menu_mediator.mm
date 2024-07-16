@@ -1834,9 +1834,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 }
 
 - (void)destinationCustomizationCompleted {
-  if (_engagementTracker) {
-    _engagementTracker->NotifyEvent(
-        feature_engagement::events::kBlueDotPromoOverflowMenuDismissed);
+  if (self.engagementTracker &&
+      self.settingsDestination.badge == BadgeTypePromo) {
+    self.engagementTracker->NotifyEvent(
+        feature_engagement::events::kBlueDotOverflowMenuCustomized);
   }
 }
 

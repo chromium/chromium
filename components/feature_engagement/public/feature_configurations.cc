@@ -1896,8 +1896,10 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     // least once.
     config->event_configs.insert(EventConfig(
         "blue_dot_promo_settings_dismissed", Comparator(EQUAL, 0), 360, 360));
-    // TODO(crbug.com/338249422): Stop showing blue dot promo if overflow menu
-    // was customized while blue dot was showing.
+    // Stop showing blue dot promo if overflow menu was customized while blue
+    // dot was showing.
+    config->event_configs.insert(EventConfig(
+        "blue_dot_overflow_menu_customized", Comparator(EQUAL, 0), 360, 360));
 
     // Cooldowns from other default browser promos.
     config->event_configs.insert(EventConfig("default_browser_promo_shown",
