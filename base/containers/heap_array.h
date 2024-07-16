@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef BASE_CONTAINERS_HEAP_ARRAY_H_
 #define BASE_CONTAINERS_HEAP_ARRAY_H_
 
@@ -147,10 +142,14 @@ class TRIVIAL_ABI GSL_OWNER HeapArray {
   // most useful, say, when the compiler can't deduce a template
   // argument type.
   base::span<T> as_span() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return base::span<T>(data_.get(), size_);
+    // SAFETY: `size_` is the number of elements in the `data_` allocation` at
+    // all times.
+    return UNSAFE_BUFFERS(base::span<T>(data_.get(), size_));
   }
   base::span<const T> as_span() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return base::span<const T>(data_.get(), size_);
+    // SAFETY: `size_` is the number of elements in the `data_` allocation` at
+    // all times.
+    return UNSAFE_BUFFERS(base::span<const T>(data_.get(), size_));
   }
 
   // Convenience method to copy the contents of the entire array from a
@@ -197,7 +196,9 @@ class TRIVIAL_ABI GSL_OWNER HeapArray {
   base::span<T> leak() && {
     HeapArray<T> dropped = std::move(*this);
     T* leaked = dropped.data_.release();
-    return make_span(leaked, dropped.size_);
+    // SAFETY: The `size_` is the number of elements in the allocation in
+    // `data_` at all times, which is renamed as `leaked` here.
+    return UNSAFE_BUFFERS(span(leaked, dropped.size_));
   }
 
   // Allows construction of a smaller HeapArray from an existing HeapArray w/o

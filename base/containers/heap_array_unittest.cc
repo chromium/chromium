@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/containers/heap_array.h"
 
 #include <stdint.h>
@@ -97,8 +92,10 @@ TEST(HeapArray, DataAndIndex) {
   auto vec = HeapArray<uint32_t>::WithSize(2u);
   vec[0] = 100u;
   vec[1] = 101u;
-  EXPECT_EQ(vec.data()[0], 100u);
-  EXPECT_EQ(vec.data()[1], 101u);
+  auto span = vec.as_span();
+  EXPECT_EQ(span.data(), vec.data());
+  EXPECT_EQ(span[0], 100u);
+  EXPECT_EQ(span[1], 101u);
 }
 
 TEST(HeapArray, IteratorAndIndex) {
