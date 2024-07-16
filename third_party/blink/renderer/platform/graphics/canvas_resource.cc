@@ -205,9 +205,9 @@ bool CanvasResource::PrepareAcceleratedTransferableResourceFromClientSI(
     return false;
   SetMailboxSyncMode(sync_mode);
   auto client_shared_image = GetClientSharedImage();
-  if (!client_shared_image) {
-    return false;
-  }
+
+  // The SharedImage should exist as long as the ContextProviderWrapper exists.
+  CHECK(client_shared_image);
 
   *out_resource = viz::TransferableResource::MakeGpu(
       client_shared_image->mailbox(), client_shared_image->GetTextureTarget(),
