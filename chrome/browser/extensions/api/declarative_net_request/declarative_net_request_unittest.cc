@@ -1396,8 +1396,9 @@ TEST_P(SingleRulesetTest, RuleCountLimitMatched) {
       helper.ShouldIgnoreRuleset(extension()->id(), static_sources[0].id()));
 }
 
-// Ensure that an extension's allocation will be kept when it is disabled.
-TEST_P(SingleRulesetTest, AllocationKeptWhenDisabled) {
+// Ensure that an extension's allocation will be kept or released when it is
+// disabled based on the reason.
+TEST_P(SingleRulesetTest, AllocationWhenDisabled) {
   TestRule rule = CreateGenericRule();
   for (int i = 0; i < GetMaximumRulesPerRuleset(); ++i) {
     rule.id = kMinValidID + i;
@@ -1421,7 +1422,7 @@ TEST_P(SingleRulesetTest, AllocationKeptWhenDisabled) {
   CheckExtensionAllocationInPrefs(extension()->id(), 200);
 
   service()->DisableExtension(extension()->id(),
-                              disable_reason::DISABLE_USER_ACTION);
+                              disable_reason::DISABLE_GREYLIST);
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(0);
 
   // The extension's last known extra rule count should be persisted after it is
@@ -1436,6 +1437,14 @@ TEST_P(SingleRulesetTest, AllocationKeptWhenDisabled) {
 
   EXPECT_EQ(200u, global_rules_tracker.GetAllocatedGlobalRuleCountForTesting());
   CheckExtensionAllocationInPrefs(extension()->id(), 200);
+
+  // Disable the extension via user action. This should release its allocation.
+  service()->DisableExtension(extension()->id(),
+                              disable_reason::DISABLE_USER_ACTION);
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(0);
+
+  EXPECT_EQ(0u, global_rules_tracker.GetAllocatedGlobalRuleCountForTesting());
+  CheckExtensionAllocationInPrefs(extension()->id(), std::nullopt);
 }
 
 // Ensure that we get an install warning on exceeding the rule count limit and
@@ -3001,21 +3010,21 @@ TEST_P(MultipleRulesetsTest, ReclaimAllocationOnUnload) {
 
   // Test some DisableReasons that shouldn't cause the allocation to be
   // released.
-  disable_extension_and_check_allocation(disable_reason::DISABLE_USER_ACTION,
-                                         false);
-
   disable_extension_and_check_allocation(
       disable_reason::DISABLE_PERMISSIONS_INCREASE |
           disable_reason::DISABLE_GREYLIST,
       false);
 
   // Test the DisableReasons that should cause the allocation to be released.
+  disable_extension_and_check_allocation(disable_reason::DISABLE_USER_ACTION,
+                                         true);
+
   disable_extension_and_check_allocation(
       disable_reason::DISABLE_BLOCKED_BY_POLICY, true);
 
   disable_extension_and_check_allocation(
       disable_reason::DISABLE_BLOCKED_BY_POLICY |
-          disable_reason::DISABLE_USER_ACTION,
+          disable_reason::DISABLE_GREYLIST,
       true);
 
   // We should reclaim the extension's allocation if it is blocklisted.

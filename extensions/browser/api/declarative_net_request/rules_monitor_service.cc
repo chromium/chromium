@@ -79,7 +79,8 @@ bool ShouldReleaseAllocationOnUnload(const ExtensionPrefs* prefs,
                                      UnloadedExtensionReason reason) {
   if (reason == UnloadedExtensionReason::DISABLE) {
     static constexpr int kReleaseAllocationDisableReasons =
-        disable_reason::DISABLE_BLOCKED_BY_POLICY;
+        disable_reason::DISABLE_BLOCKED_BY_POLICY |
+        disable_reason::DISABLE_USER_ACTION;
 
     // Release allocation on reload of an unpacked extension and treat it as a
     // new install since the extension directory's contents may have changed.
