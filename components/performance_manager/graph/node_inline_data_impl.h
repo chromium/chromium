@@ -76,10 +76,6 @@ class SparseStorage {
 template <typename T>
 concept IsSparseNodeInlineData = std::derived_from<T, SparseNodeInlineData<T>>;
 
-// Disable the Destroy() method for non-sparse types.
-template <typename T>
-concept CanCallDestroy = IsSparseNodeInlineData<T>;
-
 template <class T>
 using Storage = std::conditional_t<IsSparseNodeInlineData<T>,
                                    SparseStorage<T>,
