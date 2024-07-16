@@ -319,7 +319,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DevTools.LegacyResourceTypeFilterItemSelected"
     enum="DevToolsLegacyResourceTypeFilterItemSelected"
-    expires_after="2024-11-09">
+    expires_after="2025-01-12">
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@google.com</owner>
   <owner>wolfi@google.com</owner>
@@ -331,7 +331,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DevTools.LegacyResourceTypeFilterNumberOfSelectedChanged"
     enum="DevToolsLegacyResourceTypeFilterNumberOfSelectedChanged"
-    expires_after="2024-11-09">
+    expires_after="2025-01-12">
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@google.com</owner>
   <owner>wolfi@google.com</owner>
@@ -371,7 +371,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DevTools.NetworkPanelMoreFiltersItemSelected"
     enum="DevToolsNetworkPanelMoreFiltersItemSelected"
-    expires_after="2024-11-09">
+    expires_after="2025-01-12">
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@google.com</owner>
   <owner>wolfi@google.com</owner>
@@ -512,7 +512,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.ResourceTypeFilterItemSelected"
-    enum="DevToolsResourceTypeFilterItemSelected" expires_after="2024-11-09">
+    enum="DevToolsResourceTypeFilterItemSelected" expires_after="2025-01-12">
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@google.com</owner>
   <owner>wolfi@google.com</owner>
@@ -523,7 +523,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DevTools.ResourceTypeFilterNumberOfSelectedChanged"
     enum="DevToolsResourceTypeFilterNumberOfSelectedChanged"
-    expires_after="2024-11-09">
+    expires_after="2025-01-12">
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@google.com</owner>
   <owner>wolfi@google.com</owner>
@@ -570,7 +570,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.StyleTextCopied" enum="DevToolsStyleTextCopied"
-    expires_after="2024-11-10">
+    expires_after="2025-01-12">
   <owner>changhaohan@chromium.org</owner>
   <owner>bmeurer@google.com</owner>
   <owner>yangguo@chromium.org</owner>
