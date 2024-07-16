@@ -10904,7 +10904,8 @@
                 {
                     "name": "Enabled_20240627",
                     "params": {
-                        "utility-process-params": "{\"is-supported\":true}"
+                        "utility-prob-pct": "50",
+                        "utility-process-params": "{\"is-supported\":true,\"sampling-rate-bytes\":1000000}"
                     },
                     "enable_features": [
                         "HeapProfilerCentralControl",
