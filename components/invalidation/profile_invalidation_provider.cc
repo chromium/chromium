@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/invalidation/impl/profile_invalidation_provider.h"
+#include "components/invalidation/profile_invalidation_provider.h"
 
 #include <utility>
 

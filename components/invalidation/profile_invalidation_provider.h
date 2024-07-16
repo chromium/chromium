@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_INVALIDATION_IMPL_PROFILE_INVALIDATION_PROVIDER_H_
-#define COMPONENTS_INVALIDATION_IMPL_PROFILE_INVALIDATION_PROVIDER_H_
+#ifndef COMPONENTS_INVALIDATION_PROFILE_INVALIDATION_PROVIDER_H_
+#define COMPONENTS_INVALIDATION_PROFILE_INVALIDATION_PROVIDER_H_
 
 #include <memory>
 #include <string>
@@ -62,4 +62,4 @@ class ProfileInvalidationProvider : public KeyedService {
 
 }  // namespace invalidation
 
-#endif  // COMPONENTS_INVALIDATION_IMPL_PROFILE_INVALIDATION_PROVIDER_H_
+#endif  // COMPONENTS_INVALIDATION_PROFILE_INVALIDATION_PROVIDER_H_

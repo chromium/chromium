@@ -39,8 +39,6 @@ static_library("impl") {
     "per_user_topic_subscription_request.h",
     "profile_identity_provider.cc",
     "profile_identity_provider.h",
-    "profile_invalidation_provider.cc",
-    "profile_invalidation_provider.h",
     "status.cc",
     "status.h",
   ]

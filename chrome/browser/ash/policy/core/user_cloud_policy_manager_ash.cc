@@ -44,7 +44,7 @@
 #include "components/enterprise/browser/reporting/real_time_report_controller.h"
 #include "components/enterprise/browser/reporting/report_generator.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
-#include "components/invalidation/impl/profile_invalidation_provider.h"
+#include "components/invalidation/profile_invalidation_provider.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/policy/core/common/cloud/affiliation.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"

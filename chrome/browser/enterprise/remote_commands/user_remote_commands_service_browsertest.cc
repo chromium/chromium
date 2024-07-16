@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/enterprise/remote_commands/user_remote_commands_service.h"
+
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/remote_commands/user_remote_commands_service.h"
 #include "chrome/browser/enterprise/remote_commands/user_remote_commands_service_factory.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -18,7 +19,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
-#include "components/invalidation/impl/profile_invalidation_provider.h"
+#include "components/invalidation/profile_invalidation_provider.h"
 #include "components/policy/core/browser/cloud/user_policy_signin_service_base.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"

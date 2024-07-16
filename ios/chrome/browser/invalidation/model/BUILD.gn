@@ -10,6 +10,7 @@ source_set("model") {
   deps = [
     "//base",
     "//components/gcm_driver",
+    "//components/invalidation",
     "//components/invalidation/impl",
     "//components/keyed_service/ios",
     "//components/pref_registry",

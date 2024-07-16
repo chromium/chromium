@@ -12,7 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/invalidation/impl/profile_invalidation_provider.h"
+#include "components/invalidation/profile_invalidation_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 

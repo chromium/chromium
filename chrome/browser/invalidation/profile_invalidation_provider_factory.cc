@@ -26,7 +26,7 @@
 #include "components/invalidation/impl/invalidation_prefs.h"
 #include "components/invalidation/impl/per_user_topic_subscription_manager.h"
 #include "components/invalidation/impl/profile_identity_provider.h"
-#include "components/invalidation/impl/profile_invalidation_provider.h"
+#include "components/invalidation/profile_invalidation_provider.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry.h"

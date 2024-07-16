@@ -12,6 +12,8 @@ static_library("invalidation") {
     "invalidation_listener.h",
     "invalidation_listener_impl.cc",
     "invalidation_listener_impl.h",
+    "profile_invalidation_provider.cc",
+    "profile_invalidation_provider.h",
   ]
 
   public_deps = [ "//components/invalidation/public" ]
@@ -20,7 +22,9 @@ static_library("invalidation") {
     "//base",
     "//base:i18n",
     "//components/gcm_driver",
+    "//components/invalidation/impl",
     "//components/keyed_service/core",
+    "//components/pref_registry",
     "//components/signin/public/identity_manager",
     "//google_apis",
   ]

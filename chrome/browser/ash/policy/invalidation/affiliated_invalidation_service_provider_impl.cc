@@ -21,7 +21,7 @@
 #include "components/invalidation/impl/fcm_invalidation_service.h"
 #include "components/invalidation/impl/fcm_network_handler.h"
 #include "components/invalidation/impl/per_user_topic_subscription_manager.h"
-#include "components/invalidation/impl/profile_invalidation_provider.h"
+#include "components/invalidation/profile_invalidation_provider.h"
 #include "components/invalidation/public/identity_provider.h"
 #include "components/invalidation/public/invalidation_handler.h"
 #include "components/invalidation/public/invalidation_service.h"

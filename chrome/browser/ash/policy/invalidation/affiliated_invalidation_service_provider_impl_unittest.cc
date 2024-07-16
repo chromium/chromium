@@ -24,7 +24,7 @@
 #include "components/invalidation/impl/fake_invalidation_handler.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
 #include "components/invalidation/impl/fcm_invalidation_service.h"
-#include "components/invalidation/impl/profile_invalidation_provider.h"
+#include "components/invalidation/profile_invalidation_provider.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidator_state.h"
 #include "components/keyed_service/core/keyed_service.h"
