@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/cors/cors_url_loader.h"
-
 #include "base/feature_list.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/cookies/site_for_cookies.h"
+#include "services/network/cors/cors_url_loader.h"
 #include "services/network/cors/cors_url_loader_test_util.h"
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"
+#include "services/network/shared_dictionary/shared_dictionary_in_memory.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage_in_memory.h"
@@ -146,8 +146,11 @@ class CorsURLLoaderSharedDictionaryTest : public CorsURLLoaderTestBase {
               dictionary_info.expiration());
     EXPECT_EQ("/path*", dictionary_info.match());
     EXPECT_EQ(kTestData.size(), dictionary_info.size());
-    EXPECT_EQ(kTestData, std::string(dictionary_info.data()->data(),
-                                     dictionary_info.size()));
+    EXPECT_EQ(net::OK, dictionary_info.dictionary()->ReadAll(
+                           base::BindOnce([](int) { NOTREACHED_NORETURN(); })));
+    EXPECT_EQ(kTestData,
+              std::string(dictionary_info.dictionary()->data()->data(),
+                          dictionary_info.size()));
   }
 
   const std::map<

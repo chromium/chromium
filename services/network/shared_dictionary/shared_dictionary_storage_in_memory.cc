@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "net/base/io_buffer.h"
@@ -29,7 +30,7 @@ SharedDictionaryStorageInMemory::SharedDictionaryStorageInMemory(
 
 SharedDictionaryStorageInMemory::~SharedDictionaryStorageInMemory() = default;
 
-std::unique_ptr<net::SharedDictionary>
+scoped_refptr<net::SharedDictionary>
 SharedDictionaryStorageInMemory::GetDictionarySync(
     const GURL& url,
     mojom::RequestDestination destination) {
@@ -46,14 +47,13 @@ SharedDictionaryStorageInMemory::GetDictionarySync(
     return nullptr;
   }
   info->set_last_used_time(base::Time::Now());
-  return std::make_unique<SharedDictionaryInMemory>(info->data(), info->size(),
-                                                    info->hash(), info->id());
+  return info->dictionary();
 }
 
 void SharedDictionaryStorageInMemory::GetDictionary(
     const GURL& url,
     mojom::RequestDestination destination,
-    base::OnceCallback<void(std::unique_ptr<net::SharedDictionary>)> callback) {
+    base::OnceCallback<void(scoped_refptr<net::SharedDictionary>)> callback) {
   std::move(callback).Run(GetDictionarySync(url, destination));
 }
 
@@ -189,12 +189,12 @@ SharedDictionaryStorageInMemory::DictionaryInfo::DictionaryInfo(
       expiration_(expiration),
       match_(match),
       match_dest_(std::move(match_dest)),
-      id_(id),
       last_used_time_(last_used_time),
-      data_(std::move(data)),
-      size_(size),
-      hash_(hash),
-      matcher_(std::move(matcher)) {}
+      matcher_(std::move(matcher)),
+      dictionary_(base::MakeRefCounted<SharedDictionaryInMemory>(data,
+                                                                 size,
+                                                                 hash,
+                                                                 id)) {}
 
 SharedDictionaryStorageInMemory::DictionaryInfo::DictionaryInfo(
     DictionaryInfo&& other) = default;

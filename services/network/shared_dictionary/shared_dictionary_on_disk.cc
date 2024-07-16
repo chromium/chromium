@@ -24,16 +24,18 @@ SharedDictionaryOnDisk::SharedDictionaryOnDisk(
     const net::SHA256HashValue& hash,
     const std::string& id,
     const base::UnguessableToken& disk_cache_key_token,
-    SharedDictionaryDiskCache* disk_cahe,
-    base::OnceClosure disk_cache_error_callback)
+    SharedDictionaryDiskCache& disk_cahe,
+    base::OnceClosure disk_cache_error_callback,
+    base::ScopedClosureRunner on_deleted_closure_runner)
     : size_(size),
       hash_(hash),
       id_(id),
-      disk_cache_error_callback_(std::move(disk_cache_error_callback)) {
+      disk_cache_error_callback_(std::move(disk_cache_error_callback)),
+      on_deleted_closure_runner_(std::move(on_deleted_closure_runner)) {
   auto split_callback = base::SplitOnceCallback(base::BindOnce(
       &SharedDictionaryOnDisk::OnEntry, weak_factory_.GetWeakPtr(),
       /*open_start_time=*/base::Time::Now()));
-  disk_cache::EntryResult result = disk_cahe->OpenOrCreateEntry(
+  disk_cache::EntryResult result = disk_cahe.OpenOrCreateEntry(
       disk_cache_key_token.ToString(),
       /*create=*/false, std::move(split_callback.first));
   if (result.net_error() != net::ERR_IO_PENDING) {

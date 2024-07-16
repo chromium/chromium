@@ -21,7 +21,6 @@ class SharedDictionaryInMemory : public net::SharedDictionary {
                            size_t size,
                            const net::SHA256HashValue& sha256,
                            const std::string& id);
-  ~SharedDictionaryInMemory() override;
 
   SharedDictionaryInMemory(const SharedDictionaryInMemory&) = delete;
   SharedDictionaryInMemory& operator=(const SharedDictionaryInMemory&) = delete;
@@ -34,6 +33,8 @@ class SharedDictionaryInMemory : public net::SharedDictionary {
   const std::string& id() const override;
 
  private:
+  ~SharedDictionaryInMemory() override;
+
   const scoped_refptr<net::IOBuffer> data_;
   const size_t size_;
   const net::SHA256HashValue sha256_;

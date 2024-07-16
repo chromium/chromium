@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
@@ -370,7 +371,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   const raw_ptr<NetworkContext> context_;
 
   scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage_;
-  std::unique_ptr<net::SharedDictionary> shared_dictionary_;
+  scoped_refptr<net::SharedDictionary> shared_dictionary_;
   raw_ptr<mojom::SharedDictionaryAccessObserver> shared_dictionary_observer_;
   std::unique_ptr<SharedDictionaryDataPipeWriter>
       shared_dictionary_data_pipe_writer_;

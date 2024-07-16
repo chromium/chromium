@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -15,10 +16,8 @@ class IOBuffer;
 struct SHA256HashValue;
 
 // This class is used to read the binary of the shared dictionary.
-class NET_EXPORT SharedDictionary {
+class NET_EXPORT SharedDictionary : public base::RefCounted<SharedDictionary> {
  public:
-  virtual ~SharedDictionary() = default;
-
   // Reads the whole binary of the dictionary. If an error has occurred, returns
   // ERR_FAILED. If the binary of the dictionary is already in the memory
   // returns OK. Otherwise returns ERR_IO_PENDING and `callback` will be called
@@ -42,6 +41,10 @@ class NET_EXPORT SharedDictionary {
   // when Chrome can use the dictionary.
   // https://www.rfc-editor.org/rfc/rfc8941#name-serializing-a-string
   virtual const std::string& id() const = 0;
+
+ protected:
+  friend class base::RefCounted<SharedDictionary>;
+  virtual ~SharedDictionary() = default;
 };
 
 }  // namespace net

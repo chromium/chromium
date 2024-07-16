@@ -362,7 +362,7 @@ CorsURLLoader::CorsURLLoader(
         request_.url, request_.destination,
         base::BindOnce(
             [](base::WeakPtr<CorsURLLoader> loader,
-               std::unique_ptr<net::SharedDictionary> shared_dictionary) {
+               scoped_refptr<net::SharedDictionary> shared_dictionary) {
               if (loader) {
                 loader->shared_dictionary_ = std::move(shared_dictionary);
               }

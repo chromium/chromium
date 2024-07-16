@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "net/base/hash_value.h"
@@ -63,13 +64,13 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
       const SharedDictionaryStorageOnDisk&) = delete;
 
   // SharedDictionaryStorage
-  std::unique_ptr<net::SharedDictionary> GetDictionarySync(
+  scoped_refptr<net::SharedDictionary> GetDictionarySync(
       const GURL& url,
       mojom::RequestDestination destination) override;
   void GetDictionary(
       const GURL& url,
       mojom::RequestDestination destination,
-      base::OnceCallback<void(std::unique_ptr<net::SharedDictionary>)> callback)
+      base::OnceCallback<void(scoped_refptr<net::SharedDictionary>)> callback)
       override;
   base::expected<scoped_refptr<SharedDictionaryWriter>,
                  mojom::SharedDictionaryError>
@@ -102,14 +103,11 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
   friend class SharedDictionaryManagerTest;
   friend class SharedDictionaryManagerOnDiskTest;
 
-  class RefCountedSharedDictionary;
-  class WrappedSharedDictionary;
-
   void OnDatabaseRead(
       net::SQLitePersistentSharedDictionaryStore::DictionaryListOrError result);
   void OnDictionaryWritten(std::unique_ptr<SimpleUrlPatternMatcher> matcher,
                            net::SharedDictionaryInfo info);
-  void OnRefCountedSharedDictionaryDeleted(
+  void OnSharedDictionaryDeleted(
       const base::UnguessableToken& disk_cache_key_token);
 
   const std::map<
@@ -129,7 +127,7 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
                WrappedDictionaryInfo>>
       dictionary_info_map_;
 
-  std::map<base::UnguessableToken, raw_ptr<RefCountedSharedDictionary>>
+  std::map<base::UnguessableToken, raw_ptr<net::SharedDictionary>>
       dictionaries_;
 
   bool get_dictionary_called_ = false;

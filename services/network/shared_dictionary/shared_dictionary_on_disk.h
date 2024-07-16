@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "net/base/hash_value.h"
@@ -34,10 +35,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryOnDisk
                          const net::SHA256HashValue& hash,
                          const std::string& id,
                          const base::UnguessableToken& disk_cache_key_token,
-                         SharedDictionaryDiskCache* disk_cahe,
-                         base::OnceClosure disk_cache_error_callback);
-
-  ~SharedDictionaryOnDisk() override;
+                         SharedDictionaryDiskCache& disk_cahe,
+                         base::OnceClosure disk_cache_error_callback,
+                         base::ScopedClosureRunner on_deleted_closure_runner);
 
   // net::SharedDictionary
   int ReadAll(base::OnceCallback<void(int)> callback) override;
@@ -47,6 +47,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryOnDisk
   const std::string& id() const override;
 
  private:
+  ~SharedDictionaryOnDisk() override;
+
   enum class State { kLoading, kDone, kFailed };
 
   void OnEntry(base::Time open_start_time, disk_cache::EntryResult result);
@@ -64,6 +66,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryOnDisk
   std::vector<base::OnceCallback<void(int)>> readall_callbacks_;
   disk_cache::ScopedEntryPtr entry_;
   scoped_refptr<net::IOBufferWithSize> data_;
+
+  base::ScopedClosureRunner on_deleted_closure_runner_;
   base::WeakPtrFactory<SharedDictionaryOnDisk> weak_factory_{this};
 };
 

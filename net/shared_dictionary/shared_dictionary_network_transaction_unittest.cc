@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/test/scoped_feature_list.h"
 #include "crypto/secure_hash.h"
@@ -95,7 +96,6 @@ class DummySyncDictionary : public SharedDictionary {
     secure_hash->Update(data_->data(), size_);
     secure_hash->Finish(hash_.data, sizeof(hash_.data));
   }
-  ~DummySyncDictionary() override = default;
 
   // SharedDictionary
   int ReadAll(base::OnceCallback<void(int)> callback) override { return OK; }
@@ -103,6 +103,9 @@ class DummySyncDictionary : public SharedDictionary {
   size_t size() const override { return size_; }
   const SHA256HashValue& hash() const override { return hash_; }
   const std::string& id() const override { return id_; }
+
+ protected:
+  ~DummySyncDictionary() override = default;
 
  private:
   const scoped_refptr<IOBuffer> data_;
@@ -115,7 +118,6 @@ class DummyAsyncDictionary : public DummySyncDictionary {
  public:
   explicit DummyAsyncDictionary(const std::string& data_string)
       : DummySyncDictionary(data_string) {}
-  ~DummyAsyncDictionary() override = default;
 
   // SharedDictionary
   int ReadAll(base::OnceCallback<void(int)> callback) override {
@@ -127,6 +129,8 @@ class DummyAsyncDictionary : public DummySyncDictionary {
   }
 
  private:
+  ~DummyAsyncDictionary() override = default;
+
   base::OnceCallback<void(int)> read_all_callback_;
 };
 
@@ -254,8 +258,8 @@ TEST_F(SharedDictionaryNetworkTransactionTest, SyncDictionary) {
   MockHttpRequest request(*scoped_mock_transaction_);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
-         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
-        return std::make_unique<DummySyncDictionary>(kTestDictionaryData);
+         const GURL& request_url) -> scoped_refptr<SharedDictionary> {
+        return base::MakeRefCounted<DummySyncDictionary>(kTestDictionaryData);
       });
   SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
                                                  /*enable_shared_zstd=*/false);
@@ -288,8 +292,8 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NotAllowedToUseDictionary) {
   MockHttpRequest request(*scoped_mock_transaction_);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
-         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
-        return std::make_unique<DummySyncDictionary>(kTestDictionaryData);
+         const GURL& request_url) -> scoped_refptr<SharedDictionary> {
+        return base::MakeRefCounted<DummySyncDictionary>(kTestDictionaryData);
       });
 
   SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
@@ -329,9 +333,9 @@ TEST_F(SharedDictionaryNetworkTransactionTest, DictionaryId) {
   MockHttpRequest request(*scoped_mock_transaction_);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
-         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
-        return std::make_unique<DummySyncDictionary>(kTestDictionaryData,
-                                                     "test-id");
+         const GURL& request_url) -> scoped_refptr<SharedDictionary> {
+        return base::MakeRefCounted<DummySyncDictionary>(kTestDictionaryData,
+                                                         "test-id");
       });
   SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
                                                  /*enable_shared_zstd=*/false);
@@ -371,9 +375,9 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
   MockHttpRequest request(*scoped_mock_transaction_);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
-         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
-        return std::make_unique<DummySyncDictionary>(kTestDictionaryData,
-                                                     "test\\dictionary\"id");
+         const GURL& request_url) -> scoped_refptr<SharedDictionary> {
+        return base::MakeRefCounted<DummySyncDictionary>(
+            kTestDictionaryData, "test\\dictionary\"id");
       });
   SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
                                                  /*enable_shared_zstd=*/false);
@@ -409,8 +413,9 @@ TEST_F(SharedDictionaryNetworkTransactionTest, EmptyDictionaryId) {
   MockHttpRequest request(*scoped_mock_transaction_);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
-         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
-        return std::make_unique<DummySyncDictionary>(kTestDictionaryData, "");
+         const GURL& request_url) -> scoped_refptr<SharedDictionary> {
+        return base::MakeRefCounted<DummySyncDictionary>(kTestDictionaryData,
+                                                         "");
       });
   SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
                                                  /*enable_shared_zstd=*/false);
@@ -448,8 +453,8 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
   MockHttpRequest request(*scoped_mock_transaction_);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
-         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
-        return std::make_unique<DummySyncDictionary>(kTestDictionaryData);
+         const GURL& request_url) -> scoped_refptr<SharedDictionary> {
+        return base::MakeRefCounted<DummySyncDictionary>(kTestDictionaryData);
       });
   SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
                                                  /*enable_shared_zstd=*/false);
@@ -485,8 +490,8 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
   MockHttpRequest request(*scoped_mock_transaction_);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
-         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
-        return std::make_unique<DummySyncDictionary>(kTestDictionaryData);
+         const GURL& request_url) -> scoped_refptr<SharedDictionary> {
+        return base::MakeRefCounted<DummySyncDictionary>(kTestDictionaryData);
       });
   SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
                                                  /*enable_shared_zstd=*/false);
@@ -524,8 +529,8 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
   MockHttpRequest request(scoped_mock_transaction);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
-         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
-        return std::make_unique<DummySyncDictionary>(kTestDictionaryData);
+         const GURL& request_url) -> scoped_refptr<SharedDictionary> {
+        return base::MakeRefCounted<DummySyncDictionary>(kTestDictionaryData);
       });
   SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
                                                  /*enable_shared_zstd=*/false);
@@ -558,7 +563,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoMatchingDictionary) {
   MockHttpRequest request(*scoped_mock_transaction_);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
-         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+         const GURL& request_url) -> scoped_refptr<SharedDictionary> {
         return nullptr;
       });
   SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
@@ -592,7 +597,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, OpaqueFrameOrigin) {
   MockHttpRequest request(*scoped_mock_transaction_);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
-         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+         const GURL& request_url) -> scoped_refptr<SharedDictionary> {
         // dictionary_getter must be called with a nullopt isolation_key.
         CHECK(!isolation_key);
         return nullptr;
@@ -631,7 +636,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, WithoutValidLoadFlag) {
   request.dictionary_getter = base::BindRepeating(
       [](bool* getter_called,
          const std::optional<SharedDictionaryIsolationKey>& isolation_key,
-         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+         const GURL& request_url) -> scoped_refptr<SharedDictionary> {
         *getter_called = true;
         return nullptr;
       },
@@ -671,8 +676,8 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoSbrContentEncoding) {
   MockHttpRequest request(*scoped_mock_transaction_);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
-         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
-        return std::make_unique<DummySyncDictionary>(kTestDictionaryData);
+         const GURL& request_url) -> scoped_refptr<SharedDictionary> {
+        return base::MakeRefCounted<DummySyncDictionary>(kTestDictionaryData);
       });
   SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
                                                  /*enable_shared_zstd=*/false);
@@ -713,8 +718,8 @@ TEST_F(SharedDictionaryNetworkTransactionTest, WrongContentDictionaryHeader) {
   MockHttpRequest request(*scoped_mock_transaction_);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
-         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
-        return std::make_unique<DummySyncDictionary>(kTestDictionaryData);
+         const GURL& request_url) -> scoped_refptr<SharedDictionary> {
+        return base::MakeRefCounted<DummySyncDictionary>(kTestDictionaryData);
       });
   SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
                                                  /*enable_shared_zstd=*/false);
@@ -740,8 +745,8 @@ TEST_F(SharedDictionaryNetworkTransactionTest, MultipleContentEncodingWithSbr) {
   MockHttpRequest request(*scoped_mock_transaction_);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
-         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
-        return std::make_unique<DummySyncDictionary>(kTestDictionaryData);
+         const GURL& request_url) -> scoped_refptr<SharedDictionary> {
+        return base::MakeRefCounted<DummySyncDictionary>(kTestDictionaryData);
       });
   SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
                                                  /*enable_shared_zstd=*/false);
@@ -770,15 +775,15 @@ TEST_F(SharedDictionaryNetworkTransactionTest, MultipleContentEncodingWithSbr) {
 
 TEST_F(SharedDictionaryNetworkTransactionTest,
        AsyncDictionarySuccessBeforeStartReading) {
-  std::unique_ptr<DummyAsyncDictionary> dictionary =
-      std::make_unique<DummyAsyncDictionary>(kTestDictionaryData);
+  scoped_refptr<DummyAsyncDictionary> dictionary =
+      base::MakeRefCounted<DummyAsyncDictionary>(kTestDictionaryData);
   DummyAsyncDictionary* dictionary_ptr = dictionary.get();
 
   MockHttpRequest request(kBrotliDictionaryTestTransaction);
   request.dictionary_getter = base::BindRepeating(
-      [](std::unique_ptr<DummyAsyncDictionary>* dictionary,
+      [](scoped_refptr<DummyAsyncDictionary>* dictionary,
          const std::optional<SharedDictionaryIsolationKey>& isolation_key,
-         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+         const GURL& request_url) -> scoped_refptr<SharedDictionary> {
         CHECK(*dictionary);
         return std::move(*dictionary);
       },
@@ -812,15 +817,15 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
 
 TEST_F(SharedDictionaryNetworkTransactionTest,
        AsyncDictionarySuccessAfterStartReading) {
-  std::unique_ptr<DummyAsyncDictionary> dictionary =
-      std::make_unique<DummyAsyncDictionary>(kTestDictionaryData);
+  scoped_refptr<DummyAsyncDictionary> dictionary =
+      base::MakeRefCounted<DummyAsyncDictionary>(kTestDictionaryData);
   DummyAsyncDictionary* dictionary_ptr = dictionary.get();
 
   MockHttpRequest request(kBrotliDictionaryTestTransaction);
   request.dictionary_getter = base::BindRepeating(
-      [](std::unique_ptr<DummyAsyncDictionary>* dictionary,
+      [](scoped_refptr<DummyAsyncDictionary>* dictionary,
          const std::optional<SharedDictionaryIsolationKey>& isolation_key,
-         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+         const GURL& request_url) -> scoped_refptr<SharedDictionary> {
         CHECK(*dictionary);
         return std::move(*dictionary);
       },
@@ -858,15 +863,15 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
 
 TEST_F(SharedDictionaryNetworkTransactionTest,
        AsyncDictionarySuccessAfterTransactionDestroy) {
-  std::unique_ptr<DummyAsyncDictionary> dictionary =
-      std::make_unique<DummyAsyncDictionary>(kTestDictionaryData);
+  scoped_refptr<DummyAsyncDictionary> dictionary =
+      base::MakeRefCounted<DummyAsyncDictionary>(kTestDictionaryData);
   DummyAsyncDictionary* dictionary_ptr = dictionary.get();
 
   MockHttpRequest request(kBrotliDictionaryTestTransaction);
   request.dictionary_getter = base::BindRepeating(
-      [](std::unique_ptr<DummyAsyncDictionary>* dictionary,
+      [](scoped_refptr<DummyAsyncDictionary>* dictionary,
          const std::optional<SharedDictionaryIsolationKey>& isolation_key,
-         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+         const GURL& request_url) -> scoped_refptr<SharedDictionary> {
         CHECK(*dictionary);
         return std::move(*dictionary);
       },
@@ -905,15 +910,15 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
 
 TEST_F(SharedDictionaryNetworkTransactionTest,
        AsyncDictionaryFailureBeforeStartReading) {
-  std::unique_ptr<DummyAsyncDictionary> dictionary =
-      std::make_unique<DummyAsyncDictionary>(kTestDictionaryData);
+  scoped_refptr<DummyAsyncDictionary> dictionary =
+      base::MakeRefCounted<DummyAsyncDictionary>(kTestDictionaryData);
   DummyAsyncDictionary* dictionary_ptr = dictionary.get();
 
   MockHttpRequest request(kBrotliDictionaryTestTransaction);
   request.dictionary_getter = base::BindRepeating(
-      [](std::unique_ptr<DummyAsyncDictionary>* dictionary,
+      [](scoped_refptr<DummyAsyncDictionary>* dictionary,
          const std::optional<SharedDictionaryIsolationKey>& isolation_key,
-         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+         const GURL& request_url) -> scoped_refptr<SharedDictionary> {
         CHECK(*dictionary);
         return std::move(*dictionary);
       },
@@ -944,15 +949,15 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
 
 TEST_F(SharedDictionaryNetworkTransactionTest,
        AsyncDictionaryFailureAfterStartReading) {
-  std::unique_ptr<DummyAsyncDictionary> dictionary =
-      std::make_unique<DummyAsyncDictionary>(kTestDictionaryData);
+  scoped_refptr<DummyAsyncDictionary> dictionary =
+      base::MakeRefCounted<DummyAsyncDictionary>(kTestDictionaryData);
   DummyAsyncDictionary* dictionary_ptr = dictionary.get();
 
   MockHttpRequest request(kBrotliDictionaryTestTransaction);
   request.dictionary_getter = base::BindRepeating(
-      [](std::unique_ptr<DummyAsyncDictionary>* dictionary,
+      [](scoped_refptr<DummyAsyncDictionary>* dictionary,
          const std::optional<SharedDictionaryIsolationKey>& isolation_key,
-         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+         const GURL& request_url) -> scoped_refptr<SharedDictionary> {
         CHECK(*dictionary);
         return std::move(*dictionary);
       },
@@ -992,7 +997,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, Restart) {
   MockHttpRequest request(mock_transaction);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
-         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+         const GURL& request_url) -> scoped_refptr<SharedDictionary> {
         return nullptr;
       });
   SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
@@ -1048,7 +1053,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, GetLoadState) {
   MockHttpRequest request(scoped_mock_transaction);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
-         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
+         const GURL& request_url) -> scoped_refptr<SharedDictionary> {
         return nullptr;
       });
   SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
@@ -1082,8 +1087,8 @@ TEST_F(SharedDictionaryNetworkTransactionTest, SharedZstd) {
   MockHttpRequest request(new_mock_transaction);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
-         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
-        return std::make_unique<DummySyncDictionary>(kTestDictionaryData);
+         const GURL& request_url) -> scoped_refptr<SharedDictionary> {
+        return base::MakeRefCounted<DummySyncDictionary>(kTestDictionaryData);
       });
   SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
                                                  /*enable_shared_zstd=*/true);
@@ -1122,8 +1127,8 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoZstdDContentEncoding) {
   MockHttpRequest request(scoped_mock_transaction);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
-         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
-        return std::make_unique<DummySyncDictionary>(kTestDictionaryData);
+         const GURL& request_url) -> scoped_refptr<SharedDictionary> {
+        return base::MakeRefCounted<DummySyncDictionary>(kTestDictionaryData);
       });
   SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
                                                  /*enable_shared_zstd=*/true);
@@ -1330,8 +1335,8 @@ TEST_P(SharedDictionaryNetworkTransactionProtocolCheckTest, Basic) {
   MockHttpRequest request(new_mock_transaction);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
-         const GURL& request_url) -> std::unique_ptr<SharedDictionary> {
-        return std::make_unique<DummySyncDictionary>(kTestDictionaryData);
+         const GURL& request_url) -> scoped_refptr<SharedDictionary> {
+        return base::MakeRefCounted<DummySyncDictionary>(kTestDictionaryData);
       });
   SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
                                                  /*enable_shared_zstd=*/false);

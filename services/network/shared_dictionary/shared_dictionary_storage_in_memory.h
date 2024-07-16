@@ -12,10 +12,12 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "net/base/hash_value.h"
 #include "net/shared_dictionary/shared_dictionary_isolation_key.h"
+#include "services/network/shared_dictionary/shared_dictionary_in_memory.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer_in_memory.h"
 #include "url/gurl.h"
@@ -30,6 +32,7 @@ namespace cors {
 class CorsURLLoaderSharedDictionaryTest;
 }  // namespace cors
 
+class SharedDictionaryInMemory;
 class SharedDictionaryManagerInMemory;
 class SimpleUrlPatternMatcher;
 
@@ -69,11 +72,10 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
     const std::set<mojom::RequestDestination>& match_dest() const {
       return match_dest_;
     }
-    const std::string& id() const { return id_; }
+    const std::string& id() const { return dictionary_->id(); }
     const base::Time& last_used_time() const { return last_used_time_; }
-    const scoped_refptr<net::IOBuffer>& data() const { return data_; }
-    size_t size() const { return size_; }
-    const net::SHA256HashValue& hash() const { return hash_; }
+    size_t size() const { return dictionary_->size(); }
+    const net::SHA256HashValue& hash() const { return dictionary_->hash(); }
     const SimpleUrlPatternMatcher* matcher() const { return matcher_.get(); }
 
     void set_last_fetch_time(base::Time last_fetch_time) {
@@ -83,6 +85,10 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
       last_used_time_ = last_used_time;
     }
 
+    scoped_refptr<SharedDictionaryInMemory> dictionary() const {
+      return dictionary_;
+    }
+
    private:
     GURL url_;
     base::Time last_fetch_time_;
@@ -90,12 +96,10 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
     base::TimeDelta expiration_;
     std::string match_;
     std::set<mojom::RequestDestination> match_dest_;
-    std::string id_;
     base::Time last_used_time_;
-    scoped_refptr<net::IOBuffer> data_;
-    size_t size_;
-    net::SHA256HashValue hash_;
     std::unique_ptr<SimpleUrlPatternMatcher> matcher_;
+
+    scoped_refptr<SharedDictionaryInMemory> dictionary_;
   };
 
   SharedDictionaryStorageInMemory(
@@ -109,13 +113,13 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
       const SharedDictionaryStorageInMemory&) = delete;
 
   // SharedDictionaryStorage
-  std::unique_ptr<net::SharedDictionary> GetDictionarySync(
+  scoped_refptr<net::SharedDictionary> GetDictionarySync(
       const GURL& url,
       mojom::RequestDestination destination) override;
   void GetDictionary(
       const GURL& url,
       mojom::RequestDestination destination,
-      base::OnceCallback<void(std::unique_ptr<net::SharedDictionary>)> callback)
+      base::OnceCallback<void(scoped_refptr<net::SharedDictionary>)> callback)
       override;
   base::expected<scoped_refptr<SharedDictionaryWriter>,
                  mojom::SharedDictionaryError>

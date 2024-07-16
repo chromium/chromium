@@ -64,7 +64,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
 
   // Returns a matching SharedDictionary for `url`. If the metadata has not been
   // read from the database, this method returns nullptr.
-  virtual std::unique_ptr<net::SharedDictionary> GetDictionarySync(
+  virtual scoped_refptr<net::SharedDictionary> GetDictionarySync(
       const GURL& url,
       mojom::RequestDestination destination) = 0;
 
@@ -75,7 +75,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
   virtual void GetDictionary(
       const GURL& url,
       mojom::RequestDestination destination,
-      base::OnceCallback<void(std::unique_ptr<net::SharedDictionary>)>
+      base::OnceCallback<void(scoped_refptr<net::SharedDictionary>)>
           callback) = 0;
 
  protected:

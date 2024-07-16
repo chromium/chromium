@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/shared_dictionary/shared_dictionary_isolation_key.h"
 
 class GURL;
@@ -18,7 +19,7 @@ namespace net {
 class SharedDictionary;
 
 using SharedDictionaryGetter =
-    base::RepeatingCallback<std::unique_ptr<SharedDictionary>(
+    base::RepeatingCallback<scoped_refptr<SharedDictionary>(
         const std::optional<SharedDictionaryIsolationKey>& isolation_key,
         const GURL& request_url)>;
 

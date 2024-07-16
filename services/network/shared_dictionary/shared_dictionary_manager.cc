@@ -5,6 +5,7 @@
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
 
 #include "base/location.h"
+#include "base/memory/ref_counted.h"
 #include "base/trace_event/typed_macros.h"
 #include "net/base/load_flags.h"
 #include "net/shared_dictionary/shared_dictionary.h"
@@ -114,7 +115,7 @@ SharedDictionaryManager::MaybeCreateSharedDictionaryGetter(
       [](base::WeakPtr<SharedDictionaryManager> manager,
          mojom::RequestDestination request_destination,
          const std::optional<net::SharedDictionaryIsolationKey>& isolation_key,
-         const GURL& request_url) -> std::unique_ptr<net::SharedDictionary> {
+         const GURL& request_url) -> scoped_refptr<net::SharedDictionary> {
         return (isolation_key && manager)
                    ? manager->GetStorage(*isolation_key)
                          ->GetDictionarySync(request_url, request_destination)

@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -142,7 +143,7 @@ class NET_EXPORT SharedDictionaryNetworkTransaction : public HttpTransaction {
 
   const bool enable_shared_zstd_;
 
-  std::unique_ptr<SharedDictionary> shared_dictionary_;
+  scoped_refptr<SharedDictionary> shared_dictionary_;
   // The Structured Field sf-binary hash of sha256 of dictionary calculated when
   // sending a HTTP request.
   std::string dictionary_hash_base64_;
@@ -169,7 +170,7 @@ class NET_EXPORT SharedDictionaryNetworkTransaction : public HttpTransaction {
   bool cert_is_issued_by_known_root_ = false;
   NextProto negotiated_protocol_ = kProtoUnknown;
 
-  base::RepeatingCallback<std::unique_ptr<SharedDictionary>()>
+  base::RepeatingCallback<scoped_refptr<SharedDictionary>()>
       shared_dictionary_getter_;
 
   base::WeakPtrFactory<SharedDictionaryNetworkTransaction> weak_factory_{this};
