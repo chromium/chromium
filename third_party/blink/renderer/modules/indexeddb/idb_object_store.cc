@@ -33,6 +33,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
@@ -1185,7 +1186,9 @@ void IDBObjectStore::RenameIndex(int64_t index_id, const String& new_name) {
   db().RenameIndex(transaction_->Id(), Id(), index_id, new_name);
 
   auto metadata_iterator = metadata_->indexes.find(index_id);
-  DCHECK_NE(metadata_iterator, metadata_->indexes.end()) << "Invalid index_id";
+  CHECK_NE(metadata_iterator, metadata_->indexes.end(),
+           base::NotFatalUntil::M130)
+      << "Invalid index_id";
   const String& old_name = metadata_iterator->value->name;
 
   DCHECK(index_map_.Contains(old_name))

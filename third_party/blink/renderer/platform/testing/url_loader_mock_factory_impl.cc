@@ -74,7 +74,7 @@ void URLLoaderMockFactoryImpl::RegisterErrorURL(const WebURL& url,
 
 void URLLoaderMockFactoryImpl::UnregisterURL(const blink::WebURL& url) {
   URLToResponseMap::iterator iter = url_to_response_info_.find(url);
-  DCHECK(iter != url_to_response_info_.end());
+  CHECK(iter != url_to_response_info_.end());
   url_to_response_info_.erase(iter);
 
   URLToErrorMap::iterator error_iter = url_to_error_info_.find(url);
@@ -105,7 +105,7 @@ void URLLoaderMockFactoryImpl::UnregisterURLProtocol(
     const WebString& protocol) {
   ProtocolToResponseMap::iterator iter =
       protocol_to_response_info_.find(protocol);
-  DCHECK(iter != protocol_to_response_info_.end());
+  CHECK(iter != protocol_to_response_info_.end());
   protocol_to_response_info_.erase(iter);
 }
 

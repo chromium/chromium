@@ -11,6 +11,7 @@
 
 #include <bit>
 
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 #include "third_party/blink/renderer/core/animation/css_interpolation_environment.h"
@@ -969,7 +970,7 @@ void StyleCascade::LookupAndApplyInterpolation(const CSSProperty& property,
   const ActiveInterpolationsMap& map = *interpolations_.GetEntries()[index].map;
   PropertyHandle handle = ToPropertyHandle(property, *priority);
   const auto& entry = map.find(handle);
-  DCHECK_NE(entry, map.end());
+  CHECK_NE(entry, map.end(), base::NotFatalUntil::M130);
   ApplyInterpolation(property, *priority, *entry->value, resolver);
 }
 
