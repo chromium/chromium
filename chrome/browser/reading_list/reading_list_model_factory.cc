@@ -69,7 +69,6 @@ ReadingListModel* ReadingListModelFactory::GetForBrowserContext(
       GetInstance()->GetServiceForBrowserContext(context, true));
 }
 
-#if BUILDFLAG(IS_ANDROID)
 // static
 reading_list::DualReadingListModel*
 ReadingListModelFactory::GetAsDualReadingListForBrowserContext(
@@ -77,7 +76,6 @@ ReadingListModelFactory::GetAsDualReadingListForBrowserContext(
   return static_cast<reading_list::DualReadingListModel*>(
       GetInstance()->GetServiceForBrowserContext(context, true));
 }
-#endif
 
 // static
 ReadingListModelFactory* ReadingListModelFactory::GetInstance() {

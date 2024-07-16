@@ -26,10 +26,8 @@ class ReadingListModelFactory : public ProfileKeyedServiceFactory {
   static ReadingListModel* GetForBrowserContext(
       content::BrowserContext* context);
 
-#if BUILDFLAG(IS_ANDROID)
   static reading_list::DualReadingListModel*
   GetAsDualReadingListForBrowserContext(content::BrowserContext* context);
-#endif
 
   static ReadingListModelFactory* GetInstance();
 
