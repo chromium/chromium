@@ -14,10 +14,35 @@ import {hasStringProperty} from '../../utils.js';
 
 import {FakeAppParentalControlsHandler} from './fake_app_parental_controls_handler.js';
 
-suite('AppSetupPinKeyboardElementTest', () => {
+suite('AppSetupPinDialogElementTest', () => {
   let setupPinDialog: AppSetupPinDialogElement;
   let fakeMetricsPrivate: FakeMetricsPrivate;
   let handler: FakeAppParentalControlsHandler;
+
+  function getSetupPinKeyboard(): AppSetupPinKeyboardElement {
+    const setupPinKeyboard =
+        setupPinDialog.shadowRoot!.querySelector<AppSetupPinKeyboardElement>(
+          '#setupPinKeyboard');
+    assertTrue(!!setupPinKeyboard);
+    return setupPinKeyboard;
+  }
+
+  function getActionButton(): HTMLButtonElement {
+    const actionButton =
+        setupPinDialog.shadowRoot!.querySelector<HTMLButtonElement>(
+            '.action-button');
+    assertTrue(!!actionButton);
+    return actionButton;
+  }
+
+  async function enterPin(pin: string): Promise<void> {
+    const pinKeyboard =
+        getSetupPinKeyboard().shadowRoot!.getElementById('pinKeyboard');
+    assertTrue(!!pinKeyboard);
+    assertTrue(hasStringProperty(pinKeyboard, 'value'));
+    pinKeyboard.value = pin;
+    await flushTasks();
+  }
 
   setup(() => {
     handler = new FakeAppParentalControlsHandler();
@@ -34,126 +59,90 @@ suite('AppSetupPinKeyboardElementTest', () => {
   });
 
   test('Writing a pin that is too long shows an error message', async () => {
-    const setupPinKeyboard =
-        setupPinDialog.shadowRoot!.getElementById('setupPinKeyboard');
-    assertTrue(!!setupPinKeyboard);
-
-    const pinKeyboard =
-        setupPinKeyboard.shadowRoot!.getElementById('pinKeyboard');
-
-    assertTrue(!!pinKeyboard);
-    assertTrue(hasStringProperty(pinKeyboard, 'value'));
-
-    const pin = '1234567';
-    pinKeyboard.value = pin;
-    await flushTasks();
+    assertTrue(getActionButton().disabled);
+    await enterPin('1234567');
 
     // Verify that error message is showing
     const problemDiv =
-        setupPinKeyboard.shadowRoot!.getElementById('problemDiv');
+        getSetupPinKeyboard().shadowRoot!.getElementById('problemDiv');
     assertTrue(!!problemDiv);
     assertTrue(!!problemDiv.textContent);
-    const errorMessage = problemDiv.textContent.trim();
-
-    assertEquals(errorMessage, 'PIN must be 6 digits');
     assertFalse(problemDiv.hasAttribute('invisible'));
+    const errorMessage = problemDiv.textContent.trim();
+    assertEquals(errorMessage, 'PIN must be 6 digits');
+    assertTrue(getActionButton().disabled);
   });
 
   test('Writing a pin that is too short shows an error message', async () => {
-    const setupPinKeyboard =
-        setupPinDialog.shadowRoot!.getElementById('setupPinKeyboard');
-    assertTrue(!!setupPinKeyboard);
-
-    const pinKeyboard =
-        setupPinKeyboard.shadowRoot!.getElementById('pinKeyboard');
-    assertTrue(!!pinKeyboard);
-    assertTrue(hasStringProperty(pinKeyboard, 'value'));
-
-    const pin = '12345';
-    pinKeyboard.value = pin;
-    await flushTasks();
+    assertTrue(getActionButton().disabled);
+    await enterPin('12345');
 
     // Verify that error message is showing
     const problemDiv =
-        setupPinKeyboard.shadowRoot!.getElementById('problemDiv');
+        getSetupPinKeyboard().shadowRoot!.getElementById('problemDiv');
     assertTrue(!!problemDiv);
     assertTrue(!!problemDiv.textContent);
-    const errorMessage = problemDiv.textContent.trim();
-
-    assertEquals(errorMessage, 'PIN must be 6 digits');
     assertFalse(problemDiv.hasAttribute('invisible'));
+    const errorMessage = problemDiv.textContent.trim();
+    assertEquals(errorMessage, 'PIN must be 6 digits');
+    assertTrue(getActionButton().disabled);
   });
 
   test(
       'Writing a pin that contains non-digits shows an error message',
       async () => {
-        const setupPinKeyboard =
-            setupPinDialog.shadowRoot!.getElementById('setupPinKeyboard');
-        assertTrue(!!setupPinKeyboard);
-
-        const pinKeyboard =
-            setupPinKeyboard.shadowRoot!.getElementById('pinKeyboard');
-        assertTrue(!!pinKeyboard);
-        assertTrue(hasStringProperty(pinKeyboard, 'value'));
-
-        const pin = '1a3456';
-        pinKeyboard.value = pin;
-        await flushTasks();
+        assertTrue(getActionButton().disabled);
+        await enterPin('1a3456');
 
         // Verify that error message is showing
         const problemDiv =
-            setupPinKeyboard.shadowRoot!.getElementById('problemDiv');
+          getSetupPinKeyboard().shadowRoot!.getElementById('problemDiv');
         assertTrue(!!problemDiv);
         assertTrue(!!problemDiv.textContent);
-        const errorMessage = problemDiv.textContent.trim();
-
-        assertEquals(errorMessage, 'PIN must use numbers only');
         assertFalse(problemDiv.hasAttribute('invisible'));
+        const errorMessage = problemDiv.textContent.trim();
+        assertEquals(errorMessage, 'PIN must use numbers only');
+        assertTrue(getActionButton().disabled);
       });
 
   test(
       'Writing a pin that meets the requirements shows no error message',
       async () => {
-        const setupPinKeyboard =
-            setupPinDialog.shadowRoot!.getElementById('setupPinKeyboard');
-        assertTrue(!!setupPinKeyboard);
-
-        const pinKeyboard =
-            setupPinKeyboard.shadowRoot!.getElementById('pinKeyboard');
-        assertTrue(!!pinKeyboard);
-        assertTrue(hasStringProperty(pinKeyboard, 'value'));
-
-        const pin = '123456';
-        pinKeyboard.value = pin;
-        await flushTasks();
+        assertTrue(getActionButton().disabled);
+        await enterPin('123456');
 
         // Verify that error message is not showing
         const problemDiv =
-            setupPinKeyboard.shadowRoot!.getElementById('problemDiv');
+        getSetupPinKeyboard().shadowRoot!.getElementById('problemDiv');
         assertTrue(!!problemDiv);
         assertTrue(!!problemDiv.textContent);
-        const errorMessage = problemDiv.textContent.trim();
-
         assertTrue(problemDiv.hasAttribute('invisible'));
+        const errorMessage = problemDiv.textContent.trim();
         assertEquals(errorMessage, '');
+        assertFalse(getActionButton().disabled);
+      });
+
+  test(
+      'Submitting a valid pin and clicking continue shows confirm step',
+      async () => {
+        const continueButton = getActionButton();
+        assertTrue(continueButton.disabled);
+        await enterPin('123456');
+
+        assertFalse(continueButton.disabled);
+        assertEquals(continueButton.textContent, 'Continue');
+        continueButton.click();
+        await flushTasks();
+
+        const confirmButton = getActionButton();
+        assertEquals(confirmButton.textContent, 'Confirm');
+        assertFalse(continueButton.disabled);
       });
 
   test('Submitting an invalid PIN records error to histogram', async () => {
-    const setupPinKeyboard =
-        setupPinDialog.shadowRoot!.querySelector<AppSetupPinKeyboardElement>(
-            '#setupPinKeyboard');
-    assertTrue(!!setupPinKeyboard);
+    await enterPin('1234');
 
-    const pinKeyboard =
-        setupPinKeyboard.shadowRoot!.getElementById('pinKeyboard');
-    assertTrue(!!pinKeyboard);
-    assertTrue(hasStringProperty(pinKeyboard, 'value'));
-
-    const pin = '1234';
-    pinKeyboard.value = pin;
-    await flushTasks();
-
-    setupPinKeyboard.doSubmit();
+    getSetupPinKeyboard().doSubmit();
     await flushTasks();
 
     assertEquals(
