@@ -43,8 +43,10 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionNoticeController.NoticeControllerEvent;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -112,6 +114,19 @@ public final class TrackingProtectionNoticeTest {
         sActivityTestRule.startMainActivityWithURL(UrlConstants.GOOGLE_URL);
 
         renderViewWithId(R.id.message_banner, "tracking_protection_onboarding_notice");
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.TRACKING_PROTECTION_FULL_ONBOARDING_MOBILE_TRIGGER)
+    @Feature({"RenderTest"})
+    public void testRenderFullTrackingProtectionOnboardingNotice() {
+        mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.FULL3PCD_ONBOARDING);
+
+        setConnectionSecurityLevel(ConnectionSecurityLevel.SECURE);
+        sActivityTestRule.startMainActivityWithURL(UrlConstants.GOOGLE_URL);
+
+        renderViewWithId(R.id.message_banner, "full_tracking_protection_onboarding_notice");
     }
 
     @Test

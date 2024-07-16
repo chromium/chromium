@@ -36,7 +36,6 @@ public class TrackingProtectionOnboardingController {
     private final ActivityTabProvider mActivityTabProvider;
 
     private ActivityTabTabObserver mActivityTabTabObserver;
-    private TrackingProtectionModeBOnboardingView mTrackingProtectionModeBOnboardingView;
     private TrackingProtectionOnboardingView mTrackingProtectionOnboardingView;
 
     /**
@@ -98,18 +97,42 @@ public class TrackingProtectionOnboardingController {
      * @param tab The tab on which the notice might be shown.
      */
     public void maybeOnboard(Tab tab) {
-        if (tab == null || tab.isIncognitoBranded()) return;
+        try {
+            if (tab == null || tab.isIncognitoBranded()) return;
+            if (!isSecure(tab)) return;
+            if (!shouldShowNotice(mTrackingProtectionBridge)) return;
 
-        if (!isSecure(tab)) {
-            return;
-        }
+            int noticeType = getNoticeType();
 
-        TrackingProtectionOnboardingType onboardingType = getTrackingProtectionOnboardingType();
-        if (onboardingType == TrackingProtectionOnboardingType.MODE_B) {
-            maybeOnboardModeB(tab);
-        } else if (onboardingType == TrackingProtectionOnboardingType.TP_FULL_LAUNCH) {
-            maybeOnboardFullLaunch();
+            TrackingProtectionOnboardingView trackingProtectionOnboardingView =
+                    getTrackingProtectionOnboardingView();
+
+            if (trackingProtectionOnboardingView.wasNoticeRequested()) {
+                logNoticeControllerEvent(NoticeControllerEvent.NOTICE_ALREADY_SHOWING);
+                return;
+            }
+
+            if (isSilentOnboarding(noticeType)) {
+                mTrackingProtectionBridge.noticeShown(SurfaceType.BR_APP, noticeType);
+                return;
+            }
+
+            trackingProtectionOnboardingView.showNotice(
+                    getOnNoticeShownCallback(),
+                    getOnNoticeDismissedCallback(),
+                    getInNoticePrimaryActionSupplier(),
+                    noticeType);
+
+        } finally {
+            // Controller's main job is done; view handles the rest
+            destroy();
         }
+    }
+
+    boolean isSilentOnboarding(int noticeType) {
+        return noticeType == NoticeType.MODE_B_SILENT_ONBOARDING
+                || noticeType == NoticeType.FULL3PCD_SILENT_ONBOARDING
+                || noticeType == NoticeType.FULL3PCD_SILENT_ONBOARDING_WITH_IPP;
     }
 
     private boolean isSecure(Tab tab) {
@@ -120,77 +143,6 @@ public class TrackingProtectionOnboardingController {
             return false;
         }
         return true;
-    }
-
-    private TrackingProtectionOnboardingType getTrackingProtectionOnboardingType() {
-        @NoticeType
-        int requiredNotice = mTrackingProtectionBridge.getRequiredNotice(SurfaceType.BR_APP);
-
-        switch (requiredNotice) {
-            case NoticeType.MODE_B_ONBOARDING, NoticeType.MODE_B_SILENT_ONBOARDING -> {
-                return TrackingProtectionOnboardingType.MODE_B;
-            }
-            case NoticeType.FULL3PCD_ONBOARDING,
-                    NoticeType.FULL3PCD_ONBOARDING_WITH_IPP,
-                    NoticeType.FULL3PCD_SILENT_ONBOARDING,
-                    NoticeType.FULL3PCD_SILENT_ONBOARDING_WITH_IPP -> {
-                return TrackingProtectionOnboardingType.TP_FULL_LAUNCH;
-            }
-            default -> {
-                return TrackingProtectionOnboardingType.UNKNOWN;
-            }
-        }
-    }
-
-    // TODO(b/341968245): Add proper logic once b/341975190 is finished.
-    private void maybeOnboardFullLaunch() {
-        try {
-            if (!shouldShowNotice(mTrackingProtectionBridge)) return;
-            TrackingProtectionOnboardingView onboardingView = getTrackingProtectionOnboardingView();
-            onboardingView.showNotice(
-                    (b) -> {}, (i) -> {}, () -> PrimaryActionClickBehavior.DISMISS_IMMEDIATELY);
-        } finally {
-            destroy();
-        }
-    }
-
-    private void maybeOnboardModeB(Tab tab) {
-        try {
-            if (!shouldShowNotice(mTrackingProtectionBridge)) return;
-            TrackingProtectionModeBOnboardingView trackingProtectionModeBOnboardingView =
-                    getTrackingProtectionModeBOnboardingView();
-
-            if (trackingProtectionModeBOnboardingView.wasNoticeRequested()) {
-                logNoticeControllerEvent(NoticeControllerEvent.NOTICE_ALREADY_SHOWING);
-                return;
-            }
-
-            if (getNoticeType() == NoticeType.MODE_B_SILENT_ONBOARDING) {
-                mTrackingProtectionBridge.noticeShown(SurfaceType.BR_APP, getNoticeType());
-                return;
-            }
-
-            trackingProtectionModeBOnboardingView.showNotice(
-                    getOnNoticeShownCallback(),
-                    getOnNoticeDismissedCallback(),
-                    getInNoticePrimaryActionSupplier());
-
-        } finally {
-            // Controller's main job is done; view handles the rest
-            destroy();
-        }
-    }
-
-    TrackingProtectionModeBOnboardingView getTrackingProtectionModeBOnboardingView() {
-        if (mTrackingProtectionModeBOnboardingView == null) {
-            mTrackingProtectionModeBOnboardingView =
-                    new TrackingProtectionModeBOnboardingView(
-                            mContext,
-                            mMessageDispatcher,
-                            mSettingsLauncher,
-                            mTrackingProtectionBridge);
-        }
-        return mTrackingProtectionModeBOnboardingView;
     }
 
     void setTrackingProtectionOnboardingView(
@@ -205,11 +157,6 @@ public class TrackingProtectionOnboardingController {
                             mContext, mMessageDispatcher, mSettingsLauncher);
         }
         return mTrackingProtectionOnboardingView;
-    }
-
-    void setTrackingProtectionModeBOnboardingView(
-            TrackingProtectionModeBOnboardingView trackingProtectionModeBOnboardingView) {
-        mTrackingProtectionModeBOnboardingView = trackingProtectionModeBOnboardingView;
     }
 
     private void logForSecurityLevel(int securityLevel) {

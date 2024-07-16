@@ -957,7 +957,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/privacy/settings/PrivacySettings.java",
   "java/src/org/chromium/chrome/browser/privacy_sandbox/CctHandler.java",
   "java/src/org/chromium/chrome/browser/privacy_sandbox/ChromeTrackingProtectionDelegate.java",
-  "java/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionModeBOnboardingView.java",
   "java/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionNoticeController.java",
   "java/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionOnboardingController.java",
   "java/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionOnboardingType.java",

@@ -68,21 +68,16 @@ class TrackingProtectionOnboardingView {
     public void showNotice(
             Callback<Boolean> noticeShownCallback,
             Callback<Integer> noticeDismissedCallback,
-            Supplier<Integer> noticePrimaryActioSupplier) {
+            Supplier<Integer> noticePrimaryActioSupplier,
+            @NoticeType int noticeType) {
         Resources resources = mContext.getResources();
         mMessage =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                         .with(
                                 MessageBannerProperties.MESSAGE_IDENTIFIER,
                                 MessageIdentifier.TRACKING_PROTECTION_NOTICE)
-                        .with(
-                                MessageBannerProperties.TITLE,
-                                resources.getString(
-                                        R.string.tracking_protection_full_onboarding_notice_title))
-                        .with(
-                                MessageBannerProperties.DESCRIPTION,
-                                resources.getString(
-                                        R.string.tracking_protection_full_onboarding_notice_body))
+                        .with(MessageBannerProperties.TITLE, getTitleString())
+                        .with(MessageBannerProperties.DESCRIPTION, getBodyStrings(noticeType))
                         .with(
                                 MessageBannerProperties.PRIMARY_BUTTON_TEXT,
                                 resources.getString(
@@ -109,6 +104,25 @@ class TrackingProtectionOnboardingView {
                                 noticeShownCallback::onResult)
                         .build();
         mMessageDispatcher.enqueueWindowScopedMessage(mMessage, /* highPriority= */ true);
+    }
+
+    private String getTitleString() {
+        Resources resources = mContext.getResources();
+        return resources.getString(R.string.tracking_protection_full_onboarding_notice_title);
+    }
+
+    private String getBodyStrings(int noticeType) {
+        Resources resources = mContext.getResources();
+        return switch (noticeType) {
+            case NoticeType.MODE_B_ONBOARDING -> resources.getString(
+                    R.string.tracking_protection_onboarding_notice_body);
+            case NoticeType.FULL3PCD_ONBOARDING -> resources.getString(
+                    R.string.tracking_protection_full_onboarding_notice_body);
+            case NoticeType.FULL3PCD_ONBOARDING_WITH_IPP -> resources.getString(
+                    R.string.tracking_protection_full_onboarding_ipp_notice_body);
+            default -> resources.getString(
+                    R.string.tracking_protection_full_onboarding_all_notice_body);
+        };
     }
 
     /**

@@ -52,7 +52,10 @@ public class TrackingProtectionOnboardingViewTest {
     @Test
     public void testShowNotice_Onboarding() {
         mView.showNotice(
-                mNoticeShownCallback, mNoticeDismissedCallback, mNoticePrimaryActionCallback);
+                mNoticeShownCallback,
+                mNoticeDismissedCallback,
+                mNoticePrimaryActionCallback,
+                NoticeType.FULL3PCD_SILENT_ONBOARDING);
         verify(mMessageDispatcher).enqueueWindowScopedMessage(any(), eq(true));
     }
 
@@ -60,7 +63,10 @@ public class TrackingProtectionOnboardingViewTest {
     public void testIsNoticeShowing_AfterShow() {
         assertFalse(mView.wasNoticeRequested());
         mView.showNotice(
-                mNoticeShownCallback, mNoticeDismissedCallback, mNoticePrimaryActionCallback);
+                mNoticeShownCallback,
+                mNoticeDismissedCallback,
+                mNoticePrimaryActionCallback,
+                NoticeType.FULL3PCD_SILENT_ONBOARDING);
         assertTrue(mView.wasNoticeRequested());
     }
 }

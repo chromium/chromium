@@ -447,10 +447,16 @@
 
         <!-- Tracking Protection Full Launch: Onboarding -->
       <message name="IDS_TRACKING_PROTECTION_FULL_ONBOARDING_NOTICE_TITLE" desc="Title of the tracking protection onboarding notice" formatter_data="android_java" translateable="false">
-        Browse with more privacy
+        Chrome keeps your data protected
       </message>
-      <message name="IDS_TRACKING_PROTECTION_FULL_ONBOARDING_NOTICE_BODY" desc="Content of the tracking protection notice, informing the user that they now have their third party cookies disabled by default" formatter_data="android_java" translateable="false">
-        Tracking Protection limits sites from using third-party cookies to track you as you browse.
+      <message name="IDS_TRACKING_PROTECTION_FULL_ONBOARDING_NOTICE_BODY" desc="Content of the tracking protection general notice, informing the user that they now have their third party cookies disabled by default" formatter_data="android_java" translateable="false">
+        Chrome now limits sites from using third-party cookies to track you. Manage your protection in Settings.
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_FULL_ONBOARDING_IPP_NOTICE_BODY" desc="Content of the tracking protection with IPP notice, informing the user that they now have their third party cookies disabled by default" formatter_data="android_java" translateable="false">
+        Chrome limits sites from using third-party cookies. You can also limit tracking by hiding your IP address in Settings.
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_FULL_ONBOARDING_ALL_NOTICE_BODY" desc="Content of the tracking protection notice and other protections (IPP, FPP), informing the user that they now have their third party cookies disabled by default" formatter_data="android_java" translateable="false">
+        Chrome limits sites from using third-party cookies. You can turn on other protections in Settings to limit tracking.
       </message>
       <message name="IDS_TRACKING_PROTECTION_FULL_ONBOARDING_NOTICE_SETTINGS_BUTTON_LABEL" desc="The user can choose to click “Settings“ to visit chrome://settings/cookies. If they do, they will find the cookie controls reflecting the new tracking protections." formatter_data="android_java" translateable="false">
         Settings

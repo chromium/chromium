@@ -103,6 +103,7 @@ android_library("javatests") {
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/TopicsFragmentTest.java",
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/TopicsManageFragmentTest.java",
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionNoticeTest.java",
+    "javatests/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionOnboardingNoticeTest.java",
   ]
   deps = [
     ":java",
