@@ -4,13 +4,14 @@
 
 package org.chromium.chrome.browser.desktop_windowing;
 
-import android.annotation.SuppressLint;
+import static android.view.WindowInsetsController.APPEARANCE_LIGHT_CAPTION_BARS;
+import static android.view.WindowInsetsController.APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND;
+
 import android.app.Activity;
 import android.graphics.Rect;
-import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.view.View;
-import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 
 import androidx.annotation.NonNull;
@@ -41,7 +42,7 @@ import org.chromium.ui.util.TokenHolder;
  * Class coordinating the business logic to draw into app header in desktop windowing mode, ranging
  * from listening the window insets updates, and pushing updates to the tab strip.
  */
-@RequiresApi(api = Build.VERSION_CODES.R)
+@RequiresApi(VERSION_CODES.VANILLA_ICE_CREAM)
 public class AppHeaderCoordinator
         implements DesktopWindowStateProvider,
                 TopResumedActivityChangedObserver,
@@ -51,9 +52,6 @@ public class AppHeaderCoordinator
             "is_app_in_unfocused_desktop_window";
 
     private static final String TAG = "AppHeader";
-    // TODO(crbug/328446763): Use values from Android V and remove SuppressWarnings.
-    private static final int APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND = 1 << 7;
-    @VisibleForTesting static final int APPEARANCE_LIGHT_CAPTION_BARS = 1 << 8;
 
     private static @Nullable InsetsRectProvider sInsetsRectProviderForTesting;
 
@@ -89,7 +87,6 @@ public class AppHeaderCoordinator
      * @param savedInstanceState The saved instance state {@link Bundle} holding UI state
      *     information for restoration on startup.
      */
-    @SuppressWarnings("WrongConstant")
     public AppHeaderCoordinator(
             Activity activity,
             View rootView,
@@ -117,7 +114,7 @@ public class AppHeaderCoordinator
                         ? sInsetsRectProviderForTesting
                         : new InsetsRectProvider(
                                 insetObserver,
-                                WindowInsets.Type.captionBar(),
+                                WindowInsetsCompat.Type.captionBar(),
                                 insetObserver.getLastRawWindowInsets());
         InsetsRectProvider.Observer insetsRectUpdateRunnable = this::onInsetsRectsUpdated;
         mInsetsRectProvider.addObserver(insetsRectUpdateRunnable);
@@ -280,7 +277,6 @@ public class AppHeaderCoordinator
         return newResult;
     }
 
-    @SuppressLint("WrongConstant")
     private void updateCaptionBarBackground(boolean isTransparent) {
         int captionBarAppearance =
                 isTransparent ? APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND : 0;
@@ -295,8 +291,6 @@ public class AppHeaderCoordinator
         }
     }
 
-    // TODO(crbug/328446763): Confirm the icon color update at startup during theme changes.
-    @SuppressLint("WrongConstant")
     private void updateIconColorForCaptionBars(int color) {
         boolean useLightIcon = ColorUtils.shouldUseLightForegroundOnBackground(color);
         // APPEARANCE_LIGHT_CAPTION_BARS needs to be set when caption bar is with light background.

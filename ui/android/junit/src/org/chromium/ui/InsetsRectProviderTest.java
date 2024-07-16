@@ -12,10 +12,9 @@ import static org.mockito.Mockito.doReturn;
 import android.graphics.Rect;
 import android.util.Size;
 import android.view.View;
+import android.view.WindowInsets;
 
-import androidx.annotation.NonNull;
 import androidx.core.graphics.Insets;
-import androidx.core.os.BuildCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsCompat.Type.InsetsType;
 
@@ -32,9 +31,6 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.ui.InsetsRectProvider.BoundingRectHelper;
-import org.chromium.ui.InsetsRectProviderTest.ShadowBoundingRectHelper;
-import org.chromium.ui.InsetsRectProviderTest.ShadowBuildCompat;
 import org.chromium.ui.InsetsRectProviderTest.ShadowWindowInsetsUtils;
 import org.chromium.ui.util.WindowInsetsUtils;
 
@@ -46,13 +42,7 @@ import java.util.List;
  * certain window insets has an update.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        sdk = 30,
-        shadows = {
-            ShadowBuildCompat.class,
-            ShadowWindowInsetsUtils.class,
-            ShadowBoundingRectHelper.class
-        })
+@Config(sdk = 30, shadows = ShadowWindowInsetsUtils.class)
 public class InsetsRectProviderTest {
     private static final int WINDOW_WIDTH = 600;
     private static final int WINDOW_HEIGHT = 800;
@@ -69,7 +59,7 @@ public class InsetsRectProviderTest {
 
     @After
     public void tearDown() {
-        resetShadows();
+        ShadowWindowInsetsUtils.reset();
     }
 
     @Test
@@ -162,17 +152,18 @@ public class InsetsRectProviderTest {
         assertSuppliedValues(Insets.NONE, new Rect(), List.of());
     }
 
-    private static WindowInsetsCompat buildTestWindowInsets(
+    private WindowInsetsCompat buildTestWindowInsets(
             @InsetsType int type, Insets insets, Rect availableArea, List<Rect> blockingRects) {
-        resetShadows();
-        ShadowWindowInsetsUtils.sWidestUnoccludedRect = availableArea;
-        ShadowBoundingRectHelper.sTestRects = blockingRects;
-
         // WindowInsetsCompat.Builder does not work in robolectric (always yield an empty Inset).
-        WindowInsetsCompat windowInsets = Mockito.mock(WindowInsetsCompat.class);
-        doReturn(insets).when(windowInsets).getInsets(eq(type));
-        doReturn(Insets.NONE).when(windowInsets).getInsets(not(eq(type)));
-        return windowInsets;
+        WindowInsetsCompat windowInsetsCompat = Mockito.mock(WindowInsetsCompat.class);
+        doReturn(insets).when(windowInsetsCompat).getInsets(eq(type));
+        doReturn(Insets.NONE).when(windowInsetsCompat).getInsets(not(eq(type)));
+
+        ShadowWindowInsetsUtils.sWidestUnoccludedRect = availableArea;
+        ShadowWindowInsetsUtils.sFrame = new Size(WINDOW_WIDTH, WINDOW_HEIGHT);
+        ShadowWindowInsetsUtils.sTestRects = blockingRects != null ? blockingRects : List.of();
+
+        return windowInsetsCompat;
     }
 
     private void assertSuppliedValues(Insets insets, Rect availableArea, List<Rect> blockingRects) {
@@ -190,49 +181,33 @@ public class InsetsRectProviderTest {
                 mInsetsRectProvider.getCachedInset());
     }
 
-    private static void resetShadows() {
-        ShadowBoundingRectHelper.sTestRects = null;
-        ShadowWindowInsetsUtils.sWidestUnoccludedRect = null;
-    }
-
-    // Test only class for bounding rect helper.
-    @Implements(BoundingRectHelper.class)
-    public static class ShadowBoundingRectHelper {
-        static List<Rect> sTestRects;
-
-        @Implementation
-        protected static @NonNull List<Rect> getBoundingRects(
-                WindowInsetsCompat windowInsetsCompact,
-                @WindowInsetsCompat.Type.InsetsType int typeMask) {
-            return sTestRects != null ? sTestRects : List.of();
-        }
-
-        @Implementation
-        protected static Size getFrame(WindowInsetsCompat windowInsetsCompact) {
-            return new Size(WINDOW_WIDTH, WINDOW_HEIGHT);
-        }
-    }
-
-    /** Helper class to get the class tested on V. */
-    @Implements(BuildCompat.class)
-    public static class ShadowBuildCompat {
-        @Implementation
-        protected static boolean isAtLeastV() {
-            return true;
-        }
-    }
-
-    /**
-     * Helper class to get the result from {@link #getWidestUnoccludedRect} without trigger the
-     * actual calculation.
-     */
+    /** Helper class to get the results using test values. */
     @Implements(WindowInsetsUtils.class)
     public static class ShadowWindowInsetsUtils {
         static Rect sWidestUnoccludedRect;
+        static Size sFrame;
+        static List<Rect> sTestRects;
+
+        private static void reset() {
+            sWidestUnoccludedRect = null;
+            sFrame = null;
+            sTestRects = null;
+        }
 
         @Implementation
         protected static Rect getWidestUnoccludedRect(Rect regionRect, List<Rect> blockRects) {
             return sWidestUnoccludedRect != null ? sWidestUnoccludedRect : new Rect();
+        }
+
+        @Implementation
+        protected static Size getFrameFromInsets(WindowInsets windowInsets) {
+            return sFrame != null ? sFrame : new Size(0, 0);
+        }
+
+        @Implementation
+        protected static List<Rect> getBoundingRectsFromInsets(
+                WindowInsets windowInsets, @InsetsType int insetType) {
+            return sTestRects != null ? sTestRects : List.of();
         }
     }
 }

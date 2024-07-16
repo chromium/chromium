@@ -5,25 +5,22 @@
 package org.chromium.ui;
 
 import android.graphics.Rect;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.util.Size;
 import android.view.View;
 import android.view.WindowInsets;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.OptIn;
 import androidx.core.graphics.Insets;
-import androidx.core.os.BuildCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsCompat.Type.InsetsType;
 
-import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.build.BuildConfig;
 import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
 import org.chromium.ui.util.WindowInsetsUtils;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -41,10 +38,7 @@ import java.util.List;
  * <li>1. Android version is atLeastV.
  * <li>2. WindowInsets of given type has insets from one side exactly.
  */
-@OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
 public class InsetsRectProvider implements WindowInsetsConsumer {
-    private static final String TAG = "InsetsBoundingRects";
-
     /** Observer interface that's interested in bounding rect updates. */
     public interface Observer {
 
@@ -78,7 +72,7 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
         mInsetObserver = insetObserver;
 
         // TODO (crbug/325351108): Remove the test check once we support Android V testing.
-        assert BuildConfig.IS_FOR_TEST || BuildCompat.isAtLeastV();
+        assert BuildConfig.IS_FOR_TEST || VERSION.SDK_INT >= VERSION_CODES.VANILLA_ICE_CREAM;
         mInsetObserver.addInsetsConsumer(this);
         if (initialInsets != null) {
             updateWidestUnoccludedRect(initialInsets);
@@ -136,7 +130,10 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
     public WindowInsetsCompat onApplyWindowInsets(
             @NonNull View view, @NonNull WindowInsetsCompat windowInsetsCompat) {
         // Ignore the input by version check.
-        if (!BuildCompat.isAtLeastV()) return windowInsetsCompat;
+        // TODO (crbug/351389242): Remove the test check once we support Android V testing.
+        if (!BuildConfig.IS_FOR_TEST && VERSION.SDK_INT < VERSION_CODES.VANILLA_ICE_CREAM) {
+            return windowInsetsCompat;
+        }
 
         updateWidestUnoccludedRect(windowInsetsCompat);
         return new WindowInsetsCompat.Builder(windowInsetsCompat)
@@ -147,7 +144,8 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
     private void updateWidestUnoccludedRect(WindowInsetsCompat windowInsetsCompat) {
         // Do nothing if there's no update from the cached insets, or the root view size remains
         // unchanged.
-        Size windowSize = BoundingRectHelper.getFrame(windowInsetsCompat);
+        WindowInsets windowInsets = windowInsetsCompat.toWindowInsets();
+        Size windowSize = WindowInsetsUtils.getFrameFromInsets(windowInsets);
         Rect windowRect = new Rect(0, 0, windowSize.getWidth(), windowSize.getHeight());
         if (windowInsetsCompat.equals(mCachedInsets) && windowRect.equals(mWindowRect)) return;
 
@@ -157,7 +155,7 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
         Insets insets = windowInsetsCompat.getInsets(mInsetType);
         Rect insetRectInWindow = WindowInsetsUtils.toRectInWindow(mWindowRect, insets);
         if (!insetRectInWindow.isEmpty()) {
-            mBoundingRects = BoundingRectHelper.getBoundingRects(windowInsetsCompat, mInsetType);
+            mBoundingRects = WindowInsetsUtils.getBoundingRectsFromInsets(windowInsets, mInsetType);
             mWidestUnoccludedRect =
                     WindowInsetsUtils.getWidestUnoccludedRect(insetRectInWindow, mBoundingRects);
         } else {
@@ -168,41 +166,6 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
         // Notify observers about the update.
         for (Observer observer : mObservers) {
             observer.onBoundingRectsUpdated(mWidestUnoccludedRect);
-        }
-    }
-
-    // Helper class to get the bounding Rects from the WindowInsets.
-    static class BoundingRectHelper {
-
-        /** Read the list of bounding rects indicate the system drawings from the window insets. */
-        public static @NonNull List<Rect> getBoundingRects(
-                WindowInsetsCompat windowInsetsCompat,
-                @WindowInsetsCompat.Type.InsetsType int typeMask) {
-            WindowInsets windowInsets = windowInsetsCompat.toWindowInsets();
-            List<Rect> rects = List.of();
-            try {
-                Method method =
-                        windowInsets.getClass().getDeclaredMethod("getBoundingRects", int.class);
-                rects = (List<Rect>) method.invoke(windowInsets, typeMask);
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                Log.w(TAG, "#getBoundingRect failed");
-            }
-            return rects != null ? rects : List.of();
-        }
-
-        /**
-         * Returns the assumed size of the window, relative to which the {@link
-         * WindowInsetsCompat#getInsets} and {@link #getBoundingRects} have been calculated.
-         */
-        public static Size getFrame(WindowInsetsCompat windowInsetsCompat) {
-            WindowInsets windowInsets = windowInsetsCompat.toWindowInsets();
-            try {
-                Method method = windowInsets.getClass().getDeclaredMethod("getFrame");
-                return (Size) method.invoke(windowInsets);
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                Log.w(TAG, "#getFrame failed.");
-            }
-            return new Size(0, 0);
         }
     }
 }

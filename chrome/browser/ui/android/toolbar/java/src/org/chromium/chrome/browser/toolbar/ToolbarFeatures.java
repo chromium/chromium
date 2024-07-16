@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar;
 
-import androidx.annotation.OptIn;
-import androidx.core.os.BuildCompat;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -32,14 +32,13 @@ public final class ToolbarFeatures {
     }
 
     /** Returns if we are using optimized window layout for tab strip. */
-    @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
     public static boolean isTabStripWindowLayoutOptimizationEnabled(boolean isTablet) {
         if (sTabStripLayoutOptimizationEnabledForTesting != null) {
             return sTabStripLayoutOptimizationEnabledForTesting;
         }
         return ChromeFeatureList.sTabStripLayoutOptimization.isEnabled()
                 && isTablet
-                && BuildCompat.isAtLeastV();
+                && VERSION.SDK_INT >= VERSION_CODES.VANILLA_ICE_CREAM;
     }
 
     /** Set the return value for {@link #isTabStripWindowLayoutOptimizationEnabled(boolean)}. */

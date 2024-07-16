@@ -388,15 +388,13 @@ public class AppHeaderCoordinatorUnitTest {
         assertEquals(
                 "Background is dark. Expecting APPEARANCE_LIGHT_CAPTION_BARS not set.",
                 0,
-                insetController.getSystemBarsAppearance()
-                        & AppHeaderCoordinator.APPEARANCE_LIGHT_CAPTION_BARS);
+                insetController.getSystemBarsAppearance() & (1 << 8));
 
         mAppHeaderCoordinator.updateForegroundColor(Color.WHITE);
         assertEquals(
                 "Background is light. Expecting APPEARANCE_LIGHT_CAPTION_BARS set.",
-                AppHeaderCoordinator.APPEARANCE_LIGHT_CAPTION_BARS,
-                insetController.getSystemBarsAppearance()
-                        & AppHeaderCoordinator.APPEARANCE_LIGHT_CAPTION_BARS);
+                (1 << 8),
+                insetController.getSystemBarsAppearance() & (1 << 8));
     }
 
     private void initAppHeaderCoordinator() {

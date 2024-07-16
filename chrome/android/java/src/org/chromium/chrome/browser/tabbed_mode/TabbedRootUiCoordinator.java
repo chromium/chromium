@@ -484,7 +484,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mDragDropTouchObserver = null;
         }
 
-        if (mAppHeaderCoordinator != null && VERSION.SDK_INT >= VERSION_CODES.R) {
+        if (mAppHeaderCoordinator != null && VERSION.SDK_INT >= VERSION_CODES.VANILLA_ICE_CREAM) {
             mAppHeaderCoordinator.destroy();
             mAppHeaderCoordinator = null;
         }
@@ -1177,10 +1177,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mToolbarManager.getTabStripHeightSupplier().addObserver(mOnTabStripHeightChangedCallback);
     }
 
+    @SuppressWarnings("NewApi") // Android V check is done via helper method.
     private void initAppHeaderCoordinator(Bundle savedInstanceState) {
-        // AppHeaderCoordinator require API 30 to call the WindowInsets APIs.
-        if (VERSION.SDK_INT < VERSION_CODES.R) return;
-
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
         if (!ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(isTablet)) {
             return;

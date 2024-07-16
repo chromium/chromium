@@ -86,7 +86,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
 
     @After
     public void teardown() {
-        ChromeDragAndDropBrowserDelegate.ClipDataItemBuilder.setClipDataItemForTesting(null);
+        ChromeDragAndDropBrowserDelegate.setClipDataItemWithPendingIntentForTesting(null);
     }
 
     @Test
@@ -231,16 +231,10 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
         var flags = mDelegate.buildFlags(originalFlag, dropData);
         assertTrue(
                 "Drag flags should contain DRAG_FLAG_GLOBAL_SAME_APPLICATION.",
-                (flags
-                                & ChromeDragAndDropBrowserDelegate.ClipDataItemBuilder
-                                        .DRAG_FLAG_GLOBAL_SAME_APPLICATION)
-                        != 0);
+                (flags & (1 << 12)) != 0);
         assertTrue(
-                "Drag flags should contain DRAG_FLAG_START_PENDING_INTENT_ON_UNHANDLED_DRAG.",
-                (flags
-                                & ChromeDragAndDropBrowserDelegate.ClipDataItemBuilder
-                                        .DRAG_FLAG_START_PENDING_INTENT_ON_UNHANDLED_DRAG)
-                        != 0);
+                "Drag flags should contain DRAG_FLAG_START_INTENT_SENDER_ON_UNHANDLED_DRAG.",
+                (flags & (1 << 13)) != 0);
     }
 
     private ChromeDropDataAndroid createTabDropData(
@@ -264,7 +258,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
                                         tab,
                                         MultiWindowUtils.INVALID_INSTANCE_ID))
                         : null;
-        ChromeDragAndDropBrowserDelegate.ClipDataItemBuilder.setClipDataItemForTesting(item);
+        ChromeDragAndDropBrowserDelegate.setClipDataItemWithPendingIntentForTesting(item);
 
         var data = mDelegate.buildClipData(dropData);
         assertNotNull("The clip data should have an intent set.", data.getItemAt(0).getIntent());

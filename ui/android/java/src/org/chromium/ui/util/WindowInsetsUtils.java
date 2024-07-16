@@ -7,9 +7,12 @@ package org.chromium.ui.util;
 import android.graphics.Rect;
 import android.graphics.Region;
 import android.graphics.RegionIterator;
+import android.util.Size;
+import android.view.WindowInsets;
 
 import androidx.annotation.NonNull;
 import androidx.core.graphics.Insets;
+import androidx.core.view.WindowInsetsCompat.Type.InsetsType;
 
 import org.chromium.base.Callback;
 
@@ -17,7 +20,6 @@ import java.util.List;
 
 /** Helper functions for working with WindowInsets and Rects. */
 public final class WindowInsetsUtils {
-
     /** Private constructor to stop instantiation. */
     private WindowInsetsUtils() {}
 
@@ -111,6 +113,21 @@ public final class WindowInsetsUtils {
                     }
                 });
         return widestUnoccludedRect;
+    }
+
+    // TODO (crbug/351389242): Remove method and call directly when Android V testing is supported.
+    /** See {@link WindowInsets#getFrame()} for details. */
+    @SuppressWarnings("NewApi")
+    public static Size getFrameFromInsets(WindowInsets windowInsets) {
+        return windowInsets != null ? windowInsets.getFrame() : new Size(0, 0);
+    }
+
+    // TODO (crbug/351389242): Remove method and call directly when Android V testing is supported.
+    /** See {@link WindowInsets#getBoundingRects(int)} for details. */
+    @SuppressWarnings("NewApi")
+    public static List<Rect> getBoundingRectsFromInsets(
+            WindowInsets windowInsets, @InsetsType int insetType) {
+        return windowInsets != null ? windowInsets.getBoundingRects(insetType) : List.of();
     }
 
     private static void forEachRect(Region region, Callback<Rect> rectConsumer) {
