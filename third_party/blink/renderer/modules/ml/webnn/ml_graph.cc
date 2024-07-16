@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 
 namespace blink {
 
@@ -38,10 +39,10 @@ namespace {
     return;                                                       \
   });
 
-#define THROW_AND_RETURN_TYPE_IF_ERROR(func, return_value, msg)   \
+#define THROW_AND_RETURN_EMPTY_PROMISE_IF_ERROR(func, msg)        \
   RETURN_IF_ERROR(func, [&exception_state](const String& error) { \
     exception_state.ThrowTypeError(msg + error);                  \
-    return return_value;                                          \
+    return ScriptPromise<MLComputeResult>();                      \
   });
 
 base::expected<void, String> ValidateNamedArrayBufferViews(
@@ -167,6 +168,8 @@ MLGraph::MLGraph(ExecutionContext* execution_context,
   remote_graph_.Bind(
       std::move(pending_graph_remote),
       execution_context->GetTaskRunner(TaskType::kMachineLearning));
+  remote_graph_.set_disconnect_handler(
+      WTF::BindOnce(&MLGraph::OnConnectionError, WrapWeakPersistent(this)));
 }
 
 MLGraph::~MLGraph() = default;
@@ -174,6 +177,7 @@ MLGraph::~MLGraph() = default;
 void MLGraph::Trace(Visitor* visitor) const {
   visitor->Trace(ml_context_);
   visitor->Trace(remote_graph_);
+  visitor->Trace(pending_resolvers_);
   ScriptWrappable::Trace(visitor);
 }
 
@@ -192,16 +196,20 @@ ScriptPromise<MLComputeResult> MLGraph::Compute(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   // Validate the MLNamedArrayBufferViews.
-  THROW_AND_RETURN_TYPE_IF_ERROR(
+  THROW_AND_RETURN_EMPTY_PROMISE_IF_ERROR(
       ValidateNamedArrayBufferViews(inputs, input_constraints_),
-      ScriptPromise<MLComputeResult>(), "Invalid inputs: ");
-  THROW_AND_RETURN_TYPE_IF_ERROR(
+      "Invalid inputs: ");
+  THROW_AND_RETURN_EMPTY_PROMISE_IF_ERROR(
       ValidateNamedArrayBufferViews(outputs, output_constraints_),
-      ScriptPromise<MLComputeResult>(), "Invalid outputs: ");
+      "Invalid outputs: ");
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<MLComputeResult>>(
-      script_state, exception_state.GetContext());
-  auto promise = resolver->Promise();
+  // Remote graph gets automatically unbound when the execution context
+  // destructs.
+  if (!remote_graph_.is_bound()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid graph state");
+    return EmptyPromise();
+  }
 
   HashMap<String, mojo_base::BigBuffer> name_to_buffer_map;
   for (const auto& [name, array_buffer_view] : inputs) {
@@ -211,18 +219,20 @@ ScriptPromise<MLComputeResult> MLGraph::Compute(
 
   // TransferNamedArrayBufferViews deteches input and output array buffers, so
   // JavaScript can't modify them during Compute().
-  auto inputs_info = TransferNamedArrayBufferViews(
-      resolver->GetScriptState()->GetIsolate(), inputs, exception_state);
+  auto inputs_info = TransferNamedArrayBufferViews(script_state->GetIsolate(),
+                                                   inputs, exception_state);
   if (!inputs_info) {
-    resolver->Reject(exception_state);
-    return promise;
+    return EmptyPromise();
   }
-  auto outputs_info = TransferNamedArrayBufferViews(
-      resolver->GetScriptState()->GetIsolate(), outputs, exception_state);
+  auto outputs_info = TransferNamedArrayBufferViews(script_state->GetIsolate(),
+                                                    outputs, exception_state);
   if (!outputs_info) {
-    resolver->Reject(exception_state);
-    return promise;
+    return EmptyPromise();
   }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<MLComputeResult>>(
+      script_state, exception_state.GetContext());
+  pending_resolvers_.insert(resolver);
 
   remote_graph_->Compute(
       std::move(name_to_buffer_map),
@@ -230,7 +240,8 @@ ScriptPromise<MLComputeResult> MLGraph::Compute(
                     std::move(scoped_trace), WrapPersistent(resolver),
                     std::move(inputs_info), std::move(outputs_info)));
 
-  return promise;
+  return resolver->Promise();
+  ;
 }
 
 void MLGraph::Dispatch(ScopedMLTrace scoped_trace,
@@ -293,6 +304,8 @@ void MLGraph::DidCompute(
     std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>>
         outputs_info,
     webnn::mojom::blink::ComputeResultPtr mojo_result) {
+  pending_resolvers_.erase(resolver);
+
   if (mojo_result->is_error()) {
     const auto& compute_error = mojo_result->get_error();
     resolver->RejectWithDOMException(
@@ -334,6 +347,16 @@ void MLGraph::DidCompute(
   result->setInputs(*CreateNamedArrayBufferViews(std::move(inputs_info)));
   result->setOutputs(*outputs);
   resolver->Resolve(result);
+}
+
+void MLGraph::OnConnectionError() {
+  remote_graph_.reset();
+
+  for (const auto& resolver : pending_resolvers_) {
+    resolver->RejectWithDOMException(DOMExceptionCode::kUnknownError,
+                                     "Context is lost.");
+  }
+  pending_resolvers_.clear();
 }
 
 }  // namespace blink

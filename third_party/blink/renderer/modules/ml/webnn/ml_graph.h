@@ -122,9 +122,7 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
           outputs_info,
       webnn::mojom::blink::ComputeResultPtr mojo_result);
 
-  void DidCreateWebNNGraph(ScopedMLTrace scoped_trace,
-                           ScriptPromiseResolver<MLGraph>* resolver,
-                           webnn::mojom::blink::CreateGraphResultPtr result);
+  void OnConnectionError();
 
   // Describes the constraints on the inputs or outputs to this graph.
   // Note that `WTF::HashMap` values must be nullable, but
@@ -138,6 +136,11 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   // The `WebNNGraph` is a compiled graph that can be executed by the hardware
   // accelerated OS machine learning API.
   HeapMojoAssociatedRemote<webnn::mojom::blink::WebNNGraph> remote_graph_;
+
+  // Keep a set of unresolved `ScriptPromiseResolver`s which will be
+  // rejected when the Mojo pipe is unexpectedly disconnected.
+  HeapHashSet<Member<ScriptPromiseResolver<MLComputeResult>>>
+      pending_resolvers_;
 };
 
 }  // namespace blink
