@@ -779,6 +779,9 @@ class AttributionInteropParser {
       if (base::internal::IsValueInRangeForNumericType<uint32_t>(result_64)) {
         result = static_cast<uint32_t>(result_64);
         return true;
+      } else {
+        auto context = PushContext(key);
+        *Error() << "must be representable by an unsigned 32-bit integer";
       }
     }
     return false;

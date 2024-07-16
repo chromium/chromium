@@ -757,7 +757,7 @@ TEST(AttributionInteropParserTest, InvalidConfigMaxSettableEpsilon) {
   }
 }
 
-TEST(AttributionInteropParserTest, InvalidConfigMaxInfGain) {
+TEST(AttributionInteropParserTest, InvalidConfigMaxInfoGain) {
   {
     AttributionInteropConfig config;
     base::Value::Dict dict;
@@ -775,6 +775,27 @@ TEST(AttributionInteropParserTest, InvalidConfigMaxInfGain) {
         MergeAttributionInteropConfig(std::move(dict), config),
         ErrorIs(HasSubstr("[\"max_event_info_gain\"]: must be \"inf\" or a "
                           "non-negative double formated as a base-10 string")));
+  }
+}
+
+TEST(AttributionInteropParserTest, InvalidConfigMaxTriggerStateCardinality) {
+  {
+    AttributionInteropConfig config;
+    base::Value::Dict dict;
+    dict.Set("max_trigger_state_cardinality", "0");
+    EXPECT_THAT(MergeAttributionInteropConfig(std::move(dict), config),
+                ErrorIs(HasSubstr(
+                    "[\"max_trigger_state_cardinality\"]: must be a positive "
+                    "integer formatted as base-10 string")));
+  }
+  {
+    AttributionInteropConfig config;
+    base::Value::Dict dict;
+    dict.Set("max_trigger_state_cardinality", "4294967296");
+    EXPECT_THAT(
+        MergeAttributionInteropConfig(std::move(dict), config),
+        ErrorIs(HasSubstr("[\"max_trigger_state_cardinality\"]: must be "
+                          "representable by an unsigned 32-bit integer")));
   }
 }
 
