@@ -62,9 +62,6 @@ class GraphImplTflite final : public WebNNGraphImpl {
       const base::flat_map<std::string_view, WebNNBufferImpl*>& named_outputs)
       override;
 
-  // This class is owned by the `UniqueAssociatedReceiverSet` in
-  // `ContextImplTflite`.
-  raw_ptr<ContextImplTflite> context_;
 
   scoped_refptr<GraphResources> graph_resources_;
   std::unique_ptr<ComputeResources> compute_resources_;

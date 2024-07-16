@@ -41,6 +41,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
                    mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
                    WebNNContextProviderImpl* context_provider,
                    ContextProperties properties,
+                   mojom::CreateContextOptionsPtr options,
                    base::UnguessableToken context_handle);
 
   WebNNContextImpl(const WebNNContextImpl&) = delete;
@@ -74,6 +75,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       ContextProperties backend_context_properties);
 
   const ContextProperties& properties() { return properties_; }
+  const mojom::CreateContextOptions& options() const { return *options_; }
 
   void OnLost(const std::string& context_lost_info);
 
@@ -117,7 +119,12 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // Owns this object.
   raw_ptr<WebNNContextProviderImpl> context_provider_;
 
+  // Context properties reported to the renderer process.
   const ContextProperties properties_;
+
+  // Configuration options provided by the renderer process when creating this
+  // context.
+  mojom::CreateContextOptionsPtr options_;
 
   // BufferImpls must be stored on the context to allow the WebNN service to
   // identify and use them from the renderer process in MLContext operations.

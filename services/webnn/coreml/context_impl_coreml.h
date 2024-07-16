@@ -48,8 +48,6 @@ class API_AVAILABLE(macos(14.0)) ContextImplCoreml final
       mojom::BufferInfoPtr buffer_info,
       const base::UnguessableToken& buffer_handle) override;
 
-  mojom::CreateContextOptionsPtr options_;
-
   base::WeakPtrFactory<ContextImplCoreml> weak_factory_{this};
 };
 

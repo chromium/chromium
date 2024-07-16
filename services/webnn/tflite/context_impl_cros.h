@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/ml/mojom/web_platform_model.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
@@ -21,6 +22,7 @@ class ContextImplCrOS final : public WebNNContextImpl {
   ContextImplCrOS(mojo::PendingReceiver<mojom::WebNNContext> receiver,
                   mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
                   WebNNContextProviderImpl* context_provider,
+                  mojom::CreateContextOptionsPtr options,
                   base::UnguessableToken context_handle);
 
   ContextImplCrOS(const ContextImplCrOS&) = delete;

@@ -26,8 +26,8 @@ ContextImplTflite::ContextImplTflite(
                        std::move(client_remote),
                        context_provider,
                        GraphBuilderTflite::GetContextProperties(),
-                       std::move(context_handle)),
-      options_(std::move(options)) {}
+                       std::move(options),
+                       std::move(context_handle)) {}
 
 ContextImplTflite::~ContextImplTflite() = default;
 

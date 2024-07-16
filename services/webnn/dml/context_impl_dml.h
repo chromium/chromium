@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom-forward.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "third_party/microsoft_dxheaders/src/include/directx/d3d12.h"
@@ -28,6 +29,7 @@ class ContextImplDml final : public WebNNContextImpl {
                  mojo::PendingReceiver<mojom::WebNNContext> receiver,
                  mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
                  WebNNContextProviderImpl* context_provider,
+                 mojom::CreateContextOptionsPtr options,
                  std::unique_ptr<CommandRecorder> command_recorder,
                  const gpu::GpuFeatureInfo& gpu_feature_info,
                  base::UnguessableToken context_handle);

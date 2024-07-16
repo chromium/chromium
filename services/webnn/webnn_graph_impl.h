@@ -67,6 +67,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
     return compute_resource_info_;
   }
 
+  WebNNContextImpl* context() const { return context_.get(); }
+
  private:
   // The validator is to make sure the inputs from a compute call match the
   // built graph's expected.

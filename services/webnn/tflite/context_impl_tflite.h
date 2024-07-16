@@ -30,8 +30,6 @@ class ContextImplTflite final : public WebNNContextImpl {
   // WebNNContextImpl:
   base::WeakPtr<WebNNContextImpl> AsWeakPtr() override;
 
-  const mojom::CreateContextOptions& options() const { return *options_; }
-
  private:
   void CreateGraphImpl(
       mojom::GraphInfoPtr graph_info,
@@ -42,8 +40,6 @@ class ContextImplTflite final : public WebNNContextImpl {
       mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
       mojom::BufferInfoPtr buffer_info,
       const base::UnguessableToken& buffer_handle) override;
-
-  mojom::CreateContextOptionsPtr options_;
 
   base::WeakPtrFactory<ContextImplTflite> weak_factory_{this};
 };

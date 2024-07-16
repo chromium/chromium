@@ -24,13 +24,15 @@ WebNNContextImpl::WebNNContextImpl(
     mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
     WebNNContextProviderImpl* context_provider,
     ContextProperties properties,
+    mojom::CreateContextOptionsPtr options,
     base::UnguessableToken context_handle)
     // TODO(crbug.com/345352987): pass token by value to WebNNObjectImpl.
     : WebNNObjectImpl(std::move(context_handle)),
       receiver_(this, std::move(receiver)),
       client_remote_(std::move(client_remote)),
       context_provider_(context_provider),
-      properties_(IntersectWithBaseProperties(std::move(properties))) {
+      properties_(IntersectWithBaseProperties(std::move(properties))),
+      options_(std::move(options)) {
   CHECK(context_provider_);
   // Safe to use base::Unretained because the context_provider_ owns this class
   // that won't be destroyed until this callback executes.

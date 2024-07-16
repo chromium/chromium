@@ -17,6 +17,8 @@ namespace webnn {
 
 class WebNNContextImpl;
 
+// GPU process implementation of the MLBuffer interface exposed to script.
+// Owned by the WebNNContextImpl which created it.
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNBufferImpl
     : public mojom::WebNNBuffer,
       public WebNNObjectImpl {

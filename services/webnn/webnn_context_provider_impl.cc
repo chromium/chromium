@@ -253,7 +253,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 
     context_impl = new dml::ContextImplDml(
         std::move(adapter), std::move(receiver), std::move(client_remote), this,
-        std::move(command_recorder), gpu_feature_info_, context_handle);
+        std::move(options), std::move(command_recorder), gpu_feature_info_,
+        context_handle);
   }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -272,7 +273,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 #if BUILDFLAG(IS_CHROMEOS)
     // TODO: crbug.com/41486052 - Create the TFLite context using `options`.
     context_impl = new tflite::ContextImplCrOS(
-        std::move(receiver), std::move(client_remote), this, context_handle);
+        std::move(receiver), std::move(client_remote), this, std::move(options),
+        context_handle);
 #else
     context_impl = new tflite::ContextImplTflite(
         std::move(receiver), std::move(client_remote), this, std::move(options),

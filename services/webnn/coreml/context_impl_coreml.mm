@@ -26,8 +26,8 @@ ContextImplCoreml::ContextImplCoreml(
                        std::move(client_remote),
                        context_provider,
                        GraphBuilderCoreml::GetContextProperties(),
-                       std::move(context_handle)),
-      options_(std::move(options)) {}
+                       std::move(options),
+                       std::move(context_handle)) {}
 
 ContextImplCoreml::~ContextImplCoreml() = default;
 
@@ -42,7 +42,7 @@ void ContextImplCoreml::CreateGraphImpl(
     CreateGraphImplCallback callback) {
   GraphImplCoreml::CreateAndBuild(
       this, std::move(graph_info), std::move(compute_resource_info),
-      options_.Clone(), properties(), std::move(callback));
+      options().Clone(), properties(), std::move(callback));
 }
 
 std::unique_ptr<WebNNBufferImpl> ContextImplCoreml::CreateBufferImpl(

@@ -112,7 +112,7 @@ class GraphImplTflite::ComputeResources {
  public:
   static base::expected<std::unique_ptr<ComputeResources>, mojom::ErrorPtr>
   Create(scoped_refptr<GraphResources> graph_resources,
-         ContextImplTflite* context) {
+         WebNNContextImpl* context) {
     auto self = std::make_unique<ComputeResources>();
 
     int num_threads =
@@ -230,7 +230,6 @@ GraphImplTflite::GraphImplTflite(
     std::unique_ptr<ComputeResources> compute_resources,
     ContextImplTflite* context)
     : WebNNGraphImpl(context, std::move(compute_resource_info)),
-      context_(context),
       graph_resources_(std::move(graph_resources)),
       compute_resources_(std::move(compute_resources)) {}
 
@@ -241,7 +240,7 @@ void GraphImplTflite::ComputeImpl(NamedBuffers named_inputs,
   auto compute_resources = std::move(compute_resources_);
   if (!compute_resources) {
     ASSIGN_OR_RETURN(compute_resources,
-                     ComputeResources::Create(graph_resources_, context_),
+                     ComputeResources::Create(graph_resources_, context()),
                      [&callback](mojom::ErrorPtr error) {
                        std::move(callback).Run(
                            mojom::ComputeResult::NewError(std::move(error)));

@@ -131,6 +131,7 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
                          std::move(client_remote),
                          context_provider,
                          GetContextPropertiesForTesting(),
+                         mojom::CreateContextOptions::New(),
                          std::move(context_handle)) {}
   ~FakeWebNNContextImpl() override = default;
 
