@@ -127,6 +127,10 @@ public class ArchivedTabsDialogCoordinator {
                 }
             };
 
+    /**
+     * Observes the tab count in the archived tab model to (1) update the title and (2) hide the
+     * dialog when no archived tabs remain.
+     */
     private final Callback<Integer> mTabCountObserver =
             (count) -> {
                 if (count <= 0) {
@@ -136,6 +140,7 @@ public class ArchivedTabsDialogCoordinator {
                 updateTitle();
             };
 
+    /** Used to override the default tab click behavior to restore/open the tab. */
     private final GridCardOnClickListenerProvider mGridCardOnCLickListenerProvider =
             new GridCardOnClickListenerProvider() {
                 @Nullable
@@ -166,6 +171,25 @@ public class ArchivedTabsDialogCoordinator {
                 @Override
                 public void onSettingChanged() {
                     updateIphPropertyModel();
+                }
+            };
+
+    /**
+     * Observes the TabListEditor lifecycle to remove the view and hide the dialog. This is useful
+     * for when (1) the TabListEditor is expecting the embedding view to be removed from the
+     * hierarchy prior to hide completion. (2) If the TabListEditor hides itself outside of the
+     * dialog control flow, we want to know about it in order to hide the embedding UI.
+     */
+    private final TabListEditorCoordinator.LifecycleObserver mTabListEditorLifecycleObserver =
+            new TabListEditorCoordinator.LifecycleObserver() {
+                @Override
+                public void willHide() {
+                    mRootView.removeView(mView);
+                }
+
+                @Override
+                public void didHide() {
+                    ArchivedTabsDialogCoordinator.this.hideInternal();
                 }
             };
 
@@ -248,16 +272,16 @@ public class ArchivedTabsDialogCoordinator {
         mOnTabSelectingListener = onTabSelectingListener;
         mArchivedTabModel.getTabCountSupplier().addObserver(mTabCountObserver);
 
-        // Add the dialog view.
-        mRootView.addView(mView);
-
         TabListEditorController controller = mTabListEditorCoordinator.getController();
+        controller.setLifecycleObserver(mTabListEditorLifecycleObserver);
         controller.show(TabModelUtils.convertTabListToListOfTabs(mArchivedTabModel), 0, null);
         controller.setNavigationProvider(mNavigationProvider);
 
         // Register the dialog to handle back press events.
         mBackPressManager.addHandler(controller, BackPressHandler.Type.ARCHIVED_TABS_DIALOG);
 
+        // Add the dialog view.
+        mRootView.addView(mView);
         // View is obscured by the TabListEditorCoordinator, so it needs to be brought to the front.
         mView.findViewById(R.id.close_all_tabs_button_container).bringToFront();
 
@@ -282,10 +306,17 @@ public class ArchivedTabsDialogCoordinator {
         moveToState(TabActionState.CLOSABLE);
     }
 
+    /** Hides the dialog. */
     public void hide() {
-        mTabListEditorCoordinator.getController().hide();
-        mBackPressManager.removeHandler(mTabListEditorCoordinator.getController());
         mRootView.removeView(mView);
+        hideInternal();
+    }
+
+    void hideInternal() {
+        TabListEditorController controller = mTabListEditorCoordinator.getController();
+        controller.hide();
+        controller.setLifecycleObserver(null);
+        mBackPressManager.removeHandler(mTabListEditorCoordinator.getController());
         mArchivedTabModel.getTabCountSupplier().removeObserver(mTabCountObserver);
         mTabArchiveSettings.removeObserver(mTabArchiveSettingsObserver);
     }
@@ -331,6 +362,7 @@ public class ArchivedTabsDialogCoordinator {
         mTabListEditorCoordinator =
                 new TabListEditorCoordinator(
                         mContext,
+                        mRootView,
                         /* parentView= */ mView,
                         mBrowserControlsStateProvider,
                         mArchivedTabModelOrchestrator
@@ -340,7 +372,6 @@ public class ArchivedTabsDialogCoordinator {
                         mTabContentManager,
                         /* clientTabListRecyclerViewPositionSetter= */ null,
                         mMode,
-                        mRootView,
                         /* displayGroups= */ false,
                         mSnackbarManager,
                         TabProperties.TabActionState.CLOSABLE,
@@ -417,5 +448,9 @@ public class ArchivedTabsDialogCoordinator {
 
     ArchiveDelegate getArchiveDelegateForTesting() {
         return mArchiveDelegate;
+    }
+
+    TabListEditorCoordinator.LifecycleObserver getTabListEditorLifecycleObserver() {
+        return mTabListEditorLifecycleObserver;
     }
 }

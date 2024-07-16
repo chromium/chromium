@@ -153,4 +153,15 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         mTabCountSupplier.set(0);
         verify(mRootView).removeView(any());
     }
+
+    @Test
+    public void testLifecycleObserverHidesDialog() {
+        mCoordinator.show(mOnTabSelectingListener);
+        mCoordinator.getTabListEditorLifecycleObserver().willHide();
+        verify(mRootView).removeView(any());
+
+        mCoordinator.getTabListEditorLifecycleObserver().didHide();
+        verify(mTabListEditorController).setLifecycleObserver(null);
+        verify(mBackPressManager).removeHandler(any());
+    }
 }

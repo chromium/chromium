@@ -94,7 +94,6 @@ public class TabListCoordinator
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
     private final TabListModel mModel;
-    private final ViewGroup mRootView;
     private final boolean mAllowDragAndDrop;
 
     private boolean mIsInitialized;
@@ -138,7 +137,6 @@ public class TabListCoordinator
      * @param componentName A unique string uses to identify different components for UMA recording.
      *     Recommended to use the class name or make sure the string is unique through actions.xml
      *     file.
-     * @param rootView The root view of the app.
      * @param onModelTokenChange Callback to invoke whenever a model changes. Only currently
      *     respected in TabListMode.STRIP mode.
      * @param allowDragAndDrop Whether to allow drag and drop for this tab list coordinator.
@@ -159,7 +157,6 @@ public class TabListCoordinator
             @NonNull ViewGroup parentView,
             boolean attachToParent,
             String componentName,
-            @NonNull ViewGroup rootView,
             @Nullable Callback<Object> onModelTokenChange,
             boolean allowDragAndDrop) {
         this(
@@ -178,7 +175,6 @@ public class TabListCoordinator
                 parentView,
                 attachToParent,
                 componentName,
-                rootView,
                 onModelTokenChange,
                 false,
                 0,
@@ -205,7 +201,6 @@ public class TabListCoordinator
             @NonNull ViewGroup parentView,
             boolean attachToParent,
             String componentName,
-            @NonNull ViewGroup rootView,
             @Nullable Callback<Object> onModelTokenChange,
             boolean hasEmptyView,
             int emptyImageResId,
@@ -220,7 +215,6 @@ public class TabListCoordinator
         mCurrentTabModelFilterSupplier = tabModelFilterSupplier;
         mModel = new TabListModel();
         mAdapter = new SimpleRecyclerViewAdapter(mModel);
-        mRootView = rootView;
         mAllowDragAndDrop = allowDragAndDrop;
 
         RecyclerView.RecyclerListener recyclerListener = null;

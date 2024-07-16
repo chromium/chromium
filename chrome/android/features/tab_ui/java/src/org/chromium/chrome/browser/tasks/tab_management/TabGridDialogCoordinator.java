@@ -211,7 +211,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             containerView,
                             /* attachToParent= */ false,
                             mComponentName,
-                            rootView,
                             /* onModelTokenChange= */ null,
                             /* allowDragAndDrop= */ true);
             mTabListCoordinator.setOnLongPressTabItemEventListener(mMediator);
@@ -304,13 +303,13 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             mTabListEditorCoordinator =
                     new TabListEditorCoordinator(
                             mActivity,
+                            mRootView,
                             mDialogView.findViewById(R.id.dialog_container_view),
                             mBrowserControlsStateProvider,
                             mCurrentTabModelFilterSupplier,
                             mTabContentManager,
                             mTabListCoordinator::setRecyclerViewPosition,
                             mode,
-                            mRootView,
                             /* displayGroups= */ false,
                             mSnackbarManager,
                             TabProperties.TabActionState.SELECTABLE,

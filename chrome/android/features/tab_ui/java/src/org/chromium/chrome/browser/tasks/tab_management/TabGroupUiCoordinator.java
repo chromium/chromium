@@ -169,7 +169,6 @@ public class TabGroupUiCoordinator
                             mTabListContainerView,
                             /* attachToParent= */ true,
                             COMPONENT_NAME,
-                            mRootView,
                             onModelTokenChange,
                             /* allowDragAndDrop= */ false);
             mTabStripCoordinator.initWithNative(mTabModelSelector.getModel(false).getProfile());

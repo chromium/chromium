@@ -111,13 +111,13 @@ public class TabListEditorManager {
             mTabListEditorCoordinator =
                     new TabListEditorCoordinator(
                             mActivity,
+                            mRootView,
                             mCoordinatorView,
                             mBrowserControlsStateProvider,
                             mCurrentTabModelFilterSupplier,
                             mTabContentManager,
                             mTabListCoordinator::setRecyclerViewPosition,
                             mMode,
-                            mRootView,
                             /* displayGroups= */ true,
                             mSnackbarManager,
                             TabProperties.TabActionState.SELECTABLE,

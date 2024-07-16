@@ -194,12 +194,12 @@ public class SelectableTabListEditorTest {
                             new TabListEditorCoordinator(
                                     cta,
                                     mParentView,
+                                    mParentView,
                                     cta.getBrowserControlsManager(),
                                     currentTabModelFilterSupplier,
                                     cta.getTabContentManager(),
                                     mSetRecyclerViewPosition,
                                     getMode(),
-                                    compositorViewHolder,
                                     /* displayGroups= */ true,
                                     mSnackbarManager,
                                     TabProperties.TabActionState.SELECTABLE,

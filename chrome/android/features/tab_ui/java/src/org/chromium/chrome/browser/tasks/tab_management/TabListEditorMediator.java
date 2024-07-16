@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.LifecycleObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorExitMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -69,6 +70,7 @@ class TabListEditorMediator
     private TabListEditorToolbar mTabListEditorToolbar;
     private TabListEditorCoordinator.NavigationProvider mNavigationProvider;
     private @TabActionState int mTabActionState;
+    private LifecycleObserver mLifecycleObserver;
 
     private final View.OnClickListener mNavigationClickListener =
             new View.OnClickListener() {
@@ -298,6 +300,7 @@ class TabListEditorMediator
 
     private void hideInternal(boolean hiddenByAction) {
         if (!isEditorVisible()) return;
+        if (mLifecycleObserver != null) mLifecycleObserver.willHide();
         mSnackbarManager.setParentView(null);
         TabUiMetricsHelper.recordSelectionEditorExitMetrics(
                 TabListEditorExitMetricGroups.CLOSED, mContext);
@@ -317,6 +320,7 @@ class TabListEditorMediator
                 /* quickMode= */ false);
         mModel.set(TabListEditorProperties.IS_VISIBLE, false);
         mResetHandler.postHiding();
+        if (mLifecycleObserver != null) mLifecycleObserver.didHide();
     }
 
     @Override
@@ -340,6 +344,11 @@ class TabListEditorMediator
     public void setTabActionState(@TabActionState int tabActionState) {
         mTabActionState = tabActionState;
         mTabListCoordinator.setTabActionState(tabActionState);
+    }
+
+    @Override
+    public void setLifecycleObserver(LifecycleObserver lifecycleObserver) {
+        mLifecycleObserver = lifecycleObserver;
     }
 
     @Override

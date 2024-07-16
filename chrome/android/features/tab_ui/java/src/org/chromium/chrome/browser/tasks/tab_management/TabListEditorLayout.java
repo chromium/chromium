@@ -22,6 +22,7 @@ import java.util.Map;
 /** This class is used to show the {@link SelectableListLayout} in a {@link PopupWindow}. */
 class TabListEditorLayout extends SelectableListLayout<Integer> {
     private TabListEditorToolbar mToolbar;
+    private ViewGroup mRootView;
     private ViewGroup mParentView;
     private boolean mIsInitialized;
     private boolean mIsShowing;
@@ -38,13 +39,18 @@ class TabListEditorLayout extends SelectableListLayout<Integer> {
      * Initializes the RecyclerView and the toolbar for the layout. Also initializes the selection
      * editor layout provider if there is one.This must be called before calling show/hide.
      *
-     * @param parentView The parent view to attach the {@link TabListEditorLayout}.
+     * @param rootView The top ViewGroup which has parentView attached to it, or the same if no
+     *     custom parentView is present.
+     * @param parentView The ViewGroup which the TabListEditor will attach itself to it may be
+     *     rootView if no custom view is being used, or a sub-view which is then attached to
+     *     rootView.
      * @param recyclerView The recycler view to be shown.
      * @param adapter The adapter that provides views that represent items in the recycler view.
      * @param selectionDelegate The {@link SelectionDelegate} that will inform the toolbar of
-     *                            selection changes.
+     *     selection changes.
      */
     void initialize(
+            ViewGroup rootView,
             ViewGroup parentView,
             RecyclerView recyclerView,
             RecyclerView.Adapter adapter,
@@ -61,6 +67,7 @@ class TabListEditorLayout extends SelectableListLayout<Integer> {
                                 0,
                                 null,
                                 true);
+        mRootView = rootView;
         mParentView = parentView;
     }
 
@@ -95,31 +102,31 @@ class TabListEditorLayout extends SelectableListLayout<Integer> {
     }
 
     private void clearBackgroundViewAccessibilityImportance() {
-        assert mAccessibilityImportanceMap.size() == 0 && mParentView.indexOfChild(this) == -1;
+        assert mAccessibilityImportanceMap.size() == 0 && mRootView.indexOfChild(this) == -1;
 
-        for (int i = 0; i < mParentView.getChildCount(); i++) {
-            View view = mParentView.getChildAt(i);
+        for (int i = 0; i < mRootView.getChildCount(); i++) {
+            View view = mRootView.getChildAt(i);
             mAccessibilityImportanceMap.put(view, view.getImportantForAccessibility());
             view.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
         }
-        mAccessibilityImportanceMap.put(mParentView, mParentView.getImportantForAccessibility());
-        mParentView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
+        mAccessibilityImportanceMap.put(mRootView, mRootView.getImportantForAccessibility());
+        mRootView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
     }
 
     private void restoreBackgroundViewAccessibilityImportance() {
-        assert mParentView.indexOfChild(this) == -1;
+        assert mRootView.indexOfChild(this) == -1;
 
-        for (int i = 0; i < mParentView.getChildCount(); i++) {
-            View view = mParentView.getChildAt(i);
+        for (int i = 0; i < mRootView.getChildCount(); i++) {
+            View view = mRootView.getChildAt(i);
 
             assert mAccessibilityImportanceMap.containsKey(view);
             Integer importance = mAccessibilityImportanceMap.get(view);
             view.setImportantForAccessibility(
                     importance == null ? IMPORTANT_FOR_ACCESSIBILITY_AUTO : importance);
         }
-        assert mAccessibilityImportanceMap.containsKey(mParentView);
-        Integer importance = mAccessibilityImportanceMap.get(mParentView);
-        mParentView.setImportantForAccessibility(
+        assert mAccessibilityImportanceMap.containsKey(mRootView);
+        Integer importance = mAccessibilityImportanceMap.get(mRootView);
+        mRootView.setImportantForAccessibility(
                 importance == null ? IMPORTANT_FOR_ACCESSIBILITY_AUTO : importance);
         mAccessibilityImportanceMap.clear();
     }

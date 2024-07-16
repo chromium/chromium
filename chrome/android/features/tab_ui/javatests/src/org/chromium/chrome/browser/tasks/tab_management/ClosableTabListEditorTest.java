@@ -82,15 +82,15 @@ public class ClosableTabListEditorTest {
                     mTabListEditorCoordinator =
                             new TabListEditorCoordinator(
                                     sActivityTestRule.getActivity(),
+                                    sActivityTestRule
+                                            .getActivity()
+                                            .getCompositorViewHolderForTesting(),
                                     mParentView,
                                     sActivityTestRule.getActivity().getBrowserControlsManager(),
                                     currentTabModelFilterSupplier,
                                     sActivityTestRule.getActivity().getTabContentManager(),
                                     mSetRecyclerViewPosition,
                                     getMode(),
-                                    sActivityTestRule
-                                            .getActivity()
-                                            .getCompositorViewHolderForTesting(),
                                     /* displayGroups= */ true,
                                     mSnackbarManager,
                                     TabProperties.TabActionState.CLOSABLE,

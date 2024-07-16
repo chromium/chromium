@@ -118,12 +118,24 @@ class TabListEditorCoordinator {
 
         /** Sets the {@link TabActionState} for the TabListEditor. */
         void setTabActionState(@TabActionState int tabActionState);
+
+        /** Sets the {@link LifecycleObserver} for this TabListEditor. */
+        void setLifecycleObserver(LifecycleObserver lifecycleObserver);
     }
 
     /** An interface for embedders to provide navigation. */
     public interface NavigationProvider {
         /** Defines what to do to handle "back" actions. */
         void goBack();
+    }
+
+    /** Allows an embedder to observe the lifecycle of the TabListEditor. */
+    public interface LifecycleObserver {
+        /** Called when the TabListEditor is about to be hidden. */
+        void willHide();
+
+        /** Called after the TabListEditor is hidden. */
+        void didHide();
     }
 
     /** Provider of action for the navigation button in {@link TabListEditorMediator}. */
@@ -206,9 +218,15 @@ class TabListEditorCoordinator {
                     mTabActionState = tabActionState;
                     mTabListEditorMediator.setTabActionState(tabActionState);
                 }
+
+                @Override
+                public void setLifecycleObserver(LifecycleObserver lifecycleObserver) {
+                    mTabListEditorMediator.setLifecycleObserver(lifecycleObserver);
+                }
             };
 
     private final Context mContext;
+    private final ViewGroup mRootView;
     private final ViewGroup mParentView;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final @NonNull ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
@@ -220,7 +238,6 @@ class TabListEditorCoordinator {
 
     private final @TabListMode int mTabListMode;
     private final boolean mDisplayGroups;
-    private final ViewGroup mRootView;
     private final TabContentManager mTabContentManager;
     private final @Nullable GridCardOnClickListenerProvider mGridCardOnClickListenerProvider;
 
@@ -231,26 +248,29 @@ class TabListEditorCoordinator {
 
     /**
      * @param context The Android context to use.
-     * @param parentView The parentView to attach the view to.
+     * @param rootView The top ViewGroup which has parentView attached to it, or the same if no
+     *     custom parentView is present.
+     * @param parentView The ViewGroup which the TabListEditor will attach itself to it may be
+     *     rootView if no custom view is being used, or a sub-view which is then attached to
+     *     rootView.
      * @param browserControlsStateProvider Provides the browser controls state.
      * @param currentTabModelFilterSupplier Supplies the current TabModelFilter.
      * @param tabContentManager Provides thumbnails for tabs.
      * @param clientTabListRecyclerViewPositionSetter Allows setting the recycler view position.
      * @param mode Modes of showing the list of tabs. Can be used in GRID or STRIP.
-     * @param rootView The root view of the app.
      * @param displayGroups Whether groups should be displayed.
      * @param snackbarManager Used to display snackbar messages.
      * @param initialTabActionState The initial TabActionState to use.
      */
     public TabListEditorCoordinator(
             Context context,
+            ViewGroup rootView,
             ViewGroup parentView,
             BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull ObservableSupplier<TabModelFilter> currentTabModelFilterSupplier,
             TabContentManager tabContentManager,
             Callback<RecyclerViewPosition> clientTabListRecyclerViewPositionSetter,
             @TabListMode int mode,
-            ViewGroup rootView,
             boolean displayGroups,
             SnackbarManager snackbarManager,
             @TabActionState int initialTabActionState,
@@ -259,6 +279,7 @@ class TabListEditorCoordinator {
                             gridCardOnClickListenerProvider) {
         try (TraceEvent e = TraceEvent.scoped("TabListEditorCoordinator.constructor")) {
             mContext = context;
+            mRootView = rootView;
             mParentView = parentView;
             mBrowserControlsStateProvider = browserControlsStateProvider;
             mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
@@ -266,7 +287,6 @@ class TabListEditorCoordinator {
             mTabListMode = mode;
             mDisplayGroups = displayGroups;
             mTabActionState = initialTabActionState;
-            mRootView = rootView;
             mTabContentManager = tabContentManager;
             assert mode == TabListCoordinator.TabListMode.GRID
                     || mode == TabListCoordinator.TabListMode.LIST;
@@ -447,7 +467,6 @@ class TabListEditorCoordinator {
                         mTabListEditorLayout,
                         /* attachToParent= */ false,
                         COMPONENT_NAME,
-                        mRootView,
                         null,
                         /* allowDragAndDrop= */ false);
 
@@ -481,6 +500,7 @@ class TabListEditorCoordinator {
         }
 
         mTabListEditorLayout.initialize(
+                mRootView,
                 mParentView,
                 mTabListCoordinator.getContainerView(),
                 mTabListCoordinator.getContainerView().getAdapter(),
