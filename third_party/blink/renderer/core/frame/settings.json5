@@ -1088,7 +1088,13 @@
     {
       name: "inForcedColors",
       initial: false,
-      invalidate: ["ColorScheme"],
+      type: "bool",
+    },
+
+    {
+      name: "isForcedColorsDisabled",
+      initial: false,
+      invalidate: ["ForcedColors"],
       type: "bool",
     },
 

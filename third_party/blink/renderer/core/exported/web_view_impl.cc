@@ -1819,6 +1819,7 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
 
   settings->SetLazyLoadEnabled(prefs.lazy_load_enabled);
   settings->SetInForcedColors(prefs.in_forced_colors);
+  settings->SetIsForcedColorsDisabled(prefs.is_forced_colors_disabled);
   settings->SetPreferredRootScrollbarColorScheme(
       prefs.preferred_root_scrollbar_color_scheme);
   settings->SetPreferredColorScheme(prefs.preferred_color_scheme);
@@ -3343,8 +3344,7 @@ void WebViewImpl::UpdateColorProviders(
   bool color_providers_did_change =
       page_->UpdateColorProviders(color_provider_colors);
   if (color_providers_did_change) {
-    Page::PlatformColorsChanged();
-    Page::ColorSchemeChanged();
+    Page::ForcedColorsChanged();
   }
 }
 

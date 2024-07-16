@@ -164,6 +164,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // Should be called when |GetScrollbarTheme().UsesOverlayScrollbars()|
   // changes.
   static void UsesOverlayScrollbarsChanged();
+  static void ForcedColorsChanged();
   static void PlatformColorsChanged();
   static void ColorSchemeChanged();
 

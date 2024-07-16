@@ -217,6 +217,7 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->require_transient_activation_for_html_fullscreen =
       data.require_transient_activation_for_html_fullscreen();
   out->in_forced_colors = data.in_forced_colors();
+  out->is_forced_colors_disabled = data.is_forced_colors_disabled();
   out->preferred_root_scrollbar_color_scheme =
       data.preferred_root_scrollbar_color_scheme();
   out->preferred_color_scheme = data.preferred_color_scheme();

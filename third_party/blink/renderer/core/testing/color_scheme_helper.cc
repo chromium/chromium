@@ -31,11 +31,11 @@ ColorSchemeHelper::ColorSchemeHelper(Page& page)
 ColorSchemeHelper::~ColorSchemeHelper() {
   // Reset preferred color scheme, preferred contrast and forced colors to their
   // original values.
+  settings_.SetInForcedColors(default_in_forced_colors_);
   settings_.SetPreferredRootScrollbarColorScheme(
       default_preferred_root_scrollbar_color_scheme_);
   settings_.SetPreferredColorScheme(default_preferred_color_scheme_);
   settings_.SetPreferredContrast(default_preferred_contrast_);
-  settings_.SetInForcedColors(default_in_forced_colors_);
 }
 
 void ColorSchemeHelper::SetPreferredRootScrollbarColorScheme(
@@ -52,6 +52,12 @@ void ColorSchemeHelper::SetPreferredColorScheme(
 void ColorSchemeHelper::SetPreferredContrast(
     mojom::blink::PreferredContrast preferred_contrast) {
   settings_.SetPreferredContrast(preferred_contrast);
+}
+
+void ColorSchemeHelper::SetInForcedColors(Document& document,
+                                          bool in_forced_colors) {
+  settings_.SetInForcedColors(in_forced_colors);
+  document.ColorSchemeChanged();
 }
 
 void ColorSchemeHelper::SetInForcedColors(bool in_forced_colors) {

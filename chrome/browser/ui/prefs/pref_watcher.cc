@@ -69,6 +69,7 @@ const char* const kWebPrefsToObserve[] = {
 #else
     prefs::kAccessibilityFocusHighlightEnabled,
 #endif
+    prefs::kPageColorsBlockList,
 };
 
 const int kWebPrefsToObserveLength = std::size(kWebPrefsToObserve);

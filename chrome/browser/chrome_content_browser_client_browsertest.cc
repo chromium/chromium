@@ -429,19 +429,18 @@ IN_PROC_BROWSER_TEST_P(ForcedColorsTest, ForcedColors) {
 IN_PROC_BROWSER_TEST_P(ForcedColorsTest, ForcedColorsWithBlockList) {
   test_theme_.set_forced_colors(GetParam());
 
-  // Add url to the page colors block list.
   const char* url = "http://foo.com";
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
+
+  // Add url to the page colors block list.
   base::Value::List list;
   list.Append(url);
   Profile* profile = browser()->profile();
   profile->GetPrefs()->SetList(prefs::kPageColorsBlockList, list.Clone());
-
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()
       ->OnWebPreferencesChanged();
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
 
   // Forced colors should be `none` when a site is added to the block list.
   EXPECT_EQ(true, EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
@@ -452,7 +451,6 @@ IN_PROC_BROWSER_TEST_P(ForcedColorsTest, ForcedColorsWithBlockList) {
   // Remove url from the page colors block list.
   list.EraseValue(base::Value(url));
   profile->GetPrefs()->SetList(prefs::kPageColorsBlockList, list.Clone());
-
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()

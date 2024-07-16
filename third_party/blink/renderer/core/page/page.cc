@@ -537,6 +537,11 @@ void Page::UsesOverlayScrollbarsChanged() {
   }
 }
 
+void Page::ForcedColorsChanged() {
+  PlatformColorsChanged();
+  ColorSchemeChanged();
+}
+
 void Page::PlatformColorsChanged() {
   for (const Page* page : AllPages()) {
     for (Frame* frame = page->MainFrame(); frame;
@@ -1141,6 +1146,10 @@ void Page::SettingsChanged(ChangeType change_type) {
     case ChangeType::kVisionDeficiency: {
       if (auto* main_local_frame = DynamicTo<LocalFrame>(MainFrame()))
         main_local_frame->GetDocument()->VisionDeficiencyChanged();
+      break;
+    }
+    case ChangeType::kForcedColors: {
+      ForcedColorsChanged();
       break;
     }
   }

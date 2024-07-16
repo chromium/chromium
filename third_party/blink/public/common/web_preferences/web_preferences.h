@@ -355,6 +355,11 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // when to apply system color overrides to author specified styles.
   bool in_forced_colors = false;
 
+  // Indicates if Forced Colors mode should be disabled for this page.
+  // This allows users opt out of forced colors on specific sites.
+  // Forced colors are disabled for sites in the `kPageColorsBlockList` pref.
+  bool is_forced_colors_disabled = false;
+
   // The preferred color scheme set by the user's browser settings. The variable
   // follows the browser's color mode setting unless a browser theme (custom or
   // not) is defined, in which case the color scheme is set to the default

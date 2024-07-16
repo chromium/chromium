@@ -708,6 +708,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.in_forced_colors;
   }
 
+  static bool is_forced_colors_disabled(
+      const blink::web_pref::WebPreferences& r) {
+    return r.is_forced_colors_disabled;
+  }
+
   static blink::mojom::PreferredColorScheme
   preferred_root_scrollbar_color_scheme(
       const blink::web_pref::WebPreferences& r) {

@@ -757,6 +757,11 @@ void WebSettingsImpl::SetInForcedColors(bool in_forced_colors) {
   settings_->SetInForcedColors(in_forced_colors);
 }
 
+void WebSettingsImpl::SetIsForcedColorsDisabled(
+    bool is_forced_colors_disabled) {
+  settings_->SetIsForcedColorsDisabled(is_forced_colors_disabled);
+}
+
 void WebSettingsImpl::SetPreferredRootScrollbarColorScheme(
     mojom::blink::PreferredColorScheme color_scheme) {
   settings_->SetPreferredRootScrollbarColorScheme(color_scheme);

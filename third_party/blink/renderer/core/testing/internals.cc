@@ -3402,7 +3402,7 @@ void Internals::setForcedColorsAndDarkPreferredColorScheme(Document* document) {
   color_scheme_helper_.emplace(*document);
   color_scheme_helper_->SetPreferredColorScheme(
       mojom::blink::PreferredColorScheme::kDark);
-  color_scheme_helper_->SetInForcedColors(/*in_forced_colors=*/true);
+  color_scheme_helper_->SetInForcedColors(*document, /*in_forced_colors=*/true);
   color_scheme_helper_->SetEmulatedForcedColors(*document,
                                                 /*is_dark_theme=*/false);
 }

@@ -32,7 +32,7 @@ class ColorSchemeHelper {
   void SetPreferredColorScheme(
       mojom::PreferredColorScheme preferred_color_scheme);
   void SetPreferredContrast(mojom::PreferredContrast preferred_contrast);
-  void SetInForcedColors(bool in_forced_colors);
+  void SetInForcedColors(Document& document, bool in_forced_colors);
   void SetEmulatedForcedColors(Document& document, bool is_dark_theme);
 
  private:
@@ -44,6 +44,9 @@ class ColorSchemeHelper {
   mojom::PreferredContrast default_preferred_contrast_ =
       mojom::PreferredContrast::kNoPreference;
   bool default_in_forced_colors_ = false;
+  // Only to be used by the destructor, since we need to cleanup but don't store
+  // the Document/Page.
+  void SetInForcedColors(bool in_forced_colors);
 };
 
 }  // namespace blink

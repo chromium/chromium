@@ -29,8 +29,6 @@ class PageColorsFactory : public ProfileKeyedServiceFactory {
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
-  void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
 };
 
 #endif  // CHROME_BROWSER_ACCESSIBILITY_PAGE_COLORS_FACTORY_H_

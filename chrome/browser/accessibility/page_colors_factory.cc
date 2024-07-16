@@ -13,11 +13,6 @@ PageColors* PageColorsFactory::GetForProfile(Profile* profile) {
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
-void PageColorsFactory::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  PageColors::RegisterProfilePrefs(registry);
-}
-
 // static
 PageColorsFactory* PageColorsFactory::GetInstance() {
   static base::NoDestructor<PageColorsFactory> instance;
