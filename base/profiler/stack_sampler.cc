@@ -80,12 +80,19 @@ class StackCopierDelegate : public StackCopier::Delegate {
   const MetadataRecorder::MetadataProvider* const metadata_provider_;
 };
 
+bool g_use_thread_pool = false;
+
 }  // namespace
 
 StackSampler::~StackSampler() {
   if (thread_pool_runner_) {
     thread_pool_runner_->DeleteSoon(FROM_HERE, unwind_data_.release());
   }
+}
+
+// static
+void StackSampler::SetUseThreadPool(bool use_thread_pool) {
+  g_use_thread_pool = use_thread_pool;
 }
 
 std::unique_ptr<StackBuffer> StackSampler::CreateStackBuffer() {
@@ -99,18 +106,17 @@ std::unique_ptr<StackBuffer> StackSampler::CreateStackBuffer() {
 void StackSampler::Initialize() {
   was_initialized_ = true;
   unwind_data_->Initialize(std::move(unwinders_factory_).Run());
-  // TODO(dtapuska): Uncomment this when ready.
-#if 0
-  thread_pool_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
+  if (g_use_thread_pool) {
+    thread_pool_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
 
-  // The thread pool might not start right away (or it may never start), so we
-  // schedule a job and wait for it to become running before we schedule other
-  // work.
-  thread_pool_runner_->PostTaskAndReply(
-      FROM_HERE, base::DoNothing(),
-      base::BindOnce(&StackSampler::ThreadPoolRunning,
-                     weak_ptr_factory_.GetWeakPtr()));
-#endif
+    // The thread pool might not start right away (or it may never start), so we
+    // schedule a job and wait for it to become running before we schedule other
+    // work.
+    thread_pool_runner_->PostTaskAndReply(
+        FROM_HERE, base::DoNothing(),
+        base::BindOnce(&StackSampler::ThreadPoolRunning,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void StackSampler::ThreadPoolRunning() {
