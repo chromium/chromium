@@ -620,6 +620,12 @@ const char kIOSPasswordBottomSheetAutofocusName[] =
 const char kIOSPasswordBottomSheetAutofocusDescription[] =
     "Enables triggering the password bottom sheet on autofocus on IOS.";
 
+const char kIOSProactivePasswordGenerationBottomSheetName[] =
+    "IOS Proactive Password Generation Bottom Sheet";
+const char kIOSProactivePasswordGenerationBottomSheetDescription[] =
+    "Enables the display of the proactive password generation bottom sheet on "
+    "IOS.";
+
 const char kSyncWebauthnCredentialsName[] = "Sync WebAuthn credentials";
 const char kSyncWebauthnCredentialsDescription[] =
     "Allow syncing, managing, and displaying Google Password Manager WebAuthn "

@@ -1291,6 +1291,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          password_manager::features::kIOSPasswordBottomSheetAutofocus)},
+    {"ios-proactive-password-generation-bottom-sheet",
+     flag_descriptions::kIOSProactivePasswordGenerationBottomSheetName,
+     flag_descriptions::kIOSProactivePasswordGenerationBottomSheetDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(password_manager::features::
+                            kIOSProactivePasswordGenerationBottomSheet)},
     {"sync-webauthn-credentials",
      flag_descriptions::kSyncWebauthnCredentialsName,
      flag_descriptions::kSyncWebauthnCredentialsDescription, flags_ui::kOsIos,

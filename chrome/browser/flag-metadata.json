@@ -5404,6 +5404,17 @@
     "expiry_milestone": 140
   },
   {
+    "name": "ios-proactive-password-generation-bottom-sheet",
+    "owners": [
+      "cloutierc@google.com",
+      "vincb@google.com",
+      "sugoi@chromium.org",
+      "tmartino@chromium.org",
+      "bling-transactions@google.com"
+    ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "ios-promo-address-bubble",
     "owners": [
       "aliaaborhamy@google.com",

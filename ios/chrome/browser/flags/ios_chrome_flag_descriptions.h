@@ -511,6 +511,11 @@ extern const char kIOSPasswordAuthOnEntryV2Description[];
 extern const char kIOSPasswordBottomSheetAutofocusName[];
 extern const char kIOSPasswordBottomSheetAutofocusDescription[];
 
+// Title and description for the flag to enable the proactive password
+// generation bottom sheet on IOS.
+extern const char kIOSProactivePasswordGenerationBottomSheetName[];
+extern const char kIOSProactivePasswordGenerationBottomSheetDescription[];
+
 // Title and description for the flag to allow syncing, managing, and displaying
 // Google Password Manager WebAuthn credential ('passkey') metadata.
 extern const char kSyncWebauthnCredentialsName[];
