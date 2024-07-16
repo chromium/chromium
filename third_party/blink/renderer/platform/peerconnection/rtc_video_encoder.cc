@@ -1771,17 +1771,14 @@ void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
       auto mapped_buffer =
           scaled_buffer->GetMappedFrameBuffer(preferred_pixel_formats_);
       if (!mapped_buffer) {
+        mapped_buffer = scaled_buffer->ToI420();
+      }
+      if (!mapped_buffer) {
         NotifyErrorStatus({media::EncoderStatus::Codes::kSystemAPICallError,
-                           "Failed to map a buffer"});
+                           "Failed to map buffer"});
         return;
       }
 
-      mapped_buffer = scaled_buffer->ToI420();
-      if (!mapped_buffer) {
-        NotifyErrorStatus({media::EncoderStatus::Codes::kFormatConversionError,
-                           "Failed to convert a buffer to I420"});
-        return;
-      }
       DCHECK_NE(mapped_buffer->type(), webrtc::VideoFrameBuffer::Type::kNative);
       frame = ConvertFromMappedWebRtcVideoFrameBuffer(mapped_buffer, timestamp);
       if (!frame) {
