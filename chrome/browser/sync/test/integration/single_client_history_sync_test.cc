@@ -889,32 +889,54 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
                        ClearsForeignHistoryOnTurningSyncOff) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
-  // Before Sync gets enabled, one URL exists locally, one remotely.
+  // Before Sync gets enabled, one URL exists locally, one remotely, and one
+  // redirect chain consisting of 3 URLs also remotely.
   const GURL url_local("https://www.url-local.com");
+
   const GURL url_remote("https://www.url-remote.com");
+  const GURL url_remote_chain1("https://www.url-remote1.com");
+  const GURL url_remote_chain2("https://www.url-remote2.com");
+  const GURL url_remote_chain3("https://www.url-remote3.com");
 
   history_helper::AddUrlToHistory(/*index=*/0, url_local);
 
   GetFakeServer()->InjectEntity(CreateFakeServerEntity(CreateSpecifics(
       base::Time::Now() - base::Minutes(5), "other_cache_guid", url_remote)));
 
-  // Turn on Sync - this will cause the remote URL to get downloaded.
+  GetFakeServer()->InjectEntity(CreateFakeServerEntity(
+      CreateSpecifics(base::Time::Now() - base::Minutes(5), "other_cache_guid",
+                      {url_remote_chain1, url_remote_chain2, url_remote_chain3},
+                      {101, 102, 103})));
+
+  // Turn on Sync - this will cause the remote URLs to get downloaded.
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   // Make sure the "local" and "remote" URLs both exist in the DB.
   history::URLRow row;
   ASSERT_TRUE(history_helper::GetUrlFromClient(/*index=*/0, url_local, &row));
   ASSERT_TRUE(history_helper::GetUrlFromClient(/*index=*/0, url_remote, &row));
+  ASSERT_TRUE(
+      history_helper::GetUrlFromClient(/*index=*/0, url_remote_chain1, &row));
+  ASSERT_TRUE(
+      history_helper::GetUrlFromClient(/*index=*/0, url_remote_chain2, &row));
+  ASSERT_TRUE(
+      history_helper::GetUrlFromClient(/*index=*/0, url_remote_chain3, &row));
 
   // Turn Sync off by removing the primary account.
   GetClient(0)->SignOutPrimaryAccount();
   ASSERT_EQ(GetSyncService(0)->GetTransportState(),
             syncer::SyncService::TransportState::DISABLED);
 
-  // This should have triggered the deletion of foreign history (but left
-  // local history alone).
+  // This should have triggered the deletion of foreign history, both the
+  // individual visit and the redirect chain (but left local history alone).
   EXPECT_TRUE(history_helper::GetUrlFromClient(/*index=*/0, url_local, &row));
   EXPECT_FALSE(history_helper::GetUrlFromClient(/*index=*/0, url_remote, &row));
+  EXPECT_FALSE(
+      history_helper::GetUrlFromClient(/*index=*/0, url_remote_chain1, &row));
+  EXPECT_FALSE(
+      history_helper::GetUrlFromClient(/*index=*/0, url_remote_chain2, &row));
+  EXPECT_FALSE(
+      history_helper::GetUrlFromClient(/*index=*/0, url_remote_chain3, &row));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
