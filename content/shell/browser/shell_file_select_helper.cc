@@ -171,8 +171,7 @@ void ShellFileSelectHelper::RunFileChooserEnd() {
 }
 
 void ShellFileSelectHelper::FileSelected(const ui::SelectedFileInfo& file,
-                                         int index,
-                                         void* params) {
+                                         int index) {
   if (dialog_type_ == ui::SelectFileDialog::SELECT_UPLOAD_FOLDER) {
     StartNewEnumeration(file.local_path);
     return;
@@ -181,12 +180,11 @@ void ShellFileSelectHelper::FileSelected(const ui::SelectedFileInfo& file,
 }
 
 void ShellFileSelectHelper::MultiFilesSelected(
-    const std::vector<ui::SelectedFileInfo>& files,
-    void* params) {
+    const std::vector<ui::SelectedFileInfo>& files) {
   ConvertToFileChooserFileInfoList(files);
 }
 
-void ShellFileSelectHelper::FileSelectionCanceled(void* params) {
+void ShellFileSelectHelper::FileSelectionCanceled() {
   RunFileChooserEnd();
 }
 
@@ -222,7 +220,7 @@ void ShellFileSelectHelper::OnListDone(int error) {
   std::unique_ptr<ActiveDirectoryEnumeration> entry =
       std::move(directory_enumeration_);
   if (error) {
-    FileSelectionCanceled(nullptr);
+    FileSelectionCanceled();
     return;
   }
 

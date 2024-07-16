@@ -133,13 +133,12 @@ void SelectFileDialogImpl::FileWasSelected(
   }
 
   if (was_cancelled || files.empty()) {
-    listener_->FileSelectionCanceled(params);
+    listener_->FileSelectionCanceled();
   } else {
     if (is_multi) {
-      listener_->MultiFilesSelected(FilePathListToSelectedFileInfoList(files),
-                                    params);
+      listener_->MultiFilesSelected(FilePathListToSelectedFileInfoList(files));
     } else {
-      listener_->FileSelected(SelectedFileInfo(files[0]), index, params);
+      listener_->FileSelected(SelectedFileInfo(files[0]), index);
     }
   }
 }

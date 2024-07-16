@@ -172,8 +172,7 @@ void FileSelectHelperIOS::RunFileChooserEnd() {
 }
 
 void FileSelectHelperIOS::FileSelected(const ui::SelectedFileInfo& file,
-                                       int index,
-                                       void* params) {
+                                       int index) {
   if (dialog_type_ == ui::SelectFileDialog::SELECT_UPLOAD_FOLDER) {
     StartNewEnumeration(file.local_path);
     return;
@@ -182,12 +181,11 @@ void FileSelectHelperIOS::FileSelected(const ui::SelectedFileInfo& file,
 }
 
 void FileSelectHelperIOS::MultiFilesSelected(
-    const std::vector<ui::SelectedFileInfo>& files,
-    void* params) {
+    const std::vector<ui::SelectedFileInfo>& files) {
   ConvertToFileChooserFileInfoList(files);
 }
 
-void FileSelectHelperIOS::FileSelectionCanceled(void* params) {
+void FileSelectHelperIOS::FileSelectionCanceled() {
   RunFileChooserEnd();
 }
 
@@ -223,7 +221,7 @@ void FileSelectHelperIOS::OnListDone(int error) {
   std::unique_ptr<ActiveDirectoryEnumeration> entry =
       std::move(directory_enumeration_);
   if (error) {
-    FileSelectionCanceled(nullptr);
+    FileSelectionCanceled();
     return;
   }
 
