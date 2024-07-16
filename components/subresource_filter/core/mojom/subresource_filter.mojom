@@ -72,11 +72,8 @@ struct DocumentLoadStatistics {
 
 // Subresource filter implemented by the renderer.
 interface SubresourceFilterRulesetObserver {
-  // Sends read-only mode file handles with ruleset data to a renderer
-  // process, containing filtering rules to be consulted for all subsequent
-  // document loads that have filtering activated. The |filter_tag| is used to
-  // identify the type of ruleset being sent so that ruleset dealers on the
-  // renderer can choose to read only the ruleset(s) relevant for their use
-  // case.
-  SetRulesetForProcess(string filter_tag, mojo_base.mojom.File ruleset_file);
+  // Sends a read-only mode file handle with the ruleset data to a renderer
+  // process, containing the subresource filtering rules to be consulted for all
+  // subsequent document loads that have subresource filtering activated.
+  SetRulesetForProcess(mojo_base.mojom.File ruleset_file);
 };

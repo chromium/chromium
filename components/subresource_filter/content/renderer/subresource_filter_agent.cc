@@ -13,7 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/time/time.h"
-#include "components/subresource_filter/content/renderer/safe_browsing_unverified_ruleset_dealer.h"
+#include "components/subresource_filter/content/renderer/unverified_ruleset_dealer.h"
 #include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
 #include "components/subresource_filter/content/shared/renderer/web_document_subresource_filter_impl.h"
 #include "components/subresource_filter/core/common/document_subresource_filter.h"
@@ -49,7 +49,7 @@ namespace subresource_filter {
 
 SubresourceFilterAgent::SubresourceFilterAgent(
     content::RenderFrame* render_frame,
-    SafeBrowsingUnverifiedRulesetDealer* ruleset_dealer)
+    UnverifiedRulesetDealer* ruleset_dealer)
     : content::RenderFrameObserver(render_frame),
       content::RenderFrameObserverTracker<SubresourceFilterAgent>(render_frame),
       ruleset_dealer_(ruleset_dealer) {

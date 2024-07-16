@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_filter/content/shared/renderer/unverified_ruleset_dealer.h"
-
-#include <string>
+#include "components/subresource_filter/content/renderer/unverified_ruleset_dealer.h"
 
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 
@@ -29,12 +27,8 @@ void UnverifiedRulesetDealer::UnregisterMojoInterfaces(
       mojom::SubresourceFilterRulesetObserver::Name_);
 }
 
-void UnverifiedRulesetDealer::SetRulesetForProcess(
-    const std::string& filter_tag,
-    base::File ruleset_file) {
-  if (filter_tag == GetFilterTag()) {
-    SetRulesetFile(std::move(ruleset_file));
-  }
+void UnverifiedRulesetDealer::SetRulesetForProcess(base::File ruleset_file) {
+  SetRulesetFile(std::move(ruleset_file));
 }
 
 void UnverifiedRulesetDealer::OnRendererAssociatedRequest(

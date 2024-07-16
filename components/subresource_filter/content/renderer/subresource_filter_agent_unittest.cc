@@ -11,7 +11,7 @@
 #include "base/files/file.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
-#include "components/subresource_filter/content/renderer/safe_browsing_unverified_ruleset_dealer.h"
+#include "components/subresource_filter/content/renderer/unverified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
 #include "components/subresource_filter/core/common/scoped_timers.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
@@ -40,7 +40,7 @@ namespace {
 class SubresourceFilterAgentUnderTest : public SubresourceFilterAgent {
  public:
   explicit SubresourceFilterAgentUnderTest(
-      SafeBrowsingUnverifiedRulesetDealer* ruleset_dealer,
+      UnverifiedRulesetDealer* ruleset_dealer,
       bool is_subresource_filter_root,
       bool is_provisional,
       bool is_parent_ad_frame,
@@ -307,7 +307,7 @@ class SubresourceFilterAgentTest : public ::testing::Test {
 
  private:
   testing::TestRulesetCreator test_ruleset_creator_;
-  SafeBrowsingUnverifiedRulesetDealer ruleset_dealer_;
+  UnverifiedRulesetDealer ruleset_dealer_;
 
   std::unique_ptr<SubresourceFilterAgentUnderTest> agent_;
 };

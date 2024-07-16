@@ -73,7 +73,7 @@ class Extension;
 #endif
 
 namespace subresource_filter {
-class SafeBrowsingUnverifiedRulesetDealer;
+class UnverifiedRulesetDealer;
 }
 
 namespace url {
@@ -290,7 +290,7 @@ class ChromeContentRendererClient
 #if BUILDFLAG(ENABLE_SPELLCHECK)
   std::unique_ptr<SpellCheck> spellcheck_;
 #endif
-  std::unique_ptr<subresource_filter::SafeBrowsingUnverifiedRulesetDealer>
+  std::unique_ptr<subresource_filter::UnverifiedRulesetDealer>
       subresource_filter_ruleset_dealer_;
 #if BUILDFLAG(ENABLE_PLUGINS)
   std::set<std::string> allowed_camera_device_origins_;

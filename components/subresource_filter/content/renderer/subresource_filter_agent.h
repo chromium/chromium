@@ -24,7 +24,7 @@ class WebDocumentSubresourceFilter;
 
 namespace subresource_filter {
 
-class SafeBrowsingUnverifiedRulesetDealer;
+class UnverifiedRulesetDealer;
 class WebDocumentSubresourceFilterImpl;
 
 // The renderer-side agent of ContentSubresourceFilterThrottleManager. There is
@@ -38,9 +38,8 @@ class SubresourceFilterAgent
  public:
   // The |ruleset_dealer| must not be null and must outlive this instance. The
   // |render_frame| may be null in unittests.
-  explicit SubresourceFilterAgent(
-      content::RenderFrame* render_frame,
-      SafeBrowsingUnverifiedRulesetDealer* ruleset_dealer);
+  explicit SubresourceFilterAgent(content::RenderFrame* render_frame,
+                                  UnverifiedRulesetDealer* ruleset_dealer);
 
   SubresourceFilterAgent(const SubresourceFilterAgent&) = delete;
   SubresourceFilterAgent& operator=(const SubresourceFilterAgent&) = delete;
@@ -145,7 +144,7 @@ class SubresourceFilterAgent
       const blink::RemoteFrameToken& placeholder_token) override;
 
   // Owned by the ChromeContentRendererClient and outlives us.
-  raw_ptr<SafeBrowsingUnverifiedRulesetDealer> ruleset_dealer_;
+  raw_ptr<UnverifiedRulesetDealer> ruleset_dealer_;
 
   mojom::ActivationState activation_state_for_next_document_;
 
