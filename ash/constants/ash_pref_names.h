@@ -284,14 +284,6 @@ inline constexpr char kMultitaskMenuNudgeClamshellLastShown[] =
 inline constexpr char kMultitaskMenuNudgeTabletLastShown[] =
     "cros.wm_nudge.tablet_multitask_nudge_last_shown";
 
-// The number of times we have shown the informed restore education nudge.
-inline constexpr char kInformedRestoreNudgeShownCount[] =
-    "ash.wm.informed_restore_nudge_shown_count";
-
-// The last time we showed the informed restore education nudge.
-inline constexpr char kInformedRestoreNudgeLastShown[] =
-    "ash.wm.informed_restore_nudge_last_shown";
-
 // The following SAML-related prefs are not settings that the domain admin can
 // set, but information that the SAML Identity Provider can send us:
 
@@ -1035,20 +1027,34 @@ inline constexpr char kLocalStateDevicePeripheralDataAccessEnabled[] =
 inline constexpr char kLoginShutdownTimestampPrefName[] =
     "ash.shelf.login_shutdown_timestamp";
 
-// A `TimeDelta` pref indicates the length of time for taking the pine
-// screenshot on shutdown.
-inline constexpr char kPineScreenshotTakenDuration[] =
+// The number of times we have shown the informed restore education nudge.
+inline constexpr char kInformedRestoreNudgeShownCount[] =
+    "ash.wm.informed_restore_nudge_shown_count";
+
+// The last time we showed the informed restore education nudge.
+inline constexpr char kInformedRestoreNudgeLastShown[] =
+    "ash.wm.informed_restore_nudge_last_shown";
+
+// A `TimeDelta` pref indicates the length of time for taking the informed
+// restore screenshot on shutdown. Pine is the old name for informed restore.
+inline constexpr char kInformedRestoreScreenshotTakenDuration[] =
     "ash.pine.screenshot_taken_duration";
 
 // A `TimeDelta` pref indicates the length of time for encoding and writing the
-// pine screenshot to the disk.
-inline constexpr char kPineScreenshotEncodeAndSaveDuration[] =
+// informed restore screenshot to the disk. Pine is the old name for informed
+// restore.
+inline constexpr char kInformedRestoreScreenshotEncodeAndSaveDuration[] =
     "ash.pine.sreenshot_encode_and_save_duration";
 
 // A boolean pref indicating whether the informed restore onboarding dialog
-// should be shown.
+// should be shown. Pine is the old name for informed restore.
 inline constexpr char kShowInformedRestoreOnboarding[] =
     "ash.pine.should_show_informed_restore_onboarding";
+
+// A string pref that stores the last software version. Used to notify users if
+// there has been an update.
+inline constexpr char kInformedRestoreLastVersion[] =
+    "ash.wm.informed_restore_last_version";
 
 // A boolean pref that specifies if the cellular setup notification can be
 // shown or not. This notification should be shown post-OOBE if the user has a

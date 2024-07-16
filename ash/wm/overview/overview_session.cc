@@ -219,7 +219,7 @@ void OverviewSession::Init(
   // Create this before the birch bar widget.
   if (features::IsForestFeatureEnabled()) {
     birch_bar_controller_ = std::make_unique<BirchBarController>(
-        /*from_pine_service=*/enter_exit_overview_type_ ==
+        /*is_informed_restore=*/enter_exit_overview_type_ ==
         OverviewEnterExitType::kInformedRestore);
   }
 

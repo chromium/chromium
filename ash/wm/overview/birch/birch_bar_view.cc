@@ -299,8 +299,8 @@ void BirchBarView::SetupChips(const std::vector<raw_ptr<BirchItem>>& items) {
     case State::kLoadingByUser:
       reason = RelayoutReason::kSetupByUser;
       break;
-    // When loading in pine or reloading, directly perform fading in animation
-    // since the bar was filled by chip loaders.
+    // When loading for informed restore or reloading, directly perform fading
+    // in animation since the bar was filled by chip loaders.
     case State::kLoadingForInformedRestore:
     case State::kReloading:
       break;

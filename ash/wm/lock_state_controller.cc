@@ -297,10 +297,11 @@ LockStateController::~LockStateController() {
 void LockStateController::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(prefs::kLoginShutdownTimestampPrefName,
                              base::Time());
-  registry->RegisterTimeDeltaPref(prefs::kPineScreenshotTakenDuration,
-                                  base::TimeDelta());
-  registry->RegisterTimeDeltaPref(prefs::kPineScreenshotEncodeAndSaveDuration,
-                                  base::TimeDelta());
+  registry->RegisterTimeDeltaPref(
+      prefs::kInformedRestoreScreenshotTakenDuration, base::TimeDelta());
+  registry->RegisterTimeDeltaPref(
+      prefs::kInformedRestoreScreenshotEncodeAndSaveDuration,
+      base::TimeDelta());
 }
 
 void LockStateController::AddObserver(LockStateObserver* observer) {
@@ -969,9 +970,9 @@ void LockStateController::StartSessionStateChange(
 
 void LockStateController::OnTakeScreenshotFailTimeout(
     RequestedSessionState requested_session_state) {
-  SaveInformedRestoreScreenshotDuration(local_state_,
-                                        prefs::kPineScreenshotTakenDuration,
-                                        kTakeScreenshotFailTimeout);
+  SaveInformedRestoreScreenshotDuration(
+      local_state_, prefs::kInformedRestoreScreenshotTakenDuration,
+      kTakeScreenshotFailTimeout);
   RecordScreenshotOnShutdownStatus(
       ScreenshotOnShutdownStatus::kFailedOnTakingScreenshotTimeout);
   mirror_wallpaper_layer_.reset();
@@ -994,9 +995,9 @@ void LockStateController::OnInformedRestoreImageTaken(
   }
 
   take_screenshot_fail_timer_.Stop();
-  SaveInformedRestoreScreenshotDuration(local_state_,
-                                        prefs::kPineScreenshotTakenDuration,
-                                        base::TimeTicks::Now() - start_time);
+  SaveInformedRestoreScreenshotDuration(
+      local_state_, prefs::kInformedRestoreScreenshotTakenDuration,
+      base::TimeTicks::Now() - start_time);
 
   mirror_wallpaper_layer_.reset();
 
@@ -1017,11 +1018,10 @@ void LockStateController::OnInformedRestoreImageSaved(
     base::TimeTicks start_time,
     const base::FilePath& file_path) {
   SaveInformedRestoreScreenshotDuration(
-      local_state_, prefs::kPineScreenshotEncodeAndSaveDuration,
-      // This duration includes the time waiting for the
-      // `ThreadPool` to start running the task, also the
-      // time that the UI thread waits to get the reply
-      // from the `ThreadPool`.
+      local_state_, prefs::kInformedRestoreScreenshotEncodeAndSaveDuration,
+      // This duration includes the time waiting for the `ThreadPool` to start
+      // running the task, also the time that the UI thread waits to get the
+      // reply from the `ThreadPool`.
       base::TimeTicks::Now() - start_time);
   RecordScreenshotOnShutdownStatus(ScreenshotOnShutdownStatus::kSucceeded);
   if (shutdown_canceled_) {

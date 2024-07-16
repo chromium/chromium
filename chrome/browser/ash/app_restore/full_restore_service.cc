@@ -21,7 +21,6 @@
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/setting.mojom-shared.h"
 #include "ash/wm/desks/templates/saved_desk_controller.h"
-#include "ash/wm/window_restore/informed_restore_contents_data.h"
 #include "ash/wm/window_restore/informed_restore_controller.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/barrier_callback.h"
@@ -30,6 +29,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
+#include "base/version_info/version_info.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
@@ -337,13 +337,27 @@ void FullRestoreService::Init(bool& show_notification) {
   PrefService* prefs = profile_->GetPrefs();
   DCHECK(prefs);
 
+  // Determine whether we should show the update string. Crash takes priority
+  // over update but we do the computations to store the pref for the next
+  // session here first. The pref may not be registered in certain unit tests.
+  bool is_update = false;
+  if (features::IsForestFeatureEnabled() &&
+      prefs->HasPrefPath(prefs::kInformedRestoreLastVersion)) {
+    const base::Version old_version(
+        prefs->GetString(prefs::kInformedRestoreLastVersion));
+    const base::Version current_version = version_info::GetVersion();
+    prefs->SetString(prefs::kInformedRestoreLastVersion,
+                     current_version.GetString());
+    is_update = old_version.IsValid() && current_version > old_version;
+  }
+
   // If the system crashed before reboot, show the restore notification.
   if (ExitTypeService::GetLastSessionExitType(profile_) == ExitType::kCrashed) {
     if (!HasRestorePref(prefs))
       SetDefaultRestorePrefIfNecessary(prefs);
 
-    MaybeShowRestoreNotification(kRestoreForCrashNotificationId,
-                                 show_notification);
+    MaybeShowRestoreNotification(
+        InformedRestoreContentsData::DialogType::kCrash, show_notification);
     return;
   }
 
@@ -390,20 +404,26 @@ void FullRestoreService::Init(bool& show_notification) {
   }
 
   switch (restore_pref) {
-    case RestoreOption::kAlways:
+    case RestoreOption::kAlways: {
       Restore();
       break;
-    case RestoreOption::kAskEveryTime:
-      MaybeShowRestoreNotification(kRestoreNotificationId, show_notification);
+    }
+    case RestoreOption::kAskEveryTime: {
+      const auto dialog_type =
+          is_update ? InformedRestoreContentsData::DialogType::kUpdate
+                    : InformedRestoreContentsData::DialogType::kNormal;
+      MaybeShowRestoreNotification(dialog_type, show_notification);
       MaybeInitiateAdminTemplateAutoLaunch();
       break;
-    case RestoreOption::kDoNotRestore:
+    }
+    case RestoreOption::kDoNotRestore: {
       if (features::IsForestFeatureEnabled()) {
         MaybeShowInformedRestoreOnboarding(/*restore_on=*/false);
       }
       ::full_restore::FullRestoreSaveHandler::GetInstance()->AllowSave();
       MaybeInitiateAdminTemplateAutoLaunch();
       return;
+    }
   }
 }
 
@@ -598,11 +618,11 @@ bool FullRestoreService::CanBeInited() const {
 }
 
 void FullRestoreService::InitInformedRestoreContentsData(
-    bool last_session_crashed) {
+    InformedRestoreContentsData::DialogType dialog_type) {
   CHECK(app_launch_handler_->HasRestoreData());
 
   contents_data_ = std::make_unique<InformedRestoreContentsData>();
-  contents_data_->last_session_crashed = last_session_crashed;
+  contents_data_->dialog_type = dialog_type;
 
   contents_data_->restore_callback = base::BindOnce(
       &FullRestoreService::OnDialogRestore, weak_ptr_factory_.GetWeakPtr());
@@ -651,8 +671,9 @@ void FullRestoreService::InitInformedRestoreContentsData(
   }
 }
 
-void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
-                                                      bool& show_notification) {
+void FullRestoreService::MaybeShowRestoreNotification(
+    InformedRestoreContentsData::DialogType dialog_type,
+    bool& show_notification) {
   if (!app_launch_handler_) {
     return;
   }
@@ -676,7 +697,10 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
     return;
   }
 
-  const bool last_session_crashed = id == kRestoreForCrashNotificationId;
+  const bool last_session_crashed =
+      dialog_type == InformedRestoreContentsData::DialogType::kCrash;
+  const std::string id = last_session_crashed ? kRestoreForCrashNotificationId
+                                              : kRestoreNotificationId;
   if (!app_launch_handler_->HasRestoreData()) {
     CHECK(features::IsForestFeatureEnabled());
     MaybeShowInformedRestoreOnboarding(/*restore_on=*/true);
@@ -701,7 +725,7 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
   if (features::IsForestFeatureEnabled()) {
     CHECK(delegate_);
 
-    InitInformedRestoreContentsData(last_session_crashed);
+    InitInformedRestoreContentsData(dialog_type);
 
     if (crosapi::browser_util::IsLacrosEnabled()) {
       crosapi::CrosapiManager::Get()

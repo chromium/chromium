@@ -119,8 +119,8 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
   // Indicates if the data fetching is in progress.
   bool data_fetch_in_progress_ = false;
 
-  // True if the overview session was triggered by the pine service.
-  const bool from_pine_service_;
+  // True if the overview session is an informed restore session.
+  const bool is_informed_restore_;
 
   // Show/hide suggestions pref change registrar.
   PrefChangeRegistrar show_suggestions_pref_registrar_;

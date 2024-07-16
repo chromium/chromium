@@ -559,6 +559,31 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, AppInfo) {
   EXPECT_EQ("jhdjimmaggjajfjphpljagpgkidjilnj", apps_infos[3].app_id);
 }
 
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_Update) {
+  // Need at least one window for restore data.
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  CreateBrowser(profile);
+  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+
+  // Prepare for the main test body by setting the version to one that will be
+  // less.
+  profile->GetPrefs()->SetString(prefs::kInformedRestoreLastVersion, "0.0.0.0");
+
+  // Immediate save to full restore file to bypass the 2.5 second throttle.
+  AppLaunchInfoSaveWaiter::Wait();
+}
+
+// Verify that the app info that is sent to ash shell is dialog type update.
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, Update) {
+  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+
+  const InformedRestoreContentsData* contents_data =
+      Shell::Get()->informed_restore_controller()->contents_data();
+  ASSERT_TRUE(contents_data);
+  EXPECT_EQ(InformedRestoreContentsData::DialogType::kUpdate,
+            contents_data->dialog_type);
+}
+
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_ReenterOverviewPineSession) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
   CreateBrowser(ProfileManager::GetActiveUserProfile());

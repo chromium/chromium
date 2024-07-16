@@ -39,9 +39,9 @@ void RecordScreenshotDurations(PrefService* local_state) {
   };
 
   record_uma(local_state, "Ash.Pine.ScreenshotTakenDuration",
-             prefs::kPineScreenshotTakenDuration);
+             prefs::kInformedRestoreScreenshotTakenDuration);
   record_uma(local_state, "Ash.Pine.ScreenshotEncodeAndSaveDuration",
-             prefs::kPineScreenshotEncodeAndSaveDuration);
+             prefs::kInformedRestoreScreenshotEncodeAndSaveDuration);
 }
 
 void RecordDialogScreenshotVisibility(bool visible) {

@@ -1105,10 +1105,11 @@ TEST_F(LockStateControllerInformedRestoreTest, ShutdownWithWindows) {
   auto* local_state = Shell::Get()->local_state();
   // Informed restore screenshot related durations were recorded.
   const base::TimeDelta screenshot_taken_duration =
-      local_state->GetTimeDelta(prefs::kPineScreenshotTakenDuration);
+      local_state->GetTimeDelta(prefs::kInformedRestoreScreenshotTakenDuration);
   EXPECT_FALSE(screenshot_taken_duration.is_zero());
   const base::TimeDelta screenshot_encode_and_save_duration =
-      local_state->GetTimeDelta(prefs::kPineScreenshotEncodeAndSaveDuration);
+      local_state->GetTimeDelta(
+          prefs::kInformedRestoreScreenshotEncodeAndSaveDuration);
   EXPECT_FALSE(screenshot_encode_and_save_duration.is_zero());
 }
 

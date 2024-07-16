@@ -8294,6 +8294,9 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_CRASH_DESCRIPTION" desc="Label of the description for the informed restore dialog, if the previous session ended with a crash. Gives a little more information than the title.">
         Your Chromebook restarted unexpectedly. Open your previous windows and apps.
       </message>
+      <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_UPDATE_DESCRIPTION" desc="Label of the description for the informed restore dialog, if the previous session was on a earlier version.">
+        Your Chromebook has been updated. Open your previous windows and apps.
+      </message>
       <message name="IDS_ASH_INFORMED_RESTORE_DIALOG_NO_THANKS_BUTTON" desc="Label of the no thanks button for the informed restore dialog, which users can click if they choose not to restore.">
         No thanks
       </message>

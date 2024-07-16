@@ -74,8 +74,8 @@ std::string GetPrefNameFromSuggestionType(BirchSuggestionType type) {
 
 }  // namespace
 
-BirchBarController::BirchBarController(bool from_pine_service)
-    : from_pine_service_(from_pine_service) {
+BirchBarController::BirchBarController(bool is_informed_restore)
+    : is_informed_restore_(is_informed_restore) {
   // Init and register the show suggestions pref changed callback.
   show_suggestions_pref_registrar_.Init(GetPrefService());
   show_suggestions_pref_registrar_.Add(
@@ -252,7 +252,7 @@ void BirchBarController::MaybeFetchDataFromModel() {
     // Fetching data from model.
     data_fetch_in_progress_ = true;
     birch_model->RequestBirchDataFetch(
-        /*is_post_login=*/from_pine_service_,
+        /*is_post_login=*/is_informed_restore_,
         base::BindOnce(&BirchBarController::OnItemsFetchedFromModel,
                        weak_ptr_factory_.GetWeakPtr()));
   } else if (!birch_model_observer_.IsObserving()) {

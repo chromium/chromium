@@ -174,7 +174,6 @@ void InformedRestoreController::MaybeShowInformedRestoreOnboarding(
 void InformedRestoreController::
     MaybeStartInformedRestoreSessionDevAccelerator() {
   auto data = std::make_unique<InformedRestoreContentsData>();
-  data->last_session_crashed = false;
   std::pair<base::OnceClosure, base::OnceClosure> split =
       base::SplitOnceCallback(base::BindOnce(
           &InformedRestoreController::MaybeEndInformedRestoreSession,

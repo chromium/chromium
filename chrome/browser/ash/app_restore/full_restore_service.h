@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/wm/window_restore/informed_restore_contents_data.h"
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -32,11 +33,7 @@ namespace message_center {
 class Notification;
 }  // namespace message_center
 
-namespace ash {
-
-struct InformedRestoreContentsData;
-
-namespace full_restore {
+namespace ash::full_restore {
 
 class FullRestoreAppLaunchHandler;
 class FullRestoreDataHandler;
@@ -159,11 +156,13 @@ class FullRestoreService : public KeyedService,
   // apps. Otherwise, returns false.
   bool CanBeInited() const;
 
-  void InitInformedRestoreContentsData(bool last_session_crashed);
+  void InitInformedRestoreContentsData(
+      InformedRestoreContentsData::DialogType dialog_type);
 
-  // Show the restore notification on startup.
-  void MaybeShowRestoreNotification(const std::string& id,
-                                    bool& show_notification);
+  // Shows the restore notification or the informed restore dialog on startup.
+  void MaybeShowRestoreNotification(
+      InformedRestoreContentsData::DialogType dialog_type,
+      bool& show_notification);
 
   void RecordRestoreAction(const std::string& notification_id,
                            RestoreAction restore_action);
@@ -263,8 +262,6 @@ class ScopedRestoreForTesting {
   ~ScopedRestoreForTesting();
 };
 
-}  // namespace full_restore
-
-}  // namespace ash
+}  // namespace ash::full_restore
 
 #endif  // CHROME_BROWSER_ASH_APP_RESTORE_FULL_RESTORE_SERVICE_H_

@@ -1226,7 +1226,8 @@ TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile, Crash) {
               MaybeStartInformedRestoreOverviewSession(testing::_))
       .WillOnce([](std::unique_ptr<InformedRestoreContentsData> data) {
         ASSERT_TRUE(data);
-        EXPECT_TRUE(data->last_session_crashed);
+        EXPECT_EQ(InformedRestoreContentsData::DialogType::kCrash,
+                  data->dialog_type);
       });
   CreateFullRestoreServiceForTesting(std::move(mock_delegate));
 

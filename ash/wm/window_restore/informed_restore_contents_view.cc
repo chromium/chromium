@@ -315,10 +315,20 @@ void InformedRestoreContentsView::CreateChildViews() {
       Shell::Get()->informed_restore_controller()->contents_data();
   CHECK(contents_data);
   const int title_message_id = IDS_ASH_INFORMED_RESTORE_DIALOG_TITLE;
-  const int description_message_id =
-      contents_data->last_session_crashed
-          ? IDS_ASH_INFORMED_RESTORE_DIALOG_CRASH_DESCRIPTION
-          : IDS_ASH_INFORMED_RESTORE_DIALOG_DESCRIPTION;
+  int description_message_id;
+  switch (contents_data->dialog_type) {
+    case InformedRestoreContentsData::DialogType::kNormal:
+      description_message_id = IDS_ASH_INFORMED_RESTORE_DIALOG_DESCRIPTION;
+      break;
+    case InformedRestoreContentsData::DialogType::kCrash:
+      description_message_id =
+          IDS_ASH_INFORMED_RESTORE_DIALOG_CRASH_DESCRIPTION;
+      break;
+    case InformedRestoreContentsData::DialogType::kUpdate:
+      description_message_id =
+          IDS_ASH_INFORMED_RESTORE_DIALOG_UPDATE_DESCRIPTION;
+      break;
+  }
 
   auto* primary_container_view = AddChildView(
       // In landscape mode, this box layout view is the container for the left

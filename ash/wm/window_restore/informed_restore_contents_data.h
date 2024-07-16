@@ -23,6 +23,13 @@ struct ASH_EXPORT InformedRestoreContentsData {
   InformedRestoreContentsData& operator=(const InformedRestoreContentsData&) = delete;
   ~InformedRestoreContentsData();
 
+  // The dialog will display a different description string based on the type.
+  enum class DialogType {
+    kNormal,
+    kCrash,
+    kUpdate,
+  };
+
   struct AppInfo {
     AppInfo(const std::string& id, const std::string& title, int window_id);
     AppInfo(const std::string& app_id,
@@ -74,6 +81,9 @@ struct ASH_EXPORT InformedRestoreContentsData {
   // True if the previous session crashed. The dialog will have slightly
   // different strings in this case.
   bool last_session_crashed = false;
+
+  // The dialog will have slightly different strings depending on its type.
+  DialogType dialog_type = DialogType::kNormal;
 
   // Callbacks for the restore and cancel buttons.
   base::OnceClosure restore_callback;
