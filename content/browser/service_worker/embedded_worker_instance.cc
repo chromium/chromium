@@ -224,6 +224,7 @@ struct EmbeddedWorkerInstance::StartInfo {
 
 EmbeddedWorkerInstance::~EmbeddedWorkerInstance() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  in_dtor_ = true;
   ReleaseProcess();
 }
 
@@ -472,7 +473,12 @@ void EmbeddedWorkerInstance::Stop() {
   // been sent.
   if (status_ == blink::EmbeddedWorkerStatus::kStarting &&
       !HasSentStartWorker(starting_phase())) {
+    base::WeakPtr<EmbeddedWorkerInstance> weak_this =
+        weak_factory_.GetWeakPtr();
     ReleaseProcess();
+    if (!weak_this) {
+      return;
+    }
     for (auto& observer : listener_list_)
       observer.OnStopped(
           blink::EmbeddedWorkerStatus::kStarting /* old_status */);
@@ -706,7 +712,11 @@ void EmbeddedWorkerInstance::OnStarted(
 void EmbeddedWorkerInstance::OnStopped() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   blink::EmbeddedWorkerStatus old_status = status_;
+  base::WeakPtr<EmbeddedWorkerInstance> weak_this = weak_factory_.GetWeakPtr();
   ReleaseProcess();
+  if (!weak_this) {
+    return;
+  }
   for (auto& observer : listener_list_)
     observer.OnStopped(old_status);
 }
@@ -718,7 +728,11 @@ void EmbeddedWorkerInstance::Detach() {
   }
 
   blink::EmbeddedWorkerStatus old_status = status_;
+  base::WeakPtr<EmbeddedWorkerInstance> weak_this = weak_factory_.GetWeakPtr();
   ReleaseProcess();
+  if (!weak_this) {
+    return;
+  }
   for (auto& observer : listener_list_)
     observer.OnDetached(old_status);
 }
@@ -995,6 +1009,13 @@ void EmbeddedWorkerInstance::OnNetworkAccessedForScriptLoad() {
 }
 
 void EmbeddedWorkerInstance::ReleaseProcess() {
+  // Keeps alive `owner_version_` and `this` during the method.
+  // We don't have to protect `owner_version_` during the destruction because
+  // there should no remaining `scoped_refptr` to `*owner_version_` that could
+  // trigger re-entering `~EmbeddedWorkerInstance()`.
+  scoped_refptr<ServiceWorkerVersion> protect =
+      !in_dtor_ ? owner_version_.get() : nullptr;
+
   // Abort an inflight start task.
   inflight_start_info_.reset();
   // NotifyForegroundServiceWorkerRemoved() may trigger a call to
@@ -1022,8 +1043,8 @@ void EmbeddedWorkerInstance::OnSetupFailed(
     StatusCallback callback,
     blink::ServiceWorkerStatusCode status) {
   blink::EmbeddedWorkerStatus old_status = status_;
-  ReleaseProcess();
   base::WeakPtr<EmbeddedWorkerInstance> weak_this = weak_factory_.GetWeakPtr();
+  ReleaseProcess();
   std::move(callback).Run(status);
   if (weak_this && old_status != blink::EmbeddedWorkerStatus::kStopped) {
     for (auto& observer : weak_this->listener_list_)
