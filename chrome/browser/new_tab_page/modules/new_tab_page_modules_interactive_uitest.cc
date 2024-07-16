@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+#include <vector>
+
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/new_tab_page/modules/modules_switches.h"
@@ -24,6 +27,11 @@ const DeepQuery kModulesV2Container = {"ntp-app", "ntp-modules-v2",
 const DeepQuery kModulesV2Wrapper = {"ntp-app", "ntp-modules-v2", "#container",
                                      "ntp-module-wrapper"};
 
+struct ModuleLink {
+  const DeepQuery query;
+  const char* url;
+};
+
 struct ModuleDetails {
   const std::vector<base::test::FeatureRefAndParams> features;
   const DeepQuery module_query;
@@ -31,8 +39,7 @@ struct ModuleDetails {
   const DeepQuery more_action_menu_query;
   const DeepQuery dismiss_button_query;
   const DeepQuery disable_button_query;
-  const DeepQuery tile_link_query;
-  const char* tile_link;
+  const std::vector<ModuleLink> links;
 };
 
 ModuleDetails kMostRelevantTabResumptionModuleDetails = {
@@ -51,10 +58,60 @@ ModuleDetails kMostRelevantTabResumptionModuleDetails = {
      "ntp-most-relevant-tab-resumption", "ntp-module-header-v2", "#dismiss"},
     {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
      "ntp-most-relevant-tab-resumption", "ntp-module-header-v2", "#disable"},
-    {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
-     "ntp-most-relevant-tab-resumption", "#tabs", "a"},
-    kGooglePageUrl,
+    {{{"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+       "ntp-most-relevant-tab-resumption", "#tabs", "a"},
+      kGooglePageUrl}},
 };
+
+ModuleDetails kGoogleCalendarModuleDetails = {
+    {{ntp_features::kNtpCalendarModule,
+      {{ntp_features::kNtpCalendarModuleDataParam, "fake"}}},
+     {ntp_features::kNtpModulesRedesigned, {}}},
+    {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+     "ntp-google-calendar-module"},
+    {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+     "ntp-google-calendar-module", "ntp-module-header-v2", "#menuButton"},
+    {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+     "ntp-google-calendar-module", "ntp-module-header-v2", "cr-action-menu",
+     "dialog"},
+    {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+     "ntp-google-calendar-module", "ntp-module-header-v2", "#dismiss"},
+    {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+     "ntp-google-calendar-module", "ntp-module-header-v2", "#disable"},
+    {{{"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+       "ntp-google-calendar-module", "ntp-calendar", "ntp-calendar-event",
+       "#header"},
+      "https://foo.com/0"},
+     {{"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+       "ntp-google-calendar-module", "ntp-calendar", "#seeMore", "a"},
+      "https://calendar.google.com"},
+     {{"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+       "ntp-google-calendar-module", "ntp-calendar", "ntp-calendar-event",
+       "cr-chip"},
+      "https://foo.com/attachment0"},
+     {{"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+       "ntp-google-calendar-module", "ntp-calendar", "ntp-calendar-event",
+       "cr-button"},
+      "https://foo.com/conference0"}},
+};
+
+std::vector<ModuleDetails> kAllModules = {
+    kGoogleCalendarModuleDetails,
+    kMostRelevantTabResumptionModuleDetails,
+};
+
+std::vector<std::pair<std::vector<base::test::FeatureRefAndParams>, ModuleLink>>
+GetAllModuleLinks(std::vector<ModuleDetails> modules) {
+  std::vector<
+      std::pair<std::vector<base::test::FeatureRefAndParams>, ModuleLink>>
+      result;
+  for (const auto& module : modules) {
+    for (const auto& link : module.links) {
+      result.push_back(std::make_pair(module.features, link));
+    }
+  }
+  return result;
+}
 
 }  // namespace
 
@@ -84,16 +141,13 @@ class NewTabPageModulesInteractiveUiBaseTest : public InteractiveBrowserTest {
                                          GURL(chrome::kChromeUINewTabPageURL)));
   }
 
-  InteractiveTestApi::MultiStep WaitForLinkToLoad(const DeepQuery& link,
-                                                  const char* url) {
+  InteractiveTestApi::MultiStep WaitForLinkToLoad(const DeepQuery& link) {
     StateChange tile_loaded;
     tile_loaded.event = kElementReadyEvent;
     tile_loaded.type = StateChange::Type::kExistsAndConditionTrue;
     tile_loaded.where = link;
     tile_loaded.test_function = base::StrCat(
-        {"(el) => { return el.clientWidth > 0 && el.clientHeight > "
-         "0 && el.getAttribute('href') == '",
-         url, "'; }"});
+        {"(el) => { return el.clientWidth > 0 && el.clientHeight > 0; }"});
     return WaitForStateChange(kNewTabPageElementId, std::move(tile_loaded));
   }
 
@@ -169,10 +223,9 @@ class NewTabPageModulesInteractiveUiTest
   ModuleDetails ModuleDetails() const { return GetParam(); }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    NewTabPageModulesInteractiveUiTest,
-    ::testing::Values(kMostRelevantTabResumptionModuleDetails));
+INSTANTIATE_TEST_SUITE_P(All,
+                         NewTabPageModulesInteractiveUiTest,
+                         ::testing::ValuesIn(kAllModules));
 
 // TODO(crbug.com/335214502): Re-enable this test.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
@@ -255,6 +308,33 @@ IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveUiTest,
       WaitForElementHiddenSet(kModulesV2Wrapper));
 }
 
+class NewTabPageModulesInteractiveLinkUiTest
+    : public NewTabPageModulesInteractiveUiBaseTest,
+      public testing::WithParamInterface<
+          std::pair<std::vector<base::test::FeatureRefAndParams>, ModuleLink>> {
+ public:
+  NewTabPageModulesInteractiveLinkUiTest() = default;
+  ~NewTabPageModulesInteractiveLinkUiTest() override = default;
+  NewTabPageModulesInteractiveLinkUiTest(
+      const NewTabPageModulesInteractiveLinkUiTest&) = delete;
+  void operator=(const NewTabPageModulesInteractiveLinkUiTest&) = delete;
+
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kSignedOutNtpModulesSwitch);
+
+    features.InitWithFeaturesAndParameters(GetParam().first, {});
+    InteractiveBrowserTest::SetUp();
+  }
+
+  ModuleLink ModuleLink() const { return GetParam().second; }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         NewTabPageModulesInteractiveLinkUiTest,
+                         ::testing::ValuesIn(GetAllModuleLinks(kAllModules)));
+
 // TODO(crbug.com/347914816): Fix test failure on Mac.
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
@@ -264,7 +344,7 @@ IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveUiTest,
 #define MAYBE_ClickingEntryNavigatesToCorrectPage \
   ClickingEntryNavigatesToCorrectPage
 #endif
-IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveLinkUiTest,
                        MAYBE_ClickingEntryNavigatesToCorrectPage) {
   RunTestSequence(
       // 1. Wait for new tab page to load.
@@ -272,16 +352,13 @@ IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveUiTest,
       // 2. Wait for modules container to have an expected child count matching
       // the test setup.
       WaitForElementChildElementCount(kModulesV2Container, 1),
-      // 3. Wait for the Tab resumption module to load.
-      WaitForElementToLoad(ModuleDetails().module_query),
-      // 4. Wait for tile to load.
-      WaitForLinkToLoad(ModuleDetails().tile_link_query,
-                        ModuleDetails().tile_link),
-      // 5. Scroll to tile. Modules may sometimes load below the fold.
-      ScrollIntoView(kNewTabPageElementId, ModuleDetails().tile_link_query),
-      // 6. Click the element link.
-      ClickElement(kNewTabPageElementId, ModuleDetails().tile_link_query),
-      // 7. Verify that the tab navigates to the tile's link.
+      // 3. Wait for link to load.
+      WaitForLinkToLoad(ModuleLink().query),
+      // 4. Scroll to link. Modules may sometimes load below the fold.
+      ScrollIntoView(kNewTabPageElementId, ModuleLink().query),
+      // 5. Click the element link.
+      ClickElement(kNewTabPageElementId, ModuleLink().query),
+      // 6. Verify that the tab navigates to the tile's link.
       WaitForWebContentsNavigation(kNewTabPageElementId,
-                                   GURL(ModuleDetails().tile_link)));
+                                   GURL(ModuleLink().url)));
 }

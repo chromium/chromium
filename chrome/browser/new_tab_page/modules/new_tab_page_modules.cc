@@ -29,8 +29,13 @@ const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
     bool is_managed_profile) {
   std::vector<std::pair<const std::string, int>> details;
 
-  if (is_managed_profile &&
-      base::FeatureList::IsEnabled(ntp_features::kNtpCalendarModule)) {
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpCalendarModule) &&
+      (is_managed_profile || (!base::GetFieldTrialParamValueByFeature(
+                                   ntp_features::kNtpCalendarModule,
+                                   ntp_features::kNtpCalendarModuleDataParam)
+                                   .empty() &&
+                              base::CommandLine::ForCurrentProcess()->HasSwitch(
+                                  switches::kSignedOutNtpModulesSwitch)))) {
     details.emplace_back("google_calendar",
                          IDS_NTP_MODULES_GOOGLE_CALENDAR_TITLE);
   }
