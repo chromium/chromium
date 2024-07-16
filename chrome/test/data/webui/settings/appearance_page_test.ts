@@ -599,6 +599,15 @@ suite('TabSearchPositionSettings', () => {
     assertEquals(FALSEY_STRING, dropdown?.getSelectedValue());
   });
 
+  test('restart button A11y', async () => {
+    await buildPage(/*startupPref=*/ false, /*currentPref=*/ true);
+    const button = getTabSearchRestartButton();
+    assertTrue(!!button);
+
+    // The restart button needs to have the "alert" aria attribute.
+    assertEquals('alert', button.role);
+  });
+
   test('restart button steady state', async () => {
     await buildPage(/*startupPref=*/ false, /*currentPref=*/ false);
     assertFalse(!!getTabSearchRestartButton());

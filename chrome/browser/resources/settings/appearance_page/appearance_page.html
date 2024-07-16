@@ -192,8 +192,8 @@
             </div>
             <template is="dom-if" if="[[showTabSearchPositionRestartButton_]]"
                 restamp>
-              <cr-button id="tabSearchPositionRestart"
-                on-click="onTabSearchPositionRestartClick_">
+              <cr-button id="tabSearchPositionRestart" role="alert"
+                  on-click="onTabSearchPositionRestartClick_">
                 $i18n{restart}
               </cr-button>
             </template>
