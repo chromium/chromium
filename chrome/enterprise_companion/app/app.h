@@ -7,7 +7,12 @@
 
 #include <memory>
 
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
+#include "base/time/time.h"
+#include "chrome/enterprise_companion/enterprise_companion_client.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
+#include "mojo/public/cpp/platform/named_platform_channel.h"
 
 namespace enterprise_companion {
 
@@ -34,6 +39,13 @@ class App {
 
 // Creates an App which runs the EnterpriseCompanion IPC server process.
 std::unique_ptr<App> CreateAppServer();
+
+// Creates an App which instructs the running server to exit, if present.
+std::unique_ptr<App> CreateAppShutdown(
+    base::Clock* clock = base::DefaultClock::GetInstance(),
+    base::TimeDelta connection_timeout = base::Seconds(10),
+    const mojo::NamedPlatformChannel::ServerName& server_name =
+        GetServerName());
 
 }  // namespace enterprise_companion
 

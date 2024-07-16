@@ -30,6 +30,8 @@ enum class ApplicationError {
   kPolicyPersistenceFailed,
   // The global singleton lock could not be acquired.
   kCannotAcquireLock,
+  // The EnterpriseCompanion IPC service could not be reached.
+  kEnterpriseCompanionServiceConnectionFailed,
 };
 
 // Represents an error which was deserialized from an external source (e.g.

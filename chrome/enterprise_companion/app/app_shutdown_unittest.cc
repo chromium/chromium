@@ -2,20 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/enterprise_companion/enterprise_companion_service_stub.h"
-
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
-#include "base/logging.h"
-#include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -25,21 +18,15 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/default_clock.h"
-#include "base/unguessable_token.h"
-#include "chrome/enterprise_companion/enterprise_companion_client.h"
+#include "base/time/time.h"
+#include "chrome/enterprise_companion/app/app.h"
 #include "chrome/enterprise_companion/enterprise_companion_service.h"
+#include "chrome/enterprise_companion/enterprise_companion_service_stub.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
 #include "chrome/enterprise_companion/ipc_support.h"
-#include "chrome/enterprise_companion/mojom/enterprise_companion.mojom-forward.h"
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
-#include "components/named_mojo_ipc_server/named_mojo_ipc_server_client_util.h"
-#include "mojo/public/cpp/bindings/callback_helpers.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
-#include "mojo/public/cpp/platform/platform_channel_endpoint.h"
-#include "mojo/public/cpp/system/isolated_connection.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
@@ -48,9 +35,7 @@ namespace enterprise_companion {
 namespace {
 
 constexpr char kServerNameFlag[] = "server-name";
-
-// Exit code emitted by the multi-process test client if an IPC call is dropped.
-constexpr int32_t kClientCallbackDroppedExitCode = 42;
+constexpr int32_t kIPCConnectionFailedExitCode = 42;
 
 class MockEnterpriseCompanionService final : public EnterpriseCompanionService {
  public:
@@ -63,7 +48,7 @@ class MockEnterpriseCompanionService final : public EnterpriseCompanionService {
 
 }  // namespace
 
-class EnterpriseCompanionServiceStubTest : public ::testing::Test {
+class AppShutdownTest : public ::testing::Test {
  public:
   void SetUp() override {
     mock_service_ = std::make_unique<MockEnterpriseCompanionService>();
@@ -80,8 +65,7 @@ class EnterpriseCompanionServiceStubTest : public ::testing::Test {
     base::CommandLine command_line =
         base::GetMultiProcessTestChildBaseCommandLine();
     command_line.AppendSwitchNative(kServerNameFlag, server_name_);
-    return base::SpawnMultiProcessTestChild("EnterpriseCompanionClient",
-                                            command_line,
+    return base::SpawnMultiProcessTestChild("ShutdownAppClient", command_line,
                                             /*options=*/{});
   }
 
@@ -95,7 +79,7 @@ class EnterpriseCompanionServiceStubTest : public ::testing::Test {
         FROM_HERE, base::BindLambdaForTesting([&] {
           base::ScopedAllowBaseSyncPrimitivesForTesting allow_blocking;
           process_exited = base::WaitForMultiprocessTestChildExit(
-              process, TestTimeouts::action_timeout() / 2, &exit_code);
+              process, TestTimeouts::action_timeout(), &exit_code);
         }),
         wait_for_process_exit_loop.QuitClosure());
     wait_for_process_exit_loop.Run();
@@ -133,7 +117,7 @@ class EnterpriseCompanionServiceStubTest : public ::testing::Test {
   }
 };
 
-TEST_F(EnterpriseCompanionServiceStubTest, ServiceReachable) {
+TEST_F(AppShutdownTest, ServiceReachable) {
   EXPECT_CALL(*mock_service_, Shutdown)
       .WillOnce([](base::OnceClosure callback) { std::move(callback).Run(); });
   // Start the companion service and wait for it to become available before
@@ -152,7 +136,7 @@ TEST_F(EnterpriseCompanionServiceStubTest, ServiceReachable) {
   EXPECT_EQ(WaitForProcess(child_process), 0);
 }
 
-TEST_F(EnterpriseCompanionServiceStubTest, UntrustedCallerRejected) {
+TEST_F(AppShutdownTest, UntrustedCallerRejected) {
   EXPECT_CALL(*mock_service_, Shutdown).Times(0);
   base::RunLoop start_run_loop;
   std::unique_ptr<mojom::EnterpriseCompanion> stub =
@@ -165,53 +149,34 @@ TEST_F(EnterpriseCompanionServiceStubTest, UntrustedCallerRejected) {
   start_run_loop.Run(FROM_HERE);
 
   base::Process child_process = SpawnClient();
-  EXPECT_EQ(WaitForProcess(child_process), kClientCallbackDroppedExitCode);
+  EXPECT_EQ(WaitForProcess(child_process), kIPCConnectionFailedExitCode);
 }
 
-// A test client which connects to the NamedMojoIpcServer, calls the Shutdown
-// RPC, and returns with the result code of the call.
-MULTIPROCESS_TEST_MAIN(EnterpriseCompanionClient) {
+TEST_F(AppShutdownTest, Timeout) {
+  EnterpriseCompanionStatus result =
+      CreateAppShutdown(base::DefaultClock::GetInstance(),
+                        base::Milliseconds(100), server_name_)
+          ->Run();
+  EXPECT_TRUE(result.EqualsApplicationError(
+      ApplicationError::kEnterpriseCompanionServiceConnectionFailed));
+}
+
+MULTIPROCESS_TEST_MAIN(ShutdownAppClient) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::MainThreadType::IO};
   ScopedIPCSupportWrapper ipc_support;
 
-  std::unique_ptr<mojo::IsolatedConnection> connection;
-  mojo::Remote<mojom::EnterpriseCompanion> remote;
-  base::RunLoop connect_run_loop;
-  ConnectToServer(
-      base::DefaultClock::GetInstance(), TestTimeouts::action_timeout(),
-      base::BindLambdaForTesting(
-          [&](std::unique_ptr<mojo::IsolatedConnection> in_connection,
-              mojo::Remote<mojom::EnterpriseCompanion> in_remote) {
-            connection = std::move(in_connection);
-            remote = std::move(in_remote);
-          })
-          .Then(connect_run_loop.QuitClosure()),
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
-          kServerNameFlag));
-  connect_run_loop.Run();
-
-  if (!connection || !remote) {
-    LOG(ERROR) << "Failed to connect to remote";
-    return -1;
+  EnterpriseCompanionStatus result =
+      CreateAppShutdown(base::DefaultClock::GetInstance(),
+                        TestTimeouts::action_timeout(),
+                        command_line->GetSwitchValueNative(kServerNameFlag))
+          ->Run();
+  if (result.EqualsApplicationError(
+          ApplicationError::kEnterpriseCompanionServiceConnectionFailed)) {
+    return kIPCConnectionFailedExitCode;
   }
-
-  int32_t result_code = -1;
-  base::RunLoop wait_for_response_run_loop;
-  remote->Shutdown(
-      base::BindOnce(
-          [](int32_t* out_result_code, mojom::StatusPtr status) {
-            *out_result_code = status->code;
-          },
-          &result_code)
-          .Then(mojo::WrapCallbackWithDropHandler(
-              mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-                  base::BindOnce(wait_for_response_run_loop.QuitClosure())),
-              base::BindLambdaForTesting(
-                  [&]() { result_code = kClientCallbackDroppedExitCode; }))));
-  wait_for_response_run_loop.Run();
-
-  return result_code;
+  return !result.ok();
 }
 
 }  // namespace enterprise_companion

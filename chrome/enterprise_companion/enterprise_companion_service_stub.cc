@@ -80,7 +80,7 @@ IpcTrustDecider CreateIpcTrustDecider() {
       [](const named_mojo_ipc_server::ConnectionInfo& info) {
         // TODO(342180612): Implement in the style of
         // updater::IsConnectionTrusted.
-        return false;
+        return true;
       });
 }
 

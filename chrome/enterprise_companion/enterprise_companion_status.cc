@@ -63,7 +63,7 @@ constexpr std::string DeviceManagementStatusToString(
     case policy::DM_STATUS_SERVICE_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE:
       return "Non-dasher account with packaged license can't enroll";
     case policy::DM_STATUS_SERVICE_ENTERPRISE_ACCOUNT_IS_NOT_ELIGIBLE_TO_ENROLL:
-      return "Nnot eligible enterprise account can't enroll";
+      return "Not eligible enterprise account can't enroll";
     case policy::DM_STATUS_SERVICE_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED:
       return "Enterprise TOS has not been accepted";
     case policy::DM_STATUS_SERVICE_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE:
@@ -83,6 +83,8 @@ constexpr std::string ApplicationErrorToString(ApplicationError error) {
       return "Failed to persist policies to storage.";
     case ApplicationError::kCannotAcquireLock:
       return "Failed to acquire global singleton lock.";
+    case ApplicationError::kEnterpriseCompanionServiceConnectionFailed:
+      return "The EnterpriseCompanion IPC interface could not be reached.";
   }
 }
 
