@@ -1167,7 +1167,8 @@
       "http/tests/storage/partitioned-storage"
     ],
     "args": ["--disable-features=ThirdPartyStoragePartitioning"],
-    "expires": "Feb 4, 2025"
+    "expires": "Feb 4, 2025",
+    "owners": ["arichiv@chromium.org", "bingler@chromium.org"]
   },
 
   "isInputPending requires threaded compositing and layerized iframes",
