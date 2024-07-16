@@ -18,6 +18,8 @@ source_set("browser") {
     "metrics_web_contents_observer.h",
     "navigation_handle_user_data.cc",
     "navigation_handle_user_data.h",
+    "observers/abandoned_page_load_metrics_observer.cc",
+    "observers/abandoned_page_load_metrics_observer.h",
     "observers/assert_page_load_metrics_observer.cc",
     "observers/assert_page_load_metrics_observer.h",
     "observers/back_forward_cache_page_load_metrics_observer.cc",

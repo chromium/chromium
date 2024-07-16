@@ -6,88 +6,24 @@
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_GWS_ABANDONED_PAGE_LOAD_METRICS_OBSERVER_H_
 
 #include "components/google/core/common/google_util.h"
+#include "components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/navigation_handle_timing.h"
 
 namespace internal {
 // Exposed for tests.
 extern const char kGWSAbandonedPageLoadMetricsHistogramPrefix[];
-extern const char kSuffixWasBackgrounded[];
-extern const char kSuffixWasHidden[];
 extern const char kSuffixWasNonSRP[];
 
 }  // namespace internal
 
 // Observes and records UMA for navigations to GWS which might or might get
 // "abandoned" at some point during the navigation / loading. Different from
-// GWSPageLoadMetricsObserver, this observer will log the navigation milestones
-// even if the navigation didn't end up reaching all the milestones. This allows
-// us to look at the amount of navigations that reached each milestone, to see
-// where the navigation gets abandoned. In addition to that, this observer will
-// also log the abandonment reason and the last navigation milestone the
-// navigation reached before getting abandoned.
+// AbandonedPageLoadMetricsObserver, this will only observe navigations that
+// target GWS (either from the start or after redirections).
 class GWSAbandonedPageLoadMetricsObserver
-    : public page_load_metrics::PageLoadMetricsObserver {
+    : public AbandonedPageLoadMetricsObserver {
  public:
-  // The different navigation milestones that the tracked page load can reach.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  //
-  // LINT.IfChange(NavigationMilestone)
-  enum class NavigationMilestone {
-    kNavigationStart = 0,
-    kLoaderStart = 1,
-    kFirstRedirectedRequestStart = 2,
-    kFirstRedirectResponseStart = 3,
-    kFirstRedirectResponseLoaderCallback = 4,
-    kNonRedirectedRequestStart = 5,
-    kNonRedirectResponseStart = 6,
-    kNonRedirectResponseLoaderCallback = 7,
-    kCommitSent = 8,
-    kDidCommit = 9,
-    kMaxValue = kDidCommit,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:NavigationMilestoneEnum)
-
-  // The different abandonment reasons that the tracked page load can encounter.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  //
-  // LINT.IfChange(AbandonReason)
-  enum class AbandonReason {
-    kFrameRemoved = 0,
-    kExplicitCancellation = 1,
-    kInternalCancellation = 2,
-    kRenderProcessGone = 3,
-    kNeverStarted = 4,
-    kFailedSecurityCheck = 5,
-    kOther = 6,
-    kHidden = 7,
-    kErrorPage = 8,
-    kAppBackgrounded = 9,
-    kNewReloadNavigation = 10,
-    kNewHistoryNavigation = 11,
-    kNewOtherNavigationBrowserInitiated = 12,
-    kNewOtherNavigationRendererInitiated = 13,
-    kMaxValue = kNewOtherNavigationRendererInitiated,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:NavigationAbandonReasonEnum)
-
-  static std::string AbandonReasonToString(AbandonReason abandon_reason);
-  static std::string NavigationMilestoneToString(
-      NavigationMilestone navigation_milestone);
-  static std::string GetMilestoneHistogramNameWithoutPrefixSuffix(
-      NavigationMilestone milestone);
-  static std::string GetMilestoneToAbandonHistogramNameWithoutPrefixSuffix(
-      NavigationMilestone milestone,
-      std::optional<AbandonReason> abandon_reason);
-  static std::string
-  GetAbandonReasonAtMilestoneHistogramNameWithoutPrefixSuffix(
-      NavigationMilestone milestone);
-  static std::string
-  GetLastMilestoneBeforeAbandonHistogramNameWithoutPrefixSuffix(
-      std::optional<AbandonReason> abandon_reason);
-
   GWSAbandonedPageLoadMetricsObserver();
   ~GWSAbandonedPageLoadMetricsObserver() override;
 
@@ -98,59 +34,14 @@ class GWSAbandonedPageLoadMetricsObserver
 
   // page_load_metrics::PageLoadMetricsObserver implementation:
   const char* GetObserverName() const override;
-  ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
-                        const GURL& currently_committed_url,
-                        bool started_in_foreground) override;
-  ObservePolicy OnRedirect(
-      content::NavigationHandle* navigation_handle) override;
-  ObservePolicy OnNavigationHandleTimingUpdated(
-      content::NavigationHandle* navigation_handle) override;
-  ObservePolicy OnCommit(content::NavigationHandle* navigation_handle) override;
-
-  // Signals that the navigation is abandoned: backgrounded, hidden, or failed.
-  ObservePolicy FlushMetricsOnAppEnterBackground(
-      const page_load_metrics::mojom::PageLoadTiming& timing) override;
-  ObservePolicy OnHidden(
-      const page_load_metrics::mojom::PageLoadTiming& timing) override;
-  void OnFailedProvisionalLoad(
-      const page_load_metrics::FailedProvisionalLoadInfo&
-          failed_provisional_load_info) override;
-  void OnDidInternalNavigationAbort(
-      content::NavigationHandle* navigation_handle) override;
-
-  // Prerender, fenced-frame, bfcache cases are excluded.
-  // TODO(https://crbug.com/347706997): Consider logging for these cases, but
-  // mark them specifically to avoid skewing the timings.
-  ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
-                                 const GURL& currently_committed_url) override;
-  ObservePolicy OnFencedFramesStart(
-      content::NavigationHandle* navigation_handle,
-      const GURL& currently_committed_url) override;
 
  private:
-  // Returns the suffix to be added to the histograms logged. This is not static
-  // since the return value depends on events that happened while the tracked
-  // page load is ongoing.
-  std::string GetHistogramSuffix(NavigationMilestone navigation_milestone,
-                                 base::TimeTicks event_time) const;
-
-  void LogNavigationMilestoneMetrics();
-  void LogMetricsOnAbandon(AbandonReason abandon_reason,
-                           base::TimeTicks navigation_abandon_time);
-  void LogAbandonHistograms(AbandonReason abandon_reason,
-                            NavigationMilestone milestone,
-                            base::TimeTicks event_time,
-                            base::TimeTicks relative_start_time);
-  void LogMilestoneHistogram(NavigationMilestone milestone,
-                             base::TimeTicks event_time,
-                             base::TimeTicks relative_start_time);
-  bool WasBackgrounded() const {
-    return !first_backgrounded_timestamp_.is_null();
-  }
-  bool WasHidden() const { return !first_hidden_timestamp_.is_null(); }
-
-  void LogPreviousBackgroundingIfNeeded();
-  void LogPreviousHidingIfNeeded();
+  // AbandonedPageLoadMetricsObserver overrides:
+  std::string GetHistogramPrefix() const override;
+  std::string GetAdditionalSuffix() const override;
+  ObservePolicy OnNavigationEvent(
+      content::NavigationHandle* navigation_handle) override;
+  bool IsAllowedToLogMetrics() const override;
 
   // Set to true if we see the navigation involves non-SRP URL, which will be
   // specially marked in the logged metrics.
@@ -158,35 +49,6 @@ class GWSAbandonedPageLoadMetricsObserver
   // Set to true if we see the navigation involves SRP URL, which means we need
   // to log metrics for this navigation.
   bool involved_srp_url_ = false;
-
-  // Timestamp of the first time `FlushMetricsOnAppEnterBackground()` or
-  // `OnHidden()` are called, respectively. This is tracked in case the
-  // abandonments are not logged immediately, e.g. when we're not sure if the
-  // navigation we're tracking will involve SRP (i.e. `involved_srp_url` is
-  // false).
-  base::TimeTicks first_backgrounded_timestamp_;
-  base::TimeTicks first_hidden_timestamp_;
-  // Whether we've previously logged backgrounding/hiding time. This is useful
-  // because we will keep observing when backgrounding/hiding happens, unlike
-  // other abandonment triggers. This ensures we will only log those events
-  // once.
-  bool did_log_backgrounding_ = false;
-  bool did_log_hiding_ = false;
-  // Whether the navigation has been abandoned before.
-  bool did_abandon_navigation_ = false;
-
-  // Whether the NavigationStart histogram, which should only be logged once per
-  // navigation, has been logged before.
-  bool did_log_navigation_start_ = false;
-
-  // The most up-to-date NavigationHandleTiming for the navigation we're
-  // tracking, updated from `OnNavigationHandleTimingUpdated()`.
-  content::NavigationHandleTiming latest_navigation_handle_timing_;
-  // The `latest_navigation_handle_timing_` value of the last time we called
-  // `LogNavigationMilestoneMetrics()`. This is needed because that function can
-  // be called multiple times, but we only want to log the milestones that we
-  // haven't logged on a previous call before.
-  content::NavigationHandleTiming last_logged_navigation_handle_timing_;
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_GWS_ABANDONED_PAGE_LOAD_METRICS_OBSERVER_H_

@@ -148,6 +148,7 @@ void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
     tracker->AddObserver(std::make_unique<SchemePageLoadMetricsObserver>());
     tracker->AddObserver(std::make_unique<FromGWSPageLoadMetricsObserver>());
     tracker->AddObserver(std::make_unique<GWSPageLoadMetricsObserver>());
+    tracker->AddObserver(std::make_unique<AbandonedPageLoadMetricsObserver>());
     tracker->AddObserver(
         std::make_unique<GWSAbandonedPageLoadMetricsObserver>());
     tracker->AddObserver(std::make_unique<ForegroundDurationUKMObserver>());

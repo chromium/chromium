@@ -2668,6 +2668,7 @@ if (!is_android) {
       "../browser/os_crypt/os_crypt_async_browsertest.cc",
       "../browser/page_content_annotations/page_content_annotations_service_browsertest.cc",
       "../browser/page_content_annotations/page_text_observer_browsertest.cc",
+      "../browser/page_load_metrics/observers/abandoned_page_load_metrics_observer_browsertest.cc",
       "../browser/page_load_metrics/observers/ad_metrics/ad_density_intervention_browsertest.cc",
       "../browser/page_load_metrics/observers/ad_metrics/ads_page_load_metrics_observer_browsertest.cc",
       "../browser/page_load_metrics/observers/ad_metrics/large_sticky_ad_intervention_browsertest.cc",

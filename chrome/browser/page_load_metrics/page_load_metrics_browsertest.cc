@@ -67,6 +67,7 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/no_state_prefetch/browser/prerender_histograms.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_origin.h"
+#include "components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/core/uma_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
@@ -256,13 +257,23 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
 
   bool NoPageLoadMetricsRecorded() {
     // Determine whether any 'public' page load metrics are recorded. We exclude
-    // 'internal' metrics as these may be recorded for debugging purposes.
+    // 'internal' metrics as these may be recorded for debugging purposes, and
+    // abandonment-related metrics, which are expected to be recorded for all
+    // kinds of navigations.
     size_t total_pageload_histograms =
         histogram_tester_->GetTotalCountsForPrefix("PageLoad.").size();
     size_t total_internal_histograms =
         histogram_tester_->GetTotalCountsForPrefix("PageLoad.Internal.").size();
-    DCHECK_GE(total_pageload_histograms, total_internal_histograms);
-    return total_pageload_histograms - total_internal_histograms == 0;
+    size_t total_abandon_histograms =
+        histogram_tester_
+            ->GetTotalCountsForPrefix(
+                internal::kAbandonedPageLoadMetricsHistogramPrefix)
+            .size();
+    DCHECK_GE(total_pageload_histograms,
+              total_internal_histograms + total_abandon_histograms);
+    return total_pageload_histograms - total_internal_histograms -
+               total_abandon_histograms ==
+           0;
   }
 
   std::unique_ptr<PageLoadMetricsTestWaiter> CreatePageLoadMetricsTestWaiter(

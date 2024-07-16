@@ -191,7 +191,7 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="kNewOtherNavigationRendererInitiated"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/page_load_metrics/observers/gws_abandoned_page_load_metrics_observer.h:AbandonReason) -->
+<!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h:AbandonReason) -->
 
 <!-- LINT.IfChange(NavigationMilestoneEnum) -->
 
@@ -208,7 +208,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="kDidCommit"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/page_load_metrics/observers/gws_abandoned_page_load_metrics_observer.h:NavigationMilestone) -->
+<!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h:NavigationMilestone) -->
 
 <enum name="OriginTrialStatusChange">
   <int value="0"
