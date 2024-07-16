@@ -12,26 +12,38 @@
 namespace updater {
 
 // Key for storing the installer version in the install settings dictionary.
-extern const char kInstallerVersion[];
+inline constexpr char kInstallerVersion[] = "installer_version";
 
-// The updater specific app ID.
+// The updater specific app ID. Defined in the .cc file so that the updater
+// branding constants don't leak in this public header.
 extern const char kUpdaterAppId[];
 
-// The app ID used to qualify the updater.
+// The app ID used to qualify the updater. Defined in the .cc file so that the
+// updater branding constants don't leak in this public header.
 extern const char kQualificationAppId[];
 
-// The name of the updater program image, typically, "updater.exe" or "updater".
-extern const char kExecutableName[];
+// The name of the updater program image.
+#if BUILDFLAG(IS_WIN)
+inline constexpr char kExecutableName[] = "updater.exe";
+#else
+inline constexpr char kExecutableName[] = "updater";
+#endif
 
 // A suffix appended to the updater executable name before any file extension.
 extern const char kExecutableSuffix[];
 
 // "0.0.0.0". Historically, a null version has been used to indicate a
 // new install.
-extern const char kNullVersion[];
+inline constexpr char kNullVersion[] = "0.0.0.0";
 
 // Command line switches.
 //
+// If a command line switch is marked as `backward-compatibility`, it
+// means the switch name cannot be changed, and the parser must be able to
+// handle command line in the DOS style '/<switch> <optional_value>'. This is to
+// make sure the new updater understands the hand-off requests from the legacy
+// updaters.
+
 // This switch starts the COM server. This switch is invoked by the COM runtime
 // when CoCreate is called on one of several CLSIDs that the server supports.
 // We expect to use the COM server for the following scenarios:
@@ -48,19 +60,20 @@ extern const char kNullVersion[];
 //   from Privileged Services that can offer full functionality for a particular
 //   set of interfaces, to Medium Integrity processes that can offer limited
 //   (say, read-only) functionality for that same set of interfaces.
-extern const char kServerSwitch[];
+inline constexpr char kServerSwitch[] = "server";
 
 // This switch specifies the XPC service the server registers to listen to.
-extern const char kServerServiceSwitch[];
+inline constexpr char kServerServiceSwitch[] = "service";
 
 // Valid values for the kServerServiceSwitch.
-extern const char kServerUpdateServiceInternalSwitchValue[];
-extern const char kServerUpdateServiceSwitchValue[];
+inline constexpr char kServerUpdateServiceInternalSwitchValue[] =
+    "update-internal";
+inline constexpr char kServerUpdateServiceSwitchValue[] = "update";
 
 // This switch starts the Windows service. This switch is invoked by the SCM
 // either as a part of system startup (`SERVICE_AUTO_START`) or when `CoCreate`
 // is called on one of several CLSIDs that the server supports.
-extern const char kWindowsServiceSwitch[];
+inline constexpr char kWindowsServiceSwitch[] = "windows-service";
 
 // This switch indicates that the Windows service is in the COM server mode.
 // This switch is passed to `ServiceMain` by the SCM when CoCreate is called on
@@ -69,151 +82,159 @@ extern const char kWindowsServiceSwitch[];
 // * The Server for the UI when installing Machine applications.
 // * The On-Demand COM Server for Machine applications.
 // * COM Server for launching processes at System Integrity, i.e., an Elevator.
-extern const char kComServiceSwitch[];
+inline constexpr char kComServiceSwitch[] = "com-service";
 
 // Crash the program for testing purposes.
-extern const char kCrashMeSwitch[];
+inline constexpr char kCrashMeSwitch[] = "crash-me";
 
 // Runs as the Crashpad handler.
-extern const char kCrashHandlerSwitch[];
+inline constexpr char kCrashHandlerSwitch[] = "crash-handler";
 
 // Updates the updater.
-extern const char kUpdateSwitch[];
+inline constexpr char kUpdateSwitch[] = "update";
 
 // Installs the updater. Takes an optional argument for the meta installer tag.
 // The tag is a string of arguments, separated by a delimiter (in this case, the
 // delimiter is `&`). The tag is typically embedded in the program image of the
 // metainstaller, but for testing purposes, the tag could be passed directly as
 // a command line argument. The tag is currently encoded as an ASCII string.
-extern const char kInstallSwitch[];
+inline constexpr char kInstallSwitch[] = "install";
 
-extern const char kEulaRequiredSwitch[];
+inline constexpr char kEulaRequiredSwitch[] = "eularequired";
 
 // Specifies that this is an OEM install in audit mode.
-extern const char kOemSwitch[];
+inline constexpr char kOemSwitch[] = "oem";
 
 // The --installerdata=file.dat switch is passed to an installer if an
 // installdataindex is specified in the tag or if installerdata is passed in via
 // --appargs. The corresponding installerdata is written to file.dat with an
 // UTF8 encoding as well as a UTF8 BOM.
-extern const char kInstallerDataSwitch[];
+inline constexpr char kInstallerDataSwitch[] = "installerdata";
 
 // Uninstalls the updater.
-extern const char kUninstallSwitch[];
+inline constexpr char kUninstallSwitch[] = "uninstall";
 
 // Uninstalls this version of the updater.
-extern const char kUninstallSelfSwitch[];
+inline constexpr char kUninstallSelfSwitch[] = "uninstall-self";
 
 // Uninstalls the updater if no apps are managed by it.
-extern const char kUninstallIfUnusedSwitch[];
+inline constexpr char kUninstallIfUnusedSwitch[] = "uninstall-if-unused";
 
 // Kicks off the update service. This switch is typically used for by a
 // scheduled to invoke the updater periodically.
-extern const char kWakeSwitch[];
+inline constexpr char kWakeSwitch[] = "wake";
 
 // Kicks off the update service for all versions.
-extern const char kWakeAllSwitch[];
+inline constexpr char kWakeAllSwitch[] = "wake-all";
 
 // The updater needs to operate in the system context.
-extern const char kSystemSwitch[];
+inline constexpr char kSystemSwitch[] = "system";
 
 // Runs in test mode. Currently, it exits right away.
-extern const char kTestSwitch[];
+inline constexpr char kTestSwitch[] = "test";
 
 // Run in recovery mode.
-extern const char kRecoverSwitch[];
+inline constexpr char kRecoverSwitch[] = "recover";
 
 // The version of the program triggering recovery.
-extern const char kBrowserVersionSwitch[];
+inline constexpr char kBrowserVersionSwitch[] = "browser-version";
 
 // The session ID of the Omaha session triggering recovery.
-extern const char kSessionIdSwitch[];
+inline constexpr char kSessionIdSwitch[] =
+    "sessionid";  // backward-compatibility.
 
 // The app ID of the program triggering recovery.
-extern const char kAppGuidSwitch[];
+inline constexpr char kAppGuidSwitch[] = "appguid";
 
 // Disables throttling for the crash reported until the following bug is fixed:
 // https://bugs.chromium.org/p/crashpad/issues/detail?id=23
-extern const char kNoRateLimitSwitch[];
+inline constexpr char kNoRateLimitSwitch[] = "no-rate-limit";
 
 // Causes crashpad handler to start a second instance to monitor the first
 // instance for exceptions.
-extern const char kMonitorSelfSwitch[];
+inline constexpr char kMonitorSelfSwitch[] = "monitor-self";
 
 // Additional arguments passed to the --monitor-self instance.
-extern const char kMonitorSelfSwitchArgument[];
+inline constexpr char kMonitorSelfSwitchArgument[] = "monitor-self-argument";
 
 // The handle of an event to signal when the initialization of the main process
 // is complete.
-extern const char kInitDoneNotifierSwitch[];
+inline constexpr char kInitDoneNotifierSwitch[] = "init-done-notifier";
 
 // Enables logging.
-extern const char kEnableLoggingSwitch[];
+inline constexpr char kEnableLoggingSwitch[] = "enable-logging";
 
 // Specifies the logging module filter and its value. Note that some call sites
 // may still use different values for the logging module filter.
-extern const char kLoggingModuleSwitch[];
-extern const char kLoggingModuleSwitchValue[];
+inline constexpr char kLoggingModuleSwitch[] = "vmodule";
+inline constexpr char kLoggingModuleSwitchValue[] =
+#if BUILDFLAG(IS_WIN)
+    "*/components/winhttp/*=1,"
+#endif
+    "*/components/update_client/*=2,*/chrome/updater/*=2";
 
 // Specifies the application that the Updater needs to install.
-extern const char kAppIdSwitch[];
+inline constexpr char kAppIdSwitch[] = "app-id";
 
 // Specifies the version of the application that the updater needs to register.
-extern const char kAppVersionSwitch[];
+inline constexpr char kAppVersionSwitch[] = "app-version";
 
 // Specifies that the Updater should perform some minimal checks to verify that
 // it is operational/healthy. This is for backward compatibility with Omaha 3.
 // Omaha 3 runs "GoogleUpdate.exe /healthcheck" and expects an exit code of
 // HRESULT SUCCESS, i.e., S_OK, in which case it will hand off the installation
 // to Omaha 4.
-extern const char kHealthCheckSwitch[];
+inline constexpr char kHealthCheckSwitch[] = "healthcheck";
 
 // Specifies the enterprise request argument. On Windows, the request may
 // be from legacy updaters which pass the argument in the format of
 // `/enterprise`. Manual argument parsing is needed for that scenario.
-extern const char kEnterpriseSwitch[];
+inline constexpr char kEnterpriseSwitch[] =
+    "enterprise";  // backward-compatibility.
 
 // Specifies that no UI should be shown.
-extern const char kSilentSwitch[];
+inline constexpr char kSilentSwitch[] = "silent";  // backward-compatibility.
 
 // The "alwayslaunchcmd" switch specifies that launch commands are to be run
 // unconditionally, even for silent modes.
-extern const char kAlwaysLaunchCmdSwitch[];
+inline constexpr char kAlwaysLaunchCmdSwitch[] = "alwayslaunchcmd";
 
 // Specifies the handoff request argument. On Windows, the request may
 // be from legacy updaters which pass the argument in the format of
 // `/handoff <install-args-details>`. Manual argument parsing is needed for that
 // scenario.
-extern const char kHandoffSwitch[];
+inline constexpr char kHandoffSwitch[] = "handoff";  // backward-compatibility.
 
 // Specifies the full path to the offline install resources. The folder
 // contains offline installer and the manifest file.
-extern const char kOfflineDirSwitch[];
+inline constexpr char kOfflineDirSwitch[] =
+    "offlinedir";  // backward-compatibility.
 
 // Specifies extra app args. The switch must be in the following format:
 //     --appargs="appguid=<appid>&installerdata=<URL-encoded-installer-data>"
 // On Windows, the request may be from legacy updaters which pass the argument
 // in the format of `/appargs <value>`. Manual argument parsing is needed for
 // that scenario.
-extern const char kAppArgsSwitch[];
+inline constexpr char kAppArgsSwitch[] = "appargs";  // backward-compatibility.
 
 // The "expect-elevated" switch indicates that updater setup should be running
 // elevated (at high integrity). This switch is needed to avoid running into a
 // loop trying (but failing repeatedly) to elevate updater setup when attempting
 // to install on a standard user account with UAC disabled.
-extern const char kCmdLineExpectElevated[];
+inline constexpr char kCmdLineExpectElevated[] = "expect-elevated";
 
 // The "expect-de-elevated" switch indicates that updater setup should be
 // running de-elevated (at medium integrity). This switch is needed to avoid
 // running into a loop trying (but failing repeatedly) to de-elevate updater
 // setup when attempting to install as a standard user account with UAC enabled.
-extern const char kCmdLineExpectDeElevated[];
+inline constexpr char kCmdLineExpectDeElevated[] = "expect-de-elevated";
 
 // The "prefers-user" switch indicates that updater setup could not elevate, and
 // is now trying to install the app per-user.
-extern const char kCmdLinePrefersUser[];
+inline constexpr char kCmdLinePrefersUser[] = "prefers-user";
 
-// Environment variables.
+// Environment variables. Defined in the .cc file so that the updater branding
+// constants don't leak in this public header.
 extern const char kUsageStatsEnabled[];
 extern const char kUsageStatsEnabledValueEnabled[];
 
@@ -222,25 +243,31 @@ extern const char kUsageStatsEnabledValueEnabled[];
 // The directory name where CRX apps get installed. This is provided for demo
 // purposes, since products installed by this updater will be installed in
 // their specific locations.
-extern const char kAppsDir[];
+inline constexpr char kAppsDir[] = "apps";
 
 // The name of the uninstall script which is invoked by the --uninstall switch.
-extern const char kUninstallScript[];
+inline constexpr char kUninstallScript[] = "uninstall.cmd";
 
 // Developer override keys.
-extern const char kDevOverrideKeyUrl[];
-extern const char kDevOverrideKeyCrashUploadUrl[];
-extern const char kDevOverrideKeyDeviceManagementUrl[];
-extern const char kDevOverrideKeyAppLogoUrl[];
-extern const char kDevOverrideKeyUseCUP[];
-extern const char kDevOverrideKeyInitialDelay[];
-extern const char kDevOverrideKeyServerKeepAliveSeconds[];
-extern const char kDevOverrideKeyCrxVerifierFormat[];
-extern const char kDevOverrideKeyGroupPolicies[];
-extern const char kDevOverrideKeyOverinstallTimeout[];
-extern const char kDevOverrideKeyIdleCheckPeriodSeconds[];
-extern const char kDevOverrideKeyManagedDevice[];
-extern const char kDevOverrideKeyEnableDiffUpdates[];
+inline constexpr char kDevOverrideKeyUrl[] = "url";
+inline constexpr char kDevOverrideKeyCrashUploadUrl[] = "crash_upload_url";
+inline constexpr char kDevOverrideKeyDeviceManagementUrl[] =
+    "device_management_url";
+inline constexpr char kDevOverrideKeyAppLogoUrl[] = "app_logo_url";
+inline constexpr char kDevOverrideKeyUseCUP[] = "use_cup";
+inline constexpr char kDevOverrideKeyInitialDelay[] = "initial_delay";
+inline constexpr char kDevOverrideKeyServerKeepAliveSeconds[] =
+    "server_keep_alive";
+inline constexpr char kDevOverrideKeyCrxVerifierFormat[] =
+    "crx_verifier_format";
+inline constexpr char kDevOverrideKeyGroupPolicies[] = "group_policies";
+inline constexpr char kDevOverrideKeyOverinstallTimeout[] =
+    "overinstall_timeout";
+inline constexpr char kDevOverrideKeyIdleCheckPeriodSeconds[] =
+    "idle_check_period";
+inline constexpr char kDevOverrideKeyManagedDevice[] = "managed_device";
+inline constexpr char kDevOverrideKeyEnableDiffUpdates[] =
+    "enable_diff_updates";
 
 // Timing constants.
 // How long to wait for an application installer (such as chrome_installer.exe)
@@ -265,7 +292,8 @@ inline constexpr int kWaitForLaunchctlUpdateSec = 5;
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_MAC)
-// The user defaults suite name.
+// The user defaults suite name. Defined in the .cc file so that the updater
+// branding constants don't leak in this public header.
 extern const char kUserDefaultsSuiteName[];
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -485,17 +513,17 @@ inline constexpr int kMaxAutoUpdateCheckPeriodMinutes = 43200;
 // The maximum value allowed for policy UpdatesSuppressedDurationMin.
 inline constexpr int kMaxUpdatesSuppressedDurationMinutes = 960;
 
-extern const char kProxyModeDirect[];
-extern const char kProxyModeAutoDetect[];
-extern const char kProxyModePacScript[];
-extern const char kProxyModeFixedServers[];
-extern const char kProxyModeSystem[];
+inline constexpr char kProxyModeDirect[] = "direct";
+inline constexpr char kProxyModeAutoDetect[] = "auto_detect";
+inline constexpr char kProxyModePacScript[] = "pac_script";
+inline constexpr char kProxyModeFixedServers[] = "fixed_servers";
+inline constexpr char kProxyModeSystem[] = "system";
 
-extern const char kDownloadPreferenceCacheable[];
+inline constexpr char kDownloadPreferenceCacheable[] = "cacheable";
 
 // UTF8 byte order mark (BOM) used to prefix the contents of the installerdata
 // file.
-extern const char kUTF8BOM[];
+inline constexpr char kUTF8BOM[] = "\xEF\xBB\xBF";
 
 inline constexpr int kPolicyNotSet = -1;
 inline constexpr int kPolicyDisabled = 0;
@@ -510,13 +538,15 @@ inline constexpr bool kInstallPolicyDefault = kPolicyEnabled;
 inline constexpr bool kUpdatePolicyDefault = kPolicyEnabled;
 
 // Policy manager `source()` constants.
-extern const char kSourceGroupPolicyManager[];
-extern const char kSourceDMPolicyManager[];
-extern const char kSourceManagedPreferencePolicyManager[];
-extern const char kSourceDefaultValuesPolicyManager[];
-extern const char kSourceDictValuesPolicyManager[];
+inline constexpr char kSourceGroupPolicyManager[] = "Group Policy";
+inline constexpr char kSourceDMPolicyManager[] = "Device Management";
+inline constexpr char kSourceManagedPreferencePolicyManager[] =
+    "Managed Preferences";
+inline constexpr char kSourceDefaultValuesPolicyManager[] = "Default";
+inline constexpr char kSourceDictValuesPolicyManager[] = "DictValuePolicy";
 
-// Serializes updater installs.
+// Serializes updater installs. Defined in the .cc file so that the updater
+// branding constants don't leak in this public header.
 extern const char kSetupMutex[];
 
 inline constexpr int kUninstallPingReasonUninstalled = 0;
@@ -556,10 +586,10 @@ inline constexpr int GOOPDATEINSTALL_E_INSTALLER_TIMED_OUT = 0x80040904;
 inline constexpr int GOOPDATEINSTALL_E_INSTALL_ALREADY_RUNNING = 0x80040907;
 
 // Install Sources.
-extern const char kInstallSourceTaggedMetainstaller[];
-extern const char kInstallSourceOffline[];
-extern const char kInstallSourcePolicy[];
-extern const char kInstallSourceOnDemand[];
+inline constexpr char kInstallSourceTaggedMetainstaller[] = "taggedmi";
+inline constexpr char kInstallSourceOffline[] = "offline";
+inline constexpr char kInstallSourcePolicy[] = "policy";
+inline constexpr char kInstallSourceOnDemand[] = "ondemand";
 
 }  // namespace updater
 
