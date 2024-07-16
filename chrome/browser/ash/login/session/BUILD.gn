@@ -109,6 +109,10 @@ static_library("session") {
     "//media",
     "//rlz/buildflags",
     "//url",
+
+    # TODO(b/353449319): Use //chrome/browser/ash after fixing cyclic dependency from
+    # obj/chrome/browser/ash/login/session/session/user_session_initializer.o.
+    "//chrome/browser/ash:app_install_events_proto",
   ]
 
   allow_circular_includes_from = [
