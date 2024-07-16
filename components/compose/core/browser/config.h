@@ -134,7 +134,10 @@ struct Config {
 
   // Finch-controllable list of countries where Compose should be enabled. The
   // default value contains countries where it was already fully launched.
-  std::vector<std::string> enabled_countries = {"us"};
+  std::vector<std::string> enabled_countries = {
+      "bd", "ca", "gh", "in", "ke", "my", "ng", "ph",
+      "pk", "sg", "tz", "ug", "us", "zm", "zw",
+  };
 
   Config();
   Config(const Config& other);

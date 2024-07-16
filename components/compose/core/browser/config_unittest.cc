@@ -24,7 +24,10 @@ class ConfigTest : public testing::Test {
 
 TEST_F(ConfigTest, ConfigUsesDefaultCountryValues) {
   compose::Config config = compose::GetComposeConfig();
-  EXPECT_THAT(config.enabled_countries, testing::UnorderedElementsAre("us"));
+  EXPECT_THAT(config.enabled_countries,
+              testing::UnorderedElementsAre("bd", "ca", "gh", "in", "ke", "my",
+                                            "ng", "ph", "pk", "sg", "tz", "ug",
+                                            "us", "zm", "zw"));
 }
 
 TEST_F(ConfigTest, ConfigUsesCountryFinchValues) {
@@ -43,5 +46,8 @@ TEST_F(ConfigTest, ConfigFallbackToDefaultsCountriesIfBadFinchValues) {
       {{"enabled_countries", ", \t' \n ,\" ,\"\t\n"}});
   compose::ResetConfigForTesting();
   compose::Config config = compose::GetComposeConfig();
-  EXPECT_THAT(config.enabled_countries, testing::UnorderedElementsAre("us"));
+  EXPECT_THAT(config.enabled_countries,
+              testing::UnorderedElementsAre("bd", "ca", "gh", "in", "ke", "my",
+                                            "ng", "ph", "pk", "sg", "tz", "ug",
+                                            "us", "zm", "zw"));
 }
