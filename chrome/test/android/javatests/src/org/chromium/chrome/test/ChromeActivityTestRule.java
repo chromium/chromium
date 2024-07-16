@@ -61,7 +61,6 @@ import org.chromium.url.GURL;
 
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -342,21 +341,9 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
      */
     public Tab loadUrlInNewTab(
             final String url, final boolean incognito, final @TabLaunchType int launchType) {
-        Tab tab;
-        try {
-            tab =
-                    ThreadUtils.runOnUiThreadBlocking(
-                            new Callable<Tab>() {
-                                @Override
-                                public Tab call() {
-                                    return getActivity()
-                                            .getTabCreator(incognito)
-                                            .launchUrl(url, launchType);
-                                }
-                            });
-        } catch (ExecutionException e) {
-            throw new AssertionError("Failed to create new tab", e);
-        }
+        Tab tab =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> getActivity().getTabCreator(incognito).launchUrl(url, launchType));
         ChromeTabUtils.waitForTabPageLoaded(tab, url);
         ChromeTabUtils.waitForInteractable(tab);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();

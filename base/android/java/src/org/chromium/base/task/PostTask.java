@@ -9,7 +9,6 @@ import android.os.Handler;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-import org.chromium.base.JavaUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
@@ -127,15 +126,15 @@ public class PostTask {
     }
 
     /**
-     * This function executes the task immediately if the current thread is the
-     * same as the one corresponding to the SingleThreadTaskRunner, otherwise it
-     * posts it and blocks until the task finishes.
+     * This function executes the task immediately if the current thread is the same as the one
+     * corresponding to the SingleThreadTaskRunner, otherwise it posts it and blocks until the task
+     * finishes.
      *
-     * Usage outside of testing contexts is discouraged. Prefer callbacks in order
-     * to avoid blocking.
+     * <p>Usage outside of testing contexts is discouraged. Prefer callbacks in order to avoid
+     * blocking.
      *
      * @param taskTraits The TaskTraits that describe the desired TaskRunner.
-     * @param task The task to be run with the specified traits.
+     * @param c The task to be run with the specified traits.
      * @return The result of the callable
      */
     public static <T> T runSynchronously(@TaskTraits int taskTraits, Callable<T> c) {
@@ -143,15 +142,15 @@ public class PostTask {
     }
 
     /**
-     * This function executes the task immediately if the current thread is the
-     * same as the one corresponding to the SingleThreadTaskRunner, otherwise it
-     * posts it and blocks until the task finishes.
+     * This function executes the task immediately if the current thread is the same as the one
+     * corresponding to the SingleThreadTaskRunner, otherwise it posts it and blocks until the task
+     * finishes.
      *
-     * Usage outside of testing contexts is discouraged. Prefer callbacks in order
-     * to avoid blocking.
+     * <p>Usage outside of testing contexts is discouraged. Prefer callbacks in order to avoid
+     * blocking.
      *
      * @param taskTraits The TaskTraits that describe the desired TaskRunner.
-     * @param task The task to be run with the specified traits.
+     * @param r The task to be run with the specified traits.
      */
     public static void runSynchronously(@TaskTraits int taskTraits, Runnable r) {
         runSynchronouslyInternal(taskTraits, new FutureTask<Void>(r, null));
@@ -162,7 +161,10 @@ public class PostTask {
         try {
             return task.get();
         } catch (Exception e) {
-            throw JavaUtils.throwUnchecked(e);
+            // Use a RuntimeException rather than ExecutionException so that callers are not forced
+            // to add try/catch.
+            // Wrap the "caused by" rather than the ExecutionException to avoid excessive wrapping.
+            throw new RuntimeException(e.getCause());
         }
     }
 

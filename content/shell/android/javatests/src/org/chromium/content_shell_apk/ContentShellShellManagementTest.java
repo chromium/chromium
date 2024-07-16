@@ -17,8 +17,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_shell.Shell;
 
-import java.util.concurrent.ExecutionException;
-
 /** Test suite to verify the behavior of the shell management logic. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ContentShellShellManagementTest {
@@ -34,7 +32,7 @@ public class ContentShellShellManagementTest {
     @SmallTest
     @Feature({"Main"})
     @DisabledTest(message = "https://crbug.com/1371971")
-    public void testMultipleShellsLaunched() throws ExecutionException {
+    public void testMultipleShellsLaunched() {
         final ContentShellActivity activity =
                 mActivityTestRule.launchContentShellWithUrl(TEST_PAGE_1);
         Assert.assertEquals(

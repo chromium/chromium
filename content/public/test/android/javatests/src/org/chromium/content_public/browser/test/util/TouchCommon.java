@@ -12,9 +12,6 @@ import android.view.ViewConfiguration;
 
 import org.chromium.base.ThreadUtils;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-
 /**
  * Touch-related functionality reused across test cases.
  *
@@ -493,21 +490,11 @@ public class TouchCommon {
     }
 
     private static View getRootViewForActivity(final Activity activity) {
-        try {
-            View view =
-                    ThreadUtils.runOnUiThreadBlocking(
-                            new Callable<View>() {
-                                @Override
-                                public View call() {
-                                    return activity.findViewById(android.R.id.content)
-                                            .getRootView();
-                                }
-                            });
-            assert view != null : "Failed to find root view for activity";
-            return view;
-        } catch (ExecutionException e) {
-            throw new RuntimeException("Dispatching touch event failed", e);
-        }
+        View view =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> activity.findViewById(android.R.id.content).getRootView());
+        assert view != null : "Failed to find root view for activity";
+        return view;
     }
 
     /**
@@ -517,17 +504,7 @@ public class TouchCommon {
      * @param event The view to be dispatched.
      */
     public static boolean dispatchTouchEvent(final View view, final MotionEvent event) {
-        try {
-            return ThreadUtils.runOnUiThreadBlocking(
-                    new Callable<Boolean>() {
-                        @Override
-                        public Boolean call() {
-                            return view.dispatchTouchEvent(event);
-                        }
-                    });
-        } catch (Throwable e) {
-            throw new RuntimeException("Dispatching touch event failed", e);
-        }
+        return ThreadUtils.runOnUiThreadBlocking(() -> view.dispatchTouchEvent(event));
     }
 
     /**

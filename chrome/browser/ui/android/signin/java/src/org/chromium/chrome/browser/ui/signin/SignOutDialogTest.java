@@ -58,8 +58,6 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
-import java.util.concurrent.ExecutionException;
-
 /** Instrumentation tests for {@link SignOutDialogCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
@@ -101,9 +99,9 @@ public class SignOutDialogTest {
     public void testRegularAccountCanNotRevokeSyncConsent() {
         when(mProfile.isChild()).thenReturn(false);
         // ThreadUtils.runOnUiThreadBlocking() catches the IllegalArgumentException and throws it
-        // wrapped inside a ExecutionException.
+        // wrapped inside a RuntimeException.
         Assert.assertThrows(
-                ExecutionException.class,
+                RuntimeException.class,
                 () -> showSignOutDialog(SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS));
     }
 
@@ -112,9 +110,9 @@ public class SignOutDialogTest {
     public void testChildAccountCanOnlyRevokeSyncConsent() {
         when(mProfile.isChild()).thenReturn(true);
         // ThreadUtils.runOnUiThreadBlocking() catches the IllegalArgumentException and throws it
-        // wrapped inside a ExecutionException.
+        // wrapped inside a RuntimeException.
         Assert.assertThrows(
-                ExecutionException.class,
+                RuntimeException.class,
                 () -> showSignOutDialog(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS));
     }
 

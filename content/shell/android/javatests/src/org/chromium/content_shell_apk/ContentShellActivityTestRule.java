@@ -16,7 +16,6 @@ import androidx.test.InstrumentationRegistry;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 
-import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CallbackHelper;
@@ -43,7 +42,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -110,7 +108,7 @@ public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentSh
     }
 
     /** Returns the OnCursorUpdateHelper. */
-    public OnCursorUpdateHelper getOnCursorUpdateHelper() throws ExecutionException {
+    public OnCursorUpdateHelper getOnCursorUpdateHelper() {
         return ThreadUtils.runOnUiThreadBlocking(
                 new Callable<OnCursorUpdateHelper>() {
                     @Override
@@ -125,94 +123,61 @@ public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentSh
 
     /** Returns the current {@link ViewEventSink} or null if there is none; */
     public ViewEventSink getViewEventSink() {
-        try {
-            return ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        return ViewEventSink.from(getActivity().getActiveShell().getWebContents());
-                    });
-        } catch (ExecutionException e) {
-            return null;
-        }
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    return ViewEventSink.from(getActivity().getActiveShell().getWebContents());
+                });
     }
 
     /** Returns the WebContents of this Shell. */
     public WebContents getWebContents() {
-        try {
-            return ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        return getActivity().getActiveShell().getWebContents();
-                    });
-        } catch (ExecutionException e) {
-            return null;
-        }
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    return getActivity().getActiveShell().getWebContents();
+                });
     }
 
     /** Returns the {@link SelectionPopupControllerImpl} of the WebContents. */
     public SelectionPopupControllerImpl getSelectionPopupController() {
-        try {
-            return ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        return SelectionPopupControllerImpl.fromWebContents(
-                                getActivity().getActiveShell().getWebContents());
-                    });
-        } catch (ExecutionException e) {
-            return null;
-        }
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    return SelectionPopupControllerImpl.fromWebContents(
+                            getActivity().getActiveShell().getWebContents());
+                });
     }
 
     /** Returns the {@link ImeAdapterImpl} of the WebContents. */
     public ImeAdapterImpl getImeAdapter() {
-        try {
-            return ThreadUtils.runOnUiThreadBlocking(
-                    () -> ImeAdapterImpl.fromWebContents(getWebContents()));
-        } catch (ExecutionException e) {
-            return null;
-        }
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> ImeAdapterImpl.fromWebContents(getWebContents()));
     }
 
     /** Returns the {@link SelectPopup} of the WebContents. */
     public SelectPopup getSelectPopup() {
-        try {
-            return ThreadUtils.runOnUiThreadBlocking(
-                    () -> SelectPopup.fromWebContents(getWebContents()));
-        } catch (ExecutionException e) {
-            return null;
-        }
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> SelectPopup.fromWebContents(getWebContents()));
     }
 
     public WebContentsAccessibilityImpl getWebContentsAccessibility() {
-        try {
-            return ThreadUtils.runOnUiThreadBlocking(
-                    () -> WebContentsAccessibilityImpl.fromWebContents(getWebContents()));
-        } catch (ExecutionException e) {
-            return null;
-        }
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> WebContentsAccessibilityImpl.fromWebContents(getWebContents()));
     }
 
     /** Returns the RenderCoordinates of the WebContents. */
     public RenderCoordinatesImpl getRenderCoordinates() {
-        try {
-            return ThreadUtils.runOnUiThreadBlocking(
-                    () -> ((WebContentsImpl) getWebContents()).getRenderCoordinates());
-        } catch (ExecutionException e) {
-            return null;
-        }
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> ((WebContentsImpl) getWebContents()).getRenderCoordinates());
     }
 
     /** Returns the current container view or null if there is no WebContents. */
     public View getContainerView() {
         final WebContents webContents = getWebContents();
-        try {
-            return ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        return webContents != null
-                                ? webContents.getViewAndroidDelegate().getContainerView()
-                                : null;
-                    });
-        } catch (ExecutionException e) {
-            Log.w(TAG, "Getting container view failed. Returning null", e);
-            return null;
-        }
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    return webContents != null
+                            ? webContents.getViewAndroidDelegate().getContainerView()
+                            : null;
+                });
     }
 
     public JavascriptInjector getJavascriptInjector() {
@@ -247,9 +212,8 @@ public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentSh
      *
      * @param url The URL to create the new {@link Shell} with.
      * @return A new instance of a {@link Shell}.
-     * @throws ExecutionException
      */
-    public Shell loadNewShell(String url) throws ExecutionException {
+    public Shell loadNewShell(String url) {
         Shell shell =
                 ThreadUtils.runOnUiThreadBlocking(
                         new Callable<Shell>() {

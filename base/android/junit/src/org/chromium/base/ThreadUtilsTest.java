@@ -20,8 +20,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.BuildConfig;
 
-import java.util.concurrent.ExecutionException;
-
 /** Unit tests for ThreadUtils. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -33,9 +31,9 @@ public class ThreadUtilsTest {
         ThreadChecker checker = new ThreadChecker();
         checker.assertOnValidThread();
 
-        ExecutionException e =
+        RuntimeException e =
                 Assert.assertThrows(
-                        ExecutionException.class,
+                        RuntimeException.class,
                         () ->
                                 PostTask.runSynchronously(
                                         TaskTraits.USER_BLOCKING, checker::assertOnValidThread));

@@ -35,7 +35,6 @@ import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 
 import java.util.Iterator;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /** Test that verifies back press will dismiss the selection popup. */
@@ -74,7 +73,7 @@ public class SelectionPopupBackPressTest {
     @MediumTest
     @Feature({"TextInput", "SmartSelection"})
     @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    public void testBackPressHandlerOnTabSwitched() throws ExecutionException {
+    public void testBackPressHandlerOnTabSwitched() {
         mActivityTestRule.startMainActivityOnBlankPage();
         final ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         final BackPressHandler selectionPopupHandler =
@@ -104,7 +103,7 @@ public class SelectionPopupBackPressTest {
     @MediumTest
     @Feature({"TextInput", "SmartSelection"})
     @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    public void testBackPressHandlerOnWebContentChanged() throws ExecutionException {
+    public void testBackPressHandlerOnWebContentChanged() {
         mActivityTestRule.startMainActivityOnBlankPage();
         final ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         final SelectionPopupBackPressHandler selectionPopupHandler =

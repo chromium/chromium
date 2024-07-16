@@ -36,7 +36,6 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.LoadListener;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 /** Tests for Search Engine Settings. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -208,8 +207,7 @@ public class SearchEngineSettingsTest {
     }
 
     private static Preference waitForPreference(
-            final PreferenceFragmentCompat prefFragment, final String preferenceKey)
-            throws ExecutionException {
+            final PreferenceFragmentCompat prefFragment, final String preferenceKey) {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(

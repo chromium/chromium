@@ -15,7 +15,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
 /** Helper methods to deal with threading related tasks. */
@@ -182,32 +181,27 @@ public class ThreadUtils {
      * Run the supplied Callable on the main thread, wrapping any exceptions in a RuntimeException.
      * The method will block until the Callable completes.
      *
-     * Note that non-test usage of this function is heavily discouraged. For non-tests, use
+     * <p>Note that non-test usage of this function is heavily discouraged. For non-tests, use
      * callbacks rather than blocking threads.
      *
      * @param c The Callable to run
      * @return The result of the callable
      */
     public static <T> T runOnUiThreadBlockingNoException(Callable<T> c) {
-        try {
-            return runOnUiThreadBlocking(c);
-        } catch (ExecutionException e) {
-            throw JavaUtils.throwUnchecked(e);
-        }
+        return runOnUiThreadBlocking(c);
     }
 
     /**
      * Run the supplied Callable on the main thread, The method will block until the Callable
      * completes.
      *
-     * Note that non-test usage of this function is heavily discouraged. For non-tests, use
+     * <p>Note that non-test usage of this function is heavily discouraged. For non-tests, use
      * callbacks rather than blocking threads.
      *
      * @param c The Callable to run
      * @return The result of the callable
-     * @throws ExecutionException c's exception
      */
-    public static <T> T runOnUiThreadBlocking(Callable<T> c) throws ExecutionException {
+    public static <T> T runOnUiThreadBlocking(Callable<T> c) {
         return PostTask.runSynchronously(TaskTraits.UI_DEFAULT, c);
     }
 

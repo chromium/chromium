@@ -77,7 +77,6 @@ import org.chromium.url.Origin;
 
 import java.net.URL;
 import java.util.Locale;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -788,13 +787,8 @@ public class NavigateTest {
     }
 
     private String getTabUrlOnUIThread(final Tab tab) {
-        try {
-            return ThreadUtils.runOnUiThreadBlocking(
-                    () -> ChromeTabUtils.getUrlStringOnUiThread(tab));
-        } catch (ExecutionException ex) {
-            assert false : "Unexpected ExecutionException";
-        }
-        return null;
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> ChromeTabUtils.getUrlStringOnUiThread(tab));
     }
 
     private String getTabBodyText(Tab tab) {

@@ -10,7 +10,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_AT_STARTUP_UMA;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_UMA;
@@ -69,7 +68,6 @@ import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /** Integration tests of showing a NTP with Start surface UI at startup. */
@@ -394,12 +392,8 @@ public class ShowNtpAtStartupTest {
                 cta, 2, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
         waitForNtpLoaded(cta.getActivityTab());
 
-        try {
-            ThreadUtils.runOnUiThreadBlocking(
-                    () -> cta.findViewById(R.id.single_tab_view).performClick());
-        } catch (ExecutionException e) {
-            Assert.fail("Failed to tap the single tab card " + e.toString());
-        }
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> cta.findViewById(R.id.single_tab_view).performClick());
 
         // Verifies that the last active Tab is showing, and NTP home surface is closed.
         verifyTabCountAndActiveTabUrl(cta, 1, TAB_URL, /* expectHomeSurfaceUiShown= */ null);
@@ -465,12 +459,8 @@ public class ShowNtpAtStartupTest {
                         + "snapshot for the NTP.",
                 ntp.getSnapshotSingleTabCardChangedForTesting());
 
-        try {
-            ThreadUtils.runOnUiThreadBlocking(
-                    () -> cta.findViewById(R.id.tab_switcher_button).performClick());
-        } catch (ExecutionException e) {
-            fail("Failed to tap 'more tabs' " + e.toString());
-        }
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> cta.findViewById(R.id.tab_switcher_button).performClick());
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

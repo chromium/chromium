@@ -32,8 +32,6 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.net.test.util.TestWebServer;
 
-import java.util.concurrent.ExecutionException;
-
 /** Tests related to the sad tab logic. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
@@ -52,11 +50,7 @@ public class SadTabTest {
 
     private static boolean isShowingSadTab(Tab tab) {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        try {
-            return ThreadUtils.runOnUiThreadBlocking(() -> SadTab.isShowing(tab));
-        } catch (ExecutionException e) {
-            return false;
-        }
+        return ThreadUtils.runOnUiThreadBlocking(() -> SadTab.isShowing(tab));
     }
 
     @After
@@ -217,11 +211,7 @@ public class SadTabTest {
     }
 
     private static boolean showSendFeedbackView(final Tab tab) {
-        try {
-            return ThreadUtils.runOnUiThreadBlocking(() -> SadTab.from(tab).showSendFeedbackView());
-        } catch (ExecutionException e) {
-            return false; // Make tests fail when an exception is thrown.
-        }
+        return ThreadUtils.runOnUiThreadBlocking(() -> SadTab.from(tab).showSendFeedbackView());
     }
 
     /**
@@ -232,11 +222,7 @@ public class SadTabTest {
      */
     private static Button getSadTabButton(Tab tab) {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        try {
-            return ThreadUtils.runOnUiThreadBlocking(
-                    () -> tab.getView().findViewById(R.id.sad_tab_button));
-        } catch (ExecutionException e) {
-            return null;
-        }
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> tab.getView().findViewById(R.id.sad_tab_button));
     }
 }

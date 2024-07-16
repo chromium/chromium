@@ -64,8 +64,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -115,21 +113,12 @@ public class NotificationPlatformBridgeTest {
     }
 
     private double getEngagementScoreBlocking() {
-        try {
-            return ThreadUtils.runOnUiThreadBlocking(
-                    new Callable<Double>() {
-                        @Override
-                        public Double call() {
-                            // TODO (https://crbug.com/1063807):  Add incognito mode tests.
-                            return SiteEngagementService.getForBrowserContext(
-                                            ProfileManager.getLastUsedRegularProfile())
-                                    .getScore(mPermissionTestRule.getOrigin());
-                        }
-                    });
-        } catch (ExecutionException ex) {
-            assert false : "Unexpected ExecutionException";
-        }
-        return 0.0;
+        // TODO (https://crbug.com/1063807):  Add incognito mode tests.
+        return ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        SiteEngagementService.getForBrowserContext(
+                                        ProfileManager.getLastUsedRegularProfile())
+                                .getScore(mPermissionTestRule.getOrigin()));
     }
 
     /**

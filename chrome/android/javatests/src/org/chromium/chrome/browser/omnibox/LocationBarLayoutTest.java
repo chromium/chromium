@@ -58,7 +58,6 @@ import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 
 /** Unit tests for {@link LocationBarLayout}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -102,12 +101,7 @@ public class LocationBarLayoutTest {
     }
 
     private String getUrlText(UrlBar urlBar) {
-        try {
-            return ThreadUtils.runOnUiThreadBlocking(() -> urlBar.getText().toString());
-        } catch (ExecutionException ex) {
-            throw new RuntimeException(
-                    "Failed to get the UrlBar's text! Exception below:\n" + ex.toString());
-        }
+        return ThreadUtils.runOnUiThreadBlocking(() -> urlBar.getText().toString());
     }
 
     private UrlBar getUrlBar() {
@@ -145,24 +139,20 @@ public class LocationBarLayoutTest {
                 });
         CriteriaHelper.pollUiThread(() -> urlBar.hasFocus());
 
-        try {
-            ThreadUtils.runOnUiThreadBlocking(
-                    new Callable<Void>() {
-                        @Override
-                        public Void call() throws InterruptedException {
-                            mActivityTestRule.typeInOmnibox(text, false);
-                            return null;
-                        }
-                    });
-        } catch (ExecutionException e) {
-            throw new RuntimeException("Failed to type \"" + text + "\" into the omnibox!");
-        }
+        ThreadUtils.runOnUiThreadBlocking(
+                new Callable<Void>() {
+                    @Override
+                    public Void call() throws InterruptedException {
+                        mActivityTestRule.typeInOmnibox(text, false);
+                        return null;
+                    }
+                });
     }
 
     @Test
     @SmallTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    public void testNotShowingVoiceSearchButtonIfUrlBarContainsText() throws ExecutionException {
+    public void testNotShowingVoiceSearchButtonIfUrlBarContainsText() {
         // When there is text, the delete button should be visible.
         setUrlBarTextAndFocus("testing");
 
@@ -173,7 +163,7 @@ public class LocationBarLayoutTest {
     @Test
     @SmallTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    public void testShowingVoiceSearchButtonIfUrlBarIsEmpty() throws ExecutionException {
+    public void testShowingVoiceSearchButtonIfUrlBarIsEmpty() {
         // When there's no text, the mic button should be visible.
         setUrlBarTextAndFocus("");
 
@@ -183,7 +173,7 @@ public class LocationBarLayoutTest {
 
     @Test
     @SmallTest
-    public void testDeleteButton() throws ExecutionException {
+    public void testDeleteButton() {
         setUrlBarTextAndFocus("testing");
         CriteriaHelper.pollUiThread(
                 () -> {

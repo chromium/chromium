@@ -28,7 +28,6 @@ import org.chromium.content_public.browser.WebContents;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -659,12 +658,8 @@ public class DOMUtils {
     }
 
     private static int getMaybeTopControlsHeight(final WebContents webContents) {
-        try {
-            return ThreadUtils.runOnUiThreadBlocking(
-                    () -> DOMUtilsJni.get().getTopControlsShrinkBlinkHeight(webContents));
-        } catch (ExecutionException e) {
-            return 0;
-        }
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> DOMUtilsJni.get().getTopControlsShrinkBlinkHeight(webContents));
     }
 
     /**

@@ -11,7 +11,6 @@ import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -22,9 +21,7 @@ import static org.mockito.Mockito.when;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.test.filters.MediumTest;
-import androidx.test.filters.SmallTest;
 
-import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -67,7 +64,6 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 /** Instrumentation tests for {@link SignOutDialogCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -104,28 +100,6 @@ public class SignOutCoordinatorTest {
     public void setUp() {
         LibraryLoader.getInstance().ensureInitialized();
         mActivityTestRule.launchActivity(null);
-    }
-
-    @Test
-    @SmallTest
-    public void testNullOnSignOutCallback() {
-        try {
-            ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        SignOutCoordinator.startSignOutFlow(
-                                mActivityTestRule.getActivity(),
-                                mProfile,
-                                mFragmentManager,
-                                mActivityTestRule.getActivity().getModalDialogManager(),
-                                mSnackbarManager,
-                                SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
-                                /* showConfirmDialog= */ false,
-                                null);
-                        return null;
-                    });
-        } catch (ExecutionException ex) {
-            MatcherAssert.assertThat(ex.getCause(), instanceOf(AssertionError.class));
-        }
     }
 
     @Test

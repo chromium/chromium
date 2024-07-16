@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 /** Util class for survey related testing. */
 public class TestSurveyUtils {
@@ -67,7 +66,7 @@ public class TestSurveyUtils {
         SurveyClientImpl.setForceShowSurveyForTesting(doForce);
     }
 
-    static TestSurveyFactory setUpTestSurveyFactory() throws ExecutionException {
+    static TestSurveyFactory setUpTestSurveyFactory() {
         TestSurveyFactory factory = ThreadUtils.runOnUiThreadBlocking(TestSurveyFactory::new);
         SurveyClientFactory.setInstanceForTesting(factory);
         return factory;
@@ -109,12 +108,8 @@ public class TestSurveyUtils {
                     CommandLine.getInstance()
                             .appendSwitch(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE);
 
-                    try {
-                        mTestSurveyFactory = setUpTestSurveyFactory();
-                        base.evaluate();
-                    } catch (ExecutionException e) {
-                        throw new RuntimeException(e);
-                    }
+                    mTestSurveyFactory = setUpTestSurveyFactory();
+                    base.evaluate();
                 }
             };
         }

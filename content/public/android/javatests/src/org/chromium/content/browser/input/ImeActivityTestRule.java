@@ -43,7 +43,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /** Integration tests for text input for Android L (or above) features. */
@@ -399,20 +398,8 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
     }
 
     ChromiumBaseInputConnection getInputConnection() {
-        try {
-            return ThreadUtils.runOnUiThreadBlocking(
-                    new Callable<ChromiumBaseInputConnection>() {
-                        @Override
-                        public ChromiumBaseInputConnection call() {
-                            return (ChromiumBaseInputConnection)
-                                    getImeAdapter().getInputConnectionForTest();
-                        }
-                    });
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-            Assert.fail();
-            return null;
-        }
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> (ChromiumBaseInputConnection) getImeAdapter().getInputConnectionForTest());
     }
 
     void restartInput() {

@@ -243,8 +243,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
                 () -> awContents.getSettings().setJavaScriptEnabled(true));
     }
 
-    public static boolean getJavaScriptEnabledOnUiThread(final AwContents awContents)
-            throws ExecutionException {
+    private static boolean getJavaScriptEnabledOnUiThread(final AwContents awContents) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> awContents.getSettings().getJavaScriptEnabled());
     }

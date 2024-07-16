@@ -29,8 +29,6 @@ import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.ui.base.ViewAndroidDelegate;
 
-import java.util.concurrent.ExecutionException;
-
 /** Test the select popup and how it interacts with another WebContents. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -54,14 +52,10 @@ public class SelectPopupOtherContentViewTest {
                             + "</body></html>");
 
     private boolean isSelectPopupVisibleOnUiThread() {
-        try {
-            return ThreadUtils.runOnUiThreadBlocking(
-                    () ->
-                            WebContentsUtils.isSelectPopupVisible(
-                                    mActivityTestRule.getWebContents()));
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        }
+        return ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        WebContentsUtils.isSelectPopupVisible(
+                                mActivityTestRule.getWebContents()));
     }
 
     /**

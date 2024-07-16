@@ -36,7 +36,6 @@ import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Test various Java WebContents specific features.
@@ -56,12 +55,10 @@ public class WebContentsTest {
      * Check that {@link WebContents#isDestroyed()} works as expected.
      * TODO(dtrainor): Test this using {@link WebContents#destroy()} instead once it is possible to
      * build a {@link WebContents} directly in the content/ layer.
-     *
-     * @throws ExecutionException
      */
     @Test
     @SmallTest
-    public void testWebContentsIsDestroyedMethod() throws ExecutionException {
+    public void testWebContentsIsDestroyedMethod() {
         final ContentShellActivity activity =
                 mActivityTestRule.launchContentShellWithUrl(TEST_URL_1);
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
@@ -227,11 +224,10 @@ public class WebContentsTest {
     /**
      * Check that serializing a destroyed WebContents always results in a null deserialized
      * WebContents.
-     * @throws ExecutionException
      */
     @Test
     @SmallTest
-    public void testSerializingADestroyedWebContentsDoesNotDeserialize() throws ExecutionException {
+    public void testSerializingADestroyedWebContentsDoesNotDeserialize() {
         ContentShellActivity activity = mActivityTestRule.launchContentShellWithUrl(TEST_URL_1);
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
         WebContents webContents = activity.getActiveWebContents();
@@ -261,12 +257,10 @@ public class WebContentsTest {
     /**
      * Check that destroying a WebContents after serializing it always results in a null
      * deserialized WebContents.
-     * @throws ExecutionException
      */
     @Test
     @SmallTest
-    public void testDestroyingAWebContentsAfterSerializingDoesNotDeserialize()
-            throws ExecutionException {
+    public void testDestroyingAWebContentsAfterSerializingDoesNotDeserialize() {
         ContentShellActivity activity = mActivityTestRule.launchContentShellWithUrl(TEST_URL_1);
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
         WebContents webContents = activity.getActiveWebContents();

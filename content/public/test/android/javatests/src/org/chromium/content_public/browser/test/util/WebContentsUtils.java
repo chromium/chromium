@@ -25,7 +25,6 @@ import org.chromium.content_public.browser.ViewEventSink;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /** Collection of test-only WebContents utilities. */
@@ -77,11 +76,7 @@ public class WebContentsUtils {
      * @param webContents The WebContents in use.
      */
     public static ImeAdapter getImeAdapter(WebContents webContents) {
-        try {
-            return ThreadUtils.runOnUiThreadBlocking(() -> ImeAdapter.fromWebContents(webContents));
-        } catch (ExecutionException e) {
-            return null;
-        }
+        return ThreadUtils.runOnUiThreadBlocking(() -> ImeAdapter.fromWebContents(webContents));
     }
 
     /**
@@ -90,12 +85,8 @@ public class WebContentsUtils {
      * @param webContents The WebContents in use.
      */
     public static GestureListenerManager getGestureListenerManager(WebContents webContents) {
-        try {
-            return ThreadUtils.runOnUiThreadBlocking(
-                    () -> GestureListenerManager.fromWebContents(webContents));
-        } catch (ExecutionException e) {
-            return null;
-        }
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> GestureListenerManager.fromWebContents(webContents));
     }
 
     /**
@@ -104,11 +95,7 @@ public class WebContentsUtils {
      * @param webContents The WebContents in use.
      */
     public static ViewEventSink getViewEventSink(WebContents webContents) {
-        try {
-            return ThreadUtils.runOnUiThreadBlocking(() -> ViewEventSink.from(webContents));
-        } catch (ExecutionException e) {
-            return null;
-        }
+        return ThreadUtils.runOnUiThreadBlocking(() -> ViewEventSink.from(webContents));
     }
 
     /**

@@ -34,7 +34,6 @@ import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 /** Tests for the TabModelSelectorTabObserver. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -211,11 +210,7 @@ public class TabModelSelectorTabObserverTest {
     }
 
     private static void closeTab(TabModel tabModel, Tab tab) {
-        try {
-            ThreadUtils.runOnUiThreadBlocking(() -> tabModel.closeTab(tab));
-        } catch (ExecutionException e) {
-            throw new RuntimeException("Error occurred waiting for runnable", e);
-        }
+        ThreadUtils.runOnUiThreadBlocking(() -> tabModel.closeTab(tab));
     }
 
     private static void removeTab(TabModel tabModel, Tab tab) {

@@ -37,7 +37,6 @@ import org.chromium.net.test.util.TestWebServer;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /** Test suite for JavaScript Java interaction. */
@@ -528,9 +527,9 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
 
         // Pass an URI instead of origin shouldn't work.
         final String jsObjectName5 = JS_OBJECT_NAME + "5";
-        ExecutionException exception =
+        RuntimeException exception =
                 Assert.assertThrows(
-                        ExecutionException.class,
+                        RuntimeException.class,
                         () ->
                                 addWebMessageListenerOnUiThread(
                                         mAwContents,
@@ -548,9 +547,9 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
     @Feature({"AndroidWebView", "JsJavaInteraction"})
     public void testDontAllowAddWebMessageLitenerWithTheSameJsObjectName() throws Throwable {
         addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
-        ExecutionException exception =
+        RuntimeException exception =
                 Assert.assertThrows(
-                        ExecutionException.class,
+                        RuntimeException.class,
                         () ->
                                 addWebMessageListenerOnUiThread(
                                         mAwContents,
@@ -1311,9 +1310,9 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
 
         // Wrong origin rule.
         final String testObjectName5 = testObjectName + "5";
-        ExecutionException exception =
+        RuntimeException exception =
                 Assert.assertThrows(
-                        ExecutionException.class,
+                        RuntimeException.class,
                         () ->
                                 addDocumentStartJavaScriptOnUiThread(
                                         mAwContents,
