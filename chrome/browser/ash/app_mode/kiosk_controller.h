@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_APP_MODE_KIOSK_CONTROLLER_H_
 
 #include <optional>
-#include <string>
 #include <vector>
 
 #include "ash/public/cpp/login_accelerators.h"
@@ -63,13 +62,6 @@ class KioskController {
       KioskProfileLoadFailedObserver* observer) = 0;
 
   virtual bool HandleAccelerator(LoginAcceleratorAction action) = 0;
-
-  // Initializes the `KioskSystemSession`. Should be called at the end of the
-  // Kiosk launch.
-  virtual void InitializeKioskSystemSession(
-      Profile* profile,
-      const KioskAppId& kiosk_app_id,
-      const std::optional<std::string>& app_name) = 0;
 
   // Returns the `KioskSystemSession`. Can be `nullptr` if called outside a
   // Kiosk session, or before `InitializeSystemSession`.

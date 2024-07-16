@@ -13,7 +13,6 @@
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/types/expected.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
@@ -57,11 +56,6 @@ class KioskControllerImpl : public KioskController,
 
   bool HandleAccelerator(LoginAcceleratorAction action) override;
 
-  void InitializeKioskSystemSession(
-      Profile* profile,
-      const KioskAppId& kiosk_app_id,
-      const std::optional<std::string>& app_name) override;
-
   KioskSystemSession* GetKioskSystemSession() override;
 
   kiosk_vision::TelemetryProcessor* GetKioskVisionTelemetryProcessor() override;
@@ -76,11 +70,14 @@ class KioskControllerImpl : public KioskController,
   void OnAppLaunched(const KioskAppId& kiosk_app_id,
                      Profile* profile,
                      const std::optional<std::string>& app_name);
-  void OnLaunchComplete(std::optional<KioskAppLaunchError::Error> error);
+  void OnLaunchComplete(KioskAppLaunchError::Error error);
   void OnLaunchCompleteAfterCrash(const KioskAppId& app,
                                   Profile* profile,
                                   bool success,
                                   const std::optional<std::string>& app_name);
+  void InitializeKioskSystemSession(const KioskAppId& kiosk_app_id,
+                                    Profile* profile,
+                                    const std::optional<std::string>& app_name);
 
   void DeleteLaunchControllerAsync();
   void DeleteLaunchController();

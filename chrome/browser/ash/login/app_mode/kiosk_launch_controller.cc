@@ -13,7 +13,6 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/shell.h"
-#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
@@ -49,6 +48,7 @@
 #include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/login/app_mode/force_install_observer.h"
+#include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -543,10 +543,6 @@ void KioskLaunchController::CleanUp() {
   }
   RecordKioskLaunchDuration(kiosk_app_id_.type,
                             base::Time::Now() - launcher_start_time_);
-
-  // Make sure that any kiosk launch errors get written to disk before we kill
-  // the browser.
-  g_browser_process->local_state()->CommitPendingWrite();
 }
 
 void KioskLaunchController::OnTimerFire() {
@@ -600,44 +596,56 @@ void KioskLaunchController::OnAppPrepared() {
 }
 
 void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
+  using Error = KioskAppLaunchError::Error;
+
   if (cleaned_up_) {
     return;
   }
 
   SetKioskLaunchStateCrashKey(KioskLaunchState::kLaunchFailed);
 
-  DCHECK_NE(KioskAppLaunchError::Error::kNone, error);
   SYSLOG(ERROR) << "Kiosk launch failed, error=" << ToString(error) << " ("
                 << static_cast<int>(error) << ")";
 
-  // Reboot on the recoverable cryptohome errors.
-  if (error == KioskAppLaunchError::Error::kCryptohomedNotRunning ||
-      error == KioskAppLaunchError::Error::kAlreadyMounted) {
-    // Do not save the error because saved errors would stop app from launching
-    // on the next run.
-    std::move(attempt_relaunch_).Run();
-    FinishLaunchWithError(error);
-    return;
+  switch (error) {
+    case Error::kNone:
+      NOTREACHED_NORETURN();
+    case Error::kCryptohomedNotRunning:
+    case Error::kAlreadyMounted:
+      // Reboot the device on recoverable cryptohome errors. Do not save error
+      // because that prevents re-launch on the next run.
+      std::move(attempt_relaunch_).Run();
+      break;
+    case Error::kLacrosDataMigrationStarted:
+    case Error::kLacrosBackwardDataMigrationStarted:
+      // The migration code handles the chrome restart, so nothing to do.
+      break;
+    case Error::kHasPendingLaunch:
+    case Error::kUnableToMount:
+    case Error::kUnableToRemove:
+    case Error::kUnableToInstall:
+    case Error::kUserCancel:
+    case Error::kNotKioskEnabled:
+    case Error::kUnableToRetrieveHash:
+    case Error::kPolicyLoadFailed:
+    case Error::kUnableToDownload:
+    case Error::kUnableToLaunch:
+    case Error::kExtensionsLoadTimeout:
+    case Error::kExtensionsPolicyInvalid:
+    case Error::kUserNotAllowlisted:
+      if (KioskLaunchController::TestOverrides::block_exit_on_failure) {
+        // Don't exit on launch failure if a test checks for Kiosk splash screen
+        // after launch fails, which happens to MSan browser_tests since this
+        // build variant runs significantly slower.
+        return;
+      }
+
+      // Save the error to prevent re-launch and show the error-toast.
+      KioskAppLaunchError::Save(error);
+      std::move(attempt_logout_).Run();
+      break;
   }
 
-  if (error == KioskAppLaunchError::Error::kLacrosDataMigrationStarted ||
-      error ==
-          KioskAppLaunchError::Error::kLacrosBackwardDataMigrationStarted) {
-    // The Lacros migration code handles the chrome restart, so nothing to do.
-    FinishLaunchWithError(error);
-    return;
-  }
-
-  // Don't exit on launch failure if a test checks for Kiosk splash screen after
-  // launch fails, which happens to MSan browser_tests since this build variant
-  // runs significantly slower.
-  if (TestOverrides::block_exit_on_failure) {
-    return;
-  }
-
-  // Saves the error and ends the session to go back to login screen.
-  KioskAppLaunchError::Save(error);
-  std::move(attempt_logout_).Run();
   FinishLaunchWithError(error);
 }
 
