@@ -100,7 +100,8 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   self.titleTextStyle = UIFontTextStyleTitle2;
   self.titleString = l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE);
   self.customSpacing = kTitleVerticalPadding;
-  self.primaryActionString = l10n_util::GetNSString(IDS_IOS_CLEAR_BUTTON);
+  self.primaryActionString =
+      l10n_util::GetNSString(IDS_IOS_DELETE_BROWSING_DATA_BUTTON);
   self.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_DELETE_BROWSING_DATA_CANCEL);
 

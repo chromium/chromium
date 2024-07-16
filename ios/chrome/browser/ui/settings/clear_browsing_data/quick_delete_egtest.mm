@@ -359,10 +359,9 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI
-      tapClearBrowsingDataMenuButton:ButtonWithAccessibilityLabel(
-                                         l10n_util::GetNSString(
-                                             IDS_IOS_CLEAR_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
+                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
 
   // Check that the history entry was deleted.
   GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 0,
@@ -403,10 +402,9 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI
-      tapClearBrowsingDataMenuButton:ButtonWithAccessibilityLabel(
-                                         l10n_util::GetNSString(
-                                             IDS_IOS_CLEAR_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
+                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
 
   // Check that the history entry was deleted.
   GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 0,
@@ -442,10 +440,9 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_nil()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI
-      tapClearBrowsingDataMenuButton:ButtonWithAccessibilityLabel(
-                                         l10n_util::GetNSString(
-                                             IDS_IOS_CLEAR_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
+                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
 
   // Check that the history entry was not deleted.
   GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 1,
@@ -483,10 +480,9 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI
-      tapClearBrowsingDataMenuButton:ButtonWithAccessibilityLabel(
-                                         l10n_util::GetNSString(
-                                             IDS_IOS_CLEAR_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
+                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
 
   // Check that the tab has not been closed.
   [ChromeEarlGrey waitForWebStateNotContainingText:"Echo"];
@@ -534,10 +530,9 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI
-      tapClearBrowsingDataMenuButton:ButtonWithAccessibilityLabel(
-                                         l10n_util::GetNSString(
-                                             IDS_IOS_CLEAR_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
+                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
 
   // Check that the tabs have been closed in both windows.
   [ChromeEarlGrey waitForWebStateNotContainingText:"Echo"];
@@ -579,10 +574,9 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_nil()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI
-      tapClearBrowsingDataMenuButton:ButtonWithAccessibilityLabel(
-                                         l10n_util::GetNSString(
-                                             IDS_IOS_CLEAR_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
+                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
 
   // Check that the tab has not been closed.
   [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
@@ -728,10 +722,9 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI
-      tapClearBrowsingDataMenuButton:ButtonWithAccessibilityLabel(
-                                         l10n_util::GetNSString(
-                                             IDS_IOS_CLEAR_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
+                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
 
   // Check that the stored password was removed.
   GREYAssertEqual(
@@ -771,10 +764,9 @@ void ExpectClearBrowsingDataNavigationHistograms(
                      kPasswordCount))] assertWithMatcher:grey_nil()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI
-      tapClearBrowsingDataMenuButton:ButtonWithAccessibilityLabel(
-                                         l10n_util::GetNSString(
-                                             IDS_IOS_CLEAR_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
+                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
 
   // Check that the stored password was not removed.
   GREYAssertEqual(
@@ -809,10 +801,9 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI
-      tapClearBrowsingDataMenuButton:ButtonWithAccessibilityLabel(
-                                         l10n_util::GetNSString(
-                                             IDS_IOS_CLEAR_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
+                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
 
   // Check that the stored card was removed.
   GREYAssertEqual(0, [AutofillAppInterface localCreditCount],
@@ -847,10 +838,9 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_nil()];
 
   // Tap the browsing data button.
-  [ChromeEarlGreyUI
-      tapClearBrowsingDataMenuButton:ButtonWithAccessibilityLabel(
-                                         l10n_util::GetNSString(
-                                             IDS_IOS_CLEAR_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
+                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
 
   // Check that the stored card was not removed.
   GREYAssertEqual(1, [AutofillAppInterface localCreditCount],
@@ -994,10 +984,9 @@ void ExpectClearBrowsingDataNavigationHistograms(
 
   // Open Quick Delete and delete browsing data.
   [self openQuickDeleteFromThreeDotMenu];
-  [ChromeEarlGreyUI
-      tapClearBrowsingDataMenuButton:ButtonWithAccessibilityLabel(
-                                         l10n_util::GetNSString(
-                                             IDS_IOS_CLEAR_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
+                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
@@ -1015,10 +1004,9 @@ void ExpectClearBrowsingDataNavigationHistograms(
 
   // Open Quick Delete and delete browsing data.
   [self openQuickDeleteFromThreeDotMenu];
-  [ChromeEarlGreyUI
-      tapClearBrowsingDataMenuButton:ButtonWithAccessibilityLabel(
-                                         l10n_util::GetNSString(
-                                             IDS_IOS_CLEAR_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
+                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
@@ -1035,10 +1023,9 @@ void ExpectClearBrowsingDataNavigationHistograms(
 
   // Open Quick Delete and delete browsing data.
   [self openQuickDeleteFromThreeDotMenu];
-  [ChromeEarlGreyUI
-      tapClearBrowsingDataMenuButton:ButtonWithAccessibilityLabel(
-                                         l10n_util::GetNSString(
-                                             IDS_IOS_CLEAR_BUTTON))];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
+                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
