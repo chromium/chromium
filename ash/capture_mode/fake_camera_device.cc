@@ -42,9 +42,10 @@ int g_next_buffer_id = 0;
 
 scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
     const gfx::Size& frame_size) {
-  uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
-                                gpu::SHARED_IMAGE_USAGE_SCANOUT;
+  gpu::SharedImageUsageSet shared_image_usage =
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
+      gpu::SHARED_IMAGE_USAGE_SCANOUT;
   return aura::Env::GetInstance()
       ->context_factory()
       ->SharedMainThreadRasterContextProvider()
