@@ -341,7 +341,7 @@ class AutofillCapturedSitesInteractiveTest
                               {features::test::kAutofillShowTypePredictions,
                                {}},
                               {features::kAutofillParsingPatternProvider,
-                               {{"prediction_source", "nextgen"}}},
+                               {{"prediction_source", "experimental"}}},
                               {features::test::
                                    kAutofillCapturedSiteTestsUseAutofillFlow,
                                {}}},
