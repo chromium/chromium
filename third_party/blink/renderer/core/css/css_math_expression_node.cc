@@ -2819,7 +2819,20 @@ double CSSMathExpressionOperation::EvaluateOperator(
       // clamp(MIN, VAL, MAX) is identical to max(MIN, min(VAL, MAX))
       // according to the spec,
       // https://drafts.csswg.org/css-values-4/#funcdef-clamp.
-      return std::max(min, std::min(val, max));
+      double minimum = std::min(val, max);
+      // std::min(0.0, -0.0) returns 0.0, so manually check for this situation
+      // to set result to -0.0.
+      if (val == 0 && max == 0 && !std::signbit(val) && std::signbit(max)) {
+        minimum = -0.0;
+      }
+      double maximum = std::max(min, minimum);
+      // std::max(-0.0, 0.0) returns -0.0, so manually check for this situation
+      // to set result to 0.0.
+      if (min == 0 && minimum == 0 && std::signbit(min) &&
+          !std::signbit(minimum)) {
+        maximum = 0.0;
+      }
+      return maximum;
     }
     case CSSMathOperator::kRoundNearest:
     case CSSMathOperator::kRoundUp:
