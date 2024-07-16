@@ -1490,10 +1490,20 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
     // table box (i.e. non-captions).
     LayoutUnit adjusted_child_block_offset = child_block_offset;
     if (has_entered_non_repeated_section) {
+      // We may be past the fragmentation line due to monolithic content from a
+      // preceding page still taking up space in a resumed fragment -
+      // potentially all space, and more. The fragmentainer offset will be right
+      // after the end of the monolithic content, which might not even be on the
+      // current page, but on a later one. We now want to calculate the offset
+      // for the repeated table footer, relatively to that fragmentainer offset,
+      // so that the footer ends up exactly at the bottom of this page (this may
+      // be a negative offset, since the fragmentainer offset may be on a
+      // subsequent page, after the monolithic content).
+      LayoutUnit footer_offset_at_end_of_page =
+          FragmentainerCapacity() - GetConstraintSpace().FragmentainerOffset() -
+          repeated_footer_block_size;
       adjusted_child_block_offset =
-          std::min(adjusted_child_block_offset,
-                   UnclampedFragmentainerSpaceLeft(container_builder_) -
-                       repeated_footer_block_size);
+          std::min(adjusted_child_block_offset, footer_offset_at_end_of_page);
     }
 
     LogicalOffset offset(section_inline_offset, adjusted_child_block_offset);

@@ -635,29 +635,9 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
   bool may_resume_in_next_outer_fragmentainer = false;
   LayoutUnit available_outer_space = kIndefiniteSize;
   if (is_constrained_by_outer_fragmentation_context_) {
-    available_outer_space = std::max(
-        minimum_column_block_size,
-        UnclampedFragmentainerSpaceLeft(container_builder_) - row_offset);
-
-    if (available_outer_space <= LayoutUnit()) {
-      if (available_outer_space < LayoutUnit()) {
-        // We're past the end of the outer fragmentainer (typically due to a
-        // margin). Nothing will fit here, not even zero-size content. If we
-        // haven't produced any fragments yet, and aborting is allowed, we'll
-        // retry in the next outer fragmentainer. Otherwise, we need to continue
-        // (once we have started laying out, we cannot skip any fragmentainers)
-        // with no available size.
-        if (GetConstraintSpace().IsInsideBalancedColumns() &&
-            !container_builder_.IsInitialColumnBalancingPass()) {
-          container_builder_.PropagateSpaceShortage(-available_outer_space);
-        }
-        available_outer_space = LayoutUnit();
-      }
-
-      // We are out of space, but we're exactly at the end of the outer
-      // fragmentainer. If none of our contents take up space, we're going to
-      // fit, otherwise not. Lay out and find out.
-    }
+    available_outer_space = std::max(minimum_column_block_size,
+                                     FragmentainerSpaceLeft() - row_offset);
+    DCHECK_GE(available_outer_space, LayoutUnit());
 
     // Determine if we should resume layout in the next outer fragmentation
     // context if we run out of space in the current one. This is always the

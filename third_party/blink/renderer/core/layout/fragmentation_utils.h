@@ -218,18 +218,6 @@ inline LayoutUnit FragmentainerOffsetAtBfc(const ConstraintSpace& space) {
   return space.FragmentainerOffset() - space.ExpectedBfcBlockOffset();
 }
 
-// Same as FragmentainerSpaceLeft(), but not to be called in the initial
-// column balancing pass (when fragmentainer block-size is unknown), and without
-// any clamping of negative values.
-inline LayoutUnit UnclampedFragmentainerSpaceLeft(
-    const BoxFragmentBuilder& builder,
-    bool include_cloned_block_end_decorations = false) {
-  const ConstraintSpace& space = builder.GetConstraintSpace();
-  DCHECK(space.HasKnownFragmentainerBlockSize());
-  return FragmentainerCapacity(builder, include_cloned_block_end_decorations) -
-         space.FragmentainerOffset();
-}
-
 // Adjust margins to take fragmentation into account. Leading/trailing block
 // margins must be applied to at most one fragment each. Leading block margins
 // come before the first fragment (if at all; see below), and trailing block
