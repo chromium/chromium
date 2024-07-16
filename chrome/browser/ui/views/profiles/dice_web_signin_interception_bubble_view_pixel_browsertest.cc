@@ -319,14 +319,8 @@ class DiceWebSigninInterceptionBubblePixelTest
   std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> bubble_handle_;
 };
 
-// TODO(https://crbug.com/339315678): re-enable the test.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
-#else
-#define MAYBE_InvokeUi_default InvokeUi_default
-#endif
 IN_PROC_BROWSER_TEST_P(DiceWebSigninInterceptionBubblePixelTest,
-                       MAYBE_InvokeUi_default) {
+                       InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
