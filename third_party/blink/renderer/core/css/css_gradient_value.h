@@ -149,7 +149,8 @@ class CSSGradientValue : public CSSImageGeneratorValue {
                 const ComputedStyle&) const;
   void AddDeprecatedStops(GradientDesc&,
                           const Document&,
-                          const ComputedStyle&) const;
+                          const ComputedStyle&,
+                          const CSSToLengthConversionData&) const;
   void AddComputedStops(const ComputedStyle&,
                         bool allow_visited_style,
                         const HeapVector<CSSGradientColorStop, 2>& stops,
