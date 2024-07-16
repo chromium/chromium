@@ -8,10 +8,13 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "components/crash/core/common/crash_key.h"
 #import "components/remote_cocoa/app_shim/features.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_host_helper.h"
@@ -103,6 +106,12 @@ void OrderChildWindow(NSWindow* child_window,
 
 }  // namespace
 
+@interface NSNextStepFrame (Private)
+- (instancetype)initWithFrame:(NSRect)frame
+                    styleMask:(NSUInteger)styleMask
+                        owner:(id)owner;
+@end
+
 @interface NSWindow (Private)
 + (Class)frameViewClassForStyleMask:(NSWindowStyleMask)windowStyle;
 - (BOOL)hasKeyAppearance;
@@ -159,7 +168,39 @@ void OrderChildWindow(NSWindow* child_window,
 }
 @end
 
-@implementation NativeWidgetMacNSWindowBorderlessFrame
+@implementation NativeWidgetMacNSWindowBorderlessFrame {
+ @private
+  base::debug::StackTrace _initStackTrace;
+  NSUInteger _initStyleMask;
+}
+
+// TODO(crbug.com/348713769): remove after debug.
+- (instancetype)initWithFrame:(NSRect)frame
+                    styleMask:(NSUInteger)styleMask
+                        owner:(id)owner {
+  _initStackTrace = base::debug::StackTrace();
+  _initStyleMask = styleMask;
+  return [super initWithFrame:frame styleMask:styleMask owner:owner];
+}
+- (void)_surrenderToolbarViewForFullScreenWindow {
+  static crash_reporter::CrashKeyString<64> initStackTraceKey(
+      "NativeWidgetMacNSWindowBorderlessFrame_initStackTrace");
+  static crash_reporter::CrashKeyString<11> initStyleMaskKey(
+      "NativeWidgetMacNSWindowBorderlessFrame_initStyleMask");
+  static crash_reporter::CrashKeyString<11> currentStyleMaskKey(
+      "NativeWidgetMacNSWindowBorderlessFrame_currentStyleMaskKey");
+  static crash_reporter::CrashKeyString<11> windowDebugDescriptionKey(
+      "NativeWidgetMacNSWindowBorderlessFrame_windowDebugDescription");
+  static crash_reporter::CrashKeyString<5> initHasParentWindowKey(
+      "NativeWidgetMacNSWindowBorderlessFrame_hasParentWindow");
+  crash_reporter::SetCrashKeyStringToStackTrace(&initStackTraceKey,
+                                                _initStackTrace);
+  initStyleMaskKey.Set(base::NumberToString(_initStyleMask));
+  currentStyleMaskKey.Set(base::NumberToString(self.window.styleMask));
+  windowDebugDescriptionKey.Set(self.window.debugDescription.UTF8String);
+  initHasParentWindowKey.Set(self.window.parentWindow ? "true" : "false");
+  NOTREACHED();
+}
 - (void)mouseDown:(NSEvent*)event {
   [self cr_mouseDownOnFrameView:event];
   [super mouseDown:event];
