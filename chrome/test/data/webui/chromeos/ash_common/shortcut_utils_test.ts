@@ -25,7 +25,7 @@ suite('ShortcutUtils', function() {
       },
       originalAccelerator: null,
       shortcutLabelText: getTrustedHTML`<a>test string</a>` as TrustedHTML,
-      hasLauncherKey: true,
+      metaKey: MetaKey.kLauncher,
     };
 
     const inputKeyParts = createInputKeyParts(inputAcceleratorProperties);

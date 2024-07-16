@@ -18,6 +18,7 @@ mojom("mojom") {
     ":accelerator_fetcher",
     ":shortcut_input_provider",
     "//mojo/public/mojom/base",
+    "//ui/events/ash/mojom",
   ]
 }
 

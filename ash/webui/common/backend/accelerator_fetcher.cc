@@ -107,9 +107,10 @@ void AcceleratorFetcher::OnAcceleratorsUpdated() {
   }
 }
 
-void AcceleratorFetcher::HasLauncherKey(HasLauncherKeyCallback callback) {
+void AcceleratorFetcher::GetMetaKeyToDisplay(
+    GetMetaKeyToDisplayCallback callback) {
   std::move(callback).Run(
-      Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard());
+      Shell::Get()->keyboard_capability()->GetMetaKeyToDisplay());
 }
 
 void AcceleratorFetcher::OnObserverDisconnect(mojo::RemoteSetElementId id) {

@@ -10,7 +10,7 @@ import {ShortcutInputKeyElement} from './shortcut_input_key.js';
 
 export interface ShortcutLabelProperties extends StandardAcceleratorProperties {
   shortcutLabelText: TrustedHTML;
-  hasLauncherKey: boolean;
+  metaKey: MetaKey;
 }
 
 /**
@@ -142,8 +142,7 @@ export function createInputKeyParts(
       // Current use cases outside keyboard page or shortcut page only consider
       // 'meta' instead of 'command'.
       key.key = modifierName === 'command' ? 'meta' : modifierName;
-      key.metaKey = shortcutLabelProperties.hasLauncherKey ? MetaKey.kLauncher :
-                                                             MetaKey.kSearch;
+      key.metaKey = shortcutLabelProperties.metaKey;
       key.narrow = useNarrowLayout;
       inputKeys.push(key);
       pressedModifiers.push(modifierName);

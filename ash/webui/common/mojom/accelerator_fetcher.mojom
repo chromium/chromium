@@ -6,6 +6,7 @@ module ash.common.mojom;
 
 import "ash/public/mojom/accelerator_info.mojom";
 import "ash/public/mojom/accelerator_actions.mojom";
+import "ui/events/ash/mojom/meta_key.mojom";
 
 // Interface for observing accelerator changes and notifying the frontend
 // to update the shortcut accelerator displays.
@@ -32,6 +33,8 @@ interface AcceleratorFetcher {
   ObserveAcceleratorChanges(
       array<ash.mojom.AcceleratorAction> actionIds,
       pending_remote<AcceleratorFetcherObserver> observer);
-  // Whether there is a Launcher key on any connected keyboard.
-  HasLauncherKey() => (bool has_launcher_key);
+  // Returns the meta key to display in the UI to represent the overall current
+  // keyboard situation. This will only return either Launcher, Search, or
+  // LauncherRefresh.
+  GetMetaKeyToDisplay() => (ui.mojom.MetaKey meta_key);
 };
