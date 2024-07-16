@@ -42,7 +42,7 @@ suite('ExtensionItemListTest', function() {
     itemList.extensions = extensionItems;
     itemList.apps = appItems;
     itemList.filter = '';
-    itemList.isMv2DeprecationWarningDismissed = false;
+    itemList.isMv2DeprecationNoticeDismissed = false;
     document.body.appendChild(itemList);
   }
 
@@ -277,7 +277,7 @@ suite('ExtensionItemListTest', function() {
     assertEquals(2, mv2DeprecationPanel.extensions.length);
 
     // Panel is hidden if warning has been dismissed.
-    itemList.set('isMv2DeprecationWarningDismissed', true);
+    itemList.set('isMv2DeprecationNoticeDismissed', true);
     flush();
     boundTestVisible('extensions-mv2-deprecation-panel', false);
   });

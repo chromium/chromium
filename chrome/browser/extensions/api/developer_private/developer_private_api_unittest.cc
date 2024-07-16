@@ -3253,8 +3253,7 @@ TEST_F(DeveloperPrivateApiWithMV2DeprecationWarningUnitTest,
   update_profile_function->set_source_context_type(mojom::ContextType::kWebUi);
 
   base::Value::List args;
-  args.Append(
-      base::Value::Dict().Set("isMv2DeprecationWarningDismissed", true));
+  args.Append(base::Value::Dict().Set("isMv2DeprecationNoticeDismissed", true));
   EXPECT_TRUE(RunFunction(update_profile_function, args));
 
   EXPECT_TRUE(experiment_manager->DidUserAcknowledgeNoticeGlobally());

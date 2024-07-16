@@ -97,9 +97,9 @@ suite('ExtensionsMV2DeprecationPanel_WarningStage', function() {
         assertTrue(!!dismissButton);
 
         dismissButton.click();
-        await mockDelegate.whenCalled('dismissMv2DeprecationWarning');
+        await mockDelegate.whenCalled('dismissMv2DeprecationNotice');
         assertEquals(
-            1, mockDelegate.getCallCount('dismissMv2DeprecationWarning'));
+            1, mockDelegate.getCallCount('dismissMv2DeprecationNotice'));
       });
 
   test(

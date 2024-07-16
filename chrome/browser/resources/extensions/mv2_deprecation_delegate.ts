@@ -3,6 +3,6 @@
 // found in the LICENSE file.
 
 export interface Mv2DeprecationDelegate {
-  dismissMv2DeprecationWarning(): void;
+  dismissMv2DeprecationNotice(): void;
   dismissMv2DeprecationNoticeForExtension(id: string): void;
 }

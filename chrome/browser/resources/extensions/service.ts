@@ -35,7 +35,7 @@ export interface ServiceInterface extends ActivityLogDelegate,
   getExtensionsInfo(): Promise<chrome.developerPrivate.ExtensionInfo[]>;
   getExtensionSize(id: string): Promise<string>;
   dismissSafetyHubExtensionsMenuNotification(): void;
-  dismissMv2DeprecationWarning(): void;
+  dismissMv2DeprecationNotice(): void;
 }
 
 export class Service implements ServiceInterface {
@@ -505,9 +505,9 @@ export class Service implements ServiceInterface {
     chrome.developerPrivate.dismissSafetyHubExtensionsMenuNotification();
   }
 
-  dismissMv2DeprecationWarning(): void {
+  dismissMv2DeprecationNotice(): void {
     chrome.developerPrivate.updateProfileConfiguration(
-        {isMv2DeprecationWarningDismissed: true});
+        {isMv2DeprecationNoticeDismissed: true});
   }
 
   dismissMv2DeprecationNoticeForExtension(id: string): Promise<void> {

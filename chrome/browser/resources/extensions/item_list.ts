@@ -41,7 +41,7 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
         value: false,
       },
 
-      isMv2DeprecationWarningDismissed: {
+      isMv2DeprecationNoticeDismissed: {
         type: Boolean,
         notify: true,
       },
@@ -121,7 +121,7 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
         type: Boolean,
         computed: 'computeShowMv2DeprecationPanel_(' +
             'mv2ExperimentStage_, mv2DeprecatedExtensions_, ' +
-            'isMv2DeprecationWarningDismissed)',
+            'isMv2DeprecationNoticeDismissed)',
       },
 
       hasSafetyCheckTriggeringExtension_: {
@@ -135,7 +135,7 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
   extensions: chrome.developerPrivate.ExtensionInfo[];
   delegate: ItemDelegate;
   inDevMode: boolean;
-  isMv2DeprecationWarningDismissed: boolean;
+  isMv2DeprecationNoticeDismissed: boolean;
   filter: string;
   private computedFilter_: string;
   private maxColumns_: number;
@@ -287,9 +287,9 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
       case Mv2ExperimentStage.NONE:
         return false;
       case Mv2ExperimentStage.WARNING:
-        // Panel is visible when it has not been dismissed for this stage and at
-        // least one extension is affected by the MV2 deprecation.
-        return !this.isMv2DeprecationWarningDismissed &&
+        // Panel is visible when it has not been dismissed and at least one
+        // extension is affected by the MV2 deprecation.
+        return !this.isMv2DeprecationNoticeDismissed &&
             this.mv2DeprecatedExtensions_?.length !== 0;
       case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
         // Panel is visible when at least one extension is affected by the MV2

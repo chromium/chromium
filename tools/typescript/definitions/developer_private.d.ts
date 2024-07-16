@@ -276,7 +276,7 @@ declare global {
         isDeveloperModeControlledByPolicy: boolean;
         isIncognitoAvailable: boolean;
         isChildAccount: boolean;
-        isMv2DeprecationWarningDismissed: boolean;
+        isMv2DeprecationNoticeDismissed: boolean;
       }
 
       export interface ExtensionConfigurationUpdate {
@@ -292,7 +292,7 @@ declare global {
 
       export interface ProfileConfigurationUpdate {
         inDeveloperMode?: boolean;
-        isMv2DeprecationWarningDismissed?: boolean;
+        isMv2DeprecationNoticeDismissed?: boolean;
       }
 
       export interface ExtensionCommandUpdate {
