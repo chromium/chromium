@@ -328,6 +328,8 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
 
   private onDangerousDownloadInterstitialCancel_() {
     this.validateInterstitial_();
+    this.mojoHandler_.recordCancelBypassWarningInterstitial(
+        this.bypassPromptItemId_);
     this.hideBypassWarningPrompt_();
   }
 
