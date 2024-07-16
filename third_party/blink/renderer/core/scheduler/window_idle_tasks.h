@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_WINDOW_IDLE_TASKS_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_WINDOW_IDLE_TASKS_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_WINDOW_IDLE_TASKS_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_WINDOW_IDLE_TASKS_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -12,7 +13,7 @@ class IdleRequestOptions;
 class LocalDOMWindow;
 class V8IdleRequestCallback;
 
-class WindowIdleTasks {
+class CORE_EXPORT WindowIdleTasks {
   STATIC_ONLY(WindowIdleTasks);
 
  public:
@@ -24,4 +25,4 @@ class WindowIdleTasks {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_WINDOW_IDLE_TASKS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_WINDOW_IDLE_TASKS_H_

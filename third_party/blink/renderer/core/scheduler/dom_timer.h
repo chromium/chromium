@@ -24,13 +24,13 @@
  *
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_DOM_TIMER_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_DOM_TIMER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_DOM_TIMER_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_DOM_TIMER_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/probe/async_task_context.h"
-#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -50,10 +50,10 @@ class ScriptState;
 class ScriptValue;
 class V8Function;
 
-class MODULES_EXPORT DOMTimer final : public GarbageCollected<DOMTimer>,
-                                      public ExecutionContextLifecycleObserver,
-                                      public TimerBase,
-                                      public NameClient {
+class CORE_EXPORT DOMTimer final : public GarbageCollected<DOMTimer>,
+                                   public ExecutionContextLifecycleObserver,
+                                   public TimerBase,
+                                   public NameClient {
   USING_PRE_FINALIZER(DOMTimer, Dispose);
 
  public:
@@ -117,4 +117,4 @@ class MODULES_EXPORT DOMTimer final : public GarbageCollected<DOMTimer>,
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_DOM_TIMER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_DOM_TIMER_H_

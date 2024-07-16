@@ -99,7 +99,7 @@ class TestAuditNonBlinkUsageTest(unittest.TestCase):
             {
                 'type': 'isolate->GetContinuationPreservedEmbedderData',
                 'allowed': True,
-                'path': 'third_party/blink/renderer/modules/scheduler/'
+                'path': 'third_party/blink/renderer/core/scheduler/'
             },
         ]
         for item in check_list:

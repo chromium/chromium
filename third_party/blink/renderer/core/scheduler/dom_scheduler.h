@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_DOM_SCHEDULER_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_DOM_SCHEDULER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_DOM_SCHEDULER_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_DOM_SCHEDULER_H_
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
-#include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/scheduler/dom_task_signal.h"
+#include "third_party/blink/renderer/core/scheduler/dom_task_signal.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -55,9 +55,9 @@ class WebSchedulingTaskQueue;
  *  task queues are created the first time a TaskSignal is passed to postTask,
  *  and their lifetime matches that of the associated TaskSignal.
  */
-class MODULES_EXPORT DOMScheduler : public ScriptWrappable,
-                                    public ExecutionContextLifecycleObserver,
-                                    public Supplement<ExecutionContext> {
+class CORE_EXPORT DOMScheduler : public ScriptWrappable,
+                                 public ExecutionContextLifecycleObserver,
+                                 public Supplement<ExecutionContext> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -198,4 +198,4 @@ class MODULES_EXPORT DOMScheduler : public ScriptWrappable,
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_DOM_SCHEDULER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_DOM_SCHEDULER_H_

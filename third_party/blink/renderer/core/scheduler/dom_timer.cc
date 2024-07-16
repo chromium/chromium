@@ -24,7 +24,7 @@
  *
  */
 
-#include "third_party/blink/renderer/modules/scheduler/dom_timer.h"
+#include "third_party/blink/renderer/core/scheduler/dom_timer.h"
 
 #include "base/numerics/clamped_math.h"
 #include "base/task/single_thread_task_runner.h"
@@ -38,7 +38,7 @@
 #include "third_party/blink/renderer/core/frame/page_dismissal_scope.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
-#include "third_party/blink/renderer/modules/scheduler/scheduled_action.h"
+#include "third_party/blink/renderer/core/scheduler/scheduled_action.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"

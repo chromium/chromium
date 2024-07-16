@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_DOM_TASK_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_DOM_TASK_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_DOM_TASK_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_DOM_TASK_H_
 
 #include <atomic>
 #include <optional>
@@ -13,8 +13,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/probe/async_task_context.h"
-#include "third_party/blink/renderer/modules/scheduler/dom_scheduler.h"
-#include "third_party/blink/renderer/modules/scheduler/dom_task_signal.h"
+#include "third_party/blink/renderer/core/scheduler/dom_scheduler.h"
+#include "third_party/blink/renderer/core/scheduler/dom_task_signal.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 
@@ -72,4 +72,4 @@ class DOMTask final : public GarbageCollected<DOMTask> {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_DOM_TASK_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_DOM_TASK_H_

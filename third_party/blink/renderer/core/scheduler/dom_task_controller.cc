@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/scheduler/dom_task_controller.h"
+#include "third_party/blink/renderer/core/scheduler/dom_task_controller.h"
 
-#include "third_party/blink/renderer/bindings/modules/v8/v8_task_controller_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_task_controller_init.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/modules/scheduler/dom_task_signal.h"
+#include "third_party/blink/renderer/core/scheduler/dom_task_signal.h"
 
 namespace blink {
 

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_DOM_TASK_SIGNAL_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_DOM_TASK_SIGNAL_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_DOM_TASK_SIGNAL_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_DOM_TASK_SIGNAL_H_
 
 #include "base/functional/callback_forward.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/abort_signal_composition_type.h"
-#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -20,7 +20,7 @@ class ExceptionState;
 class ExecutionContext;
 class TaskSignalAnyInit;
 
-class MODULES_EXPORT DOMTaskSignal final : public AbortSignal {
+class CORE_EXPORT DOMTaskSignal final : public AbortSignal {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -78,4 +78,4 @@ struct DowncastTraits<DOMTaskSignal> {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_DOM_TASK_SIGNAL_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_DOM_TASK_SIGNAL_H_

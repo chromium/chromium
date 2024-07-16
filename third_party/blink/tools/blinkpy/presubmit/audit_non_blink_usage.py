@@ -2154,7 +2154,7 @@ _CONFIG = [
     },
      {
         'paths': [
-            'third_party/blink/renderer/modules/scheduler/',
+            'third_party/blink/renderer/core/scheduler/',
             'third_party/blink/renderer/modules/shared_storage/',
         ],
         'allowed': [

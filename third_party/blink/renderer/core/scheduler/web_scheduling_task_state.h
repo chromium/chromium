@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_WEB_SCHEDULING_TASK_STATE_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_WEB_SCHEDULING_TASK_STATE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_WEB_SCHEDULING_TASK_STATE_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_WEB_SCHEDULING_TASK_STATE_H_
 
-#include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/scheduler/script_wrappable_task_state.h"
+#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/scheduler/script_wrappable_task_state.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink::scheduler {
@@ -17,7 +17,7 @@ namespace blink {
 class AbortSignal;
 class DOMTaskSignal;
 
-class MODULES_EXPORT WebSchedulingTaskState final
+class CORE_EXPORT WebSchedulingTaskState final
     : public ScriptWrappableTaskState {
  public:
   WebSchedulingTaskState(scheduler::TaskAttributionInfo*,
@@ -38,4 +38,4 @@ class MODULES_EXPORT WebSchedulingTaskState final
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_WEB_SCHEDULING_TASK_STATE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_WEB_SCHEDULING_TASK_STATE_H_

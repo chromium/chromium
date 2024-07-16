@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_TASK_ATTRIBUTION_INFO_IMPL_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_TASK_ATTRIBUTION_INFO_IMPL_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_TASK_ATTRIBUTION_INFO_IMPL_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_TASK_ATTRIBUTION_INFO_IMPL_H_
 
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
-#include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/scheduler/script_wrappable_task_state.h"
+#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/scheduler/script_wrappable_task_state.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -17,7 +17,7 @@ class AbortSignal;
 class DOMTaskSignal;
 class SoftNavigationContext;
 
-class MODULES_EXPORT TaskAttributionInfoImpl final
+class CORE_EXPORT TaskAttributionInfoImpl final
     : public ScriptWrappableTaskState,
       public scheduler::TaskAttributionInfo {
  public:
@@ -48,4 +48,4 @@ struct DowncastTraits<TaskAttributionInfoImpl> {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_TASK_ATTRIBUTION_INFO_IMPL_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_TASK_ATTRIBUTION_INFO_IMPL_H_

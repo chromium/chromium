@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/scheduler/task_attribution_tracker_impl.h"
+#include "third_party/blink/renderer/core/scheduler/task_attribution_tracker_impl.h"
 
 #include <memory>
 #include <optional>
@@ -12,9 +12,9 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/modules/scheduler/script_wrappable_task_state.h"
-#include "third_party/blink/renderer/modules/scheduler/task_attribution_info_impl.h"
-#include "third_party/blink/renderer/modules/scheduler/web_scheduling_task_state.h"
+#include "third_party/blink/renderer/core/scheduler/script_wrappable_task_state.h"
+#include "third_party/blink/renderer/core/scheduler/task_attribution_info_impl.h"
+#include "third_party/blink/renderer/core/scheduler/web_scheduling_task_state.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"

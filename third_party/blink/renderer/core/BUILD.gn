@@ -60,6 +60,7 @@ import("//third_party/blink/renderer/core/paint/build.gni")
 import("//third_party/blink/renderer/core/permissions_policy/build.gni")
 import("//third_party/blink/renderer/core/preferences/build.gni")
 import("//third_party/blink/renderer/core/resize_observer/build.gni")
+import("//third_party/blink/renderer/core/scheduler/build.gni")
 import(
     "//third_party/blink/renderer/core/scheduler_integration_tests/build.gni")
 import("//third_party/blink/renderer/core/script/build.gni")
@@ -309,6 +310,7 @@ component("core") {
       rebase_path(blink_core_sources_resize_observer, "", "resize_observer")
   sources +=
       rebase_path(blink_core_sources_speculation_rules, "", "speculation_rules")
+  sources += rebase_path(blink_core_sources_scheduler, "", "scheduler")
   sources += rebase_path(blink_core_sources_script, "", "script")
   sources += rebase_path(blink_core_sources_scroll, "", "scroll")
   sources += rebase_path(blink_core_sources_shadow_realm, "", "shadow_realm")
@@ -1431,6 +1433,7 @@ source_set("unit_tests") {
       rebase_path(blink_core_tests_permissions_policy, "", "permissions_policy")
   sources +=
       rebase_path(blink_core_tests_resize_observer, "", "resize_observer")
+  sources += rebase_path(blink_core_tests_scheduler, "", "scheduler")
   sources += rebase_path(blink_core_tests_scheduler_integration_tests,
                          "",
                          "scheduler_integration_tests")

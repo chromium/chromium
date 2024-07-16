@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_TASK_ATTRIBUTION_TRACKER_IMPL_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_TASK_ATTRIBUTION_TRACKER_IMPL_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_TASK_ATTRIBUTION_TRACKER_IMPL_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_TASK_ATTRIBUTION_TRACKER_IMPL_H_
 
 #include <optional>
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
-#include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
@@ -36,8 +36,7 @@ class TaskAttributionInfo;
 // task is the parent of the current task, and stores that info for later. It
 // then enables callers to determine if a certain task ID is an ancestor of the
 // current task.
-class MODULES_EXPORT TaskAttributionTrackerImpl
-    : public TaskAttributionTracker {
+class CORE_EXPORT TaskAttributionTrackerImpl : public TaskAttributionTracker {
  public:
   static std::unique_ptr<TaskAttributionTracker> Create(v8::Isolate*);
 
@@ -81,9 +80,9 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
   WTF::Deque<Persistent<TaskAttributionInfo>> same_document_navigation_tasks_;
 
   // The lifetime of this class is tied to the `isolate_`.
-  raw_ptr<v8::Isolate> isolate_;
+  v8::Isolate* isolate_;
 };
 
 }  // namespace blink::scheduler
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_TASK_ATTRIBUTION_TRACKER_IMPL_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_TASK_ATTRIBUTION_TRACKER_IMPL_H_

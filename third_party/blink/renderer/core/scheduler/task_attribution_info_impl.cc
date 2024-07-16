@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/scheduler/task_attribution_info_impl.h"
+#include "third_party/blink/renderer/core/scheduler/task_attribution_info_impl.h"
 
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
