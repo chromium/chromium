@@ -67,6 +67,9 @@ class BASE_EXPORT StackSampler {
   // any StackSampler object.
   static std::unique_ptr<StackBuffer> CreateStackBuffer();
 
+  // Set whether a thread pool should be used or not.
+  static void SetUseThreadPool(bool use_thread_pool);
+
   // The following functions are all called on the SamplingThread (not the
   // thread being sampled).
 
