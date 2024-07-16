@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/time/time.h"
 #include "chrome/browser/apps/almanac_api_client/almanac_api_util.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 #include "chrome/browser/apps/almanac_api_client/proto/client_context.pb.h"
@@ -34,9 +33,6 @@ constexpr int kMaxResponseSizeInBytes = 1024 * 1024;
 
 constexpr char kServerErrorHistogramName[] =
     "AppPreloadService.ServerResponseCodes";
-
-constexpr char kServerRoundTripTimeForFirstLogin[] =
-    "AppPreloadService.ServerRoundTripTimeForFirstLogin";
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("app_preload_service", R"(
@@ -156,7 +152,6 @@ void ParseShelfPinOrdering(const google::protobuf::RepeatedPtrField<
 }
 
 void ConvertAppPreloadListResponseProto(
-    base::TimeTicks request_start_time,
     GetInitialAppsCallback callback,
     base::expected<proto::AppPreloadListResponse, QueryError> query_response) {
   LauncherOrdering launcher_ordering;
@@ -168,22 +163,17 @@ void ConvertAppPreloadListResponseProto(
     return;
   }
 
-  base::UmaHistogramTimes(kServerRoundTripTimeForFirstLogin,
-                          base::TimeTicks::Now() - request_start_time);
-
-
   std::vector<PreloadAppDefinition> apps;
   for (const auto& app : query_response->apps_to_install()) {
     apps.emplace_back(app);
   }
 
   std::string empty_root_folder;
-  ParseLauncherOrdering(query_response->launcher_config(),
-                        empty_root_folder, &launcher_ordering,
+  ParseLauncherOrdering(query_response->launcher_config(), empty_root_folder,
+                        &launcher_ordering,
                         /*allow_nested_folders=*/true);
 
-  ParseShelfPinOrdering(query_response->shelf_config(),
-                        &shelf_pin_ordering);
+  ParseShelfPinOrdering(query_response->shelf_config(), &shelf_pin_ordering);
 
   std::move(callback).Run(std::move(apps), std::move(launcher_ordering),
                           std::move(shelf_pin_ordering));
@@ -191,17 +181,15 @@ void ConvertAppPreloadListResponseProto(
 
 }  // namespace
 
-void GetAppsForFirstLogin(
-    const DeviceInfo& device_info,
-    network::mojom::URLLoaderFactory& url_loader_factory,
-    GetInitialAppsCallback callback) {
+void GetAppsForFirstLogin(const DeviceInfo& device_info,
+                          network::mojom::URLLoaderFactory& url_loader_factory,
+                          GetInitialAppsCallback callback) {
   QueryAlmanacApi<proto::AppPreloadListResponse>(
       url_loader_factory, kTrafficAnnotation,
       BuildGetAppsForFirstLoginRequestBody(device_info),
       kAppPreloadAlmanacEndpoint, kMaxResponseSizeInBytes,
       kServerErrorHistogramName,
-      base::BindOnce(&ConvertAppPreloadListResponseProto,
-                     base::TimeTicks::Now(), std::move(callback)));
+      base::BindOnce(&ConvertAppPreloadListResponseProto, std::move(callback)));
 }
 
 GURL GetServerUrl() {

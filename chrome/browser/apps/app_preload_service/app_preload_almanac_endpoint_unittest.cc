@@ -30,13 +30,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace {
-
-constexpr char kServerRoundTripHistogram[] =
-    "AppPreloadService.ServerRoundTripTimeForFirstLogin";
-
-}  // namespace
-
 namespace apps {
 
 class AppPreloadAlmanacEndpointTest : public testing::Test {
@@ -200,8 +193,6 @@ TEST_F(AppPreloadAlmanacEndpointTest, GetAppsForFirstLoginSuccessfulResponse) {
   EXPECT_EQ(shelf_pin_ordering.size(), 2u);
   EXPECT_EQ(shelf_pin_ordering[web_app1], 1u);
   EXPECT_EQ(shelf_pin_ordering[android_app1], 1u);
-
-  histograms_.ExpectTotalCount(kServerRoundTripHistogram, 1);
 }
 
 TEST_F(AppPreloadAlmanacEndpointTest, GetAppsForFirstLoginServerError) {
@@ -215,8 +206,6 @@ TEST_F(AppPreloadAlmanacEndpointTest, GetAppsForFirstLoginServerError) {
   app_preload_almanac_endpoint::GetAppsForFirstLogin(
       DeviceInfo(), *test_shared_loader_factory_, result.GetCallback());
   EXPECT_FALSE(std::get<0>(result.Get()).has_value());
-
-  histograms_.ExpectTotalCount(kServerRoundTripHistogram, 0);
 }
 
 TEST_F(AppPreloadAlmanacEndpointTest, GetAppsForFirstLoginNetworkError) {
@@ -231,8 +220,6 @@ TEST_F(AppPreloadAlmanacEndpointTest, GetAppsForFirstLoginNetworkError) {
   app_preload_almanac_endpoint::GetAppsForFirstLogin(
       DeviceInfo(), *test_shared_loader_factory_, result.GetCallback());
   EXPECT_FALSE(std::get<0>(result.Get()).has_value());
-
-  histograms_.ExpectTotalCount(kServerRoundTripHistogram, 0);
 }
 
 }  // namespace apps
