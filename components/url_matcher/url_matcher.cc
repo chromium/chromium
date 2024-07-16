@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "url/gurl.h"
 #include "url/url_canon.h"
@@ -917,8 +916,7 @@ std::set<base::MatcherStringPattern::ID> URLMatcher::MatchURL(
         triggered_condition_sets_iter->second;
     for (auto j = condition_sets.begin(); j != condition_sets.end(); ++j) {
       auto condition_set_iter = url_matcher_condition_sets_.find(*j);
-      CHECK(condition_set_iter != url_matcher_condition_sets_.end(),
-            base::NotFatalUntil::M130);
+      DCHECK(condition_set_iter != url_matcher_condition_sets_.end());
       if (condition_set_iter->second->IsMatch(matches, url,
                                               url_for_component_searches))
         result.insert(*j);
