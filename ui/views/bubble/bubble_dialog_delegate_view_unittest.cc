@@ -46,6 +46,7 @@
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -1168,13 +1169,13 @@ class BubbleDialogDelegateViewAnchorTest : public test::WidgetTest {
   // from the widgets actually being used in each test.
   Widget* dummy_widget() const { return dummy_widget_.get(); }
 
- private:
   View* GetAnchorView(Widget* widget) {
     View* const contents_view = widget->GetContentsView();
     DCHECK(contents_view);
     return contents_view;
   }
 
+ private:
   WidgetAutoclosePtr dummy_widget_;
 };
 
@@ -1346,6 +1347,18 @@ TEST_F(BubbleDialogDelegateViewAnchorTest,
   Anchor(bubble, widget.get());
   Anchor(bubble2, bubble);
   bubble->Close();
+}
+
+// Tests that if the anchor view has kWidgetForAnchoringKey property,
+// uses that widget for anchoring.
+TEST_F(BubbleDialogDelegateViewAnchorTest, WidgetForAnchoring) {
+  auto widget = CreateTopLevelWidget();
+  auto widget_for_anchoring = CreateTopLevelWidget();
+
+  GetAnchorView(widget.get())
+      ->SetProperty(kWidgetForAnchoringKey, widget_for_anchoring.get());
+  auto* bubble = CreateBubble(widget.get());
+  EXPECT_EQ(bubble->parent(), widget_for_anchoring.get());
 }
 
 TEST_F(BubbleDialogDelegateViewTest, BubbleMetrics) {

@@ -18,10 +18,11 @@ class Insets;
 
 namespace views {
 
+class BoxLayoutFlexSpecification;
 class DialogDelegate;
 class FlexSpecification;
 class HighlightPathGenerator;
-class BoxLayoutFlexSpecification;
+class Widget;
 
 // The hit test component (e.g. HTCLIENT) for a View in a window frame. Defaults
 // to HTNOWHERE.
@@ -48,6 +49,15 @@ VIEWS_EXPORT extern const ui::ClassProperty<gfx::Insets*>* const
 // enable the bubble's contents to be included in the focus order.
 VIEWS_EXPORT extern const ui::ClassProperty<DialogDelegate*>* const
     kAnchoredDialogKey;
+
+// A property to store the anchor widget used for anchoring a bubble dialog
+// to this view. If unset, the anchor widget is this view's containing widget.
+//
+// This is useful in macOS fullscreen where a sub views tree is moved to a
+// separate overlay widget that has a higher z-order level. We anchor the bubble
+// to the overlay widget to prevent the bubble from being occluded.
+VIEWS_EXPORT extern const ui::ClassProperty<Widget*>* const
+    kWidgetForAnchoringKey;
 
 // A property to store how a view should flex when placed in a layout.
 // Only supported by BoxLayout.
@@ -110,5 +120,6 @@ DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, gfx::Size*)
 DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, ui::ElementIdentifier)
 DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, bool)
 DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, views::View*)
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, views::Widget*)
 
 #endif  // UI_VIEWS_VIEW_CLASS_PROPERTIES_H_

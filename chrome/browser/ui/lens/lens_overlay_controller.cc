@@ -72,6 +72,10 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/widget/native_widget.h"
+
+void* kLensOverlayPreselectionWidgetIdentifier =
+    &kLensOverlayPreselectionWidgetIdentifier;
 
 namespace {
 
@@ -1846,6 +1850,9 @@ void LensOverlayController::ShowPreselectionBubble() {
     preselection_widget_ = views::BubbleDialogDelegateView::CreateBubble(
         std::make_unique<lens::LensPreselectionBubble>(
             tab_->GetBrowserWindowInterface()->GetWebView()->parent()));
+    preselection_widget_->SetNativeWindowProperty(
+        views::kWidgetIdentifierKey,
+        const_cast<void*>(kLensOverlayPreselectionWidgetIdentifier));
     preselection_widget_observer_.Observe(preselection_widget_);
   }
   preselection_widget_->Show();
