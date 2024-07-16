@@ -576,4 +576,10 @@
   <message name="IDS_PRODUCT_SPECIFICATIONS_REMOVE_COLUMN" translateable="false" desc="The title of the menu item for removing a column in the product specification list.">
     Remove column
   </message>
+  <message name="IDS_PRODUCT_SPECIFICATIONS_DISCLAIMER" translateable="false" desc="Disclaimer text shown in product specifications UIs.">
+    This is an experimental feature and won't always get it right.
+  </message>
+  <message name="IDS_PRODUCT_SPECIFICATIONS_LEARN_MORE_A11Y_LABEL" translateable="false" desc="Accessibility label for a link labeled 'Learn more' that links to a help article about product specifications.">
+    Learn more about product specifications.
+  </message>
 </grit-part>

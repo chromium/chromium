@@ -78,13 +78,16 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       {"emptyStateDescription",
        IDS_PRODUCT_SPECIFICATIONS_EMPTY_STATE_TITLE_DESCRIPTION},
       {"emptyStateTitle", IDS_PRODUCT_SPECIFICATIONS_EMPTY_STATE_TITLE},
-      {"suggestedTabs", IDS_PRODUCT_SPECIFICATIONS_SUGGESTIONS_SECTION},
+      {"experimentalFeatureDisclaimer", IDS_PRODUCT_SPECIFICATIONS_DISCLAIMER},
+      {"learnMore", IDS_LEARN_MORE},
+      {"learnMoreA11yLabel", IDS_PRODUCT_SPECIFICATIONS_LEARN_MORE_A11Y_LABEL},
       {"priceRowTitle", IDS_PRODUCT_SPECIFICATIONS_PRICE_ROW_TITLE},
       {"recentlyViewedTabs",
        IDS_PRODUCT_SPECIFICATIONS_RECENTLY_VIEWED_TABS_SECTION},
       {"removeColumn", IDS_PRODUCT_SPECIFICATIONS_REMOVE_COLUMN},
       {"renameGroup", IDS_PRODUCT_SPECIFICATIONS_RENAME_GROUP},
       {"seeAll", IDS_PRODUCT_SPECIFICATIONS_SEE_ALL},
+      {"suggestedTabs", IDS_PRODUCT_SPECIFICATIONS_SUGGESTIONS_SECTION},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
