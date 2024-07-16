@@ -2524,6 +2524,28 @@
             ]
         }
     ],
+    "AutofillUpstreamUpdatedUi": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Security",
+                    "params": {
+                        "autofill_upstream_updated_ui_treatment": "1"
+                    },
+                    "enable_features": [
+                        "AutofillUpstreamUpdatedUi"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutomaticLazyFrameLoading": [
         {
             "platforms": [
