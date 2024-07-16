@@ -8,6 +8,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/timer/timer.h"
+#import "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
@@ -40,9 +41,11 @@ static constexpr base::TimeDelta kConfirmationStateDuration =
   // state.
   base::OneShotTimer _autoCloseConfirmationTimer;
 
-  // Set to `YES` by `creditCardUploadCompleted` when card is uploaded and modal
-  // shows success confirmation.
-  BOOL _creditCardUploadCompleted;
+  // Holds a value when loading and confirmation is enabled. `NO` indicates
+  // modal is in loading state. `YES` indicates modal is in confirmation state.
+  std::optional<BOOL> _creditCardUploadCompleted;
+
+  BOOL _loadingDismissedByUser;
 }
 
 #pragma mark - Accessors
@@ -122,16 +125,24 @@ static constexpr base::TimeDelta kConfirmationStateDuration =
 - (void)creditCardUploadCompleted:(BOOL)card_saved {
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
+    if (!_loadingDismissedByUser) {
+      autofill::autofill_metrics::LogCreditCardUploadLoadingViewResultMetric(
+          autofill::autofill_metrics::SaveCardPromptResult::kNotInteracted);
+    }
     if (card_saved) {
+      autofill::autofill_metrics::
+          LogCreditCardUploadConfirmationViewShownMetric(
+              /*is_shown=*/true, /*is_card_uploaded=*/true);
+
       _creditCardUploadCompleted = YES;
       [self.consumer showProgressWithUploadCompleted:YES];
 
       // Auto close modal after showing successful card save confirmation.
       __weak __typeof(self) weakSelf = self;
-      _autoCloseConfirmationTimer.Start(FROM_HERE, kConfirmationStateDuration,
-                                        base::BindOnce(^{
-                                          [weakSelf dismissInfobarModal:nil];
-                                        }));
+      _autoCloseConfirmationTimer.Start(
+          FROM_HERE, kConfirmationStateDuration, base::BindOnce(^{
+            [weakSelf dimissConfirmationStateOnTimeout];
+          }));
     } else {
       // On card save failure, this modal is dimissed and user is shown an error
       // dialog triggered from IOSChromePaymentsAutofillClient.
@@ -164,8 +175,13 @@ static constexpr base::TimeDelta kConfirmationStateDuration =
 
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
+    autofill::autofill_metrics::LogCreditCardUploadLoadingViewShownMetric(
+        /*is_shown=*/true);
+    _creditCardUploadCompleted = NO;
     [self.consumer showProgressWithUploadCompleted:NO];
   } else {
+    autofill::autofill_metrics::LogCreditCardUploadLoadingViewShownMetric(
+        /*is_shown=*/false);
     [self dismissOverlay];
   }
 }
@@ -175,19 +191,29 @@ static constexpr base::TimeDelta kConfirmationStateDuration =
   [self dismissOverlay];
 }
 
+- (void)dimissConfirmationStateOnTimeout {
+  [self dismissOverlay];
+  [self onConfirmationClosedWithAutoClose:YES];
+}
+
 - (void)dismissInfobarModal:(id)infobarModal {
   base::RecordAction(base::UserMetricsAction(kInfobarModalCancelButtonTapped));
   [self dismissOverlay];
 
   // When loading and confirmation feature is enabled and credit card upload is
-  // completed, modal would be showing a success confirmation. On modal getting
-  // closed in confirmation state, call
-  // `AutofillSaveCardInfoBarDelegateIOS::OnConfirmationClosed`.
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation) &&
-      _creditCardUploadCompleted) {
-    _autoCloseConfirmationTimer.Stop();
-    self.saveCardDelegate->OnConfirmationClosed();
+  // completed, modal would be showing a success confirmation and value of
+  // `_creditCardUploadCompleted` would be `YES`. Modal getting closed from here
+  // means user dismissed it using the close button.
+  if (_creditCardUploadCompleted.has_value() &&
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
+    if (_creditCardUploadCompleted.value()) {
+      [self onConfirmationClosedWithAutoClose:NO];
+    } else {
+      _loadingDismissedByUser = YES;
+      autofill::autofill_metrics::LogCreditCardUploadLoadingViewResultMetric(
+          autofill::autofill_metrics::SaveCardPromptResult::kClosed);
+    }
   }
 }
 
@@ -204,6 +230,18 @@ static constexpr base::TimeDelta kConfirmationStateDuration =
         [SaveCardMessageWithLinks convertFrom:delegate->legal_message_lines()];
   }
   return [[NSMutableArray alloc] init];
+}
+
+// Called when modal gets closed in confirmation state. Logs how the modal got
+// closed and calls `AutofillSaveCardInfoBarDelegateIOS::OnConfirmationClosed`.
+- (void)onConfirmationClosedWithAutoClose:(BOOL)autoClosed {
+  autofill::autofill_metrics::LogCreditCardUploadConfirmationViewResultMetric(
+      autoClosed
+          ? autofill::autofill_metrics::SaveCardPromptResult::kNotInteracted
+          : autofill::autofill_metrics::SaveCardPromptResult::kClosed,
+      /*is_card_uploaded=*/true);
+  _autoCloseConfirmationTimer.Stop();
+  self.saveCardDelegate->OnConfirmationClosed();
 }
 
 @end

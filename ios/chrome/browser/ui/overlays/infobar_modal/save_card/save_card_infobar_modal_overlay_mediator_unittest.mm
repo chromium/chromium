@@ -8,11 +8,13 @@
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "base/uuid.h"
 #import "components/autofill/core/browser/autofill_client.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #import "components/autofill/core/browser/payments/test_legal_message_line.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/signin/public/identity_manager/account_info.h"
@@ -189,6 +191,23 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest, LoadURL) {
               base::SysUTF8ToNSString(delegate.pendingURLToLoad.spec()));
 }
 
+// Tests metrics for loading view not shown when loading and confirmation is not
+// enabled.
+TEST_F(SaveCardInfobarModalOverlayMediatorTest, LoadingViewNotShown_Metrics) {
+  base::HistogramTester histogramTester;
+  NSString* cardholderName = @"name";
+  NSString* month = @"3";
+  NSString* year = @"23";
+
+  OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
+  [mediator_ saveCardWithCardholderName:cardholderName
+                        expirationMonth:month
+                         expirationYear:year];
+
+  histogramTester.ExpectUniqueSample("Autofill.CreditCardUpload.LoadingShown",
+                                     false, 1);
+}
+
 class SaveCardInfobarModalOverlayMediatorWithLocalSave
     : public SaveCardInfobarModalOverlayMediatorTest {
  public:
@@ -327,4 +346,125 @@ TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
   base::TimeDelta delta = base::Seconds(0.5);
   task_environment()->FastForwardBy(kConfirmationStateDuration - delta);
   EXPECT_EQ(delta, task_environment()->NextMainThreadPendingTaskDelay());
+}
+
+// Tests metrics for loading view shown and dismissed by user.
+TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
+       LoadingViewShownAndDismissedByUser_Metrics) {
+  base::HistogramTester histogramTester;
+  NSString* cardholderName = @"name";
+  NSString* month = @"3";
+  NSString* year = @"23";
+
+  [mediator_ saveCardWithCardholderName:cardholderName
+                        expirationMonth:month
+                         expirationYear:year];
+
+  histogramTester.ExpectUniqueSample("Autofill.CreditCardUpload.LoadingShown",
+                                     true, 1);
+
+  // When modal is dismissed by user, on tapping the `Close` button before
+  // receiving server response, `dismissInfobarModal` is called. Verify
+  // `Autofill.CreditCardUpload.LoadingResult` metrics is logged with reason for
+  // dismissal as `kClosed`.
+  OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
+  [mediator_ dismissInfobarModal:nil];
+
+  histogramTester.ExpectUniqueSample(
+      "Autofill.CreditCardUpload.LoadingResult",
+      autofill::autofill_metrics::SaveCardPromptResult::kClosed, 1);
+
+  // On receving server response, `creditCardUploadCompleted` is called, that
+  // records loading view was not interacted with, if not already dismissed.
+  // Verify `Autofill.CreditCardUpload.LoadingResult` metrics is not logged
+  // again since it was already dismissed by the user.
+  OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
+  [mediator_ creditCardUploadCompleted:/*card_saved=*/false];
+
+  histogramTester.ExpectBucketCount(
+      "Autofill.CreditCardUpload.LoadingResult",
+      autofill::autofill_metrics::SaveCardPromptResult::kNotInteracted, 0);
+}
+
+// Tests metrics for loading view shown and dismissed on receiving result from
+// server.
+TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
+       LoadingViewShownAndNotDismissedByUser_Metrics) {
+  base::HistogramTester histogramTester;
+  NSString* cardholderName = @"name";
+  NSString* month = @"3";
+  NSString* year = @"23";
+
+  [mediator_ saveCardWithCardholderName:cardholderName
+                        expirationMonth:month
+                         expirationYear:year];
+
+  histogramTester.ExpectUniqueSample("Autofill.CreditCardUpload.LoadingShown",
+                                     true, 1);
+
+  // On receving server response if loading result is showing, it will be
+  // dismissed by the mediator. Verify `Autofill.CreditCardUpload.LoadingResult`
+  // metrics is logged with reason for dismissal as `kNotInteracted`.
+  OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
+  [mediator_ creditCardUploadCompleted:/*card_saved=*/false];
+
+  histogramTester.ExpectUniqueSample(
+      "Autofill.CreditCardUpload.LoadingResult",
+      autofill::autofill_metrics::SaveCardPromptResult::kNotInteracted, 1);
+  histogramTester.ExpectBucketCount(
+      "Autofill.CreditCardUpload.LoadingResult",
+      autofill::autofill_metrics::SaveCardPromptResult::kClosed, 0);
+}
+
+// Tests metrics for confirmation view shown and dismissed by user.
+TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
+       ConfirmationViewShownAndDismissedByUser_Metrics) {
+  base::HistogramTester histogramTester;
+
+  [mediator_ creditCardUploadCompleted:/*card_saved=*/true];
+
+  histogramTester.ExpectUniqueSample(
+      "Autofill.CreditCardUpload.ConfirmationShown.CardUploaded",
+      /*is_shown=*/true, 1);
+
+  // When confirmation view is dismissed by user on tapping the close button
+  // before the modal is auto-closed, `dismissInfobarModal` is called. Verify
+  // `Autofill.CreditCardUpload.ConfirmationResult` metrics is logged with
+  // reason for dismissal as `kClosed`.
+  OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
+  [mediator_ dismissInfobarModal:nil];
+  task_environment()->FastForwardBy(kConfirmationStateDuration);
+
+  histogramTester.ExpectUniqueSample(
+      "Autofill.CreditCardUpload.ConfirmationResult.CardUploaded",
+      autofill::autofill_metrics::SaveCardPromptResult::kClosed, 1);
+  histogramTester.ExpectBucketCount(
+      "Autofill.CreditCardUpload.ConfirmationResult.CardUploaded",
+      autofill::autofill_metrics::SaveCardPromptResult::kNotInteracted, 0);
+}
+
+// Tests metrics for confirmation view shown and auto-closed on
+// timeout.
+TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
+       ConfirmationViewShownAndAutoClosedOnTimeout_Metrics) {
+  base::HistogramTester histogramTester;
+
+  [mediator_ creditCardUploadCompleted:/*card_saved=*/true];
+
+  histogramTester.ExpectUniqueSample(
+      "Autofill.CreditCardUpload.ConfirmationShown.CardUploaded",
+      /*is_shown=*/true, 1);
+
+  // When confirmation view is auto-closed on timeout, verify
+  // `Autofill.CreditCardUpload.ConfirmationResult` metrics is logged with
+  // reason for dismissal as `kNotInteracted`.
+  OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
+  task_environment()->FastForwardBy(kConfirmationStateDuration);
+
+  histogramTester.ExpectUniqueSample(
+      "Autofill.CreditCardUpload.ConfirmationResult.CardUploaded",
+      autofill::autofill_metrics::SaveCardPromptResult::kNotInteracted, 1);
+  histogramTester.ExpectBucketCount(
+      "Autofill.CreditCardUpload.ConfirmationResult.CardUploaded",
+      autofill::autofill_metrics::SaveCardPromptResult::kClosed, 0);
 }

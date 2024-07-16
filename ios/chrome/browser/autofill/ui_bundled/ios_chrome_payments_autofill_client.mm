@@ -13,6 +13,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_progress_dialog_type.h"
+#import "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #import "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
@@ -116,9 +117,20 @@ void IOSChromePaymentsAutofillClient::CreditCardUploadCompleted(
     bool card_saved,
     std::optional<OnConfirmationClosedCallback>
         on_confirmation_closed_callback) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
+    autofill_metrics::LogCreditCardUploadConfirmationViewShownMetric(
+        /*is_shown=*/false, card_saved);
+    return;
+  }
   if (client_->GetAutofillSaveCardInfoBarDelegateIOS()) {
     client_->GetAutofillSaveCardInfoBarDelegateIOS()->CreditCardUploadCompleted(
         card_saved, std::move(on_confirmation_closed_callback));
+  }
+  if (!card_saved) {
+    autofill_metrics::LogCreditCardUploadConfirmationViewShownMetric(
+        /*is_shown=*/true, /*is_card_uploaded=*/false);
+    // TODO(crbug.com/40287758): Show credit card upload failure confirmation.
   }
 }
 
