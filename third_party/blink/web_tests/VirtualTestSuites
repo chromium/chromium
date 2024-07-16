@@ -2402,7 +2402,8 @@
     ],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=CookieDeprecationFacilitatedTesting:label/label_test"],
-    "expires": "Dec 30, 2024"
+    "expires": "Dec 30, 2024",
+    "owners": ["linnan@chromium.org", "anthonygarant@chromium.org"]
   },
   {
     "prefix": "ancestor-chain-bit-considered",
