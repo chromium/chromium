@@ -79,11 +79,6 @@ SidePanelCoordinator* LensSidePanelCoordinator::GetSidePanelCoordinator() {
 }
 
 LensSidePanelCoordinator::~LensSidePanelCoordinator() {
-  if (SidePanelCoordinator* side_panel_coordinator =
-          GetSidePanelCoordinator()) {
-    side_panel_coordinator->RemoveSidePanelViewStateObserver(this);
-  }
-
   if (template_url_service_ != nullptr)
     template_url_service_->RemoveObserver(this);
 }
