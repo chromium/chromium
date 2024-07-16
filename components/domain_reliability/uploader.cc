@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/supports_user_data.h"
 #include "components/domain_reliability/util.h"
 #include "net/base/elements_upload_data_stream.h"
@@ -176,7 +177,7 @@ class DomainReliabilityUploaderImpl : public DomainReliabilityUploader,
     DCHECK(!shutdown_);
 
     auto request_it = uploads_.find(request);
-    DCHECK(request_it != uploads_.end());
+    CHECK(request_it != uploads_.end(), base::NotFatalUntil::M130);
 
     int http_response_code = -1;
     base::TimeDelta retry_after;
