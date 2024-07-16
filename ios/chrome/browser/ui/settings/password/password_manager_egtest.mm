@@ -3922,4 +3922,40 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+- (void)testSwipingAnotherAffiliatedGroupWhenAnotherIsInEditMode {
+  // Form an affiliated group with two passwords.
+  SavePasswordFormToProfileStore(/*password=*/@"password1",
+                                 /*username=*/@"user1",
+                                 /*origin=*/@"https://example.com");
+  SavePasswordFormToProfileStore(/*password=*/@"password2",
+                                 /*username=*/@"user2",
+                                 /*origin=*/@"https://example1.com");
+
+  OpenPasswordManager();
+
+  // Swipe the affiliated group until the "Delete" button is revealed.
+  [[EarlGrey selectElementWithMatcher:grey_text(@"example.com")]
+      performAction:chrome_test_util::SwipeToShowDeleteButton()];
+
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Assert that "Delete" button is displayed.
+  [[EarlGrey selectElementWithMatcher:grey_kindOfClassName(
+                                          @"UISwipeActionStandardButton")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Swipe the next affiliated group until the "Delete" button is revealed.
+  [[EarlGrey selectElementWithMatcher:grey_text(@"example1.com")]
+      performAction:chrome_test_util::SwipeToShowDeleteButton()];
+
+  // Wait for the first affiliated group to reach its original state (i.e. no
+  // visible delete button).
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Assert that "Delete" button is displayed for the second affiliated group.
+  [[EarlGrey selectElementWithMatcher:grey_kindOfClassName(
+                                          @"UISwipeActionStandardButton")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 @end

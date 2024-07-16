@@ -452,20 +452,27 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 }
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
+  BOOL viewWasInEditMode = self.editing;
   [super setEditing:editing animated:animated];
+
+  // The UI needs to be updated only when we are switching between editing
+  // states (i.e. no-edit -> edit and edit -> no-edit). Updating the UI using
+  // batchUpdate (or equivalent) when the view is already in edit mode, causes
+  // the view to forcibly exit edit mode.
+  if (viewWasInEditMode == editing) {
+    return;
+  }
+
   [self setSearchBarEnabled:self.shouldEnableSearchBar];
   [self setWidgetPromoItemEnabled:!editing];
   [self updatePasswordCheckButtonWithState:self.passwordCheckState];
   [self updatePasswordCheckStatusLabelWithState:self.passwordCheckState];
-  [self reconfigurePasswordCheckSectionCellsWithState:self.passwordCheckState];
   [self setAddPasswordButtonEnabled:!editing];
-
-  //  We want to update the toolbar only if the current view is the Password
-  //  Manager.
   if ([self.navigationController.topViewController
           isKindOfClass:[PasswordManagerViewController class]]) {
     [self updateUIForEditState];
   }
+  [self reconfigurePasswordCheckSectionCellsWithState:self.passwordCheckState];
 }
 
 - (BOOL)hasPasswords {
@@ -897,6 +904,9 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
 - (void)updatePasswordManagerUI {
   if ([self shouldShowEmptyStateView]) {
+    // Force UI update, as setting table view's editing state to disabled might
+    // not update the UI.
+    [self updateUIForEditState];
     [self setEditing:NO animated:YES];
     [self reloadData];
     return;
@@ -1417,6 +1427,9 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     [self focusAccessibilityOnPasswordCheckStatus];
     self.checkWasTriggeredManually = NO;
   }
+
+  // Apply the changes to the "Password Check" cell.
+  [self reconfigureCellsForItems:@[ self.passwordProblemsItem ]];
 }
 
 // Enables or disables the `widgetPromoItem`.
