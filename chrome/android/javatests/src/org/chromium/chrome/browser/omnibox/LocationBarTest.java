@@ -19,7 +19,6 @@ import static org.mockito.Mockito.doReturn;
 
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.provider.Settings;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -293,19 +292,10 @@ public class LocationBarTest {
     @MediumTest
     public void testOnConfigurationChanged() {
         startActivityNormally();
-        // We expect the UrlBar to be focused iff a Hardware keyboard handler does not automatically
-        // call up Software keyboard (IME).
-        boolean wantUrlBarFocus =
-                Settings.Secure.getInt(
-                                mActivity.getContentResolver(), "show_ime_with_hard_keyboard", 0)
-                        == 0;
-
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mLocationBarMediator.showUrlBarCursorWithoutFocusAnimations();
-                    // If IME is configured to show up with hardware keys, url bar should not
-                    // receive focus.
-                    Assert.assertEquals(wantUrlBarFocus, mLocationBarMediator.isUrlBarFocused());
+                    Assert.assertTrue(mLocationBarMediator.isUrlBarFocused());
                 });
 
         Configuration configuration = mActivity.getSavedConfigurationForTesting();

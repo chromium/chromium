@@ -13,7 +13,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Rect;
-import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.FloatProperty;
 import android.view.KeyEvent;
@@ -441,18 +440,6 @@ class LocationBarMediator
 
     /*package */ void showUrlBarCursorWithoutFocusAnimations() {
         if (mUrlHasFocus || mUrlFocusedFromFakebox) {
-            return;
-        }
-
-        // Verify if Hardware keyboard still requests Software keyboard (IME) to be used.
-        // If that happens, suppress early focus to take Software keyboard out of the way.
-        // This is specifically relevant in Incognito mode, where Soft keyboard clobbers relevant
-        // messages.
-        // The setting below is not explicitly itemized in Settings.Secure, but it corresponds
-        // to whether Software keyboard would be called up when Physical keyboard is in use on
-        // Pixel devices.
-        if (Settings.Secure.getInt(mContext.getContentResolver(), "show_ime_with_hard_keyboard", 0)
-                != 0) {
             return;
         }
 
