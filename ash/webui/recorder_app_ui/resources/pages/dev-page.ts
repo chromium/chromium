@@ -20,7 +20,7 @@ import {
   usePlatformHandler,
   useRecordingDataManager,
 } from '../core/lit/context.js';
-import {Model, ModelId} from '../core/platform_handler.js';
+import {Model, ModelId, ModelResponse} from '../core/platform_handler.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
 
@@ -69,7 +69,10 @@ export class DevPage extends ReactiveLitElement {
 
   private readonly textareaRef = createRef<HTMLTextAreaElement>();
 
-  private readonly titles = signal<string[][]>([]);
+  /**
+   * Contains an array of each models response of the suggested titles.
+   */
+  private readonly titles = signal<Array<ModelResponse<string[]>>>([]);
 
   override disconnectedCallback(): void {
     if (this.loadedModels.value !== null) {

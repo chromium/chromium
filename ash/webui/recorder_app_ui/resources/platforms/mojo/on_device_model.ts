@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Model} from '../../core/platform_handler.js';
+import {
+  Model,
+  ModelResponse,
+  ModelResponseError,
+} from '../../core/platform_handler.js';
 import {shorten} from '../../core/utils/utils.js';
 
 import {
@@ -44,6 +48,38 @@ Reply:
 
 export const SUMMARIZATION_PROMPT_TEMPLATE = `${PLACEHOLDER}
 Write an abstractive summary in 3-bullet points: <ctrl23>`;
+
+/**
+ * The keys are id of the safety classes.
+ *
+ * The safety class that each id corresponds to can be found at
+ * //google3/chrome/intelligence/ondevice/data/example_text_safety.txtpb.
+ *
+ * TODO: b/349723775 - Adjust the threshold to the final one.
+ */
+const REQUEST_SAFETY_SCORE_THRESHOLDS = new Map([
+  [4, 0.65],
+  [23, 0.65],
+]);
+
+const RESPONSE_SAFETY_SCORE_THRESHOLDS = new Map([
+  [0, 0.65],
+  [1, 0.65],
+  [2, 0.65],
+  [3, 0.65],
+  [4, 0.65],
+  [5, 0.65],
+  [6, 0.65],
+  [7, 0.65],
+  [9, 0.65],
+  [10, 0.65],
+  [11, 0.65],
+  [12, 0.8],
+  [18, 0.7],
+  [20, 0.65],
+  [21, 0.8],
+  [23, 0.65],
+]);
 
 function parseResponse(res: string): string {
   // Note this is NOT an underscore: ▁(U+2581)
@@ -93,14 +129,19 @@ export class OnDeviceModel implements Model {
     return promise;
   }
 
-  async suggestTitles(content: string): Promise<string[]> {
+  async suggestTitles(content: string): Promise<ModelResponse<string[]>> {
+    if (await this.contentIsUnsafe(content, REQUEST_SAFETY_SCORE_THRESHOLDS)) {
+      return {kind: 'error', error: ModelResponseError.UNSAFE};
+    }
     content = shorten(content, MAX_CONTENT_WORDS);
     const prompt = TITLE_SUGGESTION_PROMPT_TEMPLATE.replace(
       PLACEHOLDER,
       content,
     );
     const res = await this.execute(prompt);
-    // Note this is NOT an underscore: ▁(U+2581)
+    if (await this.contentIsUnsafe(res, RESPONSE_SAFETY_SCORE_THRESHOLDS)) {
+      return {kind: 'error', error: ModelResponseError.UNSAFE};
+    }
     const lines = parseResponse(res)
                     .replaceAll(/^\s*\d\.\s*/gm, '')
                     .replaceAll(/TITLE\s*\d*:?\s*/gim, '')
@@ -114,15 +155,39 @@ export class OnDeviceModel implements Model {
         titles.push(m[0]);
       }
     }
-    return titles.slice(0, 3);
+    return {kind: 'success', result: titles.slice(0, 3)};
   }
 
-  async summarize(content: string): Promise<string> {
+  async summarize(content: string): Promise<ModelResponse> {
+    if (await this.contentIsUnsafe(content, REQUEST_SAFETY_SCORE_THRESHOLDS)) {
+      return {kind: 'error', error: ModelResponseError.UNSAFE};
+    }
     content = shorten(content, MAX_CONTENT_WORDS);
     const prompt = SUMMARIZATION_PROMPT_TEMPLATE.replace(PLACEHOLDER, content);
     const res = await this.execute(prompt);
+    if (await this.contentIsUnsafe(res, RESPONSE_SAFETY_SCORE_THRESHOLDS)) {
+      return {kind: 'error', error: ModelResponseError.UNSAFE};
+    }
     const summary = parseResponse(res);
-    return summary;
+    return {kind: 'success', result: summary};
+  }
+
+  private async contentIsUnsafe(
+    content: string,
+    thresholds: Map<number, number>,
+  ): Promise<boolean> {
+    const info = await this.remote.classifyTextSafety(content);
+    const scores = info.safetyInfo?.classScores ?? null;
+    if (scores === null) {
+      return false;
+    }
+    for (const [idx, threshold] of thresholds.entries()) {
+      const score = scores[idx];
+      if (score !== undefined && score >= threshold) {
+        return true;
+      }
+    }
+    return false;
   }
 
   close(): void {

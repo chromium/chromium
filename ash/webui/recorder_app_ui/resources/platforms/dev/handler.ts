@@ -17,6 +17,7 @@ import {SAMPLE_RATE} from '../../core/audio_constants.js';
 import {
   Model,
   ModelId,
+  ModelResponse,
   ModelState,
   PlatformHandler as PlatformHandlerBase,
   SodaSession,
@@ -47,19 +48,23 @@ import {
 import {strings} from './strings.js';
 
 class ModelDev implements Model {
-  async suggestTitles(content: string): Promise<string[]> {
+  async suggestTitles(content: string): Promise<ModelResponse<string[]>> {
     await sleep(3000);
     const words = content.split(' ');
-    return [
+    const result = [
       `Title for "${words[2]}"`,
       `Longer long title for "${words[1]}"`,
       `This is a very long long title that is too long for "${words[0]}"`,
     ];
+    // TODO(pihsun): Mock error state.
+    return {kind: 'success', result};
   }
 
-  async summarize(content: string): Promise<string> {
+  async summarize(content: string): Promise<ModelResponse> {
     await sleep(3000);
-    return `Summary for ${content.substring(0, 40)}...`;
+    const result = `Summary for ${content.substring(0, 40)}...`;
+    // TODO(pihsun): Mock error state.
+    return {kind: 'success', result};
   }
 
   close(): void {}

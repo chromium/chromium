@@ -6,6 +6,7 @@ import 'chrome://resources/cros_components/badge/badge.js';
 import 'chrome://resources/mwc/@material/web/progress/circular-progress.js';
 import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
+import './genai-error.js';
 import './genai-placeholder.js';
 import './summary-consent-card.js';
 
@@ -20,7 +21,7 @@ import {
 
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
-import {ModelId} from '../core/platform_handler.js';
+import {ModelId, ModelResponse} from '../core/platform_handler.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
 import {concatTextTokens, TextToken} from '../core/soda/soda.js';
@@ -175,7 +176,7 @@ export class SummarizationView extends ReactiveLitElement {
   // should just pass in the whole metadata after we have summarization in
   // metadata though, but would still need a way to "re-run" summarization
   // for dev iteration purpose.
-  private readonly summary = signal<string|null>(null);
+  private readonly summary = signal<ModelResponse|null>(null);
 
   // TODO(pihsun): Have a single struct for all possible states, instead of
   // multiple boolean.
@@ -238,11 +239,19 @@ export class SummarizationView extends ReactiveLitElement {
   }
 
   private renderSummaryContent() {
-    if (this.summary.value === null) {
+    const summary = this.summary.value;
+    if (summary === null) {
       return html`<genai-placeholder></genai-placeholder>`;
     }
-    return html`<div id="summary">${this.summary.value}</div>
-      ${this.renderSummaryFooter()}`;
+    switch (summary.kind) {
+      case 'error':
+        return html`<genai-error .error=${summary.error}></genai-error>`;
+      case 'success':
+        return html`<div id="summary">${summary.result}</div>
+          ${this.renderSummaryFooter()}`;
+      default:
+        assertExhaustive(summary);
+    }
   }
 
   private renderSummary() {

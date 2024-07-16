@@ -26,6 +26,8 @@ const noArgStrings = [
   'exportDialogTranscriptionFormatTxtOption',
   'exportDialogTranscriptionHeader',
   'genAiDisclaimerText',
+  'genAiErrorGeneralLabel',
+  'genAiErrorTrustAndSafetyLabel',
   'genAiExperimentBadge',
   'genAiLearnMoreLink',
   'onboardingDialogSpeakerIdAllowButton',

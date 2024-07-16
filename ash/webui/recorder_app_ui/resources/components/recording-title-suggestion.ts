@@ -6,6 +6,7 @@ import 'chrome://resources/cros_components/badge/badge.js';
 import 'chrome://resources/cros_components/chip/chip.js';
 import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
+import './genai-error.js';
 import './genai-placeholder.js';
 
 import {Chip} from 'chrome://resources/cros_components/chip/chip.js';
@@ -17,12 +18,13 @@ import {
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
+import {ModelResponse} from '../core/platform_handler.js';
 import {
   ComputedState,
   ReactiveLitElement,
   ScopedAsyncComputed,
 } from '../core/reactive/lit.js';
-import {assertInstanceof} from '../core/utils/assert.js';
+import {assertExhaustive, assertInstanceof} from '../core/utils/assert.js';
 
 /**
  * The title suggestion popup in playback page of Recorder App.
@@ -128,7 +130,8 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
     suggestedTitles: {attribute: false},
   };
 
-  suggestedTitles: ScopedAsyncComputed<string[]|null>|null = null;
+  suggestedTitles: ScopedAsyncComputed<ModelResponse<string[]>|null>|null =
+    null;
 
   private onCloseClick() {
     this.dispatchEvent(new Event('close'));
@@ -191,12 +194,24 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
         <genai-placeholder></genai-placeholder>
       </div>`;
     }
-    const suggestions = map(
-      this.suggestedTitles.value,
-      (s) => this.renderSuggestion(s),
-    );
-    return html`<div id="suggestions">${suggestions}</div>
-      ${this.renderSuggestionFooter()}`;
+    const suggestedTitles = this.suggestedTitles.value;
+    switch (suggestedTitles.kind) {
+      case 'error': {
+        return html`<genai-error
+          .error=${suggestedTitles.error}
+        ></genai-error>`;
+      }
+      case 'success': {
+        const suggestions = map(
+          suggestedTitles.result,
+          (s) => this.renderSuggestion(s),
+        );
+        return html`<div id="suggestions">${suggestions}</div>
+          ${this.renderSuggestionFooter()}`;
+      }
+      default:
+        assertExhaustive(suggestedTitles);
+    }
   }
 
   override render(): RenderResult {

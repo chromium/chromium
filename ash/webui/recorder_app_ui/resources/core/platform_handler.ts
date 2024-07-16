@@ -26,18 +26,34 @@ export type ModelState = {
   progress: number,
 };
 
+export enum ModelResponseError {
+  // General error.
+  GENERAL = 'GENERAL',
+
+  // Filtered by T&S on the request or response string.
+  UNSAFE = 'UNSAFE',
+}
+
+// prettier-ignore
+export type ModelResponse<T = string> = {
+  kind: 'error',
+  error: ModelResponseError,
+}|{
+  kind: 'success',
+  result: T,
+};
+
 export interface Model {
   /**
    * Returns the suggested titles based on content.
    */
   // TODO(pihsun): method to set input options.
-  // TODO(pihsun): Other fields needed from mojo, like safety info, ...
-  suggestTitles(content: string): Promise<string[]>;
+  suggestTitles(content: string): Promise<ModelResponse<string[]>>;
 
   /**
    * Generates a short summarization of the given content.
    */
-  summarize(content: string): Promise<string>;
+  summarize(content: string): Promise<ModelResponse<string>>;
 
   /**
    * Closes the model connection.

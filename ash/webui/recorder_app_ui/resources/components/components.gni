@@ -16,6 +16,7 @@ component_files = [
   "delete-recording-dialog.ts",
   "expandable-card.ts",
   "export-dialog.ts",
+  "genai-error.ts",
   "genai-placeholder.ts",
   "mic-selection-menu.ts",
   "onboarding-dialog.ts",
