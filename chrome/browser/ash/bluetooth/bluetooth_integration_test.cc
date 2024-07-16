@@ -61,14 +61,14 @@ IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
   RunTestSequence(
       ObserveState(kBluetoothPowerState, BluetoothPowerStateObserver::Create()),
 
-      // Ensure bluetooth is on at test start. If this fails it
-      // means some previous test left bluetooth disabled.
+      // Ensure bluetooth is on at test start. If this fails it means some
+      // previous test left bluetooth disabled.
       WaitForState(kBluetoothPowerState, true),
 
       Log("Opening quick settings bubble"), OpenQuickSettings(),
 
-      // The bluetooth toggle button may take time to enable because
-      // the UI queries the bluetooth adapter state asynchronously.
+      // The bluetooth toggle button may take time to enable because the UI
+      // queries the bluetooth adapter state asynchronously.
       Log("Waiting for bluetooth toggle button to enable"),
       WaitForViewProperty(kBluetoothFeatureTileToggleElementId, views::View,
                           Enabled, true),
@@ -84,6 +84,49 @@ IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
 
       Log("Pressing bluetooth toggle button again"),
       PressButton(kBluetoothFeatureTileToggleElementId),
+
+      Log("Waiting for bluetooth adapter to power on"),
+      WaitForState(kBluetoothPowerState, true));
+}
+
+IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
+                       ToggleBluetoothFromQuickSettingsBluetoothPage) {
+  SetupContextWidget();
+  RunTestSequence(
+      ObserveState(kBluetoothPowerState, BluetoothPowerStateObserver::Create()),
+
+      // Ensure bluetooth is on at test start. If this fails it means some
+      // previous test left bluetooth disabled.
+      WaitForState(kBluetoothPowerState, true),
+
+      Log("Opening quick settings bubble and navigating to the Bluetooth page"),
+      OpenQuickSettings(),
+
+      // Allow UI state to settle.
+      FlushEvents(),
+
+      NavigateQuickSettingsToBluetoothPage(),
+
+      Log("Waiting for bluetooth toggle button to be shown"),
+      WaitForShow(kBluetoothDetailedViewToggleElementId),
+
+      // The bluetooth toggle button may take time to enable because the UI
+      // queries the bluetooth adapter state asynchronously.
+      Log("Waiting for bluetooth toggle button to enable"),
+      WaitForViewProperty(kBluetoothDetailedViewToggleElementId, views::View,
+                          Enabled, true),
+
+      Log("Pressing bluetooth toggle button"),
+      MoveMouseTo(kBluetoothDetailedViewToggleElementId), ClickMouse(),
+
+      Log("Waiting for bluetooth adapter to power off"),
+      WaitForState(kBluetoothPowerState, false),
+
+      // Allow UI state to settle.
+      FlushEvents(),
+
+      Log("Pressing bluetooth toggle button again"),
+      PressButton(kBluetoothDetailedViewToggleElementId),
 
       Log("Waiting for bluetooth adapter to power on"),
       WaitForState(kBluetoothPowerState, true));
@@ -111,8 +154,8 @@ IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
   };
 
   RunTestSequence(
-      // Ensure bluetooth is on at test start. If this fails it
-      // means some previous test left bluetooth disabled.
+      // Ensure bluetooth is on at test start. If this fails it means some
+      // previous test left bluetooth disabled.
       Log("Verifying initial bluetooth power state"),
       ObserveState(kBluetoothPowerState, BluetoothPowerStateObserver::Create()),
       WaitForState(kBluetoothPowerState, true),

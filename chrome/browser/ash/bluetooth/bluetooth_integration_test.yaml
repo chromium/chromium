@@ -9,12 +9,15 @@ harness: "crosier"
 category: "integration"
 owners:
   - email: "jamescook@chromium.org"
+  - email: "chadduffin@chromium.org"
   - email: "chromeos-sw-engprod@google.com"
 hw_agnostic: False
 criteria: |
   Crosier Bluetooth test.
 cases:
   - id: "ToggleBluetoothFromQuickSettings"
+    tags: ["crosier:crosierdemosuite"]
+  - id: "ToggleBluetoothFromQuickSettingsBluetoothPage"
     tags: ["crosier:crosierdemosuite"]
   - id: "ToggleBluetoothFromOsSettings"
     tags: ["crosier:crosierdemosuite"]

@@ -212,6 +212,8 @@ void BluetoothDetailedViewImpl::CreateTopContainer() {
   auto toggle = std::make_unique<Switch>(base::BindRepeating(
       &BluetoothDetailedViewImpl::OnToggleClicked, weak_factory_.GetWeakPtr()));
   toggle_button_ = toggle.get();
+  toggle_button_->SetProperty(views::kElementIdentifierKey,
+                              kBluetoothDetailedViewToggleElementId);
   toggle_row_->AddRightView(toggle.release());
 
   // Allow the row to be taller than a typical tray menu item.
