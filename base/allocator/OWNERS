@@ -1,5 +1,4 @@
 lizeb@chromium.org
-primiano@chromium.org
 wfh@chromium.org
 
 per-file allocator.gni=file://base/allocator/partition_allocator/OWNERS
