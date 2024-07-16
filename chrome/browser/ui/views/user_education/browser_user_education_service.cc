@@ -380,7 +380,10 @@ void MaybeRegisterChromeFeaturePromos(
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // kIPHDesktopReEngagementFeature:
-  registry.RegisterFeature(CreateLowUsagePromoSpecification(profile));
+  registry.RegisterFeature(
+      std::move(CreateLowUsagePromoSpecification(profile).SetMetadata(
+          126, "dfried@google.com",
+          "Helpful messages for low-usage users; runs on new session.")));
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   // kIPHExperimentalAIPromoFeature:
