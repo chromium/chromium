@@ -128,8 +128,9 @@ PlusAddressService::~PlusAddressService() {
   }
 }
 
-bool PlusAddressService::SupportsPlusAddresses(const url::Origin& origin,
-                                               bool is_off_the_record) const {
+bool PlusAddressService::ShouldShowManualFallback(
+    const url::Origin& origin,
+    bool is_off_the_record) const {
   // First, check prerequisites (the feature enabled, etc.).
   if (!IsEnabled()) {
     return false;
@@ -216,8 +217,17 @@ void PlusAddressService::GetSuggestions(
     std::u16string_view focused_field_value,
     autofill::AutofillSuggestionTriggerSource trigger_source,
     GetSuggestionsCallback callback) {
-  if (!SupportsPlusAddresses(last_committed_primary_main_frame_origin,
-                             is_off_the_record)) {
+  if (!IsEnabled() ||
+      !IsSupportedOrigin(last_committed_primary_main_frame_origin)) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  // TODO: crbug.com/353240084 - move check to OnGetAffiliatedPlusProfiles to
+  // make it affiliations-aware.
+  if (is_off_the_record &&
+      !GetPlusProfile(OriginToFacet(last_committed_primary_main_frame_origin))
+           .has_value()) {
     std::move(callback).Run({});
     return;
   }

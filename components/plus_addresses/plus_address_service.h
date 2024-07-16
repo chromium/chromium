@@ -113,15 +113,14 @@ class PlusAddressService : public KeyedService,
       WebDataServiceBase::Handle handle,
       std::unique_ptr<WDTypedResult> result) override;
 
-  // Returns `true` when plus addresses are supported. This includes checks that
-  // the `kPlusAddressesEnabled` base::Feature is enabled, that there's a
-  // signed-in user, the ability to talk to the server, and that off-the-record
-  // sessions will not offer new plus address creation.
-  // Virtual to allow overriding the behavior in tests. This allows external
-  // tests (e.g., those in autofill that depend on this class) to substitute
-  // their own behavior.
-  bool SupportsPlusAddresses(const url::Origin& origin,
-                             bool is_off_the_record) const;
+  // Returns whether a manual fallback suggestion should be shown on `origin`.
+  // This is true iff
+  // - the `PlusAddressService` is enabled,
+  // - `origin` is not a blocked origin, and
+  // - the user either has at least one plus address for that `origin` or
+  //   `is_off_the_record` is false.
+  bool ShouldShowManualFallback(const url::Origin& origin,
+                                bool is_off_the_record) const;
 
   // Gets a plus address, if one exists, for the passed-in facet.
   std::optional<std::string> GetPlusAddress(

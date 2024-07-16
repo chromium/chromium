@@ -460,7 +460,7 @@ bool AutofillContextMenuManager::ShouldAddPlusAddressManualFallbackItem(
           web_contents->GetBrowserContext());
   AutofillClient& client = autofill_driver.GetAutofillManager().client();
   return plus_address_service &&
-         plus_address_service->SupportsPlusAddresses(
+         plus_address_service->ShouldShowManualFallback(
              client.GetLastCommittedPrimaryMainFrameOrigin(),
              client.IsOffTheRecord()) &&
          base::FeatureList::IsEnabled(
