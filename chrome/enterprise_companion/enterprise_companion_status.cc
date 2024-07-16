@@ -4,6 +4,7 @@
 
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
 
+#include <string>
 #include <variant>
 
 #include "base/functional/overloaded.h"
@@ -14,7 +15,7 @@ namespace enterprise_companion {
 
 namespace {
 
-const char* DeviceManagementStatusToString(
+constexpr std::string DeviceManagementStatusToString(
     policy::DeviceManagementStatus status) {
   switch (status) {
     case policy::DM_STATUS_SUCCESS:
@@ -72,7 +73,7 @@ const char* DeviceManagementStatusToString(
   }
 }
 
-const char* ApplicationErrorToString(ApplicationError error) {
+constexpr std::string ApplicationErrorToString(ApplicationError error) {
   switch (error) {
     case ApplicationError::kRegistrationPreconditionFailed:
       return "An action failed due to the client not being registered.";
@@ -87,15 +88,27 @@ const char* ApplicationErrorToString(ApplicationError error) {
 
 }  // namespace
 
-const char* EnterpriseCompanionStatus::description() const {
+PersistedError::PersistedError(int space,
+                               int code,
+                               const std::string& description)
+    : space(space), code(code), description(description) {}
+PersistedError::PersistedError(const PersistedError&) = default;
+PersistedError::PersistedError(PersistedError&&) = default;
+PersistedError::~PersistedError() = default;
+PersistedError& PersistedError::operator=(const PersistedError&) = default;
+PersistedError& PersistedError::operator=(PersistedError&&) = default;
+
+std::string EnterpriseCompanionStatus::description() const {
   return std::visit(
       base::Overloaded{
-          [](std::monostate) { return "Success"; },
+          [](std::monostate) { return std::string("Success"); },
+          [](const PersistedError& error) { return error.description; },
           [](policy::DeviceManagementStatus status) {
             return DeviceManagementStatusToString(status);
           },
           [](policy::CloudPolicyValidatorBase::Status status) {
-            return policy::CloudPolicyValidatorBase::StatusToString(status);
+            return std::string(
+                policy::CloudPolicyValidatorBase::StatusToString(status));
           },
           [](ApplicationError error) {
             return ApplicationErrorToString(error);
@@ -103,5 +116,16 @@ const char* EnterpriseCompanionStatus::description() const {
       },
       status_variant_);
 }
+
+EnterpriseCompanionStatus::EnterpriseCompanionStatus(
+    const EnterpriseCompanionStatus&) = default;
+EnterpriseCompanionStatus::~EnterpriseCompanionStatus() = default;
+
+EnterpriseCompanionStatus::EnterpriseCompanionStatus(ApplicationError error)
+    : EnterpriseCompanionStatus(StatusVariant(error)) {}
+
+EnterpriseCompanionStatus::EnterpriseCompanionStatus(
+    StatusVariant&& status_variant)
+    : status_variant_(std::move(status_variant)) {}
 
 }  // namespace enterprise_companion

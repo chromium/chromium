@@ -5,6 +5,8 @@
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
 
 #include "base/ranges/algorithm.h"
+#include "chrome/enterprise_companion/mojom/enterprise_companion.mojom-forward.h"
+#include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -63,13 +65,53 @@ TEST(EnterpriseCompanionStatusTest, CloudPolicyValidationResultErrorsEqual) {
   EXPECT_EQ(status1, status2);
 }
 
+TEST(EnterpriseCompanionStatusTest, FromMojomStatusSuccess) {
+  EnterpriseCompanionStatus status = EnterpriseCompanionStatus::FromMojomStatus(
+      mojom::Status::New(/*space=*/0, /*code=*/0, /*description=*/"Success"));
+  EXPECT_TRUE(status.ok());
+}
+
+TEST(EnterpriseCompanionStatusTest, FromMojomStatusError) {
+  EnterpriseCompanionStatus status =
+      EnterpriseCompanionStatus::FromMojomStatus(mojom::Status::New(
+          /*space=*/777, /*code=*/42, /*description=*/
+          "a strange error"));
+  EXPECT_FALSE(status.ok());
+  EXPECT_EQ(status.space(), 777);
+  EXPECT_EQ(status.code(), 42);
+  EXPECT_EQ(status.description(), "a strange error");
+}
+
+TEST(EnterpriseCompanionStatusTest, FromMojomStatusEqual) {
+  EnterpriseCompanionStatus status1 =
+      EnterpriseCompanionStatus::FromMojomStatus(mojom::Status::New(
+          /*space=*/777, /*code=*/42, /*description=*/"description1"));
+  EnterpriseCompanionStatus status2 =
+      EnterpriseCompanionStatus::FromMojomStatus(mojom::Status::New(
+          /*space=*/777, /*code=*/42, /*description=*/"description1"));
+  EXPECT_EQ(status1, status2);
+}
+
+TEST(EnterpriseCompanionStatusTest, FromMojomStatusEqualsOtherType) {
+  EnterpriseCompanionStatus status1 =
+      EnterpriseCompanionStatus::FromMojomStatus(mojom::Status::New(
+          /*space=*/3,
+          /*code=*/static_cast<int>(ApplicationError::kCannotAcquireLock),
+          /*description=*/"description1"));
+  EnterpriseCompanionStatus status2 =
+      EnterpriseCompanionStatus(ApplicationError::kCannotAcquireLock);
+  EXPECT_EQ(status1, status2);
+}
+
 TEST(EnterpriseCompanionStatusTest, DifferentSuccessesEqual) {
   std::vector<EnterpriseCompanionStatus> successes = {
       EnterpriseCompanionStatus::Success(),
       EnterpriseCompanionStatus::FromDeviceManagementStatus(
           policy::DM_STATUS_SUCCESS),
       EnterpriseCompanionStatus::FromCloudPolicyValidationResult(
-          policy::CloudPolicyValidatorBase::VALIDATION_OK)};
+          policy::CloudPolicyValidatorBase::VALIDATION_OK),
+      EnterpriseCompanionStatus::FromMojomStatus(mojom::Status::New(
+          /*space=*/0, /*code=*/0, /*description=*/"Success"))};
 
   ASSERT_TRUE(base::ranges::all_of(
       successes,

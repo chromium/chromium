@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <ostream>
+#include <string>
 #include <utility>
 #include <variant>
 
@@ -31,6 +32,28 @@ enum class ApplicationError {
   kCannotAcquireLock,
 };
 
+// Represents an error which was deserialized from an external source (e.g.
+// across an IPC or network boundary). The error may not be known to this
+// version of the application.
+struct PersistedError {
+  PersistedError(int space, int code, const std::string& description);
+  PersistedError(const PersistedError&);
+  PersistedError(PersistedError&&);
+  ~PersistedError();
+
+  PersistedError& operator=(const PersistedError&);
+  PersistedError& operator=(PersistedError&&);
+
+  // The error space, as defined by `EnterpriseCompanionStatus`.
+  int space;
+  // The error code, as defined by `EnterpriseCompanionStatus`.
+  int code;
+  // A human readable description of the error.
+  std::string description;
+
+  auto operator<=>(const PersistedError& other) const = default;
+};
+
 // Canonical view of statuses used across the application.
 class EnterpriseCompanionStatus {
  public:
@@ -41,8 +64,11 @@ class EnterpriseCompanionStatus {
   using StatusVariant = std::variant<Ok,
                                      policy::DeviceManagementStatus,
                                      policy::CloudPolicyValidatorBase::Status,
-                                     ApplicationError>;
+                                     ApplicationError,
+                                     PersistedError>;
   EnterpriseCompanionStatus() = delete;
+  EnterpriseCompanionStatus(const EnterpriseCompanionStatus&);
+  ~EnterpriseCompanionStatus();
 
   // Constructs an `Ok` status.
   static EnterpriseCompanionStatus Success() {
@@ -53,16 +79,24 @@ class EnterpriseCompanionStatus {
 
   // Indicates the status space for the code. As an implementation detail, the
   // space is the index of the code's type within `StatusVariant`.
-  int space() const { return status_variant_.index(); }
+  int space() const {
+    if (const PersistedError* deserialized_error =
+            std::get_if<PersistedError>(&status_variant_)) {
+      return deserialized_error->space;
+    } else {
+      return status_variant_.index();
+    }
+  }
 
   int code() const {
     return std::visit(
         base::Overloaded{[](std::monostate) { return 0; },
+                         [](const PersistedError& error) { return error.code; },
                          [](auto&& x) { return static_cast<int>(x); }},
         status_variant_);
   }
 
-  const char* description() const;
+  std::string description() const;
 
   mojom::StatusPtr ToMojomStatus() const {
     return mojom::Status::New(space(), code(), description());
@@ -75,7 +109,16 @@ class EnterpriseCompanionStatus {
     return status;
   }
 
-  auto operator<=>(const EnterpriseCompanionStatus& other) const = default;
+  static EnterpriseCompanionStatus FromMojomStatus(mojom::StatusPtr status) {
+    return status->code == 0 || status->space == 0
+               ? Success()
+               : EnterpriseCompanionStatus(StatusVariant(PersistedError(
+                     status->space, status->code, status->description)));
+  }
+
+  bool operator==(const EnterpriseCompanionStatus& other) const {
+    return space() == other.space() && code() == other.code();
+  }
 
   // policy::DeviceManagementStatus:
   static EnterpriseCompanionStatus FromDeviceManagementStatus(
@@ -100,8 +143,7 @@ class EnterpriseCompanionStatus {
   }
 
   // ApplicationError:
-  explicit EnterpriseCompanionStatus(ApplicationError error)
-      : EnterpriseCompanionStatus(StatusVariant(error)) {}
+  explicit EnterpriseCompanionStatus(ApplicationError error);
   bool EqualsApplicationError(ApplicationError other) const {
     return operator==(From<3>(other));
   }
@@ -109,19 +151,7 @@ class EnterpriseCompanionStatus {
  private:
   StatusVariant status_variant_;
 
-  // Outputs a human-friendly string representation of the status.
-  friend std::ostream& operator<<(std::ostream& out,
-                                  const EnterpriseCompanionStatus& status) {
-    out << status.status_variant_.index();
-    std::visit(base::Overloaded{
-                   [](std::monostate) {},
-                   [&out](auto&& x) { out << " : " << static_cast<int>(x); }},
-               status.status_variant_);
-    return out;
-  }
-
-  explicit EnterpriseCompanionStatus(StatusVariant&& status_variant)
-      : status_variant_(std::move(status_variant)) {}
+  explicit EnterpriseCompanionStatus(StatusVariant&& status_variant);
 
   template <size_t I, typename T>
   static EnterpriseCompanionStatus From(T&& status) {
