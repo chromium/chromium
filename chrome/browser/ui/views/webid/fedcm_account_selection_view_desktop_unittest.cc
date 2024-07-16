@@ -1827,6 +1827,27 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
       "Blink.FedCm.ChooseAnAccountSelected.Desktop", 1, 1);
 }
 
+// Tests that closing the dialog when the single returning account UI is shown
+// does not cause a crash.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       MultiIdpWithSingleReturningAccountClose) {
+  std::vector<IdentityProviderDisplayData> idp_list = {
+      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignIn}}),
+      CreateIdentityProviderDisplayData({{kAccountId2, LoginState::kSignUp}}),
+      CreateIdentityProviderDisplayData({},
+                                        /*has_login_status_mismatch=*/true)};
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowMultiIdp(idp_list, SignInMode::kExplicit,
+                            blink::mojom::RpMode::kWidget);
+  AccountSelectionViewBase::Observer* observer =
+      static_cast<AccountSelectionViewBase::Observer*>(controller.get());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kSingleReturningAccount,
+            account_selection_view_->sheet_type_);
+
+  // Simulate the dialog being closed.
+  observer->OnCloseButtonClicked(CreateMouseEvent());
+}
+
 // Tests that if a pop-up window is opened in button flow mode, closing the
 // pop-up window triggers the dismiss callback.
 TEST_F(FedCmAccountSelectionViewDesktopTest,

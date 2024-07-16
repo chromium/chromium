@@ -935,6 +935,8 @@ FedCmAccountSelectionView::SheetType FedCmAccountSelectionView::GetSheetType() {
     case State::SINGLE_ACCOUNT_PICKER:
     case State::MULTI_ACCOUNT_PICKER:
     case State::REQUEST_PERMISSION:
+    case State::SINGLE_RETURNING_ACCOUNT_PICKER:
+    case State::NEWLY_LOGGED_IN_ACCOUNT_PICKER:
       return SheetType::ACCOUNT_SELECTION;
 
     case State::VERIFYING:
@@ -948,9 +950,6 @@ FedCmAccountSelectionView::SheetType FedCmAccountSelectionView::GetSheetType() {
 
     case State::LOADING:
       return SheetType::LOADING;
-
-    default:
-      NOTREACHED_NORETURN();
   }
 }
 
@@ -1038,7 +1037,8 @@ bool FedCmAccountSelectionView::IsIdpSigninPopupOpen() {
   return popup_window_ && (state_ == State::LOADING ||
                            state_ == State::IDP_SIGNIN_STATUS_MISMATCH ||
                            state_ == State::SINGLE_ACCOUNT_PICKER ||
-                           state_ == State::MULTI_ACCOUNT_PICKER);
+                           state_ == State::MULTI_ACCOUNT_PICKER ||
+                           state_ == State::NEWLY_LOGGED_IN_ACCOUNT_PICKER);
 }
 
 void FedCmAccountSelectionView::PrimaryMainFrameWasResized(bool width_changed) {
