@@ -8,7 +8,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
-import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoUtils.LogoSizeForLogoPolish;
@@ -19,17 +18,6 @@ import org.chromium.chrome.browser.logo.LogoUtils.LogoSizeForLogoPolish;
  */
 public class StartSurfaceConfiguration {
     private static final String TAG = "StartSurfaceConfig";
-
-    // Start return time experiment:
-    // This parameter isn't just used on tablets anymore.
-    public static final String HOME_SURFACE_RETURN_TIME_SECONDS_PARAM =
-            "start_surface_return_time_on_tablet_seconds";
-    public static final IntCachedFieldTrialParameter HOME_SURFACE_RETURN_TIME_SECONDS =
-            ChromeFeatureList.newIntCachedFieldTrialParameter(
-                    ChromeFeatureList.START_SURFACE_RETURN_TIME,
-                    HOME_SURFACE_RETURN_TIME_SECONDS_PARAM,
-                    28800); // 8 hours
-
     private static final String LOGO_POLISH_LARGE_SIZE_PARAM = "polish_logo_size_large";
     public static final BooleanCachedFieldTrialParameter LOGO_POLISH_LARGE_SIZE =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
