@@ -7,6 +7,7 @@
 #include <cmath>
 
 #include "base/bits.h"
+#include "base/containers/heap_array.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -47,14 +48,14 @@ void CopyConvertFromInterleaved(
 class SelfOwnedMemory : public AudioBuffer::ExternalMemory {
  public:
   explicit SelfOwnedMemory(size_t size)
-      : memory_(std::make_unique<uint8_t[]>(size)) {
-    span_ = {memory_.get(), size};
+      : heap_array_(base::HeapArray<uint8_t>::Uninit(size)) {
+    span_ = heap_array_.as_span();
   }
   SelfOwnedMemory(SelfOwnedMemory&&) = default;
   ~SelfOwnedMemory() override = default;
 
  private:
-  std::unique_ptr<uint8_t[]> memory_;
+  base::HeapArray<uint8_t> heap_array_;
 };
 
 }  // namespace
