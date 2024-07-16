@@ -33,6 +33,10 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   // displayed to the user in the Inactive Tabs button when inactiveTabsCount >
   // 0.
   NSInteger _inactiveTabsDaysThreshold;
+
+  // The cell registration for inactive tabs button cell.
+  UICollectionViewCellRegistration* _inactiveTabsButtonCellRegistration;
+
   // The supplementary view registration for the Inactive Tabs button header.
   UICollectionViewSupplementaryRegistration*
       _inactiveTabsButtonHeaderRegistration;
@@ -47,7 +51,6 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   return _inactiveTabsCount == 0;
 }
 
-// Returns a configured header for the given index path.
 - (UICollectionReusableView*)headerForSectionAtIndexPath:
     (NSIndexPath*)indexPath {
   if (self.mode == TabGridModeNormal) {
@@ -74,9 +77,35 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   return [super headerForSectionAtIndexPath:indexPath];
 }
 
+- (UICollectionViewCell*)cellForItemAtIndexPath:(NSIndexPath*)indexPath
+                                 itemIdentifier:
+                                     (GridItemIdentifier*)itemIdentifier {
+  if (itemIdentifier.type == GridItemType::kInactiveTabsButton) {
+    CHECK(IsInactiveTabButtonRefactoringEnabled());
+    UICollectionViewCellRegistration* registration =
+        _inactiveTabsButtonCellRegistration;
+    return [self.collectionView
+        dequeueConfiguredReusableCellWithRegistration:registration
+                                         forIndexPath:indexPath
+                                                 item:itemIdentifier];
+  }
+
+  return [super cellForItemAtIndexPath:indexPath itemIdentifier:itemIdentifier];
+}
+
 - (void)createRegistrations {
   __weak __typeof(self) weakSelf = self;
-  if (!IsInactiveTabButtonRefactoringEnabled()) {
+  if (IsInactiveTabButtonRefactoringEnabled()) {
+    // Register InactiveTabsButtonCell.
+    auto configureInactiveTabsButtonCell =
+        ^(UICollectionViewCell* cell, NSIndexPath* indexPath, id item) {
+          // TODO(crbug.com/352722446): use a correct cell.
+          cell.backgroundColor = UIColor.greenColor;
+        };
+    _inactiveTabsButtonCellRegistration = [UICollectionViewCellRegistration
+        registrationWithCellClass:UICollectionViewCell.class
+             configurationHandler:configureInactiveTabsButtonCell];
+  } else {
     // Register InactiveTabsButtonHeader.
     auto configureInactiveTabsButtonHeader =
         ^(InactiveTabsButtonHeader* header, NSString* elementKind,

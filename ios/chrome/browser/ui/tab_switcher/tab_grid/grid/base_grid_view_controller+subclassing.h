@@ -38,6 +38,13 @@ typedef UICollectionViewDiffableDataSource<NSString*, GridItemIdentifier*>
 - (UICollectionReusableView*)headerForSectionAtIndexPath:(NSIndexPath*)indexPath
     NS_REQUIRES_SUPER;
 
+// Returns a configured cell for the given `indexPath` and `itemIdentifier`. The
+// subclass must call super if it can't handle it.
+- (UICollectionViewCell*)cellForItemAtIndexPath:(NSIndexPath*)indexPath
+                                 itemIdentifier:
+                                     (GridItemIdentifier*)itemIdentifier
+    NS_REQUIRES_SUPER;
+
 // Updates the ring to be around the currently selected item. If
 // `shouldBringItemIntoView` is true, the collection view scrolls to present the
 // selected item at the top.
