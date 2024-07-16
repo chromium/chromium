@@ -10,12 +10,10 @@
 #include <memory>
 
 class AutocompleteController;
-@protocol OmniboxCommands;
 @protocol OmniboxKeyboardDelegate;
 @protocol OmniboxPopupPresenterDelegate;
 class OmniboxPopupViewIOS;
 @protocol OmniboxReturnDelegate;
-@class OmniboxTextFieldIOS;
 @protocol PopupMatchPreviewDelegate;
 @protocol ToolbarOmniboxConsumer;
 

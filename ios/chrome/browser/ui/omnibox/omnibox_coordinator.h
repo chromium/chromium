@@ -13,7 +13,6 @@ class OmniboxClient;
 @class BubblePresenter;
 @protocol EditViewAnimatee;
 @class OmniboxPopupCoordinator;
-@class OmniboxTextFieldIOS;
 @protocol LocationBarOffsetProvider;
 @protocol OmniboxPopupPresenterDelegate;
 @protocol TextFieldViewContaining;
