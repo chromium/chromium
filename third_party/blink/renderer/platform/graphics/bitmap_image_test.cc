@@ -149,6 +149,8 @@ class BitmapImageTest : public testing::Test {
     int last_decoded_size_changed_delta_;
   };
 
+  void TearDown() override { image_.reset(); }
+
   static Vector<char> ReadFile(const char* file_name) {
     String file_path = test::PlatformTestDataPath(file_name);
     std::optional<Vector<char>> data = test::ReadFromFile(file_path);
