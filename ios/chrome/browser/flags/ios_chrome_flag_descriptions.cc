@@ -238,6 +238,12 @@ const char kClearDeviceDataOnSignOutForManagedUsersName[] =
 const char kClearDeviceDataOnSignOutForManagedUsersDescription[] =
     "Enables clearing data saved on the device for managed users on signout.";
 
+const char kClearUndecryptablePasswordsName[] =
+    "Removes passwords that can no longer be decrypted";
+const char kClearUndecryptablePasswordsDescription[] =
+    "If enabled local passwords that current encyrption key cannot decrypt, "
+    "will be deleted to restore the full functionality of password manager.";
+
 const char kContentNotificationExperimentName[] =
     "Content Notification Experiment";
 const char kContentNotificationExperimentDescription[] =

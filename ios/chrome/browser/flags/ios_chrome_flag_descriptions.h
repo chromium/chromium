@@ -196,6 +196,11 @@ extern const char kBreakpadNoDelayInitialUploadDescription[];
 extern const char kClearDeviceDataOnSignOutForManagedUsersName[];
 extern const char kClearDeviceDataOnSignOutForManagedUsersDescription[];
 
+// Title and description for the flag that enables deleting undecryptable
+// passwords.
+extern const char kClearUndecryptablePasswordsName[];
+extern const char kClearUndecryptablePasswordsDescription[];
+
 // Title and description for the flag to enable the content notification
 // experiments. This is a kill switcher that guarded the
 // ContentPushNotifications feature.
