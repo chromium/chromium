@@ -5,47 +5,33 @@
 #ifndef CONTENT_PUBLIC_BROWSER_GLOBAL_REQUEST_ID_H_
 #define CONTENT_PUBLIC_BROWSER_GLOBAL_REQUEST_ID_H_
 
-#include <atomic>
-#include <tuple>
+#include <compare>
 
+#include "base/numerics/safe_conversions.h"
+#include "content/common/content_export.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace content {
 
 // Uniquely identifies a net::URLRequest.
-struct GlobalRequestID {
-  GlobalRequestID() : child_id(-1), request_id(-1) {
-  }
+struct CONTENT_EXPORT GlobalRequestID {
+  GlobalRequestID() = default;
 
-  GlobalRequestID(int child_id, int request_id)
-      : child_id(child_id),
-        request_id(request_id) {
-  }
+  GlobalRequestID(base::StrictNumeric<int32_t> child_id,
+                  base::StrictNumeric<int32_t> request_id)
+      : child_id(child_id), request_id(request_id) {}
 
   // The unique ID of the child process (different from OS's PID).
-  int child_id;
+  int32_t child_id = -1;
 
   // The request ID (unique for the child).
-  int request_id;
+  int32_t request_id = -1;
 
-  // Returns a Request ID for browser-initiated requests.
-  static GlobalRequestID MakeBrowserInitiated() {
-    static std::atomic_int s_next_request_id{-2};
-    return GlobalRequestID(-1, s_next_request_id--);
-  }
+  // Returns a Request ID for browser-initiated requests. Crashes if called more
+  // than (2**31 - 2) times.
+  static GlobalRequestID MakeBrowserInitiated();
 
-  bool operator<(const GlobalRequestID& other) const {
-    return std::tie(child_id, request_id) <
-           std::tie(other.child_id, other.request_id);
-  }
-  bool operator==(const GlobalRequestID& other) const {
-    return child_id == other.child_id &&
-        request_id == other.request_id;
-  }
-  bool operator!=(const GlobalRequestID& other) const {
-    return child_id != other.child_id ||
-        request_id != other.request_id;
-  }
+  auto operator<=>(const GlobalRequestID& other) const = default;
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
 };

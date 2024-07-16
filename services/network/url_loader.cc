@@ -26,6 +26,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
@@ -523,7 +524,7 @@ URLLoader::URLLoader(
     mojo::PendingRemote<mojom::URLLoaderClient> url_loader_client,
     base::WeakPtr<mojom::URLLoaderClient> sync_url_loader_client,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    uint32_t request_id,
+    base::StrictNumeric<int32_t> request_id,
     int keepalive_request_size,
     base::WeakPtr<KeepaliveStatisticsRecorder> keepalive_statistics_recorder,
     std::unique_ptr<TrustTokenRequestHelperFactory> trust_token_helper_factory,

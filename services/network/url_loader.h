@@ -19,6 +19,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -164,7 +165,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       mojo::PendingRemote<mojom::URLLoaderClient> url_loader_client,
       base::WeakPtr<mojom::URLLoaderClient> sync_url_loader_client,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      uint32_t request_id,
+      base::StrictNumeric<int32_t> request_id,
       int keepalive_request_size,
       base::WeakPtr<KeepaliveStatisticsRecorder> keepalive_statistics_recorder,
       std::unique_ptr<TrustTokenRequestHelperFactory>
@@ -611,7 +612,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // This also belongs to URLLoaderFactory and outlives this loader.
   const raw_ptr<mojom::CrossOriginEmbedderPolicyReporter> coep_reporter_;
 
-  const uint32_t request_id_;
+  const int32_t request_id_;
   const int keepalive_request_size_;
   const bool keepalive_;
   const bool do_not_prompt_for_login_;

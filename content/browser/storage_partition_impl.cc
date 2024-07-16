@@ -28,6 +28,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -449,8 +450,8 @@ class LoginHandlerDelegate {
       content::BrowserContext* browser_context,
       const net::AuthChallengeInfo& auth_info,
       bool is_request_for_primary_main_frame,
-      uint32_t process_id,
-      uint32_t request_id,
+      base::StrictNumeric<int32_t> process_id,
+      base::StrictNumeric<int32_t> request_id,
       const GURL& url,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       bool first_auth_attempt)
@@ -1966,7 +1967,7 @@ void StoragePartitionImpl::BindSessionStorageArea(
 
 void StoragePartitionImpl::OnAuthRequired(
     const std::optional<base::UnguessableToken>& window_id,
-    uint32_t request_id,
+    int32_t request_id,
     const GURL& url,
     bool first_auth_attempt,
     const net::AuthChallengeInfo& auth_info,

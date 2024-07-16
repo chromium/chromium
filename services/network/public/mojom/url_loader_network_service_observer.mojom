@@ -147,7 +147,7 @@ interface URLLoaderNetworkServiceObserver {
   // frame.
   OnAuthRequired(
       mojo_base.mojom.UnguessableToken? window_id,
-      uint32 request_id,
+      int32 request_id,
       url.mojom.Url url,
       bool first_auth_attempt,
       AuthChallengeInfo auth_info,
