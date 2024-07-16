@@ -472,9 +472,18 @@ std::unique_ptr<developer::ProfileInfo> DeveloperPrivateAPI::CreateProfileInfo(
   info->can_load_unpacked =
       ExtensionManagementFactory::GetForBrowserContext(profile)
           ->HasAllowlistedExtension();
-  info->is_mv2_deprecation_warning_dismissed =
-      ManifestV2ExperimentManager::Get(profile)
-          ->DidUserAcknowledgeWarningGlobally();
+
+  // MV2 deprecation.
+  ManifestV2ExperimentManager* mv2_experiment_manager =
+      ManifestV2ExperimentManager::Get(profile);
+  // TODO(crbug.com/339061151): for now, notice can only be acknowledged on the
+  // warning stage. Change this when we introduce the behavior for the disabled
+  // stage.
+  if (mv2_experiment_manager->GetCurrentExperimentStage() ==
+      MV2ExperimentStage::kWarning) {
+    info->is_mv2_deprecation_warning_dismissed =
+        mv2_experiment_manager->DidUserAcknowledgeNoticeGlobally();
+  }
   return info;
 }
 
@@ -1063,7 +1072,7 @@ DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
 
   if (update.is_mv2_deprecation_warning_dismissed.value_or(false)) {
     ManifestV2ExperimentManager::Get(browser_context())
-        ->MarkWarningAsAcknowledgedGlobally();
+        ->MarkNoticeAsAcknowledgedGlobally();
   }
 
   return RespondNow(NoArguments());

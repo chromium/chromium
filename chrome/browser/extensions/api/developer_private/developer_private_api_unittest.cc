@@ -3243,10 +3243,10 @@ TEST_F(DeveloperPrivateApiWithMV2DeprecationWarningUnitTest,
 }
 
 TEST_F(DeveloperPrivateApiWithMV2DeprecationWarningUnitTest,
-       TestAcknowledgingWarningGlobally) {
+       TestAcknowledgingNoticeGlobally) {
   ManifestV2ExperimentManager* experiment_manager =
       ManifestV2ExperimentManager::Get(browser_context());
-  EXPECT_FALSE(experiment_manager->DidUserAcknowledgeWarningGlobally());
+  EXPECT_FALSE(experiment_manager->DidUserAcknowledgeNoticeGlobally());
 
   auto update_profile_function = base::MakeRefCounted<
       api::DeveloperPrivateUpdateProfileConfigurationFunction>();
@@ -3257,7 +3257,7 @@ TEST_F(DeveloperPrivateApiWithMV2DeprecationWarningUnitTest,
       base::Value::Dict().Set("isMv2DeprecationWarningDismissed", true));
   EXPECT_TRUE(RunFunction(update_profile_function, args));
 
-  EXPECT_TRUE(experiment_manager->DidUserAcknowledgeWarningGlobally());
+  EXPECT_TRUE(experiment_manager->DidUserAcknowledgeNoticeGlobally());
 }
 
 TEST_F(DeveloperPrivateApiWithMV2DeprecationDisabledUnitTest,

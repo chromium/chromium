@@ -2131,6 +2131,8 @@ void ExtensionPrefs::RegisterProfilePrefs(
   registry->RegisterListPref(pref_names::kExtensionInstallTypeBlocklist);
   registry->RegisterBooleanPref(
       kMV2DeprecationWarningAcknowledgedGloballyPref.name, false);
+  registry->RegisterBooleanPref(
+      kMV2DeprecationDisabledAcknowledgedGloballyPref.name, false);
 }
 
 template <class ExtensionIdContainer>

@@ -203,10 +203,10 @@ TEST_F(ManifestV2ExperimentManagerWarningUnitTest,
 }
 
 TEST_F(ManifestV2ExperimentManagerWarningUnitTest,
-       MarkingGeneralWwarningAsAcknowledged) {
-  EXPECT_FALSE(experiment_manager()->DidUserAcknowledgeWarningGlobally());
-  experiment_manager()->MarkWarningAsAcknowledgedGlobally();
-  EXPECT_TRUE(experiment_manager()->DidUserAcknowledgeWarningGlobally());
+       MarkingGlobalNoticeAsAcknowledged) {
+  EXPECT_FALSE(experiment_manager()->DidUserAcknowledgeNoticeGlobally());
+  experiment_manager()->MarkNoticeAsAcknowledgedGlobally();
+  EXPECT_TRUE(experiment_manager()->DidUserAcknowledgeNoticeGlobally());
 }
 
 // Tests that the experiment stage is properly set when the manifest V2

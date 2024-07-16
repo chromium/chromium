@@ -470,13 +470,19 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
   source->AddBoolean("safetyHubShowReviewPanel",
                      base::FeatureList::IsEnabled(features::kSafetyHub));
 
+  // MV2 deprecation.
   auto* mv2_experiment_manager = ManifestV2ExperimentManager::Get(profile);
-  source->AddInteger(
-      "MV2ExperimentStage",
-      static_cast<int>(mv2_experiment_manager->GetCurrentExperimentStage()));
-  source->AddBoolean(
-      "MV2DeprecationPanelDismissed",
-      mv2_experiment_manager->DidUserAcknowledgeWarningGlobally());
+  MV2ExperimentStage experiment_stage =
+      mv2_experiment_manager->GetCurrentExperimentStage();
+  source->AddInteger("MV2ExperimentStage", static_cast<int>(experiment_stage));
+  // TOOD(crbug.com/339061151): This variable should hold the state for the
+  // different stages. Update once we add the functionality for the dismised
+  // stage.
+  bool notice_dismissed_warning_stage =
+      experiment_stage == MV2ExperimentStage::kWarning &&
+      mv2_experiment_manager->DidUserAcknowledgeNoticeGlobally();
+  source->AddBoolean("MV2DeprecationPanelDismissed",
+                     notice_dismissed_warning_stage);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   source->AddString(

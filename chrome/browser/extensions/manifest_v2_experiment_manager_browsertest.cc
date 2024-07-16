@@ -63,6 +63,9 @@ MV2ExperimentStage GetExperimentStageForTest(std::string_view test_name) {
        MV2ExperimentStage::kDisableWithReEnable},
       {"PRE_MarkingNoticeAsAcknowledged", MV2ExperimentStage::kWarning},
       {"MarkingNoticeAsAcknowledged", MV2ExperimentStage::kDisableWithReEnable},
+      {"PRE_MarkingGlobalNoticeAsAcknowledged", MV2ExperimentStage::kWarning},
+      {"MarkingGlobalNoticeAsAcknowledged",
+       MV2ExperimentStage::kDisableWithReEnable},
       {"PRE_PRE_ExtensionsAreReEnabledIfPolicyChangesOnStartup",
        MV2ExperimentStage::kWarning},
       {"PRE_ExtensionsAreReEnabledIfPolicyChangesOnStartup",
@@ -442,6 +445,8 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   EXPECT_FALSE(WasExtensionReEnabledByUser(extension_id));
 }
 
+// Tests that the MV2 deprecation notice for an extension is only acknowledged
+// for the current stage.
 // Step 1 (Warning Stage): Mark an extension's notice as acknowledged on this
 // stage.
 IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
@@ -479,6 +484,49 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   // Mark the notice as acknowledged for this stage. Verify it's acknowledged.
   experiment_manager()->MarkNoticeAsAcknowledged(extension->id());
   EXPECT_TRUE(experiment_manager()->DidUserAcknowledgeNotice(extension->id()));
+}
+
+// Tests that the MV2 deprecation global notice is only acknowledged for the
+// current stage.
+// Step 1 (Warning Stage): Mark the global notice as acknowledged
+// on this stage.
+IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
+                       PRE_MarkingGlobalNoticeAsAcknowledged) {
+  EXPECT_EQ(MV2ExperimentStage::kWarning, GetActiveExperimentStage());
+
+  WaitForExtensionSystemReady();
+
+  // Add an extension that should make the MV2 deprecation notice visible.
+  // Verify global notice is not marked as acknowledged on this stage.
+  const Extension* extension = AddMV2Extension("Test MV2 Extension");
+  ASSERT_TRUE(extension);
+  EXPECT_FALSE(experiment_manager()->DidUserAcknowledgeNoticeGlobally());
+
+  // Mark the global notice as acknowledged for this stage. Verify it's
+  // acknowledged.
+  experiment_manager()->MarkNoticeAsAcknowledgedGlobally();
+  EXPECT_TRUE(experiment_manager()->DidUserAcknowledgeNoticeGlobally());
+}
+// Step 2 (Disable Stage): Verify global notice is not acknowledged on this
+// stage. Mark notice as acknowledged on this stage.
+IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
+                       MarkingGlobalNoticeAsAcknowledged) {
+  EXPECT_EQ(MV2ExperimentStage::kDisableWithReEnable,
+            GetActiveExperimentStage());
+
+  WaitForExtensionSystemReady();
+
+  // Verify global notice is not marked as acknowledged on this stage, even if
+  // it was acknowledged on the previous stage.
+  const Extension* extension = GetExtensionByName(
+      "Test MV2 Extension", extension_registry()->disabled_extensions());
+  ASSERT_TRUE(extension);
+  EXPECT_FALSE(experiment_manager()->DidUserAcknowledgeNoticeGlobally());
+
+  // Mark the global notice as acknowledged for this stage. Verify it's
+  // acknowledged.
+  experiment_manager()->MarkNoticeAsAcknowledgedGlobally();
+  EXPECT_TRUE(experiment_manager()->DidUserAcknowledgeNoticeGlobally());
 }
 
 // Tests that extensions are properly re-enabled on startup if they should no

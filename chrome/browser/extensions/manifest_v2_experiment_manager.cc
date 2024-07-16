@@ -167,6 +167,21 @@ PrefMap GetExtensionAcknowledgedPrefFor(MV2ExperimentStage experiment_stage) {
   }
 }
 
+// Returns the pref that stores whether the user has acknowledged the MV2
+// deprecation global notice in `experiment_stage`.
+PrefMap GetGlobalNoticeAcknowledgedPrefFor(
+    MV2ExperimentStage experiment_stage) {
+  switch (experiment_stage) {
+    case MV2ExperimentStage::kNone:
+      // There is no notice for this stage, thus it cannot be acknowledged.
+      NOTREACHED_NORETURN();
+    case MV2ExperimentStage::kWarning:
+      return kMV2DeprecationWarningAcknowledgedGloballyPref;
+    case MV2ExperimentStage::kDisableWithReEnable:
+      return kMV2DeprecationDisabledAcknowledgedGloballyPref;
+  }
+}
+
 // Returns true if extensions should be disabled if the user is in the given
 // `stage` of the MV2 experiments. Extracted into this method to make it easier
 // to update as we add more stages.
@@ -297,14 +312,24 @@ void ManifestV2ExperimentManager::MarkNoticeAsAcknowledged(
   extension_prefs()->SetBooleanPref(extension_id, pref, true);
 }
 
-bool ManifestV2ExperimentManager::DidUserAcknowledgeWarningGlobally() {
-  return extension_prefs()->GetPrefAsBoolean(
-      kMV2DeprecationWarningAcknowledgedGloballyPref);
+bool ManifestV2ExperimentManager::DidUserAcknowledgeNoticeGlobally() {
+  // There is no notice for kNone stage, thus it cannot be acknowledged.
+  if (experiment_stage_ == MV2ExperimentStage::kNone) {
+    return false;
+  }
+
+  PrefMap pref = GetGlobalNoticeAcknowledgedPrefFor(experiment_stage_);
+  return extension_prefs()->GetPrefAsBoolean(pref);
 }
 
-void ManifestV2ExperimentManager::MarkWarningAsAcknowledgedGlobally() {
-  extension_prefs()->SetBooleanPref(
-      kMV2DeprecationWarningAcknowledgedGloballyPref, true);
+void ManifestV2ExperimentManager::MarkNoticeAsAcknowledgedGlobally() {
+  // There is no notice for kNone stage, thus it cannot be acknowledged.
+  if (experiment_stage_ == MV2ExperimentStage::kNone) {
+    return;
+  }
+
+  PrefMap pref = GetGlobalNoticeAcknowledgedPrefFor(experiment_stage_);
+  extension_prefs()->SetBooleanPref(pref, true);
 }
 
 ExtensionPrefs* ManifestV2ExperimentManager::extension_prefs() {
