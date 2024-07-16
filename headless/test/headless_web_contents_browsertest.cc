@@ -250,16 +250,10 @@ class HeadlessWebContentsScreenshotWindowPositionTest
   }
 };
 
-#if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
-// TODO(crbug.com/40694526): Disabled due to flakiness on Mac ASAN.
-DISABLED_HEADLESS_DEVTOOLED_TEST_P(
-    HeadlessWebContentsScreenshotWindowPositionTest);
-#else
 HEADLESS_DEVTOOLED_TEST_P(HeadlessWebContentsScreenshotWindowPositionTest);
-#endif
 
 // Instantiate test case for both software and gpu compositing modes.
-INSTANTIATE_TEST_SUITE_P(HeadlessWebContentsScreenshotWindowPositionTests,
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          HeadlessWebContentsScreenshotWindowPositionTest,
                          ::testing::Bool());
 
