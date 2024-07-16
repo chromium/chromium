@@ -125,9 +125,6 @@ export class RegionSelectionElement extends PolymerElement {
       detail: this.getNormalizedCenterRotatedBoxFromGesture(event),
     }));
 
-    recordLensOverlayInteraction(
-        INVOCATION_SOURCE, UserAction.kRegionSelection);
-
     this.clearCanvas();
     return true;
   }
@@ -275,9 +272,13 @@ export class RegionSelectionElement extends PolymerElement {
   private getPostSelectionRegion(gesture: GestureEvent):
       PostSelectionBoundingBox {
     if (gesture.state === GestureState.STARTING) {
+      recordLensOverlayInteraction(
+          INVOCATION_SOURCE, UserAction.kTapRegionSelection);
       return this.getPostSelectionRegionFromTap(gesture);
     }
 
+    recordLensOverlayInteraction(
+        INVOCATION_SOURCE, UserAction.kRegionSelection);
     return this.getPostSelectionRegionFromDrag(gesture);
   }
 

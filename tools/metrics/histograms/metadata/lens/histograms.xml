@@ -173,6 +173,12 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded each time the user interacts with the Lens Overlay, enumerated by
     those actions and sliced by invocation source.
+
+    Before M128, region selection included both tap and region selection and the
+    region selection metric was emitted whenever the user tapped or dragged a
+    new selection on the overlay. M128+ clients distinguish the two selection
+    types and the tap and region selection metrics are emitted when the user
+    taps and drags a new selection respectively.
   </summary>
   <token key="InvocationSource" variants="InvocationSources"/>
 </histogram>
@@ -184,6 +190,12 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded each time the user interacts with the Lens Overlay, enumerated by
     those actions.
+
+    Before M128, region selection included both tap and region selection and the
+    region selection metric was emitted whenever the user tapped or dragged a
+    new selection on the overlay. M128+ clients distinguish the two selection
+    types and the tap and region selection metrics are emitted when the user
+    taps and drags a new selection respectively.
   </summary>
 </histogram>
 

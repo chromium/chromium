@@ -30,6 +30,7 @@ enum UserAction {
   kMyActivity = 6,
   kLearnMore = 7,
   kSendFeedback = 8,
+  kTapRegionSelection = 9,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayUserAction)
 
