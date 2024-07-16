@@ -568,6 +568,10 @@ export class PlaybackPage extends ReactiveLitElement {
     `;
   }
 
+  private toggleMenu() {
+    this.menu.value?.toggle();
+  }
+
   private renderHeader() {
     const transcriptionToggleButton =
       this.textTokens.value === null ? nothing : html`
@@ -579,9 +583,6 @@ export class PlaybackPage extends ReactiveLitElement {
               <cra-icon slot="selectedIcon" name="notes"></cra-icon>
             </cra-icon-button>
           `;
-    const showMenu = () => {
-      this.menu.value?.show();
-    };
 
     return html`
       <div id="header" class="sheet">
@@ -594,7 +595,7 @@ export class PlaybackPage extends ReactiveLitElement {
         <cra-icon-button
           buttonstyle="floating"
           id="show-menu"
-          @click=${showMenu}
+          @click=${this.toggleMenu}
         >
           <!-- TODO: b/336963138 - Implements more menu -->
           <cra-icon slot="icon" name="more_vertical"></cra-icon>

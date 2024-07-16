@@ -661,10 +661,11 @@ export class RecordPage extends ReactiveLitElement {
     `;
   }
 
+  private toggleMenu() {
+    this.menu.value?.toggle();
+  }
+
   private renderHeader() {
-    const showMenu = () => {
-      this.menu.value?.show();
-    };
     const toggleTranscriptionButton = html`
       <cra-icon-button
         buttonstyle="toggle"
@@ -684,7 +685,7 @@ export class RecordPage extends ReactiveLitElement {
       this.transcriptionAvailable.value ? toggleTranscriptionButton : nothing}
         <cra-icon-button
           buttonstyle="floating"
-          @click=${showMenu}
+          @click=${this.toggleMenu}
           id="show-menu"
         >
           <cra-icon slot="icon" name="more_vertical"></cra-icon>

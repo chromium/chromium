@@ -16,6 +16,14 @@ export class CraMenu extends Menu {
       }
     `,
   ];
+
+  toggle(): void {
+    if (this.open) {
+      this.close();
+    } else {
+      this.show();
+    }
+  }
 }
 
 window.customElements.define('cra-menu', CraMenu);
