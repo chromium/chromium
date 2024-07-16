@@ -19721,6 +19721,7 @@ from previous Chrome versions.
   <int value="-444867364" label="Metal:enabled"/>
   <int value="-444758854" label="CellularCarrierLock:disabled"/>
   <int value="-444307785" label="WebAppEnableAppTitle:disabled"/>
+  <int value="-444098682" label="AutofillUploadCardRequestTimeout:enabled"/>
   <int value="-442384327" label="RubyShortHeuristics:enabled"/>
   <int value="-442352394" label="IframeOneGoogleBar:disabled"/>
   <int value="-441972413" label="OobeJellyModal:disabled"/>
@@ -21783,6 +21784,7 @@ from previous Chrome versions.
       label="PageInfoAboutThisSiteImprovedBottomSheet:disabled"/>
   <int value="425072496" label="GridLayoutForNtpShortcuts:enabled"/>
   <int value="425621232" label="Conch:enabled"/>
+  <int value="425658479" label="AutofillUploadCardRequestTimeout:disabled"/>
   <int value="425938961" label="DesksCloseAll:disabled"/>
   <int value="426199960" label="Commander:enabled"/>
   <int value="426540253" label="PowerScheduler:disabled"/>

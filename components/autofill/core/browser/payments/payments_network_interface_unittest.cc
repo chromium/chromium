@@ -17,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -1359,6 +1360,69 @@ TEST_F(PaymentsNetworkInterfaceTest, UploadSuccessCardArtUrlPresent) {
   EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ(upload_card_response_details_.card_art_url.spec(),
             "https://www.example.com/");
+}
+
+TEST_F(PaymentsNetworkInterfaceTest, UploadSuccessMeasureTimeoutHistogram) {
+  base::HistogramTester histogram_tester;
+
+  base::FieldTrialParams params;
+  params["autofill_upload_card_request_timeout_milliseconds"] = "10000";
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillUploadCardRequestTimeout, params);
+
+  StartUploading();
+  IssueOAuthToken();
+  ReturnResponse(payments_network_interface_.get(), net::HTTP_OK, "{}");
+
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PaymentsNetworkInterface.UploadCardRequest.ClientSideTimedOut",
+      /*sample=*/false, /*expected_bucket_count=*/1);
+}
+
+TEST_F(PaymentsNetworkInterfaceTest, UploadFailureDueToClientSideTimeout) {
+  base::HistogramTester histogram_tester;
+
+  base::FieldTrialParams params;
+  params["autofill_upload_card_request_timeout_milliseconds"] = "10000";
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillUploadCardRequestTimeout, params);
+
+  // Fake a client-side timeout on the card upload.
+  StartUploading();
+  IssueOAuthToken();
+  ReturnResponse(payments_network_interface_.get(), net::ERR_TIMED_OUT, "");
+
+  EXPECT_EQ(PaymentsRpcResult::kTryAgainFailure, result_);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PaymentsNetworkInterface.UploadCardRequest.ClientSideTimedOut",
+      /*sample=*/true, /*expected_bucket_count=*/1);
+}
+
+TEST_F(PaymentsNetworkInterfaceTest,
+       UploadClientTimeoutNotRecordedForOtherFailure) {
+  base::HistogramTester histogram_tester;
+
+  base::FieldTrialParams params;
+  params["autofill_upload_card_request_timeout_milliseconds"] = "10000";
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillUploadCardRequestTimeout, params);
+
+  // Fake a network issue on the upload; this shouldn't result in any record
+  // being made for the client timeout histogram. In particular,
+  // HTTP_REQUEST_TIMEOUT is treated differently than the client side timeout.
+  StartUploading();
+  IssueOAuthToken();
+  ReturnResponse(payments_network_interface_.get(), net::HTTP_REQUEST_TIMEOUT,
+                 "");
+
+  EXPECT_EQ(PaymentsRpcResult::kNetworkError, result_);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.PaymentsNetworkInterface.UploadCardRequest.ClientSideTimedOut",
+      /*expected_count=*/0);
 }
 
 TEST_F(PaymentsNetworkInterfaceTest, UnmaskMissingPan) {

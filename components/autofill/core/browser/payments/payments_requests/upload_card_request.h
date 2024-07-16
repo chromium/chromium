@@ -39,6 +39,8 @@ class UploadCardRequest : public PaymentsRequest {
   bool IsResponseComplete() override;
   void RespondToDelegate(
       PaymentsAutofillClient::PaymentsRpcResult result) override;
+  std::string GetHistogramName() const override;
+  std::optional<base::TimeDelta> GetTimeout() const override;
 
  private:
   const PaymentsNetworkInterface::UploadCardRequestDetails request_details_;

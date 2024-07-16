@@ -248,4 +248,26 @@ TEST(UploadCardRequestTest, UploadDoesNotIncludeCardNicknameEmptyNickname) {
                std::string::npos);
 }
 
+TEST(UploadCardRequestTest, DoesNotHaveTimeoutWithoutFlag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillUploadCardRequestTimeout);
+
+  std::unique_ptr<UploadCardRequest> request =
+      CreateUploadCardRequest(UploadCardOptions());
+  EXPECT_FALSE(request->GetTimeout().has_value());
+}
+
+TEST(UploadCardRequestTest, HasTimeoutWhenFlagSet) {
+  base::FieldTrialParams params;
+  params["autofill_upload_card_request_timeout_milliseconds"] = "6000";
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillUploadCardRequestTimeout, params);
+
+  std::unique_ptr<UploadCardRequest> request =
+      CreateUploadCardRequest(UploadCardOptions());
+  EXPECT_EQ(*request->GetTimeout(), base::Milliseconds(6000));
+}
+
 }  // namespace autofill::payments

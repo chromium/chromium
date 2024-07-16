@@ -6,6 +6,8 @@
 
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "components/autofill/core/browser/payments/account_info_getter.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
@@ -120,11 +122,15 @@ void PaymentsNetworkInterfaceBase::OnSimpleLoaderComplete(
       simple_url_loader_->ResponseInfo()->headers) {
     response_code =
         simple_url_loader_->ResponseInfo()->headers->response_code();
+  } else if (simple_url_loader_->NetError() == net::ERR_TIMED_OUT) {
+    response_code = net::ERR_TIMED_OUT;
   }
+
   std::string data;
   if (response_body) {
     data = std::move(*response_body);
   }
+
   OnSimpleLoaderCompleteInternal(response_code, data);
 }
 
@@ -137,6 +143,21 @@ void PaymentsNetworkInterfaceBase::OnSimpleLoaderCompleteInternal(
 
   if (!request_) {
     return;
+  }
+
+  // Measure metrics on how often each type of request times out. We only want
+  // to compare timeouts to otherwise successful results, to measure the effects
+  // of client-side timeouts on successful saves.
+  //
+  // Note: This in theory could affect cases where we timed out when we would
+  // have otherwise received HTTP_UNAUTHORIZED, but it's very unlikely that
+  // HTTP_UNAUTHORIZED would take long enough to hit the client side timeout.
+  if (request_->GetTimeout().has_value() &&
+      (response_code == net::HTTP_OK || response_code == net::ERR_TIMED_OUT)) {
+    base::UmaHistogramBoolean(
+        base::StrCat({"Autofill.PaymentsNetworkInterface.",
+                      request_->GetHistogramName(), ".ClientSideTimedOut"}),
+        response_code == net::ERR_TIMED_OUT);
   }
 
   switch (response_code) {
@@ -193,6 +214,19 @@ void PaymentsNetworkInterfaceBase::OnSimpleLoaderCompleteInternal(
     // reported?
     case net::HTTP_REQUEST_TIMEOUT: {
       result = PaymentsRpcResult::kNetworkError;
+      break;
+    }
+
+    // This case occurs when the request hits the client-side timeout. This is
+    // quite complex as the call could still complete on the server side, but we
+    // were not willing to wait any longer for the server. The best
+    // representation is `kTryAgainFailure`, but it may not be correct for the
+    // UX to *immediately* try again in all cases.
+    //
+    // TODO(crbug.com/40287257): Consider whether it makes more sense to add a
+    // new PaymentsRpcResult::kClientSideTimeout and return that here.
+    case net::ERR_TIMED_OUT: {
+      result = PaymentsRpcResult::kTryAgainFailure;
       break;
     }
 
@@ -331,6 +365,16 @@ void PaymentsNetworkInterfaceBase::SetOAuth2TokenAndStartRequest() {
       std::move(resource_request_), traffic_annotation);
   simple_url_loader_->AttachStringForUpload(request_->GetRequestContent(),
                                             request_->GetRequestContentType());
+
+  // Some request types specify a client-side timeout, in order to provide a
+  // better user experience (e.g., avoid the user being unnecessarily blocked).
+  //
+  // The sandbox server is significantly slower than prod, so we never set a
+  // client-side timeout when using sandbox, even if the request specifies one.
+  if (request_->GetTimeout().has_value() && IsPaymentsProductionEnabled()) {
+    CHECK(request_->GetTimeout()->is_positive());
+    simple_url_loader_->SetTimeoutDuration(*request_->GetTimeout());
+  }
 
   simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),

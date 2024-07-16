@@ -55,7 +55,7 @@ class PaymentsNetworkInterfaceTestBase {
   void IssueOAuthToken();
   void ReturnResponse(
       PaymentsNetworkInterfaceBase* payments_network_interface_base,
-      net::HttpStatusCode response_code,
+      int response_code,
       const std::string& response_body);
 
   void assertIncludedInRequest(std::string field_name_or_value);

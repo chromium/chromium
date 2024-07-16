@@ -198,4 +198,17 @@ void UploadCardRequest::RespondToDelegate(
   std::move(callback_).Run(result, upload_card_response_details_);
 }
 
+std::string UploadCardRequest::GetHistogramName() const {
+  return "UploadCardRequest";
+}
+
+std::optional<base::TimeDelta> UploadCardRequest::GetTimeout() const {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillUploadCardRequestTimeout)) {
+    return std::nullopt;
+  }
+  return base::Milliseconds(
+      features::kAutofillUploadCardRequestTimeoutMilliseconds.Get());
+}
+
 }  // namespace autofill::payments

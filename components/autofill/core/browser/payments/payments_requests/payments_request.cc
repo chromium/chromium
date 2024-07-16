@@ -15,6 +15,16 @@
 
 namespace autofill::payments {
 
+PaymentsRequest::PaymentsRequest() {
+  // Enforce the invariant: if you have a client-side timeout set, you must
+  // provide a name for the associated histogram.
+  if (GetTimeout().has_value()) {
+    CHECK(!GetHistogramName().empty())
+        << "If a PaymentsRequest subclass sets a client-side timeout, it must "
+           "also provide a GetHistogram implementation.";
+  }
+}
+
 PaymentsRequest::~PaymentsRequest() = default;
 
 bool PaymentsRequest::IsRetryableFailure(const std::string& error_code) {
@@ -27,6 +37,14 @@ bool PaymentsRequest::IsRetryableFailure(const std::string& error_code) {
   // authentication flow, we want to set result to kTryAgainFailure if a flow
   // status is present in the response.
   return base::EqualsCaseInsensitiveASCII(error_code, "internal");
+}
+
+std::string PaymentsRequest::GetHistogramName() const {
+  return "";
+}
+
+std::optional<base::TimeDelta> PaymentsRequest::GetTimeout() const {
+  return std::nullopt;
 }
 
 base::Value::Dict PaymentsRequest::BuildRiskDictionary(

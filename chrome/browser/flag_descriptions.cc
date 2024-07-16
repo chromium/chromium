@@ -658,6 +658,13 @@ const char kAutofillSyncEwalletAccountsDescription[] =
     "servers and displayed on the payment methods settings page.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+const char kAutofillUploadCardRequestTimeoutName[] =
+    "Timeout for the credit card upload request";
+const char kAutofillUploadCardRequestTimeoutDescription[] =
+    "When enabled, sets a client-side timeout on the Autofill credit card "
+    "upload request. Upon timeout, the client will terminate the upload UI, "
+    "but the request may still succeed server-side.";
+
 const char kAutofillUpstreamUpdatedUiName[] =
     "Credit card upload save UI treatment";
 const char kAutofillUpstreamUpdatedUiDescription[] =

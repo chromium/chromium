@@ -178,6 +178,10 @@ chromium-metrics-reviews@google.com.
   <variant name=".Reshows" summary="re-show"/>
 </variants>
 
+<variants name="Autofill.PaymentsRequestType">
+  <variant name="UploadCardRequest" summary="credit card upload"/>
+</variants>
+
 <!-- TODO(crbug.com/40926801): Rename PaymentsRpcCardType since we add LocalCard here. -->
 
 <variants name="Autofill.PaymentsRpcCardType">
@@ -3852,6 +3856,25 @@ chromium-metrics-reviews@google.com.
     cards when adding the new card, the &quot;cards&quot; bucket labeled 0 will
     be incremented).
   </summary>
+</histogram>
+
+<histogram
+    name="Autofill.PaymentsNetworkInterface.{PaymentsRequestType}.ClientSideTimedOut"
+    enum="Boolean" expires_after="2025-07-01">
+  <owner>smcgruer@google.com</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    For an API call to Google Payments servers of type {PaymentsRequestType},
+    denotes whether or not that API call triggered the client-side timeout.
+    Logged when the request either completes or times out on the client side,
+    and only if there is a client-side timeout value specified for the given
+    type.
+
+    The non-timeout case is logged only if the request succeeds according to the
+    server, to try to best measure the ratio of failed calls that are due to the
+    client-side timeout.
+  </summary>
+  <token key="PaymentsRequestType" variants="Autofill.PaymentsRequestType"/>
 </histogram>
 
 <histogram name="Autofill.PerfectFilling.{FormType}" enum="Boolean"

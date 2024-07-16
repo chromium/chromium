@@ -72,7 +72,7 @@ void PaymentsNetworkInterfaceTestBase::IssueOAuthToken() {
 
 void PaymentsNetworkInterfaceTestBase::ReturnResponse(
     PaymentsNetworkInterfaceBase* payments_network_interface_base,
-    net::HttpStatusCode response_code,
+    int response_code,
     const std::string& response_body) {
   payments_network_interface_base->OnSimpleLoaderCompleteInternal(
       response_code, response_body);

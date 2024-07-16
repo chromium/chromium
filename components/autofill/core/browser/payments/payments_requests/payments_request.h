@@ -19,6 +19,7 @@ namespace autofill::payments {
 // Shared class for the various Payments request types.
 class PaymentsRequest {
  public:
+  PaymentsRequest();
   virtual ~PaymentsRequest();
 
   // Returns the URL path for this type of request.
@@ -46,6 +47,25 @@ class PaymentsRequest {
   // retryable, false otherwise. If this returns true, the PaymentsRpcResult for
   // the request will be kTryAgainFailure.
   virtual bool IsRetryableFailure(const std::string& error_code);
+
+  // Returns the name of the request that should be recorded in histograms. The
+  // default implementation is an empty string, and the PaymentsRequest
+  // constructor will check that if GetTimeout returns a non-null value then
+  // GetHistogramName must return a non-empty string.
+  //
+  // If a subclass overrides this, it must add the histogram name to the
+  // Autofill.PaymentsRequestType variants in histograms.xml.
+  virtual std::string GetHistogramName() const;
+
+  // Returns the client-side timeout that should be set on the network request,
+  // if any. If a Payments API call reaches this timeout, it will be closed from
+  // the client side. Note that this may not stop the underlying API call from
+  // succeeding - it may still complete on the server side.
+  //
+  // The default implementation has no client-side timeout.
+  //
+  // If a subclass overrides this, it must also override GetHistogramName.
+  virtual std::optional<base::TimeDelta> GetTimeout() const;
 
  protected:
   // Shared helper function to build the risk data sent in the request.
