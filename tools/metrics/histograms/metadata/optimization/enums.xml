@@ -707,6 +707,10 @@ chromium-metrics-reviews@google.com.
   <int value="57" label="VCN_MERCHANT_OPT_OUT_MASTERCARD"/>
   <int value="58" label="PIX_MERCHANT_ORIGINS_ALLOWLIST"/>
   <int value="59" label="HISTORY_EMBEDDINGS"/>
+  <int value="60" label="AUTOFILL_ABLATION_SITES_LIST1"/>
+  <int value="61" label="AUTOFILL_ABLATION_SITES_LIST2"/>
+  <int value="62" label="AUTOFILL_ABLATION_SITES_LIST3"/>
+  <int value="63" label="AUTOFILL_ABLATION_SITES_LIST4"/>
 </enum>
 
 <enum name="PageContentAnnotationsStorageStatus">

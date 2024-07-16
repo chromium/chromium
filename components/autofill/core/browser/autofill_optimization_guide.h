@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/data_model/credit_card_benefit.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 
 class GURL;
 
@@ -76,6 +77,14 @@ class AutofillOptimizationGuide : public KeyedService {
   virtual bool ShouldBlockBenefitSuggestionLabelsForCardAndUrl(
       const CreditCard& card,
       const GURL& url) const;
+
+  // Returns whether `url` is eligible for ablation as per `type`.
+  // Type must be one of
+  // `optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST1`, ...,
+  // `optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST4`.
+  virtual bool IsEligibleForAblation(
+      const GURL& url,
+      optimization_guide::proto::OptimizationType type) const;
 
  private:
   // Raw pointer to a decider which is owned by the decider's factory.

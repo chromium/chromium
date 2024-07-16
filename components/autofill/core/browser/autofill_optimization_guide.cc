@@ -107,6 +107,19 @@ void AddCreditCardOptimizationTypes(
   }
 }
 
+void AddAblationOptimizationTypes(
+    base::flat_set<optimization_guide::proto::OptimizationType>&
+        optimization_types) {
+  optimization_types.insert(
+      optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST1);
+  optimization_types.insert(
+      optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST2);
+  optimization_types.insert(
+      optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST3);
+  optimization_types.insert(
+      optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST4);
+}
+
 // Maps the credit card category optimizations type to the
 // CreditCardCategoryBenefit::BenefitCategory enum.
 CreditCardCategoryBenefit::BenefitCategory
@@ -167,6 +180,11 @@ void AutofillOptimizationGuide::OnDidParseForm(
     if (has_credit_card_field) {
       AddCreditCardOptimizationTypes(personal_data_manager, optimization_types);
     }
+  }
+
+  if (base::FeatureList::IsEnabled(
+          ::autofill::features::kAutofillEnableAblationStudy)) {
+    AddAblationOptimizationTypes(optimization_types);
   }
 
   // If we do not have any optimization types to register, do not do anything.
@@ -267,6 +285,20 @@ bool AutofillOptimizationGuide::ShouldBlockFormFieldSuggestion(
   // No conditions to block displaying this virtual card suggestion were met,
   // so return that we should not block displaying this suggestion.
   return false;
+}
+
+bool AutofillOptimizationGuide::IsEligibleForAblation(
+    const GURL& url,
+    optimization_guide::proto::OptimizationType type) const {
+  CHECK(type == optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST1 ||
+        type == optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST2 ||
+        type == optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST3 ||
+        type == optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST4)
+      << type;
+  optimization_guide::OptimizationGuideDecision decision =
+      decider_->CanApplyOptimization(url, type,
+                                     /*optimization_metadata=*/nullptr);
+  return decision == optimization_guide::OptimizationGuideDecision::kTrue;
 }
 
 bool AutofillOptimizationGuide::ShouldBlockBenefitSuggestionLabelsForCardAndUrl(

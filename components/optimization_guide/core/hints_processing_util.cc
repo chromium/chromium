@@ -123,6 +123,14 @@ std::string GetStringNameForOptimizationType(
       return "PixMerchantOriginsAllowlist";
     case proto::OptimizationType::HISTORY_EMBEDDINGS:
       return "HistoryEmbeddings";
+    case proto::OptimizationType::AUTOFILL_ABLATION_SITES_LIST1:
+      return "AutofillAblationSitesList1";
+    case proto::OptimizationType::AUTOFILL_ABLATION_SITES_LIST2:
+      return "AutofillAblationSitesList2";
+    case proto::OptimizationType::AUTOFILL_ABLATION_SITES_LIST3:
+      return "AutofillAblationSitesList3";
+    case proto::OptimizationType::AUTOFILL_ABLATION_SITES_LIST4:
+      return "AutofillAblationSitesList4";
   }
 
   // The returned string is used to record histograms for the optimization type.

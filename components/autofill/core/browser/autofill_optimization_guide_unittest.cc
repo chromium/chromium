@@ -717,6 +717,65 @@ TEST_F(AutofillOptimizationGuideTest,
                                                personal_data_manager_.get());
 }
 
+// Test that the ablation site lists are registered in case the ablation
+// experiment is enabled.
+TEST_F(AutofillOptimizationGuideTest, AutofillAblation) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAblationStudy};
+  FormData form_data = CreateTestCreditCardFormData(/*is_https=*/true,
+                                                    /*use_month_type=*/false);
+  FormStructure form_structure{form_data};
+  const std::vector<FieldType> field_types = {
+      CREDIT_CARD_NAME_FIRST, CREDIT_CARD_NAME_LAST, CREDIT_CARD_NUMBER,
+      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_4_DIGIT_YEAR};
+  test_api(form_structure).SetFieldTypes(field_types, field_types);
+
+  // Ensure that on registration the right optimization types are registered.
+  EXPECT_CALL(*decider_,
+              RegisterOptimizationTypes(testing::IsSupersetOf(
+                  {optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST1,
+                   optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST2,
+                   optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST3,
+                   optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST4})));
+  autofill_optimization_guide_->OnDidParseForm(form_structure,
+                                               personal_data_manager_.get());
+
+  // Ensure that `IsEligibleForAblation()` returns the right responses.
+  ON_CALL(*decider_,
+          CanApplyOptimization(
+              testing::_, testing::_,
+              testing::Matcher<optimization_guide::OptimizationMetadata*>(
+                  testing::Eq(nullptr))))
+      .WillByDefault(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kFalse));
+  ON_CALL(
+      *decider_,
+      CanApplyOptimization(
+          testing::Eq(GURL("https://www.example.com")),
+          testing::Eq(optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST1),
+          testing::Matcher<optimization_guide::OptimizationMetadata*>(
+              testing::Eq(nullptr))))
+      .WillByDefault(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kTrue));
+  EXPECT_CALL(*decider_,
+              CanApplyOptimization(
+                  testing::_, testing::_,
+                  testing::Matcher<optimization_guide::OptimizationMetadata*>(
+                      testing::Eq(nullptr))))
+      .Times(3);
+  EXPECT_TRUE(autofill_optimization_guide_->IsEligibleForAblation(
+      GURL("https://www.example.com"),
+      optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST1));
+  // www.othersite.com is not on any list.
+  EXPECT_FALSE(autofill_optimization_guide_->IsEligibleForAblation(
+      GURL("https://www.othersite.com"),
+      optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST1));
+  // www.example.com is not on list 2, but on list 1.
+  EXPECT_FALSE(autofill_optimization_guide_->IsEligibleForAblation(
+      GURL("https://www.example.com"),
+      optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST2));
+}
+
 struct BenefitOptimizationToBenefitCategoryTestCase {
   const std::string issuer_id;
   const optimization_guide::proto::OptimizationType optimization_type;
