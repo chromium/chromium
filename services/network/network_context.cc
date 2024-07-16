@@ -3109,6 +3109,23 @@ void NetworkContext::GetSharedDictionaryOriginsBetween(
                                                 std::move(callback));
 }
 
+void NetworkContext::PreloadSharedDictionaryInfoForDocument(
+    const std::vector<GURL>& urls,
+    mojo::PendingReceiver<mojom::PreloadedSharedDictionaryInfoHandle>
+        preload_handle) {
+  if (shared_dictionary_manager_) {
+    shared_dictionary_manager_->PreloadSharedDictionaryInfoForDocument(
+        urls, std::move(preload_handle));
+  }
+}
+
+void NetworkContext::HasPreloadedSharedDictionaryInfoForTesting(
+    HasPreloadedSharedDictionaryInfoForTestingCallback callback) {
+  std::move(callback).Run(
+      shared_dictionary_manager_ &&
+      shared_dictionary_manager_->HasPreloadedSharedDictionaryInfo());
+}
+
 void NetworkContext::ResourceSchedulerClientVisibilityChanged(
     const base::UnguessableToken& client_token,
     bool visible) {

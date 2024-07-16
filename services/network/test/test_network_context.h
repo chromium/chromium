@@ -340,6 +340,12 @@ class TestNetworkContext : public mojom::NetworkContext {
       base::Time start_time,
       base::Time end_time,
       GetSharedDictionaryOriginsBetweenCallback callback) override {}
+  void PreloadSharedDictionaryInfoForDocument(
+      const std::vector<GURL>& urls,
+      mojo::PendingReceiver<mojom::PreloadedSharedDictionaryInfoHandle>
+          preload_handle) override {}
+  void HasPreloadedSharedDictionaryInfoForTesting(
+      HasPreloadedSharedDictionaryInfoForTestingCallback callback) override {}
   void ResourceSchedulerClientVisibilityChanged(
       const base::UnguessableToken& client_token,
       bool visible) override {}

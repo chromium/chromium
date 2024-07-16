@@ -402,6 +402,12 @@ BASE_FEATURE(kCompressionDictionaryTransport,
              "CompressionDictionaryTransport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When this feature is enabled, preloaded dictionaries will not be used for
+// network requests if the binary has not yet been preloaded.
+BASE_FEATURE(kPreloadedDictionaryConditionalUse,
+             "PreloadedDictionaryConditionalUse",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kVisibilityAwareResourceScheduler,
              "VisibilityAwareResourceScheduler",
              base::FEATURE_DISABLED_BY_DEFAULT);

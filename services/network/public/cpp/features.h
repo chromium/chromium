@@ -144,6 +144,9 @@ BASE_DECLARE_FEATURE(kCompressionDictionaryTransportBackend);
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kCompressionDictionaryTransport);
 
+COMPONENT_EXPORT(NETWORK_CPP)
+BASE_DECLARE_FEATURE(kPreloadedDictionaryConditionalUse);
+
 // Enables visibility aware network service resource scheduler. When enabled,
 // request may be prioritized or de-prioritized based on the visibility of
 // requestors.

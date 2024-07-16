@@ -665,6 +665,9 @@ struct SharedDictionaryInfo {
   SHA256HashValue hash;
 };
 
+// An opaque handle that keeps preloaded the preloaded shared dictionaries.
+interface PreloadedSharedDictionaryInfoHandle {};
+
 // Represents a signed exchange report.
 // Spec: https://wicg.github.io/webpackage/loading.html#queue-report
 struct SignedExchangeReport {
@@ -1683,6 +1686,13 @@ interface NetworkContext {
 
   // Sets maximum size of the shared dictionary cache.
   SetSharedDictionaryCacheMaxSize(uint64 cache_max_size);
+
+  // Preloads matching dictionaries for loading documents of the `urls`.
+  PreloadSharedDictionaryInfoForDocument(
+      array<url.mojom.Url> urls,
+      pending_receiver<PreloadedSharedDictionaryInfoHandle> preload_handle);
+  // Check if there is a preloaded shared dictionary info.
+  HasPreloadedSharedDictionaryInfoForTesting() => (bool value);
 
   // Called when visibility of ResourceSchedulerClient has changed.
   // `client_token` identifies which client has changed its visibility.

@@ -7,6 +7,7 @@
 
 #include "base/base_paths.h"
 #include "base/files/file_util.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
@@ -25,6 +26,7 @@
 #include "content/public/browser/clear_site_data_utils.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -53,6 +55,7 @@
 #include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
@@ -1334,6 +1337,33 @@ class SharedDictionaryBrowserTest
     return cross_origin_server()->GetURL(relative_url);
   }
 
+  bool HasPreloadedSharedDictionaryInfo() {
+    bool result = false;
+    base::RunLoop run_loop;
+    GetTargetNetworkContext()->HasPreloadedSharedDictionaryInfoForTesting(
+        base::BindLambdaForTesting([&](bool value) {
+          result = value;
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return result;
+  }
+
+  void SendMemoryPressureToNetworkService() {
+    content::GetNetworkService()->OnMemoryPressure(
+        base::MemoryPressureListener::MemoryPressureLevel::
+            MEMORY_PRESSURE_LEVEL_CRITICAL);
+    // To make sure that OnMemoryPressure has been received by the network
+    // service, send a GetNetworkList IPC and wait for the result.
+    base::RunLoop run_loop;
+    content::GetNetworkService()->GetNetworkList(
+        net::INCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES,
+        base::BindLambdaForTesting(
+            [&](const std::optional<net::NetworkInterfaceList>&
+                    interface_list) { run_loop.Quit(); }));
+    run_loop.Run();
+  }
+
  private:
   void RegisterRedirectRequestHandler(net::EmbeddedTestServer& server) {
     server.RegisterRequestHandler(base::BindRepeating(
@@ -2328,6 +2358,41 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
         )",
                              GetURL("/shared_dictionary/path/test?")))
                 .ExtractString());
+}
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
+                       PreloadSharedDictionaryInfo) {
+  mojo::PendingRemote<network::mojom::PreloadedSharedDictionaryInfoHandle>
+      preloaded_shared_dictionaries_handle;
+  GetTargetNetworkContext()->PreloadSharedDictionaryInfoForDocument(
+      {GetURL("/")},
+      preloaded_shared_dictionaries_handle.InitWithNewPipeAndPassReceiver());
+  EXPECT_TRUE(HasPreloadedSharedDictionaryInfo());
+  preloaded_shared_dictionaries_handle.reset();
+  EXPECT_FALSE(HasPreloadedSharedDictionaryInfo());
+}
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
+                       DoNotPreloadDictionayUnderMemoryPressure) {
+  SendMemoryPressureToNetworkService();
+  mojo::PendingRemote<network::mojom::PreloadedSharedDictionaryInfoHandle>
+      preloaded_shared_dictionaries_handle;
+  GetTargetNetworkContext()->PreloadSharedDictionaryInfoForDocument(
+      {GetURL("/")},
+      preloaded_shared_dictionaries_handle.InitWithNewPipeAndPassReceiver());
+  EXPECT_FALSE(HasPreloadedSharedDictionaryInfo());
+}
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
+                       PreloadedDictionayDiscardedByMemoryPressure) {
+  mojo::PendingRemote<network::mojom::PreloadedSharedDictionaryInfoHandle>
+      preloaded_shared_dictionaries_handle;
+  GetTargetNetworkContext()->PreloadSharedDictionaryInfoForDocument(
+      {GetURL("/")},
+      preloaded_shared_dictionaries_handle.InitWithNewPipeAndPassReceiver());
+  EXPECT_TRUE(HasPreloadedSharedDictionaryInfo());
+  SendMemoryPressureToNetworkService();
+  EXPECT_FALSE(HasPreloadedSharedDictionaryInfo());
 }
 
 }  // namespace

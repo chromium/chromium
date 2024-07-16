@@ -6,9 +6,11 @@
 #define SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_MANAGER_H_
 
 #include <map>
+#include <memory>
 
 #include "base/component_export.h"
 #include "base/containers/lru_cache.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/scoped_refptr.h"
@@ -100,6 +102,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
       int request_load_flags,
       mojom::RequestDestination request_destination);
 
+  void PreloadSharedDictionaryInfoForDocument(
+      const std::vector<GURL>& urls,
+      mojo::PendingReceiver<mojom::PreloadedSharedDictionaryInfoHandle>
+          preload_handle);
+  bool HasPreloadedSharedDictionaryInfo() const;
+
  protected:
   SharedDictionaryManager();
 
@@ -107,6 +115,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
   // called only when there is no matching storage in `storages_`.
   virtual scoped_refptr<SharedDictionaryStorage> CreateStorage(
       const net::SharedDictionaryIsolationKey& isolation_key) = 0;
+
+  scoped_refptr<net::SharedDictionary> GetDictionaryImpl(
+      mojom::RequestDestination request_destination,
+      const std::optional<net::SharedDictionaryIsolationKey>& isolation_key,
+      const GURL& request_url);
 
   base::WeakPtr<SharedDictionaryManager> GetWeakPtr();
 
@@ -117,11 +130,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
 
  private:
   friend class cors::CorsURLLoaderSharedDictionaryTest;
+  class PreloadedDictionaries;
 
   size_t GetStorageCountForTesting();
 
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel level);
+
+  void DeletePreloadedDictionaries(
+      PreloadedDictionaries* preloaded_dictionaries);
 
   base::LRUCache<net::SharedDictionaryIsolationKey,
                  scoped_refptr<SharedDictionaryStorage>>
@@ -132,6 +149,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
 
   std::map<net::SharedDictionaryIsolationKey, raw_ptr<SharedDictionaryStorage>>
       storages_;
+  std::set<std::unique_ptr<PreloadedDictionaries>, base::UniquePtrComparator>
+      preloaded_dictionaries_set_;
 
   base::WeakPtrFactory<SharedDictionaryManager> weak_factory_{this};
 };
