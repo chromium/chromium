@@ -220,6 +220,11 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::ExpectAppTag(updater_scope_, app_id, tag);
   }
 
+  void SetAppTag(const std::string& app_id,
+                 const std::string& tag) const override {
+    updater::test::SetAppTag(updater_scope_, app_id, tag);
+  }
+
   void ExpectAppVersion(const std::string& app_id,
                         const base::Version& version) const override {
     updater::test::ExpectAppVersion(updater_scope_, app_id, version);

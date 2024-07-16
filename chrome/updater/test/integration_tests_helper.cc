@@ -309,6 +309,9 @@ void AppTestHelper::FirstTaskRun() {
           {"expect_app_tag",
            WithSwitch("tag", WithSwitch("app_id",
                                         WithSystemScope(Wrap(&ExpectAppTag))))},
+          {"set_app_tag",
+           WithSwitch("tag",
+                      WithSwitch("app_id", WithSystemScope(Wrap(&SetAppTag))))},
           {"expect_app_version",
            WithSwitch(
                "app_version",

@@ -281,6 +281,10 @@ void ExpectAppTag(UpdaterScope scope,
                   const std::string& app_id,
                   const std::string& tag);
 
+void SetAppTag(UpdaterScope scope,
+               const std::string& app_id,
+               const std::string& tag);
+
 void ExpectAppVersion(UpdaterScope scope,
                       const std::string& app_id,
                       const base::Version& version);

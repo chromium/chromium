@@ -108,6 +108,8 @@ class IntegrationTestCommands
   virtual void ExpectNotRegistered(const std::string& app_id) const = 0;
   virtual void ExpectAppTag(const std::string& app_id,
                             const std::string& tag) const = 0;
+  virtual void SetAppTag(const std::string& app_id,
+                         const std::string& tag) const = 0;
   virtual void ExpectAppVersion(const std::string& app_id,
                                 const base::Version& version) const = 0;
   virtual void RunWake(int exit_code) const = 0;

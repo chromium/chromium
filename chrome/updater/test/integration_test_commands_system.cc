@@ -275,6 +275,11 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("expect_app_tag", {Param("app_id", app_id), Param("tag", tag)});
   }
 
+  void SetAppTag(const std::string& app_id,
+                 const std::string& tag) const override {
+    RunCommand("set_app_tag", {Param("app_id", app_id), Param("tag", tag)});
+  }
+
   void ExpectAppVersion(const std::string& app_id,
                         const base::Version& version) const override {
     RunCommand(

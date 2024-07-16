@@ -999,6 +999,16 @@ void ExpectAppTag(UpdaterScope scope,
                      ->GetAP(app_id));
 }
 
+void SetAppTag(UpdaterScope scope,
+               const std::string& app_id,
+               const std::string& tag) {
+  scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(scope);
+  base::MakeRefCounted<PersistedData>(scope, global_prefs->GetPrefService(),
+                                      nullptr)
+      ->SetAP(app_id, tag);
+  PrefsCommitPendingWrites(global_prefs->GetPrefService());
+}
+
 void Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code) {
   base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait_process;
   if (IsSystemInstall(scope)) {

@@ -405,6 +405,10 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->ExpectAppTag(app_id, tag);
   }
 
+  void SetAppTag(const std::string& app_id, const std::string& tag) {
+    test_commands_->SetAppTag(app_id, tag);
+  }
+
   void ExpectAppVersion(const std::string& app_id,
                         const base::Version& version) {
     test_commands_->ExpectAppVersion(app_id, version);
@@ -1501,6 +1505,18 @@ TEST_F(IntegrationTest, ChangeTag) {
   ASSERT_NO_FATAL_FAILURE(ExpectAppTag(kAppId, "foo2"));
 
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, SetTagRoundTrip) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+
+  ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
+  ASSERT_NO_FATAL_FAILURE(ExpectAppTag("test", ""));
+
+  ASSERT_NO_FATAL_FAILURE(SetAppTag("test", "abc"));
+  ASSERT_NO_FATAL_FAILURE(ExpectAppTag("test", "abc"));
+
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
