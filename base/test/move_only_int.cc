@@ -1,8 +1,8 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/copy_only_int.h"
+#include "base/test/move_only_int.h"
 
 #include <utility>
 
@@ -11,17 +11,14 @@
 
 namespace base {
 
-// static
-int CopyOnlyInt::num_copies_ = 0;
-
-CopyOnlyInt::~CopyOnlyInt() {
+MoveOnlyInt::~MoveOnlyInt() {
   int old_data = std::exchange(data_, 0);
   if (GetDestructionCallbackStorage()) {
     GetDestructionCallbackStorage().Run(old_data);
   }
 }
 
-RepeatingCallback<void(int)>& CopyOnlyInt::GetDestructionCallbackStorage() {
+RepeatingCallback<void(int)>& MoveOnlyInt::GetDestructionCallbackStorage() {
   static NoDestructor<RepeatingCallback<void(int)>> callback;
   return *callback;
 }

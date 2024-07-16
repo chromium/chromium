@@ -5,6 +5,10 @@
 #ifndef BASE_TEST_COPY_ONLY_INT_H_
 #define BASE_TEST_COPY_ONLY_INT_H_
 
+#include <utility>
+
+#include "base/functional/callback.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace base {
 
@@ -14,31 +18,12 @@ class CopyOnlyInt {
  public:
   explicit CopyOnlyInt(int data = 1) : data_(data) {}
   CopyOnlyInt(const CopyOnlyInt& other) : data_(other.data_) { ++num_copies_; }
-  ~CopyOnlyInt() { data_ = 0; }
+  ~CopyOnlyInt();
 
-  friend bool operator==(const CopyOnlyInt& lhs, const CopyOnlyInt& rhs) {
-    return lhs.data_ == rhs.data_;
-  }
-
-  friend bool operator!=(const CopyOnlyInt& lhs, const CopyOnlyInt& rhs) {
-    return !operator==(lhs, rhs);
-  }
-
-  friend bool operator<(const CopyOnlyInt& lhs, const CopyOnlyInt& rhs) {
-    return lhs.data_ < rhs.data_;
-  }
-
-  friend bool operator>(const CopyOnlyInt& lhs, const CopyOnlyInt& rhs) {
-    return rhs < lhs;
-  }
-
-  friend bool operator<=(const CopyOnlyInt& lhs, const CopyOnlyInt& rhs) {
-    return !(rhs < lhs);
-  }
-
-  friend bool operator>=(const CopyOnlyInt& lhs, const CopyOnlyInt& rhs) {
-    return !(lhs < rhs);
-  }
+  friend bool operator==(const CopyOnlyInt& lhs,
+                         const CopyOnlyInt& rhs) = default;
+  friend auto operator<=>(const CopyOnlyInt& lhs,
+                          const CopyOnlyInt& rhs) = default;
 
   int data() const { return data_; }
 
@@ -46,7 +31,18 @@ class CopyOnlyInt {
 
   static int num_copies() { return num_copies_; }
 
+  // Called with the value of `data()` when an instance of `CopyOnlyInt` is
+  // destroyed. Returns an `absl::Cleanup` scoper that automatically
+  // unregisters the callback when the scoper is destroyed.
+  static auto SetScopedDestructionCallback(
+      RepeatingCallback<void(int)> callback) {
+    GetDestructionCallbackStorage() = std::move(callback);
+    return absl::Cleanup([] { GetDestructionCallbackStorage().Reset(); });
+  }
+
  private:
+  static RepeatingCallback<void(int)>& GetDestructionCallbackStorage();
+
   volatile int data_;
 
   static int num_copies_;

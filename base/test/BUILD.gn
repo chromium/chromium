@@ -96,6 +96,7 @@ static_library("test_support") {
     "mock_entropy_provider.h",
     "mock_log.cc",
     "mock_log.h",
+    "move_only_int.cc",
     "move_only_int.h",
     "multiprocess_test.h",
     "null_task_runner.cc",

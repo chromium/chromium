@@ -6,8 +6,10 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/copy_only_int.h"
 #include "base/test/move_only_int.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base::internal {
@@ -68,11 +70,14 @@ TEST(VectorBuffer, DeleteMoveOnly) {
     new (UNSAFE_BUFFERS(buffer.begin() + i)) MoveOnlyInt(i + 1);
   }
 
+  std::vector<int> destroyed_instances;
+  auto scoped_callback_cleanup =
+      MoveOnlyInt::SetScopedDestructionCallback(BindLambdaForTesting(
+          [&](int value) { destroyed_instances.push_back(value); }));
   VectorBuffer<MoveOnlyInt>::DestructRange(buffer.as_span());
 
-  // Delete should have reset all of the values to 0.
-  for (int i = 0; i < size; i++)
-    EXPECT_EQ(0, buffer[i].data());
+  EXPECT_THAT(destroyed_instances,
+              ::testing::ElementsAre(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 }
 
 TEST(VectorBuffer, PODMove) {
@@ -99,14 +104,20 @@ TEST(VectorBuffer, MovableMove) {
     new (UNSAFE_BUFFERS(original.begin() + i)) MoveOnlyInt(i + 1);
   }
 
+  std::vector<int> destroyed_instances;
+  auto scoped_callback_cleanup =
+      MoveOnlyInt::SetScopedDestructionCallback(BindLambdaForTesting(
+          [&](int value) { destroyed_instances.push_back(value); }));
   VectorBuffer<MoveOnlyInt>::MoveConstructRange(original.as_span(),
                                                 dest.as_span());
 
-  // Moving from a MoveOnlyInt resets to 0.
   for (int i = 0; i < size; i++) {
-    EXPECT_EQ(0, original[i].data());
     EXPECT_EQ(i + 1, dest[i].data());
   }
+  // The original values were consumed, so when the original elements are
+  // destroyed, the destruction callback should report 0.
+  EXPECT_THAT(destroyed_instances,
+              ::testing::ElementsAre(0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 }
 
 TEST(VectorBuffer, CopyToMove) {
@@ -119,15 +130,20 @@ TEST(VectorBuffer, CopyToMove) {
     // `begin() + i` is inside the buffer.
     new (UNSAFE_BUFFERS(original.begin() + i)) CopyOnlyInt(i + 1);
   }
+
+  std::vector<int> destroyed_instances;
+  auto scoped_callback_cleanup =
+      CopyOnlyInt::SetScopedDestructionCallback(BindLambdaForTesting(
+          [&](int value) { destroyed_instances.push_back(value); }));
   VectorBuffer<CopyOnlyInt>::MoveConstructRange(original.as_span(),
                                                 dest.as_span());
 
-  // The original should have been destructed, which should reset the value to
-  // 0. Technically this dereferences the destructed object.
   for (int i = 0; i < size; i++) {
-    EXPECT_EQ(0, original[i].data());
     EXPECT_EQ(i + 1, dest[i].data());
   }
+
+  EXPECT_THAT(destroyed_instances,
+              ::testing::ElementsAre(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 }
 
 TEST(VectorBuffer, TrivialAbiMove) {
