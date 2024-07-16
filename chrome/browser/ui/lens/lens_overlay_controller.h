@@ -763,6 +763,12 @@ class LensOverlayController : public LensSearchboxClient,
   // case the time to first interaction is essentially zero.
   void RecordTimeToFirstInteraction();
 
+  // Records UMA and UKM metrics for dismissal and end of session metrics.
+  // This includes dismissal source, session length, and whether a search was
+  // recorded in the session.
+  void RecordEndOfSessionMetrics(
+      lens::LensOverlayDismissalSource dismissal_source);
+
   // Owns this class.
   raw_ptr<tabs::TabInterface> tab_;
 

@@ -2569,6 +2569,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        MAYBE_RecordHistogramsShowAndClose) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   base::HistogramTester histogram_tester;
   WaitForPaint();
 
@@ -2589,6 +2590,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                                     /*expected_count=*/0);
   histogram_tester.ExpectTotalCount("Lens.Overlay.SessionDuration",
                                     /*expected_count=*/0);
+  auto entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Lens_Overlay_SessionEnd::kEntryName);
+  EXPECT_EQ(0u, entries.size());
 
   // Showing the UI and then closing it should record an entry in the
   // appropriate buckets and the total count of invocations, dismissals,
@@ -2598,14 +2602,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
   histogram_tester.ExpectBucketCount("Lens.Overlay.Invoked",
                                      LensOverlayInvocationSource::kAppMenu,
                                      /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
                                     /*expected_count=*/1);
-
-  CloseOverlayAndWaitForOff(controller,
-                            LensOverlayDismissalSource::kOverlayCloseButton);
   histogram_tester.ExpectBucketCount(
       "Lens.Overlay.Dismissed", LensOverlayDismissalSource::kOverlayCloseButton,
       /*expected_count=*/1);
@@ -2631,6 +2635,19 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   histogram_tester.ExpectTotalCount(
       "Lens.Overlay.ByInvocationSource.AppMenu.SessionDuration",
       /*expected_count=*/1);
+  entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Lens_Overlay_SessionEnd::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[0], ukm::builders::Lens_Overlay_SessionEnd::kInvocationSourceName,
+      static_cast<int64_t>(LensOverlayInvocationSource::kAppMenu));
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::Lens_Overlay_SessionEnd::kInvocationResultedInSearchName,
+      false);
+  const char kSessionDuration[] = "SessionDuration";
+  EXPECT_TRUE(
+      ukm::TestUkmRecorder::EntryHasMetric(entries[0].get(), kSessionDuration));
 }
 
 // TODO(346840584): Disabled due to flakiness on Mac.
@@ -2643,6 +2660,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        MAYBE_RecordHistogramsShowSearchAndClose) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   base::HistogramTester histogram_tester;
   WaitForPaint();
 
@@ -2663,6 +2681,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                                     /*expected_count=*/0);
   histogram_tester.ExpectTotalCount("Lens.Overlay.SessionDuration",
                                     /*expected_count=*/0);
+  auto entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Lens_Overlay_SessionEnd::kEntryName);
+  EXPECT_EQ(0u, entries.size());
 
   // Showing the UI, issuing a search and then closing it should record
   // an entry in the true bucket of the "resulted in search" metric.
@@ -2670,11 +2691,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
-  histogram_tester.ExpectBucketCount("Lens.Overlay.Invoked",
-                                     LensOverlayInvocationSource::kToolbar,
-                                     /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
-                                    /*expected_count=*/1);
 
   // Issue a search.
   controller->IssueTextSelectionRequestForTesting("oranges", 20, 200);
@@ -2684,6 +2700,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Close the overlay and verify that a successful session was recorded.
   CloseOverlayAndWaitForOff(controller,
                             LensOverlayDismissalSource::kOverlayCloseButton);
+  histogram_tester.ExpectBucketCount("Lens.Overlay.Invoked",
+                                     LensOverlayInvocationSource::kToolbar,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
+                                    /*expected_count=*/1);
   histogram_tester.ExpectBucketCount("Lens.Overlay.InvocationResultedInSearch",
                                      false, /*expected_count=*/0);
   histogram_tester.ExpectBucketCount("Lens.Overlay.InvocationResultedInSearch",
@@ -2694,6 +2715,19 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   histogram_tester.ExpectBucketCount(
       "Lens.Overlay.ByInvocationSource.Toolbar.InvocationResultedInSearch",
       true, /*expected_count=*/1);
+  entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Lens_Overlay_SessionEnd::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[0], ukm::builders::Lens_Overlay_SessionEnd::kInvocationSourceName,
+      static_cast<int64_t>(LensOverlayInvocationSource::kToolbar));
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::Lens_Overlay_SessionEnd::kInvocationResultedInSearchName,
+      true);
+  const char kSessionDuration[] = "SessionDuration";
+  EXPECT_TRUE(
+      ukm::TestUkmRecorder::EntryHasMetric(entries[0].get(), kSessionDuration));
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -2712,17 +2746,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Attempting to invoke the overlay twice without closing it in between
   // should record only a single new entry.
   controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
-  histogram_tester.ExpectBucketCount("Lens.Overlay.Invoked",
-                                     LensOverlayInvocationSource::kAppMenu,
-                                     /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
-                                    /*expected_count=*/1);
   controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
-  histogram_tester.ExpectBucketCount("Lens.Overlay.Invoked",
-                                     LensOverlayInvocationSource::kAppMenu,
-                                     /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
-                                    /*expected_count=*/1);
+
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
 
@@ -2730,6 +2755,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // only record a single entry.
   CloseOverlayAndWaitForOff(controller,
                             LensOverlayDismissalSource::kOverlayCloseButton);
+  histogram_tester.ExpectBucketCount("Lens.Overlay.Invoked",
+                                     LensOverlayInvocationSource::kAppMenu,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
+                                    /*expected_count=*/1);
   histogram_tester.ExpectBucketCount(
       "Lens.Overlay.Dismissed", LensOverlayDismissalSource::kOverlayCloseButton,
       /*expected_count=*/1);

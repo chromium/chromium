@@ -435,14 +435,6 @@ void LensOverlayController::ShowUI(
     ShowPreselectionBubble();
   }
 
-  // Record invocation metrics.
-  base::UmaHistogramEnumeration("Lens.Overlay.Invoked", invocation_source);
-  ukm::SourceId source_id =
-      tab_->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
-  ukm::builders::Lens_Overlay_Invoked(source_id)
-      .SetSource(static_cast<int64_t>(invocation_source))
-      .Record(ukm::UkmRecorder::Get());
-
   // Establish data required for session metrics.
   search_performed_in_session_ = false;
   invocation_time_ = base::TimeTicks::Now();
@@ -1370,35 +1362,7 @@ void LensOverlayController::CloseUIPart2(
 
   state_ = State::kOff;
 
-  // Record dismissal and session metrics.
-  // UMA unsliced Dismissed and InvocationResultedInSearch.
-  base::UmaHistogramEnumeration("Lens.Overlay.Dismissed", dismissal_source);
-
-  base::UmaHistogramBoolean("Lens.Overlay.InvocationResultedInSearch",
-                            search_performed_in_session_);
-  // UMA InvocationResultedInSearch sliced by entry point.
-  const auto sliced_search_performed_histogram_name =
-      "Lens.Overlay.ByInvocationSource." + GetInvocationSourceString() +
-      ".InvocationResultedInSearch";
-  base::UmaHistogramBoolean(sliced_search_performed_histogram_name,
-                            search_performed_in_session_);
-
-  DCHECK(!invocation_time_.is_null());
-  // UMA unsliced session duration.
-  base::TimeDelta session_duration = base::TimeTicks::Now() - invocation_time_;
-  base::UmaHistogramCustomTimes("Lens.Overlay.SessionDuration",
-                                session_duration,
-                                /*min=*/base::Milliseconds(1),
-                                /*max=*/base::Minutes(10), /*buckets=*/50);
-  // UMA session duration sliced by entry point.
-  const auto sliced_session_duration_histogram_name =
-      "Lens.Overlay.ByInvocationSource." + GetInvocationSourceString() +
-      ".SessionDuration";
-  base::UmaHistogramCustomTimes(sliced_session_duration_histogram_name,
-                                session_duration,
-                                /*min=*/base::Milliseconds(1),
-                                /*max=*/base::Minutes(10), /*buckets=*/50);
-  invocation_time_ = base::TimeTicks();
+  RecordEndOfSessionMetrics(dismissal_source);
 }
 
 void LensOverlayController::InitializeOverlayUI(
@@ -2025,4 +1989,51 @@ void LensOverlayController::RecordTimeToFirstInteraction() {
       break;
   }
   event.Record(ukm::UkmRecorder::Get());
+}
+
+void LensOverlayController::RecordEndOfSessionMetrics(
+    lens::LensOverlayDismissalSource dismissal_source) {
+  // UMA invocation source.
+  base::UmaHistogramEnumeration("Lens.Overlay.Invoked", invocation_source_);
+
+  // UMA unsliced Dismissed.
+  base::UmaHistogramEnumeration("Lens.Overlay.Dismissed", dismissal_source);
+
+  // UMA unsliced InvocationResultedInSearch.
+  base::UmaHistogramBoolean("Lens.Overlay.InvocationResultedInSearch",
+                            search_performed_in_session_);
+
+  // UMA InvocationResultedInSearch sliced by entry point.
+  const auto sliced_search_performed_histogram_name =
+      "Lens.Overlay.ByInvocationSource." + GetInvocationSourceString() +
+      ".InvocationResultedInSearch";
+  base::UmaHistogramBoolean(sliced_search_performed_histogram_name,
+                            search_performed_in_session_);
+
+  // UMA unsliced session duration.
+  DCHECK(!invocation_time_.is_null());
+  base::TimeDelta session_duration = base::TimeTicks::Now() - invocation_time_;
+  base::UmaHistogramCustomTimes("Lens.Overlay.SessionDuration",
+                                session_duration,
+                                /*min=*/base::Milliseconds(1),
+                                /*max=*/base::Minutes(10), /*buckets=*/50);
+
+  // UMA session duration sliced by entry point.
+  const auto sliced_session_duration_histogram_name =
+      "Lens.Overlay.ByInvocationSource." + GetInvocationSourceString() +
+      ".SessionDuration";
+  base::UmaHistogramCustomTimes(sliced_session_duration_histogram_name,
+                                session_duration,
+                                /*min=*/base::Milliseconds(1),
+                                /*max=*/base::Minutes(10), /*buckets=*/50);
+
+  // UKM session end metrics. Includes invocation source, whether the
+  // session resulted in a search, and session duration.
+  ukm::SourceId source_id =
+      tab_->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  ukm::builders::Lens_Overlay_SessionEnd(source_id)
+      .SetInvocationSource(static_cast<int64_t>(invocation_source_))
+      .SetInvocationResultedInSearch(search_performed_in_session_)
+      .SetSessionDuration(session_duration.InMilliseconds())
+      .Record(ukm::UkmRecorder::Get());
 }
