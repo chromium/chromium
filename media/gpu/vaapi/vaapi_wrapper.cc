@@ -1961,9 +1961,12 @@ bool VaapiWrapper::GetJpegDecodeSuitableImageFourCC(unsigned int rt_format,
   } else if (GetImplementationType() == VAImplementation::kIntelIHD) {
     // (b/159896972): iHD v20.1.1 cannot create Y216 and Y416 images from a
     // decoded JPEG on gen 12. It is also failing to support Y800 format.
+    //
+    // (b/344835625): the VPP in MTL cannot be configured to output 422H.
     if (preferred_fourcc == VA_FOURCC_Y216 ||
         preferred_fourcc == VA_FOURCC_Y416 ||
-        preferred_fourcc == VA_FOURCC_Y800) {
+        preferred_fourcc == VA_FOURCC_Y800 ||
+        preferred_fourcc == VA_FOURCC_422H) {
       preferred_fourcc = VA_FOURCC_I420;
     }
   }
