@@ -1,8 +1,11 @@
 <style include="settings-shared input-device-settings-shared">
 </style>
 <div id="touchpad">
-  <h2 class="subsection-header"
-      id="touchpadName">[[getTouchpadName(touchpad.name)]]</h2>
+  <per-device-subsection-header
+      device-key="[[touchpad.deviceKey]]"
+      name="[[getTouchpadName(touchpad.name)]]"
+      battery-info="[[touchpad.batteryInfo]]">
+  </per-device-subsection-header>
   <div class="subsection">
     <settings-toggle-button id="enableTapToClick"
         pref="{{enableTapToClickPref}}"

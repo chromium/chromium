@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {fakeTouchpads, fakeTouchpads2, SettingsPerDeviceTouchpadElement} from 'chrome://os-settings/os_settings.js';
+import {fakeTouchpads, fakeTouchpads2, PerDeviceSubsectionHeaderElement, SettingsPerDeviceTouchpadElement} from 'chrome://os-settings/os_settings.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -42,8 +43,11 @@ suite('<settings-per-device-touchpad>', () => {
         const subsections = perDeviceTouchpadPage.shadowRoot!.querySelectorAll(
             'settings-per-device-touchpad-subsection');
         for (let i = 0; i < subsections.length; i++) {
+          const subsectionHeader = strictQuery(
+              'per-device-subsection-header', subsections[i]!.shadowRoot,
+              PerDeviceSubsectionHeaderElement);
           const name =
-              subsections[i]!.shadowRoot!.querySelector('h2')!.textContent;
+              subsectionHeader.shadowRoot!.querySelector('h2')!.textContent;
           if (fakeTouchpads[i]!.isExternal) {
             assertEquals(fakeTouchpads[i]!.name, name);
           } else {

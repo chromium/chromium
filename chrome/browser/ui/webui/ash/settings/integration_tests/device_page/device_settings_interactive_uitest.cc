@@ -303,7 +303,8 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest, OpenTouchpadSubpage) {
       "settings-device-page",
       "settings-per-device-touchpad",
       "settings-per-device-touchpad-subsection",
-      "h2#touchpadName",
+      "per-device-subsection-header",
+      "h2#deviceName",
   };
 
   SetTouchpadDevices({kSampleTouchpadInternal});
@@ -541,7 +542,8 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest, AddNewTouchpad) {
       "settings-device-page",
       "settings-per-device-touchpad",
       "settings-per-device-touchpad-subsection",
-      "h2#touchpadName",
+      "per-device-subsection-header",
+      "h2#deviceName",
   };
 
   SetTouchpadDevices({kSampleTouchpadInternal});

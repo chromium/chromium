@@ -18,6 +18,7 @@ import '../controls/settings_radio_group.js';
 import '../controls/settings_slider.js';
 import '../controls/settings_toggle_button.js';
 import './input_device_settings_shared.css.js';
+import './per_device_subsection_header.js';
 import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
