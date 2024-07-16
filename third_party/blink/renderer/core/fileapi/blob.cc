@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 
 #include <memory>
@@ -59,6 +54,21 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
+namespace {
+
+// http://dev.w3.org/2006/webapi/FileAPI/#constructorBlob
+bool IsValidBlobType(const String& type) {
+  for (unsigned i = 0; i < type.length(); ++i) {
+    UChar c = type[i];
+    if (c < 0x20 || c > 0x7E) {
+      return false;
+    }
+  }
+  return true;
+}
+
+}  // namespace
 
 // TODO(https://crbug.com/989876): This is not used any more, refactor
 // PublicURLManager to deprecate this.
@@ -294,23 +304,14 @@ mojo::PendingRemote<mojom::blink::Blob> Blob::AsMojoBlob() const {
 
 // static
 String Blob::NormalizeType(const String& type) {
-  if (type.IsNull())
+  if (type.IsNull()) {
     return g_empty_string;
-  const size_t length = type.length();
-  if (length > 65535)
+  }
+  if (type.length() > 65535) {
     return g_empty_string;
-  if (type.Is8Bit()) {
-    const LChar* chars = type.Characters8();
-    for (size_t i = 0; i < length; ++i) {
-      if (chars[i] < 0x20 || chars[i] > 0x7e)
-        return g_empty_string;
-    }
-  } else {
-    const UChar* chars = type.Characters16();
-    for (size_t i = 0; i < length; ++i) {
-      if (chars[i] < 0x0020 || chars[i] > 0x007e)
-        return g_empty_string;
-    }
+  }
+  if (!IsValidBlobType(type)) {
+    return g_empty_string;
   }
   return type.DeprecatedLower();
 }
