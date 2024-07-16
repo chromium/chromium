@@ -334,13 +334,16 @@ def main():
                        capture_output=not args.show_ninja,
                        check=True)
 
-    logging.info('Running jdeps...')
+    logging.info(f'Running jdeps on {len(target_jars)} jars...')
     # jdeps already has some parallelism
     jdeps_process_number = math.ceil(multiprocessing.cpu_count() / 2)
+
     with multiprocessing.Pool(jdeps_process_number) as pool:
         jdeps_outputs = pool.map(
-            functools.partial(jar_utils.run_jdeps, jdeps_path=jdeps_path),
-            target_jars.values())
+            functools.partial(jar_utils.run_jdeps,
+                              jdeps_path=jdeps_path,
+                              verbose=args.verbose), target_jars.values())
+
 
     logging.info('Parsing jdeps output...')
     jdeps_parser = JavaClassJdepsParser()
