@@ -24,6 +24,8 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
 #include "content/public/browser/preloading.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
 
 struct AutocompleteMatch;
@@ -266,6 +268,9 @@ class SearchPrefetchService : public KeyedService,
                                        TemplateURLService* template_url_service,
                                        const GURL& canonical_search_url);
 
+  void MaybePreloadDictionary(const AutocompleteResult& result);
+  void DeletePreloadDictionaries();
+
   // Prefetches that are started are stored using search terms as a key. Only
   // one prefetch should be started for a given search term until the old
   // prefetch expires.
@@ -289,6 +294,10 @@ class SearchPrefetchService : public KeyedService,
   // served from cache. The value is the prefetch URL in cache and the latest
   // serving time of the response.
   std::map<GURL, std::pair<GURL, base::Time>> prefetch_cache_;
+
+  mojo::PendingRemote<network::mojom::PreloadedSharedDictionaryInfoHandle>
+      preloaded_shared_dictionaries_handle_;
+  base::OneShotTimer preloaded_shared_dictionaries_expiry_timer_;
 
   base::WeakPtrFactory<SearchPrefetchService> weak_factory_{this};
 };

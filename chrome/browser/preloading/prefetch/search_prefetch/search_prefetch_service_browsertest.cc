@@ -7,10 +7,12 @@
 #include <optional>
 
 #include "base/containers/contains.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -41,6 +43,7 @@
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -51,12 +54,14 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "net/base/network_interfaces.h"
 #include "net/base/url_util.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
@@ -4003,4 +4008,113 @@ IN_PROC_BROWSER_TEST_F(SearchNavigationPrefetchDefaultMatchBrowserTest,
   EXPECT_FALSE(prefetch_status.has_value());
 
   omnibox->model()->SetPopupSelection(OmniboxPopupSelection(1));
+}
+
+// Test suite to check the SearchPrefetchDictionaryPreload feature.
+class SearchPrefetchDictionaryPreloadBrowserTest
+    : public SearchPrefetchBaseBrowserTest {
+ public:
+  SearchPrefetchDictionaryPreloadBrowserTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {kAutocompleteDictionaryPreload,
+         {{"autocomplete_preloaded_dictionary_timeout", "10ms"}}}};
+    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+  }
+
+ protected:
+  bool HasPreloadedSharedDictionaryInfo() {
+    bool result = false;
+    base::RunLoop run_loop;
+    browser()
+        ->profile()
+        ->GetDefaultStoragePartition()
+        ->GetNetworkContext()
+        ->HasPreloadedSharedDictionaryInfoForTesting(
+            base::BindLambdaForTesting([&](bool value) {
+              result = value;
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return result;
+  }
+
+  void SendMemoryPressureToNetworkService() {
+    content::GetNetworkService()->OnMemoryPressure(
+        base::MemoryPressureListener::MemoryPressureLevel::
+            MEMORY_PRESSURE_LEVEL_CRITICAL);
+    // To make sure that OnMemoryPressure has been received by the network
+    // service, send a GetNetworkList IPC and wait for the result.
+    base::RunLoop run_loop;
+    content::GetNetworkService()->GetNetworkList(
+        net::INCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES,
+        base::BindLambdaForTesting(
+            [&](const std::optional<net::NetworkInterfaceList>&
+                    interface_list) { run_loop.Quit(); }));
+    run_loop.Run();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchDictionaryPreloadBrowserTest,
+                       PreloadDictionayAndDiscard) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  std::string search_terms = kOmniboxSuggestPrefetchQuery;
+  AutocompleteMatch autocomplete_match =
+      CreateSearchSuggestionMatch(search_terms, search_terms, false);
+  AutocompleteResult autocomplete_result;
+  autocomplete_result.AppendMatches({autocomplete_match});
+  search_prefetch_service->OnResultChanged(GetWebContents(),
+                                           autocomplete_result);
+  EXPECT_TRUE(HasPreloadedSharedDictionaryInfo());
+  WaitForDuration(base::Milliseconds(11));
+  EXPECT_FALSE(HasPreloadedSharedDictionaryInfo());
+}
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchDictionaryPreloadBrowserTest,
+                       NonHttpFamilyAreIgnored) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  std::string search_terms = kOmniboxSuggestPrefetchQuery;
+  AutocompleteMatch autocomplete_match =
+      CreateSearchSuggestionMatch(search_terms, search_terms, false);
+  autocomplete_match.destination_url = GURL("chrome://blank");
+  AutocompleteResult autocomplete_result;
+  autocomplete_result.AppendMatches({autocomplete_match});
+  search_prefetch_service->OnResultChanged(GetWebContents(),
+                                           autocomplete_result);
+  EXPECT_FALSE(HasPreloadedSharedDictionaryInfo());
+}
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchDictionaryPreloadBrowserTest,
+                       DoNotPreloadDictionayUnderMemoryPressure) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  std::string search_terms = kOmniboxSuggestPrefetchQuery;
+  AutocompleteMatch autocomplete_match =
+      CreateSearchSuggestionMatch(search_terms, search_terms, false);
+  AutocompleteResult autocomplete_result;
+  autocomplete_result.AppendMatches({autocomplete_match});
+  SendMemoryPressureToNetworkService();
+  search_prefetch_service->OnResultChanged(GetWebContents(),
+                                           autocomplete_result);
+  EXPECT_FALSE(HasPreloadedSharedDictionaryInfo());
+}
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchDictionaryPreloadBrowserTest,
+                       PreloadedDictionayDiscardedByMemoryPressure) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  std::string search_terms = kOmniboxSuggestPrefetchQuery;
+  AutocompleteMatch autocomplete_match =
+      CreateSearchSuggestionMatch(search_terms, search_terms, false);
+  AutocompleteResult autocomplete_result;
+  autocomplete_result.AppendMatches({autocomplete_match});
+  search_prefetch_service->OnResultChanged(GetWebContents(),
+                                           autocomplete_result);
+  EXPECT_TRUE(HasPreloadedSharedDictionaryInfo());
+  SendMemoryPressureToNetworkService();
+  EXPECT_FALSE(HasPreloadedSharedDictionaryInfo());
 }

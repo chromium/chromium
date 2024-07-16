@@ -40,8 +40,10 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/preloading_data.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
@@ -684,6 +686,9 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
   // Do not perform preloading if there is no active tab.
   if (!web_contents)
     return;
+
+  MaybePreloadDictionary(result);
+
   for (const auto& match : result) {
     // Return early if neither prefetch nor prerender are enabled for the match.
     if (!ShouldPrefetch(match)) {
@@ -1244,4 +1249,42 @@ void SearchPrefetchService::SetLoaderDestructionCallbackForTesting(
   return prefetches_[canonical_search_url]
       ->SetLoaderDestructionCallbackForTesting(  // IN-TEST
           std::move(streaming_url_loader_destruction_callback));
+}
+
+void SearchPrefetchService::MaybePreloadDictionary(
+    const AutocompleteResult& result) {
+  if (!base::FeatureList::IsEnabled(kAutocompleteDictionaryPreload)) {
+    return;
+  }
+  std::vector<GURL> match_destination_urls;
+  match_destination_urls.reserve(result.size());
+  for (const AutocompleteMatch& match : result) {
+    if (match.destination_url.SchemeIsHTTPOrHTTPS()) {
+      match_destination_urls.emplace_back(match.destination_url);
+    }
+  }
+
+  if (match_destination_urls.empty()) {
+    return;
+  }
+
+  // Keep the old handle until `PreloadSharedDictionaryInfoForDocument()` call
+  // to avoid reloading dictionaries in the network service.
+  mojo::PendingRemote<network::mojom::PreloadedSharedDictionaryInfoHandle>
+      old_handle = std::move(preloaded_shared_dictionaries_handle_);
+
+  preloaded_shared_dictionaries_handle_.reset();
+  profile_->GetDefaultStoragePartition()
+      ->GetNetworkContext()
+      ->PreloadSharedDictionaryInfoForDocument(
+          match_destination_urls, preloaded_shared_dictionaries_handle_
+                                      .InitWithNewPipeAndPassReceiver());
+  preloaded_shared_dictionaries_expiry_timer_.Start(
+      FROM_HERE, kAutocompletePreloadedDictionaryTimeout.Get(),
+      base::BindOnce(&SearchPrefetchService::DeletePreloadDictionaries,
+                     base::Unretained(this)));
+}
+
+void SearchPrefetchService::DeletePreloadDictionaries() {
+  preloaded_shared_dictionaries_handle_.reset();
 }

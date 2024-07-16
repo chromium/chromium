@@ -106,3 +106,12 @@ bool OnlyAllowDefaultMatchPreloading() {
   return base::FeatureList::IsEnabled(
       kSearchPrefetchOnlyAllowDefaultMatchPreloading);
 }
+
+BASE_FEATURE(kAutocompleteDictionaryPreload,
+             "SearchPrefetchDictionaryPreload",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta>
+    kAutocompletePreloadedDictionaryTimeout{
+        &kAutocompleteDictionaryPreload,
+        "autocomplete_preloaded_dictionary_timeout", base::Milliseconds(60000)};

@@ -77,4 +77,13 @@ bool PrefetchSearchHistorySuggestions();
 // being the default match.
 bool OnlyAllowDefaultMatchPreloading();
 
+// When this feature is enabled, SearchPrefetchService will send a request to
+// the network service to preload shared dictionary from the disk storage for
+// the AutocompleteResult's `destination_url`.
+BASE_DECLARE_FEATURE(kAutocompleteDictionaryPreload);
+
+// The amount of time preloaded dictionary is kept alive.
+extern const base::FeatureParam<base::TimeDelta>
+    kAutocompletePreloadedDictionaryTimeout;
+
 #endif  // CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_FIELD_TRIAL_SETTINGS_H_
