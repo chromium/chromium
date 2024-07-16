@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.LinearLayout;
 
 import org.chromium.base.Callback;
@@ -113,7 +114,17 @@ class MessageCardView extends LinearLayout {
     }
 
     /**
+     * Sets the action button visibility.
+     *
+     * @param visible Whether the action button is visible.
+     */
+    void setActionButtonVisible(boolean visible) {
+        mActionButton.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    /**
      * Set content description for dismiss button.
+     *
      * @param description The content description.
      */
     void setDismissButtonContentDescription(String description) {

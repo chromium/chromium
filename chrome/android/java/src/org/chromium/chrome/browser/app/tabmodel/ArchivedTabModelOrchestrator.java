@@ -161,6 +161,11 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
             mWindow = null;
         }
 
+        if (mTabArchiveSettings != null) {
+            mTabArchiveSettings.destroy();
+            mTabArchiveSettings = null;
+        }
+
         super.destroy();
     }
 

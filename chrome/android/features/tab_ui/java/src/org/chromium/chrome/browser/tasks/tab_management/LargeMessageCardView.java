@@ -99,9 +99,10 @@ class LargeMessageCardView extends FrameLayout {
 
     /**
      * Set description text.
+     *
      * @param descriptionText Text to be displayed.
      */
-    void setDescriptionText(String descriptionText) {
+    void setDescriptionText(CharSequence descriptionText) {
         mDescription.setText(descriptionText);
     }
 

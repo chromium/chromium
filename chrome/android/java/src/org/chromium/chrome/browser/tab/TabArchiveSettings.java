@@ -4,8 +4,12 @@
 
 package org.chromium.chrome.browser.tab;
 
+import android.content.SharedPreferences;
+
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.base.ObserverList;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -15,10 +19,33 @@ import java.util.concurrent.TimeUnit;
 
 /** Class to manage reading/writing preferences related to tab declutter. */
 public class TabArchiveSettings {
+    public interface Observer {
+        // Called when a setting was changed.
+        void onSettingChanged();
+    }
+
     @VisibleForTesting static final boolean ARCHIVE_ENABLED_DEFAULT = true;
     @VisibleForTesting static final boolean AUTO_DELETE_ENABLED_DEFAULT = true;
+    @VisibleForTesting static final boolean DIALOG_IPH_DEFAULT = true;
+
+    private SharedPreferences.OnSharedPreferenceChangeListener mPrefsListener =
+            new SharedPreferences.OnSharedPreferenceChangeListener() {
+                @Override
+                public void onSharedPreferenceChanged(SharedPreferences sharedPrefs, String key) {
+                    if (key.equals(ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_ENABLED)
+                            || key.equals(
+                                    ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_TIME_DELTA_HOURS)
+                            || key.equals(ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_ENABLED)
+                            || key.equals(
+                                    ChromePreferenceKeys
+                                            .TAB_DECLUTTER_AUTO_DELETE_TIME_DELTA_HOURS)) {
+                        notifyObservers();
+                    }
+                }
+            };
 
     private final SharedPreferencesManager mPrefsManager;
+    private final ObserverList<Observer> mObservers = new ObserverList<>();
 
     /**
      * Constructor.
@@ -27,6 +54,24 @@ public class TabArchiveSettings {
      */
     public TabArchiveSettings(SharedPreferencesManager prefsManager) {
         mPrefsManager = prefsManager;
+        ContextUtils.getAppSharedPreferences()
+                .registerOnSharedPreferenceChangeListener(mPrefsListener);
+    }
+
+    /** Destroys the object, unregistering observers. */
+    public void destroy() {
+        ContextUtils.getAppSharedPreferences()
+                .unregisterOnSharedPreferenceChangeListener(mPrefsListener);
+    }
+
+    /** Adds the given observer to the list. */
+    public void addObserver(Observer obs) {
+        mObservers.addObserver(obs);
+    }
+
+    /** Removes the given observer from the list. */
+    public void removeObserver(Observer obs) {
+        mObservers.removeObserver(obs);
     }
 
     /** Returns whether archive is enabled in settings. */
@@ -114,10 +159,32 @@ public class TabArchiveSettings {
         return ChromeFeatureList.sAndroidTabDeclutterIntervalTimeDeltaHours.getValue();
     }
 
+    /** Returns whether the dialog iph should be shown. */
+    public boolean shouldShowDialogIph() {
+        return mPrefsManager.readBoolean(
+                ChromePreferenceKeys.TAB_DECLUTTER_DIALOG_IPH, DIALOG_IPH_DEFAULT);
+    }
+
+    /** Sets whether the dialog iph should be shown. */
+    public void setShouldShowDialogIph(boolean shouldShow) {
+        mPrefsManager.writeBoolean(ChromePreferenceKeys.TAB_DECLUTTER_DIALOG_IPH, shouldShow);
+    }
+
+    // Private methods.
+
+    private void notifyObservers() {
+        for (Observer obs : mObservers) {
+            obs.onSettingChanged();
+        }
+    }
+
+    // Testing-specific methods.
+
     public void resetSettingsForTesting() {
         mPrefsManager.removeKey(ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_ENABLED);
         mPrefsManager.removeKey(ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_TIME_DELTA_HOURS);
         mPrefsManager.removeKey(ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_ENABLED);
         mPrefsManager.removeKey(ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_TIME_DELTA_HOURS);
+        mPrefsManager.removeKey(ChromePreferenceKeys.TAB_DECLUTTER_DIALOG_IPH);
     }
 }

@@ -226,7 +226,8 @@ public class ArchivedTabsMessageService extends MessageService
                         mRootView,
                         mSnackbarManager,
                         mRegularTabCreator,
-                        mBackPressManager);
+                        mBackPressManager,
+                        mTabArchiveSettings);
     }
 
     private void updateModelProperties() {

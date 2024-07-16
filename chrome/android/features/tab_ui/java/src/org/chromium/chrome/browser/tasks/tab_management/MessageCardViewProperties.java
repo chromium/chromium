@@ -44,7 +44,7 @@ class MessageCardViewProperties {
             new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<String> SECONDARY_ACTION_TEXT =
             new PropertyModel.WritableObjectPropertyKey<>();
-    public static final PropertyModel.WritableObjectPropertyKey<String> DESCRIPTION_TEXT =
+    public static final PropertyModel.WritableObjectPropertyKey<CharSequence> DESCRIPTION_TEXT =
             new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<String> DESCRIPTION_TEXT_TEMPLATE =
             new PropertyModel.WritableObjectPropertyKey<>();
@@ -81,6 +81,10 @@ class MessageCardViewProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey<String> TITLE_TEXT =
             new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableBooleanPropertyKey VIEW_AS_ACTION_BUTTON =
+            new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableBooleanPropertyKey ACTION_BUTTON_VISIBLE =
+            new PropertyModel.WritableBooleanPropertyKey();
 
     /** By default, if nothing is specified, regular is assumed. */
     public static final PropertyModel.ReadableIntPropertyKey
@@ -116,6 +120,8 @@ class MessageCardViewProperties {
                 IS_INCOGNITO,
                 TITLE_TEXT,
                 MESSAGE_CARD_VISIBILITY_CONTROL_IN_REGULAR_AND_INCOGNITO_MODE,
-                PRICE_DROP
+                PRICE_DROP,
+                VIEW_AS_ACTION_BUTTON,
+                ACTION_BUTTON_VISIBLE
             };
 }

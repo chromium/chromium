@@ -138,7 +138,7 @@ public class ArchivedTabModelOrchestratorTest {
     }
 
     private void setupDeclutterSettingsForTest() {
-        mTabArchiveSettings.setArchiveTimeDeltaHours(0);
+        runOnUiThreadBlocking(() -> mTabArchiveSettings.setArchiveTimeDeltaHours(0));
     }
 
     @Test
@@ -190,7 +190,7 @@ public class ArchivedTabModelOrchestratorTest {
     @MediumTest
     public void testScheduledDeclutter() {
         finishLoading();
-        mOrchestrator.getTabArchiveSettings().setArchiveEnabled(false);
+        runOnUiThreadBlocking(() -> mTabArchiveSettings.setArchiveEnabled(false));
         mActivityTestRule.loadUrlInNewTab(
                 mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
 
@@ -206,7 +206,7 @@ public class ArchivedTabModelOrchestratorTest {
         assertEquals(2, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
 
-        mOrchestrator.getTabArchiveSettings().setArchiveEnabled(true);
+        runOnUiThreadBlocking(() -> mOrchestrator.getTabArchiveSettings().setArchiveEnabled(true));
         // A task was scheduled to perform a scheduled declutter, get it and run it.
         runOnUiThreadBlocking(() -> mTaskRunner.mDelayedTasks.get(0).first.run());
 
@@ -261,7 +261,7 @@ public class ArchivedTabModelOrchestratorTest {
     @MediumTest
     public void testDeclutterAfterDestroy() {
         finishLoading();
-        mOrchestrator.getTabArchiveSettings().setArchiveEnabled(false);
+        runOnUiThreadBlocking(() -> mOrchestrator.getTabArchiveSettings().setArchiveEnabled(false));
         mActivityTestRule.loadUrlInNewTab(
                 mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
 

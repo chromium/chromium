@@ -21,6 +21,7 @@ found in the LICENSE file.
         android:minWidth="8dp"
         android:adjustViewBounds="true"
         android:importantForAccessibility="no"
+        android:scaleType="center"
         app:srcCompat="@drawable/ic_globe_24dp"/>
     <org.chromium.components.browser_ui.widget.text.TemplatePreservingTextView
         android:id="@+id/description"

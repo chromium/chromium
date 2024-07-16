@@ -40855,6 +40855,30 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Tabs.ArchivedTabsDialogIphClicked">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when the archived tabs dialog IPH is clicked.
+  </description>
+</action>
+
+<action name="Tabs.ArchivedTabsDialogIphDismissed">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when the archived tabs dialog IPH is dismissed.
+  </description>
+</action>
+
+<action name="Tabs.ArchivedTabsDialogIphShown">
+  <owner>wylieb@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when the archived tabs dialog IPH is shown.
+  </description>
+</action>
+
 <action name="Tabs.CloseAllArchivedTabsMenuItem">
   <owner>wylieb@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>

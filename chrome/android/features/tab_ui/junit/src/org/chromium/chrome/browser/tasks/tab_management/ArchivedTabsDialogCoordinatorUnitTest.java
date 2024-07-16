@@ -37,6 +37,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab_ui.OnTabSelectingListener;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -73,6 +74,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     @Mock private TabCreator mRegularTabCreator;
     @Mock private BackPressManager mBackPressManager;
     @Mock private OnTabSelectingListener mOnTabSelectingListener;
+    @Mock private TabArchiveSettings mTabArchiveSettings;
 
     private Context mContext;
     private ArchivedTabsDialogCoordinator mCoordinator;
@@ -96,7 +98,8 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
                         mRootView,
                         mSnackbarManager,
                         mRegularTabCreator,
-                        mBackPressManager);
+                        mBackPressManager,
+                        mTabArchiveSettings);
         mCoordinator.setTabListEditorCoordinatorForTesting(mTabListEditorCoordinator);
     }
 

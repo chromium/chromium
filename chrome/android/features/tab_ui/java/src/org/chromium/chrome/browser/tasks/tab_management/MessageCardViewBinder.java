@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import org.chromium.ui.modelutil.PropertyKey;
@@ -19,25 +20,7 @@ class MessageCardViewBinder {
         MessageCardView itemView = (MessageCardView) view;
         if (MessageCardViewProperties.ACTION_TEXT == propertyKey) {
             itemView.setActionText(model.get(MessageCardViewProperties.ACTION_TEXT));
-            itemView.setActionButtonOnClickListener(
-                    v -> {
-                        MessageCardView.ReviewActionProvider uiProvider =
-                                model.get(MessageCardViewProperties.UI_ACTION_PROVIDER);
-                        if (uiProvider != null) uiProvider.review();
-
-                        MessageCardView.ReviewActionProvider serviceProvider =
-                                model.get(
-                                        MessageCardViewProperties.MESSAGE_SERVICE_ACTION_PROVIDER);
-                        if (serviceProvider != null) serviceProvider.review();
-
-                        MessageCardView.DismissActionProvider uiDismissProvider =
-                                model.get(MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER);
-                        if (uiDismissProvider != null
-                                && !model.get(MessageCardViewProperties.SHOULD_KEEP_AFTER_REVIEW)) {
-                            uiDismissProvider.dismiss(
-                                    model.get(MessageCardViewProperties.MESSAGE_TYPE));
-                        }
-                    });
+            itemView.setActionButtonOnClickListener(getConfirmationOnClickListener(model));
         } else if (MessageCardViewProperties.DESCRIPTION_TEXT == propertyKey) {
             itemView.setDescriptionText(model.get(MessageCardViewProperties.DESCRIPTION_TEXT));
         } else if (MessageCardViewProperties.DESCRIPTION_TEXT_TEMPLATE == propertyKey) {
@@ -67,6 +50,14 @@ class MessageCardViewBinder {
             itemView.setIconVisibility(model.get(MessageCardViewProperties.IS_ICON_VISIBLE));
         } else if (MessageCardViewProperties.IS_INCOGNITO == propertyKey) {
             itemView.updateMessageCardColor(model.get(MessageCardViewProperties.IS_INCOGNITO));
+        } else if (MessageCardViewProperties.VIEW_AS_ACTION_BUTTON == propertyKey) {
+            itemView.setOnClickListener(
+                    model.get(MessageCardViewProperties.VIEW_AS_ACTION_BUTTON)
+                            ? getConfirmationOnClickListener(model)
+                            : null);
+        } else if (MessageCardViewProperties.ACTION_BUTTON_VISIBLE == propertyKey) {
+            itemView.setActionButtonVisible(
+                    model.get(MessageCardViewProperties.ACTION_BUTTON_VISIBLE));
         }
     }
 
@@ -79,5 +70,24 @@ class MessageCardViewBinder {
                         itemView.setIcon(drawable);
                     });
         }
+    }
+
+    static OnClickListener getConfirmationOnClickListener(PropertyModel model) {
+        return v -> {
+            MessageCardView.ReviewActionProvider uiProvider =
+                    model.get(MessageCardViewProperties.UI_ACTION_PROVIDER);
+            if (uiProvider != null) uiProvider.review();
+
+            MessageCardView.ReviewActionProvider serviceProvider =
+                    model.get(MessageCardViewProperties.MESSAGE_SERVICE_ACTION_PROVIDER);
+            if (serviceProvider != null) serviceProvider.review();
+
+            MessageCardView.DismissActionProvider uiDismissProvider =
+                    model.get(MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER);
+            if (uiDismissProvider != null
+                    && !model.get(MessageCardViewProperties.SHOULD_KEEP_AFTER_REVIEW)) {
+                uiDismissProvider.dismiss(model.get(MessageCardViewProperties.MESSAGE_TYPE));
+            }
+        };
     }
 }

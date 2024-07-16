@@ -91,5 +91,6 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
             tabArchiveSettingsPref.setSummary(
                     getResources().getString(R.string.archive_settings_time_delta_never));
         }
+        archiveSettings.destroy();
     }
 }

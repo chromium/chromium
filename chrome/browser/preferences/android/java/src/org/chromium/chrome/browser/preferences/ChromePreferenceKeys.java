@@ -802,6 +802,7 @@ public final class ChromePreferenceKeys {
             "Chrome.Tab.ArchiveAutoDeleteEnabled";
     public static final String TAB_DECLUTTER_AUTO_DELETE_TIME_DELTA_HOURS =
             "Chrome.Tab.ArchiveAutoDeleteTimeDeltaHours";
+    public static final String TAB_DECLUTTER_DIALOG_IPH = "Chrome.Tab.ShowArchiveTabDialogIPH";
     public static final String TAB_ID_MANAGER_NEXT_ID =
             "org.chromium.chrome.browser.tab.TabIdManager.NEXT_ID";
 
@@ -1038,6 +1039,7 @@ public final class ChromePreferenceKeys {
                 TAB_DECLUTTER_ARCHIVE_TIME_DELTA_HOURS,
                 TAB_DECLUTTER_AUTO_DELETE_ENABLED,
                 TAB_DECLUTTER_AUTO_DELETE_TIME_DELTA_HOURS,
+                TAB_DECLUTTER_DIALOG_IPH,
                 TAB_TEARING_MAX_INSTANCES_FAILURE_START_TIME_MS,
                 TAB_TEARING_MAX_INSTANCES_FAILURE_COUNT,
                 TWA_DISCLOSURE_SEEN_PACKAGES,

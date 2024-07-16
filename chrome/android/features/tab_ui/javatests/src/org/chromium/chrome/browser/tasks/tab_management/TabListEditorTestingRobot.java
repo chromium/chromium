@@ -170,6 +170,12 @@ public class TabListEditorTestingRobot {
         }
 
         public TabListEditorTestingRobot.Action clickEndButtonAtAdapterPosition(int position) {
+            clickViewIdAtAdapterPosition(0, R.id.end_button);
+            return this;
+        }
+
+        public TabListEditorTestingRobot.Action clickViewIdAtAdapterPosition(
+                int position, @IdRes int id) {
             onView(inTabListEditor(withId(R.id.tab_list_recycler_view)))
                     .perform(
                             new ViewAction() {
@@ -190,10 +196,7 @@ public class TabListEditorTestingRobot {
                                     RecyclerView.ViewHolder viewHolder =
                                             recyclerView.findViewHolderForAdapterPosition(position);
                                     if (viewHolder.itemView == null) return;
-                                    viewHolder
-                                            .itemView
-                                            .findViewById(R.id.end_button)
-                                            .performClick();
+                                    viewHolder.itemView.findViewById(id).performClick();
                                 }
                             });
             return this;

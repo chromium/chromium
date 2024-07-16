@@ -5,6 +5,9 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,19 +27,25 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab_ui.OnTabSelectingListener;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.NavigationProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.ui.modelutil.LayoutViewBuilder;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -152,6 +161,14 @@ public class ArchivedTabsDialogCoordinator {
                 }
             };
 
+    private final TabArchiveSettings.Observer mTabArchiveSettingsObserver =
+            new TabArchiveSettings.Observer() {
+                @Override
+                public void onSettingChanged() {
+                    updateIphPropertyModel();
+                }
+            };
+
     private final @NonNull Context mContext;
     private final @NonNull ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
     private final @NonNull TabModel mArchivedTabModel;
@@ -162,11 +179,13 @@ public class ArchivedTabsDialogCoordinator {
     private final @NonNull SnackbarManager mSnackbarManager;
     private final @NonNull TabCreator mRegularTabCreator;
     private final @NonNull BackPressManager mBackPressManager;
+    private final @NonNull TabArchiveSettings mTabArchiveSettings;
 
     private ViewGroup mView;
     private @TabActionState int mTabActionState = TabActionState.CLOSABLE;
     private TabListEditorCoordinator mTabListEditorCoordinator;
     private OnTabSelectingListener mOnTabSelectingListener;
+    private PropertyModel mIphMessagePropertyModel;
 
     /**
      * @param context The android context.
@@ -178,6 +197,7 @@ public class ArchivedTabsDialogCoordinator {
      * @param snackbarManager Manages snackbars shown in the app.
      * @param regularTabCreator Handles the creation of regular tabs.
      * @param backPressManager Manages the different back press handlers throughout the app.
+     * @param tabArchiveSettings The settings manager for tab archive.
      */
     public ArchivedTabsDialogCoordinator(
             @NonNull Context context,
@@ -188,7 +208,8 @@ public class ArchivedTabsDialogCoordinator {
             @NonNull ViewGroup rootView,
             @NonNull SnackbarManager snackbarManager,
             @NonNull TabCreator regularTabCreator,
-            @NonNull BackPressManager backPressManager) {
+            @NonNull BackPressManager backPressManager,
+            @NonNull TabArchiveSettings tabArchiveSettings) {
         mContext = context;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mTabContentManager = tabContentManager;
@@ -197,6 +218,7 @@ public class ArchivedTabsDialogCoordinator {
         mSnackbarManager = snackbarManager;
         mRegularTabCreator = regularTabCreator;
         mBackPressManager = backPressManager;
+        mTabArchiveSettings = tabArchiveSettings;
 
         mArchivedTabModelOrchestrator = archivedTabModelOrchestrator;
         mArchivedTabModel =
@@ -217,7 +239,9 @@ public class ArchivedTabsDialogCoordinator {
      * @param onTabSelectingListener Allows a tab to be selected in the main tab switcher.
      */
     public void show(OnTabSelectingListener onTabSelectingListener) {
+        boolean tabListFirstShown = false;
         if (mTabListEditorCoordinator == null) {
+            tabListFirstShown = true;
             createTabListEditorCoordinator();
         }
 
@@ -237,6 +261,24 @@ public class ArchivedTabsDialogCoordinator {
         // View is obscured by the TabListEditorCoordinator, so it needs to be brought to the front.
         mView.findViewById(R.id.close_all_tabs_button_container).bringToFront();
 
+        // Add the IPH to the TabListEditor.
+        if (mTabArchiveSettings.shouldShowDialogIph()) {
+            if (tabListFirstShown) {
+                mTabListEditorCoordinator.registerItemType(
+                        TabProperties.UiType.MESSAGE,
+                        new LayoutViewBuilder(R.layout.tab_grid_message_card_item),
+                        MessageCardViewBinder::bind);
+            }
+            mIphMessagePropertyModel =
+                    ArchivedTabsIphMessageCardViewModel.create(
+                            mContext, this::onIphReviewClicked, this::onIphDismissClicked);
+            updateIphPropertyModel();
+            mTabListEditorCoordinator.addSpecialListItem(
+                    0, UiType.MESSAGE, mIphMessagePropertyModel);
+            RecordUserAction.record("Tabs.ArchivedTabsDialogIphShown");
+        }
+        mTabArchiveSettings.addObserver(mTabArchiveSettingsObserver);
+
         moveToState(TabActionState.CLOSABLE);
     }
 
@@ -245,6 +287,7 @@ public class ArchivedTabsDialogCoordinator {
         mBackPressManager.removeHandler(mTabListEditorCoordinator.getController());
         mRootView.removeView(mView);
         mArchivedTabModel.getTabCountSupplier().removeObserver(mTabCountObserver);
+        mTabArchiveSettings.removeObserver(mTabArchiveSettingsObserver);
     }
 
     void moveToState(@TabActionState int tabActionState) {
@@ -322,6 +365,48 @@ public class ArchivedTabsDialogCoordinator {
                     .getTabArchiver()
                     .unarchiveAndRestoreTab(mRegularTabCreator, tab);
         }
+    }
+
+    private void onIphReviewClicked() {
+        new SettingsLauncherImpl()
+                .launchSettingsActivity(mContext, TabArchiveSettingsFragment.class);
+        RecordUserAction.record("Tabs.ArchivedTabsDialogIphClicked");
+    }
+
+    private void onIphDismissClicked(@MessageType int messageType) {
+        mTabArchiveSettings.setShouldShowDialogIph(false);
+        mTabListEditorCoordinator.removeSpecialListItem(
+                UiType.MESSAGE, MessageService.MessageType.ARCHIVED_TABS_IPH_MESSAGE);
+        RecordUserAction.record("Tabs.ArchivedTabsDialogIphDismissed");
+    }
+
+    private void updateIphPropertyModel() {
+        if (mIphMessagePropertyModel == null) return;
+
+        int archiveTimeDeltaDays = mTabArchiveSettings.getArchiveTimeDeltaDays();
+        int autoDeleteTimeDeletaDays = mTabArchiveSettings.getAutoDeleteTimeDeltaDays();
+        String settingsTitle =
+                mContext.getString(R.string.archived_tab_iph_card_subtitle_settings_title);
+        String description =
+                mContext.getString(
+                        R.string.archived_tab_iph_card_subtitle,
+                        archiveTimeDeltaDays,
+                        autoDeleteTimeDeletaDays,
+                        settingsTitle);
+        SpannableString ss = new SpannableString(description);
+        ForegroundColorSpan fcs =
+                new ForegroundColorSpan(SemanticColorUtils.getDefaultTextColorAccent1(mContext));
+        ss.setSpan(
+                fcs,
+                description.indexOf(settingsTitle),
+                description.indexOf(settingsTitle) + settingsTitle.length(),
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        mIphMessagePropertyModel.set(MessageCardViewProperties.DESCRIPTION_TEXT, ss);
+    }
+
+    private boolean shouldShowIph() {
+        return true;
     }
 
     // Testing-specific methods

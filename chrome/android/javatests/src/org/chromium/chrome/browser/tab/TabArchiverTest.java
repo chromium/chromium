@@ -103,10 +103,12 @@ public class TabArchiverTest {
         mRegularTabCreator = sActivityTestRule.getActivity().getTabCreator(false);
 
         mSharedPrefs = ChromeSharedPreferences.getInstance();
-        mTabArchiveSettings = new TabArchiveSettings(mSharedPrefs);
-        // Clear prefs set by tests.
-        mTabArchiveSettings.resetSettingsForTesting();
-        mTabArchiveSettings.setArchiveEnabled(true);
+        runOnUiThreadBlocking(
+                () -> {
+                    mTabArchiveSettings = new TabArchiveSettings(mSharedPrefs);
+                    mTabArchiveSettings.resetSettingsForTesting();
+                    mTabArchiveSettings.setArchiveEnabled(true);
+                });
 
         mTabArchiver =
                 runOnUiThreadBlockingNoException(
@@ -162,8 +164,11 @@ public class TabArchiverTest {
         sActivityTestRule.loadUrlInNewTab(
                 sActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
 
-        // Set the tab to expire after 1 hour to simplify testing.
-        mTabArchiveSettings.setArchiveTimeDeltaHours(1);
+        runOnUiThreadBlocking(
+                () -> {
+                    // Set the tab to expire after 1 hour to simplify testing.
+                    mTabArchiveSettings.setArchiveTimeDeltaHours(1);
+                });
 
         // Set the clock to 1 hour after 0.
         doReturn(TimeUnit.HOURS.toMillis(1)).when(mClock).currentTimeMillis();
@@ -194,8 +199,11 @@ public class TabArchiverTest {
     @Test
     @MediumTest
     public void testTabModelSelectorInactiveTabsAreArchived() throws Exception {
-        // Set the tab to expire after 1 hour to simplify testing.
-        mTabArchiveSettings.setArchiveTimeDeltaHours(1);
+        runOnUiThreadBlocking(
+                () -> {
+                    // Set the tab to expire after 1 hour to simplify testing.
+                    mTabArchiveSettings.setArchiveTimeDeltaHours(1);
+                });
 
         // Set the clock to 1 hour after 0.
         doReturn(TimeUnit.HOURS.toMillis(1)).when(mClock).currentTimeMillis();
@@ -231,7 +239,10 @@ public class TabArchiverTest {
     @Test
     @MediumTest
     public void testEligibleTabsAreAutoDeleted() throws Exception {
-        mTabArchiveSettings.setArchiveTimeDeltaHours(0);
+        runOnUiThreadBlocking(
+                () -> {
+                    mTabArchiveSettings.setArchiveTimeDeltaHours(0);
+                });
 
         Tab tab =
                 sActivityTestRule.loadUrlInNewTab(
@@ -259,8 +270,11 @@ public class TabArchiverTest {
 
         Tab archivedTab = mArchivedTabModel.getTabAt(0);
 
-        mTabArchiveSettings.setAutoDeleteTimeDeltaHours(0);
-        runOnUiThreadBlocking(() -> mTabArchiver.deleteEligibleArchivedTabs());
+        runOnUiThreadBlocking(
+                () -> {
+                    mTabArchiveSettings.setAutoDeleteTimeDeltaHours(0);
+                    mTabArchiver.deleteEligibleArchivedTabs();
+                });
 
         assertEquals(1, mRegularTabModel.getCount());
         CriteriaHelper.pollInstrumentationThread(() -> mArchivedTabModel.getCount() == 0);
@@ -290,9 +304,12 @@ public class TabArchiverTest {
     @MediumTest
     public void testTabModelSelectorInactiveTabsAreArchived_NoActionTakenWhenDisabled()
             throws Exception {
-        mTabArchiveSettings.setArchiveEnabled(false);
-        // Set the tab to expire after 1 hour to simplify testing.
-        mTabArchiveSettings.setArchiveTimeDeltaHours(1);
+        runOnUiThreadBlocking(
+                () -> {
+                    mTabArchiveSettings.setArchiveEnabled(false);
+                    // Set the tab to expire after 1 hour to simplify testing.
+                    mTabArchiveSettings.setArchiveTimeDeltaHours(1);
+                });
 
         // Set the clock to 1 hour after 0.
         doReturn(TimeUnit.HOURS.toMillis(1)).when(mClock).currentTimeMillis();

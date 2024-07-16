@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -29,12 +30,15 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorExitMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
+import org.chromium.ui.modelutil.MVCListAdapter;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -340,6 +344,43 @@ class TabListEditorCoordinator {
         if (mMultiThumbnailCardProvider != null) {
             mMultiThumbnailCardProvider.destroy();
         }
+    }
+
+    /**
+     * Register a new view type for the underlying TabListCoordinator.
+     *
+     * @see MVCListAdapter#registerType(int, MVCListAdapter.ViewBuilder,
+     *     PropertyModelChangeProcessor.ViewBinder).
+     */
+    public <T extends View> void registerItemType(
+            @UiType int typeId,
+            MVCListAdapter.ViewBuilder<T> builder,
+            PropertyModelChangeProcessor.ViewBinder<PropertyModel, T, PropertyKey> binder) {
+        assert mTabListCoordinator != null;
+        mTabListCoordinator.registerItemType(typeId, builder, binder);
+    }
+
+    /**
+     * Inserts a special item into the underlying TabListCoordinator.
+     *
+     * @see TabListCoordinator#addSpecialItemToModel(int, int, PropertyModel).
+     */
+    public void addSpecialListItem(int index, @UiType int uiType, PropertyModel model) {
+        assert mTabListCoordinator != null;
+        mTabListCoordinator.addSpecialListItem(index, uiType, model);
+    }
+
+    /**
+     * Removes a special {@link org.chromium.ui.modelutil.MVCListAdapter.ListItem} that has the
+     * given {@code uiType} and/or its {@link PropertyModel} has the given {@code itemIdentifier}.
+     *
+     * @param uiType The uiType to match.
+     * @param itemIdentifier The itemIdentifier to match. This can be obsoleted if the {@link
+     *     org.chromium.ui.modelutil.MVCListAdapter.ListItem} does not need additional identifier.
+     */
+    public void removeSpecialListItem(@UiType int uiType, int itemIdentifier) {
+        assert mTabListCoordinator != null;
+        mTabListCoordinator.removeSpecialListItem(uiType, itemIdentifier);
     }
 
     private void createTabListCoordinator() {
