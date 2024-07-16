@@ -52,3 +52,10 @@ std::unique_ptr<KeyedService> NotificationPermissionsReviewServiceFactory::
       HostContentSettingsMapFactory::GetForProfile(context),
       engagement_service);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+bool NotificationPermissionsReviewServiceFactory::
+    ServiceIsCreatedWithBrowserContext() const {
+  return base::FeatureList::IsEnabled(features::kSafetyHub);
+}
+#endif  // BUILDFLAG(IS_ANDROID)

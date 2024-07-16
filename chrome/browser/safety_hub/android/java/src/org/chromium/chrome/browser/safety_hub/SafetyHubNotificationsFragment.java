@@ -74,7 +74,15 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
                 notificationPermissions.getPrimaryPattern());
         showSingleSiteSnackbar(
                 R.string.safety_hub_notifications_allow_snackbar,
-                notificationPermissions.getPrimaryPattern());
+                notificationPermissions.getPrimaryPattern(),
+                new SnackbarManager.SnackbarController() {
+                    @Override
+                    public void onAction(Object actionData) {
+                        mNotificationPermissionReviewBridge
+                                .undoIgnoreOriginForNotificationPermissionReview(
+                                        (String) actionData);
+                    }
+                });
     }
 
     @Override
@@ -85,7 +93,14 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
                 notificationPermissions.getPrimaryPattern());
         showSingleSiteSnackbar(
                 R.string.safety_hub_notifications_reset_snackbar,
-                notificationPermissions.getPrimaryPattern());
+                notificationPermissions.getPrimaryPattern(),
+                new SnackbarManager.SnackbarController() {
+                    @Override
+                    public void onAction(Object actionData) {
+                        mNotificationPermissionReviewBridge.allowNotificationPermissionForOrigin(
+                                (String) actionData);
+                    }
+                });
     }
 
     @Override
@@ -135,17 +150,12 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
         return R.string.safety_hub_notifications_page_menu_text;
     }
 
-    private void showSingleSiteSnackbar(int titleResId, String origin) {
+    private void showSingleSiteSnackbar(
+            int titleResId, String origin, SnackbarManager.SnackbarController snackbarController) {
         showSnackbar(
                 getString(titleResId, origin),
                 Snackbar.UMA_SAFETY_HUB_SINGLE_SITE_NOTIFICATIONS,
-                new SnackbarManager.SnackbarController() {
-                    @Override
-                    public void onAction(Object actionData) {
-                        mNotificationPermissionReviewBridge.allowNotificationPermissionForOrigin(
-                                (String) actionData);
-                    }
-                },
+                snackbarController,
                 origin);
     }
 }
