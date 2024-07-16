@@ -378,7 +378,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
     scoped_refptr<gpu::ClientSharedImage> client_shared_image;
     gpu::SyncToken sync_token;
     size_t bitmap_image_read_refs = 0u;
-    MailboxSyncMode mailbox_sync_mode = kUnverifiedSyncToken;
+    bool needs_verified_synctoken = false;
     bool is_lost = false;
 
     // We need to create 2 representations if canvas is operating in single

@@ -607,9 +607,9 @@ void CanvasResourceSharedImage::Transfer() {
     return;
 
   // TODO(khushalsagar): This is for consistency with MailboxTextureHolder
-  // transfer path. Its unclear why the verification can not be deferred until
+  // transfer path. It's unclear why the verification can not be deferred until
   // the resource needs to be transferred cross-process.
-  owning_thread_data().mailbox_sync_mode = kVerifiedSyncToken;
+  owning_thread_data().needs_verified_synctoken = true;
   GetSyncToken();
 }
 
@@ -672,7 +672,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
 
   // If its cross thread, then the sync token was already verified.
   if (!is_cross_thread()) {
-    owning_thread_data().mailbox_sync_mode = kUnverifiedSyncToken;
+    owning_thread_data().needs_verified_synctoken = false;
   }
   image = AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
       GetClientSharedImage()->mailbox(), GetSyncToken(), texture_id_for_image,
@@ -718,7 +718,8 @@ void CanvasResourceSharedImage::CopyRenderingResultsToGpuMemoryBuffer(
 
 void CanvasResourceSharedImage::SetMailboxSyncMode(MailboxSyncMode mode) {
   if (!is_cross_thread()) {
-    owning_thread_data().mailbox_sync_mode = mode;
+    owning_thread_data().needs_verified_synctoken =
+        (mode == kVerifiedSyncToken);
   }
 }
 
@@ -755,7 +756,7 @@ const gpu::SyncToken CanvasResourceSharedImage::GetSyncToken() {
     owning_thread_data().mailbox_needs_new_sync_token = false;
   }
 
-  if (owning_thread_data().mailbox_sync_mode == kVerifiedSyncToken &&
+  if (owning_thread_data().needs_verified_synctoken &&
       !owning_thread_data().sync_token.verified_flush()) {
     int8_t* token_data = owning_thread_data().sync_token.GetData();
     auto* raster_interface = RasterInterface();
