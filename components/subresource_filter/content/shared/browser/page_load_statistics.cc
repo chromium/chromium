@@ -75,10 +75,10 @@ void PageLoadStatistics::OnDidFinishLoad() {
   } else {
     CHECK(aggregated_document_statistics_.evaluation_total_wall_duration
               .is_zero(),
-          base::NotFatalUntil::M129);
+          base::NotFatalUntil::M130);
     CHECK(
         aggregated_document_statistics_.evaluation_total_cpu_duration.is_zero(),
-        base::NotFatalUntil::M129);
+        base::NotFatalUntil::M130);
   }
 }
 
