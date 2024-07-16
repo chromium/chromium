@@ -4,10 +4,13 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_MODEL_ADAPTATION_LOADER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_MODEL_ADAPTATION_LOADER_H_
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
+#include "base/types/optional_util.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
@@ -24,15 +27,15 @@ enum class OnDeviceModelAdaptationAvailability;
 class OnDeviceModelAdaptationMetadata {
  public:
   static std::unique_ptr<OnDeviceModelAdaptationMetadata> New(
-      const on_device_model::AdaptationAssetPaths& asset_paths,
+      on_device_model::AdaptationAssetPaths* asset_paths,
       int64_t version,
       scoped_refptr<OnDeviceModelFeatureAdapter> adapter);
 
   OnDeviceModelAdaptationMetadata(const OnDeviceModelAdaptationMetadata&);
   ~OnDeviceModelAdaptationMetadata();
 
-  const on_device_model::AdaptationAssetPaths& asset_paths() const {
-    return asset_paths_;
+  const on_device_model::AdaptationAssetPaths* asset_paths() const {
+    return base::OptionalToPtr(asset_paths_);
   }
 
   scoped_refptr<const OnDeviceModelFeatureAdapter> adapter() const {
@@ -45,10 +48,10 @@ class OnDeviceModelAdaptationMetadata {
   friend class OnDeviceModelServiceControllerTest;
 
   OnDeviceModelAdaptationMetadata(
-      const on_device_model::AdaptationAssetPaths& asset_paths,
+      on_device_model::AdaptationAssetPaths* asset_paths,
       int64_t version,
       scoped_refptr<OnDeviceModelFeatureAdapter> adapter);
-  on_device_model::AdaptationAssetPaths asset_paths_;
+  std::optional<on_device_model::AdaptationAssetPaths> asset_paths_;
   int64_t version_;
   scoped_refptr<OnDeviceModelFeatureAdapter> adapter_;
 };

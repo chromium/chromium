@@ -195,7 +195,7 @@ OnDeviceModelServiceController::CreateSession(
   if (features::internal::IsOnDeviceModelAdaptationEnabled(feature)) {
     auto it = model_adaptation_metadata_.find(feature);
     CHECK(it != model_adaptation_metadata_.end());
-    adaptation_assets = it->second.asset_paths();
+    adaptation_assets = base::OptionalFromPtr(it->second.asset_paths());
     adaptation_version = it->second.version();
   }
 
@@ -233,7 +233,6 @@ OnDeviceModelServiceController::GetOrCreateModelRemote(
         adaptation_assets) {
   MaybeCreateBaseModelRemote(model_paths);
   if (!adaptation_assets.has_value()) {
-    CHECK(!features::internal::IsOnDeviceModelAdaptationEnabled(feature));
     // The base model is being used by a feature directly, so set the idle
     // handler.
     base_model_remote_.set_idle_handler(

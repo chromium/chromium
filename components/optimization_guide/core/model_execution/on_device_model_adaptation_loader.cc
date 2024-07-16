@@ -56,7 +56,7 @@ CreateAdaptatonMetadataFromModelExecutionConfig(
                                 kAdaptationModelExecutionConfigInvalid);
   }
   return base::ok(OnDeviceModelAdaptationMetadata::New(
-      *asset_paths, version,
+      asset_paths.get(), version,
       base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config))));
 }
 
@@ -79,7 +79,7 @@ OnDeviceModelAdaptationMetadataCreated(
 // static
 std::unique_ptr<OnDeviceModelAdaptationMetadata>
 OnDeviceModelAdaptationMetadata::New(
-    const on_device_model::AdaptationAssetPaths& asset_paths,
+    on_device_model::AdaptationAssetPaths* asset_paths,
     int64_t version,
     scoped_refptr<OnDeviceModelFeatureAdapter> adapter) {
   return base::WrapUnique(new OnDeviceModelAdaptationMetadata(
@@ -87,10 +87,10 @@ OnDeviceModelAdaptationMetadata::New(
 }
 
 OnDeviceModelAdaptationMetadata::OnDeviceModelAdaptationMetadata(
-    const on_device_model::AdaptationAssetPaths& asset_paths,
+    on_device_model::AdaptationAssetPaths* asset_paths,
     int64_t version,
     scoped_refptr<OnDeviceModelFeatureAdapter> adapter)
-    : asset_paths_(std::move(asset_paths)),
+    : asset_paths_(base::OptionalFromPtr(asset_paths)),
       version_(version),
       adapter_(std::move(adapter)) {}
 
@@ -241,8 +241,8 @@ OnDeviceModelAdaptationLoader::ProcessModelUpdate(
   auto weights_file = model_info->GetAdditionalFileWithBaseName(
       kOnDeviceModelAdaptationWeightsFile);
   if (!weights_file) {
-    return base::unexpected(
-        OnDeviceModelAdaptationAvailability::kAdaptationModelInvalid);
+    // Return that the weights file was not provided.
+    return base::ok(nullptr);
   }
   auto adaptations_assets =
       std::make_unique<on_device_model::AdaptationAssetPaths>();

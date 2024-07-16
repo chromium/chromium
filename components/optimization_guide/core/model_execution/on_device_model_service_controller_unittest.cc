@@ -536,20 +536,19 @@ TEST_F(OnDeviceModelServiceControllerTest,
   test_controller_->AddOnDeviceModelAvailabilityChangeObserver(
       ModelBasedCapabilityKey::kTest, &availability_observer_test);
 
+  on_device_model::AdaptationAssetPaths asset_paths;
   test_controller_->MaybeUpdateModelAdaptation(
       ModelBasedCapabilityKey::kCompose,
-      OnDeviceModelAdaptationMetadata::New(
-          on_device_model::AdaptationAssetPaths(), kModelAdatationVersion,
-          /*adapter=*/nullptr));
+      OnDeviceModelAdaptationMetadata::New(&asset_paths, kModelAdatationVersion,
+                                           /*adapter=*/nullptr));
   EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,
             availability_observer_compose.reason_);
   EXPECT_FALSE(availability_observer_test.reason_);
 
   test_controller_->MaybeUpdateModelAdaptation(
       ModelBasedCapabilityKey::kTest,
-      OnDeviceModelAdaptationMetadata::New(
-          on_device_model::AdaptationAssetPaths(), kModelAdatationVersion,
-          /*adapter=*/nullptr));
+      OnDeviceModelAdaptationMetadata::New(&asset_paths, kModelAdatationVersion,
+                                           /*adapter=*/nullptr));
   EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,
             availability_observer_test.reason_);
 
@@ -625,11 +624,11 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelAdaptationAndBaseModelSuccess) {
   test_controller_->AddOnDeviceModelAvailabilityChangeObserver(
       ModelBasedCapabilityKey::kCompose, &availability_observer_compose);
 
+  on_device_model::AdaptationAssetPaths asset_paths;
   test_controller_->MaybeUpdateModelAdaptation(
       ModelBasedCapabilityKey::kCompose,
-      OnDeviceModelAdaptationMetadata::New(
-          on_device_model::AdaptationAssetPaths(), kModelAdatationVersion,
-          /*adapter=*/nullptr));
+      OnDeviceModelAdaptationMetadata::New(&asset_paths, kModelAdatationVersion,
+                                           /*adapter=*/nullptr));
   EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,
             availability_observer_compose.reason_);
 
@@ -671,6 +670,53 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelAdaptationAndBaseModelSuccess) {
   EXPECT_EQ(1ull, test_controller_->on_device_model_receiver_count());
 
   // Fast forward by another idle timeout. The base model remote will be reset.
+  task_environment_.FastForwardBy(features::GetOnDeviceModelIdleTimeout() +
+                                  base::Seconds(1));
+  EXPECT_FALSE(test_controller_->IsConnectedForTesting());
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       ModelAdaptationEmptyWeightsUsesBaseModel) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::internal::kModelAdaptationCompose, {}}}, {});
+
+  proto::OnDeviceModelExecutionFeatureConfig config_compose;
+  config_compose.set_can_skip_text_safety(true);
+  PopulateConfigForFeature(ModelBasedCapabilityKey::kCompose, config_compose);
+
+  Initialize({.config = config_compose});
+
+  FakeOnDeviceModelAvailabilityObserver availability_observer_compose(
+      ModelBasedCapabilityKey::kCompose);
+  test_controller_->AddOnDeviceModelAvailabilityChangeObserver(
+      ModelBasedCapabilityKey::kCompose, &availability_observer_compose);
+
+  test_controller_->MaybeUpdateModelAdaptation(
+      ModelBasedCapabilityKey::kCompose,
+      OnDeviceModelAdaptationMetadata::New(/*asset_paths=*/nullptr,
+                                           kModelAdatationVersion,
+                                           /*adapter=*/nullptr));
+  EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,
+            availability_observer_compose.reason_);
+
+  auto session_compose = test_controller_->CreateSession(
+      ModelBasedCapabilityKey::kCompose, base::DoNothing(),
+      logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(GetModelAdaptationControllers().empty());
+
+  ExecuteModel(*session_compose, "foo");
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(response_received_);
+  EXPECT_EQ(*response_received_, "Input: execute:foo\n");
+  EXPECT_TRUE(*provided_by_on_device_);
+
+  session_compose.reset();
+
+  // Fast forward by idle timeout. The base model remote will be reset.
   task_environment_.FastForwardBy(features::GetOnDeviceModelIdleTimeout() +
                                   base::Seconds(1));
   EXPECT_FALSE(test_controller_->IsConnectedForTesting());
@@ -3567,11 +3613,11 @@ TEST_F(OnDeviceModelServiceControllerTest, TestAvailabilityObserver) {
   EXPECT_EQ(OnDeviceModelEligibilityReason::kModelAdaptationNotAvailable,
             availability_observer_compose.reason_);
 
+  on_device_model::AdaptationAssetPaths asset_paths;
   test_controller_->MaybeUpdateModelAdaptation(
       ModelBasedCapabilityKey::kCompose,
-      OnDeviceModelAdaptationMetadata::New(
-          on_device_model::AdaptationAssetPaths(), kModelAdatationVersion,
-          /*adapter=*/nullptr));
+      OnDeviceModelAdaptationMetadata::New(&asset_paths, kModelAdatationVersion,
+                                           /*adapter=*/nullptr));
   EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,
             availability_observer_test.reason_);
   EXPECT_EQ(OnDeviceModelEligibilityReason::kSuccess,
