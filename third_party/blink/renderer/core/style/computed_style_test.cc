@@ -2145,4 +2145,13 @@ TEST_F(ComputedStyleTest, UseCountInsideListMarkerPositionQuirk) {
       document.IsUseCounted(WebFeature::kInsideListMarkerPositionQuirk));
 }
 
+TEST_F(ComputedStyleTest, ZoomInheritance) {
+  Document& document = GetDocument();
+  document.body()->setInnerHTML(R"HTML(
+    <div id="target" style="line-height: revert; zoom: 2;">Hello, world!</div>
+  )HTML");
+  document.View()->UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(true) << "Test passes if it doesn't hit a DCHECK.";
+}
+
 }  // namespace blink

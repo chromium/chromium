@@ -1313,7 +1313,7 @@ const CSSValue* StyleCascade::ResolveRevert(const CSSProperty& property,
     case CascadeOrigin::kAnimation: {
       const CascadePriority* p =
           map_.Find(property.GetCSSPropertyName(), target_origin);
-      if (!p) {
+      if (!p || !p->HasOrigin()) {
         origin = CascadeOrigin::kNone;
         return cssvalue::CSSUnsetValue::Create();
       }
