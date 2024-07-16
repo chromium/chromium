@@ -7579,3 +7579,6 @@ crbug.com/41490706 [ Linux ] external/wpt/touch-events/multi-touch-interfaces.ht
 
 # Gardener 2024-07-15
 crbug.com/353204670 [ Mac11-arm64 ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-copyImage.html [ Failure Pass ]
+
+# Gardener 2024-07-16
+crbug.com/353392059 [ Linux ] fast/forms/select-popup/select-many-options-hang.html [ Pass Timeout ]
