@@ -78,11 +78,18 @@ void SafetyHubExtensionsResult::OnExtensionPrefsUpdated(
   if (extension_ptr != triggering_extensions_.end()) {
     extensions::ExtensionRegistry* extension_registry =
         extensions::ExtensionRegistry::Get(profile);
+    const extensions::Extension* extension =
+        extension_registry->GetExtensionById(
+            extension_id, extensions::ExtensionRegistry::EVERYTHING);
+    // If the extension is NULL it has been uninstalled and should be
+    // removed from `triggering_extensions_`.
+    if (!extension) {
+      triggering_extensions_.erase(extension_ptr);
+      return;
+    }
     developer::SafetyCheckWarningReason warning_reason =
         extensions::ExtensionSafetyCheckUtils::GetSafetyCheckWarningReason(
-            *extension_registry->GetExtensionById(
-                extension_id, extensions::ExtensionRegistry::EVERYTHING),
-            profile);
+            *extension, profile);
     if (warning_reason == developer::SafetyCheckWarningReason::kNone) {
       triggering_extensions_.erase(extension_ptr);
     }
