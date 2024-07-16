@@ -192,6 +192,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
   private boundOnDocumentKeyDown_: (e: KeyboardEvent) => void = (_e) => null;
   private prerenderTimer_: null|ReturnType<typeof setTimeout> = null;
   private preconnectTimer_: null|ReturnType<typeof setTimeout> = null;
+  private dragImage_: HTMLImageElement;
 
   private info_: MostVisitedInfo|null = null;
 
@@ -210,11 +211,17 @@ export class MostVisitedElement extends MostVisitedElementBase {
 
     this.windowProxy_ = MostVisitedWindowProxy.getInstance();
 
-    /**
-     * This is the position of the mouse with respect to the top-left corner
-     * of the tile being dragged.
-     */
+    // Position of the mouse with respect to the top-left corner of the tile
+    // being dragged.
     this.dragOffset_ = null;
+
+    // Create a transparent 1x1 pixel image that will replace the default drag
+    // "ghost" image. The image is preloaded to ensure it's available when
+    // dragging starts.
+    this.dragImage_ = new Image(1, 1);
+    this.dragImage_.src =
+        'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAA' +
+        'ABAAEAAAICTAEAOw==';
 
     this.mediaEventTracker_ = new EventTracker();
     this.eventTracker_ = new EventTracker();
@@ -688,8 +695,9 @@ export class MostVisitedElement extends MostVisitedElementBase {
     }
     // |dataTransfer| is null in tests.
     if (e.dataTransfer) {
-      // Remove the ghost image that appears when dragging.
-      e.dataTransfer.setDragImage(new Image(), 0, 0);
+      // Replace the ghost image that appears when dragging with a transparent
+      // 1x1 pixel image.
+      e.dataTransfer.setDragImage(this.dragImage_, 0, 0);
     }
 
     this.dragStart_(e.target as HTMLElement, e.x, e.y);

@@ -65,6 +65,7 @@ function syncVisualOrderWithDOM(columnElements: HTMLElement[]) {
 }
 
 export class DragAndDropManager {
+  private dragImage_: HTMLImageElement;
   private eventTracker_: EventTracker = new EventTracker();
   private tableElement_: TableElement;
 
@@ -77,6 +78,13 @@ export class DragAndDropManager {
 
   init(tableElement: TableElement): void {
     this.tableElement_ = tableElement;
+    // Create a transparent 1x1 pixel image that will replace the default drag
+    // "ghost" image. The image is preloaded to ensure it's available when
+    // dragging starts.
+    this.dragImage_ = new Image(1, 1);
+    this.dragImage_.src =
+        'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAA' +
+        'ABAAEAAAICTAEAOw==';
     this.eventTracker_.add(
         document, 'dragstart', (e: DragEvent) => this.onDragStart_(e));
   }
@@ -87,8 +95,9 @@ export class DragAndDropManager {
 
   private onDragStart_(e: DragEvent) {
     if (e.dataTransfer) {
-      // Remove the ghost image that appears when dragging.
-      e.dataTransfer.setDragImage(new Image(), 0, 0);
+      // Replace the ghost image that appears when dragging with a transparent
+      // 1x1 pixel image.
+      e.dataTransfer.setDragImage(this.dragImage_, 0, 0);
     }
 
     const dragElement = getColumnByComposedPath(e.composedPath());
