@@ -251,17 +251,6 @@ BASE_FEATURE(kChromeStructuredMetrics,
              "ChromeStructuredMetrics",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Kill switch for Controlled Frame. This is enabled by default but is only
-// tested to ensure it's enabled before proceeding with the rest of the feature
-// checks like testing for IWA support or Kiosk mode. If this feature flag is
-// disabled, such as via Finch, then Controlled Frame will no longer be
-// available in IWA or Kiosk mode.
-// See https://github.com/WICG/controlled-frame/blob/main/README.md for more
-// info.
-BASE_FEATURE(kControlledFrame,
-             "ControlledFrame",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Moves the Extensions "puzzle piece" icon from the title bar into the app menu
 // for web app windows.
 BASE_FEATURE(kDesktopPWAsElidedExtensionsMenu,

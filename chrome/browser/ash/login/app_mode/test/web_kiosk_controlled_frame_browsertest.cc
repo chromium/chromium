@@ -13,6 +13,7 @@
 #include "extensions/common/features/feature_channel.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace {
 
@@ -52,6 +53,7 @@ void WaitForDocumentLoaded(content::WebContents* web_contents) {
 }  // namespace
 
 namespace ash {
+
 class WebKioskControlledFrameBaseTest : public WebKioskBaseTest {
  public:
   WebKioskControlledFrameBaseTest() = delete;
@@ -63,13 +65,24 @@ class WebKioskControlledFrameBaseTest : public WebKioskBaseTest {
   }
 
  protected:
-  WebKioskControlledFrameBaseTest(version_info::Channel channel, bool https)
-      : channel_(channel),
+  WebKioskControlledFrameBaseTest(bool feature_enabled,
+                                  version_info::Channel channel,
+                                  bool https)
+      : feature_enabled_(feature_enabled),
+        channel_(channel),
         https_(https),
         web_app_server_(UseHttpsUrl()
                             ? net::test_server::EmbeddedTestServer::TYPE_HTTPS
                             : net::test_server::EmbeddedTestServer::TYPE_HTTP) {
-    feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
+    std::vector<base::test::FeatureRef> enabled_features = {
+        features::kIsolatedWebApps};
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (feature_enabled_) {
+      enabled_features.push_back(blink::features::kControlledFrame);
+    } else {
+      disabled_features.push_back(blink::features::kControlledFrame);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   bool UseHttpsUrl() { return https_; }
@@ -86,6 +99,9 @@ class WebKioskControlledFrameBaseTest : public WebKioskBaseTest {
     WaitForDocumentLoaded(web_contents);
     return web_contents;
   }
+
+ protected:
+  bool feature_enabled_{true};
 
  private:
   void InitAppServer() {
@@ -109,6 +125,7 @@ class WebKioskControlledFrameHttpTest
  public:
   WebKioskControlledFrameHttpTest()
       : WebKioskControlledFrameBaseTest(
+            /*feature_enabled=*/true,
             /*channel=*/version_info::Channel::CANARY,
             /*https=*/GetParam()) {}
 };
@@ -119,7 +136,7 @@ IN_PROC_BROWSER_TEST_P(WebKioskControlledFrameHttpTest, ApiAvailability) {
 
   // Controlled Frame API should be available for https urls, but not for http
   bool is_api_available = ControlledFrameElementCreated(web_contents);
-  if (UseHttpsUrl()) {
+  if (feature_enabled_ && UseHttpsUrl()) {
     EXPECT_TRUE(is_api_available);
   } else {
     EXPECT_FALSE(is_api_available);
@@ -130,11 +147,14 @@ INSTANTIATE_TEST_SUITE_P(All, WebKioskControlledFrameHttpTest, testing::Bool());
 
 class WebKioskControlledFrameChannelTest
     : public WebKioskControlledFrameBaseTest,
-      public testing::WithParamInterface<version_info::Channel> {
+      public testing::WithParamInterface<
+          std::tuple<bool, version_info::Channel>> {
  public:
   WebKioskControlledFrameChannelTest()
-      : WebKioskControlledFrameBaseTest(/*channel=*/GetParam(),
-                                        /*https=*/true) {}
+      : WebKioskControlledFrameBaseTest(
+            /*feature_enabled=*/std::get<0>(GetParam()),
+            /*channel=*/std::get<1>(GetParam()),
+            /*https=*/true) {}
 };
 
 IN_PROC_BROWSER_TEST_P(WebKioskControlledFrameChannelTest, ApiAvailability) {
@@ -145,7 +165,8 @@ IN_PROC_BROWSER_TEST_P(WebKioskControlledFrameChannelTest, ApiAvailability) {
   // This works because the mechanism for checking the channel runs using
   // extensions-based code.
   bool is_api_available = ControlledFrameElementCreated(web_contents);
-  if (extensions::GetCurrentChannel() != version_info::Channel::STABLE &&
+  if (feature_enabled_ &&
+      extensions::GetCurrentChannel() != version_info::Channel::STABLE &&
       extensions::GetCurrentChannel() != version_info::Channel::BETA) {
     EXPECT_TRUE(is_api_available);
   } else {
@@ -153,12 +174,23 @@ IN_PROC_BROWSER_TEST_P(WebKioskControlledFrameChannelTest, ApiAvailability) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         WebKioskControlledFrameChannelTest,
-                         testing::Values(version_info::Channel::STABLE,
-                                         version_info::Channel::BETA,
-                                         version_info::Channel::DEV,
-                                         version_info::Channel::CANARY,
-                                         version_info::Channel::DEFAULT));
+INSTANTIATE_TEST_SUITE_P(
+    Enabled,
+    WebKioskControlledFrameChannelTest,
+    testing::Combine(
+        /*feature_enabled=*/testing::Values(true),
+        /*channel=*/testing::Values(version_info::Channel::STABLE,
+                                    version_info::Channel::BETA,
+                                    version_info::Channel::DEV,
+                                    version_info::Channel::CANARY,
+                                    version_info::Channel::DEFAULT)));
+
+INSTANTIATE_TEST_SUITE_P(
+    Disabled,
+    WebKioskControlledFrameChannelTest,
+    testing::Combine(
+        /*feature_enabled=*/testing::Values(false),
+        /*channel=*/testing::Values(version_info::Channel::STABLE,
+                                    version_info::Channel::CANARY)));
 
 }  // namespace ash

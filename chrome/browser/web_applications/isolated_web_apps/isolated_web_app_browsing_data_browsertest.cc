@@ -58,6 +58,7 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -166,6 +167,8 @@ class IsolatedWebAppBrowsingDataTest : public IsolatedWebAppBrowserTestHarness {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kControlledFrame};
   std::unique_ptr<net::EmbeddedTestServer> server_;
 };
 

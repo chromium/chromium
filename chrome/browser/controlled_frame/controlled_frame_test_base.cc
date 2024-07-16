@@ -10,14 +10,76 @@
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 
 namespace controlled_frame {
 
-ControlledFrameTestBase::ControlledFrameTestBase() = default;
+ControlledFrameTestBase::ControlledFrameTestBase()
+    : channel_(version_info::Channel::DEFAULT),
+      feature_setting_(FeatureSetting::ENABLED),
+      flag_setting_(FlagSetting::CONTROLLED_FRAME) {
+  ConfigureEnvironment();
+}
+
+ControlledFrameTestBase::ControlledFrameTestBase(
+    const version_info::Channel& channel,
+    const FeatureSetting& feature_setting,
+    const FlagSetting& flag_setting)
+    : channel_(channel),
+      feature_setting_(feature_setting),
+      flag_setting_(flag_setting) {
+  ConfigureEnvironment();
+}
+
 ControlledFrameTestBase::~ControlledFrameTestBase() = default;
+
+void ControlledFrameTestBase::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  if (flag_setting() == FlagSetting::EXPERIMENTAL) {
+    // Enable experimental web platform features as a proxy for enabling
+    // Controlled Frame.
+    command_line->AppendSwitch(
+        switches::kEnableExperimentalWebPlatformFeatures);
+  } else if (flag_setting() == FlagSetting::CONTROLLED_FRAME) {
+    // Enable just the Controlled Frame API.
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "ControlledFrame");
+  }
+}
+
+std::string ControlledFrameTestBase::ConfigToString() {
+  return "channel=" + base::NumberToString(int(channel())) +
+         "; feature=" + base::NumberToString(int(feature_setting())) +
+         "; flag=" + base::NumberToString(int(flag_setting()));
+}
+
+void ControlledFrameTestBase::ConfigureEnvironment() {
+  // Initialize |scoped_feature_list_|. Start by initializing |feature_list|.
+  auto feature_list = std::make_unique<base::FeatureList>();
+  // IsolatedWebAppBrowserTestHarness enables features::kIsolatedWebApps and
+  // features::kIsolatedWebAppDevMode.
+  std::vector<base::test::FeatureRef> enabled_features = {
+      blink::features::kIsolateSandboxedIframes};
+  std::vector<base::test::FeatureRef> disabled_features = {};
+  switch (feature_setting()) {
+    case FeatureSetting::UNINITIALIZED:
+      FAIL() << "FeatureSetting should be initialized.";
+    case FeatureSetting::NONE:
+      break;
+    case FeatureSetting::DISABLED:
+      disabled_features.push_back(blink::features::kControlledFrame);
+      break;
+    case FeatureSetting::ENABLED:
+      enabled_features.push_back(blink::features::kControlledFrame);
+      break;
+  }
+  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+}
 
 void ControlledFrameTestBase::StartContentServer(
     std::string_view chrome_test_data_relative_dir) {

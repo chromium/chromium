@@ -62,6 +62,9 @@ void CommitNavigation(std::unique_ptr<content::NavigationSimulator> simulator) {
 }  // namespace
 
 IsolatedWebAppBrowserTestHarness::IsolatedWebAppBrowserTestHarness() {
+  // Note: We cannot enable blink::features::kControlledFrame here since there
+  // are tests that inherit from this class which depend on being able to start
+  // without kControlledFrame in their feature list.
   iwa_scoped_feature_list_.InitWithFeatures(
       {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode,
        blink::features::kUnrestrictedUsb},

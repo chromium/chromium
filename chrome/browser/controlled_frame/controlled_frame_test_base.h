@@ -8,6 +8,7 @@
 #include <memory>
 #include <string_view>
 
+#include "base/version_info/version_info.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -28,13 +29,34 @@ class ScopedBundledIsolatedWebApp;
 
 namespace controlled_frame {
 
+enum class FeatureSetting {
+  UNINITIALIZED = 0,
+  NONE = 1,
+  DISABLED = 2,
+  ENABLED = 3,
+};
+
+enum class FlagSetting {
+  UNINITIALIZED = 0,
+  NONE = 1,
+  EXPERIMENTAL = 2,
+  CONTROLLED_FRAME = 3,
+};
+
 class ControlledFrameTestBase
     : public web_app::IsolatedWebAppBrowserTestHarness {
  public:
   ControlledFrameTestBase();
+  ControlledFrameTestBase(const version_info::Channel&,
+                          const FeatureSetting&,
+                          const FlagSetting&);
   ControlledFrameTestBase(const ControlledFrameTestBase&) = delete;
   ControlledFrameTestBase& operator=(const ControlledFrameTestBase&) = delete;
   ~ControlledFrameTestBase() override;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override;
+
+  std::string ConfigToString();
 
  protected:
   void StartContentServer(std::string_view chrome_test_data_relative_dir);
@@ -48,10 +70,30 @@ class ControlledFrameTestBase
   extensions::WebViewGuest* GetWebViewGuest(
       content::RenderFrameHost* embedder_frame);
 
+  version_info::Channel channel() { return channel_.channel(); }
+  FeatureSetting feature_setting() { return feature_setting_; }
+  FlagSetting flag_setting() { return flag_setting_; }
+
+  // |ConfigureEnvironment| ensures that a specific set of environment
+  // parameters are configured before this test run starts. The parameters cover
+  // the channel, feature, and flag configuration for the test. The channel is
+  // configured using ScopedCurrentChannel. The rest of the settings are
+  // configured using other parts of the feature system and must be run during
+  // the constructor.
+  //
+  // Most tests will be able to use the overloaded ctor. However, any tests
+  // built using testing::Combine() won't be able to use the overloaded ctor.
+  // Instead, they use their own ctor, pull the test values apart from the
+  // testing parameter, and then call |ConfigureEnvironment| directly.
+  void ConfigureEnvironment();
+
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kIsolateSandboxedIframes};
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app_;
+
+  extensions::ScopedCurrentChannel channel_;
+  FeatureSetting feature_setting_{FeatureSetting::UNINITIALIZED};
+  FlagSetting flag_setting_{FlagSetting::UNINITIALIZED};
 };
 
 }  // namespace controlled_frame

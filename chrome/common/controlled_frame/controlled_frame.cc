@@ -15,6 +15,7 @@
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/mojom/context_type.mojom.h"
+#include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/command_line.h"
@@ -70,7 +71,10 @@ bool AvailabilityCheck(const std::string& api_full_name,
                        int context_id,
                        bool check_developer_mode,
                        const extensions::ContextData& context_data) {
-  if (!base::FeatureList::IsEnabled(features::kControlledFrame)) {
+  // Verify that the kControlledFrame blink::features flag is enabled. It's a
+  // kill switch, so it should be enabled by default and only present so if
+  // needed we can use Finch to disable Controlled Frame.
+  if (!base::FeatureList::IsEnabled(blink::features::kControlledFrame)) {
     return false;
   }
 

@@ -184,19 +184,24 @@ const content::EvalJsResult VerifyBackgroundColorIsRed(
   )");
 }
 
-[[nodiscard]] bool IsControlledFramePresent(
-    content::RenderFrameHost* app_frame) {
-  return ExecJs(app_frame, R"(
+[[nodiscard]] bool IsControlledFramePresent(content::RenderFrameHost* app_frame,
+                                            const GURL& src) {
+  static std::string kIsControlledFramePresent = R"(
       new Promise((resolve, reject) => {
         const controlledframe = document.createElement('controlledframe');
-        if (('src' in controlledframe)) {
-          // Tag is defined.
-          resolve('SUCCESS');
-        } else {
+        if (!('src' in controlledframe)) {
+          // Tag is undefined or generates a malformed response.
           reject('FAIL');
+          return;
         }
+        controlledframe.setAttribute('src', $1);
+        controlledframe.addEventListener('loadstop', resolve);
+        controlledframe.addEventListener('loadabort', reject);
+        document.body.appendChild(controlledframe);
       });
-  )");
+  )";
+
+  return ExecJs(app_frame, content::JsReplace(kIsControlledFramePresent, src));
 }
 
 // TODO(odejesush): Add tests for the rest of the Promise API methods.
@@ -205,6 +210,18 @@ const char* kControlledFramePromiseApiMethods[]{"back", "forward", "go"};
 }  // namespace
 
 class ControlledFrameApiTest : public ControlledFrameTestBase {
+ protected:
+  ControlledFrameApiTest()
+      : ControlledFrameTestBase(
+            /*channel=*/version_info::Channel::STABLE,
+            /*feature_setting=*/FeatureSetting::ENABLED,
+            /*flag_setting=*/FlagSetting::CONTROLLED_FRAME) {}
+
+  ControlledFrameApiTest(const version_info::Channel& channel,
+                         const FeatureSetting& feature_setting,
+                         const FlagSetting& flag_setting)
+      : ControlledFrameTestBase(channel, feature_setting, flag_setting) {}
+
  public:
   void SetUpOnMainThread() override {
     ControlledFrameTestBase::SetUpOnMainThread();
@@ -898,12 +915,7 @@ class ControlledFrameServiceWorkerTest
   }
 
  protected:
-  ControlledFrameServiceWorkerTest() {
-    feature_list.InitWithFeatures(
-        /*enabled_features=*/{features::kIsolatedWebApps,
-                              features::kIsolatedWebAppDevMode},
-        /*disabled_features=*/{});
-  }
+  ControlledFrameServiceWorkerTest() {}
 
   ~ControlledFrameServiceWorkerTest() override = default;
 
@@ -986,10 +998,11 @@ class ControlledFrameNotAvailableChannelTest
     : public ControlledFrameApiTest,
       public testing::WithParamInterface<version_info::Channel> {
  protected:
-  ControlledFrameNotAvailableChannelTest() : channel_(GetParam()) {}
-
- private:
-  extensions::ScopedCurrentChannel channel_;
+  ControlledFrameNotAvailableChannelTest()
+      : ControlledFrameApiTest(/*channel=*/GetParam(),
+                               /*feature_setting=*/FeatureSetting::ENABLED,
+                               /*flag_setting=*/FlagSetting::CONTROLLED_FRAME) {
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(ControlledFrameNotAvailableChannels,
@@ -1007,29 +1020,103 @@ IN_PROC_BROWSER_TEST_P(ControlledFrameNotAvailableChannelTest, Test) {
   content::WebContents* app_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  ASSERT_FALSE(IsControlledFramePresent(app_contents->GetPrimaryMainFrame()));
+  ASSERT_FALSE(IsControlledFramePresent(
+      app_contents->GetPrimaryMainFrame(),
+      embedded_https_test_server().GetURL("/index.html")));
 }
 
-class ControlledFrameDisabledTest : public ControlledFrameApiTest {
+class ControlledFrameAvailabilityTest
+    : public ControlledFrameApiTest,
+      public testing::WithParamInterface<
+          ::std::tuple<version_info::Channel, FeatureSetting, FlagSetting>> {
  protected:
-  ControlledFrameDisabledTest() {
-    feature_list.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{features::kControlledFrame});
+  ControlledFrameAvailabilityTest()
+      : ControlledFrameApiTest(
+            /*channel=*/std::get<0>(GetParam()),
+            /*feature_setting=*/std::get<1>(GetParam()),
+            /*flag_setting=*/std::get<2>(GetParam())) {}
+
+  ~ControlledFrameAvailabilityTest() override = default;
+
+  // |DetermineExpectedState| derives the expected enabling status based on
+  // the channel, feature, and flag inputs.
+  //
+  // Ideally, when we set a feature to enabled or disabled in the test setup,
+  // we would be altering that feature's default setting for the purposes of
+  // the test. However, ScopedFeatureList doesn't enable or disable a feature
+  // via defaults but instead by overrides. As a result, any feature that's
+  // enabled or disabled by ScopedFeatureList will appear as an override.
+  bool DetermineExpectedState() {
+    if (feature_setting() == FeatureSetting::DISABLED) {
+      return false;
+    }
+
+    if (feature_setting() == FeatureSetting::NONE &&
+        flag_setting() == FlagSetting::NONE) {
+      return false;
+    }
+
+    if (feature_setting() == FeatureSetting::ENABLED &&
+        (flag_setting() == FlagSetting::EXPERIMENTAL ||
+         flag_setting() == FlagSetting::CONTROLLED_FRAME)) {
+      return true;
+    }
+
+    // In Blink's runtime flags, if the base::Feature is overridden and that
+    // feature is enabled via the override, then the corresponding Blink
+    // runtime flag is also enabled.
+    if (feature_setting() == FeatureSetting::ENABLED &&
+        flag_setting() == FlagSetting::NONE) {
+      return true;
+    }
+
+    return false;
   }
-
-  ~ControlledFrameDisabledTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list;
 };
 
-IN_PROC_BROWSER_TEST_F(ControlledFrameDisabledTest, MissingFeature) {
+INSTANTIATE_TEST_SUITE_P(
+    /* */,
+    ControlledFrameAvailabilityTest,
+    /* Per-channel tests examine the extensions-based availability system. */
+    testing::Combine(
+        /*channel=*/testing::Values(version_info::Channel::STABLE,
+                                    version_info::Channel::BETA,
+                                    version_info::Channel::DEV,
+                                    version_info::Channel::CANARY),
+        /*feature=*/
+        testing::Values(FeatureSetting::NONE,
+                        FeatureSetting::DISABLED,
+                        FeatureSetting::ENABLED),
+        /*flag=*/
+        testing::Values(FlagSetting::NONE,
+                        FlagSetting::EXPERIMENTAL,
+                        FlagSetting::CONTROLLED_FRAME)));
+
+IN_PROC_BROWSER_TEST_P(ControlledFrameAvailabilityTest, Verify) {
+  const bool expected_enabled = DetermineExpectedState();
+  EXPECT_EQ(expected_enabled,
+            base::FeatureList::IsEnabled(blink::features::kControlledFrame));
+
   web_app::IsolatedWebAppUrlInfo url_info =
       CreateAndInstallEmptyApp(web_app::ManifestBuilder());
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
-  ASSERT_FALSE(IsControlledFramePresent(app_frame));
+  const bool actual_enabled = CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL("/index.html"));
+  EXPECT_EQ(expected_enabled, actual_enabled)
+      << "Test failure for case: " << ConfigToString();
+
+  // Uncomment for debugging information:
+  // DLOG(ERROR) << ConfigToString();
+  // DLOG(ERROR) << "expected_enabled=" << expected_enabled
+  //             << "; actual_enabled=" << actual_enabled;
+
+  if (expected_enabled && actual_enabled) {
+    auto* web_view_guest = GetWebViewGuest(app_frame);
+    EXPECT_EQ(kEvalSuccessStr, SetBackgroundColorToWhite(web_view_guest));
+    EXPECT_EQ(kEvalSuccessStr, ExecuteScriptRedBackgroundCode(app_frame));
+    EXPECT_EQ(kEvalSuccessStr, VerifyBackgroundColorIsRed(web_view_guest));
+  }
 }
 
 }  // namespace controlled_frame

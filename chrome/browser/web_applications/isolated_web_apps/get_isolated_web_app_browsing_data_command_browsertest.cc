@@ -23,6 +23,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -87,6 +88,8 @@ class GetIsolatedWebAppBrowsingDataCommandBrowserTest
 
  private:
   std::unique_ptr<ScopedProxyIsolatedWebApp> app_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kControlledFrame};
 };
 
 IN_PROC_BROWSER_TEST_F(GetIsolatedWebAppBrowsingDataCommandBrowserTest,

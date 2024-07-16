@@ -760,6 +760,16 @@
       status: "experimental",
     },
     {
+      // Enable support for Controlled Frame, providing the Controlled
+      // Frame tag to IWA apps and other contexts. See
+      // https://github.com/WICG/controlled-frame/blob/main/README.md for more
+      // info.
+      name: "ControlledFrame",
+      public: true,
+      status: "experimental",
+      base_feature_status: "disabled",
+    },
+    {
       name: "CookieDeprecationFacilitatedTesting",
       base_feature: "none",
     },
