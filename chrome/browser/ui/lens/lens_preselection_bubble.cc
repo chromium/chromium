@@ -71,7 +71,7 @@ gfx::Rect LensPreselectionBubble::GetBubbleBounds() {
     const int x =
         anchor_bounds.x() + (anchor_bounds.width() - bubble_size.width()) / 2;
     // Take bubble out of its original bounds to cross "line of death".
-    const int y = anchor_bounds.y() - bubble_size.height() / 2;
+    const int y = anchor_bounds.bottom() - bubble_size.height() / 2;
     return gfx::Rect(x, y, bubble_size.width(), bubble_size.height());
   }
   return gfx::Rect();

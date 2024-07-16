@@ -1119,6 +1119,10 @@ bool Browser::IsTabStripVisible() {
   return window_->IsToolbarShowing();
 }
 
+views::View* Browser::TopContainer() {
+  return window_->GetTopContainer();
+}
+
 tabs::TabInterface* Browser::GetActiveTabInterface() {
   return tab_strip_model_->GetActiveTab();
 }

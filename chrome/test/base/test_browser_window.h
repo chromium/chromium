@@ -202,6 +202,7 @@ class TestBrowserWindow : public BrowserWindow {
       base::OnceCallback<void(bool)> confirmed_callback) override {}
   bool IsDownloadShelfVisible() const override;
   DownloadShelf* GetDownloadShelf() override;
+  views::View* GetTopContainer() override;
   DownloadBubbleUIController* GetDownloadBubbleUIController() override;
   void ConfirmBrowserCloseWithPendingDownloads(
       int download_count,
