@@ -12,6 +12,7 @@ import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './healthd_internals_shared.css.js';
 import './pages/telemetry.js';
 import './pages/battery_chart.js';
+import './pages/cpu_frequency_chart.js';
 import './pages/thermal_chart.js';
 import './settings/settings_dialog.js';
 
@@ -23,6 +24,7 @@ import {getTemplate} from './app.html.js';
 import {PagePath} from './constants.js';
 import {HealthdApiTelemetryResult} from './externs.js';
 import type {HealthdInternalsBatteryChartElement} from './pages/battery_chart.js';
+import type {HealthdInternalsCpuFrequencyChartElement} from './pages/cpu_frequency_chart.js';
 import type {HealthdInternalsTelemetryElement} from './pages/telemetry.js';
 import type {HealthdInternalsThermalChartElement} from './pages/thermal_chart.js';
 import type {HealthdInternalsSettingsDialogElement} from './settings/settings_dialog.js';
@@ -37,6 +39,7 @@ export interface HealthdInternalsAppElement {
   $: {
     telemetryPage: HealthdInternalsTelemetryElement,
     batteryChart: HealthdInternalsBatteryChartElement,
+    cpuFrequencyChart: HealthdInternalsCpuFrequencyChartElement,
     thermalChart: HealthdInternalsThermalChartElement,
     settingsDialog: HealthdInternalsSettingsDialogElement,
   };
@@ -89,11 +92,15 @@ export class HealthdInternalsAppElement extends PolymerElement {
       path: PagePath.TELEMETRY,
     },
     {
-      name: 'Battery Diagram',
+      name: 'Battery Chart',
       path: PagePath.BATTERY,
     },
     {
-      name: 'Thermal Diagram',
+      name: 'CPU Frequency Chart',
+      path: PagePath.CPU_FREQUENCY,
+    },
+    {
+      name: 'Thermal Chart',
       path: PagePath.THERMAL,
     },
   ];
@@ -118,6 +125,8 @@ export class HealthdInternalsAppElement extends PolymerElement {
   private handleVisibilityChanged(pagePath: PagePath, isVisible: boolean) {
     if (pagePath === PagePath.BATTERY) {
       this.$.batteryChart.updateVisibility(isVisible);
+    } else if (pagePath === PagePath.CPU_FREQUENCY) {
+      this.$.cpuFrequencyChart.updateVisibility(isVisible);
     } else if (pagePath === PagePath.THERMAL) {
       this.$.thermalChart.updateVisibility(isVisible);
     }
@@ -145,6 +154,7 @@ export class HealthdInternalsAppElement extends PolymerElement {
 
     const timestamp: number = Date.now();
     this.$.batteryChart.updateBatteryData(data.battery, timestamp);
+    this.$.cpuFrequencyChart.updateCpuData(data.cpu, timestamp);
     this.$.thermalChart.updateThermalData(data.thermals, timestamp);
   }
 

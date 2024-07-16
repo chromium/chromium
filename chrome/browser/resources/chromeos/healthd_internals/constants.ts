@@ -32,6 +32,7 @@ export const LINE_CHART_COLOR_SET: string[] = [
  */
 export enum PagePath {
   TELEMETRY = '/telemetry',
+  CPU_FREQUENCY = '/cpu_frequency',
   BATTERY = '/battery',
   THERMAL = '/thermal',
 }
