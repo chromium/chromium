@@ -274,6 +274,7 @@ source_set("eg_app_support+eg2") {
     "//components/autofill/core/common",
     "//components/keyed_service/core",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/common",
     "//components/password_manager/ios:fake_bulk_leak_check_service",
     "//components/prefs",

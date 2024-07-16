@@ -181,6 +181,13 @@ void PasswordFormToJSON(const PasswordForm& form, base::Value::Dict& target) {
   target.Set("is_gaia_with_skip_save_password_form",
              form.form_data.is_gaia_with_skip_save_password_form());
   target.Set("in_store", ToString(form.in_store));
+  target.Set("server_side_classification_successful",
+             form.server_side_classification_successful);
+  target.Set("username_may_use_prefilled_placeholder",
+             form.username_may_use_prefilled_placeholder);
+  target.Set("form_has_autofilled_value", form.form_has_autofilled_value);
+  target.Set("keychain_identifier", form.keychain_identifier);
+  target.Set("accepts_webauthn_credentials", form.accepts_webauthn_credentials);
 
   std::vector<std::string> hashes;
   hashes.reserve(form.moving_blocked_for_list.size());
@@ -407,62 +414,6 @@ void PasswordForm::SetNoteWithEmptyUniqueDisplayName(
 bool ArePasswordFormUniqueKeysEqual(const PasswordForm& left,
                                     const PasswordForm& right) {
   return PasswordFormUniqueKey(left) == PasswordFormUniqueKey(right);
-}
-
-bool operator==(const PasswordForm& lhs, const PasswordForm& rhs) {
-  // TODO(crbug.com/40227324): Revisit whether we should consider the
-  // primary_key field when comparing forms. This is currently used only in
-  // tests, and non of the existing tests test the equality of primary_keys.
-  return lhs.scheme == rhs.scheme && lhs.signon_realm == rhs.signon_realm &&
-         lhs.url == rhs.url && lhs.action == rhs.action &&
-         lhs.submit_element == rhs.submit_element &&
-         lhs.username_element == rhs.username_element &&
-         lhs.username_element_renderer_id == rhs.username_element_renderer_id &&
-         lhs.username_value == rhs.username_value &&
-         lhs.all_alternative_usernames == rhs.all_alternative_usernames &&
-         lhs.all_alternative_passwords == rhs.all_alternative_passwords &&
-         lhs.form_has_autofilled_value == rhs.form_has_autofilled_value &&
-         lhs.password_element == rhs.password_element &&
-         lhs.password_element_renderer_id == rhs.password_element_renderer_id &&
-         lhs.password_value == rhs.password_value &&
-         lhs.new_password_element == rhs.new_password_element &&
-         lhs.confirmation_password_element ==
-             rhs.confirmation_password_element &&
-         lhs.confirmation_password_element_renderer_id ==
-             rhs.confirmation_password_element_renderer_id &&
-         lhs.new_password_value == rhs.new_password_value &&
-         lhs.date_created == rhs.date_created &&
-         lhs.date_last_used == rhs.date_last_used &&
-         lhs.date_password_modified == rhs.date_password_modified &&
-         lhs.blocked_by_user == rhs.blocked_by_user && lhs.type == rhs.type &&
-         lhs.times_used_in_html_form == rhs.times_used_in_html_form &&
-         lhs.form_data.SameFormAs(rhs.form_data) &&
-         lhs.generation_upload_status == rhs.generation_upload_status &&
-         lhs.display_name == rhs.display_name && lhs.icon_url == rhs.icon_url &&
-         // We compare the serialization of the origins here, as we want unique
-         // origins to compare as '=='.
-         lhs.federation_origin.Serialize() ==
-             rhs.federation_origin.Serialize() &&
-         lhs.skip_zero_click == rhs.skip_zero_click &&
-         lhs.was_parsed_using_autofill_predictions ==
-             rhs.was_parsed_using_autofill_predictions &&
-         lhs.match_type == rhs.match_type &&
-         lhs.affiliated_web_realm == rhs.affiliated_web_realm &&
-         lhs.app_display_name == rhs.app_display_name &&
-         lhs.app_icon_url == rhs.app_icon_url &&
-         lhs.submission_event == rhs.submission_event &&
-         lhs.only_for_fallback == rhs.only_for_fallback &&
-         lhs.in_store == rhs.in_store &&
-         lhs.moving_blocked_for_list == rhs.moving_blocked_for_list &&
-         lhs.password_issues == rhs.password_issues && lhs.notes == rhs.notes &&
-         lhs.previously_associated_sync_account_email ==
-             rhs.previously_associated_sync_account_email &&
-         lhs.sender_email == rhs.sender_email &&
-         lhs.sender_name == rhs.sender_name &&
-         lhs.sender_profile_image_url == rhs.sender_profile_image_url &&
-         lhs.date_received == rhs.date_received &&
-         lhs.sharing_notification_displayed ==
-             rhs.sharing_notification_displayed;
 }
 
 std::ostream& operator<<(std::ostream& os, PasswordForm::Scheme scheme) {

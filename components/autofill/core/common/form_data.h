@@ -393,6 +393,12 @@ bool FormHasNonEmptyPasswordField(const FormData& form);
 // For testing.
 std::ostream& operator<<(std::ostream& os, const FormData& form);
 
+#if defined(UNIT_TEST)
+inline bool operator==(const FormData& lhs, const FormData& rhs) {
+  return FormData::DeepEqual(lhs, rhs);
+}
+#endif  // defined(UNIT_TEST)
+
 // Serialize FormData. Used by the PasswordManager to persist FormData
 // pertaining to password forms. Serialized data is appended to |pickle|.
 void SerializeFormData(const FormData& form_data, base::Pickle* pickle);

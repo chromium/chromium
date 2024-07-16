@@ -247,8 +247,8 @@ TEST_P(PasswordStoreBuiltInBackendTest, NonASCIIData) {
   backend->AddLoginAsync(expected_form, base::DoNothing());
 
   base::MockCallback<LoginsOrErrorReply> mock_reply;
-  EXPECT_CALL(mock_reply,
-              Run(VariantWith<LoginsResult>(ElementsAre(expected_form))));
+  EXPECT_CALL(mock_reply, Run(VariantWith<LoginsResult>(ElementsAre(
+                              HasPrimaryKeyAndEquals(expected_form)))));
   backend->GetAutofillableLoginsAsync(mock_reply.Get());
 
   RunUntilIdle();
@@ -329,9 +329,9 @@ TEST_P(PasswordStoreBuiltInBackendTest, GetAllLoginsAsync) {
     expected_results.push_back(*credential);
   }
   base::MockCallback<LoginsOrErrorReply> mock_reply;
-  EXPECT_CALL(
-      mock_reply,
-      Run(VariantWith<LoginsResult>(ElementsAreArray(expected_results))));
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<LoginsResult>(UnorderedElementsAreArray(
+                  FormsIgnoringPrimaryKey(expected_results)))));
   backend->GetAllLoginsAsync(mock_reply.Get());
 
   RunUntilIdle();
@@ -848,8 +848,9 @@ TEST_P(PasswordStoreBuiltInBackendTest, GetLoginsWithAffiliations) {
   mock_affiliated_match_helper
       .ExpectCallToInjectAffiliationAndBrandingInformation({});
   base::MockCallback<LoginsOrErrorReply> mock_reply;
-  EXPECT_CALL(mock_reply, Run(VariantWith<LoginsResult>(
-                              UnorderedElementsAreArray(expected_results))));
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<LoginsResult>(UnorderedElementsAreArray(
+                  FormsIgnoringPrimaryKey(expected_results)))));
 
   backend->GetGroupedMatchingLoginsAsync(observed_form, mock_reply.Get());
   RunUntilIdle();
@@ -899,8 +900,9 @@ TEST_P(PasswordStoreBuiltInBackendTest,
   }
 
   base::MockCallback<LoginsOrErrorReply> mock_reply;
-  EXPECT_CALL(mock_reply, Run(VariantWith<LoginsResult>(
-                              UnorderedElementsAreArray(expected_results))));
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<LoginsResult>(UnorderedElementsAreArray(
+                  FormsIgnoringPrimaryKey(expected_results)))));
 
   backend->GetAllLoginsWithAffiliationAndBrandingAsync(mock_reply.Get());
   RunUntilIdle();

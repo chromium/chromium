@@ -14,6 +14,7 @@
 #import "base/test/ios/wait_util.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/password_manager/core/common/password_manager_features.h"
@@ -154,8 +155,10 @@ bool SaveToPasswordProfileStore(const PasswordForm& form) {
     return false;
   }
   for (const auto& result : consumer.GetStoreResults()) {
-    if (result == expected_form)
+    if (testing::Value(
+            result, password_manager::EqualsIgnorePrimaryKey(expected_form))) {
       return true;
+    }
   }
   return false;
 }
@@ -175,7 +178,8 @@ bool SaveToPasswordAccountStore(const PasswordForm& form) {
     return false;
   }
   for (const auto& result : consumer.GetStoreResults()) {
-    if (result == expected_form) {
+    if (testing::Value(
+            result, password_manager::EqualsIgnorePrimaryKey(expected_form))) {
       return true;
     }
   }
