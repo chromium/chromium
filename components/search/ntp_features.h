@@ -59,7 +59,6 @@ BASE_DECLARE_FEATURE(kNtpModulesOverflowScrollbar);
 BASE_DECLARE_FEATURE(kNtpModulesDragAndDrop);
 BASE_DECLARE_FEATURE(kNtpModulesLoad);
 BASE_DECLARE_FEATURE(kNtpModulesRedesigned);
-BASE_DECLARE_FEATURE(kNtpMostVisitedReflowOnOverflow);
 BASE_DECLARE_FEATURE(kNtpOutlookCalendarModule);
 BASE_DECLARE_FEATURE(kNtpPhotosModule);
 BASE_DECLARE_FEATURE(kNtpPhotosModuleSoftOptOut);

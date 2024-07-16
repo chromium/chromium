@@ -191,9 +191,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddInteger(
       "multipleLoadedModulesMaxModuleInstanceCount",
       ntp_features::GetMultipleLoadedModulesMaxModuleInstanceCount());
-  source->AddBoolean("mostVisitedReflowOnOverflowEnabled",
-                     base::FeatureList::IsEnabled(
-                         ntp_features::kNtpMostVisitedReflowOnOverflow));
   source->AddBoolean("mostRelevantTabResumptionEnabled",
                      base::FeatureList::IsEnabled(
                          ntp_features::kNtpMostRelevantTabResumptionModule));

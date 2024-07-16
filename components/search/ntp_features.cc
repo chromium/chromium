@@ -234,11 +234,6 @@ BASE_FEATURE(kNtpModulesRedesigned,
              "NtpModulesRedesigned",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, MostVisited tiles will reflow when overflowing.
-BASE_FEATURE(kNtpMostVisitedReflowOnOverflow,
-             "NtpMostVisitedReflowOnOverflow",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, OneGoogleBar will be shown.
 // This is a kill switch. Keep indefinitely.
 BASE_FEATURE(kNtpOneGoogleBar,
