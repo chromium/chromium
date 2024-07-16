@@ -181,12 +181,6 @@
   _keyboardMediator.omniboxTextField = self.textField;
   _keyboardMediator.delegate = self;
 
-  if (!base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
-    self.keyboardAccessoryView = ConfigureAssistiveKeyboardViews(
-        self.textField, kDotComTLD, _keyboardMediator, templateURLService,
-        self.bubblePresenter);
-  }
-
   if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching)) {
     self.zeroSuggestPrefetchHelper = [[ZeroSuggestPrefetchHelper alloc]
         initWithWebStateList:self.browser->GetWebStateList()
@@ -229,15 +223,13 @@
 }
 
 - (void)focusOmnibox {
-  if (base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
-    if (!self.keyboardAccessoryView) {
-      TemplateURLService* templateURLService =
-          ios::TemplateURLServiceFactory::GetForBrowserState(
-              self.browser->GetBrowserState());
-      self.keyboardAccessoryView = ConfigureAssistiveKeyboardViews(
-          self.textField, kDotComTLD, _keyboardMediator, templateURLService,
-          self.bubblePresenter);
-    }
+  if (!self.keyboardAccessoryView) {
+    TemplateURLService* templateURLService =
+        ios::TemplateURLServiceFactory::GetForBrowserState(
+            self.browser->GetBrowserState());
+    self.keyboardAccessoryView = ConfigureAssistiveKeyboardViews(
+        self.textField, kDotComTLD, _keyboardMediator, templateURLService,
+        self.bubblePresenter);
   }
 
   if (![self.textField isFirstResponder]) {
