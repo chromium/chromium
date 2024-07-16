@@ -610,10 +610,6 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
       tags.append('webgpu-adapter-' + cls._use_webgpu_adapter)
     else:
       tags.append('webgpu-adapter-default')
-    if cls.UseWebGpuCompatMode():
-      tags.append('webgpu-compat')
-    else:
-      tags.append('webgpu-not-compat')
 
     if host_information.IsWindows():
       if cls._use_fxc:
