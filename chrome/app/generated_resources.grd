@@ -6374,14 +6374,13 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Learn more about disabled extensions.
       </message>
 
-      <!-- Manifest V2 Deprecation Dialog -->
+      <!-- Manifest V2 Deprecation Dialogs -->
       <message name="IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_KEEP_DIALOG_TITLE" desc="The title of the dialog asking the user if they want to keep the extension installed, which is affected by the Manifest V2 deprecation">
         Keep "<ph name="EXTENSION_NAME">$1<ex>Google Translate</ex></ph>"?
       </message>
       <message name="IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_KEEP_DIALOG_OK_BUTTON" desc="The text of the dialog button to keep the extension installed, which is affected by the Manifest V2 deprecation">
         Keep
       </message>
-      <!-- Manifest V2 Deprecation Dialog strings -->
       <message name="IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_DISABLED_DIALOG_TITLE" desc="The title of the dialog that appears when extensions were disabled due to the Manifest V2 deprecation">
         "<ph name="EXTENSION_NAME">$1<ex>Google Translate</ex></ph>" was turned off
       </message>
@@ -6396,6 +6395,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
           =1 {Manage extension}
           other {Manage extensions}
         }
+      </message>
+      <message name="IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_REENABLE_DIALOG_TITLE" desc="The title of the dialog asking the user if they want to enable an extension that was disabled due to the Manifest V2 deprecation">
+        Turn "<ph name="EXTENSION_NAME">$1<ex>Google Translate</ex></ph>" on?
+      </message>
+      <message name="IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_REENABLE_DIALOG_OK_BUTTON" desc="The text of the dialog button to turn on an extension that was disabled due to the Manifest V2 deprecation">
+        Turn on
       </message>
 
       <!-- Begin Extension Settings Overridden Dialog strings. -->

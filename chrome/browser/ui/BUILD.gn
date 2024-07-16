@@ -5720,6 +5720,7 @@ static_library("ui") {
       "views/extensions/extensions_toolbar_coordinator.h",
       "views/extensions/mv2_deprecation_disabled_dialog.cc",
       "views/extensions/mv2_deprecation_keep_dialog.cc",
+      "views/extensions/mv2_deprecation_reenable_dialog.cc",
       "views/extensions/reload_page_dialog.cc",
       "views/extensions/security_dialog_tracker.cc",
       "views/extensions/security_dialog_tracker.h",

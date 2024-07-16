@@ -95,6 +95,14 @@ void ShowMv2DeprecationKeepDialog(content::BrowserContext* browser_context,
                                   base::OnceClosure accept_callback,
                                   base::OnceClosure cancel_callback);
 
+// Shows a dialog when the user re-enables an extension affected by the MV2
+// deprecation.
+void ShowMv2DeprecationReEnableDialog(
+    gfx::NativeWindow parent,
+    const ExtensionId& extension_id,
+    const std::string& extension_name,
+    base::OnceCallback<void(bool)> done_callback);
+
 // Shows a dialog when extensions require a refresh for their action
 // to be run or blocked. When the dialog is accepted, `callback` is
 // invoked.
