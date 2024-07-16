@@ -531,7 +531,7 @@ class DevToolsProtocolTest_BounceTrackingMitigations
         /*enabled_features=*/{{features::kDIPS,
                                {{"delete", "true"},
                                 {"triggering_action", "stateful_bounce"}}}},
-        /*disabled_features=*/{kDipsPrepopulation});
+        /*disabled_features=*/{});
 
     DevToolsProtocolTest::SetUp();
   }

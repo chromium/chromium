@@ -34,11 +34,6 @@ namespace dips {
 class PersistentRepeatingTimer;
 }
 
-class DIPSPrepopulateTest;
-class DIPSServiceTest;
-
-BASE_DECLARE_FEATURE(kDipsPrepopulation);
-
 class DIPSService : public KeyedService {
  public:
   using RecordBounceCallback = base::RepeatingCallback<void(
@@ -108,14 +103,6 @@ class DIPSService : public KeyedService {
   }
 
   void OnTimerFiredForTesting() { OnTimerFired(); }
-  // Prepopulation is a major source of flakiness, but tests (unless they are
-  // specifically for prepopulation) should disable the kDipsPrepopulation
-  // feature, not call this function.
-  void WaitForInitCompleteForTesting(
-      absl::variant<base::PassKey<DIPSServiceTest>,
-                    base::PassKey<DIPSPrepopulateTest>>) {
-    wait_for_prepopulating_.Run();
-  }
   void WaitForFileDeletionCompleteForTesting() {
     wait_for_file_deletion_.Run();
   }
@@ -169,11 +156,7 @@ class DIPSService : public KeyedService {
       base::RepeatingCallback<void(const GURL&)> content_settings_callback);
 
   scoped_refptr<base::SequencedTaskRunner> CreateTaskRunner();
-  void InitializeStorageWithEngagedSites(bool prepopulated);
-  // Prepopulates the DIPS database with `sites` having interaction at `time`.
-  void InitializeStorage(base::Time time, std::vector<std::string> sites);
 
-  void OnStorageInitialized();
   void OnTimerFired();
   void DeleteDIPSEligibleState(DeletedSitesCallback callback,
                                std::vector<std::string> sites_to_clear);
@@ -193,7 +176,6 @@ class DIPSService : public KeyedService {
                      const GURL& third_party_url) const;
 
   base::RunLoop wait_for_file_deletion_;
-  base::RunLoop wait_for_prepopulating_;
   raw_ptr<content::BrowserContext> browser_context_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   // The persisted timer controlling how often incidental state is cleared.

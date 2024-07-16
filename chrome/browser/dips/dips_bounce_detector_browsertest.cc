@@ -2843,7 +2843,6 @@ class DIPSBounceTriggerBrowserTest : public DIPSBounceDetectorBrowserTest {
   DIPSBounceTriggerBrowserTest() {
     enabled_features_.push_back(
         {features::kDIPS, {{"triggering_action", "bounce"}}});
-    disabled_features_.push_back(kDipsPrepopulation);
   }
 
   void SetUpOnMainThread() override {
@@ -3100,10 +3099,6 @@ class DIPSPrivacySandboxApiInteractionTest : public PlatformBrowserTest {
     std::vector<base::test::FeatureRef> disabled_features;
 
     enabled_features.emplace_back(features::kPrivacySandboxAdsAPIsOverride);
-    // If we accidentally visit any sites before DIPS DB prepopulation
-    // completes, the prepopulation task will insert an interaction for any
-    // sites we visit. Disable prepopulation to avoid flakes.
-    disabled_features.emplace_back(kDipsPrepopulation);
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 

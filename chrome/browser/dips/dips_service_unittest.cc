@@ -72,33 +72,13 @@ TEST_F(DIPSServiceTest, DontCreateServiceIfFeatureDisabled) {
   EXPECT_EQ(DIPSService::Get(&profile), nullptr);
 }
 
-TEST_F(DIPSServiceTest, EnablePrepopulation) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kDipsPrepopulation);
-
+TEST_F(DIPSServiceTest, NoPrepopulation) {
   const GURL url("http://example.com/");
   TestingProfile profile;
   site_engagement::SiteEngagementService::Get(&profile)->AddPointsForTesting(
       url, 42);
 
   auto* dips_service = DIPSService::Get(&profile);
-  dips_service->WaitForInitCompleteForTesting(PassKey());
-  // Because there was engagement on example.com, prepopulation should have
-  // created a DIPS DB record for it:
-  ASSERT_TRUE(GetDIPSState(dips_service, url).has_value());
-}
-
-TEST_F(DIPSServiceTest, DisablePrepopulation) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kDipsPrepopulation);
-
-  const GURL url("http://example.com/");
-  TestingProfile profile;
-  site_engagement::SiteEngagementService::Get(&profile)->AddPointsForTesting(
-      url, 42);
-
-  auto* dips_service = DIPSService::Get(&profile);
-  dips_service->WaitForInitCompleteForTesting(PassKey());
   // There was engagement on example.com, but database prepopulation was
   // disabled, so there should NOT be a DIPS DB record for it:
   ASSERT_FALSE(GetDIPSState(dips_service, url).has_value());

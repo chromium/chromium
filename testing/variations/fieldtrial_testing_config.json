@@ -6864,26 +6864,6 @@
             ]
         }
     ],
-    "DIPSDisablePrepopulation": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "DipsPrepopulation"
-                    ]
-                }
-            ]
-        }
-    ],
     "DIPSStatefulBounceEnforcement": [
         {
             "platforms": [

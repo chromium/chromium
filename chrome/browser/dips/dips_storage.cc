@@ -20,27 +20,6 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
 
-namespace {
-
-// The number of sites to process in each call to DIPSStorage::Prepopulate().
-// Intended to be constant; settable only for testing.
-size_t g_prepopulate_chunk_size = 100;
-
-}  // namespace
-
-DIPSStorage::PrepopulateArgs::PrepopulateArgs(base::Time time,
-                                              size_t offset,
-                                              std::vector<std::string> sites,
-                                              base::OnceClosure on_complete)
-    : time(time),
-      offset(offset),
-      sites(std::move(sites)),
-      on_complete(std::move(on_complete)) {}
-
-DIPSStorage::PrepopulateArgs::PrepopulateArgs(PrepopulateArgs&&) = default;
-
-DIPSStorage::PrepopulateArgs::~PrepopulateArgs() = default;
-
 DIPSStorage::DIPSStorage(const std::optional<base::FilePath>& path)
     : db_(std::make_unique<DIPSDatabase>(path)) {
   base::AssertLongCPUWorkAllowed();
@@ -304,47 +283,6 @@ void DIPSStorage::DeleteDatabaseFiles(base::FilePath path,
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(IgnoreResult(&sql::Database::Delete), std::move(path)),
       std::move(on_complete));
-}
-
-/* static */
-size_t DIPSStorage::SetPrepopulateChunkSizeForTesting(size_t size) {
-  return std::exchange(g_prepopulate_chunk_size, size);
-}
-
-void DIPSStorage::PrepopulateChunk(PrepopulateArgs args) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_LE(args.offset, args.sites.size());
-
-  size_t chunk_size =
-      std::min(args.sites.size() - args.offset, g_prepopulate_chunk_size);
-  for (size_t i = 0; i < chunk_size; i++) {
-    DIPSState state = ReadSite(args.sites[args.offset + i]);
-    // TODO(crbug.com/40913154): Verify whether we need to ignore if WAA is
-    // non-empty regardless of interaction.
-    if (state.user_interaction_times().has_value()) {
-      continue;
-    }
-
-    state.update_user_interaction_time(args.time);
-
-    if (!state.site_storage_times().has_value()) {
-      // If we set a fake interaction time but no storage time, then when
-      // storage does happen we'll report an incorrect
-      // TimeFromInteractionToStorage metric. So set the storage time too.
-      state.update_site_storage_time(args.time);
-    }
-  }
-
-  // Increment chunk offset in args and resubmit task if incomplete.
-  args.offset += chunk_size;
-  if (args.offset < args.sites.size()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&DIPSStorage::PrepopulateChunk,
-                                  weak_factory_.GetWeakPtr(), std::move(args)));
-  } else {
-    db_->MarkAsPrepopulated();
-    std::move(args.on_complete).Run();
-  }
 }
 
 std::optional<base::Time> DIPSStorage::GetTimerLastFired() {
