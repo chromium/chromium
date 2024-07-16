@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_VARIATIONS_SERVICE_GOOGLE_GROUPS_UPDATER_SERVICE_H_
 #define COMPONENTS_VARIATIONS_SERVICE_GOOGLE_GROUPS_UPDATER_SERVICE_H_
 
+#include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -36,6 +38,9 @@ inline constexpr char kDogfoodGroupsSyncPrefGaiaIdKey[] = "gaia_id";
 
 // Service responsible for one-way synchronization of Google group information
 // from per-profile sync data to local-state.
+// TODO: crbug.com/348575889 - Rename the service to GoogleGroupsManager to
+// reflect that it also allows looking up whether a group-controlled feature is
+// enabled for the BrowserContext that this service is associated with.
 class GoogleGroupsUpdaterService : public KeyedService,
                                    public syncer::SyncServiceObserver {
  public:
@@ -50,6 +55,15 @@ class GoogleGroupsUpdaterService : public KeyedService,
   ~GoogleGroupsUpdaterService() override;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
+  // Returns whether `feature` is enabled and, if the study that is connected to
+  // this feature has a non-empty `google_groups` filter, whether the
+  // BrowserContext associated with `this` KeyedService is in at least one of
+  // those Google Groups. Note that the Google Groups for the BrowserContext are
+  // only populated if the user is syncing their preferences. If the user is not
+  // syncing their preferences, this function therefore falls back to
+  // `base::FeatureList::IsEnabled`.
+  bool IsFeatureEnabledForProfile(const base::Feature& feature) const;
 
   // KeyedService overrides.
   void Shutdown() override;
@@ -86,6 +100,10 @@ class GoogleGroupsUpdaterService : public KeyedService,
   const raw_ref<PrefService> source_prefs_;
 
   PrefChangeRegistrar pref_change_registrar_;
+
+  // A cached version of the (variations-related) Google Groups that the profile
+  // is a part of.
+  base::flat_set<std::string> google_group_ids_;
 
   // The SyncService observation. When Sync gets disabled (most likely due to
   // user signout), the groups-related preferences must be cleared.

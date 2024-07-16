@@ -21,6 +21,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/metrics/field_trial_list_including_low_anonymity.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1805,6 +1806,26 @@ TYPED_TEST(VariationsSeedProcessorTest,
       GetActiveFieldTrialGroupsForTesting(
           &active_groups_including_low_anonymity);
   EXPECT_EQ(active_groups_including_low_anonymity.size(), 1u);
+}
+
+// Tests that studies with filters with a `google_groups` parameter generate a
+// field trial parameter that contains the Google Groups ids for that study.
+TYPED_TEST(VariationsSeedProcessorTest,
+           StudyWithGoogleGroupFilterGeneratesFieldTrialParam) {
+  VariationsSeed seed;
+  Study* study = seed.add_study();
+  study->set_name("A");
+  study->set_default_experiment_name("Default");
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
+  AddExperiment("AA", 100, study);
+  AddExperiment("Default", 0, study);
+  AddGoogleGroupFilter(*study);
+
+  this->CreateTrialsFromSeed(seed);
+
+  EXPECT_EQ(base::NumberToString(kExampleGoogleGroup),
+            base::GetFieldTrialParamValue(
+                "A", internal::kGoogleGroupFeatureParamName));
 }
 
 TYPED_TEST(VariationsSeedProcessorTest,

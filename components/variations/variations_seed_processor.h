@@ -24,7 +24,18 @@ namespace variations {
 namespace internal {
 // The trial group selected when a study specifies a feature that is already
 // associated with another trial. Exposed in the header file for testing.
-COMPONENT_EXPORT(VARIATIONS) extern const char kFeatureConflictGroupName[];
+COMPONENT_EXPORT(VARIATIONS)
+extern const char kFeatureConflictGroupName[];
+
+// The name of an auto-generated feature parameter for studies that have a
+// non-empty google_groups filter.
+COMPONENT_EXPORT(VARIATIONS)
+extern const char kGoogleGroupFeatureParamName[];
+
+// The separator between multiple Google groups in when serialized into a string
+// for the feature parameter.
+COMPONENT_EXPORT(VARIATIONS)
+extern const char kGoogleGroupFeatureParamSeparator[];
 }  // namespace internal
 
 class ProcessedStudy;

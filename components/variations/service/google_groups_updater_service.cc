@@ -4,12 +4,21 @@
 
 #include "components/variations/service/google_groups_updater_service.h"
 
+#include <iterator>
+#include <string>
+#include <string_view>
+#include <vector>
+
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/strings/string_split.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync/service/sync_service.h"
 #include "components/variations/pref_names.h"
+#include "components/variations/variations_seed_processor.h"
 
 GoogleGroupsUpdaterService::GoogleGroupsUpdaterService(
     PrefService& target_prefs,
@@ -45,6 +54,30 @@ void GoogleGroupsUpdaterService::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF
 #endif
   );
+}
+
+bool GoogleGroupsUpdaterService::IsFeatureEnabledForProfile(
+    const base::Feature& feature) const {
+  if (!base::FeatureList::IsEnabled(feature)) {
+    return false;
+  }
+
+  const std::string google_groups_param =
+      base::FeatureParam<std::string>(
+          &feature, variations::internal::kGoogleGroupFeatureParamName, "")
+          .Get();
+  const std::vector<std::string_view> group_strings = base::SplitStringPiece(
+      google_groups_param,
+      variations::internal::kGoogleGroupFeatureParamSeparator,
+      base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  if (group_strings.empty()) {
+    // No required Google Group for this experiment.
+    return true;
+  }
+  return base::ranges::any_of(group_strings, [&user_groups = google_group_ids_](
+                                                 std::string_view group) {
+    return user_groups.contains(group);
+  });
 }
 
 void GoogleGroupsUpdaterService::Shutdown() {
@@ -97,14 +130,18 @@ void GoogleGroupsUpdaterService::UpdateGoogleGroups() {
       &target_prefs_.get(), variations::prefs::kVariationsGoogleGroups);
   base::Value::Dict& target_prefs_dict = target_prefs_update.Get();
 
-  base::Value::List groups;
-  for (const auto& group_value : source_prefs_->GetList(
+  const base::Value::List& source_list = source_prefs_->GetList(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-           variations::kOsDogfoodGroupsSyncPrefName
+      variations::kOsDogfoodGroupsSyncPrefName
 #else
-           variations::kDogfoodGroupsSyncPrefName
+      variations::kDogfoodGroupsSyncPrefName
 #endif
-           )) {
+  );
+
+  base::Value::List groups;
+  std::vector<std::string> group_ids;
+  group_ids.reserve(source_list.size());
+  for (const auto& group_value : source_list) {
     const base::Value::Dict* group_dict = group_value.GetIfDict();
     if (group_dict == nullptr) {
       continue;
@@ -115,6 +152,9 @@ void GoogleGroupsUpdaterService::UpdateGoogleGroups() {
       continue;
     }
     groups.Append(*group_str);
+    group_ids.push_back(*group_str);
   }
   target_prefs_dict.Set(key_, std::move(groups));
+  google_group_ids_ = {std::make_move_iterator(group_ids.begin()),
+                       std::make_move_iterator(group_ids.end())};
 }

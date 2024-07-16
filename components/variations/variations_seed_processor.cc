@@ -16,6 +16,8 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_ref.h"
 #include "components/variations/client_filterable_state.h"
@@ -28,18 +30,42 @@
 namespace variations {
 
 namespace internal {
+
 const char kFeatureConflictGroupName[] = "ClientSideFeatureConflict";
+const char kGoogleGroupFeatureParamName[] = "__GGIDS";
+const char kGoogleGroupFeatureParamSeparator[] = ",";
+
 }  // namespace internal
 
 namespace {
 
-// Associates the variations params of |experiment|, if present.
+// Serializes the `google_groups` attribute of `filter`.
+std::string SerializeGoogleGroupsFilter(const Study::Filter& filter) {
+  std::string result;
+  for (int64_t group_id : filter.google_group()) {
+    if (!result.empty()) {
+      result.append(internal::kGoogleGroupFeatureParamSeparator);
+    }
+    result.append(base::NumberToString(group_id));
+  }
+  return result;
+}
+
+// Associates the variations params of `experiment`, if present.
 void RegisterExperimentParams(const Study& study,
                               const Study::Experiment& experiment) {
   std::map<std::string, std::string> params;
-  for (int i = 0; i < experiment.param_size(); ++i) {
-    if (experiment.param(i).has_name() && experiment.param(i).has_value())
-      params[experiment.param(i).name()] = experiment.param(i).value();
+  for (const auto& param : experiment.param()) {
+    if (param.has_name() && param.has_value()) {
+      params[param.name()] = param.value();
+    }
+  }
+  // If the study has a filter with a `google_groups` attribute, we write those
+  // Google Group ids into a feature parameter. This allows looking up which
+  // Google Groups may influence a feature's state.
+  if (study.filter().google_group_size() > 0) {
+    params[internal::kGoogleGroupFeatureParamName] =
+        SerializeGoogleGroupsFilter(study.filter());
   }
   if (!params.empty())
     base::AssociateFieldTrialParams(study.name(), experiment.name(), params);
@@ -185,9 +211,9 @@ void RegisterFeatureOverrides(const Study& study,
   }
 }
 
-// Checks if |experiment| is associated with a forcing flag or feature and if it
-// is, returns whether it should be forced enabled based on the |command_line|
-// or |feature_list| state.
+// Checks if |experiment| is associated with a forcing flag or feature and if
+// it is, returns whether it should be forced enabled based on the
+// |command_line| or |feature_list| state.
 bool ShouldForceExperiment(const Study::Experiment& experiment,
                            const base::CommandLine& command_line,
                            const base::FeatureList& feature_list) {
@@ -201,14 +227,16 @@ bool ShouldForceExperiment(const Study::Experiment& experiment,
         experiment.feature_association().forcing_feature_off(),
         base::FeatureList::OVERRIDE_DISABLE_FEATURE);
   }
-  if (experiment.has_forcing_flag())
+  if (experiment.has_forcing_flag()) {
     return command_line.HasSwitch(experiment.forcing_flag());
+  }
   return false;
 }
 
 bool StudyIsLowAnonymity(const Study& study) {
-  // Studies which are set based on Google group membership are potentially low
-  // anonymity (as the groups could in theory have a small number of members).
+  // Studies which are set based on Google group membership are potentially
+  // low anonymity (as the groups could in theory have a small number of
+  // members).
   return study.filter().google_group_size() > 0;
 }
 

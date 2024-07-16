@@ -4,13 +4,16 @@
 
 #include "components/variations/service/google_groups_updater_service.h"
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/variations/pref_names.h"
+#include "components/variations/variations_seed_processor.h"
 #include "google_groups_updater_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -149,4 +152,95 @@ TEST_F(GoogleGroupsUpdaterServiceTest, ClearProfilePrefsClearsTargetPref) {
   // Check the source and target prefs have been cleared.
   CheckSourcePrefCleared();
   CheckTargetPref({});
+}
+
+// Tests that `IsFeatureEnabledForProfile` returns true if the feature is
+// enabled and the source prefs of the `GoogleGroupsUpdaterService` contain at
+// least one of the google_groups specified for the feature.
+TEST_F(GoogleGroupsUpdaterServiceTest, IsFeatureEnabledForProfile) {
+  static BASE_FEATURE(kSampleFeature, "SampleFeature",
+                      base::FEATURE_DISABLED_BY_DEFAULT);
+  auto feature_list = std::make_unique<base::FeatureList>();
+  GoogleGroupsUpdaterService google_groups_updater(target_prefs_, key_,
+                                                   source_prefs_);
+
+  constexpr char kTrialName[] = "SampleTrial";
+  constexpr char kGroupName[] = "SampleGroup";
+  constexpr char kRelevantGroupId[] = "1234";
+  base::FieldTrial* trial =
+      base::FieldTrialList::CreateFieldTrial(kTrialName, kGroupName);
+  feature_list->RegisterFieldTrialOverride(
+      "SampleFeature", base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial);
+  ASSERT_TRUE(base::AssociateFieldTrialParams(
+      kTrialName, kGroupName,
+      {{variations::internal::kGoogleGroupFeatureParamName,
+        kRelevantGroupId}}));
+
+  SetSourcePref({"123", "789"});
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kSampleFeature));
+  EXPECT_FALSE(
+      google_groups_updater.IsFeatureEnabledForProfile(kSampleFeature));
+
+  SetSourcePref({"123", kRelevantGroupId});
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kSampleFeature));
+  EXPECT_TRUE(google_groups_updater.IsFeatureEnabledForProfile(kSampleFeature));
+}
+
+// Tests that `IsFeatureEnabledForProfile` can deal properly with google_groups
+// parameters of size longer than 1.
+TEST_F(GoogleGroupsUpdaterServiceTest,
+       IsFeatureEnabledForProfileMultipleGroups) {
+  static BASE_FEATURE(kSampleFeature, "SampleFeature",
+                      base::FEATURE_DISABLED_BY_DEFAULT);
+  auto feature_list = std::make_unique<base::FeatureList>();
+  GoogleGroupsUpdaterService google_groups_updater(target_prefs_, key_,
+                                                   source_prefs_);
+
+  constexpr char kTrialName[] = "SampleTrial";
+  constexpr char kGroupName[] = "SampleGroup";
+  constexpr char kRelevantGroupId[] = "1234";
+  base::FieldTrial* trial =
+      base::FieldTrialList::CreateFieldTrial(kTrialName, kGroupName);
+  feature_list->RegisterFieldTrialOverride(
+      "SampleFeature", base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial);
+  ASSERT_TRUE(base::AssociateFieldTrialParams(
+      kTrialName, kGroupName,
+      {{variations::internal::kGoogleGroupFeatureParamName,
+        base::StrCat({"645",
+                      variations::internal::kGoogleGroupFeatureParamSeparator,
+                      kRelevantGroupId})}}));
+
+  SetSourcePref({kRelevantGroupId, "789"});
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kSampleFeature));
+  EXPECT_TRUE(google_groups_updater.IsFeatureEnabledForProfile(kSampleFeature));
+}
+
+// Tests that `IsFeatureEnabledForProfile` is always false if the feature itself
+// is disabled.
+TEST_F(GoogleGroupsUpdaterServiceTest,
+       IsFeatureEnabledForProfileForDisabledFeature) {
+  static BASE_FEATURE(kSampleFeature, "SampleFeature",
+                      base::FEATURE_DISABLED_BY_DEFAULT);
+  auto feature_list = std::make_unique<base::FeatureList>();
+  GoogleGroupsUpdaterService google_groups_updater(target_prefs_, key_,
+                                                   source_prefs_);
+
+  constexpr char kTrialName[] = "SampleTrial";
+  constexpr char kGroupName[] = "SampleGroup";
+  constexpr char kRelevantGroupId[] = "1234";
+  base::FieldTrialList::CreateFieldTrial(kTrialName, kGroupName);
+  ASSERT_TRUE(base::AssociateFieldTrialParams(
+      kTrialName, kGroupName,
+      {{variations::internal::kGoogleGroupFeatureParamName,
+        kRelevantGroupId}}));
+  SetSourcePref({"123", kRelevantGroupId});
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+  EXPECT_FALSE(base::FeatureList::IsEnabled(kSampleFeature));
+  EXPECT_FALSE(
+      google_groups_updater.IsFeatureEnabledForProfile(kSampleFeature));
 }
