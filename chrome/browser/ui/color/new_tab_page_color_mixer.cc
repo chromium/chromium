@@ -488,7 +488,7 @@ void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
     mixer[kColorNewTabPageHistoryClustersModuleItemBackground] = {
         gfx::kGoogleGrey100};
   }
-  mixer[kColorNewTabPageModuleIconContainerBackground] =
+  mixer[kColorNewTabPageModuleIconBackground] =
       ui::SetAlpha(accent_color,
                    /* 24% opacity */ 0.24 * SK_AlphaOPAQUE);
   mixer[kColorNewTabPageModuleScrollButtonBackground] = {
