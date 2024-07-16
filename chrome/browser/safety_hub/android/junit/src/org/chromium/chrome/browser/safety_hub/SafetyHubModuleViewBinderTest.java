@@ -307,11 +307,12 @@ public class SafetyHubModuleViewBinderTest {
                 SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT, 0);
 
         String expectedTitle = mActivity.getString(R.string.safety_hub_permissions_ok_title);
+        String expectedSummary = mActivity.getString(R.string.safety_hub_permissions_ok_summary);
         String expectedSecondaryButtonText =
                 mActivity.getString(R.string.safety_hub_go_to_settings_button);
 
         assertEquals(expectedTitle, mPermissionsPreference.getTitle().toString());
-        assertNull(mPermissionsPreference.getSummary());
+        assertEquals(expectedSummary, mPermissionsPreference.getSummary().toString());
         assertEquals(SAFE_ICON, shadowOf(mPermissionsPreference.getIcon()).getCreatedFromResId());
         assertNull(mPermissionsPreference.getPrimaryButtonText());
         assertEquals(expectedSecondaryButtonText, mPermissionsPreference.getSecondaryButtonText());
@@ -331,12 +332,14 @@ public class SafetyHubModuleViewBinderTest {
                                 R.plurals.safety_hub_permissions_warning_title,
                                 sitesWithUnusedPermissionsCount,
                                 sitesWithUnusedPermissionsCount);
+        String expectedSummary =
+                mActivity.getString(R.string.safety_hub_permissions_warning_summary);
         String expectedPrimaryButtonText = mActivity.getString(R.string.got_it);
         String expectedSecondaryButtonText =
                 mActivity.getString(R.string.safety_hub_view_sites_button);
 
         assertEquals(expectedTitle, mPermissionsPreference.getTitle().toString());
-        assertNull(mPermissionsPreference.getSummary());
+        assertEquals(expectedSummary, mPermissionsPreference.getSummary().toString());
         assertEquals(INFO_ICON, shadowOf(mPermissionsPreference.getIcon()).getCreatedFromResId());
         assertEquals(expectedPrimaryButtonText, mPermissionsPreference.getPrimaryButtonText());
         assertEquals(expectedSecondaryButtonText, mPermissionsPreference.getSecondaryButtonText());
@@ -350,11 +353,13 @@ public class SafetyHubModuleViewBinderTest {
 
         String expectedTitle =
                 mActivity.getString(R.string.safety_hub_notifications_review_ok_title);
+        String expectedSummary =
+                mActivity.getString(R.string.safety_hub_notifications_review_ok_summary);
         String expectedSecondaryButtonText =
                 mActivity.getString(R.string.safety_hub_go_to_notifications_button);
 
         assertEquals(expectedTitle, mNotificationsReviewPreference.getTitle().toString());
-        assertNull(mNotificationsReviewPreference.getSummary());
+        assertEquals(expectedSummary, mNotificationsReviewPreference.getSummary().toString());
         assertEquals(
                 SAFE_ICON,
                 shadowOf(mNotificationsReviewPreference.getIcon()).getCreatedFromResId());
@@ -378,13 +383,15 @@ public class SafetyHubModuleViewBinderTest {
                                 R.plurals.safety_hub_notifications_review_warning_title,
                                 notificationPermissionsForReviewCount,
                                 notificationPermissionsForReviewCount);
+        String expectedSummary =
+                mActivity.getString(R.string.safety_hub_notifications_review_warning_summary);
         String expectedPrimaryButtonText =
                 mActivity.getString(R.string.safety_hub_notifications_reset_all_button);
         String expectedSecondaryButtonText =
                 mActivity.getString(R.string.safety_hub_view_sites_button);
 
         assertEquals(expectedTitle, mNotificationsReviewPreference.getTitle().toString());
-        assertNull(mNotificationsReviewPreference.getSummary());
+        assertEquals(expectedSummary, mNotificationsReviewPreference.getSummary().toString());
         assertEquals(
                 INFO_ICON,
                 shadowOf(mNotificationsReviewPreference.getIcon()).getCreatedFromResId());

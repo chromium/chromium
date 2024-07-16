@@ -356,6 +356,7 @@ public class SafetyHubModuleViewBinder {
                 model.get(SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT);
         @SafetyHubModuleProperties.ModuleState int state = getModuleState(model, option);
         String title;
+        String summary;
         String primaryButtonText = null;
         String secondaryButtonText;
         View.OnClickListener primaryButtonListener = null;
@@ -370,7 +371,10 @@ public class SafetyHubModuleViewBinder {
                                     R.plurals.safety_hub_permissions_warning_title,
                                     sitesWithUnusedPermissionsCount,
                                     sitesWithUnusedPermissionsCount);
-
+            summary =
+                    preference
+                            .getContext()
+                            .getString(R.string.safety_hub_permissions_warning_summary);
             primaryButtonText = preference.getContext().getString(R.string.got_it);
             secondaryButtonText =
                     preference.getContext().getString(R.string.safety_hub_view_sites_button);
@@ -379,6 +383,7 @@ public class SafetyHubModuleViewBinder {
                     model.get(SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER);
         } else {
             title = preference.getContext().getString(R.string.safety_hub_permissions_ok_title);
+            summary = preference.getContext().getString(R.string.safety_hub_permissions_ok_summary);
             secondaryButtonText =
                     preference.getContext().getString(R.string.safety_hub_go_to_settings_button);
             secondaryButtonListener =
@@ -386,6 +391,7 @@ public class SafetyHubModuleViewBinder {
         }
 
         preference.setTitle(title);
+        preference.setSummary(summary);
         preference.setPrimaryButtonText(primaryButtonText);
         preference.setSecondaryButtonText(secondaryButtonText);
         preference.setPrimaryButtonClickListener(primaryButtonListener);
@@ -404,6 +410,7 @@ public class SafetyHubModuleViewBinder {
                 model.get(SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT);
         @SafetyHubModuleProperties.ModuleState int state = getModuleState(model, option);
         String title;
+        String summary;
         String primaryButtonText = null;
         String secondaryButtonText;
         View.OnClickListener primaryButtonListener = null;
@@ -418,6 +425,10 @@ public class SafetyHubModuleViewBinder {
                                     R.plurals.safety_hub_notifications_review_warning_title,
                                     notificationPermissionsForReviewCount,
                                     notificationPermissionsForReviewCount);
+            summary =
+                    preference
+                            .getContext()
+                            .getString(R.string.safety_hub_notifications_review_warning_summary);
             primaryButtonText =
                     preference
                             .getContext()
@@ -432,6 +443,10 @@ public class SafetyHubModuleViewBinder {
                     preference
                             .getContext()
                             .getString(R.string.safety_hub_notifications_review_ok_title);
+            summary =
+                    preference
+                            .getContext()
+                            .getString(R.string.safety_hub_notifications_review_ok_summary);
             secondaryButtonText =
                     preference
                             .getContext()
@@ -441,6 +456,7 @@ public class SafetyHubModuleViewBinder {
         }
 
         preference.setTitle(title);
+        preference.setSummary(summary);
         preference.setPrimaryButtonText(primaryButtonText);
         preference.setSecondaryButtonText(secondaryButtonText);
         preference.setPrimaryButtonClickListener(primaryButtonListener);

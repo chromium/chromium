@@ -1688,7 +1688,7 @@ Your Google account may have other forms of browsing history like searches and a
         Review permissions
       </message>
       <message name="IDS_SAFETY_HUB_PERMISSIONS_PAGE_HEADER" translateable="false">
-        To protect your data, permissions were removed from sites you haven’t visited recently
+        To protect your data, permissions were removed from sites that abuse notifications or that you haven’t visited recently
       </message>
       <message name="IDS_SAFETY_HUB_SINGLE_PERMISSION_SNACKBAR" translateable="false">
         Permissions allowed again for <ph name="SITE_NAME">%1$s<ex>https://example.com:443</ex></ph>
@@ -1851,6 +1851,18 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
       <message name="IDS_SAFETY_HUB_UPDATE_UNAVAILABLE_TITLE" translateable="false">
         Can’t check Chrome version
+      </message>
+      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_REVIEW_OK_SUMMARY" translateable="false">
+        Chrome will let you know about sites that may be sending too many notifications
+      </message>
+      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_REVIEW_WARNING_SUMMARY" translateable="false">
+        You can stop these sites from sending future notifications
+      </message>
+      <message name="IDS_SAFETY_HUB_PERMISSIONS_OK_SUMMARY" translateable="false">
+        Chrome automatically removes permissions from abusive and unused sites
+      </message>
+      <message name="IDS_SAFETY_HUB_PERMISSIONS_WARNING_SUMMARY" translateable="false">
+        To protect your data, permissions were removed from abusive and unused sites
       </message>
 
        <!-- Safe Browsing preferences -->
