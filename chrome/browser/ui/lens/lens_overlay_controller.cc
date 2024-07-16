@@ -40,6 +40,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/find_in_page/find_tab_helper.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/permissions/permission_request_manager.h"
@@ -413,6 +414,11 @@ void LensOverlayController::ShowUI(
 
   // Setup observer to be notified of side panel opens and closes.
   side_panel_state_observer_.Observe(side_panel_coordinator_);
+
+  if (find_in_page::FindTabHelper* const find_tab_helper =
+          find_in_page::FindTabHelper::FromWebContents(tab_->GetContents())) {
+    find_tab_observer_.Observe(find_tab_helper);
+  }
 
   if (auto* helper = OmniboxTabHelper::FromWebContents(tab_->GetContents())) {
     omnibox_tab_helper_observer_.Observe(helper);
@@ -1339,6 +1345,7 @@ void LensOverlayController::CloseUIPart2(
 
   tab_contents_view_observer_.Reset();
   omnibox_tab_helper_observer_.Reset();
+  find_tab_observer_.Reset();
   tab_contents_observer_.reset();
   side_panel_receiver_.reset();
   side_panel_page_.reset();
@@ -1477,6 +1484,16 @@ void LensOverlayController::OnOmniboxFocusChanged(
       HidePreselectionBubble();
     }
   }
+}
+
+void LensOverlayController::OnFindEmptyText(
+    content::WebContents* web_contents) {
+  CloseUIAsync(lens::LensOverlayDismissalSource::kFindInPageInvoked);
+}
+
+void LensOverlayController::OnFindResultAvailable(
+    content::WebContents* web_contents) {
+  CloseUIAsync(lens::LensOverlayDismissalSource::kFindInPageInvoked);
 }
 
 const GURL& LensOverlayController::GetPageURL() const {

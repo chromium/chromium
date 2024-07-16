@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
+#include "components/find_in_page/find_result_observer.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/sessions/core/session_id.h"
@@ -91,7 +92,8 @@ class LensOverlayController : public LensSearchboxClient,
                               public views::ViewObserver,
                               public views::WidgetObserver,
                               public OmniboxTabHelper::Observer,
-                              public content::RenderProcessHostObserver {
+                              public content::RenderProcessHostObserver,
+                              public find_in_page::FindResultObserver {
  public:
   // Observer of LensOverlayController events.
   class Observer : public base::CheckedObserver {
@@ -643,6 +645,10 @@ class LensOverlayController : public LensSearchboxClient,
   void OnOmniboxFocusChanged(OmniboxFocusState state,
                              OmniboxFocusChangeReason reason) override;
 
+  // find_in_page::FindResultObserver:
+  void OnFindEmptyText(content::WebContents* web_contents) override;
+  void OnFindResultAvailable(content::WebContents* web_contents) override;
+
   // Overridden from LensSearchboxClient:
   const GURL& GetPageURL() const override;
   SessionID GetTabId() const override;
@@ -898,6 +904,12 @@ class LensOverlayController : public LensSearchboxClient,
   // Observer to check for browser window entering fullscreen.
   base::ScopedObservation<FullscreenController, FullscreenObserver>
       fullscreen_observation_{this};
+
+  // Observer to check if the user is using CTRL/CMD+F while the overlay is
+  // open.
+  base::ScopedObservation<find_in_page::FindTabHelper,
+                          find_in_page::FindResultObserver>
+      find_tab_observer_{this};
 
   // Observer to check when the content web view bounds change.
   base::ScopedObservation<views::View, views::ViewObserver>
