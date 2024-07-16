@@ -162,7 +162,6 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                         .with(
                                 BANK_ACCOUNT_SUMMARY,
                                 getBankAccountSummaryString(context, bankAccount))
-                        .with(BANK_ACCOUNT_DRAWABLE_ID, R.drawable.ic_account_balance)
                         .with(
                                 ON_BANK_ACCOUNT_CLICK_ACTION,
                                 () -> this.onBankAccountSelected(bankAccount));
