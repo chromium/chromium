@@ -368,6 +368,7 @@
 <translation id="1650602712345345441">Chrome 설정 관리</translation>
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">비밀번호 관리자를 MacOS 키체인과 함께 사용하려면 Chromium을 다시 실행한 다음 키체인 액세스를 허용하세요. 탭을 다시 실행하면 탭이 다시 열립니다.</translation>
+<translation id="1652887625750064647">AI 최적 일치</translation>
 <translation id="1656024727720460136">Chrome에서 페이지를 읽기 쉽도록 간소화했습니다. Chrome에서 보안 연결을 통해 원본 페이지를 가져왔습니다.</translation>
 <translation id="1656489000284462475">수령</translation>
 <translation id="1658111267661135323">TV 및 동영상</translation>
@@ -678,6 +679,7 @@
 <translation id="2219658597883514593">가이드 다시 시작</translation>
 <translation id="2219735899272417925">기기 재설정 필요</translation>
 <translation id="2221227930294879156">식음료 이벤트</translation>
+<translation id="2222604080869344662">다운로드를 계속하려면 OneDrive에 로그인하세요</translation>
 <translation id="2224337661447660594">인터넷 연결 없음</translation>
 <translation id="2225927550500503913">가상 카드 사용 설정됨</translation>
 <translation id="2226636330183131181">Wi-Fi 네트워크에 <ph name="BEGIN_LINK" />로그인<ph name="END_LINK" /></translation>
@@ -777,6 +779,7 @@
 <translation id="2399868464369312507">Chrome에서 결제 수단을 수정하려고 합니다.</translation>
 <translation id="2400600116338235695">직렬 포트에 연결하도록 요청할 수 있음</translation>
 <translation id="2404884497378469141">파일을 다시 복사해 보세요.</translation>
+<translation id="2412310121876768057">다음 사용 시 카드 자동 완성하기</translation>
 <translation id="2413155254802890957">이전 주소</translation>
 <translation id="2413528052993050574">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 서버의 보안 인증서가 취소될 수 있습니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
 <translation id="2414886740292270097">어둡게</translation>
@@ -1240,6 +1243,7 @@
 <translation id="3352881017886802007">스포츠 게임</translation>
 <translation id="3355823806454867987">프록시 설정 변경...</translation>
 <translation id="335809815767823">내보내기 성공</translation>
+<translation id="3359387651158939842">Google Pay에서 사용하려고 카드를 저장하면 향후 구매 시 카드 정보를 자동 완성합니다.</translation>
 <translation id="3359565626472459400">결혼</translation>
 <translation id="3360103848165129075">결제 핸들러 시트</translation>
 <translation id="3362968246557010467">이 정책은 지원 중단된 <ph name="OLD_POLICY" /> 정책에서 자동으로 복사되었습니다. 이 정책을 대신 사용해야 합니다.</translation>
@@ -2054,6 +2058,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">올림픽</translation>
 <translation id="4898742041545089450">이 주제는 차단 해제되어 있으며, 방문 기록을 기반으로 활성화될 수도 있습니다.</translation>
+<translation id="4899379435492347481">이 카드를 저장하고 나의 다른 기기에서 Google Pay로 온라인에서 구매할 때 사용합니다.</translation>
 <translation id="4900217275619098670">9번째 롤</translation>
 <translation id="4901052769830245369">라벨(반광택)</translation>
 <translation id="4901162432287938633">위생 및 세면용품</translation>
@@ -2717,6 +2722,7 @@
 <translation id="6180316780098470077">재시도 간격</translation>
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome에서 자동으로 서드 파티 쿠키를 제한합니다.</translation>
+<translation id="6194139058731919563">카드 세부정보는 Google 계정에 저장되고 온라인 결제에 사용될 때 암호화됩니다.</translation>
 <translation id="6194209731893739467">추적 중인 모든 제품을 여기에서 확인</translation>
 <translation id="6195163219142236913">서드 파티 쿠키 제한됨</translation>
 <translation id="6195371403461054755">지질학</translation>
@@ -3617,6 +3623,7 @@
 <translation id="7831993212387676366">쇼핑 목록이 무엇인가요?</translation>
 <translation id="7832078172950550575">일상적인 표현을 사용하면 '주변 피자집' 또는 '도심의 가족 친화 공원'과 같은 문구로 방문 기록을 검색할 수 있습니다. 검색어, 최적 일치 항목, 페이지 콘텐츠가 Google로 전송되며 이 기능을 개선하기 위해 인적 검토자가 이를 확인할 수 있습니다. <ph name="BEGIN_LINK" />검색 기록 설정 관리<ph name="END_LINK" /></translation>
 <translation id="7840103971441592723">화면 캡처가 시작되었습니다.</translation>
+<translation id="7840504603489703295">금융 기관의 한도가 적용됩니다.</translation>
 <translation id="784137052867620416">쇼핑 통계</translation>
 <translation id="784404208867107517">그룹화된 기록</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{없음}=1{앱 1개(<ph name="EXAMPLE_APP_1" />)}=2{앱 2개(<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{앱 #개(<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -3815,6 +3822,7 @@
 <translation id="8241712895048303527">이 사이트에서 차단</translation>
 <translation id="8242426110754782860">계속</translation>
 <translation id="8246482227229072868">고리</translation>
+<translation id="8248406213705193919">카드 안전하게 저장하기</translation>
 <translation id="8249296373107784235">중단</translation>
 <translation id="824968735947741546"><ph name="SOURCE" />(자동 감지)를 <ph name="TARGET" />로 번역 중</translation>
 <translation id="8250094606476360498">이 주소는 현재 이 기기에 저장되어 있습니다. Google 제품에서 사용하려면 Google 계정(<ph name="ACCOUNT" />)에 저장하세요.</translation>
@@ -4298,6 +4306,7 @@
 <translation id="9169664750068251925">이 사이트에서 항상 차단</translation>
 <translation id="9169931577761441333">홈 화면에 <ph name="APP_NAME" /> 추가</translation>
 <translation id="9170848237812810038">실행 취소(&amp;U)</translation>
+<translation id="9170906125144697215">앱을 전환하지 않고 Pix로 결제</translation>
 <translation id="9171296965991013597">앱을 종료하시겠습니까?</translation>
 <translation id="9173282814238175921">단일 문서/새 시트</translation>
 <translation id="9173995187295789444">블루투스 기기 검색 중...</translation>
@@ -4319,6 +4328,7 @@
 <translation id="9205078245616868884">동기화 암호로 데이터가 암호화되어 있습니다. 동기화를 시작하려면 입력하세요.</translation>
 <translation id="920643408853370361">여행자 보험</translation>
 <translation id="9207861905230894330">글을 추가하지 못했습니다.</translation>
+<translation id="9209339767782560829">로그인 인증서를 사용하는 중에 문제가 발생했습니다.</translation>
 <translation id="9210825002219699214">항공 여행</translation>
 <translation id="9211461151375991073">@을 입력하여 <ph name="FEATURED_SEARCH_LIST" /> 검색</translation>
 <translation id="9213433120051936369">디자인 사용자설정</translation>

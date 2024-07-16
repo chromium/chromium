@@ -17,6 +17,7 @@
 <translation id="1149651794389918149">Пријавите се у Chrome. Ако желите да се пријавите на налог само једном, можете да <ph name="GUEST_LINK_BEGIN" />користите уређај као гост<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">О ChromeOS-у</translation>
 <translation id="1154147086299354128">&amp;Отвори у Chrome-у</translation>
+<translation id="1184145431117212167">Инсталација није успела јер ваша верзија Windows-а није подржана.</translation>
 <translation id="1194807384646768652">Chrome је блокирао ово преузимање јер се овај тип фајл не преузима често и може да буде опасан</translation>
 <translation id="1203500561924088507">Хвала вам на инсталацији. Потребно је да рестартујете прегледач пре него што почнете да користите <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1229096353876452996">Google препоручује да подесите Chrome као подразумевани прегледач</translation>
@@ -239,6 +240,7 @@
 <translation id="4191857738314598978">{0,plural, =1{Поново покрените Chrome за један дан}one{Поново покрените Chrome за # дан}few{Поново покрените Chrome за # дана}other{Поново покрените Chrome за # дана}}</translation>
 <translation id="4205939740494406371">Chrome не може да вам проверава лозинке. Пробајте поново после 24 сата или <ph name="BEGIN_LINK" />проверите лозинке на Google налогу<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Отказује се...</translation>
+<translation id="4224210481850767180">Инсталација је отказана.</translation>
 <translation id="4242034826641750751">Chrome-у су потребне дозволе за камеру и микрофон за овај сајт</translation>
 <translation id="424864128008805179">Желите ли да се одјавите из Chrome-а?</translation>
 <translation id="4251615635259297716">Желите ли да повежете Chrome податке са овим налогом?</translation>

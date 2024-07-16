@@ -5134,6 +5134,7 @@
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{إعادة صوت الموقع الإلكتروني}zero{إعادة صوت المواقع الإلكترونية}two{إعادة صوت الموقعَين الإلكترونيين}few{إعادة صوت المواقع الإلكترونية}many{إعادة صوت المواقع الإلكترونية}other{إعادة صوت المواقع الإلكترونية}}</translation>
 <translation id="4745500401920035244">أجرى المشرف تغييرًا على مستوى النظام بأكمله يعمل على إيقاف بعض الملفات الشخصية القديمة. لم يعُد بإمكانك الوصول إلى هذا الملف الشخصي، لكن لا يزال بإمكانك إزالته.</translation>
 <translation id="474609389162964566">‏الوصول إلى "مساعد Google" من خلال قول Ok Google</translation>
+<translation id="4746757725581505837">أنت على وشك حذف بياناتك في "<ph name="BRAND" />" التي تم حفظها على هذا الجهاز</translation>
 <translation id="4748783296226936791">‏تتّصل المواقع الإلكترونية عادةً بأجهزة HID لتتيح الميزات التي تستخدم لوحات المفاتيح غير العادية ووحدات التحكّم في الألعاب وغيرها من الأجهزة.</translation>
 <translation id="4750185073185658673">‏عليك الانتقال إلى هاتفك لمراجعة بعض الأذونات الإضافية. يُرجى التأكّد من أنّ كل من البلوتوث وWi-Fi مفعّلين على هاتفك.</translation>
 <translation id="4750394297954878236">الاقتراحات</translation>
@@ -8743,6 +8744,7 @@
 <translation id="7471520329163184433">أبطأ</translation>
 <translation id="747312361841682912">حذف البيانات المعروضة</translation>
 <translation id="7473891865547856676">لا، شكرًا</translation>
+<translation id="7474043404939621342">تخصيص شريط الأدوات</translation>
 <translation id="747459581954555080">استرداد الكل</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{يجب إرجاع الجهاز فورًا}zero{يجب إرجاع جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} يوم}two{يجب إرجاع جهاز <ph name="DEVICE_TYPE" /> خلال يومَين ({NUM_DAYS})}few{يجب إرجاع جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} أيام}many{يجب إرجاع جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} يومًا}other{يجب إرجاع جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} يوم}}</translation>
 <translation id="7475671414023905704">‏عنوان URL لكلمة المرور المفقودة في Netscape</translation>

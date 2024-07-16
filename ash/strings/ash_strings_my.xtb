@@ -521,6 +521,7 @@
 <translation id="2970920913501714344">အက်ပ်၊ နောက်ဆက်တွဲနှင့် အပြင်အဆင်များ ထည့်သွင်းနိုင်သည်</translation>
 <translation id="2977598380246111477">နောက်ထပ် ဂဏန်း</translation>
 <translation id="2985148236010982088">အက်ပ်အားလုံး ကြည့်ရန်</translation>
+<translation id="2992272421330787632">မီဒီယာ အကြံပြုချက်အားလုံး ဖျောက်ရန်</translation>
 <translation id="2992327365391326550">စက်၏မိုက်ခရိုဖုန်းခလုတ် ပိတ်ထားသည်။</translation>
 <translation id="3000461861112256445">မိုနိုအသံ</translation>
 <translation id="3001391739687111021">ဖန်သားပြင်အရွယ်အစား ပြင်ဆင်ရန်</translation>
@@ -591,6 +592,7 @@
 <translation id="3255483164551725916">သင်ဘာလုပ်နိုင်သလဲ။</translation>
 <translation id="3256109297135787951">သင်၏ စင်ပေါ်ရှိ အရာကို ထင်သာအောင် ပြုလုပ်ထားခြင်းမှ ဖယ်ရှားရန်</translation>
 <translation id="3260969790895726815">စကားသံကို စက်အတွင်းတွင် လုပ်ဆောင်သည်။ နှုတ်တိုက်ချပေးခြင်းသည် အော့ဖ်လိုင်း အလုပ်လုပ်သော်လည်း အသံကွန်မန်းအချို့က အလုပ်လုပ်မည်မဟုတ်ပါ။</translation>
+<translation id="3264031581203585083">Google Drive အကြံပြုချက်အားလုံး ဖျောက်ရန်</translation>
 <translation id="3265032511221679826">နေရာအတိအကျ သုံးခွင့် ဖွင့်မလား။</translation>
 <translation id="3269597722229482060">ညာဘက်ခလုတ်ကို နှိပ်ရန်</translation>
 <translation id="3274634049061007184">သင့်ဖုန်းရှိ အက်ပ်များကို ကြည့်ရန်</translation>
@@ -742,6 +744,7 @@
 <translation id="3738664582935948253">ဖန်သားပြင်ရိုက်ကူးမှုများတွင် ကလစ်နှင့် လက်ကွက်ဖြတ်လမ်းများကို ယခုပြနိုင်ပါပြီ</translation>
 <translation id="3742055079367172538">မျက်နှာပြင်ပုံရိပ် ရယူပြီး</translation>
 <translation id="3743775386021959186">အထူးပြသမှု <ph name="REMAINING_TIME" /> ကျန်သည်</translation>
+<translation id="3750403286520637847">မိုးလေဝသ အကြံပြုချက် ဖျောက်ရန်</translation>
 <translation id="3756485814916578707">ဖန်သားပြင်ကို ကာစ်လုပ်နေသည်</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> ဖြတ်လမ်းလင့်ခ်ကို <ph name="OLD_SHORTCUT" /> မှ <ph name="NEW_SHORTCUT" /> သို့ အပ်ဒိတ်လုပ်လိုက်သည်</translation>
 <translation id="3765841986579723851">ယနေ့ ပြင်ဆင်ထားသည်</translation>
@@ -781,6 +784,7 @@
 <translation id="3906954721959377182">တက်ဘလက်</translation>
 <translation id="3923494859158167397">မိုဘိုင်းကွန်ရက် စနစ်ထည့်သွင်းမထားပါ</translation>
 <translation id="3925540965556789199"><ph name="DATE" />၊ အစီအစဉ်များ ဖွင့်နေသည်။</translation>
+<translation id="3927049937406914450">တည်နေရာသုံးခွင့် ပိတ်ထားသောကြောင့် မိုးလေဝသကို မရနိုင်ပါ။ ၎င်းကို ဆက်တင်များတွင် ပြောင်းနိုင်သည်။</translation>
 <translation id="3932043219784172185">ချိတ်ဆက်ထားသော စက်မရှိပါ</translation>
 <translation id="3934456833412894880">အလိုက်သင့်အားသွင်းခြင်းကို ဖွင့်ထားသည်။ သင့်ဘက်ထရီ သက်တမ်းကြာရှည်စေရန် ၈၀% တွင် ရပ်နေမည်ဖြစ်ပြီး အလိုရှိသောအချိန်တွင် အားအပြည့်သွင်းပါမည်။</translation>
 <translation id="3943857333388298514">ကူးဖြည့်ရန်</translation>
@@ -806,6 +810,7 @@
 <translation id="4002066346123236978">ခေါင်းစဉ်</translation>
 <translation id="40062176907008878">လက်ရေး</translation>
 <translation id="4011112806063830608">‘မနှောင့်ယှက်ရ’ ကို ဖွင့်ထားသည်။</translation>
+<translation id="4015144849380506405">၎င်းဖွင့်ထားချိန်တွင် မောက်စ်ကီးများကို ခဏရပ်ရန်/ဆက်လုပ်ရန်</translation>
 <translation id="4017989525502048489">လေဆာညွှန်တံ</translation>
 <translation id="401993194061514265">ညွှန်မှတ် မရရှိနိုင်ပါ။ Screencast ကို ပြန်ဖွင့်ပါ။</translation>
 <translation id="4021716437419160885">အောက်သို့ လှိမ့်ရန်</translation>
@@ -896,6 +901,7 @@
 <translation id="4312840429157639164">ကင်မရာကို အပေါ်ညာဘက်ထောင့်သို့ ကပ်ထားသည်။ စနစ်မျက်နှာပြင်နှင့် ငြိနေသည်။</translation>
 <translation id="4316910396681052118">အက်ပ်များ အားလုံး</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">Chrome ဘရောင်ဇာ အကြံပြုချက်အားလုံး ဖျောက်ရန်</translation>
 <translation id="4322742403972824594">‘Ctrl + Alt + အပေါ်ညွှန်မြား’ လက်ကွက်ဖြတ်လမ်းကို ပြောင်းထားသည်။ ‘ပင်မ’ ကီးသုံးလိုပါက <ph name="LAUNCHER_KEY_NAME" /> ကီး + ‘ဘယ်ညွှန်မြား’ နှိပ်ပါ။</translation>
 <translation id="4324840740119394760">၎င်းက <ph name="APP_NAME" />၊ ကင်မရာခွင့်ပြုချက်ပါသည့် အက်ပ်နှင့် ဝဘ်ဆိုက်အားလုံးကို ကင်မရာသုံးခွင့်ပြုသည်</translation>
 <translation id="4327147325944669226">ဂိမ်း မှတ်တမ်းတင်ရန်</translation>
@@ -929,6 +935,7 @@
 <translation id="4450893287417543264">ထပ်မပြပါနှင့်</translation>
 <translation id="4451374464530248585">‘Alt + အောက်ညွှန်မြား’ လက်ကွက်ဖြတ်လမ်းကို ပြောင်းထားသည်။ ‘စာမျက်နှာ အောက်သို့’ ကီးသုံးလိုပါက <ph name="LAUNCHER_KEY_NAME" /> ကီး + ‘အောက်ညွှန်မြား’ နှိပ်ပါ။</translation>
 <translation id="4453876312474547652">Ctrl + V ကို နှိပ်ထားပါက ကလစ်ဘုတ်ကို မြင်ရပါမည်။ chrome://flags (Lacros သုံးပါက os://flags) တွင် #clipboard-history-longpress အလံပြခြင်းကို ပိတ်ခြင်းဖြင့် ဤဖြတ်လမ်းလင့်ခ်ကို ပိတ်နိုင်သည်။</translation>
+<translation id="445765352722456792">အကြံပြုချက်များ စိတ်ကြိုက်လုပ်ရန်</translation>
 <translation id="445864333228800152">မင်္ဂလာ ညနေခင်းပါ၊</translation>
 <translation id="4458688154122353284">ဖန်သားပြင်ရိုက်ကူးမှု ရပ်ရန်</translation>
 <translation id="445923051607553918">Wi-Fi ကွန်ရက် ချိတ်ဆည်</translation>
@@ -1331,6 +1338,7 @@
 <translation id="5802516411616338943">အမြန်ဆက်တင်များ ဖွင့်ရန်</translation>
 <translation id="5804651031882187592">"ဆင်းမ်လော့ခ်ချရန်" ဆက်တင်ကို ပိတ်ပါ</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> စတင်ရန် နှိပ်ပါ</translation>
+<translation id="5819918159912280082">သင်၏ Chromebook သည် မမျှော်လင့်ဘဲ ပြန်လည်စတင်သွားသည်။ သင်၏ ယခင် ဝင်းဒိုးနှင့်အက်ပ်များ ဖွင့်နိုင်သည်။</translation>
 <translation id="5823239091726045201">ဝဘ်ပေါ်ရှိ Google Tasks</translation>
 <translation id="5825969630400862129">ချိတ်ဆက်ထားသည့် စက်ဆက်တင်များ</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> တွင် <ph name="ROUTE_TITLE" /> ကို ရပ်ရန်</translation>
@@ -1511,6 +1519,7 @@
 <translation id="6469104339369989396">ဟော့စပေါ့ ဖွင့်/ပိတ်လုပ်ရန်</translation>
 <translation id="6477681113376365978">ဖိုင်ကို ဒေါင်းလုဒ်လုပ်၍မရပါ</translation>
 <translation id="6482559668224714696">မျက်နှာပြင်အပြည့် မှန်ဘီလူး</translation>
+<translation id="6485086611007560630">မိုးလေဝသ (မရနိုင်ပါ)</translation>
 <translation id="6490471652906364588">USB-C ကိရိယာ (ညာ ပို့တ်)</translation>
 <translation id="649452524636452238">အဆင့်မြင့်ကတ် ပင်နံပါတ်</translation>
 <translation id="6495322433318104734">စခရင်နားချိန်ပုံ ပြထားသည်။ ထွက်ရန် နှစ်သက်ရာကီး နှိပ်ပါ</translation>
@@ -1780,6 +1789,7 @@
 <translation id="7514365320538308">ဒေါင်းလုဒ်</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">စာမျက်နှာအောက်</translation>
+<translation id="7518182783647693467">အပူချိန်ယူနစ်များ ပြောင်းရန် (F နှင့် C)</translation>
 <translation id="7519206258459640379">ကင်မရာဘောင်ချိန်ခြင်း ဖွင့်ထားသည်။</translation>
 <translation id="7519649142417630956">အပြီးပိတ်လိုက်သည်နှင့် စီမံခန့်ခွဲသူသည် အကောင့်မှထွက်သွားပြီး သင့်စက်ကို ထိန်းချုပ်နိုင်တော့မည် မဟုတ်ပါ။
 
@@ -1920,6 +1930,7 @@
 <translation id="7951630946012935453">keyboard အလင်းမှိန်ရန်</translation>
 <translation id="7953994493035617347">ပုံရိပ်ပြတ်သားကိန်းအသစ် အတည်ပြုမလား။</translation>
 <translation id="795958884516058160">‘ဖန်သားပြင်အပြည့် မှန်ဘီလူး’ ဖွင့်ထားသည်။ ၎င်းကိုပိတ်ရန် <ph name="ACCELERATOR" /> ကို ထပ်နှိပ်ပါ။</translation>
+<translation id="7962583092928373823">Google Calendar အကြံပြုချက်အားလုံး ဖျောက်ရန်</translation>
 <translation id="7963689218131240420">‘မနှောင့်ယှက်ရ’ ကို ပိတ်ထားသည်။</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> မှ</translation>
 <translation id="7968693143708939792">ဖိုင်တွဲရွေးရန်...</translation>
@@ -1992,6 +2003,7 @@
 <translation id="8214996719228530800">Canary ချန်နယ်</translation>
 <translation id="8219451629189078428">ဤအချိန်အတွင်းတွင် သင့် Chromebook ကို ဖွင့်ထားပြီး ပါဝါချိတ်ဆက်ထားရန် လိုအပ်ပါသည်။ အားသွင်းကိရိယာ သို့မဟုတ် ကြားခံကိရိယာကြိုးများကို သင့် Chromebook နှင့် ပလတ်ပေါက် နှစ်ခုစလုံးတွင် တပ်ထားကြောင်း သေချာပါစေ။ သင့် Chromebook ကို မပိတ်ပါနှင့်။</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> ထည့်ရန်</translation>
+<translation id="8228175756124063692">ဤအကြံပြုချက်ကို ဖျောက်ရန်</translation>
 <translation id="8230305195727960608">အရောင်ပြောင်းပြန်ပြုလုပ်သည့်မုဒ်</translation>
 <translation id="8236042855478648955">နားချိန် ရောက်ပါပြီ</translation>
 <translation id="8237964652943995219">လာမည့်မျက်နှာပြင်- <ph name="DESK_NAME" />။ မျက်နှာပြင် <ph name="DESK_COUNT" /> ခုအနက် <ph name="DESK_INDEX" />။</translation>
@@ -2179,6 +2191,7 @@
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> အကွက်ကို အမှတ်ခြစ်မထားပါ။</translation>
 <translation id="8949925099261528566">ချိတ်ဆက်ထားသည်၊ အင်တာနက်မရှိပါ</translation>
 <translation id="8951539504029375108">အတည်ပြုထားသော Thunderbolt ကိရိယာများကိုသာ သင်၏ Chromebook ဖြင့် တွဲသုံးနိုင်သည်</translation>
+<translation id="8956420987536947088">သင်၏ ယခင် ဝင်းဒိုးနှင့်အက်ပ်များ ဖွင့်နိုင်သည်</translation>
 <translation id="8959380109429710384">ဖန်သားပြင်အပြည့် မှန်ဘီလူးအတွက် လက်ကွက်ဖြတ်လမ်းများကို သင်နှိပ်လိုက်သည်။ ဇူးမ်ဆွဲထားသော မြင်ကွင်းကို ရွှေ့ကြည့်ရန် ctrl + alt + မြားများ သုံးပါ။</translation>
 <translation id="8964525410783593407">၁ နာရီ</translation>
 <translation id="8973885907461690937">မီနူးသင်္ကေတကို အထူးပြသရန်</translation>

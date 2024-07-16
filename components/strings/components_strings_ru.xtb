@@ -679,6 +679,7 @@
 <translation id="2219658597883514593">Открыть руководство</translation>
 <translation id="2219735899272417925">требуется сбросить настройки устройства</translation>
 <translation id="2221227930294879156">Мероприятия, связанные с продовольственными товарами</translation>
+<translation id="2222604080869344662">Войдите в OneDrive, чтобы продолжить скачивание</translation>
 <translation id="2224337661447660594">Нет подключения к Интернету</translation>
 <translation id="2225927550500503913">Виртуальная карта включена</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Вход<ph name="END_LINK" /> в сеть Wi-Fi</translation>
@@ -778,6 +779,7 @@
 <translation id="2399868464369312507">Google Chrome пытается изменить способы оплаты.</translation>
 <translation id="2400600116338235695">Разрешено отправлять запрос на подключение к последовательным портам</translation>
 <translation id="2404884497378469141">Попробуйте скопировать файлы ещё раз.</translation>
+<translation id="2412310121876768057">Использовать автозаполнение в следующий раз?</translation>
 <translation id="2413155254802890957">Старый</translation>
 <translation id="2413528052993050574">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Его сертификат безопасности может быть отозван. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
 <translation id="2414886740292270097">Тёмная</translation>
@@ -850,6 +852,7 @@
 <translation id="254524874071906077">Сделать Chrome браузером по умолчанию</translation>
 <translation id="2545721997179863249">Выбран вариант "Заполнить все поля"</translation>
 <translation id="2546283357679194313">Файлы сookie и данные сайтов</translation>
+<translation id="2546678870939430879">Повторить действие с результатом</translation>
 <translation id="254947805923345898">Недопустимое значение правила.</translation>
 <translation id="2549836668759467704">Строительные подряды и консультации</translation>
 <translation id="255002559098805027">Сайт <ph name="HOST_NAME" /> отправил недействительный ответ.</translation>
@@ -1032,6 +1035,7 @@
 <translation id="2954624054936281172">Таблица сохраненных способов оплаты</translation>
 <translation id="295526156371527179">Внимание! Это правило не объединено, так как оно не является словарем.</translation>
 <translation id="2955913368246107853">Закрыть панель поиска</translation>
+<translation id="2958345633099973853">Отменить действие с результатом</translation>
 <translation id="2958544468932521864">Крикет</translation>
 <translation id="2959274854674276289">Вегетарианская кухня</translation>
 <translation id="2961809451460302960">Страхование жизни</translation>
@@ -1240,6 +1244,7 @@
 <translation id="3352881017886802007">Спортивные игры</translation>
 <translation id="3355823806454867987">Изменить настройки прокси-сервера...</translation>
 <translation id="335809815767823">Экспорт завершен</translation>
+<translation id="3359387651158939842">Если вы сохраните карту, то при будущих покупках с помощью Google Pay ее реквизиты будут заполняться автоматически.</translation>
 <translation id="3359565626472459400">Бракосочетания</translation>
 <translation id="3360103848165129075">Лист с обработчиком платежа</translation>
 <translation id="3362968246557010467">Это значение было автоматически скопировано из устаревшего правила <ph name="OLD_POLICY" />. Воспользуйтесь этим правилом.</translation>
@@ -2054,6 +2059,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> и <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Олимпийские игры</translation>
 <translation id="4898742041545089450">Выбранная тема разблокирована и может стать активной в зависимости от вашей истории браузера.</translation>
+<translation id="4899379435492347481">Если вы сохраните карту, то сможете использовать ее для онлайн-покупок с помощью Google Pay на всех своих устройствах.</translation>
 <translation id="4900217275619098670">Девятый лоток</translation>
 <translation id="4901052769830245369">Этикетки (полуглянцевые)</translation>
 <translation id="4901162432287938633">Гигиена и туалетные принадлежности</translation>
@@ -2509,6 +2515,7 @@
 <translation id="5772086939108830423">Использовать ключ доступа на другом устройстве</translation>
 <translation id="5776313857861697733">Приоритет</translation>
 <translation id="5776574724412881956">Виртуальная карта не указана? Нажмите на ее реквизиты, чтобы скопировать их в буфер обмена. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
+<translation id="577804500166306874">Загрузка результата</translation>
 <translation id="5781136890105823427">Эксперимент включен</translation>
 <translation id="578305955206182703">Янтарный</translation>
 <translation id="5783700460098783980">Багаж и товары для путешественников</translation>
@@ -2717,6 +2724,7 @@
 <translation id="6180316780098470077">Интервал повтора</translation>
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome автоматически ограничивает использование сторонних файлов cookie</translation>
+<translation id="6194139058731919563">Реквизиты карты сохраняются в аккаунте Google в зашифрованном виде и используются для онлайн-покупок.</translation>
 <translation id="6194209731893739467">Здесь вы найдете все отслеживаемые товары</translation>
 <translation id="6195163219142236913">Использование сторонних файлов cookie ограничено</translation>
 <translation id="6195371403461054755">Геология</translation>
@@ -3618,6 +3626,7 @@
 <translation id="7831993212387676366">Что такое список покупок</translation>
 <translation id="7832078172950550575">Вы можете искать информацию в истории браузера, формулируя запросы простыми словами, например "пиццерии рядом со мной" или "парки для прогулки с семьей в центре". Ваши запросы, лучшие совпадения и содержимое найденных страниц отправляются в Google. Наши специалисты могут просматривать такие данные, чтобы улучшать эту функцию. <ph name="BEGIN_LINK" />Настроить поиск в истории<ph name="END_LINK" /></translation>
 <translation id="7840103971441592723">Запись экрана начата</translation>
+<translation id="7840504603489703295">Действуют лимиты, установленные вашим финансовым учреждением.</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="784404208867107517">История с распределением по группам</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Нет}=1{1 приложение (<ph name="EXAMPLE_APP_1" />)}=2{2 приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# приложение (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}few{# приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}many{# приложений (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
@@ -3816,6 +3825,7 @@
 <translation id="8241712895048303527">Блокировать на этом сайте</translation>
 <translation id="8242426110754782860">Продолжить</translation>
 <translation id="8246482227229072868">Кольца</translation>
+<translation id="8248406213705193919">Сохранить карту безопасным образом?</translation>
 <translation id="8249296373107784235">Отмена</translation>
 <translation id="824968735947741546">Перевод: <ph name="SOURCE" /> (распознан автоматически) – <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Адрес добавлен на это устройство. Сохраните его в аккаунте Google (<ph name="ACCOUNT" />), чтобы использовать в других продуктах Google.</translation>
@@ -4300,6 +4310,7 @@
 <translation id="9169664750068251925">Всегда блокировать на этом сайте</translation>
 <translation id="9169931577761441333">Добавить приложение "<ph name="APP_NAME" />" на главный экран</translation>
 <translation id="9170848237812810038">&amp;Отменить</translation>
+<translation id="9170906125144697215">Платите через Pix, не выходя из приложения</translation>
 <translation id="9171296965991013597">Закрыть приложение?</translation>
 <translation id="9173282814238175921">Один документ/новый лист</translation>
 <translation id="9173995187295789444">Поиск устройств Bluetooth…</translation>
@@ -4321,6 +4332,7 @@
 <translation id="9205078245616868884">Данные зашифрованы с помощью кодовой фразы. Введите ее, чтобы начать синхронизацию.</translation>
 <translation id="920643408853370361">Туристическое страхование</translation>
 <translation id="9207861905230894330">Не удалось добавить статью</translation>
+<translation id="9209339767782560829">Возникла проблема с вашим сертификатом для входа.</translation>
 <translation id="9210825002219699214">Авиаперелеты</translation>
 <translation id="9211461151375991073">Введите @, чтобы выполнить поиск по сайтам <ph name="FEATURED_SEARCH_LIST" />.</translation>
 <translation id="9213433120051936369">Настроить вид</translation>

@@ -825,6 +825,7 @@ De minimum drempelwaarde is 1 minuut.
 <translation id="1634989431648355062">De <ph name="FLASH_PLUGIN_NAME" />-plug-in toestaan op deze sites</translation>
 <translation id="1635450837608153975">Geavanceerde JavaScript-optimalisaties uitzetten op alle sites</translation>
 <translation id="1635748761015837179">Schrijven naar externe opslagapparaten toestaan</translation>
+<translation id="163653062822010558">Aangezet: css-zoom voldoet aan de standaardspecificatie.</translation>
 <translation id="1639468541408865385">HTTP-verificatiecache met wereldwijd bereik aanzetten</translation>
 <translation id="1639673466479276550">Zet de screensaver voor het inlogscherm aan.</translation>
 <translation id="1640824698339859203">Zwevende SSO aanzetten en de webserviceverificaties van de gebruiker naar een nieuw apparaat verplaatsen</translation>
@@ -1229,6 +1230,7 @@ Als je het beleid niet toepast, sluit <ph name="PRODUCT_NAME" /> het tabblad nad
 <translation id="1930127294345368978">Maximum aantal vellen dat mag worden gebruikt voor één afdruktaak</translation>
 <translation id="1933378685401357864">Achtergrondafbeelding</translation>
 <translation id="1935409768874953955">Geanonimiseerde gegevensverzameling met URL-sleutel is altijd actief</translation>
+<translation id="1942015922182679826">Verwijdering van niet-ontsleutelbare wachtwoorden aanzetten</translation>
 <translation id="1942626390957213764">Hub voor delen van bureaublad uitzetten</translation>
 <translation id="194407941132272412">Site-isolatie uitzetten voor alle websites, maar de gebruiker toestaan dit aan te zetten</translation>
 <translation id="1945994447126139909">Dit bedrijfsbeleid is voor tijdelijke aanpassing en wordt verwijderd in <ph name="PRODUCT_NAME" /> versie 88.
@@ -4180,6 +4182,7 @@ Als je dit beleid niet instelt, kunnen de Chrome Root Store of de door het syste
 Dit beleid is verwijderd in <ph name="PRODUCT_NAME" /> versie 113 voor <ph name="MS_WIN_NAME" /> en <ph name="MAC_OS_NAME" />, <ph name="PRODUCT_OS_NAME" /> versie 120,
 <ph name="PRODUCT_NAME" /> versie 120 voor <ph name="LINUX_OS_NAME" /> en <ph name="PRODUCT_NAME" /> versie 121 voor <ph name="ANDROID_NAME" /> toen de ondersteuning voor het gebruik van de door het platform geleverde certificaatverificatie en rootcertificaten werd verwijderd.</translation>
 <translation id="424318624725112807">Inlastekenmarkering op het inlogscherm aanzetten</translation>
+<translation id="4243419387411966417">Verwijdering van niet-ontsleutelbare wachtwoorden uitzetten</translation>
 <translation id="4245159233848584683">Als je het beleid toepast of niet instelt, toont <ph name="PRODUCT_OS_NAME" /> een netwerkconfiguratieprompt als een apparaat offline is en een lokaal account op het apparaat is ingesteld voor automatisch inloggen zonder vertraging.
 
 Als je het beleid niet toepast, wordt in plaats daarvan een foutmelding getoond.</translation>
@@ -5156,6 +5159,15 @@ Als je dit beleid niet instelt, staat Help me met schrijven aan op niet-beheerde
 <translation id="5085647276663819155">Afdrukvoorbeeld uitzetten</translation>
 <translation id="5087932158260897375">Als je dit beleid instelt op False, wordt rapportage van diagnostische gegevens over domeinbetrouwbaarheid uitgezet en worden er geen gegevens naar Google gestuurd.
 Als je dit beleid instelt op True of niet instelt, volgt de rapportage van diagnostische gegevens over domeinbetrouwbaarheid het gedrag van MetricsReportingEnabled voor <ph name="PRODUCT_NAME" /> of DeviceMetricsReportingEnabled voor <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="5088284418186527880">Dit beleid zorgt voor naleving van de nieuw aangenomen specificatie voor css-zoom.
+
+Als je dit beleid toepast of niet instelt, houdt de css-eigenschap 'zoom' zich aan de specificatie:
+
+https://drafts.csswg.org/css-viewport/#zoom-property
+
+Als je het beleid niet toepast, valt de css-eigenschap 'zoom' terug op het verouderde gedrag van vóór de standaardisatie.
+
+Dit beleid is een tijdelijke uitstelmaatregel om tijd te geven om webcontent te migreren naar het nieuwe gedrag. Er is ook een origin trial (DisableStandardizedBrowserZoom) die overeenkomt met het gedrag als dit beleid niet wordt toegepast. Dit beleid wordt verwijderd en het gedrag Aangezet wordt permanent in mijlpaal 134.</translation>
 <translation id="5090791951240382356">Toestaan dat woordenboekbeleid van verschillende bronnen wordt samengevoegd</translation>
 <translation id="5091315650312105069"><ph name="BASIC_AUTH" />-verificatie toestaan voor HTTP</translation>
 <translation id="5093603777978346818">De screensaver op het vergrendelscherm niet aanzetten.</translation>
@@ -5768,6 +5780,7 @@ Dit is verwijderd in M112.</translation>
 <translation id="5534079385061985566">Functie voor volledig herstel aanzetten.</translation>
 <translation id="5534235660122271432">Schrijven naar externe opslagapparaten niet toestaan</translation>
 <translation id="5535256585099022933">Het tijdsinterval voor herstarten instellen</translation>
+<translation id="5537400155400537818">Uitgezet: css-zoom behoudt het verouderde gedrag van vóór de standaardisatie.</translation>
 <translation id="553806128266843748">Een Booleaanse markering die aangeeft of throttling aanstaat.</translation>
 <translation id="5540885720415375851">Toestaan dat lokale apparaten worden gevonden</translation>
 <translation id="5542235730745104308">Als je het beleid instelt op True, gebruikt <ph name="PRODUCT_NAME" /> alternatieve foutpagina's die zijn ingebouwd (zoals Pagina niet gevonden). Als je het beleid instelt op False, gebruikt <ph name="PRODUCT_NAME" /> nooit alternatieve foutpagina's.
@@ -6931,6 +6944,13 @@ Als je dit beleid niet instelt, wordt het virtuele toetsenbord getoond op basis 
       Het virtuele toetsenbord kan worden gewijzigd in een compacte indeling, afhankelijk van de invoermethode.</translation>
 <translation id="6404064917675764807">CRD-sessiegebeurtenissen niet rapporteren</translation>
 <translation id="6404360891305375004">Bestanden delen via netwerk toestaan</translation>
+<translation id="640519320513485101">Met dit beleid bepaal je of de ingebouwde wachtwoordmanager niet-ontsleutelbare wachtwoorden mag verwijderen uit de bijbehorende database. Dit is vereist om de volledige functionaliteit van de ingebouwde wachtwoordmanager te herstellen, maar er kan permanent gegevensverlies optreden. Niet-ontsleutelbare wachtwoordwaarden worden niet automatisch ontsleutelbaar. Als ze kunnen worden gecorrigeerd, zijn er meestal complexe gebruikersacties nodig.
+
+Als je het beleid toepast, raken gebruikers met niet-ontsleutelbare wachtwoorden die in de ingebouwde wachtwoordmanager zijn opgeslagen, deze wachtwoorden kwijt. Er gebeurt niets met wachtwoorden die nog steeds werken.
+
+Als je het beleid niet toepast, behouden gebruikers de wachtwoordmanagergegevens, maar werkt de wachtwoordmanager niet.
+
+Als je het beleid instelt, kunnen gebruikers het niet wijzigen in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6407093060083181305">Blokkeringslijst voor installatie van extensies configureren</translation>
 <translation id="640827304541402854">Firewallpassage vanaf host voor externe toegang uitzetten</translation>
 <translation id="6410847321564585975">Toelatingslijst voor rapportage van website-activiteit</translation>
@@ -8898,6 +8918,7 @@ Als je het beleid niet toepast of niet instelt, bevat de gemaakte Kerberos-SPN g
       Als je 0 instelt, wordt het scherm niet door <ph name="PRODUCT_OS_NAME" /> vergrendeld als de gebruiker inactief is. Als je niets instelt, wordt de standaardperiode gebruikt.
 
       De aanbevolen manier om het scherm te vergrendelen bij inactiviteit is de schermvergrendeling bij opschorting aanzetten en <ph name="PRODUCT_OS_NAME" /> opschorten na een inactieve periode. Gebruik dit beleid alleen als schermvergrendeling veel eerder moet plaatsvinden dan opschorting of als je helemaal niet wilt opschorten bij inactiviteit.</translation>
+<translation id="7894964526545174973">Gestandaardiseerd zoomgedrag van browser aanzetten</translation>
 <translation id="7895553628261067384">Externe toegang</translation>
 <translation id="7898807590879163195">Hartslag voor apparaatactiviteit uitzetten</translation>
 <translation id="789975630884141379">Voorgestelde content aanzetten</translation>

@@ -742,6 +742,7 @@
 <translation id="6750737795876287924">हालको डिरेक्टरी</translation>
 <translation id="6751256176799620176">१ फोल्डरलाई चयन गरियो</translation>
 <translation id="6755827872271341378">ChromeOS Flex चल्ने डिभाइस</translation>
+<translation id="6777029074498310250">यस सम्बन्धमा थप जानकारी प्राप्त गर्न <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /> मा जानुहोस्</translation>
 <translation id="6790428901817661496">प्ले गर्नुहोस्</translation>
 <translation id="6794539005637808366">यो फाइल रिस्टोर गर्नुहोस् वा सो फाइल ड्र्याग गरेर ट्र्यासबाहिर रहेको नयाँ फोल्डरमा लैजानुहोस्</translation>
 <translation id="6795884519221689054">पान्डा</translation>
@@ -795,6 +796,7 @@
 <translation id="7086590977277044826">तमिल InScript किबोर्ड</translation>
 <translation id="7088615885725309056">पुरानो</translation>
 <translation id="7103992300314999525">म्यासेडोनियाली</translation>
+<translation id="7104338189998813914">तपाईंको OneDrive खाता एक्सेस गर्ने क्रममा कुनै समस्या आएको छ</translation>
 <translation id="7106346894903675391">थप भण्डारण खरिद गर्नुहोस्...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ड्राइभमा खोज्नुहोस्&lt;/em&gt;</translation>
 <translation id="7135561821015524160">कन्नड फोनेटिक</translation>

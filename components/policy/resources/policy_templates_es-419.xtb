@@ -475,6 +475,31 @@ Si la inhabilitas o no la estableces, el restablecimiento completo de la configu
 <translation id="1372511977715560169">Controlar la habilitación de la función <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> en <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="1372618949173323717">Inhabilitar JavaScript</translation>
 <translation id="1376119291123231789">Habilitar el modo avanzado de carga de la batería</translation>
+<translation id="1376299650477150211">Te permite establecer una lista de patrones de URL de sitios que especifican los sitios para los cuales
+se inhabilitan las optimizaciones avanzadas de JavaScript.
+
+Si inhabilitas las optimizaciones de JavaScript, es posible que <ph name="PRODUCT_NAME" /> renderice el contenido web más lentamente.
+
+Para obtener información detallada sobre los patrones de URL válidos, consulta
+https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).
+
+Las excepciones de la política correspondiente a las optimizaciones de JavaScript solo se aplicarán en el nivel de detalle
+del sitio (eTLD+1). Si una política se establece solo para subdomain.site.com, no se
+aplicará correctamente a site.com ni a subdomain.site.com dado que a ambos sitios les corresponde
+el mismo eTLD+1 (site.com), para el cual no se estableció ninguna política. En este caso, la política
+debe establecerse para site.com de modo que se aplique correctamente tanto a site.com como
+a subdomain.site.com.
+
+Esta política se aplica por marco y no se basa solamente en la URL de origen
+de nivel superior. Entonces, si site-one.com aparece en la política de <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />, pero site-one.com carga un marco
+que incluye site-two.com, por ejemplo, site-one.com tendrá inhabilitadas las optimizaciones de JavaScript,
+pero site-two.com utilizará la política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, si se establece, o bien habilitará
+las optimizaciones de JavaScript de forma predeterminada. Las entradas de la lista de entidades bloqueadas tienen mayor prioridad que las entradas de la
+lista de entidades permitidas, que, a su vez, tienen mayor prioridad que el valor predeterminado configurado.
+
+Si no estableces esta política para un sitio, se aplicará la política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> al sitio, si se establece. De lo contrario, se habilitará
+la optimización de JavaScript para el sitio.</translation>
 <translation id="1376765488559847650">CloudUpload</translation>
 <translation id="1379689277107868399">Cuando estableces la política como DoNotPrompt o no la estableces, <ph name="PRODUCT_NAME" /> no le solicita automáticamente al usuario que vuelva a realizar la autenticación en el navegador.
 
@@ -1096,6 +1121,7 @@ Esta política no tiene efecto si la opción para conservar los datos de navegac
       Si habilitas <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" />, los usuarios de Family Link también podrán acceder a las cuentas definidas en esta política.</translation>
 <translation id="18186215616223740">Cuando navegues a documentos de Office administrados por <ph name="BASIC_EDITOR_NAME" />, forzar su descarga</translation>
 <translation id="1819272352048746487">Habilita o inhabilita varias funciones en el teclado en pantalla</translation>
+<translation id="1820974289087266512">La función Generador de códigos QR está inhabilitada.</translation>
 <translation id="1822163547472114648">Configuración de Crear temas con IA</translation>
 <translation id="1823974945066396306">Define la lista de usuarios con permiso para acceder al dispositivo. Las entradas que se ingresen deben tener el formato <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, p. ej., <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />. Para permitir usuarios aleatorios en un dominio, usa el formato <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
 
@@ -2907,6 +2933,13 @@ Si inhabilitas la política, no se mostrará al usuario la promoción para calif
 <translation id="3177537290334203187">Utilizar el comportamiento predeterminado al decidir si los sitios web pueden hacer solicitudes a extremos de red</translation>
 <translation id="3177802893484440532">Solicitar comprobaciones OCSP/CRL en línea para los anclajes de confianza locales</translation>
 <translation id="3179533009079100620">Mostrar el selector de perfiles</translation>
+<translation id="3180633260411794645">Si estableces la política, podrás especificar una lista de patrones de URL que indiquen los sitios que no pueden ejecutar JavaScript.
+
+      Si no estableces la política, se aplicará <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
+
+      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).
+
+      Ten en cuenta que esta política bloquea JavaScript según si el origen del documento de nivel superior (generalmente la URL de la página que también se muestra en la barra de direcciones) coincide con alguno de los patrones. Por lo tanto, esta política no es adecuada para mitigar los ataques a la cadena de suministro web. Por ejemplo, si proporcionas el patrón "https://[*.]foo.com/", no se impedirá que una página alojada en, por ejemplo, https://example.com ejecute una secuencia de comandos cargada desde https://www.foo.com/example.js. Además, si proporcionas el patrón "https://example.com/", no se impedirá que un documento de https://example.com ejecute secuencias de comandos si no es el documento de nivel superior, sino que se incorpora como un submarco en una página alojada en otro origen, por ejemplo, https://www.bar.com.</translation>
 <translation id="3180671894201217988">Si habilitas la política o no la estableces, el software de terceros no podrá insertar código ejecutable en los procesos de <ph name="PRODUCT_NAME" />.
 
       Si inhabilitas la política, este software podrá insertar el código mencionado en los procesos de <ph name="PRODUCT_NAME" />.</translation>
@@ -5211,6 +5244,28 @@ El establecimiento de esta política permite controlar la presentación de conte
       Si estableces esta política como verdadera, el usuario podrá crear y utilizar perfiles secundarios, y usar el modo de invitado.
 
       Ten en cuenta que, si estableces esta política como verdadera, pero se estableció <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" /> como falsa, el usuario no podrá crear perfiles secundarios. Del mismo modo, si se estableció <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" /> como falsa, el usuario tampoco podrá usar el modo de invitado.</translation>
+<translation id="4958911425563967203">Te permite establecer una lista de patrones de URL de sitios que especifican los sitios para los cuales
+se habilitan las optimizaciones avanzadas de JavaScript.
+
+Para obtener información detallada sobre los patrones de URL de sitios válidos, consulta
+https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).
+
+Las excepciones de la política correspondiente a las optimizaciones de JavaScript solo se aplicarán en el nivel de detalle
+del sitio (eTLD+1). Si una política se establece solo para subdomain.site.com, no se
+aplicará correctamente a site.com ni a subdomain.site.com dado que a ambos sitios les corresponde
+el mismo eTLD+1 (site.com), para el cual no se estableció ninguna política. En este caso, la política
+debe establecerse para site.com de modo que se aplique correctamente tanto a site.com como
+a subdomain.site.com.
+
+Esta política se aplica por marco y no se basa solamente en la URL de origen
+de nivel superior. Entonces, si site-one.com aparece en la política de <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" />, pero site-one.com carga un marco que incluye site-two.com, por ejemplo, site-one.com tendrá habilitadas las optimizaciones de JavaScript,
+pero site-two.com utilizará la política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, si se establece, o bien habilitará
+las optimizaciones de JavaScript de forma predeterminada. Las entradas de la lista de entidades bloqueadas tienen mayor prioridad que las entradas de la
+lista de entidades permitidas, que, a su vez, tienen mayor prioridad que el valor predeterminado configurado.
+
+Si no estableces esta política para un sitio, se aplicará la política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> al sitio, si se establece. De lo contrario, se habilitará
+la optimización de JavaScript para el sitio.</translation>
 <translation id="4960597185231686653">Función experimental booleana que indica si el teclado en pantalla puede proporcionar entrada de voz.</translation>
 <translation id="4970046075219007744">Permitir que las aplicaciones web le soliciten al usuario acceso a determinados tipos de archivos a través de la API de File Handling</translation>
 <translation id="4970855112942626932">Inhabilitar el acceso en el navegador</translation>
@@ -5409,6 +5464,11 @@ Si no la estableces o la inhabilitas, las cookies y los datos se pueden usar par
           Si se habilita esta configuración, <ph name="PRODUCT_NAME" /> ignorará todas las opciones relacionadas con el proxy especificadas desde la línea de comandos.
 
           Si no se configura esta política, los usuarios podrán elegir las opciones de configuración del proxy por su cuenta.</translation>
+<translation id="5169461017653366056">Esta política habilita la función Generador de códigos QR en <ph name="PRODUCT_NAME" />.
+
+Si habilitas esta política o no la configuras, se habilitará la función Generador de códigos QR.
+
+Si inhabilitas esta política, se inhabilitará la función Generador de códigos QR.</translation>
 <translation id="5170018694841697392">No forzar el uso de SafeSearch en la Búsqueda de Google</translation>
 <translation id="5172841243186654432">A menos que establezcas la política <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> para restablecer las URL de sesiones anteriores de forma definitiva, la configuración de <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> te permitirá crear una lista de patrones de URL donde se especifiquen los sitios que pueden y no pueden configurar cookies para una sesión determinada.
 
@@ -8045,6 +8105,7 @@ Si se establece como "solo lectura" o no se establece, los archivos locales perm
 
        En <ph name="MS_WIN_NAME" />, esta funcionalidad solo estará disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, están inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> o se ejecutan en Windows 10 Pro. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="6988791975283483023">Inhabilitar Wi-Fi</translation>
+<translation id="6990546578776912554">Especificar los dominios que se excluirán de la resolución con DNS-over-HTTPS</translation>
 <translation id="6990736882800900101">Permitir que se abran todas las ventanas emergentes destinadas a <ph name="BLANK_PAGE_NAME" /> para interactuar con la página que abrió la ventana emergente, a menos que esta página inhabilite esta interacción de forma explícita </translation>
 <translation id="6991623831629598930">Usar el valor predeterminado para el acuerdo de claves poscuántico Kyber en TLS</translation>
 <translation id="6992943675460798920">Permitir que los usuarios tomen capturas de pantalla y graben videos</translation>
@@ -8679,6 +8740,7 @@ la lectura en voz alta estará habilitada.</translation>
 
       Si no la estableces, se omitirá la pantalla de presentación de <ph name="FEATURE_NAME" /> para los usuarios administrados por empresas y se mostrará a los usuarios no administrados.</translation>
 <translation id="7469554574977894907">Habilitar sugerencias de búsqueda</translation>
+<translation id="7472547030234093862">Especificar los dominios que se resolverán con DNS-over-HTTPS</translation>
 <translation id="747275827471712187">Revierte el comportamiento de las cookies en estos sitios conforme al atributo heredado <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
 <translation id="747517124419659622">Permitir AI-powered history search sin mejorar los modelos de IA</translation>
 <translation id="7476030153540156377">Elegir si se debe activar la función IP Protection de <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
@@ -10842,6 +10904,7 @@ pero que se pueden usar como sugerencias para la compilación de rutas de acceso
 <translation id="9113058104383612727">Habilitar las herramientas de solución de problemas del Kiosco</translation>
 <translation id="9113065986946552397">Los resultados de las limpiezas realizadas con Limpiar Chrome siempre se comparten con Google</translation>
 <translation id="9113262510565261950">Tiempo de espera de inactividad de la pantalla de acceso del protector de pantalla del dispositivo</translation>
+<translation id="911448529868608648">Habilitar Generador de códigos QR</translation>
 <translation id="911605919007170833">Informar el estado de seguridad</translation>
 <translation id="9117826695152538214">Si estableces el valor "True" para la política, se activarán las teclas especiales. Si estableces el valor "False", se desactivarán estas teclas.
 
@@ -10938,6 +11001,7 @@ Para obtener más información sobre contextos seguros, consulta https://www.w3.
 <translation id="9142561920976791097">Usar el comportamiento nuevo de envío de eventos en los controles de formularios inhabilitados</translation>
 <translation id="91459503271584213">Iniciar directamente los hosts de mensajería nativa ejecutables en Windows</translation>
 <translation id="9148720248753722892">No permitir los certificados firmados por SHA-1</translation>
+<translation id="9149075762533142978">La función Generador de códigos QR está habilitada.</translation>
 <translation id="9149678135092892302">Inhabilitar la generación de informes sobre la versión</translation>
 <translation id="9150416707757015439">Esta política no está aprobada. Usa IncognitoModeAvailability en su lugar. Esto habilita el modo incógnito en <ph name="PRODUCT_NAME" />. Si se habilita esta opción o si no se configura, los usuarios podrán abrir páginas web en modo incógnito. Si se inhabilita esta configuración, los usuarios no podrán abrir páginas web en modo incógnito. Si esta política no se configura, se habilitará esta opción y el usuario podrá usar el modo incógnito.</translation>
 <translation id="9152473318295429890">Habilitar las sugerencias contextuales de páginas web relacionadas</translation>

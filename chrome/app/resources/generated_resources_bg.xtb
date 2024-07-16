@@ -1934,6 +1934,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="237828693408258535">Да се преведе ли тази страница?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Възможно е това разширение скоро да спре да се поддържа}other{Възможно е тези разширения скоро да спрат да се поддържат}}</translation>
 <translation id="2378982052244864789">Изберете директорията на разширението.</translation>
+<translation id="2379111564446699251">За да пренаредите бутоните в лентата с инструменти, ги преместете с плъзгане</translation>
 <translation id="2379281330731083556">Печат чрез системния диалогов прозорец... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Това може да доведе до прекъсване на връзката с мобилната ви мрежа за няколко минути</translation>
 <translation id="2381499968174336913">Преглед на споделения шрифт</translation>
@@ -3539,6 +3540,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3569614820047645079">Файловете в „Моят диск“ се синхронизират автоматично с вашия Chromebook, за да имате достъп до тях без връзка с интернет.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> може да преглежда следните файлове и папки</translation>
 <translation id="3571734092741541777">Настройване</translation>
+<translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> разширения бяха изключени</translation>
 <translation id="3575121482199441727">Разрешаване за този сайт</translation>
 <translation id="3575224072358507281">Събира IP адресите и резултатите от измерването на мрежата за Measurement Lab в съответствие с декларацията си за поверителност (measurementlab.net/privacy)</translation>
 <translation id="3577473026931028326">Нещо се обърка. Опитайте отново.</translation>
@@ -10275,6 +10277,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8596540852772265699">Персонализирани файлове</translation>
 <translation id="8597845839771543242">Формат на свойството:</translation>
 <translation id="8598249292448297523">отпечатване</translation>
+<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Управление на разширението}other{Управление на разширенията}}</translation>
 <translation id="8599681327221583254">Едно или повече правила не са конфигурирани правилно. Моля, обърнете се към администратора си</translation>
 <translation id="8599864823732014237">Искате ли да пропуснете корпоративното регистриране?</translation>
 <translation id="8601206103050338563">Удостоверяване на TLS WWW клиент</translation>
@@ -10671,6 +10674,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="887292602123626481">Научете повече за търсещите машини по подразбиране</translation>
 <translation id="8873075098103007382">Организиране посредством групи раздели</translation>
 <translation id="8874341931345877644">Предаване към устройство:</translation>
+<translation id="8874448314264883207">Разширението <ph name="EXTENSION_NAME" /> бе изключено</translation>
 <translation id="8874790741333031443">Опитайте временно да разрешите „бисквитките“ на трети страни. Това ще понижи нивото на защита при сърфиране, но е по-вероятно функциите на сайта да работят по очаквания начин.</translation>
 <translation id="8875520811099717934">Надстройване на Linux</translation>
 <translation id="8875736897340638404">Избиране на настройка за видимостта</translation>
@@ -10729,6 +10733,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8918900204934259333">Приложението се инсталира...</translation>
 <translation id="891931289445130855">Изтриване на данните и разрешенията</translation>
 <translation id="8920133120839850939">За да навигирате назад и напред, изберете раздела „Още жестове“ и включете „Прокарване на пръст между страниците“</translation>
+<translation id="8922348435910470639">Дублирана резервация</translation>
 <translation id="8922624386829239660">Преместване на екрана, когато мишката докосва краищата му</translation>
 <translation id="8923880975836399332">Тъмно синьо-зелено</translation>
 <translation id="8925124370124776087">Заглавната лента е скрита</translation>

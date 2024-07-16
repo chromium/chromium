@@ -27,6 +27,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1497802159252041924">Uppsetningarvilla: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Deila Chromium flipa</translation>
 <translation id="1553461853655228091">Chromium þarf leyfi til að nota myndavélina til að búa til þrívíddarkort af umhverfinu</translation>
+<translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Þessi viðbót er ekki lengur studd. Chromium mælir með að þú fjarlægir hana.}one{Þessi viðbót er ekki lengur studd. Chromium mælir með að þú fjarlægir hana.}other{Þessar viðbætur eru ekki lengur studdar. Chromium mælir með að þú fjarlægir þær.}}</translation>
 <translation id="1574377791422810894">Öryggisverkfæri Chromium</translation>
 <translation id="1591808205441691831">Chromium þarf að staðfesta að þetta sért þú svo að þú getir vistað tiltekin gögn á Google-reikningnum þínum og notað þau í öllum tækjunum þínum. Gögnin verða áfram í þessu tæki ef þú skráir þig út.</translation>
 <translation id="1594928384848033697">Chromium vill eyða gögnum Aðgangsorðastjórnunar. Sláðu inn Windows-aðgangsorðið þitt til að leyfa það.</translation>

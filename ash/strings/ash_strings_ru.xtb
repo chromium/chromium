@@ -521,6 +521,7 @@
 <translation id="2970920913501714344">Устанавливать приложения, расширения и темы.</translation>
 <translation id="2977598380246111477">Следующая цифра</translation>
 <translation id="2985148236010982088">Посмотреть все приложения</translation>
+<translation id="2992272421330787632">Скрыть все подсказки для мультимедиа</translation>
 <translation id="2992327365391326550">Кнопка микрофона на устройстве отключена</translation>
 <translation id="3000461861112256445">Монофо­нический звук</translation>
 <translation id="3001391739687111021">Изменить размер экрана</translation>
@@ -591,6 +592,7 @@
 <translation id="3255483164551725916">Что ты умеешь?</translation>
 <translation id="3256109297135787951">Снять выделение с объекта на панели запуска.</translation>
 <translation id="3260969790895726815">Вы можете использовать голосовой ввод в офлайн-режиме, так как речь обрабатывается локально, но некоторые голосовые команды будут недоступны.</translation>
+<translation id="3264031581203585083">Скрыть все подсказки Google Диска</translation>
 <translation id="3265032511221679826">Открыть доступ к данным о точном местоположении?</translation>
 <translation id="3269597722229482060">Правый клик</translation>
 <translation id="3274634049061007184">Просматривайте приложения с телефона.</translation>
@@ -742,6 +744,7 @@
 <translation id="3738664582935948253">Теперь в записи видео с экрана можно показывать сочетания клавиш и нажатия.</translation>
 <translation id="3742055079367172538">Сделан скриншот</translation>
 <translation id="3743775386021959186">Режим концентрации внимания включен. Оставшееся время: <ph name="REMAINING_TIME" />.</translation>
+<translation id="3750403286520637847">Скрыть погоду</translation>
 <translation id="3756485814916578707">Трансляция экрана…</translation>
 <translation id="3765841382945324995">Сочетание клавиш для действия "<ph name="SIX_PACK_KEY_NAME" />" изменено с <ph name="OLD_SHORTCUT" /> на <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Изменено сегодня</translation>
@@ -781,6 +784,7 @@
 <translation id="3906954721959377182">Планшет</translation>
 <translation id="3923494859158167397">Нет настроенных мобильных сетей</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, загрузка мероприятий</translation>
+<translation id="3927049937406914450">Невозможно показать погоду, так как нет доступа к геоданным. Включите его в настройках.</translation>
 <translation id="3932043219784172185">Нет подключенных устройств</translation>
 <translation id="3934456833412894880">Адаптивная зарядка включена. Чтобы продлить срок службы батареи, заряд будет доводиться до уровня 80 % и удерживаться на нем. Полностью батарея будет заряжаться, только когда это необходимо.</translation>
 <translation id="3943857333388298514">Вставить</translation>
@@ -806,6 +810,7 @@
 <translation id="4002066346123236978">Название</translation>
 <translation id="40062176907008878">Рукописный ввод</translation>
 <translation id="4011112806063830608">Сейчас он включен.</translation>
+<translation id="4015144849380506405">Деактивировать/активировать кнопки мыши</translation>
 <translation id="4017989525502048489">Лазерная указка</translation>
 <translation id="401993194061514265">Фломастер недоступен. Закройте и снова откройте Screencast.</translation>
 <translation id="4021716437419160885">Прокрутить вниз</translation>
@@ -896,6 +901,7 @@
 <translation id="4312840429157639164">Окно предварительного просмотра камеры привязано к правому верхнему углу, так как перекрывало элементы системного интерфейса</translation>
 <translation id="4316910396681052118">ВСЕ ПРИЛОЖЕНИЯ</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">Скрыть все подсказки браузера Chrome</translation>
 <translation id="4322742403972824594">Функция сочетания клавиш Ctrl + Alt + Стрелка вверх изменилась. Чтобы выполнить действие клавиши Home, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Стрелка влево.</translation>
 <translation id="4324840740119394760">Доступ к камере получит приложение "<ph name="APP_NAME" />", а также все приложения и сайты с разрешением "Камера".</translation>
 <translation id="4327147325944669226">Записать игру</translation>
@@ -929,6 +935,7 @@
 <translation id="4450893287417543264">Больше не показывать</translation>
 <translation id="4451374464530248585">Функция сочетания клавиш Alt + Стрелка вниз изменилась. Чтобы выполнить действие клавиши Page Down, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Стрелка вниз.</translation>
 <translation id="4453876312474547652">Чтобы открыть историю буфера обмена, нажмите и удерживайте клавиши Ctrl + V. Если вы не хотите использовать это сочетание клавиш, отключите экспериментальный параметр #clipboard-history-longpress на странице chrome://flags (os://flags для Lacros).</translation>
+<translation id="445765352722456792">Настроить подсказки</translation>
 <translation id="445864333228800152">Добрый вечер!</translation>
 <translation id="4458688154122353284">Остановить запись с экрана</translation>
 <translation id="445923051607553918">Подключение к сети Wi-Fi</translation>
@@ -1331,6 +1338,7 @@
 <translation id="5802516411616338943">Открыть быстрые настройки</translation>
 <translation id="5804651031882187592">Отключите блокировку SIM-карты</translation>
 <translation id="5805809050170488595">Нажмите, чтобы активировать <ph name="NETWORK_NAME" /></translation>
+<translation id="5819918159912280082">Устройство Chromebook было перезагружено. Откройте предыдущие окна и приложения.</translation>
 <translation id="5823239091726045201">Google Задачи (веб-версия)</translation>
 <translation id="5825969630400862129">Настройки подключенных устройств</translation>
 <translation id="5837036133683224804">Остановить трансляцию <ph name="ROUTE_TITLE" /> на устройство "<ph name="RECEIVER_NAME" />"</translation>
@@ -1511,6 +1519,7 @@
 <translation id="6469104339369989396">Включить или отключить точку доступа</translation>
 <translation id="6477681113376365978">Не удалось скачать файл</translation>
 <translation id="6482559668224714696">Полноэкранная лупа</translation>
+<translation id="6485086611007560630">Погода (недоступно)</translation>
 <translation id="6490471652906364588">Устройство USB-C (порт справа)</translation>
 <translation id="649452524636452238">PIN-код для смарт-карты</translation>
 <translation id="6495322433318104734">Показывается заставка. Чтобы выйти, нажмите любую клавишу.</translation>
@@ -1780,6 +1789,7 @@
 <translation id="7514365320538308">Скачать</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">Page Down</translation>
+<translation id="7518182783647693467">Изменить единицы измерения температуры (F или C)</translation>
 <translation id="7519206258459640379">Автомасштабирование включено</translation>
 <translation id="7519649142417630956">При выключении сеанс удаленной работы прервется и администратор не сможет управлять вашим устройством.
 
@@ -1920,6 +1930,7 @@
 <translation id="7951630946012935453">Уменьшить яркость подсветки клавиатуры</translation>
 <translation id="7953994493035617347">Подтвердите изменение</translation>
 <translation id="795958884516058160">Полноэкранная лупа включена. Чтобы отключить ее, нажмите <ph name="ACCELERATOR" /> ещё раз.</translation>
+<translation id="7962583092928373823">Скрыть все подсказки Google Календаря</translation>
 <translation id="7963689218131240420">Сейчас он отключен.</translation>
 <translation id="7963992254934562106">С <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Выбрать папку</translation>
@@ -1992,6 +2003,7 @@
 <translation id="8214996719228530800">Версия Canary</translation>
 <translation id="8219451629189078428">В течение этого времени устройство Chromebook должно быть включено, а кабели зарядного устройства или адаптера – надежно подсоединены к нему и подключены к сети электропитания. Не выключайте устройство Chromebook.</translation>
 <translation id="8220076512072059941">Плюс <ph name="FOCUS_DURATION_DELTA" /></translation>
+<translation id="8228175756124063692">Скрыть эту подсказку</translation>
 <translation id="8230305195727960608">Режим инверсии цветов</translation>
 <translation id="8236042855478648955">Пора сделать перерыв</translation>
 <translation id="8237964652943995219">Следующий рабочий стол: <ph name="DESK_NAME" />. Номер рабочего стола: <ph name="DESK_INDEX" /> из <ph name="DESK_COUNT" />.</translation>
@@ -2178,6 +2190,7 @@
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> (<ph name="EMAIL" />), флажок не установлен.</translation>
 <translation id="8949925099261528566">Подключено, без доступа к интернету</translation>
 <translation id="8951539504029375108">Chromebook совместим только с одобренными устройствами Thunderbolt.</translation>
+<translation id="8956420987536947088">Откройте предыдущие окна и приложения.</translation>
 <translation id="8959380109429710384">Вы нажали сочетание клавиш для полноэкранной лупы. Для перемещения по экрану, когда масштаб увеличен, нажимайте клавиши со стрелками, удерживая Ctrl и Alt.</translation>
 <translation id="8964525410783593407">1 час</translation>
 <translation id="8973885907461690937">Переключиться на значок меню</translation>

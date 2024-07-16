@@ -25,6 +25,7 @@
 <translation id="1497802159252041924">安装时出错：<ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">共享 Chromium 标签页</translation>
 <translation id="1553461853655228091">Chromium 需要获得相应权限，才能使用您的摄像头为您的周边环境创建 3D 地图</translation>
+<translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{此扩展程序已不再受支持。Chromium 建议您移除它。}other{这些扩展程序已不再受支持。Chromium 建议您移除它们。}}</translation>
 <translation id="1574377791422810894">Chromium 的安全工具</translation>
 <translation id="1591808205441691831">Chromium 需要先验证您的身份，然后才能将某些数据保存到您的 Google 账号中，并在您的所有设备上使用。如果您退出账号，这些数据将保留在此设备上。</translation>
 <translation id="1594928384848033697">Chromium 想要删除您的密码管理工具数据。请输入您的 Windows 密码以允许此操作。</translation>

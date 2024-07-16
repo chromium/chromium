@@ -464,6 +464,18 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa gi
 <translation id="1372511977715560169"><ph name="PRODUCT_OS_NAME" /> içinde <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> özelliğinin etkinleştirilmesini kontrol et</translation>
 <translation id="1372618949173323717">JavaScript'i devre dışı bırak</translation>
 <translation id="1376119291123231789">Gelişmiş pil şarj modunu etkinleştir</translation>
+<translation id="1376299650477150211">Gelişmiş JavaScript optimizasyonlarının devre dışı bırakıldığı siteleri belirten site URL kalıplarının listesini oluşturmanıza olanak tanır.
+
+JavaScript optimizasyonlarının devre dışı bırakılması, <ph name="PRODUCT_NAME" /> tarayıcının web içeriğini daha yavaş oluşturabileceği anlamına gelir.
+
+Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz.
+Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.
+
+JavaScript optimizasyon politikası istisnaları, yalnızca site ayrıntı düzeyinde (eTLD+1) uygulanır. Hem site.com hem de altalan.site.com, politikaya tabi olmayan aynı eTLD+1'e (site.com) çözümlendiğinden yalnızca altalan.site.com için ayarlanan bir politika, bu URL'lerde doğru şekilde uygulanmaz. Bu durumda, hem site.com hem de altalan.site.com'da doğru şekilde uygulanması için politikanın site.com üzerinde ayarlanması gerekir.
+
+Bu politika, yalnızca üst seviye kaynak URL'si üzerinde değil, çerçeve bazında geçerlidir. Örneğin <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" /> politikasında listelenmiş olan site-bir.com, site-iki.com'u içeren bir çerçeve yüklerse site-bir.com'da JavaScript optimizasyonları devre dışı bırakılır. Ancak site-iki.com, ayarlanmışsa <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> ayarının politikasını veya varsayılan olarak JavaScript optimizasyonları etkin ayarını kullanır. Engellenenler listesindeki girişler, izin verilenler listesindeki girişlere göre daha yüksek önceliğe sahiptir. İzin verilenler listesindeki girişler de yapılandırılmış varsayılan değere göre daha yüksek önceliğe sahiptir.
+
+Bu politikanın ayarlanmadığı bir site için mevcutsa <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> ayarının politikası geçerli olur, mevcut değilse JavaScript optimizasyonu site için etkinleştirilir.</translation>
 <translation id="1376765488559847650">Cloud Upload</translation>
 <translation id="1379689277107868399">DoNotPrompt değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" />, kullanıcıdan tarayıcıda yeniden kimlik doğrulaması yapmasını otomatik olarak istemez.
 
@@ -1064,6 +1076,7 @@ Kurumsal profil ayrımının katı bir şekilde zorunlu tutulması ya da ilgili 
       <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" /> etkinleştirilirse, bu politikada tanımlanan hesaplara ek olarak Family Link kullanıcılarına da izin verilir.</translation>
 <translation id="18186215616223740"><ph name="BASIC_EDITOR_NAME" /> tarafından işlenen Office dokümanlarına gidildiğinde bunları indirmeye zorla</translation>
 <translation id="1819272352048746487">Dokunmatik klavyedeki çeşitli özellikleri açma veya kapama</translation>
+<translation id="1820974289087266512">QR kodu oluşturma aracı özelliği devre dışı.</translation>
 <translation id="1822163547472114648">Yapay Zeka ile Tema Oluştur ayarları</translation>
 <translation id="1823974945066396306">Cihaza giriş yapmasına izin verilen kullanıcıların listesini tanımlar. Girişler <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> formundadır (örneğin, <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />). Bir alan üzerinde rastgele kullanıcılara izin vermek için <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" /> formunda girişler kullanın.
 
@@ -2855,6 +2868,13 @@ Politika, Devre Dışı değerine ayarlanırsa App Store puan promosyonu, kullan
 <translation id="3177537290334203187">Web sitelerinin ağ uç noktalarına istekte bulunup bulunamayacağını belirlerken varsayılan çalışma biçimini kullanın.</translation>
 <translation id="3177802893484440532">Yerel güven bağlantıları için online OCSP/CRL denetimlerini gerekli kıl</translation>
 <translation id="3179533009079100620">Profil Seçiciyi Göster</translation>
+<translation id="3180633260411794645">Politikayı ayarlamak, JavaScript çalıştıramayan siteleri belirten URL kalıpları için bir liste yapmanıza olanak tanır.
+
+      Politika etkinleştirilir ve ayarlanmadan bırakılırsa <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
+
+      Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.
+
+      Bu politikanın, JavaScript'i üst düzey dokümanın kaynağının (genellikle adres çubuğunda da görüntülenen sayfa URL'si) kalıplardan herhangi biriyle eşleşip eşleşmediğine göre engellediğini unutmayın. Dolayısıyla bu politika web tedarik zinciri saldırılarını azaltmak için uygun değildir. Örneğin "https://[*.]foo.com/" kalıbının kullanılması, https://example.com/ adresinde barındırılan bir sayfanın https://www.foo.com/example.js adresinden yüklenen bir komut dosyasını çalıştırmasını engellemez. Ayrıca, "https://example.com/" kalıbının kullanılması, https://example.com adresindeki bir dokümanın üst düzey doküman olmamasına rağmen başka bir kaynakta (ör. https://www.bar.com) barındırılan bir sayfanın alt çerçevesi olarak yerleştirilmiş olması durumunda bu dokümanın komut dosyası çalıştırmasını da engellemez.</translation>
 <translation id="3180671894201217988">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa üçüncü taraf yazılımlarının <ph name="PRODUCT_NAME" /> işlemlerine çalıştırılabilir kod yerleştirmesi önlenir.
 
       Politika, Devre Dışı değerine ayarlanırsa bu yazılımın <ph name="PRODUCT_NAME" /> işlemlerine bu tür kod yerleştirmesine izin verilir.</translation>
@@ -5119,6 +5139,16 @@ Bu politika, kullanıcıların <ph name="PRODUCT_NAME" /> ürününde oturum aç
       Bu politika doğru değerine ayarlanırsa kullanıcı hem ikinci profiller oluşturup kullanabilir hem de misafir modunu kullanabilir.
 
       Bu politika doğru değerine ayarlanır, ancak <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" /> seçeneği yanlış değerine ayarlanırsa kullanıcının ikinci profiller oluşturamayacağına dikkat edin. Aynı durum <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" /> ve misafir modu için de geçerlidir.</translation>
+<translation id="4958911425563967203">Gelişmiş JavaScript optimizasyonlarının etkinleştirildiği siteleri belirten site URL kalıplarının listesini oluşturmanıza olanak tanır.
+
+Geçerli site URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz.
+Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.
+
+JavaScript optimizasyon politikası istisnaları, yalnızca site ayrıntı düzeyinde (eTLD+1) uygulanır. Hem site.com hem de altalan.site.com, politikaya tabi olmayan aynı eTLD+1'e (site.com) çözümlendiğinden yalnızca altalan.site.com için ayarlanan bir politika, bu URL'lerde doğru şekilde uygulanmaz. Bu durumda, hem site.com hem de altalan.site.com'da doğru şekilde uygulanması için politikanın site.com üzerinde ayarlanması gerekir.
+
+Bu politika, yalnızca üst seviye kaynak URL'si üzerinde değil, çerçeve bazında geçerlidir. Örneğin <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> politikasında listelenmiş olan site-bir.com, site-iki.com'u içeren bir çerçeve yüklerse site-bir.com'da JavaScript optimizasyonları etkin olur. Ancak site-iki.com, ayarlanmışsa <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> ayarının politikasını veya varsayılan olarak JavaScript optimizasyonları etkin ayarını kullanır. Engellenenler listesindeki girişler, izin verilenler listesindeki girişlere göre daha yüksek önceliğe sahiptir. İzin verilenler listesindeki girişler de yapılandırılmış varsayılan değere göre daha yüksek önceliğe sahiptir.
+
+Bu politikanın ayarlanmadığı bir site için mevcutsa <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> ayarının politikası geçerli olur, mevcut değilse JavaScript optimizasyonu site için etkinleştirilir.</translation>
 <translation id="4960597185231686653">Dokunmatik klavyede ses girişi özelliği sunulup sunulamayacağını gösteren bir boole flag'i.</translation>
 <translation id="4970046075219007744">Web uygulamalarının, kullanıcıdan File Handling API üzerinden dosya türlerine erişim istemesine izin ver</translation>
 <translation id="4970855112942626932">Tarayıcıda oturum açmayı devre dışı bırak</translation>
@@ -5316,6 +5346,11 @@ Politika ayarlanmadan bırakılırsa ya da devre dışı bırakılırsa çerezle
           Bu ayarı etkinleştirirseniz, <ph name="PRODUCT_NAME" />, komut satırında proxy ile ilgili belirtilen tüm seçenekleri yoksayar.
 
           Bu politikanın ayarlanmadan bırakılması, kullanıcıların proxy ayarlarını kendi başlarına seçmelerine olanak tanır.</translation>
+<translation id="5169461017653366056">Bu politika, <ph name="PRODUCT_NAME" /> tarayıcıdaki QR kodu oluşturma aracı özelliğini etkinleştirir.
+
+Bu politikayı etkinleştirirseniz veya yapılandırmazsanız QR kodu oluşturma aracı özelliği etkinleştirilir.
+
+Bu politikayı devre dışı bırakırsanız QR kodu oluşturma aracı özelliği devre dışı bırakılır.</translation>
 <translation id="5170018694841697392">Google Arama'da Güvenli Arama kullanımını zorlama</translation>
 <translation id="5172841243186654432"><ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> politikası, önceki oturumlardan URL'lerin geri yükleneceği şekilde ayarlanmamışsa, <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> ayarı bir oturum için çerezlere izin veren ve vermeyen siteleri belirten URL kalıpları için liste yapmanıza olanak tanır.
 
@@ -7869,6 +7904,7 @@ Politika, "salt okuma" değerine ayarlanır veya ayarlanmadan bırakılırsa yer
 
        <ph name="MS_WIN_NAME" /> işletim sisteminde bu işlev yalnızca Windows 10 Pro üzerinde çalışan bir <ph name="MS_AD_NAME" /> alan adına katılmış veya <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir. <ph name="MAC_OS_NAME" /> işletim sisteminde bu işlev yalnızca MDM ile çalışan veya MCX aracılığıyla bir alan adına katılmış örneklerde kullanılabilir.</translation>
 <translation id="6988791975283483023">Kablosuz özelliğini devre dışı bırak</translation>
+<translation id="6990546578776912554">DNS-over-HTTPS kullanılarak çözümlenmeyecek alanları belirt</translation>
 <translation id="6990736882800900101"><ph name="BLANK_PAGE_NAME" /> sayfasını hedefleyerek açılan tüm pop-up'lara, pop-up'ı açmak isteyen sayfayla etkileşimde bulunma izni ver. Bu izin, pop-up'ı açan sayfa böyle bir etkileşimi açıkça devre dışı bırakmadığı sürece verilir. </translation>
 <translation id="6991623831629598930">TLS'de etkinleştirilen Kyber kuantum sonrası anahtar anlaşması için varsayılan değeri kullan</translation>
 <translation id="6992943675460798920">Kullanıcıların ekran görüntüsü almasına veya video kaydı yapmasına izin ver</translation>
@@ -8505,6 +8541,7 @@ bırakılırsa sesli okuma etkinleştirilir.</translation>
 
       Politika ayarlanmadan bırakılırsa <ph name="FEATURE_NAME" /> giriş ekranı, kuruluş tarafından yönetilen kullanıcılar için atlanır, yönetilmeyen kullanıcılar için gösterilir.</translation>
 <translation id="7469554574977894907">Arama önerilerini etkinleştir</translation>
+<translation id="7472547030234093862">DNS-over-HTTPS kullanılarak çözümlenecek alanları belirt</translation>
 <translation id="747275827471712187">Bu sitelerde çerezler için eski <ph name="ATTRIBUTE_SAMESITE_NAME" /> davranışına geri dön</translation>
 <translation id="747517124419659622">Yapay zeka modellerini daha iyi hale getirmeden yapay zeka destekli geçmişte arama özelliğine izin ver</translation>
 <translation id="7476030153540156377"><ph name="PRIVACY_SANDBOX_NAME" /> IP koruması özelliğinin etkinleştirilip etkinleştirilmeyeceğini seç.</translation>
@@ -10616,6 +10653,7 @@ kullanılabilecek sertifikaların listesi. Sertifikalar, base64 kodlu olmalıdı
 <translation id="9113058104383612727">Kiosk sorun giderme araçlarını etkinleştir</translation>
 <translation id="9113065986946552397">Chrome Temizleme çalışması sonuçları her zaman Google ile paylaşılsın</translation>
 <translation id="9113262510565261950">Cihaz ekran koruyucusu giriş ekranı boşta kalma zaman aşımı.</translation>
+<translation id="911448529868608648">QR kodu oluşturma aracını etkinleştir</translation>
 <translation id="911605919007170833">Güvenlik durumunu raporla</translation>
 <translation id="9117826695152538214">Politikayı True (Doğru) değerine ayarlamak, yapışkan tuşları açık tutar. Politikayı False (Yanlış) değerine ayarlamak, yapışkan tuşları kapalı tutar.
 
@@ -10701,6 +10739,7 @@ Bu politika yalnızca <ph name="FULL_RESTORE_ENABLED_NAME" /> politikası doğru
 <translation id="9142561920976791097">Devre dışı bırakılan form kontrollerinde yeni etkinlik gönderme davranışı kullanılacak.</translation>
 <translation id="91459503271584213">Yürütülebilir yerel mesajlaşma ana makinelerini doğrudan Windows'da başlat</translation>
 <translation id="9148720248753722892">SHA-1 imzalı sertifikalara izin verme</translation>
+<translation id="9149075762533142978">QR kodu oluşturma aracı özelliği etkin.</translation>
 <translation id="9149678135092892302">Sürüm bilgilerinin raporlanmasını devre dışı bırak</translation>
 <translation id="9150416707757015439">Bu politika uygun bulunmamaktadır. Lütfen, bunun yerine IncognitoModeAvailability politikasını kullanın.
       <ph name="PRODUCT_NAME" /> Gizli modunu etkinleştirir.

@@ -742,7 +742,7 @@
 <translation id="6750737795876287924">Trenutni direktorij</translation>
 <translation id="6751256176799620176">Odabran je 1 folder</translation>
 <translation id="6755827872271341378">ChromeOS Flex uređaj</translation>
-<translation id="6777029074498310250">Više informacija potražite na web-lokaciji <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /></translation>
+<translation id="6777029074498310250">Posjetite <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /> za više informacija</translation>
 <translation id="6790428901817661496">Pokreni</translation>
 <translation id="6794539005637808366">Vratite stavku ili je prevucite u novi folder izvan otpada</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -796,7 +796,7 @@
 <translation id="7086590977277044826">tamilski s tastaturom InScript</translation>
 <translation id="7088615885725309056">Starije</translation>
 <translation id="7103992300314999525">makedonski</translation>
-<translation id="7104338189998813914">Pojavio se problem s pristupanjem vašem OneDrive računu</translation>
+<translation id="7104338189998813914">Došlo je do problema prilikom pristupanja OneDrive računu</translation>
 <translation id="7106346894903675391">Kupite dodatni prostor za pohranu...</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" – &lt;em&gt;pretraži Disk&lt;/em&gt;</translation>
 <translation id="7135561821015524160">kanada fonetski</translation>

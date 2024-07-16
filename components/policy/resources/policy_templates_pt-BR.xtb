@@ -858,6 +858,7 @@ A "entrada do usuário" é definida pelas APIs do sistema operacional e inclui a
 <translation id="1634989431648355062">Permitir o plug-in <ph name="FLASH_PLUGIN_NAME" /> nestes sites</translation>
 <translation id="1635450837608153975">Desativar as otimizações avançadas do JavaScript em todos os sites</translation>
 <translation id="1635748761015837179">Permitir gravação em dispositivos de armazenamento externo</translation>
+<translation id="163653062822010558">Ativada: o zoom do CSS está em conformidade com a especificação padrão.</translation>
 <translation id="1639468541408865385">Ativar cache de autenticação HTTP com escopo global</translation>
 <translation id="1639673466479276550">Ativar o protetor na tela de bloqueio.</translation>
 <translation id="1640824698339859203">Ativar o SSO flutuante e mover as autenticações do serviço da Web do usuário para um novo dispositivo</translation>
@@ -1296,6 +1297,7 @@ Se a política for definida como desativada, o <ph name="PRODUCT_NAME" /> fechar
 <translation id="1930127294345368978">Número máximo de páginas permitidas para um único trabalho de impressão</translation>
 <translation id="1933378685401357864">Imagem do plano de fundo</translation>
 <translation id="1935409768874953955">A coleta de dados anônimos inseridos no URL deve estar sempre ativa</translation>
+<translation id="1942015922182679826">Ativar a exclusão de senhas não descriptografáveis</translation>
 <translation id="1942626390957213764">Desativar o hub de compartilhamento da área de trabalho</translation>
 <translation id="194407941132272412">Desativar o isolamento de sites para todos os sites, mas permitir que o usuário ative essa opção</translation>
 <translation id="1945994447126139909">Esta política visa à adaptação a curto prazo e será removida na versão 88 do <ph name="PRODUCT_NAME" />.
@@ -1701,6 +1703,13 @@ A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENAB
 
       Definir <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valor 2) impede que qualquer variação seja aplicada ao navegador na tela de login. Esse modo não é recomendado, porque pode impedir que os desenvolvedores do <ph name="PRODUCT_OS_NAME" /> forneçam correções críticas de segurança de maneira rápida.</translation>
 <translation id="2215746393279570703">Configurações de SSO flutuante</translation>
+<translation id="2218830243081931587">Esta política controla o comportamento do atalho no <ph name="PRODUCT_OS_NAME" />.
+
+Se a política for deixada sem definição ou for definida como <ph name="NORMAL_SYSTEM_PRIORITY" />, todos os atalhos do sistema <ph name="PRODUCT_OS_NAME" /> serão ativados como esperado.
+
+Se a política for definida como <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS" />, uma lista predeterminada de atalhos da tecla de acesso rápido nunca vai ativar um atalho.
+
+Se a política for definida como <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY" />, uma lista predeterminada de atalhos da tecla de acesso rápido nunca vai ativar um atalho enquanto um app estiver em tela cheia.</translation>
 <translation id="2221779615493499989">Informar o status de rede dos usuários em dispositivos registrados.
 
       Se a política for definida como falsa, as informações não serão enviadas.
@@ -2508,6 +2517,7 @@ Esta política só pode ser definida como uma política do usuário em nuvem.</t
 <translation id="2847788524147474533">As políticas do computador da plataforma têm precedência em relação às políticas do computador na nuvem</translation>
 <translation id="2849275596224278787">Ocultar opções de acessibilidade no menu da bandeja do sistema na tela de login</translation>
 <translation id="2853649500575897584">Não bloquear pontos de extensão legados no processo do navegador</translation>
+<translation id="2853757230661166968">Permite que os aplicativos capturem e substituam os atalhos padrão do sistema.</translation>
 <translation id="285480231336205327">Ativar modo de alto contraste</translation>
 <translation id="285627849510728211">Definir a configuração do dia para o modo avançado de carregamento de bateria</translation>
 <translation id="2856932965866813330">Ativa o compartilhamento de credenciais do usuário com outros usuários</translation>
@@ -3883,6 +3893,7 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 
       Observação: esta política precisa ser usada com <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />.</translation>
 <translation id="3918339829588313389">Permitir que os usuários definam um PIN fraco</translation>
+<translation id="392227823425989489">Todos os atalhos do sistema serão sempre ativados como esperado.</translation>
 <translation id="3924506460382372403">Desativar relatórios sobre o status dos gráficos do dispositivo</translation>
 <translation id="3925377537407648234">Define resolução de tela e fator de escala</translation>
 <translation id="3926681471685211524">Verificar o uso da Chave RSA em certificados de servidor emitidos por âncoras de confiança locais</translation>
@@ -4335,6 +4346,13 @@ Observação: o bloqueio de URLs internos chrome://* e chrome-untrusted://* pode
       Se a política for definida como falsa, a resolução de DNS do sistema (getaddrinfo()) será executada no processo de rede, e não no navegador. Isso pode forçar a desativação do sandbox do serviço de rede, prejudicando a segurança do <ph name="PRODUCT_NAME" />.
 
       Se a política for deixada sem definição, a resolução de DNS poderá ser executada no serviço de rede, fora dele ou parcialmente dentro e parcialmente fora, dependendo da configuração do sistema e das flags de recursos.</translation>
+<translation id="4234788818648224034">Lista de domínios que não serão resolvidos usando DNS sobre HTTPS. Esta política é ignorada quando o modo de DNS seguro está desativado (DNS em texto simples usado sempre).
+
+Se a política <ph name="DOH_TEMPLATES_POLICY_NAME" /> também estiver definida, um domínio mais específico será preferido. A especificidade se refere ao número de pontos (".") no domínio. Quando um domínio corresponder às duas políticas, o padrão será usar DNS sobre HTTPS para o domínio.
+
+Os domínios precisam estar no formato de um nome de domínio totalmente qualificado (FQDN, na sigla em inglês) ou como sufixos de domínio anotados usando um prefixo curinga especial "*".
+
+Domínios com formato incorreto serão ignorados.</translation>
 <translation id="4239720644496144453">O cache não é usado para apps Android. Se vários usuários instalarem o mesmo app Android, o download dele será feito novamente para cada usuário.</translation>
 <translation id="4242583077375244471">Quando a política é ativada, o <ph name="PRODUCT_NAME" />
 verifica os certificados do servidor usando o verificador de certificados integrado,
@@ -4355,6 +4373,7 @@ na versão 121 do <ph name="PRODUCT_NAME" /> para
 <ph name="ANDROID_NAME" />, quando o suporte ao uso das
 raízes e do verificador de certificados disponibilizados pela plataforma foi removido.</translation>
 <translation id="424318624725112807">Ativar o destaque do cursor de texto na tela de login</translation>
+<translation id="4243419387411966417">Desativar a exclusão de senhas não descriptografáveis</translation>
 <translation id="4245159233848584683">Ativar a política ou deixá-la sem definição faz com que o <ph name="PRODUCT_OS_NAME" /> mostre uma solicitação de configuração da rede quando um dispositivo ficar off-line, se uma conta local do dispositivo estiver definida para login automático sem atraso.
 
 A desativação da política faz com que uma mensagem de erro apareça.</translation>
@@ -5372,6 +5391,15 @@ Se ela for deixada sem definição, o recurso ficará ativado em dispositivos n�
 <translation id="5085647276663819155">Desativar visualização da impressão</translation>
 <translation id="5087932158260897375">Se a política for definida como falsa, os relatórios de dados para diagnóstico de confiabilidade do domínio serão desativados e nenhum dado será enviado ao Google.
 Se a política for definida como verdadeira ou for deixada sem definição, esses relatórios vão seguir o comportamento de MetricsReportingEnabled para o <ph name="PRODUCT_NAME" /> ou de DeviceMetricsReportingEnabled para o <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="5088284418186527880">Esta política permite a conformidade com a especificação recém-adotada de zoom do CSS.
+
+Quando ela for ativada ou deixada sem definição, a propriedade "zoom" do CSS vai seguir a especificação:
+
+  https://drafts.csswg.org/css-viewport/#zoom-property (link em inglês)
+
+Quando ela for desativada, a propriedade "zoom" do CSS vai voltar ao comportamento legado pré-padronizado.
+
+Esta política é uma solução temporária para permitir que o conteúdo da Web seja migrado para o novo comportamento. Há também um teste de origem (DisableStandardizedBrowserZoom) que corresponde ao comportamento quando esta política está desativada. Esta política será removida e o comportamento "Ativado" será permanente no marco 134.</translation>
 <translation id="5090791951240382356">Permitir a mescla de políticas de dicionário de diferentes fontes</translation>
 <translation id="5091315650312105069">Permitir autenticação <ph name="BASIC_AUTH" /> para conexões HTTP</translation>
 <translation id="5093603777978346818">Não ativar o protetor na tela de bloqueio.</translation>
@@ -5436,6 +5464,15 @@ Quando a política não está definida ou é desativada, os cookies e os dados p
 <translation id="5152787786897382519">O Chromium e o Google Chrome têm alguns grupos de políticas que dependem umas das outras para oferecer controle sobre um recurso. Esses conjuntos são representados pelos seguintes grupos de políticas. Como essas políticas podem ter diversas fontes, apenas os valores da fonte de maior prioridade serão aplicados. Os valores de uma fonte de menor prioridade presente no mesmo grupo serão ignorados. A ordem da prioridade está definida em <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Ícone dos experimentos do navegador na barra de ferramentas</translation>
 <translation id="5159674159887919923">Não enviar mais dados de hardware no ChromeOS Flex</translation>
+<translation id="5162982931329320509">Lista de domínios a serem resolvidos usando DNS sobre HTTPS. Outros domínios não incluídos na lista não serão resolvidos usando DNS sobre HTTPS. Esta política é ignorada quando o modo de DNS seguro está desativado (DNS em texto simples usado sempre).
+
+Se a lista estiver vazia ou não for definida, todos os domínios serão resolvidos usando DNS sobre HTTPS sempre que possível. Esse é o mesmo comportamento de uma lista de domínios incluídos com o valor ["*"].
+
+Se a política <ph name="DOH_TEMPLATES_POLICY_NAME" /> também for definida, um domínio mais específico será preferido. A especificidade se refere ao número de pontos (".") no domínio. Quando um domínio corresponder às duas políticas, o padrão será usar DNS sobre HTTPS para o domínio.
+
+Os domínios precisam estar no formato de um nome de domínio totalmente qualificado (FQDN, na sigla em inglês) ou como sufixos de domínio anotados usando um prefixo curinga especial "*".
+
+Domínios com formato incorreto serão ignorados.</translation>
 <translation id="5163002264923337812">Ativar o antigo fluxo de login baseado na Web</translation>
 <translation id="5163889437570441600">Permite que o conteúdo seja transmitido usando o <ph name="PRODUCT_NAME" />.
 
@@ -5991,6 +6028,7 @@ A remoção foi feita na versão M112.</translation>
 <translation id="5534079385061985566">Ativar o recurso de restauração completa.</translation>
 <translation id="5534235660122271432">Não permitir gravação em dispositivos de armazenamento externo</translation>
 <translation id="5535256585099022933">Configurar o intervalo de tempo para reinicialização</translation>
+<translation id="5537400155400537818">Desativada: o zoom do CSS preserva o comportamento legado pré-padrão.</translation>
 <translation id="553806128266843748">Uma sinalização booleana indicando se a limitação está ativada.</translation>
 <translation id="5540885720415375851">Permitir a detecção de dispositivos locais</translation>
 <translation id="5542235730745104308">Se a política for definida como verdadeira, o <ph name="PRODUCT_NAME" /> vai usar páginas de erro alternativas integradas no navegador, como "Página não encontrada". Se a política for definida como falsa, o <ph name="PRODUCT_NAME" /> nunca vai usar páginas de erro alternativas.
@@ -7239,6 +7277,13 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
       O teclado virtual pode mudar para um layout compacto, dependendo do método de entrada.</translation>
 <translation id="6404064917675764807">Não informar eventos de sessões de CRD</translation>
 <translation id="6404360891305375004">Permitir o compartilhamento de arquivos pela rede</translation>
+<translation id="640519320513485101">Esta política controla se o gerenciador de senhas integrado pode excluir senhas não descriptografáveis do banco de dados. Isso é necessário para restaurar a funcionalidade completa do gerenciador de senhas integrado, mas pode incluir uma perda permanente de dados. Se for possível corrigir os valores de senhas não descriptografáveis para que possam ser descriptografados, geralmente será necessário que o usuário realize ações complexas.
+
+Se a política for ativada, as senhas não descriptografáveis salvas no gerenciador de senhas integrado do usuário serão perdidas. As senhas que ainda estiverem em um estado funcional não serão modificadas.
+
+Se a política for desativada, os dados do gerenciador de senhas dos usuários vão continuar intactos, mas a funcionalidade será interrompida.
+
+Se a política for definida, os usuários não poderão mudá-la no <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6407093060083181305">Configurar lista de bloqueio para instalação de extensões</translation>
 <translation id="640827304541402854">Desativar travessia de firewall do host de acesso remoto</translation>
 <translation id="6410847321564585975">Lista de permissões de relatórios de atividade do site</translation>
@@ -8339,6 +8384,7 @@ Se esta política for desativada, as senhas nunca serão lembradas e todas as se
 <translation id="7146198347561863646">Se a política for definida como "Ativada" ou não for definida, wake locks serão permitidos para gerenciamento de energia. Extensões podem solicitar wake locks pela API da extensão de gerenciamento de energia e por apps ARC.
 
       Se a política for definida como "Desativada", as solicitações de wake locks serão ignoradas.</translation>
+<translation id="7148958378210448356">Uma lista predeterminada de atalhos com a tecla de acesso rápido nunca vai realizar uma ação.</translation>
 <translation id="7149042336307555519"> Os tipos de conexão permitidos para uso em atualizações de SO. Atualizações de SO podem gerar uma grande sobrecarga na conexão devido ao tamanho e podem incorrer em custo adicional. Portanto, elas não são, por padrão, ativadas para tipos de conexão considerados caros (atualmente apenas "celular").
 
       Os identificadores de tipo de conexão reconhecidos são <ph name="CONNECTION_TYPE_ETHERNET_NAME" />, <ph name="CONNECTION_TYPE_WIFI_NAME" /> e <ph name="CONNECTION_TYPE_CELLULAR_NAME" />.</translation>
@@ -9262,6 +9308,7 @@ Desativar a política ou deixá-la sem definição faz com que o SPN do Kerberos
       Quando a política é definida como zero, o <ph name="PRODUCT_OS_NAME" /> não bloqueia a tela quando o usuário fica inativo. Se a política não for definida, o período padrão será usado.
 
       Recomendação: ative o bloqueio de tela depois de um período de inatividade quando o dispositivo estiver suspenso e suspenda o <ph name="PRODUCT_OS_NAME" /> depois do intervalo de inatividade. Use esta política apenas quando o bloqueio de tela ocorrer muito antes da suspensão ou quando você não quiser a suspensão por inatividade.</translation>
+<translation id="7894964526545174973">Ativar comportamento padronizado de zoom do navegador</translation>
 <translation id="7895553628261067384">Acesso remoto</translation>
 <translation id="7898807590879163195">Desativar sinal de funcionamento de atividade do dispositivo</translation>
 <translation id="789975630884141379">Permitir conteúdo sugerido</translation>
@@ -9537,6 +9584,7 @@ Aviso: recomendamos que você deixe as atualizações automáticas ativadas para
 <translation id="8089200718228084417">Ativar a impressão com o protocolo Privet suspenso</translation>
 <translation id="8091982561085048989">Flag booleana indicando se o IPP Everywhere deve ser usado ou não para configurar a impressora. Essa sinalização é compatível com o <ph name="PRODUCT_OS_NAME" /> 76 ou versão mais recente.</translation>
 <translation id="8094095107731619070">Ativar a correção automática do teclado físico quando os usuários digitarem</translation>
+<translation id="8099833343914898016">Uma lista predeterminada de atalhos com a tecla de acesso rápido nunca vai realizar uma ação em tela cheia.</translation>
 <translation id="8099880303030573137">Intervalo de inatividade no funcionamento com energia da bateria</translation>
 <translation id="8101381354936029836">Grupo atômico de políticas:</translation>
 <translation id="8102854005031553638">O visualizador de PDF usa o renderizador AGG.</translation>
@@ -10744,6 +10792,19 @@ Observação: no momento, apenas a primeira entrada será considerada. Extensõe
       Esta política só afeta usuários que fizeram a autenticação com SAML.
 
       O valor da política precisa ser especificado em segundos.</translation>
+<translation id="9015526159640436408">URL de uma imagem que será usada como selo corporativo do perfil. O URL precisa levar a uma imagem.
+
+O selo vai aparecer na barra de ferramentas.
+
+Se a política for definida no navegador, todos os perfis terão esse logotipo na barra de ferramentas.
+
+Se a política for definida no perfil, somente ele terá o logotipo.
+
+Se a política for deixada sem definição, um ícone padrão de edifício vai aparecer.
+
+Se ocorrer um erro ao tentar mostrar a imagem, esse ícone não vai aparecer.
+
+Ao contrário de outras políticas, a definida no nível do perfil tem precedência em relação a uma definida no nível do navegador.</translation>
 <translation id="9015578113567730893">Frequência de coleta da telemetria de áudio em milissegundos.</translation>
 <translation id="9015759770696099204">As configurações F11/F12 estão desativadas</translation>
 <translation id="9015952763003753868">Fazer com que <ph name="ACAM_HEADER_NAME" /> corresponda à especificação de simulação do <ph name="CORS" /> em conformidade</translation>

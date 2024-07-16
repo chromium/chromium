@@ -521,6 +521,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2970920913501714344">Apps, extensies en thema's installeren</translation>
 <translation id="2977598380246111477">Volgend cijfer</translation>
 <translation id="2985148236010982088">Alle apps bekijken</translation>
+<translation id="2992272421330787632">Alle mediasuggesties verbergen</translation>
 <translation id="2992327365391326550">De microfoonknop van het apparaat staat uit.</translation>
 <translation id="3000461861112256445">Monogeluid</translation>
 <translation id="3001391739687111021">Schermformaat bewerken</translation>
@@ -591,6 +592,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3255483164551725916">Wat kun je doen?</translation>
 <translation id="3256109297135787951">De markering voor een item op je plank verwijderen</translation>
 <translation id="3260969790895726815">Spraak wordt lokaal verwerkt en dicteren werkt offline, maar sommige spraakopdrachten werken niet.</translation>
+<translation id="3264031581203585083">Alle Google Drive-suggesties verbergen</translation>
 <translation id="3265032511221679826">Toegang tot exacte locatie aanzetten?</translation>
 <translation id="3269597722229482060">Klikken met rechtermuisknop</translation>
 <translation id="3274634049061007184">Apps van je telefoon bekijken</translation>
@@ -742,6 +744,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3738664582935948253">Je kunt nu klikken en sneltoetsen tonen in schermopnamen</translation>
 <translation id="3742055079367172538">Screenshot gemaakt</translation>
 <translation id="3743775386021959186">Focus staat aan, nog <ph name="REMAINING_TIME" /></translation>
+<translation id="3750403286520637847">Weersuggestie verbergen</translation>
 <translation id="3756485814916578707">Scherm casten</translation>
 <translation id="3765841382945324995">De sneltoets <ph name="SIX_PACK_KEY_NAME" /> is geüpdatet van <ph name="OLD_SHORTCUT" /> naar <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Vandaag bewerkt</translation>
@@ -781,6 +784,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3923494859158167397">Geen mobiele netwerken ingesteld</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, afspraken laden.</translation>
+<translation id="3927049937406914450">Weer is niet beschikbaar omdat locatietoegang uitstaat. Je kunt dit wijzigen in de instellingen.</translation>
 <translation id="3932043219784172185">Geen apparaat aangesloten</translation>
 <translation id="3934456833412894880">Aangepast opladen staat aan. Je batterij blijft op 80% om de batterijduur te verlengen en wordt volledig opgeladen wanneer je dat nodig hebt.</translation>
 <translation id="3943857333388298514">Plak</translation>
@@ -897,6 +901,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4312840429157639164">Camera uitgelijnd op de rechterbovenhoek. Conflict met systeemoppervlak.</translation>
 <translation id="4316910396681052118">ALLE APPS</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">Alle Chrome-browsersuggesties verbergen</translation>
 <translation id="4322742403972824594">De sneltoets Ctrl + Alt + pijl-omhoog is veranderd. Als je de toets Home wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + pijl-links.</translation>
 <translation id="4324840740119394760">Hiermee geef je <ph name="APP_NAME" /> en alle apps en websites met camerarechten toegang tot de camera</translation>
 <translation id="4327147325944669226">Game opnemen</translation>
@@ -930,6 +935,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4450893287417543264">Niet meer bekijken</translation>
 <translation id="4451374464530248585">De sneltoets Alt + pijl-omlaag is veranderd. Als je de toets Page Down wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + pijl-omlaag.</translation>
 <translation id="4453876312474547652">Je ziet het klembord als je Ctrl + V ingedrukt houdt. Je kunt deze sneltoets uitzetten door de flag #clipboard-history-longpress uit te zetten in chrome://flags (os://flags als je Lacros gebruikt).</translation>
+<translation id="445765352722456792">Suggesties aanpassen</translation>
 <translation id="445864333228800152">Goedenavond,</translation>
 <translation id="4458688154122353284">Schermopname stoppen</translation>
 <translation id="445923051607553918">Aanmelden bij wifi-netwerk</translation>
@@ -1332,6 +1338,7 @@ Geen apparaten verbonden.</translation>
 <translation id="5802516411616338943">Snelle instellingen openen</translation>
 <translation id="5804651031882187592">De instelling Simkaart vergrendelen uitzetten</translation>
 <translation id="5805809050170488595">Klik om <ph name="NETWORK_NAME" /> te activeren</translation>
+<translation id="5819918159912280082">Je Chromebook is onverwacht opnieuw opgestart. Open je vorige vensters en apps.</translation>
 <translation id="5823239091726045201">Google Tasks op het web</translation>
 <translation id="5825969630400862129">Instellingen voor verbonden apparaten</translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" /> in <ph name="RECEIVER_NAME" /> stopzetten</translation>
@@ -1512,6 +1519,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6469104339369989396">Hotspot aan-/uitzetten</translation>
 <translation id="6477681113376365978">Kan bestand niet downloaden</translation>
 <translation id="6482559668224714696">Volledig scherm vergroten</translation>
+<translation id="6485086611007560630">Weer (niet beschikbaar)</translation>
 <translation id="6490471652906364588">USB-C-apparaat (poort aan rechterkant)</translation>
 <translation id="649452524636452238">Pincode van smartkaart</translation>
 <translation id="6495322433318104734">Screensaver wordt weergegeven, druk op een toets om af te sluiten</translation>
@@ -1781,6 +1789,7 @@ Nieuwe installatie</translation>
 <translation id="7514365320538308">Downloaden</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
+<translation id="7518182783647693467">Wisselen tussen temperatuureenheden (F versus C)</translation>
 <translation id="7519206258459640379">Cameraframing staat aan.</translation>
 <translation id="7519649142417630956">Na het uitzetten wordt de beheerder uitgelogd en kan die je apparaat niet meer bedienen.
 
@@ -1921,6 +1930,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7951630946012935453">Toetsenbord dimmen</translation>
 <translation id="7953994493035617347">Nieuwe resolutie bevestigen?</translation>
 <translation id="795958884516058160">Vergrootglas voor volledig scherm staat aan. Druk nogmaals op <ph name="ACCELERATOR" /> om dit uit te zetten.</translation>
+<translation id="7962583092928373823">Alle Google Agenda-suggesties verbergen</translation>
 <translation id="7963689218131240420">Niet storen staat uit.</translation>
 <translation id="7963992254934562106">Van <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Map selecteren...</translation>
@@ -1993,6 +2003,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8214996719228530800">Canary-kanaal</translation>
 <translation id="8219451629189078428">Je Chromebook moet ondertussen aan blijven en zijn aangesloten op een stopcontact. Zorg dat de kabels van de oplader of adapter goed zijn aangesloten, zowel op je Chromebook als op het stopcontact. Zet je Chromebook niet uit.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> toevoegen</translation>
+<translation id="8228175756124063692">Deze suggestie verbergen</translation>
 <translation id="8230305195727960608">Modus voor kleurinversie</translation>
 <translation id="8236042855478648955">Tijd voor een pauze</translation>
 <translation id="8237964652943995219">Volgend bureau: <ph name="DESK_NAME" />. Bureau <ph name="DESK_INDEX" /> van <ph name="DESK_COUNT" />.</translation>
@@ -2179,6 +2190,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="894774083269346314">Selectievakje <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> niet aangevinkt.</translation>
 <translation id="8949925099261528566">Verbonden, geen internet</translation>
 <translation id="8951539504029375108">Alleen goedgekeurde Thunderbolt-apparaten werken met je Chromebook</translation>
+<translation id="8956420987536947088">Je vorige vensters en apps openen</translation>
 <translation id="8959380109429710384">Je hebt op de sneltoets voor het vergrootglas voor volledig scherm gedrukt. Gebruik Ctrl + Alt + pijltoetsen om te bewegen op de ingezoomde weergave.</translation>
 <translation id="8964525410783593407">1 u</translation>
 <translation id="8973885907461690937">De focus op het menu-icoon plaatsen</translation>

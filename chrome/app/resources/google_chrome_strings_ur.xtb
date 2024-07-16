@@ -17,6 +17,7 @@
 <translation id="1149651794389918149">‏Chrome میں سائن ان کریں۔ اگر آپ کسی اکاؤنٹ میں صرف ایک بار سائن ان کرنا چاہتے ہیں تو آپ <ph name="GUEST_LINK_BEGIN" />آلہ کو بطور مہمان استعمال<ph name="GUEST_LINK_END" /> کر سکتے ہیں۔</translation>
 <translation id="1152920704813762236">‏ChromeOS کے بارے میں</translation>
 <translation id="1154147086299354128">‏Chrome میں &amp;کھولیں</translation>
+<translation id="1184145431117212167">‏انسٹالیشن ناکام ہوگئی کیونکہ Windows کا آپ کا ورژن تعاون یافتہ نہیں ہے۔</translation>
 <translation id="1194807384646768652">‏Chrome نے اس ڈاؤن لوڈ کو مسدود کر دیا کیونکہ فائل کی یہ قسم عام طور پر ڈاؤن لوڈ نہیں ہوتی ہے اور یہ خطرناک ہو سکتی ہے</translation>
 <translation id="1203500561924088507">انسٹال کرنے کا شکریہ۔ آپ کو <ph name="BUNDLE_NAME" /> استعمال کرنے سے پہلے اپنا براؤزر لازمی طور سے ری اسٹارٹ کرنا چاہیے۔</translation>
 <translation id="1229096353876452996">‏Google ‏Chrome کو بطور ڈیفالٹ سیٹ کرنے کی تجویز کرتا ہے</translation>
@@ -238,6 +239,7 @@
 <translation id="4191857738314598978">{0,plural, =1{‏ایک دن کے اندر Chrome کو دوبارہ لانچ کریں}other{‏# دن کے اندر Chrome کو دوبارہ لانچ کریں}}</translation>
 <translation id="4205939740494406371">‏Chrome آپ کے پاس ورڈز چیک نہیں کر سکتا ہے۔ 24 گھنٹے بعد دوبارہ کوشش کریں یا <ph name="BEGIN_LINK" />اپنے Google اکاؤنٹ میں پاس ورڈز چیک کریں<ph name="END_LINK" />۔</translation>
 <translation id="4222932583846282852">منسوخ ہو رہا ہے...</translation>
+<translation id="4224210481850767180">انسٹالیشن کو منسوخ کر دیا گیا۔</translation>
 <translation id="4242034826641750751">‏Chrome کو اس سائٹ کے لیے کیمرے اور مائیکروفون کی اجازتیں درکار ہیں</translation>
 <translation id="424864128008805179">‏Chrome سے سائن آؤٹ کریں؟</translation>
 <translation id="4251615635259297716">‏آپ کا Chrome ڈیٹا اس اکاؤنٹ سے لنک کریں؟</translation>

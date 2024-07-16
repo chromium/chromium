@@ -17,6 +17,7 @@
 <translation id="1149651794389918149">ចូលគណនី Chrome។ ប្រសិនបើ​អ្នក​ចង់​ចូល​គណនី​តែមួយលើក អ្នក​អាច<ph name="GUEST_LINK_BEGIN" />ប្រើប្រាស់​ឧបករណ៍​ក្នុងនាម​ជា​ភ្ញៀវ<ph name="GUEST_LINK_END" />។</translation>
 <translation id="1152920704813762236">អំពី ChromeOS</translation>
 <translation id="1154147086299354128">&amp;​បើក​នៅក្នុង Chrome</translation>
+<translation id="1184145431117212167">ការដំឡើងមិនបានសម្រេចទេ ដោយសារកំណែ Windows របស់អ្នកមិនអាចប្រើបាន។</translation>
 <translation id="1194807384646768652">Chrome បានទប់ស្កាត់​ការទាញយកនេះ ដោយសារ​ប្រភេទ​ឯកសារនេះ​មិនត្រូវបាន​ទាញយក​ជាទូទៅទេ ហើយវាអាច​បង្កគ្រោះថ្នាក់</translation>
 <translation id="1203500561924088507">សូមអរគុណសម្រាប់ការដំឡើង។ អ្នកត្រូវតែចាប់ផ្ដើមកម្មវិធីរុករកតាមអ៊ីនធឺណិតរបស់អ្នកឡើងវិញ មុនពេលប្រើ <ph name="BUNDLE_NAME" />។</translation>
 <translation id="1229096353876452996">Google សូមណែនាំឱ្យកំណត់ Chrome ជាលំនាំដើម</translation>
@@ -239,6 +240,7 @@
 <translation id="4191857738314598978">{0,plural, =1{ចាប់ផ្ដើម Chrome ឡើងវិញ​ក្នុងរយៈពេល​មួយថ្ងៃទៀត}other{ចាប់ផ្ដើម Chrome ឡើងវិញ​ក្នុងរយៈពេល # ថ្ងៃទៀត}}</translation>
 <translation id="4205939740494406371">Chrome មិន​អាចពិនិត្យ​ពាក្យសម្ងាត់របស់អ្នកបានទេ។ សូមព្យាយាមម្ដង​ទៀតក្រោយ​រយៈពេល 24 ម៉ោង ឬ<ph name="BEGIN_LINK" />ពិនិត្យពាក្យ​សម្ងាត់នៅក្នុង​គណនី Google របស់អ្នក<ph name="END_LINK" />។</translation>
 <translation id="4222932583846282852">កំពុងបោះបង់...</translation>
+<translation id="4224210481850767180">ការដំឡើងត្រូវបានបោះបង់។</translation>
 <translation id="4242034826641750751">Chrome ត្រូវការ​ការអនុញ្ញាត​មីក្រូហ្វូន និង​កាមេរ៉ា​សម្រាប់គេហទំព័រនេះ</translation>
 <translation id="424864128008805179">ចង់ចេញពី Chrome មែនទេ?</translation>
 <translation id="4251615635259297716">ភ្ជាប់ទិន្នន័យ Chrome របស់អ្នកទៅគណនីនេះទេ?</translation>

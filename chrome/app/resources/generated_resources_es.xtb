@@ -1926,6 +1926,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="237828693408258535">¿Quieres traducir esta página?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Puede que esta extensión deje de admitirse próximamente}other{Puede que estas extensiones dejen de admitirse próximamente}}</translation>
 <translation id="2378982052244864789">Selecciona el directorio de la extensión.</translation>
+<translation id="2379111564446699251">Para organizar los botones de la barra de herramientas, arrástralos</translation>
 <translation id="2379281330731083556">Imprimir utilizando el cuadro de diálogo del sistema <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Es posible que tu red móvil se desconecte durante unos minutos.</translation>
 <translation id="2381499968174336913">Vista previa de pestaña compartida</translation>
@@ -3530,6 +3531,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3569614820047645079">Tus archivos de Mi unidad se sincronizan automáticamente con tu Chromebook para que puedas acceder a ellos sin conexión a Internet.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> puede ver los siguientes archivos y carpetas:</translation>
 <translation id="3571734092741541777">Configurar</translation>
+<translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> extensiones se han desactivado</translation>
 <translation id="3575121482199441727">Permitir en este sitio web</translation>
 <translation id="3575224072358507281">Recoger direcciones IP y resultados de medición de redes para Measurement Lab, de acuerdo con su política de privacidad (measurementlab.net/privacy)</translation>
 <translation id="3577473026931028326">Se ha producido un error. Inténtalo de nuevo.</translation>
@@ -5666,7 +5668,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5160634252433617617">Teclado físico</translation>
 <translation id="5160857336552977725">Inicia sesión en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">Dispositivos USB de <ph name="VENDOR_NAME" /></translation>
-<translation id="5161442190864186925">Unirse a la reunión</translation>
+<translation id="5161442190864186925">Unirme a la reunión</translation>
 <translation id="5161827038979306924">¿En qué se diferencian tu historial de navegación en Chrome y tu historial de búsqueda?</translation>
 <translation id="5162905305237671850">Se ha bloqueado el <ph name="DEVICE_TYPE" /></translation>
 <translation id="5163910114647549394">Pestaña movida al final de la barra de pestañas</translation>
@@ -10262,6 +10264,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8596540852772265699">Archivos personalizados</translation>
 <translation id="8597845839771543242">Formato de propiedad:</translation>
 <translation id="8598249292448297523">impresión</translation>
+<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Gestionar extensión}other{Gestionar extensiones}}</translation>
 <translation id="8599681327221583254">Una o más políticas no se han configurado correctamente. Ponte en contacto con tu administrador.</translation>
 <translation id="8599864823732014237">¿Saltar registro de empresa?</translation>
 <translation id="8601206103050338563">Autenticación de cliente WWW TLS</translation>
@@ -10658,6 +10661,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="887292602123626481">Más información sobre los buscadores predeterminados</translation>
 <translation id="8873075098103007382">Mantén el orden con los grupos de pestañas</translation>
 <translation id="8874341931345877644">Enviar a un dispositivo:</translation>
+<translation id="8874448314264883207"><ph name="EXTENSION_NAME" /> se ha desactivado</translation>
 <translation id="8874790741333031443">Prueba a permitir temporalmente las cookies de terceros, lo que disminuirá la protección al navegar, pero aumentará la probabilidad de que las opciones de los sitios funcionen como se espera.</translation>
 <translation id="8875520811099717934">Actualización de Linux</translation>
 <translation id="8875736897340638404">Elige tu visibilidad</translation>
@@ -10716,6 +10720,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8918900204934259333">Instalando la aplicación...</translation>
 <translation id="891931289445130855">Eliminar datos y permisos</translation>
 <translation id="8920133120839850939">Selecciona la pestaña Más gestos y, a continuación, activa Desliza de una página a otra para retroceder y avanzar</translation>
+<translation id="8922348435910470639">Reserva doble</translation>
 <translation id="8922624386829239660">Mover la pantalla cuando el ratón toque los bordes de esta</translation>
 <translation id="8923880975836399332">Turquesa oscuro</translation>
 <translation id="8925124370124776087">La barra de título ahora está oculta</translation>

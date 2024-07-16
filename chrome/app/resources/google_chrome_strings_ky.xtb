@@ -22,6 +22,7 @@
 <translation id="1229096353876452996">Chrome'ду демейки серепчи кылууну сунуштайбыз</translation>
 <translation id="1265739287306757398">Үйрөнүп алыңыз</translation>
 <translation id="1278833599417554002">&amp;Chrome'ду жаңыртуу үчүн кайра иштетиңиз</translation>
+<translation id="1290883685122687410">Тууралоо катасы: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Chrome эң акыркы тутум жаңыртууларын орнотуп бүткүчө күтө туруңуз.</translation>
 <translation id="1335640173511558774">Бул түзмөктү колдонуудан мурун, <ph name="MANAGER" /> төмөнкү Тейлөө шарттарын окуп, кабыл алууңузду талап кылат. Бул шарттар ChromeOS Flex шарттарын кеңейтип, өзгөртүп же чектебейт.</translation>
 <translation id="1341711321000856656">Башка Chrome профилинен сырсөздөрдү көрүү үчүн которулсаңыз болот</translation>
@@ -195,6 +196,7 @@
 <translation id="3583751698304738917">Мурунтан эле башка Chrome профилинен <ph name="USER_EMAIL_ADDRESS" /> катары киргенсиз</translation>
 <translation id="3595784445906693824">Chromium'го жаңы профилден киресизби?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Администраторуңуз жаңыртууну колдонуу үчүн Chrome'ду кайра иштетүүнү талап кылууда}=1{Администраторуңуз жаңыртууну колдонуу үчүн Chrome'ду кайра иштетүүнү талап кылууда. Жашыруун терезеңиз кайра ачылбайт.}other{Администраторуңуз жаңыртууну колдонуу үчүн Chrome'ду кайра иштетүүнү талап кылууда. # жашыруун терезеңиз кайра ачылбайт.}}</translation>
+<translation id="3597003331831379823">Жогорулатылган артыкчылыктар менен туураланбай калды. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Акыркы убакта кирген жоксуз. Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана <ph name="PERMISSION_3" /> өчүрдү</translation>
 <translation id="3622797965165704966">Эми Google Аккаунтуңуз аркылуу жана бөлүшүлгөн компьютерлерден Chrome'до иштөө алдаганча жеңилирээк болуп калды.</translation>
 <translation id="3635073343384702370">Сырсөздөрүңүздү сактаганда Chrome аларды текшере алат</translation>

@@ -834,6 +834,7 @@ Ngưỡng tối thiểu là 1 phút.
 <translation id="1634989431648355062">Cho phép plugin <ph name="FLASH_PLUGIN_NAME" /> trên các trang web này</translation>
 <translation id="1635450837608153975">Tắt tính năng tối ưu hoá JavaScript nâng cao trên mọi trang web</translation>
 <translation id="1635748761015837179">Cho phép ghi vào thiết bị bộ nhớ ngoài</translation>
+<translation id="163653062822010558">Bật: Thuộc tính thu phóng trong CSS tuân theo thông số kỹ thuật tiêu chuẩn.</translation>
 <translation id="1639468541408865385">Bật bộ nhớ đệm xác thực HTTP có phạm vi toàn cầu</translation>
 <translation id="1639673466479276550">Bật trình bảo vệ màn hình trên màn hình đăng nhập.</translation>
 <translation id="1640824698339859203">Bật dịch vụ SSO di động và chuyển trạng thái xác thực dịch vụ web của người dùng sang thiết bị mới</translation>
@@ -1261,6 +1262,7 @@ Nếu bạn đặt chính sách này thành Tắt, thì <ph name="PRODUCT_NAME" 
 <translation id="1930127294345368978">Số trang tính tối đa được phép sử dụng cho một lệnh in</translation>
 <translation id="1933378685401357864">Hình nền</translation>
 <translation id="1935409768874953955">Chính sách thu thập dữ liệu ẩn danh nhập dưới dạng URL luôn hoạt động</translation>
+<translation id="1942015922182679826">Cho phép xoá mật khẩu không giải mã được</translation>
 <translation id="1942626390957213764">Tắt trung tâm chia sẻ trên máy tính</translation>
 <translation id="194407941132272412">Tắt tính năng tách biệt trang web đối với tất cả trang web nhưng cho phép người dùng bật tính năng này</translation>
 <translation id="1945994447126139909">Chính sách doanh nghiệp này là để áp dụng trong thời gian ngắn và sẽ bị loại bỏ trong phiên bản <ph name="PRODUCT_NAME" /> 88.
@@ -4252,6 +4254,7 @@ cho <ph name="MS_WIN_NAME" /> và <ph name="MAC_OS_NAME" />,
 <ph name="ANDROID_NAME" /> khi chúng tôi ngừng hỗ trợ việc sử dụng
 trình xác minh chứng chỉ và gốc do nền tảng cung cấp.</translation>
 <translation id="424318624725112807">Bật tính năng làm nổi bật dấu chèn trên màn hình đăng nhập</translation>
+<translation id="4243419387411966417">Không cho phép xoá mật khẩu không giải mã được</translation>
 <translation id="4245159233848584683">Nếu bạn đặt thành Enabled (Bật) hoặc không đặt chính sách này, thì <ph name="PRODUCT_OS_NAME" /> sẽ hiển thị lời nhắc định cấu hình mạng, trong trường hợp thiết bị không kết nối mạng cũng như đã thiết lập phiên tự động đăng nhập có độ trễ bằng 0 cho một tài khoản trên thiết bị.
 
 Nếu bạn đặt chính sách này thành Disabled (Tắt), một thông báo lỗi sẽ xuất hiện thay thế cho lời nhắc.</translation>
@@ -5258,6 +5261,15 @@ Nếu bạn không đặt chính sách này, thì tính năng "Giúp tôi viết
 <translation id="5085647276663819155">Vô hiệu hóa xem trước bản in</translation>
 <translation id="5087932158260897375">Nếu bạn đặt chính sách này thành false, thì tính năng báo cáo dữ liệu chẩn đoán về độ tin cậy của miền sẽ bị tắt và không có dữ liệu nào được gửi cho Google.
 Nếu bạn đặt chính sách này thành true hoặc không đặt, thì tính năng báo cáo dữ liệu chẩn đoán về độ tin cậy của miền sẽ tuân theo hành vi của MetricsReportingEnabled cho <ph name="PRODUCT_NAME" /> hoặc DeviceMetricsReportingEnabled cho <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="5088284418186527880">Chính sách này đảm bảo việc tuân thủ thông số kỹ thuật mới được áp dụng của thuộc tính thu phóng trong CSS.
+
+Khi bạn đặt chính sách này thành Enabled (Bật) hoặc không đặt, thuộc tính "thu phóng" trong CSS sẽ tuân thủ thông số kỹ thuật sau:
+
+  https://drafts.csswg.org/css-viewport/#zoom-property
+
+Khi bạn đặt chính sách này thành Disabled (Tắt), thuộc tính "thu phóng" trong CSS sẽ quay trở lại hành vi cũ, trước khi được chuẩn hoá.
+
+Chính sách này là giải pháp tạm thời để bạn có thời gian di chuyển nội dung trên web sang hành vi mới. Ngoài ra, bạn có thể sử dụng bản dùng thử theo nguyên gốc ("DisableStandardizedBrowserZoom") tương ứng với hành vi khi bạn đặt chính sách này thành Disabled (Tắt). Chính sách này sẽ bị loại bỏ và hành vi ở trạng thái "Enabled" (Bật) sẽ được áp dụng vĩnh viễn ở cột mốc 134.</translation>
 <translation id="5090791951240382356">Cho phép hợp nhất các chính sách từ điển thuộc các nguồn khác nhau</translation>
 <translation id="5091315650312105069">Cho phép dùng phương thức xác thực <ph name="BASIC_AUTH" /> cho HTTP</translation>
 <translation id="5093603777978346818">Không bật trình bảo vệ màn hình trên màn hình khoá.</translation>
@@ -5873,6 +5885,7 @@ API này đã bị loại bỏ ở M112.</translation>
 <translation id="5534079385061985566">Bật tính năng khôi phục hoàn toàn.</translation>
 <translation id="5534235660122271432">Không cho phép ghi vào các thiết bị bộ nhớ ngoài</translation>
 <translation id="5535256585099022933">Đặt khoảng thời gian chạy lại</translation>
+<translation id="5537400155400537818">Tắt: Thuộc tính thu phóng trong CSS giữ nguyên hành vi cũ, trước khi có thông số kỹ thuật tiêu chuẩn.</translation>
 <translation id="553806128266843748">Một cờ boolean cho biết liệu tùy chọn điều tiết có được bật hay không.</translation>
 <translation id="5540885720415375851">Cho phép tìm thiết bị cục bộ</translation>
 <translation id="5542235730745104308">Nếu bạn đặt chính sách này thành True, thì <ph name="PRODUCT_NAME" /> sẽ sử dụng các trang thông báo lỗi thay thế tích hợp (chẳng hạn như "không tìm thấy trang"). Nếu bạn đặt chính sách này thành False, thì <ph name="PRODUCT_NAME" /> sẽ không bao giờ sử dụng các trang thông báo lỗi thay thế.
@@ -7088,6 +7101,13 @@ Nếu bạn không đặt chính sách này thì chế độ mặc định là 0
       Bàn phím ảo có thể chuyển sang bố cục thu gọn, tuỳ thuộc vào phương thức nhập.</translation>
 <translation id="6404064917675764807">Không báo cáo sự kiện trong phiên CRD</translation>
 <translation id="6404360891305375004">Cho phép chia sẻ tệp trên cùng mạng</translation>
+<translation id="640519320513485101">Chính sách này kiểm soát việc trình quản lý mật khẩu tích hợp sẵn có thể xoá các mật khẩu không giải mã được khỏi cơ sở dữ liệu của trình quản lý đó hay không. Đây là yêu cầu bắt buộc để khôi phục toàn bộ chức năng của trình quản lý mật khẩu tích hợp sẵn. Tuy nhiên, người dùng có thể bị mất dữ liệu vĩnh viễn. Các giá trị mật khẩu không giải mã được sẽ không thể tự giải mã và nếu có thể sửa lỗi này thì người dùng cũng thường phải thực hiện một số thao tác phức tạp.
+
+Nếu bạn đặt chính sách này thành Enabled (Bật) thì những người dùng có mật khẩu không thể giải mã đã được lưu vào trình quản lý mật khẩu tích hợp sẵn sẽ mất các mật khẩu đó. Những mật khẩu vẫn hoạt động bình thường sẽ không bị ảnh hưởng.
+
+Nếu bạn đặt chính sách này thành Disabled (Tắt) thì dữ liệu trong trình quản lý mật khẩu của người dùng sẽ không bị ảnh hưởng nhưng chức năng của trình quản lý đó sẽ bị hỏng.
+
+Nếu bạn đặt chính sách này, người dùng sẽ không thể thay đổi chính sách trong <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6407093060083181305">Định cấu hình danh sách chặn cài đặt tiện ích</translation>
 <translation id="640827304541402854">Tắt tính năng chặn tường lửa của máy chủ truy cập từ xa</translation>
 <translation id="6410847321564585975">Danh sách cho phép kiểm soát việc báo cáo hoạt động của trang web</translation>
@@ -9082,6 +9102,7 @@ Nếu bạn đặt thành Disabled (Tắt) hoặc không đặt chính sách nà
       Khi bạn đặt chính sách này thành 0, <ph name="PRODUCT_OS_NAME" /> sẽ không khóa màn hình khi người dùng không hoạt động. Khi bạn không đặt chính sách này, hệ thống sẽ sử dụng khoảng thời gian mặc định.
 
       Gợi ý: Khóa màn hình khi ở chế độ rảnh bằng cách bật tính năng khóa màn hình khi hệ thống tạm ngưng hoạt động và đặt <ph name="PRODUCT_OS_NAME" /> ở chế độ tạm ngưng hoạt động sau thời gian trì hoãn khi ở chế độ rảnh. Chỉ sử dụng chính sách này khi bạn muốn khóa màn hình sớm hơn đáng kể so với thời gian tạm ngưng hoạt động hoặc khi bạn không muốn tạm ngưng hoạt động ở chế độ rảnh.</translation>
+<translation id="7894964526545174973">Cho phép áp dụng hành vi thu phóng trình duyệt được chuẩn hoá</translation>
 <translation id="7895553628261067384">Truy cập từ xa</translation>
 <translation id="7898807590879163195">Tắt gói heartbeat về hoạt động của thiết bị</translation>
 <translation id="789975630884141379">Bật nội dung đề xuất</translation>

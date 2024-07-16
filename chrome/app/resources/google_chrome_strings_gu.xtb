@@ -17,6 +17,7 @@
 <translation id="1149651794389918149">Chromeમાં સાઇન ઇન કરો. જો કોઈ એકાઉન્ટમાં તમે માત્ર એક જ વાર સાઇન ઇન કરવા માગતા હો, તો તમે <ph name="GUEST_LINK_BEGIN" />ડિવાઇસનો ઉપયોગ અતિથિ તરીકે કરી<ph name="GUEST_LINK_END" /> શકો છો.</translation>
 <translation id="1152920704813762236">ChromeOS વિશે</translation>
 <translation id="1154147086299354128">&amp;Chromeમાં ખોલો</translation>
+<translation id="1184145431117212167">Windowsનું તમારું વર્ઝન સપોર્ટેડ ન હોવાને કારણે આ ઇન્સ્ટૉલેશન નિષ્ફળ રહ્યું.</translation>
 <translation id="1194807384646768652">Chrome દ્વારા આ ડાઉનલોડ બ્લૉક કરવામાં આવ્યું કારણ કે સામાન્ય રીતે આ પ્રકારની ફાઇલ ડાઉનલોડ કરવામાં આવતી નથી અને તે જોખમી હોઈ શકે છે</translation>
 <translation id="1203500561924088507">ઇન્સ્ટૉલ કરવા બદલ આભાર. <ph name="BUNDLE_NAME" />નો ઉપયોગ કરતા પહેલાં તમારે તમારું બ્રાઉઝર ફરી શરૂ કરવું આવશ્યક છે.</translation>
 <translation id="1229096353876452996">Chromeને ડિફૉલ્ટ તરીકે સેટ કરવાનો સુઝાવ Google આપે છે</translation>
@@ -239,6 +240,7 @@
 <translation id="4191857738314598978">{0,plural, =1{એક દિવસની અંદર Chromeને ફરીથી લૉન્ચ કરો}one{# દિવસની અંદર Chromeને ફરીથી લૉન્ચ કરો}other{# દિવસની અંદર Chromeને ફરીથી લૉન્ચ કરો}}</translation>
 <translation id="4205939740494406371">Chrome તમારા પાસવર્ડ ચેક કરી શકતું નથી. 24 કલાક પછી ફરી પ્રયાસ કરજો અથવા <ph name="BEGIN_LINK" />તમારા Google એકાઉન્ટમાં પાસવર્ડ ચેક કરો<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">રદ કરી રહ્યાં છીએ…</translation>
+<translation id="4224210481850767180">ઇન્સ્ટૉલેશન રદ કરવામાં આવ્યું છે.</translation>
 <translation id="4242034826641750751">આ સાઇટ માટે Chromeને કૅમેરા અને માઇક્રોફોનની પરવાનગીઓની જરૂર છે</translation>
 <translation id="424864128008805179">Chromeમાંથી સાઇન આઉટ કરીએ?</translation>
 <translation id="4251615635259297716">તમારા Chrome ડેટાને આ એકાઉન્ટ સાથે લિંક કરીએ?</translation>

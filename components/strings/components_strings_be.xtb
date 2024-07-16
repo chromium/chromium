@@ -679,6 +679,7 @@
 <translation id="2219658597883514593">Перазапусціць дапаможнік</translation>
 <translation id="2219735899272417925">Патрабуецца скід прылады</translation>
 <translation id="2221227930294879156">Кулінарныя і дэгустацыйныя мерапрыемствы</translation>
+<translation id="2222604080869344662">Каб працягнуць спампоўванне, увайдзіце ў OneDrive</translation>
 <translation id="2224337661447660594">Няма падключэння да інтэрнэту</translation>
 <translation id="2225927550500503913">Віртуальная картка ўключана</translation>
 <translation id="2226636330183131181"><ph name="BEGIN_LINK" />Уваход<ph name="END_LINK" /> у сетку Wi-Fi</translation>
@@ -778,6 +779,7 @@
 <translation id="2399868464369312507">Google Chrome спрабуе змяніць спосабы аплаты.</translation>
 <translation id="2400600116338235695">Сайт можа запытваць дазвол на падключэнне да паслядоўных партоў</translation>
 <translation id="2404884497378469141">Паспрабуйце скапіраваць файлы яшчэ раз</translation>
+<translation id="2412310121876768057">Аўтаматычна запаўняць рэквізіты карткі наступны раз?</translation>
 <translation id="2413155254802890957">Старая форма</translation>
 <translation id="2413528052993050574">Серверу не ўдалося даказаць, што гэта <ph name="DOMAIN" />; магчыма, яго сертыфікат бяспекі адкліканы. Прычынай могуць быць няправільныя налады або зламыснік, які спрабуе перахапіць падключэнне.</translation>
 <translation id="2414886740292270097">Цёмная</translation>
@@ -1242,6 +1244,7 @@
 <translation id="3352881017886802007">Спартыўныя гульні</translation>
 <translation id="3355823806454867987">Змяніць налады проксі-сервера...</translation>
 <translation id="335809815767823">Экспарт завершаны</translation>
+<translation id="3359387651158939842">Рэквізіты карткі будуць аўтаматычна запаўняцца падчас купляў, калі вы захаваеце яе для выкарыстання ў Google Pay</translation>
 <translation id="3359565626472459400">Шлюб</translation>
 <translation id="3360103848165129075">Аркуш апрацоўшчыка плацяжоў</translation>
 <translation id="3362968246557010467">Гэта палітыка была аўтаматычна скапіравана з састарэлай палітыкі "<ph name="OLD_POLICY" />" – выкарыстоўвайце гэту новую палітыку.</translation>
@@ -2055,6 +2058,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Алімпійскія гульні</translation>
 <translation id="4898742041545089450">Гэта тэма разблакіравана і можа стаць актыўнай (гэта залежыць ад гісторыі прагляду вамі сайтаў)</translation>
+<translation id="4899379435492347481">Захавайце гэту картку, каб выкарыстоўваць яе для купляў у інтэрнэце праз Google Pay на ўсіх сваіх прыладах</translation>
 <translation id="4900217275619098670">Дзявяты рулон</translation>
 <translation id="4901052769830245369">Паўглянцавы этыкетачны матэрыял</translation>
 <translation id="4901162432287938633">Гігіена і туалетныя прылады</translation>
@@ -2718,6 +2722,7 @@
 <translation id="6180316780098470077">Інтэрвал паміж спробамі</translation>
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="6184868291074982484">Chrome аўтаматычна абмяжоўвае выкарыстанне старонніх файлаў cookie</translation>
+<translation id="6194139058731919563">Рэквізіты вашай карткі зашыфроўваюцца, калі яны захоўваюцца ў вашым Уліковым запісе Google, а таксама падчас плацяжоў у інтэрнэце</translation>
 <translation id="6194209731893739467">Тут можна паглядзець усе прадукты, за якімі вы сочыце</translation>
 <translation id="6195163219142236913">Староннія файлы cookie абмежаваны</translation>
 <translation id="6195371403461054755">Геалогія</translation>
@@ -3620,6 +3625,7 @@
 <translation id="7831993212387676366">Што такое спіс пакупак?</translation>
 <translation id="7832078172950550575">Шукаць у гісторыі прагляду сайтаў можна, выкарыстоўваючы звычайныя фразы, напрыклад, "піцэрыі паблізу" ці "паркі для сямейнага адпачынку ў цэнтры горада". Для паляпшэння гэтай функцыі пошукавыя запыты, найлепшыя супадзенні і змесціва іх старонак адпраўляюцца ў Google і могуць праглядацца спецыялістамі. <ph name="BEGIN_LINK" />Кіраваць наладай пошуку ў гісторыі<ph name="END_LINK" /></translation>
 <translation id="7840103971441592723">Здыманне экрана пачалося</translation>
+<translation id="7840504603489703295">Прымяняюцца абмежаванні вашай фінансавай установы.</translation>
 <translation id="784137052867620416">Статыстыка купляў</translation>
 <translation id="784404208867107517">Згрупаваная гісторыя</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Няма}=1{1 праграма (<ph name="EXAMPLE_APP_1" />)}=2{2 праграмы (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# праграма (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}few{# праграмы (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}many{# праграм (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# праграмы (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -3818,6 +3824,7 @@
 <translation id="8241712895048303527">Блакіраваць на гэтым сайце</translation>
 <translation id="8242426110754782860">Працягнуць</translation>
 <translation id="8246482227229072868">Пярсцёнкі</translation>
+<translation id="8248406213705193919">Захаваць рэквізіты карткі ў бяспецы?</translation>
 <translation id="8249296373107784235">Скасаваць</translation>
 <translation id="824968735947741546">Выконваецца пераклад з мовы "<ph name="SOURCE" />" (распазнана аўтаматычна) на мову "<ph name="TARGET" />"</translation>
 <translation id="8250094606476360498">Адрас зараз захаваны на гэтай прыладзе. Каб выкарыстоўваць яго ў іншых прадуктах Google, захавайце гэты адрас у сваім Уліковым запісе Google (<ph name="ACCOUNT" />).</translation>
@@ -4302,6 +4309,7 @@
 <translation id="9169664750068251925">Заўсёды блакіраваць на гэтым сайце</translation>
 <translation id="9169931577761441333">Дадайце праграму "<ph name="APP_NAME" />" на галоўны экран</translation>
 <translation id="9170848237812810038">&amp;Адрабіць</translation>
+<translation id="9170906125144697215">Плаціце з дапамогай Pix без пераключэння паміж праграмамі</translation>
 <translation id="9171296965991013597">Выйсці з праграмы?</translation>
 <translation id="9173282814238175921">Адзіны дакумент, новы аркуш</translation>
 <translation id="9173995187295789444">Ідзе пошук прылад Bluetooth...</translation>
@@ -4323,6 +4331,7 @@
 <translation id="9205078245616868884">Вашы даныя зашыфраваны з дапамогай фразы-пароля для сінхранізацыі. Увядзіце яе, каб пачаць сінхранізацыю.</translation>
 <translation id="920643408853370361">Турыстычнае страхаванне</translation>
 <translation id="9207861905230894330">Не ўдалося дадаць артыкул.</translation>
+<translation id="9209339767782560829">Узнікла праблема з выкарыстаннем вашага сертыфіката ўваходу.</translation>
 <translation id="9210825002219699214">Авіяпералёты</translation>
 <translation id="9211461151375991073">Увядзіце @ для пошуку на <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Наладжванне выгляду</translation>
