@@ -10,6 +10,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
@@ -24,6 +25,7 @@
 namespace syncer {
 namespace {
 
+using base::test::RunOnceCallback;
 using StoreWithCache =
     ModelTypeStoreWithInMemoryCache<sync_pb::SecurityEventSpecifics>;
 
@@ -139,10 +141,8 @@ TEST_F(ModelTypeStoreWithInMemoryCacheTest, LoadsPopulatedStore) {
 TEST_F(ModelTypeStoreWithInMemoryCacheTest, HandlesStoreCreationError) {
   base::MockCallback<OnceModelTypeStoreFactory> store_factory;
   EXPECT_CALL(store_factory, Run)
-      .WillOnce([](ModelType type, ModelTypeStore::InitCallback callback) {
-        std::move(callback).Run(ModelError(FROM_HERE, "Store creation error!"),
-                                nullptr);
-      });
+      .WillOnce(RunOnceCallback<1>(
+          ModelError(FROM_HERE, "Store creation error!"), nullptr));
   std::optional<ModelError> error;
   std::unique_ptr<StoreWithCache> store;
   std::unique_ptr<MetadataBatch> metadata_batch;
@@ -162,10 +162,8 @@ TEST_F(ModelTypeStoreWithInMemoryCacheTest, HandlesStoreLoadError) {
       ModelTypeStoreTestUtil::MoveStoreToFactory(std::move(underlying_store));
 
   EXPECT_CALL(*underlying_store_raw, ReadAllDataAndMetadata)
-      .WillOnce([](ModelTypeStore::ReadAllDataAndMetadataCallback callback) {
-        std::move(callback).Run(ModelError(FROM_HERE, "Store load error!"),
-                                nullptr, nullptr);
-      });
+      .WillOnce(RunOnceCallback<0>(ModelError(FROM_HERE, "Store load error!"),
+                                   nullptr, nullptr));
 
   std::optional<ModelError> error;
   std::unique_ptr<StoreWithCache> store;
