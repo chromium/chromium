@@ -60,11 +60,15 @@ FakeTrustedVaultClientBackend::FakeTrustedVaultClientBackend() = default;
 
 FakeTrustedVaultClientBackend::~FakeTrustedVaultClientBackend() = default;
 
-void FakeTrustedVaultClientBackend::AddObserver(Observer* observer) {
+void FakeTrustedVaultClientBackend::AddObserver(
+    Observer* observer,
+    const std::string& security_domain_path) {
   // Do nothing.
 }
 
-void FakeTrustedVaultClientBackend::RemoveObserver(Observer* observer) {
+void FakeTrustedVaultClientBackend::RemoveObserver(
+    Observer* observer,
+    const std::string& security_domain_path) {
   // Do nothing.
 }
 
@@ -73,29 +77,31 @@ void FakeTrustedVaultClientBackend::
   // Do nothing.
 }
 
-void FakeTrustedVaultClientBackend::FetchKeys(id<SystemIdentity> identity,
-                                              NSString* security_domain,
-                                              KeyFetchedCallback completion) {
+void FakeTrustedVaultClientBackend::FetchKeys(
+    id<SystemIdentity> identity,
+    const std::string& security_domain_path,
+    KeyFetchedCallback completion) {
   // Do nothing.
 }
 
 void FakeTrustedVaultClientBackend::MarkLocalKeysAsStale(
     id<SystemIdentity> identity,
-    NSString* security_domain,
+    const std::string& security_domain_path,
     base::OnceClosure completion) {
   // Do nothing.
 }
 
 void FakeTrustedVaultClientBackend::GetDegradedRecoverabilityStatus(
     id<SystemIdentity> identity,
-    NSString* security_domain,
+    const std::string& security_domain_path,
     base::OnceCallback<void(bool)> completion) {
   // Do nothing.
 }
 
-void FakeTrustedVaultClientBackend::Reauthentication(
+FakeTrustedVaultClientBackend::CancelDialogCallback
+FakeTrustedVaultClientBackend::ReauthenticationWithCancelCallback(
     id<SystemIdentity> identity,
-    NSString* security_domain,
+    const std::string& security_domain_path,
     UIViewController* presenting_view_controller,
     CompletionBlock completion) {
   DCHECK(!view_controller_);
@@ -104,18 +110,30 @@ void FakeTrustedVaultClientBackend::Reauthentication(
   [presenting_view_controller presentViewController:view_controller_
                                            animated:YES
                                          completion:nil];
+  base::WeakPtr<FakeTrustedVaultClientBackend> weak_ptr =
+      weak_ptr_factory_.GetWeakPtr();
+  return base::BindOnce(
+      [](base::WeakPtr<FakeTrustedVaultClientBackend> weak_ptr, bool animated,
+         ProceduralBlock cancel_done_callback) {
+        weak_ptr->InternalCancelDialog(animated, cancel_done_callback);
+      },
+      weak_ptr);
 }
 
-void FakeTrustedVaultClientBackend::FixDegradedRecoverability(
+FakeTrustedVaultClientBackend::CancelDialogCallback
+FakeTrustedVaultClientBackend::FixDegradedRecoverabilityWithCancelCallback(
     id<SystemIdentity> identity,
-    NSString* security_domain,
+    const std::string& security_domain_path,
     UIViewController* presenting_view_controller,
     CompletionBlock completion) {
   // Do nothing.
+  return base::BindOnce(
+      [](bool animated, ProceduralBlock cancel_done_callback) {});
 }
 
-void FakeTrustedVaultClientBackend::CancelDialog(BOOL animated,
-                                                 ProceduralBlock completion) {
+void FakeTrustedVaultClientBackend::InternalCancelDialog(
+    BOOL animated,
+    ProceduralBlock completion) {
   DCHECK(view_controller_);
   [view_controller_.presentingViewController
       dismissViewControllerAnimated:animated
@@ -125,7 +143,7 @@ void FakeTrustedVaultClientBackend::CancelDialog(BOOL animated,
 
 void FakeTrustedVaultClientBackend::ClearLocalData(
     id<SystemIdentity> identity,
-    NSString* security_domain,
+    const std::string& security_domain_path,
     base::OnceCallback<void(bool)> completion) {
   // Do nothing.
 }

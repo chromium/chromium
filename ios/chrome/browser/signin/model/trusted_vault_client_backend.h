@@ -5,15 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_SIGNIN_MODEL_TRUSTED_VAULT_CLIENT_BACKEND_H_
 #define IOS_CHROME_BROWSER_SIGNIN_MODEL_TRUSTED_VAULT_CLIENT_BACKEND_H_
 
-#include <UIKit/UIKit.h>
+#import <UIKit/UIKit.h>
 
-#include <string>
-#include <vector>
+#import <string>
+#import <vector>
 
-#include "base/functional/callback_forward.h"
-#include "base/ios/block_types.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/trusted_vault/trusted_vault_client.h"
+#import "base/functional/callback_forward.h"
+#import "base/ios/block_types.h"
+#import "base/observer_list.h"
+#import "components/keyed_service/core/keyed_service.h"
+#import "components/trusted_vault/trusted_vault_client.h"
 
 @protocol SystemIdentity;
 
@@ -34,6 +35,8 @@ class TrustedVaultClientBackend : public KeyedService {
   using KeyFetchedCallback = base::OnceCallback<void(const SharedKeyList&)>;
   using CompletionBlock = void (^)(BOOL success, NSError* error);
   using GetPublicKeyCallback = base::OnceCallback<void(const PublicKey&)>;
+  using CancelDialogCallback =
+      base::OnceCallback<void(BOOL animated, ProceduralBlock cancel_done)>;
 
   // Callback used to verify local device registration and log the result to
   // UMA metrics. The argument represents the gaia ID subject to verification.
@@ -47,10 +50,13 @@ class TrustedVaultClientBackend : public KeyedService {
   ~TrustedVaultClientBackend() override;
 
   // Adds/removes observers.
-  // TODO(crbug.com/343007092): Need to update observer APIs to add security
-  // domain parameter.
-  virtual void AddObserver(Observer* observer) = 0;
-  virtual void RemoveObserver(Observer* observer) = 0;
+  virtual void AddObserver(Observer* observer,
+                           const std::string& security_domain_path);
+  virtual void RemoveObserver(Observer* observer,
+                              const std::string& security_domain_path);
+  // DEPRECATED, Please use the method above.
+  virtual void AddObserver(Observer* observer);
+  virtual void RemoveObserver(Observer* observer);
 
   // Registers a delegate-like callback that implements device registration
   // verification.
@@ -62,11 +68,12 @@ class TrustedVaultClientBackend : public KeyedService {
   // Asynchronously fetches the shared keys for `identity` and invokes
   // `callback` with the fetched keys.
   virtual void FetchKeys(id<SystemIdentity> identity,
-                         NSString* security_domain,
+                         const std::string& security_domain_path,
                          KeyFetchedCallback completion);
   // DEPRECATED, please use the method above.
   virtual void FetchKeys(id<SystemIdentity> identity,
-                         KeyFetchedCallback callback);
+                         NSString* security_domain_path,
+                         KeyFetchedCallback completion);
 
   // Invoked when the result of FetchKeys() contains keys that are not
   // up-to-date. During the execution, before `callback` is invoked, the
@@ -74,71 +81,80 @@ class TrustedVaultClientBackend : public KeyedService {
   // may or may not treat existing keys as stale (only guaranteed upon
   // completion of MarkLocalKeysAsStale()).
   virtual void MarkLocalKeysAsStale(id<SystemIdentity> identity,
-                                    NSString* security_domain,
+                                    const std::string& security_domain_path,
                                     base::OnceClosure completion);
   // DEPRECATED, please use the method above.
   virtual void MarkLocalKeysAsStale(id<SystemIdentity> identity,
-                                    base::OnceClosure callback);
+                                    NSString* security_domain_path,
+                                    base::OnceClosure completion);
 
   // Returns whether recoverability of the keys is degraded and user action is
   // required to add a new method.
   virtual void GetDegradedRecoverabilityStatus(
       id<SystemIdentity> identity,
-      NSString* security_domain,
+      const std::string& security_domain_path,
       base::OnceCallback<void(bool)> completion);
   // DEPRECATED, please use the method above.
   virtual void GetDegradedRecoverabilityStatus(
       id<SystemIdentity> identity,
-      base::OnceCallback<void(bool)> callback);
+      NSString* security_domain_path,
+      base::OnceCallback<void(bool)> completion);
 
   // Presents the trusted vault key reauthentication UI for `identity` for the
   // purpose of extending the set of keys returned via FetchKeys(). Once the
-  // reauth is done and the UI is dismissed, `callback` is called. `callback` is
-  // not called if the reauthentication is canceled.
-  virtual void Reauthentication(id<SystemIdentity> identity,
-                                NSString* security_domain,
-                                UIViewController* presenting_view_controller,
-                                CompletionBlock completion);
+  // reauth is done and the UI is dismissed, `completion` is called.
+  // `completion` is not called if the reauthentication is canceled.
+  virtual CancelDialogCallback ReauthenticationWithCancelCallback(
+      id<SystemIdentity> identity,
+      const std::string& security_domain_path,
+      UIViewController* presenting_view_controller,
+      CompletionBlock completion);
   // DEPRECATED, please use the method above.
   virtual void Reauthentication(id<SystemIdentity> identity,
+                                NSString* security_domain_path,
                                 UIViewController* presenting_view_controller,
-                                CompletionBlock callback);
+                                CompletionBlock completion);
 
   // Presents the trusted vault key reauthentication UI for `identity` for the
   // purpose of improving recoverability as returned via
   // GetDegradedRecoverabilityStatus(). Once the reauth is done and the UI is
-  // dismissed, `callback` is called. `callback` is not called if the
+  // dismissed, `completion` is called. `completion` is not called if the
   // reauthentication is canceled.
-  virtual void FixDegradedRecoverability(
+  virtual CancelDialogCallback FixDegradedRecoverabilityWithCancelCallback(
       id<SystemIdentity> identity,
-      NSString* security_domain,
+      const std::string& security_domain_path,
       UIViewController* presenting_view_controller,
       CompletionBlock completion);
   // DEPRECATED, please use the method above.
   virtual void FixDegradedRecoverability(
       id<SystemIdentity> identity,
+      NSString* security_domain_path,
       UIViewController* presenting_view_controller,
-      CompletionBlock callback);
+      CompletionBlock completion);
 
   // Cancels the presented trusted vault reauthentication UI, triggered via
   // either Reauthentication() or via
   // FixDegradedRecoverability(). The reauthentication callback
   // will not be called. If no reauthentication dialog is not present,
   // `callback` is called synchronously.
-  virtual void CancelDialog(BOOL animated, ProceduralBlock callback) = 0;
+  virtual void CancelDialog(BOOL animated, ProceduralBlock callback);
 
   // Clears local data belonging to `identity`, such as shared keys. This
   // excludes the physical client's key pair, which remains unchanged.
   virtual void ClearLocalData(id<SystemIdentity> identity,
-                              NSString* security_domain,
+                              const std::string& security_domain_path,
                               base::OnceCallback<void(bool)> completion);
   // DEPRECATED, please use the method above.
   virtual void ClearLocalData(id<SystemIdentity> identity,
-                              base::OnceCallback<void(bool)> callback);
+                              NSString* security_domain_path,
+                              base::OnceCallback<void(bool)> completion);
 
   // Returns the member public key used to enroll the local device.
   virtual void GetPublicKeyForIdentity(id<SystemIdentity> identity,
                                        GetPublicKeyCallback callback) = 0;
+
+ private:
+  base::WeakPtrFactory<TrustedVaultClientBackend> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_TRUSTED_VAULT_CLIENT_BACKEND_H_

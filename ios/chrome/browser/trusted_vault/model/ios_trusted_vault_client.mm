@@ -9,6 +9,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/trusted_vault/features.h"
+#import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/trusted_vault_client_backend.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -19,7 +20,8 @@ IOSTrustedVaultClient::IOSTrustedVaultClient(
     TrustedVaultClientBackend* trusted_vault_client_backend,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
     : account_manager_service_(account_manager_service),
-      backend_(trusted_vault_client_backend) {
+      backend_(trusted_vault_client_backend),
+      security_domain_path_(trusted_vault::SecurityDomainId::kChromeSync) {
   DCHECK(account_manager_service_);
   DCHECK(backend_);
 }
@@ -27,10 +29,20 @@ IOSTrustedVaultClient::IOSTrustedVaultClient(
 IOSTrustedVaultClient::~IOSTrustedVaultClient() = default;
 
 void IOSTrustedVaultClient::AddObserver(Observer* observer) {
+  std::string security_domain_path_string =
+      GetSecurityDomainPath(security_domain_path_);
+  // Replace the following line by after InternalTrustedVaultClientBackend is
+  // migrated:
+  // backend_->AddObserver(observer, security_domain_path_string);
   backend_->AddObserver(observer);
 }
 
 void IOSTrustedVaultClient::RemoveObserver(Observer* observer) {
+  std::string security_domain_path_string =
+      GetSecurityDomainPath(security_domain_path_);
+  // Replace the following line by after InternalTrustedVaultClientBackend is
+  // migrated:
+  // backend_->RemoveObserver(observer, security_domain_path_string);
   backend_->RemoveObserver(observer);
 }
 
@@ -38,7 +50,10 @@ void IOSTrustedVaultClient::FetchKeys(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)>
         callback) {
-  backend_->FetchKeys(IdentityForAccount(account_info), std::move(callback));
+  std::string security_domain_path_string =
+      GetSecurityDomainPath(security_domain_path_);
+  backend_->FetchKeys(IdentityForAccount(account_info),
+                      security_domain_path_string, std::move(callback));
 }
 
 void IOSTrustedVaultClient::StoreKeys(
@@ -52,8 +67,10 @@ void IOSTrustedVaultClient::StoreKeys(
 void IOSTrustedVaultClient::MarkLocalKeysAsStale(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(bool)> callback) {
+  std::string security_domain_path_string =
+      GetSecurityDomainPath(security_domain_path_);
   backend_->MarkLocalKeysAsStale(
-      IdentityForAccount(account_info),
+      IdentityForAccount(account_info), security_domain_path_string,
       // Since false positives are allowed in the API, always invoke `callback`
       // with true, indicating that something may have changed.
       base::BindOnce(std::move(callback), true));
@@ -62,7 +79,10 @@ void IOSTrustedVaultClient::MarkLocalKeysAsStale(
 void IOSTrustedVaultClient::GetIsRecoverabilityDegraded(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(bool)> callback) {
+  std::string security_domain_path_string =
+      GetSecurityDomainPath(security_domain_path_);
   backend_->GetDegradedRecoverabilityStatus(IdentityForAccount(account_info),
+                                            security_domain_path_string,
                                             std::move(callback));
 }
 
@@ -77,7 +97,10 @@ void IOSTrustedVaultClient::AddTrustedRecoveryMethod(
 
 void IOSTrustedVaultClient::ClearLocalDataForAccount(
     const CoreAccountInfo& account_info) {
-  backend_->ClearLocalData(IdentityForAccount(account_info), base::DoNothing());
+  std::string security_domain_path_string =
+      GetSecurityDomainPath(security_domain_path_);
+  backend_->ClearLocalData(IdentityForAccount(account_info),
+                           security_domain_path_string, base::DoNothing());
 }
 
 id<SystemIdentity> IOSTrustedVaultClient::IdentityForAccount(

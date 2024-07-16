@@ -18,8 +18,10 @@ class ChromiumTrustedVaultClientBackend final
     : public TrustedVaultClientBackend {
  public:
   // TrustedVaultClientBackend implementation.
-  void AddObserver(Observer* observer) final;
-  void RemoveObserver(Observer* observer) final;
+  void AddObserver(Observer* observer,
+                   const std::string& security_domain_path) final;
+  void RemoveObserver(Observer* observer,
+                      const std::string& security_domain_path) final;
   void SetDeviceRegistrationPublicKeyVerifierForUMA(
       VerifierCallback verifier) final;
   void FetchKeys(id<SystemIdentity> identity,
@@ -48,11 +50,15 @@ class ChromiumTrustedVaultClientBackend final
                                GetPublicKeyCallback completion) final;
 };
 
-void ChromiumTrustedVaultClientBackend::AddObserver(Observer* observer) {
+void ChromiumTrustedVaultClientBackend::AddObserver(
+    Observer* observer,
+    const std::string& security_domain_path) {
   // Do nothing.
 }
 
-void ChromiumTrustedVaultClientBackend::RemoveObserver(Observer* observer) {
+void ChromiumTrustedVaultClientBackend::RemoveObserver(
+    Observer* observer,
+    const std::string& security_domain_path) {
   // Do nothing.
 }
 
