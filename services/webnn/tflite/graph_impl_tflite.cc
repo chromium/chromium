@@ -5,11 +5,9 @@
 #include "services/webnn/tflite/graph_impl_tflite.h"
 
 #include "base/location.h"
-#include "base/memory/aligned_memory.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected_macros.h"
-#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "services/webnn/buildflags.h"
 #include "services/webnn/error.h"
@@ -139,8 +137,6 @@ class GraphImplTflite::ComputeResources {
     self->interpreter_->SetProfiler(&self->profiler_);
 #endif
 
-    // In addition to allocating tensors this step does additional graph
-    // initialization steps such as constant folding.
     status = self->interpreter_->AllocateTensors();
     if (status != kTfLiteOk) {
       return base::unexpected(
@@ -167,97 +163,18 @@ class GraphImplTflite::ComputeResources {
   }
 
   mojom::ComputeResultPtr InvokeInterpreter(NamedBuffers named_inputs) {
-    TfLiteStatus status;
-    bool needs_reallocate_tensors = false;
-
-    // A `mojo_base::BigBuffer` might not match TFLite's required alignment
-    // which will disable the zero copy optimization and require allocating a
-    // temporary buffer.
-    std::vector<std::unique_ptr<void, base::AlignedFreeDeleter>> temp_buffers;
-
     for (int tensor_idx : interpreter_->inputs()) {
       TfLiteTensor* tensor = interpreter_->tensor(tensor_idx);
       auto it = named_inputs.find(tensor->name);
       // The caller guarantees that all expected tensors have been provided.
       CHECK(it != named_inputs.end());
-
-      base::span<uint8_t> buffer(it->second);
-      if (!base::IsAligned(buffer.data(), ::tflite::kDefaultTensorAlignment)) {
-        void* aligned_memory = base::AlignedAlloc(
-            buffer.size(), ::tflite::kDefaultTensorAlignment);
-        temp_buffers.emplace_back(aligned_memory);
-
-        // SAFETY: `aligned_memory` was allocated with `buffer.size()` bytes.
-        buffer = UNSAFE_BUFFERS(base::span(
-            reinterpret_cast<uint8_t*>(aligned_memory), buffer.size()));
-        buffer.copy_from(it->second);
-      }
-
-      status = interpreter_->SetCustomAllocationForTensor(
-          tensor_idx, {buffer.data(), buffer.size()});
-      if (status != kTfLiteOk) {
-        return ToError<mojom::ComputeResult>(
-            mojom::Error::Code::kUnknownError,
-            base::StrCat({"Unable to map input tensor: ",
-                          TfLiteStatusToString(status)}));
-      }
-      needs_reallocate_tensors = true;
-    }
-
-    std::vector<std::pair<base::span<uint8_t>, base::span<const uint8_t>>>
-        outputs_to_copy;
-    std::vector<std::pair<std::string, mojo_base::BigBuffer>> named_outputs;
-    named_outputs.reserve(interpreter_->outputs().size());
-    for (int tensor_idx : interpreter_->outputs()) {
-      TfLiteTensor* tensor = interpreter_->tensor(tensor_idx);
-      mojo_base::BigBuffer target_buffer(tensor->bytes);
-
-      base::span<uint8_t> buffer(target_buffer);
-      if (tensor->allocation_type == kTfLitePersistentRo) {
-        // The initial `AllocateTensors()` call has marked this output as a
-        // constant. It cannot be replaced with a custom allocation.
-        outputs_to_copy.emplace_back(target_buffer, SpanFromTensor(tensor));
-      } else {
-        if (!base::IsAligned(buffer.data(),
-                             ::tflite::kDefaultTensorAlignment)) {
-          void* aligned_memory = base::AlignedAlloc(
-              buffer.size(), ::tflite::kDefaultTensorAlignment);
-          temp_buffers.emplace_back(aligned_memory);
-
-          // SAFETY: `aligned_memory` was allocated with `buffer.size()` bytes.
-          buffer = UNSAFE_BUFFERS(base::span(
-              reinterpret_cast<uint8_t*>(aligned_memory), buffer.size()));
-          outputs_to_copy.emplace_back(target_buffer, buffer);
-        }
-
-        status = interpreter_->SetCustomAllocationForTensor(
-            tensor_idx, {buffer.data(), buffer.size()});
-        if (status != kTfLiteOk) {
-          return ToError<mojom::ComputeResult>(
-              mojom::Error::Code::kUnknownError,
-              base::StrCat({"Unable to map output tensor: ",
-                            TfLiteStatusToString(status)}));
-        }
-        needs_reallocate_tensors = true;
-      }
-
-      named_outputs.emplace_back(tensor->name, std::move(target_buffer));
-    }
-
-    if (needs_reallocate_tensors) {
-      status = interpreter_->AllocateTensors();
-      if (status != kTfLiteOk) {
-        return ToError<mojom::ComputeResult>(
-            mojom::Error::Code::kUnknownError,
-            base::StrCat({"Unable to allocate tensors: ",
-                          TfLiteStatusToString(status)}));
-      }
+      SpanFromTensor(tensor).copy_from(base::make_span(it->second));
     }
 
 #if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
     profiler_.StartProfiling();
 #endif
-    status = interpreter_->Invoke();
+    TfLiteStatus status = interpreter_->Invoke();
 #if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
     profiler_.StopProfiling();
 #endif
@@ -267,8 +184,12 @@ class GraphImplTflite::ComputeResources {
           base::StrCat({"Failed to compute: ", TfLiteStatusToString(status)}));
     }
 
-    for (auto& [dst, src] : outputs_to_copy) {
-      dst.copy_from(src);
+    std::vector<std::pair<std::string, mojo_base::BigBuffer>> named_outputs;
+    named_outputs.reserve(interpreter_->outputs().size());
+    for (int tensor_idx : interpreter_->outputs()) {
+      TfLiteTensor* tensor = interpreter_->tensor(tensor_idx);
+      named_outputs.emplace_back(tensor->name,
+                                 mojo_base::BigBuffer(SpanFromTensor(tensor)));
     }
 
     return mojom::ComputeResult::NewNamedOutputs(std::move(named_outputs));
