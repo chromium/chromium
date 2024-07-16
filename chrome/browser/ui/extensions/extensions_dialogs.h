@@ -38,9 +38,17 @@ namespace gfx {
 class ImageSkia;
 }  // namespace gfx
 
+namespace permissions {
+class ChooserController;
+}  // namespace permissions
+
 namespace extensions {
 
 class Extension;
+
+void ShowConstrainedDeviceChooserDialog(
+    content::WebContents* web_contents,
+    std::unique_ptr<permissions::ChooserController> controller);
 
 // Shows a dialog to notify the user that the extension installation is
 // blocked due to policy. It also shows additional information from

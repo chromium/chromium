@@ -465,7 +465,6 @@ source_set("extensions") {
     "chrome_content_verifier_delegate.h",
     "chrome_extension_browser_constants.cc",
     "chrome_extension_browser_constants.h",
-    "chrome_extension_chooser_dialog.h",
     "chrome_extension_cookies.cc",
     "chrome_extension_cookies.h",
     "chrome_extension_cookies_factory.cc",

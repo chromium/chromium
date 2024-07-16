@@ -26,7 +26,7 @@
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/chrome_extension_chooser_dialog.h"
+#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -235,7 +235,8 @@ base::OnceClosure ShowDeviceChooserDialog(
   auto* browser_context = owner->GetBrowserContext();
   if (extensions::AppWindowRegistry::Get(browser_context)
           ->GetAppWindowForWebContents(contents)) {
-    ShowConstrainedDeviceChooserDialog(contents, std::move(controller));
+    extensions::ShowConstrainedDeviceChooserDialog(contents,
+                                                   std::move(controller));
     // This version of the chooser dialog does not support being closed by the
     // code which created it.
     return base::DoNothing();

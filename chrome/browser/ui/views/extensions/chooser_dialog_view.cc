@@ -6,7 +6,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/chrome_device_permissions_prompt.h"
-#include "chrome/browser/extensions/chrome_extension_chooser_dialog.h"
 #include "chrome/browser/extensions/device_permissions_dialog_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/device_chooser_content_view.h"
@@ -91,6 +90,8 @@ void ChooserDialogView::OnSelectionChanged() {
 BEGIN_METADATA(ChooserDialogView)
 END_METADATA
 
+namespace extensions {
+
 void ShowConstrainedDeviceChooserDialog(
     content::WebContents* web_contents,
     std::unique_ptr<permissions::ChooserController> controller) {
@@ -104,6 +105,8 @@ void ShowConstrainedDeviceChooserDialog(
         new ChooserDialogView(std::move(controller)), web_contents);
   }
 }
+
+}  //  namespace extensions
 
 void ChromeDevicePermissionsPrompt::ShowDialogViews() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
