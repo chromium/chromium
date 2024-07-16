@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFr
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.settings.CardPreference;
+import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
@@ -58,6 +59,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     private static final String PREF_SAFETY_TIPS_SAFETY_TOOLS = "safety_tips_safety_tools";
     private static final String PREF_SAFETY_TIPS_INCOGNITO = "safety_tips_incognito";
     private static final String PREF_SAFETY_TIPS_SAFE_BROWSING = "safety_tips_safe_browsing";
+    private static final String PREF_SAFETY_TIPS = "safety_tips";
 
     @VisibleForTesting
     static final String SAFETY_TOOLS_LEARN_MORE_URL = "https://www.google.com/chrome/#safe";
@@ -308,6 +310,9 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     }
 
     private void setUpSafetyTipsModule() {
+        ExpandablePreferenceGroup safetyTipsPreference = findPreference(PREF_SAFETY_TIPS);
+        safetyTipsPreference.setExpanded(false);
+
         findPreference(PREF_SAFETY_TIPS_SAFETY_TOOLS)
                 .setOnPreferenceClickListener(
                         (preference) -> {

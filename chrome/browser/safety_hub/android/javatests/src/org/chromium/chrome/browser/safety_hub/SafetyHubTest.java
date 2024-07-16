@@ -628,25 +628,26 @@ public final class SafetyHubTest {
         // Verify the safety tips module is displayed.
         String safetyTipsTitle =
                 safetyHubFragment.getString(R.string.safety_hub_safety_tips_section_header);
-        scrollToLastPosition();
+        scrollToPreference(withText(safetyTipsTitle));
         onView(withText(safetyTipsTitle)).check(matches(isDisplayed()));
 
-        // The module should be expanded in it's initial state.
-        // Verify the child preferences are visible.
+        // The module should be collapsed in it's initial state.
+        // Verify the child preferences are not visible.
+        onView(withText(R.string.safety_hub_safety_tips_safety_tools_title)).check(doesNotExist());
+        onView(withText(R.string.safety_hub_safety_tips_incognito_title)).check(doesNotExist());
+        onView(withText(R.string.safety_hub_safety_tips_safe_browsing_title)).check(doesNotExist());
+
+        // Click on expand button.
+        clickOnExpandButtonNextToText(safetyTipsTitle);
+        scrollToLastPosition();
+
+        // Verify the child preferences are now visible.
         onView(withText(R.string.safety_hub_safety_tips_safety_tools_title))
                 .check(matches(isDisplayed()));
         onView(withText(R.string.safety_hub_safety_tips_incognito_title))
                 .check(matches(isDisplayed()));
         onView(withText(R.string.safety_hub_safety_tips_safe_browsing_title))
                 .check(matches(isDisplayed()));
-
-        // Click on collapse button.
-        clickOnExpandButtonNextToText(safetyTipsTitle);
-
-        // Verify the child preferences are now hidden.
-        onView(withText(R.string.safety_hub_safety_tips_safety_tools_title)).check(doesNotExist());
-        onView(withText(R.string.safety_hub_safety_tips_incognito_title)).check(doesNotExist());
-        onView(withText(R.string.safety_hub_safety_tips_safe_browsing_title)).check(doesNotExist());
     }
 
     @Test
@@ -654,9 +655,18 @@ public final class SafetyHubTest {
     @Feature({"SafetyHubTips"})
     public void testSafetyToolsLearnMoreLink_OpensInCCT() {
         mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
         scrollToLastPosition();
 
-        // The module should be expanded in it's initial state and all its children are visible.
+        String safetyTipsTitle =
+                safetyHubFragment.getString(R.string.safety_hub_safety_tips_section_header);
+        scrollToPreference(withText(safetyTipsTitle));
+
+        // The module should be collapsed in it's initial state and the children are hidden.
+        // Click on expand button.
+        clickOnExpandButtonNextToText(safetyTipsTitle);
+        scrollToLastPosition();
+
         // Verify the Safety tools preference is displayed and clicking on it opens the correct link
         // in CCT.
         String safetyToolsTitle =
@@ -674,9 +684,18 @@ public final class SafetyHubTest {
     @Feature({"SafetyHubTips"})
     public void testIncognitoLearnMoreLink_OpensInCCT() {
         mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
         scrollToLastPosition();
 
-        // The module should be expanded in it's initial state and all its children are visible.
+        String safetyTipsTitle =
+                safetyHubFragment.getString(R.string.safety_hub_safety_tips_section_header);
+        scrollToPreference(withText(safetyTipsTitle));
+
+        // The module should be collapsed in it's initial state and the children are hidden.
+        // Click on expand button.
+        clickOnExpandButtonNextToText(safetyTipsTitle);
+        scrollToLastPosition();
+
         // Verify the Incognito preference is displayed and clicking on it opens the correct link in
         // CCT.
         String incognitoTitle =
@@ -694,9 +713,18 @@ public final class SafetyHubTest {
     @Feature({"SafetyHubTips"})
     public void testSafeBrowsingLearnMoreLink_OpensInCCT() {
         mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
         scrollToLastPosition();
 
-        // The module should be expanded in it's initial state and all its children are visible.
+        String safetyTipsTitle =
+                safetyHubFragment.getString(R.string.safety_hub_safety_tips_section_header);
+        scrollToPreference(withText(safetyTipsTitle));
+
+        // The module should be collapsed in it's initial state and the children are hidden.
+        // Click on expand button.
+        clickOnExpandButtonNextToText(safetyTipsTitle);
+        scrollToLastPosition();
+
         // Verify the Safe browsing preference is displayed and clicking on it opens the correct
         // link in CCT.
         String safeBrowsingTitle =
