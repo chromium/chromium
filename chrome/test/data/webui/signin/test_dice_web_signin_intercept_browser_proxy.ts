@@ -30,8 +30,8 @@ export class TestDiceWebSigninInterceptBrowserProxy extends TestBrowserProxy
       headerTextColor: '',
       interceptedProfileColor: '',
       primaryProfileColor: '',
-      interceptedAccount: {isManaged: false, pictureUrl: ''},
-      primaryAccount: {isManaged: false, pictureUrl: ''},
+      interceptedAccount: {pictureUrl: '', avatarBadge: ''},
+      primaryAccount: {pictureUrl: '', avatarBadge: ''},
       useV2Design: false,
       showManagedDisclaimer: false,
     };

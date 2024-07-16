@@ -229,16 +229,16 @@
         <img class="avatar" alt=""
             src="[[interceptionParameters_.primaryAccount.pictureUrl]]">
         <div class="work-badge"
-            hidden="[[!interceptionParameters_.primaryAccount.isManaged]]">
-          <iron-icon class="icon" icon="cr:domain"></iron-icon>
+            hidden="[[!interceptionParameters_.primaryAccount.avatarBadge.length]]">
+          <iron-icon class="icon" icon="[[interceptionParameters_.primaryAccount.avatarBadge]]"></iron-icon>
         </div>
       </div>
       <div class="avatar-container-v2" id="avatarIntercepted">
         <img class="avatar" alt=""
             src="[[interceptionParameters_.interceptedAccount.pictureUrl]]">
         <div class="work-badge"
-            hidden="[[!interceptionParameters_.interceptedAccount.isManaged]]">
-          <iron-icon class="icon" icon="cr:domain"></iron-icon>
+            hidden="[[!interceptionParameters_.interceptedAccount.avatarBadge.length]]">
+          <iron-icon class="icon" icon="[[interceptionParameters_.interceptedAccount.avatarBadge]]"></iron-icon>
         </div>
       </div>
     </div>
@@ -250,8 +250,8 @@
         <img class="avatar" alt=""
             src="[[interceptionParameters_.interceptedAccount.pictureUrl]]">
         <div class="work-badge" id="badge"
-            hidden="[[!interceptionParameters_.interceptedAccount.isManaged]]">
-          <iron-icon class="icon" icon="cr:domain"></iron-icon>
+            hidden="[[!interceptionParameters_.interceptedAccount.avatarBadge.length]]">
+          <iron-icon class="icon" icon="[[interceptionParameters_.interceptedAccount.avatarBadge]]"></iron-icon>
         </div>
       </div>
     </div>

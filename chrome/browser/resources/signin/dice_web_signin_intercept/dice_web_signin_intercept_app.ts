@@ -95,8 +95,8 @@ export class DiceWebSigninInterceptAppElement extends
     this.style.setProperty(
         '--primary-profile-color', parameters.primaryProfileColor);
     this.style.setProperty('--header-text-color', parameters.headerTextColor);
-    this.notifyPath('interceptionParameters_.interceptedAccount.isManaged');
-    this.notifyPath('interceptionParameters_.primaryAccount.isManaged');
+    this.notifyPath('interceptionParameters_.interceptedAccount.avatarBadge');
+    this.notifyPath('interceptionParameters_.primaryAccount.avatarBadge');
   }
 
   private sanitizeInnerHtml_(text: string): TrustedHTML {

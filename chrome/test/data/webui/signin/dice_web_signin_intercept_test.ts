@@ -16,6 +16,7 @@ import {TestDiceWebSigninInterceptBrowserProxy} from './test_dice_web_signin_int
 
 const AVATAR_URL_1: string = 'chrome://theme/IDR_PROFILE_AVATAR_1';
 const AVATAR_URL_2: string = 'chrome://theme/IDR_PROFILE_AVATAR_2';
+const AVATAR_BADGE_SOURCE: string = 'cr:domain';
 
 const BASE_PARAMETERS: InterceptionParameters = {
   headerText: 'header_text',
@@ -27,8 +28,8 @@ const BASE_PARAMETERS: InterceptionParameters = {
   headerTextColor: 'rgba(255, 255, 255, 1)',
   interceptedProfileColor: 'rgba(255, 0, 0, 1)',
   primaryProfileColor: 'rgba(255, 255, 255, 1)',
-  interceptedAccount: {isManaged: false, pictureUrl: AVATAR_URL_1},
-  primaryAccount: {isManaged: false, pictureUrl: AVATAR_URL_2},
+  interceptedAccount: {pictureUrl: AVATAR_URL_1, avatarBadge: ''},
+  primaryAccount: {pictureUrl: AVATAR_URL_2, avatarBadge: ''},
   useV2Design: false,
   showManagedDisclaimer: false,
 };
@@ -134,8 +135,8 @@ suite('DiceWebSigninInterceptTest', function() {
 
     const parameters = {
       ...PARAMETERS,
-      interceptedAccount: {isManaged: false, pictureUrl: AVATAR_URL_2},
-      primaryAccount: {isManaged: false, pictureUrl: AVATAR_URL_1},
+      interceptedAccount: {pictureUrl: AVATAR_URL_2, avatarBadge: ''},
+      primaryAccount: {pictureUrl: AVATAR_URL_1, avatarBadge: ''},
       useV2Design: false,
     };
 
@@ -147,11 +148,11 @@ suite('DiceWebSigninInterceptTest', function() {
     assertTrue(isChildVisible(app, avatarSelector));
     checkImageUrl(avatarSelector, AVATAR_URL_2);
 
-    // Update isManaged for intercepted account.
-    parameters.interceptedAccount.isManaged = true;
+    // Update Management for intercepted account.
+    parameters.interceptedAccount.avatarBadge = AVATAR_BADGE_SOURCE;
     fireParametersChanged(parameters);
     assertTrue(isChildVisible(app, badgeSelector));
-    parameters.interceptedAccount.isManaged = false;
+    parameters.interceptedAccount.avatarBadge = '';
     fireParametersChanged(parameters);
     assertFalse(isChildVisible(app, badgeSelector));
   });
@@ -164,7 +165,8 @@ suite('DiceWebSigninInterceptTest', function() {
     // without Sync Promo.
     let parameters = {
       ...PARAMETERS,
-      interceptedAccount: {isManaged: true, pictureUrl: AVATAR_URL_1},
+      interceptedAccount:
+          {avatarBadge: AVATAR_BADGE_SOURCE, pictureUrl: AVATAR_URL_1},
     };
     fireParametersChanged(parameters);
     await waitAfterNextRender(app);
@@ -174,7 +176,8 @@ suite('DiceWebSigninInterceptTest', function() {
     // Equivalent to Sign-in Intercept Bubble V1 with Sync Promo.
     parameters = {
       ...PARAMETERS,
-      interceptedAccount: {isManaged: true, pictureUrl: AVATAR_URL_1},
+      interceptedAccount:
+          {avatarBadge: AVATAR_BADGE_SOURCE, pictureUrl: AVATAR_URL_1},
       showManagedDisclaimer: true,
     };
     fireParametersChanged(parameters);
@@ -230,28 +233,33 @@ suite('DiceWebSigninInterceptTestV2', function() {
     // Update urls.
     const parameters = {
       ...PARAMETERS,
-      interceptedAccount: {isManaged: false, pictureUrl: AVATAR_URL_2},
-      primaryAccount: {isManaged: false, pictureUrl: AVATAR_URL_1},
+      interceptedAccount: {pictureUrl: AVATAR_URL_2, avatarBadge: ''},
+      primaryAccount: {pictureUrl: AVATAR_URL_1, avatarBadge: ''},
     };
     fireParametersChanged(parameters);
     checkImageUrl(interceptedAvatarSelector, AVATAR_URL_2);
     checkImageUrl(primaryAvatarSelector, AVATAR_URL_1);
 
-    // Update isManaged back and forth..
-    parameters.interceptedAccount.isManaged = true;
+    // Update Managed account information back and forth..
+    parameters.interceptedAccount.avatarBadge = AVATAR_BADGE_SOURCE;
     fireParametersChanged(parameters);
     assertTrue(isChildVisible(app, interceptedBadgeSelector));
     assertFalse(isChildVisible(app, primaryBadgeSelector));
 
-    parameters.primaryAccount.isManaged = true;
+    parameters.primaryAccount.avatarBadge = AVATAR_BADGE_SOURCE;
     fireParametersChanged(parameters);
     assertTrue(isChildVisible(app, interceptedBadgeSelector));
     assertTrue(isChildVisible(app, primaryBadgeSelector));
 
-    parameters.interceptedAccount.isManaged = false;
+    parameters.interceptedAccount.avatarBadge = '';
     fireParametersChanged(parameters);
     assertFalse(isChildVisible(app, interceptedBadgeSelector));
     assertTrue(isChildVisible(app, primaryBadgeSelector));
+
+    parameters.primaryAccount.avatarBadge = '';
+    fireParametersChanged(parameters);
+    assertFalse(isChildVisible(app, interceptedBadgeSelector));
+    assertFalse(isChildVisible(app, primaryBadgeSelector));
   });
 
   test('ManagedDisclaimer', async function() {
@@ -260,7 +268,8 @@ suite('DiceWebSigninInterceptTestV2', function() {
     // Update showManagedDisclaimer and check that the disclaimer is shown.
     const parameters = {
       ...PARAMETERS,
-      interceptedAccount: {isManaged: true, pictureUrl: AVATAR_URL_1},
+      interceptedAccount:
+          {avatarBadge: AVATAR_BADGE_SOURCE, pictureUrl: AVATAR_URL_1},
       showManagedDisclaimer: true,
     };
     fireParametersChanged(parameters);

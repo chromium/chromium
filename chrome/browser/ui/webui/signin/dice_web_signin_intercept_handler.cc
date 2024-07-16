@@ -40,9 +40,18 @@
 
 namespace {
 
+constexpr char kEnterprizeBadgeSource[] = "cr:domain";
+constexpr char kSupervisedBadgeSource[] = "cr20:kite";
+
 // Returns true if the account is managed (aka Enterprise, or Dasher).
 bool IsManaged(const AccountInfo& info) {
   return info.hosted_domain != kNoHostedDomainFound;
+}
+
+// Returns true if the account is supervised.
+bool IsSupervised(const AccountInfo& info) {
+  return info.capabilities.is_subject_to_parental_controls() ==
+         signin::Tribool::kTrue;
 }
 
 SkColor GetProfileHighlightColor(Profile* profile) {
@@ -63,7 +72,15 @@ std::string GetAccountPictureUrl(const AccountInfo& info) {
 
 base::Value::Dict GetAccountInfoValue(const AccountInfo& info) {
   base::Value::Dict account_info_value;
-  account_info_value.Set("isManaged", IsManaged(info));
+  std::string_view avatar_badge = "";
+  if (IsManaged(info)) {
+    avatar_badge = kEnterprizeBadgeSource;
+  } else if (IsSupervised(info) &&
+             base::FeatureList::IsEnabled(
+                 supervised_user::kShowKiteForSupervisedUsers)) {
+    avatar_badge = kSupervisedBadgeSource;
+  }
+  account_info_value.Set("avatarBadge", avatar_badge);
   account_info_value.Set("pictureUrl", GetAccountPictureUrl(info));
   return account_info_value;
 }
