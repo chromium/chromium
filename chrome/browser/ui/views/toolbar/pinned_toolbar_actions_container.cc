@@ -662,12 +662,28 @@ void PinnedToolbarActionsContainer::ReorderViews() {
   // Pinned buttons appear first. Use the model's ordering of pinned ActionIds
   // because |pinned_buttons_| ordering is not updated on changes from the model
   // or from the user dragging to reorder.
-  for (auto id : model_->PinnedActionIds()) {
+  const auto ordered_pinned_ids = model_->PinnedActionIds();
+  for (auto id : ordered_pinned_ids) {
     if (auto* button = GetPinnedButtonFor(id)) {
       ReorderChildView(button, index);
       index++;
     }
   }
+
+  // Update the order of |pinned_buttons_| to reflect the model's order.
+  std::sort(pinned_buttons_.begin(), pinned_buttons_.end(),
+            [ordered_pinned_ids](PinnedActionToolbarButton* button_1,
+                                 PinnedActionToolbarButton* button_2) {
+              int button_1_index =
+                  std::find(ordered_pinned_ids.begin(),
+                            ordered_pinned_ids.end(), button_1->GetActionId()) -
+                  ordered_pinned_ids.begin();
+              int button_2_index =
+                  std::find(ordered_pinned_ids.begin(),
+                            ordered_pinned_ids.end(), button_2->GetActionId()) -
+                  ordered_pinned_ids.begin();
+              return button_1_index < button_2_index;
+            });
 
   // Add the dragged button in its location if a drag is active.
   if (drop_info_.get()) {
@@ -748,6 +764,18 @@ void PinnedToolbarActionsContainer::MovePinnedAction(
     const ui::DropTargetEvent& event,
     ui::mojom::DragOperation& output_drag_op,
     std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
+  // Adjust the index based on the the the button we are moving it next to in
+  // the toolbar. This is necessary because there might be ids in the model that
+  // are not currently available that need to be factored into the index
+  // calculation.
+  if (index != pinned_buttons_.size() - 1) {
+    auto target_index_button = pinned_buttons_[index];
+    const auto& pinned_action_ids = model_->PinnedActionIds();
+    auto it = find(pinned_action_ids.begin(), pinned_action_ids.end(),
+                   target_index_button->GetActionId());
+    CHECK(it != pinned_action_ids.end());
+    index = it - pinned_action_ids.begin();
+  }
   model_->MovePinnedAction(action_id, index);
 
   output_drag_op = ui::mojom::DragOperation::kMove;
