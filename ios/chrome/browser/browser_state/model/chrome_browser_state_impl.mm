@@ -137,6 +137,8 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
       pref_registry_(new user_prefs::PrefRegistrySyncable),
       io_data_(new ChromeBrowserStateImplIOData::Handle(this)) {
   DCHECK(!browser_state_name.empty());
+  BrowserStateDependencyManager::GetInstance()->MarkBrowserStateLive(this);
+
   profile_metrics::SetBrowserProfileType(
       this, profile_metrics::BrowserProfileType::kRegular);
 
