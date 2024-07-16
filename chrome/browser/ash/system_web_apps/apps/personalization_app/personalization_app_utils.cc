@@ -22,11 +22,13 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_user_provider_impl.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_wallpaper_provider_impl.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
+#include "components/language/core/common/locale_util.h"
 #include "components/manta/manta_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -121,6 +123,12 @@ bool IsManagedUserEligibleForSeaPen(Profile* profile) {
   return CanAccessMantaFeaturesWithoutMinorRestrictions(profile);
 }
 
+bool IsSystemInEnglishLanguage() {
+  return g_browser_process != nullptr &&
+         language::ExtractBaseLanguage(
+             g_browser_process->GetApplicationLocale()) == "en";
+}
+
 bool IsEligibleForSeaPen(Profile* profile) {
   if (!profile) {
     LOG(ERROR) << __func__ << " no profile";
@@ -186,6 +194,11 @@ bool IsEligibleForSeaPenTextInput(Profile* profile) {
   if (!features::IsSeaPenTextInputEnabled()) {
     // Without the experiment, users are not allowed to use SeaPenTextInput.
     DVLOG(1) << __func__ << " SeaPenTextInput disabled";
+    return false;
+  }
+  if (!IsSystemInEnglishLanguage()) {
+    // The feature only supports English users.
+    DVLOG(1) << __func__ << " system not in English language";
     return false;
   }
   return IsEligibleForSeaPen(profile) &&

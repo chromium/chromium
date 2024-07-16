@@ -41,6 +41,9 @@ AccountId GetAccountId(const Profile* profile);
 // profiles can, but kiosk and guest cannot.
 bool CanSeeWallpaperOrPersonalizationApp(const Profile* profile);
 
+// Verifies if the current language settings in English.
+bool IsSystemInEnglishLanguage();
+
 // Controls whether the profile can see and open SeaPen UI.
 bool IsEligibleForSeaPen(Profile* profile);
 

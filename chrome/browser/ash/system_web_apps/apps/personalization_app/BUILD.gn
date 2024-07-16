@@ -64,6 +64,7 @@ static_library("personalization_app") {
     "//chromeos/ash/components/settings",
     "//components/account_id",
     "//components/keyed_service/core",
+    "//components/language/core/common",
     "//components/manta",
     "//components/manta/proto",
     "//components/metrics",
