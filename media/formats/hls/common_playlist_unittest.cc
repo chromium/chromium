@@ -67,11 +67,6 @@ TYPED_TEST(HlsCommonPlaylistTest, MissingM3u) {
   builder.AppendLine("#EXTM3U");
   builder.ExpectError(ParseStatusCode::kPlaylistMissingM3uTag);
 
-  // Test with invalid line ending
-  builder = TypeParam();
-  builder.Append("#EXTM3U");
-  builder.ExpectError(ParseStatusCode::kPlaylistMissingM3uTag);
-
   // Test with invalid format
   builder = TypeParam();
   builder.AppendLine("#EXTM3U:");

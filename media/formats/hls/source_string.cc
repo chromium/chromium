@@ -92,11 +92,21 @@ ParseStatus::Or<SourceString> SourceLineIterator::Next() {
 
   const auto line_end = source_.find_first_of("\r\n");
   if (line_end == std::string_view::npos) {
-    ParseStatus st = ParseStatusCode::kInvalidEOL;
-    if (!base::IsStringUTF8AllowingNoncharacters(source_)) {
-      return st;
-    }
-    return std::move(st).WithData("source", source_);
+    // The parser deviates from the HLS spec here:
+    // Lines in a Playlist file are terminated by either a single line feed
+    // character or a carriage return character followed by a line feed
+    // character.  Each line is a URI, is blank, or starts with the
+    // character '#'.  Blank lines are ignored.  Whitespace MUST NOT be
+    // present, except for elements in which it is explicitly specified.
+    //
+    // Other browser implementations do not follow this, and often accept the
+    // lack of trailing newline on the last line of a manifest. This is
+    // actually somewhat common, and is by far the single largest error on
+    // which we currently deviate from the android player implementation.
+    auto result = SourceString::Create({}, current_line_, source_);
+    source_ = std::string_view{};
+    current_line_ += 1;
+    return result;
   }
 
   const auto line_content = source_.substr(0, line_end);

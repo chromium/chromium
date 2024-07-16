@@ -146,6 +146,15 @@ TEST(HlsItemsTest, GetNextLineItem1) {
   RunTest(kManifest, kExpectations);
 }
 
+TEST(HlsItemsTest, GetNextLineItemAcceptMissingEOL) {
+  constexpr std::string_view kManifest = "#EXTM3U";
+
+  const ParseStatus::Or<LineResult> kExpectations[] = {
+      ExpectEmptyTag(CommonTagName::kM3u, 1), ParseStatusCode::kReachedEOF};
+
+  RunTest(kManifest, kExpectations);
+}
+
 TEST(HlsItemsTest, GetNextLineItem2) {
   constexpr std::string_view kManifest =
       "#EXTM3U\n"
@@ -155,15 +164,6 @@ TEST(HlsItemsTest, GetNextLineItem2) {
   const ParseStatus::Or<LineResult> kExpectations[] = {
       ExpectEmptyTag(CommonTagName::kM3u, 1), ParseStatusCode::kInvalidEOL,
       ParseStatusCode::kInvalidEOL};
-
-  RunTest(kManifest, kExpectations);
-}
-
-TEST(HlsItemsTest, GetNextLineItem3) {
-  constexpr std::string_view kManifest = "#EXTM3U";
-
-  const ParseStatus::Or<LineResult> kExpectations[] = {
-      ParseStatusCode::kInvalidEOL, ParseStatusCode::kInvalidEOL};
 
   RunTest(kManifest, kExpectations);
 }

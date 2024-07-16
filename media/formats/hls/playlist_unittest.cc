@@ -48,8 +48,10 @@ TEST(HlsPlaylistTest, IdentifyPlaylist) {
   ok_test(Playlist::kDefaultVersion, Playlist::Kind::kMultivariantPlaylist, "");
   ok_test(5, Playlist::Kind::kMultivariantPlaylist, "#EXT-X-VERSION:5\n");
 
-  // Playlists with invalid line endings should still be rejected
-  error_test(ParseStatusCode::kInvalidEOL, "#EXTINF");
+  // Playlists with invalid line endings should normally be rejected, however
+  // other implementations in certain browsers do accept manifests which are
+  // missing a trailing newline.
+  ok_test(Playlist::kDefaultVersion, Playlist::Kind::kMediaPlaylist, "#EXTINF");
 
   // Playlists with kind-specific tags should deduce to that kind of playlist.
   // These tags do not need to be valid.
