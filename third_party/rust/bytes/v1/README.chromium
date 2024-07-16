@@ -1,9 +1,9 @@
 Name: bytes
 URL: https://crates.io/crates/bytes
 Description: Types and traits for working with bytes
-Version: 1.6.0
+Version: 1.6.1
 Security Critical: no
 Shipped: no
 License: MIT
-License File: //third_party/rust/chromium_crates_io/vendor/bytes-1.6.0/LICENSE
-Revision: ce8d8a0a029c0d296ade752ecc8c3e1ce9eee47f
+License File: //third_party/rust/chromium_crates_io/vendor/bytes-1.6.1/LICENSE
+Revision: fd13c7dcdb840653bf81294d141da77d3f1f9e1f

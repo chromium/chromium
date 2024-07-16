@@ -1698,7 +1698,7 @@ unsafe fn rebuild_vec(ptr: *mut u8, mut len: usize, mut cap: usize, off: usize) 
 static SHARED_VTABLE: Vtable = Vtable {
     clone: shared_v_clone,
     to_vec: shared_v_to_vec,
-    is_unique: crate::bytes::shared_is_unique,
+    is_unique: shared_v_is_unique,
     drop: shared_v_drop,
 };
 
@@ -1730,6 +1730,12 @@ unsafe fn shared_v_to_vec(data: &AtomicPtr<()>, ptr: *const u8, len: usize) -> V
         release_shared(shared);
         v
     }
+}
+
+unsafe fn shared_v_is_unique(data: &AtomicPtr<()>) -> bool {
+    let shared = data.load(Ordering::Acquire);
+    let ref_count = (*shared.cast::<Shared>()).ref_count.load(Ordering::Relaxed);
+    ref_count == 1
 }
 
 unsafe fn shared_v_drop(data: &mut AtomicPtr<()>, _ptr: *const u8, _len: usize) {

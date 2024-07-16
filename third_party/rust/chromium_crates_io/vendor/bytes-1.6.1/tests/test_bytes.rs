@@ -1172,3 +1172,12 @@ fn shared_is_unique() {
     drop(b);
     assert!(c.is_unique());
 }
+
+#[test]
+fn mut_shared_is_unique() {
+    let mut b = BytesMut::from(LONG);
+    let c = b.split().freeze();
+    assert!(!c.is_unique());
+    drop(b);
+    assert!(c.is_unique());
+}

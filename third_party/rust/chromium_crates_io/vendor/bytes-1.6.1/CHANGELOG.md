@@ -1,3 +1,8 @@
+# 1.6.1 (July 13, 2024)
+
+This release fixes a bug where `Bytes::is_unique` returns incorrect values when
+the `Bytes` originates from a shared `BytesMut`. (#718)
+
 # 1.6.0 (March 22, 2024)
 
 ### Added
