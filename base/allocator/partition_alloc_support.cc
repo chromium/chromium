@@ -424,7 +424,7 @@ std::string ExtractDanglingPtrSignature(std::string stacktrace) {
   for (size_t i = 0; i < lines.size(); ++i) {
     for (const auto& patterns : callee_patterns) {
       if (ranges::all_of(patterns, [&](std::string_view pattern) {
-            return lines[i].find(pattern) != StringPiece::npos;
+            return lines[i].find(pattern) != std::string_view::npos;
           })) {
         caller_index = i + 1;
       }

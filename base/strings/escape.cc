@@ -540,7 +540,7 @@ std::string UnescapeBinaryURLComponent(std::string_view escaped_text,
 
   // If there are no '%' characters in the string, there will be nothing to
   // unescape, so we can take the fast path.
-  if (escaped_text.find('%') == StringPiece::npos) {
+  if (escaped_text.find('%') == std::string_view::npos) {
     std::string unescaped_text(escaped_text);
     if (rules & UnescapeRule::REPLACE_PLUS_WITH_SPACE)
       std::replace(unescaped_text.begin(), unescaped_text.end(), '+', ' ');

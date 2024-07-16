@@ -95,9 +95,9 @@ struct ASH_EXPORT ParsedDynamicAssetId {
 ASH_EXPORT bool ParseDynamicLottieAssetId(std::string_view asset_id,
                                           ParsedDynamicAssetId& parsed_output);
 
-// AmbientTheme converted to a string for readability. The returned StringPiece
-// is guaranteed to be null-terminated and point to memory valid for the
-// lifetime of the program.
+// AmbientTheme converted to a string for readability. The returned
+// std::string_view is guaranteed to be null-terminated and point to memory
+// valid for the lifetime of the program.
 ASH_EXPORT std::string_view AmbientThemeToString(
     personalization_app::mojom::AmbientTheme theme);
 

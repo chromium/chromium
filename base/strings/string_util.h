@@ -103,8 +103,7 @@ constexpr std::basic_string_view<CharT> MakeBasicStringPiece(Iter begin,
   return {base::to_address(begin), static_cast<size_t>(end - begin)};
 }
 
-// Explicit instantiations of MakeBasicStringPiece for the BasicStringPiece
-// aliases defined in base/strings/string_piece.h
+// Explicit instantiations of MakeBasicStringPiece.
 template <typename Iter>
 constexpr std::string_view MakeStringPiece(Iter begin, Iter end) {
   return MakeBasicStringPiece<char>(begin, end);

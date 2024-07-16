@@ -1625,7 +1625,7 @@ bool FailOnTaskEnvironmentLog(int severity,
                               size_t message_start,
                               const std::string& str) {
   std::string_view file_str(file);
-  if (file_str.find("task_environment.cc") != StringPiece::npos) {
+  if (file_str.find("task_environment.cc") != std::string_view::npos) {
     ADD_FAILURE() << str;
     return true;
   }

@@ -74,7 +74,7 @@ std::wstring CollapseWhitespace(std::wstring_view text,
 }
 
 bool ContainsOnlyChars(std::wstring_view input, std::wstring_view characters) {
-  return input.find_first_not_of(characters) == StringPiece::npos;
+  return input.find_first_not_of(characters) == std::string_view::npos;
 }
 
 bool EqualsASCII(std::wstring_view str, std::string_view ascii) {

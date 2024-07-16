@@ -185,7 +185,7 @@ void HistogramTester::GetBucketCountForSamples(
 
 HistogramTester::CountsMap HistogramTester::GetTotalCountsForPrefix(
     std::string_view prefix) const {
-  EXPECT_TRUE(prefix.find('.') != StringPiece::npos)
+  EXPECT_TRUE(prefix.find('.') != std::string_view::npos)
       << "|prefix| ought to contain at least one period, to avoid matching too"
       << " many histograms.";
 

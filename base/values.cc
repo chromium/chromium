@@ -869,7 +869,7 @@ std::optional<Value> Value::Dict::ExtractByDottedPath(std::string_view path) {
   // removing dictionaries that become empty if a value matching `path` is
   // extracted.
   size_t dot_index = path.find('.');
-  if (dot_index == StringPiece::npos) {
+  if (dot_index == std::string_view::npos) {
     return Extract(path);
   }
   // This could be clever to avoid a double-lookup by using storage_ directly,

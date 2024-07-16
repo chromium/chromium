@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string_view>
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -74,8 +75,8 @@ class ScrollTracingBrowserTest : public ContentBrowserTest {
   }
 
   void ValidateUkm(GURL url,
-                   base::StringPiece entry_name,
-                   std::map<base::StringPiece, int64_t> expected_values) {
+                   std::string_view entry_name,
+                   std::map<std::string_view, int64_t> expected_values) {
     const auto& entries =
         test_ukm_recorder_->GetMergedEntriesByName(entry_name);
     EXPECT_EQ(1u, entries.size());

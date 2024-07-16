@@ -226,12 +226,12 @@ std::string CollapseWhitespaceASCII(std::string_view text,
 }
 
 bool ContainsOnlyChars(std::string_view input, std::string_view characters) {
-  return input.find_first_not_of(characters) == StringPiece::npos;
+  return input.find_first_not_of(characters) == std::string_view::npos;
 }
 
 bool ContainsOnlyChars(std::u16string_view input,
                        std::u16string_view characters) {
-  return input.find_first_not_of(characters) == StringPiece16::npos;
+  return input.find_first_not_of(characters) == std::u16string_view::npos;
 }
 
 bool IsStringASCII(std::string_view str) {

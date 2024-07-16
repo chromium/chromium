@@ -57,7 +57,7 @@ struct ParsedDecimal {
 constexpr std::optional<ParsedDecimal> ConsumeDurationNumber(
     std::string_view& number_string) {
   ParsedDecimal res;
-  StringPiece::const_iterator orig_start = number_string.begin();
+  std::string_view::const_iterator orig_start = number_string.begin();
   // Parse contiguous digits.
   for (; !number_string.empty(); number_string.remove_prefix(1)) {
     const int d = number_string.front() - '0';

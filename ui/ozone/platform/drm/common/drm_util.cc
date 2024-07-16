@@ -1094,11 +1094,11 @@ std::optional<TileProperty> ParseTileBlob(
   const std::string tile_str(
       static_cast<char*>(tile_blob.data),
       base::strict_cast<std::string::size_type>(tile_blob.length));
-  base::StringPiece tile_string_piece(tile_str);
+  std::string_view tile_string_piece(tile_str);
   tile_string_piece = base::TrimString(tile_string_piece, std::string("\0", 1u),
                                        base::TRIM_TRAILING);
 
-  std::vector<base::StringPiece> tile_properties = base::SplitStringPiece(
+  std::vector<std::string_view> tile_properties = base::SplitStringPiece(
       tile_string_piece, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   if (tile_properties.size() != 8) {
