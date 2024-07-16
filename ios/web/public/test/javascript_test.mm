@@ -31,7 +31,7 @@ void JavascriptTest::AddUserScript(NSString* script_name) {
   WKUserScript* script = [[WKUserScript alloc]
         initWithSource:web::test::GetPageScript(script_name)
          injectionTime:WKUserScriptInjectionTimeAtDocumentStart
-      forMainFrameOnly:YES];
+      forMainFrameOnly:NO];
   [web_view_.configuration.userContentController addUserScript:script];
 }
 

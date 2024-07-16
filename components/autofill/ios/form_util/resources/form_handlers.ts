@@ -246,7 +246,7 @@ function sendFormMutationMessagesAfterDelay(
  * Checks if cross-frame filling is enabled and, if so, forwards messages to
  * the Child Frame Registration lib.
  */
-function maybeProcessChildFrame(event: MessageEvent<any>): void {
+function processInboundMessage(event: MessageEvent<any>): void {
   if (gCrWeb.autofill_form_features.isAutofillAcrossIframesEnabled()) {
     processChildFrameMessage(event);
   }
@@ -276,7 +276,7 @@ function attachListeners(): void {
    * Receipt of cross-frame messages for Child Frame Registration don't use the
    * `formActivity` handler, but need to be attached under the same conditions.
    */
-  window.addEventListener('message', maybeProcessChildFrame);
+  window.addEventListener('message', processInboundMessage);
 
   // Per specification, SubmitEvent is not triggered when calling form.submit().
   // Hook the method to call the handler in that case.
