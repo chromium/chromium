@@ -119,21 +119,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-  if (kIPHPasswordsAccountStorageFeature.name == feature->name) {
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(ANY, 0);
-    config->trigger = EventConfig("passwords_account_storage_trigger",
-                                  Comparator(LESS_THAN, 5), 180, 180);
-    config->used = EventConfig("passwords_account_storage_used",
-                               Comparator(EQUAL, 0), 180, 180);
-    config->event_configs.insert(
-        EventConfig("passwords_account_storage_unselected",
-                    Comparator(EQUAL, 0), 180, 180));
-    return config;
-  }
-
   if (kIPHPasswordsManagementBubbleAfterSaveFeature.name == feature->name) {
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;

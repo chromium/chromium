@@ -13,8 +13,6 @@
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "ui/base/models/image_model.h"
-#include "ui/base/resource/resource_bundle.h"
 
 namespace {
 
@@ -30,28 +28,6 @@ std::u16string GetPrimaryAccountEmailFromProfile(Profile* profile) {
   return base::UTF8ToUTF16(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .email);
-}
-
-ui::ImageModel GetPrimaryAccountAvatarFromProfile(Profile* profile,
-                                                  int icon_size_dip) {
-  if (!profile) {
-    return ui::ImageModel();
-  }
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  if (!identity_manager) {
-    return ui::ImageModel();
-  }
-  AccountInfo primary_account_info = identity_manager->FindExtendedAccountInfo(
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
-  CHECK(!primary_account_info.IsEmpty());
-  gfx::Image account_icon = primary_account_info.account_image;
-  if (account_icon.IsEmpty()) {
-    account_icon = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-        profiles::GetPlaceholderAvatarIconResourceID());
-  }
-  return ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
-      account_icon, icon_size_dip, icon_size_dip, profiles::SHAPE_CIRCLE));
 }
 
 }  // namespace
@@ -107,13 +83,6 @@ std::u16string
 CommonSavedAccountManagerBubbleController::GetPrimaryAccountEmail() {
   Profile* profile = GetProfile();
   return GetPrimaryAccountEmailFromProfile(profile);
-}
-
-ui::ImageModel
-CommonSavedAccountManagerBubbleController::GetPrimaryAccountAvatar(
-    int icon_size_dip) {
-  Profile* profile = GetProfile();
-  return GetPrimaryAccountAvatarFromProfile(profile, icon_size_dip);
 }
 
 void CommonSavedAccountManagerBubbleController::OnUserAuthenticationCompleted(

@@ -331,8 +331,6 @@ chromium-metrics-reviews@google.com.
       summary="educating users about the zoom option in the main menu"/>
   <variant name="IPH_PasswordManagerShortcut"
       summary="Password Manager shortcut."/>
-  <variant name="IPH_PasswordsAccountStorage"
-      summary="passwords account storage"/>
   <variant name="IPH_PasswordSharingFeature"
       summary="educating the users about password sharing when they open
                password details page"/>

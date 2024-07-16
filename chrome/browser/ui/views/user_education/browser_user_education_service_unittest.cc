@@ -166,7 +166,6 @@ TEST(BrowserUserEducationServiceTest, PreventNewHardCodedConfigurations) {
       "IPH_GMCCastStartStop",
       "IPH_GMCLocalMediaCasting",
       "IPH_HighEfficiencyMode",
-      "IPH_PasswordsAccountStorage",
       "IPH_PasswordsManagementBubbleAfterSave",
       "IPH_PasswordsManagementBubbleDuringSignin",
       "IPH_PasswordsWebAppProfileSwitch",

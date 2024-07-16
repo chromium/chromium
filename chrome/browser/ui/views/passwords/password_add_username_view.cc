@@ -122,7 +122,7 @@ PasswordAddUsernameView::PasswordAddUsernameView(
       CreatePasswordLabelWithEyeIconView(std::move(password_label));
   AddEmptyBorder(password_field.get());
 
-  BuildCredentialRows(root_view, nullptr, std::move(username_dropdown),
+  BuildCredentialRows(root_view, std::move(username_dropdown),
                       std::move(password_field));
 
   SetAcceptCallback(

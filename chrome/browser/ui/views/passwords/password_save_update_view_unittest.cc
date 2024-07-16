@@ -56,9 +56,6 @@ class PasswordSaveUpdateViewTest : public PasswordBubbleViewTestBase {
   }
 
   PasswordSaveUpdateView* view() { return view_; }
-  views::Combobox* account_picker() {
-    return view_->DestinationDropdownForTesting();
-  }
 
  protected:
   password_manager::PasswordForm pending_password_;
@@ -111,13 +108,6 @@ TEST_F(PasswordSaveUpdateViewTest, HasTitleAndTwoButtons) {
   EXPECT_TRUE(view()->ShouldShowWindowTitle());
   EXPECT_TRUE(view()->GetOkButton());
   EXPECT_TRUE(view()->GetCancelButton());
-}
-
-TEST_F(PasswordSaveUpdateViewTest, ShouldNotShowAccountPicker) {
-  ON_CALL(*feature_manager_mock(), ShouldShowAccountStorageBubbleUi)
-      .WillByDefault(Return(false));
-  CreateViewAndShow();
-  EXPECT_FALSE(account_picker());
 }
 
 TEST_F(PasswordSaveUpdateViewTest, ShouldSelectAccountStoreByDefault) {

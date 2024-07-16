@@ -182,7 +182,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHMemorySaverModeFeature,
     &kIPHLiveCaptionFeature,
     &kIPHTabAudioMutingFeature,
-    &kIPHPasswordsAccountStorageFeature,
     &kIPHPasswordsManagementBubbleAfterSaveFeature,
     &kIPHPasswordsManagementBubbleDuringSigninFeature,
     &kIPHPasswordsWebAppProfileSwitchFeature,

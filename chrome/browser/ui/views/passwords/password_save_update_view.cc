@@ -23,27 +23,20 @@
 #include "chrome/browser/ui/views/passwords/credentials_item_view.h"
 #include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "chrome/browser/ui/views/promos/autofill_bubble_signin_promo_view.h"
-#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
-#include "components/user_education/common/feature_promo_specification.h"
-#include "components/user_education/common/help_bubble_params.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/interaction/element_identifier.h"
-#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_combobox_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
 #include "ui/views/controls/editable_combobox/editable_password_combobox.h"
 #include "ui/views/controls/styled_label.h"
-#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
@@ -65,16 +58,7 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
   DCHECK(controller_.state() == password_manager::ui::PENDING_PASSWORD_STATE ||
          controller_.state() ==
              password_manager::ui::PENDING_PASSWORD_UPDATE_STATE);
-  std::unique_ptr<views::Combobox> destination_dropdown;
-  if (controller_.ShouldShowPasswordStorePicker()) {
-    destination_dropdown = CreateDestinationCombobox(
-        controller_.GetPrimaryAccountEmail(),
-        controller_.GetPrimaryAccountAvatar(ComboboxIconSize()),
-        controller_.IsUsingAccountStore());
-    destination_dropdown->SetCallback(base::BindRepeating(
-        &PasswordSaveUpdateView::DestinationChanged, base::Unretained(this)));
-    destination_dropdown_ = destination_dropdown.get();
-  }
+
   const password_manager::PasswordForm& password_form =
       controller_.pending_password();
   if (password_form.IsFederatedCredential()) {
@@ -91,10 +75,6 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
             gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
                                 DISTANCE_CONTROL_LIST_VERTICAL),
                             0));
-
-    if (destination_dropdown) {
-      AddChildView(std::move(destination_dropdown));
-    }
 
     const auto titles = GetCredentialLabelsForAccountChooser(password_form);
     AddChildView(
@@ -118,15 +98,8 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
     // Set up layout:
     SetLayoutManager(std::make_unique<views::FillLayout>());
     views::View* root_view = AddChildView(std::make_unique<views::View>());
-    views::AnimatingLayoutManager* animating_layout =
-        root_view->SetLayoutManager(
-            std::make_unique<views::AnimatingLayoutManager>());
-    animating_layout
-        ->SetBoundsAnimationMode(views::AnimatingLayoutManager::
-                                     BoundsAnimationMode::kAnimateMainAxis)
-        .SetOrientation(views::LayoutOrientation::kVertical);
-    views::FlexLayout* flex_layout = animating_layout->SetTargetLayoutManager(
-        std::make_unique<views::FlexLayout>());
+    views::FlexLayout* flex_layout =
+        root_view->SetLayoutManager(std::make_unique<views::FlexLayout>());
     flex_layout->SetOrientation(views::LayoutOrientation::kVertical)
         .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
         .SetIgnoreDefaultMainAxisMargins(true)
@@ -139,24 +112,8 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
 
     username_dropdown_ = username_dropdown.get();
     password_dropdown_ = password_dropdown.get();
-    BuildCredentialRows(root_view, std::move(destination_dropdown),
-                        std::move(username_dropdown),
+    BuildCredentialRows(root_view, std::move(username_dropdown),
                         std::move(password_dropdown));
-
-    // The |username_dropdown_| should observe the animating layout manager to
-    // close the dropdown menu when the animation starts.
-    animating_layout_for_username_dropdown_observation_ = std::make_unique<
-        base::ScopedObservation<views::AnimatingLayoutManager,
-                                views::AnimatingLayoutManager::Observer>>(
-        username_dropdown_);
-    animating_layout_for_username_dropdown_observation_->Observe(
-        animating_layout);
-    animating_layout_for_iph_observation_.Observe(animating_layout);
-
-    // The account picker is only visible in Save bubbble, not Update bubble.
-    if (destination_dropdown_) {
-      destination_dropdown_->SetVisible(!controller_.IsCurrentStateUpdate());
-    }
 
     // Only non-federated credentials bubble has a username field and can
     // change states between Save and Update. Therefore, we need to have the
@@ -201,9 +158,7 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
       kHatsSurveyTriggerAutofillPassword, web_contents, 10000);
 }
 
-PasswordSaveUpdateView::~PasswordSaveUpdateView() {
-  CloseIPHBubbleIfOpen();
-}
+PasswordSaveUpdateView::~PasswordSaveUpdateView() = default;
 
 PasswordBubbleControllerBase* PasswordSaveUpdateView::GetController() {
   return &controller_;
@@ -236,11 +191,8 @@ bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
   }
 
   // Remove current elements.
-  animating_layout_for_iph_observation_.Reset();
-  animating_layout_for_username_dropdown_observation_.reset();
   username_dropdown_ = nullptr;
   password_dropdown_ = nullptr;
-  destination_dropdown_ = nullptr;
   accessibility_alert_ = nullptr;
   RemoveAllChildViews();
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -275,30 +227,6 @@ bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }
 
-void PasswordSaveUpdateView::DestinationChanged() {
-  bool is_account_store_selected =
-      destination_dropdown_->GetSelectedIndex() == 0u;
-  controller_.OnToggleAccountStore(is_account_store_selected);
-  // Saving in account and local stores have action button text for non-opted-in
-  // users (Next vs. Save).
-  UpdateBubbleUIElements();
-  // If the user explicitly switched to "save on this device only",
-  // record this with the IPH tracker (so it can decide not to show the
-  // IPH again). It may be null in tests, so handle that case.
-  auto* const promo_controller =
-      BrowserFeaturePromoController::GetForView(GetAnchorView());
-  if (!is_account_store_selected && promo_controller) {
-    promo_controller->feature_engagement_tracker()->NotifyEvent(
-        "passwords_account_storage_unselected");
-  }
-  // The IPH shown upon failure in reauth is used to informs the user that the
-  // password will be stored on device. This is why it's important to close it
-  // if the user changes the destination to account.
-  if (failed_reauth_promo_bubble_) {
-    CloseIPHBubbleIfOpen();
-  }
-}
-
 views::View* PasswordSaveUpdateView::GetInitiallyFocusedView() {
   if (username_dropdown_ && username_dropdown_->GetText().empty()) {
     return username_dropdown_;
@@ -328,19 +256,6 @@ void PasswordSaveUpdateView::AddedToWidget() {
   static_cast<views::Label*>(GetBubbleFrameView()->title())
       ->SetAllowCharacterBreak(true);
   SetBubbleHeader(IDR_SAVE_PASSWORD, IDR_SAVE_PASSWORD_DARK);
-  if (ShouldShowFailedReauthIPH()) {
-    MaybeShowIPH(IPHType::kFailedReauth);
-  } else {
-    MaybeShowIPH(IPHType::kRegular);
-  }
-}
-
-void PasswordSaveUpdateView::OnLayoutIsAnimatingChanged(
-    views::AnimatingLayoutManager* source,
-    bool is_animating) {
-  if (!is_animating) {
-    MaybeShowIPH(IPHType::kRegular);
-  }
 }
 
 void PasswordSaveUpdateView::UpdateUsernameAndPasswordInModel() {
@@ -394,20 +309,6 @@ void PasswordSaveUpdateView::UpdateBubbleUIElements() {
   if (should_announce_save_update_change) {
     AnnounceBubbleChange();
   }
-
-  // Nothing else to do if the account picker hasn't been created.
-  if (!destination_dropdown_) {
-    return;
-  }
-
-  // If it's not a save bubble anymore, close the IPH because the account picker
-  // will disappear. If it has become a save bubble, the IPH will get triggered
-  // after the animation finishes.
-  if (controller_.IsCurrentStateUpdate()) {
-    CloseIPHBubbleIfOpen();
-  }
-
-  destination_dropdown_->SetVisible(!controller_.IsCurrentStateUpdate());
 }
 
 std::unique_ptr<views::View> PasswordSaveUpdateView::CreateFooterView() {
@@ -433,75 +334,6 @@ std::unique_ptr<views::View> PasswordSaveUpdateView::CreateFooterView() {
       open_password_manager_closure);
 }
 
-bool PasswordSaveUpdateView::ShouldShowFailedReauthIPH() {
-  // If the reauth failed, we should have automatically switched to local mdoe,
-  // and we should show the reauth failed IPH unconditionally as long as the
-  // user didn't change the save location.
-  return controller_.DidAuthForAccountStoreOptInFail() &&
-         !controller_.IsUsingAccountStore();
-}
-
-void PasswordSaveUpdateView::MaybeShowIPH(IPHType type) {
-  // IPH is shown only where the destination dropdown is shown (i.e. only for
-  // Save bubble).
-  if (!destination_dropdown_ || controller_.IsCurrentStateUpdate()) {
-    return;
-  }
-
-  // The promo controller may not exist in tests.
-  auto* const promo_controller =
-      BrowserFeaturePromoController::GetForView(GetAnchorView());
-  if (!promo_controller) {
-    return;
-  }
-
-  switch (type) {
-    case IPHType::kRegular:
-      if (promo_controller->MaybeShowPromo(
-              feature_engagement::kIPHPasswordsAccountStorageFeature)) {
-        // If the regular promo was shown, the failed reauth promo is
-        // definitely finished. If not, we can't be confident it hasn't
-        // finished.
-        failed_reauth_promo_bubble_.reset();
-      }
-      break;
-    case IPHType::kFailedReauth: {
-      auto promo_spec =
-          user_education::FeaturePromoSpecification::CreateForLegacyPromo(
-              /* feature =*/nullptr, ui::ElementIdentifier(),
-              IDS_PASSWORD_MANAGER_IPH_BODY_SAVE_REAUTH_FAIL);
-      promo_spec.SetBubbleArrow(user_education::HelpBubbleArrow::kRightCenter);
-
-      auto* const anchor_element =
-          views::ElementTrackerViews::GetInstance()->GetElementForView(
-              destination_dropdown_, true);
-      // If the destination dropdown isn't currently visible, there will be no
-      // matching element, and we cannot show the bubble (there wouldn't be
-      // anything to anchor it to). This check avoids crbug.com/1291194.
-      if (anchor_element) {
-        failed_reauth_promo_bubble_ =
-            promo_controller->ShowCriticalPromo(promo_spec, anchor_element);
-      }
-      break;
-    }
-  }
-}
-
-void PasswordSaveUpdateView::CloseIPHBubbleIfOpen() {
-  failed_reauth_promo_bubble_.reset();
-
-  // The promo controller may not exist in tests.
-  auto* const promo_controller =
-      BrowserFeaturePromoController::GetForView(GetAnchorView());
-  if (!promo_controller) {
-    return;
-  }
-
-  promo_controller->EndPromo(
-      feature_engagement::kIPHPasswordsAccountStorageFeature,
-      user_education::EndFeaturePromoReason::kAbortPromo);
-}
-
 void PasswordSaveUpdateView::AnnounceBubbleChange() {
   // Federated credentials bubbles don't change the state between Update and
   // Save, and hence they don't have an `accessibility_alert_` view created.
@@ -510,13 +342,6 @@ void PasswordSaveUpdateView::AnnounceBubbleChange() {
   }
 
   std::u16string accessibility_alert_text = GetWindowTitle();
-  if (destination_dropdown_ && !controller_.IsCurrentStateUpdate()) {
-    // For Save bubbles, if the `destination_dropdown_` exists (for account
-    // store users), we use the labels in the `destination_dropdown_` instead.
-    accessibility_alert_text = destination_dropdown_->GetTextForRow(
-        destination_dropdown_->GetSelectedIndex().value());
-  }
-
   views::ViewAccessibility& ax = accessibility_alert_->GetViewAccessibility();
   ax.SetRole(ax::mojom::Role::kAlert);
   ax.SetName(accessibility_alert_text, ax::mojom::NameFrom::kAttribute);

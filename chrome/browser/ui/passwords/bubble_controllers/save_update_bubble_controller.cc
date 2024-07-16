@@ -17,9 +17,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
-#include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/smart_bubble_stats_store.h"
@@ -248,32 +246,6 @@ void SaveUpdateBubbleController::ShouldRevealPasswords(
       base::BindOnce(&CommonSavedAccountManagerBubbleController::
                          OnUserAuthenticationCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-bool SaveUpdateBubbleController::ShouldShowPasswordStorePicker() const {
-  if (!delegate_->GetPasswordFeatureManager()
-           ->ShouldShowAccountStorageBubbleUi()) {
-    return false;
-  }
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kButterOnDesktopFollowup)) {
-    return false;
-  }
-  if (delegate_->GetPasswordFeatureManager()
-          ->ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally()) {
-    // If the user will be asked to opt-in *after* saving the current password
-    // locally, then do not show the destination picker yet.
-    CHECK_EQ(delegate_->GetPasswordFeatureManager()->GetDefaultPasswordStore(),
-             Store::kProfileStore);
-    return false;
-  }
-  return true;
-}
-
-void SaveUpdateBubbleController::OnToggleAccountStore(
-    bool is_account_store_selected) {
-  delegate_->GetPasswordFeatureManager()->SetDefaultPasswordStore(
-      is_account_store_selected ? Store::kAccountStore : Store::kProfileStore);
 }
 
 bool SaveUpdateBubbleController::IsUsingAccountStore() {

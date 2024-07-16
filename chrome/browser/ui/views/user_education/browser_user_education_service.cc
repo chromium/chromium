@@ -460,15 +460,6 @@ void MaybeRegisterChromeFeaturePromos(
       IDS_GMC_LOCAL_MEDIA_CAST_START_PROMO,
       FeaturePromoSpecification::AcceleratorInfo()));
 
-  // kIPHPasswordsAccountStorageFeature:
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForLegacyPromo(
-          &feature_engagement::kIPHPasswordsAccountStorageFeature,
-          kSavePasswordComboboxElementId,
-          IDS_PASSWORD_MANAGER_IPH_BODY_SAVE_TO_ACCOUNT)
-          .SetBubbleTitleText(IDS_PASSWORD_MANAGER_IPH_TITLE_SAVE_TO_ACCOUNT)
-          .SetBubbleArrow(HelpBubbleArrow::kRightCenter)));
-
   // kIPHPasswordsManagementBubbleAfterSaveFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(
