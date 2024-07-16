@@ -287,7 +287,7 @@ class ProductSpecificationsServiceTest : public testing::Test {
                  << " not found\n";
   }
 
- private:
+ protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<ProductSpecificationsService> service_;
   raw_ptr<ProductSpecificationsSyncBridge> bridge_;
@@ -299,6 +299,26 @@ class ProductSpecificationsServiceTest : public testing::Test {
   testing::NiceMock<syncer::MockModelTypeChangeProcessor>& change_processor() {
     return processor_;
   }
+};
+
+class ProductSpecificationsServiceSyncDisabledTest
+    : public ProductSpecificationsServiceTest {
+ public:
+  void SetUp() override {
+    ProductSpecificationsServiceTest::SetUp();
+    initial_set_ = std::make_unique<ProductSpecificationsSet>(
+        service()
+            ->AddProductSpecificationsSet(
+                kProductSpecsName, {GURL(kProductOneUrl), GURL(kProductTwoUrl)})
+            .value());
+    ON_CALL(processor_, IsTrackingMetadata())
+        .WillByDefault(testing::Return(false));
+  }
+
+  ProductSpecificationsSet* initial_set() { return initial_set_.get(); }
+
+ private:
+  std::unique_ptr<ProductSpecificationsSet> initial_set_;
 };
 
 TEST_F(ProductSpecificationsServiceTest, TestGetProductSpecifications) {
@@ -830,6 +850,49 @@ TEST_F(ProductSpecificationsServiceTest,
   // ProductSpecificationsSet so the GetSetByUuid API returns std:nullopt.
   entries().erase(it);
   EXPECT_EQ(std::nullopt, service()->GetSetByUuid(uuid_to_get));
+}
+
+TEST_F(ProductSpecificationsServiceSyncDisabledTest,
+       TestGetProductSpecifications) {
+  EXPECT_TRUE(service()->GetAllProductSpecifications().empty());
+}
+
+TEST_F(ProductSpecificationsServiceSyncDisabledTest, TestGetSetByUuid) {
+  EXPECT_EQ(std::nullopt, service()->GetSetByUuid(base::Uuid::ParseLowercase(
+                              "50000000-0000-0000-0000-000000000000")));
+}
+
+TEST_F(ProductSpecificationsServiceSyncDisabledTest,
+       TestAddProductSpecificationsSet) {
+  EXPECT_EQ(std::nullopt, service()->AddProductSpecificationsSet(
+                              "Name", {GURL("https://a.example.com"),
+                                       GURL("https://b.example.com")}));
+}
+
+TEST_F(ProductSpecificationsServiceSyncDisabledTest, TestSetUrls) {
+  EXPECT_EQ(
+      std::nullopt,
+      service()->SetUrls(
+          base::Uuid::ParseLowercase("50000000-0000-0000-0000-000000000000"),
+          {GURL("https://a.example.com"), GURL("https://b.example.com")}));
+}
+
+TEST_F(ProductSpecificationsServiceSyncDisabledTest, TestSetName) {
+  EXPECT_EQ(std::nullopt,
+            service()->SetName(base::Uuid::ParseLowercase(
+                                   "50000000-0000-0000-0000-000000000000"),
+                               "new name"));
+}
+
+TEST_F(ProductSpecificationsServiceSyncDisabledTest, TestDelete) {
+  EXPECT_TRUE(entries().find(initial_set()->uuid().AsLowercaseString()) !=
+              entries().end());
+  EXPECT_CALL(*observer(), OnProductSpecificationsSetRemoved(testing::_))
+      .Times(0);
+  service()->DeleteProductSpecificationsSet(
+      initial_set()->uuid().AsLowercaseString());
+  EXPECT_TRUE(entries().find(initial_set()->uuid().AsLowercaseString()) !=
+              entries().end());
 }
 
 }  // namespace commerce

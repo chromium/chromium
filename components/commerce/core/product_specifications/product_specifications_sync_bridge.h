@@ -73,6 +73,10 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
   sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
       const sync_pb::EntitySpecifics& entity_specifics) const override;
 
+  // Return true if sync is enabled (in chrome://settings/syncSetup/advanced)
+  // sync is enabled and the Product Specifications toggle is enabled).
+  bool IsSyncEnabled();
+
  private:
   friend class commerce::ProductSpecificationsService;
   friend class commerce::ProductSpecificationsServiceTest;

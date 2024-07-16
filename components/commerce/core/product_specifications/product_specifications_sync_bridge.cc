@@ -164,6 +164,10 @@ ProductSpecificationsSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
   return trimmed_entity_specifics;
 }
 
+bool ProductSpecificationsSyncBridge::IsSyncEnabled() {
+  return change_processor()->IsTrackingMetadata();
+}
+
 void ProductSpecificationsSyncBridge::AddSpecifics(
     const std::vector<sync_pb::ProductComparisonSpecifics> specifics) {
   // Sync is mandatory for this feature to be usable.

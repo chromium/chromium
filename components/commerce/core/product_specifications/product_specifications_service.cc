@@ -121,6 +121,10 @@ ProductSpecificationsService::GetSyncControllerDelegate() {
 
 const std::vector<ProductSpecificationsSet>
 ProductSpecificationsService::GetAllProductSpecifications() {
+  if (!bridge_->IsSyncEnabled()) {
+    return {};
+  }
+
   if (base::FeatureList::IsEnabled(
           commerce::kProductSpecificationsMultiSpecifics)) {
     std::map<std::string, std::vector<sync_pb::ProductComparisonSpecifics>>
@@ -199,6 +203,10 @@ void ProductSpecificationsService::GetAllProductSpecifications(
 
 const std::optional<ProductSpecificationsSet>
 ProductSpecificationsService::GetSetByUuid(const base::Uuid& uuid) {
+  if (!bridge_->IsSyncEnabled()) {
+    return std::nullopt;
+  }
+
   if (base::FeatureList::IsEnabled(
           commerce::kProductSpecificationsMultiSpecifics)) {
     sync_pb::ProductComparisonSpecifics* top_level_specific =
@@ -271,6 +279,10 @@ const std::optional<ProductSpecificationsSet>
 ProductSpecificationsService::AddProductSpecificationsSet(
     const std::string& name,
     const std::vector<GURL>& urls) {
+  if (!bridge_->IsSyncEnabled()) {
+    return std::nullopt;
+  }
+
   // TODO(crbug.com/332545064) add for a product specification set being added.
   std::vector<sync_pb::ProductComparisonSpecifics> specifics;
   int64_t time_now = base::Time::Now().InMillisecondsSinceUnixEpoch();
@@ -317,6 +329,9 @@ ProductSpecificationsService::AddProductSpecificationsSet(
 const std::optional<ProductSpecificationsSet>
 ProductSpecificationsService::SetUrls(const base::Uuid& uuid,
                                       const std::vector<GURL>& urls) {
+  if (!bridge_->IsSyncEnabled()) {
+    return std::nullopt;
+  }
   if (base::FeatureList::IsEnabled(
           commerce::kProductSpecificationsMultiSpecifics)) {
     sync_pb::ProductComparisonSpecifics* top_level_specific =
@@ -362,6 +377,9 @@ ProductSpecificationsService::SetUrls(const base::Uuid& uuid,
 const std::optional<ProductSpecificationsSet>
 ProductSpecificationsService::SetName(const base::Uuid& uuid,
                                       const std::string& name) {
+  if (!bridge_->IsSyncEnabled()) {
+    return std::nullopt;
+  }
   if (base::FeatureList::IsEnabled(
           commerce::kProductSpecificationsMultiSpecifics)) {
     // If we can't find the top level entry (perhaps due to a sync failure -
@@ -412,6 +430,9 @@ ProductSpecificationsService::SetName(const base::Uuid& uuid,
 
 void ProductSpecificationsService::DeleteProductSpecificationsSet(
     const std::string& uuid) {
+  if (!bridge_->IsSyncEnabled()) {
+    return;
+  }
   if (base::FeatureList::IsEnabled(
           commerce::kProductSpecificationsMultiSpecifics)) {
     std::vector<sync_pb::ProductComparisonSpecifics> specifics_to_delete;
