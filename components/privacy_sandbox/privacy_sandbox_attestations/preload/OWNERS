@@ -1,0 +1,3 @@
+# For bot updates to pre-installed Privacy Sandbox Attestation component.
+per-file manifest.json=mdb.adservices-enrollment@google.com
+per-file privacy-sandbox-attestations.dat=mdb.adservices-enrollment@google.com
