@@ -10,11 +10,12 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -23,12 +24,9 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class UrlImageSourceImplUnitTest {
-    @Mock private TabContentManager mTabContentManager;
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
+    @Mock private TabContentManager mTabContentManager;
 
     @Test
     @SmallTest

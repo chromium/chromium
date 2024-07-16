@@ -11,10 +11,12 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -26,7 +28,9 @@ import java.util.List;
 /** Unit tests for ForeignSessionSuggestionBackend. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class ForeignSessionSuggestionBackendTest extends TestSupport {
+public class ForeignSessionSuggestionBackendUnitTest extends TestSupport {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private ForeignSessionHelper mForeignSessionHelper;
     @Mock private UrlFilteringDelegate mUrlFilteringDelegate;
 
@@ -36,8 +40,6 @@ public class ForeignSessionSuggestionBackendTest extends TestSupport {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         TabResumptionModuleUtils.setFakeCurrentTimeMsForTesting(() -> CURRENT_TIME_MS);
         mSuggestionBackend =
                 new ForeignSessionSuggestionBackend(mForeignSessionHelper, mUrlFilteringDelegate);

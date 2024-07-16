@@ -19,7 +19,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class LocalTabTabResumptionDataProviderTest extends TestSupport {
+public class LocalTabTabResumptionDataProviderUnitTest extends TestSupport {
     private int mFetchSuggestionsCallbackCounter;
 
     @Test

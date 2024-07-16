@@ -105,11 +105,11 @@ robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.tab_resumption"
 
   sources = [
-    "junit/src/org/chromium/chrome/browser/tab_resumption/ForeignSessionSuggestionBackendTest.java",
-    "junit/src/org/chromium/chrome/browser/tab_resumption/LocalTabTabResumptionDataProviderTest.java",
-    "junit/src/org/chromium/chrome/browser/tab_resumption/MixedTabResumptionDataProviderTest.java",
-    "junit/src/org/chromium/chrome/browser/tab_resumption/SyncDerivedSuggestionEntrySourceTest.java",
-    "junit/src/org/chromium/chrome/browser/tab_resumption/SyncDerivedTabResumptionDataProviderTest.java",
+    "junit/src/org/chromium/chrome/browser/tab_resumption/ForeignSessionSuggestionBackendUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/tab_resumption/LocalTabTabResumptionDataProviderUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/tab_resumption/MixedTabResumptionDataProviderUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/tab_resumption/SyncDerivedSuggestionEntrySourceUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/tab_resumption/SyncDerivedTabResumptionDataProviderUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleEnablementUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleMediatorUnitTest.java",

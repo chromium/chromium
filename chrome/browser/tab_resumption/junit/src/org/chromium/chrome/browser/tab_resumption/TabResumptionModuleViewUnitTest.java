@@ -38,7 +38,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -61,7 +62,9 @@ import org.chromium.url.JUnitTestGURLs;
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID})
 public class TabResumptionModuleViewUnitTest extends TestSupport {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mocker = new JniMocker();
+
     @Mock UrlUtilities.Natives mUrlUtilitiesJniMock;
 
     private static final String TAB_TITLE = "Tab Title";
@@ -88,7 +91,6 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
 
         mContext = ApplicationProvider.getApplicationContext();

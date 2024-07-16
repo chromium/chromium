@@ -18,13 +18,15 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -84,6 +86,8 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupportExtended {
         }
     }
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private TabResumptionDataProvider mDataProvider;
     @Mock private UrlImageProvider mUrlImageProvider;
     @Mock private SuggestionClickCallback mClickCallback;
@@ -100,8 +104,6 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupportExtended {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         mContext = ApplicationProvider.getApplicationContext();
         mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
 

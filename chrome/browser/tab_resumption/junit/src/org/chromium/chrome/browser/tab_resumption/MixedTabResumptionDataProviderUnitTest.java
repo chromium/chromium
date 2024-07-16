@@ -11,13 +11,14 @@ import static org.mockito.Mockito.verify;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -30,7 +31,9 @@ import java.util.Arrays;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class MixedTabResumptionDataProviderTest extends TestSupport {
+public class MixedTabResumptionDataProviderUnitTest extends TestSupport {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private LocalTabTabResumptionDataProvider mLocalTabProvider;
     @Mock private SyncDerivedTabResumptionDataProvider mSyncDerivedProvider;
 
@@ -44,11 +47,6 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
     private int mLocalTabFetchCount;
     private int mSyncDerivedFetchCount;
     private int mFetchSuggestionsCallbackCounter;
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     @SmallTest

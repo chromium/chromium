@@ -14,13 +14,15 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -37,13 +39,15 @@ import java.util.concurrent.TimeUnit;
 /** Unit tests for SyncDerivedTabResumptionDataProvider. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class SyncDerivedTabResumptionDataProviderTest extends TestSupport {
+public class SyncDerivedTabResumptionDataProviderUnitTest extends TestSupport {
     static final SuggestionEntry ENTRY1 =
             SuggestionEntry.createFromForeignSessionTab("My Tablet", TAB6);
     static final SuggestionEntry ENTRY2 =
             SuggestionEntry.createFromForeignSessionTab("My Tablet", TAB5);
     static final SuggestionEntry ENTRY3 =
             SuggestionEntry.createFromForeignSessionTab("My Desktop", TAB1);
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private SyncDerivedSuggestionEntrySource mSource;
 
@@ -59,8 +63,6 @@ public class SyncDerivedTabResumptionDataProviderTest extends TestSupport {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         mFakeTime = CURRENT_TIME_MS;
         TabResumptionModuleUtils.setFakeCurrentTimeMsForTesting(() -> mFakeTime);
         mDataProvider = new SyncDerivedTabResumptionDataProvider(mSource, () -> {});

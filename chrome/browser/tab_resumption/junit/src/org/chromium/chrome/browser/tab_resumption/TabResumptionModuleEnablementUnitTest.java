@@ -13,10 +13,12 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.CollectionUtil;
@@ -38,6 +40,7 @@ import java.util.HashSet;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabResumptionModuleEnablementUnitTest extends TestSupportExtended {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private SyncService mSyncService;
@@ -47,8 +50,6 @@ public class TabResumptionModuleEnablementUnitTest extends TestSupportExtended {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
