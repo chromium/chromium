@@ -7,7 +7,6 @@
 #include <stdint.h>
 
 #include <optional>
-#include <sstream>
 #include <string_view>
 #include <utility>
 
@@ -40,7 +39,6 @@
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.h"
 #include "net/base/schemeful_site.h"
-#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
@@ -66,19 +64,9 @@ struct DebugDataTypeAndBody {
         additional_fields(std::move(additional_fields)) {}
 };
 
-// This is a temporary measure until we phase out the use of uint128.
-std::string EncodeUint128ToString(absl::uint128 value) {
-  std::ostringstream out;
-  out << value;
-  return out.str();
-}
-
-base::Value GetLimit(int limit) {
+template <typename T>
+base::Value GetLimit(T limit) {
   return base::Value(base::NumberToString(limit));
-}
-
-base::Value GetLimit(absl::uint128 limit) {
-  return base::Value(EncodeUint128ToString(limit));
 }
 
 std::optional<DebugDataTypeAndBody> GetReportDataBody(
