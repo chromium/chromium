@@ -4,9 +4,7 @@
   <div slot="body">$i18n{appManagementAppContentDialogSublabel}</div>
   <div id="dialogBody" slot="body" scrollable>
     ${this.app.scopeExtensions.map(item => html`
-      <div class="list-item">
-        ${item}
-      </div>
+      <div class="list-item">${item}</div>
     `)}
   </div>
 </cr-dialog>

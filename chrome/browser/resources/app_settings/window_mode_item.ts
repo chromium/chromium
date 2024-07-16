@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './app_management_shared_style.css.js';
 import './toggle_row.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.js';
@@ -12,7 +11,7 @@ import {AppManagementUserAction, WindowMode} from 'chrome://resources/cr_compone
 import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {CrLitElement, type PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getCss} from './app_management_shared_style_lit.css.js';
+import {getCss} from './app_management_shared_style.css.js';
 import type {ToggleRowElement} from './toggle_row.js';
 import {createDummyApp} from './web_app_settings_utils.js';
 import {getHtml} from './window_mode_item.html.js';
@@ -59,7 +58,7 @@ export class WindowModeItemElement extends CrLitElement {
     };
   }
 
-  windowModeLabel: string;
+  windowModeLabel: string = '';
   app: App = createDummyApp();
   override hidden: boolean = false;
 

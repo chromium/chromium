@@ -38,8 +38,8 @@ export class UninstallButtonElement extends CrLitElement {
   }
 
   app: App = createDummyApp();
-  uninstallLabel: string;
-  policyLabel: string;
+  uninstallLabel: string = '';
+  policyLabel: string = '';
 
   /**
    * Returns true if the button should be disabled due to app install type.

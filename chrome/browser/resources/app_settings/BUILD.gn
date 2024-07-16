@@ -39,7 +39,6 @@ build_webui("build") {
     "app_content_dialog.css",
     "app_content_item.css",
     "app_management_shared_style.css",
-    "app_management_shared_style_lit.css",
     "file_handling_item.css",
     "more_permissions_item.css",
     "permission_item.css",

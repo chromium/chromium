@@ -12,7 +12,7 @@ import {AppManagementUserAction, RunOnOsLoginMode} from 'chrome://resources/cr_c
 import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getCss} from './app_management_shared_style_lit.css.js';
+import {getCss} from './app_management_shared_style.css.js';
 import {getHtml} from './run_on_os_login_item.html.js';
 import type {ToggleRowElement} from './toggle_row.js';
 import {createDummyApp} from './web_app_settings_utils.js';
@@ -56,7 +56,7 @@ export class RunOnOsLoginItemElement extends CrLitElement {
     };
   }
 
-  loginModeLabel: string;
+  loginModeLabel: string = '';
   app: App = createDummyApp();
 
   override firstUpdated() {

@@ -66,24 +66,15 @@ export class PermissionItemElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
-
-      /**
-       * True if the app is managed or is a sub app.
-       */
-      disabled_: {
-        type: Boolean,
-        reflect: true,
-      },
     };
   }
 
   app: App = createDummyApp();
-  permissionLabel: string;
+  permissionLabel: string = '';
   permissionType: PermissionTypeIndex = 'kUnknown';
-  icon: string;
-  private syncPermissionManually: boolean;
+  icon: string = '';
+  private syncPermissionManually: boolean = false;
   protected available_: boolean = false;
-  private disabled_: boolean = false;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -91,7 +82,6 @@ export class PermissionItemElement extends CrLitElement {
     if (changedProperties.has('app') ||
         changedProperties.has('permissionType')) {
       this.available_ = this.isAvailable_();
-      this.disabled_ = this.isDisabled_();
     }
   }
 

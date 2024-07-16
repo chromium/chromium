@@ -12,7 +12,7 @@ import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getCss} from './app_management_shared_style_lit.css.js';
+import {getCss} from './app_management_shared_style.css.js';
 import {getHtml} from './supported_links_overlapping_apps_dialog.html.js';
 import {createDummyApp} from './web_app_settings_utils.js';
 
@@ -49,7 +49,7 @@ export class SupportedLinksOverlappingAppsDialogElement extends
 
   app: App = createDummyApp();
   overlappingAppIds: string[] = [];
-  apps: AppMap;
+  apps: AppMap = {};
 
   protected getBodyText_(): string {
     const appNames: string[] = this.overlappingAppIds.map(appId => {

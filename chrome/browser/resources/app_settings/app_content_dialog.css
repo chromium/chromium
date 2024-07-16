@@ -5,8 +5,8 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #scheme=relative
- * #import=./app_management_shared_style_lit.css.js
- * #include=app-management-shared-style-lit
+ * #import=./app_management_shared_style.css.js
+ * #include=app-management-shared-style
  * #css_wrapper_metadata_end */
 
 #dialogBody {
@@ -22,10 +22,4 @@
   display: flex;
   min-height: 36px;
   padding: 0;
-}
-
-iron-list {
-/* Text selection in an iron-list is problematic because the items are
-  * reused. The result is the selection happens somewhat arbitrarily.*/
-  user-select: none;
 }

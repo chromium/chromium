@@ -21,7 +21,8 @@ import type {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio
 import type {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import {CrLitElement, type PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './supported_links_item.css.js';
 import {getHtml} from './supported_links_item.html.js';
@@ -83,7 +84,7 @@ export class SupportedLinksItemElement extends SupportedLinksItemElementBase {
   }
 
   app: App = createDummyApp();
-  apps: AppMap;
+  apps: AppMap = {};
   override hidden: boolean = false;
   protected disabled_: boolean = false;
   protected overlappingAppsWarning_: string = '';
@@ -166,8 +167,8 @@ export class SupportedLinksItemElement extends SupportedLinksItemElementBase {
 
     switch (appNames.length) {
       case 1:
-        this.overlappingAppsWarning_ =
-            this.i18n('appManagementIntentOverlapWarningText1App', appNames[0]);
+        this.overlappingAppsWarning_ = this.i18n(
+            'appManagementIntentOverlapWarningText1App', appNames[0]);
         break;
       case 2:
         this.overlappingAppsWarning_ = this.i18n(
