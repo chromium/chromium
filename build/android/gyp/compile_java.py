@@ -452,10 +452,12 @@ def _OnStaleMd5(changes, options, javac_cmd, javac_args, java_files, kt_files):
   jar_info_path = None
   if not options.enable_errorprone:
     # Delete any stale files in the generated directory. The purpose of
-    # options.generated_dir is for codesearch.
+    # options.generated_dir is for codesearch and Android Studio.
     shutil.rmtree(options.generated_dir, True)
     intermediates_out_dir = options.generated_dir
 
+    # Write .info file only for the main javac invocation (no need to do it
+    # when running Error Prone.
     jar_info_path = options.jar_path + '.info'
 
   # Compiles with Error Prone take twice as long to run as pure javac. Thus GN
@@ -615,6 +617,15 @@ def _RunCompiler(changes,
 
     CreateJarFile(jar_path, classes_dir, service_provider_configuration,
                   options.additional_jar_files, options.kotlin_jar_path)
+
+    # Remove input srcjars that confuse Android Studio:
+    # https://crbug.com/353326240
+    for root, _, files in os.walk(intermediates_out_dir):
+      for subpath in files:
+        p = os.path.join(root, subpath)
+        # JNI Zero placeholders
+        if '_jni_java/' in p and not p.endswith('Jni.java'):
+          os.unlink(p)
 
     if save_info_file:
       info_file_context.Commit(jar_info_path)
