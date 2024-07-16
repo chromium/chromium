@@ -2642,6 +2642,8 @@ buildflag_header("sanitizer_buildflags") {
 
   flags = [
     "IS_HWASAN=$is_hwasan",
+    "IS_UBSAN=$is_ubsan",
+    "IS_UBSAN_SECURITY=$is_ubsan_security",
     "USING_SANITIZER=$using_sanitizer",
   ]
 }

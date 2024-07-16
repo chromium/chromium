@@ -33,23 +33,30 @@ test("fuzzing_unittests") {
   ]
   data_deps = []
 
-  # TODO(crbug.com/40603084): Get these tests working on Windows.
-  if (use_fuzzing_engine && !is_win) {
-    sources += [ "fuzzer_launcher_test.cc" ]
+  if (use_fuzzing_engine) {
+    sources += [ "stacktrace_test.cc" ]
+
     deps += [
       "//base",
       "//testing/gmock",
     ]
-    data_deps += [
-      ":check_fuzzer_config",
-      ":check_seed_corpus_archive",
-      ":test_config_and_dict",
-      ":test_config_and_seed_corpus",
-      ":test_config_and_seed_corpuses",
-      ":test_config_only",
-      ":test_dict_from_subdir",
-      ":test_dict_only",
-    ]
+
+    data_deps += [ ":stacktrace_test_uaf_fuzzer" ]
+
+    # TODO(crbug.com/40603084): Get these tests working on Windows.
+    if (!is_win) {
+      sources += [ "fuzzer_launcher_test.cc" ]
+      data_deps += [
+        ":check_fuzzer_config",
+        ":check_seed_corpus_archive",
+        ":test_config_and_dict",
+        ":test_config_and_seed_corpus",
+        ":test_config_and_seed_corpuses",
+        ":test_config_only",
+        ":test_dict_from_subdir",
+        ":test_dict_only",
+      ]
+    }
   }
 }
 
@@ -121,4 +128,10 @@ if (use_fuzzing_engine && !is_win) {
     sources = [ "check_seed_corpus_archive.py" ]
     outputs = [ "$root_build_dir/check_seed_corpus_archive.py" ]
   }
+}
+
+fuzzer_test("stacktrace_test_uaf_fuzzer") {
+  sources = [ "stacktrace_test_uaf_fuzzer.cc" ]
+  deps = [ "//base" ]
+  additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
 }
