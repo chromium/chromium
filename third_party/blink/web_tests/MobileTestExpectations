@@ -53,7 +53,7 @@ crbug.com/349397104 external/wpt/pointerevents/pointerevent_touch-action-span-no
 # SharedWorker interface
 crbug.com/40290702 external/wpt/background-fetch/idlharness.https.any.sharedworker.html [ Failure ]
 crbug.com/40290702 external/wpt/content-index/idlharness.https.any.sharedworker.html [ Failure ]
-crbug.com/40290702 external/wpt/cookie-store/idlharness.tentative.https.any.sharedworker.html [ Failure ]
+crbug.com/40290702 external/wpt/cookie-store/idlharness.https.any.sharedworker.html [ Failure ]
 crbug.com/40290702 external/wpt/dom/idlharness.any.sharedworker.html [ Failure ]
 crbug.com/40290702 external/wpt/encoding/idlharness.any.sharedworker.html [ Failure ]
 crbug.com/40290702 external/wpt/event-timing/idlharness.any.sharedworker.html [ Failure ]

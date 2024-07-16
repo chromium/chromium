@@ -61,10 +61,10 @@ external/wpt/content-index/idlharness.https.any.sharedworker.html
 external/wpt/content-index/idlharness.https.any.worker.html
 external/wpt/content-security-policy/embedded-enforcement/idlharness.window.html
 external/wpt/content-security-policy/securitypolicyviolation/idlharness.window.html
-external/wpt/cookie-store/idlharness.tentative.https.any.html
-external/wpt/cookie-store/idlharness.tentative.https.any.serviceworker.html
-external/wpt/cookie-store/idlharness.tentative.https.any.sharedworker.html
-external/wpt/cookie-store/idlharness.tentative.https.any.worker.html
+external/wpt/cookie-store/idlharness.https.any.html
+external/wpt/cookie-store/idlharness.https.any.serviceworker.html
+external/wpt/cookie-store/idlharness.https.any.sharedworker.html
+external/wpt/cookie-store/idlharness.https.any.worker.html
 external/wpt/credential-management/idlharness.https.window.html
 external/wpt/css/css-anchor-position/idlharness.html
 external/wpt/css/css-animations/idlharness.html
