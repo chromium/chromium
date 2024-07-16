@@ -1,3 +1,0 @@
-This is a wdspec test.
-Harness Error. harness_status.status = 1 , harness_status.message = 
-Harness: the test ran to completion.

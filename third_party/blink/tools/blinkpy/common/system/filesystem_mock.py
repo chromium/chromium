@@ -187,7 +187,8 @@ class MockFileSystem(object):
     def glob(self, glob_string):
         # FIXME: This handles '*', but not '?', '[', or ']'.
         glob_string = re.escape(glob_string)
-        glob_string = glob_string.replace('\\*\\*', '.*')
+        # Allow zero directories (e.g., `a/**/b` matches `a/b`).
+        glob_string = glob_string.replace('/\\*\\*', '(|/.*)')
         glob_string = glob_string.replace('\\*', '[^\\/]*')
         glob_string = glob_string.replace('\\/', '/')
         path_filter = lambda path: re.fullmatch(glob_string, path)

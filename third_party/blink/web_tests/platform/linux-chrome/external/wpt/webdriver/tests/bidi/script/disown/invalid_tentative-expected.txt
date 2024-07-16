@@ -1,4 +1,0 @@
-This is a wdspec test.
-[FAIL] test_params_target_invalid_value
-  Failed: DID NOT RAISE <class 'webdriver.bidi.error.InvalidArgumentException'>
-Harness: the test ran to completion.

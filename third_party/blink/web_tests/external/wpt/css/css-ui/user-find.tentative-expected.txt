@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Basic test for the user-find property
-  assert_unreached: Error: assert_equals: Should be not findable: Basic use case, text: me, iter: 1 expected false but got true Reached unreachable code
-Harness: the test ran to completion.
-

@@ -11,7 +11,9 @@ If this script is given the argument --auto-update, it will also:
 """
 
 import argparse
+import collections
 import contextlib
+import itertools
 import json
 import logging
 import textwrap
@@ -33,7 +35,6 @@ from blinkpy.w3c.chromium_commit import ChromiumCommit
 from blinkpy.w3c.chromium_exportable_commits import exportable_commits_over_last_n_commits
 from blinkpy.w3c.common import (
     read_credentials,
-    is_testharness_baseline,
     is_file_exportable,
     WPT_GH_URL,
     WPT_GH_RANGE_URL_TEMPLATE,
@@ -188,11 +189,8 @@ class TestImporter:
         # expectations for renamed tests. This requires the old WPT manifest, so
         # must happen before we regenerate it.
         self.expectations_updater.cleanup_test_expectations_files()
-
         self._generate_manifest()
-
-        # TODO(crbug.com/800570 robertma): Re-enable it once we fix the bug.
-        # self._delete_orphaned_baselines()
+        self.delete_orphaned_baselines()
 
         if not self.project_git.has_working_directory_changes():
             _log.info('Done: no changes to import.')
@@ -531,42 +529,49 @@ class TestImporter:
                                  for commit in locally_applied_commits) + '\n'
         return message
 
-    def _delete_orphaned_baselines(self):
-        _log.info('Deleting any orphaned baselines.')
+    def delete_orphaned_baselines(self):
+        """Delete baselines that don't correspond to any external WPTs.
 
-        is_baseline_filter = lambda fs, dirname, basename: is_testharness_baseline(basename)
+        Notes:
+          * This method should be called after importing the new tests and
+            regenerating the manifest.
+          * There's no need to handle renames explicitly because any failures
+            in the renamed tests will be rebaselined later.
+        """
+        port = self.host.port_factory.get()
 
-        baselines = self.fs.files_under(
-            self.dest_path, file_filter=is_baseline_filter)
+        # Find which baselines should be deleted for each deleted test. Because
+        # baseline paths are lossily sanitized, it's not easy to determine what
+        # test corresponds to a baseline path. Therefore, this map is keyed on
+        # the generic baseline as a proxy for the test URL instead.
+        baselines_by_generic_path = collections.defaultdict(set)
+        baseline_glob = self.fs.join(port.web_tests_dir(), '**', 'external',
+                                     'wpt', '**', '*-expected.txt')
+        for baseline in self.fs.glob(baseline_glob):
+            _, generic_baseline = port.parse_output_filename(baseline)
+            baselines_by_generic_path[generic_baseline].add(baseline)
 
         # Note about possible refactoring:
         #  - the manifest path could be factored out to a common location, and
         #  - the logic for reading the manifest could be factored out from here
         # and the Port class.
-        manifest_path = self.finder.path_from_web_tests(
-            'external', 'wpt', 'MANIFEST.json')
-        manifest = WPTManifest.from_file(self.host.port_factory.get(),
-                                         manifest_path)
-        wpt_urls = manifest.all_urls()
+        manifest_path = self.finder.path_from_wpt_tests('MANIFEST.json')
+        # Exclude test types `(print-)reftest` and `crashtest`, which can't
+        # have `*-expected.txt`.
+        manifest = WPTManifest.from_file(port, manifest_path,
+                                         ['testharness', 'wdspec', 'manual'])
+        for url_from_test_root in manifest.all_urls():
+            test = self.finder.wpt_prefix() + url_from_test_root
+            generic_baseline = port.output_filename(test, Port.BASELINE_SUFFIX,
+                                                    '.txt')
+            baselines_by_generic_path.pop(generic_baseline, None)
 
-        # Currently baselines for tests with query strings are merged,
-        # so that the tests foo.html?r=1 and foo.html?r=2 both have the same
-        # baseline, foo-expected.txt.
-        # TODO(qyearsley): Remove this when this behavior is fixed.
-        wpt_urls = [url.split('?')[0] for url in wpt_urls]
-
-        wpt_dir = self.finder.path_from_web_tests('external', 'wpt')
-        for full_path in baselines:
-            rel_path = self.fs.relpath(full_path, wpt_dir)
-            if not self._has_corresponding_test(rel_path, wpt_urls):
-                self.fs.remove(full_path)
-
-    def _has_corresponding_test(self, rel_path, wpt_urls):
-        # TODO(qyearsley): Ensure that this works with platform baselines and
-        # virtual baselines, and add unit tests.
-        base = '/' + rel_path.replace('-expected.txt', '')
-        return any(
-            (base + ext) in wpt_urls for ext in Port.supported_file_extensions)
+        orphan_count = 0
+        for baseline_to_delete in itertools.chain.from_iterable(
+                baselines_by_generic_path.values()):
+            self.remove(baseline_to_delete)
+            orphan_count += 1
+        _log.info(f'Deleted {orphan_count} orphaned baseline(s).')
 
     def copyfile(self, source, destination):
         _log.debug('cp %s %s', source, destination)
