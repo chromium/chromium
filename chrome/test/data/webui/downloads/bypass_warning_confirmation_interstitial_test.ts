@@ -8,6 +8,7 @@ import type {DownloadsDangerousDownloadInterstitialElement} from 'chrome://downl
 import {BrowserProxy, loadTimeData} from 'chrome://downloads/downloads.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestDownloadsProxy} from './test_support.js';
 
@@ -71,5 +72,20 @@ suite('interstitial tests', function() {
     downloadButton.click();
 
     assertFalse(interstitial.$.dialog.open);
+  });
+
+  test('clicking continue anyway opens survey and disables itself', function() {
+    const continueAnywayButton = interstitial.$.continueAnywayButton;
+    assertTrue(!!continueAnywayButton);
+    assertFalse(continueAnywayButton.disabled);
+
+    const surveyAndDownloadButton = interstitial!.shadowRoot!.querySelector(
+        '#survey-and-download-button-wrapper');
+    assertFalse(isVisible(surveyAndDownloadButton));
+
+    continueAnywayButton.click();
+
+    assertTrue(isVisible(surveyAndDownloadButton));
+    assertTrue(continueAnywayButton.disabled);
   });
 });

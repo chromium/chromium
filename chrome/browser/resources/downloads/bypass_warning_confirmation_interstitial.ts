@@ -14,6 +14,7 @@ import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -23,6 +24,7 @@ import {getTemplate} from './bypass_warning_confirmation_interstitial.html.js';
 export interface DownloadsDangerousDownloadInterstitialElement {
   $: {
     dialog: HTMLDialogElement,
+    continueAnywayButton: CrButtonElement,
   };
 }
 
@@ -38,11 +40,18 @@ export class DownloadsDangerousDownloadInterstitialElement extends
 
   static get properties() {
     return {
+      hideSurveyAndDownloadButton_: {
+        type: Boolean,
+        value: true,
+      },
+
       trustSiteLine: String,
     };
   }
 
   trustSiteLine: string;
+
+  private hideSurveyAndDownloadButton_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -54,6 +63,13 @@ export class DownloadsDangerousDownloadInterstitialElement extends
     assert(!this.$.dialog.open);
     this.dispatchEvent(
         new CustomEvent('cancel', {bubbles: true, composed: true}));
+  }
+
+  private onContinueAnywayClick_() {
+    const continueAnywayButton = this.$.continueAnywayButton;
+    assert(!!continueAnywayButton);
+    continueAnywayButton.setAttribute('disabled', 'true');
+    this.hideSurveyAndDownloadButton_ = false;
   }
 
   private onDownloadClick_() {

@@ -50,6 +50,10 @@
     background: var(--cr-fallback-color-primary-container);
   }
 
+  #continueAnywayButton[disabled] {
+    opacity: 0.5;
+  }
+
   .secondary-button {
     border: 1px solid #fff;
     background: var(--cr-fallback-color-error);
@@ -99,7 +103,8 @@
         </p>
       </div>
       <div id="button-container">
-        <cr-button class="secondary-button" id="continue-anyway-button">
+        <cr-button class="secondary-button" id="continueAnywayButton"
+          on-click="onContinueAnywayClick_">
           $i18n{warningBypassInterstitialContinue}
         </cr-button>
         <cr-button id="back-to-safety-button" on-click="onBackToSafetyClick_">
@@ -107,23 +112,26 @@
         </cr-button>
       </div>
     </div>
-    <div id="survey-wrapper">
-      <p id="survey-title">$i18n{warningBypassInterstitialSurveyTitle}</p>
-      <cr-radio-group>
-        <cr-radio-button name="CreatedFile">
-          $i18n{warningBypassInterstitialSurveyCreatedFile}
-        </cr-radio-button>
-        <cr-radio-button name="TrustSite">
-          [[trustSiteLine]]
-        </cr-radio-button>
-        <cr-radio-button name="AcceptRisk">
-          $i18n{warningBypassInterstitialSurveyAcceptRisk}
-        </cr-radio-button>
-      </cr-radio-group>
+    <div hidden="[[hideSurveyAndDownloadButton_]]"
+      id="survey-and-download-button-wrapper">
+      <div id="survey-wrapper">
+        <p id="survey-title">$i18n{warningBypassInterstitialSurveyTitle}</p>
+        <cr-radio-group>
+          <cr-radio-button name="CreatedFile">
+            $i18n{warningBypassInterstitialSurveyCreatedFile}
+          </cr-radio-button>
+          <cr-radio-button name="TrustSite">
+            [[trustSiteLine]]
+          </cr-radio-button>
+          <cr-radio-button name="AcceptRisk">
+            $i18n{warningBypassInterstitialSurveyAcceptRisk}
+          </cr-radio-button>
+        </cr-radio-group>
+      </div>
+      <cr-button class="secondary-button" id="download-button"
+        on-click="onDownloadClick_">
+        $i18n{warningBypassInterstitialDownload}
+      </cr-button>
     </div>
-    <cr-button class="secondary-button" id="download-button"
-      on-click="onDownloadClick_">
-      $i18n{warningBypassInterstitialDownload}
-    </cr-button>
   </div>
 </dialog>
