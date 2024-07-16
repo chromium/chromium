@@ -267,6 +267,7 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
                 "<!DOCTYPE html><html><body>Hello. I'm from a content-provider.</body></html>";
         TestContentProvider.register(
                 testHtmlContentPath, "text/html", testHtmlContent.getBytes(StandardCharsets.UTF_8));
+        mAwContents.getSettings().setAllowContentAccess(true);
         mRule.loadUrlSync(
                 mAwContents,
                 mContentsClient.getOnPageFinishedHelper(),
