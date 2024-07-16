@@ -19,7 +19,7 @@ namespace autofill::i18n_model_definition {
 using CountryAndFieldType = std::pair<std::string_view, FieldType>;
 
 // A lookup map for stopwords for countries and field types.
-constexpr auto kAutofillModelStopwords =
+inline constexpr auto kAutofillModelStopwords =
     base::MakeFixedFlatMap<CountryAndFieldType, std::u16string_view>({
       {{"BR", ADDRESS_HOME_OVERFLOW_AND_LANDMARK}, u"Ponto de referência:"},
       {{"BR", ADDRESS_HOME_SUBPREMISE}, u"Andar"},

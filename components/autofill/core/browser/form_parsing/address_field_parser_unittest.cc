@@ -26,6 +26,7 @@ class AddressFieldParserTest
                                        features::kAutofillUseBRAddressModel,
                                        features::kAutofillUseCAAddressModel,
                                        features::kAutofillUseDEAddressModel,
+                                       features::kAutofillUseFRAddressModel,
                                        features::kAutofillUsePLAddressModel,
                                        features::kAutofillUseINAddressModel,
                                        features::kAutofillUseITAddressModel,

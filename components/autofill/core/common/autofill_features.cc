@@ -450,6 +450,11 @@ BASE_FEATURE(kAutofillUseDEAddressModel,
              "AutofillUseDEAddressModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables using a custom address model for France, overriding the legacy one.
+BASE_FEATURE(kAutofillUseFRAddressModel,
+             "AutofillUseFRAddressModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables using a custom address model for India, overriding the legacy one.
 BASE_FEATURE(kAutofillUseINAddressModel,
              "AutofillUseINAddressModel",
