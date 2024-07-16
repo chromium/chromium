@@ -1398,6 +1398,25 @@ VISIT_PROTO_FIELDS(const sync_pb::SyncEntity& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::SyncEntity::CollaborationMetadata& proto) {
   VISIT(collaboration_id);
+  VISIT(attribution_metadata);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::SyncEntity::CollaborationMetadata::AttributionMetadata&
+        proto) {
+  VISIT(created);
+  VISIT(updated);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::SyncEntity::CollaborationMetadata::
+                       AttributionMetadata::Attribution& proto) {
+  VISIT(user_info);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::SyncEntity::CollaborationMetadata::AttributionMetadata::
+        Attribution::AttributionUserInfo& proto) {
+  VISIT(gaia_id);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SyncInvalidationsPayload& proto) {

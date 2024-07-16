@@ -229,7 +229,33 @@ message SyncEntity {
   message CollaborationMetadata {
     // Collaboration ID which the current entity belongs to.
     optional string collaboration_id = 1;
+
+    // Stores information about the creation and modification of a shared data
+    // type.
+    message AttributionMetadata {
+      // Details about a single attribution event (creation or modification).
+      message Attribution {
+        // Information about who the change should be attributed to.
+        message AttributionUserInfo {
+          // The obfuscated GAIA ID of the user.
+          optional string gaia_id = 1;
+        }
+
+        // Information about the user.
+        optional AttributionUserInfo user_info = 1;
+      }
+
+      // Information about when the specifics was created.
+      optional Attribution created = 1;
+
+      // Information about when the specifics was last updated.
+      optional Attribution updated = 2;
+    }
+
+    // Stores information who created or updated the entity.
+    optional AttributionMetadata attribution_metadata = 2;
   }
+
   optional CollaborationMetadata collaboration = 27;
 
   // Optionally present in CommitMessage for committed deletions (but may remain
