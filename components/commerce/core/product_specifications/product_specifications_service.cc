@@ -499,18 +499,28 @@ void ProductSpecificationsService::OnProductSpecificationsSetAdded(
 
 void ProductSpecificationsService::OnSpecificsAdded(
     const std::vector<sync_pb::ProductComparisonSpecifics> specifics) {
+  std::set<std::string> updated_top_level_uuids;
   for (const sync_pb::ProductComparisonSpecifics& specific : specifics) {
     // Legacy storage format doesn't use ProductComparison &
     // ProductComparisonItem.
     if (!specific.has_product_comparison() &&
         !specific.has_product_comparison_item()) {
-      for (auto& observer : observers_) {
-        observer.OnProductSpecificationsSetAdded(
-            ProductSpecificationsSet::FromProto(specific));
-      }
+      NotifyProductSpecificationsAdded(
+          ProductSpecificationsSet::FromProto(specific));
+    } else if (specific.has_product_comparison()) {
+      updated_top_level_uuids.insert(specific.uuid());
+    } else if (specific.has_product_comparison_item()) {
+      updated_top_level_uuids.insert(
+          specific.product_comparison_item().product_comparison_uuid());
     }
   }
-  // TODO(crbug.com/350346263) Handle new multi specifics format.
+  for (const auto& uuid : updated_top_level_uuids) {
+    std::optional<ProductSpecificationsSet> product_specifications_set =
+        GetSetByUuid(base::Uuid::ParseLowercase(uuid));
+    if (product_specifications_set.has_value()) {
+      NotifyProductSpecificationsAdded(product_specifications_set.value());
+    }
+  }
 }
 
 void ProductSpecificationsService::OnSpecificsUpdated(
@@ -543,6 +553,13 @@ void ProductSpecificationsService::OnSpecificsRemoved(
   }
 
   // TODO(crbug.com/351003028) Handle multi specifics format.
+}
+
+void ProductSpecificationsService::NotifyProductSpecificationsAdded(
+    const ProductSpecificationsSet& added_set) {
+  for (auto& observer : observers_) {
+    observer.OnProductSpecificationsSetAdded(added_set);
+  }
 }
 
 void ProductSpecificationsService::NotifyProductSpecificationsUpdate(

@@ -287,6 +287,35 @@ class ProductSpecificationsServiceTest : public testing::Test {
                  << " not found\n";
   }
 
+  void ApplyIncrementalSyncChangesForTesting(
+      const std::vector<sync_pb::ProductComparisonSpecifics> specifics,
+      const syncer::EntityChange::ChangeType change_type) {
+    bridge()->ApplyIncrementalSyncChangesForTesting(specifics, change_type);
+  }
+
+  void VerifyProductSpecificationsSet(
+      const base::Uuid uuid,
+      const std::optional<ProductSpecificationsSet> expected) {
+    base::RunLoop run_loop;
+    service()->GetSetByUuid(
+        uuid, base::BindOnce(
+                  [](const std::optional<ProductSpecificationsSet> expected,
+                     const std::optional<ProductSpecificationsSet> set) {
+                    EXPECT_EQ(expected.has_value(), set.has_value());
+                    if (expected.has_value()) {
+                      EXPECT_EQ(expected.value().uuid(), set.value().uuid());
+                      EXPECT_EQ(expected.value().name(), set.value().name());
+                      EXPECT_EQ(expected.value().creation_time(),
+                                set.value().creation_time());
+                      EXPECT_EQ(expected.value().update_time(),
+                                set.value().update_time());
+                      EXPECT_EQ(expected.value().urls(), set.value().urls());
+                    }
+                  },
+                  expected)
+                  .Then(run_loop.QuitClosure()));
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<ProductSpecificationsService> service_;
@@ -893,6 +922,40 @@ TEST_F(ProductSpecificationsServiceSyncDisabledTest, TestDelete) {
       initial_set()->uuid().AsLowercaseString());
   EXPECT_TRUE(entries().find(initial_set()->uuid().AsLowercaseString()) !=
               entries().end());
+}
+
+TEST_F(ProductSpecificationsServiceTest, TestMultiSpecificsAdded) {
+  EnableMultiSpecFlag();
+
+  std::string expected_name = "New set";
+  std::vector<GURL> expected_urls = {GURL("https://a.example.com"),
+                                     GURL("https://b.example.com")};
+
+  // Add ProductSpecificationsSet to acquire underlying specifics which are
+  // then used to simulate the specifics being sent from the sync server.
+  std::optional<ProductSpecificationsSet> expected_set =
+      service()->AddProductSpecificationsSet(expected_name, expected_urls);
+  std::vector<sync_pb::ProductComparisonSpecifics> to_add;
+  for (const auto& [_, specifics] : entries()) {
+    to_add.push_back(specifics);
+  }
+  // Now specifics have been acquired, delete ProductSpecificationsSet to
+  // ensure the bridge reacts appropriately to the specifics being sent
+  // from the server (i.e. reconstructs ProductSpecificationsSet and passes
+  // it to the observer method).
+  service()->DeleteProductSpecificationsSet(
+      expected_set.value().uuid().AsLowercaseString());
+  VerifyProductSpecificationsSet(expected_set.value().uuid(), std::nullopt);
+
+  EXPECT_CALL(*observer(),
+              OnProductSpecificationsSetAdded(
+                  HasProductSpecsNameUrl(expected_name, expected_urls)))
+      .Times(1);
+  // Simulate specifics being sent from the sync server via
+  // 'ApplyIncrementalSyncChanges'
+  ApplyIncrementalSyncChangesForTesting(
+      to_add, syncer::EntityChange::ChangeType::ACTION_ADD);
+  VerifyProductSpecificationsSet(expected_set.value().uuid(), expected_set);
 }
 
 }  // namespace commerce

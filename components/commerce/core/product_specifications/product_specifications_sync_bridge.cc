@@ -16,6 +16,7 @@
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/unique_position.h"
+#include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_store.h"
@@ -36,6 +37,16 @@ const sync_pb::ProductComparisonSpecifics TrimSpecificsForCaching(
   trimmed_comparison_data.clear_name();
   trimmed_comparison_data.clear_data();
   return trimmed_comparison_data;
+}
+
+syncer::EntityData MakeEntityData(
+    const sync_pb::ProductComparisonSpecifics& specifics) {
+  syncer::EntityData entity_data;
+  *entity_data.specifics.mutable_product_comparison() = specifics;
+  entity_data.name = base::StringPrintf("%s_%s", specifics.name().c_str(),
+                                        specifics.uuid().c_str());
+
+  return entity_data;
 }
 
 }  // namespace
@@ -77,6 +88,7 @@ ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
     syncer::EntityChangeList entity_changes) {
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
+  std::vector<sync_pb::ProductComparisonSpecifics> added;
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     const sync_pb::ProductComparisonSpecifics& specifics =
         change->data().specifics.product_comparison();
@@ -84,7 +96,7 @@ ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
       case syncer::EntityChange::ACTION_ADD:
         entries_.emplace(change->storage_key(), specifics);
         batch->WriteData(change->storage_key(), specifics.SerializeAsString());
-        delegate_->OnSpecificsAdded({specifics});
+        added.push_back(specifics);
         break;
       case syncer::EntityChange::ACTION_UPDATE: {
         auto local_specifics = entries_.find(change->storage_key());
@@ -114,6 +126,7 @@ ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
         break;
     }
   }
+  delegate_->OnSpecificsAdded(added);
   batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   Commit(std::move(batch));
   return {};
@@ -346,6 +359,27 @@ ProductSpecificationsSyncBridge::CreateEntityData(
     data->set_url(data_to_copy.url());
   }
   return entity_data;
+}
+
+void ProductSpecificationsSyncBridge::ApplyIncrementalSyncChangesForTesting(
+    const std::vector<sync_pb::ProductComparisonSpecifics>& specifics_to_add,
+    const syncer::EntityChange::ChangeType change_type) {
+  syncer::EntityChangeList add_changes;
+  for (const auto& specifics : specifics_to_add) {
+    switch (change_type) {
+      case syncer::EntityChange::ACTION_ADD:
+        add_changes.push_back(syncer::EntityChange::CreateAdd(
+            specifics.uuid(), MakeEntityData(specifics)));
+        break;
+      default:
+        DCHECK(0) << "EntityChange " << change_type << "not supported\n";
+    }
+  }
+
+  auto metadata_change_list =
+      std::make_unique<syncer::InMemoryMetadataChangeList>();
+  ApplyIncrementalSyncChanges(std::move(metadata_change_list),
+                              std::move(add_changes));
 }
 
 }  // namespace commerce

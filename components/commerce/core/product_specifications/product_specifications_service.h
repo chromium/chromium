@@ -100,6 +100,8 @@ class ProductSpecificationsService
   void OnSpecificsRemoved(const std::vector<sync_pb::ProductComparisonSpecifics>
                               specifics) override;
 
+  void NotifyProductSpecificationsAdded(const ProductSpecificationsSet& set);
+
   void NotifyProductSpecificationsUpdate(const ProductSpecificationsSet& before,
                                          const ProductSpecificationsSet& after);
 
