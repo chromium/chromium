@@ -661,8 +661,12 @@ void ThrottlingURLLoader::OnReceiveResponse(
     for (auto& entry : throttles_) {
       auto* throttle = entry.throttle.get();
       base::Time start = base::Time::Now();
+      auto weak_ptr = weak_factory_.GetWeakPtr();
       throttle->BeforeWillProcessResponse(response_url_, *response_head,
                                           &has_pending_restart);
+      if (!weak_ptr) {
+        return;
+      }
       RecordExecutionTimeHistogram("BeforeWillProcessResponse", start);
       if (!HandleThrottleResult(throttle)) {
         return;
@@ -682,8 +686,12 @@ void ThrottlingURLLoader::OnReceiveResponse(
       auto* throttle = entry.throttle.get();
       bool throttle_deferred = false;
       base::Time start = base::Time::Now();
+      auto weak_ptr = weak_factory_.GetWeakPtr();
       throttle->WillProcessResponse(response_url_, response_head.get(),
                                     &throttle_deferred);
+      if (!weak_ptr) {
+        return;
+      }
       RecordExecutionTimeHistogram(GetStageNameForHistogram(DEFERRED_RESPONSE),
                                    start);
       if (!HandleThrottleResult(throttle, throttle_deferred, &deferred))
@@ -853,7 +861,11 @@ void ThrottlingURLLoader::OnComplete(
     for (auto& entry : throttles_) {
       auto* throttle = entry.throttle.get();
       base::Time start = base::Time::Now();
+      auto weak_ptr = weak_factory_.GetWeakPtr();
       throttle->WillOnCompleteWithError(status);
+      if (!weak_ptr) {
+        return;
+      }
       RecordExecutionTimeHistogram("WillOnCompleteWithError", start);
       if (!HandleThrottleResult(throttle)) {
         return;
