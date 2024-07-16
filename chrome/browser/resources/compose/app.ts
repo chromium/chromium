@@ -692,7 +692,9 @@ export class ComposeAppElement extends ComposeAppElementBase {
     // are announced by alternating between this "loading" message and the
     // "updated" message. This is also done to announce updates for the undo
     // and redo functions.
-    this.screenReaderAnnounce_(this.i18n('resultLoadingA11yMessage'));
+    if (this.enableUiRefinements) {
+      this.screenReaderAnnounce_(this.i18n('resultLoadingA11yMessage'));
+    }
     // </if>
     this.$.body.scrollTop = 0;
     this.loading_ = true;
@@ -709,7 +711,9 @@ export class ComposeAppElement extends ComposeAppElementBase {
     assert(this.$.textarea.validate());
     assert(this.submitted_);
     // <if expr="is_macosx">
-    this.screenReaderAnnounce_(this.i18n('resultLoadingA11yMessage'));
+    if (this.enableUiRefinements) {
+      this.screenReaderAnnounce_(this.i18n('resultLoadingA11yMessage'));
+    }
     // </if>
     const bodyHeight = this.$.body.offsetHeight;
     const resultHeight = this.$.resultContainer.offsetHeight;
@@ -785,8 +789,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
         break;
     }
 
-    this.screenReaderAnnounce_(
-        this.i18n('resultUpdatedA11yMessage'), TIMEOUT_MS);
+    if (this.enableUiRefinements) {
+      this.screenReaderAnnounce_(
+          this.i18n('resultUpdatedA11yMessage'), TIMEOUT_MS);
+    }
   }
 
   private composeResponseReceived_(response: ComposeResponse) {
@@ -959,7 +965,9 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
   private async onUndoClick_() {
     // <if expr="is_macosx">
-    this.screenReaderAnnounce_(this.i18n('undoResultA11yMessage'));
+    if (this.enableUiRefinements) {
+      this.screenReaderAnnounce_(this.i18n('undoResultA11yMessage'));
+    }
     // </if>
     try {
       const state = await this.apiProxy_.undo();
@@ -1004,7 +1012,9 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
   private async onRedoClick_() {
     // <if expr="is_macosx">
-    this.screenReaderAnnounce_(this.i18n('redoResultA11yMessage'));
+    if (this.enableUiRefinements) {
+      this.screenReaderAnnounce_(this.i18n('redoResultA11yMessage'));
+    }
     // </if>
     try {
       const state = await this.apiProxy_.redo();
@@ -1053,7 +1063,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private screenReaderAnnounce_(message: string, wait: number = 0) {
     setTimeout(() => {
       const announcer = getAnnouncerInstance() as CrA11yAnnouncerElement;
-      announcer.announceWithTimeout(message, wait);
+      announcer.announce(message, wait);
     });
   }
 
