@@ -94,7 +94,9 @@ CoreAccountId FamilyMember::GetAccountId() const {
   CHECK(supervised_user::IsSubjectToParentalControls(
       *browser()->profile()->GetPrefs()))
       << "Blocklist control page is only available to user who have that "
-         "feature enabled. Check if member is a subject to parental controls.";
+         "feature enabled. Check if member is a subject to parental controls. "
+         "Account: "
+      << account_.user;
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser()->profile());

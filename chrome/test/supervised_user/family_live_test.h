@@ -27,7 +27,12 @@ namespace supervised_user {
 const char* const kFamilyIdentifierSwitch =
     "supervised-tests-family-identifier";
 
-std::string GetFamilyIdentifier();
+// Alternatively, use these two to provide head of household's and child's
+// credentials directly, in <username>:<password> syntax (colon separated).
+const char* const kHeadOfHouseholdCredentialsSwitch =
+    "supervised-tests-hoh-credentials";
+const char* const kChildCredentialsSwitch =
+    "supervised-tests-child-credentials";
 
 // A LiveTest which assumes a specific structure of provided test accounts,
 // which are forming a family:
@@ -56,26 +61,20 @@ class FamilyLiveTest : public signin::test::LiveTest {
   // explicitly added to `extra_enabled_hosts`.
   GURL GetRoutedUrl(std::string_view url_spec) const;
 
-  FamilyMember& head_of_household() {
-    CHECK(head_of_household_)
-        << "No head of household found in family: " + GetFamilyIdentifier();
-    return *head_of_household_;
-  }
-  FamilyMember& child() {
-    CHECK(child_) << "No child found in family: " + GetFamilyIdentifier();
-    return *child_;
-  }
+  FamilyMember& head_of_household() const;
+  FamilyMember& child() const;
 
  private:
-  // Extracts requested account, which must exist.
-  signin::test::TestAccount GetTestAccount(std::string_view account_name) const;
-  // Checks if the requested account exists.
-  bool AccountExists(std::string_view account_name) const;
+  void SetFamilyMembers(const ::signin::test::TestAccount& head_of_household,
+                        const ::signin::test::TestAccount& child);
 
-  // Creates a new browser signed in to the specified account, which must
-  // exist.
+  // Extracts requested account from test_accounts.json file, which must exist.
+  signin::test::TestAccount GetAccountFromFile(
+      std::string_view account_name_suffix) const;
+
+  // Creates a new browser signed in to the specified account
   std::unique_ptr<FamilyMember> MakeSignedInBrowser(
-      std::string_view account_name);
+      const signin::test::TestAccount& account);
 
   std::unique_ptr<FamilyMember> head_of_household_;
   std::unique_ptr<FamilyMember> child_;
