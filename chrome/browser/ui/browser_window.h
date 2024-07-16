@@ -489,6 +489,9 @@ class BrowserWindow : public ui::BaseWindow {
   // can happen if the new download bubble UI is enabled.
   virtual DownloadShelf* GetDownloadShelf() = 0;
 
+  // Returns the TopContainerView.
+  virtual views::View* GetTopContainer() = 0;
+
   // Returns the DownloadBubbleUIController. Returns null if Download Bubble
   // UI is not enabled, or if the download toolbar button does not exist.
   virtual DownloadBubbleUIController* GetDownloadBubbleUIController() = 0;

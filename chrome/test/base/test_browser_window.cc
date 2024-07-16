@@ -313,6 +313,9 @@ bool TestBrowserWindow::IsDownloadShelfVisible() const {
 DownloadShelf* TestBrowserWindow::GetDownloadShelf() {
   return &download_shelf_;
 }
+views::View* TestBrowserWindow::GetTopContainer() {
+  return nullptr;
+}
 
 DownloadBubbleUIController* TestBrowserWindow::GetDownloadBubbleUIController() {
   return nullptr;

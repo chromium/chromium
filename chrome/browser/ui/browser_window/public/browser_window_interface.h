@@ -20,6 +20,7 @@ class TabInterface;
 
 namespace views {
 class WebView;
+class View;
 }  // namespace views
 
 namespace web_modal {
@@ -47,6 +48,9 @@ class BrowserWindowInterface {
   // Will return false on browser initialization before the tab strip is
   // initialized.
   virtual bool IsTabStripVisible() = 0;
+
+  // Returns the top container view.
+  virtual views::View* TopContainer() = 0;
 
   // Returns the foreground tab. This can be nullptr very early during
   // BrowserWindow initialization, and very late during BrowserWindow teardown.

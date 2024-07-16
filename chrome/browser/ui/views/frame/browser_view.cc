@@ -3191,6 +3191,10 @@ DownloadShelf* BrowserView::GetDownloadShelf() {
   return download_shelf_;
 }
 
+views::View* BrowserView::GetTopContainer() {
+  return top_container_;
+}
+
 DownloadBubbleUIController* BrowserView::GetDownloadBubbleUIController() {
   DCHECK(toolbar_button_provider_);
   if (auto* download_button = toolbar_button_provider_->GetDownloadButton())

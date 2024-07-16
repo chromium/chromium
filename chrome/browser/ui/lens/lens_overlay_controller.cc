@@ -1876,7 +1876,7 @@ void LensOverlayController::ShowPreselectionBubble() {
   if (!preselection_widget_) {
     preselection_widget_ = views::BubbleDialogDelegateView::CreateBubble(
         std::make_unique<lens::LensPreselectionBubble>(
-            tab_->GetBrowserWindowInterface()->GetWebView()->parent()));
+            tab_->GetBrowserWindowInterface()->TopContainer()));
     preselection_widget_->SetNativeWindowProperty(
         views::kWidgetIdentifierKey,
         const_cast<void*>(kLensOverlayPreselectionWidgetIdentifier));
