@@ -1125,7 +1125,8 @@
       "http/tests/inspector-protocol/network/response-received-extra-info-exempted-cookie.js"
     ],
     "args": ["--test-third-party-cookie-phaseout"],
-    "expires": "May 1, 2025"
+    "expires": "May 1, 2025",
+    "owners": ["shuuran@chromium.org", "dylancutler@google.com"]
   },
   {
     "prefix": "third-party-storage-partitioning",
