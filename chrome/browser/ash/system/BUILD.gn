@@ -71,6 +71,11 @@ static_library("system") {
     "//third_party/icu:icui18n_hidden_visibility",
     "//third_party/icu:icuuc_public",
     "//ui/ozone",
+
+    # TODO(crbug.com/353408109): Use //chrome/browser/ash/login instead after fixing cyclic
+    # dependency.
+    "//chromeos/ash/components/kiosk/vision",
+    "//components/paint_preview/buildflags",
   ]
 }
 
