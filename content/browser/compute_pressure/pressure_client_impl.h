@@ -36,30 +36,27 @@ class CONTENT_EXPORT PressureClientImpl : public device::mojom::PressureClient {
   // device::mojom::PressureClient implementation.
   void OnPressureUpdated(device::mojom::PressureUpdatePtr update) override;
 
-  void AddClient(
-      device::mojom::PressureManager* pressure_manager,
-      mojo::PendingRemote<device::mojom::PressureClient> pending_client,
-      device::mojom::PressureSource source,
-      device::mojom::PressureManager::AddClientCallback callback);
-
   void Reset();
 
-  bool has_remote() const {
+  // Binds the Blink-side PressureClient mojo::Remote and returns its
+  // corresponding mojo::PendingReceiver.
+  mojo::PendingReceiver<device::mojom::PressureClient>
+  BindNewPipeAndPassReceiver();
+
+  // Binds a mojo::PendingReceiver to the services-side mojo::Receiver owned by
+  // this class.
+  void BindReceiver(mojo::PendingReceiver<device::mojom::PressureClient>);
+
+  bool is_client_remote_bound() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     return client_remote_.is_bound();
   }
 
-  bool IsClientReceiverBoundForTesting() const {
+  bool is_client_receiver_bound() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     return client_receiver_.is_bound();
-  }
-
-  bool IsClientRemoteBoundForTesting() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    return client_remote_.is_bound();
   }
 
  private:

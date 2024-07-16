@@ -38,9 +38,9 @@
 
 namespace content {
 
+using device::mojom::PressureManagerAddClientError;
 using device::mojom::PressureSource;
 using device::mojom::PressureState;
-using device::mojom::PressureStatus;
 using device::mojom::PressureUpdate;
 
 namespace {
@@ -98,10 +98,10 @@ class FakePressureClient : public device::mojom::PressureClient {
     run_loop.Run();
   }
 
-  mojo::PendingRemote<device::mojom::PressureClient>
-  BindNewPipeAndPassRemote() {
+  void Bind(
+      mojo::PendingReceiver<device::mojom::PressureClient> pending_receiver) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return receiver_.BindNewPipeAndPassRemote();
+    receiver_.Bind(std::move(pending_receiver));
   }
 
  private:
@@ -176,10 +176,12 @@ TEST_F(PressureServiceForDedicatedWorkerTest, AddClient) {
   SetPressureServiceForDedicatedWorker();
 
   FakePressureClient client;
-  base::test::TestFuture<PressureStatus> future;
-  pressure_manager_->AddClient(client.BindNewPipeAndPassRemote(),
-                               PressureSource::kCpu, future.GetCallback());
-  ASSERT_EQ(future.Get(), PressureStatus::kOk);
+  base::test::TestFuture<device::mojom::PressureManagerAddClientResultPtr>
+      future;
+  pressure_manager_->AddClient(PressureSource::kCpu, future.GetCallback());
+  ASSERT_TRUE(future.Get()->is_pressure_client());
+  auto result = future.Take();
+  client.Bind(std::move(result->get_pressure_client()));
 
   const base::TimeTicks time = base::TimeTicks::Now();
   PressureUpdate update(PressureSource::kCpu, PressureState::kNominal, time);
@@ -286,10 +288,12 @@ TEST_F(PressureServiceForSharedWorkerTest, AddClient) {
   SetPressureServiceForSharedWorker();
 
   FakePressureClient client;
-  base::test::TestFuture<PressureStatus> future;
-  pressure_manager_->AddClient(client.BindNewPipeAndPassRemote(),
-                               PressureSource::kCpu, future.GetCallback());
-  ASSERT_EQ(future.Get(), PressureStatus::kOk);
+  base::test::TestFuture<device::mojom::PressureManagerAddClientResultPtr>
+      future;
+  pressure_manager_->AddClient(PressureSource::kCpu, future.GetCallback());
+  ASSERT_TRUE(future.Get()->is_pressure_client());
+  auto result = future.Take();
+  client.Bind(std::move(result->get_pressure_client()));
 
   const base::TimeTicks time = base::TimeTicks::Now();
   PressureUpdate update(PressureSource::kCpu, PressureState::kNominal, time);

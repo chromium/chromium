@@ -56,8 +56,8 @@ class MODULES_EXPORT PressureClientImpl final
     return observers_;
   }
 
-  mojo::PendingRemote<device::mojom::blink::PressureClient>
-  BindNewPipeAndPassRemote();
+  void BindPressureClient(
+      mojo::PendingReceiver<device::mojom::blink::PressureClient>);
 
   void Reset();
 

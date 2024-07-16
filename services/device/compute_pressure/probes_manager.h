@@ -28,9 +28,12 @@ class ProbesManager {
   ProbesManager(const ProbesManager&) = delete;
   ProbesManager& operator=(const ProbesManager&) = delete;
 
-  mojom::PressureStatus AddClient(
-      mojo::PendingRemote<mojom::PressureClient> client,
-      mojom::PressureSource source);
+  bool is_supported(mojom::PressureSource source) const;
+
+  // Adds |client| to the list of mojom::PressureClient remotes for the given
+  // |source| type and starts the probe if necessary.
+  void RegisterClientRemote(mojo::Remote<mojom::PressureClient> client,
+                            mojom::PressureSource source);
 
   base::TimeDelta sampling_interval() const;
 

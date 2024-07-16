@@ -34,9 +34,9 @@
 
 namespace content {
 
+using device::mojom::PressureManagerAddClientError;
 using device::mojom::PressureSource;
 using device::mojom::PressureState;
-using device::mojom::PressureStatus;
 using device::mojom::PressureUpdate;
 
 namespace {
@@ -94,10 +94,10 @@ class FakePressureClient : public device::mojom::PressureClient {
     run_loop.Run();
   }
 
-  mojo::PendingRemote<device::mojom::PressureClient>
-  BindNewPipeAndPassRemote() {
+  void Bind(
+      mojo::PendingReceiver<device::mojom::PressureClient> pending_receiver) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return receiver_.BindNewPipeAndPassRemote();
+    receiver_.Bind(std::move(pending_receiver));
   }
 
  private:
@@ -153,13 +153,21 @@ class PressureServiceForFrameTest : public RenderViewHostImplTestHarness {
     task_environment()->RunUntilIdle();
   }
 
-  PressureStatus AddPressureClient(
-      mojo::PendingRemote<device::mojom::PressureClient> client,
+  base::expected<void, PressureManagerAddClientError> AddPressureClient(
+      FakePressureClient* client,
       PressureSource source) {
-    base::test::TestFuture<PressureStatus> future;
-    pressure_manager_->AddClient(std::move(client), source,
-                                 future.GetCallback());
-    return future.Get();
+    base::test::TestFuture<device::mojom::PressureManagerAddClientResultPtr>
+        future;
+    pressure_manager_->AddClient(source, future.GetCallback());
+
+    auto result = future.Take();
+    if (result->is_pressure_client()) {
+      client->Bind(std::move(result->get_pressure_client()));
+    }
+
+    return result->is_error()
+               ? base::unexpected(result->get_error())
+               : base::expected<void, PressureManagerAddClientError>();
   }
 
  protected:
@@ -173,9 +181,7 @@ class PressureServiceForFrameTest : public RenderViewHostImplTestHarness {
 
 TEST_F(PressureServiceForFrameTest, AddClient) {
   FakePressureClient client;
-  ASSERT_EQ(AddPressureClient(client.BindNewPipeAndPassRemote(),
-                              PressureSource::kCpu),
-            PressureStatus::kOk);
+  ASSERT_TRUE(AddPressureClient(&client, PressureSource::kCpu).has_value());
 
   const base::TimeTicks time = base::TimeTicks::Now();
   PressureUpdate update(PressureSource::kCpu, PressureState::kNominal, time);
@@ -189,29 +195,25 @@ TEST_F(PressureServiceForFrameTest, AddClientNotSupported) {
   pressure_manager_overrider_->set_is_supported(false);
 
   FakePressureClient client;
-  ASSERT_EQ(AddPressureClient(client.BindNewPipeAndPassRemote(),
-                              PressureSource::kCpu),
-            PressureStatus::kNotSupported);
+  auto result = AddPressureClient(&client, PressureSource::kCpu);
+  ASSERT_FALSE(result.has_value());
+  ASSERT_EQ(result.error(), PressureManagerAddClientError::kNotSupported);
 
   const auto& pressure_client =
       PressureServiceForFrame::GetOrCreateForCurrentDocument(
           contents()->GetPrimaryMainFrame())
           ->GetPressureClientForTesting(PressureSource::kCpu);
-  EXPECT_FALSE(pressure_client.IsClientReceiverBoundForTesting());
+  EXPECT_FALSE(pressure_client.is_client_receiver_bound());
 }
 
 TEST_F(PressureServiceForFrameTest, AddClientTwice) {
   FakePressureClient client1;
-  ASSERT_EQ(AddPressureClient(client1.BindNewPipeAndPassRemote(),
-                              PressureSource::kCpu),
-            PressureStatus::kOk);
+  ASSERT_TRUE(AddPressureClient(&client1, PressureSource::kCpu).has_value());
 
   // Simulate the renderer calling AddClient twice for the same PressureSource
-  // and wait for the PressureServiceBase to finish the call.
-  FakePressureClient client2;
+  // and wait for PressureServiceBase to reject the call.
   mojo::test::BadMessageObserver bad_message_observer;
-  pressure_manager_->AddClient(client2.BindNewPipeAndPassRemote(),
-                               PressureSource::kCpu, base::DoNothing());
+  pressure_manager_->AddClient(PressureSource::kCpu, base::DoNothing());
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
             "PressureClientImpl is already connected.");
 
@@ -223,9 +225,7 @@ TEST_F(PressureServiceForFrameTest, AddClientTwice) {
 
 TEST_F(PressureServiceForFrameTest, DisconnectFromBlink) {
   FakePressureClient client;
-  ASSERT_EQ(AddPressureClient(client.BindNewPipeAndPassRemote(),
-                              PressureSource::kCpu),
-            PressureStatus::kOk);
+  ASSERT_TRUE(AddPressureClient(&client, PressureSource::kCpu).has_value());
 
   // Simulate the renderer disconnecting and wait for the PressureServiceBase
   // to observe the pipe close.
@@ -238,8 +238,8 @@ TEST_F(PressureServiceForFrameTest, DisconnectFromBlink) {
   const auto& pressure_client =
       pressure_service->GetPressureClientForTesting(PressureSource::kCpu);
   EXPECT_FALSE(pressure_service->IsManagerReceiverBoundForTesting());
-  EXPECT_TRUE(pressure_client.IsClientRemoteBoundForTesting());
-  EXPECT_TRUE(pressure_client.IsClientReceiverBoundForTesting());
+  EXPECT_TRUE(pressure_client.is_client_remote_bound());
+  EXPECT_TRUE(pressure_client.is_client_receiver_bound());
 }
 
 TEST_F(PressureServiceForFrameTest, InsecureOrigin) {
@@ -274,13 +274,11 @@ class InterceptingFakePressureManager : public device::FakePressureManager {
       base::OnceClosure interception_callback)
       : interception_callback_(std::move(interception_callback)) {}
 
-  void AddClient(mojo::PendingRemote<device::mojom::PressureClient> client,
-                 device::mojom::PressureSource source,
+  void AddClient(device::mojom::PressureSource source,
                  const std::optional<base::UnguessableToken>& token,
                  AddClientCallback callback) override {
     std::move(interception_callback_).Run();
-    device::FakePressureManager::AddClient(std::move(client), source, token,
-                                           std::move(callback));
+    device::FakePressureManager::AddClient(source, token, std::move(callback));
   }
 
  private:
@@ -307,8 +305,8 @@ TEST_F(PressureServiceForFrameTest, DestructionOrderWithOngoingCallback) {
   pressure_manager_.set_disconnect_handler(run_loop.QuitClosure());
   FakePressureClient client;
   pressure_manager_->AddClient(
-      client.BindNewPipeAndPassRemote(), PressureSource::kCpu,
-      base::BindOnce([](device::mojom::PressureStatus) {
+      PressureSource::kCpu,
+      base::BindOnce([](device::mojom::PressureManagerAddClientResultPtr) {
         ADD_FAILURE() << "Reached AddClient callback unexpectedly";
       }));
   run_loop.Run();

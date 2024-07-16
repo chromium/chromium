@@ -8,6 +8,7 @@
 #include <array>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "content/browser/compute_pressure/pressure_client_impl.h"
@@ -41,9 +42,8 @@ class CONTENT_EXPORT PressureServiceBase
 
   virtual bool CanCallAddClient() const;
 
-  // device::mojom::PressureManager implementation.
-  void AddClient(mojo::PendingRemote<device::mojom::PressureClient> client,
-                 device::mojom::PressureSource source,
+  // blink::mojom::WebPressureManager implementation.
+  void AddClient(device::mojom::PressureSource source,
                  AddClientCallback callback) override;
 
   // Verifies if the data should be delivered according to focus status.
@@ -70,6 +70,10 @@ class CONTENT_EXPORT PressureServiceBase
  private:
   void OnPressureManagerDisconnected();
 
+  void DidAddClient(device::mojom::PressureSource source,
+                    AddClientCallback client_callback,
+                    device::mojom::PressureManagerAddClientResultPtr);
+
   // Services side.
   // Callback from |manager_receiver_| is passed to |manager_remote_| and the
   // Receiver should be destroyed first so that the callback is invalidated
@@ -84,6 +88,8 @@ class CONTENT_EXPORT PressureServiceBase
   std::array<PressureClientImpl,
              static_cast<size_t>(device::mojom::PressureSource::kMaxValue) + 1>
       source_to_client_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::WeakPtrFactory<PressureServiceBase> weak_ptr_factory_{this};
 };
 
 }  // namespace content

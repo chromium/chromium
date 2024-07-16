@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/compute_pressure/probes_manager.h"
 #include "services/device/compute_pressure/virtual_probes_manager.h"
+#include "services/device/public/mojom/pressure_manager.mojom.h"
 
 namespace device {
 
@@ -40,7 +41,6 @@ void PressureManagerImpl::Bind(
 }
 
 void PressureManagerImpl::AddClient(
-    mojo::PendingRemote<mojom::PressureClient> client,
     mojom::PressureSource source,
     const std::optional<base::UnguessableToken>& token,
     AddClientCallback callback) {
@@ -53,13 +53,26 @@ void PressureManagerImpl::AddClient(
     if (it == virtual_probes_managers_.end()) {
       // For now, treat a non-existent token just like a non-existent pressure
       // source.
-      std::move(callback).Run(mojom::PressureStatus::kNotSupported);
+      std::move(callback).Run(mojom::PressureManagerAddClientResult::NewError(
+          mojom::PressureManagerAddClientError::kNotSupported));
       return;
     }
     manager = it->second.get();
   }
 
-  std::move(callback).Run(manager->AddClient(std::move(client), source));
+  if (!manager->is_supported(source)) {
+    std::move(callback).Run(mojom::PressureManagerAddClientResult::NewError(
+        mojom::PressureManagerAddClientError::kNotSupported));
+    return;
+  }
+
+  mojo::Remote<mojom::PressureClient> pressure_client;
+  auto pending_receiver = pressure_client.BindNewPipeAndPassReceiver();
+  manager->RegisterClientRemote(std::move(pressure_client), source);
+
+  std::move(callback).Run(
+      mojom::PressureManagerAddClientResult::NewPressureClient(
+          std::move(pending_receiver)));
 }
 
 ProbesManager* PressureManagerImpl::GetProbesManagerForTesting() const {

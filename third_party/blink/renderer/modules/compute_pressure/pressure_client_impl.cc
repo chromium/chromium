@@ -85,14 +85,14 @@ void PressureClientImpl::RemoveObserver(PressureObserver* observer) {
   }
 }
 
-mojo::PendingRemote<device::mojom::blink::PressureClient>
-PressureClientImpl::BindNewPipeAndPassRemote() {
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI);
-  auto remote = receiver_.BindNewPipeAndPassRemote(std::move(task_runner));
+void PressureClientImpl::BindPressureClient(
+    mojo::PendingReceiver<device::mojom::blink::PressureClient>
+        pending_client_receiver) {
+  receiver_.Bind(
+      std::move(pending_client_receiver),
+      GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));
   receiver_.set_disconnect_handler(
       WTF::BindOnce(&PressureClientImpl::Reset, WrapWeakPersistent(this)));
-  return remote;
 }
 
 void PressureClientImpl::Reset() {

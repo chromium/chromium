@@ -29,8 +29,7 @@ class FakePressureManager : public mojom::PressureManager {
   bool is_bound() const;
 
   // mojom::PressureManager implementation.
-  void AddClient(mojo::PendingRemote<mojom::PressureClient> client,
-                 mojom::PressureSource source,
+  void AddClient(mojom::PressureSource source,
                  const std::optional<base::UnguessableToken>& token,
                  AddClientCallback callback) override;
 

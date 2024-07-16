@@ -7,13 +7,16 @@ module device.mojom;
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/device/public/mojom/pressure_update.mojom";
 
-// Result of PressureManager.AddClient().
-enum PressureStatus {
-  kOk,
-
+enum PressureManagerAddClientError {
   // The underlying platform does not report compute pressure information or
   // the renderer is not allowed access to the feature.
   kNotSupported,
+};
+
+// PressureManager.AddClient()'s return type.
+union PressureManagerAddClientResult {
+  PressureManagerAddClientError error;
+  pending_receiver<PressureClient> pressure_client;
 };
 
 struct VirtualPressureSourceMetadata {
@@ -53,9 +56,8 @@ interface PressureManager {
   //
   // |token| can be used to identify a virtual pressure source created with a
   // call to AddVirtualPressureSource().
-  AddClient(
-      pending_remote<PressureClient> client, PressureSource source,
-      mojo_base.mojom.UnguessableToken? token) => (PressureStatus result);
+  AddClient(PressureSource source, mojo_base.mojom.UnguessableToken? token) =>
+      (PressureManagerAddClientResult result);
 };
 
 // Interface that client of the PressureManager interface must

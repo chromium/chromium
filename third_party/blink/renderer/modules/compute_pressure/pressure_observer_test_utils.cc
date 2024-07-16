@@ -27,12 +27,11 @@ void FakePressureService::BindRequest(mojo::ScopedMessagePipeHandle handle) {
       &FakePressureService::OnConnectionError, WTF::Unretained(this)));
 }
 
-void FakePressureService::AddClient(
-    mojo::PendingRemote<device::mojom::blink::PressureClient> client,
-    device::mojom::blink::PressureSource source,
-    AddClientCallback callback) {
-  client_remote_.Bind(std::move(client));
-  std::move(callback).Run(device::mojom::blink::PressureStatus::kOk);
+void FakePressureService::AddClient(device::mojom::blink::PressureSource source,
+                                    AddClientCallback callback) {
+  std::move(callback).Run(
+      device::mojom::blink::PressureManagerAddClientResult::NewPressureClient(
+          client_remote_.BindNewPipeAndPassReceiver()));
 }
 
 void FakePressureService::SendUpdate(

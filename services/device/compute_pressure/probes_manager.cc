@@ -40,19 +40,25 @@ ProbesManager::ProbesManager(base::TimeDelta sampling_interval)
 
 ProbesManager::~ProbesManager() = default;
 
-mojom::PressureStatus ProbesManager::AddClient(
-    mojo::PendingRemote<mojom::PressureClient> client,
+bool ProbesManager::is_supported(mojom::PressureSource source) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  switch (source) {
+    case mojom::PressureSource::kCpu:
+      return !!cpu_probe_manager_;
+  }
+}
+
+void ProbesManager::RegisterClientRemote(
+    mojo::Remote<mojom::PressureClient> client,
     mojom::PressureSource source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   switch (source) {
     case mojom::PressureSource::kCpu: {
-      if (!cpu_probe_manager_) {
-        return mojom::PressureStatus::kNotSupported;
-      }
+      CHECK(cpu_probe_manager_);
       clients_[source].Add(std::move(client));
       cpu_probe_manager_->EnsureStarted();
-      return mojom::PressureStatus::kOk;
     }
   }
 }

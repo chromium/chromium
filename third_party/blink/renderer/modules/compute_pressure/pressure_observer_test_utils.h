@@ -27,10 +27,8 @@ class FakePressureService final : public mojom::blink::WebPressureManager {
   void SendUpdate(device::mojom::blink::PressureUpdatePtr update);
 
   // mojom::blink::WebPressureManager implementation.
-  void AddClient(
-      mojo::PendingRemote<device::mojom::blink::PressureClient> client,
-      device::mojom::blink::PressureSource source,
-      AddClientCallback callback) override;
+  void AddClient(device::mojom::blink::PressureSource source,
+                 AddClientCallback callback) override;
 
  private:
   void OnConnectionError();
