@@ -29,6 +29,7 @@ import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.PlatformServiceBridgeImpl;
 import org.chromium.android_webview.common.ValueOrErrorCallback;
 import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactory;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -91,7 +92,7 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
         mAwContents = mTestContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
 
-        mRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mAwContents.addWebMessageListener(
                                 "testListener", new String[] {"*"}, mMessageListener));

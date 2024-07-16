@@ -147,7 +147,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     }
 
     public void setSpeculativeLoadingAllowed(@SpeculativeLoadingAllowedFlags int allowed) {
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mAwContents.getSettings().setSpeculativeLoadingAllowed(allowed));
     }
 
@@ -176,7 +176,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
                       });
                     }
                 """;
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAwContents.evaluateJavaScript(channelScript, null);
                 });
@@ -201,7 +201,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         final String speculationRules = String.format(speculationRulesTemplate, url);
 
         // Start prerendering from the initial page.
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAwContents.evaluateJavaScript(speculationRules, null);
                 });
@@ -223,7 +223,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
     private void navigatePage(String url) throws Exception {
         OnPageStartedHelper onPageStartedHelper = mContentsClient.getOnPageStartedHelper();
         int currentOnPageStartedCallCount = onPageStartedHelper.getCallCount();
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     final String navigationScript = String.format("location.href = `%s`;", url);
                     mAwContents.evaluateJavaScript(navigationScript, null);
@@ -248,7 +248,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
                 mActivityTestRule.loadUrlAsync(mAwContents, activateUrl);
                 break;
             case JAVASCRIPT:
-                mActivityTestRule.runOnUiThread(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             final String activationScript =
                                     String.format("location.href = `%s`;", activateUrl);
@@ -536,7 +536,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         helper.clearUrls();
         callCount = helper.getCallCount();
         // RenderFrameHostChanged without FrameTree swap occurs here.
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAwContents.evaluateJavaScript("history.back();", null);
                 });

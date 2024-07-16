@@ -31,6 +31,7 @@ import org.chromium.android_webview.test.OnlyRunIn;
 import org.chromium.android_webview.test.util.EmbeddedComponentLoaderFactory;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.component_updater.EmbeddedComponentLoader;
 
@@ -124,7 +125,7 @@ public class EmbeddedComponentLoaderTest extends AwParameterizedTest {
                 TEST_COMPONENT_ID,
                 new String[] {file.getAbsolutePath(), manifestFile.getAbsolutePath()});
 
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     EmbeddedComponentLoader mLoader =
                             EmbeddedComponentLoaderFactory.makeEmbeddedComponentLoader();

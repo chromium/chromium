@@ -458,7 +458,7 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
     public void testMetadata_appPackageName() throws Throwable {
         final String appPackageName = ContextUtils.getApplicationContext().getPackageName();
 
-        mRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AwBrowserProcess.setWebViewPackageName(appPackageName);
                     AndroidMetricsServiceClient.setInstallerPackageTypeForTesting(

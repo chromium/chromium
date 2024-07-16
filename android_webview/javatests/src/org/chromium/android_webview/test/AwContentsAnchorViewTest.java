@@ -19,6 +19,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwViewAndroidDelegate;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Feature;
 import org.chromium.ui.display.DisplayAndroid;
 
@@ -37,7 +38,7 @@ public class AwContentsAnchorViewTest extends AwParameterizedTest {
 
     @Before
     public void setUp() {
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mContainerView = new FrameLayout(mActivityTestRule.getActivity());
                     mViewDelegate = new AwViewAndroidDelegate(mContainerView, null, null);
@@ -48,7 +49,7 @@ public class AwContentsAnchorViewTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     public void testAddAndRemoveAnchorViews() throws Throwable {
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Add 2 anchor views
                     View anchorView1 = addAnchorView();
@@ -69,7 +70,7 @@ public class AwContentsAnchorViewTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     public void testAddAndMoveAnchorView() throws Throwable {
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Add anchorView and set layout params
                     View anchorView = addAnchorView();
@@ -89,7 +90,7 @@ public class AwContentsAnchorViewTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     public void testMovedAndRemovedAnchorViewIsNotTransferred() throws Throwable {
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Add, move and remove anchorView
                     View anchorView = addAnchorView();
@@ -109,7 +110,7 @@ public class AwContentsAnchorViewTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     public void testTransferAnchorView() throws Throwable {
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
 
                     // Add anchor view
@@ -127,7 +128,7 @@ public class AwContentsAnchorViewTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     public void testTransferMovedAnchorView() throws Throwable {
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
 
                     // Add anchor view and move it
@@ -146,7 +147,7 @@ public class AwContentsAnchorViewTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     public void testRemoveTransferedAnchorView() throws Throwable {
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
 
                     // Add anchor view
@@ -167,7 +168,7 @@ public class AwContentsAnchorViewTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     public void testMoveTransferedAnchorView() throws Throwable {
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
 
                     // Add anchor view
@@ -189,7 +190,7 @@ public class AwContentsAnchorViewTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     public void testTransferMultipleMovedAnchorViews() throws Throwable {
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
 
                     // Add and move anchorView1

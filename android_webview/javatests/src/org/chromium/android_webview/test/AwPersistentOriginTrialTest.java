@@ -18,6 +18,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.TestAwContentsClient.ShouldInterceptRequestHelper;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
@@ -61,8 +62,8 @@ public class AwPersistentOriginTrialTest extends AwParameterizedTest {
      */
     private static final String PERSISTENT_TRIAL_TOKEN =
             "AzZfd1vKZ0SSGRGk/8nIszQSlHYjbuYVE3jwaNZG3X4t11zRhzPWWJwTZ+JJDS3JJsyEZcpz+y20pAP6/6upOQ"
-                    + "4AAABdeyJvcmlnaW4iOiAiaHR0cHM6Ly9leGFtcGxlLmNvbTo0NDMiLCAiZmVhdHVyZSI6ICJGcm9idWxhdG"
-                    + "VQZXJzaXN0ZW50IiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9";
+                + "4AAABdeyJvcmlnaW4iOiAiaHR0cHM6Ly9leGFtcGxlLmNvbTo0NDMiLCAiZmVhdHVyZSI6ICJGcm9idWxhdG"
+                + "VQZXJzaXN0ZW50IiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9";
     private ShouldInterceptRequestHelper mInterceptRequestHelper;
 
     public AwPersistentOriginTrialTest(AwSettingsMutation param) {
@@ -82,7 +83,7 @@ public class AwPersistentOriginTrialTest extends AwParameterizedTest {
     @After
     public void tearDown() throws Exception {
         // Clean up the stored tokens after tests
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AwBrowserContext context = mActivityTestRule.getAwBrowserContext();
                     context.clearPersistentOriginTrialStorageForTesting();

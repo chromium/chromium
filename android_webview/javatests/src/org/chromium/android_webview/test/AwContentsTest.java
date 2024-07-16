@@ -114,7 +114,7 @@ public class AwContentsTest extends AwParameterizedTest {
     public void testCreateDestroy() throws Throwable {
         mActivityTestRule.startBrowserProcess();
         // NOTE this test runs on UI thread, so we cannot call any async methods.
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mActivityTestRule
                                 .createAwTestContainerView(mContentsClient)
@@ -185,7 +185,7 @@ public class AwContentsTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     public void testWebViewApisFailGracefullyAfterDestruction() throws Throwable {
         mActivityTestRule.startBrowserProcess();
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AwContents awContents =
                             mActivityTestRule
@@ -259,7 +259,7 @@ public class AwContentsTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     public void testGoBackGoForwardWithoutSessionHistory() throws Throwable {
         mActivityTestRule.startBrowserProcess();
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AwContents awContents =
                             mActivityTestRule
@@ -280,7 +280,7 @@ public class AwContentsTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     public void testBackgroundColorInDarkMode() throws Throwable {
         mActivityTestRule.startBrowserProcess();
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AwContents awContents =
                             mActivityTestRule
@@ -741,7 +741,7 @@ public class AwContentsTest extends AwParameterizedTest {
             final @RendererPriority int priority,
             final boolean waivedWhenNotVisible)
             throws Throwable {
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> awContents.setRendererPriorityPolicy(priority, waivedWhenNotVisible));
     }
 
@@ -845,14 +845,14 @@ public class AwContentsTest extends AwParameterizedTest {
                         .getAwContents();
         Assert.assertEquals(RendererPriority.HIGH, getRendererPriorityOnUiThread(awContents));
 
-        mActivityTestRule.runOnUiThread(() -> awContents.onPause());
+        ThreadUtils.runOnUiThreadBlocking(() -> awContents.onPause());
         Assert.assertEquals(RendererPriority.HIGH, getRendererPriorityOnUiThread(awContents));
 
         setRendererPriorityOnUiThread(
                 awContents, RendererPriority.HIGH, /* waivedWhenNotVisible= */ true);
         Assert.assertEquals(RendererPriority.WAIVED, getRendererPriorityOnUiThread(awContents));
 
-        mActivityTestRule.runOnUiThread(() -> awContents.onResume());
+        ThreadUtils.runOnUiThreadBlocking(() -> awContents.onResume());
         Assert.assertEquals(RendererPriority.HIGH, getRendererPriorityOnUiThread(awContents));
     }
 
@@ -862,7 +862,7 @@ public class AwContentsTest extends AwParameterizedTest {
     @OnlyRunIn(MULTI_PROCESS)
     public void testPauseDestroyResume() throws Throwable {
         mActivityTestRule.startBrowserProcess();
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AwContents awContents;
                     awContents =
@@ -938,7 +938,7 @@ public class AwContentsTest extends AwParameterizedTest {
         AwTestContainerView testView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         final AwContents awContents = testView.getAwContents();
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Run javascript navigation immediately, without waiting for the completion of
                     // data URL.
@@ -1004,7 +1004,7 @@ public class AwContentsTest extends AwParameterizedTest {
                 mContentsClient.getOnPageFinishedHelper(),
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // We specifically call AwContents.evaluateJavaScript() rather than the
                     // AwActivityTestRule helper methods to make sure we're using the same code path
@@ -1019,7 +1019,7 @@ public class AwContentsTest extends AwParameterizedTest {
 
         // Verify the callback actually contains the execution result.
         final SettableFuture<String> jsResult = SettableFuture.create();
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // We specifically call AwContents.evaluateJavaScript() rather than the
                     // AwActivityTestRule helper methods to make sure we're using the same code path
@@ -1052,15 +1052,14 @@ public class AwContentsTest extends AwParameterizedTest {
         AwTestContainerView testView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         final AwContents awContents = testView.getAwContents();
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // "about:safe-browsing" will be rewritten by
                     // components.url_formatter.UrlFormatter.fixupUrl into
                     // "chrome://safe-browsing/".
                     //
                     // Note that chrome://safe-browsing/ is one of very few chrome://... URLs that
-                    // work
-                    // in Android WebView.  In particular, chrome://version/ wouldn't work.
+                    // work in Android WebView.  In particular, chrome://version/ wouldn't work.
                     awContents.loadUrl("about:safe-browsing");
                 });
 

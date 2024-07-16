@@ -106,7 +106,7 @@ public class MultiProfileTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testCannotDeleteDefault() {
-        mRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertThrows(
                             IllegalArgumentException.class,
@@ -121,7 +121,7 @@ public class MultiProfileTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     public void testCannotDeleteProfileInUse() {
         mRule.getProfileSync("myProfile", true);
-        mRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertThrows(
                             IllegalStateException.class,
@@ -135,7 +135,7 @@ public class MultiProfileTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testCanDeleteNonExistent() {
-        mRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertFalse(AwBrowserContextStore.deleteNamedContext("DoesNotExist"));
                 });
@@ -206,7 +206,7 @@ public class MultiProfileTest extends AwParameterizedTest {
     public void testSetBrowserContextOnDestroyedWebViewThrowsException() {
         mRule.startBrowserProcess();
         final AwBrowserContext otherProfile = mRule.getProfileSync("other-profile", true);
-        mRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AwContents awContents =
                             mRule.createAwTestContainerView(mContentsClient).getAwContents();
@@ -227,7 +227,7 @@ public class MultiProfileTest extends AwParameterizedTest {
     public void testSetBrowserContextAfterGetBrowserContextThrowsException() {
         mRule.startBrowserProcess();
         final AwBrowserContext otherProfile = mRule.getProfileSync("other-profile", true);
-        mRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AwContents awContents =
                             mRule.createAwTestContainerView(mContentsClient).getAwContents();
@@ -250,7 +250,7 @@ public class MultiProfileTest extends AwParameterizedTest {
         mRule.startBrowserProcess();
         final AwBrowserContext myCoolProfile = mRule.getProfileSync("my-profile", true);
         final AwBrowserContext myOtherCoolProfile = mRule.getProfileSync("my-other-profile", true);
-        mRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AwContents awContents =
                             mRule.createAwTestContainerView(mContentsClient).getAwContents();
@@ -278,10 +278,11 @@ public class MultiProfileTest extends AwParameterizedTest {
                     return null;
                 });
         final AwBrowserContext myCoolProfile = mRule.getProfileSync("my-profile", true);
-        mRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         Assert.assertThrows(
-                                "Cannot set new profile after call to WebView#evaluateJavascript",
+                                "Cannot set new profile after call to"
+                                        + " WebView#evaluateJavascript",
                                 IllegalStateException.class,
                                 () -> awContents.setBrowserContext(myCoolProfile)));
     }
@@ -297,7 +298,7 @@ public class MultiProfileTest extends AwParameterizedTest {
         TestWebServer webServer = TestWebServer.start();
         String url = webServer.setResponse("/URL.html", "", null);
         mRule.loadUrlSync(awContents, mContentsClient.getOnPageFinishedHelper(), url);
-        mRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertThrows(
                             "Cannot set new profile on a WebView that has been previously"
@@ -332,7 +333,7 @@ public class MultiProfileTest extends AwParameterizedTest {
     public void testGetBrowserContextThrowsExceptionIfWebViewDestroyed() {
         mRule.startBrowserProcess();
         final AwBrowserContext myProfile = mRule.getProfileSync("my-profile", true);
-        mRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     final AwContents awContents = mRule.createAwContents(myProfile);
                     awContents.destroy();
@@ -494,7 +495,7 @@ public class MultiProfileTest extends AwParameterizedTest {
                 };
 
         // Setup a message listener and a startup script to post on to the listener.
-        mRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     webView.addWebMessageListener(listenerName, injectDomains, injectedListener);
                     webView.addDocumentStartJavaScript(startupScript, injectDomains);
