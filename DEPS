@@ -1512,7 +1512,7 @@ deps = {
       'packages': [
           {
                'package': 'chromium/third_party/android_build_tools/manifest_merger',
-               'version': 'EL_n6z6EIpxqT6t1ZhG8Zx4IgmdTyl_KlPazwMqe0SsC',
+               'version': 'GGTpgNcW7W4dG6PH1FlPe3ej4jP6pPRyfFs_0rHBfqkC',
           },
       ],
       'condition': 'checkout_android',
