@@ -53,14 +53,18 @@
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_list.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
+#include "net/quic/address_utils.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/quic/mock_crypto_client_stream_factory.h"
 #include "net/quic/mock_quic_context.h"
 #include "net/quic/mock_quic_data.h"
+#include "net/quic/quic_chromium_connection_helper.h"
 #include "net/quic/quic_http_stream.h"
+#include "net/quic/quic_server_info.h"
 #include "net/quic/quic_session_pool.h"
 #include "net/quic/quic_session_pool_peer.h"
 #include "net/quic/quic_test_packet_maker.h"
+#include "net/quic/test_quic_crypto_client_config_handle.h"
 #include "net/socket/socket_test_util.h"
 #include "net/spdy/spdy_session_key.h"
 #include "net/spdy/spdy_test_util_common.h"
@@ -69,6 +73,9 @@
 #include "net/test/test_with_task_environment.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/mock_connection_id_generator.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/static_http_user_agent_settings.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -104,6 +111,21 @@ class FailingProxyResolverFactory : public ProxyResolverFactory {
                           CompletionOnceCallback callback,
                           std::unique_ptr<Request>* request) override {
     return ERR_PAC_SCRIPT_FAILED;
+  }
+};
+
+// A subclass of QuicChromiumClientSession that "goes away" right after
+// CreateHandle was called.
+class MockQuicChromiumClientSession : public QuicChromiumClientSession {
+ public:
+  using QuicChromiumClientSession::QuicChromiumClientSession;
+
+  std::unique_ptr<QuicChromiumClientSession::Handle> CreateHandle(
+      url::SchemeHostPort destination) override {
+    auto res = QuicChromiumClientSession::CreateHandle(destination);
+    // Make the session go away right after it was created.
+    SetGoingAwayForTesting(true);
+    return res;
   }
 };
 
@@ -633,6 +655,76 @@ class JobControllerReconsiderProxyAfterErrorTest
     factory_ = session_->http_stream_factory();
   }
 
+  void CreateMockQUICProxySession(url::SchemeHostPort server) {
+    const IPEndPoint kIpEndPoint = IPEndPoint(IPAddress::IPv4AllZeros(), 0);
+    quic::test::MockRandom random{0};
+    quic::MockClock clock;
+    QuicChromiumConnectionHelper helper(&clock, &random);
+    quic::test::MockAlarmFactory alarm_factory;
+    quic::test::MockConnectionIdGenerator connection_id_generator;
+    TransportSecurityState transport_security_state;
+    SSLConfigServiceDefaults ssl_config_service;
+    quic::QuicCryptoClientConfig crypto_config(
+        quic::test::crypto_test_utils::ProofVerifierForTesting());
+    quic::QuicConfig quic_config(quic::test::DefaultQuicConfig());
+
+    std::unique_ptr<DatagramClientSocket> socket =
+        session_deps_.socket_factory->CreateDatagramClientSocket(
+            DatagramSocket::DEFAULT_BIND, NetLog::Get(), NetLogSource());
+    socket->Connect(kIpEndPoint);
+    quic::test::MockQuicConnection* connection =
+        new quic::test::MockQuicConnection(&helper, &alarm_factory,
+                                           quic::Perspective::IS_CLIENT);
+    EXPECT_CALL(*connection,
+                CloseConnection(quic::QUIC_PEER_GOING_AWAY, "session torn down",
+                                quic::ConnectionCloseBehavior::SILENT_CLOSE))
+        .Times(1);
+
+    QuicSessionKey session_key(
+        server.host(), server.port(), PRIVACY_MODE_DISABLED,
+        ProxyChain::ForIpProtection({}, 0), SessionUsage::kProxy, SocketTag(),
+        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+        /*require_dns_https_alpn=*/false);
+    mock_proxy_sessions_.emplace_back(
+        std::make_unique<MockQuicChromiumClientSession>(
+            connection, std::move(socket), session_->quic_session_pool(),
+            &crypto_client_stream_factory_, &clock, &transport_security_state,
+            &ssl_config_service,
+            base::WrapUnique(static_cast<QuicServerInfo*>(nullptr)),
+            session_key,
+            /*require_confirmation=*/false,
+            /*migrate_session_early_v2=*/false,
+            /*migrate_session_on_network_change_v2=*/false,
+            kDefaultNetworkForTests,
+            quic::QuicTime::Delta::FromMilliseconds(
+                kDefaultRetransmittableOnWireTimeout.InMilliseconds()),
+            /*migrate_idle_session=*/false, /*allow_port_migration_=*/false,
+            kDefaultIdleSessionMigrationPeriod,
+            /*multi_port_probing_interval=*/0, kMaxTimeOnNonDefaultNetwork,
+            kMaxMigrationsToNonDefaultNetworkOnWriteError,
+            kMaxMigrationsToNonDefaultNetworkOnPathDegrading,
+            kQuicYieldAfterPacketsRead,
+            quic::QuicTime::Delta::FromMilliseconds(
+                kQuicYieldAfterDurationMilliseconds),
+            /*cert_verify_flags=*/0, quic_config,
+            std::make_unique<TestQuicCryptoClientConfigHandle>(&crypto_config),
+            "CONNECTION_UNKNOWN", base::TimeTicks::Now(),
+            base::TimeTicks::Now(), base::DefaultTickClock::GetInstance(),
+            base::SingleThreadTaskRunner::GetCurrentDefault().get(),
+            /*socket_performance_watcher=*/nullptr,
+            ConnectionEndpointMetadata(),
+            /*report_ecn=*/true,
+            NetLogWithSource::Make(NetLogSourceType::NONE)));
+
+    quic::test::NoopQpackStreamSenderDelegate
+        noop_qpack_stream_sender_delegate_;
+    mock_proxy_sessions_.back()->Initialize();
+    mock_proxy_sessions_.back()
+        ->qpack_decoder()
+        ->set_qpack_stream_sender_delegate(&noop_qpack_stream_sender_delegate_);
+    mock_proxy_sessions_.back()->StartReading();
+  }
+
   std::unique_ptr<HttpStreamRequest> CreateJobController(
       const HttpRequestInfo& request_info) {
     auto job_controller = std::make_unique<HttpStreamFactory::JobController>(
@@ -648,6 +740,10 @@ class JobControllerReconsiderProxyAfterErrorTest
         &request_delegate_, nullptr, net_log_with_source_,
         HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
   }
+
+ protected:
+  std::vector<std::unique_ptr<MockQuicChromiumClientSession>>
+      mock_proxy_sessions_;
 
  private:
   // Use real Jobs so that Job::Resume() is not mocked out. When main job is
@@ -1861,9 +1957,9 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest, ReconsiderErrMsgTooBig) {
 // Test proxy fallback logic in the case connecting through a Quic proxy.
 TEST_F(JobControllerReconsiderProxyAfterErrorTest,
        ReconsiderProxyAfterErrorQuicProxy) {
-  // TODO(crbug.com/336318587): Add the phase to cover proxy stream.
   enum class ErrorPhase {
     kHostResolution,
+    kProxySession,
     kUdpConnect,
   };
 
@@ -1881,6 +1977,10 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
     // bool triggers_ssl_connect_job_retry_logic = false;
   } kRetriableErrors[] = {
       {ErrorPhase::kHostResolution, ERR_NAME_NOT_RESOLVED},
+      // Test that proxy session gets activated but then failed before
+      // requesting the stream. The error is determined by
+      // QuicChromiumClientSession::Handle::RequestStream.
+      {ErrorPhase::kProxySession, ERR_CONNECTION_CLOSED},
       {ErrorPhase::kUdpConnect, ERR_ADDRESS_UNREACHABLE},
       {ErrorPhase::kUdpConnect, ERR_CONNECTION_TIMED_OUT},
       {ErrorPhase::kUdpConnect, ERR_CONNECTION_RESET},
@@ -1893,6 +1993,8 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
   // To use Quic proxy the destination must be HTTPS.
   GURL dest_url("https://www.example.com");
 
+  url::SchemeHostPort proxy_server(url::kHttpsScheme, "badproxy", 99);
+  url::SchemeHostPort proxy_server2(url::kHttpsScheme, "badfallbackproxy", 98);
   for (const auto& mock_error : kRetriableErrors) {
     SCOPED_TRACE(ErrorToString(mock_error.error));
 
@@ -1900,10 +2002,12 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
 
     auto quic_proxy_chain =
         ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
-            ProxyServer::SCHEME_QUIC, "badproxy", 99)});
+            ProxyServer::SCHEME_QUIC, proxy_server.host(),
+            proxy_server.port())});
     auto quic_proxy_chain2 =
         ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
-            ProxyServer::SCHEME_QUIC, "badfallbackproxy", 98)});
+            ProxyServer::SCHEME_QUIC, proxy_server2.host(),
+            proxy_server2.port())});
     std::unique_ptr<ConfiguredProxyResolutionService> proxy_resolution_service =
         ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
             {quic_proxy_chain, quic_proxy_chain2, ProxyChain::Direct()},
@@ -1927,6 +2031,14 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
         session_deps_.host_resolver->rules()->AddSimulatedFailure("badproxy");
         session_deps_.host_resolver->rules()->AddSimulatedFailure(
             "badfallbackproxy");
+        break;
+      case ErrorPhase::kProxySession:
+        quic_proxy_socket_main_job =
+            std::make_unique<StaticSocketDataProvider>();
+        quic_proxy_socket_main_job->set_connect_data(MockConnect(ASYNC, OK));
+        quic_proxy_socket_main_job2 =
+            std::make_unique<StaticSocketDataProvider>();
+        quic_proxy_socket_main_job2->set_connect_data(MockConnect(ASYNC, OK));
         break;
       case ErrorPhase::kUdpConnect:
         quic_proxy_socket_main_job =
@@ -1971,10 +2083,18 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
     HttpRequestInfo request_info;
     request_info.method = "GET";
     request_info.url = dest_url;
-
     Initialize(std::move(proxy_resolution_service),
                std::move(test_proxy_delegate),
                /*using_quic=*/true);
+    if (mock_error.phase == ErrorPhase::kProxySession) {
+      CreateMockQUICProxySession(proxy_server);
+      CreateMockQUICProxySession(proxy_server2);
+      ASSERT_EQ(mock_proxy_sessions_.size(), 2u);
+      session_->quic_session_pool()->ActivateSessionForTesting(
+          proxy_server, mock_proxy_sessions_[0].get());
+      session_->quic_session_pool()->ActivateSessionForTesting(
+          proxy_server2, mock_proxy_sessions_[1].get());
+    }
 
     // Start two requests. The first request should consume data from
     // |socket_data_proxy_main_job| and |socket_data_direct_first_request|.
@@ -2006,8 +2126,15 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
       // Quic connection does not create socket. So only check the sessions,
       // and close them. So that the next loop iteration won't reuse them.
       QuicSessionPool* quic_session_pool = session_->quic_session_pool();
+      // Mock session is owned by the test case. So after test is done,
+      // remove them from the session pool to avoid dangling pointer.
+      while (!mock_proxy_sessions_.empty()) {
+        quic_session_pool->DeactivateSessionForTesting(
+            mock_proxy_sessions_.back().get());
+        mock_proxy_sessions_.pop_back();
+      }
       EXPECT_EQ(1, quic_session_pool->CountActiveSessions());
-      quic_session_pool->CloseAllSessions(OK, quic::QUIC_PEER_GOING_AWAY);
+      quic_session_pool->CloseAllSessions(OK, quic::QUIC_NO_ERROR);
     }
     EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
   }

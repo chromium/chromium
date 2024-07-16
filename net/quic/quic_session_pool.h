@@ -498,6 +498,12 @@ class NET_EXPORT_PRIVATE QuicSessionPool
 
   int CountActiveSessions() { return active_sessions_.size(); }
 
+  // Inject a QUIC session for testing various edge cases.
+  void ActivateSessionForTesting(const url::SchemeHostPort& destination,
+                                 QuicChromiumClientSession* session);
+
+  void DeactivateSessionForTesting(QuicChromiumClientSession* session);
+
   // Returns the QUIC version that would be used with an endpoint associated
   // with `metadata`, or `quic::ParsedQuicVersion::Unsupported()` if the
   // endpoint cannot be used with QUIC.

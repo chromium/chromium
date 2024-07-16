@@ -1141,6 +1141,20 @@ const std::set<std::string>& QuicSessionPool::GetDnsAliasesForSessionKey(
   return it->second;
 }
 
+void QuicSessionPool::ActivateSessionForTesting(
+    const url::SchemeHostPort& destination,
+    QuicChromiumClientSession* session) {
+  all_sessions_.emplace(session, QuicSessionPool::QuicSessionAliasKey(
+                                     destination, session->quic_session_key()));
+  ActivateSession(all_sessions_[session], session, std::set<std::string>());
+}
+
+void QuicSessionPool::DeactivateSessionForTesting(
+    QuicChromiumClientSession* session) {
+  OnSessionGoingAway(session);
+  all_sessions_.erase(session);
+}
+
 quic::ParsedQuicVersion QuicSessionPool::SelectQuicVersion(
     const quic::ParsedQuicVersion& known_quic_version,
     const ConnectionEndpointMetadata& metadata,

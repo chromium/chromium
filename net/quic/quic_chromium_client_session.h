@@ -803,8 +803,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // Returns true if the stream factory disables gQUIC 0-RTT.
   bool gquic_zero_rtt_disabled() const;
 
-  // Returns a Handle to this session.
-  std::unique_ptr<QuicChromiumClientSession::Handle> CreateHandle(
+  // Returns a Handle to this session. Virtual for testing.
+  virtual std::unique_ptr<QuicChromiumClientSession::Handle> CreateHandle(
       url::SchemeHostPort destination);
 
   // Returns the number of client hello messages that have been sent on the
@@ -922,6 +922,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // order.
   const std::set<std::string>& GetDnsAliasesForSessionKey(
       const QuicSessionKey& key) const;
+
+  void SetGoingAwayForTesting(bool going_away) { going_away_ = going_away; }
 
  protected:
   // quic::QuicSession methods:

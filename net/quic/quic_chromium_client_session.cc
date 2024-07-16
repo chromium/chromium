@@ -495,7 +495,6 @@ int QuicChromiumClientSession::Handle::RequestStream(
     const NetworkTrafficAnnotationTag& traffic_annotation) {
   DCHECK(!stream_request_);
 
-  // TODO(crbug.com/41491379): Add a regression test.
   if (!session_ || session_->going_away_) {
     return ERR_CONNECTION_CLOSED;
   }
