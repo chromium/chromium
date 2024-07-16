@@ -8,6 +8,8 @@ static_library("sync_bookmarks") {
   sources = [
     "bookmark_local_changes_builder.cc",
     "bookmark_local_changes_builder.h",
+    "bookmark_local_data_batch_uploader.cc",
+    "bookmark_local_data_batch_uploader.h",
     "bookmark_model_merger.cc",
     "bookmark_model_merger.h",
     "bookmark_model_observer_impl.cc",
@@ -53,6 +55,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "bookmark_local_data_batch_uploader_unittest.cc",
     "bookmark_model_merger_unittest.cc",
     "bookmark_model_observer_impl_unittest.cc",
     "bookmark_model_type_processor_unittest.cc",
