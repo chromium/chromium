@@ -17,28 +17,26 @@
     }
 
     #scroll-marker-group {
-        width: 24px;
         height: 40px;
-        border: 4px solid black;
+        border: 3px solid black;
         padding: 5px;
     }
 
-    #scroll-marker-group>span {
+    #scroll-marker-group > div {
         width: 10px;
         height: 10px;
         background-color: blue;
         border-radius: 100%;
-        display: inline-block;
     }
 
-    #scroll-marker-group>#first {
+    #scroll-marker-group > #first {
         background-color: purple;
     }
 </style>
 <div>TEST BLOCK BEFORE</div>
 <div id="scroll-marker-group">
-    <span id="first"></span>
-    <span></span>
+    <div id="first"></div>
+    <div></div>
 </div>
 <div id="scroller">
     <div></div>
