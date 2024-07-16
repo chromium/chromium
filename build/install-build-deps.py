@@ -250,7 +250,7 @@ def dev_list():
       "p7zip",
       "patch",
       "perl",
-      "pkg-config",
+      "pkgconf",
       "rpm",
       "ruby",
       "subversion",
