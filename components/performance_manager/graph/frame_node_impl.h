@@ -268,9 +268,9 @@ class FrameNodeImpl
   const content::BrowsingInstanceId browsing_instance_id_;
 
   // The unique ID of the SiteInstanceGroup this frame belongs to. Frames in the
-  // same SiteInstanceGroup may synchronously script each other. Frames with the
-  // same |site_instance_group_id_| will also have the same
-  // |browsing_instance_id_|.
+  // same SiteInstanceGroup are in the same process and exist as LocalFrames in
+  // the same blink::FrameTree. Frames with the same |site_instance_group_id_|
+  // will also have the same |browsing_instance_id_|.
   const content::SiteInstanceGroupId site_instance_group_id_;
 
   // A proxy object that lets the underlying RFH be safely dereferenced on the
