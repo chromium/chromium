@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/ranges/algorithm.h"
@@ -583,7 +584,8 @@ class WebBundleParser::MetadataParser
     base::flat_map<GURL, mojom::BundleResponseLocationPtr> requests;
 
     auto responses_section = section_offsets_.find(kResponsesSection);
-    DCHECK(responses_section != section_offsets_.end());
+    CHECK(responses_section != section_offsets_.end(),
+          base::NotFatalUntil::M130);
     const uint64_t responses_section_offset = responses_section->second.first;
     const uint64_t responses_section_length = responses_section->second.second;
 
