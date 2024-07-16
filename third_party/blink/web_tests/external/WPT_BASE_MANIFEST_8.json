@@ -24825,7 +24825,7 @@
     ]
    },
    "contenteditable": {
-    "synthetic-height.tentative.html": [
+    "synthetic-height.html": [
      "4d466bff412e6de924b9886ef808b49f7ff2b44d",
      [
       null,
@@ -285888,7 +285888,7 @@
       {}
      ]
     ],
-    "line-height-in-list-item.tentative.html": [
+    "line-height-in-list-item.html": [
      "be655e51fc8f84d2d34930414de5428412f98b5b",
      [
       null,
@@ -299575,7 +299575,7 @@
       "877e192bbff2204ddf56f83e411f17bfb6adab89",
       []
      ],
-     "eval-typecheck-callout-order.tentative.html.headers": [
+     "eval-typecheck-callout-order.html.headers": [
       "85de8bd415def35ca45c0abf74590cdfa393d0f4",
       []
      ],
@@ -299915,7 +299915,7 @@
      }
     },
     "nonce-hiding": {
-     "dangling-html-or-body.tentative.html.headers": [
+     "dangling-html-or-body.html.headers": [
       "67d4c81e589d487b25bdb73a89f8ba1c49a0c431",
       []
      ],
@@ -397126,11 +397126,11 @@
      "7a476805135df44ff141d3f59ac9c59e2966b3e8",
      []
     ],
-    "requestStorageAccess-cross-origin-iframe-navigation-relax.tentative.sub.https.window-expected.txt": [
+    "requestStorageAccess-cross-origin-iframe-navigation-relax.sub.https.window-expected.txt": [
      "9f5d28f52b1dc8093d2b41494d180afb9e6777a6",
      []
     ],
-    "requestStorageAccess-dedicated-worker.tentative.sub.https.window-expected.txt": [
+    "requestStorageAccess-dedicated-worker.sub.https.window-expected.txt": [
      "01c641c521b98b97b9027ca8b9e7a4cdca3e11bd",
      []
     ],
@@ -399211,24 +399211,22 @@
    },
    "top-level-storage-access-api": {
     "README.md": [
-     "e3636a221ecd07caaea91a68e677f4bd5f0bc1ee",
+     "e0e385f6e7581eb32b2e77a648b8a6cdb213b635",
      []
     ],
-    "tentative": {
-     "resources": {
-      "permissions-iframe.https.html": [
-       "c9907203322112ffb01a50b09541e891250c4f5e",
-       []
-      ],
-      "requestStorageAccessFor-iframe.html": [
-       "050196dfdb9e66d2309a8f2286cb0a67eb34121b",
-       []
-      ],
-      "requestStorageAccessFor-iframe.https.html": [
-       "14da63b033cbe3418af599939d3cf407485ccf8c",
-       []
-      ]
-     }
+    "resources": {
+     "permissions-iframe.https.html": [
+      "c9907203322112ffb01a50b09541e891250c4f5e",
+      []
+     ],
+     "requestStorageAccessFor-iframe.html": [
+      "050196dfdb9e66d2309a8f2286cb0a67eb34121b",
+      []
+     ],
+     "requestStorageAccessFor-iframe.https.html": [
+      "14da63b033cbe3418af599939d3cf407485ccf8c",
+      []
+     ]
     }
    },
    "touch-events": {
@@ -399336,6 +399334,12 @@
      "c6412f8d472fcfd6022b0ae485f52b3d3dedd820",
      []
     ],
+    "resources": {
+     "block-text-node-insertion.js": [
+      "1b924aaf7f33f5d68d07a0490eef855cf7523634",
+      []
+     ]
+    },
     "support": {
      "HTMLScriptElement-internal-slot-support.html": [
       "b9a0ceefae22a7becb4552e0aadc7e9bfc24cd24",
@@ -399428,6 +399432,10 @@
     ],
     "trusted-types-reporting.html.headers": [
      "31c8e4131701cfa1cc794cea6b45d4c4915897fd",
+     []
+    ],
+    "trusted-types-svg-script-set-href-expected.txt": [
+     "dfcfea13184878bc9c144aaf076cae306f832bd9",
      []
     ]
    },
@@ -440890,7 +440898,7 @@
        {}
       ]
      ],
-     "eval-typecheck-callout-order.tentative.html": [
+     "eval-typecheck-callout-order.html": [
       "0be7cf29a284d5f2471c7ada0b5cd643b6f0fb6a",
       [
        null,
@@ -441778,7 +441786,7 @@
      ]
     },
     "nonce-hiding": {
-     "dangling-html-or-body.tentative.html": [
+     "dangling-html-or-body.html": [
       "4ba65e05b885cbc780fab7f1650689016f257ac2",
       [
        null,
@@ -445055,10 +445063,10 @@
       }
      ]
     ],
-    "idlharness.tentative.https.any.js": [
+    "idlharness.https.any.js": [
      "6312f3c4ba3a1525df8955a5a7b7ddab4485a90a",
      [
-      "cookie-store/idlharness.tentative.https.any.html",
+      "cookie-store/idlharness.https.any.html",
       {
        "script_metadata": [
         [
@@ -445086,7 +445094,7 @@
       }
      ],
      [
-      "cookie-store/idlharness.tentative.https.any.serviceworker.html",
+      "cookie-store/idlharness.https.any.serviceworker.html",
       {
        "script_metadata": [
         [
@@ -445114,7 +445122,7 @@
       }
      ],
      [
-      "cookie-store/idlharness.tentative.https.any.sharedworker.html",
+      "cookie-store/idlharness.https.any.sharedworker.html",
       {
        "script_metadata": [
         [
@@ -445142,7 +445150,7 @@
       }
      ],
      [
-      "cookie-store/idlharness.tentative.https.any.worker.html",
+      "cookie-store/idlharness.https.any.worker.html",
       {
        "script_metadata": [
         [
@@ -512283,8 +512291,17 @@
      ]
     ],
     "fedcm-button-and-other-account": {
+     "fedcm-button-mode-auto-selected-flag.tentative.https.html": [
+      "786c63ca5e4ece5c4ea77ca4b60234741baf5c1a",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "fedcm-button-mode-basics.tentative.https.html": [
-      "a71e26213524928d01f552f6dcf522247636619d",
+      "918f72432107e6dcb1b8825bc48501e434252323",
       [
        null,
        {
@@ -604470,7 +604487,7 @@
       {}
      ]
     ],
-    "explicit-root-different-document.tentative.html": [
+    "explicit-root-different-document.html": [
      "15c5e620d5beaadfaa0600049a9492be367d12b8",
      [
       null,
@@ -604614,7 +604631,7 @@
       {}
      ]
     ],
-    "not-in-containing-block-chain.tentative.html": [
+    "not-in-containing-block-chain.html": [
      "4490d0b631ec2e9e95f8d63e1b51df28180d7e99",
      [
       null,
@@ -607426,49 +607443,49 @@
       ]
      ]
     },
-    "preloader-css-import-no-quote.tentative.html": [
+    "preloader-css-import-no-quote.html": [
      "6b982ea2ce22595aa427e65f9ae204baf3ef9fc6",
      [
       null,
       {}
      ]
     ],
-    "preloader-css-import-no-semicolon.tentative.html": [
+    "preloader-css-import-no-semicolon.html": [
      "ab81c82192a4c2d028d8a24476b312978b7be323",
      [
       null,
       {}
      ]
     ],
-    "preloader-css-import-no-space.tentative.html": [
+    "preloader-css-import-no-space.html": [
      "9e83bebe573e572e86b71022fe635a340a66afcf",
      [
       null,
       {}
      ]
     ],
-    "preloader-css-import-single-quote.tentative.html": [
+    "preloader-css-import-single-quote.html": [
      "83c6415765eb16647dcd1aee3ab9c5020d132098",
      [
       null,
       {}
      ]
     ],
-    "preloader-css-import.tentative.html": [
+    "preloader-css-import.html": [
      "6e84e139832e8c83bf93896167774837ab02e22d",
      [
       null,
       {}
      ]
     ],
-    "preloader-link-media.tentative.html": [
+    "preloader-link-media.html": [
      "93fc7d969fd75141189b4ce8499a270819520074",
      [
       null,
       {}
      ]
     ],
-    "preloader-template.tentative.html": [
+    "preloader-template.html": [
      "e816309184844a6d46a20e1152c9efca80fe6f0b",
      [
       null,
@@ -652095,10 +652112,10 @@
     ]
    },
    "storage-access-api": {
-    "hasStorageAccess-ABA.tentative.sub.https.window.js": [
+    "hasStorageAccess-ABA.sub.https.window.js": [
      "8fa4122fbbb36feca0961219437ab4d49722c087",
      [
-      "storage-access-api/hasStorageAccess-ABA.tentative.sub.https.window.html",
+      "storage-access-api/hasStorageAccess-ABA.sub.https.window.html",
       {
        "script_metadata": [
         [
@@ -652175,10 +652192,10 @@
       }
      ]
     ],
-    "requestStorageAccess-ABA.tentative.sub.https.window.js": [
+    "requestStorageAccess-ABA.sub.https.window.js": [
      "428053f3e56899ce9c66cc7eefbcfa3e462f2191",
      [
-      "storage-access-api/requestStorageAccess-ABA.tentative.sub.https.window.html",
+      "storage-access-api/requestStorageAccess-ABA.sub.https.window.html",
       {
        "script_metadata": [
         [
@@ -652197,10 +652214,10 @@
       }
      ]
     ],
-    "requestStorageAccess-cross-origin-iframe-navigation-relax.tentative.sub.https.window.js": [
+    "requestStorageAccess-cross-origin-iframe-navigation-relax.sub.https.window.js": [
      "7ccb9824e699a3a269fa257b2c889d50f89d8f88",
      [
-      "storage-access-api/requestStorageAccess-cross-origin-iframe-navigation-relax.tentative.sub.https.window.html",
+      "storage-access-api/requestStorageAccess-cross-origin-iframe-navigation-relax.sub.https.window.html",
       {
        "script_metadata": [
         [
@@ -652297,10 +652314,10 @@
       }
      ]
     ],
-    "requestStorageAccess-dedicated-worker.tentative.sub.https.window.js": [
+    "requestStorageAccess-dedicated-worker.sub.https.window.js": [
      "5c3089bf3473156e66922a0c7eb0e3805f6b001d",
      [
-      "storage-access-api/requestStorageAccess-dedicated-worker.tentative.sub.https.window.html",
+      "storage-access-api/requestStorageAccess-dedicated-worker.sub.https.window.html",
       {
        "script_metadata": [
         [
@@ -652503,10 +652520,10 @@
       }
      ]
     ],
-    "requestStorageAccess-web-socket.tentative.sub.https.window.js": [
+    "requestStorageAccess-web-socket.sub.https.window.js": [
      "bc323bd95a09a0ed3192f5a67db1be5636f09961",
      [
-      "storage-access-api/requestStorageAccess-web-socket.tentative.sub.https.window.html",
+      "storage-access-api/requestStorageAccess-web-socket.sub.https.window.html",
       {
        "script_metadata": [
         [
@@ -662145,74 +662162,72 @@
     ]
    },
    "top-level-storage-access-api": {
-    "tentative": {
-     "requestStorageAccessFor-insecure.sub.window.js": [
-      "0852483ce54e04ee0927e618d751a6eb231f14cb",
-      [
-       "top-level-storage-access-api/tentative/requestStorageAccessFor-insecure.sub.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/storage-access-api/helpers.js"
-         ],
-         [
-          "script",
-          "/resources/testdriver.js"
-         ],
-         [
-          "script",
-          "/resources/testdriver-vendor.js"
-         ]
+    "requestStorageAccessFor-insecure.sub.window.js": [
+     "0852483ce54e04ee0927e618d751a6eb231f14cb",
+     [
+      "top-level-storage-access-api/requestStorageAccessFor-insecure.sub.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/storage-access-api/helpers.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
         ]
-       }
-      ]
-     ],
-     "requestStorageAccessFor.sub.https.window.js": [
-      "dd2975e49c02193475a034987365df1d0f69ac81",
-      [
-       "top-level-storage-access-api/tentative/requestStorageAccessFor.sub.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/storage-access-api/helpers.js"
-         ],
-         [
-          "script",
-          "/resources/testdriver.js"
-         ],
-         [
-          "script",
-          "/resources/testdriver-vendor.js"
-         ]
-        ]
-       }
-      ]
-     ],
-     "top-level-storage-access-permission.sub.https.window.js": [
-      "466b6f3bbed03642248ce40367b0794d3b2e4eb3",
-      [
-       "top-level-storage-access-api/tentative/top-level-storage-access-permission.sub.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/storage-access-api/helpers.js"
-         ],
-         [
-          "script",
-          "/resources/testdriver.js"
-         ],
-         [
-          "script",
-          "/resources/testdriver-vendor.js"
-         ]
-        ]
-       }
-      ]
+       ]
+      }
      ]
-    }
+    ],
+    "requestStorageAccessFor.sub.https.window.js": [
+     "dd2975e49c02193475a034987365df1d0f69ac81",
+     [
+      "top-level-storage-access-api/requestStorageAccessFor.sub.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/storage-access-api/helpers.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "top-level-storage-access-permission.sub.https.window.js": [
+     "466b6f3bbed03642248ce40367b0794d3b2e4eb3",
+     [
+      "top-level-storage-access-api/top-level-storage-access-permission.sub.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/storage-access-api/helpers.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ]
+       ]
+      }
+     ]
+    ]
    },
    "touch-events": {
     "expose-legacy-touch-event-apis.html": [
@@ -662757,7 +662772,14 @@
      ]
     ],
     "block-text-node-insertion-into-script-element.html": [
-     "08e3e695530302c8875d127bc4d36e2085a1a1d4",
+     "adadfe5a7ad5034672307e13e5edaf13a9fd4e1e",
+     [
+      null,
+      {}
+     ]
+    ],
+    "block-text-node-insertion-into-svg-script-element.html": [
+     "5f0fb78f9bd90ef6035636cd18310d428d5056d9",
      [
       null,
       {}
@@ -663022,7 +663044,7 @@
      ]
     ],
     "trusted-types-svg-script-set-href.html": [
-     "ab3174c192b1851a2a20a99626369368145e4666",
+     "9b8a528fca44e8f5872d7a70597b7be8544609df",
      [
       null,
       {}

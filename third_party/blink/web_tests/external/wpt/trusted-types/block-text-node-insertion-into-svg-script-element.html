@@ -16,12 +16,11 @@
     createScript: s => (s.includes("fail") ? null : s.replace("default", "count")),
     createHTML: s => s.replace(/2/g, "3"),
   };
-
   const policy = trustedTypes.createPolicy("policy", policy_dict);
 
   const policy_dict_default = {
     createScript: (s, _, sink) => {
-      assert_equals(sink, 'HTMLScriptElement text');
+      assert_equals(sink, 'SVGScriptElement text');
       return (s.includes("fail") ? null : s.replace("default", "count"));
     },
     createHTML: (s, _, sink) => {
@@ -30,6 +29,10 @@
       }
       return s.replace(/2/g, "3");
     },
+  };
+
+  const script_elements = {
+    "svg:script": doc => doc.createElementNS("http://www.w3.org/2000/svg", "script"),
   };
 
   // Original report:
@@ -54,10 +57,6 @@
     return checkMessage();
   }, "Regression test: Bypass via insertAdjacentText, initial comment.");
 
-  const script_elements = {
-    "script": doc => doc.createElement("script"),
-
-  };
   for (let [element, create_element] of Object.entries(script_elements)) {
     // Like the "Original Report" test case above, but avoids use of the "text"
     // accessor that <svg:script> doesn't support.
@@ -137,7 +136,6 @@
     return checkSecurityPolicyViolationEvent(3);
   }, "Spot tests around script + innerHTML interaction.");
 
-
   // Create default policy. Wrapped in a promise_test to ensure it runs only
   // after the other tests.
   let default_policy;
@@ -192,4 +190,3 @@
 </script>
 </body>
 </html>
-

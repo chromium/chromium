@@ -2600,6 +2600,12 @@ crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.html?h264_a
 crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.worker.html?h264_avc [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac14 ] external/wpt/html/browsers/the-window-object/window-indexed-properties-delete-no-cache.html [ Timeout ]
+[ Mac13 ] external/wpt/html/browsers/the-window-object/window-indexed-properties-delete-no-cache.html [ Timeout ]
+[ Mac11 ] external/wpt/html/browsers/the-window-object/window-indexed-properties-delete-no-cache.html [ Timeout ]
+[ Win11-arm64 ] external/wpt/html/semantics/embedded-content/media-elements/preserves-pitch.html [ Timeout ]
+external/wpt/trusted-types/block-text-node-insertion-into-svg-script-element.html [ Timeout ]
+[ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/config-cross-origin-apis.https.html [ Timeout ]
 crbug.com/353228154 [ Mac12 ] external/wpt/css/css-writing-modes/forms/select-multiple-options-visual-order.html [ Timeout ]
 crbug.com/353228155 [ Mac ] external/wpt/svg/text/reftests/textpath-letter-spacing-01.svg [ Failure ]
 crbug.com/352414603 external/wpt/html/canvas/offscreen/text/2d.text.measure.getActualBoundingBox-exceptions.tentative.worker.html [ Timeout ]

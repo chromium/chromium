@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Assign string to SVGScriptElement.href.baseVal  w/ default policy.
+  assert_equals: expected "SVGScriptElement href" but got "SVGAnimatedString baseVal"
+[FAIL] Assign string to non-attached SVGScriptElement.href via setAttribute w/ default policy.
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttribute"
+[FAIL] Assign string to attached SVGScriptElement.href via setAttribute w/ default policy.
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttribute"
+Harness: the test ran to completion.
+
