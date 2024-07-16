@@ -22,10 +22,10 @@ enum class AuthenticationOperation {
   // is a primary account. Please note that the primary account can disappear
   // (for external reasons) when the reauth is in progress.
   kPrimaryAccountReauth,
-  // Operation to start a re-authenticate operation. The user is presented with
-  // the SSOAuth re-authenticate dialog. This command can only be used if there
-  // is no primary account.
-  kSigninAndSyncReauth,
+  // Operation to sign-in again with the previously signed-in account. The user
+  // is presented with the SSOAuth dialog. This command can only be used if
+  // there is no primary account.
+  kResignin,
   // Operation to start a sign-in only operation. The user is presented with
   // the consistency web sign-in dialog.
   kSigninOnly,

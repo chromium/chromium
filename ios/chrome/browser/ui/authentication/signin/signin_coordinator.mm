@@ -132,7 +132,7 @@ using signin_metrics::PromoAction;
                          browser:browser
                      accessPoint:accessPoint
                      promoAction:promoAction
-                    signinIntent:AddAccountSigninIntent::kSigninAndSyncReauth];
+                    signinIntent:AddAccountSigninIntent::kResignin];
 }
 
 + (instancetype)

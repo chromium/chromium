@@ -190,7 +190,7 @@ using signin_metrics::PromoAction;
             (SigninCoordinatorResult)signinResult
                                       identity:(id<SystemIdentity>)identity {
   switch (self.signinIntent) {
-    case AddAccountSigninIntent::kSigninAndSyncReauth:
+    case AddAccountSigninIntent::kResignin:
       if (signinResult == SigninCoordinatorResultSuccess) {
         [self presentPostSigninManagerCoordinatorWithIdentity:identity];
       } else {

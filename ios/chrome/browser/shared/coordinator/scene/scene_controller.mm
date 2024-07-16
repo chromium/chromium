@@ -1818,7 +1818,7 @@ using UserFeedbackDataCallback =
                                                     promoAction:
                                                         command.promoAction];
       break;
-    case AuthenticationOperation::kSigninAndSyncReauth:
+    case AuthenticationOperation::kResignin:
       self.signinCoordinator = [SigninCoordinator
           signinAndSyncReauthCoordinatorWithBaseViewController:
               baseViewController

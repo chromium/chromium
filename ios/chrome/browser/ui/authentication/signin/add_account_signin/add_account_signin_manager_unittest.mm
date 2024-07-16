@@ -32,8 +32,6 @@ enum class TestCase {
   kAddAccountWhileSignedOut,
   kAddAccountWhileSignedIn,
   kPrimaryAccountReauth,
-  // TODO(crbug.com/40071162): Rename kSigninAndSyncReauth to Resignin or
-  // something.
   kResigninWithUsername,
   kResigninWithoutUsername,
 };
@@ -87,7 +85,7 @@ class AddAccountSigninManagerTest
         return AddAccountSigninIntent::kPrimaryAccountReauth;
       case TestCase::kResigninWithUsername:
       case TestCase::kResigninWithoutUsername:
-        return AddAccountSigninIntent::kSigninAndSyncReauth;
+        return AddAccountSigninIntent::kResignin;
     }
     NOTREACHED_NORETURN();
   }

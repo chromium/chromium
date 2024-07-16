@@ -66,7 +66,7 @@
     case AddAccountSigninIntent::kAddAccount:
       // The user wants to add a new account, don't pre-fill any email.
       break;
-    case AddAccountSigninIntent::kSigninAndSyncReauth:
+    case AddAccountSigninIntent::kResignin:
       DUMP_WILL_BE_CHECK(primaryAccount.IsEmpty())
           << base::SysNSStringToUTF8([self description]);
       std::string userEmailString =

@@ -175,7 +175,7 @@
   prefService->SetString(prefs::kGoogleServicesLastSyncingUsername,
                          emailAddress);
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperation::kSigninAndSyncReauth
+      initWithOperation:AuthenticationOperation::kResignin
             accessPoint:signin_metrics::AccessPoint::
                             ACCESS_POINT_RESIGNIN_INFOBAR];
   UIViewController* baseViewController =
