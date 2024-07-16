@@ -7,6 +7,7 @@ package org.chromium.ui;
 import android.content.Context;
 import android.os.Handler;
 import android.os.StrictMode;
+import android.provider.Settings;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -113,5 +114,17 @@ public final class KeyboardUtils {
     public static boolean isAndroidSoftKeyboardShowing(View view) {
         View rootView = view.getRootView();
         return rootView != null && calculateKeyboardHeightFromWindowInsets(rootView) > 0;
+    }
+
+    /**
+     * Reports whether Software keyboard is requested to come up while Hardware keyboard is in use.
+     * This helps with cases where the Hardware keyboard is unconventional (e.g. Yubikey), and the
+     * User explicitly requests the System to show up the Software keyboard when interacting with
+     * input fields. NOTE: This is the default behavior on emulated devices.
+     */
+    public static boolean shouldShowImeWithHardwareKeyboard(Context context) {
+        return Settings.Secure.getInt(
+                        context.getContentResolver(), "show_ime_with_hard_keyboard", 0)
+                != 0;
     }
 }

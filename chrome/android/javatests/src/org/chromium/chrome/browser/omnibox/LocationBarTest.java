@@ -19,7 +19,6 @@ import static org.mockito.Mockito.doReturn;
 
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.provider.Settings;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -69,6 +68,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.common.ContentSwitches;
+import org.chromium.ui.KeyboardUtils;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.test.util.ViewUtils;
@@ -295,10 +295,7 @@ public class LocationBarTest {
         startActivityNormally();
         // We expect the UrlBar to be focused iff a Hardware keyboard handler does not automatically
         // call up Software keyboard (IME).
-        boolean wantUrlBarFocus =
-                Settings.Secure.getInt(
-                                mActivity.getContentResolver(), "show_ime_with_hard_keyboard", 0)
-                        == 0;
+        boolean wantUrlBarFocus = !KeyboardUtils.shouldShowImeWithHardwareKeyboard(mActivity);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

@@ -13,7 +13,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Rect;
-import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.FloatProperty;
 import android.view.KeyEvent;
@@ -79,6 +78,7 @@ import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
+import org.chromium.ui.KeyboardUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.interpolators.Interpolators;
@@ -451,10 +451,7 @@ class LocationBarMediator
         // The setting below is not explicitly itemized in Settings.Secure, but it corresponds
         // to whether Software keyboard would be called up when Physical keyboard is in use on
         // Pixel devices.
-        if (Settings.Secure.getInt(mContext.getContentResolver(), "show_ime_with_hard_keyboard", 0)
-                != 0) {
-            return;
-        }
+        if (KeyboardUtils.shouldShowImeWithHardwareKeyboard(mContext)) return;
 
         mUrlFocusedWithoutAnimations = true;
         // This method should only be called on devices with a hardware keyboard attached, as

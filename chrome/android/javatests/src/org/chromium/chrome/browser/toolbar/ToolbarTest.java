@@ -63,6 +63,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.KeyboardUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 /** Tests for toolbar manager behavior. */
@@ -190,6 +191,10 @@ public class ToolbarTest {
         // Simulate availability of a hardware keyboard.
         activity.getResources().getConfiguration().keyboard = Configuration.KEYBOARD_QWERTY;
 
+        // If soft keyboard is requested while hardware keyboard is connected - do not prefocus the
+        // Omnibox, as it will automatically call up software keyboard.
+        boolean wantPrefocus = !KeyboardUtils.shouldShowImeWithHardwareKeyboard(activity);
+
         // Open a new tab.
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), activity, false, true);
@@ -201,7 +206,7 @@ public class ToolbarTest {
                                     .getLocationBar()
                                     .getOmniboxStub()
                                     .isUrlBarFocused(),
-                            Matchers.is(true));
+                            Matchers.is(wantPrefocus));
                 });
 
         // Navigate away from the NTP.
@@ -220,7 +225,6 @@ public class ToolbarTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "b/353348883")
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
     public void testMaybeShowUrlBarFocusIfHardwareKeyboardAvailable_newTabFromTabSwitcher() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
