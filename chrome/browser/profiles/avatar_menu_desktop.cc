@@ -38,6 +38,7 @@ AvatarMenu::ImageLoadStatus AvatarMenu::GetImageForMenuButton(
       status = ImageLoadStatus::LOADING;
   }
 
-  *image = entry->GetAvatarIcon(preferred_size, /*use_high_res_file=*/false);
+  *image = entry->GetAvatarIcon(preferred_size, /*use_high_res_file=*/false,
+                                /*icon_params=*/{.has_padding = false});
   return status;
 }

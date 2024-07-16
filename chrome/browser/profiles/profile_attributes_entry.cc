@@ -61,6 +61,8 @@ const char kProfileManagementOidcIdToken[] = "profile_management_oidc_id_token";
 const char kProfileManagementId[] = "profile_management_id";
 const char kUserAcceptedAccountManagement[] =
     "user_accepted_account_management";
+const char kIsUsingNewPlaceholderAvatarIcon[] =
+    "is_using_new_placeholder_avatar_icon";
 
 // All accounts info. This is a dictionary containing sub-dictionaries of
 // account information, keyed by the gaia ID. The sub-dictionaries are empty for
@@ -180,6 +182,16 @@ void ProfileAttributesEntry::Initialize(ProfileAttributesStorage* storage,
     // Reset the locked state to avoid a profile being locked after the force
     // signin policy has been disabled.
     SetBool(kForceSigninProfileLockedKey, false);
+  }
+
+  // If the kOutlineSilhouetteIcon feature state has changed, notify that the
+  // avatar icon has changed once so that cached avatar images will be updated
+  // (e.g. the application badge icon on Windows).
+  if (base::FeatureList::IsEnabled(kOutlineSilhouetteIcon) !=
+      GetBool(kIsUsingNewPlaceholderAvatarIcon)) {
+    SetBool(kIsUsingNewPlaceholderAvatarIcon,
+            base::FeatureList::IsEnabled(kOutlineSilhouetteIcon));
+    profile_attributes_storage_->NotifyOnProfileAvatarChanged(profile_path_);
   }
 }
 

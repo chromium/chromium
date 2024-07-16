@@ -798,7 +798,9 @@ void SetDefaultProfileAvatarIndex(Profile* profile, size_t avatar_icon_index) {
 #if BUILDFLAG(IS_WIN)
 SkBitmap GetWin2xAvatarImage(ProfileAttributesEntry* entry) {
   // Request just one size large enough for all uses.
-  return GetSkBitmapCopy(entry->GetAvatarIcon(IconUtil::kLargeIconSize));
+  return GetSkBitmapCopy(
+      entry->GetAvatarIcon(IconUtil::kLargeIconSize, /*use_high_res_file=*/true,
+                           /*icon_params=*/{.has_padding = false}));
 }
 
 SkBitmap GetWin2xAvatarIconAsSquare(const SkBitmap& source_bitmap) {
