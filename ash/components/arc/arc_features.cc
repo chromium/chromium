@@ -188,6 +188,11 @@ BASE_FEATURE(kExtendInputAnrTimeout,
              "ArcExtendInputAnrTimeout",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether to extend the broadcast of intent ANR timeout time.
+BASE_FEATURE(kExtendIntentAnrTimeout,
+             "ArcExtendIntentAnrTimeout",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to extend the executing service ANR timeout time.
 BASE_FEATURE(kExtendServiceAnrTimeout,
              "ArcExtendServiceAnrTimeout",

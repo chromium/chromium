@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 14
+// Next MinVersion: 15
 
 module arc.mojom;
 
@@ -49,6 +49,8 @@ struct FeatureFlags {
   [MinVersion=12] bool enable_friendlier_error_dialog;
   // chrome://flags#arc-extend-service-anr-timeout
   [MinVersion=13] bool extend_service_anr_timeout;
+  // chrome://flags#arc-extend-intent-anr-timeout
+  [MinVersion=14] bool extend_intent_anr_timeout;
 };
 
 // This interface provides methods to propagate the feature flag status to

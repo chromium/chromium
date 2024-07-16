@@ -3381,6 +3381,9 @@ extern const char kArcEnableAttestationDescription[];
 extern const char kArcExtendInputAnrTimeoutName[];
 extern const char kArcExtendInputAnrTimeoutDescription[];
 
+extern const char kArcExtendIntentAnrTimeoutName[];
+extern const char kArcExtendIntentAnrTimeoutDescription[];
+
 extern const char kArcExtendServiceAnrTimeoutName[];
 extern const char kArcExtendServiceAnrTimeoutDescription[];
 

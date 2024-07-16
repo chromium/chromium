@@ -5834,6 +5834,13 @@ const char kArcExtendInputAnrTimeoutDescription[] =
     "When enabled, the default input event ANR timeout time will be extended"
     " from 5 seconds to 8 seconds.";
 
+const char kArcExtendIntentAnrTimeoutName[] =
+    "Extend broadcast of intent ANR timeout time";
+const char kArcExtendIntentAnrTimeoutDescription[] =
+    "When enabled, the default broadcast of intent ANR timeout time will be"
+    " extended from 10 seconds to 15 seconds for foreground broadcasts, 60"
+    " seconds to 90 seconds for background broadcasts.";
+
 const char kArcExtendServiceAnrTimeoutName[] =
     "Extend executing service ANR timeout time";
 const char kArcExtendServiceAnrTimeoutDescription[] =

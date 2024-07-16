@@ -309,6 +309,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "arc-extend-intent-anr-timeout",
+    "owners": [ "yixie@chromium.org", "arc-user-focus@google.com" ],
+    "expiry_milestone": 131
+  },
+  {
     "name": "arc-extend-service-anr-timeout",
     "owners": [ "yixie@chromium.org", "arc-user-focus@google.com" ],
     "expiry_milestone": 131

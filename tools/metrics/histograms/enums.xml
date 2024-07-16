@@ -16135,6 +16135,7 @@ from previous Chrome versions.
   <int value="-1969627578" label="EnableVariableRefreshRateAlwaysOn:disabled"/>
   <int value="-1968796101"
       label="OmniboxRemoveExcessiveRecycledViewClearCalls:disabled"/>
+  <int value="-1968729540" label="ArcExtendIntentAnrTimeout:enabled"/>
   <int value="-1966599581" label="LauncherKeyShortcutInBestMatch:enabled"/>
   <int value="-1966445414" label="StylusBatteryStatus:disabled"/>
   <int value="-1965587041" label="omnibox-tab-switch-suggestions"/>
@@ -16645,6 +16646,7 @@ from previous Chrome versions.
   <int value="-1752118355" label="DesktopDetailedLanguageSettings:enabled"/>
   <int value="-1752055359" label="AccessCodeCastFreezeUI:enabled"/>
   <int value="-1751928267" label="disable-icon-ntp"/>
+  <int value="-1751705267" label="ArcExtendIntentAnrTimeout:disabled"/>
   <int value="-1751562448" label="OmniboxExpandedStateColors:disabled"/>
   <int value="-1751492305" label="SupportTool:enabled"/>
   <int value="-1750933674" label="ObservableAPI:disabled"/>

@@ -216,6 +216,18 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyExtendInputAnrTimeout_Disabled) {
   EXPECT_FALSE(instance()->flags_called_value()->extend_input_anr_timeout);
 }
 
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyExtendIntentAnrTimeout_Enabled) {
+  scoped_feature_list()->InitAndEnableFeature(arc::kExtendIntentAnrTimeout);
+  Connect();
+  EXPECT_TRUE(instance()->flags_called_value()->extend_intent_anr_timeout);
+}
+
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyExtendIntentAnrTimeout_Disabled) {
+  scoped_feature_list()->InitAndDisableFeature(arc::kExtendIntentAnrTimeout);
+  Connect();
+  EXPECT_FALSE(instance()->flags_called_value()->extend_intent_anr_timeout);
+}
+
 TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyExtendServiceAnrTimeout_Enabled) {
   scoped_feature_list()->InitAndEnableFeature(arc::kExtendServiceAnrTimeout);
   Connect();
