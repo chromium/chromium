@@ -18,6 +18,8 @@ process_version("branding_header") {
     "-e",
     "COMPANY_SHORTNAME=\"$enterprise_companion_company_short_name\"",
     "-e",
+    "COMPANY_SHORTNAME_LOWERCASE=\"$enterprise_companion_company_short_name_lowercase\"",
+    "-e",
     "COMPANY_SHORTNAME_UPPERCASE=\"$enterprise_companion_company_short_name_uppercase\"",
     "-e",
     "CRASH_PRODUCT_NAME=\"$crash_product_name\"",
@@ -35,6 +37,8 @@ process_version("branding_header") {
     "MAC_BUNDLE_IDENTIFIER_STRING=\"$mac_enterprise_companion_bundle_identifier\"",
     "-e",
     "PRODUCT_FULLNAME=\"$enterprise_companion_product_full_name\"",
+    "-e",
+    "PRODUCT_FULLNAME_DASHED_LOWERCASE=\"$enterprise_companion_product_full_name_dashed_lowercase\"",
   ]
 
   template_file = "enterprise_companion_branding.h.in"
