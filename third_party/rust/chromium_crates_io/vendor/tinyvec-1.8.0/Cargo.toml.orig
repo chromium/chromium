@@ -1,7 +1,7 @@
 [package]
 name = "tinyvec"
 description = "`tinyvec` provides 100% safe vec-like data structures."
-version = "1.7.0"
+version = "1.8.0"
 authors = ["Lokathor <zefria@gmail.com>"]
 edition = "2018"
 license = "Zlib OR Apache-2.0 OR MIT"

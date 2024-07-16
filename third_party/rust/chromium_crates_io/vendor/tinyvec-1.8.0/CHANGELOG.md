@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8
+
+* [Fuuzetsu](https://github.com/Fuuzetsu) added the `ArrayVec::as_inner` method.
+  [pr 197](https://github.com/Lokathor/tinyvec/pull/197)
+
 ## 1.7
 
 * [Fuuzetsu](https://github.com/Fuuzetsu) added the `rustc_1_61` cargo feature, which adds the `retain_mut` method.

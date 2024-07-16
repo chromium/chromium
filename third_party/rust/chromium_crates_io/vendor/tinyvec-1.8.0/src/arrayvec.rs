@@ -1183,6 +1183,18 @@ impl<A: Array> ArrayVec<A> {
   }
 }
 
+impl<A> ArrayVec<A> {
+  /// Returns the reference to the inner array of the `ArrayVec`.
+  ///
+  /// This returns the full array, even if the `ArrayVec` length is currently
+  /// less than that.
+  #[inline(always)]
+  #[must_use]
+  pub const fn as_inner(&self) -> &A {
+    &self.data
+  }
+}
+
 /// Splicing iterator for `ArrayVec`
 /// See [`ArrayVec::splice`](ArrayVec::<A>::splice)
 pub struct ArrayVecSplice<'p, A: Array, I: Iterator<Item = A::Item>> {
