@@ -2427,6 +2427,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     @RequiresRestart("crbug.com/344662605")
+    @DisabledTest(message = "crbug.com/353502929")
     public void testPageScrollTriggerViewExitAndEnter() throws Throwable {
         loadHTML(
                 """
