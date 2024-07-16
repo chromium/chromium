@@ -268,8 +268,13 @@ extern NSString* const kSettingsDoneButtonId;
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
+// Returns a new Cancel button for a UINavigationItem which will call
+// `closeSettings` when it is pressed. Should only be called by view controllers
+// owned by SettingsNavigationController.
+- (UIBarButtonItem*)cancelButton;
+
 // Returns a new Done button for a UINavigationItem which will call
-// closeSettings when it is pressed. Should only be called by view controllers
+// `closeSettings` when it is pressed. Should only be called by view controllers
 // owned by SettingsNavigationController.
 - (UIBarButtonItem*)doneButton;
 

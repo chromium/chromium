@@ -5,9 +5,10 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/settings/autofill/autofill_settings_constants.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -29,6 +30,7 @@ using chrome_test_util::ManualFallbackProfilesIconMatcher;
 using chrome_test_util::ManualFallbackProfilesTableViewMatcher;
 using chrome_test_util::ManualFallbackProfileTableViewWindowMatcher;
 using chrome_test_util::NavigationBarCancelButton;
+using chrome_test_util::NavigationBarDoneButton;
 using chrome_test_util::SettingsProfileMatcher;
 using chrome_test_util::TapWebElementWithId;
 
@@ -72,6 +74,11 @@ void OpenAddressManualFillView() {
   // Verify the address table view controller is visible.
   [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Matcher for the page showing the details of an address.
+id<GREYMatcher> AddressDetailsPage() {
+  return grey_accessibilityID(kAutofillProfileEditTableViewId);
 }
 
 // Matcher for the expanded address manual fill view button.
@@ -532,8 +539,25 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
   [[EarlGrey selectElementWithMatcher:OverflowMenuEditAction()]
       performAction:grey_tap()];
 
-  // TODO(crbug.com/326413640): Check that the details page was opened in edit
-  // mode.
+  // Check that the address details page opened.
+  [[EarlGrey selectElementWithMatcher:AddressDetailsPage()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Edit the address.
+  [[EarlGrey selectElementWithMatcher:grey_text(@"666 Erebus St.")]
+      performAction:grey_replaceText(@"123 new address")];
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      performAction:grey_tap()];
+
+  // Tap Cancel Button.
+  [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
+      performAction:grey_tap()];
+
+  // Check that the address details page is no longer visible.
+  [[EarlGrey selectElementWithMatcher:AddressDetailsPage()]
+      assertWithMatcher:grey_notVisible()];
+
+  // TODO(crbug.com/332956674): Check that the updated suggestion is visible.
 }
 
 #pragma mark - Private

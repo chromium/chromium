@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_coordinator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_data_util.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -24,6 +25,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_settings_profile_edit_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 
 @interface AutofillProfileEditCoordinator () <
     AutofillCountrySelectionTableViewControllerDelegate,
@@ -99,15 +101,28 @@
   self.viewController.handler = self.sharedViewController;
   self.viewController.snackbarCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SnackbarCommands);
+  if (self.openInEditMode) {
+    [self.viewController editButtonPressed];
+  }
 
-  DCHECK(self.baseNavigationController);
+  CHECK(self.baseNavigationController);
+  // Add a "Cancel" button to the navigation bar if there's no other view
+  // controller in the navigation stack.
+  if (self.baseNavigationController.viewControllers.count == 0) {
+    SettingsNavigationController* settingsNavigationController =
+        base::apple::ObjCCastStrict<SettingsNavigationController>(
+            self.baseNavigationController);
+    self.viewController.navigationItem.leftBarButtonItem =
+        [settingsNavigationController cancelButton];
+  }
   [self.baseNavigationController pushViewController:self.viewController
                                            animated:YES];
 }
 
 - (void)stop {
-  // Never called because `self.viewController` is pushed out of the stack via
-  // the navigation bar back button.
+  _sharedViewController = nil;
+  _viewController = nil;
+  _mediator = nil;
 }
 
 #pragma mark - AutofillProfileEditMediatorDelegate
@@ -120,9 +135,6 @@
     return;
   }
 
-  self.sharedViewController = nil;
-  self.viewController = nil;
-  self.mediator = nil;
   [self.delegate
       autofillProfileEditCoordinatorTableViewControllerDidFinish:self];
 }

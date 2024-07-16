@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_edit_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_coordinator.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_table_view_controller.h"
@@ -90,6 +91,7 @@ void ConfigureHandlers(id<SettingsRootViewControlling> controller,
 NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 @interface SettingsNavigationController () <
+    AutofillProfileEditCoordinatorDelegate,
     ClearBrowsingDataCoordinatorDelegate,
     GoogleServicesSettingsCoordinatorDelegate,
     ManageSyncSettingsCoordinatorDelegate,
@@ -119,6 +121,10 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 // Password details coordinator.
 @property(nonatomic, strong)
     PasswordDetailsCoordinator* passwordDetailsCoordinator;
+
+// Autofill profile edit coordinator.
+@property(nonatomic, strong)
+    AutofillProfileEditCoordinator* autofillProfileEditCoordinator;
 
 // TODO(crbug.com/335387869): Delete this coordinator when Quick Delete is fully
 // launched. The coordinator for the clear browsing data screen.
@@ -652,6 +658,14 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 #pragma mark - Public
 
+- (UIBarButtonItem*)cancelButton {
+  UIBarButtonItem* item = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                           target:self
+                           action:@selector(closeSettings)];
+  return item;
+}
+
 - (UIBarButtonItem*)doneButton {
   if (self.presentingViewController == nil) {
     // This can be called while being dismissed. In that case, return nil. See
@@ -688,6 +702,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self stopPrivacySettingsCoordinator];
   [self stopInactiveTabSettingsCoordinator];
   [self stopPasswordDetailsCoordinator];
+  [self stopAutofillProfileEditCoordinator];
   [self stopNotificationsCoordinator];
 
   // Reset the delegate to prevent any queued transitions from attempting to
@@ -721,16 +736,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 }
 
 #pragma mark - Private
-
-// Creates an autoreleased "Cancel" button that cancels the settings when
-// tapped.
-- (UIBarButtonItem*)cancelButton {
-  UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-                           target:self
-                           action:@selector(closeSettings)];
-  return cancelButton;
-}
 
 // Pushes a GoogleServicesSettingsViewController on this settings navigation
 // controller. Does nothing id the top view controller is already of type
@@ -919,6 +924,13 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   self.passwordDetailsCoordinator = nil;
 }
 
+// Stops the underlying AutofillProfileEditCoordinator.
+- (void)stopAutofillProfileEditCoordinator {
+  [self.autofillProfileEditCoordinator stop];
+  self.autofillProfileEditCoordinator.delegate = nil;
+  self.autofillProfileEditCoordinator = nil;
+}
+
 // Stops the underlying NotificationsCoordinator.
 - (void)stopNotificationsCoordinator {
   [self.notificationsCoordinator stop];
@@ -980,6 +992,14 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 - (void)passwordDetailsCancelButtonWasTapped {
   [self closeSettings];
+}
+
+#pragma mark - AutofillProfileEditCoordinatorDelegate
+
+- (void)autofillProfileEditCoordinatorTableViewControllerDidFinish:
+    (AutofillProfileEditCoordinator*)coordinator {
+  DCHECK_EQ(self.autofillProfileEditCoordinator, coordinator);
+  [self stopAutofillProfileEditCoordinator];
 }
 
 #pragma mark - ClearBrowsingDataCoordinatorDelegate
@@ -1155,8 +1175,14 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 - (void)showAddressDetails:(const autofill::AutofillProfile*)address
                 inEditMode:(BOOL)editMode
      offerMigrateToAccount:(BOOL)offerMigrateToAccount {
-  // TODO(crbug.com/326413640): Set up and start a
-  // AutofillProfileEditCoordinator.
+  self.autofillProfileEditCoordinator = [[AutofillProfileEditCoordinator alloc]
+      initWithBaseNavigationController:self
+                               browser:self.browser
+                               profile:*address
+                migrateToAccountButton:offerMigrateToAccount];
+  self.autofillProfileEditCoordinator.delegate = self;
+  self.autofillProfileEditCoordinator.openInEditMode = editMode;
+  [self.autofillProfileEditCoordinator start];
 }
 
 // TODO(crbug.com/41352590) : Do not pass `baseViewController` through
