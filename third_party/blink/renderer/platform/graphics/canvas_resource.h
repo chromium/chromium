@@ -139,11 +139,10 @@ class PLATFORM_EXPORT CanvasResource
   // ExternalCanvasResource either holds ClientSharedImage or is removed.
   virtual bool UsesClientSharedImage() { return false; }
 
-  // The sync mode indicates how the sync token for the resource should be
-  // prepared. By default canvas resources do not actually do any different
-  // preparation based on the sync mode; subclasses that do should override this
-  // method.
-  virtual void SetMailboxSyncMode(MailboxSyncMode mode) {}
+  // For subclasses that do verification of sync tokens (which subclasses do not
+  // by default), indicates whether the sync token needs to be verified before
+  // being handed out to clients.
+  virtual void SetNeedsVerifiedSyncToken(bool needs_verified_synctoken) {}
 
   // The ClientSharedImage containing information on the SharedImage (if any)
   // attached to the resource.
@@ -357,7 +356,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   bool IsLost() const { return owning_thread_data().is_lost; }
   void CopyRenderingResultsToGpuMemoryBuffer(const sk_sp<SkImage>& image);
   bool UsesClientSharedImage() override { return true; }
-  void SetMailboxSyncMode(MailboxSyncMode mode) override;
+  void SetNeedsVerifiedSyncToken(bool needs_verified_synctoken) override;
   scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() override;
   const scoped_refptr<gpu::ClientSharedImage>& GetClientSharedImage() const;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,

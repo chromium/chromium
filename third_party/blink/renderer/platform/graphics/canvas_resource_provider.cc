@@ -291,7 +291,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
       return gpu::Mailbox();
 
     WillDrawInternal(false);
-    resource_->SetMailboxSyncMode(sync_mode);
+    resource_->SetNeedsVerifiedSyncToken(sync_mode == kVerifiedSyncToken);
     return resource_->GetClientSharedImage()->mailbox();
   }
 
@@ -471,10 +471,10 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
           TearDownSkSurface();
 
         if (mode_ == SkSurface::kRetain_ContentChangeMode) {
-          old_resource_shared_image->SetMailboxSyncMode(kOrderingBarrier);
+          old_resource_shared_image->SetNeedsVerifiedSyncToken(false);
           auto old_mailbox =
               old_resource_shared_image->GetClientSharedImage()->mailbox();
-          resource()->SetMailboxSyncMode(kOrderingBarrier);
+          resource()->SetNeedsVerifiedSyncToken(false);
           auto mailbox = resource()->GetClientSharedImage()->mailbox();
 
           raster_interface->CopySharedImage(
@@ -533,7 +533,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     WillDrawInternal(true);
     const bool needs_clear = !is_cleared_;
     is_cleared_ = true;
-    resource()->SetMailboxSyncMode(kUnverifiedSyncToken);
+    resource()->SetNeedsVerifiedSyncToken(false);
     RasterRecordOOP(std::move(last_recording), needs_clear,
                     resource()->GetClientSharedImage()->mailbox());
   }

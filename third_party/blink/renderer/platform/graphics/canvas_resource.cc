@@ -203,7 +203,7 @@ bool CanvasResource::PrepareAcceleratedTransferableResourceFromClientSI(
   DCHECK(SharedGpuContext::IsGpuCompositingEnabled());
   if (!ContextProviderWrapper())
     return false;
-  SetMailboxSyncMode(sync_mode);
+  SetNeedsVerifiedSyncToken(sync_mode == kVerifiedSyncToken);
   auto client_shared_image = GetClientSharedImage();
 
   // The SharedImage should exist as long as the ContextProviderWrapper exists.
@@ -716,10 +716,10 @@ void CanvasResourceSharedImage::CopyRenderingResultsToGpuMemoryBuffer(
   owning_thread_data().sync_token = sii->GenUnverifiedSyncToken();
 }
 
-void CanvasResourceSharedImage::SetMailboxSyncMode(MailboxSyncMode mode) {
+void CanvasResourceSharedImage::SetNeedsVerifiedSyncToken(
+    bool needs_verified_synctoken) {
   if (!is_cross_thread()) {
-    owning_thread_data().needs_verified_synctoken =
-        (mode == kVerifiedSyncToken);
+    owning_thread_data().needs_verified_synctoken = needs_verified_synctoken;
   }
 }
 
