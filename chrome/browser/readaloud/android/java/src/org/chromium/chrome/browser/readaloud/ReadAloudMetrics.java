@@ -94,6 +94,7 @@ public class ReadAloudMetrics {
 
     private static float[] sPlaybackSpeeds = {0.5f, 0.8f, 1.0f, 1.2f, 1.5f, 2.0f, 3.0f, 4.0f};
 
+
     public static void recordDurationMsListened(long durationMs) {
         if (durationMs != 0) {
             RecordHistogram.recordLongTimesHistogram(TIME_SPENT_LISTENING, durationMs);
