@@ -296,9 +296,7 @@ void ManagePasswordsView::RecreateLayout() {
     if (controller_.IsOptedInForAccountStorage() &&
         !controller_.get_currently_selected_password()
              .value()
-             .IsUsingAccountStore() &&
-        base::FeatureList::IsEnabled(
-            password_manager::features::kButterOnDesktopFollowup)) {
+             .IsUsingAccountStore()) {
       frame_view->SetFootnoteView(CreateMovePasswordFooterView());
       frame_view->SetProperty(views::kElementIdentifierKey, kFooterId);
     }

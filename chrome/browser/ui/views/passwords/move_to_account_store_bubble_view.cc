@@ -192,12 +192,9 @@ END_METADATA
 std::unique_ptr<views::Label> CreateDescription(
     const std::u16string& profile_email) {
   auto description = std::make_unique<views::Label>(
-      base::FeatureList::IsEnabled(
-          password_manager::features::kButterOnDesktopFollowup)
-          ? l10n_util::GetStringFUTF16(
-                IDS_PASSWORD_MANAGER_SAVE_IN_ACCOUNT_BUBBLE_DESCRIPTION,
-                profile_email)
-          : l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MOVE_HINT),
+      l10n_util::GetStringFUTF16(
+          IDS_PASSWORD_MANAGER_SAVE_IN_ACCOUNT_BUBBLE_DESCRIPTION,
+          profile_email),
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_HINT);
   description->SetMultiLine(true);
   description->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -290,14 +287,9 @@ MoveToAccountStoreBubbleView::MoveToAccountStoreBubbleView(
       /*from_view=*/std::move(computer_view),
       /*to_view=*/std::move(avatar_view)));
 
-  SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
-      base::FeatureList::IsEnabled(
-          password_manager::features::kButterOnDesktopFollowup)
-          ? l10n_util::GetStringUTF16(
-                IDS_PASSWORD_MANAGER_SAVE_IN_ACCOUNT_BUBBLE_SAVE_BUTTON)
-          : l10n_util::GetStringUTF16(
-                IDS_PASSWORD_MANAGER_MOVE_BUBBLE_OK_BUTTON));
+  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+                 l10n_util::GetStringUTF16(
+                     IDS_PASSWORD_MANAGER_SAVE_IN_ACCOUNT_BUBBLE_SAVE_BUTTON));
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                  l10n_util::GetStringUTF16(
                      IDS_PASSWORD_MANAGER_MOVE_BUBBLE_CANCEL_BUTTON));

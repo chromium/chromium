@@ -58,11 +58,8 @@ void MoveToAccountStoreBubbleController::OnFaviconReady(
 }
 
 std::u16string MoveToAccountStoreBubbleController::GetTitle() const {
-  return base::FeatureList::IsEnabled(
-             password_manager::features::kButterOnDesktopFollowup)
-             ? l10n_util::GetStringUTF16(
-                   IDS_PASSWORD_MANAGER_SAVE_IN_ACCOUNT_BUBBLE_TITLE)
-             : l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MOVE_TITLE);
+  return l10n_util::GetStringUTF16(
+      IDS_PASSWORD_MANAGER_SAVE_IN_ACCOUNT_BUBBLE_TITLE);
 }
 
 void MoveToAccountStoreBubbleController::AcceptMove() {

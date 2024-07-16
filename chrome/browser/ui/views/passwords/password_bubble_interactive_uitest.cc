@@ -120,8 +120,7 @@ class PasswordBubbleInteractiveUiTest : public ManagePasswordsTest {
  public:
   PasswordBubbleInteractiveUiTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{password_manager::features::
-                                  kButterOnDesktopFollowup},
+        /*enabled_features=*/{},
         /*disabled_features=*/{
             password_manager::features::kPasswordManualFallbackAvailable});
   }

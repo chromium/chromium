@@ -881,20 +881,13 @@ void ManagePasswordsUIController::MovePasswordToAccountStore() {
         GetState() ==
             password_manager::ui::MOVE_CREDENTIAL_FROM_MANAGE_BUBBLE_STATE);
 
-  // TODO(crbug.com/40943570): After this feature lands, clean this up and use
-  // only MovePendingPasswordToAccountStoreUsingHelper() to move passwords.
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kButterOnDesktopFollowup)) {
-    MovePendingPasswordToAccountStoreUsingHelper(
-        GetPendingPassword(),
-        GetState() == password_manager::ui::MOVE_CREDENTIAL_AFTER_LOG_IN_STATE
-            ? password_manager::metrics_util::MoveToAccountStoreTrigger::
-                  kSuccessfulLoginWithProfileStorePassword
-            : password_manager::metrics_util::MoveToAccountStoreTrigger::
-                  kExplicitlyTriggeredInPasswordsManagementBubble);
-  } else {
-    passwords_data_.form_manager()->MoveCredentialsToAccountStore();
-  }
+  MovePendingPasswordToAccountStoreUsingHelper(
+      GetPendingPassword(),
+      GetState() == password_manager::ui::MOVE_CREDENTIAL_AFTER_LOG_IN_STATE
+          ? password_manager::metrics_util::MoveToAccountStoreTrigger::
+                kSuccessfulLoginWithProfileStorePassword
+          : password_manager::metrics_util::MoveToAccountStoreTrigger::
+                kExplicitlyTriggeredInPasswordsManagementBubble);
 
   ClearPopUpFlagForBubble();
   passwords_data_.TransitionToState(password_manager::ui::MANAGE_STATE);

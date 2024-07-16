@@ -37,21 +37,9 @@ ManagePasswordsListView::ManagePasswordsListView(
   for (const std::unique_ptr<password_manager::PasswordForm>& password_form :
        credentials) {
     std::optional<ui::ImageModel> store_icon = std::nullopt;
-    if (is_account_storage_available &&
-        base::FeatureList::IsEnabled(
-            password_manager::features::kButterOnDesktopFollowup)) {
-      if (!password_form->IsUsingAccountStore()) {
-        store_icon = ui::ImageModel::FromVectorIcon(
-            vector_icons::kNotUploadedIcon, ui::kColorIcon, gfx::kFaviconSize);
-      }
-    } else if (password_form->IsUsingAccountStore()) {
+    if (is_account_storage_available && !password_form->IsUsingAccountStore()) {
       store_icon = ui::ImageModel::FromVectorIcon(
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-          vector_icons::kGoogleGLogoIcon,
-#else
-          vector_icons::kSyncIcon,
-#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-          gfx::kPlaceholderColor, gfx::kFaviconSize);
+          vector_icons::kNotUploadedIcon, ui::kColorIcon, gfx::kFaviconSize);
     }
 
     std::unique_ptr<RichHoverButton> list_item =
@@ -82,17 +70,9 @@ ManagePasswordsListView::ManagePasswordsListView(
                                            ui::kColorIcon),
             /*state_icon=*/store_icon);
 
-    if (is_account_storage_available &&
-        base::FeatureList::IsEnabled(
-            password_manager::features::kButterOnDesktopFollowup)) {
-      if (!password_form->IsUsingAccountStore()) {
-        list_item->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
-            IDS_PASSWORD_MANAGER_MANAGEMENT_BUBBLE_LIST_ITEM_DEVICE_ONLY_ACCESSIBLE_TEXT,
-            GetDisplayUsername(*password_form)));
-      }
-    } else if (password_form->IsUsingAccountStore()) {
+    if (is_account_storage_available && !password_form->IsUsingAccountStore()) {
       list_item->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
-          IDS_PASSWORD_MANAGER_MANAGEMENT_BUBBLE_LIST_ITEM_ACCESSIBLE_TEXT,
+          IDS_PASSWORD_MANAGER_MANAGEMENT_BUBBLE_LIST_ITEM_DEVICE_ONLY_ACCESSIBLE_TEXT,
           GetDisplayUsername(*password_form)));
     }
 
