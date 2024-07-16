@@ -64,9 +64,6 @@ class ThreadProfilerConfiguration {
   bool IsJavaNameHashingEnabled() const;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  // True if the thread pool is used for unwinding.
-  bool IsThreadPoolEnabledForCurrentProcess() const;
-
  private:
   friend base::NoDestructor<ThreadProfilerConfiguration>;
 
@@ -83,11 +80,6 @@ class ThreadProfilerConfiguration {
     // Enabled within the experiment (and paired with equal-sized
     // kProfileDisabled group).
     kProfileControl,
-
-    // Enabled within the experiment (and paired with equal-sized
-    // kProfileDisabled and kProfileControl groups). The stack
-    // unwinder with use a thread pool.
-    kProfileEnabledWithThreadPool,
 
     // Enabled outside of the experiment.
     kProfileEnabled,
