@@ -666,40 +666,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Canvas.WebGPUMaxRecycledResourcesCount"
-    units="Recyclable resources" expires_after="2024-07-21">
-  <owner>magchen@chromium.org</owner>
-  <owner>enga@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    The maximum number of total unused recyclable WebGPU resources since last
-    clean-up. Logged in the WebGPU recyclable resouce clean-up timer function.
-  </summary>
-</histogram>
-
-<histogram name="Blink.Canvas.WebGPUMaxRecycledResourcesInKB" units="KB"
-    expires_after="2024-06-02">
-  <owner>magchen@chromium.org</owner>
-  <owner>enga@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    The maximum size of total unused recyclable WebGPU resources in KB since
-    last clean-up. Logged in the WebGPU recyclable resouce clean-up timer
-    function.
-  </summary>
-</histogram>
-
-<histogram name="Blink.Canvas.WebGPUStaleResourceCount"
-    units="recyclable resources" expires_after="2024-06-30">
-  <owner>magchen@chromium.org</owner>
-  <owner>enga@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    The number of stale recyclable WebGPU canvas resources released and logged
-    in the WebGPU recyclable resouce clean-up timer function.
-  </summary>
-</histogram>
-
 <histogram name="Blink.Clipboard.Read.NumberOfFormats" units="count"
     expires_after="2024-12-08">
   <owner>estade@chromium.org</owner>

@@ -115,10 +115,6 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
 
   uint64_t total_unused_resources_in_bytes_ = 0;
 
-  // For histograms only.
-  uint64_t last_seen_max_unused_resources_in_bytes_ = 0;
-  wtf_size_t last_seen_max_unused_resources_ = 0;
-
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

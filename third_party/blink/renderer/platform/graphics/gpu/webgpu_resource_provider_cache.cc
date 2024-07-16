@@ -70,14 +70,6 @@ void WebGPURecyclableResourceCache::OnDestroyRecyclableResource(
                                           current_timer_id_, resource_size));
   }
 
-  if (last_seen_max_unused_resources_in_bytes_ <
-      total_unused_resources_in_bytes_) {
-    last_seen_max_unused_resources_in_bytes_ = total_unused_resources_in_bytes_;
-  }
-  if (last_seen_max_unused_resources_ < unused_providers_.size()) {
-    last_seen_max_unused_resources_ = unused_providers_.size();
-  }
-
   // If the cache is full, release LRU from the back.
   while (total_unused_resources_in_bytes_ >
          kMaxRecyclableResourceCachesInBytes) {
@@ -149,33 +141,6 @@ void WebGPURecyclableResourceCache::ReleaseStaleResources() {
     total_unused_resources_in_bytes_ -= unused_providers_.back().resource_size_;
     unused_providers_.pop_back();
   }
-
-  // The number of stale Resources released this time in this function.
-  base::UmaHistogramCustomCounts("Blink.Canvas.WebGPUStaleResourceCount",
-                                 stale_resource_count, /*min=*/0,
-                                 /*max=*/300,
-                                 /*buckets=*/50);
-
-  // The maximum number of total resource memory size between two
-  // ReleaseStaleResources() calls.
-  // UmaHistogramCustomCounts only takes the int type as input.
-  int last_seen_max_unused_resources_in_kb =
-      static_cast<int>(last_seen_max_unused_resources_in_bytes_ / 1024);
-  base::UmaHistogramCustomCounts("Blink.Canvas.WebGPUMaxRecycledResourcesInKB",
-                                 last_seen_max_unused_resources_in_kb,
-                                 /*min=*/0,
-                                 /*max=*/kMaxRecyclableResourceCachesInKB,
-                                 /*buckets=*/50);
-  last_seen_max_unused_resources_in_bytes_ = 0;
-
-  // The maximum number of unused resources between two ReleaseStaleResources()
-  // calls.
-  base::UmaHistogramCustomCounts("Blink.Canvas.WebGPUMaxRecycledResourcesCount",
-                                 last_seen_max_unused_resources_,
-                                 /*min=*/0,
-                                 /*max=*/300,
-                                 /*buckets=*/50);
-  last_seen_max_unused_resources_ = 0;
 
   current_timer_id_++;
   StartResourceCleanUpTimer();
