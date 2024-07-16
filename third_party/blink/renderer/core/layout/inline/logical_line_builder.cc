@@ -87,8 +87,8 @@ void LogicalLineBuilder::CreateLine(LineInfo* line_info,
     std::pair<LayoutUnit, LayoutUnit>& insets = logical_column->base_insets;
     ApplyLeftAndRightExpansion(
         insets.first, insets.second,
-        line_box->MakeSpan().subspan(logical_column->start_index,
-                                     logical_column->size));
+        base::span(*line_box).subspan(logical_column->start_index,
+                                      logical_column->size));
   }
 }
 
@@ -531,7 +531,7 @@ void LogicalLineBuilder::PlaceRubyAnnotation(
   annotation_builder.CreateLine(&annotation_line, line_items,
                                 /* main_line_helper */ nullptr);
   ApplyLeftAndRightExpansion(insets.first, insets.second,
-                             line_items->MakeSpan());
+                             base::span(*line_items));
 
   logical_column.state_stack.ComputeInlinePositions(
       line_items, LayoutUnit(), /* ignore_box_margin_border_padding */ false);
@@ -635,9 +635,9 @@ void LogicalLineBuilder::BidiReorder(
       //
       // min_element() below doesn't return the end iterator because we
       // ensure there is at least one item in the range.
-      column->start_index =
-          *base::ranges::min_element(logical_to_visual.MakeSpan().subspan(
-              column->start_index, column->size));
+      column->start_index = *base::ranges::min_element(
+          base::span(logical_to_visual)
+              .subspan(column->start_index, column->size));
     }
     // The order is important for RubyBlockPositionCalculator::HandleRubyLine().
     std::stable_sort(

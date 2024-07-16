@@ -303,7 +303,9 @@ class CORE_EXPORT LogicalLineItems : public GarbageCollected<LogicalLineItems> {
   void Shrink(wtf_size_t size) { children_.Shrink(size); }
   void swap(LogicalLineItems& other) { children_.swap(other.children_); }
 
-  base::span<LogicalLineItem> MakeSpan() { return children_.MakeSpan(); }
+  explicit operator base::span<LogicalLineItem>() {
+    return base::span(children_);
+  }
   using iterator = Vector<LogicalLineItem, 16>::iterator;
   iterator begin() { return children_.begin(); }
   iterator end() { return children_.end(); }

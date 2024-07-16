@@ -29,7 +29,7 @@ class CORE_EXPORT FragmentItems final {
   wtf_size_t Size() const { return items_.size(); }
 
   using Span = base::span<const FragmentItem>;
-  Span Items() const { return items_.MakeSpan(); }
+  Span Items() const { return base::span(items_); }
   bool Equals(const Span& span) const {
     return ItemsData() == span.data() && Size() == span.size();
   }

@@ -1193,8 +1193,8 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
 
   // Returns a base::span representing the whole data.
   // The base::span is valid until this Vector is modified.
-  base::span<T> MakeSpan() { return {data(), size()}; }
-  base::span<const T> MakeSpan() const { return {data(), size()}; }
+  explicit operator base::span<T>() { return {data(), size()}; }
+  explicit operator base::span<const T>() { return {data(), size()}; }
 
   // Return a pointer to the front of the backing buffer. Those pointers get
   // invalidated on a reallocation.

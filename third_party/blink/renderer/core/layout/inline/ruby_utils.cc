@@ -1195,8 +1195,9 @@ RubyBlockPositionCalculator& RubyBlockPositionCalculator::PlaceLines(
     }
     LayoutUnit offset = em_height.descent;
     auto lines_before_base =
-        ruby_lines_.MakeSpan().first(base::checked_cast<size_t>(
-            std::distance(ruby_lines_.begin(), base_iterator)));
+        base::span(ruby_lines_)
+            .first(base::checked_cast<size_t>(
+                std::distance(ruby_lines_.begin(), base_iterator)));
     for (auto& ruby_line : base::Reversed(lines_before_base)) {
       FontHeight metrics = ruby_line->UpdateMetrics();
       offset += metrics.ascent;
@@ -1218,8 +1219,9 @@ RubyBlockPositionCalculator& RubyBlockPositionCalculator::PlaceLines(
     }
     LayoutUnit offset = -em_height.ascent;
     for (auto& ruby_line :
-         ruby_lines_.MakeSpan().last(base::checked_cast<size_t>(
-             std::distance(base_iterator, ruby_lines_.end()) - 1))) {
+         base::span(ruby_lines_)
+             .last(base::checked_cast<size_t>(
+                 std::distance(base_iterator, ruby_lines_.end()) - 1))) {
       FontHeight metrics = ruby_line->UpdateMetrics();
       offset -= metrics.descent;
       ruby_line->MoveInBlockDirection(offset);
