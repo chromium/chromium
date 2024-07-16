@@ -5837,6 +5837,13 @@ AXObject* AXObject::ParentObject() const {
 
 AXObject* AXObject::ParentObject() {
   DUMP_WILL_BE_CHECK(!IsDetached());
+  // Calling IsMissingParent can cause us to dereference pointers that
+  // are null on detached objects, return early here to avoid crashing.
+  // TODO(accessibility) Remove early return and change above assertion
+  // to CHECK() once this no longer occurs.
+  if (IsDetached()) {
+    return nullptr;
+  }
 
   // TODO(crbug.com/337178753): this should not be necessary once subtree
   // removals can be immediate, complete and safe.

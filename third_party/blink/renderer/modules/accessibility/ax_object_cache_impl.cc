@@ -1621,6 +1621,15 @@ void AXObjectCacheImpl::Remove(AXID ax_id, bool notify_parent) {
   // detached object, which is illegal.
   RemoveReferencesToAXID(ax_id);
 
+  // RemoveReferencesToAXID can cause the object to detach, in this case,
+  // fail gracefully rather than attempting to double detach.
+  DUMP_WILL_BE_CHECK(!obj->IsDetached()) << obj;
+  if (obj->IsDetached()) {
+    // TODO(accessibility): Remove early return and change above assertion
+    // to CHECK() once this no longer occurs.
+    return;
+  }
+
   obj->Detach();
 
   // Remove the object.
