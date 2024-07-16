@@ -25,6 +25,7 @@
   .completion-container {
     font-weight: 500;
     font-size: 14px;
+    margin-top: 20px;
     min-height: 42px;
   }
 
@@ -69,7 +70,8 @@
         class="action-button bulk-action-button"
         aria-label="$i18n{safetyCheckRemoveAll}"
         id="removeAllButton"
-        on-click="onRemoveAllClick_">
+        on-click="onRemoveAllClick_"
+        hidden$="[[!shouldShowSafetyHubRemoveAllButton_]]">
           $i18n{safetyCheckRemoveAll}
       </cr-button>
     </div>

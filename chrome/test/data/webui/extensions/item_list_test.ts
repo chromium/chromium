@@ -196,20 +196,6 @@ suite('ExtensionItemListTest', function() {
         itemList.shadowRoot!.querySelector('extensions-review-panel');
     assertTrue(!!reviewPanel);
     assertEquals(1, reviewPanel.extensions.length);
-
-    // "Acknowledge" the unsafe extension by removing the safetyCheckText.
-    // The review panel should still be visible as it now displays the
-    // completion state.
-    itemList.set(
-        'extensions.3', createExtensionInfo({
-          name: 'Unsafe extension',
-          id: 'd'.repeat(32),
-        }));
-    flush();
-    boundTestVisible('extensions-review-panel', true);
-    assertTrue(!!reviewPanel);
-    // There are no unsafe extensions in the panel.
-    assertEquals(0, reviewPanel.extensions.length);
   });
 
   test('SafetyCheckPanel_EnabledSafetyHub', function() {
@@ -235,20 +221,6 @@ suite('ExtensionItemListTest', function() {
         itemList.shadowRoot!.querySelector('extensions-review-panel');
     assertTrue(!!reviewPanel);
     assertEquals(1, reviewPanel.extensions.length);
-
-    // "Acknowledge" the unsafe extension by removing the safetyCheckText.
-    // The review panel should still be visible as it now displays the
-    // completion state.
-    itemList.set(
-        'extensions.3', createExtensionInfo({
-          name: 'Unsafe extension',
-          id: 'd'.repeat(32),
-        }));
-    flush();
-    boundTestVisible('extensions-review-panel', true);
-    assertTrue(!!reviewPanel);
-    // There are no unsafe extensions in the panel.
-    assertEquals(0, reviewPanel.extensions.length);
   });
 
   test('ManifestV2DeprecationPanel_None', async function() {

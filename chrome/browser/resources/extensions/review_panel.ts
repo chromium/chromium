@@ -77,11 +77,19 @@ export class ExtensionsReviewPanelElement extends
       completionMessage_: String,
 
       /**
-       * Indicates whether to show the panel header.
+       * Indicates whether to show the Remove All button.
        */
-      shouldShowSafetyHubHeader_: {
+      shouldShowSafetyHubRemoveAllButton_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('safetyHubShowReviewPanel'),
+        computed: 'computeShouldShowSafetyHubRemoveAllButton_(extensions.*)',
+      },
+
+      /**
+       * Indicates whether to show the potentially unsafe extensions or not.
+       */
+      shouldShowUnsafeExtensions_: {
+        type: Boolean,
+        computed: 'computeShouldShowUnsafeExtensions_(extensions.*)',
       },
 
       /**
@@ -95,11 +103,11 @@ export class ExtensionsReviewPanelElement extends
       },
 
       /**
-       * Indicates whether to show the potentially unsafe extensions or not.
+       * Indicates whether to show the panel header.
        */
-      shouldShowUnsafeExtensions_: {
+      shouldShowSafetyHubHeader_: {
         type: Boolean,
-        computed: 'computeShouldShowUnsafeExtensions_(extensions.*)',
+        computed: 'computeShouldShowSafetyHubHeader_(extensions.*)',
       },
 
       /**
@@ -111,11 +119,16 @@ export class ExtensionsReviewPanelElement extends
       },
 
       /**
-       * Indicates if any potential unsafe extensions has been kept or removed.
+       * Tracks if the last action that led to the number of extensions
+       * under review going to 0 was taken in the review panel. If it was
+       * the completion state is shown. If not the review panel is removed.
+       * This prevents actions like toggling dev mode or removing a
+       * extension using the item card's Remove button from triggering the
+       * completion message.
        */
-      numberOfExtensionsChanged_: {
+      numberOfExtensionsChangedByLastReviewPanelAction_: {
         type: Number,
-        value: 1,
+        value: 0,
       },
 
       /**
@@ -140,7 +153,7 @@ export class ExtensionsReviewPanelElement extends
 
   delegate: ItemDelegate;
   extensions: chrome.developerPrivate.ExtensionInfo[];
-  private numberOfExtensionsChanged_: number;
+  private numberOfExtensionsChangedByLastReviewPanelAction_: number;
   private reviewPanelShown_: boolean;
   private completionMetricLogged_: boolean;
   private headerString_: string;
@@ -148,6 +161,7 @@ export class ExtensionsReviewPanelElement extends
   private unsafeExtensionsReviewListExpanded_: boolean;
   private completionMessage_: string;
   private shouldShowSafetyHubHeader_: boolean;
+  private shouldShowSafetyHubRemoveAllButton_: boolean;
   private shouldShowCompletionInfo_: boolean;
   private shouldShowUnsafeExtensions_: boolean;
   private lastClickedExtensionId_: string;
@@ -163,7 +177,8 @@ export class ExtensionsReviewPanelElement extends
             'safetyCheckDescription', this.extensions.length);
     this.completionMessage_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
-            'safetyCheckAllDoneForNow', this.numberOfExtensionsChanged_);
+            'safetyCheckAllDoneForNow',
+            this.numberOfExtensionsChangedByLastReviewPanelAction_);
   }
 
   /**
@@ -171,7 +186,8 @@ export class ExtensionsReviewPanelElement extends
    * unsafe extensions left.
    */
   private computeShouldShowCompletionInfo_(): boolean {
-    if (this.extensions?.length === 0) {
+    if (this.extensions?.length === 0 &&
+        this.numberOfExtensionsChangedByLastReviewPanelAction_ !== 0) {
       if (!this.completionMetricLogged_) {
         this.completionMetricLogged_ = true;
         chrome.metricsPrivate.recordUserAction('SafetyCheck.ReviewCompletion');
@@ -194,6 +210,13 @@ export class ExtensionsReviewPanelElement extends
         }
       }
       this.completionMetricLogged_ = false;
+      // Reset the `numberOfExtensionsChangedByLastReviewPanelAction_` if
+      // the last action completed the review, i.e., a completion message
+      // will be shown. Resetting ensures that the completion message is
+      // only shown once after a review panel action.
+      if (this.shouldShowCompletionInfo_) {
+        this.numberOfExtensionsChangedByLastReviewPanelAction_ = 0;
+      }
       ExtensionsHatsBrowserProxyImpl.getInstance().panelShown(true);
       return true;
     } else {
@@ -203,7 +226,12 @@ export class ExtensionsReviewPanelElement extends
   }
 
   private computeShouldShowSafetyHubHeader_(): boolean {
-    return loadTimeData.getBoolean('safetyHubShowReviewPanel');
+    return loadTimeData.getBoolean('safetyHubShowReviewPanel') &&
+        (this.shouldShowUnsafeExtensions_ || this.shouldShowCompletionInfo_);
+  }
+
+  private computeShouldShowSafetyHubRemoveAllButton_(): boolean {
+    return this.extensions?.length !== 1;
   }
 
   /**
@@ -228,6 +256,9 @@ export class ExtensionsReviewPanelElement extends
         convertSafetyCheckReason(this.lastClickedExtensionTriggerReason_),
         SAFETY_HUB_WARNING_REASON_MAX_SIZE);
     ExtensionsHatsBrowserProxyImpl.getInstance().extensionKeptAction();
+    if (this.extensions?.length === 1) {
+      this.numberOfExtensionsChangedByLastReviewPanelAction_ = 1;
+    }
     this.$.makeExceptionMenu.close();
     if (this.lastClickedExtensionId_) {
       this.delegate.setItemSafetyCheckWarningAcknowledged(
@@ -255,11 +286,15 @@ export class ExtensionsReviewPanelElement extends
         convertSafetyCheckReason(e.model.item.safetyCheckWarningReason),
         SAFETY_HUB_WARNING_REASON_MAX_SIZE);
     ExtensionsHatsBrowserProxyImpl.getInstance().extensionRemovedAction();
+    if (this.extensions?.length === 1) {
+      this.numberOfExtensionsChangedByLastReviewPanelAction_ = 1;
+    }
     try {
       await this.delegate.uninstallItem(e.model.item.id);
     } catch (_) {
-      // The error was almost certainly the user cancelling the dialog.
-      // Do nothing.
+      // The error was almost certainly the user canceling the dialog.
+      // Update the number of changed extensions.
+      this.numberOfExtensionsChangedByLastReviewPanelAction_ = 0;
     }
   }
 
@@ -269,8 +304,9 @@ export class ExtensionsReviewPanelElement extends
     ExtensionsHatsBrowserProxyImpl.getInstance().removeAllAction(
         this.extensions.length);
     event.stopPropagation();
+    this.numberOfExtensionsChangedByLastReviewPanelAction_ =
+        this.extensions.length;
     try {
-      this.numberOfExtensionsChanged_ = this.extensions.length;
       this.extensions.forEach(extension => {
         chrome.metricsPrivate.recordEnumerationValue(
             SAFETY_HUB_EXTENSION_REMOVED_HISTOGRAM_NAME,
@@ -280,9 +316,9 @@ export class ExtensionsReviewPanelElement extends
       await this.delegate.deleteItems(
           this.extensions.map(extension => extension.id));
     } catch (_) {
-      // The error was almost certainly the user cancelling the dialog.
-      // Reset `numberOfExtensionsChanged_`.
-      this.numberOfExtensionsChanged_ = 1;
+      // The error was almost certainly the user canceling the dialog.
+      // Reset `numberOfExtensionsChangedByLastReviewPanelAction_`.
+      this.numberOfExtensionsChangedByLastReviewPanelAction_ = 0;
     }
   }
 }

@@ -109,17 +109,19 @@ suite('ExtensionsReviewPanel', function() {
         'Alpha');
   });
 
-  test('CompletionStateShouldBeShownIfNoExtensions', async function() {
-    const completionTextContainer =
-        element.shadowRoot!.querySelector('.completion-container');
-    assertTrue(!!completionTextContainer);
-    assertFalse(isVisible(completionTextContainer));
+  test(
+      'CompletionStateShouldNotBeShownIfNoExtensionsAndNoAction',
+      async function() {
+        const completionTextContainer =
+            element.shadowRoot!.querySelector('.completion-container');
+        assertTrue(!!completionTextContainer);
+        assertFalse(isVisible(completionTextContainer));
 
-    element.set('extensions', []);
-    await flushTasks();
+        element.set('extensions', []);
+        await flushTasks();
 
-    assertTrue(isVisible(completionTextContainer));
-  });
+        assertFalse(isVisible(completionTextContainer));
+      });
 
   test('CompletionStateShouldBeShownAfterDeletingItems', async function() {
     const completionTextContainer =
@@ -138,7 +140,7 @@ suite('ExtensionsReviewPanel', function() {
     element.shadowRoot!.querySelector('cr-icon-button')?.click();
     await flushTasks();
     await browserProxy.whenCalled('extensionRemovedAction');
-    const completionText = pluralString.getArgs('getPluralString')[2];
+    const completionText = pluralString.getArgs('getPluralString')[5];
     assertTrue(!!completionTextContainer);
     assertTrue(isVisible(completionTextContainer));
     assertEquals(completionText.messageName, 'safetyCheckAllDoneForNow');
