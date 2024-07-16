@@ -33,6 +33,8 @@ void ChromeQuickAnswersTestBase::SetUp() {
   GetFakeUserManager()->AddUser(account_id);
   GetFakeUserManager()->LoginUser(account_id);
 
+  SetUpInitialPrefValues();
+
   quick_answers_controller_ = std::make_unique<QuickAnswersControllerImpl>(
       read_write_cards_ui_controller_);
 

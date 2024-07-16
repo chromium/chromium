@@ -39,6 +39,10 @@ class ChromeQuickAnswersTestBase : public ChromeAshTestBase {
   void TearDown() override;
 
  protected:
+  // `SetUpInitialPrefValues` is called before `QuickAnswersState` is
+  // instantiated.
+  virtual void SetUpInitialPrefValues() {}
+
   void CreateAndShowBasicMenu();
   void ResetMenuParent();
   Profile* GetProfile() { return profile_.get(); }

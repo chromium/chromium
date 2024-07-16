@@ -87,13 +87,15 @@ class QuickAnswersStateAshTest : public ChromeQuickAnswersTestBase,
   // ChromeQuickAnswersTestBase:
   void SetUp() override {
     ChromeQuickAnswersTestBase::SetUp();
-
-    prefs_ = static_cast<TestingPrefServiceSimple*>(
-        ash::Shell::Get()->session_controller()->GetPrimaryUserPrefService());
-    DCHECK(prefs_);
-    DCHECK(QuickAnswersState::Get()->prefs_initialized());
+    CHECK(QuickAnswersState::Get()->prefs_initialized());
 
     observer_ = std::make_unique<TestQuickAnswersStateObserver>();
+  }
+
+  void SetUpInitialPrefValues() override {
+    prefs_ = static_cast<TestingPrefServiceSimple*>(
+        ash::Shell::Get()->session_controller()->GetPrimaryUserPrefService());
+    CHECK(prefs_);
   }
 
   TestingPrefServiceSimple* prefs() { return prefs_; }
@@ -103,6 +105,18 @@ class QuickAnswersStateAshTest : public ChromeQuickAnswersTestBase,
  private:
   raw_ptr<TestingPrefServiceSimple, DanglingUntriaged> prefs_ = nullptr;
   std::unique_ptr<TestQuickAnswersStateObserver> observer_;
+};
+
+class QuickAnswersStateAshEnabledTest : public QuickAnswersStateAshTest {
+ protected:
+  void SetUpInitialPrefValues() override {
+    QuickAnswersStateAshTest::SetUpInitialPrefValues();
+
+    prefs()->SetBoolean(quick_answers::prefs::kQuickAnswersEnabled, true);
+    CHECK_EQ(
+        ConsentStatus::kUnknown,
+        prefs()->GetInteger(quick_answers::prefs::kQuickAnswersConsentStatus));
+  }
 };
 
 TEST_F(QuickAnswersStateAshTest, InitObserver) {
@@ -315,6 +329,18 @@ TEST_F(QuickAnswersStateAshTest, EnabledThenDisabledByPolicy) {
   EXPECT_EQ(quick_answers::prefs::ConsentStatus::kRejected,
             observer()->consent_status());
   EXPECT_FALSE(observer()->settings_enabled());
+}
+
+// This is for testing `turned_on` in
+// `QuickAnswersStateAsh::UpdateSettingsEnabled`.
+TEST_F(QuickAnswersStateAshEnabledTest, EnabledFromBeginning) {
+  ASSERT_TRUE(prefs()->GetBoolean(quick_answers::prefs::kQuickAnswersEnabled));
+
+  EXPECT_EQ(
+      ConsentStatus::kUnknown,
+      prefs()->GetInteger(quick_answers::prefs::kQuickAnswersConsentStatus))
+      << "If pref value is enabled from beginning, it should not be treated as "
+         "turned on, i.e., consent status must be un-touched.";
 }
 
 TEST_P(QuickAnswersStateAshTest, ForceDisabledForKiosk) {
