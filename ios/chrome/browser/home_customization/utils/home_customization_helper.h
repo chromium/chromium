@@ -21,6 +21,9 @@
 // Returns the icon image for a given toggle type.
 + (UIImage*)iconForToggleType:(CustomizationToggleType)type;
 
+// Returns the accessibility identifier for a given toggle type.
++ (NSString*)accessibilityIdentifierForToggleType:(CustomizationToggleType)type;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UTILS_HOME_CUSTOMIZATION_HELPER_H_

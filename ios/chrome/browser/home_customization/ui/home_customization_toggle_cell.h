@@ -9,14 +9,18 @@
 
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 
+@protocol HomeCustomizationMutator;
+
 // A cell in the customization menu that allows users to toggle the visibility
 // of a module using a switch.
 @interface HomeCustomizationToggleCell : UICollectionViewCell
 
-// Configures the cell with the given text and icon.
-- (void)configureCellWithTitle:(NSString*)title
-                      subtitle:(NSString*)subtitle
-                          icon:(UIImage*)icon;
+// Mutator for communicating with the HomeCustomizationMediator.
+@property(nonatomic, weak) id<HomeCustomizationMutator> mutator;
+
+// Configures the cell's properties for a given toggle type.
+- (void)configureCellWithType:(CustomizationToggleType)type
+                      enabled:(BOOL)enabled;
 
 @end
 

@@ -857,6 +857,13 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterStringPref(kSyncCachedTrustedVaultAutoUpgradeDebugInfo, "");
 
+  // Registers the Home customization visibility prefs.
+  registry->RegisterBooleanPref(prefs::kHomeCustomizationShortcutsEnabled,
+                                true);
+  registry->RegisterBooleanPref(prefs::kHomeCustomizationMagicStackEnabled,
+                                true);
+  registry->RegisterBooleanPref(prefs::kHomeCustomizationDiscoverEnabled, true);
+
   // Deprecated 05/2024.
   registry->RegisterBooleanPref(kAutologinEnabled, true);
   registry->RegisterListPref(kReverseAutologinRejectedEmailList);

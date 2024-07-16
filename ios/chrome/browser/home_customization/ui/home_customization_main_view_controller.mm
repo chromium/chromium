@@ -4,11 +4,10 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_view_controller.h"
 
-#import <vector>
+#import <map>
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_toggle_cell.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
-#import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -26,8 +25,9 @@ const CGFloat kSpacingBetweenToggles = 12;
 
 @interface HomeCustomizationMainViewController () <UICollectionViewDelegate>
 
-// Contains the types of HomeCustomizationToggleCells that should be shown.
-@property(nonatomic, assign) std::vector<CustomizationToggleType> toggleTypes;
+// Contains the types of HomeCustomizationToggleCells that should be shown, with
+// a BOOL indicating if each one is enabled.
+@property(nonatomic, assign) std::map<CustomizationToggleType, BOOL> toggleMap;
 
 @end
 
@@ -66,14 +66,12 @@ const CGFloat kSpacingBetweenToggles = 12;
            configurationHandler:^(HomeCustomizationToggleCell* cell,
                                   NSIndexPath* indexPath,
                                   NSNumber* itemIdentifier) {
+             CHECK(weakSelf.mutator);
              CustomizationToggleType toggleType =
-                 weakSelf.toggleTypes[indexPath.row];
-             [cell configureCellWithTitle:[HomeCustomizationHelper
-                                              titleForToggleType:toggleType]
-                                 subtitle:[HomeCustomizationHelper
-                                              subtitleForToggleType:toggleType]
-                                     icon:[HomeCustomizationHelper
-                                              iconForToggleType:toggleType]];
+                 (CustomizationToggleType)[itemIdentifier integerValue];
+             BOOL enabled = self.toggleMap.at(toggleType);
+             [cell configureCellWithType:toggleType enabled:enabled];
+             cell.mutator = weakSelf.mutator;
            }];
 }
 
@@ -187,8 +185,7 @@ const CGFloat kSpacingBetweenToggles = 12;
   // Create toggles section and add items to it.
   [snapshot appendSectionsWithIdentifiers:@[ kCustomizationSectionToggles ]];
   [snapshot
-      appendItemsWithIdentifiers:[self
-                                     identifiersForToggleTypes:self.toggleTypes]
+      appendItemsWithIdentifiers:[self identifiersForToggleMap:self.toggleMap]
        intoSectionWithIdentifier:kCustomizationSectionToggles];
 
   return snapshot;
@@ -215,8 +212,8 @@ const CGFloat kSpacingBetweenToggles = 12;
 
 #pragma mark - HomeCustomizationMainConsumer
 
-- (void)populateTogglesWithTypes:(std::vector<CustomizationToggleType>)types {
-  _toggleTypes = types;
+- (void)populateToggles:(std::map<CustomizationToggleType, BOOL>)toggleMap {
+  _toggleMap = toggleMap;
 
   // Recreate the snapshot with the new items to take into account all the
   // changes of items presence (add/remove).
@@ -226,7 +223,7 @@ const CGFloat kSpacingBetweenToggles = 12;
   // Reconfigure all present items to ensure that they are updated in case their
   // content changed.
   [snapshot
-      reconfigureItemsWithIdentifiers:[self identifiersForToggleTypes:types]];
+      reconfigureItemsWithIdentifiers:[self identifiersForToggleMap:toggleMap]];
 
   [_diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
@@ -235,12 +232,12 @@ const CGFloat kSpacingBetweenToggles = 12;
 
 // Returns an array of identifiers for a vector of toggle types, which can be
 // used by the snapshot.
-- (NSMutableArray<NSNumber*>*)identifiersForToggleTypes:
-    (std::vector<CustomizationToggleType>)types {
+- (NSMutableArray<NSNumber*>*)identifiersForToggleMap:
+    (std::map<CustomizationToggleType, BOOL>)types {
   NSMutableArray<NSNumber*>* toggleDataIdentifiers =
       [[NSMutableArray alloc] init];
-  for (CustomizationToggleType type : types) {
-    [toggleDataIdentifiers addObject:@((int)type)];
+  for (auto const& [key, value] : types) {
+    [toggleDataIdentifiers addObject:@((int)key)];
   }
   return toggleDataIdentifiers;
 }

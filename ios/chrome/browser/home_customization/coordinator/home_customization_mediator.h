@@ -7,10 +7,19 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/home_customization/ui/home_customization_mutator.h"
+
 @protocol HomeCustomizationMainConsumer;
+class PrefService;
 
 // The mediator for the Home surface's customization menu.
-@interface HomeCustomizationMediator : NSObject
+@interface HomeCustomizationMediator : NSObject <HomeCustomizationMutator>
+
+// Initializes this mediator with a pref service.
+- (instancetype)initWithPrefService:(PrefService*)prefService
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // A consumer representing the main page's view controller.
 @property(nonatomic, weak) id<HomeCustomizationMainConsumer> mainPageConsumer;

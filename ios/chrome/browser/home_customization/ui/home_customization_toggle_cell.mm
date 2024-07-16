@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_toggle_cell.h"
 
+#import "ios/chrome/browser/home_customization/ui/home_customization_mutator.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
+#import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -26,6 +28,9 @@ const CGFloat kSpacingBetweenIconAndText = 24;
 }  // namespace
 
 @implementation HomeCustomizationToggleCell {
+  // The type for this toggle cell, indicating what module it represents.
+  CustomizationToggleType _type;
+
   // The horizontal stack view containing all the cell's content.
   UIStackView* _contentStackView;
 
@@ -84,7 +89,9 @@ const CGFloat kSpacingBetweenIconAndText = 24;
     _navigationImageView = [[UIImageView alloc] initWithImage:navigationIcon];
 
     _switch = [[UISwitch alloc] init];
-    _switch.on = YES;
+    [_switch addTarget:self
+                  action:@selector(handleSwitchToggled:)
+        forControlEvents:UIControlEventValueChanged];
 
     _contentStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
       _iconImageView, _textStackView, _navigationImageView, _switch
@@ -106,12 +113,17 @@ const CGFloat kSpacingBetweenIconAndText = 24;
 
 #pragma mark - Public
 
-- (void)configureCellWithTitle:(NSString*)title
-                      subtitle:(NSString*)subtitle
-                          icon:(UIImage*)icon {
-  _title.text = title;
-  _subtitle.text = subtitle;
-  _iconImageView.image = icon;
+- (void)configureCellWithType:(CustomizationToggleType)type
+                      enabled:(BOOL)enabled {
+  _type = type;
+
+  _title.text = [HomeCustomizationHelper titleForToggleType:type];
+  _subtitle.text = [HomeCustomizationHelper subtitleForToggleType:type];
+  _iconImageView.image = [HomeCustomizationHelper iconForToggleType:type];
+  _switch.on = enabled;
+
+  self.accessibilityIdentifier =
+      [HomeCustomizationHelper accessibilityIdentifierForToggleType:type];
 }
 
 #pragma mark - Private
@@ -119,9 +131,16 @@ const CGFloat kSpacingBetweenIconAndText = 24;
 // Prepares the cell for reuse by the collection view.
 - (void)prepareForReuse {
   [super prepareForReuse];
+  self.accessibilityIdentifier = nil;
   _title.text = nil;
   _subtitle.text = nil;
   _iconImageView.image = nil;
+  _switch.on = NO;
+}
+
+// Handles the cell's UISwitch being toggled.
+- (void)handleSwitchToggled:(UISwitch*)sender {
+  [self.mutator handleModuleToggledWithType:_type enabled:sender.isOn];
 }
 
 @end

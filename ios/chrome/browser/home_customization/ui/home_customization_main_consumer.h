@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#include <vector>
+#include <map>
 
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 
@@ -15,8 +15,9 @@
 // main page's view controller.
 @protocol HomeCustomizationMainConsumer
 
-// Populates the toggle cells with given `types` and updates the snapshot.
-- (void)populateTogglesWithTypes:(std::vector<CustomizationToggleType>)types;
+// Populates the toggle cells with a map of types and bools indicating if each
+// type is enabled, then updates the snapshot.
+- (void)populateToggles:(std::map<CustomizationToggleType, BOOL>)toggleMap;
 
 @end
 

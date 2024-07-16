@@ -11,11 +11,11 @@
 + (NSString*)titleForToggleType:(CustomizationToggleType)type {
   switch (type) {
     case CustomizationToggleType::kShortcuts:
-      return @"Test title 1";
+      return @"Test title 1 (Shortcuts)";
     case CustomizationToggleType::kMagicStack:
-      return @"Test title 2";
+      return @"Test title 2 (Magic Stack)";
     case CustomizationToggleType::kDiscover:
-      return @"Test title 3";
+      return @"Test title 3 (Discover)";
   }
 }
 
@@ -40,6 +40,18 @@
     case CustomizationToggleType::kDiscover:
       return DefaultSymbolWithPointSize(kDiscoverFeedSymbol,
                                         kToggleIconPointSize);
+  }
+}
+
++ (NSString*)accessibilityIdentifierForToggleType:
+    (CustomizationToggleType)type {
+  switch (type) {
+    case CustomizationToggleType::kShortcuts:
+      return kCustomizationToggleShortcutsIdentifier;
+    case CustomizationToggleType::kMagicStack:
+      return kCustomizationToggleMagicStackIdentifier;
+    case CustomizationToggleType::kDiscover:
+      return kCustomizationToggleDiscoverIdentifier;
   }
 }
 

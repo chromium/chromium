@@ -9,10 +9,15 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_consumer.h"
 
+@protocol HomeCustomizationMutator;
+
 // The view controller representing the first page of the Home customization
 // menu.
 @interface HomeCustomizationMainViewController
     : UIViewController <HomeCustomizationMainConsumer>
+
+// Mutator for communicating with the HomeCustomizationMediator.
+@property(nonatomic, weak) id<HomeCustomizationMutator> mutator;
 
 @end
 

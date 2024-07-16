@@ -16,6 +16,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/supervised_user/core/common/features.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
+#import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_app_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -1630,6 +1631,93 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 }
 
+#pragma mark - Customization tests
+
+// Tests that the customization menu can be used to toggle the visibility of
+// Home surface modules.
+- (void)testToggleModuleVisiblityInCustomizationMenu {
+  // Reset prefs so that this test run is independent.
+  [ChromeEarlGrey setBoolValue:YES
+                   forUserPref:prefs::kHomeCustomizationShortcutsEnabled];
+  [ChromeEarlGrey setBoolValue:YES
+                   forUserPref:prefs::kHomeCustomizationMagicStackEnabled];
+  [ChromeEarlGrey setBoolValue:YES
+                   forUserPref:prefs::kHomeCustomizationDiscoverEnabled];
+
+  // Enable customization and reset state so the test can run repeatedly.
+  // TODO(crbug.com/350990359): Remove this when feature is enabled by default.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_enabled.push_back(kHomeCustomization);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Open the Home customization menu and expand it to view all its content.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kNTPCustomizationMenuButtonIdentifier)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(l10n_util::GetNSString(
+                     IDS_IOS_HOME_CUSTOMIZATION_MAIN_PAGE_NAVIGATION_TITLE))]
+      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+
+  // Check for a toggle cell for Shortcuts, Magic Stack and Discover, and ensure
+  // that they're all on.
+  [[EarlGrey
+      selectElementWithMatcher:CustomizationToggle(
+                                   kCustomizationToggleShortcutsIdentifier)]
+      assertWithMatcher:grey_switchWithOnState(YES)];
+  [[EarlGrey
+      selectElementWithMatcher:CustomizationToggle(
+                                   kCustomizationToggleMagicStackIdentifier)]
+      assertWithMatcher:grey_switchWithOnState(YES)];
+  [[EarlGrey
+      selectElementWithMatcher:CustomizationToggle(
+                                   kCustomizationToggleDiscoverIdentifier)]
+      assertWithMatcher:grey_switchWithOnState(YES)];
+
+  // Turn off the Magic Stack and Discover toggles.
+  [[EarlGrey
+      selectElementWithMatcher:CustomizationToggle(
+                                   kCustomizationToggleMagicStackIdentifier)]
+      performAction:grey_turnSwitchOn(NO)];
+  [[EarlGrey
+      selectElementWithMatcher:CustomizationToggle(
+                                   kCustomizationToggleDiscoverIdentifier)]
+      performAction:grey_turnSwitchOn(NO)];
+
+  // Dismiss the customization menu, then open and expand it again.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kNavigationBarDismissButtonIdentifier)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kNTPCustomizationMenuButtonIdentifier)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(l10n_util::GetNSString(
+                     IDS_IOS_HOME_CUSTOMIZATION_MAIN_PAGE_NAVIGATION_TITLE))]
+      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+
+  // Check that the state of each switch was retained.
+  [[EarlGrey
+      selectElementWithMatcher:CustomizationToggle(
+                                   kCustomizationToggleShortcutsIdentifier)]
+      assertWithMatcher:grey_switchWithOnState(YES)];
+  [[EarlGrey
+      selectElementWithMatcher:CustomizationToggle(
+                                   kCustomizationToggleMagicStackIdentifier)]
+      assertWithMatcher:grey_switchWithOnState(NO)];
+  [[EarlGrey
+      selectElementWithMatcher:CustomizationToggle(
+                                   kCustomizationToggleDiscoverIdentifier)]
+      assertWithMatcher:grey_switchWithOnState(NO)];
+
+  // TODO(crbug.com/350990359): Check that module visibility changed once
+  // implemented.
+}
+
 #pragma mark - Helpers
 
 // Opens the Settings menu and ensures that the visibility of the Discover
@@ -1814,6 +1902,12 @@ id<GREYMatcher> FeedHeaderSegmentDiscover() {
 id<GREYMatcher> FeedHeaderSegmentFollowing() {
   return FeedHeaderSegmentedControlSegmentWithTitle(
       IDS_IOS_FOLLOWING_FEED_TITLE);
+}
+
+// Returns the switch in toggle cell from the customization menu.
+id<GREYMatcher> CustomizationToggle(NSString* identifier) {
+  return grey_allOf(grey_kindOfClassName(@"UISwitch"),
+                    grey_ancestor(grey_accessibilityID(identifier)), nil);
 }
 
 @end

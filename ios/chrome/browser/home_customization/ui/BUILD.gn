@@ -7,6 +7,7 @@ source_set("ui") {
     "home_customization_main_consumer.h",
     "home_customization_main_view_controller.h",
     "home_customization_main_view_controller.mm",
+    "home_customization_mutator.h",
     "home_customization_toggle_cell.h",
     "home_customization_toggle_cell.mm",
   ]

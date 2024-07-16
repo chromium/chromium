@@ -19,6 +19,11 @@ extern NSString* const kBottomSheetDetentIdentifier;
 // The identifier for the dismiss button on the top right of the navigation bar.
 extern NSString* const kNavigationBarDismissButtonIdentifier;
 
+// The identifiers for the main page toggle cells.
+extern NSString* const kCustomizationToggleShortcutsIdentifier;
+extern NSString* const kCustomizationToggleMagicStackIdentifier;
+extern NSString* const kCustomizationToggleDiscoverIdentifier;
+
 // The size of the toggle cell's icon.
 extern const CGFloat kToggleIconPointSize;
 

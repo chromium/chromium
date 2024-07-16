@@ -12,4 +12,11 @@ NSString* const kBottomSheetDetentIdentifier = @"BottomSheetDetentIdentifier";
 NSString* const kNavigationBarDismissButtonIdentifier =
     @"NavigationBarDismissButtonIdentifier";
 
+NSString* const kCustomizationToggleShortcutsIdentifier =
+    @"CustomizationToggleShortcutsIdentifier";
+NSString* const kCustomizationToggleMagicStackIdentifier =
+    @"CustomizationToggleMagicStackIdentifier";
+NSString* const kCustomizationToggleDiscoverIdentifier =
+    @"CustomizationToggleDiscoverIdentifier";
+
 const CGFloat kToggleIconPointSize = 18;
