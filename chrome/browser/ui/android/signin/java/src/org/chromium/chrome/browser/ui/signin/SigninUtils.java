@@ -15,7 +15,6 @@ import android.text.TextUtils;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -312,7 +311,6 @@ public final class SigninUtils {
      */
     public static boolean shouldShowNewSigninFlow() {
         return ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                && !BuildInfo.getInstance().isAutomotive;
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS);
     }
 }

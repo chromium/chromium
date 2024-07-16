@@ -41,7 +41,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
@@ -195,11 +194,7 @@ public class IdentityDiscControllerTest {
     @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testIdentityDiscSignedOut_replaceSyncBySigninEnabled() throws Exception {
         // When user is signed out, a signed-out avatar should be visible on the NTP.
-        @StringRes
-        int descriptionId =
-                BuildInfo.getInstance().isAutomotive
-                        ? R.string.accessibility_toolbar_btn_signed_out_with_sync_identity_disc
-                        : R.string.accessibility_toolbar_btn_signed_out_identity_disc;
+        @StringRes int descriptionId = R.string.accessibility_toolbar_btn_signed_out_identity_disc;
         ViewUtils.waitForVisibleView(
                 allOf(
                         withId(R.id.optional_toolbar_button),
@@ -207,22 +202,13 @@ public class IdentityDiscControllerTest {
                         withContentDescription(descriptionId)));
 
         // Clicking the signed-out avatar should lead to the correct sign-in screen.
-        // TODO(crbug.com/41496906): Implement the new sign-in flow for automotive and update the
-        // verification below.
-        if (!BuildInfo.getInstance().isAutomotive) {
-            Activity signinActivity =
-                    ActivityTestUtils.waitForActivity(
-                            InstrumentationRegistry.getInstrumentation(),
-                            SigninAndHistorySyncActivity.class,
-                            () -> onView(withId(R.id.optional_toolbar_button)).perform(click()));
-            if (signinActivity != null) {
-                ApplicationTestUtils.finishActivity(signinActivity);
-            }
-        } else {
-            ActivityTestUtils.waitForActivity(
-                    InstrumentationRegistry.getInstrumentation(),
-                    SyncConsentActivity.class,
-                    () -> onView(withId(R.id.optional_toolbar_button)).perform(click()));
+        Activity signinActivity =
+                ActivityTestUtils.waitForActivity(
+                        InstrumentationRegistry.getInstrumentation(),
+                        SigninAndHistorySyncActivity.class,
+                        () -> onView(withId(R.id.optional_toolbar_button)).perform(click()));
+        if (signinActivity != null) {
+            ApplicationTestUtils.finishActivity(signinActivity);
         }
     }
 
