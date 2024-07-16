@@ -453,9 +453,6 @@ void URLRequestJob::NotifyHeadersComplete() {
       // Wait for SetAuth or CancelAuth to be called.
       return;
     }
-    NotifyFinalHeadersReceived();
-    // |this| may be destroyed at this point.
-    return;
   }
 
   if (NeedsRetryWithStorageAccess()) {

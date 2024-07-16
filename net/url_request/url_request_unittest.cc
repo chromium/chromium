@@ -109,6 +109,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_server_properties.h"
+#include "net/http/http_status_code.h"
 #include "net/http/http_transaction_test_util.h"
 #include "net/http/http_util.h"
 #include "net/http/transport_security_state.h"
@@ -13428,6 +13429,7 @@ class StorageAccessHeaderURLRequestTest : public URLRequestTestHTTP {
     kRedirect,
     kAuthChallenge,
     kExpectAuthCredentials,
+    kAuthWithoutChallenge,
   };
 
   void set_response_sequence(const std::initializer_list<ResponseKind>& kinds) {
@@ -13473,6 +13475,9 @@ class StorageAccessHeaderURLRequestTest : public URLRequestTestHTTP {
         return HandleAuthChallenge(request, std::move(http_response));
       case ResponseKind::kExpectAuthCredentials:
         return HandleExpectAuthCredentials(request, std::move(http_response));
+      case ResponseKind::kAuthWithoutChallenge:
+        http_response->set_code(HTTP_UNAUTHORIZED);
+        return http_response;
     }
   }
 
@@ -13593,7 +13598,7 @@ TEST_F(StorageAccessHeaderURLRequestTest,
 }
 
 TEST_F(StorageAccessHeaderURLRequestTest,
-       StorageAccessHeaderRetry_AuthIgnoresRetryHeader) {
+       StorageAccessHeaderRetry_AuthChallengeIgnoresRetryHeader) {
   set_response_sequence({ResponseKind::kAuthChallenge,
                          ResponseKind::kExpectAuthCredentials,
                          ResponseKind::kOk});
@@ -13632,6 +13637,43 @@ TEST_F(StorageAccessHeaderURLRequestTest,
           CookieSettingOverrides(
               {CookieSettingOverride::kStorageAccessGrantEligibleViaHeader})));
   EXPECT_TRUE(d.auth_required_called());
+}
+
+TEST_F(StorageAccessHeaderURLRequestTest,
+       StorageAccessHeaderRetry_AuthWithoutChallengeHonorsRetryHeader) {
+  set_response_sequence(
+      {ResponseKind::kAuthWithoutChallenge, ResponseKind::kOk});
+
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  auto& network_delegate = *context_builder->set_network_delegate(
+      std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
+          std::vector({false, true}),
+          cookie_util::StorageAccessStatus::kInactive));
+  auto context = context_builder->Build();
+  TestDelegate d;
+  d.set_credentials(AuthCredentials(kUser, kSecret));
+
+  std::unique_ptr<URLRequest> req(context->CreateRequest(
+      http_test_server()->GetURL(kStorageAccessRetryPath), DEFAULT_PRIORITY, &d,
+      TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  req->Start();
+  d.RunUntilComplete();
+
+  EXPECT_THAT(
+      network_delegate.cookie_setting_overrides_records(),
+      ElementsAre(
+          // The first request (OnForcePrivacyMode and
+          // OnAnnotateAndMoveUserBlockedCookies). The first response is a 4XX
+          // but does not include a challenge, so we handle the `retry` header.
+          CookieSettingOverrides(), CookieSettingOverrides(),
+          // The next request should include the overrides due to the `retry`
+          // header.
+          CookieSettingOverrides(
+              {CookieSettingOverride::kStorageAccessGrantEligibleViaHeader}),
+          CookieSettingOverrides(
+              {CookieSettingOverride::kStorageAccessGrantEligibleViaHeader})));
+  EXPECT_FALSE(d.auth_required_called());
 }
 
 TEST_F(StorageAccessHeaderURLRequestTest,
