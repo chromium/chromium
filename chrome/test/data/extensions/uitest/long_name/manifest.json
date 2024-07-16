@@ -1,5 +1,5 @@
 {
   "name": "Test Extension with Extraordinarily Long Name That Is Quite Long",
   "version": "13.1",
-  "manifest_version": 2
+  "manifest_version": 3
 }

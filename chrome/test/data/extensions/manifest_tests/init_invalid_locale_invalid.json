@@ -1,6 +1,6 @@
 {
-   "name": "my extension",
-   "manifest_version": 2,
-   "version": "1.0.0.0",
-   "default_locale": 5
+  "name": "my extension",
+  "manifest_version": 3,
+  "version": "1.0.0.0",
+  "default_locale": 5
 }

@@ -1,7 +1,10 @@
 {
   "name": "chrome.sessions",
   "version": "0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "end-to-end browser test for chrome.sessions API",
-  "permissions": ["sessions", "tabs"]
+  "permissions": [
+    "sessions",
+    "tabs"
+  ]
 }

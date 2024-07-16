@@ -2,6 +2,8 @@
   "name": "Service worker - notifications test",
   "description": "Tests ServiceWorkerRegistration.showNotification() from an extension",
   "version": "1",
-  "manifest_version": 2,
-  "permissions": ["notifications"]
+  "manifest_version": 3,
+  "permissions": [
+    "notifications"
+  ]
 }

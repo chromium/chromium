@@ -1,7 +1,7 @@
 {
   "name": "platforms key does not cause a warning",
   "version": "1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "platforms": [
     {
       "os": "win",

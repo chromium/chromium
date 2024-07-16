@@ -1,11 +1,13 @@
 {
   "name": "test",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "version": "1",
   "tts_engine": {
     "voices": [
       {
-        "voice_name": [ "Shouldn't be in an array" ]
+        "voice_name": [
+          "Shouldn't be in an array"
+        ]
       }
     ]
   }

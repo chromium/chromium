@@ -1,10 +1,12 @@
 {
   "name": "test",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "version": "1",
   "content_scripts": [
     {
-      "matches": [12345]
+      "matches": [
+        12345
+      ]
     }
   ]
 }

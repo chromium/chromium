@@ -2,5 +2,5 @@
   "name": "Unload listener",
   "description": "An extension that has an unload listener in a page",
   "version": "0.1",
-  "manifest_version": 2
+  "manifest_version": 3
 }

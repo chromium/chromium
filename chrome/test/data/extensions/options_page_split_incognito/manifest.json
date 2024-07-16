@@ -4,5 +4,5 @@
   "options_page": "options.html",
   "incognito": "split",
   "version": "0.1.1",
-  "manifest_version": 2
+  "manifest_version": 3
 }

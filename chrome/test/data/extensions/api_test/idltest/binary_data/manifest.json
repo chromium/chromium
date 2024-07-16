@@ -1,6 +1,8 @@
 {
   "name": "IDLTest API test extension",
   "version": "0.5",
-  "permissions": ["idltest"],
-  "manifest_version": 2
+  "permissions": [
+    "idltest"
+  ],
+  "manifest_version": 3
 }

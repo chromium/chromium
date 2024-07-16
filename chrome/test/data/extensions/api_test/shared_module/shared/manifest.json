@@ -1,6 +1,6 @@
 {
   "name": "Shared Module Test",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "version": "1.0",
   "export": {},
   "default_locale": "en",

@@ -1,7 +1,9 @@
 {
   "name": "test",
   "version": "1",
-  "manifest_version": 2,
-  "icons": { "16": "16.png",
-             "24": "24.png" }
+  "manifest_version": 3,
+  "icons": {
+    "16": "16.png",
+    "24": "24.png"
+  }
 }

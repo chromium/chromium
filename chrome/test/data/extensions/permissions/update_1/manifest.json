@@ -1,6 +1,8 @@
 {
-   "name": "Permissions Update Test",
-   "permissions": [ "history" ],
-   "manifest_version": 2,
-   "version": "1"
+  "name": "Permissions Update Test",
+  "permissions": [
+    "history"
+  ],
+  "manifest_version": 3,
+  "version": "1"
 }

@@ -1,7 +1,7 @@
 {
   "name": "unit_tests --gtest_filter=NativelyConnectableManifestTest.IncorrectType",
   "version": "1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "natively_connectable": {
     "com.google.chrome.test.echo": 2,
     "com.google.chrome.test.echo": "three",

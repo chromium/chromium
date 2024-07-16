@@ -1,5 +1,5 @@
 {
   "name": "Updated extension that uses service worker without skipWaiting()",
   "version": "2.0",
-  "manifest_version": 2
+  "manifest_version": 3
 }

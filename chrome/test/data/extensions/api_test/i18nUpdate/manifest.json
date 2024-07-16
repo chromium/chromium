@@ -3,10 +3,14 @@
   "version": "1.0",
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["contentscript.js"]
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "contentscript.js"
+      ]
     }
   ],
   "default_locale": "en",
-  "manifest_version": 2
+  "manifest_version": 3
 }

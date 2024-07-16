@@ -1,4 +1,4 @@
 {
-   "name": "my extension",
-   "manifest_version": 2
+  "name": "my extension",
+  "manifest_version": 3
 }
