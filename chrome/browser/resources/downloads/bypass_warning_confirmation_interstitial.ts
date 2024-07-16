@@ -18,8 +18,9 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {BrowserProxy} from './browser_proxy.js';
 import {getTemplate} from './bypass_warning_confirmation_interstitial.html.js';
-
+import type {PageHandlerInterface} from './downloads.mojom-webui.js';
 
 export interface DownloadsDangerousDownloadInterstitialElement {
   $: {
@@ -40,6 +41,8 @@ export class DownloadsDangerousDownloadInterstitialElement extends
 
   static get properties() {
     return {
+      bypassPromptItemId: String,
+
       hideSurveyAndDownloadButton_: {
         type: Boolean,
         value: true,
@@ -49,10 +52,18 @@ export class DownloadsDangerousDownloadInterstitialElement extends
     };
   }
 
+  bypassPromptItemId: string;
   trustSiteLine: string;
 
   private boundKeydown_: ((e: KeyboardEvent) => void)|null = null;
   private hideSurveyAndDownloadButton_: boolean;
+
+  private mojoHandler_: PageHandlerInterface|null = null;
+
+  override ready() {
+    super.ready();
+    this.mojoHandler_ = BrowserProxy.getInstance().handler;
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -86,10 +97,16 @@ export class DownloadsDangerousDownloadInterstitialElement extends
     assert(!!continueAnywayButton);
     continueAnywayButton.setAttribute('disabled', 'true');
     this.hideSurveyAndDownloadButton_ = false;
+
+    assert(this.bypassPromptItemId !== '');
+    assert(!!this.mojoHandler_);
+    this.mojoHandler_.recordOpenSurveyOnDangerousInterstitial(
+        this.bypassPromptItemId);
   }
 
   private onDownloadClick_() {
     this.$.dialog.close();
+
     assert(!this.$.dialog.open);
     this.dispatchEvent(
         new CustomEvent('close', {bubbles: true, composed: true}));

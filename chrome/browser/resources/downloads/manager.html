@@ -141,6 +141,7 @@
     restamp>
   <template is="dom-if" if="[[dangerousDownloadInterstitial_]]" restamp>
     <downloads-dangerous-download-interstitial
+        bypass-prompt-item-id="[[bypassPromptItemId_]]"
         trust-site-line=
         "[[computeDangerousInterstitialTrustSiteLine_(bypassPromptItemId_)]]"
         on-cancel="onDangerousDownloadInterstitialCancel_"

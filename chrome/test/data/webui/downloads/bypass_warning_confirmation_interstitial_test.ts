@@ -4,7 +4,7 @@
 
 import 'chrome://downloads/downloads.js';
 
-import type {DownloadsDangerousDownloadInterstitialElement} from 'chrome://downloads/downloads.js';
+import type {DownloadsDangerousDownloadInterstitialElement, PageRemote} from 'chrome://downloads/downloads.js';
 import {BrowserProxy, loadTimeData} from 'chrome://downloads/downloads.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -15,7 +15,9 @@ import {TestDownloadsProxy} from './test_support.js';
 
 suite('interstitial tests', function() {
   let interstitial: DownloadsDangerousDownloadInterstitialElement;
+  let callbackRouterRemote: PageRemote;
   let testDownloadsProxy: TestDownloadsProxy;
+  const bypassPromptItemId = 'itemId';
   const displayReferrerUrl = 'https://example.com';
   const trustSiteLineUrl = `I trust the site (${displayReferrerUrl})`;
   const trustSiteLineNoUrl = 'I trust the site';
@@ -24,13 +26,14 @@ suite('interstitial tests', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testDownloadsProxy = new TestDownloadsProxy();
-
+    callbackRouterRemote = testDownloadsProxy.callbackRouterRemote;
     BrowserProxy.setInstance(testDownloadsProxy);
 
     interstitial =
         document.createElement('downloads-dangerous-download-interstitial');
     interstitial.trustSiteLine = loadTimeData.getStringF(
         'warningBypassInterstitialSurveyTrustSiteWithUrl', displayReferrerUrl);
+    interstitial.bypassPromptItemId = bypassPromptItemId;
     document.body.appendChild(interstitial);
     flush();
   });
@@ -87,20 +90,29 @@ suite('interstitial tests', function() {
     assertFalse(interstitial.$.dialog.open);
   });
 
-  test('clicking continue anyway opens survey and disables itself', function() {
-    const continueAnywayButton = interstitial.$.continueAnywayButton;
-    assertTrue(!!continueAnywayButton);
-    assertFalse(continueAnywayButton.disabled);
+  test(
+      'clicking continue records opens survey and disables itself',
+      async () => {
+        const continueAnywayButton = interstitial.$.continueAnywayButton;
+        assertTrue(!!continueAnywayButton);
+        assertFalse(continueAnywayButton.disabled);
 
-    const surveyAndDownloadButton = interstitial!.shadowRoot!.querySelector(
-        '#survey-and-download-button-wrapper');
-    assertFalse(isVisible(surveyAndDownloadButton));
+        const surveyAndDownloadButton = interstitial!.shadowRoot!.querySelector(
+            '#survey-and-download-button-wrapper');
+        assertFalse(isVisible(surveyAndDownloadButton));
 
-    continueAnywayButton.click();
+        continueAnywayButton.click();
 
-    assertTrue(isVisible(surveyAndDownloadButton));
-    assertTrue(continueAnywayButton.disabled);
-  });
+        assertTrue(isVisible(surveyAndDownloadButton));
+        assertTrue(continueAnywayButton.disabled);
+
+        await callbackRouterRemote.$.flushForTesting();
+        flush();
+
+        const openSurveyId = await testDownloadsProxy.handler.whenCalled(
+            'recordOpenSurveyOnDangerousInterstitial');
+        assertEquals(bypassPromptItemId, openSurveyId);
+      });
 
   test('esc key disabled while interstitial open', function() {
     let cancelCounter = 0;
