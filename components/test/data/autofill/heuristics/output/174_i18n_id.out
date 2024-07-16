@@ -2,7 +2,7 @@ NAME_FIRST | fn | Nama Depan: |  | fn_1
 NAME_LAST | ln | Nama Belakang: |  | fn_1
 COMPANY_NAME | cm | Nama Perusahaan: |  | fn_1
 ADDRESS_HOME_LINE1 | a1 | Alamat: |  | fn_1
-ADDRESS_HOME_STATE | st | Provinci: |  | fn_1
+ADDRESS_HOME_STATE | st | Provinsi: |  | fn_1
 ADDRESS_HOME_CITY | ct | Kota/Kabupaten: |  | fn_1
 ADDRESS_HOME_DEPENDENT_LOCALITY | dl | Kecamatan: |  | fn_1
 ADDRESS_HOME_ZIP | zc | Kode Pos: |  | fn_1
