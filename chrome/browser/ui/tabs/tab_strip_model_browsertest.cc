@@ -34,6 +34,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/saved_tab_groups/features.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -173,14 +174,52 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(0, tab_strip_model->count());
 }
 
-class TabStripModelBrowserTest : public InProcessBrowserTest {
+class TabStripModelBrowserTest : public InProcessBrowserTest,
+                                 public TabStripModelObserver {
  public:
   TabStripModelBrowserTest() {
     feature_list_.InitWithFeatures({features::kTabOrganization}, {});
   }
 
+  void TearDownOnMainThread() override { observer_.Reset(); }
+
+  MOCK_METHOD(void,
+              OnTabGroupAdded,
+              (const tab_groups::TabGroupId& group_id),
+              (override));
+  MOCK_METHOD(void,
+              OnTabGroupWillBeRemoved,
+              (const tab_groups::TabGroupId& group_id),
+              (override));
+
   base::test::ScopedFeatureList feature_list_;
+  base::ScopedObservation<TabStripModel, TabStripModelBrowserTest> observer_{
+      this};
 };
+
+IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, OnTabGroupAdded) {
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  // We should already have a tab. Add it to a group and see if
+  // TabStripModelObserver::OnTabGroupAdded is called.
+  EXPECT_CALL(*this, OnTabGroupAdded(_)).Times(1);
+
+  observer_.Observe(browser()->tab_strip_model());
+  browser()->tab_strip_model()->AddToNewGroup({0});
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, OnTabGroupWillBeRemoved) {
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+
+  // Close the group and see if TabStripModelObserver::OnTabGroupWillBeRemoved
+  // is called.
+  EXPECT_CALL(*this, OnTabGroupWillBeRemoved(group_id)).Times(1);
+
+  observer_.Observe(browser()->tab_strip_model());
+  browser()->tab_strip_model()->CloseAllTabsInGroup(group_id);
+}
 
 IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, CommandOrganizeTabs) {
   base::HistogramTester histogram_tester;

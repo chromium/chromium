@@ -357,6 +357,12 @@ class TabStripModelObserver {
   // independent of the tabstrip model and do not affect any tab state.
   virtual void OnTabGroupChanged(const TabGroupChange& change);
 
+  // Notfies us when a Tab Group is added to the Tab Group Model.
+  virtual void OnTabGroupAdded(const tab_groups::TabGroupId& group_id);
+
+  // Notfies us when a Tab Group will be removed from the Tab Group Model.
+  virtual void OnTabGroupWillBeRemoved(const tab_groups::TabGroupId& group_id);
+
   // The specified WebContents at |index| changed in some way. |contents|
   // may be an entirely different object and the old value is no longer
   // available by the time this message is delivered.

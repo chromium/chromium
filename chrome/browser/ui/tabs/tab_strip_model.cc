@@ -677,6 +677,10 @@ void TabStripModel::CloseAllTabsInGroup(const tab_groups::TabGroupId& group) {
 
   delegate_->WillCloseGroup(group);
 
+  for (TabStripModelObserver& observer : observers_) {
+    observer.OnTabGroupWillBeRemoved(group);
+  }
+
   gfx::Range tabs_in_group = group_model_->GetTabGroup(group)->ListTabs();
   if (static_cast<int>(tabs_in_group.length()) == count())
     closing_all_ = true;
@@ -1090,6 +1094,10 @@ tab_groups::TabGroupId TabStripModel::AddToNewGroup(
   AddToNewGroupImpl(indices, group_id, visual_data);
   delegate_->GroupAdded(group_id);
 
+  for (TabStripModelObserver& observer : observers_) {
+    observer.OnTabGroupAdded(group_id);
+  }
+
   return group_id;
 }
 
@@ -1113,6 +1121,10 @@ tab_groups::TabGroupId TabStripModel::AddToNewGroup(
   // TODO(crbug.com/339858272) : Consolidate all default save logic to
   // TabStripModel::AddToNewGroupImpl.
   delegate_->GroupAdded(new_group);
+
+  for (TabStripModelObserver& observer : observers_) {
+    observer.OnTabGroupAdded(new_group);
+  }
 
   return new_group;
 }
