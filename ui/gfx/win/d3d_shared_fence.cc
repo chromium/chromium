@@ -167,13 +167,18 @@ bool D3DSharedFence::WaitD3D11(
     it = d3d11_wait_fence_map_.Put(d3d11_wait_device, std::move(d3d11_fence));
   }
 
+  const Microsoft::WRL::ComPtr<ID3D11Fence>& fence = it->second;
+  // Skip wait if we're already past the wait value.
+  if (fence->GetCompletedValue() >= fence_value_) {
+    return true;
+  }
+
   Microsoft::WRL::ComPtr<ID3D11DeviceContext4> context4 =
       GetDeviceContext4(d3d11_wait_device.Get());
   if (!context4) {
     return false;
   }
 
-  const Microsoft::WRL::ComPtr<ID3D11Fence>& fence = it->second;
   HRESULT hr = context4->Wait(fence.Get(), fence_value_);
   if (FAILED(hr)) {
     DLOG(ERROR) << "D3D11 fence wait failed: "
