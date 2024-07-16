@@ -172,6 +172,44 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(NavigationAbandonReasonEnum) -->
+
+<enum name="NavigationAbandonReasonEnum">
+  <int value="0" label="kFrameRemoved"/>
+  <int value="1" label="kExplicitCancellation"/>
+  <int value="2" label="kInternalCancellation"/>
+  <int value="3" label="kRenderProcessGone"/>
+  <int value="4" label="kNeverStarted"/>
+  <int value="5" label="kFailedSecurityCheck"/>
+  <int value="6" label="kOther"/>
+  <int value="7" label="kHidden"/>
+  <int value="8" label="kErrorPage"/>
+  <int value="9" label="kAppBackgrounded"/>
+  <int value="10" label="kNewReloadNavigation"/>
+  <int value="11" label="kNewHistoryNavigation"/>
+  <int value="12" label="kNewOtherNavigationBrowserInitiated"/>
+  <int value="13" label="kNewOtherNavigationRendererInitiated"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/page_load_metrics/observers/gws_abandoned_page_load_metrics_observer.h:AbandonReason) -->
+
+<!-- LINT.IfChange(NavigationMilestoneEnum) -->
+
+<enum name="NavigationMilestoneEnum">
+  <int value="0" label="kNavigationStart"/>
+  <int value="1" label="kLoaderStart"/>
+  <int value="2" label="kFirstRedirectedRequestStart"/>
+  <int value="3" label="kFirstRedirectResponseStart"/>
+  <int value="4" label="kFirstRedirectResponseLoaderCallback"/>
+  <int value="5" label="kNonRedirectedRequestStart"/>
+  <int value="6" label="kNonRedirectResponseStart"/>
+  <int value="7" label="kNonRedirectResponseLoaderCallback"/>
+  <int value="8" label="kCommitSent"/>
+  <int value="9" label="kDidCommit"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/page_load_metrics/observers/gws_abandoned_page_load_metrics_observer.h:NavigationMilestone) -->
+
 <enum name="OriginTrialStatusChange">
   <int value="0"
       label="kDisabled: Origin-specific origin trial token was disabled (i.e.

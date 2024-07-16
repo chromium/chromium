@@ -61,7 +61,10 @@ chromium-metrics-reviews@google.com.
   <variant name="Hidden"/>
   <variant name="InternalCancellation"/>
   <variant name="NeverStarted"/>
-  <variant name="NewNavigation"/>
+  <variant name="NewHistoryNavigation"/>
+  <variant name="NewOtherNavigationBrowserInitiated"/>
+  <variant name="NewOtherNavigationRendererInitiated"/>
+  <variant name="NewReloadNavigation"/>
   <variant name="Other"/>
   <variant name="RenderProcessGone"/>
 </variants>
@@ -930,6 +933,42 @@ chromium-metrics-reviews@google.com.
     metric is emitted when the navigation is completed or the app is
     backgrounded on Android.
   </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.Leakage.AbandonReasonAt.{NavigationMilestone}{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}"
+    enum="NavigationAbandonReasonEnum" expires_after="2024-12-08">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Logs the navigation abandonment reason that happens when the last milestone
+    is {NavigationMilestone} on a main frame navigation for Google Search page
+    loads, with potentially some suffixes detaling the navigation
+    {BackgroundSuffix}, {HiddenSuffix}, and/or {NonSRPSuffix}. The metric is
+    emitted when the navigation gets abandoned.
+  </summary>
+  <token key="NavigationMilestone" variants="NavigationMilestone"/>
+  <token key="BackgroundSuffix" variants="BackgroundSuffix"/>
+  <token key="HiddenSuffix" variants="HiddenSuffix"/>
+  <token key="NonSRPSuffix" variants="NonSRPSuffix"/>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.Leakage.LastMilestoneBeforeAbandon.{NavigationAbandonReason}{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}"
+    enum="NavigationMilestoneEnum" expires_after="2024-12-08">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Logs the last navigation milestone reason that was reached when a main frame
+    navigation for Google Search page load is abandoned due to
+    {NavigationAbandonReason}, with potentially some suffixes detaling the
+    navigation {BackgroundSuffix}, {HiddenSuffix}, and/or {NonSRPSuffix}. The
+    metric is emitted when the navigation gets abandoned.
+  </summary>
+  <token key="NavigationAbandonReason" variants="NavigationAbandonReason"/>
+  <token key="BackgroundSuffix" variants="BackgroundSuffix"/>
+  <token key="HiddenSuffix" variants="HiddenSuffix"/>
+  <token key="NonSRPSuffix" variants="NonSRPSuffix"/>
 </histogram>
 
 <histogram name="PageLoad.Clients.GoogleSearch.Leakage.NavigationStart"

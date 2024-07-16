@@ -11,41 +11,10 @@
 
 namespace internal {
 // Exposed for tests.
-
-extern const char kAbandonReasonNewNavigation[];
-extern const char kAbandonReasonFrameRemoved[];
-extern const char kAbandonReasonExplicitCancellation[];
-extern const char kAbandonReasonInternalCancellation[];
-extern const char kAbandonReasonRenderProcessGone[];
-extern const char kAbandonReasonNeverStarted[];
-extern const char kAbandonReasonFailedSecurityCheck[];
-extern const char kAbandonReasonOther[];
-extern const char kAbandonReasonHidden[];
-extern const char kAbandonReasonErrorPage[];
-extern const char kAbandonReasonAppBackgrounded[];
-
+extern const char kGWSAbandonedPageLoadMetricsHistogramPrefix[];
 extern const char kSuffixWasBackgrounded[];
 extern const char kSuffixWasHidden[];
 extern const char kSuffixWasNonSRP[];
-
-extern const char kHistogramGWSLeakageNavigationStart[];
-extern const char kHistogramGWSLeakageNavigationStartToLoaderStart[];
-extern const char
-    kHistogramGWSLeakageNavigationStartToFirstRedirectedRequestStart[];
-extern const char
-    kHistogramGWSLeakageNavigationStartToFirstRedirectResponseStart[];
-extern const char
-    kHistogramGWSLeakageNavigationStartToNonRedirectedRequestStart[];
-extern const char
-    kHistogramGWSLeakageNavigationStartToNonRedirectResponseStart[];
-extern const char kHistogramGWSLeakageNavigationStartToCommitSent[];
-extern const char kHistogramGWSLeakageNavigationStartToDidCommit[];
-
-extern const char kHistogramGWSLeakageNavigationStartToAbandon[];
-extern const char kHistogramGWSLeakageLoaderStartToAbandon[];
-extern const char kHistogramGWSLeakageFirstRedirectResponseStartToAbandon[];
-extern const char kHistogramGWSLeakageNonRedirectResponseStartToAbandon[];
-extern const char kHistogramGWSLeakageCommitSentToAbandon[];
 
 }  // namespace internal
 
@@ -60,6 +29,65 @@ extern const char kHistogramGWSLeakageCommitSentToAbandon[];
 class GWSAbandonedPageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
+  // The different navigation milestones that the tracked page load can reach.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(NavigationMilestone)
+  enum class NavigationMilestone {
+    kNavigationStart = 0,
+    kLoaderStart = 1,
+    kFirstRedirectedRequestStart = 2,
+    kFirstRedirectResponseStart = 3,
+    kFirstRedirectResponseLoaderCallback = 4,
+    kNonRedirectedRequestStart = 5,
+    kNonRedirectResponseStart = 6,
+    kNonRedirectResponseLoaderCallback = 7,
+    kCommitSent = 8,
+    kDidCommit = 9,
+    kMaxValue = kDidCommit,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:NavigationMilestoneEnum)
+
+  // The different abandonment reasons that the tracked page load can encounter.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(AbandonReason)
+  enum class AbandonReason {
+    kFrameRemoved = 0,
+    kExplicitCancellation = 1,
+    kInternalCancellation = 2,
+    kRenderProcessGone = 3,
+    kNeverStarted = 4,
+    kFailedSecurityCheck = 5,
+    kOther = 6,
+    kHidden = 7,
+    kErrorPage = 8,
+    kAppBackgrounded = 9,
+    kNewReloadNavigation = 10,
+    kNewHistoryNavigation = 11,
+    kNewOtherNavigationBrowserInitiated = 12,
+    kNewOtherNavigationRendererInitiated = 13,
+    kMaxValue = kNewOtherNavigationRendererInitiated,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:NavigationAbandonReasonEnum)
+
+  static std::string AbandonReasonToString(AbandonReason abandon_reason);
+  static std::string NavigationMilestoneToString(
+      NavigationMilestone navigation_milestone);
+  static std::string GetMilestoneHistogramNameWithoutPrefixSuffix(
+      NavigationMilestone milestone);
+  static std::string GetMilestoneToAbandonHistogramNameWithoutPrefixSuffix(
+      NavigationMilestone milestone,
+      std::optional<AbandonReason> abandon_reason);
+  static std::string
+  GetAbandonReasonAtMilestoneHistogramNameWithoutPrefixSuffix(
+      NavigationMilestone milestone);
+  static std::string
+  GetLastMilestoneBeforeAbandonHistogramNameWithoutPrefixSuffix(
+      std::optional<AbandonReason> abandon_reason);
+
   GWSAbandonedPageLoadMetricsObserver();
   ~GWSAbandonedPageLoadMetricsObserver() override;
 
@@ -100,12 +128,22 @@ class GWSAbandonedPageLoadMetricsObserver
       const GURL& currently_committed_url) override;
 
  private:
+  // Returns the suffix to be added to the histograms logged. This is not static
+  // since the return value depends on events that happened while the tracked
+  // page load is ongoing.
+  std::string GetHistogramSuffix(NavigationMilestone navigation_milestone,
+                                 base::TimeTicks event_time) const;
+
   void LogNavigationMilestoneMetrics();
-  void LogMetricsOnAbandon(const std::string& abandon_reason,
+  void LogMetricsOnAbandon(AbandonReason abandon_reason,
                            base::TimeTicks navigation_abandon_time);
-  void LogPageLoadHistogram(const std::string& name,
+  void LogAbandonHistograms(AbandonReason abandon_reason,
+                            NavigationMilestone milestone,
                             base::TimeTicks event_time,
                             base::TimeTicks relative_start_time);
+  void LogMilestoneHistogram(NavigationMilestone milestone,
+                             base::TimeTicks event_time,
+                             base::TimeTicks relative_start_time);
   bool WasBackgrounded() const {
     return !first_backgrounded_timestamp_.is_null();
   }

@@ -15,41 +15,52 @@
 #include "content/public/browser/navigation_handle.h"
 
 namespace {
-std::string DiscardReasonToString(
+
+using AbandonReason = GWSAbandonedPageLoadMetricsObserver::AbandonReason;
+
+AbandonReason DiscardReasonToAbandonReason(
     content::NavigationDiscardReason discard_reason) {
   switch (discard_reason) {
     case content::NavigationDiscardReason::kNewReloadNavigation:
+      return AbandonReason::kNewReloadNavigation;
     case content::NavigationDiscardReason::kNewHistoryNavigation:
+      return AbandonReason::kNewHistoryNavigation;
     case content::NavigationDiscardReason::kNewOtherNavigationBrowserInitiated:
+      return AbandonReason::kNewOtherNavigationBrowserInitiated;
     case content::NavigationDiscardReason::kNewOtherNavigationRendererInitiated:
-      return internal::kAbandonReasonNewNavigation;
+      return AbandonReason::kNewOtherNavigationRendererInitiated;
     case content::NavigationDiscardReason::kWillRemoveFrame:
-      return internal::kAbandonReasonFrameRemoved;
+      return AbandonReason::kFrameRemoved;
     case content::NavigationDiscardReason::kExplicitCancellation:
-      return internal::kAbandonReasonExplicitCancellation;
+      return AbandonReason::kExplicitCancellation;
     case content::NavigationDiscardReason::kInternalCancellation:
-      return internal::kAbandonReasonInternalCancellation;
+      return AbandonReason::kInternalCancellation;
     case content::NavigationDiscardReason::kRenderProcessGone:
-      return internal::kAbandonReasonRenderProcessGone;
+      return AbandonReason::kRenderProcessGone;
     case content::NavigationDiscardReason::kNeverStarted:
-      return internal::kAbandonReasonNeverStarted;
+      return AbandonReason::kNeverStarted;
     case content::NavigationDiscardReason::kFailedSecurityCheck:
-      return internal::kAbandonReasonFailedSecurityCheck;
+      return AbandonReason::kFailedSecurityCheck;
       // Other cases like kCommittedNavigation and kRenderFrameHostDestruction
       // should be obsolete, so just use "other" as the reason.
     case content::NavigationDiscardReason::kCommittedNavigation:
-      return internal::kAbandonReasonOther;
     case content::NavigationDiscardReason::kRenderFrameHostDestruction:
-      return internal::kAbandonReasonOther;
+      return AbandonReason::kOther;
   }
 }
 }  // namespace
 
 namespace internal {
 
-#define HISTOGRAM_PREFIX "PageLoad.Clients.GoogleSearch.Leakage."
+const char kGWSAbandonedPageLoadMetricsHistogramPrefix[] =
+    "PageLoad.Clients.GoogleSearch.Leakage.";
 
-const char kAbandonReasonNewNavigation[] = "NewNavigation";
+const char kAbandonReasonNewReloadNavigation[] = "NewReloadNavigation";
+const char kAbandonReasonNewHistoryNavigation[] = "NewHistoryNavigation";
+const char kAbandonReasonNewOtherNavigationBrowserInitiated[] =
+    "NewOtherNavigationBrowserInitiated";
+const char kAbandonReasonNewOtherNavigationRendererInitiated[] =
+    "NewOtherNavigationRendererInitiated";
 const char kAbandonReasonFrameRemoved[] = "FrameRemoved";
 const char kAbandonReasonExplicitCancellation[] = "ExplicitCancellation";
 const char kAbandonReasonInternalCancellation[] = "InternalCancellation";
@@ -65,37 +76,81 @@ const char kSuffixWasBackgrounded[] = ".WasBackgrounded";
 const char kSuffixWasHidden[] = ".WasHidden";
 const char kSuffixWasNonSRP[] = ".WasNonSRP";
 
-const char kHistogramGWSLeakageNavigationStart[] =
-    HISTOGRAM_PREFIX "NavigationStart";
-const char kHistogramGWSLeakageNavigationStartToLoaderStart[] =
-    HISTOGRAM_PREFIX "NavigationStartToLoaderStart";
-const char kHistogramGWSLeakageNavigationStartToFirstRedirectedRequestStart[] =
-    HISTOGRAM_PREFIX "NavigationStartToFirstRedirectedRequestStart";
-const char kHistogramGWSLeakageNavigationStartToFirstRedirectResponseStart[] =
-    HISTOGRAM_PREFIX "NavigationStartToFirstRedirectResponseStart";
-const char kHistogramGWSLeakageNavigationStartToNonRedirectedRequestStart[] =
-    HISTOGRAM_PREFIX "NavigationStartToNonRedirectedRequestStart";
-const char kHistogramGWSLeakageNavigationStartToNonRedirectResponseStart[] =
-    HISTOGRAM_PREFIX "NavigationStartToNonRedirectResponseStart";
-const char kHistogramGWSLeakageNavigationStartToCommitSent[] =
-    HISTOGRAM_PREFIX "NavigationStartToCommitSent";
-const char kHistogramGWSLeakageNavigationStartToDidCommit[] =
-    HISTOGRAM_PREFIX "NavigationStartToDidCommit";
+const char kMilestoneNavigationStart[] = "NavigationStart";
+const char kMilestoneLoaderStart[] = "LoaderStart";
+const char kMilestoneFirstRedirectedRequestStart[] =
+    "FirstRedirectedRequestStart";
+const char kMilestoneFirstRedirectResponseStart[] =
+    "FirstRedirectResponseStart";
+const char kMilestoneNonRedirectedRequestStart[] = "NonRedirectedRequestStart";
+const char kMilestoneNonRedirectResponseStart[] = "NonRedirectResponseStart";
+const char kMilestoneCommitSent[] = "CommitSent";
+const char kMilestoneDidCommit[] = "DidCommit";
+
 // TODO(https://crbug.com/347706997): Record more milestones related to loading,
 // loader callbacks, and process creation timing.
 
-const char kHistogramGWSLeakageNavigationStartToAbandon[] =
-    HISTOGRAM_PREFIX "NavigationStartToAbandon.";
-const char kHistogramGWSLeakageLoaderStartToAbandon[] =
-    HISTOGRAM_PREFIX "LoaderStartToAbandon.";
-const char kHistogramGWSLeakageFirstRedirectResponseStartToAbandon[] =
-    HISTOGRAM_PREFIX "FirstRedirectResponseStartToAbandon.";
-const char kHistogramGWSLeakageNonRedirectResponseStartToAbandon[] =
-    HISTOGRAM_PREFIX "NonRedirectResponseStartToAbandon.";
-const char kHistogramGWSLeakageCommitSentToAbandon[] =
-    HISTOGRAM_PREFIX "CommitSentToAbandon.";
-
 }  // namespace internal
+
+std::string GWSAbandonedPageLoadMetricsObserver::AbandonReasonToString(
+    AbandonReason abandon_reason) {
+  switch (abandon_reason) {
+    case AbandonReason::kNewReloadNavigation:
+      return internal::kAbandonReasonNewReloadNavigation;
+    case AbandonReason::kNewHistoryNavigation:
+      return internal::kAbandonReasonNewHistoryNavigation;
+    case AbandonReason::kNewOtherNavigationBrowserInitiated:
+      return internal::kAbandonReasonNewOtherNavigationBrowserInitiated;
+    case AbandonReason::kNewOtherNavigationRendererInitiated:
+      return internal::kAbandonReasonNewOtherNavigationRendererInitiated;
+    case AbandonReason::kFrameRemoved:
+      return internal::kAbandonReasonFrameRemoved;
+    case AbandonReason::kExplicitCancellation:
+      return internal::kAbandonReasonExplicitCancellation;
+    case AbandonReason::kInternalCancellation:
+      return internal::kAbandonReasonInternalCancellation;
+    case AbandonReason::kRenderProcessGone:
+      return internal::kAbandonReasonRenderProcessGone;
+    case AbandonReason::kNeverStarted:
+      return internal::kAbandonReasonNeverStarted;
+    case AbandonReason::kFailedSecurityCheck:
+      return internal::kAbandonReasonFailedSecurityCheck;
+    case AbandonReason::kOther:
+      return internal::kAbandonReasonOther;
+    case AbandonReason::kHidden:
+      return internal::kAbandonReasonHidden;
+    case AbandonReason::kErrorPage:
+      return internal::kAbandonReasonErrorPage;
+    case AbandonReason::kAppBackgrounded:
+      return internal::kAbandonReasonAppBackgrounded;
+  }
+}
+
+std::string GWSAbandonedPageLoadMetricsObserver::NavigationMilestoneToString(
+    NavigationMilestone navigation_milestone) {
+  switch (navigation_milestone) {
+    case NavigationMilestone::kNavigationStart:
+      return internal::kMilestoneNavigationStart;
+    case NavigationMilestone::kLoaderStart:
+      return internal::kMilestoneLoaderStart;
+    case NavigationMilestone::kFirstRedirectedRequestStart:
+      return internal::kMilestoneFirstRedirectedRequestStart;
+    case NavigationMilestone::kFirstRedirectResponseStart:
+      return internal::kMilestoneFirstRedirectResponseStart;
+    case NavigationMilestone::kNonRedirectedRequestStart:
+      return internal::kMilestoneNonRedirectedRequestStart;
+    case NavigationMilestone::kNonRedirectResponseStart:
+      return internal::kMilestoneNonRedirectResponseStart;
+    case NavigationMilestone::kCommitSent:
+      return internal::kMilestoneCommitSent;
+    case NavigationMilestone::kDidCommit:
+      return internal::kMilestoneDidCommit;
+    case NavigationMilestone::kFirstRedirectResponseLoaderCallback:
+    case NavigationMilestone::kNonRedirectResponseLoaderCallback:
+      // These milestones are not processed yet and are explicitly not handled.
+      NOTREACHED_NORETURN();
+  }
+}
 
 GWSAbandonedPageLoadMetricsObserver::GWSAbandonedPageLoadMetricsObserver() =
     default;
@@ -108,17 +163,16 @@ const char* GWSAbandonedPageLoadMetricsObserver::GetObserverName() const {
   return kName;
 }
 
-void GWSAbandonedPageLoadMetricsObserver::LogPageLoadHistogram(
-    const std::string& name,
-    base::TimeTicks event_time,
-    base::TimeTicks relative_start_time) {
+std::string GWSAbandonedPageLoadMetricsObserver::GetHistogramSuffix(
+    NavigationMilestone milestone,
+    base::TimeTicks event_time) const {
   std::string suffix = "";
   // If necessary, add suffixes to the histogram that indicates the event
   // happens after hiding/backgrounding/requesting non-SRP page. Note that
   // for NavigationStart events, the `event_time` is actually set to the current
   // time / the time when we first log all the milestones, so we explicitly skip
   // that case (hiding the navigation before it starts shouldn't count anyways).
-  if (name != internal::kHistogramGWSLeakageNavigationStart) {
+  if (milestone != NavigationMilestone::kNavigationStart) {
     if (WasBackgrounded() && event_time > first_backgrounded_timestamp_) {
       suffix += internal::kSuffixWasBackgrounded;
     }
@@ -129,7 +183,80 @@ void GWSAbandonedPageLoadMetricsObserver::LogPageLoadHistogram(
   if (did_request_non_srp_) {
     suffix += internal::kSuffixWasNonSRP;
   }
-  PAGE_LOAD_HISTOGRAM(name + suffix, event_time - relative_start_time);
+  return suffix;
+}
+
+std::string GWSAbandonedPageLoadMetricsObserver::
+    GetMilestoneToAbandonHistogramNameWithoutPrefixSuffix(
+        NavigationMilestone milestone,
+        std::optional<AbandonReason> abandon_reason) {
+  return NavigationMilestoneToString(milestone) + "ToAbandon." +
+         (abandon_reason.has_value()
+              ? AbandonReasonToString(abandon_reason.value())
+              : "");
+}
+
+std::string GWSAbandonedPageLoadMetricsObserver::
+    GetAbandonReasonAtMilestoneHistogramNameWithoutPrefixSuffix(
+        NavigationMilestone milestone) {
+  return std::string("AbandonReasonAt.") +
+         NavigationMilestoneToString(milestone);
+}
+
+std::string GWSAbandonedPageLoadMetricsObserver::
+    GetLastMilestoneBeforeAbandonHistogramNameWithoutPrefixSuffix(
+        std::optional<AbandonReason> abandon_reason) {
+  return std::string("LastMilestoneBeforeAbandon.") +
+         (abandon_reason.has_value()
+              ? AbandonReasonToString(abandon_reason.value())
+              : "");
+}
+
+std::string GWSAbandonedPageLoadMetricsObserver::
+    GetMilestoneHistogramNameWithoutPrefixSuffix(
+        NavigationMilestone milestone) {
+  if (milestone == NavigationMilestone::kNavigationStart) {
+    return std::string(internal::kMilestoneNavigationStart);
+  }
+  return std::string(internal::kMilestoneNavigationStart) + "To" +
+         NavigationMilestoneToString(milestone);
+}
+
+void GWSAbandonedPageLoadMetricsObserver::LogMilestoneHistogram(
+    NavigationMilestone milestone,
+    base::TimeTicks event_time,
+    base::TimeTicks relative_start_time) {
+  PAGE_LOAD_HISTOGRAM(
+      internal::kGWSAbandonedPageLoadMetricsHistogramPrefix +
+          GetMilestoneHistogramNameWithoutPrefixSuffix(milestone) +
+          GetHistogramSuffix(milestone, event_time),
+      event_time - relative_start_time);
+}
+
+void GWSAbandonedPageLoadMetricsObserver::LogAbandonHistograms(
+    AbandonReason abandon_reason,
+    NavigationMilestone milestone,
+    base::TimeTicks event_time,
+    base::TimeTicks relative_start_time) {
+  std::string histogram_suffix = GetHistogramSuffix(milestone, event_time);
+  PAGE_LOAD_HISTOGRAM(internal::kGWSAbandonedPageLoadMetricsHistogramPrefix +
+                          GetMilestoneToAbandonHistogramNameWithoutPrefixSuffix(
+                              milestone, abandon_reason) +
+                          histogram_suffix,
+                      event_time - relative_start_time);
+  std::string milestone_string = NavigationMilestoneToString(milestone);
+  base::UmaHistogramEnumeration(
+      internal::kGWSAbandonedPageLoadMetricsHistogramPrefix +
+          GetAbandonReasonAtMilestoneHistogramNameWithoutPrefixSuffix(
+              milestone) +
+          histogram_suffix,
+      abandon_reason);
+  base::UmaHistogramEnumeration(
+      internal::kGWSAbandonedPageLoadMetricsHistogramPrefix +
+          GetLastMilestoneBeforeAbandonHistogramNameWithoutPrefixSuffix(
+              abandon_reason) +
+          histogram_suffix,
+      milestone);
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
@@ -192,7 +319,7 @@ GWSAbandonedPageLoadMetricsObserver::OnNavigationHandleTimingUpdated(
       // The navigation will commit an error page instead of SRP. Record this as
       // an abandonment as soon as we notice.
       LogMetricsOnAbandon(
-          internal::kAbandonReasonErrorPage,
+          AbandonReason::kErrorPage,
           navigation_handle->GetNavigationHandleTiming().request_failed_time);
       return STOP_OBSERVING;
     }
@@ -214,9 +341,8 @@ GWSAbandonedPageLoadMetricsObserver::OnCommit(
   // The navigation committed SRP. Log all the navigation milestone timings.
   involved_srp_url_ = true;
   LogNavigationMilestoneMetrics();
-  LogPageLoadHistogram(internal::kHistogramGWSLeakageNavigationStartToDidCommit,
-                       base::TimeTicks::Now(),
-                       GetDelegate().GetNavigationStart());
+  LogMilestoneHistogram(NavigationMilestone::kDidCommit, base::TimeTicks::Now(),
+                        GetDelegate().GetNavigationStart());
 
   // If there's any previous hiding/backgrounding that hasn't been logged (e.g.
   // if the navigation didn't involve SRP URLs when these abandonments happen),
@@ -260,7 +386,7 @@ GWSAbandonedPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
     // This is the first time we're getting backgrounded. If we've seen that the
     // navigation has involved SRP, log the abandonment now.
     if (involved_srp_url_) {
-      LogMetricsOnAbandon(internal::kAbandonReasonAppBackgrounded,
+      LogMetricsOnAbandon(AbandonReason::kAppBackgrounded,
                           first_backgrounded_timestamp_);
       did_log_backgrounding_ = true;
     }
@@ -281,8 +407,7 @@ GWSAbandonedPageLoadMetricsObserver::OnHidden(
     // This is the first time we're getting hidden. If we've seen that the
     // navigation has involved SRP, log the abandonment now.
     if (involved_srp_url_) {
-      LogMetricsOnAbandon(internal::kAbandonReasonHidden,
-                          first_hidden_timestamp_);
+      LogMetricsOnAbandon(AbandonReason::kHidden, first_hidden_timestamp_);
       did_log_hiding_ = true;
     }
 
@@ -295,14 +420,13 @@ GWSAbandonedPageLoadMetricsObserver::OnHidden(
 
 void GWSAbandonedPageLoadMetricsObserver::LogPreviousHidingIfNeeded() {
   if (WasHidden() && !did_log_hiding_) {
-    LogMetricsOnAbandon(internal::kAbandonReasonHidden,
-                        first_hidden_timestamp_);
+    LogMetricsOnAbandon(AbandonReason::kHidden, first_hidden_timestamp_);
     did_log_hiding_ = true;
   }
 }
 void GWSAbandonedPageLoadMetricsObserver::LogPreviousBackgroundingIfNeeded() {
   if (WasBackgrounded() && !did_log_backgrounding_) {
-    LogMetricsOnAbandon(internal::kAbandonReasonAppBackgrounded,
+    LogMetricsOnAbandon(AbandonReason::kAppBackgrounded,
                         first_backgrounded_timestamp_);
     did_log_backgrounding_ = true;
   }
@@ -316,7 +440,7 @@ void GWSAbandonedPageLoadMetricsObserver::OnFailedProvisionalLoad(
     return;
   }
   LogMetricsOnAbandon(
-      DiscardReasonToString(failed_provisional_load_info.discard_reason),
+      DiscardReasonToAbandonReason(failed_provisional_load_info.discard_reason),
       base::TimeTicks::Now());
 }
 
@@ -330,13 +454,13 @@ void GWSAbandonedPageLoadMetricsObserver::OnDidInternalNavigationAbort(
   involved_srp_url_ = true;
   CHECK(navigation_handle->GetNavigationDiscardReason().has_value());
   LogMetricsOnAbandon(
-      DiscardReasonToString(
+      DiscardReasonToAbandonReason(
           navigation_handle->GetNavigationDiscardReason().value()),
       base::TimeTicks::Now());
 }
 
 void GWSAbandonedPageLoadMetricsObserver::LogMetricsOnAbandon(
-    const std::string& abandon_reason,
+    AbandonReason abandon_reason,
     base::TimeTicks abandon_timing) {
   CHECK(involved_srp_url_);
   // We only log abandonments once and stop observing after abandonment, except
@@ -352,14 +476,16 @@ void GWSAbandonedPageLoadMetricsObserver::LogMetricsOnAbandon(
   // logged them as abandonments (e.g. if the navigation didn't involve SRP
   // previously when those abandonments happened), log them first, before
   // logging this new abandonment.
-  if (abandon_reason != internal::kAbandonReasonHidden) {
+  if (abandon_reason != AbandonReason::kHidden) {
     LogPreviousHidingIfNeeded();
   }
-  if (abandon_reason != internal::kAbandonReasonAppBackgrounded) {
+  if (abandon_reason != AbandonReason::kAppBackgrounded) {
     LogPreviousBackgroundingIfNeeded();
   }
 
-  // Log the time from the closest navigation milestone timing. This helps us
+  const std::string abandon_string = AbandonReasonToString(abandon_reason);
+
+  // Log the time from the latest navigation milestone received. This helps us
   // know at what point of the navigation the abandonment happened. Note that
   // for redirects and non-redirects we only check "response" milestones and not
   // the "request" counterparts, since we're only notified of
@@ -368,38 +494,34 @@ void GWSAbandonedPageLoadMetricsObserver::LogMetricsOnAbandon(
   if (!latest_navigation_handle_timing_.navigation_commit_sent_time.is_null() &&
       abandon_timing >
           latest_navigation_handle_timing_.navigation_commit_sent_time) {
-    LogPageLoadHistogram(
-        internal::kHistogramGWSLeakageCommitSentToAbandon + abandon_reason,
-        abandon_timing,
+    LogAbandonHistograms(
+        abandon_reason, NavigationMilestone::kCommitSent, abandon_timing,
         latest_navigation_handle_timing_.navigation_commit_sent_time);
   } else if (!latest_navigation_handle_timing_.non_redirect_response_start_time
                   .is_null() &&
              abandon_timing > latest_navigation_handle_timing_
                                   .non_redirect_response_start_time) {
-    LogPageLoadHistogram(
-        internal::kHistogramGWSLeakageNonRedirectResponseStartToAbandon +
-            abandon_reason,
+    LogAbandonHistograms(
+        abandon_reason, NavigationMilestone::kNonRedirectResponseStart,
         abandon_timing,
         latest_navigation_handle_timing_.non_redirect_response_start_time);
   } else if (!latest_navigation_handle_timing_.first_response_start_time
                   .is_null() &&
              abandon_timing >
                  latest_navigation_handle_timing_.first_response_start_time) {
-    LogPageLoadHistogram(
-        internal::kHistogramGWSLeakageFirstRedirectResponseStartToAbandon +
-            abandon_reason,
+    LogAbandonHistograms(
+        abandon_reason, NavigationMilestone::kFirstRedirectResponseStart,
         abandon_timing,
         latest_navigation_handle_timing_.first_response_start_time);
   } else if (!latest_navigation_handle_timing_.loader_start_time.is_null() &&
              abandon_timing >
                  latest_navigation_handle_timing_.loader_start_time) {
-    LogPageLoadHistogram(
-        internal::kHistogramGWSLeakageLoaderStartToAbandon + abandon_reason,
-        abandon_timing, latest_navigation_handle_timing_.loader_start_time);
+    LogAbandonHistograms(abandon_reason, NavigationMilestone::kLoaderStart,
+                         abandon_timing,
+                         latest_navigation_handle_timing_.loader_start_time);
   } else {
-    LogPageLoadHistogram(
-        internal::kHistogramGWSLeakageNavigationStartToAbandon + abandon_reason,
-        abandon_timing, GetDelegate().GetNavigationStart());
+    LogAbandonHistograms(abandon_reason, NavigationMilestone::kNavigationStart,
+                         abandon_timing, GetDelegate().GetNavigationStart());
   }
 }
 
@@ -411,8 +533,8 @@ void GWSAbandonedPageLoadMetricsObserver::LogNavigationMilestoneMetrics() {
       GetDelegate().GetNavigationStart();
   if (!did_log_navigation_start_) {
     // Log NavigationStart exactly once.
-    LogPageLoadHistogram(internal::kHistogramGWSLeakageNavigationStart,
-                         base::TimeTicks::Now(), navigation_start_time);
+    LogMilestoneHistogram(NavigationMilestone::kNavigationStart,
+                          base::TimeTicks::Now(), navigation_start_time);
     did_log_navigation_start_ = true;
   }
 
@@ -423,8 +545,8 @@ void GWSAbandonedPageLoadMetricsObserver::LogNavigationMilestoneMetrics() {
   if (!latest_navigation_handle_timing_.navigation_commit_sent_time.is_null() &&
       last_logged_navigation_handle_timing_.navigation_commit_sent_time
           .is_null()) {
-    LogPageLoadHistogram(
-        internal::kHistogramGWSLeakageNavigationStartToCommitSent,
+    LogMilestoneHistogram(
+        NavigationMilestone::kCommitSent,
         latest_navigation_handle_timing_.navigation_commit_sent_time,
         navigation_start_time);
   }
@@ -436,13 +558,12 @@ void GWSAbandonedPageLoadMetricsObserver::LogNavigationMilestoneMetrics() {
     // The navigation had received its final non-redirect response.
     CHECK(!latest_navigation_handle_timing_.non_redirected_request_start_time
                .is_null());
-    LogPageLoadHistogram(
-        internal::kHistogramGWSLeakageNavigationStartToNonRedirectResponseStart,
+    LogMilestoneHistogram(
+        NavigationMilestone::kNonRedirectResponseStart,
         latest_navigation_handle_timing_.non_redirect_response_start_time,
         navigation_start_time);
-    LogPageLoadHistogram(
-        internal::
-            kHistogramGWSLeakageNavigationStartToNonRedirectedRequestStart,
+    LogMilestoneHistogram(
+        NavigationMilestone::kNonRedirectedRequestStart,
         latest_navigation_handle_timing_.non_redirected_request_start_time,
         navigation_start_time);
   }
@@ -455,17 +576,15 @@ void GWSAbandonedPageLoadMetricsObserver::LogNavigationMilestoneMetrics() {
     // If we got a response that is not the final response, it must be a
     // redirect response.
     if (!latest_navigation_handle_timing_.first_response_start_time.is_null()) {
-      LogPageLoadHistogram(
-          internal::
-              kHistogramGWSLeakageNavigationStartToFirstRedirectResponseStart,
+      LogMilestoneHistogram(
+          NavigationMilestone::kFirstRedirectResponseStart,
           latest_navigation_handle_timing_.first_response_start_time,
           navigation_start_time);
     }
 
     if (!latest_navigation_handle_timing_.first_request_start_time.is_null()) {
-      LogPageLoadHistogram(
-          internal::
-              kHistogramGWSLeakageNavigationStartToFirstRedirectedRequestStart,
+      LogMilestoneHistogram(
+          NavigationMilestone::kFirstRedirectedRequestStart,
           latest_navigation_handle_timing_.first_request_start_time,
           navigation_start_time);
     }
@@ -473,10 +592,9 @@ void GWSAbandonedPageLoadMetricsObserver::LogNavigationMilestoneMetrics() {
 
   if (!latest_navigation_handle_timing_.loader_start_time.is_null() &&
       last_logged_navigation_handle_timing_.loader_start_time.is_null()) {
-    LogPageLoadHistogram(
-        internal::kHistogramGWSLeakageNavigationStartToLoaderStart,
-        latest_navigation_handle_timing_.loader_start_time,
-        navigation_start_time);
+    LogMilestoneHistogram(NavigationMilestone::kLoaderStart,
+                          latest_navigation_handle_timing_.loader_start_time,
+                          navigation_start_time);
   }
 
   last_logged_navigation_handle_timing_ = latest_navigation_handle_timing_;

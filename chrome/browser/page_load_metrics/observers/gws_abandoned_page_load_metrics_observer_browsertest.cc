@@ -49,6 +49,10 @@ std::unique_ptr<net::test_server::HttpResponse> SRPRedirectHandler(
 
 }  // namespace
 
+using AbandonReason = GWSAbandonedPageLoadMetricsObserver::AbandonReason;
+using NavigationMilestone =
+    GWSAbandonedPageLoadMetricsObserver::NavigationMilestone;
+
 class GWSAbandonedPageLoadMetricsObserverBrowserTest
     : public MetricIntegrationTest {
  public:
@@ -65,25 +69,29 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
   }
 
  protected:
-  enum class NavigationMilestone {
-    NAVIGATION_START = 0,
-    LOADER_START = 1,
-    FIRST_REDIRECT_RESPONSE = 2,
-    NON_REDIRECT_RESPONSE = 3,
-    COMMIT_SENT = 4,
-  };
-
+  std::vector<NavigationMilestone> all_milestones() {
+    // TODO(https://crbug.com/347706997): Once they're handled, include
+    // k{First,Non}RedirectResponseLoaderCallback milestones.
+    return {NavigationMilestone::kNavigationStart,
+            NavigationMilestone::kLoaderStart,
+            NavigationMilestone::kFirstRedirectedRequestStart,
+            NavigationMilestone::kFirstRedirectResponseStart,
+            NavigationMilestone::kNonRedirectedRequestStart,
+            NavigationMilestone::kNonRedirectResponseStart,
+            NavigationMilestone::kCommitSent,
+            NavigationMilestone::kDidCommit};
+  }
   std::vector<NavigationMilestone> all_testable_milestones() {
-    return {NavigationMilestone::NAVIGATION_START,
-            NavigationMilestone::LOADER_START,
-            NavigationMilestone::FIRST_REDIRECT_RESPONSE,
-            NavigationMilestone::NON_REDIRECT_RESPONSE};
+    return {NavigationMilestone::kNavigationStart,
+            NavigationMilestone::kLoaderStart,
+            NavigationMilestone::kFirstRedirectResponseStart,
+            NavigationMilestone::kNonRedirectResponseStart};
   }
 
   std::vector<NavigationMilestone> all_throttleable_milestones() {
-    return {NavigationMilestone::NAVIGATION_START,
-            NavigationMilestone::FIRST_REDIRECT_RESPONSE,
-            NavigationMilestone::NON_REDIRECT_RESPONSE};
+    return {NavigationMilestone::kNavigationStart,
+            NavigationMilestone::kFirstRedirectResponseStart,
+            NavigationMilestone::kNonRedirectResponseStart};
   }
 
   GURL url_srp() {
@@ -120,7 +128,7 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
   }
 
   GURL GetTargetURLForMilestone(NavigationMilestone milestone) {
-    if (milestone == NavigationMilestone::FIRST_REDIRECT_RESPONSE) {
+    if (milestone == NavigationMilestone::kFirstRedirectResponseStart) {
       return url_srp_redirect();
     }
     return url_srp();
@@ -166,75 +174,77 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
     Start();
   }
 
+  std::string GetMilestoneToAbandonHistogramName(
+      NavigationMilestone milestone,
+      std::optional<AbandonReason> abandon_reason = std::nullopt,
+      std::string suffix = "") {
+    return internal::kGWSAbandonedPageLoadMetricsHistogramPrefix +
+           GWSAbandonedPageLoadMetricsObserver::
+               GetMilestoneToAbandonHistogramNameWithoutPrefixSuffix(
+                   milestone, abandon_reason) +
+           suffix;
+  }
+
+  std::string GetMilestoneHistogramName(NavigationMilestone milestone,
+                                        std::string suffix = "") {
+    return internal::kGWSAbandonedPageLoadMetricsHistogramPrefix +
+           GWSAbandonedPageLoadMetricsObserver::
+               GetMilestoneHistogramNameWithoutPrefixSuffix(milestone) +
+           suffix;
+  }
+
+  std::string GetAbandonReasonAtMilestoneHistogramName(
+      NavigationMilestone milestone,
+      std::string suffix = "") {
+    return internal::kGWSAbandonedPageLoadMetricsHistogramPrefix +
+           GWSAbandonedPageLoadMetricsObserver::
+               GetAbandonReasonAtMilestoneHistogramNameWithoutPrefixSuffix(
+                   milestone) +
+           suffix;
+  }
+
+  std::string GetLastMilestoneBeforeAbandonHistogramName(
+      std::optional<AbandonReason> abandon_reason = std::nullopt,
+      std::string suffix = "") {
+    return internal::kGWSAbandonedPageLoadMetricsHistogramPrefix +
+           GWSAbandonedPageLoadMetricsObserver::
+               GetLastMilestoneBeforeAbandonHistogramNameWithoutPrefixSuffix(
+                   abandon_reason) +
+           suffix;
+  }
+
   void ExpectTotalCountForAllNavigationMilestones(
       bool include_redirect,
       int count,
       std::string histogram_suffix = "") {
-    histogram_tester().ExpectTotalCount(
-        internal::kHistogramGWSLeakageNavigationStart + histogram_suffix,
-        count);
-    histogram_tester().ExpectTotalCount(
-        internal::kHistogramGWSLeakageNavigationStartToLoaderStart +
-            histogram_suffix,
-        count);
-    histogram_tester().ExpectTotalCount(
-        internal::
-                kHistogramGWSLeakageNavigationStartToFirstRedirectedRequestStart +
-            histogram_suffix,
-        include_redirect ? count : 0);
-    histogram_tester().ExpectTotalCount(
-        internal::
-                kHistogramGWSLeakageNavigationStartToFirstRedirectResponseStart +
-            histogram_suffix,
-        include_redirect ? count : 0);
-    histogram_tester().ExpectTotalCount(
-        internal::
-                kHistogramGWSLeakageNavigationStartToNonRedirectedRequestStart +
-            histogram_suffix,
-        count);
-    histogram_tester().ExpectTotalCount(
-        internal::
-                kHistogramGWSLeakageNavigationStartToNonRedirectResponseStart +
-            histogram_suffix,
-        count);
-    histogram_tester().ExpectTotalCount(
-        internal::kHistogramGWSLeakageNavigationStartToCommitSent +
-            histogram_suffix,
-        count);
-    histogram_tester().ExpectTotalCount(
-        internal::kHistogramGWSLeakageNavigationStartToDidCommit +
-            histogram_suffix,
-        count);
+    for (auto milestone : all_milestones()) {
+      SCOPED_TRACE(
+          testing::Message()
+          << " ExpectTotalCountForAllNavigationMilestones on milestone "
+          << ((int)milestone) << " with suffix " << histogram_suffix);
+      bool is_redirect =
+          (milestone == NavigationMilestone::kFirstRedirectResponseStart ||
+           milestone == NavigationMilestone::kFirstRedirectedRequestStart);
+      histogram_tester().ExpectTotalCount(
+          GetMilestoneHistogramName(milestone, histogram_suffix),
+          (!is_redirect || include_redirect) ? count : 0);
+    }
   }
 
   void ExpectEmptyNavigationAbandonment() {
-    EXPECT_TRUE(histogram_tester()
-                    .GetTotalCountsForPrefix(
-                        internal::kHistogramGWSLeakageNavigationStartToAbandon)
-                    .empty());
-    EXPECT_TRUE(histogram_tester()
-                    .GetTotalCountsForPrefix(
-                        internal::kHistogramGWSLeakageLoaderStartToAbandon)
-                    .empty());
-    EXPECT_TRUE(
-        histogram_tester()
-            .GetTotalCountsForPrefix(
-                internal::
-                    kHistogramGWSLeakageFirstRedirectResponseStartToAbandon)
-            .empty());
-    EXPECT_TRUE(
-        histogram_tester()
-            .GetTotalCountsForPrefix(
-                internal::kHistogramGWSLeakageNonRedirectResponseStartToAbandon)
-            .empty());
-    EXPECT_TRUE(histogram_tester()
-                    .GetTotalCountsForPrefix(
-                        internal::kHistogramGWSLeakageCommitSentToAbandon)
-                    .empty());
+    for (auto milestone : all_milestones()) {
+      SCOPED_TRACE(testing::Message()
+                   << " ExpectEmptyNavigationAbandonment on milestone "
+                   << ((int)milestone));
+      EXPECT_TRUE(histogram_tester()
+                      .GetTotalCountsForPrefix(
+                          GetMilestoneToAbandonHistogramName(milestone))
+                      .empty());
+    }
   }
 
   void TestNavigationAbandonment(
-      std::string abandon_reason,
+      AbandonReason abandon_reason,
       NavigationMilestone abandon_milestone,
       GURL target_url,
       bool expect_milestone_successful,
@@ -242,11 +252,11 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
       content::WebContents* web_contents,
       base::OnceCallback<void(content::NavigationHandle*)>
           after_nav_start_callback,
-      std::string abandon_after_hiding_reason = std::string(),
+      std::optional<AbandonReason> abandon_after_hiding_reason = std::nullopt,
       base::OnceCallback<void()> abandon_after_hiding_callback =
           base::OnceCallback<void()>()) {
     SCOPED_TRACE(testing::Message()
-                 << " Testing abandonment with reason " << abandon_reason
+                 << " Testing abandonment with reason " << ((int)abandon_reason)
                  << " on milestone " << ((int)abandon_milestone));
     // Use a newly created HistogramTester, to prevent getting samples that are
     // recorded for previous navigations.
@@ -255,29 +265,35 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
     // Navigate to a non-SRP page, to ensure we have a previous page. This is
     // important for testing hiding the WebContents or crashing the process.
     EXPECT_TRUE(content::NavigateToURL(web_contents, url_non_srp()));
+    // Navigate again to another SRP page, so that tests that need to do history
+    // navigation before the SRP navigation commits can do so.
+    EXPECT_TRUE(content::NavigateToURL(
+        browser()->tab_strip_model()->GetActiveWebContents(), url_non_srp_2()));
 
     // Navigate to SRP, but pause it just after we reach the desired milestone.
     content::TestNavigationManager navigation(web_contents, target_url);
     web_contents->GetController().LoadURL(target_url, content::Referrer(),
                                           ui::PAGE_TRANSITION_LINK,
                                           std::string());
-    if (abandon_milestone == NavigationMilestone::NAVIGATION_START) {
+    if (abandon_milestone == NavigationMilestone::kNavigationStart) {
       EXPECT_EQ(navigation.WaitForRequestStart(), expect_milestone_successful);
-    } else if (abandon_milestone == NavigationMilestone::LOADER_START) {
+    } else if (abandon_milestone == NavigationMilestone::kLoaderStart) {
       EXPECT_EQ(navigation.WaitForLoaderStart(), expect_milestone_successful);
     } else if (abandon_milestone ==
-               NavigationMilestone::FIRST_REDIRECT_RESPONSE) {
+               NavigationMilestone::kFirstRedirectResponseStart) {
       EXPECT_EQ(navigation.WaitForRequestRedirected(),
                 expect_milestone_successful);
     } else if (abandon_milestone ==
-               NavigationMilestone::NON_REDIRECT_RESPONSE) {
+               NavigationMilestone::kNonRedirectResponseStart) {
       EXPECT_EQ(navigation.WaitForResponse(), expect_milestone_successful);
     }
+    // TODO(https://crbug.com/347706997): Test for abandonment after the commit
+    // IPC is sent.
 
     std::move(after_nav_start_callback).Run(navigation.GetNavigationHandle());
 
-    if (!abandon_after_hiding_reason.empty()) {
-      EXPECT_EQ(abandon_reason, internal::kAbandonReasonHidden);
+    if (abandon_after_hiding_reason.has_value()) {
+      EXPECT_EQ(abandon_reason, AbandonReason::kHidden);
       EXPECT_TRUE(navigation.WaitForResponse());
       std::move(abandon_after_hiding_callback).Run();
     }
@@ -291,7 +307,7 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
     // WebContents we navigate for metrics flushing purposes, so we navigate
     // the active one.
     EXPECT_TRUE(content::NavigateToURL(
-        browser()->tab_strip_model()->GetActiveWebContents(), url_non_srp_2()));
+        browser()->tab_strip_model()->GetActiveWebContents(), url_non_srp()));
 
     bool redirected_from_non_srp =
         (target_url == url_non_srp_redirect_to_srp());
@@ -305,194 +321,195 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
 
     // There should be new entries for the navigation milestone metrics up until
     // the abandonment, but no entries for milestones after that.
+
     histogram_tester.ExpectTotalCount(
-        internal::kHistogramGWSLeakageNavigationStart + histogram_suffix, 1);
+        GetMilestoneHistogramName(NavigationMilestone::kNavigationStart,
+                                  histogram_suffix),
+        1);
     histogram_tester.ExpectTotalCount(
-        internal::kHistogramGWSLeakageNavigationStartToLoaderStart +
-            histogram_suffix,
-        abandon_milestone == NavigationMilestone::NAVIGATION_START ? 0 : 1);
+        GetMilestoneHistogramName(NavigationMilestone::kLoaderStart,
+                                  histogram_suffix),
+        abandon_milestone == NavigationMilestone::kNavigationStart ? 0 : 1);
     histogram_tester.ExpectTotalCount(
-        internal::
-                kHistogramGWSLeakageNavigationStartToFirstRedirectedRequestStart +
-            histogram_suffix,
+        GetMilestoneHistogramName(
+            NavigationMilestone::kFirstRedirectedRequestStart,
+            histogram_suffix),
         (has_redirect &&
-         abandon_milestone >= NavigationMilestone::FIRST_REDIRECT_RESPONSE)
+         abandon_milestone >= NavigationMilestone::kFirstRedirectResponseStart)
             ? 1
             : 0);
     histogram_tester.ExpectTotalCount(
-        internal::
-                kHistogramGWSLeakageNavigationStartToFirstRedirectResponseStart +
-            histogram_suffix,
+        GetMilestoneHistogramName(
+            NavigationMilestone::kFirstRedirectResponseStart, histogram_suffix),
         (has_redirect &&
-         abandon_milestone >= NavigationMilestone::FIRST_REDIRECT_RESPONSE)
+         abandon_milestone >= NavigationMilestone::kFirstRedirectResponseStart)
             ? 1
             : 0);
     histogram_tester.ExpectTotalCount(
-        internal::
-                kHistogramGWSLeakageNavigationStartToNonRedirectedRequestStart +
-            histogram_suffix,
-        abandon_milestone >= NavigationMilestone::NON_REDIRECT_RESPONSE ? 1
-                                                                        : 0);
+        GetMilestoneHistogramName(
+            NavigationMilestone::kNonRedirectedRequestStart, histogram_suffix),
+        abandon_milestone >= NavigationMilestone::kNonRedirectResponseStart
+            ? 1
+            : 0);
     histogram_tester.ExpectTotalCount(
-        internal::
-                kHistogramGWSLeakageNavigationStartToNonRedirectResponseStart +
-            histogram_suffix,
-        abandon_milestone >= NavigationMilestone::NON_REDIRECT_RESPONSE ? 1
-                                                                        : 0);
+        GetMilestoneHistogramName(
+            NavigationMilestone::kNonRedirectResponseStart, histogram_suffix),
+        abandon_milestone >= NavigationMilestone::kNonRedirectResponseStart
+            ? 1
+            : 0);
     histogram_tester.ExpectTotalCount(
-        internal::kHistogramGWSLeakageNavigationStartToCommitSent +
-            histogram_suffix,
-        abandon_milestone >= NavigationMilestone::COMMIT_SENT ? 1 : 0);
+        GetMilestoneHistogramName(NavigationMilestone::kCommitSent,
+                                  histogram_suffix),
+        abandon_milestone >= NavigationMilestone::kCommitSent ? 1 : 0);
     histogram_tester.ExpectTotalCount(
-        internal::kHistogramGWSLeakageNavigationStartToDidCommit +
-            histogram_suffix,
+        GetMilestoneHistogramName(NavigationMilestone::kDidCommit,
+                                  histogram_suffix),
         0);
 
-    // There should be a new entry for exactly one of the abandonment metric,
-    // indicating that the SRP navigation is abandoned just after
-    // `abandon_milestone` because of `abandon_reason`.
+    // There should be a new entry for exactly one of the abandonment
+    // histograms, indicating that the SRP navigation is abandoned just after
+    // `abandon_milestone` because of `abandon_reason`. An exception is when the
+    // navigation is first abandoned by hiding, then abandoned again by
+    // `abandon_after_hiding_reason` which is not kHidden.
 
-    if (abandon_milestone == NavigationMilestone::NAVIGATION_START) {
+    // Check that the last milestone before abandonment due to `abandon_reason`
+    // and `abandon_after_hiding_reason` (if set) is correctly recorded.
+    if (!abandon_after_hiding_reason.has_value() ||
+        abandon_after_hiding_reason == AbandonReason::kHidden) {
+      EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                      GetLastMilestoneBeforeAbandonHistogramName()),
+                  testing::ElementsAre(
+                      testing::Pair(GetLastMilestoneBeforeAbandonHistogramName(
+                                        abandon_reason, histogram_suffix),
+                                    1)));
+    } else {
       EXPECT_THAT(
           histogram_tester.GetTotalCountsForPrefix(
-              internal::kHistogramGWSLeakageNavigationStartToAbandon),
-          testing::ElementsAre(testing::Pair(
-              std::string(
-                  internal::kHistogramGWSLeakageNavigationStartToAbandon) +
-                  abandon_reason + histogram_suffix,
-              1)));
-    } else {
-      EXPECT_TRUE(
-          histogram_tester
-              .GetTotalCountsForPrefix(
-                  internal::kHistogramGWSLeakageNavigationStartToAbandon)
-              .empty());
+              GetLastMilestoneBeforeAbandonHistogramName()),
+          testing::UnorderedElementsAre(
+              testing::Pair(GetLastMilestoneBeforeAbandonHistogramName(
+                                abandon_reason, histogram_suffix),
+                            1),
+              testing::Pair(GetLastMilestoneBeforeAbandonHistogramName(
+                                abandon_after_hiding_reason,
+                                internal::kSuffixWasHidden + histogram_suffix),
+                            1)));
     }
 
-    if (abandon_milestone == NavigationMilestone::LOADER_START) {
-      EXPECT_THAT(
-          histogram_tester.GetTotalCountsForPrefix(
-              internal::kHistogramGWSLeakageLoaderStartToAbandon),
-          testing::ElementsAre(testing::Pair(
-              std::string(internal::kHistogramGWSLeakageLoaderStartToAbandon) +
-                  abandon_reason + histogram_suffix,
-              1)));
-    } else {
-      EXPECT_TRUE(histogram_tester
-                      .GetTotalCountsForPrefix(
-                          internal::kHistogramGWSLeakageLoaderStartToAbandon)
-                      .empty());
-    }
+    for (auto milestone : all_milestones()) {
+      if (abandon_milestone == milestone) {
+        // Check that the milestone to abandonment time is recorded.
+        EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                        GetMilestoneToAbandonHistogramName(milestone)),
+                    testing::ElementsAre(testing::Pair(
+                        GetMilestoneToAbandonHistogramName(
+                            milestone, abandon_reason, histogram_suffix),
+                        1)));
+        // Check that the abandonment reason at the milestone is recorded.
+        EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                        GetAbandonReasonAtMilestoneHistogramName(milestone)),
+                    testing::ElementsAre(
+                        testing::Pair(GetAbandonReasonAtMilestoneHistogramName(
+                                          milestone, histogram_suffix),
+                                      1)));
 
-    if (abandon_milestone == NavigationMilestone::FIRST_REDIRECT_RESPONSE) {
-      EXPECT_THAT(
-          histogram_tester.GetTotalCountsForPrefix(
-              internal::
-                  kHistogramGWSLeakageFirstRedirectResponseStartToAbandon),
-          testing::ElementsAre(testing::Pair(
-              std::string(
-                  internal::
-                      kHistogramGWSLeakageFirstRedirectResponseStartToAbandon) +
-                  abandon_reason + histogram_suffix,
-              1)));
-    } else {
-      EXPECT_TRUE(
-          histogram_tester
-              .GetTotalCountsForPrefix(
-                  internal::
-                      kHistogramGWSLeakageFirstRedirectResponseStartToAbandon)
-              .empty());
-    }
+        histogram_tester.ExpectUniqueSample(
+            GetAbandonReasonAtMilestoneHistogramName(milestone,
+                                                     histogram_suffix),
+            abandon_reason, 1);
 
-    if (abandon_milestone == NavigationMilestone::NON_REDIRECT_RESPONSE) {
-      EXPECT_THAT(
-          histogram_tester.GetTotalCountsForPrefix(
-              internal::kHistogramGWSLeakageNonRedirectResponseStartToAbandon),
-          testing::ElementsAre(testing::Pair(
-              std::string(
-                  internal::
-                      kHistogramGWSLeakageNonRedirectResponseStartToAbandon) +
-                  abandon_reason + histogram_suffix,
-              1)));
-    } else if (!abandon_after_hiding_reason.empty() &&
-               abandon_after_hiding_reason != internal::kAbandonReasonHidden) {
-      // If a navigation was initially abandoned by hiding, but then got
-      // abandoned again, it will also log the second abandonment, but with
-      // a suffix indicating that it was previously hidden.
-      EXPECT_THAT(
-          histogram_tester.GetTotalCountsForPrefix(
-              internal::kHistogramGWSLeakageNonRedirectResponseStartToAbandon),
-          testing::ElementsAre(testing::Pair(
-              std::string(
-                  internal::
-                      kHistogramGWSLeakageNonRedirectResponseStartToAbandon) +
-                  abandon_after_hiding_reason + internal::kSuffixWasHidden +
-                  histogram_suffix,
-              1)));
-    } else {
-      EXPECT_TRUE(
-          histogram_tester
-              .GetTotalCountsForPrefix(
-                  internal::
-                      kHistogramGWSLeakageNonRedirectResponseStartToAbandon)
-              .empty());
+      } else if (milestone == NavigationMilestone::kNonRedirectResponseStart &&
+                 abandon_after_hiding_reason.has_value() &&
+                 abandon_after_hiding_reason != AbandonReason::kHidden) {
+        // If a navigation was initially abandoned by hiding, but then got
+        // abandoned again, it will also log the second abandonment, but with
+        // a suffix indicating that it was previously hidden.
+        EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                        GetMilestoneToAbandonHistogramName(milestone)),
+                    testing::ElementsAre(testing::Pair(
+                        GetMilestoneToAbandonHistogramName(
+                            milestone, abandon_after_hiding_reason,
+                            internal::kSuffixWasHidden + histogram_suffix),
+                        1)));
+        EXPECT_THAT(
+            histogram_tester.GetTotalCountsForPrefix(
+                GetAbandonReasonAtMilestoneHistogramName(milestone)),
+            testing::ElementsAre(testing::Pair(
+                GetAbandonReasonAtMilestoneHistogramName(
+                    milestone, internal::kSuffixWasHidden + histogram_suffix),
+                1)));
+        histogram_tester.ExpectUniqueSample(
+            GetAbandonReasonAtMilestoneHistogramName(
+                milestone, internal::kSuffixWasHidden + histogram_suffix),
+            abandon_after_hiding_reason.value(), 1);
+      } else {
+        EXPECT_TRUE(histogram_tester
+                        .GetTotalCountsForPrefix(
+                            GetMilestoneToAbandonHistogramName(milestone))
+                        .empty());
+        EXPECT_TRUE(histogram_tester
+                        .GetTotalCountsForPrefix(
+                            GetAbandonReasonAtMilestoneHistogramName(milestone))
+                        .empty());
+      }
     }
-
-    // TODO(https://crbug.com/347706997): Test for abandonment after the commit
-    // IPC is sent.
-    EXPECT_TRUE(histogram_tester
-                    .GetTotalCountsForPrefix(
-                        internal::kHistogramGWSLeakageCommitSentToAbandon)
-                    .empty());
 
     // For navigations that are abandoned due to hiding, we will continue
     // recording the milestones after the hiding abandonment, but will add
     // the "WasHidden" suffix.
-    if (abandon_reason == internal::kAbandonReasonHidden) {
+    if (abandon_reason == AbandonReason::kHidden) {
       histogram_suffix = internal::kSuffixWasHidden + histogram_suffix;
       // Only expect entries for milestones after the hiding takes place.
       bool already_hidden =
-          (abandon_milestone == NavigationMilestone::NAVIGATION_START);
+          (abandon_milestone == NavigationMilestone::kNavigationStart);
       histogram_tester.ExpectTotalCount(
-          internal::kHistogramGWSLeakageNavigationStart + histogram_suffix, 0);
+          GetMilestoneHistogramName(NavigationMilestone::kNavigationStart,
+                                    histogram_suffix),
+          0);
       histogram_tester.ExpectTotalCount(
-          internal::kHistogramGWSLeakageNavigationStartToLoaderStart +
-              histogram_suffix,
+          GetMilestoneHistogramName(NavigationMilestone::kLoaderStart,
+                                    histogram_suffix),
           already_hidden ? 1 : 0);
 
-      already_hidden |=
-          (abandon_milestone < NavigationMilestone::FIRST_REDIRECT_RESPONSE);
+      already_hidden |= (abandon_milestone <
+                         NavigationMilestone::kFirstRedirectResponseStart);
       histogram_tester.ExpectTotalCount(
-          internal::
-                  kHistogramGWSLeakageNavigationStartToFirstRedirectedRequestStart +
-              histogram_suffix,
+          GetMilestoneHistogramName(
+              NavigationMilestone::kFirstRedirectedRequestStart,
+              histogram_suffix),
           (has_redirect && already_hidden) ? 1 : 0);
       histogram_tester.ExpectTotalCount(
-          internal::
-                  kHistogramGWSLeakageNavigationStartToFirstRedirectResponseStart +
-              histogram_suffix,
+          GetMilestoneHistogramName(
+              NavigationMilestone::kFirstRedirectResponseStart,
+              histogram_suffix),
           (has_redirect && already_hidden) ? 1 : 0);
 
-      already_hidden |=
-          (abandon_milestone <= NavigationMilestone::FIRST_REDIRECT_RESPONSE);
+      already_hidden |= (abandon_milestone <=
+                         NavigationMilestone::kFirstRedirectResponseStart);
       histogram_tester.ExpectTotalCount(
-          internal::
-                  kHistogramGWSLeakageNavigationStartToNonRedirectedRequestStart +
-              histogram_suffix,
+          GetMilestoneHistogramName(
+              NavigationMilestone::kNonRedirectedRequestStart,
+              histogram_suffix),
           already_hidden ? 1 : 0);
       histogram_tester.ExpectTotalCount(
-          internal::
-                  kHistogramGWSLeakageNavigationStartToNonRedirectResponseStart +
-              histogram_suffix,
+          GetMilestoneHistogramName(
+              NavigationMilestone::kNonRedirectResponseStart, histogram_suffix),
           already_hidden ? 1 : 0);
       // The navigation might be abandoned for a second time after hiding. In
       // that case, the milestones after the second abandonment won't be logged,
       // except if it was another hiding.
       histogram_tester.ExpectTotalCount(
-          internal::kHistogramGWSLeakageNavigationStartToCommitSent +
-              histogram_suffix,
-          (abandon_after_hiding_reason.empty() ||
-           abandon_after_hiding_reason == internal::kAbandonReasonHidden)
+          GetMilestoneHistogramName(NavigationMilestone::kCommitSent,
+                                    histogram_suffix),
+          (!abandon_after_hiding_reason.has_value() ||
+           abandon_after_hiding_reason == AbandonReason::kHidden)
+              ? 1
+              : 0);
+      histogram_tester.ExpectTotalCount(
+          GetMilestoneHistogramName(NavigationMilestone::kDidCommit,
+                                    histogram_suffix),
+          (!abandon_after_hiding_reason.has_value() ||
+           abandon_after_hiding_reason == AbandonReason::kHidden)
               ? 1
               : 0);
     }
@@ -679,22 +696,37 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
 IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
                        SearchCancelledByNewNavigation) {
   for (NavigationMilestone milestone : all_testable_milestones()) {
-    TestNavigationAbandonment(
-        internal::kAbandonReasonNewNavigation, milestone,
-        GetTargetURLForMilestone(milestone),
-        /*expect_milestone_successful=*/true,
-        /*expect_committed=*/false, web_contents(),
-        base::BindOnce(
-            [](content::WebContents* web_contents,
-               content::NavigationHandle* navigation_handle) {
-              // Navigate to a non-SRP page, which will trigger the cancellation
-              // of the SRP navigation.
-              web_contents->GetController().LoadURL(
-                  GURL("about:blank"), content::Referrer(),
-                  ui::PAGE_TRANSITION_LINK, std::string());
-              EXPECT_TRUE(WaitForLoadStop(web_contents));
-            },
-            web_contents()));
+    for (AbandonReason reason :
+         {AbandonReason::kNewReloadNavigation,
+          AbandonReason::kNewHistoryNavigation,
+          AbandonReason::kNewOtherNavigationBrowserInitiated,
+          AbandonReason::kNewOtherNavigationRendererInitiated}) {
+      TestNavigationAbandonment(
+          reason, milestone, GetTargetURLForMilestone(milestone),
+          /*expect_milestone_successful=*/true,
+          /*expect_committed=*/false, web_contents(),
+          base::BindLambdaForTesting(
+              [&](content::NavigationHandle* navigation_handle) {
+                // Navigate to a non-SRP page, which will trigger the
+                // cancellation of the SRP navigation. The type of navigation is
+                // determined by the `reason` to be tested.
+                if (reason == AbandonReason::kNewReloadNavigation) {
+                  EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                                     "location.reload();"));
+                } else if (reason == AbandonReason::kNewHistoryNavigation) {
+                  web_contents()->GetController().GoBack();
+                } else if (reason ==
+                           AbandonReason::kNewOtherNavigationBrowserInitiated) {
+                  web_contents()->GetController().LoadURL(
+                      GURL("about:blank"), content::Referrer(),
+                      ui::PAGE_TRANSITION_LINK, std::string());
+                } else {
+                  EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                                     "location.href = 'about:blank';"));
+                }
+                EXPECT_TRUE(WaitForLoadStop(web_contents()));
+              }));
+    }
   }
 }
 
@@ -705,7 +737,7 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
                        SearchCancelledByWebContentsStop) {
   for (NavigationMilestone milestone : all_testable_milestones()) {
     TestNavigationAbandonment(
-        internal::kAbandonReasonExplicitCancellation, milestone,
+        AbandonReason::kExplicitCancellation, milestone,
         GetTargetURLForMilestone(milestone),
         /*expect_milestone_successful=*/true,
         /*expect_committed=*/false, web_contents(),
@@ -730,8 +762,7 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
     web_contents()->WasShown();
 
     TestNavigationAbandonment(
-        internal::kAbandonReasonHidden, milestone,
-        GetTargetURLForMilestone(milestone),
+        AbandonReason::kHidden, milestone, GetTargetURLForMilestone(milestone),
         /*expect_milestone_successful=*/true,
         /*expect_committed=*/true, web_contents(),
         base::BindOnce(
@@ -753,8 +784,7 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
     web_contents()->WasShown();
 
     TestNavigationAbandonment(
-        internal::kAbandonReasonHidden, milestone,
-        url_non_srp_redirect_to_srp(),
+        AbandonReason::kHidden, milestone, url_non_srp_redirect_to_srp(),
         /*expect_milestone_successful=*/true,
         /*expect_committed=*/true, web_contents(),
         base::BindOnce(
@@ -776,10 +806,10 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
   web_contents()->WasShown();
 
   TestNavigationAbandonment(
-      internal::kAbandonReasonHidden,
-      // Test hiding at NAVIGATION_START, then stop the navigation on
-      // NON_REDIRECT_RESPONSE.
-      NavigationMilestone::NAVIGATION_START, url_srp(),
+      AbandonReason::kHidden,
+      // Test hiding at kNavigationStart, then stop the navigation on
+      // kNonRedirectResponseStart.
+      NavigationMilestone::kNavigationStart, url_srp(),
       /*expect_milestone_successful=*/true,
       /*expect_committed=*/false, web_contents(),
       base::BindOnce(
@@ -789,7 +819,7 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
             web_contents->WasHidden();
           },
           web_contents()),
-      internal::kAbandonReasonExplicitCancellation,
+      AbandonReason::kExplicitCancellation,
       base::BindOnce(
           [](content::WebContents* web_contents) {
             // Stop the navigation to SRP.
@@ -803,16 +833,15 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
 IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
                        SearchTabHiddenThenStopped_NonSRPRedirectToSRP) {
   for (NavigationMilestone milestone :
-       {NavigationMilestone::NAVIGATION_START,
-        NavigationMilestone::FIRST_REDIRECT_RESPONSE}) {
+       {NavigationMilestone::kNavigationStart,
+        NavigationMilestone::kFirstRedirectResponseStart}) {
     // Make sure the WebContents is currently shown, before hiding it later.
     web_contents()->WasShown();
 
     TestNavigationAbandonment(
         // Test hiding at `milestone`, then stop the navigation on
         // NON_REDIRECT_RESPONSE.
-        internal::kAbandonReasonHidden, milestone,
-        url_non_srp_redirect_to_srp(),
+        AbandonReason::kHidden, milestone, url_non_srp_redirect_to_srp(),
         /*expect_milestone_successful=*/true,
         /*expect_committed=*/false, web_contents(),
         base::BindOnce(
@@ -822,7 +851,7 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
               web_contents->WasHidden();
             },
             web_contents()),
-        internal::kAbandonReasonExplicitCancellation,
+        AbandonReason::kExplicitCancellation,
         base::BindOnce(
             [](content::WebContents* web_contents) {
               // Stop the navigation to SRP.
@@ -840,10 +869,10 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
   web_contents()->WasShown();
 
   TestNavigationAbandonment(
-      internal::kAbandonReasonHidden,
-      // Test hiding at NAVIGATION_START, then stop the navigation on
-      // NON_REDIRECT_RESPONSE.
-      NavigationMilestone::NAVIGATION_START, url_srp(),
+      AbandonReason::kHidden,
+      // Test hiding at kNavigationStart, then stop the navigation on
+      // kNonRedirectResponseStart.
+      NavigationMilestone::kNavigationStart, url_srp(),
       /*expect_milestone_successful=*/true,
       /*expect_committed=*/true, web_contents(),
       base::BindOnce(
@@ -853,7 +882,7 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
             web_contents->WasHidden();
           },
           web_contents()),
-      internal::kAbandonReasonHidden,
+      AbandonReason::kHidden,
       base::BindOnce(
           [](content::WebContents* web_contents) {
             // Stop the navigation to SRP.
@@ -882,7 +911,7 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
         browser()->tab_strip_model()->GetActiveWebContents();
 
     TestNavigationAbandonment(
-        internal::kAbandonReasonFrameRemoved, milestone,
+        AbandonReason::kFrameRemoved, milestone,
         GetTargetURLForMilestone(milestone),
         /*expect_milestone_successful=*/true,
         /*expect_committed=*/false, popup_contents,
@@ -921,11 +950,11 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
                   content::TestNavigationThrottle::ThrottleMethod method =
                       content::TestNavigationThrottle::WILL_START_REQUEST;
                   if (milestone ==
-                      NavigationMilestone::FIRST_REDIRECT_RESPONSE) {
+                      NavigationMilestone::kFirstRedirectResponseStart) {
                     method =
                         content::TestNavigationThrottle::WILL_REDIRECT_REQUEST;
                   } else if (milestone ==
-                             NavigationMilestone::NON_REDIRECT_RESPONSE) {
+                             NavigationMilestone::kNonRedirectResponseStart) {
                     method =
                         content::TestNavigationThrottle::WILL_PROCESS_RESPONSE;
                   }
@@ -935,7 +964,7 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
                   return throttle;
                 }));
         TestNavigationAbandonment(
-            internal::kAbandonReasonInternalCancellation, milestone,
+            AbandonReason::kInternalCancellation, milestone,
             GetTargetURLForMilestone(milestone),
             /*expect_milestone_successful=*/false,
             /*expect_committed=*/false, web_contents(),
@@ -967,23 +996,24 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
               }
               content::TestNavigationThrottle::ThrottleMethod method =
                   content::TestNavigationThrottle::WILL_START_REQUEST;
-              if (milestone == NavigationMilestone::FIRST_REDIRECT_RESPONSE) {
+              if (milestone ==
+                  NavigationMilestone::kFirstRedirectResponseStart) {
                 method = content::TestNavigationThrottle::WILL_REDIRECT_REQUEST;
               } else if (milestone ==
-                         NavigationMilestone::NON_REDIRECT_RESPONSE) {
+                         NavigationMilestone::kNonRedirectResponseStart) {
                 method = content::TestNavigationThrottle::WILL_PROCESS_RESPONSE;
               }
               auto throttle =
                   std::make_unique<content::TestNavigationThrottle>(handle);
               throttle->SetResponse(
                   method, content::TestNavigationThrottle::SYNCHRONOUS,
-                  milestone == NavigationMilestone::NON_REDIRECT_RESPONSE
+                  milestone == NavigationMilestone::kNonRedirectResponseStart
                       ? content::NavigationThrottle::BLOCK_RESPONSE
                       : content::NavigationThrottle::BLOCK_REQUEST);
               return throttle;
             }));
     TestNavigationAbandonment(
-        internal::kAbandonReasonErrorPage, milestone,
+        AbandonReason::kErrorPage, milestone,
         GetTargetURLForMilestone(milestone),
         /*expect_milestone_successful=*/false,
         /*expect_committed=*/true, web_contents(),
@@ -1001,8 +1031,8 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
 IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
                        SearchCancelledByRenderProcessGone) {
   TestNavigationAbandonment(
-      internal::kAbandonReasonRenderProcessGone,
-      NavigationMilestone::NON_REDIRECT_RESPONSE, url_srp(),
+      AbandonReason::kRenderProcessGone,
+      NavigationMilestone::kNonRedirectResponseStart, url_srp(),
 
       /*expect_milestone_successful=*/true,
       /*expect_committed=*/false, web_contents(),
