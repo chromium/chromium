@@ -295,12 +295,6 @@ class AutofillClient {
     ArrowPosition arrow_position;
   };
 
-  // Callback to run after local credit card save or local CVC save is offered.
-  // Sends whether the prompt was accepted, declined, or ignored in
-  // |user_decision|.
-  using LocalSaveCardPromptCallback =
-      base::OnceCallback<void(SaveCardOfferUserDecision user_decision)>;
-
   // Callback to run after upload credit card save or upload CVC save for
   // existing server card is offered. Sends whether the prompt was accepted,
   // declined, or ignored in |user_decision|, and additional

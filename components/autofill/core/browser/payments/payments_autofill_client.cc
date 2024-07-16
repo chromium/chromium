@@ -76,7 +76,7 @@ void PaymentsAutofillClient::ScanCreditCard(CreditCardScanCallback callback) {}
 void PaymentsAutofillClient::ConfirmSaveCreditCardLocally(
     const CreditCard& card,
     AutofillClient::SaveCreditCardOptions options,
-    AutofillClient::LocalSaveCardPromptCallback callback) {}
+    LocalSaveCardPromptCallback callback) {}
 
 void PaymentsAutofillClient::ConfirmSaveCreditCardToCloud(
     const CreditCard& card,

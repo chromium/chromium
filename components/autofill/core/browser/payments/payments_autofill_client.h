@@ -124,6 +124,12 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // Callback to run when the credit card has been scanned.
   using CreditCardScanCallback = base::OnceCallback<void(const CreditCard&)>;
 
+  // Callback to run after local credit card save or local CVC save is offered.
+  // Sends whether the prompt was accepted, declined, or ignored in
+  // `user_decision`.
+  using LocalSaveCardPromptCallback = base::OnceCallback<void(
+      AutofillClient::SaveCardOfferUserDecision user_decision)>;
+
 #if BUILDFLAG(IS_ANDROID)
   // Gets the AutofillSaveCardBottomSheetBridge or creates one if it doesn't
   // exist.
@@ -219,7 +225,7 @@ class PaymentsAutofillClient : public RiskDataLoader {
   virtual void ConfirmSaveCreditCardLocally(
       const CreditCard& card,
       AutofillClient::SaveCreditCardOptions options,
-      AutofillClient::LocalSaveCardPromptCallback callback);
+      LocalSaveCardPromptCallback callback);
 
   // Runs `callback` once the user makes a decision with respect to the
   // offer-to-save prompt. This includes both the save server card prompt and

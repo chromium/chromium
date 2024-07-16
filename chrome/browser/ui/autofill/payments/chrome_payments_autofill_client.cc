@@ -251,7 +251,7 @@ void ChromePaymentsAutofillClient::ScanCreditCard(
 void ChromePaymentsAutofillClient::ConfirmSaveCreditCardLocally(
     const CreditCard& card,
     AutofillClient::SaveCreditCardOptions options,
-    AutofillClient::LocalSaveCardPromptCallback callback) {
+    LocalSaveCardPromptCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
   DCHECK(options.show_prompt);
   AutofillSaveCardUiInfo ui_info =

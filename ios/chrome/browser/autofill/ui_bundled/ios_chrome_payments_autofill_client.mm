@@ -84,7 +84,7 @@ void IOSChromePaymentsAutofillClient::LoadRiskData(
 void IOSChromePaymentsAutofillClient::ConfirmSaveCreditCardLocally(
     const CreditCard& card,
     AutofillClient::SaveCreditCardOptions options,
-    AutofillClient::LocalSaveCardPromptCallback callback) {
+    LocalSaveCardPromptCallback callback) {
   DCHECK(options.show_prompt);
   infobar_manager_->AddInfoBar(CreateSaveCardInfoBarMobile(
       std::make_unique<AutofillSaveCardInfoBarDelegateIOS>(

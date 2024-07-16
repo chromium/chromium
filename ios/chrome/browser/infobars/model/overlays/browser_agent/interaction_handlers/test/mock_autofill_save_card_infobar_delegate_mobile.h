@@ -8,11 +8,11 @@
 #include <memory>
 #include <string>
 
-#include "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
-
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class GURL;
@@ -23,7 +23,8 @@ class MockAutofillSaveCardInfoBarDelegateMobile
   MockAutofillSaveCardInfoBarDelegateMobile(
       autofill::AutofillClient::SaveCreditCardOptions options,
       const autofill::CreditCard& card,
-      absl::variant<autofill::AutofillClient::LocalSaveCardPromptCallback,
+      absl::variant<autofill::payments::PaymentsAutofillClient::
+                        LocalSaveCardPromptCallback,
                     autofill::AutofillClient::UploadSaveCardPromptCallback>
           callback,
       const autofill::LegalMessageLines& legal_message_lines,

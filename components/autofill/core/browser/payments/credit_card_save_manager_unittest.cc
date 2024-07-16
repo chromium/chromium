@@ -166,7 +166,7 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
               ConfirmSaveCreditCardLocally,
               (const CreditCard&,
                AutofillClient::SaveCreditCardOptions,
-               AutofillClient::LocalSaveCardPromptCallback),
+               payments::PaymentsAutofillClient::LocalSaveCardPromptCallback),
               (override));
   MOCK_METHOD(void,
               ConfirmSaveCreditCardToCloud,
@@ -205,9 +205,8 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
         .WillByDefault(
             [offer_decision](
                 const CreditCard&, AutofillClient::SaveCreditCardOptions,
-                AutofillClient::LocalSaveCardPromptCallback callback) {
-              std::move(callback).Run(offer_decision);
-            });
+                payments::PaymentsAutofillClient::LocalSaveCardPromptCallback
+                    callback) { std::move(callback).Run(offer_decision); });
   }
 
   // Used in tests to ensure that:
@@ -907,12 +906,13 @@ TEST_F(CreditCardSaveManagerTest,
 
   EXPECT_CALL(payments_client(), ConfirmSaveCreditCardLocally)
       .Times(3)
-      .WillRepeatedly([](const CreditCard&,
-                         AutofillClient::SaveCreditCardOptions,
-                         AutofillClient::LocalSaveCardPromptCallback callback) {
-        std::move(callback).Run(
-            AutofillClient::SaveCardOfferUserDecision::kIgnored);
-      });
+      .WillRepeatedly(
+          [](const CreditCard&, AutofillClient::SaveCreditCardOptions,
+             payments::PaymentsAutofillClient::LocalSaveCardPromptCallback
+                 callback) {
+            std::move(callback).Run(
+                AutofillClient::SaveCardOfferUserDecision::kIgnored);
+          });
 
   credit_card_save_manager_->AttemptToOfferCvcLocalSave(local_card);
 

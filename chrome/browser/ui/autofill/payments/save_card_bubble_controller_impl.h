@@ -66,7 +66,8 @@ class SaveCardBubbleControllerImpl
   virtual void OfferLocalSave(
       const CreditCard& card,
       AutofillClient::SaveCreditCardOptions options,
-      AutofillClient::LocalSaveCardPromptCallback save_card_prompt_callback);
+      payments::PaymentsAutofillClient::LocalSaveCardPromptCallback
+          save_card_prompt_callback);
 
   // Sets up the controller and is responsible for offering both card save and
   // CVC save to Google Payments. The offer-to-save CVC bubble uploads CVC for
@@ -201,7 +202,8 @@ class SaveCardBubbleControllerImpl
 
   // Callback to run once the user makes a decision with respect to the local
   // credit card offer-to-save prompt or the local CVC offer-to-save prompt.
-  AutofillClient::LocalSaveCardPromptCallback local_save_card_prompt_callback_;
+  payments::PaymentsAutofillClient::LocalSaveCardPromptCallback
+      local_save_card_prompt_callback_;
 
   // Callback to run after save card confirmation bubble is closed.
   std::optional<payments::PaymentsAutofillClient::OnConfirmationClosedCallback>

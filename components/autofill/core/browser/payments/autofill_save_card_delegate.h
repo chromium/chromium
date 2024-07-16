@@ -7,6 +7,7 @@
 
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill {
@@ -17,9 +18,9 @@ class AutofillSaveCardInfoBarDelegateMobileTest;
 class AutofillSaveCardDelegate {
  public:
   AutofillSaveCardDelegate(
-      absl::variant<AutofillClient::LocalSaveCardPromptCallback,
-                    AutofillClient::UploadSaveCardPromptCallback>
-          save_card_callback,
+      absl::variant<
+          payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
+          AutofillClient::UploadSaveCardPromptCallback> save_card_callback,
       AutofillClient::SaveCreditCardOptions options);
 
   virtual ~AutofillSaveCardDelegate();
@@ -79,7 +80,7 @@ class AutofillSaveCardDelegate {
 
   // The callback to run once the user makes a decision with respect to the
   // credit card offer-to-save prompt.
-  absl::variant<AutofillClient::LocalSaveCardPromptCallback,
+  absl::variant<payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
                 AutofillClient::UploadSaveCardPromptCallback>
       save_card_callback_;
 

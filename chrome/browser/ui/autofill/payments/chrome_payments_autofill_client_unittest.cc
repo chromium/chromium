@@ -85,7 +85,7 @@ class MockSaveCardBubbleController : public SaveCardBubbleControllerImpl {
               OfferLocalSave,
               (const CreditCard&,
                AutofillClient::SaveCreditCardOptions,
-               AutofillClient::LocalSaveCardPromptCallback),
+               payments::PaymentsAutofillClient::LocalSaveCardPromptCallback),
               (override));
 
   MOCK_METHOD(

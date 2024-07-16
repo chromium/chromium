@@ -9,6 +9,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/autofill_client.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
+#import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/common/features.h"
 #import "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
@@ -51,14 +52,15 @@ class AutofillSaveCardInfoBarDelegateTest : public PlatformTest {
 
   void SetUp() override {
     delegate_ = CreateDelegate(
-        /*callback=*/static_cast<AutofillClient::LocalSaveCardPromptCallback>(
+        /*callback=*/static_cast<
+            payments::PaymentsAutofillClient::LocalSaveCardPromptCallback>(
             base::DoNothing()));
   }
 
   std::unique_ptr<AutofillSaveCardInfoBarDelegateIOS> CreateDelegate(
-      absl::variant<AutofillClient::LocalSaveCardPromptCallback,
-                    AutofillClient::UploadSaveCardPromptCallback>
-          save_card_callback) {
+      absl::variant<
+          payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
+          AutofillClient::UploadSaveCardPromptCallback> save_card_callback) {
     auto save_card_delegate = std::make_unique<AutofillSaveCardDelegate>(
         std::move(save_card_callback), AutofillClient::SaveCreditCardOptions());
     return std::make_unique<AutofillSaveCardInfoBarDelegateIOS>(
@@ -84,9 +86,10 @@ class AutofillSaveCardInfoBarDelegateTest : public PlatformTest {
 
 // Tests that the user decision is propagated when accepting local save.
 TEST_F(AutofillSaveCardInfoBarDelegateTest, UpdateAndAccept_Local) {
-  AutofillClient::LocalSaveCardPromptCallback callback = base::BindOnce(
-      &AutofillSaveCardInfoBarDelegateTest::LocalSaveCardPromptCallbackFn,
-      base::Unretained(this));
+  payments::PaymentsAutofillClient::LocalSaveCardPromptCallback callback =
+      base::BindOnce(
+          &AutofillSaveCardInfoBarDelegateTest::LocalSaveCardPromptCallbackFn,
+          base::Unretained(this));
   std::unique_ptr<AutofillSaveCardInfoBarDelegateIOS> delegate =
       CreateDelegate(std::move(callback));
 

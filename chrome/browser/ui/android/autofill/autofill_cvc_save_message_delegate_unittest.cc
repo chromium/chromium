@@ -10,6 +10,7 @@
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
 
 namespace autofill {
@@ -24,7 +25,8 @@ class MockAutofillSaveCardDelegateAndroid
   explicit MockAutofillSaveCardDelegateAndroid(
       content::WebContents* web_contents)
       : AutofillSaveCardDelegateAndroid(
-            (AutofillClient::LocalSaveCardPromptCallback)base::DoNothing(),
+            (payments::PaymentsAutofillClient::LocalSaveCardPromptCallback)
+                base::DoNothing(),
             AutofillClient::SaveCreditCardOptions(),
             web_contents) {}
 

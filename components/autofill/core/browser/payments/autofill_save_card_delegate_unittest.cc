@@ -13,6 +13,7 @@
 #include "base/test/mock_callback.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -48,7 +49,8 @@ class AutofillSaveCardDelegateTest : public ::testing::Test,
                                      public testing::WithParamInterface<bool> {
  protected:
   void LocalCallback(SaveCardOfferUserDecision decision);
-  AutofillClient::LocalSaveCardPromptCallback MakeLocalCallback();
+  payments::PaymentsAutofillClient::LocalSaveCardPromptCallback
+  MakeLocalCallback();
   void UploadCallback(SaveCardOfferUserDecision decision,
                       const UserProvidedCardDetails& user_card_details);
   AutofillClient::UploadSaveCardPromptCallback MakeUploadCallback();
@@ -65,7 +67,7 @@ void AutofillSaveCardDelegateTest::LocalCallback(
   local_offer_decisions_.push_back(decision);
 }
 
-AutofillClient::LocalSaveCardPromptCallback
+payments::PaymentsAutofillClient::LocalSaveCardPromptCallback
 AutofillSaveCardDelegateTest::MakeLocalCallback() {
   return base::BindOnce(
       &AutofillSaveCardDelegateTest::LocalCallback,

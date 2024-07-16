@@ -18,6 +18,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -150,13 +151,15 @@ AutofillSaveCardInfoBarDelegateMobileTest::CreateDelegate(
       options.is_google_pay_branding_enabled;
 #if BUILDFLAG(IS_ANDROID)
   auto save_card_delegate = std::make_unique<AutofillSaveCardDelegateAndroid>(
-      (AutofillClient::LocalSaveCardPromptCallback)base::DoNothing(),
+      (payments::PaymentsAutofillClient::LocalSaveCardPromptCallback)
+          base::DoNothing(),
       AutofillClient::SaveCreditCardOptions(), web_contents());
   save_card_delegate->SetDeviceLockBridgeForTesting(
       std::make_unique<TestDeviceLockBridge>());
 #else
   auto save_card_delegate = std::make_unique<AutofillSaveCardDelegate>(
-      (AutofillClient::LocalSaveCardPromptCallback)base::DoNothing(),
+      (payments::PaymentsAutofillClient::LocalSaveCardPromptCallback)
+          base::DoNothing(),
       AutofillClient::SaveCreditCardOptions());
 #endif
   return std::make_unique<AutofillSaveCardInfoBarDelegateMobile>(
@@ -199,7 +202,7 @@ AutofillSaveCardInfoBarDelegateMobileTest::
   }
 
   credit_card_to_save_ = credit_card;
-  absl::variant<AutofillClient::LocalSaveCardPromptCallback,
+  absl::variant<payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
                 AutofillClient::UploadSaveCardPromptCallback>
       save_card_callback;
   AutofillSaveCardUiInfo ui_info;

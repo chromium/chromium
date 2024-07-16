@@ -10,6 +10,7 @@
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
+#import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/browser/payments/test_legal_message_line.h"
 #import "components/signin/public/identity_manager/account_info.h"
 
@@ -17,7 +18,8 @@ MockAutofillSaveCardInfoBarDelegateMobile::
     MockAutofillSaveCardInfoBarDelegateMobile(
         autofill::AutofillClient::SaveCreditCardOptions options,
         const autofill::CreditCard& card,
-        absl::variant<autofill::AutofillClient::LocalSaveCardPromptCallback,
+        absl::variant<autofill::payments::PaymentsAutofillClient::
+                          LocalSaveCardPromptCallback,
                       autofill::AutofillClient::UploadSaveCardPromptCallback>
             callback,
         const autofill::LegalMessageLines& legal_message_lines,
@@ -54,13 +56,13 @@ MockAutofillSaveCardInfoBarDelegateMobileFactory::
     CreateMockAutofillSaveCardInfoBarDelegateMobileFactory(
         bool upload,
         autofill::CreditCard card) {
-  using Variant =
-      absl::variant<autofill::AutofillClient::LocalSaveCardPromptCallback,
-                    autofill::AutofillClient::UploadSaveCardPromptCallback>;
+  using Variant = absl::variant<
+      autofill::payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
+      autofill::AutofillClient::UploadSaveCardPromptCallback>;
   autofill::AutofillClient::UploadSaveCardPromptCallback upload_cb =
       base::DoNothing();
-  autofill::AutofillClient::LocalSaveCardPromptCallback local_cb =
-      base::DoNothing();
+  autofill::payments::PaymentsAutofillClient::LocalSaveCardPromptCallback
+      local_cb = base::DoNothing();
   return std::make_unique<MockAutofillSaveCardInfoBarDelegateMobile>(
       autofill::AutofillClient::SaveCreditCardOptions(), card,
       upload ? Variant(std::move(upload_cb)) : Variant(std::move(local_cb)),

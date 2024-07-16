@@ -36,6 +36,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/manage_cards_prompt_metrics.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
@@ -163,7 +164,8 @@ SaveCardBubbleController* SaveCardBubbleController::Get(
 void SaveCardBubbleControllerImpl::OfferLocalSave(
     const CreditCard& card,
     AutofillClient::SaveCreditCardOptions options,
-    AutofillClient::LocalSaveCardPromptCallback save_card_prompt_callback) {
+    payments::PaymentsAutofillClient::LocalSaveCardPromptCallback
+        save_card_prompt_callback) {
   // If the confirmation view is still showing, close it before showing the new
   // offer.
   if (current_bubble_type_ == BubbleType::UPLOAD_COMPLETED) {

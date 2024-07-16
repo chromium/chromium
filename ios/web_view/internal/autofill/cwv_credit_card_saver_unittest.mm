@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/autofill/cwv_credit_card_saver_internal.h"
-
 #import <UIKit/UIKit.h>
+
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -14,9 +13,11 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "ios/web/public/test/web_task_environment.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
+#import "ios/web_view/internal/autofill/cwv_credit_card_saver_internal.h"
 #include "ios/web_view/test/test_with_locale_and_resources.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
@@ -93,7 +94,8 @@ TEST_F(CWVCreditCardSaverTest, Ignore) {
 TEST_F(CWVCreditCardSaverTest, Decline) {
   autofill::CreditCard credit_card = autofill::test::GetCreditCard();
   autofill::AutofillClient::SaveCreditCardOptions options;
-  autofill::AutofillClient::LocalSaveCardPromptCallback local_callback;
+  autofill::payments::PaymentsAutofillClient::LocalSaveCardPromptCallback
+      local_callback;
 
   BOOL callback_called = NO;
   autofill::AutofillClient::UploadSaveCardPromptCallback callback =

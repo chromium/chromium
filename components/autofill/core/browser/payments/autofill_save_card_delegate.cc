@@ -9,7 +9,7 @@
 namespace autofill {
 
 AutofillSaveCardDelegate::AutofillSaveCardDelegate(
-    absl::variant<AutofillClient::LocalSaveCardPromptCallback,
+    absl::variant<payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
                   AutofillClient::UploadSaveCardPromptCallback>
         save_card_callback,
     AutofillClient::SaveCreditCardOptions options)
@@ -89,7 +89,7 @@ void AutofillSaveCardDelegate::RunSaveCardPromptCallback(
         std::move(save_card_callback_))
         .Run(user_decision, user_provided_details);
   } else {
-    absl::get<AutofillClient::LocalSaveCardPromptCallback>(
+    absl::get<payments::PaymentsAutofillClient::LocalSaveCardPromptCallback>(
         std::move(save_card_callback_))
         .Run(user_decision);
   }

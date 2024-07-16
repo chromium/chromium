@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_SAVE_CARD_DELEGATE_ANDROID_H_
 
 #include "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 class DeviceLockBridge;
 
@@ -20,8 +21,9 @@ namespace autofill {
 class AutofillSaveCardDelegateAndroid : public AutofillSaveCardDelegate {
  public:
   AutofillSaveCardDelegateAndroid(
-      absl::variant<AutofillClient::LocalSaveCardPromptCallback,
-                    AutofillClient::UploadSaveCardPromptCallback> callback,
+      absl::variant<
+          payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
+          AutofillClient::UploadSaveCardPromptCallback> callback,
       AutofillClient::SaveCreditCardOptions options,
       content::WebContents* web_contents);
 
