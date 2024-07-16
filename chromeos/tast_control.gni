@@ -107,6 +107,10 @@ tast_disabled_tests_from_chrome_all = [
   "network.ConfigBaseline.login@betty-pi-arc",
   "network.ConfigBaseline.oobe@betty-pi-arc",
 
+  # b/352753237, Pnacl and terminal.SSH failing only on brya, blocking LKGM
+  "nacl.Pnacl@brya",
+  "terminal.SSH@brya",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
