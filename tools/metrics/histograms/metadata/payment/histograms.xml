@@ -138,7 +138,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.IsCanMakePaymentAllowedByPref.Startup.DisabledReason"
-    enum="Boolean" expires_after="2024-11-27">
+    enum="CanMakePaymentPreferenceSetter" expires_after="2024-11-27">
   <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-team@google.com</owner>
   <summary>
