@@ -73,7 +73,7 @@ interface CrosHealthdRoutinesService {
 
 // Argument types for the possible routines the routine control API can create.
 //
-// NextMinVersion: 3, NextIndex: 21
+// NextMinVersion: 5, NextIndex: 23
 [Stable, Extensible]
 union RoutineArgument {
   // Default field is required by extensible unions for backward compatibility.
@@ -122,6 +122,12 @@ union RoutineArgument {
   // Arguments to create a camera frame analysis routine.
   [MinVersion=2]
   CameraFrameAnalysisRoutineArgument camera_frame_analysis@20;
+  // Arguments to create a battery discharge routine.
+  [MinVersion=3]
+  BatteryDischargeRoutineArgument battery_discharge@21;
+  // Arguments to create a keyboard backlight routine.
+  [MinVersion=4]
+  KeyboardBacklightRoutineArgument keyboard_backlight@22;
 };
 
 // This routine checks whether there is any memory problem by reading/writing
@@ -259,6 +265,13 @@ struct LedLitUpRoutineArgument {
   LedColor color@1;
 };
 
+// This routine checks whether the keyboard backlight can be lit up at any
+// brightness level.
+//
+// NextMinVersion: 1, NextIndex: 0
+[Stable]
+struct KeyboardBacklightRoutineArgument {};
+
 // This routine checks whether there is any CPU problem by repeatedly
 // calculating floating point values.
 //
@@ -359,6 +372,20 @@ struct SensitiveSensorRoutineArgument {};
 // NextMinVersion: 1, NextIndex: 0
 [Stable]
 struct CameraFrameAnalysisRoutineArgument {};
+
+// This routine checks that the battery discharge rate does not exceed a certain
+// percent within a given timeframe. Clients should unplug the AC adapter and
+// report done via `UnplugAcAdapterReply`.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct BatteryDischargeRoutineArgument {
+  // The length of time this routine is expected to run.
+  mojo_base.mojom.TimeDelta exec_duration@0;
+  // The maximum change in battery percent allowed for the routine to pass,
+  // values should range in [0, 100].
+  uint8 maximum_discharge_percent_allowed@1;
+};
 
 // Interface exposed to clients for controlling a routine.
 //
@@ -536,7 +563,7 @@ union RoutineInteraction {
 // reply type in `RoutineInquiryReply`. Clients should call the `ReplyInquiry`
 // method of `RoutineControl` with the corresponding reply type.
 //
-// NextMinVersion: 1, NextIndex: 2
+// NextMinVersion: 3, NextIndex: 4
 [Stable, Extensible]
 union RoutineInquiry {
   // Default field is required by extensible unions for backward compatibility.
@@ -545,11 +572,17 @@ union RoutineInquiry {
   bool unrecognizedInquiry@0;
   // Details of the inquiry to check the LED lit up state.
   CheckLedLitUpStateInquiry check_led_lit_up_state@1;
+  // Details of the inquiry to unplug AC adapter.
+  [MinVersion=1]
+  UnplugAcAdapterInquiry unplug_ac_adapter_inquiry@2;
+  // Details of the inquiry to check the keyboard backlight LED state.
+  [MinVersion=2]
+  CheckKeyboardBacklightStateInquiry check_keyboard_backlight_state@3;
 };
 
 // Details to reply to a routine inquiry.
 //
-// NextMinVersion: 1, NextIndex: 2
+// NextMinVersion: 3, NextIndex: 4
 [Stable, Extensible]
 union RoutineInquiryReply {
   // Default field is required by extensible unions for backward compatibility.
@@ -558,6 +591,13 @@ union RoutineInquiryReply {
   bool unrecognizedReply@0;
   // Details to resume a routine requesting to check the LED lit up state.
   CheckLedLitUpStateReply check_led_lit_up_state@1;
+  // Details to resume a routine requesting to unplug the AC adapter.
+  [MinVersion=1]
+  UnplugAcAdapterReply unplug_ac_adapter@2;
+  // Details to resume a routine requesting to check the keyboard backlight LED
+  // state.
+  [MinVersion=2]
+  CheckKeyboardBacklightStateReply check_keyboard_backlight_state@3;
 };
 
 // Details regarding the inquiry to check the LED lit up state. Clients should
@@ -587,6 +627,48 @@ struct CheckLedLitUpStateReply {
   State state@0;
 };
 
+// Details regarding the inquiry to unplug the AC adapter. Clients should unplug
+// the AC adapter and reply using `UnplugAcAdapterReply`.
+//
+// NextMinVersion: 1, NextIndex: 0
+[Stable]
+struct UnplugAcAdapterInquiry {};
+
+// Details to reply to a routine requesting to unplug the AC adapter.
+//
+// NextMinVersion: 1, NextIndex: 0
+[Stable]
+struct UnplugAcAdapterReply {};
+
+// Details regarding the inquiry to check the keyboard backlight lit up state.
+// Clients should inspect the keyboard backlight and report its state using
+// `CheckKeyboardBacklightStateReply`.
+//
+// NextMinVersion: 1, NextIndex: 0
+[Stable]
+struct CheckKeyboardBacklightStateInquiry {};
+
+// Details to reply to a routine requesting to check if all the LEDs on the
+// keyboard backlight lit up.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct CheckKeyboardBacklightStateReply {
+  // State of the keyboard backlight LED.
+  //
+  // NextMinVersion: 1, NextIndex: 3
+  [Stable, Extensible]
+  enum State {
+    // The default value is for backward compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    // All keyboard backlight LEDs are lit up.
+    kOk = 1,
+    // Any of the keyboard backlight LED is not lit up.
+    kAnyNotLitUp = 2,
+  };
+  State state@0;
+};
+
 // Information about a finished routine.
 //
 // NextMinVersion: 1, NextIndex: 2
@@ -600,7 +682,7 @@ struct RoutineStateFinished {
 
 // Details about a finished routine.
 //
-// NextMinVersion: 4, NextIndex: 13
+// NextMinVersion: 5, NextIndex: 14
 [Stable, Extensible]
 union RoutineDetail {
   // Default field is required by extensible unions for backward compatibility.
@@ -634,6 +716,9 @@ union RoutineDetail {
   // Details of a completed camera frame analysis routine.
   [MinVersion=3]
   CameraFrameAnalysisRoutineDetail camera_frame_analysis@12;
+  // Details of a completed battery discharge routine.
+  [MinVersion=4]
+  BatteryDischargeRoutineDetail battery_discharge@13;
 };
 
 // Details regarding memory routine.
@@ -918,6 +1003,16 @@ struct CameraAvailabilityRoutineDetail {
   // subtest is informational, which means its result does not affect the passed
   // or failed state of the main routine.
   CameraSubtestResult camera_diagnostic_service_available_check@1;
+};
+
+// Details regarding battery discharge routine.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct BatteryDischargeRoutineDetail {
+  // The number of battery percent dropped in the routine's timeframe, range in
+  // [0, 100].
+  double discharge_percent@0;
 };
 
 // Enumeration of the possible DiskRead routine's command type.

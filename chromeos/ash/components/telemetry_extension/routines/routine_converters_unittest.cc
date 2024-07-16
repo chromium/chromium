@@ -173,6 +173,28 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
 }
 
 TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertRoutineInquiryUnplugAcAdapterInquiryPtr) {
+  auto input = healthd::RoutineInquiry::NewUnplugAcAdapterInquiry(
+      healthd::UnplugAcAdapterInquiry::New());
+
+  const auto result = ConvertRoutinePtr(std::move(input));
+
+  ASSERT_TRUE(result);
+  EXPECT_TRUE(result->is_unrecognizedInquiry());
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest,
+     ConvertRoutineInquiryCheckKeyboardBacklightStatePtr) {
+  auto input = healthd::RoutineInquiry::NewCheckKeyboardBacklightState(
+      healthd::CheckKeyboardBacklightStateInquiry::New());
+
+  const auto result = ConvertRoutinePtr(std::move(input));
+
+  ASSERT_TRUE(result);
+  EXPECT_TRUE(result->is_unrecognizedInquiry());
+}
+
+TEST(TelemetryDiagnosticRoutineConvertersTest,
      ConvertTelemetryDiagnosticRoutineStateWaitingPtr) {
   constexpr char kMessage[] = "TEST";
 
@@ -465,6 +487,11 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
 
   EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineDetail::NewSensitiveSensor(
                 healthd::SensitiveSensorRoutineDetail::New())),
+            crosapi::TelemetryDiagnosticRoutineDetail::NewUnrecognizedArgument(
+                false));
+
+  EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineDetail::NewBatteryDischarge(
+                healthd::BatteryDischargeRoutineDetail::New())),
             crosapi::TelemetryDiagnosticRoutineDetail::NewUnrecognizedArgument(
                 false));
 }

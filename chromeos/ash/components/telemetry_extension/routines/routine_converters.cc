@@ -103,6 +103,11 @@ crosapi::TelemetryDiagnosticRoutineInquiryPtr UncheckedConvertPtr(
     case healthd::RoutineInquiry::Tag::kCheckLedLitUpState:
       return crosapi::TelemetryDiagnosticRoutineInquiry::NewCheckLedLitUpState(
           ConvertRoutinePtr(std::move(input->get_check_led_lit_up_state())));
+    // The following routines have not been added to crosapi yet.
+    case healthd::RoutineInquiry::Tag::kUnplugAcAdapterInquiry:
+    case healthd::RoutineInquiry::Tag::kCheckKeyboardBacklightState:
+      return crosapi::TelemetryDiagnosticRoutineInquiry::NewUnrecognizedInquiry(
+          /*unrecognizedArgument=*/false);
   }
   NOTREACHED_NORETURN();
 }
@@ -154,6 +159,7 @@ crosapi::TelemetryDiagnosticRoutineDetailPtr UncheckedConvertPtr(
     case healthd::RoutineDetail::Tag::kBluetoothPairing:
     case healthd::RoutineDetail::Tag::kCameraAvailability:
     case healthd::RoutineDetail::Tag::kSensitiveSensor:
+    case healthd::RoutineDetail::Tag::kBatteryDischarge:
       // The actual value of unrecognizedArgument should not be used. Assign an
       // arbitrary value to it.
       return crosapi::TelemetryDiagnosticRoutineDetail::NewUnrecognizedArgument(
