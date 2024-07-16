@@ -552,8 +552,14 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
   }
 }
 
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+// TODO(crbug.com/353551973): This test has been flaky on Linux Debug testers.
+#define MAYBE_ClearBrowserDataAllTime DISABLED_ClearBrowserDataAllTime
+#else
+#define MAYBE_ClearBrowserDataAllTime ClearBrowserDataAllTime
+#endif
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
-                       ClearBrowserDataAllTime) {
+                       MAYBE_ClearBrowserDataAllTime) {
   auto cache_test_server = std::make_unique<net::EmbeddedTestServer>();
   cache_test_server->AddDefaultHandlers(
       base::FilePath(FILE_PATH_LITERAL("content/test/data")));
