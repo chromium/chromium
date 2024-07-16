@@ -421,7 +421,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   NOTREACHED_NORETURN();
 }
 
-- (void)deleteTabGroup:(const TabGroup*)group {
+- (void)deleteTabGroup:(const TabGroup*)group sourceView:(UIView*)sourceView {
   NOTREACHED_NORETURN();
 }
 

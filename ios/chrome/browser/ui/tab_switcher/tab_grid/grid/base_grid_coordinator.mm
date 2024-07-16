@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #import "base/check.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -18,7 +20,9 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_layout.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
+#import "ui/base/l10n/l10n_util.h"
 
 @implementation BaseGridCoordinator {
   // Mutator that handle toolbars changes.
@@ -29,6 +33,8 @@
   TabGroupCoordinator* _tabGroupCoordinator;
   // Handles the creation of a new tab group.
   CreateTabGroupCoordinator* _tabGroupCreator;
+  // The action sheet coordinator, if one is currently being shown.
+  ActionSheetCoordinator* _actionSheetCoordinator;
 }
 
 #pragma mark - Public
@@ -92,6 +98,12 @@
     }
   }
   return nil;
+}
+
+- (void)stopChildCoordinators {
+  [self hideTabGroupCreationAnimated:NO];
+  [self.tabGroupCoordinator stopChildCoordinators];
+  [self.gridViewController dismissModals];
 }
 
 #pragma mark - Subclassing properties
@@ -236,6 +248,33 @@
   [self.mediator displayActiveTab];
 }
 
+- (void)showTabGroupDeleteConfirmationForGroup:(const TabGroup*)tabGroup
+                                    sourceView:(UIView*)sourceView {
+  _actionSheetCoordinator = [[ActionSheetCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                           title:nil
+                         message:nil
+                            rect:sourceView.bounds
+                            view:sourceView];
+
+  base::WeakPtr<const TabGroup> weakGroup = tabGroup->GetWeakPtr();
+  __weak BaseGridCoordinator* weakSelf = self;
+  [_actionSheetCoordinator
+      addItemWithTitle:l10n_util::GetNSString(
+                           IDS_IOS_CONTENT_CONTEXT_DELETEGROUP)
+                action:^{
+                  [weakSelf closeTabsAndDeleteGroup:weakGroup];
+                }
+                 style:UIAlertActionStyleDestructive];
+  [_actionSheetCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                                     action:^{
+                                       [weakSelf dismissActionSheetCoordinator];
+                                     }
+                                      style:UIAlertActionStyleCancel];
+  [_actionSheetCoordinator start];
+}
+
 #pragma mark - CreateOrEditTabGroupCoordinatorDelegate
 
 - (void)createOrEditTabGroupCoordinatorDidDismiss:
@@ -287,6 +326,21 @@
 
   return [primaryInactiveItems
       arrayByAddingObjectsFromArray:secondaryInactiveItems];
+}
+
+// Helper method to close a tab group and dismiss the action sheet coordinator.
+- (void)closeTabsAndDeleteGroup:(base::WeakPtr<const TabGroup>)weakGroup {
+  if (weakGroup) {
+    [self.mediator closeTabGroup:weakGroup.get() andDeleteGroup:YES];
+  }
+  [self dismissActionSheetCoordinator];
+}
+
+// Stops the action sheet coordinator currently showned and nullifies the
+// instance.
+- (void)dismissActionSheetCoordinator {
+  [_actionSheetCoordinator stop];
+  _actionSheetCoordinator = nil;
 }
 
 @end

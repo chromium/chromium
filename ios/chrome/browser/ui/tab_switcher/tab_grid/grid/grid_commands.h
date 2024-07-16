@@ -67,8 +67,9 @@ class WebStateID;
 // no item with that identifier, no item is closed.
 - (void)closeItemWithID:(web::WebStateID)itemID;
 
-// Tells the receiver to delete the `group`.
-- (void)deleteTabGroup:(const TabGroup*)group;
+// Tells the receiver to delete the `group`. `sourceView` is the view that the
+// delete action originated from.
+- (void)deleteTabGroup:(const TabGroup*)group sourceView:(UIView*)sourceView;
 
 // Tells the receiver to close the `group`.
 - (void)closeTabGroup:(const TabGroup*)group;

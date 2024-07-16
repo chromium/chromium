@@ -33,6 +33,11 @@ class WebStateID;
 // Show the current active tab.
 - (void)showActiveTab;
 
+// Displays an action sheet at `sourceView` on iPad or at the bottom on iPhone
+// to confirm that selected `group` is going to be closed.
+- (void)showTabGroupDeleteConfirmationForGroup:(const TabGroup*)tabGroup
+                                    sourceView:(UIView*)sourceView;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GROUPS_TAB_GROUPS_COMMANDS_H_

@@ -37,9 +37,6 @@ class Browser;
 // The incognito browser can be reset during the execution of the app.
 - (void)setIncognitoBrowser:(Browser*)incognitoBrowser;
 
-// Stops all child coordinators.
-- (void)stopChildCoordinators;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_INCOGNITO_INCOGNITO_GRID_COORDINATOR_H_

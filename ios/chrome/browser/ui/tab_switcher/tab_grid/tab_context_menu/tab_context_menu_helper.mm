@@ -338,15 +338,18 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
     if (!incognito) {
       [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
                       [weakSelf.contextMenuDelegate deleteTabGroup:group
-                                                         incognito:incognito];
+                                                         incognito:incognito
+                                                        sourceView:cell];
                     }]];
     }
   } else {
     [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
                     [weakSelf.contextMenuDelegate deleteTabGroup:group
-                                                       incognito:incognito];
+                                                       incognito:incognito
+                                                      sourceView:cell];
                   }]];
   }
+
   return menuElements;
 }
 

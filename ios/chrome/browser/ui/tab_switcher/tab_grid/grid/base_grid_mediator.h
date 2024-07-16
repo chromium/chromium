@@ -121,6 +121,12 @@ class WebState;
 // Reconfigures the item containing the `webState`.
 - (void)updateConsumerItemForWebState:(web::WebState*)webState;
 
+// Closes all tabs in `group`, optionally deleting it from the sync service.
+// If 'deleteGroup' is YES, the group is removed permanently.
+// If 'deleteGroup' is NO, the group is closed locally but remains on the sync
+// service.
+- (void)closeTabGroup:(const TabGroup*)group andDeleteGroup:(BOOL)deleteGroup;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_BASE_GRID_MEDIATOR_H_

@@ -173,12 +173,6 @@
   }
 }
 
-- (void)stopChildCoordinators {
-  [self hideTabGroupCreationAnimated:NO];
-  [self.tabGroupCoordinator stopChildCoordinators];
-  [self.gridViewController dismissModals];
-}
-
 #pragma mark - IncognitoGridMediatorDelegate
 
 - (void)shouldDisableIncognito:(BOOL)disable {
