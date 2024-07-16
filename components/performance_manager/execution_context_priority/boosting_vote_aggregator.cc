@@ -531,7 +531,7 @@ const char* BoostingVoteAggregator::GetVoteReason(
   // Otherwise, this node has inherited its priority. Find the active incoming
   // edge and use the active reason for that edge.
   auto edge_it = GetActiveInboundEdge(layer_bit, node);
-  DCHECK(edge_it != reverse_edges_.end());
+  CHECK(edge_it != reverse_edges_.end(), base::NotFatalUntil::M130);
   DCHECK(edge_it->second->GetReasonCount());
   return edge_it->second->GetActiveReason();
 }

@@ -522,7 +522,7 @@ void WorkerWatcher::OnControlleeRemoved(int64_t version_id,
       clients = it->second;
 
   auto it2 = clients.find(client_uuid);
-  DCHECK(it2 != clients.end());
+  CHECK(it2 != clients.end(), base::NotFatalUntil::M130);
   const content::ServiceWorkerClientInfo client = it2->second;
   clients.erase(it2);
 
@@ -801,7 +801,8 @@ void WorkerWatcher::DisconnectSharedWorkerClient(
 
   // Remove |worker_node| from the set of child workers of this shared worker.
   auto child_it = shared_worker_child_workers_.find(client_shared_worker_token);
-  DCHECK(child_it != shared_worker_child_workers_.end());
+  CHECK(child_it != shared_worker_child_workers_.end(),
+        base::NotFatalUntil::M130);
   auto& child_workers = child_it->second;
 
   size_t removed = child_workers.erase(worker_node);
