@@ -330,4 +330,29 @@ public final class IpProtectionAuthTest {
     public void nativeSynchronousErrorTest() throws Exception {
         IpProtectionAuthTestNatives.testSynchronousError();
     }
+
+    @Test
+    public void nativeUnresolvedWhenClosedTest() throws Exception {
+        IpProtectionAuthTestNatives.testUnresolvedWhenClosed();
+    }
+
+    @Test
+    public void nativeCrashOnRequestSyncWithoutResponse() throws Exception {
+        IpProtectionAuthTestNatives.testCrashOnRequestSyncWithoutResponse();
+    }
+
+    @Test
+    public void nativeCrashOnRequestAsyncWithoutResponse() throws Exception {
+        IpProtectionAuthTestNatives.testCrashOnRequestAsyncWithoutResponse();
+    }
+
+    @Test
+    public void nativeCrashOnRequestSyncWithResponse() throws Exception {
+        IpProtectionAuthTestNatives.testCrashOnRequestSyncWithResponse();
+    }
+
+    @Test
+    public void nativeUnresolvedCallbacksRejectedAfterCrash() throws Exception {
+        IpProtectionAuthTestNatives.testUnresolvedCallbacksRejectedAfterCrash();
+    }
 }

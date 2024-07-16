@@ -145,4 +145,14 @@ public abstract class ConstantResponseService extends Service {
             throw new SecurityException("Intentional security exception for testing");
         }
     }
+
+    public static class NeverResolve extends ConstantResponseService {
+        @Override
+        protected void handleGetInitialData(IIpProtectionGetInitialDataCallback callback)
+                throws RemoteException {}
+
+        @Override
+        protected void handleAuthAndSign(IIpProtectionAuthAndSignCallback callback)
+                throws RemoteException {}
+    }
 }

@@ -18,8 +18,25 @@
           android:exported="true" />
     <service android:name="org.chromium.components.ip_protection_auth.mock_service.ConstantResponseService$SynchronousError"
           android:exported="true" />
+    <service android:name="org.chromium.components.ip_protection_auth.mock_service.ConstantResponseService$NeverResolve"
+          android:exported="true" />
+
+    <service android:name="org.chromium.components.ip_protection_auth.mock_service.CrashingService$CrashOnRequestSyncWithoutResponse"
+	  android:process=":crash"
+          android:exported="true" />
+    <service android:name="org.chromium.components.ip_protection_auth.mock_service.CrashingService$CrashOnRequestAsyncWithoutResponse"
+	  android:process=":crash"
+          android:exported="true" />
+    <service android:name="org.chromium.components.ip_protection_auth.mock_service.CrashingService$CrashOnRequestSyncWithResponse"
+	  android:process=":crash"
+          android:exported="true" />
+    <service android:name="org.chromium.components.ip_protection_auth.mock_service.CrashingService$CrashAfterTwoRequestsSyncWithoutResponses"
+	  android:process=":crash"
+          android:exported="true" />
+
     <service android:name="org.chromium.components.ip_protection_auth.mock_service.IpProtectionAuthServiceMock"
           android:exported="true" />
+
     <service android:name="org.chromium.components.ip_protection_auth.mock_service.NullBindingService"
           android:exported="true" />
     <service android:name="org.chromium.components.ip_protection_auth.mock_service.NullBindingService$DisabledService"

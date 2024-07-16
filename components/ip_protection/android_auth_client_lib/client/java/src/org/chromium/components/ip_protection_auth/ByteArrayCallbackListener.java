@@ -17,9 +17,7 @@ import org.jni_zero.NativeMethods;
  * byte_array_callback_listener.h). Whilst the native side will self-delete after the callback is
  * used, references to this Java object will outlive the corresponding native object.
  *
- * <p>The callback SHOULD only be called once. Any additional calls are ignored. In the event of
- * multiple calls, this class is NOT thread safe - the caller is responsible for ensuring that any
- * calls happen in sequence and not concurrently.
+ * <p>The callback MUST only be called once.
  */
 @JNINamespace("ip_protection::android")
 final class ByteArrayCallbackListener implements IpProtectionByteArrayCallback {
@@ -28,7 +26,7 @@ final class ByteArrayCallbackListener implements IpProtectionByteArrayCallback {
     @Override
     public void onResult(@NonNull byte[] response) {
         if (mNativeListener == 0) {
-            return;
+            throw new IllegalStateException("callback already used");
         }
         ByteArrayCallbackListenerJni.get().onResult(mNativeListener, response);
         mNativeListener = 0;
@@ -37,7 +35,7 @@ final class ByteArrayCallbackListener implements IpProtectionByteArrayCallback {
     @Override
     public void onError(int authRequestError) {
         if (mNativeListener == 0) {
-            return;
+            throw new IllegalStateException("callback already used");
         }
         ByteArrayCallbackListenerJni.get().onError(mNativeListener, authRequestError);
         mNativeListener = 0;

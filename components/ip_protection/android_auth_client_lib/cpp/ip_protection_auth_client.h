@@ -52,12 +52,22 @@ class IpProtectionAuthClient : public IpProtectionAuthClientInterface {
       CreateIpProtectionAuthClientCallback callback);
 
   // Asynchronously send a GetInitialDataRequest to the signing server.
-  // Callback will be invoked on a thread from the Binder thread pool.
+  //
+  // There are no guarantees as to which thread the callback is invoked on. It
+  // could be the main thread, a binder thread, some internal sequence, or even
+  // be called synchronously! It is the responsibility of the caller to repost
+  // to a well-defined sequence as needed (such as via base::BindPostTask or
+  // base::BindPostTaskToCurrentDefault).
   void GetInitialData(const privacy::ppn::GetInitialDataRequest& request,
                       GetInitialDataResponseCallback callback) const override;
 
   // Asynchronously send an AuthAndSignRequest to the signing server.
-  // Callback will be invoked on a thread from the Binder thread pool.
+  //
+  // There are no guarantees as to which thread the callback is invoked on. It
+  // could be the main thread, a binder thread, some internal sequence, or even
+  // be called synchronously! It is the responsibility of the caller to repost
+  // to a well-defined sequence as needed (such as via base::BindPostTask or
+  // base::BindPostTaskToCurrentDefault).
   void AuthAndSign(const privacy::ppn::AuthAndSignRequest& request,
                    AuthAndSignResponseCallback callback) const override;
 

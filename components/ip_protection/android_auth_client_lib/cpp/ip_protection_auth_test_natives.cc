@@ -43,6 +43,21 @@ const char kMockClassNameForUnparsableResponse[] =
 const char kMockClassNameForSynchronousError[] =
     "org.chromium.components.ip_protection_auth.mock_service."
     "ConstantResponseService$SynchronousError";
+const char kMockClassNameForNeverResolve[] =
+    "org.chromium.components.ip_protection_auth.mock_service."
+    "ConstantResponseService$NeverResolve";
+const char kMockClassNameForCrashOnRequestSyncWithoutResponse[] =
+    "org.chromium.components.ip_protection_auth.mock_service."
+    "CrashingService$CrashOnRequestSyncWithoutResponse";
+const char kMockClassNameForCrashOnRequestAsyncWithoutResponse[] =
+    "org.chromium.components.ip_protection_auth.mock_service."
+    "CrashingService$CrashOnRequestAsyncWithoutResponse";
+const char kMockClassNameForCrashOnRequestSyncWithResponse[] =
+    "org.chromium.components.ip_protection_auth.mock_service."
+    "CrashingService$CrashOnRequestSyncWithResponse";
+const char kMockClassNameForCrashAfterTwoRequestsSyncWithoutResponses[] =
+    "org.chromium.components.ip_protection_auth.mock_service."
+    "CrashingService$CrashAfterTwoRequestsSyncWithoutResponses";
 
 // Perform an IpProtectionAuthClient::CreateConnectedInstanceForTesting call in
 // a RunLoop, quitting the RunLoop when either a client is ready or an error
@@ -110,14 +125,16 @@ GetInitialDataBlocking(
   base::RunLoop run_loop;
   client.GetInitialData(
       std::move(request),
-      base::BindLambdaForTesting(
-          [&run_loop,
-           &result](base::expected<privacy::ppn::GetInitialDataResponse,
-                                   ip_protection::android::AuthRequestError>
-                        response) {
-            result = std::move(response);
-            run_loop.Quit();
-          }));
+      base::BindPostTask(
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          base::BindLambdaForTesting(
+              [&run_loop,
+               &result](base::expected<privacy::ppn::GetInitialDataResponse,
+                                       ip_protection::android::AuthRequestError>
+                            response) {
+                result = std::move(response);
+                run_loop.Quit();
+              })));
   run_loop.Run();
   return result;
 }
@@ -135,14 +152,16 @@ AuthAndSignBlocking(
   base::RunLoop run_loop;
   client.AuthAndSign(
       std::move(request),
-      base::BindLambdaForTesting(
-          [&run_loop,
-           &result](base::expected<privacy::ppn::AuthAndSignResponse,
-                                   ip_protection::android::AuthRequestError>
-                        response) {
-            result = std::move(response);
-            run_loop.Quit();
-          }));
+      base::BindPostTask(
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          base::BindLambdaForTesting(
+              [&run_loop,
+               &result](base::expected<privacy::ppn::AuthAndSignResponse,
+                                       ip_protection::android::AuthRequestError>
+                            response) {
+                result = std::move(response);
+                run_loop.Quit();
+              })));
   run_loop.Run();
   return result;
 }
@@ -331,4 +350,255 @@ static void JNI_IpProtectionAuthTestNatives_TestSynchronousError(JNIEnv* env) {
   CHECK(!auth_and_sign_response.has_value());
   CHECK(auth_and_sign_response.error() ==
         ip_protection::android::AuthRequestError::kOther);
+}
+
+static void JNI_IpProtectionAuthTestNatives_TestUnresolvedWhenClosed(
+    JNIEnv* env) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  base::expected<privacy::ppn::GetInitialDataResponse,
+                 ip_protection::android::AuthRequestError>
+      get_initial_data_response;
+  base::expected<privacy::ppn::AuthAndSignResponse,
+                 ip_protection::android::AuthRequestError>
+      auth_and_sign_response;
+
+  int remaining = 2;
+  base::RunLoop run_loop;
+  {
+    std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
+        client = CreateAndExpectClientBlocking(kMockClassNameForNeverResolve);
+    client->GetInitialData(
+        privacy::ppn::GetInitialDataRequest(),
+        base::BindPostTask(
+            base::SequencedTaskRunner::GetCurrentDefault(),
+            base::BindLambdaForTesting(
+                [&run_loop, &remaining, &get_initial_data_response](
+                    base::expected<privacy::ppn::GetInitialDataResponse,
+                                   ip_protection::android::AuthRequestError>
+                        response) {
+                  get_initial_data_response = std::move(response);
+                  remaining--;
+                  if (remaining == 0) {
+                    run_loop.Quit();
+                  }
+                })));
+    client->AuthAndSign(
+        privacy::ppn::AuthAndSignRequest(),
+        base::BindPostTask(
+            base::SequencedTaskRunner::GetCurrentDefault(),
+            base::BindLambdaForTesting(
+                [&run_loop, &remaining, &auth_and_sign_response](
+                    base::expected<privacy::ppn::AuthAndSignResponse,
+                                   ip_protection::android::AuthRequestError>
+                        response) {
+                  auth_and_sign_response = std::move(response);
+                  remaining--;
+                  if (remaining == 0) {
+                    run_loop.Quit();
+                  }
+                })));
+    // client closes when out of scope
+  }
+  run_loop.Run();
+
+  CHECK(!get_initial_data_response.has_value());
+  CHECK(get_initial_data_response.error() ==
+        ip_protection::android::AuthRequestError::kOther);
+  CHECK(!auth_and_sign_response.has_value());
+  CHECK(auth_and_sign_response.error() ==
+        ip_protection::android::AuthRequestError::kOther);
+}
+
+// Service crashes whilst handling the binder call, without calling the
+// callback. The client must synthetically report an error via the callback.
+static void
+JNI_IpProtectionAuthTestNatives_TestCrashOnRequestSyncWithoutResponse(
+    JNIEnv* env) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  base::expected<privacy::ppn::GetInitialDataResponse,
+                 ip_protection::android::AuthRequestError>
+      get_initial_data_response;
+  base::expected<privacy::ppn::AuthAndSignResponse,
+                 ip_protection::android::AuthRequestError>
+      auth_and_sign_response;
+
+  {
+    std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
+        client = CreateAndExpectClientBlocking(
+            kMockClassNameForCrashOnRequestSyncWithoutResponse);
+    get_initial_data_response =
+        GetInitialDataBlocking(*client, privacy::ppn::GetInitialDataRequest());
+  }
+  {
+    std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
+        client = CreateAndExpectClientBlocking(
+            kMockClassNameForCrashOnRequestSyncWithoutResponse);
+    auth_and_sign_response =
+        AuthAndSignBlocking(*client, privacy::ppn::AuthAndSignRequest());
+  }
+
+  CHECK(!get_initial_data_response.has_value());
+  CHECK(get_initial_data_response.error() ==
+        ip_protection::android::AuthRequestError::kOther);
+  CHECK(!auth_and_sign_response.has_value());
+  CHECK(auth_and_sign_response.error() ==
+        ip_protection::android::AuthRequestError::kOther);
+}
+
+// Service handles the binder call, without calling the callback, and then later
+// crashes in the background. The client must detect this and synthetically
+// report an error via the callback.
+static void
+JNI_IpProtectionAuthTestNatives_TestCrashOnRequestAsyncWithoutResponse(
+    JNIEnv* env) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  base::expected<privacy::ppn::GetInitialDataResponse,
+                 ip_protection::android::AuthRequestError>
+      get_initial_data_response;
+  base::expected<privacy::ppn::AuthAndSignResponse,
+                 ip_protection::android::AuthRequestError>
+      auth_and_sign_response;
+
+  {
+    std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
+        client = CreateAndExpectClientBlocking(
+            kMockClassNameForCrashOnRequestAsyncWithoutResponse);
+    get_initial_data_response =
+        GetInitialDataBlocking(*client, privacy::ppn::GetInitialDataRequest());
+  }
+  {
+    std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
+        client = CreateAndExpectClientBlocking(
+            kMockClassNameForCrashOnRequestAsyncWithoutResponse);
+    auth_and_sign_response =
+        AuthAndSignBlocking(*client, privacy::ppn::AuthAndSignRequest());
+  }
+
+  CHECK(!get_initial_data_response.has_value());
+  CHECK(get_initial_data_response.error() ==
+        ip_protection::android::AuthRequestError::kOther);
+  CHECK(!auth_and_sign_response.has_value());
+  CHECK(auth_and_sign_response.error() ==
+        ip_protection::android::AuthRequestError::kOther);
+}
+
+// Service resolves the callback and then crashes whilst still handling the
+// binder call. The client must tollerate both error flows.
+//
+// It is not strictly deterministic as to which error flow runs first!
+static void JNI_IpProtectionAuthTestNatives_TestCrashOnRequestSyncWithResponse(
+    JNIEnv* env) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  base::expected<privacy::ppn::GetInitialDataResponse,
+                 ip_protection::android::AuthRequestError>
+      get_initial_data_response;
+  base::expected<privacy::ppn::AuthAndSignResponse,
+                 ip_protection::android::AuthRequestError>
+      auth_and_sign_response;
+
+  {
+    std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
+        client = CreateAndExpectClientBlocking(
+            kMockClassNameForCrashOnRequestSyncWithResponse);
+    get_initial_data_response =
+        GetInitialDataBlocking(*client, privacy::ppn::GetInitialDataRequest());
+  }
+  {
+    std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
+        client = CreateAndExpectClientBlocking(
+            kMockClassNameForCrashOnRequestSyncWithResponse);
+    auth_and_sign_response =
+        AuthAndSignBlocking(*client, privacy::ppn::AuthAndSignRequest());
+  }
+
+  // The synchronous error handler and the callback handler may theoretically
+  // race, so don't assert between kTransient and kOther.
+  //
+  // The most important result is that the combination of two error paths don't
+  // result in a crash.
+  CHECK(!get_initial_data_response.has_value());
+  CHECK(!auth_and_sign_response.has_value());
+}
+
+// Client tries to send three requests:
+// - Service will handle the first call (without calling back).
+// - Service will crash within the second call (without calling back).
+// - Service is already dead by time of third request.
+// This is done once for getInitialData and once for authAndSign.
+//
+// The client will need to reject all the callbacks itself.
+static void
+JNI_IpProtectionAuthTestNatives_TestUnresolvedCallbacksRejectedAfterCrash(
+    JNIEnv* env) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  std::vector<base::expected<privacy::ppn::GetInitialDataResponse,
+                             ip_protection::android::AuthRequestError>>
+      get_initial_data_responses;
+  std::vector<base::expected<privacy::ppn::AuthAndSignResponse,
+                             ip_protection::android::AuthRequestError>>
+      auth_and_sign_responses;
+  const int numCalls = 3;
+
+  {
+    std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
+        client = CreateAndExpectClientBlocking(
+            kMockClassNameForCrashAfterTwoRequestsSyncWithoutResponses);
+    int remaining = numCalls;
+    base::RunLoop run_loop;
+    for (int i = 0; i < numCalls; i++) {
+      client->GetInitialData(
+          privacy::ppn::GetInitialDataRequest(),
+          base::BindPostTask(
+              base::SequencedTaskRunner::GetCurrentDefault(),
+              base::BindLambdaForTesting(
+                  [&run_loop, &remaining, &get_initial_data_responses](
+                      base::expected<privacy::ppn::GetInitialDataResponse,
+                                     ip_protection::android::AuthRequestError>
+                          response) {
+                    get_initial_data_responses.emplace_back(
+                        std::move(response));
+                    remaining--;
+                    if (remaining == 0) {
+                      run_loop.Quit();
+                    }
+                  })));
+    }
+    run_loop.Run();
+  }
+  {
+    std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
+        client = CreateAndExpectClientBlocking(
+            kMockClassNameForCrashAfterTwoRequestsSyncWithoutResponses);
+    int remaining = numCalls;
+    base::RunLoop run_loop;
+    for (int i = 0; i < numCalls; i++) {
+      client->AuthAndSign(
+          privacy::ppn::AuthAndSignRequest(),
+          base::BindPostTask(
+              base::SequencedTaskRunner::GetCurrentDefault(),
+              base::BindLambdaForTesting(
+                  [&run_loop, &remaining, &auth_and_sign_responses](
+                      base::expected<privacy::ppn::AuthAndSignResponse,
+                                     ip_protection::android::AuthRequestError>
+                          response) {
+                    auth_and_sign_responses.emplace_back(std::move(response));
+                    remaining--;
+                    if (remaining == 0) {
+                      run_loop.Quit();
+                    }
+                  })));
+    }
+    run_loop.Run();
+  }
+
+  CHECK(get_initial_data_responses.size() == 3);
+  CHECK(auth_and_sign_responses.size() == 3);
+  for (const auto& response : get_initial_data_responses) {
+    CHECK(!response.has_value());
+    CHECK(response.error() == ip_protection::android::AuthRequestError::kOther);
+  }
+  for (const auto& response : auth_and_sign_responses) {
+    CHECK(!response.has_value());
+    CHECK(response.error() == ip_protection::android::AuthRequestError::kOther);
+  }
 }

@@ -32,6 +32,16 @@ public final class IpProtectionAuthTestNatives {
         void testUnparsableResponse();
 
         void testSynchronousError();
+
+        void testUnresolvedWhenClosed();
+
+        void testCrashOnRequestSyncWithoutResponse();
+
+        void testCrashOnRequestAsyncWithoutResponse();
+
+        void testCrashOnRequestSyncWithResponse();
+
+        void testUnresolvedCallbacksRejectedAfterCrash();
     }
 
     public static void createConnectedInstanceForTesting() {
@@ -68,5 +78,25 @@ public final class IpProtectionAuthTestNatives {
 
     public static void testSynchronousError() {
         IpProtectionAuthTestNativesJni.get().testSynchronousError();
+    }
+
+    public static void testUnresolvedWhenClosed() {
+        IpProtectionAuthTestNativesJni.get().testUnresolvedWhenClosed();
+    }
+
+    public static void testCrashOnRequestSyncWithoutResponse() {
+        IpProtectionAuthTestNativesJni.get().testCrashOnRequestSyncWithoutResponse();
+    }
+
+    public static void testCrashOnRequestAsyncWithoutResponse() {
+        IpProtectionAuthTestNativesJni.get().testCrashOnRequestAsyncWithoutResponse();
+    }
+
+    public static void testCrashOnRequestSyncWithResponse() {
+        IpProtectionAuthTestNativesJni.get().testCrashOnRequestSyncWithResponse();
+    }
+
+    public static void testUnresolvedCallbacksRejectedAfterCrash() {
+        IpProtectionAuthTestNativesJni.get().testUnresolvedCallbacksRejectedAfterCrash();
     }
 }
