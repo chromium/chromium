@@ -6,9 +6,15 @@
 #define CHROME_BROWSER_ACCESSIBILITY_PDF_OCR_METRICS_H_
 
 // This file contains a helper function to record metrics for PDF OCR.
+
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace accessibility {
 
-void RecordPDFOpenedWithA11yFeatureWithPdfOcr();
+void RecordPDFOpenedWithA11yFeatureWithPdfOcr(
+    content::BrowserContext* browser_context);
 
 }  // namespace accessibility
 

@@ -32,6 +32,8 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
+#include "chrome/browser/accessibility/pdf_ocr_controller.h"
+#include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
@@ -1197,6 +1199,13 @@ class PdfOcrUmaTest : public PDFExtensionAccessibilityTest,
   // PDFExtensionAccessibilityTest:
   bool UseOopif() const override { return GetParam(); }
 
+  void SetUpOnMainThread() override {
+    PDFExtensionAccessibilityTest::SetUpOnMainThread();
+
+    screen_ai::PdfOcrControllerFactory::GetForProfile(browser()->profile())
+        ->set_ocr_ready_for_testing();
+  }
+
  protected:
   std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
     std::vector<base::test::FeatureRef> enabled =
@@ -1236,7 +1245,7 @@ IN_PROC_BROWSER_TEST_P(PdfOcrUmaTest, CheckOpenedWithScreenReader) {
 
   base::HistogramTester histograms;
   histograms.ExpectUniqueSample(
-      "Accessibility.PDF.OpenedWithScreenReader.PdfOcr", true,
+      "Accessibility.PDF.OpenedWithScreenReader.PdfOcr2", true,
       /*expected_bucket_count=*/0);
 
   ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
@@ -1248,7 +1257,7 @@ IN_PROC_BROWSER_TEST_P(PdfOcrUmaTest, CheckOpenedWithScreenReader) {
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histograms.ExpectUniqueSample(
-      "Accessibility.PDF.OpenedWithScreenReader.PdfOcr", true,
+      "Accessibility.PDF.OpenedWithScreenReader.PdfOcr2", true,
       /*expected_bucket_count=*/1);
 }
 
@@ -1264,7 +1273,7 @@ IN_PROC_BROWSER_TEST_P(PdfOcrUmaTest, CheckOpenedWithSelectToSpeak) {
 
   base::HistogramTester histograms;
   histograms.ExpectUniqueSample(
-      "Accessibility.PDF.OpenedWithSelectToSpeak.PdfOcr", true,
+      "Accessibility.PDF.OpenedWithSelectToSpeak.PdfOcr2", true,
       /*expected_bucket_count=*/0);
 
   ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
@@ -1276,7 +1285,7 @@ IN_PROC_BROWSER_TEST_P(PdfOcrUmaTest, CheckOpenedWithSelectToSpeak) {
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histograms.ExpectUniqueSample(
-      "Accessibility.PDF.OpenedWithSelectToSpeak.PdfOcr", true,
+      "Accessibility.PDF.OpenedWithSelectToSpeak.PdfOcr2", true,
       /*expected_bucket_count=*/1);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
