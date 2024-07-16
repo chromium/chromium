@@ -14,7 +14,6 @@ import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -86,6 +85,7 @@ public class OmniboxTest {
     @EnormousTest
     @Feature({"Omnibox"})
     public void testSimpleUse() throws InterruptedException {
+        mActivityTestRule.startMainActivityOnBlankPage();
         OmniboxTestUtils omnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
         omnibox.requestFocus();
         omnibox.typeText("aaaaaaa", false);
@@ -134,6 +134,7 @@ public class OmniboxTest {
     @MediumTest
     @Feature({"Omnibox"})
     public void testAltEnterOpensSearchResultInNewTab() {
+        mActivityTestRule.startMainActivityOnBlankPage();
         int tabCount = ChromeTabUtils.getNumOpenTabs(mActivityTestRule.getActivity());
         Tab currentTab = mActivityTestRule.getActivity().getActivityTab();
 
@@ -198,6 +199,7 @@ public class OmniboxTest {
     @MediumTest
     @SkipCommandLineParameterization
     public void testSecurityIconOnHTTP() {
+        mActivityTestRule.startMainActivityOnBlankPage();
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(
                         ApplicationProvider.getApplicationContext());
@@ -217,6 +219,7 @@ public class OmniboxTest {
     @MediumTest
     @SkipCommandLineParameterization
     public void testSecurityIconOnHTTPS() throws Exception {
+        mActivityTestRule.startMainActivityOnBlankPage();
         EmbeddedTestServer httpsTestServer =
                 EmbeddedTestServer.createAndStartHTTPSServer(
                         ApplicationProvider.getApplicationContext(), ServerCertificate.CERT_OK);
@@ -271,6 +274,7 @@ public class OmniboxTest {
     @MediumTest
     @SkipCommandLineParameterization
     public void testSecurityIconOnHTTPSFocusAndBack() throws Exception {
+        mActivityTestRule.startMainActivityOnBlankPage();
         setNonDefaultSearchEngine();
 
         EmbeddedTestServer httpsTestServer =
@@ -379,6 +383,7 @@ public class OmniboxTest {
     @SmallTest
     @SkipCommandLineParameterization
     public void testHttpsLocationBarColor() throws Exception {
+        mActivityTestRule.startMainActivityOnBlankPage();
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartHTTPSServer(
                         InstrumentationRegistry.getInstrumentation().getContext(),
@@ -444,14 +449,5 @@ public class OmniboxTest {
                             .getLocationBarModelForTesting()
                             .shouldEmphasizeHttpsScheme());
         }
-    }
-
-    @Before
-    public void setUp() throws InterruptedException {
-        if (mActivityTestRule.getName().equals("testsplitPathFromUrlDisplayText")
-                || mActivityTestRule.getName().equals("testDefaultText")) {
-            return;
-        }
-        mActivityTestRule.startMainActivityOnBlankPage();
     }
 }

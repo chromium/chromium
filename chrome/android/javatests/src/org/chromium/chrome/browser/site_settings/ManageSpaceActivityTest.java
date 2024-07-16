@@ -53,9 +53,6 @@ public class ManageSpaceActivityTest {
 
     @Before
     public void setUp() throws Exception {
-        if (!mActivityTestRule.getName().equals("testClearUnimporantWithoutChromeStart")) {
-            mActivityTestRule.startMainActivityOnBlankPage();
-        }
         mTestServer =
                 EmbeddedTestServer.createAndStartServer(
                         ApplicationProvider.getApplicationContext());
@@ -99,6 +96,7 @@ public class ManageSpaceActivityTest {
     @Test
     @SmallTest
     public void testLaunchActivity() {
+        mActivityTestRule.startMainActivityOnBlankPage();
         startManageSpaceActivity().finish();
     }
 
@@ -107,6 +105,7 @@ public class ManageSpaceActivityTest {
     @Feature({"SiteEngagement"})
     @EnableFeatures(ChromeFeatureList.BROWSING_DATA_MODEL)
     public void testClearUnimportantOnlyWithBDM() throws Exception {
+        mActivityTestRule.startMainActivityOnBlankPage();
         shouldClearUnimportantDomainDataOnly();
     }
 
@@ -115,6 +114,7 @@ public class ManageSpaceActivityTest {
     @Feature({"SiteEngagement"})
     @DisableFeatures(ChromeFeatureList.BROWSING_DATA_MODEL)
     public void testClearUnimportantOnlyWithoutBDM() throws Exception {
+        mActivityTestRule.startMainActivityOnBlankPage();
         shouldClearUnimportantDomainDataOnly();
     }
 
@@ -174,6 +174,7 @@ public class ManageSpaceActivityTest {
     @MediumTest
     @Feature({"SiteEngagement"})
     public void testManageSiteStorage() {
+        mActivityTestRule.startMainActivityOnBlankPage();
         ManageSpaceActivity manageSpaceActivity = startManageSpaceActivity();
         waitForClearButtonEnabled(manageSpaceActivity);
         onView(withId(R.id.manage_site_data_storage)).perform(click());

@@ -16,7 +16,6 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
-import org.junit.Rule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
@@ -72,10 +71,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     // The number of ms to wait for the rendering activity to be started.
     private static final int ACTIVITY_START_TIMEOUT_MS = 1000;
 
-    private Thread.UncaughtExceptionHandler mDefaultUncaughtExceptionHandler;
-    private String mCurrentTestName;
-
-    @Rule private EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
+    private EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
 
     protected ChromeActivityTestRule(Class<T> activityClass) {
         super(activityClass);
@@ -83,7 +79,6 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
 
     @Override
     public Statement apply(final Statement base, Description description) {
-        mCurrentTestName = description.getMethodName();
         Statement testServerStatement = mTestServerRule.apply(base, description);
         return super.apply(testServerStatement, description);
     }
@@ -420,18 +415,6 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
      */
     public void assertWaitForPageScaleFactorMatch(float expectedScale) {
         ChromeApplicationTestUtils.assertWaitForPageScaleFactorMatch(getActivity(), expectedScale);
-    }
-
-    /**
-     * Waits till the WebContents receives a page scale factor different
-     * from the specified value and asserts that this happens.
-     */
-    public void assertWaitForPageScaleFactorChange(float initialScale) {
-        ChromeApplicationTestUtils.assertWaitForPageScaleFactorChange(getActivity(), initialScale);
-    }
-
-    public String getName() {
-        return mCurrentTestName;
     }
 
     /**
