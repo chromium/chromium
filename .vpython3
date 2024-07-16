@@ -42,7 +42,7 @@ verify_pep425_tag: [
 #   build/android/pylib/local/emulator/avd.py
 wheel: <
   name: "infra/python/wheels/protobuf-py3"
-  version: "version:3.20.0"
+  version: "version:4.25.1"
 >
 
 # TODO(https://crbug.com/898348): Add in necessary wheels as Python3 versions
@@ -155,7 +155,7 @@ wheel: <
   name: "infra/python/wheels/pillow/${vpython_platform}"
   version: "version:8.3.1"
   # There is currently no Linux arm/arm64 version in CIPD.
-  not_match_tag <
+  not_match_tag: <
     platform: "linux_arm64"
   >
 >
@@ -163,7 +163,7 @@ wheel: <
   name: "infra/python/wheels/opencv_python/${vpython_platform}"
   version: "version:4.5.3.56.chromium.4"
   # There is currently no Linux arm/arm64 version in CIPD.
-  not_match_tag <
+  not_match_tag: <
     platform: "linux_arm64"
   >
 >
@@ -225,20 +225,20 @@ wheel: <
   version: "version:2.0.1"
 >
 wheel: <
-  name: "infra/python/wheels/uritemplate-py2_py3"
-  version: "version:3.0.0"
+  name: "infra/python/wheels/uritemplate-py3"
+  version: "version:4.1.1"
 >
 wheel: <
-  name: "infra/python/wheels/google-auth-py2_py3"
-  version: "version:1.25.0"
+  name: "infra/python/wheels/google-auth-py3"
+  version: "version:2.16.2"
 >
 wheel: <
   name: "infra/python/wheels/googleapis-common-protos-py2_py3"
-  version: "version:1.52.0"
+  version: "version:1.61.0"
 >
 wheel: <
   name: "infra/python/wheels/google-api-core-py3"
-  version: "version:1.31.5"
+  version: "version:2.14.0"
 >
 wheel: <
   name: "infra/python/wheels/google-auth-httplib2-py2_py3"
@@ -246,7 +246,15 @@ wheel: <
 >
 wheel: <
   name: "infra/python/wheels/google-api-python-client-py3"
-  version: "version:2.2.0"
+  version: "version:2.111.0"
+>
+wheel: <
+  name: "infra/python/wheels/google-cloud-core-py3"
+  version: "version:2.3.3"
+>
+wheel: <
+  name: "infra/python/wheels/grpcio-status-py3"
+  version: "version:1.57.0"
 >
 wheel: <
   name: "infra/python/wheels/oauth2client-py2_py3"
@@ -263,7 +271,7 @@ wheel: <
 
 wheel: <
   name: "infra/python/wheels/grpcio/${vpython_platform}"
-  version: "version:1.44.0"
+  version: "version:1.57.0"
 >
 
 wheel: <
@@ -273,7 +281,7 @@ wheel: <
 
 wheel: <
   name: "infra/python/wheels/proto-plus-py3"
-  version: "version:1.20.3"
+  version: "version:1.22.3"
 >
 
 wheel: <
@@ -392,8 +400,8 @@ wheel: <
 >
 
 wheel: <
-  name: "infra/python/wheels/packaging-py2_py3"
-  version: "version:16.8"
+  name: "infra/python/wheels/packaging-py3"
+  version: "version:21.3"
 >
 
 wheel: <
@@ -623,4 +631,43 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/immutabledict-py3"
   version: "version:4.1.0"
+>
+
+# Used by:
+#   //testing/unexpected_passes_common
+wheel: <
+  name: "infra/python/wheels/db-dtypes-py2_py3"
+  version: "version:1.2.0"
+  # No 32-bit Windows wheel available for a dependency (pyarrow)
+  not_match_tag: <
+    platform: "win32"
+  >
+>
+wheel: <
+  name: "infra/python/wheels/google-cloud-bigquery-py3"
+  version: "version:3.23.1"
+>
+wheel: <
+  name: "infra/python/wheels/google-cloud-bigquery-storage-py3"
+  version: "version:2.25.0"
+>
+wheel: <
+  name: "infra/python/wheels/google-crc32c/${vpython_platform}"
+  version: "version:1.5.0.chromium.1"
+>
+wheel: <
+  name: "infra/python/wheels/google-resumable-media-py3"
+  version: "version:2.3.0"
+>
+wheel: <
+  name: "infra/python/wheels/pyarrow/${vpython_platform}"
+  # Likely cannot be upgraded past 15.0.2 until Mac 11 is no longer tested due
+  # to https://github.com/apache/arrow/issues/41696. The bug indicates that
+  # 16.0.0 should work, but that still seems to segfault on Chromium's Mac 11
+  # machines.
+  version: "version:15.0.2"
+  # No 32-bit Windows wheel available.
+  not_match_tag: <
+    platform: "win32"
+  >
 >
