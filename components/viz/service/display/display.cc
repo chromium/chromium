@@ -138,9 +138,6 @@ bool SupportsSetFrameRate(const OutputSurface* output_surface) {
 #if BUILDFLAG(IS_ANDROID)
   return output_surface->capabilities().supports_surfaceless &&
          gfx::SurfaceControl::SupportsSetFrameRate();
-#elif BUILDFLAG(IS_WIN)
-  return output_surface->capabilities().supports_dc_layers &&
-         features::ShouldUseSetPresentDuration();
 #else
   return false;
 #endif

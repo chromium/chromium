@@ -120,14 +120,6 @@ BASE_FEATURE(kWebRtcLogCapturePipeline,
              "WebRtcLogCapturePipeline",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_WIN)
-// Enables swap chains to call SetPresentDuration to request DWM/OS to reduce
-// vsync.
-BASE_FEATURE(kUseSetPresentDuration,
-             "UseSetPresentDuration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_WIN)
-
 // Used to debug Android WebView Vulkan composite. Composite to an intermediate
 // buffer and draw the intermediate buffer to the secondary command buffer.
 BASE_FEATURE(kWebViewVulkanIntermediateBuffer,
@@ -426,12 +418,6 @@ bool IsUsingVizFrameSubmissionForWebView() {
 bool ShouldWebRtcLogCapturePipeline() {
   return base::FeatureList::IsEnabled(kWebRtcLogCapturePipeline);
 }
-
-#if BUILDFLAG(IS_WIN)
-bool ShouldUseSetPresentDuration() {
-  return base::FeatureList::IsEnabled(kUseSetPresentDuration);
-}
-#endif  // BUILDFLAG(IS_WIN)
 
 std::optional<int> ShouldDrawPredictedInkPoints() {
   if (!base::FeatureList::IsEnabled(kDrawPredictedInkPoint))

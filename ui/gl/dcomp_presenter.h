@@ -71,7 +71,6 @@ class GL_EXPORT DCompPresenter : public Presenter,
   // scheduled with ScheduleDCLayer, as it's automatically placed in the layer
   // tree at z-order 0.
   void ScheduleDCLayer(std::unique_ptr<DCLayerOverlayParams> params) override;
-  void SetFrameRate(float frame_rate) override;
 
   void Present(SwapCompletionCallback completion_callback,
                PresentationCallback presentation_callback,
