@@ -352,7 +352,11 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
                        LaunchWebAppFromComponentContent) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  // Configure WebUI to serve HTML/JS invoking LaunchApp Mojo API
+  // Configure WebUI to serve HTML/JS invoking LaunchApp Mojo API, which calls
+  // DemoModeUntrustedPageHandler::LaunchApp(app_id) ->
+  // ChromeDemoModeAppDelegate::LaunchApp(app_id) ->
+  // AppServiceProxyBase::Launch(app_id, 0, apps::LaunchSource::kFromOtherApp)
+  // in its call hierarchy.
   const std::string kTestJs = content::JsReplace(
       "import {pageHandler} from './page_handler.js'; "
       "document.addEventListener('DOMContentLoaded', () => {"
@@ -368,6 +372,9 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
 
   // Launch SWA
   WaitForTestSystemAppInstall();
+  // There should be no DemoMode.AppLaunchSource recorded at the start.
+  histogram_tester_.ExpectTotalCount("DemoMode.AppLaunchSource", 0);
+
   apps::AppLaunchParams params =
       LaunchParamsForApp(ash::SystemWebAppType::DEMO_MODE);
   params.override_url = GURL(ash::kChromeUntrustedUIDemoModeAppURL +
@@ -380,11 +387,25 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
   base::RunLoop run_loop;
   MockWebAppPublisher mock_web_app_publisher(
       apps::AppServiceProxyFactory::GetForProfile(profile));
+  // We expect the call hierarchy described in the comments of `kTestJs` will
+  // be gone through by verifying the last function
+  // Launch(app_id, 0, apps::LaunchSource::kFromOtherApp) is called.
   EXPECT_CALL(mock_web_app_publisher,
               Launch(kFakeAppId, 0, apps::LaunchSource::kFromOtherApp, _))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  // Launch the mock demo mode app.
   LaunchApp(std::move(params));
   run_loop.Run();
+
+  // Since we launched the fake app using the LaunchApp Mojo API, we expect to
+  // see one count in AppLaunchSource::kDemoModeApp, but no others.
+  histogram_tester_.ExpectBucketCount("DemoMode.AppLaunchSource",
+                                      DemoSession::AppLaunchSource::kShelf, 0);
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.AppLaunchSource", DemoSession::AppLaunchSource::kAppList, 0);
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.AppLaunchSource", DemoSession::AppLaunchSource::kDemoModeApp,
+      1);
 
   // Set up the display.
   display::test::DisplayManagerTestApi(Shell::Get()->display_manager())

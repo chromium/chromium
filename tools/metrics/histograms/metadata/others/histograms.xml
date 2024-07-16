@@ -3251,10 +3251,11 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-02-28">
   <owner>llin@chromium.org</owner>
   <owner>xiqiruan@chromium.org</owner>
+  <owner>wanghaifan@google.com</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <summary>
     The source of app launches in demo mode, either the shelf, the app list, or
-    the highlights app.
+    the demo mode app.
   </summary>
 </histogram>
 

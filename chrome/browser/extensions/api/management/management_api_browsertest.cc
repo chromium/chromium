@@ -9,7 +9,6 @@
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -34,11 +33,6 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/test/extension_test_message_listener.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/ash/login/demo_mode/demo_mode_test_utils.h"
-#endif
 
 namespace keys = extension_management_api_constants;
 
@@ -171,55 +165,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
     EXPECT_FALSE(launched.was_satisfied());
   }
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
-                       NoDemoModeAppLaunchSourceReported) {
-  EXPECT_FALSE(ash::DemoSession::IsDeviceInDemoMode());
-
-  base::HistogramTester histogram_tester;
-  // Should see 0 apps launched from the API in the histogram at first.
-  histogram_tester.ExpectTotalCount("DemoMode.AppLaunchSource", 0);
-
-  ExtensionTestMessageListener app_launched_listener("app_launched");
-  ASSERT_TRUE(
-      LoadExtension(test_data_dir_.AppendASCII("management/packaged_app"),
-                    {.context_type = ContextType::kFromManifest}));
-  ASSERT_TRUE(
-      LoadExtension(test_data_dir_.AppendASCII("management/launch_app")));
-  ASSERT_TRUE(app_launched_listener.WaitUntilSatisfied());
-
-  // Should still see 0 apps launched from the API in the histogram.
-  histogram_tester.ExpectTotalCount("DemoMode.AppLaunchSource", 0);
-}
-
-IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
-                       DemoModeAppLaunchSourceReported) {
-  ash::test::LockDemoDeviceInstallAttributes();
-  EXPECT_TRUE(ash::DemoSession::IsDeviceInDemoMode());
-
-  base::HistogramTester histogram_tester;
-  // Should see 0 apps launched from the Launcher in the histogram at first.
-  histogram_tester.ExpectTotalCount("DemoMode.AppLaunchSource", 0);
-
-  ExtensionTestMessageListener app_launched_listener("app_launched");
-  ASSERT_TRUE(
-      LoadExtension(test_data_dir_.AppendASCII("management/packaged_app"),
-                    {.context_type = ContextType::kFromManifest}));
-  ASSERT_TRUE(
-      LoadExtension(test_data_dir_.AppendASCII("management/launch_app")));
-  ASSERT_TRUE(app_launched_listener.WaitUntilSatisfied());
-
-  // Should see 1 app launched from the highlights app  in the histogram.
-  histogram_tester.ExpectUniqueSample(
-      "DemoMode.AppLaunchSource",
-      ash::DemoSession::AppLaunchSource::kExtensionApi, 1);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // TODO(crbug.com/40211465): Run these tests on Chrome OS with both Ash and
 // Lacros processes active.
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,

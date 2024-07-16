@@ -69,14 +69,20 @@ class DemoSession : public session_manager::SessionManagerObserver,
   enum class AppLaunchSource {
     // Logged when apps are launched from the Shelf in Demo Mode.
     kShelf = 0,
+
     // Logged when apps are launched from the App List in Demo Mode.
     kAppList = 1,
-    // Logged by any Extension APIs used by the Highlights App to launch apps in
-    // Demo Mode.
-    kExtensionApi = 2,
+
+    // Obsolete. Logged by any Extension APIs used by the Highlights App to
+    // launch apps in Demo Mode.
+    // kExtensionApi = 2, OBSOLETE
+
+    // Logged when apps are launched from the demo mode app.
+    kDemoModeApp = 3,
+
     // Add future entries above this comment, in sync with enums.xml.
     // Update kMaxValue to the last value.
-    kMaxValue = kExtensionApi
+    kMaxValue = kDemoModeApp
   };
 
   // The list of countries that Demo Mode supports, ie the countries we have

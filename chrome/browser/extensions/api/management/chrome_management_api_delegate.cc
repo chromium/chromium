@@ -69,10 +69,6 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 namespace {
 using InstallOrLaunchWebAppCallback =
     extensions::ManagementAPIDelegate::InstallOrLaunchWebAppCallback;
@@ -433,11 +429,6 @@ bool ChromeManagementAPIDelegate::LaunchAppFunctionDelegate(
       apps::AppLaunchParams(extension->id(), launch_container,
                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
                             apps::LaunchSource::kFromManagementApi));
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::DemoSession::RecordAppLaunchSourceIfInDemoMode(
-      ash::DemoSession::AppLaunchSource::kExtensionApi);
-#endif
 
   extensions::RecordAppLaunchType(extension_misc::APP_LAUNCH_EXTENSION_API,
                                   extension->GetType());

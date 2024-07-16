@@ -4668,7 +4668,11 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <summary>Source of App Launches in Demo Mode.</summary>
   <int value="0" label="Shelf"/>
   <int value="1" label="App List"/>
-  <int value="2" label="Highlights App"/>
+  <int value="2" label="Highlights App">
+    Obsolete, Highlights App is renamed to Demo Mode App due to the conversion
+    to SWA.
+  </int>
+  <int value="3" label="Demo Mode App"/>
 </enum>
 
 <enum name="DemoModeHighlightsAction">

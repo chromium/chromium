@@ -10,12 +10,9 @@
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "base/path_service.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
-#include "chrome/browser/ash/login/demo_mode/demo_mode_test_utils.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
@@ -150,60 +147,4 @@ IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest, OnInstalled) {
   ASSERT_EQ(1u, app_instance()->launch_requests().size());
   EXPECT_TRUE(
       app_instance()->launch_requests()[0]->IsForApp(*launchable_apps[0]));
-}
-
-IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest,
-                       NoDemoModeAppLaunchSourceReported) {
-  // Not in Demo mode
-  EXPECT_FALSE(ash::DemoSession::IsDeviceInDemoMode());
-
-  base::HistogramTester histogram_tester;
-
-  // Should see 0 apps launched from the Launcher in the histogram at first.
-  histogram_tester.ExpectTotalCount("DemoMode.AppLaunchSource", 0);
-
-  // Launch an arc app as done in the tests above.
-  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(browser()->profile());
-  ASSERT_TRUE(prefs);
-  CreateAppInstance(prefs);
-  std::vector<arc::mojom::AppInfoPtr> one_app;
-  one_app.emplace_back(
-      arc::mojom::AppInfo::New("App_0", "Package_0", "Dummy_activity_0"));
-  app_instance()->SendRefreshAppList(one_app);
-  EXPECT_TRUE(RunExtensionTest(
-      "arc_app_launcher/launch_app",
-      {.custom_arg = "Package_0", .launch_as_platform_app = true}))
-      << message_;
-
-  // Should still see no apps launched in the histogram.
-  histogram_tester.ExpectTotalCount("DemoMode.AppLaunchSource", 0);
-}
-
-IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest, DemoModeAppLaunchSourceReported) {
-  // Set Demo mode
-  ash::test::LockDemoDeviceInstallAttributes();
-  EXPECT_TRUE(ash::DemoSession::IsDeviceInDemoMode());
-
-  base::HistogramTester histogram_tester;
-
-  // Should see 0 apps launched from the Launcher in the histogram at first.
-  histogram_tester.ExpectTotalCount("DemoMode.AppLaunchSource", 0);
-
-  // Launch an arc app as done in the tests above.
-  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(browser()->profile());
-  ASSERT_TRUE(prefs);
-  CreateAppInstance(prefs);
-  std::vector<arc::mojom::AppInfoPtr> one_app;
-  one_app.emplace_back(
-      arc::mojom::AppInfo::New("App_0", "Package_0", "Dummy_activity_0"));
-  app_instance()->SendRefreshAppList(one_app);
-  EXPECT_TRUE(RunExtensionTest(
-      "arc_app_launcher/launch_app",
-      {.custom_arg = "Package_0", .launch_as_platform_app = true}))
-      << message_;
-
-  // Should see 1 app launched from the highlights app in the histogram.
-  histogram_tester.ExpectUniqueSample(
-      "DemoMode.AppLaunchSource",
-      ash::DemoSession::AppLaunchSource::kExtensionApi, 1);
 }
