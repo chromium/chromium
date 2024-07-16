@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/test/gtest_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -404,6 +405,16 @@ TEST(OptionalRefTest, EqualityComparisonWithNullOpt) {
     EXPECT_NE(r, std::nullopt);
     EXPECT_NE(std::nullopt, r);
   }
+}
+
+TEST(OptionalRefTest, CompatibilityWithOptionalMatcher) {
+  using ::testing::Optional;
+
+  int x = 45;
+  optional_ref<int> r(x);
+  EXPECT_THAT(r, Optional(x));
+  EXPECT_THAT(r, Optional(45));
+  EXPECT_THAT(r, ::testing::Not(Optional(46)));
 }
 
 TEST(OptionalRefDeathTest, ArrowOnEmpty) {
