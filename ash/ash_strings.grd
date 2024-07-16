@@ -1319,6 +1319,9 @@ Style notes:
       <message name="IDS_ASH_SWITCH_ACCESS_DICTATION" desc="The label for the Switch Access menu option to dictate into the focused input.">
         Dictation
       </message>
+      <message name="IDS_ASH_SWITCH_ACCESS_DRILL_DOWN" desc="The label for the Switch Access menu option to navigate within the current selection.">
+        Drill down
+      </message>
       <message name="IDS_ASH_SWITCH_ACCESS_END_TEXT_SELECTION" desc="The label for the Switch Access menu option to stop changing the text selection.">
         Stop selecting
       </message>

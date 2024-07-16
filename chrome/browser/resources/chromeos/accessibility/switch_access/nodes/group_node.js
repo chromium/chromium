@@ -42,7 +42,7 @@ export class GroupNode extends SAChildNode {
 
   /** @override */
   get actions() {
-    return [MenuAction.SELECT];
+    return [MenuAction.DRILL_DOWN];
   }
 
   /** @override */
@@ -127,7 +127,7 @@ export class GroupNode extends SAChildNode {
 
   /** @override */
   performAction(action) {
-    if (action === MenuAction.SELECT) {
+    if (action === MenuAction.DRILL_DOWN) {
       Navigator.byItem.enterGroup();
       return ActionResponse.CLOSE_MENU;
     }

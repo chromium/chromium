@@ -45,6 +45,8 @@ const base::flat_map<std::string, ButtonInfo>& GetMenuButtonDetails() {
           {&kSwitchAccessDecrementIcon, IDS_ASH_SWITCH_ACCESS_DECREMENT}},
          {"dictation",
           {&kDictationOnNewuiIcon, IDS_ASH_SWITCH_ACCESS_DICTATION}},
+         {"drillDown",
+          {&kSwitchAccessDrillDownIcon, IDS_ASH_SWITCH_ACCESS_DRILL_DOWN}},
          {"endTextSelection",
           {&kSwitchAccessEndTextSelectionIcon,
            IDS_ASH_SWITCH_ACCESS_END_TEXT_SELECTION}},

@@ -188,6 +188,12 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, NavigateButtonsInTextFieldMenu) {
   // Send "next".
   SendVirtualKeyPress(ui::KeyboardCode::VKEY_2);
 
+  // The next menu item is the "enter" button.
+  utils()->WaitForFocusRing("primary", "button", "Drill down");
+
+  // Send "next".
+  SendVirtualKeyPress(ui::KeyboardCode::VKEY_2);
+
   // The next menu item is the "point scanning" button.
   utils()->WaitForFocusRing("primary", "button", "Point scanning");
 

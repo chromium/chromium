@@ -43,19 +43,27 @@ export class BasicNode extends SAChildNode {
   private baseNode_: AutomationNode;
   private parent_: SARootNode | null;
   private locationChangedHandler_?: RepeatedEventHandler;
+  private isActionable_: boolean;
   private static creators_: Creator[] = [];
 
   protected constructor(baseNode: AutomationNode, parent: SARootNode | null) {
     super();
     this.baseNode_ = baseNode;
     this.parent_ = parent;
+    this.isActionable_ = !this.isGroup() ||
+        SwitchAccessPredicate.isActionable(baseNode, new SACache());
   }
 
   // ================= Getters and setters =================
 
   override get actions(): MenuAction[] {
     const actions: MenuAction[] = [];
-    actions.push(MenuAction.SELECT);
+    if (this.isActionable_) {
+      actions.push(MenuAction.SELECT);
+    }
+    if (this.isGroup()) {
+      actions.push(MenuAction.DRILL_DOWN);
+    }
 
     const ancestor = this.getScrollableAncestor_();
     // TODO(b/314203187): Not null asserted, check that this is correct.
@@ -162,12 +170,16 @@ export class BasicNode extends SAChildNode {
   override performAction(action: MenuAction): ActionResponse {
     let ancestor;
     switch (action) {
-      case MenuAction.SELECT:
+      case MenuAction.DRILL_DOWN:
         if (this.isGroup()) {
           Navigator.byItem.enterGroup();
-        } else {
-          this.baseNode_.doDefault();
+          return ActionResponse.CLOSE_MENU;
         }
+        // Should not happen.
+        console.error('Action DRILL_DOWN received on non-group node.');
+        return ActionResponse.NO_ACTION_TAKEN;
+      case MenuAction.SELECT:
+        this.baseNode_.doDefault();
         return ActionResponse.CLOSE_MENU;
       case MenuAction.SCROLL_DOWN:
         ancestor = this.getScrollableAncestor_();

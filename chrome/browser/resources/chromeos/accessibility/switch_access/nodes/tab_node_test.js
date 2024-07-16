@@ -39,10 +39,10 @@ AX_TEST_F('SwitchAccessTabNodeTest', 'Construction', async function() {
       chrome.automation.RoleType.TAB, tab.role, 'Tab node is not a tab');
   assertTrue(tab.isGroup(), 'Tab node should be a group');
   assertEquals(
-      1, tab.actions.length, 'Tab as a group should have 1 action (select)');
+      1, tab.actions.length, 'Tab as a group should have 1 action (drill down)');
   assertEquals(
-      MenuAction.SELECT, tab.actions[0],
-      'Tab as a group should have the action SELECT');
+      MenuAction.DRILL_DOWN, tab.actions[0],
+      'Tab as a group should have the action DRILL_DOWN');
 
   Navigator.byItem.node_.doDefaultAction();
 

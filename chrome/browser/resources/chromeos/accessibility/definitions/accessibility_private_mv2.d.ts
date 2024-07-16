@@ -96,6 +96,7 @@ declare global {
         CUT = 'cut',
         DECREMENT = 'decrement',
         DICTATION = 'dictation',
+        DRILL_DOWN = 'drillDown',
         END_TEXT_SELECTION = 'endTextSelection',
         INCREMENT = 'increment',
         ITEM_SCAN = 'itemScan',

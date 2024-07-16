@@ -441,6 +441,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "switch_access_copy.icon",
     "switch_access_cut.icon",
     "switch_access_decrement.icon",
+    "switch_access_drill_down.icon",
     "switch_access_end_text_selection.icon",
     "switch_access_increment.icon",
     "switch_access_item_scan.icon",

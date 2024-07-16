@@ -168,6 +168,7 @@ export class ActionManager {
           MenuAction.CUT,
           MenuAction.DECREMENT,
           MenuAction.DICTATION,
+          MenuAction.DRILL_DOWN,
           MenuAction.INCREMENT,
           MenuAction.KEYBOARD,
           MenuAction.MOVE_CURSOR,
