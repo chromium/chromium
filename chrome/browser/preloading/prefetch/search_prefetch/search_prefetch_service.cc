@@ -687,6 +687,9 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
   if (!web_contents)
     return;
 
+  // This preloads dictionaries for AutocompleteResult's `destination_url` which
+  // are not specific to search prefetch.
+  // TODO(crbug.com/349030549): Consider moving somewhere more suitable.
   MaybePreloadDictionary(result);
 
   for (const auto& match : result) {
@@ -1281,10 +1284,10 @@ void SearchPrefetchService::MaybePreloadDictionary(
                                       .InitWithNewPipeAndPassReceiver());
   preloaded_shared_dictionaries_expiry_timer_.Start(
       FROM_HERE, kAutocompletePreloadedDictionaryTimeout.Get(),
-      base::BindOnce(&SearchPrefetchService::DeletePreloadDictionaries,
+      base::BindOnce(&SearchPrefetchService::DeletePreloadedDictionaries,
                      base::Unretained(this)));
 }
 
-void SearchPrefetchService::DeletePreloadDictionaries() {
+void SearchPrefetchService::DeletePreloadedDictionaries() {
   preloaded_shared_dictionaries_handle_.reset();
 }

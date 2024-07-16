@@ -268,8 +268,9 @@ class SearchPrefetchService : public KeyedService,
                                        TemplateURLService* template_url_service,
                                        const GURL& canonical_search_url);
 
+  // Preloads the compression dictionaries in the network service.
   void MaybePreloadDictionary(const AutocompleteResult& result);
-  void DeletePreloadDictionaries();
+  void DeletePreloadedDictionaries();
 
   // Prefetches that are started are stored using search terms as a key. Only
   // one prefetch should be started for a given search term until the old

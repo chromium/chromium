@@ -4010,11 +4010,11 @@ IN_PROC_BROWSER_TEST_F(SearchNavigationPrefetchDefaultMatchBrowserTest,
   omnibox->model()->SetPopupSelection(OmniboxPopupSelection(1));
 }
 
-// Test suite to check the SearchPrefetchDictionaryPreload feature.
-class SearchPrefetchDictionaryPreloadBrowserTest
+// Test suite to check the AutocompleteDictionaryPreload feature.
+class AutocompleteDictionaryPreloadBrowserTest
     : public SearchPrefetchBaseBrowserTest {
  public:
-  SearchPrefetchDictionaryPreloadBrowserTest() {
+  AutocompleteDictionaryPreloadBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {kAutocompleteDictionaryPreload,
          {{"autocomplete_preloaded_dictionary_timeout", "10ms"}}}};
@@ -4057,7 +4057,7 @@ class SearchPrefetchDictionaryPreloadBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SearchPrefetchDictionaryPreloadBrowserTest,
+IN_PROC_BROWSER_TEST_F(AutocompleteDictionaryPreloadBrowserTest,
                        PreloadDictionayAndDiscard) {
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
@@ -4073,7 +4073,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchDictionaryPreloadBrowserTest,
   EXPECT_FALSE(HasPreloadedSharedDictionaryInfo());
 }
 
-IN_PROC_BROWSER_TEST_F(SearchPrefetchDictionaryPreloadBrowserTest,
+IN_PROC_BROWSER_TEST_F(AutocompleteDictionaryPreloadBrowserTest,
                        NonHttpFamilyAreIgnored) {
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
@@ -4088,7 +4088,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchDictionaryPreloadBrowserTest,
   EXPECT_FALSE(HasPreloadedSharedDictionaryInfo());
 }
 
-IN_PROC_BROWSER_TEST_F(SearchPrefetchDictionaryPreloadBrowserTest,
+IN_PROC_BROWSER_TEST_F(AutocompleteDictionaryPreloadBrowserTest,
                        DoNotPreloadDictionayUnderMemoryPressure) {
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
@@ -4103,7 +4103,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchDictionaryPreloadBrowserTest,
   EXPECT_FALSE(HasPreloadedSharedDictionaryInfo());
 }
 
-IN_PROC_BROWSER_TEST_F(SearchPrefetchDictionaryPreloadBrowserTest,
+IN_PROC_BROWSER_TEST_F(AutocompleteDictionaryPreloadBrowserTest,
                        PreloadedDictionayDiscardedByMemoryPressure) {
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
