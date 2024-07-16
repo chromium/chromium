@@ -8243,6 +8243,279 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_SIGNED_OUT_TITLE" desc="The title of the message displayed when a wallpaper search request rejected because the user is signed out.">
         Please sign in to continue.
       </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_CATEGORY_DESSERTS" desc="The label for a wallpaper search category (ex. Desserts).">
+        Desserts
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_CATEGORY_INTERIORS" desc="The label for a wallpaper search category (ex. Desserts).">
+        Interiors
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_CATEGORY_LANDSCAPE" desc="The label for a wallpaper search category (ex. Desserts).">
+        Landscape
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_CATEGORY_NATURE" desc="The label for a wallpaper search category (ex. Desserts).">
+        Nature
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_CATEGORY_OUTER_SPACE" desc="The label for a wallpaper search category (ex. Desserts).">
+        Outer space
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_CATEGORY_PLACES" desc="The label for a wallpaper search category (ex. Desserts).">
+        Places
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_CATEGORY_STRUCTURES" desc="The label for a wallpaper search category (ex. Desserts).">
+        Structures
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_CAKE_POPS" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Cake pops
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_CHEESECAKE" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Cheesecake
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_FRUIT_TART" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Fruit tart
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_ICE_CREAM" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Ice cream
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_MACARON" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Macaron
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_PANNA_COTTA" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Panna cotta
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_CHEMISTRY_LAB" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Chemistry lab
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_HALLWAY" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Hallway
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_KITCHEN" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Kitchen
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_LIVING_ROOM" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Living room
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_READING_NOOK" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Reading nook
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_DESERT" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Desert
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_FOREST" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Forest
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_HIGHLANDS" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Highlands
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_MEADOW" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Meadow
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_MOUNTAIN" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Mountain
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_OCEAN" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Ocean
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_RAINFOREST" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Rainforest
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_RICE_PADDY" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Rice paddy
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_SALT_FLAT" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Salt flat
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_SHORELINE" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Shoreline
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_TUNDRA" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Tundra
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_WATERFALL" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Waterfall
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_AURORA_BOREALIS" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Aurora borealis
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_CLIFF" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Cliff
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_CRASHING_WAVES" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Crashing waves
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_CREEK" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Creek
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_ECLIPSES" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Eclipses
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_FLOWERS" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Flowers
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_LIGHTNING" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Lightning
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_NIGHT_SKY" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Night sky
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_PALM_TREE" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Palm tree
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_RAINBOW" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Rainbow
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_RIVER" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        River
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_SLOT_CANYON" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Slot canyon
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_SUNSET" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Sunset
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_ASTEROID" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Asteroid
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_COMET" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Comet
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_MOON" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Moon
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_NEBULA" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Nebula
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_PLANET" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Planet
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_SPACE_STATION" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Space station
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_STARS" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Stars
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_CHICHEN_ITZA" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Chichen Itza
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_GRAND_CANYON" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Grand Canyon
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_GRAND_TETON_NATIONAL_PARK" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Grand Teton National Park
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_GREAT_PYRAMID_OF_GIZA" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Great Pyramid of Giza
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_ROCKY_MOUNTAINS_NATIONAL_PARK" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Rocky Mountains National Park
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_THE_COLOSSEUM" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        The Colosseum
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_ZION_NATIONAL_PARK" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Zion National Park
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_BRICK_BUILDING" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Brick Building
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_CASTLE" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Castle
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_HIGHWAY" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Highway
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_HOUSE" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        House
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_LIGHTHOUSE" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Lighthouse
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_PIER" desc="The label for a wallpaper search subject (ex. Cake pops).">
+        Pier
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_STYLE_ANIMATED" desc="The label for a wallpaper search style (ex Animated).">
+        Animated
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_STYLE_COLORED_PENCIL" desc="The label for a wallpaper search style (ex Animated).">
+        Colored Pencil
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_STYLE_CYBERPUNK" desc="The label for a wallpaper search style (ex Animated).">
+        Cyberpunk
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_STYLE_DREAM" desc="The label for a wallpaper search style (ex Animated).">
+        Dream
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_STYLE_EXPRESSIONISM" desc="The label for a wallpaper search style (ex Animated).">
+        Expressionism
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_STYLE_FANTASY" desc="The label for a wallpaper search style (ex Animated).">
+        Fantasy
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_STYLE_IMPRESSIONISM" desc="The label for a wallpaper search style (ex Animated).">
+        Impressionism
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_STYLE_OIL_PAINTING" desc="The label for a wallpaper search style (ex Animated).">
+        Oil Painting
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_STYLE_ORGANIC" desc="The label for a wallpaper search style (ex Animated).">
+        Organic
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_STYLE_PHOTOGRAPHY" desc="The label for a wallpaper search style (ex Animated).">
+        Photography
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_STYLE_SPLATTER" desc="The label for a wallpaper search style (ex Animated).">
+        Splatter
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_STYLE_STEAMPUNK" desc="The label for a wallpaper search style (ex Animated).">
+        Steampunk
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_STYLE_WATERCOLOR" desc="The label for a wallpaper search style (ex Animated).">
+        Watercolor
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_CHAOTIC" desc="The label for a wallpaper search mood (ex Chaotic).">
+        Chaotic
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_CREATIVE" desc="The label for a wallpaper search mood (ex Chaotic).">
+        Creative
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_DARK" desc="The label for a wallpaper search mood (ex Chaotic).">
+        Dark
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_DREAMY" desc="The label for a wallpaper search mood (ex Chaotic).">
+        Dreamy
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_EXCITED" desc="The label for a wallpaper search mood (ex Chaotic).">
+        Excited
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_HAPPY" desc="The label for a wallpaper search mood (ex Chaotic).">
+        Happy
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_INTELLECTUAL" desc="The label for a wallpaper search mood (ex Chaotic).">
+        Intellectual
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_ORDERLY" desc="The label for a wallpaper search mood (ex Chaotic).">
+        Orderly
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_ROMANTIC" desc="The label for a wallpaper search mood (ex Chaotic).">
+        Romantic
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_SERENE" desc="The label for a wallpaper search mood (ex Chaotic).">
+        Serene
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_SNOWY" desc="The label for a wallpaper search mood (ex Chaotic).">
+        Snowy
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_SUBDUED" desc="The label for a wallpaper search mood (ex Chaotic).">
+        Subdued
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_SUNNY" desc="The label for a wallpaper search mood (ex Chaotic).">
+        Sunny
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_THOUGHTFUL" desc="The label for a wallpaper search mood (ex Chaotic).">
+        Thoughtful
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_WHIMSICAL" desc="The label for a wallpaper search mood (ex Chaotic).">
+        Whimsical
+      </message>
       <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_CHOOSE_ICONS_LABEL" desc="Label for the description of the functionality of the section of Customize Chrome for selecting toolbar icons.">
         Choose what buttons show in the toolbar
       </message>
