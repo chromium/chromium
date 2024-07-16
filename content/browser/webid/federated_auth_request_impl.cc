@@ -650,6 +650,12 @@ void FederatedAuthRequestImpl::RequestToken(
       ReportBadMessageAndDeleteThis("The provider list should not be empty.");
       return;
     }
+    if (idp_get_params_ptr->mode == RpMode::kButton &&
+        requirement == MediationRequirement::kSilent) {
+      ReportBadMessageAndDeleteThis(
+          "mediation: silent is not supported in button mode.");
+      return;
+    }
   }
 
   if (render_frame_host().IsNestedWithinFencedFrame()) {
@@ -837,8 +843,6 @@ void FederatedAuthRequestImpl::RequestToken(
       fedcm_metrics_->RecordTimeBetweenUserInfoAndButtonModeAPI(
           start_time_ - user_info_accounts_response_time.value());
     }
-    // TODO(crbug.com/329235198): Support other mediation mode in button mode.
-    mediation_requirement_ = MediationRequirement::kRequired;
     if (!had_transient_user_activation_) {
       CompleteRequestWithError(
           FederatedAuthRequestResult::kMissingTransientUserActivation,
@@ -1445,8 +1449,7 @@ bool FederatedAuthRequestImpl::CanShowContinueOnPopup() const {
     return true;
   }
 
-  if (identity_selection_type_ == kExplicit ||
-      identity_selection_type_ == kAutoButton) {
+  if (identity_selection_type_ == kExplicit) {
     return true;
   }
   DCHECK_EQ(identity_selection_type_, kAutoWidget);

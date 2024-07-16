@@ -7099,16 +7099,16 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnInButtonMode) {
   for (const auto& idp_info : kConfigurationValid.idp_info) {
     ASSERT_EQ(idp_info.second.accounts.size(), 1u);
   }
-  // The following checks are skipped in button mode.
+  // The following checks work in button mode.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
-      .Times(0);
+      .Times(1);
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               RequiresUserMediation(url::Origin::Create(GURL(kRpUrl))))
-      .Times(0);
+      .Times(1);
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               IsAutoReauthnSettingEnabled())
-      .Times(0);
+      .Times(1);
 
   static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
       ->SimulateUserActivation();

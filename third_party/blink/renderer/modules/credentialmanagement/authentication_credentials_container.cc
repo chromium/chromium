@@ -2108,21 +2108,6 @@ void AuthenticationCredentialsContainer::GetForIdentity(
   }
   base::UmaHistogramEnumeration("Blink.FedCm.RpContext", rp_context);
 
-  mojom::blink::RpMode rp_mode = mojom::blink::RpMode::kWidget;
-  if (blink::RuntimeEnabledFeatures::FedCmButtonModeEnabled(
-          resolver->GetExecutionContext())) {
-    // TODO(crbug.com/1429083): add use counters for rp mode.
-    rp_mode = mojo::ConvertTo<mojom::blink::RpMode>(identity_options.mode());
-    if (rp_mode == mojom::blink::RpMode::kButton &&
-        identity_provider_ptrs.size() > 1u) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kInvalidStateError,
-          "Button mode is not currently supported with multiple identity "
-          "providers."));
-    }
-  }
-  // TODO(crbug.com/1429083): add uma histograms for rp mode.
-
   CredentialMediationRequirement mediation_requirement;
   if (options.mediation() == "conditional") {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -2137,6 +2122,27 @@ void AuthenticationCredentialsContainer::GetForIdentity(
   } else {
     DCHECK_EQ("optional", options.mediation());
     mediation_requirement = CredentialMediationRequirement::kOptional;
+  }
+
+  mojom::blink::RpMode rp_mode = mojom::blink::RpMode::kWidget;
+  if (blink::RuntimeEnabledFeatures::FedCmButtonModeEnabled(
+          resolver->GetExecutionContext())) {
+    rp_mode = mojo::ConvertTo<mojom::blink::RpMode>(identity_options.mode());
+    if (rp_mode == mojom::blink::RpMode::kButton) {
+      if (identity_provider_ptrs.size() > 1u) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kInvalidStateError,
+            "Button mode is not currently supported with multiple identity "
+            "providers."));
+        return;
+      }
+      if (mediation_requirement == CredentialMediationRequirement::kSilent) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotSupportedError,
+            "mediation:silent is not supported in button mode"));
+        return;
+      }
+    }
   }
 
   std::unique_ptr<ScopedAbortState> scoped_abort_state;
