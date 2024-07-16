@@ -20,6 +20,7 @@
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/chromeos/crosapi/test_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
@@ -247,6 +248,25 @@ IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,
   // Expect GeForce NOW app to be opened.
   EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(
       browser_observer.Wait(), app_id));
+}
+
+IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,
+                       OpenGeforceNowInstallUriInNewWindow) {
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
+
+  GURL geforce_now_url = GURL("https://play.geforcenow.com/games?game-id=1234");
+  content::TestNavigationObserver observer(geforce_now_url);
+  observer.StartWatchingNewWebContents();
+
+  NavigateParams params(browser()->profile(),
+                        GURL("cros-apps://install-app?package_id=gfn:1234"),
+                        ui::PAGE_TRANSITION_TYPED);
+  Navigate(&params);
+
+  observer.WaitForNavigationFinished();
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(1)->GetVisibleURL(),
+            geforce_now_url);
 }
 
 IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,

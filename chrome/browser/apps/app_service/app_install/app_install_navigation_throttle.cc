@@ -262,6 +262,10 @@ ThrottleCheckResult AppInstallNavigationThrottle::HandleRequest() {
       std::move(query_params.serialized_package_id).value(), anchor_window,
       base::DoNothing());
 
+  if (!web_contents->GetLastCommittedURL().is_valid()) {
+    web_contents->ClosePage();
+  }
+
   return content::NavigationThrottle::CANCEL_AND_IGNORE;
 }
 
