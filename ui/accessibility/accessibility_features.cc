@@ -255,7 +255,7 @@ bool IsAccessibilityShakeToLocateEnabled() {
 
 BASE_FEATURE(kAccessibilityMagnifyAcceleratorDialog,
              "AccessibilityMagnifyAcceleratorDialog",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityMagnifyAcceleratorDialogEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityMagnifyAcceleratorDialog);
