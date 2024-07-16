@@ -55,9 +55,9 @@ DistillerViewer::DistillerViewer(
   distiller_->DistillPage(
       url, std::move(page),
       base::BindOnce(&DistillerViewer::OnDistillerFinished,
-                     base::Unretained(this)),
+                     weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&DistillerViewer::OnArticleDistillationUpdated,
-                          base::Unretained(this)));
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 DistillerViewer::~DistillerViewer() {}

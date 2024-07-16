@@ -106,6 +106,8 @@ class DistillerViewer : public DistillerViewerInterface {
   DistillationFinishedCallback callback_;
   // Keep reference of the distiller_ during distillation.
   std::unique_ptr<Distiller> distiller_;
+
+  base::WeakPtrFactory<DistillerViewer> weak_ptr_factory_{this};
 };
 
 }  // namespace dom_distiller
