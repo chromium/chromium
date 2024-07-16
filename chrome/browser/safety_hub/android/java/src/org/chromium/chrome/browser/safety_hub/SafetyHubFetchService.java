@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ObserverList;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
@@ -30,12 +31,19 @@ import java.util.concurrent.TimeUnit;
 
 /** Manages the scheduling of Safety Hub fetch jobs. */
 public class SafetyHubFetchService implements SyncService.SyncStateChangedListener, Destroyable {
+    interface Observer {
+        void compromisedPasswordCountChanged();
+
+        void updateStatusChanged();
+    }
+
     private static final int SAFETY_HUB_JOB_INTERVAL_IN_DAYS = 1;
     private final Profile mProfile;
 
     private final Callback<UpdateStatusProvider.UpdateStatus> mUpdateCallback =
             status -> {
                 mUpdateStatus = status;
+                notifyUpdateStatusChanged();
             };
 
     /*
@@ -43,6 +51,7 @@ public class SafetyHubFetchService implements SyncService.SyncStateChangedListen
      * null} if the status hasn't been determined yet.
      */
     private @Nullable UpdateStatusProvider.UpdateStatus mUpdateStatus;
+    private final ObserverList<Observer> mObservers = new ObserverList<>();
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     SafetyHubFetchService(Profile profile) {
@@ -56,6 +65,14 @@ public class SafetyHubFetchService implements SyncService.SyncStateChangedListen
 
         // Fetch latest update status.
         UpdateStatusProvider.getInstance().addObserver(mUpdateCallback);
+    }
+
+    void addObserver(Observer observer) {
+        mObservers.addObserver(observer);
+    }
+
+    void removeObserver(Observer observer) {
+        mObservers.removeObserver(observer);
     }
 
     @Override
@@ -149,6 +166,8 @@ public class SafetyHubFetchService implements SyncService.SyncStateChangedListen
                 accountEmail,
                 count -> {
                     prefService.setInteger(Pref.BREACHED_CREDENTIALS_COUNT, count);
+                    notifyCompromisedPasswordCountChanged();
+
                     onFinishedCallback.onResult(/* needsReschedule= */ false);
                     scheduleNextFetchJob();
                 },
@@ -170,6 +189,18 @@ public class SafetyHubFetchService implements SyncService.SyncStateChangedListen
             prefService.setInteger(Pref.BREACHED_CREDENTIALS_COUNT, 0);
 
             cancelFetchJob();
+        }
+    }
+
+    private void notifyCompromisedPasswordCountChanged() {
+        for (Observer observer : mObservers) {
+            observer.compromisedPasswordCountChanged();
+        }
+    }
+
+    private void notifyUpdateStatusChanged() {
+        for (Observer observer : mObservers) {
+            observer.updateStatusChanged();
         }
     }
 

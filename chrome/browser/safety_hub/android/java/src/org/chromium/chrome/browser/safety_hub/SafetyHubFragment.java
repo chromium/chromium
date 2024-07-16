@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
@@ -37,7 +38,8 @@ import java.util.List;
 /** Fragment containing Safety hub. */
 public class SafetyHubFragment extends SafetyHubBaseFragment
         implements UnusedSitePermissionsBridge.Observer,
-                NotificationPermissionReviewBridge.Observer {
+                NotificationPermissionReviewBridge.Observer,
+                SafetyHubFetchService.Observer {
     /**
      * Functional interface to start a Chrome Custom Tab for the given intent, e.g. by using {@link
      * org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent}.
@@ -76,10 +78,13 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
 
     private SafetyHubModuleDelegate mDelegate;
     private UnusedSitePermissionsBridge mUnusedSitePermissionsBridge;
-    private PropertyModel mPermissionsModel;
     private NotificationPermissionReviewBridge mNotificationPermissionReviewBridge;
-    private PropertyModel mNotificationsModel;
+    private SafetyHubFetchService mSafetyHubFetchService;
+    private PropertyModel mUpdateCheckPropertyModel;
+    private PropertyModel mPasswordCheckPropertyModel;
     private PropertyModel mSafeBrowsingPropertyModel;
+    private PropertyModel mPermissionsModel;
+    private PropertyModel mNotificationsModel;
     private PropertyModel mBrowserStateModule;
     private CustomTabIntentHelper mCustomTabIntentHelper;
 
@@ -91,6 +96,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         mUnusedSitePermissionsBridge = UnusedSitePermissionsBridge.getForProfile(getProfile());
         mNotificationPermissionReviewBridge =
                 NotificationPermissionReviewBridge.getForProfile(getProfile());
+        mSafetyHubFetchService = SafetyHubFetchServiceFactory.getForProfile(getProfile());
+        mSafetyHubFetchService.addObserver(this);
 
         setUpAccountPasswordCheckModule();
         setUpUpdateCheckModule();
@@ -138,24 +145,13 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
 
     private void setUpAccountPasswordCheckModule() {
         SafetyHubExpandablePreference passwordCheckPreference = findPreference(PREF_PASSWORDS);
-        int compromisedPasswordsCount =
-                UserPrefs.get(getProfile()).getInteger(Pref.BREACHED_CREDENTIALS_COUNT);
-        boolean disabledByPolicy =
-                UserPrefs.get(getProfile()).isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE);
 
-        PropertyModel passwordCheckPropertyModel =
+        mPasswordCheckPropertyModel =
                 new PropertyModel.Builder(
                                 SafetyHubModuleProperties.PASSWORD_CHECK_SAFETY_HUB_MODULE_KEYS)
                         .with(
                                 SafetyHubModuleProperties.IS_VISIBLE,
                                 mDelegate.shouldShowPasswordCheckModule())
-                        .with(
-                                SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
-                                compromisedPasswordsCount)
-                        .with(
-                                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT,
-                                mDelegate.getAccountPasswordsCount())
-                        .with(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, disabledByPolicy)
                         .with(
                                 SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
                                 v -> mDelegate.showPasswordCheckUI(getContext()))
@@ -165,7 +161,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                         .build();
 
         PropertyModelChangeProcessor.create(
-                passwordCheckPropertyModel,
+                mPasswordCheckPropertyModel,
                 passwordCheckPreference,
                 SafetyHubModuleViewBinder::bindPasswordCheckProperties);
     }
@@ -173,11 +169,10 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     private void setUpUpdateCheckModule() {
         SafetyHubExpandablePreference updateCheckPreference = findPreference(PREF_UPDATE);
 
-        PropertyModel updateCheckPropertyModel =
+        mUpdateCheckPropertyModel =
                 new PropertyModel.Builder(
                                 SafetyHubModuleProperties.UPDATE_CHECK_SAFETY_HUB_MODULE_KEYS)
                         .with(SafetyHubModuleProperties.IS_VISIBLE, true)
-                        .with(SafetyHubModuleProperties.UPDATE_STATUS, mDelegate.getUpdateStatus())
                         .with(
                                 SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
                                 v -> mDelegate.openGooglePlayStore(getContext()))
@@ -187,7 +182,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                         .build();
 
         PropertyModelChangeProcessor.create(
-                updateCheckPropertyModel,
+                mUpdateCheckPropertyModel,
                 updateCheckPreference,
                 SafetyHubModuleViewBinder::bindUpdateCheckProperties);
     }
@@ -378,9 +373,14 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     public void onResume() {
         super.onResume();
 
+        updateUpdateCheckPreference();
+        updatePasswordCheckPreference();
+        updateSafeBrowsingPreference();
         updatePermissionsPreference();
         updateNotificationsReviewPreference();
-        updateSafeBrowsingPreference();
+
+        // Fetch the passwords again to get the latest result.
+        mSafetyHubFetchService.fetchBreachedCredentialsCount(success -> {});
     }
 
     @Override
@@ -388,6 +388,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         super.onDestroy();
         mNotificationPermissionReviewBridge.removeObserver(this);
         mUnusedSitePermissionsBridge.removeObserver(this);
+        mSafetyHubFetchService.removeObserver(this);
     }
 
     @Override
@@ -398,6 +399,16 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     @Override
     public void notificationPermissionsChanged() {
         updateNotificationsReviewPreference();
+    }
+
+    @Override
+    public void compromisedPasswordCountChanged() {
+        updatePasswordCheckPreference();
+    }
+
+    @Override
+    public void updateStatusChanged() {
+        updateUpdateCheckPreference();
     }
 
     public void setDelegate(SafetyHubModuleDelegate safetyHubModuleDelegate) {
@@ -433,5 +444,30 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 mDelegate.isSafeBrowsingManaged());
         mSafeBrowsingPropertyModel.set(SafetyHubModuleProperties.SAFE_BROWSING_STATE, state);
         mBrowserStateModule.set(SafetyHubModuleProperties.SAFE_BROWSING_STATE, state);
+    }
+
+    private void updatePasswordCheckPreference() {
+        int compromisedPasswordsCount =
+                UserPrefs.get(getProfile()).getInteger(Pref.BREACHED_CREDENTIALS_COUNT);
+        int totalPasswordsCount = mDelegate.getAccountPasswordsCount();
+        boolean disabledByPolicy =
+                UserPrefs.get(getProfile()).isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE);
+
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, disabledByPolicy);
+        mBrowserStateModule.set(
+                SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
+        mBrowserStateModule.set(
+                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+    }
+
+    private void updateUpdateCheckPreference() {
+        UpdateStatusProvider.UpdateStatus updateStatus = mDelegate.getUpdateStatus();
+        mUpdateCheckPropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
+        mBrowserStateModule.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
     }
 }
