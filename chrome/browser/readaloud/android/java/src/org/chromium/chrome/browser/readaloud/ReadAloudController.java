@@ -95,7 +95,7 @@ public class ReadAloudController
     // of users http://uma/p/chrome/timeline_v2?sid=c975abf9022aac7b36bf28285f068dd6
     private static final int READABILITY_DELAY = 3000;
     private static final int MAX_URL_ENTRIES = 300;
-    private final LruCache<Integer, ReadabilityInfo> mReadabilityInfoMap =
+    private static final LruCache<Integer, ReadabilityInfo> sReadabilityInfoMap =
             new LruCache<>(MAX_URL_ENTRIES);
     private final HashSet<Integer> mPendingRequests = new HashSet<>();
     private final TabModel mTabModel;
@@ -424,7 +424,7 @@ public class ReadAloudController
                     // isPlaybackEnabled() should only be checked if isReadable == true.
                     isReadable = isReadable && ReadAloudFeatures.isPlaybackEnabled();
                     int urlHash = urlToHash(url);
-                    mReadabilityInfoMap.put(
+                    sReadabilityInfoMap.put(
                             urlHash,
                             new ReadabilityInfo(
                                     isReadable, sClock.currentTimeMillis(), timepointsSupported));
@@ -674,13 +674,13 @@ public class ReadAloudController
     }
 
     private ReadabilityInfo getReadabilityInfoIfUnexpired(int sanitizedUrlHash) {
-        ReadabilityInfo info = mReadabilityInfoMap.get(sanitizedUrlHash);
+        ReadabilityInfo info = sReadabilityInfoMap.get(sanitizedUrlHash);
         if (info != null) {
             Long retrievalDate = info.getResponseTime();
             if (retrievalDate != null && sClock.currentTimeMillis() - retrievalDate <= HOUR_TO_MS) {
                 return info;
             }
-            mReadabilityInfoMap.remove(sanitizedUrlHash);
+            sReadabilityInfoMap.remove(sanitizedUrlHash);
             notifyReadabilityMayHaveChanged();
         }
         return null;
@@ -921,7 +921,7 @@ public class ReadAloudController
                     Log.e(TAG, exception.getMessage());
                     if (exception instanceof ReadAloudUnsupportedException) {
                         Log.e(TAG, "Attempting to play a non readable website");
-                        mReadabilityInfoMap.put(
+                        sReadabilityInfoMap.put(
                                 sanitizedUrlHash,
                                 new ReadabilityInfo(false, sClock.currentTimeMillis(), false));
                         notifyReadabilityMayHaveChanged();
@@ -945,10 +945,10 @@ public class ReadAloudController
     public boolean timepointsSupported(Tab tab) {
         if (isAvailable() && !GURL.isEmptyOrInvalid(tab.getUrl())) {
             int urlHash = urlToHash(stripUserData(tab.getUrl()).getSpec());
-            if (mReadabilityInfoMap.get(urlHash) == null) {
+            if (sReadabilityInfoMap.get(urlHash) == null) {
                 return false;
             }
-            return mReadabilityInfoMap.get(urlHash).getTimepointsSupported();
+            return sReadabilityInfoMap.get(urlHash).getTimepointsSupported();
         }
         return false;
     }
@@ -1545,7 +1545,7 @@ public class ReadAloudController
     }
 
     public void setTimepointsSupportedForTest(String url, boolean supported) {
-        mReadabilityInfoMap.put(urlToHash(url), new ReadabilityInfo(true, 0L, supported));
+        sReadabilityInfoMap.put(urlToHash(url), new ReadabilityInfo(true, 0L, supported));
     }
 
     public void setStateToRestoreOnBringingToForegroundForTests(RestoreState restoreState) {
@@ -1570,6 +1570,10 @@ public class ReadAloudController
 
     private int urlToHash(String url) {
         return Hashing.murmur3_32_fixed().hashUnencodedChars(url).asInt();
+    }
+
+    static void resetReadabilityCacheForTesting() {
+        sReadabilityInfoMap.evictAll();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
