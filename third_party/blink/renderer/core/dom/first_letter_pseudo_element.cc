@@ -533,7 +533,7 @@ void FirstLetterPseudoElement::AttachFirstLetterTextLayoutObjects(
   first_letter_text->Destroy();
 }
 
-Node* FirstLetterPseudoElement::InnerNodeForHitTesting() const {
+Node* FirstLetterPseudoElement::InnerNodeForHitTesting() {
   // When we hit a first letter during hit testing, hover state and events
   // should be triggered on the parent of the real text node where the first
   // letter is taken from. The first letter may not come from a real node - for

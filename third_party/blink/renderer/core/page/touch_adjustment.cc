@@ -528,7 +528,8 @@ bool FindNodeWithLowestDistanceMetric(Node*& adjusted_node,
   }
 
   // As for HitTestResult.innerNode, we skip over pseudo elements.
-  if (adjusted_node && adjusted_node->IsPseudoElement()) {
+  if (adjusted_node && adjusted_node->IsPseudoElement() &&
+      !adjusted_node->IsScrollMarkerPseudoElement()) {
     adjusted_node = adjusted_node->ParentOrShadowHostNode();
   }
 

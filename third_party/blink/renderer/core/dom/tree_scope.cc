@@ -287,10 +287,12 @@ Element* TreeScope::HitTestPointInternal(Node* node,
   if (!node || node->IsDocumentNode())
     return nullptr;
   Element* element;
-  if (node->IsPseudoElement() || node->IsTextNode())
+  if ((node->IsPseudoElement() && !node->IsScrollMarkerPseudoElement()) ||
+      node->IsTextNode()) {
     element = node->ParentOrShadowHostElement();
-  else
+  } else {
     element = To<Element>(node);
+  }
   if (!element)
     return nullptr;
   if (type == HitTestPointType::kWebExposed)

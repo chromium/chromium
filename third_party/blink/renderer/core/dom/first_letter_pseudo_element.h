@@ -76,7 +76,7 @@ class CORE_EXPORT FirstLetterPseudoElement final : public PseudoElement {
 
   void AttachLayoutTree(AttachContext&) override;
   void DetachLayoutTree(bool performing_reattach) override;
-  Node* InnerNodeForHitTesting() const override;
+  Node* InnerNodeForHitTesting() override;
 
  private:
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;

@@ -6,6 +6,7 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
@@ -2512,6 +2513,42 @@ TEST_P(PaintLayerTest, ScrollContainerLayerTransformScroller) {
   TEST_SCROLL_CONTAINER("absolute", scroller, false);
   TEST_SCROLL_CONTAINER("fixed", scroller, false);
   TEST_SCROLL_CONTAINER("transform", scroller, false);
+}
+
+TEST_P(PaintLayerTest, HitTestScrollMarkerPseudoElement) {
+  GetDocument().body()->setInnerHTML(
+      "<style>"
+      "#scroller { overflow: scroll; scroll-marker-group: before; width: "
+      "100px; height: 100px; }"
+      "#scroller::scroll-marker-group { border: 3px solid black; display: "
+      "flex; width: 100px; height: 20px; }"
+      "#scroller div { width: 100px; height: 100px; background: green; }"
+      "#scroller div::scroll-marker { content: ''; display: inline-flex; "
+      "width: 10px; height: 10px; background: green; border-radius: 50%; }"
+      "</style>"
+      "<div id='scroller'>"
+      "  <div></div>"
+      "  <div id='second_div'></div>"
+      "</div>");
+  UpdateAllLifecyclePhasesForTest();
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
+  EXPECT_EQ(scroller->scrollTop(), 0);
+  Element* second_div =
+      GetDocument().getElementById(AtomicString("second_div"));
+  PseudoElement* second_scroll_marker =
+      second_div->GetPseudoElement(kPseudoIdScrollMarker);
+
+  HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive);
+  HitTestLocation location(PhysicalOffset(25, 20));
+  HitTestResult result(request, location);
+  GetDocument().GetLayoutView()->HitTest(location, result);
+  EXPECT_EQ(second_scroll_marker, result.InnerNode());
+
+  MouseEvent& event = *MouseEvent::Create();
+  event.SetType(event_type_names::kClick);
+  event.SetTarget(second_scroll_marker);
+  second_scroll_marker->DefaultEventHandler(event);
+  EXPECT_EQ(scroller->scrollTop(), 100);
 }
 
 }  // namespace blink

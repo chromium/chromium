@@ -38,7 +38,8 @@
 namespace blink {
 
 EventTarget& EventPath::EventTargetRespectingTargetRules(Node& reference_node) {
-  if (reference_node.IsPseudoElement()) {
+  if (reference_node.IsPseudoElement() &&
+      !reference_node.IsScrollMarkerPseudoElement()) {
     DCHECK(reference_node.parentNode());
     return *reference_node.parentNode();
   }
