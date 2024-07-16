@@ -71,18 +71,12 @@ def _CheckFeatureNames(input_api, output_api):
           input_api.re.MULTILINE)
   warnings = []
 
-  def exception(constant, feature):
-    if constant == "AutofillAddressEnhancementVotes" and \
-       feature == "kAutofillAddressEnhancementVotes":
-      return True
-    return False
-
   for f in input_api.AffectedSourceFiles(input_api.FilterSourceFile):
     if IsComponentsAutofillFile(f, 'features.cc'):
       contents = input_api.ReadFile(f)
       mismatches = [(constant, feature)
               for (constant, feature) in pattern.findall(contents)
-              if constant != feature and not exception(constant, feature)]
+              if constant != feature]
       if mismatches:
         mismatch_strings = ['\t{} -- {}'.format(*m) for m in mismatches]
         mismatch_string = format('\n').join(mismatch_strings)
