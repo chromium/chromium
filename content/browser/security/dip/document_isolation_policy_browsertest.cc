@@ -936,7 +936,10 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest, DipOriginKeyed) {
   // process will be origin-keyed because the AgentClusterKey is. Once we
   // refactor Origin-Agent-Cluster to use the AgentClusterKey, using DIP should
   // also cause SiteInfo::requires_origin_keyed_process() to return true.
-  EXPECT_FALSE(current_si->GetSiteInfo().requires_origin_keyed_process());
+  // Note: if kOriginKeyedProcessesByDefault is enabled, then
+  // requires_origin_keyed_process() will return true.
+  EXPECT_EQ(SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(),
+            current_si->GetSiteInfo().requires_origin_keyed_process());
   EXPECT_TRUE(current_si->GetSiteInfo().agent_cluster_key()->IsOriginKeyed());
 }
 
