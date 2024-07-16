@@ -229,8 +229,7 @@ class AutofillAgentTestWithFeatures : public AutofillAgentTest {
   AutofillAgentTestWithFeatures() {
     scoped_features_.InitWithFeatures(
         /*enabled_features=*/
-        {features::kAutofillReplaceCachedWebElementsByRendererIds,
-         features::kAutofillDetectRemovedFormControls},
+        {features::kAutofillReplaceCachedWebElementsByRendererIds},
         /*disabled_features=*/{});
   }
 
@@ -298,7 +297,11 @@ TEST_F(AutofillAgentTestWithFeatures, FormsSeen_UpdatedForm) {
   }
 }
 
+// Tests that when AutofillDetectRemovedFormControls is enabled, Autofill is
+// directly notified of removed form elements.
 TEST_F(AutofillAgentTestWithFeatures, FormsSeen_RemovedInput) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillDetectRemovedFormControls};
   {
     EXPECT_CALL(autofill_driver(), FormsSeen(SizeIs(1), SizeIs(0)));
     LoadHTML(R"(<body> <form><input></form> </body>)");

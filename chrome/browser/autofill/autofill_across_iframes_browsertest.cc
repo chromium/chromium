@@ -913,11 +913,6 @@ IN_PROC_BROWSER_TEST_P(AutofillAcrossIframesTest_Submission,
 class AutofillAcrossIframesTest_FullIframes
     : public AutofillAcrossIframesTest_SubmissionBase {
  public:
-  AutofillAcrossIframesTest_FullIframes() {
-    feature_list_.InitAndEnableFeature(
-        features::kAutofillDetectRemovedFormControls);
-  }
-
   [[nodiscard]] const FormStructure* LoadForm() {
     SetUrlContent("/iframe.html", R"(
         <div>
@@ -979,8 +974,16 @@ class AutofillAcrossIframesTest_FullIframes
   base::test::ScopedFeatureList feature_list_;
 };
 
+class AutofillAcrossIframesTest_FullIframes_ElementRemovalDetection
+    : public AutofillAcrossIframesTest_FullIframes {
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillDetectRemovedFormControls};
+};
+
 // Tests that autofilling on a main-origin field fills all same-origin fields.
-IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_FullIframes, FillAll) {
+IN_PROC_BROWSER_TEST_F(
+    AutofillAcrossIframesTest_FullIframes_ElementRemovalDetection,
+    FillAll) {
   ASSERT_TRUE(LoadForm());
   const FormStructure* form = FormAfterRemovalOfExtraFields();
   ASSERT_TRUE(form);
@@ -988,7 +991,9 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_FullIframes, FillAll) {
               ElementsAre(kNameFull, kNumber, kExp, kCvc));
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_FullIframes, Submit) {
+IN_PROC_BROWSER_TEST_F(
+    AutofillAcrossIframesTest_FullIframes_ElementRemovalDetection,
+    Submit) {
   ASSERT_TRUE(LoadForm());
   const FormStructure* form = FormAfterRemovalOfExtraFields();
   ASSERT_TRUE(form);
@@ -1003,8 +1008,9 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_FullIframes, Submit) {
 }
 
 // Tests that the Autofill Manager notices if an entire <form> is removed.
-IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_FullIframes,
-                       DetectFormRemoval) {
+IN_PROC_BROWSER_TEST_F(
+    AutofillAcrossIframesTest_FullIframes_ElementRemovalDetection,
+    DetectFormRemoval) {
   // This loads 4 iframes, each containing a <form> element with 4 fields.
   ASSERT_TRUE(LoadForm());
 
@@ -1022,8 +1028,9 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_FullIframes,
 
 // Tests that the Autofill Manager notices if the parent containing a <form> is
 // removed.
-IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_FullIframes,
-                       DetectParentOfFormRemoval) {
+IN_PROC_BROWSER_TEST_F(
+    AutofillAcrossIframesTest_FullIframes_ElementRemovalDetection,
+    DetectParentOfFormRemoval) {
   // This loads 4 iframes, each containing a <form> element with 4 fields.
   ASSERT_TRUE(LoadForm());
 

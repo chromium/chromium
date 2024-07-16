@@ -110,10 +110,7 @@ class AutofillTest : public InProcessBrowserTest {
         {AutofillManagerEvent::kFormsSeen}};
   };
 
-  AutofillTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kAutofillDetectRemovedFormControls);
-  }
+  AutofillTest() {}
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -619,7 +616,13 @@ IN_PROC_BROWSER_TEST_F(AutofillTest,
                                                   .size()));
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillTest, DynamicForm_DiscoverRemovedFormFields) {
+class AutofillElementRemovalDetectionTest : public AutofillTest {
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillDetectRemovedFormControls};
+};
+
+IN_PROC_BROWSER_TEST_F(AutofillElementRemovalDetectionTest,
+                       DynamicForm_DiscoverRemovedFormFields) {
   // Load a form that contains 3 fields.
   GURL url = embedded_test_server()->GetURL(
       "/autofill/dynamic_form_element_removed.html");
