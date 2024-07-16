@@ -17,6 +17,7 @@ component_files = [
   "expandable-card.ts",
   "export-dialog.ts",
   "genai-error.ts",
+  "genai-feedback-buttons.ts",
   "genai-placeholder.ts",
   "mic-selection-menu.ts",
   "onboarding-dialog.ts",

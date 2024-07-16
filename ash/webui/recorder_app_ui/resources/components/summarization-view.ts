@@ -7,6 +7,7 @@ import 'chrome://resources/mwc/@material/web/progress/circular-progress.js';
 import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
 import './genai-error.js';
+import './genai-feedback-buttons.js';
 import './genai-placeholder.js';
 import './summary-consent-card.js';
 
@@ -132,36 +133,12 @@ export class SummarizationView extends ReactiveLitElement {
       }
     }
 
-    #feedback-buttons {
-      background-color: var(--cros-sys-app_base);
-      border-radius: 18px 0 0;
+    genai-feedback-buttons {
+      --background-color: var(--cros-sys-app_base);
+
       bottom: 0;
-      display: flex;
-      flex-flow: row;
-      gap: 8px;
-      padding: 4px 4px 0 8px;
       position: absolute;
       right: 0;
-
-      & > cra-icon-button {
-        margin: 0;
-      }
-
-      & > svg {
-        color: var(--cros-sys-app_base);
-        position: absolute;
-        z-index: -1;
-      }
-
-      & > .top-right {
-        right: 0;
-        top: -10px;
-      }
-
-      & > .bottom-left {
-        bottom: 0;
-        left: -10px;
-      }
     }
   `;
 
@@ -217,24 +194,7 @@ export class SummarizationView extends ReactiveLitElement {
         <!-- TODO: b/336963138 - Add correct link -->
         <a href="#">${i18n.genAiLearnMoreLink}</a>
       </div>
-      <div id="feedback-buttons">
-        <!-- These are the two additional "white rounded corner". -->
-        <svg class="top-right" width="10" height="10">
-          <path d="M 10 10 H 0 a 10 10 0 0 0 10 -10 V 10" fill="currentcolor" />
-        </svg>
-        <svg class="bottom-left" width="10" height="10">
-          <path d="M 10 10 H 0 a 10 10 0 0 0 10 -10 V 10" fill="currentcolor" />
-        </svg>
-        <!-- TODO: b/336963138 - implements thumbs up / down -->
-        <cra-icon-button buttonstyle="toggle" size="small">
-          <cra-icon name="thumb_up" slot="icon"></cra-icon>
-          <cra-icon name="thumb_up_filled" slot="selectedIcon"></cra-icon>
-        </cra-icon-button>
-        <cra-icon-button buttonstyle="toggle" size="small">
-          <cra-icon name="thumb_down" slot="icon"></cra-icon>
-          <cra-icon name="thumb_down_filled" slot="selectedIcon"></cra-icon>
-        </cra-icon-button>
-      </div>
+      <genai-feedback-buttons></genai-feedback-buttons>
     `;
   }
 
