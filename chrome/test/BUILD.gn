@@ -8689,7 +8689,6 @@ test("unit_tests") {
       "//chrome/browser/accessibility:test_support",
       "//chrome/browser/accessibility/media_app/test:test_support",
       "//chrome/browser/apps/almanac_api_client:unit_tests",
-      "//chrome/browser/apps/app_deduplication_service:unit_tests",
       "//chrome/browser/apps/app_discovery_service:unit_tests",
       "//chrome/browser/apps/app_preload_service:unit_tests",
       "//chrome/browser/apps/app_service/promise_apps/proto",

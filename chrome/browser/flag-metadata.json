@@ -254,11 +254,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "app-deduplication-service-fondue",
-    "owners": [ "tsergeant@chromium.org", "chromeos-apps-foundation-team@google.com" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "app-install-service-uri-borealis",
     "owners": [ "tsergeant@chromium.org", "chromeos-apps-foundation-team@google.com" ],
     "expiry_milestone": 128

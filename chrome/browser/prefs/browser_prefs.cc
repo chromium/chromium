@@ -345,7 +345,6 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ash_prefs.h"
-#include "chrome/browser/apps/app_deduplication_service/app_deduplication_service.h"
 #include "chrome/browser/apps/app_discovery_service/almanac_fetcher.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
@@ -1016,6 +1015,12 @@ constexpr char kNtpModulesFreVisible[] = "NewTabPage.ModulesFreVisible";
 constexpr char kNtpModulesShownCount[] = "NewTabPage.ModulesShownCount";
 #endif
 
+// Deprecated 07/2024.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kAppDeduplicationServiceLastGetTimestamp[] =
+    "apps.app_deduplication_service.last_get_data_from_server_timestamp";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1383,6 +1388,12 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kNtpModulesFreVisible, true);
   registry->RegisterIntegerPref(kNtpModulesShownCount, 0);
   registry->RegisterTimePref(kNtpModulesFirstShownTime, base::Time());
+#endif
+
+  // Deprecated 07/2024.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterTimePref(kAppDeduplicationServiceLastGetTimestamp,
+                             base::Time());
 #endif
 }
 
@@ -1965,7 +1976,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   apps::AlmanacFetcher::RegisterProfilePrefs(registry);
   apps::AppPlatformMetricsService::RegisterProfilePrefs(registry);
   apps::AppPreloadService::RegisterProfilePrefs(registry);
-  apps::deduplication::AppDeduplicationService::RegisterProfilePrefs(registry);
   apps::webapk_prefs::RegisterProfilePrefs(registry);
   arc::prefs::RegisterProfilePrefs(registry);
   ArcAppListPrefs::RegisterProfilePrefs(registry);
@@ -2661,6 +2671,12 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kNtpModulesFreVisible);
   profile_prefs->ClearPref(kNtpModulesShownCount);
 #endif
+
+  // Added 07/2024.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  profile_prefs->ClearPref(kAppDeduplicationServiceLastGetTimestamp);
+#endif
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
 

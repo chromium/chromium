@@ -15,7 +15,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/apps/app_deduplication_service/proto/deduplication_data.pb.h"
+#include "chrome/browser/apps/almanac_api_client/proto/client_context.pb.h"
 #include "chrome/common/chrome_paths.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,15 +25,14 @@ class ProtoFileManagerTest : public testing::Test {
  protected:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    temp_file_path_ = temp_dir_.GetPath().AppendASCII(
-        "app_deduplication_service/deduplication_data.pb");
-    manager_ = std::make_unique<ProtoFileManager<proto::DeduplicateData>>(
+    temp_file_path_ = temp_dir_.GetPath().AppendASCII("user_context.pb");
+    manager_ = std::make_unique<ProtoFileManager<proto::ClientUserContext>>(
         temp_file_path_);
   }
 
   void TearDown() override { ASSERT_TRUE(temp_dir_.Delete()); }
 
-  std::unique_ptr<ProtoFileManager<proto::DeduplicateData>> manager_;
+  std::unique_ptr<ProtoFileManager<proto::ClientUserContext>> manager_;
   base::FilePath temp_file_path_;
 
  private:
@@ -44,11 +43,10 @@ class ProtoFileManagerTest : public testing::Test {
 TEST_F(ProtoFileManagerTest, WriteAndReadDataSuccess) {
   EXPECT_FALSE(base::PathExists(temp_file_path_));
   {
-    proto::DeduplicateData data;
-    auto* group = data.add_app_group();
-    group->set_app_group_uuid("15ca3ac3-c8cd-4a0c-a195-2ea210ea922c");
-    *group->add_package_id() =
-        "web:https://keep.google.com/?usp=installed_webapp";
+    proto::ClientUserContext data;
+    data.set_language("en_US");
+    data.set_user_type(proto::ClientUserContext::USERTYPE_MANAGED);
+
     base::test::TestFuture<bool> write_result;
     manager_->WriteProtoToFile(data, write_result.GetCallback());
     EXPECT_TRUE(write_result.Get());
@@ -56,25 +54,21 @@ TEST_F(ProtoFileManagerTest, WriteAndReadDataSuccess) {
 
   ASSERT_TRUE(base::PathExists(temp_file_path_));
   {
-    base::test::TestFuture<std::optional<proto::DeduplicateData>> read_data;
+    base::test::TestFuture<std::optional<proto::ClientUserContext>> read_data;
     manager_->ReadProtoFromFile(read_data.GetCallback());
     ASSERT_TRUE(read_data.Get().has_value());
-    ASSERT_EQ(read_data.Get()->app_group_size(), 1);
-    auto read_group = read_data.Get()->app_group(0);
-    EXPECT_EQ(read_group.app_group_uuid(),
-              "15ca3ac3-c8cd-4a0c-a195-2ea210ea922c");
-    EXPECT_EQ(read_group.package_id(0),
-              "web:https://keep.google.com/?usp=installed_webapp");
+    ASSERT_EQ(read_data.Get()->language(), "en_US");
+    ASSERT_EQ(read_data.Get()->user_type(),
+              proto::ClientUserContext::USERTYPE_MANAGED);
   }
 
   // Check we can overwrite the data.
   EXPECT_TRUE(base::PathExists(temp_file_path_));
   {
-    proto::DeduplicateData data;
-    auto* group = data.add_app_group();
-    group->set_app_group_uuid("2ea210ea922c-15ca3ac3-c8cd-4a0c-a195");
-    *group->add_package_id() =
-        "web:https://keep.google.com/?usp=installed_webapp2";
+    proto::ClientUserContext data;
+    data.set_language("ja_JP");
+    data.set_user_type(proto::ClientUserContext::USERTYPE_UNMANAGED);
+
     base::test::TestFuture<bool> write_result;
     manager_->WriteProtoToFile(data, write_result.GetCallback());
     EXPECT_TRUE(write_result.Get());
@@ -82,15 +76,13 @@ TEST_F(ProtoFileManagerTest, WriteAndReadDataSuccess) {
 
   ASSERT_TRUE(base::PathExists(temp_file_path_));
   {
-    base::test::TestFuture<std::optional<proto::DeduplicateData>> read_data;
+    base::test::TestFuture<std::optional<proto::ClientUserContext>> read_data;
     manager_->ReadProtoFromFile(read_data.GetCallback());
     ASSERT_TRUE(read_data.Get().has_value());
-    ASSERT_EQ(read_data.Get()->app_group_size(), 1);
-    auto read_group = read_data.Get()->app_group(0);
-    EXPECT_EQ(read_group.app_group_uuid(),
-              "2ea210ea922c-15ca3ac3-c8cd-4a0c-a195");
-    EXPECT_EQ(read_group.package_id(0),
-              "web:https://keep.google.com/?usp=installed_webapp2");
+
+    ASSERT_EQ(read_data.Get()->language(), "ja_JP");
+    ASSERT_EQ(read_data.Get()->user_type(),
+              proto::ClientUserContext::USERTYPE_UNMANAGED);
   }
 }
 }  // namespace

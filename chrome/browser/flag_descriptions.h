@@ -83,9 +83,6 @@ extern const char kAnnotatorModeDescription[];
 extern const char kAriaElementReflectionName[];
 extern const char kAriaElementReflectionDescription[];
 
-extern const char kAppDeduplicationServiceFondueName[];
-extern const char kAppDeduplicationServiceFondueDescription[];
-
 extern const char kAuxiliarySearchDonationName[];
 extern const char kAuxiliarySearchDonationDescription[];
 

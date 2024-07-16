@@ -252,7 +252,6 @@ after discussions on the right group.
       <annotation id="network_diagnostics_stun"/>
       <annotation id="network_diagnostics_tls"/>
       <annotation id="chromeos_emoji_picker_posts_fetcher"/>
-      <annotation id="deduplication_service"/>
       <annotation id="webapk_minter_install_request"/>
       <annotation id="network_portal_detector"/>
       <annotation id="android_feedback_connectivity_checker"/>
