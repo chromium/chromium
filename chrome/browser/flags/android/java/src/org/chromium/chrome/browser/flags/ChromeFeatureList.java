@@ -690,7 +690,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTabStateFlatBuffer =
             newCachedFlag(TAB_STATE_FLAT_BUFFER, false);
     public static final CachedFlag sTabStripLayoutOptimization =
-            newCachedFlag(TAB_STRIP_LAYOUT_OPTIMIZATION, false);
+            newCachedFlag(TAB_STRIP_LAYOUT_OPTIMIZATION, true);
     public static final CachedFlag sTabStripStartupRefactoring =
             newCachedFlag(TAB_STRIP_STARTUP_REFACTORING, true);
     public static final CachedFlag sTabletToolbarReordering =

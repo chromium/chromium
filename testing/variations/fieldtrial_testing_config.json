@@ -403,22 +403,6 @@
             ]
         }
     ],
-    "AndroidDesktopWindowing": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DragDropTabTearing",
-                        "TabStripLayoutOptimization"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidHatsNext": [
         {
             "platforms": [

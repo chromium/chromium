@@ -687,7 +687,7 @@ BASE_FEATURE(kDragDropIntoOmnibox,
 
 BASE_FEATURE(kDragDropTabTearing,
              "DragDropTabTearing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDragDropTabTearingEnableOEM,
              "DragDropTabTearingEnableOEM",
@@ -953,7 +953,7 @@ BASE_FEATURE(kTabStripGroupIndicatorsAndroid,
 
 BASE_FEATURE(kTabStripLayoutOptimization,
              "TabStripLayoutOptimization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabStripStartupRefactoring,
              "TabStripStartupRefactoring",
