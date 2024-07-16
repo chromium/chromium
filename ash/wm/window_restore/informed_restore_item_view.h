@@ -57,6 +57,8 @@ class ASH_EXPORT InformedRestoreItemView : public views::BoxLayoutView {
   void UpdateTitle();
 
   const std::string app_id_;
+  const std::string default_title_;
+
   const size_t tab_count_;
 
   // True if this represents the browser window and its favicons inside the

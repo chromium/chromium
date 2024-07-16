@@ -4736,6 +4736,7 @@ test("ash_pixeltests") {
     "//chromeos/dbus/power:power",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/services/network_config/public/cpp:test_support",
+    "//components/app_constants:app_constants",
     "//components/feature_engagement/public",
     "//components/user_education/common",
     "//components/user_education/views",

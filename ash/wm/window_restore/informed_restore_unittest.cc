@@ -972,7 +972,7 @@ TEST_F(InformedRestoreAppIconTest, UpdateAfterSessionStarted) {
           GetContentsView()->GetViewByID(informed_restore::kItemViewID));
   ASSERT_TRUE(item_view);
   ASSERT_TRUE(item_view->title_label_view());
-  EXPECT_TRUE(item_view->title_label_view()->GetText().empty());
+  EXPECT_EQ(u"TEST_TITLE", item_view->title_label_view()->GetText());
 
   // Update the test delegate to return a valid icon the next time one is
   // requested.
@@ -994,7 +994,7 @@ TEST_F(InformedRestoreAppIconTest, UpdateAfterSessionStarted) {
   EXPECT_TRUE(gfx::test::AreImagesClose(gfx::Image(image_view->GetImage()),
                                         gfx::Image(test_icon),
                                         /*max_deviation=*/0));
-  EXPECT_EQ(item_view->title_label_view()->GetText(), u"UPDATED_TITLE");
+  EXPECT_EQ(u"UPDATED_TITLE", item_view->title_label_view()->GetText());
 }
 
 }  // namespace ash

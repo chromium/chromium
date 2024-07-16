@@ -42,6 +42,7 @@ InformedRestoreItemView::InformedRestoreItemView(
     const InformedRestoreContentsData::AppInfo& app_info,
     bool inside_screenshot)
     : app_id_(app_info.app_id),
+      default_title_(app_info.title),
       tab_count_(app_info.tab_count),
       inside_screenshot_(inside_screenshot) {
   SetBetweenChildSpacing(inside_screenshot_
@@ -235,7 +236,7 @@ void InformedRestoreItemView::UpdateTitle() {
   // accurate, but the app might not be installed yet. Browsers are always
   // installed and `title` will be the active tab title fetched from session
   // restore. `cache` might be null in a test environment.
-  std::string title;
+  std::string title = default_title_;
   if (cache && (title.empty() || !IsBrowserAppId(app_id_))) {
     cache->ForOneApp(app_id_, [&title](const apps::AppUpdate& update) {
       title = update.Name();
