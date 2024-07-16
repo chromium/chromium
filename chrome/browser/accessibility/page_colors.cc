@@ -12,6 +12,11 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "ui/native_theme/native_theme.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "ui/linux/linux_ui.h"
+#include "ui/linux/linux_ui_factory.h"
+#endif  // BUILDFLAG(IS_LINUX)
+
 PageColors::PageColors(PrefService* profile_prefs)
     : profile_prefs_(profile_prefs) {
   theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
@@ -50,6 +55,15 @@ void PageColors::Init() {
 
 void PageColors::OnPageColorsChanged() {
   auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+#if BUILDFLAG(IS_LINUX)
+  // Allow the Linux native theme to update its state for page colors.
+  if (auto* linux_ui_theme = ui::GetDefaultLinuxUiTheme()) {
+    if (auto* linux_native_theme = linux_ui_theme->GetNativeTheme()) {
+      native_theme = linux_native_theme;
+    }
+  }
+#endif  // BUILDFLAG(IS_LINUX)
+
   ui::NativeTheme::PageColors previous_page_colors =
       native_theme->GetPageColors();
   ui::NativeTheme::PageColors current_page_colors = CalculatePageColors();

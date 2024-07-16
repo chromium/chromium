@@ -512,6 +512,12 @@ class NATIVE_THEME_EXPORT NativeTheme {
 
   virtual ColorScheme GetDefaultSystemColorScheme() const;
 
+  // Updates contrast-related theme states such as `forced_colors_`,
+  // `page_colors_`, `preferred_contrast_` and `prefers_reduced_transparency_`
+  // based on the `observed_theme`. Returns true if there's an update to any of
+  // these states.
+  bool UpdateContrastRelatedStates(const NativeTheme& observed_theme);
+
   virtual const std::map<SystemThemeColor, SkColor>& GetSystemColors() const;
 
   std::optional<SkColor> GetSystemThemeColor(
