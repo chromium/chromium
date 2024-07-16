@@ -1027,6 +1027,11 @@ void OverviewItem::OnWindowBoundsChanged(aura::Window* window,
 }
 
 void OverviewItem::OnWindowStackingChanged(aura::Window* window) {
+  if (overview_session_ && overview_session_->is_shutting_down()) {
+    return;
+  }
+
+  CHECK(item_widget_);
   auto* parent_window = window->parent();
   auto* item_widget_window = item_widget_->GetNativeWindow();
 
