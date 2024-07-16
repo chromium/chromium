@@ -8,6 +8,15 @@
 
 namespace autofill::features {
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
+// When enabled, Chrome will extract the checkout amount from the checkout page
+// of the allowlisted merchant websites.
+BASE_FEATURE(kAutofillEnableAmountExtractionDesktop,
+             "AutofillEnableAmountExtractionDesktop",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // When enabled, Android N+ devices will be supported for FIDO authentication.
 BASE_FEATURE(kAutofillEnableAndroidNKeyForFidoAuthentication,
              "AutofillEnableAndroidNKeyForFidoAuthentication",

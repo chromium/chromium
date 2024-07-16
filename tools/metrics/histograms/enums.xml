@@ -17536,6 +17536,8 @@ from previous Chrome versions.
   <int value="-1384426209" label="SharingDeviceRegistration:disabled"/>
   <int value="-1383674566" label="EnableProtoApiForClassifyUrl:enabled"/>
   <int value="-1383597259" label="SyncUserConsentSeparateType:disabled"/>
+  <int value="-1383540772"
+      label="AutofillEnableAmountExtractionDesktop:enabled"/>
   <int value="-1383524717" label="BackdropFilterMirrorEdgeMode:disabled"/>
   <int value="-1383226125" label="Cr2023MacFontSmoothing:enabled"/>
   <int value="-1383145700"
@@ -19272,6 +19274,8 @@ from previous Chrome versions.
   <int value="-638007872" label="OfflineContentOnNetError:enabled"/>
   <int value="-637297943" label="WebAuthenticationCableSecondFactor:disabled"/>
   <int value="-637215276" label="QuickAnswersOnEditableText:enabled"/>
+  <int value="-636701420"
+      label="AutofillEnableAmountExtractionDesktop:disabled"/>
   <int value="-636062300" label="BlinkExtensionDiagnostics:disabled"/>
   <int value="-634865673" label="ThemeRefactorAndroid:enabled"/>
   <int value="-634122679" label="GoogleBrandedContextMenu:enabled"/>
