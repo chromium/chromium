@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 
@@ -287,13 +288,16 @@ public class PageStation extends Station {
     /** Opens the hub by pressing the toolbar tab switcher button. */
     public <T extends HubBaseStation> T openHub(Class<T> expectedDestination) {
         recheckActiveConditions();
-
+        TabModelSelector tabModelSelector = getActivity().getTabModelSelector();
+        boolean incognitoTabsExist =
+                tabModelSelector.getModel(/* incognito= */ true).getCount() > 0;
+        boolean regularTabsExist = tabModelSelector.getModel(/* incognito= */ false).getCount() > 0;
         T destination =
                 expectedDestination.cast(
                         HubStationUtils.createHubStation(
-                                isIncognito()
-                                        ? PaneId.INCOGNITO_TAB_SWITCHER
-                                        : PaneId.TAB_SWITCHER));
+                                isIncognito() ? PaneId.INCOGNITO_TAB_SWITCHER : PaneId.TAB_SWITCHER,
+                                regularTabsExist,
+                                incognitoTabsExist));
 
         return travelToSync(destination, () -> TAB_SWITCHER_BUTTON.perform(click()));
     }

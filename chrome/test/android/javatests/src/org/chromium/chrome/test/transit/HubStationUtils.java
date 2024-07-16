@@ -38,12 +38,13 @@ public class HubStationUtils {
      * @param paneId The pane to create the station for.
      * @return corresponding {@link HubBaseStation} subclass.
      */
-    public static HubBaseStation createHubStation(@PaneId int paneId) {
+    public static HubBaseStation createHubStation(
+            @PaneId int paneId, boolean regularTabsExist, boolean incognitoTabsExist) {
         switch (paneId) {
             case PaneId.TAB_SWITCHER:
-                return new HubTabSwitcherStation();
+                return new HubTabSwitcherStation(regularTabsExist, incognitoTabsExist);
             case PaneId.INCOGNITO_TAB_SWITCHER:
-                return new HubIncognitoTabSwitcherStation();
+                return new HubIncognitoTabSwitcherStation(regularTabsExist, incognitoTabsExist);
             default:
                 throw new IllegalArgumentException("No hub station is available for " + paneId);
         }

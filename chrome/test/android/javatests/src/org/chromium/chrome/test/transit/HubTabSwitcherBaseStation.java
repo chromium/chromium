@@ -21,6 +21,8 @@ import android.view.View;
 import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.Elements;
+import org.chromium.base.test.transit.Transition;
+import org.chromium.base.test.transit.Transition.TransitionOptions;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.ViewActionOnDescendant;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
@@ -69,8 +71,9 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
 
     private final boolean mIsIncognito;
 
-    public HubTabSwitcherBaseStation(boolean isIncognito) {
-        super();
+    public HubTabSwitcherBaseStation(
+            boolean isIncognito, boolean regularTabsExist, boolean incognitoTabsExist) {
+        super(regularTabsExist, incognitoTabsExist);
         mIsIncognito = isIncognito;
     }
 
@@ -129,16 +132,22 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
     public <T extends HubTabSwitcherBaseStation> T closeTabAtIndex(
             int index, Class<T> expectedDestination) {
         TabModelSelector tabModelSelector = getActivity().getTabModelSelector();
+        boolean incognitoModelSelected = tabModelSelector.isOffTheRecordModelSelected();
+        int expectedIncognitoTabs = tabModelSelector.getModel(/* incognito= */ true).getCount();
+        int expectedRegularTabs = tabModelSelector.getModel(/* incognito= */ false).getCount();
 
         // By default stay in the same tab switcher state, unless closing the last incognito tab.
         boolean landInIncognitoSwitcher = false;
         if (getPaneId() == PaneId.INCOGNITO_TAB_SWITCHER) {
-            assertTrue(tabModelSelector.isIncognitoSelected());
+            assertTrue(incognitoModelSelected);
+            expectedIncognitoTabs--;
             if (tabModelSelector.getCurrentModel().getCount() <= 1) {
                 landInIncognitoSwitcher = false;
             } else {
                 landInIncognitoSwitcher = true;
             }
+        } else {
+            expectedRegularTabs--;
         }
 
         T tabSwitcher =
@@ -146,10 +155,19 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
                         HubStationUtils.createHubStation(
                                 landInIncognitoSwitcher
                                         ? PaneId.INCOGNITO_TAB_SWITCHER
-                                        : PaneId.TAB_SWITCHER));
-
+                                        : PaneId.TAB_SWITCHER,
+                                expectedRegularTabs > 0,
+                                expectedIncognitoTabs > 0));
+        TransitionOptions transitionOptions =
+                Transition.newOptions()
+                        .withCondition(
+                                new TabCountChangedCondition(
+                                        tabModelSelector.getModel(incognitoModelSelected),
+                                        /* expectedChange= */ -1))
+                        .build();
         return travelToSync(
                 tabSwitcher,
+                transitionOptions,
                 () -> {
                     ViewActionOnDescendant.performOnRecyclerViewNthItemDescendant(
                             TAB_LIST_RECYCLER_VIEW.getViewMatcher(),

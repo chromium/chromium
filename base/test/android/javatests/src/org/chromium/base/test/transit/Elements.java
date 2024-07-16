@@ -116,18 +116,6 @@ public class Elements {
             return condition;
         }
 
-        /**
-         * Conditional version of {@link #declareView(ViewElement)}.
-         *
-         * <p>The element is only expected if |gate| returns true.
-         */
-        public ViewElementInState declareViewIf(ViewElement viewElement, Condition gate) {
-            assertNotBuilt();
-            ViewElementInState inState = new ViewElementInState(viewElement, gate);
-            mElementsInState.add(inState);
-            return inState;
-        }
-
         /** Declare as a Condition that a View is not displayed. */
         public void declareNoView(Matcher<View> viewMatcher) {
             assertNotBuilt();

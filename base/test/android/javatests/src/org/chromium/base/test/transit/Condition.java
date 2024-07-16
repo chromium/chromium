@@ -76,7 +76,9 @@ public abstract class Condition {
     @CallSuper
     public void onStopMonitoring() {
         assert mHasStartedMonitoringForTesting
-                : getDescription() + ": onStartMonitoring was not called before onStopMonitoring";
+                : getDescription()
+                        + ": onStartMonitoring was not called before onStopMonitoring (did you"
+                        + " forget to call super.onStartMonitoring()?)";
         assert !mHasStoppedMonitoringForTesting
                 : getDescription() + ": onStopMonitoring should only be called once";
         mHasStoppedMonitoringForTesting = true;

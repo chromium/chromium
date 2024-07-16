@@ -53,18 +53,22 @@ public abstract class HubBaseStation extends Station {
 
     public static final ViewElement REGULAR_TOGGLE_TAB_BUTTON =
             scopedViewElement(
-                    allOf(
-                            withContentDescription(
-                                    R.string.accessibility_tab_switcher_standard_stack)));
+                    withContentDescription(R.string.accessibility_tab_switcher_standard_stack));
 
     public static final ViewElement INCOGNITO_TOGGLE_TAB_BUTTON =
             scopedViewElement(
-                    allOf(
-                            withContentDescription(
-                                    R.string.accessibility_tab_switcher_incognito_stack)));
+                    withContentDescription(R.string.accessibility_tab_switcher_incognito_stack));
 
     protected Supplier<ChromeTabbedActivity> mActivitySupplier;
     protected Supplier<TabModelSelector> mTabModelSelectorSupplier;
+    protected final boolean mIncognitoTabsExist;
+    protected final boolean mRegularTabsExist;
+
+    public HubBaseStation(boolean regularTabsExist, boolean incognitoTabsExist) {
+        super();
+        mRegularTabsExist = regularTabsExist;
+        mIncognitoTabsExist = incognitoTabsExist;
+    }
 
     /** Returns the station's {@link PaneId}. */
     public abstract @PaneId int getPaneId();
@@ -79,10 +83,10 @@ public abstract class HubBaseStation extends Station {
         elements.declareView(HUB_PANE_HOST);
         elements.declareView(HUB_MENU_BUTTON);
 
-        Condition incognitoTabsExist =
-                TabModelConditions.anyIncognitoTabsExist(mTabModelSelectorSupplier);
-        elements.declareViewIf(REGULAR_TOGGLE_TAB_BUTTON, incognitoTabsExist);
-        elements.declareViewIf(INCOGNITO_TOGGLE_TAB_BUTTON, incognitoTabsExist);
+        if (mIncognitoTabsExist) {
+            elements.declareView(REGULAR_TOGGLE_TAB_BUTTON);
+            elements.declareView(INCOGNITO_TOGGLE_TAB_BUTTON);
+        }
 
         elements.declareLogicalElement(
                 uiThreadLogicalElement(
@@ -130,7 +134,10 @@ public abstract class HubBaseStation extends Station {
             return expectedDestination.cast(this);
         }
 
-        T destinationStation = expectedDestination.cast(HubStationUtils.createHubStation(paneId));
+        T destinationStation =
+                expectedDestination.cast(
+                        HubStationUtils.createHubStation(
+                                paneId, mRegularTabsExist, mIncognitoTabsExist));
 
         try {
             HUB_PANE_SWITCHER.onView().check(matches(isDisplayed()));

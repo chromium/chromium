@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.test.transit;
 
+import static androidx.test.espresso.matcher.ViewMatchers.isSelected;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.hamcrest.CoreMatchers.allOf;
 
 import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
 
@@ -17,9 +20,11 @@ import org.chromium.chrome.test.R;
 public class HubTabSwitcherStation extends HubTabSwitcherBaseStation {
     public static final ViewElement EMPTY_STATE_TEXT =
             scopedViewElement(withText(R.string.tabswitcher_no_tabs_empty_state));
+    public static final ViewElement SELECTED_REGULAR_TOGGLE_TAB_BUTTON =
+            scopedViewElement(allOf(REGULAR_TOGGLE_TAB_BUTTON.getViewMatcher(), isSelected()));
 
-    public HubTabSwitcherStation() {
-        super(/* isIncognito= */ false);
+    public HubTabSwitcherStation(boolean regularTabsExist, boolean incognitoTabsExist) {
+        super(/* isIncognito= */ false, regularTabsExist, incognitoTabsExist);
     }
 
     @Override
@@ -30,8 +35,11 @@ public class HubTabSwitcherStation extends HubTabSwitcherBaseStation {
     @Override
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
-
-        elements.declareViewIf(
-                EMPTY_STATE_TEXT, TabModelConditions.noRegularTabsExist(mTabModelSelectorSupplier));
+        if (mIncognitoTabsExist) {
+            elements.declareView(SELECTED_REGULAR_TOGGLE_TAB_BUTTON);
+        }
+        if (!mRegularTabsExist) {
+            elements.declareView(EMPTY_STATE_TEXT);
+        }
     }
 }

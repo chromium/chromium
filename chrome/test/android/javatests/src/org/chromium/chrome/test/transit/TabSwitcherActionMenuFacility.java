@@ -56,12 +56,17 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
     public <T extends Station> T selectCloseTab(Class<T> expectedDestination) {
         T destination;
         TabModelSelector tabModelSelector = mHostStation.getActivity().getTabModelSelector();
+        int incognitoTabCount = tabModelSelector.getModel(/* incognito= */ true).getCount();
+        int regularTabCount = tabModelSelector.getModel(/* incognito= */ false).getCount();
         if (tabModelSelector.getCurrentModel().getCount() <= 1) {
             if (tabModelSelector.isIncognitoSelected()) {
                 // No tabs left, so closing the last will either take us to a normal tab, or the tab
                 // switcher if no normal tabs exist.
                 if (tabModelSelector.getModel(/* incognito= */ false).getCount() == 0) {
-                    destination = expectedDestination.cast(new HubTabSwitcherStation());
+                    destination =
+                            expectedDestination.cast(
+                                    new HubTabSwitcherStation(
+                                            regularTabCount > 0, /* incognitoTabsExist= */ false));
                 } else {
                     destination =
                             expectedDestination.cast(
@@ -73,7 +78,10 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
                 }
             } else {
                 // No tabs left, so closing the last will take us to the tab switcher.
-                destination = expectedDestination.cast(new HubTabSwitcherStation());
+                destination =
+                        expectedDestination.cast(
+                                new HubTabSwitcherStation(
+                                        /* regularTabsExist= */ false, incognitoTabCount > 0));
             }
         } else {
             // Another tab will be displayed.
