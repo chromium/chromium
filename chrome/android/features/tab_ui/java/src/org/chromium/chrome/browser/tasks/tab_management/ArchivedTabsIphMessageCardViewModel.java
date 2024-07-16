@@ -45,7 +45,8 @@ public class ArchivedTabsIphMessageCardViewModel {
                         MessageCardViewProperties.ICON_PROVIDER,
                         (callback) -> {
                             callback.onResult(
-                                    AppCompatResources.getDrawable(context, R.drawable.sleep_auto));
+                                    AppCompatResources.getDrawable(
+                                            context, R.drawable.archived_tab_icon));
                         })
                 .with(
                         MessageCardViewProperties.MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER,
