@@ -1,16 +1,15 @@
 # AVD config files
-This directory contains textpb files used as AVD config files by the script
-`tools/android/avd/avd.py`
-1. textpb files under `./creation` are for `avd.py create`.
-2. The ones **directly** under this directory are for `avd.py install`
-and `avd.py start`.
+This directory contains textpb files used as AVD config files by the scripts
+like `tools/android/avd/avd.py` and `build/android/test_runner.py`
+1. Creation config files under `./proto_creation`.
+1. Production config files under `./proto`.
 
 ## Naming scheme
 As more image types (`google_apis`, `google_atd`, etc.) and cpu architectures
 (`x86`, `x86_64`, etc.) are added, the following naming scheme is suggested to
 use when adding new config files:
 ```
-android_<API level>_<image type>_<cpu arch>.textpb
+android_<API level>_<image type>_<cpu arch>[_<other info>].textpb
 ```
 
 For simplicity, we do the following convention for the cpu architectures, from
@@ -23,7 +22,10 @@ the values in android sdk manager to those in the config file names.
 So for a new config that uses API level 31, image type "google_apis", cpu arch
 "x86_64", the file name would be `android_31_google_apis_x64.textpb`
 
-## Config files for `avd.py create`
+For another example, a foldable AVD with landscape view can have the file name
+`android_32_google_apis_x64_foldable_landscape.textpb`
+
+## Creation config files
 These files are normally used only by the builder
 [android-avd-packager](https://ci.chromium.org/p/chromium/builders/ci/android-avd-packager).
 It is not expected for end users to use them.
@@ -43,8 +45,8 @@ takes 3+ hours, the following steps can be used to package only certain configs.
   {
       "$build/avd_packager": {
           "avd_configs": [
-              "tools/android/avd/proto/creation/android_30_google_atd_x86.textpb",
-              "tools/android/avd/proto/creation/android_30_google_atd_x64.textpb"
+              "tools/android/avd/proto_creation/android_30_google_atd_x86.textpb",
+              "tools/android/avd/proto_creation/android_30_google_atd_x64.textpb"
           ],
           "gclient_config": "chromium",
           "gclient_apply_config": ["android"]
@@ -60,7 +62,11 @@ takes 3+ hours, the following steps can be used to package only certain configs.
 [depot_tools_link]: https://chromium.googlesource.com/chromium/tools/depot_tools/+/HEAD/README.md
 [packager_properties_example]: https://source.chromium.org/chromium/chromium/src/+/main:infra/config/subprojects/chromium/ci/chromium.infra.star;drc=59cbaef70288b956b446139de6c5bc2030bbb277;l=123-157
 
-## Config files for `avd.py install` and `avd.py start`
+## Production config files
+
+These files can use by `./avd.py start` and `./avd.py install`, as well as the
+android test runner `build/android/test_runner.py`, via the flag `--avd-config`.
+
 When updating these files, please make sure the versions of emulator
 and system image are the **same** as the tag values in the to-be-updated
 AVD CIPD package. Failure to do so will cause the AVD
