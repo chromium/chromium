@@ -936,7 +936,7 @@ external/wpt/largest-contentful-paint/animated/observe-non-animated-image.tentat
 external/wpt/largest-contentful-paint/observe-svg-background-image.html
 external/wpt/layout-instability/transform-above-filter-dynamic.html
 external/wpt/lifecycle/freeze.html
-external/wpt/loading/preloader-css-import-no-semicolon.tentative.html
+external/wpt/loading/preloader-css-import-no-semicolon.html
 external/wpt/longtask-timing/longtask-in-childiframe.html
 external/wpt/longtask-timing/shared-renderer/longtask-in-new-window.html
 external/wpt/magnetometer/Magnetometer-enabled-by-feature-policy-attribute-redirect-on-load.https.html
