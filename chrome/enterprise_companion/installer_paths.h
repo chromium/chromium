@@ -20,6 +20,12 @@ extern const char kExecutableName[];
 // the architecture of the program image.
 std::optional<base::FilePath> GetInstallDirectory();
 
+// Searches the system for an existing installation of the app. On Windows, it
+// is possible that 32 and 64-bit installations exist. In such cases, the latter
+// is returned. Returns a path to the installed application binary, if one
+// exists.
+std::optional<base::FilePath> FindExistingInstall();
+
 }  // namespace enterprise_companion
 
 #endif  // CHROME_ENTERPRISE_COMPANION_INSTALLER_PATHS_H_

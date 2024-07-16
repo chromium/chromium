@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
 
 namespace enterprise_companion {
@@ -17,6 +18,15 @@ std::optional<base::FilePath> GetInstallDirectory() {
   return base::FilePath("/opt/")
       .AppendASCII(COMPANY_SHORTNAME_STRING)
       .AppendASCII(PRODUCT_FULLNAME_STRING);
+}
+
+std::optional<base::FilePath> FindExistingInstall() {
+  std::optional<base::FilePath> path = GetInstallDirectory();
+  if (!path) {
+    return std::nullopt;
+  }
+  path = path->AppendASCII(kExecutableName);
+  return base::PathExists(*path) ? path : std::nullopt;
 }
 
 }  // namespace enterprise_companion

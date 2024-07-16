@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -23,6 +24,7 @@
 #include "base/test/test_file_util.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/default_clock.h"
 #include "base/unguessable_token.h"
 #include "chrome/enterprise_companion/enterprise_companion_client.h"
 #include "chrome/enterprise_companion/enterprise_companion_service.h"
@@ -32,6 +34,7 @@
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server_client_util.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
@@ -45,6 +48,9 @@ namespace enterprise_companion {
 namespace {
 
 constexpr char kServerNameFlag[] = "server-name";
+
+// Exit code emitted by the multi-process test client if an IPC call is dropped.
+constexpr int32_t kClientCallbackDroppedExitCode = 42;
 
 class MockEnterpriseCompanionService final : public EnterpriseCompanionService {
  public:
@@ -81,7 +87,7 @@ class EnterpriseCompanionServiceStubTest : public ::testing::Test {
 
   // Waits for a process to exit or appear stuck. The process exit code is
   // returned if exited.
-  int WaitForProcess(base::Process& process, bool should_exit) {
+  int WaitForProcess(base::Process& process) {
     int exit_code = 0;
     bool process_exited = false;
     base::RunLoop wait_for_process_exit_loop;
@@ -94,7 +100,7 @@ class EnterpriseCompanionServiceStubTest : public ::testing::Test {
         wait_for_process_exit_loop.QuitClosure());
     wait_for_process_exit_loop.Run();
     process.Close();
-    EXPECT_EQ(process_exited, should_exit);
+    EXPECT_TRUE(process_exited);
     return exit_code;
   }
 
@@ -143,7 +149,7 @@ TEST_F(EnterpriseCompanionServiceStubTest, ServiceReachable) {
   start_run_loop.Run(FROM_HERE);
 
   base::Process child_process = SpawnClient();
-  EXPECT_EQ(WaitForProcess(child_process, /*should_exit=*/true), 0);
+  EXPECT_EQ(WaitForProcess(child_process), 0);
 }
 
 TEST_F(EnterpriseCompanionServiceStubTest, UntrustedCallerRejected) {
@@ -159,7 +165,7 @@ TEST_F(EnterpriseCompanionServiceStubTest, UntrustedCallerRejected) {
   start_run_loop.Run(FROM_HERE);
 
   base::Process child_process = SpawnClient();
-  WaitForProcess(child_process, /*should_exit=*/false);
+  EXPECT_EQ(WaitForProcess(child_process), kClientCallbackDroppedExitCode);
 }
 
 // A test client which connects to the NamedMojoIpcServer, calls the Shutdown
@@ -169,27 +175,41 @@ MULTIPROCESS_TEST_MAIN(EnterpriseCompanionClient) {
       base::test::TaskEnvironment::MainThreadType::IO};
   ScopedIPCSupportWrapper ipc_support;
 
-  std::unique_ptr<mojo::IsolatedConnection> connection =
-      std::make_unique<mojo::IsolatedConnection>();
-  mojo::PlatformChannelEndpoint endpoint =
-      named_mojo_ipc_server::ConnectToServer(
-          base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
-              kServerNameFlag));
-  if (!endpoint.is_valid()) {
-    LOG(ERROR) << "Cannot connect to server: invalid endpoint.";
-    return 1;
-  }
-  mojo::Remote<mojom::EnterpriseCompanion> remote(
-      mojo::PendingRemote<mojom::EnterpriseCompanion>(
-          connection->Connect(std::move(endpoint)), /*version=*/0));
+  std::unique_ptr<mojo::IsolatedConnection> connection;
+  mojo::Remote<mojom::EnterpriseCompanion> remote;
+  base::RunLoop connect_run_loop;
+  ConnectToServer(
+      base::DefaultClock::GetInstance(), TestTimeouts::action_timeout(),
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<mojo::IsolatedConnection> in_connection,
+              mojo::Remote<mojom::EnterpriseCompanion> in_remote) {
+            connection = std::move(in_connection);
+            remote = std::move(in_remote);
+          })
+          .Then(connect_run_loop.QuitClosure()),
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
+          kServerNameFlag));
+  connect_run_loop.Run();
 
-  base::RunLoop wait_for_response_run_loop;
+  if (!connection || !remote) {
+    LOG(ERROR) << "Failed to connect to remote";
+    return -1;
+  }
+
   int32_t result_code = -1;
+  base::RunLoop wait_for_response_run_loop;
   remote->Shutdown(
-      base::BindLambdaForTesting([&result_code](mojom::StatusPtr status) {
-        result_code = static_cast<int>(status->code);
-      }).Then(wait_for_response_run_loop.QuitClosure()));
-  wait_for_response_run_loop.Run(FROM_HERE);
+      base::BindOnce(
+          [](int32_t* out_result_code, mojom::StatusPtr status) {
+            *out_result_code = status->code;
+          },
+          &result_code)
+          .Then(mojo::WrapCallbackWithDropHandler(
+              mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                  base::BindOnce(wait_for_response_run_loop.QuitClosure())),
+              base::BindLambdaForTesting(
+                  [&]() { result_code = kClientCallbackDroppedExitCode; }))));
+  wait_for_response_run_loop.Run();
 
   return result_code;
 }

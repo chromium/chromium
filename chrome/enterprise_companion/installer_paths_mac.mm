@@ -10,6 +10,7 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
 
@@ -26,6 +27,15 @@ std::optional<base::FilePath> GetInstallDirectory() {
   }
   return application_support_path.AppendASCII(COMPANY_SHORTNAME_STRING)
       .AppendASCII(PRODUCT_FULLNAME_STRING);
+}
+
+std::optional<base::FilePath> FindExistingInstall() {
+  std::optional<base::FilePath> path = GetInstallDirectory();
+  if (!path) {
+    return std::nullopt;
+  }
+  path = path->AppendASCII(kExecutableName);
+  return base::PathExists(*path) ? path : std::nullopt;
 }
 
 }  // namespace enterprise_companion

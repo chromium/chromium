@@ -143,8 +143,11 @@ static_library("client") {
   ]
   deps = [
     ":branding_header",
+    ":installer_paths",
+    "//components/named_mojo_ipc_server",
     "//mojo/public/cpp/platform",
   ]
+  public_deps = [ "mojom/" ]
 }
 
 static_library("installer_paths") {
