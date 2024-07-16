@@ -414,15 +414,15 @@ chromium-metrics-reviews@google.com.
   <owner>freedjm@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
-    Android: The position of the For-You card on the NTP, that is clicked
-    through to the host website of the content. We track the position the card
-    had in the list when it was first seen by the user. This tracked position
-    can be different from the position observed by the user, e.g. when the user
-    dismissed some suggestions from the list or requested more that got inserted
-    in the middle of the feed.
+    Android / iOS (M128+): The position of the For-You card on the NTP, that is
+    clicked through to the host website of the content. We track the position
+    the card had in the list when it was first seen by the user. This tracked
+    position can be different from the position observed by the user, e.g. when
+    the user dismissed some suggestions from the list or requested more that got
+    inserted in the middle of the feed.
 
-    iOS: Reported per click on card in the feed. Does not include position
-    information and thus can only be used as a total count of clicks.
+    iOS (Pre M128): Reported per click on card in the feed. Does not include
+    position information and thus can only be used as a total count of clicks.
   </summary>
 </histogram>
 
