@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/svg/svg_text_layout_algorithm.h"
 
 #include <algorithm>
@@ -129,11 +124,9 @@ void SvgTextLayoutAlgorithm::SetFlags(
     }
   }
   if (inline_node_.IsBidiEnabled()) {
-    std::sort(sorted_item_indexes.data(),
-              sorted_item_indexes.data() + sorted_item_indexes.size(),
-              [&](wtf_size_t a, wtf_size_t b) {
-                return items[a]->StartOffset() < items[b]->StartOffset();
-              });
+    base::ranges::sort(sorted_item_indexes, [&](wtf_size_t a, wtf_size_t b) {
+      return items[a]->StartOffset() < items[b]->StartOffset();
+    });
   }
 
   bool found_first_character = false;
@@ -332,10 +325,10 @@ void SvgTextLayoutAlgorithm::ResolveTextLength(
     // 2.4.2. Find n, the total number of typographic characters in this node
     // including any descendant nodes that are not resolved descendant nodes or
     // within a resolved descendant node.
-    auto n = std::count_if(result_.begin() + i, result_.begin() + j_plus_1,
-                           [](const auto& info) {
-                             return !info.middle && !info.text_length_resolved;
-                           });
+    auto n = base::ranges::count_if(
+        base::span(result_).subspan(i, j_plus_1 - i), [](const auto& info) {
+          return !info.middle && !info.text_length_resolved;
+        });
     // 2.4.3. Let n = n + number of resolved descendant nodes − 1.
     n += base::ranges::count_if(resolved_descendant_node_starts,
                                 [i, j_plus_1](const auto& start_index) {
@@ -495,11 +488,13 @@ void SvgTextLayoutAlgorithm::ApplyAnchoring(
   //  * j = count − 1 or the "anchored chunk" flag of result[j + 1] is true;
   wtf_size_t i = 0;
   while (i < result_.size()) {
-    auto* next_anchor =
-        std::find_if(result_.begin() + i + 1, result_.end(),
-                     [](const auto& info) { return info.anchored_chunk; });
-    wtf_size_t j = static_cast<wtf_size_t>(
-        std::distance(result_.begin(), next_anchor) - 1);
+    const wtf_size_t start_index = i + 1;
+    auto result_range = base::span(result_).subspan(start_index);
+    auto next_anchor = base::ranges::find_if(
+        result_range, [](const auto& info) { return info.anchored_chunk; });
+    wtf_size_t j =
+        start_index + static_cast<wtf_size_t>(
+                          std::distance(result_range.begin(), next_anchor) - 1);
 
     const auto& text_path_ranges = inline_node_.SvgTextPathRangeList();
     const auto* text_path_iter =
@@ -745,13 +740,12 @@ void SvgTextLayoutAlgorithm::PositionOnPath(
         } else {
           // The 'current text position' should be at the next to the last
           // drawn character.
-          const auto rbegin =
-              std::make_reverse_iterator(result_.begin() + index);
-          const auto rend = std::make_reverse_iterator(result_.begin());
-          const auto iter = std::find_if(rbegin, rend, [](const auto& info) {
-            return !info.hidden && !info.middle;
-          });
-          if (iter != rend) {
+          auto result_range = base::span(result_).subspan(index);
+          auto reverse_result_range = base::Reversed(result_range);
+          const auto iter = base::ranges::find_if(
+              reverse_result_range,
+              [](const auto& info) { return !info.hidden && !info.middle; });
+          if (iter != reverse_result_range.end()) {
             if (horizontal_) {
               path_end_x = *iter->x + iter->inline_size;
               path_end_y = *iter->y;
@@ -846,9 +840,9 @@ PhysicalSize SvgTextLayoutAlgorithm::WriteBackToFragmentItems(
         PhysicalRect(gfx::ToEnclosingRect(unscaled_visual_rect)));
   }
   // |items| should not have kLine items other than the first one.
-  DCHECK_EQ(base::ranges::find(items.begin() + 1, items.end(),
-                               FragmentItem::kLine, &FragmentItem::Type),
-            items.end());
+  DCHECK(base::ranges::find(base::span(items).subspan(1u), FragmentItem::kLine,
+                            &FragmentItem::Type) ==
+         base::span(items).subspan(1u).end());
   return {LayoutUnit(unscaled_visual_rect.right()),
           LayoutUnit(unscaled_visual_rect.bottom())};
 }

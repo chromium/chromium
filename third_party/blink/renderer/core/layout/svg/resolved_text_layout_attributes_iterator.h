@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_RESOLVED_TEXT_LAYOUT_ATTRIBUTES_ITERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_RESOLVED_TEXT_LAYOUT_ATTRIBUTES_ITERATOR_H_
 
@@ -55,11 +50,13 @@ class ResolvedTextLayoutAttributesIterator final {
     if (addressable_index == resolved_[index_].first) {
       return resolved_[index_].second;
     }
-    auto* it = std::find_if(resolved_.begin() + index_, resolved_.end(),
-                            [addressable_index](const auto& pair) {
-                              return addressable_index <= pair.first;
-                            });
-    index_ = static_cast<wtf_size_t>(std::distance(resolved_.begin(), it));
+    auto resolved_range = base::span(resolved_).subspan(index_);
+    auto it = base::ranges::find_if(resolved_range,
+                                    [addressable_index](const auto& pair) {
+                                      return addressable_index <= pair.first;
+                                    });
+    index_ +=
+        static_cast<wtf_size_t>(std::distance(resolved_range.begin(), it));
     return AdvanceTo(addressable_index);
   }
 
