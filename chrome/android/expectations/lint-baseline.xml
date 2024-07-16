@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.6.0-alpha08" type="baseline" client="" dependencies="true" name="" variant="all" version="8.6.0-alpha08">
+<issues format="6" by="lint 8.7.0-alpha01" type="baseline" client="" dependencies="true" name="" variant="all" version="8.7.0-alpha01">
 
     <issue
         id="WrongCommentType"
@@ -250,7 +250,7 @@
         errorLine2="                                          ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/NewTabPage.java"
-            line="1269"
+            line="1258"
             column="43"/>
     </issue>
 
@@ -312,17 +312,6 @@
     <issue
         id="WrongCommentType"
         message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * {@link StartSurfaceState#SHOWN_HOMEPAGE} when the refactoring is disabled."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/StartSurface.java"
-            line="112"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="    /* Destroy and clean up {@link DragStateTracker} to the content view. */"
         errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -338,7 +327,7 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content_public/browser/WebContents.java"
-            line="121"
+            line="119"
             column="27"/>
     </issue>
 
@@ -382,7 +371,7 @@
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/password_manager/AccountChooserDialog.java"
-            line="285"
+            line="283"
             column="17"/>
     </issue>
 
@@ -404,7 +393,7 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tab/TabUtils.java"
-            line="99"
+            line="101"
             column="27"/>
     </issue>
 
@@ -844,7 +833,7 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/media/FullscreenVideoPictureInPictureController.java"
-            line="469"
+            line="484"
             column="27"/>
     </issue>
 
@@ -855,7 +844,7 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/media/FullscreenVideoPictureInPictureController.java"
-            line="471"
+            line="486"
             column="27"/>
     </issue>
 
@@ -1009,7 +998,7 @@
         errorLine2="                                                                       ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/init/ProcessInitializationHandler.java"
-            line="532"
+            line="533"
             column="72"/>
     </issue>
 
@@ -1020,7 +1009,7 @@
         errorLine2="                                                      ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="563"
+            line="559"
             column="55"/>
     </issue>
 
@@ -1031,7 +1020,7 @@
         errorLine2="                                                      ~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="567"
+            line="563"
             column="55"/>
     </issue>
 
@@ -1042,7 +1031,7 @@
         errorLine2="                                                      ~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="576"
+            line="572"
             column="55"/>
     </issue>
 
@@ -1053,7 +1042,7 @@
         errorLine2="                                              ~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="1839"
+            line="1752"
             column="47"/>
     </issue>
 
@@ -1064,7 +1053,7 @@
         errorLine2="                                              ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="2008"
+            line="1926"
             column="47"/>
     </issue>
 
@@ -1295,7 +1284,7 @@
         errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tabbed_mode/TabbedRootUiCoordinator.java"
-            line="817"
+            line="789"
             column="36"/>
     </issue>
 
@@ -1306,7 +1295,7 @@
         errorLine2="                                                                                 ~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tabbed_mode/TabbedSystemUiCoordinator.java"
-            line="106"
+            line="116"
             column="82"/>
     </issue>
 
@@ -1482,7 +1471,7 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/autofill/CardUnmaskPrompt.java"
-            line="559"
+            line="558"
             column="27"/>
     </issue>
 
@@ -1493,7 +1482,7 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/autofill/CardUnmaskPrompt.java"
-            line="560"
+            line="559"
             column="27"/>
     </issue>
 
@@ -1504,7 +1493,7 @@
         errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tabmodel/ChromeTabCreator.java"
-            line="280"
+            line="278"
             column="53"/>
     </issue>
 
@@ -1517,6 +1506,39 @@
             file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/ClipDrawableProgressBar.java"
             line="123"
             column="52"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: DialogDismissalCause.UNKNOWN, DialogDismissalCause.POSITIVE_BUTTON_CLICKED, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED, DialogDismissalCause.ACTION_ON_CONTENT, DialogDismissalCause.DISMISSED_BY_NATIVE, DialogDismissalCause.NAVIGATE_BACK, DialogDismissalCause.TOUCH_OUTSIDE, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE, DialogDismissalCause.TAB_SWITCHED, DialogDismissalCause.TAB_DESTROYED, DialogDismissalCause.ACTIVITY_DESTROYED, DialogDismissalCause.NOT_ATTACHED_TO_WINDOW, DialogDismissalCause.NAVIGATE, DialogDismissalCause.WEB_CONTENTS_DESTROYED, DialogDismissalCause.DIALOG_INTERACTION_DEFERRED, DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED, DialogDismissalCause.ACTION_ON_DIALOG_NOT_POSSIBLE, DialogDismissalCause.CLIENT_TIMEOUT, but could be ButtonType.POSITIVE, ButtonType.NEGATIVE, ButtonType.TITLE_ICON, ButtonType.POSITIVE_EPHEMERAL"
+        errorLine1="                        mManager.dismissDialog(model, buttonType);"
+        errorLine2="                                                      ~~~~~~~~~~">
+        <location
+            file="../../components/browser_ui/contacts_picker/android/java/src/org/chromium/components/browser_ui/contacts_picker/ContactView.java"
+            line="113"
+            column="55"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: SigninAccessPoint.RECENT_TABS, SigninAccessPoint.BOOKMARK_MANAGER, SigninAccessPoint.NTP_FEED_TOP_PROMO, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, SigninAccessPoint.SAFETY_CHECK, SigninAccessPoint.SETTINGS, SigninAccessPoint.WEB_SIGNIN, SigninAccessPoint.NTP_SIGNED_OUT_ICON, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO"
+        errorLine1="                        signinAccessPoint);"
+        errorLine2="                        ~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/app/creator/CreatorActionDelegateImpl.java"
+            line="133"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: SigninAccessPoint.RECENT_TABS, SigninAccessPoint.BOOKMARK_MANAGER, SigninAccessPoint.NTP_FEED_TOP_PROMO, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, SigninAccessPoint.SAFETY_CHECK, SigninAccessPoint.SETTINGS, SigninAccessPoint.WEB_SIGNIN, SigninAccessPoint.NTP_SIGNED_OUT_ICON, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO"
+        errorLine1="                            signinAccessPoint);"
+        errorLine2="                            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/app/creator/CreatorActionDelegateImpl.java"
+            line="161"
+            column="29"/>
     </issue>
 
     <issue
@@ -1550,6 +1572,28 @@
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadManagerService.java"
             line="1352"
             column="20"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: SigninAccessPoint.RECENT_TABS, SigninAccessPoint.BOOKMARK_MANAGER, SigninAccessPoint.NTP_FEED_TOP_PROMO, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, SigninAccessPoint.SAFETY_CHECK, SigninAccessPoint.SETTINGS, SigninAccessPoint.WEB_SIGNIN, SigninAccessPoint.NTP_SIGNED_OUT_ICON, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO"
+        errorLine1="                        signinAccessPoint);"
+        errorLine2="                        ~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/app/feed/FeedActionDelegateImpl.java"
+            line="201"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: SigninAccessPoint.RECENT_TABS, SigninAccessPoint.BOOKMARK_MANAGER, SigninAccessPoint.NTP_FEED_TOP_PROMO, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, SigninAccessPoint.SAFETY_CHECK, SigninAccessPoint.SETTINGS, SigninAccessPoint.WEB_SIGNIN, SigninAccessPoint.NTP_SIGNED_OUT_ICON, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO"
+        errorLine1="                            signinAccessPoint);"
+        errorLine2="                            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/app/feed/FeedActionDelegateImpl.java"
+            line="229"
+            column="29"/>
     </issue>
 
     <issue
@@ -1592,8 +1636,41 @@
         errorLine2="                                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tasks/ReturnToChromeUtil.java"
-            line="454"
+            line="271"
             column="65"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: SigninAccessPoint.RECENT_TABS, SigninAccessPoint.BOOKMARK_MANAGER, SigninAccessPoint.NTP_FEED_TOP_PROMO, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, SigninAccessPoint.SAFETY_CHECK, SigninAccessPoint.SETTINGS, SigninAccessPoint.WEB_SIGNIN, SigninAccessPoint.NTP_SIGNED_OUT_ICON, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO, but could be SigninAccessPoint.SIGNIN_PROMO, SigninAccessPoint.AUTOFILL_DROPDOWN"
+        errorLine1="                        mAccessPoint);"
+        errorLine2="                        ~~~~~~~~~~~~">
+        <location
+            file="../../chrome/browser/ui/android/signin/java/src/org/chromium/chrome/browser/ui/signin/SyncPromoController.java"
+            line="713"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: SigninAccessPoint.RECENT_TABS, SigninAccessPoint.BOOKMARK_MANAGER, SigninAccessPoint.NTP_FEED_TOP_PROMO, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, SigninAccessPoint.SAFETY_CHECK, SigninAccessPoint.SETTINGS, SigninAccessPoint.WEB_SIGNIN, SigninAccessPoint.NTP_SIGNED_OUT_ICON, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO, but could be SigninAccessPoint.SIGNIN_PROMO, SigninAccessPoint.AUTOFILL_DROPDOWN"
+        errorLine1="                        mAccessPoint);"
+        errorLine2="                        ~~~~~~~~~~~~">
+        <location
+            file="../../chrome/browser/ui/android/signin/java/src/org/chromium/chrome/browser/ui/signin/SyncPromoController.java"
+            line="742"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: SigninAccessPoint.RECENT_TABS, SigninAccessPoint.BOOKMARK_MANAGER, SigninAccessPoint.NTP_FEED_TOP_PROMO, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO, SigninAccessPoint.SAFETY_CHECK, SigninAccessPoint.SETTINGS, SigninAccessPoint.WEB_SIGNIN, SigninAccessPoint.NTP_SIGNED_OUT_ICON, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, SigninAccessPoint.SEND_TAB_TO_SELF_PROMO, but could be SigninAccessPoint.SIGNIN_PROMO, SigninAccessPoint.AUTOFILL_DROPDOWN"
+        errorLine1="                        mAccessPoint);"
+        errorLine2="                        ~~~~~~~~~~~~">
+        <location
+            file="../../chrome/browser/ui/android/signin/java/src/org/chromium/chrome/browser/ui/signin/SyncPromoController.java"
+            line="771"
+            column="25"/>
     </issue>
 
     <issue
@@ -1823,7 +1900,7 @@
         errorLine2="                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabListRecyclerView.java"
-            line="162"
+            line="172"
             column="33"/>
     </issue>
 
@@ -1834,7 +1911,7 @@
         errorLine2="                        ^">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="438"
+            line="422"
             column="25"/>
     </issue>
 
@@ -2043,7 +2120,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
-            line="146"
+            line="145"
             column="13"/>
     </issue>
 
@@ -2054,7 +2131,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
-            line="203"
+            line="202"
             column="9"/>
     </issue>
 
@@ -2065,7 +2142,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
-            line="214"
+            line="213"
             column="9"/>
     </issue>
 
@@ -2219,7 +2296,7 @@
         errorLine2="                                                                   ~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/OMADownloadHandler.java"
-            line="349"
+            line="350"
             column="68"/>
     </issue>
 
@@ -2296,7 +2373,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/CompositorViewHolder.java"
-            line="669"
+            line="668"
             column="20"/>
     </issue>
 
@@ -2373,7 +2450,7 @@
         errorLine2="        ^">
         <location
             file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
-            line="174"
+            line="173"
             column="9"/>
     </issue>
 
@@ -2384,7 +2461,7 @@
         errorLine2="                ^">
         <location
             file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
-            line="175"
+            line="174"
             column="17"/>
     </issue>
 
@@ -2483,7 +2560,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="591"
+            line="574"
             column="20"/>
     </issue>
 
@@ -2527,7 +2604,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/features/keyboard_accessory/internal/java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryView.java"
-            line="201"
+            line="200"
             column="9"/>
     </issue>
 
