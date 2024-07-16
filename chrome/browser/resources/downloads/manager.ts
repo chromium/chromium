@@ -220,7 +220,14 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     if (bypassItem) {
       this.bypassPromptItemId_ = bypassItem.id;
       assert(!!this.mojoHandler_);
-      this.mojoHandler_.recordOpenBypassWarningDialog(this.bypassPromptItemId_);
+
+      if (this.dangerousDownloadInterstitial_) {
+        this.mojoHandler_.recordOpenBypassWarningInterstitial(
+            this.bypassPromptItemId_);
+      } else {
+        this.mojoHandler_.recordOpenBypassWarningDialog(
+            this.bypassPromptItemId_);
+      }
     }
   }
 

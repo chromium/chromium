@@ -373,6 +373,9 @@ suite('manager tests', function() {
         assertTrue(!!saveDangerousButton);
         saveDangerousButton.click();
         flush();
+        const recordOpenId = await testBrowserProxy.handler.whenCalled(
+            'recordOpenBypassWarningInterstitial');
+        assertEquals('itemId', recordOpenId);
         const interstitial = manager.shadowRoot!.querySelector(
             'downloads-dangerous-download-interstitial');
         assertTrue(!!interstitial);
