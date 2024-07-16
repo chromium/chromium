@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.view.TouchDelegate;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -18,6 +20,7 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -27,6 +30,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageView;
 
 /** Toolbar used in the tab grid dialog see {@link TabGridDialogCoordinator}. */
@@ -38,6 +42,8 @@ public class TabGridDialogToolbarView extends FrameLayout {
     private LinearLayout mMainContent;
     private FrameLayout mColorIconContainer;
     private ImageView mColorIcon;
+    private @Nullable FrameLayout mShareButtonContainer;
+    private @Nullable ButtonCompat mShareButton;
 
     public TabGridDialogToolbarView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -54,6 +60,8 @@ public class TabGridDialogToolbarView extends FrameLayout {
         mMainContent = findViewById(R.id.main_content);
         mColorIconContainer = findViewById(R.id.tab_group_color_icon_container);
         mColorIcon = findViewById(R.id.tab_group_color_icon);
+        mShareButtonContainer = findViewById(R.id.share_button_container);
+        mShareButton = findViewById(R.id.share_button);
     }
 
     void setLeftButtonOnClickListener(OnClickListener listener) {
@@ -167,6 +175,36 @@ public class TabGridDialogToolbarView extends FrameLayout {
     /** Set the content description of the right button. */
     void setRightButtonContentDescription(String string) {
         mRightButton.setContentDescription(string);
+    }
+
+    void setShareButtonVisibility(boolean isVisible) {
+        if (mShareButtonContainer == null || mShareButton == null) return;
+        mShareButtonContainer.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+        if (isVisible) {
+            // Post this so that getHitRect() returns the correct size as by
+            // default the view is GONE.
+            mShareButtonContainer.post(
+                    () -> {
+                        Rect rect = new Rect();
+                        mShareButton.getHitRect(rect);
+                        Resources res = mShareButton.getContext().getResources();
+                        int delta =
+                                res.getDimensionPixelSize(R.dimen.min_touch_target_size)
+                                        - rect.height();
+                        if (delta > 0) {
+                            int halfDelta = Math.round(delta / 2.0f);
+                            rect.top -= halfDelta;
+                            rect.bottom += halfDelta;
+                        }
+                        mShareButtonContainer.setTouchDelegate(
+                                new TouchDelegate(rect, mShareButton));
+                    });
+        }
+    }
+
+    void setShareButtonClickListener(OnClickListener listener) {
+        if (mShareButton == null) return;
+        mShareButton.setOnClickListener(listener);
     }
 
     /** Set the color icon of type {@link TabGroupColorId} on the tab group card view. */

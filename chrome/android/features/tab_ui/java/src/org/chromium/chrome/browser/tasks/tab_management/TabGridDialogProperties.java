@@ -27,7 +27,7 @@ class TabGridDialogProperties {
     public static final PropertyModel.WritableObjectPropertyKey<OnClickListener>
             ADD_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<OnClickListener>
-            SHARE_INVITE_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
+            SHARE_BUTTON_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<OnClickListener>
             SHARE_IMAGE_TILES_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<OnClickListener>
@@ -107,7 +107,7 @@ class TabGridDialogProperties {
                 BROWSER_CONTROLS_STATE_PROVIDER,
                 COLLAPSE_CLICK_LISTENER,
                 ADD_CLICK_LISTENER,
-                SHARE_INVITE_CLICK_LISTENER,
+                SHARE_BUTTON_CLICK_LISTENER,
                 SHARE_IMAGE_TILES_CLICK_LISTENER,
                 SHARE_MANAGE_ADD_CLICK_LISTENER,
                 HEADER_TITLE,

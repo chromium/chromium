@@ -1992,7 +1992,7 @@ public class TabGridDialogTest {
         View dialogView = cta.findViewById(R.id.dialog_parent_view);
         waitForThumbnailsToFetch(
                 (RecyclerView) dialogView.findViewById(R.id.tab_list_recycler_view));
-        mRenderTestRule.render(dialogView, "3_tabs_portrait_2_row_toolbar");
+        mRenderTestRule.render(dialogView, "3_tabs_portrait_2_row_toolbar_share_button");
     }
 
     private void openDialogFromTabSwitcherAndVerify(

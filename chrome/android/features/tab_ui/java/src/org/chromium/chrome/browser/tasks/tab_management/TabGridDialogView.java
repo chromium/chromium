@@ -47,7 +47,6 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageButton;
 
 import java.lang.annotation.Retention;
@@ -923,20 +922,16 @@ public class TabGridDialogView extends FrameLayout {
     void refreshShareBar(boolean isTabGroupShared) {
         mIsTabGroupShared = isTabGroupShared;
         ViewGroup manageBar = mDialogContainerView.findViewById(R.id.dialog_data_sharing_manage);
-        ButtonCompat inviteButton =
-                mDialogContainerView.findViewById(R.id.dialog_share_invite_button);
 
         // Check for conditions which the sharebar should not show.
-        if (manageBar == null || inviteButton == null || !mShouldShowShare) {
+        if (manageBar == null || !mShouldShowShare) {
             return;
         }
 
         if (mIsTabGroupShared) {
             manageBar.setVisibility(View.VISIBLE);
-            inviteButton.setVisibility(View.GONE);
         } else {
             manageBar.setVisibility(View.GONE);
-            inviteButton.setVisibility(View.VISIBLE);
         }
     }
 
@@ -1086,19 +1081,6 @@ public class TabGridDialogView extends FrameLayout {
     void setBindingToken(Integer bindingToken) {
         assert mBindingToken == null || bindingToken == null;
         mBindingToken = bindingToken;
-    }
-
-    /**
-     * Set click listener for the share bar invite button.
-     *
-     * @param listener {@link android.view.View.OnClickListener} for the button.
-     */
-    void setShareInviteOnClickListener(OnClickListener listener) {
-        ButtonCompat inviteButton =
-                mDialogContainerView.findViewById(R.id.dialog_share_invite_button);
-        if (inviteButton != null) {
-            inviteButton.setOnClickListener(listener);
-        }
     }
 
     /**

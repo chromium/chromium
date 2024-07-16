@@ -37,6 +37,30 @@ found in the LICENSE file.
                 android:layout_height="match_parent"
                 android:layout_width="0dp"
                 android:layout_weight="1"/>
+            <FrameLayout
+                android:id="@+id/share_button_container"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/min_touch_target_size"
+                android:layout_marginEnd="12dp"
+                android:visibility="gone">
+                <org.chromium.ui.widget.ButtonCompat
+                    android:id="@+id/share_button"
+                    style="@style/DialogShareButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/share_button_height"
+                    android:layout_gravity="center"
+                    android:minWidth="0dp"
+                    android:minHeight="@dimen/share_button_height"
+                    android:singleLine="true"
+                    android:drawablePadding="4dp"
+                    android:drawableStart="@drawable/ic_group_add_16dp"
+                    android:text="@string/tab_grid_share_button_text"
+                    android:paddingStart="@dimen/share_button_padding_start_end"
+                    android:paddingEnd="@dimen/share_button_padding_start_end"
+                    android:paddingTop="@dimen/share_button_padding_top_bottom"
+                    android:paddingBottom="@dimen/share_button_padding_top_bottom"
+                    app:verticalInset="0dp" />
+            </FrameLayout>
             <include layout="@layout/toolbar_new_tab_and_menu_button"/>
         </LinearLayout>
         <LinearLayout

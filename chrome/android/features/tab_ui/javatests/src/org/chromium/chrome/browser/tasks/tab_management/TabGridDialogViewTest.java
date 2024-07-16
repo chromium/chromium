@@ -159,7 +159,6 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID})
     public void testResetDialog() {
         View toolbarView = new View(getActivity());
         View recyclerView = new View(getActivity());
@@ -178,7 +177,6 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID})
     public void testUpdateUngroupBar() {
         AtomicReference<ColorStateList> showTextColorReference = new AtomicReference<>();
         AtomicReference<ColorStateList> hoverTextColorReference = new AtomicReference<>();

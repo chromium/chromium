@@ -445,7 +445,7 @@ public class TabGridDialogMediator
 
         // TODO(b/325082444): Only a subset should be visible at a time. Only set the listeners that
         // can be seen and used.
-        mModel.set(TabGridDialogProperties.SHARE_INVITE_CLICK_LISTENER, getShareBarClickListener());
+        mModel.set(TabGridDialogProperties.SHARE_BUTTON_CLICK_LISTENER, getShareBarClickListener());
         mModel.set(
                 TabGridDialogProperties.SHARE_IMAGE_TILES_CLICK_LISTENER,
                 getShareBarClickListener());
