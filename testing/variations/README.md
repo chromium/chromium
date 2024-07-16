@@ -5,9 +5,11 @@ which is used to ensure test coverage of active field trials.
 
 For each study, the first available experiment after platform filtering is used
 as the default experiment for Chromium builds. This experiment is also used for
-perf bots and various browser tests in the waterfall (e.g. browser_tests,
-components_browsertests, content_browsertests, extensions_browsertests, interactive_ui_tests and
-sync_integration_tests). It is not used by unit test targets.
+perf bots and various tests in the waterfall (browser tests, including those in
+browser_tests, components_browsertests, content_browsertests,
+extensions_browsertests, interactive_ui_tests, and sync_integration_tests, and
+[web platform tests](/docs/testing/web_platform_tests.md)). It is not used by
+unit test targets.
 
 > Note: This configuration applies specifically to Chromium developer builds.
 > Chrome branded / official builds do not use these definitions by default.
