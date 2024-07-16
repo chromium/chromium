@@ -50,7 +50,7 @@ namespace updater {
 // base::CommandLine can't be used because it enforces that all switches are
 // lowercase, but ksadmin has case-sensitive switches. This argument parser
 // converts an argv set into a map of switch name to switch value; for example
-// `ksadmin --register --productid com.goog.chrome -v 1.2.3.4 e` to
+// `ksadmin --register --productid=com.goog.chrome -v 1.2.3.4 e` to
 // `{"register": "", "productid": "com.goog.chrome", "v": "1.2.3.4", "e": ""}`.
 std::map<std::string, std::string> ParseCommandLine(int argc,
                                                     const char* argv[]) {
@@ -60,12 +60,27 @@ std::map<std::string, std::string> ParseCommandLine(int argc,
     std::string arg(argv[i]);
     if (base::StartsWith(arg, "--")) {
       key = arg.substr(2);
-      result[key] = "";
+      size_t eq_idx = key.find('=');
+      if (eq_idx == std::string::npos) {
+        result[key] = "";
+      } else {
+        result[key.substr(0, eq_idx)] = key.substr(eq_idx + 1);
+        key = "";
+      }
     } else if (base::StartsWith(arg, "-")) {
       // Multiple short options could be combined together. For example,
       // command `ksadmin -pP com.google.Chrome` should print Chrome ticket.
       // Split the option substring into switches character by character.
       for (const char ch : arg.substr(1)) {
+        if (ch == '=') {
+          size_t eq_idx = arg.find('=', 1);
+          CHECK_NE(eq_idx, std::string::npos)
+              << "after reaching '=' in short option \"" << arg
+              << "\", could not find it. This can't happen.";
+          result[key] = arg.substr(eq_idx + 1);
+          key = "";
+          break;  // do not process value as additional short options
+        }
         key = ch;
         result[key] = "";
       }
