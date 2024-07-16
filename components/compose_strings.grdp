@@ -169,6 +169,18 @@
   <message name="IDS_COMPOSE_RESULT_TEXT_LABEL" desc="Accesibility label for the area holding the result text.">
     Result
   </message>
+  <message name="IDS_COMPOSE_RESULT_LOADING_A11Y_MESSAGE" desc="Accessibility string read by screen readers on Mac when the result dialog is loading a new response." translateable="false">
+    Result loading
+  </message>
+  <message name="IDS_COMPOSE_RESULT_UPDATED_A11Y_MESSAGE" desc="Accessibility string read by screen readers when the text in the result dialog has changed." translateable="false">
+    Result updated
+  </message>
+  <message name="IDS_COMPOSE_UNDO_RESULT_A11Y_MESSAGE" desc="Accessibility string read by screen readers on Mac when the undo button in the result dialog has been pressed." translateable="false">
+    Undoing result
+  </message>
+  <message name="IDS_COMPOSE_REDO_RESULT_A11Y_MESSAGE" desc="Accessibility string read by screen readers on Mac when the redo button in the result dialog has been pressed." translateable="false">
+    Redoing result
+  </message>
 
   <!-- Errors -->
   <message name="IDS_COMPOSE_ERROR_TOO_SHORT" desc="Error that the input was too short.">
