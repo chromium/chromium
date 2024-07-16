@@ -91,6 +91,7 @@ class MockLensSearchboxClient : public LensSearchboxClient {
 
   // LensSearchboxClient:
   MOCK_METHOD(const GURL&, GetPageURL, (), (override, const));
+  MOCK_METHOD(SessionID, GetTabId, (), (override, const));
   MOCK_METHOD(metrics::OmniboxEventProto::PageClassification,
               GetPageClassification,
               (),

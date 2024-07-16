@@ -65,6 +65,7 @@ source_set("lens") {
     "//components/lens/proto/server:proto",
     "//components/omnibox/browser",
     "//components/permissions",
+    "//components/sessions",
     "//components/sessions:session_id",
     "//components/signin/public/identity_manager",
     "//components/strings:components_strings_grit",
