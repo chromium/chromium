@@ -716,7 +716,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 }
 
 // TODO(crbug.com/40938945): Flaky on Linux and Lacros.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/351958199: Flaky on Linux and Mac.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
 #define MAYBE_PreselectionToastOmniboxFocusState \
   DISABLED_PreselectionToastOmniboxFocusState
 #else
