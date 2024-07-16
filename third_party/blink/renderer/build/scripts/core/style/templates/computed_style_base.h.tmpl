@@ -161,10 +161,6 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
     );
   }
 
-  {% for name, groups_to_diff in diff_functions_map.items() %}
-  static bool {{name}}(const ComputedStyle& a, const ComputedStyle& b);
-  {% endfor %}
-
   // Fields.
   // TODO(sashab): Remove initialFoo() static methods and update callers to
   // use resetFoo(), which can be more efficient.

@@ -281,26 +281,6 @@ a.{{expr}} != b.{{expr}}
 {%- endif %}
 {% endmacro %}
 
-{% macro fieldwise_diff(group_to_diff) %}
-{% for diff_group in group_to_diff.subgroups %}
-if (a.{{group_getter_expression(diff_group.group)}}.Get() != b.{{group_getter_expression(diff_group.group)}}.Get()) {
-{{fieldwise_diff(diff_group)|indent(2, true)}}
-}
-{% endfor %}
-{% for field in group_to_diff.fields %}
-if ({{diff_field(field.wrapper_pointer_name, getter_expression(field))}})
-  return true;
-{% endfor %}
-{% for expression in group_to_diff.expressions %}
-if (a.{{expression}} != b.{{expression}})
-  return true;
-{% endfor %}
-{% for predicate in group_to_diff.predicates %}
-if (!{{predicate}})
-  return true;
-{% endfor %}
-{% endmacro %}
-
 {% macro field_invalidation_diff(group_to_diff) %}
 {% for subgroup in group_to_diff.subgroups|selectattr("needs_diff") %}
 if (a.{{group_getter_expression(subgroup)}}.Get() != b.{{group_getter_expression(subgroup)}}.Get()) {

@@ -14,7 +14,6 @@ The files that generate the code in ComputedStyleBase.{h,cpp} include:
 These files are inputs to the generator and tell the generator what shape our fields and functions take. This is a list of all the relevant JSON files (more detailed documentation can be found in the files themselves):
 * [css_properties.json5](https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/css/css_properties.json5): Contains information for all the CSS properties we support.
 * [computed_style_extra_fields.json5](https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/style/computed_style_extra_fields.json5): Specifies fields in ComputedStyle that we would like to generate, but are not CSS properties.
-* [computed_style_diff_functions.json5](https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/style/computed_style_diff_functions.json5): Specifies the fields we want to diff in the various diff functions in ComputedStyle. It is used to generate the various diffing functions on ComputedStyle.
 
 ## Generator files:
 These scripts generate the computed_style_base.{h,cc} files. This is a list of the relevant generator files (more detailed documentation can be found in the files themselves):

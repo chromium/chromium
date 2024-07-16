@@ -89,25 +89,6 @@ class Enum(object):
         self.set_type = set_type
 
 
-class DiffGroup(object):
-    """Represents a group of expressions and subgroups that need to be diffed
-    for a function in ComputedStyle.
-
-    Attributes:
-        subgroups: List of DiffGroup instances that are stored as subgroups
-            under this group.
-        expressions: List of expression that are on this group that need to
-            be diffed.
-    """
-
-    def __init__(self, group):
-        self.group = group
-        self.subgroups = []
-        self.fields = []
-        self.expressions = []
-        self.predicates = []
-
-
 class Field(object):
     """
     The generated ComputedStyle object is made up of a series of Fields.
