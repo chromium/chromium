@@ -277,9 +277,11 @@ def _ApplyReplacement(filepath, contents, edit, last_edit):
 
   start = edit.offset
   end = edit.offset + edit.length
+  original_contents = contents
   contents = contents[:start] + edit.replacement + contents[end:]
   if not edit.replacement:
-    contents = _ExtendDeletionIfElementIsInList(contents, edit.offset)
+    contents = _ExtendDeletionIfElementIsInList(original_contents, contents,
+                                                edit.offset, edit.length)
   return contents
 
 
@@ -364,7 +366,8 @@ def _ApplyEdits(edits):
 _WHITESPACE_BYTES = frozenset((ord('\t'), ord('\n'), ord('\r'), ord(' ')))
 
 
-def _ExtendDeletionIfElementIsInList(contents, offset):
+def _ExtendDeletionIfElementIsInList(original_contents, contents, offset,
+                                     length):
   """Extends the range of a deletion if the deleted element was part of a list.
 
   This rewriter helper makes it easy for refactoring tools to remove elements
@@ -377,8 +380,10 @@ def _ExtendDeletionIfElementIsInList(contents, offset):
   worry about having to include the comma in the replacement.
 
   Args:
+    original_contents: A bytearray before the deletion was applied.
     contents: A bytearray with the deletion already applied.
     offset: The offset in the bytearray where the deleted range used to be.
+    length: The length in the bytearray where the deleted range used to be.
   """
   char_before = char_after = None
   left_trim_count = 0
@@ -399,16 +404,43 @@ def _ExtendDeletionIfElementIsInList(contents, offset):
       char_after = chr(byte)
     break
 
+  def notify(left_offset, right_offset):
+    (start, end) = (offset, offset + length)
+    deleted = original_contents[start:end].decode('utf-8')
+    (start, end) = (start - left_offset, end + right_offset)
+    extended = original_contents[start:end].decode('utf-8')
+    (start, end) = (max(0, start - 5), end + 5)
+    context = original_contents[start:end].decode('utf-8')
+    sys.stdout.write('Extended deletion of "%s" to "%s" in "...%s..."\n' %
+                     (deleted, extended, context))
+
   if char_before:
     if char_after:
+      notify(0, right_trim_count)
       return contents[:offset] + contents[offset + right_trim_count:]
     elif char_before in (',', ':'):
+      notify(left_trim_count, 0)
       return contents[:offset - left_trim_count] + contents[offset:]
   return contents
 
 
 def main():
-  parser = argparse.ArgumentParser()
+  parser = argparse.ArgumentParser(
+      epilog="""
+Reads edit directives from stdin and applies them to all files under
+Git control, modulo the path filters.
+
+See docs/clang_tool_refactoring.md for details.
+
+When an edit direct has an empty replacement text (e.g.,
+"r:::path/to/file/to/edit:::offset1:::length1:::") and the script detects that
+the deleted text is part of a "list" (e.g., function parameters, initializers),
+the script extends the deletion to remove commas, etc. as needed. A way to
+suppress this behavior is to replace the text with a single space or similar
+(e.g., "r:::path/to/file/to/edit:::offset1:::length1::: ").
+""",
+      formatter_class=argparse.RawTextHelpFormatter,
+  )
   parser.add_argument(
       '-p',
       required=True,
