@@ -32,6 +32,7 @@ public class AutofillSaveCardUiInfo {
     private final String mConfirmText;
     private final String mCancelText;
     private final String mDescriptionText;
+    private final String mLoadingDescription;
     private final boolean mIsGooglePayBrandingEnabled;
 
     public boolean isForUpload() {
@@ -74,6 +75,10 @@ public class AutofillSaveCardUiInfo {
         return mDescriptionText;
     }
 
+    public String getLoadingDescription() {
+        return mLoadingDescription;
+    }
+
     public boolean isGooglePayBrandingEnabled() {
         return mIsGooglePayBrandingEnabled;
     }
@@ -93,8 +98,9 @@ public class AutofillSaveCardUiInfo {
             String titleText,
             String confirmText,
             String cancelText,
-            boolean isGooglePayBrandingEnabled,
-            String descriptionText) {
+            String descriptionText,
+            String loadingDescription,
+            boolean isGooglePayBrandingEnabled) {
         mIsForUpload = isForUpload;
         mLogoIcon = logoIcon;
         mIssuerIcon = issuerIcon;
@@ -108,8 +114,9 @@ public class AutofillSaveCardUiInfo {
         mTitleText = titleText;
         mConfirmText = confirmText;
         mCancelText = cancelText;
-        mIsGooglePayBrandingEnabled = isGooglePayBrandingEnabled;
         mDescriptionText = descriptionText;
+        mLoadingDescription = loadingDescription;
+        mIsGooglePayBrandingEnabled = isGooglePayBrandingEnabled;
     }
 
     // LINT.ThenChange(//chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.cc)
@@ -125,8 +132,9 @@ public class AutofillSaveCardUiInfo {
         private String mTitleText;
         private String mConfirmText;
         private String mCancelText;
-        private boolean mIsGooglePayBrandingEnabled;
         private String mDescriptionText;
+        private String mLoadingDescription;
+        private boolean mIsGooglePayBrandingEnabled;
 
         public Builder withIsForUpload(boolean isForUpload) {
             mIsForUpload = isForUpload;
@@ -168,13 +176,18 @@ public class AutofillSaveCardUiInfo {
             return this;
         }
 
-        public Builder withIsGooglePayBrandingEnabled(boolean isGooglePayBrandingEnabled) {
-            mIsGooglePayBrandingEnabled = isGooglePayBrandingEnabled;
+        public Builder withDescriptionText(String descriptionText) {
+            mDescriptionText = descriptionText;
             return this;
         }
 
-        public Builder withDescriptionText(String descriptionText) {
-            mDescriptionText = descriptionText;
+        public Builder withLoadingDescription(String loadingDescription) {
+            mLoadingDescription = loadingDescription;
+            return this;
+        }
+
+        public Builder withIsGooglePayBrandingEnabled(boolean isGooglePayBrandingEnabled) {
+            mIsGooglePayBrandingEnabled = isGooglePayBrandingEnabled;
             return this;
         }
 
@@ -191,8 +204,9 @@ public class AutofillSaveCardUiInfo {
                     mTitleText,
                     mConfirmText,
                     mCancelText,
-                    mIsGooglePayBrandingEnabled,
-                    mDescriptionText);
+                    mDescriptionText,
+                    mLoadingDescription,
+                    mIsGooglePayBrandingEnabled);
         }
     }
 }

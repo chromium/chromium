@@ -135,8 +135,8 @@ public class AutofillSaveCardBottomSheetRenderTest {
                         .withTitleText("Title text")
                         .withConfirmText("Confirm text")
                         .withCancelText("Cancel text")
-                        .withIsGooglePayBrandingEnabled(true)
                         .withDescriptionText("Description text.")
+                        .withIsGooglePayBrandingEnabled(true)
                         .build());
         runOnUiThreadBlocking(
                 () -> {
@@ -214,6 +214,9 @@ public class AutofillSaveCardBottomSheetRenderTest {
                         .with(
                                 AutofillSaveCardBottomSheetProperties.CANCEL_BUTTON_LABEL,
                                 uiInfo.getCancelText())
+                        .with(
+                                AutofillSaveCardBottomSheetProperties.LOADING_DESCRIPTION,
+                                uiInfo.getLoadingDescription())
                         .build();
         PropertyModelChangeProcessor.create(
                 model, view, AutofillSaveCardBottomSheetViewBinder::bind);

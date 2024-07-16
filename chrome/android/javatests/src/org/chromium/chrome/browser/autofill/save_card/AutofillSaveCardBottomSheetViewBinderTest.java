@@ -241,6 +241,7 @@ public class AutofillSaveCardBottomSheetViewBinderTest extends BlankUiTestActivi
         LoadingViewObserver observer = new LoadingViewObserver();
         mView.mLoadingView.addObserver(observer);
 
+        assertEquals(View.GONE, mView.mLoadingViewContainer.getVisibility());
         assertEquals(View.GONE, mView.mLoadingView.getVisibility());
         assertEquals(View.VISIBLE, mView.mAcceptButton.getVisibility());
         assertEquals(View.VISIBLE, mView.mCancelButton.getVisibility());
@@ -250,6 +251,7 @@ public class AutofillSaveCardBottomSheetViewBinderTest extends BlankUiTestActivi
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mModel.set(AutofillSaveCardBottomSheetProperties.SHOW_LOADING_STATE, true));
         observer.getOnShowLoadingUICompleteHelper().waitForCallback(onShowLoadingUICompleteCount);
+        assertEquals(View.VISIBLE, mView.mLoadingViewContainer.getVisibility());
         assertEquals(View.VISIBLE, mView.mLoadingView.getVisibility());
         assertEquals(View.GONE, mView.mAcceptButton.getVisibility());
         assertEquals(View.GONE, mView.mCancelButton.getVisibility());
@@ -259,9 +261,28 @@ public class AutofillSaveCardBottomSheetViewBinderTest extends BlankUiTestActivi
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mModel.set(AutofillSaveCardBottomSheetProperties.SHOW_LOADING_STATE, false));
         observer.getOnHideLoadingUICompleteHelper().waitForCallback(onHideLoadingUICompleteCount);
+        assertEquals(View.GONE, mView.mLoadingViewContainer.getVisibility());
         assertEquals(View.GONE, mView.mLoadingView.getVisibility());
         assertEquals(View.VISIBLE, mView.mAcceptButton.getVisibility());
         assertEquals(View.VISIBLE, mView.mCancelButton.getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    public void testLoadingDescription() {
+        bind(mModelBuilder.with(AutofillSaveCardBottomSheetProperties.LOADING_DESCRIPTION, ""));
+        assertThat(
+                String.valueOf(mView.mLoadingViewContainer.getContentDescription()),
+                isEmptyString());
+
+        final String descriptionText = "Loading Description";
+        bind(
+                mModelBuilder.with(
+                        AutofillSaveCardBottomSheetProperties.LOADING_DESCRIPTION,
+                        descriptionText));
+        assertEquals(
+                descriptionText,
+                String.valueOf(mView.mLoadingViewContainer.getContentDescription()));
     }
 
     public void openLink(String url) {}

@@ -37,8 +37,9 @@ public class AutofillSaveCardUiInfoTest {
                 .withTitleText("")
                 .withConfirmText("")
                 .withCancelText("")
-                .withIsGooglePayBrandingEnabled(false)
-                .withDescriptionText("");
+                .withDescriptionText("")
+                .withLoadingDescription("")
+                .withIsGooglePayBrandingEnabled(false);
     }
 
     @Test
@@ -55,8 +56,9 @@ public class AutofillSaveCardUiInfoTest {
                         /* titleText= */ null,
                         /* confirmText= */ null,
                         /* cancelText= */ null,
-                        /* isGooglePayBrandingEnabled= */ false,
-                        /* descriptionText= */ null);
+                        /* descriptionText= */ null,
+                        /* loadingDescription= */ null,
+                        /* isGooglePayBrandingEnabled= */ false);
 
         assertThat(uiInfo.getLegalMessageLines(), empty());
     }
@@ -166,6 +168,14 @@ public class AutofillSaveCardUiInfoTest {
                 defaultBuilder().withDescriptionText("Description Text").build();
 
         assertThat(uiInfo.getDescriptionText(), equalTo("Description Text"));
+    }
+
+    @Test
+    public void testBuilder_setsLoadingDescription() {
+        AutofillSaveCardUiInfo uiInfo =
+                defaultBuilder().withLoadingDescription("Loading Description").build();
+
+        assertThat(uiInfo.getLoadingDescription(), equalTo("Loading Description"));
     }
 
     @Test

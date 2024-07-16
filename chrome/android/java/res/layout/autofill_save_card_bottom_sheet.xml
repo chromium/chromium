@@ -106,7 +106,6 @@ found in the LICENSE file.
           tools:text="By continuing, you agree to the Google Payments Terms of Service. The Privacy Notice describes how your data is handled."
           android:textAlignment="center"
           android:textAppearance="@style/TextAppearance.TextSmall.Secondary"/>
-
       <org.chromium.ui.widget.ButtonCompat
           android:id="@+id/autofill_save_card_confirm_button"
           style="@style/FilledButton.Flat"
@@ -130,15 +129,29 @@ found in the LICENSE file.
           android:minWidth="@dimen/min_touch_target_size"
           tools:text="No Thanks" />
 
-      <org.chromium.ui.widget.LoadingView
-          android:id="@+id/autofill_save_card_loading_view"
+      <!-- The FrameLayout here is to facilitate adding a proper content
+         description for the loading view. If the content description is added
+         directly to the loading view, it will be read as
+         "zero percent <content description> progress bar". -->
+      <!-- TODO(crbug.com/40718855): Remove frame layout and move content
+       description to the loading view after the bug is resolved. -->
+      <FrameLayout
+          android:id="@+id/autofill_save_card_loading_view_container"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_gravity="center"
           android:layout_marginTop="@dimen/autofill_bottom_sheet_confirm_button_top_margin"
           android:layout_marginBottom="@dimen/autofill_bottom_sheet_loading_view_bottom_margin"
-          android:visibility="gone" />
+          android:accessibilityLiveRegion="1"
+          android:visibility="gone">
 
+        <org.chromium.ui.widget.LoadingView
+            android:id="@+id/autofill_save_card_loading_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"/>
+      </FrameLayout>
     </LinearLayout>
   </ScrollView>
 </LinearLayout>

@@ -40,6 +40,8 @@ struct AutofillSaveCardUiInfo {
   std::u16string cancel_text;
   // Description text to be shown above the card information in the prompt.
   std::u16string description_text;
+  // Accessibility description when a loading spinner is shown.
+  std::u16string loading_description;
   bool is_google_pay_branding_enabled;
 
   AutofillSaveCardUiInfo();

@@ -82,11 +82,16 @@ import org.chromium.ui.modelutil.PropertyModel;
                 view.mAcceptButton.setVisibility(View.GONE);
                 view.mCancelButton.setVisibility(View.GONE);
                 view.mLoadingView.showLoadingUI(/* skipDelay= */ true);
+                view.mLoadingViewContainer.setVisibility(View.VISIBLE);
             } else {
+                view.mLoadingViewContainer.setVisibility(View.GONE);
                 view.mLoadingView.hideLoadingUI();
                 view.mAcceptButton.setVisibility(View.VISIBLE);
                 view.mCancelButton.setVisibility(View.VISIBLE);
             }
+        } else if (AutofillSaveCardBottomSheetProperties.LOADING_DESCRIPTION == propertyKey) {
+            view.mLoadingViewContainer.setContentDescription(
+                    model.get(AutofillSaveCardBottomSheetProperties.LOADING_DESCRIPTION));
         }
     }
 

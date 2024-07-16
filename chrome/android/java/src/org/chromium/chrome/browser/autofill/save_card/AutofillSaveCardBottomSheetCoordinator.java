@@ -100,6 +100,9 @@ public class AutofillSaveCardBottomSheetCoordinator {
                                 AutofillSaveCardBottomSheetProperties.CANCEL_BUTTON_LABEL,
                                 uiInfo.getCancelText())
                         .with(AutofillSaveCardBottomSheetProperties.SHOW_LOADING_STATE, false)
+                        .with(
+                                AutofillSaveCardBottomSheetProperties.LOADING_DESCRIPTION,
+                                uiInfo.getLoadingDescription())
                         .build();
         PropertyModelChangeProcessor.create(
                 mModel, mView, AutofillSaveCardBottomSheetViewBinder::bind);

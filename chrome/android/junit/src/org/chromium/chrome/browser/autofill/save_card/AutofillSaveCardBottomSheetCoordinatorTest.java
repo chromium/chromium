@@ -143,6 +143,11 @@ public final class AutofillSaveCardBottomSheetCoordinatorTest {
                 mCoordinator
                         .getPropertyModelForTesting()
                         .get(AutofillSaveCardBottomSheetProperties.SHOW_LOADING_STATE));
+        assertEquals(
+                uiInfoForTest().getLoadingDescription(),
+                mCoordinator
+                        .getPropertyModelForTesting()
+                        .get(AutofillSaveCardBottomSheetProperties.LOADING_DESCRIPTION));
     }
 
     @Test
@@ -257,6 +262,7 @@ public final class AutofillSaveCardBottomSheetCoordinatorTest {
                 .withLegalMessageLines(List.of(new LegalMessageLine("Legal message line")))
                 .withConfirmText("Confirm text")
                 .withCancelText("Cancel text")
+                .withLoadingDescription("Loading description")
                 .build();
     }
 }

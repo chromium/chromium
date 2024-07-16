@@ -53,6 +53,11 @@ import org.chromium.ui.widget.LoadingView;
     /** The button that declines the card save prompt. */
     final Button mCancelButton;
 
+    /**
+     * Contains the loading view. Needed for proper a11y announcement of the content description.
+     */
+    final View mLoadingViewContainer;
+
     /** The view shown while the card is being uploaded. */
     final LoadingView mLoadingView;
 
@@ -73,6 +78,8 @@ import org.chromium.ui.widget.LoadingView;
         mLegalMessage = mContentView.findViewById(R.id.legal_message);
         mAcceptButton = mContentView.findViewById(R.id.autofill_save_card_confirm_button);
         mCancelButton = mContentView.findViewById(R.id.autofill_save_card_cancel_button);
+        mLoadingViewContainer =
+                mContentView.findViewById(R.id.autofill_save_card_loading_view_container);
         mLoadingView = mContentView.findViewById(R.id.autofill_save_card_loading_view);
     }
 }
