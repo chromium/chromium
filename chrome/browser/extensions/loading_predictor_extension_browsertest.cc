@@ -11,6 +11,7 @@
 #include "components/optimization_guide/proto/loading_predictor_metadata.pb.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
 
 namespace extensions {
 
@@ -26,9 +27,11 @@ class LoadingPredictorExtensionBrowserTest : public ExtensionBrowserTest {
   }
   ~LoadingPredictorExtensionBrowserTest() override = default;
 
-  void SetUp() override {
+  void SetUpOnMainThread() override {
+    // Support multiple sites on the test server.
+    host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_https_test_server().Start());
-    ExtensionBrowserTest::SetUp();
+    ExtensionBrowserTest::SetUpOnMainThread();
   }
 
   void AddOptimizationGuidePrediction(GURL main_frame_url,
@@ -75,7 +78,8 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorExtensionBrowserTest,
 
   content::RenderFrameHost* rfh =
       ui_test_utils::NavigateToURL(browser(), main_frame_url);
-  EXPECT_EQ(rfh->GetLastCommittedURL(), main_frame_url);
+  ASSERT_EQ(rfh->GetLastCommittedURL(), main_frame_url);
+  ASSERT_FALSE(rfh->IsErrorDocument());
 
   EXPECT_EQ(ExecuteScriptInBackgroundPage(
                 extension->id(),
@@ -111,12 +115,14 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorExtensionBrowserTest,
 
   content::RenderFrameHost* rfh =
       ui_test_utils::NavigateToURL(browser(), main_frame_url);
-  EXPECT_EQ(rfh->GetLastCommittedURL(), main_frame_url);
+  ASSERT_EQ(rfh->GetLastCommittedURL(), main_frame_url);
+  ASSERT_FALSE(rfh->IsErrorDocument());
 
-  EXPECT_EQ(ExecuteScriptInBackgroundPage(
-                extension->id(),
-                content::JsReplace("wasRequestBlocked($1);", subresource_url)),
-            true);
+  EXPECT_EQ(
+      ExecuteScriptInBackgroundPage(
+          extension->id(),
+          content::JsReplace("waitUntilRequestBlocked($1);", subresource_url)),
+      true);
 }
 
 }  // namespace extensions

@@ -4,9 +4,19 @@
 
 let requestsBlocked = new Set();
 
-function wasRequestBlocked(url) {
-  const result = requestsBlocked.has(url);
-  chrome.test.sendScriptResult(result);
+async function waitUntilRequestBlocked(url) {
+  if (requestsBlocked.has(url)) {
+    chrome.test.sendScriptResult(true);
+    return;
+  }
+  await new Promise(resolve => {
+    chrome.declarativeNetRequest.onRuleMatchedDebug.addListener(info => {
+      if (info.request.url === url) {
+        resolve();
+      }
+    });
+  });
+  chrome.test.sendScriptResult(true);
 }
 
 chrome.declarativeNetRequest.onRuleMatchedDebug.addListener(info => {
