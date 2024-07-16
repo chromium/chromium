@@ -142,6 +142,10 @@ class ManagementSetEnabledFunction : public ExtensionFunction {
   bool IsSupervisedExtensionApprovalFlowRequired(
       const Extension* target_extension) const;
 
+  // Returns the extension corresponding to `extension_id_`. This could be null
+  // if extension was uninstalled.
+  const Extension* GetExtension();
+
   // Extension to be enabled or disabled.
   ExtensionId extension_id_;
 

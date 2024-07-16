@@ -429,8 +429,7 @@ ExtensionFunction::ResponseAction ManagementSetEnabledFunction::Run() {
   }
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context());
-  const Extension* target_extension =
-      registry->GetExtensionById(extension_id_, ExtensionRegistry::EVERYTHING);
+  const Extension* target_extension = GetExtension();
   if (!target_extension || !ShouldExposeViaManagementAPI(*target_extension)) {
     return RespondNow(Error(keys::kNoExtensionError, extension_id_));
   }
@@ -543,12 +542,14 @@ void ManagementSetEnabledFunction::CheckPermissionsIncrease() {
       return;
     }
 
-    // TODO(emiliapaz): Extension could be uninstalled between these checks. We
-    // should check if it's valid and return an error if not.
+    // Extension could have been uninstalled externally while previous check was
+    // happening.
+    const Extension* extension = GetExtension();
+    if (!extension) {
+      FinishEnable(Error(keys::kNoExtensionError));
+      return;
+    }
 
-    const Extension* extension =
-        ExtensionRegistry::Get(browser_context())
-            ->GetExtensionById(extension_id_, ExtensionRegistry::EVERYTHING);
     const ManagementAPIDelegate* delegate = ManagementAPI::GetFactoryInstance()
                                                 ->Get(browser_context())
                                                 ->GetDelegate();
@@ -568,6 +569,14 @@ void ManagementSetEnabledFunction::OnPermissionsIncreaseChecked(
     bool permissions_allowed) {
   if (!permissions_allowed) {
     FinishEnable(Error(keys::kUserDidNotReEnableError));
+    return;
+  }
+
+  // Extension could have been uninstalled externally while previous check was
+  // happening.
+  const Extension* extension = GetExtension();
+  if (!extension) {
+    FinishEnable(Error(keys::kNoExtensionError));
     return;
   }
 
@@ -665,6 +674,11 @@ void ManagementSetEnabledFunction::OnSupervisedExtensionApprovalDone(
   }
   // Matches the AddRef in Run().
   Release();
+}
+
+const Extension* ManagementSetEnabledFunction::GetExtension() {
+  return ExtensionRegistry::Get(browser_context())
+      ->GetExtensionById(extension_id_, ExtensionRegistry::EVERYTHING);
 }
 
 ManagementUninstallFunctionBase::ManagementUninstallFunctionBase() = default;
