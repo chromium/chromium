@@ -417,12 +417,6 @@ BASE_FEATURE(kIncreasedCmdBufferParseSlice,
              "IncreasedCmdBufferParseSlice",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Kill switch for forcing restart GPU with context loss.
-// See https://crbug.com/1172229 for detail.
-BASE_FEATURE(kForceRestartGpuKillSwitch,
-             "ForceRestartGpuKillSwitch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Prune transfer cache entries not accessed recently. This also turns off
 // similar logic in cc::GpuImageDecodeCache which is the largest (often single)
 // client of transfer cache.

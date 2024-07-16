@@ -1080,8 +1080,6 @@ void GpuChannelManager::OnContextLost(
     force_restart |= (interval <= base::Seconds(5));
   }
 
-  force_restart &=
-      base::FeatureList::IsEnabled(features::kForceRestartGpuKillSwitch);
   context_lost_time_ = lost_time;
   bool is_gl = gpu_preferences_.gr_context_type == GrContextType::kGL;
   if (!force_restart && synthetic_loss && is_gl)
