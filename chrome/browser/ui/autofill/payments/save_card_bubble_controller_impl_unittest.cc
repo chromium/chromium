@@ -1609,23 +1609,14 @@ class UploadCardUpdatedDesktopUiTest
         expected_explanatory_message_id_(std::get<2>(GetParam())) {
     std::string treatment_arm_number;
     switch (treatment_arm_) {
-      case UpdatedDesktopUiTreatmentArm::kSecurityFocusStatic:
+      case UpdatedDesktopUiTreatmentArm::kSecurityFocus:
         treatment_arm_number = "1";
         break;
-      case UpdatedDesktopUiTreatmentArm::kSecurityFocusAnimated:
+      case UpdatedDesktopUiTreatmentArm::kConvenienceFocus:
         treatment_arm_number = "2";
         break;
-      case UpdatedDesktopUiTreatmentArm::kConvenienceFocusStatic:
+      case UpdatedDesktopUiTreatmentArm::kEducationFocus:
         treatment_arm_number = "3";
-        break;
-      case UpdatedDesktopUiTreatmentArm::kConvenienceFocusAnimated:
-        treatment_arm_number = "4";
-        break;
-      case UpdatedDesktopUiTreatmentArm::kEducationFocusStatic:
-        treatment_arm_number = "5";
-        break;
-      case UpdatedDesktopUiTreatmentArm::kEducationFocusAnimated:
-        treatment_arm_number = "6";
         break;
       case UpdatedDesktopUiTreatmentArm::kDefault:
         // For the default arm, disable the experiment flag.
@@ -1663,27 +1654,15 @@ INSTANTIATE_TEST_SUITE_P(
 #endif
             IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3),
         UploadCardUpdatedDesktopUiTestData(
-            UpdatedDesktopUiTreatmentArm::kSecurityFocusStatic,
+            UpdatedDesktopUiTreatmentArm::kSecurityFocus,
             IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY,
             IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY),
         UploadCardUpdatedDesktopUiTestData(
-            UpdatedDesktopUiTreatmentArm::kSecurityFocusAnimated,
-            IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY,
-            IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY),
-        UploadCardUpdatedDesktopUiTestData(
-            UpdatedDesktopUiTreatmentArm::kConvenienceFocusStatic,
+            UpdatedDesktopUiTreatmentArm::kConvenienceFocus,
             IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_CONVENIENCE,
             IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_CONVENIENCE),
         UploadCardUpdatedDesktopUiTestData(
-            UpdatedDesktopUiTreatmentArm::kConvenienceFocusAnimated,
-            IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_CONVENIENCE,
-            IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_CONVENIENCE),
-        UploadCardUpdatedDesktopUiTestData(
-            UpdatedDesktopUiTreatmentArm::kEducationFocusStatic,
-            IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_EDUCATION,
-            IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_EDUCATION),
-        UploadCardUpdatedDesktopUiTestData(
-            UpdatedDesktopUiTreatmentArm::kEducationFocusAnimated,
+            UpdatedDesktopUiTreatmentArm::kEducationFocus,
             IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_EDUCATION,
             IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_EDUCATION)));
 

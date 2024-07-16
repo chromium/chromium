@@ -65,17 +65,11 @@ UpdatedDesktopUiTreatmentArm GetUpdatedDesktopUiTreatmentArm() {
 
   switch (features::kAutofillUpstreamUpdatedUiTreatment.Get()) {
     case 1:
-      return UpdatedDesktopUiTreatmentArm::kSecurityFocusStatic;
+      return UpdatedDesktopUiTreatmentArm::kSecurityFocus;
     case 2:
-      return UpdatedDesktopUiTreatmentArm::kSecurityFocusAnimated;
+      return UpdatedDesktopUiTreatmentArm::kConvenienceFocus;
     case 3:
-      return UpdatedDesktopUiTreatmentArm::kConvenienceFocusStatic;
-    case 4:
-      return UpdatedDesktopUiTreatmentArm::kConvenienceFocusAnimated;
-    case 5:
-      return UpdatedDesktopUiTreatmentArm::kEducationFocusStatic;
-    case 6:
-      return UpdatedDesktopUiTreatmentArm::kEducationFocusAnimated;
+      return UpdatedDesktopUiTreatmentArm::kEducationFocus;
     default:
       return UpdatedDesktopUiTreatmentArm::kDefault;
   }
@@ -83,19 +77,16 @@ UpdatedDesktopUiTreatmentArm GetUpdatedDesktopUiTreatmentArm() {
 
 std::u16string GetWindowTitleForUploadSave() {
   switch (GetUpdatedDesktopUiTreatmentArm()) {
-    case UpdatedDesktopUiTreatmentArm::kSecurityFocusStatic:
-    case UpdatedDesktopUiTreatmentArm::kSecurityFocusAnimated:
+    case UpdatedDesktopUiTreatmentArm::kSecurityFocus:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY);
-    case UpdatedDesktopUiTreatmentArm::kConvenienceFocusStatic:
-    case UpdatedDesktopUiTreatmentArm::kConvenienceFocusAnimated:
+    case UpdatedDesktopUiTreatmentArm::kConvenienceFocus:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_CONVENIENCE);
-    case UpdatedDesktopUiTreatmentArm::kEducationFocusStatic:
-    case UpdatedDesktopUiTreatmentArm::kEducationFocusAnimated:
+    case UpdatedDesktopUiTreatmentArm::kEducationFocus:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_EDUCATION);
-    default:
+    case UpdatedDesktopUiTreatmentArm::kDefault:
       return features::ShouldShowImprovedUserConsentForCreditCardSave()
                  ? l10n_util::GetStringUTF16(
                        IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V4)
@@ -106,19 +97,16 @@ std::u16string GetWindowTitleForUploadSave() {
 
 std::optional<std::u16string> GetUpdatedExplanatoryMessageForUploadSave() {
   switch (GetUpdatedDesktopUiTreatmentArm()) {
-    case UpdatedDesktopUiTreatmentArm::kSecurityFocusStatic:
-    case UpdatedDesktopUiTreatmentArm::kSecurityFocusAnimated:
+    case UpdatedDesktopUiTreatmentArm::kSecurityFocus:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY);
-    case UpdatedDesktopUiTreatmentArm::kConvenienceFocusStatic:
-    case UpdatedDesktopUiTreatmentArm::kConvenienceFocusAnimated:
+    case UpdatedDesktopUiTreatmentArm::kConvenienceFocus:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_CONVENIENCE);
-    case UpdatedDesktopUiTreatmentArm::kEducationFocusStatic:
-    case UpdatedDesktopUiTreatmentArm::kEducationFocusAnimated:
+    case UpdatedDesktopUiTreatmentArm::kEducationFocus:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_EDUCATION);
-    default:
+    case UpdatedDesktopUiTreatmentArm::kDefault:
       return std::nullopt;
   }
 }

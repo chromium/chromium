@@ -41,15 +41,12 @@ enum class BubbleType {
 enum class UpdatedDesktopUiTreatmentArm {
   // Experiment not active.
   kDefault,
-  // Security-focused messaging, with static and animated banner images.
-  kSecurityFocusStatic,
-  kSecurityFocusAnimated,
-  // Convenience-focused messaging, with static and animated banner images.
-  kConvenienceFocusStatic,
-  kConvenienceFocusAnimated,
-  // Education-focused messaging, with static and animated banner images.
-  kEducationFocusStatic,
-  kEducationFocusAnimated
+  // Security-focused messaging and imagery.
+  kSecurityFocus,
+  // Convenience-focused messaging and imagery.
+  kConvenienceFocus,
+  // Education-focused messaging and imagery.
+  kEducationFocus
 };
 
 }  // namespace autofill
