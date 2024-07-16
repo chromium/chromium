@@ -83,7 +83,7 @@ const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks{
     /*default_value=*/false};
 
 BASE_FEATURE(kDlpRegionalizedEndpoints,
-             "kDlpRegionalizedEndpoints",
+             "DlpRegionalizedEndpoints",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDownloadReportWithoutUserDecision,
