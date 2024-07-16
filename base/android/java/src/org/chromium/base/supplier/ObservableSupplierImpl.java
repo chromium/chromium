@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.ThreadUtils.ThreadChecker;
 
 import java.util.Objects;
@@ -36,7 +37,10 @@ public class ObservableSupplierImpl<E> implements ObservableSupplier<E> {
     private E mObject;
     private final ObserverList<Callback<E>> mObservers = new ObserverList<>();
 
-    public ObservableSupplierImpl() {}
+    public ObservableSupplierImpl() {
+        // Guard against creation on Instrumentation thread, since this is basically always a bug.
+        assert !ThreadUtils.runningOnInstrumentationThread();
+    }
 
     public ObservableSupplierImpl(E initialValue) {
         mObject = initialValue;

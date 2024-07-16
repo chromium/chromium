@@ -325,6 +325,14 @@ public class ThreadUtils {
         return getUiThreadHandler().getLooper() == Looper.myLooper();
     }
 
+    /**
+     * @return true iff the current thread is the instrumentation thread.
+     */
+    public static boolean runningOnInstrumentationThread() {
+        return sInstrumentationThreadForTesting != null
+                && sInstrumentationThreadForTesting == Thread.currentThread();
+    }
+
     public static Looper getUiThreadLooper() {
         return getUiThreadHandler().getLooper();
     }
