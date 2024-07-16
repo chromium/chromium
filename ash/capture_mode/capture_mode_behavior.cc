@@ -17,11 +17,13 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/game_capture_bar_view.h"
 #include "ash/capture_mode/normal_capture_bar_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -378,6 +380,9 @@ bool CaptureModeBehavior::ShouldSkipVideoRecordingCountDown() const {
 }
 
 bool CaptureModeBehavior::ShouldCreateAnnotationsOverlayController() const {
+  if (base::FeatureList::IsEnabled(ash::features::kAnnotatorMode)) {
+    return true;
+  }
   return false;
 }
 
