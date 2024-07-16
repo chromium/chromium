@@ -21,6 +21,9 @@
 
 namespace webnn::dml {
 
+constexpr DML_FEATURE_LEVEL kMinDMLFeatureLevelForGpu = DML_FEATURE_LEVEL_4_0;
+constexpr DML_FEATURE_LEVEL kMinDMLFeatureLevelForNpu = DML_FEATURE_LEVEL_6_4;
+
 uint64_t CalculateDMLBufferTensorSize(DML_TENSOR_DATA_TYPE data_type,
                                       const std::vector<uint32_t>& dimensions,
                                       const std::vector<uint32_t>& strides);

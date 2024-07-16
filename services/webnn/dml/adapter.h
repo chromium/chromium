@@ -53,7 +53,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
   // Similar to the `GetGpuInstance` method above, get the shared
   // `Adapter` instance for NPU.
   static base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr>
-  GetNpuInstanceForTesting(DML_FEATURE_LEVEL min_required_dml_feature_level);
+  GetNpuInstanceForTesting();
 
   static base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> GetNpuInstance(
       DML_FEATURE_LEVEL min_required_dml_feature_level,

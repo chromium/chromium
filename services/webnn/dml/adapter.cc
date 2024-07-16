@@ -86,13 +86,12 @@ Adapter::GetInstanceForTesting(
 
 // static
 base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr>
-Adapter::GetNpuInstanceForTesting(
-    DML_FEATURE_LEVEL min_required_dml_feature_level) {
+Adapter::GetNpuInstanceForTesting() {
   CHECK_IS_TEST();
   gpu::GpuFeatureInfo gpu_feature_info;
   gpu::GPUInfo gpu_info;
   gpu::CollectBasicGraphicsInfo(&gpu_info);
-  return GetNpuInstance(DML_FEATURE_LEVEL_4_0, gpu_feature_info, gpu_info);
+  return GetNpuInstance(DML_FEATURE_LEVEL_6_4, gpu_feature_info, gpu_info);
 }
 
 // static

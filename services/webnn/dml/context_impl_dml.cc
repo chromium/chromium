@@ -40,9 +40,7 @@ using Microsoft::WRL::ComPtr;
 // TODO(crbug.com/345271830): update the context properties based on a certain
 // feature level once there is a bundled DirectML.dll.
 ContextProperties GetProperties(DML_FEATURE_LEVEL feature_level) {
-  static constexpr DML_FEATURE_LEVEL kMinDMLFeatureLevelForWebNN =
-      DML_FEATURE_LEVEL_4_0;
-  CHECK_GE(feature_level, kMinDMLFeatureLevelForWebNN);
+  CHECK_GE(feature_level, kMinDMLFeatureLevelForGpu);
 
   static constexpr SupportedDataTypes kGatherIndicesSupportedDataTypes{
       OperandDataType::kInt32, OperandDataType::kUint32,
