@@ -1,7 +1,6 @@
 per-file OWNERS=file://tools/metrics/histograms/metadata/METRIC_REVIEWER_OWNERS
 
 chadduffin@chromium.org
-gordonseto@google.com
 hsuregan@google.com
 jiajunz@google.com
 khorimoto@chromium.org
