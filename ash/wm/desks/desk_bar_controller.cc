@@ -64,6 +64,15 @@ bool ShouldProcessLocatedEvent(const ui::LocatedEvent& event) {
   return true;
 }
 
+bool TargetsSettingsBubbleContainer(const ui::LocatedEvent& event) {
+  if (aura::Window* target = static_cast<aura::Window*>(event.target())) {
+    if (aura::Window* container = GetContainerForWindow(target)) {
+      return container->GetId() == kShellWindowId_SettingBubbleContainer;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 DeskBarController::BarWidgetAndView::BarWidgetAndView(
@@ -124,23 +133,11 @@ void DeskBarController::OnDeskSwitchAnimationLaunching() {
 }
 
 void DeskBarController::OnMouseEvent(ui::MouseEvent* event) {
-  if (ShouldProcessLocatedEvent(*event)) {
-    OnMaybePressOffBar(*event);
-  }
-
-  if (event->type() == ui::ET_MOUSE_PRESSED) {
-    DesksController::Get()->MaybeDismissPersistentDeskRemovalToast();
-  }
+  OnLocatedEvent(*event);
 }
 
 void DeskBarController::OnTouchEvent(ui::TouchEvent* event) {
-  if (ShouldProcessLocatedEvent(*event)) {
-    OnMaybePressOffBar(*event);
-  }
-
-  if (event->type() == ui::ET_TOUCH_PRESSED) {
-    DesksController::Get()->MaybeDismissPersistentDeskRemovalToast();
-  }
+  OnLocatedEvent(*event);
 }
 
 void DeskBarController::OnKeyEvent(ui::KeyEvent* event) {
@@ -480,6 +477,21 @@ void DeskBarController::CloseDeskBarInternal(BarWidgetAndView& desk_bar) {
 
   SetDeskButtonActivation(desk_bar.bar_view->root(),
                           /*is_activated=*/false);
+}
+
+void DeskBarController::OnLocatedEvent(ui::LocatedEvent& event) {
+  if (ShouldProcessLocatedEvent(event)) {
+    OnMaybePressOffBar(event);
+  }
+
+  // Maybe dismiss the persistent toast, unless the event might be targeting the
+  // toast itself. If that is the case, we'd better let the toast handle the
+  // event.
+  if ((event.type() == ui::ET_MOUSE_PRESSED ||
+       event.type() == ui::ET_TOUCH_PRESSED) &&
+      !TargetsSettingsBubbleContainer(event)) {
+    DesksController::Get()->MaybeDismissPersistentDeskRemovalToast();
+  }
 }
 
 void DeskBarController::OnMaybePressOffBar(ui::LocatedEvent& event) {

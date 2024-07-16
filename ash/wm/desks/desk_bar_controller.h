@@ -123,6 +123,9 @@ class ASH_EXPORT DeskBarController : public DesksController::Observer,
 
   void CloseDeskBarInternal(BarWidgetAndView& desk_bar);
 
+  // Common handling of mouse and touch events.
+  void OnLocatedEvent(ui::LocatedEvent& event);
+
   // When pressing off the bar, it should either commit desk name change, or
   // hide the bar.
   void OnMaybePressOffBar(ui::LocatedEvent& event);
