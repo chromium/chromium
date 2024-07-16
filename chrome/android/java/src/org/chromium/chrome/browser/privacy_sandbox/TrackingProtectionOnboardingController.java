@@ -131,8 +131,7 @@ public class TrackingProtectionOnboardingController {
 
     boolean isSilentOnboarding(int noticeType) {
         return noticeType == NoticeType.MODE_B_SILENT_ONBOARDING
-                || noticeType == NoticeType.FULL3PCD_SILENT_ONBOARDING
-                || noticeType == NoticeType.FULL3PCD_SILENT_ONBOARDING_WITH_IPP;
+                || noticeType == NoticeType.FULL3PCD_SILENT_ONBOARDING;
     }
 
     private boolean isSecure(Tab tab) {

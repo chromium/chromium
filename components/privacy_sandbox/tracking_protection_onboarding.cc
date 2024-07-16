@@ -30,13 +30,13 @@ using ::privacy_sandbox::tracking_protection::
 
 using NoticeType = privacy_sandbox::TrackingProtectionOnboarding::NoticeType;
 
-TrackingProtectionOnboardingStatus GetInternalOnboardingStatus(
+TrackingProtectionOnboardingStatus GetInternalModeBOnboardingStatus(
     PrefService* pref_service) {
   return static_cast<TrackingProtectionOnboardingStatus>(
       pref_service->GetInteger(prefs::kTrackingProtectionOnboardingStatus));
 }
 
-TrackingProtectionOnboardingStatus GetInternalSilentOnboardingStatus(
+TrackingProtectionOnboardingStatus GetInternalModeBSilentOnboardingStatus(
     PrefService* pref_service) {
   return static_cast<TrackingProtectionOnboardingStatus>(
       pref_service->GetInteger(
@@ -182,7 +182,7 @@ void RecordEligibleWaitingToOnboardHistogramsOnStartup(
 }
 
 void RecordHistogramsOnboardingOnStartup(PrefService* pref_service) {
-  auto status = GetInternalOnboardingStatus(pref_service);
+  auto status = GetInternalModeBOnboardingStatus(pref_service);
   switch (status) {
     case TrackingProtectionOnboardingStatus::kIneligible:
       CreateHistogramOnboardingStartupState(
@@ -200,7 +200,7 @@ void RecordHistogramsOnboardingOnStartup(PrefService* pref_service) {
 }
 
 void RecordHistogramsSilentOnboardingOnStartup(PrefService* pref_service) {
-  auto status = GetInternalSilentOnboardingStatus(pref_service);
+  auto status = GetInternalModeBSilentOnboardingStatus(pref_service);
   switch (status) {
     case TrackingProtectionOnboardingStatus::kIneligible:
       CreateHistogramSilentOnboardingStartupState(
@@ -246,9 +246,9 @@ void RecordHistogramsOnStartup(PrefService* pref_service) {
   RecordHistogramsSilentOnboardingOnStartup(pref_service);
 }
 
-TrackingProtectionOnboarding::NoticeType GetRequiredSilentOnboardingNotice(
+TrackingProtectionOnboarding::NoticeType GetRequiredModeBSilentOnboardingNotice(
     PrefService* pref_service) {
-  auto onboarding_status = GetInternalSilentOnboardingStatus(pref_service);
+  auto onboarding_status = GetInternalModeBSilentOnboardingStatus(pref_service);
   switch (onboarding_status) {
     case TrackingProtectionOnboardingStatus::kIneligible:
     case TrackingProtectionOnboardingStatus::kOnboarded:
@@ -321,7 +321,7 @@ void ModeBNoticeShown(PrefService* pref_service) {
       base::UserMetricsAction("TrackingProtection.Notice.Shown"));
   base::Time now = base::Time::Now();
   pref_service->SetTime(prefs::kTrackingProtectionNoticeLastShown, now);
-  auto status = GetInternalOnboardingStatus(pref_service);
+  auto status = GetInternalModeBOnboardingStatus(pref_service);
   if (status != TrackingProtectionOnboardingStatus::kEligible &&
       status != TrackingProtectionOnboardingStatus::kRequested) {
     base::UmaHistogramBoolean(
@@ -347,7 +347,7 @@ void ModeBNoticeShown(PrefService* pref_service) {
 }
 
 void ModeBSilentNoticeShown(PrefService* pref_service) {
-  auto status = GetInternalSilentOnboardingStatus(pref_service);
+  auto status = GetInternalModeBSilentOnboardingStatus(pref_service);
   if (status != TrackingProtectionOnboardingStatus::kEligible) {
     RecordSilentOnboardingDidNoticeShownOnboard(false);
     return;
@@ -418,7 +418,7 @@ void TrackingProtectionOnboarding::OnOnboardingPrefChanged() const {
     observer.OnTrackingProtectionOnboardingUpdated(onboarding_status);
   }
 
-  switch (GetInternalOnboardingStatus(pref_service_)) {
+  switch (GetInternalModeBOnboardingStatus(pref_service_)) {
     case tracking_protection::TrackingProtectionOnboardingStatus::kIneligible:
     case tracking_protection::TrackingProtectionOnboardingStatus::kEligible:
       for (auto& observer : observers_) {
@@ -453,7 +453,7 @@ bool TrackingProtectionOnboarding::IsNewProfile() const {
 }
 
 void TrackingProtectionOnboarding::MaybeMarkModeBEligible() {
-  auto status = GetInternalOnboardingStatus(pref_service_);
+  auto status = GetInternalModeBOnboardingStatus(pref_service_);
   if (status != TrackingProtectionOnboardingStatus::kIneligible) {
     base::UmaHistogramBoolean(
         "PrivacySandbox.TrackingProtection.Onboarding.MaybeMarkEligible",
@@ -471,7 +471,7 @@ void TrackingProtectionOnboarding::MaybeMarkModeBEligible() {
 }
 
 void TrackingProtectionOnboarding::MaybeMarkModeBIneligible() {
-  auto status = GetInternalOnboardingStatus(pref_service_);
+  auto status = GetInternalModeBOnboardingStatus(pref_service_);
   if (status != TrackingProtectionOnboardingStatus::kEligible) {
     base::UmaHistogramBoolean(
         "PrivacySandbox.TrackingProtection.Onboarding.MaybeMarkIneligible",
@@ -488,7 +488,7 @@ void TrackingProtectionOnboarding::MaybeMarkModeBIneligible() {
 }
 
 void TrackingProtectionOnboarding::MaybeMarkModeBSilentEligible() {
-  auto status = GetInternalSilentOnboardingStatus(pref_service_);
+  auto status = GetInternalModeBSilentOnboardingStatus(pref_service_);
   if (status != TrackingProtectionOnboardingStatus::kIneligible) {
     RecordSilentOnboardingMarkEligibleHistogram(false);
     return;
@@ -503,7 +503,7 @@ void TrackingProtectionOnboarding::MaybeMarkModeBSilentEligible() {
 }
 
 void TrackingProtectionOnboarding::MaybeMarkModeBSilentIneligible() {
-  auto status = GetInternalSilentOnboardingStatus(pref_service_);
+  auto status = GetInternalModeBSilentOnboardingStatus(pref_service_);
   if (status != TrackingProtectionOnboardingStatus::kEligible) {
     RecordSilentOnboardingMarkIneligibleHistogram(false);
     return;
@@ -551,7 +551,6 @@ void TrackingProtectionOnboarding::NoticeShown(SurfaceType surface,
     case NoticeType::kFull3PCDOnboarding:
     case NoticeType::kFull3PCDSilentOnboarding:
     case NoticeType::kFull3PCDOnboardingWithIPP:
-    case NoticeType::kFull3PCDSilentOnboardingWithIPP:
       // TODO(341975190) Add support for full 3PCD.
       NOTREACHED_NORETURN();
   }
@@ -571,7 +570,6 @@ void TrackingProtectionOnboarding::NoticeActionTaken(SurfaceType surface,
     case NoticeType::kFull3PCDOnboarding:
     case NoticeType::kFull3PCDSilentOnboarding:
     case NoticeType::kFull3PCDOnboardingWithIPP:
-    case NoticeType::kFull3PCDSilentOnboardingWithIPP:
       // TODO(341975190) Add support for full 3PCD.
       NOTREACHED_NORETURN();
   }
@@ -585,10 +583,10 @@ bool TrackingProtectionOnboarding::ShouldRunUILogic(SurfaceType surface) {
 
 NoticeType TrackingProtectionOnboarding::GetRequiredNotice(
     SurfaceType surface) {
-  auto onboarding_status = GetInternalOnboardingStatus(pref_service_);
+  auto onboarding_status = GetInternalModeBOnboardingStatus(pref_service_);
   switch (onboarding_status) {
     case TrackingProtectionOnboardingStatus::kIneligible:
-      return GetRequiredSilentOnboardingNotice(pref_service_);
+      return GetRequiredModeBSilentOnboardingNotice(pref_service_);
     case TrackingProtectionOnboardingStatus::kEligible:
     case TrackingProtectionOnboardingStatus::kRequested: {
       return NoticeType::kModeBOnboarding;
@@ -639,7 +637,7 @@ TrackingProtectionOnboarding::GetSilentOnboardingTimestamp() {
 
 TrackingProtectionOnboarding::OnboardingStatus
 TrackingProtectionOnboarding::GetOnboardingStatus() const {
-  auto onboarding_status = GetInternalOnboardingStatus(pref_service_);
+  auto onboarding_status = GetInternalModeBOnboardingStatus(pref_service_);
   switch (onboarding_status) {
     case TrackingProtectionOnboardingStatus::kIneligible:
       return OnboardingStatus::kIneligible;
@@ -653,7 +651,8 @@ TrackingProtectionOnboarding::GetOnboardingStatus() const {
 
 TrackingProtectionOnboarding::SilentOnboardingStatus
 TrackingProtectionOnboarding::GetSilentOnboardingStatus() const {
-  auto onboarding_status = GetInternalSilentOnboardingStatus(pref_service_);
+  auto onboarding_status =
+      GetInternalModeBSilentOnboardingStatus(pref_service_);
   switch (onboarding_status) {
     case TrackingProtectionOnboardingStatus::kIneligible:
       return SilentOnboardingStatus::kIneligible;

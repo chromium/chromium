@@ -68,14 +68,12 @@ class TrackingProtectionOnboarding : public KeyedService {
     kModeBOnboarding,
     // The notice in question is a silent Mode B Onboarding Notice.
     kModeBSilentOnboarding,
-    // The notice in question is a full 3PCD Onboarding Notice.
-    kFull3PCDOnboarding,
     // The notice in question is a silent full 3PCD Onboarding Notice.
     kFull3PCDSilentOnboarding,
+    // The notice in question is a full 3PCD Onboarding Notice.
+    kFull3PCDOnboarding,
     // The notice in question is a full 3PCD + IPP Onboarding Notice.
     kFull3PCDOnboardingWithIPP,
-    // The notice in question is a silent full 3PCD + IPP Onboarding Notice.
-    kFull3PCDSilentOnboardingWithIPP,
   };
 
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
