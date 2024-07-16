@@ -27,4 +27,28 @@ TEST_F(LensOverlayRequestIdGeneratorTest, GetNextRequestId_IncrementsSequence) {
   ASSERT_EQ(request_id_generator.GetNextRequestId()->sequence_id(), 2);
 }
 
+TEST_F(LensOverlayRequestIdGeneratorTest, ResetRequestId_ChangesAnalyticsId) {
+  lens::LensOverlayRequestIdGenerator request_id_generator;
+  std::unique_ptr<lens::LensOverlayRequestId> first_id =
+      request_id_generator.GetNextRequestId();
+  request_id_generator.ResetRequestId();
+  std::unique_ptr<lens::LensOverlayRequestId> second_id =
+      request_id_generator.GetNextRequestId();
+  ASSERT_EQ(first_id->sequence_id(), 1);
+  ASSERT_EQ(second_id->sequence_id(), 1);
+  ASSERT_NE(first_id->analytics_id(), second_id->analytics_id());
+}
+
+TEST_F(LensOverlayRequestIdGeneratorTest,
+       GetNextRequestId_DoesNotChangeAnalyticsId) {
+  lens::LensOverlayRequestIdGenerator request_id_generator;
+  std::unique_ptr<lens::LensOverlayRequestId> first_id =
+      request_id_generator.GetNextRequestId();
+  std::unique_ptr<lens::LensOverlayRequestId> second_id =
+      request_id_generator.GetNextRequestId();
+  ASSERT_EQ(first_id->sequence_id(), 1);
+  ASSERT_EQ(second_id->sequence_id(), 2);
+  ASSERT_EQ(first_id->analytics_id(), second_id->analytics_id());
+}
+
 }  // namespace lens

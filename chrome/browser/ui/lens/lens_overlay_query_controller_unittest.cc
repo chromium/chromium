@@ -24,6 +24,7 @@
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
+#include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_visual_search_interaction_data.pb.h"
 #include "ui/gfx/codec/jpeg_codec.h"
@@ -58,6 +59,9 @@ constexpr char kStartTimeQueryParam[] = "qsubts";
 
 // The visual search interaction log data param.
 constexpr char kVisualSearchInteractionDataQueryParameterKey[] = "vsint";
+
+// Query parameter for the request id.
+inline constexpr char kRequestIdParameterKey[] = "vsrid";
 
 // The encoded search context for the test page and title.
 constexpr char kTestEncodedSearchContext[] =
@@ -118,6 +122,7 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
   lens::LensOverlayObjectsResponse fake_objects_response_;
   lens::LensOverlayInteractionResponse fake_interaction_response_;
   lens::LensOverlayClientLogs sent_client_logs_;
+  lens::LensOverlayRequestId sent_request_id_;
   lens::LensOverlayObjectsRequest sent_objects_request_;
   lens::LensOverlayInteractionRequest sent_interaction_request_;
   int num_gen204_pings_sent_ = 0;
@@ -133,10 +138,14 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
       sent_objects_request_.CopyFrom(request_data.objects_request());
       fake_server_response.mutable_objects_response()->CopyFrom(
           fake_objects_response_);
+      sent_request_id_.CopyFrom(
+          request_data.objects_request().request_context().request_id());
     } else if (request_data.has_interaction_request()) {
       sent_interaction_request_.CopyFrom(request_data.interaction_request());
       fake_server_response.mutable_interaction_response()->CopyFrom(
           fake_interaction_response_);
+      sent_request_id_.CopyFrom(
+          request_data.interaction_request().request_context().request_id());
     } else {
       NOTREACHED_IN_MIGRATION();
     }
@@ -193,6 +202,20 @@ class LensOverlayQueryControllerTest : public testing::Test {
     lens::LensOverlayVisualSearchInteractionData proto;
     EXPECT_TRUE(proto.ParseFromString(serialized_proto));
     return proto.log_data().user_selection_data().selection_type();
+  }
+
+  std::string GetAnalyticsIdFromUrl(std::string url_string) {
+    GURL url = GURL(url_string);
+    std::string vsrid_param;
+    EXPECT_TRUE(
+        net::GetValueForKeyInQuery(url, kRequestIdParameterKey, &vsrid_param));
+    std::string serialized_proto;
+    EXPECT_TRUE(base::Base64UrlDecode(
+        vsrid_param, base::Base64UrlDecodePolicy::DISALLOW_PADDING,
+        &serialized_proto));
+    lens::LensOverlayRequestId proto;
+    EXPECT_TRUE(proto.ParseFromString(serialized_proto));
+    return proto.analytics_id();
   }
 
   void CheckGen204IdsMatch(
@@ -725,6 +748,61 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(query_controller.num_gen204_pings_sent_, 2);
   CheckGen204IdsMatch(query_controller.sent_client_logs_,
                       url_response_future.Get());
+}
+
+TEST_F(LensOverlayQueryControllerTest,
+       FetchInteraction_UsesSameAnalyticsIdForLensRequestAndUrl) {
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
+      url_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayInteractionResponse>
+      interaction_data_response_future;
+  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  LensOverlayQueryControllerMock query_controller(
+      full_image_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(),
+      interaction_data_response_future.GetRepeatingCallback(),
+      thumbnail_created_future.GetRepeatingCallback(),
+      profile()->GetVariationsClient(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false);
+  query_controller.fake_objects_response_.mutable_cluster_info()
+      ->set_server_session_id(kTestServerSessionId);
+  query_controller.fake_interaction_response_.set_encoded_response(
+      kTestSuggestSignals);
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  std::map<std::string, std::string> additional_search_query_params;
+  auto region = lens::mojom::CenterRotatedBox::New();
+  region->box = gfx::RectF(30, 40, 50, 60);
+  region->coordinate_type =
+      lens::mojom::CenterRotatedBox_CoordinateType::kImage;
+
+  query_controller.StartQueryFlow(
+      bitmap, std::make_optional<GURL>(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(), 0);
+  task_environment_.RunUntilIdle();
+
+  ASSERT_TRUE(full_image_response_future.IsReady());
+  std::string first_analytics_id =
+      query_controller.sent_request_id_.analytics_id();
+  query_controller.SendRegionSearch(std::move(region), lens::REGION_SEARCH,
+                                    additional_search_query_params,
+                                    std::nullopt);
+  task_environment_.RunUntilIdle();
+  query_controller.EndQuery();
+
+  ASSERT_TRUE(url_response_future.IsReady());
+  ASSERT_TRUE(interaction_data_response_future.IsReady());
+  std::string second_analytics_id =
+      query_controller.sent_request_id_.analytics_id();
+
+  ASSERT_NE(second_analytics_id, first_analytics_id);
+  ASSERT_EQ(GetAnalyticsIdFromUrl(url_response_future.Get().url()),
+            second_analytics_id);
 }
 
 }  // namespace lens

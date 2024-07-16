@@ -24,5 +24,7 @@ message LensOverlayRequestId {
   // Note, region search request does not increment this id.
   optional int32 image_sequence_id = 3;
 
-  reserved 4;
+  // Analytics ID for the Lens request. Will be updated on the initial request
+  // and once per interaction request.
+  optional bytes analytics_id = 4;
 }
