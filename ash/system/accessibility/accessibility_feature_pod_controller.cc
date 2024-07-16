@@ -108,7 +108,6 @@ std::unique_ptr<FeatureTile> AccessibilityFeaturePodController::CreateTile(
   auto feature_tile = std::make_unique<FeatureTile>(
       base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
                           weak_ptr_factory_.GetWeakPtr()));
-  feature_tile->SetID(VIEW_ID_FEATURE_TILE_ACCESSIBILITY);
   feature_tile->SetVectorIcon(kUnifiedMenuAccessibilityIcon);
   feature_tile->SetLabel(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY));

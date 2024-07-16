@@ -79,7 +79,6 @@ std::unique_ptr<FeatureTile> CastFeaturePodController::CreateTile(
       compact ? FeatureTile::TileType::kCompact
               : FeatureTile::TileType::kPrimary);
   tile_ = tile.get();
-  tile->SetID(VIEW_ID_CAST_MAIN_VIEW);
 
   bool target_visibility = CalculateButtonVisibility();
   if (target_visibility) {

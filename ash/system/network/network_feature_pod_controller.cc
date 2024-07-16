@@ -185,7 +185,6 @@ std::unique_ptr<FeatureTile> NetworkFeaturePodController::CreateTile(
       base::BindRepeating(&FeaturePodControllerBase::OnLabelPressed,
                           weak_ptr_factory_.GetWeakPtr()));
   tile_ = tile.get();
-  tile_->SetID(VIEW_ID_FEATURE_TILE_NETWORK);
   tile_->SetIconClickable(true);
   tile_->SetIconClickCallback(
       base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,

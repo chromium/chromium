@@ -10,6 +10,7 @@
 #include "ash/capture_mode/capture_mode_feature_pod_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
+#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/pagination/pagination_controller.h"
 #include "ash/public/cpp/system_tray_client.h"
@@ -370,61 +371,78 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
   std::vector<std::unique_ptr<FeatureTile>> tiles;
 
   auto create_tile =
-      [](std::unique_ptr<FeaturePodControllerBase> controller,
+      [](ViewID tile_id, std::unique_ptr<FeaturePodControllerBase> controller,
          std::vector<std::unique_ptr<FeaturePodControllerBase>>& controllers,
          std::vector<std::unique_ptr<FeatureTile>>& tiles,
          bool compact = false) {
-        tiles.push_back(controller->CreateTile(compact));
+        std::unique_ptr<FeatureTile> tile = controller->CreateTile(compact);
+        tile->SetID(static_cast<int>(tile_id));
+        tiles.push_back(std::move(tile));
         controllers.push_back(std::move(controller));
       };
 
-  create_tile(std::make_unique<NetworkFeaturePodController>(this),
+  create_tile(VIEW_ID_FEATURE_TILE_NETWORK,
+              std::make_unique<NetworkFeaturePodController>(this),
               feature_pod_controllers_, tiles);
 
   // CaptureMode and QuietMode tiles will be compact if both are visible.
   bool capture_and_quiet_tiles_are_compact =
       CaptureModeFeaturePodController::CalculateButtonVisibility() &&
       QuietModeFeaturePodController::CalculateButtonVisibility();
-  create_tile(std::make_unique<CaptureModeFeaturePodController>(this),
+  create_tile(VIEW_ID_FEATURE_TILE_SCREEN_CAPTURE,
+              std::make_unique<CaptureModeFeaturePodController>(this),
               feature_pod_controllers_, tiles,
               capture_and_quiet_tiles_are_compact);
-  create_tile(std::make_unique<QuietModeFeaturePodController>(),
+  create_tile(VIEW_ID_FEATURE_TILE_DND,
+              std::make_unique<QuietModeFeaturePodController>(),
               feature_pod_controllers_, tiles,
               capture_and_quiet_tiles_are_compact);
-  create_tile(std::make_unique<BluetoothFeaturePodController>(this),
+  create_tile(VIEW_ID_FEATURE_TILE_BLUETOOTH,
+              std::make_unique<BluetoothFeaturePodController>(this),
               feature_pod_controllers_, tiles);
 
   // Cast and RotationLock tiles will be compact if both are visible.
   bool cast_and_rotation_tiles_are_compact =
       CastFeaturePodController::CalculateButtonVisibility() &&
       RotationLockFeaturePodController::CalculateButtonVisibility();
-  create_tile(std::make_unique<CastFeaturePodController>(this),
+  create_tile(VIEW_ID_FEATURE_TILE_CAST,
+              std::make_unique<CastFeaturePodController>(this),
               feature_pod_controllers_, tiles,
               cast_and_rotation_tiles_are_compact);
-  create_tile(std::make_unique<RotationLockFeaturePodController>(),
+  create_tile(VIEW_ID_FEATURE_TILE_AUTOROTATE,
+              std::make_unique<RotationLockFeaturePodController>(),
               feature_pod_controllers_, tiles,
               cast_and_rotation_tiles_are_compact);
-  create_tile(std::make_unique<AccessibilityFeaturePodController>(this),
+  create_tile(VIEW_ID_FEATURE_TILE_ACCESSIBILITY,
+              std::make_unique<AccessibilityFeaturePodController>(this),
               feature_pod_controllers_, tiles);
-  create_tile(std::make_unique<HotspotFeaturePodController>(this),
+  create_tile(VIEW_ID_FEATURE_TILE_HOTSPOT,
+              std::make_unique<HotspotFeaturePodController>(this),
               feature_pod_controllers_, tiles);
   if (base::FeatureList::IsEnabled(features::kFocusMode)) {
-    create_tile(std::make_unique<FocusModeFeaturePodController>(this),
+    create_tile(VIEW_ID_FEATURE_TILE_FOCUS_MODE,
+                std::make_unique<FocusModeFeaturePodController>(this),
                 feature_pod_controllers_, tiles);
   }
-  create_tile(std::make_unique<NearbyShareFeaturePodController>(this),
+  create_tile(VIEW_ID_FEATURE_TILE_NEARBY_SHARE,
+              std::make_unique<NearbyShareFeaturePodController>(this),
               feature_pod_controllers_, tiles);
-  create_tile(std::make_unique<LocaleFeaturePodController>(this),
+  create_tile(VIEW_ID_FEATURE_TILE_LOCALE,
+              std::make_unique<LocaleFeaturePodController>(this),
               feature_pod_controllers_, tiles);
-  create_tile(std::make_unique<IMEFeaturePodController>(this),
+  create_tile(VIEW_ID_FEATURE_TILE_IME,
+              std::make_unique<IMEFeaturePodController>(this),
               feature_pod_controllers_, tiles);
   if (media::ShouldEnableAutoFraming()) {
-    create_tile(std::make_unique<AutozoomFeaturePodController>(),
+    create_tile(VIEW_ID_FEATURE_TILE_AUTOZOOM,
+                std::make_unique<AutozoomFeaturePodController>(),
                 feature_pod_controllers_, tiles);
   }
-  create_tile(std::make_unique<VPNFeaturePodController>(this),
+  create_tile(VIEW_ID_FEATURE_TILE_VPN,
+              std::make_unique<VPNFeaturePodController>(this),
               feature_pod_controllers_, tiles);
-  create_tile(std::make_unique<PrivacyScreenFeaturePodController>(),
+  create_tile(VIEW_ID_FEATURE_TILE_PRIVACY_SCREEN,
+              std::make_unique<PrivacyScreenFeaturePodController>(),
               feature_pod_controllers_, tiles);
 
   quick_settings_view_->AddTiles(std::move(tiles));

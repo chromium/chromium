@@ -102,7 +102,7 @@ class SystemTrayTrayCastMediaRouterChromeOSTest : public InProcessBrowserTest {
     return tray_test_api_->IsBubbleViewVisible(view_id, false /* open_tray */);
   }
 
-  bool IsTrayVisible() { return IsViewDrawn(ash::VIEW_ID_CAST_MAIN_VIEW); }
+  bool IsTrayVisible() { return IsViewDrawn(ash::VIEW_ID_FEATURE_TILE_CAST); }
 
   bool IsCastingNotificationVisible() {
     return !GetNotificationString().empty();
@@ -316,7 +316,7 @@ class SystemTrayTrayCastAccessCodeChromeOSTest
 
   void ClickView(int view_id) { tray_test_api_->ClickBubbleView(view_id); }
 
-  bool IsTrayVisible() { return IsViewDrawn(ash::VIEW_ID_CAST_MAIN_VIEW); }
+  bool IsTrayVisible() { return IsViewDrawn(ash::VIEW_ID_FEATURE_TILE_CAST); }
 
   // Returns the status area widget.
   ash::StatusAreaWidget* FindStatusAreaWidget() {

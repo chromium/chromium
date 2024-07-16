@@ -82,7 +82,7 @@ TEST_F(QuickSettingsViewTest, CastAndAutoRotateCompactTiles) {
   EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
   tray->ShowBubble();
 
-  FeatureTile* cast_tile = GetTileById(VIEW_ID_CAST_MAIN_VIEW);
+  FeatureTile* cast_tile = GetTileById(VIEW_ID_FEATURE_TILE_CAST);
   ASSERT_TRUE(cast_tile);
   EXPECT_TRUE(cast_tile->GetVisible());
   EXPECT_EQ(cast_tile->tile_type(), FeatureTile::TileType::kPrimary);
@@ -98,7 +98,7 @@ TEST_F(QuickSettingsViewTest, CastAndAutoRotateCompactTiles) {
 
   tray->ShowBubble();
 
-  cast_tile = GetTileById(VIEW_ID_CAST_MAIN_VIEW);
+  cast_tile = GetTileById(VIEW_ID_FEATURE_TILE_CAST);
   EXPECT_TRUE(cast_tile->GetVisible());
   EXPECT_EQ(cast_tile->tile_type(), FeatureTile::TileType::kCompact);
 
