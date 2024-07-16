@@ -6,6 +6,7 @@ import 'chrome://downloads/downloads.js';
 
 import type {DownloadsDangerousDownloadInterstitialElement} from 'chrome://downloads/downloads.js';
 import {BrowserProxy, loadTimeData} from 'chrome://downloads/downloads.js';
+import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -54,23 +55,35 @@ suite('interstitial tests', function() {
   test('clicking back to safety cancels the interstitial', function() {
     assertTrue(interstitial.$.dialog.open);
 
+    let cancelCounter = 0;
+    interstitial.addEventListener('cancel', function() {
+      cancelCounter++;
+    });
+
     const backToSafetyButton =
         interstitial!.shadowRoot!.querySelector<HTMLElement>(
             '#back-to-safety-button');
     assertTrue(!!backToSafetyButton);
     backToSafetyButton.click();
 
+    assertEquals(1, cancelCounter);
     assertFalse(interstitial.$.dialog.open);
   });
 
   test('clicking download closes the interstitial', function() {
     assertTrue(interstitial.$.dialog.open);
 
+    let closeCounter = 0;
+    interstitial.addEventListener('close', function() {
+      closeCounter++;
+    });
+
     const downloadButton = interstitial!.shadowRoot!.querySelector<HTMLElement>(
         '#download-button');
     assertTrue(!!downloadButton);
     downloadButton.click();
 
+    assertEquals(1, closeCounter);
     assertFalse(interstitial.$.dialog.open);
   });
 
@@ -87,5 +100,17 @@ suite('interstitial tests', function() {
 
     assertTrue(isVisible(surveyAndDownloadButton));
     assertTrue(continueAnywayButton.disabled);
+  });
+
+  test('esc key disabled while interstitial open', function() {
+    let cancelCounter = 0;
+    // Pressing escape normally triggers a 'cancel' event on HTML dialog
+    interstitial.addEventListener('cancel', function() {
+      cancelCounter++;
+    });
+    keyDownOn(interstitial, 0, [], 'Escape');
+
+    assertEquals(0, cancelCounter);
+    assertTrue(interstitial.$.dialog.open);
   });
 });

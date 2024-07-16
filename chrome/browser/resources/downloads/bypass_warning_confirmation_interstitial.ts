@@ -51,11 +51,27 @@ export class DownloadsDangerousDownloadInterstitialElement extends
 
   trustSiteLine: string;
 
+  private boundKeydown_: ((e: KeyboardEvent) => void)|null = null;
   private hideSurveyAndDownloadButton_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
     this.$.dialog.showModal();
+    this.disableEscapeKey_();
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeKeydownListener_();
+  }
+
+  private disableEscapeKey_() {
+    this.boundKeydown_ = this.boundKeydown_ || this.onKeydown_.bind(this);
+    this.addEventListener('keydown', this.boundKeydown_);
+    // Sometimes <body> is key event's target and in that case the event
+    // will bypass dialog. We should consume those events too in order to
+    // modally. This prevents cancelling the interstitial via keyboard events.
+    document.body.addEventListener('keydown', this.boundKeydown_);
   }
 
   private onBackToSafetyClick_() {
@@ -77,6 +93,22 @@ export class DownloadsDangerousDownloadInterstitialElement extends
     assert(!this.$.dialog.open);
     this.dispatchEvent(
         new CustomEvent('close', {bubbles: true, composed: true}));
+  }
+
+  private onKeydown_(e: KeyboardEvent) {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+    }
+  }
+
+  private removeKeydownListener_() {
+    if (!this.boundKeydown_) {
+      return;
+    }
+
+    this.removeEventListener('keydown', this.boundKeydown_);
+    document.body.removeEventListener('keydown', this.boundKeydown_);
+    this.boundKeydown_ = null;
   }
 }
 
