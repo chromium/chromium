@@ -57,9 +57,6 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
   html_source->AddLocalizedString("cursorTooltipDragMessage",
                                   IDS_LENS_OVERLAY_CURSOR_TOOLTIP_DRAG_MESSAGE);
   html_source->AddLocalizedString(
-      "deleteImageSelection",
-      IDS_LENS_OVERLAY_SEARCHBOX_THUMBNAIL_REMOVE_BUTTON_LABEL);
-  html_source->AddLocalizedString(
       "cursorTooltipTextHighlightMessage",
       IDS_LENS_OVERLAY_CURSOR_TOOLTIP_TEXT_HIGHLIGHT_MESSAGE);
   html_source->AddLocalizedString(
