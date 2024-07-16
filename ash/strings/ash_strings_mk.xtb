@@ -601,7 +601,7 @@
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> уреди се поврзани на точката на пристап на <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Се префрливте во режим на лаптоп</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> сепак ќе може да се најави подоцна.</translation>
-<translation id="3321628682574733415">Неточен код на родител</translation>
+<translation id="3321628682574733415">Неточен родителски код</translation>
 <translation id="332827762492701193">Известувањата се скриени</translation>
 <translation id="3333674550998107387">Прошири го известувањето за <ph name="NOTIFICATION_TITLE" /></translation>
 <translation id="3339826665088060472">Снимање на екранот, алатки за правење слики од екранот и снимање на екранот</translation>
@@ -990,7 +990,7 @@
 <translation id="4673427585974421255">Остави вклучено</translation>
 <translation id="468293128311738995">Апликации од телефонот</translation>
 <translation id="4690510401873698237">Полицата е најдолу</translation>
-<translation id="4696813013609194136">Отклучете го уредот со код на родител</translation>
+<translation id="4696813013609194136">Отклучете го уредот со родителски код</translation>
 <translation id="4697357603686181098">Не можам да ви помогнам со ова. Обидете се со друго барање.</translation>
 <translation id="4702647871202761252">Исклучен е екранот за приватност</translation>
 <translation id="4706121060329443414">Подоцна ќе се изврши обид за преземање. Говорот ќе биде испратен до Google за обработка засега.</translation>

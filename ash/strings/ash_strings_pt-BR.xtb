@@ -989,7 +989,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4673427585974421255">Deixar ativado</translation>
 <translation id="468293128311738995">Apps do smartphone</translation>
 <translation id="4690510401873698237">Estante na parte inferior</translation>
-<translation id="4696813013609194136">Desbloquear dispositivo usando o código de familiar responsável</translation>
+<translation id="4696813013609194136">Desbloquear dispositivo usando o código do familiar responsável</translation>
 <translation id="4697357603686181098">Não posso ajudar. Tente algo diferente.</translation>
 <translation id="4702647871202761252">A tela de privacidade está desativada</translation>
 <translation id="4706121060329443414">O download será feito mais tarde. Por enquanto, a fala será enviada ao Google para processamento.</translation>
@@ -1331,7 +1331,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="5864748620896638071">Bateria em <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Coletando informações da rede</translation>
 <translation id="5867606971598166637">O administrador do sistema está monitorando suas telas</translation>
-<translation id="5876666360658629066">Digite o código de familiar responsável</translation>
+<translation id="5876666360658629066">Digite o código do familiar responsável</translation>
 <translation id="5881540930187678962">Configurar o recurso "Seu smartphone" mais tarde</translation>
 <translation id="588258955323874662">Tela inteira</translation>
 <translation id="5887954372087850114">A janela <ph name="WINDOW_TITLE" /> foi atribuída a <ph name="DESK_TITLE" /> e não foi atribuída a nenhum outro espaço de trabalho</translation>
@@ -2095,7 +2095,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">O tempo acabou. Muito bem! 🎉</translation>
 <translation id="8753368202781196133">Esse idioma não está disponível no momento</translation>
-<translation id="8755498163081687682">Verifique sua identidade: <ph name="ORIGIN_NAME" /> quer confirmar que é você</translation>
+<translation id="8755498163081687682">Confirme sua identidade: <ph name="ORIGIN_NAME" /> quer confirmar que é você</translation>
 <translation id="875593634123171288">Mostrar configurações de VPN</translation>
 <translation id="8756799553341497810">Você pode começar a personalizar o layout do app depois de sair desta visualização.</translation>
 <translation id="8759408218731716181">Não é possível configurar o login múltiplo</translation>
