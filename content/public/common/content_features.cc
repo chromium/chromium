@@ -473,7 +473,11 @@ BASE_FEATURE(kInstalledAppProvider,
 // process.
 BASE_FEATURE(kIsolatedWebApps,
              "IsolatedWebApps",
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Enables a new Automatic Fullscreen content setting that lets allowlisted
 // origins use the HTML Fullscreen API without transient activation.
