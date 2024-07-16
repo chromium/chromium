@@ -44,16 +44,19 @@ class SafetyCheckMagicStackMediatorTest : public PlatformTest {
 
     registry->RegisterBooleanPref(prefs::kSafeBrowsingEnabled, false);
     registry->RegisterBooleanPref(prefs::kSafeBrowsingEnhanced, false);
+    registry->RegisterStringPref(
+        prefs::kIosSafetyCheckManagerPasswordCheckResult,
+        NameForSafetyCheckState(PasswordSafetyCheckState::kDefault),
+        PrefRegistry::LOSSY_PREF);
+    registry->RegisterDictionaryPref(
+        prefs::kIosSafetyCheckManagerInsecurePasswordCounts,
+        PrefRegistry::LOSSY_PREF);
 
     local_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     PrefRegistrySimple* local_registry = local_pref_service_->registry();
 
     local_registry->RegisterTimePref(prefs::kIosSafetyCheckManagerLastRunTime,
                                      base::Time(), PrefRegistry::LOSSY_PREF);
-    local_registry->RegisterStringPref(
-        prefs::kIosSafetyCheckManagerPasswordCheckResult,
-        NameForSafetyCheckState(PasswordSafetyCheckState::kDefault),
-        PrefRegistry::LOSSY_PREF);
     local_registry->RegisterStringPref(
         prefs::kIosSafetyCheckManagerUpdateCheckResult,
         NameForSafetyCheckState(UpdateChromeSafetyCheckState::kDefault),
@@ -69,9 +72,6 @@ class SafetyCheckMagicStackMediatorTest : public PlatformTest {
         safety_check_prefs::kSafetyCheckInMagicStackDisabledPref, false);
     local_registry->RegisterTimePref(prefs::kIosSettingsSafetyCheckLastRunTime,
                                      base::Time());
-    local_registry->RegisterDictionaryPref(
-        prefs::kIosSafetyCheckManagerInsecurePasswordCounts,
-        PrefRegistry::LOSSY_PREF);
 
     TestChromeBrowserState::Builder builder;
 

@@ -42,16 +42,19 @@ class IOSChromeSafetyCheckManagerTest : public PlatformTest {
 
     registry->RegisterBooleanPref(prefs::kSafeBrowsingEnabled, false);
     registry->RegisterBooleanPref(prefs::kSafeBrowsingEnhanced, false);
+    registry->RegisterStringPref(
+        prefs::kIosSafetyCheckManagerPasswordCheckResult,
+        NameForSafetyCheckState(PasswordSafetyCheckState::kDefault),
+        PrefRegistry::LOSSY_PREF);
+    registry->RegisterDictionaryPref(
+        prefs::kIosSafetyCheckManagerInsecurePasswordCounts,
+        PrefRegistry::LOSSY_PREF);
 
     local_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     PrefRegistrySimple* local_registry = local_pref_service_->registry();
 
     local_registry->RegisterTimePref(prefs::kIosSafetyCheckManagerLastRunTime,
                                      base::Time(), PrefRegistry::LOSSY_PREF);
-    local_registry->RegisterStringPref(
-        prefs::kIosSafetyCheckManagerPasswordCheckResult,
-        NameForSafetyCheckState(PasswordSafetyCheckState::kDefault),
-        PrefRegistry::LOSSY_PREF);
     local_registry->RegisterStringPref(
         prefs::kIosSafetyCheckManagerUpdateCheckResult,
         NameForSafetyCheckState(UpdateChromeSafetyCheckState::kDefault),
@@ -63,9 +66,6 @@ class IOSChromeSafetyCheckManagerTest : public PlatformTest {
     local_registry->RegisterIntegerPref(
         prefs::kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness,
         -1);
-    local_registry->RegisterDictionaryPref(
-        prefs::kIosSafetyCheckManagerInsecurePasswordCounts,
-        PrefRegistry::LOSSY_PREF);
 
     TestChromeBrowserState::Builder builder;
 
@@ -597,7 +597,7 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
 TEST_F(IOSChromeSafetyCheckManagerTest,
        SettingInsecurePasswordCountsWritesToPrefs) {
   password_manager::InsecurePasswordCounts pref_counts =
-      DictToInsecurePasswordCounts(local_pref_service_->GetDict(
+      DictToInsecurePasswordCounts(pref_service_->GetDict(
           prefs::kIosSafetyCheckManagerInsecurePasswordCounts));
 
   password_manager::InsecurePasswordCounts expected_pref_counts = {
@@ -626,7 +626,7 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
   EXPECT_EQ(safety_check_manager_->GetInsecurePasswordCounts(), counts);
 
   password_manager::InsecurePasswordCounts updated_pref_counts =
-      DictToInsecurePasswordCounts(local_pref_service_->GetDict(
+      DictToInsecurePasswordCounts(pref_service_->GetDict(
           prefs::kIosSafetyCheckManagerInsecurePasswordCounts));
 
   EXPECT_EQ(updated_pref_counts, counts);
@@ -641,9 +641,8 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
   insecure_password_counts.Set(kSafetyCheckDismissedPasswordsCountKey, 2);
   insecure_password_counts.Set(kSafetyCheckReusedPasswordsCountKey, 3);
   insecure_password_counts.Set(kSafetyCheckWeakPasswordsCountKey, 4);
-  local_pref_service_->SetDict(
-      prefs::kIosSafetyCheckManagerInsecurePasswordCounts,
-      std::move(insecure_password_counts));
+  pref_service_->SetDict(prefs::kIosSafetyCheckManagerInsecurePasswordCounts,
+                         std::move(insecure_password_counts));
 
   safety_check_manager_->RestorePreviousSafetyCheckStateForTesting();
 
@@ -689,7 +688,7 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
 
   // Verify the Prefs for insecure password counts haven't changed.
   password_manager::InsecurePasswordCounts stored_counts =
-      DictToInsecurePasswordCounts(local_pref_service_->GetDict(
+      DictToInsecurePasswordCounts(pref_service_->GetDict(
           prefs::kIosSafetyCheckManagerInsecurePasswordCounts));
 
   EXPECT_EQ(stored_counts, expected);
@@ -944,7 +943,7 @@ TEST_F(IOSChromeSafetyCheckManagerTest, FindsSafeBrowsingSafetyCheckFromName) {
 // Tests `RestorePreviousSafetyCheckState()` correctly loads previous Safety
 // Check states from Prefs.
 TEST_F(IOSChromeSafetyCheckManagerTest, LoadsPreviousCheckStatesFromPrefs) {
-  local_pref_service_->SetString(
+  pref_service_->SetString(
       prefs::kIosSafetyCheckManagerPasswordCheckResult,
       NameForSafetyCheckState(PasswordSafetyCheckState::kError));
   local_pref_service_->SetString(
@@ -968,7 +967,7 @@ TEST_F(IOSChromeSafetyCheckManagerTest, LoadsPreviousCheckStatesFromPrefs) {
 // Check states from Prefs. and ignores running states.
 TEST_F(IOSChromeSafetyCheckManagerTest,
        LoadsPreviousCheckStatesFromPrefsButIgnoresRunningStates) {
-  local_pref_service_->SetString(
+  pref_service_->SetString(
       prefs::kIosSafetyCheckManagerPasswordCheckResult,
       NameForSafetyCheckState(PasswordSafetyCheckState::kRunning));
   local_pref_service_->SetString(

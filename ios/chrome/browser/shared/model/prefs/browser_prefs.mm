@@ -382,6 +382,25 @@ void MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(
   }
 }
 
+// Helper function migrating the `Value::Dict` preference from LocalState prefs
+// to BrowserState prefs.
+void MigrateDictionaryPrefFromLocalStatePrefsToProfilePrefs(
+    std::string_view pref_name,
+    PrefService* profile_pref_service) {
+  PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
+
+  const PrefService::Preference* legacy_pref =
+      local_pref_service->FindPreference(pref_name.data());
+
+  if (legacy_pref && !legacy_pref->IsDefaultValue()) {
+    profile_pref_service->SetDict(
+        pref_name.data(),
+        local_pref_service->GetDict(pref_name.data()).Clone());
+
+    local_pref_service->ClearPref(pref_name.data());
+  }
+}
+
 }  // namespace
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -541,6 +560,10 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       -1);
 
   // Preferences related to the new Safety Check Manager.
+
+  // TODO(crbug.com/353504552): Remove
+  // `kIosSafetyCheckManagerPasswordCheckResult` as a local-state Pref after its
+  // migration to Profile Prefs is complete.
   registry->RegisterStringPref(
       prefs::kIosSafetyCheckManagerPasswordCheckResult,
       NameForSafetyCheckState(PasswordSafetyCheckState::kDefault),
@@ -559,6 +582,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // refactored to use the new Safety Check Manager.
   registry->RegisterTimePref(prefs::kIosSettingsSafetyCheckLastRunTime,
                              base::Time());
+  // TODO(crbug.com/353504552): Remove
+  // `kIosSafetyCheckManagerInsecurePasswordCounts` as a local-state Pref after
+  // its migration to Profile Prefs is complete.
   registry->RegisterDictionaryPref(
       prefs::kIosSafetyCheckManagerInsecurePasswordCounts,
       PrefRegistry::LOSSY_PREF);
@@ -882,6 +908,15 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterBooleanPref(
       kObsoleteBookmarksAndReadingListAccountStorageOptIn, false);
+
+  // Preferences related to the new Safety Check Manager.
+  registry->RegisterStringPref(
+      prefs::kIosSafetyCheckManagerPasswordCheckResult,
+      NameForSafetyCheckState(PasswordSafetyCheckState::kDefault),
+      PrefRegistry::LOSSY_PREF);
+  registry->RegisterDictionaryPref(
+      prefs::kIosSafetyCheckManagerInsecurePasswordCounts,
+      PrefRegistry::LOSSY_PREF);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1117,6 +1152,20 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
 
   // Added 06/2024.
   prefs->ClearPref(kObsoleteBookmarksAndReadingListAccountStorageOptIn);
+
+  // Added 07/2024.
+  // Note that this key is an obsolete LocalState pref, it's here because it was
+  // moved from LocalState pref to BrowserState pref and before clearing it the
+  // BrowserState pref needs to be updated.
+  MigrateStringPrefFromLocalStatePrefsToProfilePrefs(
+      prefs::kIosSafetyCheckManagerPasswordCheckResult, prefs);
+
+  // Added 07/2024.
+  // Note that this key is an obsolete LocalState pref, it's here because it was
+  // moved from LocalState pref to BrowserState pref and before clearing it the
+  // BrowserState pref needs to be updated.
+  MigrateDictionaryPrefFromLocalStatePrefsToProfilePrefs(
+      prefs::kIosSafetyCheckManagerInsecurePasswordCounts, prefs);
 }
 
 void MigrateObsoleteUserDefault() {

@@ -124,13 +124,13 @@ void IOSChromeSafetyCheckManager::RestorePreviousSafetyCheckState() {
   }
 
   password_manager::InsecurePasswordCounts insecure_password_counts =
-      DictToInsecurePasswordCounts(local_pref_service_->GetDict(
+      DictToInsecurePasswordCounts(pref_service_->GetDict(
           prefs::kIosSafetyCheckManagerInsecurePasswordCounts));
   insecure_password_counts_ = insecure_password_counts;
   previous_insecure_password_counts_ = insecure_password_counts;
 
   std::optional<PasswordSafetyCheckState> password_check_state =
-      PasswordSafetyCheckStateForName(local_pref_service_->GetString(
+      PasswordSafetyCheckStateForName(pref_service_->GetString(
           prefs::kIosSafetyCheckManagerPasswordCheckResult));
 
   if (password_check_state.has_value() &&
@@ -394,9 +394,8 @@ void IOSChromeSafetyCheckManager::SetPasswordCheckState(
 
   password_check_state_ = state;
 
-  local_pref_service_->SetString(
-      prefs::kIosSafetyCheckManagerPasswordCheckResult,
-      NameForSafetyCheckState(state));
+  pref_service_->SetString(prefs::kIosSafetyCheckManagerPasswordCheckResult,
+                           NameForSafetyCheckState(state));
 
   for (auto& observer : observers_) {
     observer.PasswordCheckStateChanged(password_check_state_);
@@ -416,7 +415,7 @@ void IOSChromeSafetyCheckManager::SetInsecurePasswordCounts(
   insecure_password_counts_ = counts;
 
   ScopedDictPrefUpdate insecure_password_counts_update(
-      local_pref_service_, prefs::kIosSafetyCheckManagerInsecurePasswordCounts);
+      pref_service_, prefs::kIosSafetyCheckManagerInsecurePasswordCounts);
 
   insecure_password_counts_update->Set(kSafetyCheckCompromisedPasswordsCountKey,
                                        counts.compromised_count);
