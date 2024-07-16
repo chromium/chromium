@@ -918,17 +918,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="TrustedWebActivity.LocationDelegationEnrolled" enum="Boolean"
-    expires_after="2024-07-28">
-  <owner>eirage@chromium.org</owner>
-  <owner>peconn@chromium.org</owner>
-  <summary>
-    When a site running in Truested Web Activity is accessing geolocation,
-    records whether the last tracked focused Trusted Web Activity client app
-    enrolled location delegation.
-  </summary>
-</histogram>
-
 <histogram name="TrustedWebActivity.Notification.PermissionRequestResult"
     enum="ContentSetting" expires_after="2024-11-14">
   <owner>mvanouwerkerk@chromium.org</owner>

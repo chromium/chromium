@@ -28382,6 +28382,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="TrustedWebActivity.LocationDelegation" singular="True">
+  <obsolete>
+    Removed 07/2024. No longer used.
+  </obsolete>
   <owner>eirage@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <summary>

@@ -28,9 +28,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
-import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
@@ -58,7 +56,6 @@ public class InstalledWebappPermissionManager {
 
     private final InstalledWebappPermissionStore mStore;
     private final PackageManager mPackageManager;
-    private final TrustedWebActivityUmaRecorder mUmaRecorder;
 
     // Use a Lazy instance so we don't instantiate it on Android versions pre-O.
     private final Lazy<NotificationChannelPreserver> mChannelPreserver;
@@ -71,12 +68,10 @@ public class InstalledWebappPermissionManager {
     public InstalledWebappPermissionManager(
             @Named(APP_CONTEXT) Context context,
             InstalledWebappPermissionStore store,
-            Lazy<NotificationChannelPreserver> channelPreserver,
-            TrustedWebActivityUmaRecorder umaRecorder) {
+            Lazy<NotificationChannelPreserver> channelPreserver) {
         mPackageManager = context.getPackageManager();
         mStore = store;
         mChannelPreserver = channelPreserver;
-        mUmaRecorder = umaRecorder;
     }
 
     boolean isRunningTwa() {
@@ -89,7 +84,6 @@ public class InstalledWebappPermissionManager {
             if (!isRunningTwa()) {
                 return new InstalledWebappBridge.Permission[0];
             }
-            recordLocationDelegationEnrollmentUma();
         }
 
         List<InstalledWebappBridge.Permission> permissions = new ArrayList<>();
@@ -289,19 +283,6 @@ public class InstalledWebappPermissionManager {
             Log.e(TAG, "Couldn't find name for client package: %s", packageName);
         }
         return null;
-    }
-
-    private void recordLocationDelegationEnrollmentUma() {
-        CustomTabActivity customTabActivity = getLastTrackedFocusedTwaCustomTabActivity();
-        if (customTabActivity == null) return;
-
-        String packageName = customTabActivity.getTwaPackage();
-
-        Tab activityTab = customTabActivity.getActivityTab();
-
-        mUmaRecorder.recordLocationDelegationEnrolled(
-                activityTab != null ? activityTab.getWebContents() : null,
-                hasAndroidLocationPermission(packageName) != null);
     }
 
     private @Nullable CustomTabActivity getLastTrackedFocusedTwaCustomTabActivity() {
