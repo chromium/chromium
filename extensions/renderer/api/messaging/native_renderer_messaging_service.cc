@@ -819,6 +819,9 @@ mojom::MessagePortHost*
 NativeRendererMessagingService::GetMessagePortHostIfExists(
     ScriptContext* script_context,
     const PortId& port_id) {
+  if (!script_context) {
+    return nullptr;
+  }
   return GetMessagePortScope(script_context->GetRenderFrame())
       ->GetMessagePortHostIfExists(port_id);
 }
