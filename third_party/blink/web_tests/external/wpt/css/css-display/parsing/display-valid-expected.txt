@@ -1,9 +1,27 @@
 This is a testharness.js-based test.
-Found 28 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 37 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] e.style['display'] = "run-in" should set the property value
   assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['display'] = "flow" should set the property value
+  assert_equals: serialization should be canonical expected "block" but got "flow"
 [FAIL] e.style['display'] = "ruby-base" should set the property value
   assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['display'] = "flow-root inline" should set the property value
+  assert_equals: serialization should be canonical expected "inline-block" but got "inline flow-root"
+[FAIL] e.style['display'] = "inline flow-root" should set the property value
+  assert_equals: serialization should be canonical expected "inline-block" but got "inline flow-root"
+[FAIL] e.style['display'] = "flex inline" should set the property value
+  assert_equals: serialization should be canonical expected "inline-flex" but got "inline flex"
+[FAIL] e.style['display'] = "inline flex" should set the property value
+  assert_equals: serialization should be canonical expected "inline-flex" but got "inline flex"
+[FAIL] e.style['display'] = "grid inline" should set the property value
+  assert_equals: serialization should be canonical expected "inline-grid" but got "inline grid"
+[FAIL] e.style['display'] = "inline grid" should set the property value
+  assert_equals: serialization should be canonical expected "inline-grid" but got "inline grid"
+[FAIL] e.style['display'] = "table inline" should set the property value
+  assert_equals: serialization should be canonical expected "inline-table" but got "inline table"
+[FAIL] e.style['display'] = "inline table" should set the property value
+  assert_equals: serialization should be canonical expected "inline-table" but got "inline table"
 [FAIL] e.style['display'] = "run-in flow" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['display'] = "flow run-in" should set the property value

@@ -84233,6 +84233,19 @@
        {}
       ]
      ],
+     "box-decoration-break-clone-010.html": [
+      "283ddb96ed46d94c10e25c711efb23e0d50cfef4",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "box-shadow-001.html": [
       "d35aeb682dcfcc77c41f8b09642b3481a4b7f39d",
       [
@@ -291101,6 +291114,19 @@
         {}
        ]
       ],
+      "textpath-letter-spacing-01.svg": [
+       "4815e618a6d18a6bfdac3ba1d8f84e63758c47a9",
+       [
+        null,
+        [
+         [
+          "/svg/text/reftests/textpath-letter-spacing-01-ref.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "textpath-shape-001.svg": [
        "dbc0d9e42062d89fafe4c7220bd89c40d7dbd8fa",
        [
@@ -300948,7 +300974,7 @@
       []
      ],
      "cookie-test.js": [
-      "8299c4731786dcf6ada011820e008d670a4df78d",
+      "58f5109c813507e5292707cba54f385f0959e207",
       []
      ],
      "cookie.py": [
@@ -315215,7 +315241,7 @@
        []
       ],
       "display-valid-expected.txt": [
-       "3354cf2ca82b719b20594608dfe7bb16d056901a",
+       "a320217c2bf0aed02d2a5905112ba54b2735b72f",
        []
       ]
      },
@@ -344863,14 +344889,6 @@
       "resize-invalid-expected.txt": [
        "263200362fb3183dfddde25ea6ddcfd2823925ff",
        []
-      ],
-      "user-find-computed.tentative-expected.txt": [
-       "b8b7c398131311c6c01b48cf3872175f68b28e50",
-       []
-      ],
-      "user-find-valid.tentative-expected.txt": [
-       "fcb113c648182ee7d1442e51e61a9070892a051e",
-       []
       ]
      },
      "pointer-events-no-scrollbars-001-ref.html": [
@@ -346029,10 +346047,6 @@
      },
      "translucent-outline-ref.html": [
       "383e256533d3e9d716e3ec850d58a8c889aa2829",
-      []
-     ],
-     "user-find.tentative-expected.txt": [
-      "698a9a322259921c6d374556799fc917d4d0b34d",
       []
      ],
      "user-select-inheritance-expected.txt": [
@@ -350285,10 +350299,6 @@
       "e0e6df8d61f13e901716a16769483e32fd922043",
       []
      ],
-     "CSSStyleSheet-constructable-baseURL.tentative-expected.txt": [
-      "e0e6df8d61f13e901716a16769483e32fd922043",
-      []
-     ],
      "CSSStyleSheet-constructable-concat-ref.html": [
       "b45332345902c6197f02a8181f737e1e4ab7cc81",
       []
@@ -352631,10 +352641,6 @@
       "0e8d69a099d9615daea94dd002895d6283c4eb60",
       []
      ],
-     "is-where-parsing-expected.txt": [
-      "b92232a73d509f0b7649f7d9a8af32bfe1fd35a3",
-      []
-     ],
      "is-where-pseudo-elements-ref.html": [
       "3a17efedfbbaa0558ab73a16aef42ce626e27b7d",
       []
@@ -352842,16 +352848,8 @@
        "0541d6c9301c43e02e0cbfe0297e7657e6001149",
        []
       ],
-      "parse-has-disallow-nesting-has-inside-has.tentative-expected.txt": [
-       "bc7b31e7cf0833f5374525dde0e258e81b7310b4",
-       []
-      ],
       "parse-has-forgiving-selector-expected.txt": [
        "3e4cfe21b4775935caddfe060fe3f8a1a3ac3b4b",
-       []
-      ],
-      "parse-has.tentative-expected.txt": [
-       "b0696cb90f23c5cb78f071a10ad39a8c2744f4cf",
        []
       ],
       "parse-is-where-expected.txt": [
@@ -354555,10 +354553,6 @@
      }
     },
     "ranges": {
-     "Range-isPointInRange-shadowdom-expected.txt": [
-      "9a95fba52cc924afaa66eaa2bf1e6083ce6e1b7c",
-      []
-     ],
      "Range-isPointInRange-shadowdom.tentative-expected.txt": [
       "9a95fba52cc924afaa66eaa2bf1e6083ce6e1b7c",
       []
@@ -355615,10 +355609,6 @@
       "d307bdf6235e2d0267873f703d99f5552bfc56ac",
       []
      ],
-     "formatblock_4001-last-expected.txt": [
-      "68802bc433e918a6a13811f6bb0a7b86fb876b36",
-      []
-     ],
      "formatblock_5001-last-expected.txt": [
       "6eb89d482e9612e63c80bdd0f16ddb316539b64b",
       []
@@ -355716,10 +355706,6 @@
       []
      ],
      "insertparagraph_6001-7000-expected.txt": [
-      "02026a2061aa2cda3d6d00caae2a2d28dcc29129",
-      []
-     ],
-     "insertparagraph_6001-last-expected.txt": [
       "02026a2061aa2cda3d6d00caae2a2d28dcc29129",
       []
      ],
@@ -359790,10 +359776,6 @@
        "2bc1365d7dd379df00990831990a92532e19cbc5",
        []
       ],
-      "response-blob-realm.any.worker-expected.txt": [
-       "196050a985c43d9aed10f84d615413a0f9768563",
-       []
-      ],
       "response-body-read-task-handling-expected.txt": [
        "cd0280ac698c306f0e5a6dcc8f38763e4b422111",
        []
@@ -361207,10 +361189,6 @@
      ],
      "window-open-existing.tentative.window-expected.txt": [
       "06cd1f13ec8f52bf10fdfd2a6bfcc6e0578c4753",
-      []
-     ],
-     "window-open.tentative.https.window-expected.txt": [
-      "8e97c94388c8360494714673e9878dc8de38e43e",
       []
      ],
      "window-open.tentative.https.window_include=from-private-expected.txt": [
@@ -363218,19 +363196,11 @@
      "acaccc91ae3edbfc771da0c545a6aad88c2c1ebe",
      []
     ],
-    "idlharness.https.window-expected.txt": [
-     "1ea8496e74223080ec295d430048ec33d70ba150",
-     []
-    ],
     "idlharness.window-expected.txt": [
      "73b4f5201fb55a7e8d2fd88e6f1d2d2d49f392f8",
      []
     ],
     "not-fully-active-expected.txt": [
-     "684e54b28a52ab03586fe2f24213b64b26f3db43",
-     []
-    ],
-    "not-fully-active.https-expected.txt": [
      "684e54b28a52ab03586fe2f24213b64b26f3db43",
      []
     ]
@@ -364601,10 +364571,6 @@
        ],
        "history_pushstate_url_rewriting-expected.txt": [
         "282f94e01c96b83357a94a7f7382bf0bf0360456",
-        []
-       ],
-       "history_reload_referrer-expected.txt": [
-        "2be7e785dc8e8159b551f57725db00e26e0e7d76",
         []
        ],
        "joint_session_history": {
@@ -381399,10 +381365,6 @@
       "structured-clone-battery-of-tests.js": [
        "923ac9dc16491898d3e7724b0087775ca576409c",
        []
-      ],
-      "structured-clone-expected.txt": [
-       "a85baeb2bba8f2f6954334a721ea10f6ad4ef066",
-       []
       ]
      },
      "system-state-and-capabilities": {
@@ -382155,18 +382117,6 @@
     "expected-fail": {
      "failing-test-expected.txt": [
       "3e723ca676418e9ed3826f4397b54ee803263f57",
-      []
-     ],
-     "precondition-in-promise-expected.txt": [
-      "4b71dc975d904e1dcf31e10a5b21c846896aab97",
-      []
-     ],
-     "precondition-in-setup-expected.txt": [
-      "6f2395e83faf22f586b3bd177194ac832cbdde37",
-      []
-     ],
-     "precondition-without-setup-expected.txt": [
-      "a96b3ea4e820302afda6d748f4ea13e3abc7c428",
       []
      ],
      "uncaught-exception-expected.txt": [
@@ -385556,10 +385506,6 @@
        "f885eaec428b72e767ee167834e5371c3486476c",
        []
       ],
-      "tabindex-001-expected.txt": [
-       "143f435e5017571c7c87e1c03421ca2ae0eb03d3",
-       []
-      ],
       "tabindex-001.tentative-expected.txt": [
        "143f435e5017571c7c87e1c03421ca2ae0eb03d3",
        []
@@ -386410,22 +386356,6 @@
      "0b7ae4d8159b06d48159dba509cf050edb8c43ff",
      []
     ],
-    "MediaStreamTrackGenerator-in-service-worker.https-expected.txt": [
-     "d9c3a78e0f1a2e947e473c977431f6a449d401af",
-     []
-    ],
-    "MediaStreamTrackGenerator-in-shared-worker.https-expected.txt": [
-     "2d6eb44d847cb39d7ee343191b8caefb75b1b991",
-     []
-    ],
-    "MediaStreamTrackGenerator-in-worker.https-expected.txt": [
-     "04bfcd90e0a1154a3f40ba65e7b0b142df6fc6a3",
-     []
-    ],
-    "MediaStreamTrackGenerator-pipes-data-in-worker.https-expected.txt": [
-     "5fa0a08ef38cb8c6a5d15d805c5ef833190121ff",
-     []
-    ],
     "MediaStreamTrackProcessor-backpressure.worker-expected.txt": [
      "ea8d323036e4219edae81cd288a621f1e98dd9ee",
      []
@@ -386485,22 +386415,6 @@
      ]
     },
     "tentative": {
-     "MediaStreamTrackGenerator-in-service-worker.https-expected.txt": [
-      "d9c3a78e0f1a2e947e473c977431f6a449d401af",
-      []
-     ],
-     "MediaStreamTrackGenerator-in-shared-worker.https-expected.txt": [
-      "2d6eb44d847cb39d7ee343191b8caefb75b1b991",
-      []
-     ],
-     "MediaStreamTrackGenerator-in-worker.https-expected.txt": [
-      "04bfcd90e0a1154a3f40ba65e7b0b142df6fc6a3",
-      []
-     ],
-     "MediaStreamTrackGenerator-pipes-data-in-worker.https-expected.txt": [
-      "5fa0a08ef38cb8c6a5d15d805c5ef833190121ff",
-      []
-     ],
      "MediaStreamTrackProcessor-worker.js": [
       "51eaef80a90a6e24fce8cad4fee03e05548e4517",
       []
@@ -386778,6 +386692,18 @@
       ],
       "mime-types.json": [
        "1d0ec64a5445b9d6f7eec249b6a986cbb7d621d2",
+       []
+      ]
+     }
+    },
+    "sniffing": {
+     "support": {
+      "atom.html": [
+       "b343d6d6154219cfc911d0e31dc747f29ec0bec3",
+       []
+      ],
+      "rss.html": [
+       "d708b0d8ebdde748773a7f3a2518d61506830d3e",
        []
       ]
      }
@@ -389330,10 +389256,6 @@
     ],
     "subresource-integrity-font-expected.txt": [
      "9794b5d069dab443ee99d0b898177d1296699cb5",
-     []
-    ],
-    "supported-as-values_as=json_expected=1-expected.txt": [
-     "671147f72f53dd0195d613e5da117ffe97bc64ec",
      []
     ]
    },
@@ -397185,11 +397107,7 @@
       "9271c769b25d73c571d553bccd9ac48c8b4b7f39",
       []
      ]
-    },
-    "storagemanager-persist-persisted-match.https.any.worker-expected.txt": [
-     "9329fdfa91f719d89dc48e1f224d9050f37718c2",
-     []
-    ]
+    }
    },
    "storage-access-api": {
     "DIR_METADATA": [
@@ -398330,14 +398248,6 @@
        "9b6b22bb8c480125187ee0f152909e9b64a82247",
        []
       ],
-      "a.text-getter-01-expected.txt": [
-       "96b4d06f3d3bcfa23c0d2451fb97dcd75dedeb11",
-       []
-      ],
-      "a.text-setter-01-expected.txt": [
-       "17807ef6befa5f55c693b3bcb198d9fa2db2643d",
-       []
-      ],
       "href-animate-element-expected.txt": [
        "67f0c5ed9f5b5dedb54d172ae42549398a7b2a86",
        []
@@ -399024,10 +398934,6 @@
      "use-element-transitions-ref.html": [
       "f564b90de8cd962a19a6205338afdfa9a24e461f",
       []
-     ],
-     "vector-effect-valid-expected.txt": [
-      "b0bef9c6c6459362959ef2a974240472e5e36fa3",
-      []
      ]
     },
     "text": {
@@ -399208,6 +399114,10 @@
       ],
       "text-xml-space-001-ref.svg": [
        "1572149cf68bde8c0e8c032b28d37ae95c64652a",
+       []
+      ],
+      "textpath-letter-spacing-01-ref.svg": [
+       "9264c265f71526b9e9700f1c9f37d7ac37309529",
        []
       ],
       "textpath-shape-001-ref.svg": [
@@ -399404,10 +399314,6 @@
     ],
     "eval-csp-tt-default-policy-mutate-expected.txt": [
      "b2208ab3d4a11f416a2176409e3d9e0138597860",
-     []
-    ],
-    "idlharness.tentative.window-expected.txt": [
-     "9d36f476f0a42e895f5845aba7dd5098bb32ac08",
      []
     ],
     "idlharness.window-expected.txt": [
@@ -400940,10 +400846,6 @@
        "f1c2a17f287945caa185475f439de706f11d56b7",
        []
       ],
-      "grow-reftypes.tentative.any.worker-expected.txt": [
-       "7d6bf80291cd295caabfe4c09d1f60144101d655",
-       []
-      ],
       "grow.any.shadowrealm-expected.txt": [
        "f1c2a17f287945caa185475f439de706f11d56b7",
        []
@@ -402306,10 +402208,6 @@
       ]
      },
      "the-audioparam-interface": {
-      "audioparam-default-value-expected.txt": [
-       "bad8923a6418cb9d76bf768f94bf2f1862a3e083",
-       []
-      ],
       "audioparam-default-value.window-expected.txt": [
        "ea68ee7052479e4d8e9940a06312100fcf9f20d6",
        []
@@ -403222,12 +403120,6 @@
        "call_function": {
         "__init__.py": [
          "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
-         []
-        ]
-       },
-       "classic_interop": {
-        "window_reference-expected.txt": [
-         "3de746da8b5970b7db3122ac1b17f8dde5992279",
          []
         ]
        },
@@ -404499,15 +404391,15 @@
        []
       ],
       "add.json": [
-       "28e04a61274e05ddaa4429050932b7a5e2b09193",
+       "804ad5e345d0b73b7f003837df66c7f3ef8bb416",
        []
       ],
       "arg_max.json": [
-       "348a54dc240ff224ce2a4f8a2dd93012f0e82a8c",
+       "c66f785f416c73ab6096d4bbf7c09df8631dc71f",
        []
       ],
       "arg_min.json": [
-       "330afbc7107ced2dec1ccc2048cfc2de8d4b0648",
+       "eaf59f098cc281c9ca80f37c0d7a40256123df2f",
        []
       ],
       "average_pool2d.json": [
@@ -405300,10 +405192,6 @@
     ],
     "RTCRtpParameters-codec-expected.txt": [
      "7b97ceb59a756e43a1ea1d5dc60997fdffcb5310",
-     []
-    ],
-    "RTCRtpReceiver-video-jitterBufferTarget-stats-expected.txt": [
-     "10cd5db9b31c0e150371aefce434a1791af8aaee",
      []
     ],
     "RTCRtpSynchronizationSource-helper.js": [
@@ -408210,7 +408098,7 @@
       []
      ],
      "webxr_util.js": [
-      "625f76450e23dc509553a71b5a0157bccf91f8f6",
+      "52b63ecdbb6edb67f7c75b79bfe595e679442d25",
       []
      ]
     },
@@ -452723,6 +452611,20 @@
        {}
       ]
      ],
+     "scope-style-sharing-001.html": [
+      "2c1122a811d0229d9ee6a45f8c9b6012d959523d",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scope-style-sharing-002.html": [
+      "f47ddd4299f9c70e419442e45d60a49db14888b2",
+      [
+       null,
+       {}
+      ]
+     ],
      "scope-supports.html": [
       "9be41de0e90c17fba3698f69836db9d750023abf",
       [
@@ -454972,7 +454874,7 @@
        ]
       ],
       "display-valid.html": [
-       "c011c2a30ca26dab4c97c9278a845efb47d69970",
+       "c4bdc93cdaa72047a6ca09c939dbee29bbbc852f",
        [
         null,
         {}
@@ -512778,7 +512680,7 @@
      ]
     ],
     "ancestor-throttle.https.html": [
-     "56b1320135a5c4f367306b95d76e17a57e64ad18",
+     "679bb7881327ccda0abfb1d28e22b60a378c72d4",
      [
       null,
       {
@@ -557452,36 +557354,6 @@
        ],
        "2d.reset.state.word_spacing.html": [
         "c4a448f21c456db5159ed6fffa73e1e33d642ab6",
-        [
-         null,
-         {}
-        ]
-       ]
-      },
-      "scroll": {
-       "2d.scrollPathIntoView.basic.html": [
-        "e4cf8ea9ad2add2d46cd2b7750853486f675d416",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.scrollPathIntoView.path.html": [
-        "ee1f833aaf38daf9e8776b30932ff8331edc2421",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.scrollPathIntoView.verticalLR.html": [
-        "9d09980b6f0a35930a3c593ea1292b16ea9d5969",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.scrollPathIntoView.verticalRL.html": [
-        "8193106f8e8b7d0063cf364c0b7def61774e2662",
         [
          null,
          {}
@@ -612061,6 +611933,15 @@
        }
       ]
      ]
+    },
+    "sniffing": {
+     "html.window.js": [
+      "3fef45bb4779561a92eaf432646c7344630a7b2b",
+      [
+       "mimesniff/sniffing/html.window.html",
+       {}
+      ]
+     ]
     }
    },
    "mixed-content": {
@@ -614240,7 +614121,7 @@
       ]
      ],
      "intercept-history-pushState.html": [
-      "aad08b742ef4aa8d4b7ad9e33ee9d611d447b262",
+      "4586b134f081e4dc690972dd42483f86571661c9",
       [
        null,
        {}
@@ -641188,7 +641069,7 @@
      ]
     ],
     "scroll-to-text-fragment.html": [
-     "91f282f849f54fe8a80bae08c0cfaa65d047eca1",
+     "2dbd575bcbb95f49f8110c1ad367def73c7033c6",
      [
       null,
       {
@@ -646417,6 +646298,16 @@
          null,
          {
           "testdriver": true
+         }
+        ]
+       ],
+       "grid-order-pseudo-elements.html": [
+        "16bce77272a1a0b28d544c8caf87b5657c7ded2d",
+        [
+         null,
+         {
+          "testdriver": true,
+          "timeout": "long"
          }
         ]
        ],
@@ -695762,7 +695653,7 @@
     ],
     "validation_tests": {
      "argMinMax.https.any.js": [
-      "42d9adb57fec8ab956be4be8dde656db710a9cd6",
+      "2d7b286c8711c4e236e0efa6b372cc680086426a",
       [
        "webnn/validation_tests/argMinMax.https.any.html",
        {
