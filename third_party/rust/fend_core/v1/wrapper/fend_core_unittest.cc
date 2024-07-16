@@ -31,6 +31,7 @@ TEST_P(FendCoreParamTest, Test) {
   EXPECT_EQ(result, GetParam().expected);
 }
 
+// Tests which should NOT break from a fend-core roll.
 INSTANTIATE_TEST_SUITE_P(
     , FendCoreParamTest,
     testing::ValuesIn<FendCoreTestCase>({
@@ -43,17 +44,6 @@ INSTANTIATE_TEST_SUITE_P(
             .name = "NoApproxString",
             .query = "1/3",
             .expected = "0.33",
-        },
-
-        {
-            .name = "LowercaseXAsMultiplication",
-            .query = "4 x 5",
-            .expected = std::nullopt,
-        },
-        {
-            .name = "UppercaseXAsMultiplication",
-            .query = "4 X 5",
-            .expected = std::nullopt,
         },
 
         {
@@ -98,12 +88,73 @@ INSTANTIATE_TEST_SUITE_P(
             .query = "10cm * 2m",
             .expected = "2000 cm^2",
         },
+        // Division is not tested, see below.
+
+        {
+            .name = "ImplicitMulUnitAddition",
+            .query = "4 m s + 2 m s",
+            .expected = "6 m s",
+        },
+        {
+            .name = "ImplicitMulUnitSubtraction",
+            .query = "4 m s - 2 m s",
+            .expected = "2 m s",
+        },
+        {
+            .name = "ImplicitMulUnitMultiplication",
+            .query = "4 m s * 2 m s",
+            .expected = "8 m^2 s^2",
+        },
+        // Division is not tested, see below.
+
+        // This should never have additional percents in the output.
+        {
+            .name = "PercentTimesUnit",
+            .query = "50% * 2cm",
+            .expected = "1 cm",
+        },
+
+        // Ensures that we don't accidentally break case-sensitive queries.
+        {
+            .name = "CasedUnits",
+            .query = "10 kB to kb",
+            .expected = "80 kb",
+        },
+    }),
+    [](const testing::TestParamInfo<FendCoreTestCase> &info) {
+      return info.param.name;
+    });
+
+// Tests which COULD break from a fend-core roll due to behaviour which could
+// change between Fend versions.
+// These tests can be run with `--gtest_also_run_disabled_tests`. Once these
+// tests are fixed or stabilised, they should be moved above.
+INSTANTIATE_TEST_SUITE_P(
+    DISABLED_KnownUnexpectedBehavior, FendCoreParamTest,
+    testing::ValuesIn<FendCoreTestCase>({
+        // TODO: b/336690740 - X should be able to be used for multiplication.
+        {
+            .name = "LowercaseXAsMultiplication",
+            .query = "4 x 5",
+            .expected = std::nullopt,
+        },
+        {
+            .name = "UppercaseXAsMultiplication",
+            .query = "4 X 5",
+            .expected = std::nullopt,
+        },
+
+        // TODO: b/346472873 - Handle division more intuitively with units.
+        // https://github.com/printfn/fend/issues/76
         {
             .name = "UnitDivision",
             .query = "10cm / 2m",
             .expected = "500 cm^2",
         },
 
+        // Implicit addition with units is uncommon. We do not expect this
+        // behaviour to change (except for fixing multiplication and division),
+        // but we do not mind if this behaviour does change.
         {
             .name = "ImplicitAddUnitAddition",
             .query = "2m 20cm + 1m 10cm",
@@ -125,27 +176,16 @@ INSTANTIATE_TEST_SUITE_P(
             .expected = std::nullopt,
         },
 
-        {
-            .name = "ImplicitMulUnitAddition",
-            .query = "4 m s + 2 m s",
-            .expected = "6 m s",
-        },
-        {
-            .name = "ImplicitMulUnitSubtraction",
-            .query = "4 m s - 2 m s",
-            .expected = "2 m s",
-        },
-        {
-            .name = "ImplicitMulUnitMultiplication",
-            .query = "4 m s * 2 m s",
-            .expected = "8 m^2 s^2",
-        },
+        // Unit division (see above).
         {
             .name = "ImplicitMulUnitDivision",
             .query = "4 m s / 2 m s",
             .expected = "2 m^2 s^2",
         },
 
+        // Implicit addition with mixed fractions is uncommon. We do not expect
+        // this behaviour to change (except for fixing division), but we do not
+        // mind if this behaviour does change.
         {
             .name = "MixedFractionUnitAddition",
             .query = "3 1/3 cm + 6 2/3 mm",
@@ -167,6 +207,8 @@ INSTANTIATE_TEST_SUITE_P(
             .expected = std::nullopt,
         },
 
+        // These queries are arguably ambiguous due to unit division (see above)
+        // and could change meaning in a new Fend version.
         {
             .name = "UnitFraction",
             .query = "3 / 2 m",
@@ -178,6 +220,7 @@ INSTANTIATE_TEST_SUITE_P(
             .expected = "0.75 m",
         },
 
+        // TODO: b/342481033 - Support % better.
         {
             .name = "PercentSymbol",
             .query = "11/12*100%",
@@ -193,12 +236,8 @@ INSTANTIATE_TEST_SUITE_P(
             .query = "1 / (80%)",
             .expected = "1.25",
         },
-        {
-            .name = "PercentTimesUnit",
-            .query = "50% * 2cm",
-            .expected = "1 cm",
-        },
 
+        // TODO: b/345302335 - Resolve uppercase functions.
         {
             .name = "UppercaseLog",
             .query = "LOG 10",
@@ -214,14 +253,9 @@ INSTANTIATE_TEST_SUITE_P(
             .query = "SIN pi",
             .expected = std::nullopt,
         },
-        // Ensures that we don't accidentally break case-sensitive queries.
-        {
-            .name = "CasedUnits",
-            .query = "10 kB to kb",
-            .expected = "80 kb",
-        },
 
         // Use `+ 0` to ensure a result isn't filtered out.
+        // TODO: b/348067495 - Fend always rounds down.
         {
             .name = "PositiveRoundingBelowHalf",
             .query = "0.123 + 0",
@@ -263,6 +297,7 @@ INSTANTIATE_TEST_SUITE_P(
             .expected = "-0.12",
         },
 
+        // Issues with our Fend wrapper.
         {
             .name = "MorePrecision",
             .query = "0.127 to 3dp",
@@ -274,6 +309,8 @@ INSTANTIATE_TEST_SUITE_P(
             .expected = "0.83",
         },
 
+        // TODO: b/347804567 - "degrees C" gives incorrect results.
+        // https://github.com/printfn/fend/issues/62
         {
             .name = "DegreesC",
             .query = "100 degrees C to F",
