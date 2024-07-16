@@ -1652,6 +1652,108 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
       /*expected_bucket_count=*/1);
 }
 
+// Test that once the purchase action response is received, the transaction
+// result and latency is logged.
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       TransactionSuccess_HistogramLogged) {
+  base::HistogramTester histogram_tester;
+  autofill::BankAccount pix_account = CreatePixBankAccount(/*instrument_id=*/1);
+  payments_data_manager_->AddMaskedBankAccountForTest(pix_account);
+  EXPECT_CALL(*client_, ShowPixPaymentPrompt(
+                            testing::UnorderedElementsAreArray({pix_account}),
+                            testing::_))
+      .WillOnce(testing::Return(true));
+  manager_->OnApiAvailabilityReceived(true);
+
+  FastForwardBy(base::Seconds(2));
+  manager_->OnPurchaseActionResult(
+      FacilitatedPaymentsApiClient::PurchaseActionResult::kResultOk);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.Transaction.Result",
+      /*sample=*/TransactionResult::kSuccess,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.Transaction.Latency",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+}
+
+// Test that once the purchase action response is received as result canceled,
+// the transaction result is logged as abandoned and the latency is logged.
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       TransactionAbandonedAfterInvokePurchaseAction_HistogramLogged) {
+  base::HistogramTester histogram_tester;
+  autofill::BankAccount pix_account = CreatePixBankAccount(/*instrument_id=*/1);
+  payments_data_manager_->AddMaskedBankAccountForTest(pix_account);
+  EXPECT_CALL(*client_, ShowPixPaymentPrompt(
+                            testing::UnorderedElementsAreArray({pix_account}),
+                            testing::_))
+      .WillOnce(testing::Return(true));
+  manager_->OnApiAvailabilityReceived(true);
+
+  FastForwardBy(base::Seconds(2));
+  manager_->OnPurchaseActionResult(
+      FacilitatedPaymentsApiClient::PurchaseActionResult::kResultCanceled);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.Transaction.Result",
+      /*sample=*/TransactionResult::kAbandoned,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.Transaction.Latency",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+}
+
+// Test that if the purchase action was unable to be invoked, the transaction
+// result is logged as failed and the latency is logged.
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       TransactionFailedAfterInvokePurchaseAction_HistogramLogged) {
+  base::HistogramTester histogram_tester;
+  autofill::BankAccount pix_account = CreatePixBankAccount(/*instrument_id=*/1);
+  payments_data_manager_->AddMaskedBankAccountForTest(pix_account);
+  EXPECT_CALL(*client_, ShowPixPaymentPrompt(
+                            testing::UnorderedElementsAreArray({pix_account}),
+                            testing::_))
+      .WillOnce(testing::Return(true));
+  manager_->OnApiAvailabilityReceived(true);
+
+  FastForwardBy(base::Seconds(2));
+  manager_->OnPurchaseActionResult(
+      FacilitatedPaymentsApiClient::PurchaseActionResult::kCouldNotInvoke);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.Transaction.Result",
+      /*sample=*/TransactionResult::kFailed,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.Transaction.Latency",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       FOPSelectorNotShown_TransactionResultHistogramNotLogged) {
+  base::HistogramTester histogram_tester;
+  autofill::BankAccount pix_account = CreatePixBankAccount(/*instrument_id=*/1);
+  payments_data_manager_->AddMaskedBankAccountForTest(pix_account);
+  EXPECT_CALL(*client_, ShowPixPaymentPrompt(
+                            testing::UnorderedElementsAreArray({pix_account}),
+                            testing::_))
+      .WillOnce(testing::Return(false));
+  manager_->OnApiAvailabilityReceived(true);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.Transaction.Result",
+      /*sample=*/TransactionResult::kFailed,
+      /*expected_bucket_count=*/0);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.Transaction.Latency",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/0);
+}
+
 // Verify that the API client is initialized lazily, so it does not take up
 // space in memory unless it's being used.
 TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,

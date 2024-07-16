@@ -224,6 +224,17 @@ class FacilitatedPaymentsManager {
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
                            OnInitiatePaymentResponseReceived_HistogramLogged);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+                           TransactionSuccess_HistogramLogged);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      TransactionAbandonedAfterInvokePurchaseAction_HistogramLogged);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      TransactionFailedAfterInvokePurchaseAction_HistogramLogged);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      FOPSelectorNotShown_TransactionResultHistogramNotLogged);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
                            ApiClientInitializedLazily);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
                            HandlesFailureToLazilyInitializeApiClient);
@@ -349,6 +360,10 @@ class FacilitatedPaymentsManager {
 
   // Measures the time take to complete the purchase action.
   base::TimeTicks purchase_action_start_time_;
+
+  // Stores the time when the FOP selector was shown to the user. This is used
+  // to calculate the entire transaction latency.
+  base::TimeTicks fop_selector_shown_time_;
 
   // Contains the details required for the `InitiatePayment` request to be sent
   // to the Payments server. Its ownership is transferred to

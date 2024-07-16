@@ -275,6 +275,9 @@ void FacilitatedPaymentsManager::OnApiAvailabilityReceived(
       base::BindOnce(&FacilitatedPaymentsManager::OnPixPaymentPromptResult,
                      weak_ptr_factory_.GetWeakPtr()));
   LogFopSelectorShown(promptShown);
+  if (promptShown) {
+    fop_selector_shown_time_ = base::TimeTicks::Now();
+  }
 }
 
 void FacilitatedPaymentsManager::OnRiskDataLoaded(
@@ -300,6 +303,8 @@ void FacilitatedPaymentsManager::OnPixPaymentPromptResult(
     bool is_prompt_accepted,
     int64_t selected_instrument_id) {
   if (!is_prompt_accepted) {
+    LogTransactionResult(TransactionResult::kAbandoned,
+                         base::TimeTicks::Now() - fop_selector_shown_time_);
     Reset();
     return;
   }
@@ -320,6 +325,8 @@ void FacilitatedPaymentsManager::OnGetClientToken(
       (base::TimeTicks::Now() - get_client_token_loading_start_time_));
   if (client_token.empty()) {
     client_->ShowErrorScreen();
+    LogTransactionResult(TransactionResult::kFailed,
+                         base::TimeTicks::Now() - fop_selector_shown_time_);
     Reset();
     return;
   }
@@ -353,6 +360,8 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
     LogInitiatePaymentResult(/*result=*/false, latency);
     client_->ShowErrorScreen();
+    LogTransactionResult(TransactionResult::kFailed,
+                         base::TimeTicks::Now() - fop_selector_shown_time_);
     Reset();
     return;
   }
@@ -360,6 +369,8 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
   DCHECK(response_details);
   if (response_details->action_token_.empty()) {
     client_->ShowErrorScreen();
+    LogTransactionResult(TransactionResult::kFailed,
+                         base::TimeTicks::Now() - fop_selector_shown_time_);
     Reset();
     return;
   }
@@ -369,6 +380,8 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
   // abandon the payment flow.
   if (!account_info.has_value() || account_info.value().IsEmpty()) {
     client_->ShowErrorScreen();
+    LogTransactionResult(TransactionResult::kFailed,
+                         base::TimeTicks::Now() - fop_selector_shown_time_);
     Reset();
     return;
   }
@@ -390,6 +403,22 @@ void FacilitatedPaymentsManager::OnPurchaseActionResult(
       /*result=*/result ==
           FacilitatedPaymentsApiClient::PurchaseActionResult::kResultOk,
       base::TimeTicks::Now() - purchase_action_start_time_);
+  // Map the result received from the purchase action to overall transaction
+  // result.
+  TransactionResult transaction_result = TransactionResult::kFailed;
+  switch (result) {
+    case FacilitatedPaymentsApiClient::PurchaseActionResult::kResultOk:
+      transaction_result = TransactionResult::kSuccess;
+      break;
+    case FacilitatedPaymentsApiClient::PurchaseActionResult::kCouldNotInvoke:
+      transaction_result = TransactionResult::kFailed;
+      break;
+    case FacilitatedPaymentsApiClient::PurchaseActionResult::kResultCanceled:
+      transaction_result = TransactionResult::kAbandoned;
+      break;
+  }
+  LogTransactionResult(transaction_result,
+                       base::TimeTicks::Now() - fop_selector_shown_time_);
 }
 
 void FacilitatedPaymentsManager::ResetForTesting() {
