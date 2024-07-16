@@ -61,6 +61,14 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
                       kCommerceProductSpecificationsResourcesSize),
       IDR_COMMERCE_PRODUCT_SPECIFICATIONS_PRODUCT_SPECIFICATIONS_HTML);
 
+  // Set up chrome://compare/disclosure
+  source->AddResourcePath(
+      "disclosure/",
+      IDR_COMMERCE_PRODUCT_SPECIFICATIONS_DISCLOSURE_PRODUCT_SPECIFICATIONS_DISCLOSURE_HTML);
+  source->AddResourcePath(
+      "disclosure",
+      IDR_COMMERCE_PRODUCT_SPECIFICATIONS_DISCLOSURE_PRODUCT_SPECIFICATIONS_DISCLOSURE_HTML);
+
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"addToNewGroup", IDS_PRODUCT_SPECIFICATIONS_ADD_TO_NEW_GROUP},
       {"delete", IDS_PRODUCT_SPECIFICATIONS_DELETE},
