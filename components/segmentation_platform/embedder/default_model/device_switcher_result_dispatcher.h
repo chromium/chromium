@@ -42,9 +42,10 @@ class DeviceSwitcherResultDispatcher
   virtual ClassificationResult GetCachedClassificationResult();
 
   // Called to get the classification results from prefs if it exists, else it
-  // will wait for results and return when available. Handles only one request
-  // at a time.
+  // will wait for results upto `timeout` and return when available. Handles only
+  // one request at a time. On timeout, returns a kNotReady result.
   virtual void WaitForClassificationResult(
+      base::TimeDelta timeout,
       ClassificationResultCallback callback);
 
   // Registers preferences used by this class in the provided |registry|.
@@ -59,6 +60,8 @@ class DeviceSwitcherResultDispatcher
 
   void RefreshSegmentResultIfNeeded();
   void OnGotResult(const ClassificationResult& result);
+
+  void OnWaitTimeout();
 
   void RegisterFieldTrials();
 
