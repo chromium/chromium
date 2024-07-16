@@ -69,7 +69,7 @@ struct ErrorInner {
     context: FlatMap<ContextKind, ContextValue>,
     message: Option<Message>,
     source: Option<Box<dyn error::Error + Send + Sync>>,
-    help_flag: Option<&'static str>,
+    help_flag: Option<Cow<'static, str>>,
     styles: Styles,
     color_when: ColorChoice,
     color_help_when: ColorChoice,
@@ -319,7 +319,7 @@ impl<F: ErrorFormatter> Error<F> {
         self
     }
 
-    pub(crate) fn set_help_flag(mut self, help_flag: Option<&'static str>) -> Self {
+    pub(crate) fn set_help_flag(mut self, help_flag: Option<Cow<'static, str>>) -> Self {
         self.inner.help_flag = help_flag;
         self
     }

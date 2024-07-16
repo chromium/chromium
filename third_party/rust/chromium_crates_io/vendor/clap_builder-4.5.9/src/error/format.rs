@@ -3,6 +3,8 @@
 #![cfg_attr(not(feature = "error-context"), allow(dead_code))]
 #![cfg_attr(not(feature = "error-context"), allow(unused_imports))]
 
+use std::borrow::Cow;
+
 use crate::builder::Command;
 use crate::builder::StyledStr;
 use crate::builder::Styles;
@@ -12,6 +14,7 @@ use crate::error::ContextKind;
 use crate::error::ContextValue;
 use crate::error::ErrorKind;
 use crate::output::TAB;
+use crate::ArgAction;
 
 /// Defines how to format an error for displaying to the user
 pub trait ErrorFormatter: Sized {
@@ -120,7 +123,7 @@ impl ErrorFormatter for RichFormatter {
             put_usage(&mut styled, usage);
         }
 
-        try_help(&mut styled, styles, error.inner.help_flag);
+        try_help(&mut styled, styles, error.inner.help_flag.as_deref());
 
         styled
     }
@@ -461,7 +464,7 @@ pub(crate) fn format_error_message(
         put_usage(&mut styled, usage);
     }
     if let Some(cmd) = cmd {
-        try_help(&mut styled, styles, get_help_flag(cmd));
+        try_help(&mut styled, styles, get_help_flag(cmd).as_deref());
     }
     styled
 }
@@ -480,14 +483,32 @@ fn put_usage(styled: &mut StyledStr, usage: &StyledStr) {
     styled.push_styled(usage);
 }
 
-pub(crate) fn get_help_flag(cmd: &Command) -> Option<&'static str> {
+pub(crate) fn get_help_flag(cmd: &Command) -> Option<Cow<'static, str>> {
     if !cmd.is_disable_help_flag_set() {
-        Some("--help")
+        Some(Cow::Borrowed("--help"))
+    } else if let Some(flag) = get_user_help_flag(cmd) {
+        Some(Cow::Owned(flag))
     } else if cmd.has_subcommands() && !cmd.is_disable_help_subcommand_set() {
-        Some("help")
+        Some(Cow::Borrowed("help"))
     } else {
         None
     }
+}
+
+fn get_user_help_flag(cmd: &Command) -> Option<String> {
+    let arg = cmd.get_arguments().find(|arg| match arg.get_action() {
+        ArgAction::Help | ArgAction::HelpShort | ArgAction::HelpLong => true,
+        ArgAction::Append
+        | ArgAction::Count
+        | ArgAction::SetTrue
+        | ArgAction::SetFalse
+        | ArgAction::Set
+        | ArgAction::Version => false,
+    })?;
+
+    arg.get_long()
+        .map(|long| format!("--{long}"))
+        .or_else(|| arg.get_short().map(|short| format!("-{short}")))
 }
 
 fn try_help(styled: &mut StyledStr, styles: &Styles, help: Option<&str>) {
