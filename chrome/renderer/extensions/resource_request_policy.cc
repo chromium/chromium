@@ -77,11 +77,12 @@ bool ResourceRequestPolicy::CanRequestResource(
     blink::WebLocalFrame* frame,
     ui::PageTransition transition_type,
     const url::Origin* initiator_origin) {
-  // Any URLs, if present, should be have the chrome-extension scheme.
+  // `target_url` is expected to have the chrome-extension scheme.
+  // `upstream_url` could be empty, have the chrome-extension scheme, or DNR may
+  // cause it to be something else. Therefore, it won't be in CHECK().
+  // TODO(crbug.com/352455685): Add a test to verify upstream_url being
+  // non-empty but also not having an extension scheme.
   CHECK(target_url.SchemeIs(kExtensionScheme));
-  if (!upstream_url.is_empty() && !upstream_url.SchemeIs(kExtensionScheme)) {
-    return false;
-  }
 
   GURL frame_url = frame->GetDocument().Url();
   url::Origin frame_origin = frame->GetDocument().GetSecurityOrigin();
