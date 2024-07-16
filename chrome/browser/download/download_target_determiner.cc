@@ -552,8 +552,15 @@ DownloadTargetDeterminer::Result
 DownloadTargetDeterminer::DoRequestConfirmation() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!virtual_path_.empty());
+#if BUILDFLAG(IS_ANDROID)
+  DCHECK(!download_->IsTransient() ||
+         confirmation_reason_ == DownloadConfirmationReason::NONE ||
+         // On Android we return here a second time after prompting the user.
+         confirmation_reason_ == DownloadConfirmationReason::PREFERENCE);
+#else
   DCHECK(!download_->IsTransient() ||
          confirmation_reason_ == DownloadConfirmationReason::NONE);
+#endif
 
   next_state_ = STATE_DETERMINE_LOCAL_PATH;
 
@@ -656,7 +663,9 @@ void DownloadTargetDeterminer::RequestConfirmationDone(
   if (result == DownloadConfirmationResult::CONFIRMED_WITH_DIALOG) {
     // Double check the user-selected path is valid by looping back.
     is_checking_dialog_confirmed_path_ = true;
-    confirmation_reason_ = DownloadConfirmationReason::NONE;
+    if (confirmation_reason_ != DownloadConfirmationReason::PREFERENCE) {
+      confirmation_reason_ = DownloadConfirmationReason::NONE;
+    }
     next_state_ = STATE_RESERVE_VIRTUAL_PATH;
   }
 #endif
