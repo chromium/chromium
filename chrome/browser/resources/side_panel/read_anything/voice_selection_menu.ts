@@ -47,10 +47,6 @@ interface VoiceDropdownItem {
   id: string;
 }
 
-// Events emitted from the voice selection menu to the app
-const spBodyPadding = window.getComputedStyle(document.body)
-                          .getPropertyValue('--sp-body-padding');
-
 const VoiceSelectionMenuElementBase = WebUiListenerMixin(PolymerElement);
 
 export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
@@ -66,6 +62,11 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
   private readonly isSpeechActive: boolean;
   private voicePlayingWhenMenuOpened_: boolean = false;
   private enabledVoices_: SpeechSynthesisVoice[];
+
+  // Events emitted from the voice selection menu to the app
+  private readonly spBodyPadding: string =
+      window.getComputedStyle(document.body)
+          .getPropertyValue('--sp-body-padding');
 
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
 
@@ -108,8 +109,8 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
     const target = event.target as HTMLElement;
     const menu = this.$.voiceSelectionMenu.get();
     openMenu(menu, target, {
-      minX: parseInt(spBodyPadding, 10),
-      maxX: document.body.clientWidth - parseInt(spBodyPadding, 10),
+      minX: parseInt(this.spBodyPadding, 10),
+      maxX: document.body.clientWidth - parseInt(this.spBodyPadding, 10),
     });
 
     // Scroll to the selected voice.
