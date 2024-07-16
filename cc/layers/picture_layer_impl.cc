@@ -794,9 +794,7 @@ void PictureLayerImpl::UpdateRasterSourceInternal(
       RegisterAnimatedImages();
     }
   } else if (recording_updated) {
-    // During commit, re-generate discardable image map and update data
-    // depending on it.
-    RegenerateDiscardableImageMap();
+    needs_regenerate_discardable_image_map_ = true;
   }
 
   // The |new_invalidation| must be cleared before updating tilings since they
@@ -836,8 +834,13 @@ void PictureLayerImpl::UpdateRasterSourceInternal(
   }
 }
 
-void PictureLayerImpl::RegenerateDiscardableImageMap() {
+void PictureLayerImpl::RegenerateDiscardableImageMapIfNeeded() {
   CHECK(layer_tree_impl()->IsSyncTree());
+  if (!needs_regenerate_discardable_image_map_) {
+    return;
+  }
+  needs_regenerate_discardable_image_map_ = false;
+
   UnregisterAnimatedImages();
   if (const auto* display_list = raster_source_->GetDisplayItemList().get()) {
     scoped_refptr<DiscardableImageMap> image_map =
@@ -2101,26 +2104,24 @@ void PictureLayerImpl::InvalidateRasterInducingScrolls(
   const DisplayItemList::RasterInducingScrollMap& raster_inducing_scrolls =
       raster_source_->GetDisplayItemList()->raster_inducing_scrolls();
   Region invalidation;
-  bool should_regenerate_discardable_image_map = false;
   for (ElementId element_id : scrolls_to_invalidate) {
     auto it = raster_inducing_scrolls.find(element_id);
     if (it != raster_inducing_scrolls.end()) {
       UnionUpdateRect(it->second.visual_rect);
       invalidation.Union(it->second.visual_rect);
-      should_regenerate_discardable_image_map |=
+      needs_regenerate_discardable_image_map_ |=
           it->second.has_discardable_images;
     }
   }
-  if (invalidation.IsEmpty()) {
-    return;
-  }
+
   // Raster-inducing scroll may affect the discardable image map due to changed
   // scroll offsets.
-  if (should_regenerate_discardable_image_map) {
-    RegenerateDiscardableImageMap();
+  RegenerateDiscardableImageMapIfNeeded();
+
+  if (!invalidation.IsEmpty()) {
+    invalidation_.Union(invalidation);
+    tilings_->Invalidate(invalidation);
   }
-  invalidation_.Union(invalidation);
-  tilings_->Invalidate(invalidation);
 }
 
 void PictureLayerImpl::SetPaintWorkletRecord(

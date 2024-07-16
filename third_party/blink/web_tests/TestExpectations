@@ -775,8 +775,6 @@ virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/* [ Failure Ski
 
 crbug.com/1339051 [ Linux ] virtual/off-main-thread-css-paint/http/tests/csspaint/shadow-scale-with-page-zoom.html [ Failure ]
 
-crbug.com/350265138 virtual/threaded/external/wpt/css/css-backgrounds/animations/background-color-scroll-into-viewport.html [ Failure ]
-
 # Could not load the requested resource.
 crbug.com/350292231 [ Fuchsia ] scrollbars/scrollbar-visibility-hidden.html [ Failure ]
 crbug.com/350292231 [ Fuchsia ] fast/block/float/centered-float-avoidance-complexity.html [ Failure ]
