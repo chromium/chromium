@@ -96,18 +96,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 @property(nonatomic, weak) UICollectionView* collectionView;
 // The collection view's data source.
 @property(nonatomic, strong) GridDiffableDataSource* diffableDataSource;
-// The cell registration for grid cells.
-@property(nonatomic, strong)
-    UICollectionViewCellRegistration* gridCellRegistration;
-// The cell registration for grid group cells.
-@property(nonatomic, strong)
-    UICollectionViewCellRegistration* groupGridCellRegistration;
-// The cell registration for the Suggested Actions cell.
-@property(nonatomic, strong)
-    UICollectionViewCellRegistration* suggestedActionsCellRegistration;
-// The supplementary view registration for the grid header.
-@property(nonatomic, strong)
-    UICollectionViewSupplementaryRegistration* gridHeaderRegistration;
 // Identifier of the selected item. This should only be used for lookup or
 // equality checks, in that it is usually not possible to fetch its images
 // (favicon, snapshot). Use the GridItemIdentifier from the data source that
@@ -150,6 +138,18 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   // Tracks when the grid view is scrolling. Create a new instance to start
   // timing and reset to stop and log the associated time histogram.
   std::optional<ScopedScrollingTimeLogger> _scopedScrollingTimeLogger;
+
+  // The cell registration for inactive tabs button cell.
+  UICollectionViewCellRegistration* _inactiveTabsButtonCellRegistration;
+  // The cell registration for grid cells.
+  UICollectionViewCellRegistration* _gridCellRegistration;
+  // The cell registration for grid group cells.
+  UICollectionViewCellRegistration* _groupGridCellRegistration;
+  // The cell registration for the Suggested Actions cell.
+  UICollectionViewCellRegistration* _suggestedActionsCellRegistration;
+
+  // The supplementary view registration for the grid header.
+  UICollectionViewSupplementaryRegistration* _gridHeaderRegistration;
 }
 
 - (instancetype)init {
@@ -592,12 +592,15 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   switch (itemIdentifier.type) {
     case GridItemType::kInactiveTabsButton: {
       CHECK(IsInactiveTabButtonRefactoringEnabled());
-      // TODO(crbug.com/352722446): return the item.
-      return nil;
+      UICollectionViewCellRegistration* registration =
+          _inactiveTabsButtonCellRegistration;
+      return [self.collectionView
+          dequeueConfiguredReusableCellWithRegistration:registration
+                                           forIndexPath:indexPath
+                                                   item:itemIdentifier];
     }
     case GridItemType::kTab: {
-      UICollectionViewCellRegistration* registration =
-          self.gridCellRegistration;
+      UICollectionViewCellRegistration* registration = _gridCellRegistration;
       return [self.collectionView
           dequeueConfiguredReusableCellWithRegistration:registration
                                            forIndexPath:indexPath
@@ -606,7 +609,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     }
     case GridItemType::kGroup: {
       UICollectionViewCellRegistration* registration =
-          self.groupGridCellRegistration;
+          _groupGridCellRegistration;
       return [self.collectionView
           dequeueConfiguredReusableCellWithRegistration:registration
                                            forIndexPath:indexPath
@@ -615,7 +618,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     }
     case GridItemType::kSuggestedActions:
       UICollectionViewCellRegistration* registration =
-          self.suggestedActionsCellRegistration;
+          _suggestedActionsCellRegistration;
       return [self.collectionView
           dequeueConfiguredReusableCellWithRegistration:registration
                                            forIndexPath:indexPath
@@ -1285,18 +1288,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   [self.collectionView.collectionViewLayout invalidateLayout];
 }
 
-#pragma mark - Actions
-
-// Called when the Inactive Tabs button is tapped.
-- (void)didTapInactiveTabsButton {
-  [self.delegate didTapInactiveTabsButtonInGridViewController:self];
-}
-
-// Called when the Inactive Tabs settings link is tapped.
-- (void)didTapInactiveTabsSettingsLink {
-  [self.delegate didTapInactiveTabsSettingsLinkInGridViewController:self];
-}
-
 #pragma mark - Suggested Actions Section
 
 - (void)updateSuggestedActionsSection {
@@ -1483,22 +1474,33 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 - (void)createRegistrations {
   __weak __typeof(self) weakSelf = self;
 
-  auto configureGroupGridCell =
-      ^(GroupGridCell* cell, NSIndexPath* indexPath, TabGroupItem* item) {
-        [weakSelf configureGroupCell:cell withItem:item atIndex:indexPath.item];
+  // Register InactiveTabsButtonCell.
+  auto configureInactiveTabsButtonCell =
+      ^(UICollectionViewCell* cell, NSIndexPath* indexPath, id item) {
+        // TODO(crbug.com/352722446): use a correct cell.
+        cell.backgroundColor = UIColor.greenColor;
       };
-  self.groupGridCellRegistration = [UICollectionViewCellRegistration
-      registrationWithCellClass:[GroupGridCell class]
-           configurationHandler:configureGroupGridCell];
+  _inactiveTabsButtonCellRegistration = [UICollectionViewCellRegistration
+      registrationWithCellClass:UICollectionViewCell.class
+           configurationHandler:configureInactiveTabsButtonCell];
 
   // Register GridCell.
   auto configureGridCell =
       ^(GridCell* cell, NSIndexPath* indexPath, TabSwitcherItem* item) {
         [weakSelf configureCell:cell withItem:item atIndex:indexPath.item];
       };
-  self.gridCellRegistration = [UICollectionViewCellRegistration
-      registrationWithCellClass:[GridCell class]
+  _gridCellRegistration = [UICollectionViewCellRegistration
+      registrationWithCellClass:GridCell.class
            configurationHandler:configureGridCell];
+
+  // Register GroupGridCell.
+  auto configureGroupGridCell =
+      ^(GroupGridCell* cell, NSIndexPath* indexPath, TabGroupItem* item) {
+        [weakSelf configureGroupCell:cell withItem:item atIndex:indexPath.item];
+      };
+  _groupGridCellRegistration = [UICollectionViewCellRegistration
+      registrationWithCellClass:GroupGridCell.class
+           configurationHandler:configureGroupGridCell];
 
   // Register SuggestedActionsGridCell.
   auto configureSuggestedActionsCell =
@@ -1508,8 +1510,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
         suggestedActionsCell.suggestedActionsView =
             weakSelf.suggestedActionsViewController.view;
       };
-  self.suggestedActionsCellRegistration = [UICollectionViewCellRegistration
-      registrationWithCellClass:[SuggestedActionsGridCell class]
+  _suggestedActionsCellRegistration = [UICollectionViewCellRegistration
+      registrationWithCellClass:SuggestedActionsGridCell.class
            configurationHandler:configureSuggestedActionsCell];
 
   // Register GridHeader.
@@ -1520,7 +1522,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
         [weakSelf configureGridHeader:gridHeader
                  forSectionIdentifier:sectionIdentifier];
       };
-  self.gridHeaderRegistration = [UICollectionViewSupplementaryRegistration
+  _gridHeaderRegistration = [UICollectionViewSupplementaryRegistration
       registrationWithSupplementaryClass:[GridHeader class]
                              elementKind:UICollectionElementKindSectionHeader
                     configurationHandler:configureGridHeader];
@@ -1542,7 +1544,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     case TabGridModeSelection:
       NOTREACHED_NORETURN() << "Should not happen.";
     case TabGridModeSearch:
-      registration = self.gridHeaderRegistration;
+      registration = _gridHeaderRegistration;
       break;
   }
   return [self.collectionView
@@ -1746,9 +1748,11 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     return;
   }
 
-  CHECK_EQ(indexPath.section,
-           [self.diffableDataSource
-               indexForSectionIdentifier:kGridOpenTabsSectionIdentifier]);
+  NSString* sectionIdentifier =
+      [self.diffableDataSource sectionIdentifierForIndex:indexPath.section];
+  CHECK(
+      [sectionIdentifier isEqualToString:kInactiveTabButtonSectionIdentifier] ||
+      [sectionIdentifier isEqualToString:kGridOpenTabsSectionIdentifier]);
 
   GridItemIdentifier* itemIdentifier =
       [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
@@ -1766,7 +1770,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   switch (itemIdentifier.type) {
     case GridItemType::kInactiveTabsButton: {
       CHECK(IsInactiveTabButtonRefactoringEnabled());
-      // TODO(crbug.com/352722446): Open the inactive tab screen.
+      [self.delegate didTapInactiveTabsButtonInGridViewController:self];
       break;
     }
     case GridItemType::kTab: {

@@ -172,8 +172,37 @@ NSCollectionLayoutBoundarySupplementaryItem* TabGroupHeader() {
 NSCollectionLayoutSection* InactiveTabButtonSection(
     id<NSCollectionLayoutEnvironment> layout_environment,
     NSDirectionalEdgeInsets section_insets) {
-  // TODO(crbug.com/352722446): return a real section.
-  return nil;
+  // TODO(crbug.com/352722446): update the section to have the right size.
+
+  // Configure the layout item.
+  NSCollectionLayoutSize* item_size =
+      [NSCollectionLayoutSize sizeWithWidthDimension:FractionalWidth(1.)
+                                     heightDimension:FractionalHeight(1.)];
+  NSCollectionLayoutItem* item =
+      [NSCollectionLayoutItem itemWithLayoutSize:item_size];
+
+  // Configure the layout group.
+  NSCollectionLayoutDimension* group_height_dimension =
+      EstimatedDimension(kInactiveTabsHeaderEstimatedHeight);
+  NSCollectionLayoutSize* group_size =
+      [NSCollectionLayoutSize sizeWithWidthDimension:FractionalWidth(1.)
+                                     heightDimension:group_height_dimension];
+  NSCollectionLayoutGroup* group =
+      [NSCollectionLayoutGroup horizontalGroupWithLayoutSize:group_size
+                                                    subitems:@[ item ]];
+
+  // Configure the layout section.
+  NSCollectionLayoutSection* section =
+      [NSCollectionLayoutSection sectionWithGroup:group];
+  const CGFloat spacing = Spacing(layout_environment);
+  section_insets.top += spacing;
+  section_insets.leading += spacing;
+  section_insets.bottom += spacing;
+  section_insets.trailing += spacing;
+  section.contentInsets = section_insets;
+  section.contentInsetsReference = UIContentInsetsReferenceNone;
+
+  return section;
 }
 
 // Returns a compositional layout grid section for opened tabs.

@@ -9,6 +9,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_button_ui_swift.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_preamble_header.h"
 
@@ -147,7 +148,9 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   [snapshot
       insertSectionsWithIdentifiers:@[ kInactiveTabButtonSectionIdentifier ]
         beforeSectionWithIdentifier:kGridOpenTabsSectionIdentifier];
-  // TODO(crbug.com/352722446): insert item
+  GridItemIdentifier* item = [GridItemIdentifier inactiveTabsButtonIdentifier];
+  [snapshot appendItemsWithIdentifiers:@[ item ]
+             intoSectionWithIdentifier:kInactiveTabButtonSectionIdentifier];
 }
 
 #pragma mark - InactiveTabsInfoConsumer
@@ -206,6 +209,7 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
 
 // Called when the Inactive Tabs button is tapped.
 - (void)didTapInactiveTabsButton {
+  CHECK(!IsInactiveTabButtonRefactoringEnabled());
   [self.delegate didTapInactiveTabsButtonInGridViewController:self];
 }
 
