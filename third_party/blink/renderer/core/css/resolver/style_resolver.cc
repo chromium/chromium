@@ -1461,11 +1461,6 @@ void StyleResolver::ApplyBaseStyleNoCache(
     cascade.MutableMatchResult().AddMatchedProperties(
         UniversalOverlayUserAgentDeclaration(), CascadeOrigin::kUserAgent);
 
-    if (element->IsScrollMarkerGroupPseudoElement()) {
-      cascade.MutableMatchResult().AddMatchedProperties(
-          ScrollMarkerGroupUserAgentDeclaration(), CascadeOrigin::kUserAgent);
-    }
-
     // This adds a CSSInitialColorValue to the cascade for the document
     // element. The CSSInitialColorValue will resolve to a color-scheme
     // sensitive color in Color::ApplyValue. It is added at the start of the
@@ -1477,6 +1472,11 @@ void StyleResolver::ApplyBaseStyleNoCache(
       cascade.MutableMatchResult().AddMatchedProperties(
           DocumentElementUserAgentDeclarations(), CascadeOrigin::kUserAgent);
     }
+  }
+
+  if (element->IsScrollMarkerGroupPseudoElement()) {
+    cascade.MutableMatchResult().AddMatchedProperties(
+        ScrollMarkerGroupUserAgentDeclaration(), CascadeOrigin::kUserAgent);
   }
 
   ElementRuleCollector collector(state.ElementContext(), style_recalc_context,
