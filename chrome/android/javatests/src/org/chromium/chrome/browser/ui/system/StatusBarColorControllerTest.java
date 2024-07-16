@@ -96,6 +96,7 @@ public class StatusBarColorControllerTest {
     @LargeTest
     @Feature({"StatusBar"})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
+    @DisabledTest(message = "crbug.com/353460498")
     public void testColorToggleIncognitoInTabSwitcher() throws Exception {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
         final int expectedOverviewStandardColor =
