@@ -140,6 +140,7 @@
 #include "chrome/browser/ash/net/rollback_network_config/rollback_network_config_service.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/ash/system/device_disabling_manager.h"

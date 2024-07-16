@@ -95,6 +95,7 @@ source_set("browser_tests") {
     "//base",
     "//chrome/browser/ash",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/common",

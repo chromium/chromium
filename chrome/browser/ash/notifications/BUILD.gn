@@ -48,6 +48,7 @@ static_library("notifications") {
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
@@ -75,7 +76,10 @@ static_library("notifications") {
     "//ui/views",
   ]
 
-  allow_circular_includes_from = [ "//chrome/browser/ash/policy/core" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/handlers",
+  ]
 }
 
 source_set("unit_tests") {
@@ -104,6 +108,8 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser/ash",
     "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/policy/handlers",
+    "//chrome/browser/ash/policy/handlers:test_support",
     "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/shill",

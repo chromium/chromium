@@ -47,7 +47,6 @@ static_library("demo_mode") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/ash/arc/auth",
-    "//chrome/browser/ash/arc/notification",
     "//chrome/browser/ash/assistant",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/enrollment",
@@ -78,7 +77,6 @@ static_library("demo_mode") {
 
   allow_circular_includes_from = [
     "//chrome/browser/ash/arc/auth",
-    "//chrome/browser/ash/arc/notification",
     "//chrome/browser/ash/assistant",
     "//chrome/browser/ash/policy/enrollment",
   ]

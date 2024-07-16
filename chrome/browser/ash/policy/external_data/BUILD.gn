@@ -29,6 +29,7 @@ static_library("external_data") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/settings",

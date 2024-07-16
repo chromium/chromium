@@ -86,7 +86,6 @@
 #include "chrome/browser/ash/login/screens/user_allowlist_check_screen.h"
 #include "chrome/browser/ash/login/screens/user_creation_screen.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
-#include "chrome/browser/ash/policy/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ui/webui/ash/login/online_authentication_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
@@ -94,6 +93,10 @@
 #include "components/account_id/account_id.h"
 
 class PrefService;
+
+namespace policy {
+class AutoEnrollmentController;
+}  // namespace policy
 
 namespace ash {
 

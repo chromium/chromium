@@ -363,6 +363,7 @@ static_library("crosapi") {
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/dlp",
+    "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/printing/history",
     "//chrome/browser/ash/printing/history:print_job_info_proto",
     "//chrome/browser/ash/printing/oauth2",

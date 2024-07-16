@@ -51,6 +51,7 @@ static_library("net") {
     "//chrome/browser/ash/net/dns_over_https",
     "//chrome/browser/ash/notifications",
     "//chrome/browser/ash/platform_keys",
+    "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system",
     "//chrome/browser/profiles:profile",
@@ -94,6 +95,7 @@ static_library("net") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/platform_keys",
+    "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/system",
   ]
 }

@@ -48,6 +48,7 @@
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_test_support.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"

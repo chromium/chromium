@@ -86,6 +86,7 @@ static_library("dbus") {
     "//chrome/browser/ash/net/rollback_network_config",
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/ash/policy/dlp",
+    "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/power/ml",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos",
