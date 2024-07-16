@@ -4677,6 +4677,9 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="10" label="Performance button click"/>
   <int value="11" label="Apps button click"/>
   <int value="12" label="ChromeOS button click"/>
+  <int value="13" label="Google AI button click"/>
+  <int value="14" label="Easy To Use button click"/>
+  <int value="15" label="Google Built-in button click"/>
 </enum>
 
 <enum name="DemoModeHighlightsError">
