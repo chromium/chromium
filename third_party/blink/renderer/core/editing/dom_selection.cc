@@ -245,8 +245,8 @@ void DOMSelection::collapse(Node* node,
   if (exception_state.HadException())
     return;
 
-  // 3. If node's root is not the document associated with the context object,
-  // abort these steps.
+  // 3. If document associated with this is not a shadow-including inclusive
+  // ancestor of node, abort these steps.
   if (!IsValidForPosition(node))
     return;
 
@@ -344,6 +344,7 @@ void DOMSelection::empty() {
     Selection().Clear();
 }
 
+// https://www.w3.org/TR/selection-api/#dom-selection-setbaseandextent
 void DOMSelection::setBaseAndExtent(Node* base_node,
                                     unsigned base_offset,
                                     Node* extent_node,
@@ -364,6 +365,9 @@ void DOMSelection::setBaseAndExtent(Node* base_node,
     extent_offset = 0;
   }
 
+  // 1. If anchorOffset is longer than anchorNode's length or if focusOffset is
+  // longer than focusNode's length, throw an IndexSizeError exception and abort
+  // these steps.
   Range::CheckNodeWOffset(base_node, base_offset, exception_state);
   if (exception_state.HadException())
     return;
@@ -373,14 +377,22 @@ void DOMSelection::setBaseAndExtent(Node* base_node,
       return;
   }
 
+  // 2. If document associated with this is not a shadow-including inclusive
+  // ancestor of anchorNode or focusNode, abort these steps.
   if (!IsValidForPosition(base_node) || !IsValidForPosition(extent_node))
     return;
 
   ClearCachedRangeIfSelectionOfDocument();
 
+  // 3. Let anchor be the boundary point (anchorNode, anchorOffset) and let
+  // focus be the boundary point (focusNode, focusOffset).
   Position base_position(base_node, base_offset);
   Position extent_position(extent_node, extent_offset);
+  // 4. Let newRange be a new range.
   Range* new_range = Range::Create(base_node->GetDocument());
+  // 5. If anchor is before focus, set the start the newRange's start to anchor
+  // and its end to focus. Otherwise, set the start them to focus and anchor
+  // respectively.
   if (extent_position.IsNull()) {
     new_range->setStart(base_node, base_offset);
     new_range->setEnd(base_node, base_offset);
@@ -391,6 +403,7 @@ void DOMSelection::setBaseAndExtent(Node* base_node,
     new_range->setStart(extent_node, extent_offset);
     new_range->setEnd(base_node, base_offset);
   }
+  // 6. Set this's range to newRange.
   UpdateFrameSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtentDeprecated(base_position, extent_position)
@@ -467,8 +480,8 @@ void DOMSelection::extend(Node* node,
   if (!IsAvailable())
     return;
 
-  // 1. If node's root is not the document associated with the context object,
-  // abort these steps.
+  // 1. If the document associated with this is not a shadow-including
+  // inclusive ancestor of node, abort these steps.
   if (!IsValidForPosition(node))
     return;
 
