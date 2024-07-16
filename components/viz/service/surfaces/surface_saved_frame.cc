@@ -155,7 +155,6 @@ void SurfaceSavedFrame::RequestCopyOfOutput(
           [](scoped_refptr<gpu::ClientSharedImage> image,
              const gpu::SyncToken& sync_token, bool is_lost) {
             image->UpdateDestructionSyncToken(sync_token);
-            image->MarkForDestruction();
           },
           std::move(shared_image));
     }

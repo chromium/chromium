@@ -305,7 +305,6 @@ void ClientSharedImageInterface::DestroySharedImage(
   CHECK(client_shared_image->HasOneRef());
   CHECK(client_shared_image->HasHolder());
   client_shared_image->UpdateDestructionSyncToken(sync_token);
-  client_shared_image->MarkForDestruction();
 }
 
 scoped_refptr<ClientSharedImage> ClientSharedImageInterface::ImportSharedImage(

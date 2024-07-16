@@ -674,7 +674,6 @@ void SharedImageInterfaceInProcess::DestroySharedImage(
     scoped_refptr<ClientSharedImage> client_shared_image) {
   CHECK(client_shared_image->HasOneRef());
   client_shared_image->UpdateDestructionSyncToken(sync_token);
-  client_shared_image->MarkForDestruction();
 }
 
 void SharedImageInterfaceInProcess::DestroySharedImageOnGpuThread(
