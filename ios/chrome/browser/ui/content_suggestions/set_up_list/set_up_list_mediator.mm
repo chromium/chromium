@@ -294,6 +294,7 @@ bool DefaultBrowserPromoCompleted() {
             recordSetUpListItemShown:item.type];
       }
     }
+    [self.contentSuggestionsMetricsRecorder recordSetUpListShown];
   }
   return _setUpListConfigs;
 }

@@ -85,14 +85,13 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 // Fake subclass of SetUpListMediator to easily allow for Set Up List to be
 // shown.
 @interface FakeSetUpListMediator : SetUpListMediator
+
+// Allows enabling or disabling the SetUpList.
+@property(nonatomic, assign) BOOL shouldShowSetUpList;
+
 @end
 
 @implementation FakeSetUpListMediator
-
-- (BOOL)shouldShowSetUpList {
-  return YES;
-}
-
 @end
 
 // Fake subclass of ParcelTrackingMediator to override item config construction.
@@ -275,6 +274,7 @@ class MagicStackRankingModelTest : public PlatformTest {
         authenticationService:authenticationService
                    sceneState:scene_state_
         isDefaultSearchEngine:NO];
+    _setUpListMediator.shouldShowSetUpList = YES;
     _parcelTrackingMediator = [[FakeParcelTrackingMediator alloc]
         initWithShoppingService:shopping_service_.get()
          URLLoadingBrowserAgent:url_loader_];
@@ -328,6 +328,7 @@ class MagicStackRankingModelTest : public PlatformTest {
         initWithLocalState:local_state_.Get()];
     _magicStackRankingModel.contentSuggestionsMetricsRecorder =
         metrics_recorder_;
+    _setUpListMediator.contentSuggestionsMetricsRecorder = metrics_recorder_;
 
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
@@ -403,6 +404,36 @@ TEST_F(MagicStackRankingModelTest, TestSetUpListConsumerCall) {
   set_up_list_prefs::MarkItemComplete(local_state_.Get(),
                                       SetUpListItemType::kAutofill);
   EXPECT_OCMOCK_VERIFY(setUpListConsumer_);
+}
+
+// Tests that SetUpList metrics are recorded when it is in the MagicStack.
+TEST_F(MagicStackRankingModelTest, TestMetricsWithSetUpList) {
+  [_magicStackRankingModel fetchLatestMagicStackRanking];
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), true, ^bool() {
+        base::RunLoop().RunUntilIdle();
+        return _magicStackRankingModel.hasReceivedMagicStackResponse;
+      }));
+  histogram_tester_->ExpectUniqueSample("IOS.SetUpList.Displayed", true, 1);
+  histogram_tester_->ExpectTotalCount("IOS.SetUpList.ItemDisplayed", 2);
+  histogram_tester_->ExpectBucketCount("IOS.SetUpList.ItemDisplayed",
+                                       SetUpListItemType::kDefaultBrowser, 1);
+  histogram_tester_->ExpectBucketCount("IOS.SetUpList.ItemDisplayed",
+                                       SetUpListItemType::kAutofill, 1);
+}
+
+// Tests that SetUpList metrics are not recorded when it is not in the
+// MagicStack.
+TEST_F(MagicStackRankingModelTest, TestMetricsWithoutSetUpList) {
+  _setUpListMediator.shouldShowSetUpList = NO;
+  [_magicStackRankingModel fetchLatestMagicStackRanking];
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), true, ^bool() {
+        base::RunLoop().RunUntilIdle();
+        return _magicStackRankingModel.hasReceivedMagicStackResponse;
+      }));
+  histogram_tester_->ExpectTotalCount("IOS.SetUpList.Displayed", 0);
+  histogram_tester_->ExpectTotalCount("IOS.SetUpList.ItemDisplayed", 0);
 }
 
 // Tests that when the user changes the setting to disable signin, the
