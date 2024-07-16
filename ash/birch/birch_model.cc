@@ -418,43 +418,64 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
     return false;
   });
 
+  // Check prefs before returning items (the user might have toggled a pref
+  // off while the data fetch was in-flight so we check again here).
   std::vector<std::unique_ptr<BirchItem>> all_items;
-  for (auto& event : calendar_data_.items) {
-    all_items.push_back(std::make_unique<BirchCalendarItem>(event));
-  }
-  for (auto& event : file_id_to_attachment_item) {
-    all_items.push_back(std::make_unique<BirchAttachmentItem>(event.second));
-  }
-  for (auto& tab : recent_tab_data_.items) {
-    all_items.push_back(std::make_unique<BirchTabItem>(tab));
-  }
-  if (ShouldShowLastActive()) {
-    for (auto& item : url_to_last_active_item) {
-      all_items.push_back(std::make_unique<BirchLastActiveItem>(item.second));
+  PrefService* prefs = GetPrefService();
+  if (prefs->GetBoolean(prefs::kBirchUseCalendar)) {
+    for (auto& event : calendar_data_.items) {
+      all_items.push_back(std::make_unique<BirchCalendarItem>(event));
     }
-    last_active_last_shown_ = GetNow();
   }
-  if (ShouldShowMostVisited()) {
-    for (auto& item : url_to_most_visited_item) {
-      all_items.push_back(std::make_unique<BirchMostVisitedItem>(item.second));
+
+  if (prefs->GetBoolean(prefs::kBirchUseFileSuggest)) {
+    for (auto& event : file_id_to_attachment_item) {
+      all_items.push_back(std::make_unique<BirchAttachmentItem>(event.second));
     }
-    most_visited_last_shown_ = GetNow();
+    for (auto& file_suggestion : file_suggest_data_.items) {
+      all_items.push_back(std::make_unique<BirchFileItem>(file_suggestion));
+    }
   }
-  for (auto& event : url_to_self_share_item) {
-    all_items.push_back(std::make_unique<BirchSelfShareItem>(event.second));
+
+  if (prefs->GetBoolean(prefs::kBirchUseChromeTabs)) {
+    for (auto& tab : recent_tab_data_.items) {
+      all_items.push_back(std::make_unique<BirchTabItem>(tab));
+    }
+    if (ShouldShowLastActive()) {
+      for (auto& item : url_to_last_active_item) {
+        all_items.push_back(std::make_unique<BirchLastActiveItem>(item.second));
+      }
+      last_active_last_shown_ = GetNow();
+    }
+    if (ShouldShowMostVisited()) {
+      for (auto& item : url_to_most_visited_item) {
+        all_items.push_back(
+            std::make_unique<BirchMostVisitedItem>(item.second));
+      }
+      most_visited_last_shown_ = GetNow();
+    }
+    for (auto& event : url_to_self_share_item) {
+      all_items.push_back(std::make_unique<BirchSelfShareItem>(event.second));
+    }
   }
-  for (auto& item : lost_media_data_.items) {
-    all_items.push_back(std::make_unique<BirchLostMediaItem>(item));
+
+  if (prefs->GetBoolean(prefs::kBirchUseLostMedia)) {
+    for (auto& item : lost_media_data_.items) {
+      all_items.push_back(std::make_unique<BirchLostMediaItem>(item));
+    }
   }
-  for (auto& file_suggestion : file_suggest_data_.items) {
-    all_items.push_back(std::make_unique<BirchFileItem>(file_suggestion));
+
+  if (prefs->GetBoolean(prefs::kBirchUseWeather)) {
+    for (auto& weather_item : weather_data_.items) {
+      all_items.push_back(std::make_unique<BirchWeatherItem>(weather_item));
+    }
   }
-  for (auto& weather_item : weather_data_.items) {
-    all_items.push_back(std::make_unique<BirchWeatherItem>(weather_item));
-  }
-  for (auto& release_notes_item : release_notes_data_.items) {
-    all_items.push_back(
-        std::make_unique<BirchReleaseNotesItem>(release_notes_item));
+
+  if (prefs->GetBoolean(prefs::kBirchUseReleaseNotes)) {
+    for (auto& release_notes_item : release_notes_data_.items) {
+      all_items.push_back(
+          std::make_unique<BirchReleaseNotesItem>(release_notes_item));
+    }
   }
   // Sort items by ranking.
   std::sort(all_items.begin(), all_items.end(),

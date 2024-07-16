@@ -71,6 +71,17 @@ std::vector<BirchAttachmentItem> MakeAttachmentItemList(int item_count) {
   return attachment_item_list;
 }
 
+std::vector<BirchTabItem> MakeTabItemList(int count) {
+  std::vector<BirchTabItem> items;
+  for (int i = 0; i < count; i++) {
+    items.emplace_back(
+        u"tab " + base::NumberToString16(i), GURL("https://www.example.com/"),
+        base::Time(), GURL("https://www.favicon.com/"), "session",
+        BirchTabItem::DeviceFormFactor::kDesktop, ui::ImageModel());
+  }
+  return items;
+}
+
 // A data provider that does nothing.
 class StubBirchDataProvider : public BirchDataProvider {
  public:
@@ -543,12 +554,7 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
   model->SetCalendarItems(MakeCalendarItemList(/*event_count=*/1));
   model->SetAttachmentItems(MakeAttachmentItemList(/*item_count=*/1));
   model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
-  std::vector<BirchTabItem> tab_item_list;
-  tab_item_list.emplace_back(
-      u"tab", GURL("https://www.example.com/"), base::Time(),
-      GURL("https://www.favicon.com/"), "session",
-      BirchTabItem::DeviceFormFactor::kDesktop, ui::ImageModel());
-  model->SetRecentTabItems(std::move(tab_item_list));
+  model->SetRecentTabItems(MakeTabItemList(/*count=*/1));
   std::vector<BirchLastActiveItem> last_active_list;
   last_active_list.emplace_back(u"active", GURL("https://yahoo.com/"),
                                 base::Time(), ui::ImageModel());
@@ -600,6 +606,55 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
   EXPECT_TRUE(model->GetLostMediaItemsForTest().empty());
   EXPECT_TRUE(model->GetWeatherForTest().empty());
   EXPECT_TRUE(model->GetReleaseNotesItemsForTest().empty());
+}
+
+TEST_F(BirchModelTest, GetAllItemsDoesNotReturnItemsWithDisabledPrefs) {
+  BirchModel* model = Shell::Get()->birch_model();
+
+  // Disable all the prefs for data providers.
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  ASSERT_TRUE(prefs);
+  prefs->SetBoolean(prefs::kBirchUseCalendar, false);
+  prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
+  prefs->SetBoolean(prefs::kBirchUseChromeTabs, false);
+  prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
+  prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
+  prefs->SetBoolean(prefs::kBirchUseWeather, false);
+
+  // Populate the model with every data type.
+  model->SetCalendarItems(MakeCalendarItemList(/*event_count=*/1));
+  model->SetAttachmentItems(MakeAttachmentItemList(/*item_count=*/1));
+  model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
+  model->SetRecentTabItems(MakeTabItemList(/*count=*/1));
+  std::vector<BirchLastActiveItem> last_active_list;
+  last_active_list.emplace_back(u"active", GURL("https://yahoo.com/"),
+                                base::Time(), ui::ImageModel());
+  model->SetLastActiveItems(std::move(last_active_list));
+  std::vector<BirchMostVisitedItem> most_visited_list;
+  most_visited_list.emplace_back(u"visited", GURL("https://google.com/"),
+                                 ui::ImageModel());
+  model->SetMostVisitedItems(std::move(most_visited_list));
+  std::vector<BirchSelfShareItem> self_share_item_list;
+  self_share_item_list.emplace_back(
+      u"self share guid", u"self share tab", GURL("https://www.example.com/"),
+      base::Time(), u"my device", ui::ImageModel(), base::DoNothing());
+  model->SetSelfShareItems(std::move(self_share_item_list));
+  std::vector<BirchWeatherItem> weather_item_list;
+  weather_item_list.emplace_back(u"cloudy", 70.f, ui::ImageModel());
+  model->SetWeatherItems(std::move(weather_item_list));
+  std::vector<BirchReleaseNotesItem> release_notes_item_list;
+  release_notes_item_list.emplace_back(
+      u"note", u"explore", GURL("https://www.example.com/"), base::Time());
+  model->SetReleaseNotesItems(release_notes_item_list);
+  std::vector<BirchLostMediaItem> lost_media_item_list;
+  lost_media_item_list.emplace_back(GURL("https://www.source.com/"),
+                                    u"media title", false, ui::ImageModel(),
+                                    base::DoNothing());
+  model->SetLostMediaItems(lost_media_item_list);
+
+  // The model returns no items.
+  EXPECT_EQ(model->GetAllItems().size(), 0u);
 }
 
 TEST_F(BirchModelTest, DisablingPrefsMarksDataFresh) {
@@ -832,8 +887,8 @@ TEST_F(BirchModelTest, MAYBE_DataFetchTimeout) {
   std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
   EXPECT_EQ(all_items.size(), 3u);
   EXPECT_EQ(all_items[0]->GetType(), BirchItemType::kWeather);
-  EXPECT_EQ(all_items[1]->GetType(), BirchItemType::kTab);
-  EXPECT_EQ(all_items[2]->GetType(), BirchItemType::kFile);
+  EXPECT_EQ(all_items[1]->GetType(), BirchItemType::kFile);
+  EXPECT_EQ(all_items[2]->GetType(), BirchItemType::kTab);
   EXPECT_FALSE(model->IsDataFresh());
 }
 
@@ -944,8 +999,8 @@ TEST_F(BirchModelTest, PostLoginDataFetchTimeout) {
 
   std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
   EXPECT_EQ(all_items.size(), 2u);
-  EXPECT_EQ(all_items[0]->GetType(), BirchItemType::kTab);
-  EXPECT_EQ(all_items[1]->GetType(), BirchItemType::kFile);
+  EXPECT_EQ(all_items[0]->GetType(), BirchItemType::kFile);
+  EXPECT_EQ(all_items[1]->GetType(), BirchItemType::kTab);
   EXPECT_FALSE(model->IsDataFresh());
 }
 
@@ -1073,11 +1128,7 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
   std::vector<BirchWeatherItem> weather_item_list;
   weather_item_list.emplace_back(u"cloudy", 70.f, ui::ImageModel());
   model->SetWeatherItems(std::move(weather_item_list));
-  std::vector<BirchTabItem> tab_item_list;
-  tab_item_list.emplace_back(
-      u"tab", GURL("https://www.example.com/"), base::Time(), GURL("favicon"),
-      "session", BirchTabItem::DeviceFormFactor::kDesktop, ui::ImageModel());
-  model->SetRecentTabItems(std::move(tab_item_list));
+  model->SetRecentTabItems(MakeTabItemList(/*count=*/1));
   std::vector<BirchLastActiveItem> last_active_list;
   last_active_list.emplace_back(u"active", GURL("https://yahoo.com/"),
                                 base::Time(), ui::ImageModel());
@@ -1147,11 +1198,7 @@ TEST_F(BirchModelTest, GetAllItems) {
   model->SetReleaseNotesItems(std::move(release_notes_item_list));
   model->SetCalendarItems(MakeCalendarItemList(/*event_count=*/1));
   model->SetAttachmentItems(MakeAttachmentItemList(/*item_count=*/1));
-  std::vector<BirchTabItem> tab_item_list;
-  tab_item_list.emplace_back(
-      u"tab", GURL("https://www.example.com/"), base::Time(), GURL("favicon"),
-      "session", BirchTabItem::DeviceFormFactor::kDesktop, ui::ImageModel());
-  model->SetRecentTabItems(std::move(tab_item_list));
+  model->SetRecentTabItems(MakeTabItemList(/*count=*/1));
   std::vector<BirchLastActiveItem> last_active_list;
   last_active_list.emplace_back(u"active", GURL("https://yahoo.com/"),
                                 base::Time(), ui::ImageModel());
@@ -1170,10 +1217,10 @@ TEST_F(BirchModelTest, GetAllItems) {
   EXPECT_EQ(all_items[1]->GetType(), BirchItemType::kReleaseNotes);
   EXPECT_EQ(all_items[2]->GetType(), BirchItemType::kCalendar);
   EXPECT_EQ(all_items[3]->GetType(), BirchItemType::kAttachment);
-  EXPECT_EQ(all_items[4]->GetType(), BirchItemType::kTab);
-  EXPECT_EQ(all_items[5]->GetType(), BirchItemType::kLastActive);
-  EXPECT_EQ(all_items[6]->GetType(), BirchItemType::kMostVisited);
-  EXPECT_EQ(all_items[7]->GetType(), BirchItemType::kFile);
+  EXPECT_EQ(all_items[4]->GetType(), BirchItemType::kFile);
+  EXPECT_EQ(all_items[5]->GetType(), BirchItemType::kTab);
+  EXPECT_EQ(all_items[6]->GetType(), BirchItemType::kLastActive);
+  EXPECT_EQ(all_items[7]->GetType(), BirchItemType::kMostVisited);
 }
 
 TEST_F(BirchModelTest, SetItemListRecordsHistogram) {
@@ -1189,11 +1236,7 @@ TEST_F(BirchModelTest, SetItemListRecordsHistogram) {
   // Insert one item of each type.
   model->SetCalendarItems(MakeCalendarItemList(/*event_count=*/1));
   model->SetAttachmentItems(MakeAttachmentItemList(/*item_count=*/1));
-  std::vector<BirchTabItem> tab_item_list;
-  tab_item_list.emplace_back(
-      u"tab", GURL("https://www.example.com/"), base::Time(), GURL("favicon"),
-      "session", BirchTabItem::DeviceFormFactor::kDesktop, ui::ImageModel());
-  model->SetRecentTabItems(std::move(tab_item_list));
+  model->SetRecentTabItems(MakeTabItemList(/*count=*/1));
   std::vector<BirchLastActiveItem> last_active_list;
   last_active_list.emplace_back(u"active", GURL("https://yahoo.com/"),
                                 base::Time(), ui::ImageModel());
