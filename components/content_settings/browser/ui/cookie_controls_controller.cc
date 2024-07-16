@@ -255,22 +255,20 @@ CookieControlsController::CreateTrackingProtectionFeatureList(
 
   // TODO(http://b/5605065): Update to a UB tracking protection specific feature
   // flag.
-  if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kTrackingProtectionSettingsLaunch)) {
-    if (tracking_protection_settings_->IsIpProtectionEnabled()) {
-      features.push_back({FeatureType::kIpProtection,
-                          CookieControlsEnforcement::kNoEnforcement,
-                          protections_on
-                              ? TrackingProtectionBlockingStatus::kHidden
-                              : TrackingProtectionBlockingStatus::kVisible});
-    }
-    if (tracking_protection_settings_->IsFingerprintingProtectionEnabled()) {
-      features.push_back({FeatureType::kFingerprintingProtection,
-                          CookieControlsEnforcement::kNoEnforcement,
-                          protections_on
-                              ? TrackingProtectionBlockingStatus::kLimited
-                              : TrackingProtectionBlockingStatus::kAllowed});
-    }
+  if (privacy_sandbox::kUserBypassIpProtection.Get() &&
+      tracking_protection_settings_->IsIpProtectionEnabled()) {
+    features.push_back(
+        {FeatureType::kIpProtection, CookieControlsEnforcement::kNoEnforcement,
+         protections_on ? TrackingProtectionBlockingStatus::kHidden
+                        : TrackingProtectionBlockingStatus::kVisible});
+  }
+  if (privacy_sandbox::kUserBypassFingerprintingProtection.Get() &&
+      tracking_protection_settings_->IsFingerprintingProtectionEnabled()) {
+    features.push_back({FeatureType::kFingerprintingProtection,
+                        CookieControlsEnforcement::kNoEnforcement,
+                        protections_on
+                            ? TrackingProtectionBlockingStatus::kLimited
+                            : TrackingProtectionBlockingStatus::kAllowed});
   }
 
   return features;

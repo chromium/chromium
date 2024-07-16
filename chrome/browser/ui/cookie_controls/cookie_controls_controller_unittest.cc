@@ -18,6 +18,7 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/features.h"
@@ -1593,10 +1594,12 @@ class CookieControlsUserBypassTrackingProtectionUiTest
       public testing::WithParamInterface<testing::tuple<bool, bool, bool>> {
  public:
   CookieControlsUserBypassTrackingProtectionUiTest() {
-    feature_list_.InitWithFeatures(
-        {privacy_sandbox::kTrackingProtectionSettingsLaunch,
-         privacy_sandbox::kIpProtectionV1,
-         privacy_sandbox::kFingerprintingProtectionSetting},
+    feature_list_.InitWithFeaturesAndParameters(
+        {{privacy_sandbox::kIpProtectionUx,
+          {{"include-in-user-bypass", "true"}}},
+         {privacy_sandbox::kFingerprintingProtectionUx,
+          {{"include-in-user-bypass", "true"}}},
+         {privacy_sandbox::kTrackingProtectionSettingsLaunch, {}}},
         {});
   }
   ~CookieControlsUserBypassTrackingProtectionUiTest() override = default;
@@ -1608,14 +1611,16 @@ class CookieControlsUserBypassTrackingProtectionUiTest
     features_list.push_back(
         {FeatureType::kThirdPartyCookies, enforcement,
          protections_on ? BlockingStatus::kBlocked : BlockingStatus::kAllowed});
+    // Currently these ACT features do not support different enforcement types.
     if (tracking_protection_settings()->IsIpProtectionEnabled()) {
-      features_list.push_back({FeatureType::kIpProtection, enforcement,
+      features_list.push_back({FeatureType::kIpProtection,
+                               CookieControlsEnforcement::kNoEnforcement,
                                protections_on ? BlockingStatus::kHidden
                                               : BlockingStatus::kVisible});
     }
     if (tracking_protection_settings()->IsFingerprintingProtectionEnabled()) {
       features_list.push_back({FeatureType::kFingerprintingProtection,
-                               enforcement,
+                               CookieControlsEnforcement::kNoEnforcement,
                                protections_on ? BlockingStatus::kLimited
                                               : BlockingStatus::kAllowed});
     }
@@ -1688,6 +1693,7 @@ TEST_F(CookieControlsUserBypassTrackingProtectionUiTest,
                            /*icon_visible=*/false, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
+
   hcsm->SetContentSettingCustomScope(
       ContentSettingsPattern::Wildcard(),
       ContentSettingsPattern::FromString("[*.]cool.things.com"),
