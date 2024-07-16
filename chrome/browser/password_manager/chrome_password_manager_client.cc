@@ -1540,7 +1540,7 @@ ChromePasswordManagerClient::GetOrCreateCredManController() {
   if (!cred_man_controller_) {
     cred_man_controller_ =
         std::make_unique<password_manager::CredManController>(
-            GetOrCreateKeyboardReplacingSurfaceVisibilityController());
+            GetOrCreateKeyboardReplacingSurfaceVisibilityController(), this);
   }
   return cred_man_controller_.get();
 }
