@@ -609,7 +609,7 @@ void CanvasResourceSharedImage::Transfer() {
   // TODO(khushalsagar): This is for consistency with MailboxTextureHolder
   // transfer path. It's unclear why the verification can not be deferred until
   // the resource needs to be transferred cross-process.
-  owning_thread_data().needs_verified_synctoken = true;
+  SetNeedsVerifiedSyncToken(true);
   GetSyncToken();
 }
 
@@ -671,9 +671,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
   scoped_refptr<StaticBitmapImage> image;
 
   // If its cross thread, then the sync token was already verified.
-  if (!is_cross_thread()) {
-    owning_thread_data().needs_verified_synctoken = false;
-  }
+  SetNeedsVerifiedSyncToken(false);
   image = AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
       GetClientSharedImage()->mailbox(), GetSyncToken(), texture_id_for_image,
       image_info, GetClientSharedImage()->GetTextureTarget(),
