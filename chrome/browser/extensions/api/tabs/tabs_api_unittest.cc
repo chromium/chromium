@@ -114,6 +114,9 @@ class TabsApiUnitTest : public ExtensionServiceTestBase {
   TestBrowserWindow* browser_window() { return browser_window_.get(); }
 
   TabStripModel* GetTabStripModel() { return browser_->tab_strip_model(); }
+  content::WebContents* GetActiveWebContents() {
+    return GetTabStripModel()->GetActiveWebContents();
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   aura::Window* root_window() { return test_helper_.GetContext(); }
@@ -286,8 +289,7 @@ TEST_F(TabsApiUnitTest, QueryWithoutTabsPermission) {
     web_contentses[i] = raw_web_contents;
     browser()->tab_strip_model()->AppendWebContents(std::move(web_contents),
                                                     true);
-    EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(),
-              raw_web_contents);
+    EXPECT_EQ(GetActiveWebContents(), raw_web_contents);
     content::WebContentsTester* web_contents_tester =
         content::WebContentsTester::For(raw_web_contents);
     web_contents_tester->NavigateAndCommit(tab_urls[i]);
@@ -339,8 +341,7 @@ TEST_F(TabsApiUnitTest, QueryWithHostPermission) {
     web_contentses[i] = raw_web_contents;
     browser()->tab_strip_model()->AppendWebContents(std::move(web_contents),
                                                     true);
-    EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(),
-              raw_web_contents);
+    EXPECT_EQ(GetActiveWebContents(), raw_web_contents);
     content::WebContentsTester* web_contents_tester =
         content::WebContentsTester::For(raw_web_contents);
     web_contents_tester->NavigateAndCommit(tab_urls[i]);
@@ -475,7 +476,7 @@ TEST_F(TabsApiUnitTest, TabsUpdate) {
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
   content::WebContents* raw_contents = contents.get();
   browser()->tab_strip_model()->AppendWebContents(std::move(contents), true);
-  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(), raw_contents);
+  EXPECT_EQ(GetActiveWebContents(), raw_contents);
   CreateSessionServiceTabHelper(raw_contents);
   int tab_id = sessions::SessionTabHelper::IdForTab(raw_contents).id();
 
@@ -494,7 +495,7 @@ TEST_F(TabsApiUnitTest, TabsUpdate) {
   ASSERT_TRUE(api_test_utils::RunFunction(function.get(), args, profile(),
                                           api_test_utils::FunctionMode::kNone));
   content::NavigationController& controller =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetController();
+      GetActiveWebContents()->GetController();
   content::RenderFrameHostTester::CommitPendingLoad(&controller);
   EXPECT_EQ(kChromiumOrg, raw_contents->GetLastCommittedURL());
 }
@@ -525,7 +526,7 @@ TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTab) {
   ASSERT_NE(raw_contents, nullptr);
   ASSERT_NE(raw_non_updated_contents, nullptr);
 
-  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(), raw_contents);
+  EXPECT_EQ(GetActiveWebContents(), raw_contents);
   CreateSessionServiceTabHelper(raw_contents);
   int tab_id = sessions::SessionTabHelper::IdForTab(raw_contents).id();
   int non_updated_tab_id =
@@ -572,8 +573,7 @@ TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTab) {
     const std::string args = base::StringPrintf(kFormatArgs, tab_id);
     EXPECT_TRUE(api_test_utils::RunFunction(
         function.get(), args, profile(), api_test_utils::FunctionMode::kNone));
-    EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(),
-              raw_contents);
+    EXPECT_EQ(GetActiveWebContents(), raw_contents);
   }
 
   {  // Reset the active states, and then test highlighted for a saved tab.
@@ -594,8 +594,7 @@ TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTab) {
     const std::string args = base::StringPrintf(kFormatArgs, tab_id);
     EXPECT_TRUE(api_test_utils::RunFunction(
         function.get(), args, profile(), api_test_utils::FunctionMode::kNone));
-    EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(),
-              raw_contents);
+    EXPECT_EQ(GetActiveWebContents(), raw_contents);
   }
 
   {  // Reset the active states, and then test selected state for a saved tab.
@@ -704,7 +703,7 @@ TEST_F(TabsApiUnitTest,
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
   content::WebContents* raw_contents = contents.get();
   browser()->tab_strip_model()->AppendWebContents(std::move(contents), true);
-  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(), raw_contents);
+  EXPECT_EQ(GetActiveWebContents(), raw_contents);
   CreateSessionServiceTabHelper(raw_contents);
   int tab_id = sessions::SessionTabHelper::IdForTab(raw_contents).id();
 
@@ -742,7 +741,7 @@ TEST_F(TabsApiUnitTest,
   ASSERT_TRUE(api_test_utils::RunFunction(function.get(), args, profile(),
                                           api_test_utils::FunctionMode::kNone));
   content::NavigationController& controller =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetController();
+      GetActiveWebContents()->GetController();
   content::RenderFrameHostTester::CommitPendingLoad(&controller);
   EXPECT_EQ(kChromiumOrg, raw_contents->GetLastCommittedURL());
 
@@ -772,7 +771,7 @@ TEST_F(TabsApiUnitTest, TabsUpdateJavaScriptUrlNotAllowed) {
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
   content::WebContents* raw_contents = contents.get();
   browser()->tab_strip_model()->AppendWebContents(std::move(contents), true);
-  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(), raw_contents);
+  EXPECT_EQ(GetActiveWebContents(), raw_contents);
   content::WebContentsTester* web_contents_tester =
       content::WebContentsTester::For(raw_contents);
   web_contents_tester->NavigateAndCommit(GURL("http://www.example.com"));
@@ -1654,8 +1653,7 @@ TEST_F(TabsApiUnitTest, TabsGoForwardAndBack) {
                               base::StringPrintf("[%d]", tab_id), profile(),
                               api_test_utils::FunctionMode::kIncognito);
 
-  content::WebContents* active_webcontent =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* active_webcontent = GetActiveWebContents();
   content::NavigationController& controller =
       active_webcontent->GetController();
   content::RenderFrameHostTester::CommitPendingLoad(&controller);
@@ -2061,7 +2059,7 @@ TEST_F(TabsApiUnitTest, TabsDiscard) {
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
   content::WebContents* web_contents = contents.get();
   browser()->tab_strip_model()->AppendWebContents(std::move(contents), true);
-  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(), web_contents);
+  EXPECT_EQ(GetActiveWebContents(), web_contents);
   CreateSessionServiceTabHelper(web_contents);
   int index = browser()->tab_strip_model()->GetIndexOfWebContents(web_contents);
   int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
@@ -2096,7 +2094,7 @@ TEST_F(TabsApiUnitTest, TabsDiscardSavedTabGroupTabNotAllowed) {
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
   content::WebContents* web_contents = contents.get();
   browser()->tab_strip_model()->AppendWebContents(std::move(contents), true);
-  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(), web_contents);
+  EXPECT_EQ(GetActiveWebContents(), web_contents);
   CreateSessionServiceTabHelper(web_contents);
   int index = browser()->tab_strip_model()->GetIndexOfWebContents(web_contents);
   int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
@@ -2158,7 +2156,7 @@ TEST_F(TabsApiUnitTest,
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
   content::WebContents* web_contents = contents.get();
   browser()->tab_strip_model()->AppendWebContents(std::move(contents), true);
-  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(), web_contents);
+  EXPECT_EQ(GetActiveWebContents(), web_contents);
   CreateSessionServiceTabHelper(web_contents);
   int index = browser()->tab_strip_model()->GetIndexOfWebContents(web_contents);
   int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
