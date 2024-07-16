@@ -89,7 +89,7 @@ def _write_file(filename: str, data: List[str], directory=TEST_DATA_PATH):
   with open(full_path := os.path.join(directory, filename), 'w') as f:
     f.writelines(data)
     completed_files.add(full_path)
-    print(f'Wrote expectations file: {filename}')
+    print(".", end="", flush=True)
 
 
 def _parse_log(lines: List[str]) -> Tuple[str, str]:
@@ -204,6 +204,8 @@ def main():
       for log in _get_individual_test_logs(test_log):
         expected_file, actual_text = _parse_log(log)
         _write_file(expected_file, actual_text)
+  sorted_files = sorted(completed_files)
+  print(''.join([f'\nWrote expectations file: {f}' for f in sorted_files]))
 
 if __name__ == '__main__':
   sys.exit(main())
