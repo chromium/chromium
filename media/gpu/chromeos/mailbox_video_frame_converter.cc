@@ -199,10 +199,9 @@ class MailboxVideoFrameConverter::ScopedSharedImage {
   ScopedSharedImage(const ScopedSharedImage&) = delete;
   ScopedSharedImage& operator=(const ScopedSharedImage&) = delete;
 
-  ~ScopedSharedImage() { Destroy(); }
+  ~ScopedSharedImage() = default;
 
   void Reset(scoped_refptr<gpu::ClientSharedImage> shared_image) {
-    Destroy();
     DCHECK(shared_image);
     shared_image_ = std::move(shared_image);
   }
@@ -213,12 +212,6 @@ class MailboxVideoFrameConverter::ScopedSharedImage {
   }
 
  private:
-  void Destroy() {
-    if (shared_image_) {
-      shared_image_->MarkForDestruction();
-    }
-  }
-
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
 };
 
