@@ -14,6 +14,7 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_mode.h"
 #include "components/sync/service/model_type_controller.h"
+#include "components/sync/service/model_type_local_data_batch_uploader.h"
 
 class PrefService;
 
@@ -39,6 +40,7 @@ class PasswordModelTypeController : public syncer::ModelTypeController,
           delegate_for_full_sync_mode,
       std::unique_ptr<syncer::ModelTypeControllerDelegate>
           delegate_for_transport_mode,
+      std::unique_ptr<syncer::ModelTypeLocalDataBatchUploader> batch_uploader,
       PrefService* pref_service,
       signin::IdentityManager* identity_manager,
       syncer::SyncService* sync_service);

@@ -12,10 +12,12 @@ BookmarkModelTypeController::BookmarkModelTypeController(
     std::unique_ptr<syncer::ModelTypeControllerDelegate>
         delegate_for_full_sync_mode,
     std::unique_ptr<syncer::ModelTypeControllerDelegate>
-        delegate_for_transport_mode)
+        delegate_for_transport_mode,
+    std::unique_ptr<syncer::ModelTypeLocalDataBatchUploader> batch_uploader)
     : ModelTypeController(syncer::BOOKMARKS,
                           std::move(delegate_for_full_sync_mode),
-                          std::move(delegate_for_transport_mode)) {}
+                          std::move(delegate_for_transport_mode),
+                          std::move(batch_uploader)) {}
 
 BookmarkModelTypeController::~BookmarkModelTypeController() = default;
 

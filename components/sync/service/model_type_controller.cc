@@ -62,13 +62,17 @@ std::string ModelTypeController::StateToString(State state) {
   return "Invalid";
 }
 
-ModelTypeController::ModelTypeController(ModelType type) : type_(type) {}
+ModelTypeController::ModelTypeController(
+    ModelType type,
+    std::unique_ptr<ModelTypeLocalDataBatchUploader> batch_uploader)
+    : type_(type), batch_uploader_(std::move(batch_uploader)) {}
 
 ModelTypeController::ModelTypeController(
     ModelType type,
     std::unique_ptr<ModelTypeControllerDelegate> delegate_for_full_sync_mode,
-    std::unique_ptr<ModelTypeControllerDelegate> delegate_for_transport_mode)
-    : ModelTypeController(type) {
+    std::unique_ptr<ModelTypeControllerDelegate> delegate_for_transport_mode,
+    std::unique_ptr<ModelTypeLocalDataBatchUploader> batch_uploader)
+    : ModelTypeController(type, std::move(batch_uploader)) {
   InitModelTypeController(std::move(delegate_for_full_sync_mode),
                           std::move(delegate_for_transport_mode));
 }
@@ -306,6 +310,11 @@ void ModelTypeController::RecordMemoryUsageAndCountsHistograms() {
   if (delegate_) {
     delegate_->RecordMemoryUsageAndCountsHistograms();
   }
+}
+
+ModelTypeLocalDataBatchUploader*
+ModelTypeController::GetModelTypeLocalDataBatchUploader() {
+  return batch_uploader_.get();
 }
 
 void ModelTypeController::ReportBridgeErrorForTest() {

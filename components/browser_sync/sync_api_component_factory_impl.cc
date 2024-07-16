@@ -39,6 +39,7 @@
 #include "components/password_manager/core/browser/sharing/outgoing_password_sharing_invitation_model_type_controller.h"
 #include "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
+#include "components/password_manager/core/browser/sync/password_local_data_batch_uploader.h"
 #include "components/password_manager/core/browser/sync/password_model_type_controller.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/settings/plus_address_setting_service.h"
@@ -46,6 +47,7 @@
 #include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/power_bookmarks/core/power_bookmark_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/reading_list/core/reading_list_local_data_batch_uploader.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_type_controller.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
@@ -64,6 +66,7 @@
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
 #include "components/sync/service/model_type_controller.h"
 #include "components/sync/service/syncable_service_based_model_type_controller.h"
+#include "components/sync_bookmarks/bookmark_local_data_batch_uploader.h"
 #include "components/sync_bookmarks/bookmark_model_type_controller.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "components/sync_device_info/device_info_sync_service.h"
@@ -354,10 +357,10 @@ SyncApiComponentFactoryImpl::CreateCommonModelTypeControllers(
                         ->GetBookmarkSyncControllerDelegate(favicon_service)
                         .get())
               : nullptr;
-      controllers.push_back(
-          std::make_unique<sync_bookmarks::BookmarkModelTypeController>(
-              std::move(full_mode_delegate),
-              std::move(transport_mode_delegate)));
+      controllers.push_back(std::make_unique<
+                            sync_bookmarks::BookmarkModelTypeController>(
+          std::move(full_mode_delegate), std::move(transport_mode_delegate),
+          std::make_unique<sync_bookmarks::BookmarkLocalDataBatchUploader>()));
     }
 
     if (!disabled_types.Has(syncer::POWER_BOOKMARK) &&
@@ -419,14 +422,15 @@ SyncApiComponentFactoryImpl::CreateCommonModelTypeControllers(
   if (!disabled_types.Has(syncer::PASSWORDS)) {
     if (profile_password_store_) {
       // |profile_password_store_| can be null in tests.
-      controllers.push_back(
-          std::make_unique<password_manager::PasswordModelTypeController>(
-              profile_password_store_->CreateSyncControllerDelegate(),
-              account_password_store_
-                  ? account_password_store_->CreateSyncControllerDelegate()
-                  : nullptr,
-              sync_client_->GetPrefService(),
-              sync_client_->GetIdentityManager(), sync_service));
+      controllers.push_back(std::make_unique<
+                            password_manager::PasswordModelTypeController>(
+          profile_password_store_->CreateSyncControllerDelegate(),
+          account_password_store_
+              ? account_password_store_->CreateSyncControllerDelegate()
+              : nullptr,
+          std::make_unique<password_manager::PasswordLocalDataBatchUploader>(),
+          sync_client_->GetPrefService(), sync_client_->GetIdentityManager(),
+          sync_service));
 
       // Couple password sharing invitations with password data type.
       if (!disabled_types.Has(syncer::INCOMING_PASSWORD_SHARING_INVITATION) &&
@@ -544,7 +548,8 @@ SyncApiComponentFactoryImpl::CreateCommonModelTypeControllers(
         delegate_for_transport_mode
             ? std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
                   delegate_for_transport_mode)
-            : nullptr));
+            : nullptr,
+        std::make_unique<reading_list::ReadingListLocalDataBatchUploader>()));
   }
 
   if (!disabled_types.Has(syncer::USER_EVENTS)) {

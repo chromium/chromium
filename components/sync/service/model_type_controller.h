@@ -23,6 +23,7 @@
 #include "components/sync/model/model_type_controller_delegate.h"
 #include "components/sync/model/sync_error.h"
 #include "components/sync/service/configure_context.h"
+#include "components/sync/service/model_type_local_data_batch_uploader.h"
 
 namespace syncer {
 
@@ -67,10 +68,15 @@ class ModelTypeController {
   // `delegate_for_transport_mode` may be null.
   // THIS IS NOT SUPPORTED for new data types. When introducing a new data type,
   // you must consider how it should work in transport mode.
+  // For types having both "local" and "account" storages, `batch_uploader`
+  // can be passed and will be exposed via GetModelTypeLocalDataBatchUploader()
+  // to allow moving local data to the account.
   ModelTypeController(
       ModelType type,
       std::unique_ptr<ModelTypeControllerDelegate> delegate_for_full_sync_mode,
-      std::unique_ptr<ModelTypeControllerDelegate> delegate_for_transport_mode);
+      std::unique_ptr<ModelTypeControllerDelegate> delegate_for_transport_mode,
+      std::unique_ptr<ModelTypeLocalDataBatchUploader> batch_uploader =
+          nullptr);
 
   ModelTypeController(const ModelTypeController&) = delete;
   ModelTypeController& operator=(const ModelTypeController&) = delete;
@@ -145,6 +151,9 @@ class ModelTypeController {
   // histograms. May do nothing if state() is NOT_RUNNING or FAILED.
   virtual void RecordMemoryUsageAndCountsHistograms();
 
+  // Returns the uploader passed on construction.
+  ModelTypeLocalDataBatchUploader* GetModelTypeLocalDataBatchUploader();
+
   // Reports model type error to simulate the error reported by the bridge.
   virtual void ReportBridgeErrorForTest();
 
@@ -152,7 +161,9 @@ class ModelTypeController {
 
  protected:
   // Subclasses that use this constructor must call InitModelTypeController().
-  explicit ModelTypeController(ModelType type);
+  explicit ModelTypeController(ModelType type,
+                               std::unique_ptr<ModelTypeLocalDataBatchUploader>
+                                   batch_uploader = nullptr);
 
   // |delegate_for_transport_mode| may be null if the type does not run in
   // transport mode.
@@ -177,6 +188,9 @@ class ModelTypeController {
 
   // The type this object is responsible for controlling.
   const ModelType type_;
+
+  // Null if the ModelType does not support batch upload.
+  const std::unique_ptr<ModelTypeLocalDataBatchUploader> batch_uploader_;
 
   // Used to check that functions are called on the correct sequence.
   base::SequenceChecker sequence_checker_;
