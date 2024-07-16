@@ -728,9 +728,31 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayDisable) {
   }
 }
 
+TEST_F(ManagementApiUnitTest, SetEnabled_UnsupportedRequirements) {
+  std::unique_ptr<content::WebContents> web_contents(
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+
+  // Install an extension with unsupported requirements.
+  base::FilePath base_path = data_dir().AppendASCII("requirements");
+  base::FilePath pem_path = base_path.AppendASCII("v1_good.pem");
+  base::FilePath path = base_path.AppendASCII("v2_bad_requirements");
+  // No WebGL will be the unsupported requirement.
+  content::GpuDataManager::GetInstance()->BlocklistWebGLForTesting();
+  const Extension* extension =
+      PackAndInstallCRX(path, pem_path, INSTALL_WITHOUT_LOAD);
+
+  std::string error;
+  bool success = RunSetEnabledFunction(web_contents.get(), extension->id(),
+                                       false /* use_user_gesture */,
+                                       true /* accept_dialog */, &error);
+  EXPECT_FALSE(success);
+  EXPECT_EQ(error, "There were missing requirements: WebGL is not supported.");
+  EXPECT_FALSE(registry()->enabled_extensions().Contains(extension->id()));
+}
+
 // Tests enabling an extension via management API after it was disabled due to
 // permission increase.
-TEST_F(ManagementApiUnitTest, SetEnabledAfterIncreasedPermissions) {
+TEST_F(ManagementApiUnitTest, SetEnabled_IncreasedPermissions) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   std::unique_ptr<content::WebContents> web_contents(
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
@@ -824,6 +846,32 @@ TEST_F(ManagementApiUnitTest, SetEnabledAfterIncreasedPermissions) {
   known_perms = prefs->GetGrantedPermissions(extension_id);
   ASSERT_TRUE(known_perms);
   EXPECT_FALSE(known_perms->IsEmpty());
+}
+
+TEST_F(ManagementApiUnitTest,
+       SetEnabled_UnsupportedRequirementsAndPermissionsIncrease) {
+  std::unique_ptr<content::WebContents> web_contents(
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+
+  // Install an extension with unsupported requirements and permissions
+  // increase.
+  base::FilePath base_path = data_dir().AppendASCII("requirements");
+  base::FilePath pem_path = base_path.AppendASCII("v1_good.pem");
+  base::FilePath path =
+      base_path.AppendASCII("v2_bad_requirements_and_permissions");
+  // No WebGL will be the unsupported requirement.
+  content::GpuDataManager::GetInstance()->BlocklistWebGLForTesting();
+  const Extension* extension =
+      PackAndInstallCRX(path, pem_path, INSTALL_WITHOUT_LOAD);
+
+  // Unsupported requirements should fail first.
+  std::string error;
+  bool success = RunSetEnabledFunction(web_contents.get(), extension->id(),
+                                       false /* use_user_gesture */,
+                                       true /* accept_dialog */, &error);
+  EXPECT_FALSE(success);
+  EXPECT_EQ(error, "There were missing requirements: WebGL is not supported.");
+  EXPECT_FALSE(registry()->enabled_extensions().Contains(extension->id()));
 }
 
 // A delegate that senses when extensions are enabled or disabled.

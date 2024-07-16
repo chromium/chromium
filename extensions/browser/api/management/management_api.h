@@ -117,11 +117,23 @@ class ManagementSetEnabledFunction : public ExtensionFunction {
   void OnSupervisedExtensionApprovalDone(
       SupervisedUserExtensionsDelegate::ExtensionApprovalResult result);
 
-  // Called when the permissions increase prompt is completed.
-  void OnPermissionsIncreasePromptDone(bool did_accept);
-
-  // Called when requirements have been checked, with `errors` if any.
+  // Verifies if `extension` has supported requirements. When requirements are
+  // checked, finishes the enable checks if there are any errors. Otherwise,
+  // continues with the enable checks.
+  // This is only needed when enabling an extension.
+  void CheckRequirements(const Extension& extension);
   void OnRequirementsChecked(const PreloadCheck::Errors& errors);
+
+  // Verifies if extension has a permissions increase. When permissions are
+  // checked, finishes the enable checks returning an error if permissions are
+  // not allowed.
+  // This is only needed when enabling an extension.
+  void CheckPermissionsIncrease();
+  void OnPermissionsIncreaseChecked(bool permissions_allowed);
+
+  // Enables the extension if `response_value` is successful, and returns
+  // `response_value`.
+  void FinishEnable(ResponseValue response_value);
 
   // Returns whether `extension_id` has any unsupported requirements.
   bool HasUnsupportedRequirements(const ExtensionId& extension_id) const;

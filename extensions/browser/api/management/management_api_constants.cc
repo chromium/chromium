@@ -25,7 +25,7 @@ const char kUninstallCanceledError[] =
     "Extension * uninstall canceled by user.";
 const char kUserDidNotReEnableError[] =
     "The user did not accept the re-enable dialog.";
-const char kMissingRequirementsError[] = "There were missing requirements: *.";
+const char kMissingRequirementsError[] = "There were missing requirements: *";
 const char kGestureNeededForCreateAppShortcutError[] =
     "chrome.management.createAppShortcut requires a user gesture.";
 const char kNoBrowserToCreateShortcut[] =

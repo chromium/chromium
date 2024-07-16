@@ -429,10 +429,6 @@ ExtensionFunction::ResponseAction ManagementSetEnabledFunction::Run() {
   }
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context());
-  const ManagementAPIDelegate* delegate = ManagementAPI::GetFactoryInstance()
-                                              ->Get(browser_context())
-                                              ->GetDelegate();
-
   const Extension* target_extension =
       registry->GetExtensionById(extension_id_, ExtensionRegistry::EVERYTHING);
   if (!target_extension || !ShouldExposeViaManagementAPI(*target_extension)) {
@@ -479,8 +475,11 @@ ExtensionFunction::ResponseAction ManagementSetEnabledFunction::Run() {
     return RespondLater();
   }
 
-  // Disable extension pathflow.
+  // Disable extension.
   if (!should_enable) {
+    const ManagementAPIDelegate* delegate = ManagementAPI::GetFactoryInstance()
+                                                ->Get(browser_context())
+                                                ->GetDelegate();
     delegate->DisableExtension(
         browser_context(), extension(), extension_id_,
         Manifest::IsPolicyLocation(target_extension->location())
@@ -489,7 +488,7 @@ ExtensionFunction::ResponseAction ManagementSetEnabledFunction::Run() {
     return RespondNow(NoArguments());
   }
 
-  // Enable extension pathflow.
+  // Enable extension.
 
   // Cannot enable policy disabled extensions.
   if (policy->MustRemainDisabled(target_extension, /*reason=*/nullptr,
@@ -497,50 +496,92 @@ ExtensionFunction::ResponseAction ManagementSetEnabledFunction::Run() {
     return RespondNow(Error(keys::kUserCantModifyError, extension_id_));
   }
 
-  // Notify the user if there are new permissions before enabling the extension.
+  // Start the various checks needed before enabling an extension.
+  AddRef();  // Balanced in FinishEnable().
+  CheckRequirements(*target_extension);
+
+  // The function may have already responded, if CheckRequirements()
+  // responded synchronously.
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void ManagementSetEnabledFunction::CheckRequirements(
+    const Extension& extension) {
+  if (HasUnsupportedRequirements(extension_id_)) {
+    // Recheck the requirements.
+    requirements_checker_ = std::make_unique<RequirementsChecker>(&extension);
+    requirements_checker_->Start(base::BindOnce(
+        &ManagementSetEnabledFunction::OnRequirementsChecked, this));
+    return;
+  }
+
+  // Call OnRequirementsChecked with empty errors, since requirements are
+  // already supported.
+  PreloadCheck::Errors errors;
+  OnRequirementsChecked(errors);
+}
+
+void ManagementSetEnabledFunction::OnRequirementsChecked(
+    const PreloadCheck::Errors& errors) {
+  if (!errors.empty()) {
+    // TODO(devlin): Should we really be noisy here all the time?
+    FinishEnable(
+        Error(keys::kMissingRequirementsError,
+              base::UTF16ToUTF8(requirements_checker_->GetErrorMessage())));
+    return;
+  }
+
+  // Continue with the enable extension flow.
+  CheckPermissionsIncrease();
+}
+
+void ManagementSetEnabledFunction::CheckPermissionsIncrease() {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context());
   if (prefs->DidExtensionEscalatePermissions(extension_id_)) {
     if (!user_gesture()) {
-      return RespondNow(Error(keys::kGestureNeededForEscalationError));
+      FinishEnable(Error(keys::kGestureNeededForEscalationError));
+      return;
     }
 
-    AddRef();  // Matched in OnPermissionsIncreasePromptDone().
+    // TODO(emiliapaz): Extension could be uninstalled between these checks. We
+    // should check if it's valid and return an error if not.
+
+    const Extension* extension =
+        ExtensionRegistry::Get(browser_context())
+            ->GetExtensionById(extension_id_, ExtensionRegistry::EVERYTHING);
+    const ManagementAPIDelegate* delegate = ManagementAPI::GetFactoryInstance()
+                                                ->Get(browser_context())
+                                                ->GetDelegate();
     install_prompt_ = delegate->SetEnabledFunctionDelegate(
-        GetSenderWebContents(), browser_context(), target_extension,
+        GetSenderWebContents(), browser_context(), extension,
         base::BindOnce(
-            &ManagementSetEnabledFunction::OnPermissionsIncreasePromptDone,
-            this));
-    return RespondLater();
+            &ManagementSetEnabledFunction::OnPermissionsIncreaseChecked, this));
+    return;
   }
 
-  // Verify requirements are supported.
-  if (HasUnsupportedRequirements(extension_id_)) {
-    // Recheck the requirements.
-    requirements_checker_ =
-        std::make_unique<RequirementsChecker>(target_extension);
-
-    AddRef();  // Matched in OnRequirementsChecked().
-    requirements_checker_->Start(base::BindOnce(
-        &ManagementSetEnabledFunction::OnRequirementsChecked, this));
-    return RespondLater();
-  }
-
-  delegate->EnableExtension(browser_context(), extension_id_);
-  return RespondNow(NoArguments());
+  // Call OnPermissionsIncreaseChecked with permissions allowed set to true,
+  // since there was no permissions increase.
+  OnPermissionsIncreaseChecked(/*permissions_allowed=*/true);
 }
 
-void ManagementSetEnabledFunction::OnPermissionsIncreasePromptDone(
-    bool did_accept) {
-  if (did_accept) {
-    ManagementAPI::GetFactoryInstance()
-        ->Get(browser_context())
-        ->GetDelegate()
-        ->EnableExtension(browser_context(), extension_id_);
-    Respond(NoArguments());
-  } else {
-    Respond(Error(keys::kUserDidNotReEnableError));
+void ManagementSetEnabledFunction::OnPermissionsIncreaseChecked(
+    bool permissions_allowed) {
+  if (!permissions_allowed) {
+    FinishEnable(Error(keys::kUserDidNotReEnableError));
+    return;
   }
 
+  // This was the last check in the enable flow. We can now finish enabling
+  // the extension.
+  const ManagementAPIDelegate* delegate = ManagementAPI::GetFactoryInstance()
+                                              ->Get(browser_context())
+                                              ->GetDelegate();
+  delegate->EnableExtension(browser_context(), extension_id_);
+  FinishEnable(NoArguments());
+}
+
+void ManagementSetEnabledFunction::FinishEnable(ResponseValue response_value) {
+  Respond(std::move(response_value));
   Release();  // Balanced in Run().
 }
 
@@ -577,21 +618,6 @@ bool ManagementSetEnabledFunction::IsSupervisedExtensionApprovalFlowRequired(
     return false;
   }
   return true;
-}
-
-void ManagementSetEnabledFunction::OnRequirementsChecked(
-    const PreloadCheck::Errors& errors) {
-  if (errors.empty()) {
-    ManagementAPI::GetFactoryInstance()->Get(browser_context())->GetDelegate()->
-        EnableExtension(browser_context(), extension_id_);
-    Respond(NoArguments());
-  } else {
-    // TODO(devlin): Should we really be noisy here all the time?
-    Respond(Error(keys::kMissingRequirementsError,
-                  base::UTF16ToUTF8(requirements_checker_->GetErrorMessage())));
-  }
-
-  Release();  // Balanced in Run().
 }
 
 void ManagementSetEnabledFunction::OnSupervisedExtensionApprovalDone(
