@@ -42,14 +42,6 @@ using ToolbarButtonImageLoader = UIImage* (^)(void);
 // View used to display the view used for the spotlight effect.
 @property(nonatomic, strong) UIView* spotlightView;
 
-// Returns a ToolbarButton with a type system, using the `image` as image for
-// normal state.
-- (instancetype)initWithImage:(UIImage*)image;
-// Returns a ToolbarButton using the `image` as image for normal state and
-// `IPHHighlightedImage` as image for IPHHighlightedImage state.
-- (instancetype)initWithImage:(UIImage*)image
-          IPHHighlightedImage:(UIImage*)IPHHighlightedImage;
-
 // Returns a ToolbarButton with a type system, using the `imageLoader` to load
 // the image for normal state. Can only be used when
 // `kEnableStartupImprovements` is enabled.

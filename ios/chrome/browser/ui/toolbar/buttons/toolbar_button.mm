@@ -37,24 +37,6 @@ const CGFloat kSpotlightCornerRadius = 7;
 
 @implementation ToolbarButton
 
-- (instancetype)initWithImage:(UIImage*)image {
-  return [self initWithImage:image IPHHighlightedImage:nil];
-}
-
-- (instancetype)initWithImage:(UIImage*)image
-          IPHHighlightedImage:(UIImage*)IPHHighlightedImage {
-  self = [[super class] buttonWithType:UIButtonTypeSystem];
-  if (self) {
-    DCHECK(!base::FeatureList::IsEnabled(kEnableStartupImprovements));
-    self.image = image;
-    self.IPHHighlightedImage = IPHHighlightedImage;
-    [self setImage:image forState:UIControlStateNormal];
-
-    [self initializeButton];
-  }
-  return self;
-}
-
 - (instancetype)initWithImageLoader:(ToolbarButtonImageLoader)imageLoader {
   return [self initWithImageLoader:imageLoader IPHHighlightedImageLoader:nil];
 }
@@ -65,7 +47,6 @@ const CGFloat kSpotlightCornerRadius = 7;
   self = [[super class] buttonWithType:UIButtonTypeSystem];
   if (self) {
     DCHECK(imageLoader);
-    DCHECK(base::FeatureList::IsEnabled(kEnableStartupImprovements));
     _imageLoader = imageLoader;
     _IPHHighlightedImageLoader = IPHHighlightedImageLoader;
 
@@ -108,9 +89,7 @@ const CGFloat kSpotlightCornerRadius = 7;
   }
 
   [self checkNamedGuide];
-  if (base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
-    [self checkImageVisibility];
-  }
+  [self checkImageVisibility];
 }
 
 - (void)setHiddenInCurrentState:(BOOL)hiddenInCurrentState {
@@ -143,51 +122,33 @@ const CGFloat kSpotlightCornerRadius = 7;
 #pragma mark - Accessors
 
 - (UIView*)spotlightView {
-  if (base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
-    // Lazy load spotlightView to improve startup latency.
-    if (!_spotlightView) {
-      [self createSpotlightViewIfNeeded];
-    }
-    return _spotlightView;
-  } else {
-    return _spotlightView;
+  // Lazy load spotlightView to improve startup latency.
+  if (!_spotlightView) {
+    [self createSpotlightViewIfNeeded];
   }
+  return _spotlightView;
 }
 
 - (UIImage*)image {
-  if (base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
-    // Lazy load image to improve startup latency.
-    if (!_image) {
-      _image = _imageLoader();
-    }
-    return _image;
-  } else {
-    return _image;
+  // Lazy load image to improve startup latency.
+  if (!_image) {
+    _image = _imageLoader();
   }
+  return _image;
 }
 
 - (UIImage*)IPHHighlightedImage {
-  if (base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
-    // Lazy load IPHHighlightedImage to improve startup latency.
-    if (!_IPHHighlightedImage && _IPHHighlightedImageLoader) {
-      _IPHHighlightedImage = _IPHHighlightedImageLoader();
-    }
-    return _IPHHighlightedImage;
-  } else {
-    return _IPHHighlightedImage;
+  // Lazy load IPHHighlightedImage to improve startup latency.
+  if (!_IPHHighlightedImage && _IPHHighlightedImageLoader) {
+    _IPHHighlightedImage = _IPHHighlightedImageLoader();
   }
+  return _IPHHighlightedImage;
 }
 
 #pragma mark - Private
 
 - (void)initializeButton {
   self.translatesAutoresizingMaskIntoConstraints = NO;
-
-  // Lazy load spotlight view to improve startup latency when
-  // kEnableStartupImprovements is enabled.
-  if (!base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
-    [self createSpotlightViewIfNeeded];
-  }
 
   __weak __typeof(self) weakSelf = self;
   CustomHighlightableButtonHighlightHandler handler = ^(BOOL highlighted) {
@@ -225,9 +186,7 @@ const CGFloat kSpotlightCornerRadius = 7;
   self.hidden = self.hiddenInCurrentState || self.hiddenInCurrentSizeClass;
 
   [self checkNamedGuide];
-  if (base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
-    [self checkImageVisibility];
-  }
+  [self checkImageVisibility];
 }
 
 // Checks whether the named guide associated with this button, if there is one,
@@ -271,11 +230,7 @@ const CGFloat kSpotlightCornerRadius = 7;
 
 // Whether there is an IPH highlighted image can be used.
 - (BOOL)canUseIPHHighlightedImage {
-  if (base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
-    return _IPHHighlightedImageLoader != nil;
-  } else {
-    return self.IPHHighlightedImage != nil;
-  }
+  return _IPHHighlightedImageLoader != nil;
 }
 
 @end
