@@ -23607,6 +23607,12 @@
             ],
             "experiments": [
                 {
+                    "name": "EnabledNoSlowHistogram",
+                    "enable_features": [
+                        "V8IntelJCCErratumMitigation"
+                    ]
+                },
+                {
                     "name": "Enabled",
                     "enable_features": [
                         "V8IntelJCCErratumMitigation",
