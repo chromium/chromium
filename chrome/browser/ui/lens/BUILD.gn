@@ -56,6 +56,7 @@ source_set("lens") {
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/views/bubble",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui/top_chrome",
     "//chrome/common",

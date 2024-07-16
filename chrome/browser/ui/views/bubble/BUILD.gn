@@ -1,0 +1,41 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+import("//build/config/ui.gni")
+
+source_set("bubble") {
+  sources = [
+    "webui_bubble_dialog_view.cc",
+    "webui_bubble_dialog_view.h",
+    "webui_bubble_manager.cc",
+    "webui_bubble_manager.h",
+    "webui_bubble_manager_observer.h",
+  ]
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+    "//skia",
+    "//ui/base",
+    "//ui/views",
+    "//ui/views/controls/webview",
+  ]
+  deps = [ "//components/input" ]
+
+  if (use_aura) {
+    sources += [
+      "webui_bubble_event_handler_aura.cc",
+      "webui_bubble_event_handler_aura.h",
+    ]
+    public_deps += [
+      "//ui/events",
+      "//ui/gfx/geometry",
+    ]
+    deps += [
+      "//ui/aura",
+      "//ui/display",
+    ]
+  }
+}

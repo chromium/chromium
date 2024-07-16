@@ -5532,11 +5532,6 @@ static_library("ui") {
       "views/bookmarks/saved_tab_groups/saved_tab_group_overflow_button.h",
       "views/browser_commands_views.cc",
       "views/browser_dialogs_views.cc",
-      "views/bubble/webui_bubble_dialog_view.cc",
-      "views/bubble/webui_bubble_dialog_view.h",
-      "views/bubble/webui_bubble_manager.cc",
-      "views/bubble/webui_bubble_manager.h",
-      "views/bubble/webui_bubble_manager_observer.h",
       "views/bubble_anchor_util_views.cc",
       "views/bubble_anchor_util_views.h",
       "views/bubble_menu_item_factory.cc",
@@ -6638,6 +6633,7 @@ static_library("ui") {
       "//chrome/browser/ui/actions:actions",
       "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/views",
+      "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/webui/top_chrome",
       "//components/commerce/core:metrics",
       "//components/commerce/core:pref_names",
@@ -6693,7 +6689,10 @@ static_library("ui") {
       "//ui/base/dragdrop/mojom:mojom_headers",
     ]
 
-    allow_circular_includes_from += [ "//chrome/browser/ui/views" ]
+    allow_circular_includes_from += [
+      "//chrome/browser/ui/views",
+      "//chrome/browser/ui/views/bubble",
+    ]
 
     if (is_chrome_branded && !is_android) {
       sources += [
@@ -6951,8 +6950,6 @@ static_library("ui") {
       "views/apps/chrome_native_app_window_views_aura.h",
       "views/apps/shaped_app_window_targeter.cc",
       "views/apps/shaped_app_window_targeter.h",
-      "views/bubble/webui_bubble_event_handler_aura.cc",
-      "views/bubble/webui_bubble_event_handler_aura.h",
       "views/eye_dropper/eye_dropper_aura.cc",
       "views/renderer_context_menu/render_view_context_menu_views.cc",
       "views/renderer_context_menu/render_view_context_menu_views.h",
