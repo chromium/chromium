@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static android.view.View.IMPORTANT_FOR_ACCESSIBILITY_NO;
+import static android.view.View.IMPORTANT_FOR_ACCESSIBILITY_YES;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -789,6 +792,32 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
         mGridModel.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, null);
         PriceCardView priceCardView = mTabGridView.findViewById(R.id.price_info_box_outer);
         Assert.assertEquals(View.GONE, priceCardView.getVisibility());
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testActionButtonImportantForAccessibility() {
+        ImageView closableListActionButton = mTabListView.findViewById(R.id.end_button);
+        ImageView closableGridActionButton = mTabGridView.findViewById(R.id.action_button);
+
+        Assert.assertEquals(
+                IMPORTANT_FOR_ACCESSIBILITY_YES,
+                closableListActionButton.getImportantForAccessibility());
+        Assert.assertEquals(
+                IMPORTANT_FOR_ACCESSIBILITY_YES,
+                closableGridActionButton.getImportantForAccessibility());
+
+        ImageView selectableListActionButton = mSelectableTabListView.findViewById(R.id.end_button);
+        ImageView selectableGridActionButton =
+                mSelectableTabGridView.findViewById(R.id.action_button);
+
+        Assert.assertEquals(
+                IMPORTANT_FOR_ACCESSIBILITY_NO,
+                selectableListActionButton.getImportantForAccessibility());
+        Assert.assertEquals(
+                IMPORTANT_FOR_ACCESSIBILITY_NO,
+                selectableGridActionButton.getImportantForAccessibility());
     }
 
     private void testPriceString(

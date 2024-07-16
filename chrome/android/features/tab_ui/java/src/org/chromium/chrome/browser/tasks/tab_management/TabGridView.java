@@ -40,7 +40,7 @@ public class TabGridView extends SelectableItemViewBase<Integer> {
     private static final long BASE_ANIMATION_DURATION_MS = 218;
     private static final float ZOOM_IN_SCALE = 0.8f;
 
-    private @TabActionState int mTabActionState = TabActionState.UNSET;
+    private static WeakReference<Bitmap> sCloseButtonBitmapWeakRef;
 
     @IntDef({
         AnimationStatus.SELECTED_CARD_ZOOM_IN,
@@ -72,14 +72,21 @@ public class TabGridView extends SelectableItemViewBase<Integer> {
         int NUM_ENTRIES = 3;
     }
 
-    private static WeakReference<Bitmap> sCloseButtonBitmapWeakRef;
     private boolean mIsAnimating;
+    private @TabActionState int mTabActionState = TabActionState.UNSET;
     private @Nullable ObjectAnimator mQuickDeleteAnimation;
     private @Nullable QuickDeleteAnimationGradientDrawable mQuickDeleteAnimationDrawable;
+    private ImageView mActionButton;
 
     public TabGridView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setSelectionOnLongClick(false);
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        mActionButton = findViewById(R.id.action_button);
     }
 
     /**
@@ -169,8 +176,7 @@ public class TabGridView extends SelectableItemViewBase<Integer> {
     void setTabActionButtonDrawable(boolean isTabGroup) {
         assert mTabActionState != TabActionState.UNSET;
         if (isTabGroup) {
-            ImageView actionButton = (ImageView) fastFindViewById(R.id.action_button);
-            actionButton.setImageDrawable(
+            mActionButton.setImageDrawable(
                     ResourcesCompat.getDrawable(
                             getResources(), R.drawable.ic_more_vert_24dp, getContext().getTheme()));
         } else {
@@ -182,16 +188,19 @@ public class TabGridView extends SelectableItemViewBase<Integer> {
         if (mTabActionState == tabActionState) return;
 
         mTabActionState = tabActionState;
+        int accessibilityMode = IMPORTANT_FOR_ACCESSIBILITY_YES;
         if (mTabActionState == TabActionState.CLOSABLE) {
             setTabActionButtonCloseDrawable();
         } else if (mTabActionState == TabActionState.SELECTABLE) {
+            accessibilityMode = IMPORTANT_FOR_ACCESSIBILITY_NO;
             setTabActionButtonSelectionDrawable();
         }
+
+        mActionButton.setImportantForAccessibility(accessibilityMode);
     }
 
     private void setTabActionButtonCloseDrawable() {
         assert mTabActionState != TabActionState.UNSET;
-        ImageView actionButton = (ImageView) fastFindViewById(R.id.action_button);
 
         if (sCloseButtonBitmapWeakRef == null || sCloseButtonBitmapWeakRef.get() == null) {
             int closeButtonSize =
@@ -203,8 +212,8 @@ public class TabGridView extends SelectableItemViewBase<Integer> {
                                     bitmap, closeButtonSize, closeButtonSize, true));
             bitmap.recycle();
         }
-        actionButton.setBackground(null);
-        actionButton.setImageBitmap(sCloseButtonBitmapWeakRef.get());
+        mActionButton.setBackground(null);
+        mActionButton.setImageBitmap(sCloseButtonBitmapWeakRef.get());
     }
 
     private void setTabActionButtonSelectionDrawable() {
@@ -215,7 +224,6 @@ public class TabGridView extends SelectableItemViewBase<Integer> {
                         resources,
                         R.drawable.tab_grid_selection_list_icon,
                         getContext().getTheme());
-        ImageView actionButton = (ImageView) fastFindViewById(R.id.action_button);
 
         InsetDrawable drawable =
                 new InsetDrawable(
@@ -223,11 +231,11 @@ public class TabGridView extends SelectableItemViewBase<Integer> {
                         (int)
                                 resources.getDimension(
                                         R.dimen.selection_tab_grid_toggle_button_inset));
-        actionButton.setBackground(drawable);
-        actionButton
+        mActionButton.setBackground(drawable);
+        mActionButton
                 .getBackground()
                 .setLevel(resources.getInteger(R.integer.list_item_level_default));
-        actionButton.setImageDrawable(
+        mActionButton.setImageDrawable(
                 AnimatedVectorDrawableCompat.create(
                         getContext(), R.drawable.ic_check_googblue_20dp_animated));
     }

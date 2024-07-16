@@ -25,33 +25,43 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemV
 /** Holds the view for a tab list. */
 public class TabListView extends SelectableItemViewBase<Integer> {
     private @TabActionState int mTabActionState = TabActionState.UNSET;
+    private ImageView mActionButton;
 
     public TabListView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setSelectionOnLongClick(false);
     }
 
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        mActionButton = findViewById(R.id.end_button);
+    }
+
     void setTabActionState(@TabActionState int tabActionState) {
         if (mTabActionState == tabActionState) return;
 
         mTabActionState = tabActionState;
+        int accessibilityMode = IMPORTANT_FOR_ACCESSIBILITY_YES;
         if (mTabActionState == TabActionState.CLOSABLE) {
             setTabActionButtonCloseDrawable();
         } else if (mTabActionState == TabActionState.SELECTABLE) {
+            accessibilityMode = IMPORTANT_FOR_ACCESSIBILITY_NO;
             setTabActionButtonSelectionDrawable();
         }
+
+        mActionButton.setImportantForAccessibility(accessibilityMode);
     }
 
     private void setTabActionButtonCloseDrawable() {
         assert mTabActionState != TabActionState.UNSET;
         var resources = getResources();
 
-        ImageView actionButton = findViewById(R.id.end_button);
-        actionButton.setVisibility(View.VISIBLE);
+        mActionButton.setVisibility(View.VISIBLE);
         int closeButtonSize = (int) resources.getDimension(R.dimen.tab_grid_close_button_size);
         Bitmap bitmap = BitmapFactory.decodeResource(resources, R.drawable.btn_close);
         Bitmap.createScaledBitmap(bitmap, closeButtonSize, closeButtonSize, true);
-        actionButton.setImageBitmap(bitmap);
+        mActionButton.setImageBitmap(bitmap);
     }
 
     private void setTabActionButtonSelectionDrawable() {
@@ -61,8 +71,7 @@ public class TabListView extends SelectableItemViewBase<Integer> {
         Drawable selectionListIcon =
                 AppCompatResources.getDrawable(
                         getContext(), R.drawable.tab_grid_selection_list_icon);
-        ImageView actionButton = findViewById(R.id.end_button);
-        actionButton.setVisibility(View.VISIBLE);
+        mActionButton.setVisibility(View.VISIBLE);
         int lateralInset =
                 resources.getDimensionPixelSize(
                         R.dimen.selection_tab_list_toggle_button_lateral_inset);
@@ -76,12 +85,12 @@ public class TabListView extends SelectableItemViewBase<Integer> {
                         verticalInset,
                         lateralInset,
                         verticalInset);
-        actionButton.setBackground(drawable);
+        mActionButton.setBackground(drawable);
         findViewById(R.id.start_icon).setBackground(null);
-        actionButton
+        mActionButton
                 .getBackground()
                 .setLevel(resources.getInteger(R.integer.list_item_level_default));
-        actionButton.setImageDrawable(
+        mActionButton.setImageDrawable(
                 AnimatedVectorDrawableCompat.create(
                         getContext(), R.drawable.ic_check_googblue_20dp_animated));
     }
