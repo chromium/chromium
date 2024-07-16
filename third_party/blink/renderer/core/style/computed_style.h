@@ -2071,20 +2071,6 @@ class ComputedStyle final : public ComputedStyleBase {
     return GetPosition() != EPosition::kStatic;
   }
 
-  // Whitespace utility functions.
-  // Don't use these `EWhiteSpace` static functions directly, because the
-  // `white-space` property may become a shorthand in future.
-  // https://drafts.csswg.org/css-text-4/#white-space-property
-  static bool DeprecatedAutoWrap(EWhiteSpace ws) {
-    return blink::ShouldWrapLine(ToTextWrap(ws));
-  }
-  static bool DeprecatedPreserveNewline(EWhiteSpace ws) {
-    return blink::ShouldPreserveBreaks(ToWhiteSpaceCollapse(ws));
-  }
-  static bool DeprecatedCollapseWhiteSpace(EWhiteSpace ws) {
-    return blink::ShouldCollapseWhiteSpaces(ToWhiteSpaceCollapse(ws));
-  }
-
   // This function may return values not defined as the enum values. See
   // `EWhiteSpace`. Prefer using semantic functions below.
   EWhiteSpace WhiteSpace() const {
