@@ -254,6 +254,22 @@
         </cr-toggle>
       </div>
 
+      <div class="list-item"
+           hidden="[[!syncPrefs.productComparisonRegistered]]">
+        <div id="productComparisonsCheckboxLabel">
+          $i18n{productComparisonsCheckboxLabel}
+        </div>
+        <cr-policy-indicator indicator-type="userPolicy"
+            hidden="[[!syncPrefs.productComparisonManaged]]">
+        </cr-policy-indicator>
+        <cr-toggle checked="{{syncPrefs.productComparisonSynced}}"
+            on-change="onSingleSyncDataTypeChanged_"
+            disabled="[[disableTypeCheckBox_(
+              syncPrefs.syncAllDataTypes, syncPrefs.productComparisonManaged)]]"
+            aria-labelledby="productComparisonsCheckboxLabel">
+        </cr-toggle>
+      </div>
+
 <if expr="chromeos_ash">
       <div class="list-item" id="cookiesSyncItem" hidden="[[hideCookieItem_(
         syncStatus.syncCookiesSupported, syncPrefs.cookiesRegistered)]]">

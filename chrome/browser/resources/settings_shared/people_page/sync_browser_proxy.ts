@@ -100,6 +100,9 @@ export interface SyncPrefs {
   preferencesManaged: boolean;
   preferencesRegistered: boolean;
   preferencesSynced: boolean;
+  productComparisonManaged: boolean;
+  productComparisonRegistered: boolean;
+  productComparisonSynced: boolean;
   readingListManaged: boolean;
   readingListRegistered: boolean;
   readingListSynced: boolean;
@@ -137,6 +140,7 @@ export const syncPrefsIndividualDataTypes: string[] = [
   'passwordsSynced',
   'paymentsSynced',
   'preferencesSynced',
+  'productComparisonSynced',
   'savedTabGroupsSynced',
   'tabsSynced',
   'themesSynced',
