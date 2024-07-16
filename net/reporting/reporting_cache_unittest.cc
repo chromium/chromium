@@ -522,13 +522,13 @@ TEST_P(ReportingCacheTest, GetReportsToDeliverForSource) {
 
   const auto report1 =
       base::ranges::find(reports, source1, &ReportingReport::reporting_source);
-  DCHECK(report1 != reports.end());
+  CHECK(report1 != reports.end());
   const auto report2 =
       base::ranges::find(reports, source2, &ReportingReport::reporting_source);
-  DCHECK(report2 != reports.end());
+  CHECK(report2 != reports.end());
   const auto report3 = base::ranges::find(reports, std::nullopt,
                                           &ReportingReport::reporting_source);
-  DCHECK(report3 != reports.end());
+  CHECK(report3 != reports.end());
 
   // Get the reports for Source 1 and check the status of all reports.
   EXPECT_EQ((std::vector<raw_ptr<const ReportingReport, VectorExperimental>>{
