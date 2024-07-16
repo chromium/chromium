@@ -454,7 +454,7 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean("showTabSearchPositionSettings",
                           tabs::CanShowTabSearchPositionSetting());
   html_source->AddBoolean("tabSearchIsRightAlignedAtStartup",
-                          tabs::GetTabSearchRightAligned(profile));
+                          tabs::GetTabSearchTrailingTabstrip(profile));
 
 // TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.

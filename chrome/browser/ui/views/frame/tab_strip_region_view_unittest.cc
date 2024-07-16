@@ -9,8 +9,11 @@
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
@@ -20,6 +23,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_scroll_container.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "tab_strip_region_view.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/animation/animation_test_api.h"
@@ -53,6 +57,15 @@ class TabStripRegionViewTestBase : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
 
+    BuildTabStripRegionView();
+
+    // Prevent hover cards from appearing when the mouse is over the tab. Tests
+    // don't typically account for this possibly, so it can cause unrelated
+    // tests to fail due to tab data not being set. See crbug.com/1050012.
+    Tab::SetShowHoverCardOnMouseHoverForTesting(false);
+  }
+
+  void BuildTabStripRegionView() {
     auto controller = std::make_unique<FakeBaseTabStripController>();
     controller_ = controller.get();
     auto tab_strip = std::make_unique<TabStrip>(
@@ -63,11 +76,6 @@ class TabStripRegionViewTestBase : public ChromeViewsTestBase {
         CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     tab_strip_region_view_ = widget_->SetContentsView(
         std::make_unique<TabStripRegionView>(std::move(tab_strip)));
-
-    // Prevent hover cards from appearing when the mouse is over the tab. Tests
-    // don't typically account for this possibly, so it can cause unrelated
-    // tests to fail due to tab data not being set. See crbug.com/1050012.
-    Tab::SetShowHoverCardOnMouseHoverForTesting(false);
   }
 
   void TearDown() override {
@@ -197,6 +205,24 @@ TEST_P(TabStripRegionViewTest, ChildrenAreFlushWithTopOfTabStripRegionView) {
   views::View::ConvertPointToTarget(tab_strip_, tab_strip_region_view_,
                                     &new_tab_button_origin);
   EXPECT_EQ(0, new_tab_button_origin.y());
+}
+
+TEST_P(TabStripRegionViewTest, TabSearchPositionLoggedOnConstruction) {
+  using TabSearchPositionEnum = TabStripRegionView::TabSearchPositionEnum;
+  const bool tab_search_trailing_tabstrip =
+      tabs::GetTabSearchTrailingTabstrip(tab_strip_region_view_->profile());
+  TabSearchPositionEnum expected_enum_val =
+      tab_search_trailing_tabstrip ? TabSearchPositionEnum::kTrailing
+                                   : TabSearchPositionEnum::kLeading;
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount("Tabs.TabSearch.IsTrailingTabstrip",
+                                     TabSearchPositionEnum::kLeading, 0);
+  histogram_tester.ExpectBucketCount("Tabs.TabSearch.IsTrailingTabstrip",
+                                     TabSearchPositionEnum::kTrailing, 0);
+  BuildTabStripRegionView();
+  histogram_tester.ExpectBucketCount("Tabs.TabSearch.IsTrailingTabstrip",
+                                     expected_enum_val, 1);
 }
 
 class TabStripRegionViewTestWithScrollingDisabled

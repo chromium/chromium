@@ -20,7 +20,7 @@ bool GetDefaultTabSearchRightAligned();
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
 // Return the value of the preference for TabSearchPosition.
-bool GetTabSearchRightAligned(const Profile* profile);
+bool GetTabSearchTrailingTabstrip(const Profile* profile);
 
 void SetTabSearchRightAlignedForTesting(bool is_right_aligned);
 

@@ -13,8 +13,7 @@
 
 namespace {
 
-std::optional<bool> g_tab_search_right_aligned_at_startup = std::nullopt;
-
+std::optional<bool> g_tab_search_trailing_tabstrip_at_startup = std::nullopt;
 }
 
 namespace tabs {
@@ -33,20 +32,20 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                 GetDefaultTabSearchRightAligned());
 }
 
-bool GetTabSearchRightAligned(const Profile* profile) {
+bool GetTabSearchTrailingTabstrip(const Profile* profile) {
   // If this pref has already been read, we need to return the same value.
-  if (!g_tab_search_right_aligned_at_startup.has_value()) {
-    g_tab_search_right_aligned_at_startup =
+  if (!g_tab_search_trailing_tabstrip_at_startup.has_value()) {
+    g_tab_search_trailing_tabstrip_at_startup =
         profile && CanShowTabSearchPositionSetting()
             ? profile->GetPrefs()->GetBoolean(prefs::kTabSearchRightAligned)
             : GetDefaultTabSearchRightAligned();
   }
 
-  return g_tab_search_right_aligned_at_startup.value();
+  return g_tab_search_trailing_tabstrip_at_startup.value();
 }
 
 void SetTabSearchRightAlignedForTesting(bool is_right_aligned) {
-  g_tab_search_right_aligned_at_startup = is_right_aligned;
+  g_tab_search_trailing_tabstrip_at_startup = is_right_aligned;
 }
 
 }  // namespace tabs

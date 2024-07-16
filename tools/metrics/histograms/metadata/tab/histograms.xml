@@ -2413,6 +2413,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.TabSearch.PositionInTabstrip" enum="TabSearchPosition"
+    expires_after="2025-01-01">
+  <owner>dpenning@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    [Desktop] Logs the position of the tab search button in the tabstrip region
+    view. Trailing implies right side in LTR, leading implies left in LTR.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.TabSearch.RecentlyClosedSectionToggleAction"
     enum="TabSearchRecentlyClosedToggleActions" expires_after="2024-12-31">
   <owner>romanarora@chromium.org</owner>

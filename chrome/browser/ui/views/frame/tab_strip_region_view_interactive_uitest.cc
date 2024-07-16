@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
   tab_strip_region_view()->RequestFocus();
   EXPECT_TRUE(tab_strip_region_view()->pane_has_focus());
 
-  if (!tabs::GetTabSearchRightAligned(browser()->profile())) {
+  if (!tabs::GetTabSearchTrailingTabstrip(browser()->profile())) {
     EXPECT_TRUE(tab_0->HasFocus());
 
 #if !BUILDFLAG(IS_WIN)
@@ -190,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
 
 IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest,
                        DefaultTestSearchContainerIsEndAligned) {
-  if (!tabs::GetTabSearchRightAligned(browser()->profile())) {
+  if (!tabs::GetTabSearchTrailingTabstrip(browser()->profile())) {
     // The TabSearchContainer is calculated as controls padding away from the
     // first tab (not including bottom corner radius)
     const int tab_search_container_expected_end =
@@ -237,7 +237,7 @@ class TabSearchForcedPositionTest : public TabStripRegionViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(TabSearchForcedPositionTest,
                        DefaultTestSearchContainerIsEndAligned) {
-  if (!tabs::GetTabSearchRightAligned(browser()->profile())) {
+  if (!tabs::GetTabSearchTrailingTabstrip(browser()->profile())) {
     // The TabSearchContainer is calculated as controls padding away from the
     // first tab (not including bottom corner radius)
     const int tab_search_container_expected_end =

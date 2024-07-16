@@ -21,6 +21,7 @@ class TabSearchButton;
 class TabStrip;
 class TabStripScrollContainer;
 class ProductSpecificationsButton;
+class TabSearchPositionMetricsLogger;
 
 // Container for the tabstrip and the other views sharing space with it -
 // with the exception of the caption buttons.
@@ -28,6 +29,17 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   METADATA_HEADER(TabStripRegionView, views::AccessiblePaneView)
 
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(TabSearchPositionEnum)
+  enum class TabSearchPositionEnum {
+    kLeading = 0,
+    kTrailing = 1,
+    kMaxValue = kTrailing,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:TabSearchPosition)
+
   explicit TabStripRegionView(std::unique_ptr<TabStrip> tab_strip);
   TabStripRegionView(const TabStripRegionView&) = delete;
   TabStripRegionView& operator=(const TabStripRegionView&) = delete;
@@ -91,6 +103,8 @@ class TabStripRegionView final : public views::AccessiblePaneView {
 
   views::View* GetTabStripContainerForTesting() { return tab_strip_container_; }
 
+  const Profile* profile() { return profile_; }
+
  private:
   // Updates the border padding for `new_tab_button_` and
   // `tab_search_container_`, if present.  This should be called whenever any
@@ -106,6 +120,7 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   // on `offset`. This should only used for views that show before tab strip.
   void AdjustViewBoundsRect(View* view, int offset);
 
+  raw_ptr<const Profile> profile_ = nullptr;
   raw_ptr<views::View, AcrossTasksDanglingUntriaged> tab_strip_container_ =
       nullptr;
   raw_ptr<views::View, DanglingUntriaged> reserved_grab_handle_space_ = nullptr;
@@ -122,6 +137,9 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   // laid out before the TabStrip. Storing this configuration prevents
   // rechecking the child order on every layout.
   const bool render_tab_search_before_tab_strip_;
+
+  std::unique_ptr<TabSearchPositionMetricsLogger>
+      tab_search_position_metrics_logger_;
 
   const base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(
