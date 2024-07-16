@@ -93,6 +93,8 @@ class AtspiInProcessFuzzer
   static std::optional<size_t> FindMatchingControl(
       const std::vector<ScopedAtspiAccessible>& controls,
       const test::fuzzing::atspi_fuzzing::PathElement& selector);
+  static void RecordChildrenForUseByMutator(
+      const std::vector<ScopedAtspiAccessible>& children);
 
   static size_t MutateUsingLPM(uint8_t* data,
                                size_t size,
@@ -230,14 +232,7 @@ int AtspiInProcessFuzzer::Fuzz(
     std::vector<size_t> current_control_path;
     for (const test::fuzzing::atspi_fuzzing::PathElement& path_element :
          action.path_to_control()) {
-      // Record all known children for our custom mutator
-      for (auto& child : children) {
-        std::string name = GetNodeName(child);
-        if (!name.empty() && !kBlockedControls.contains(name)) {
-          known_names.insert(name);
-        }
-        known_roles.insert(GetNodeRole(child));
-      }
+      RecordChildrenForUseByMutator(children);
       std::optional<size_t> selected_control =
           FindMatchingControl(children, path_element);
       if (!selected_control.has_value()) {
@@ -263,6 +258,7 @@ int AtspiInProcessFuzzer::Fuzz(
 
       children = GetChildren(current_control);
     }
+    RecordChildrenForUseByMutator(children);
 
     // We have now chosen a control with which we'll interact during
     // this action
@@ -301,6 +297,17 @@ int AtspiInProcessFuzzer::Fuzz(
   }
 
   return 0;
+}
+
+void AtspiInProcessFuzzer::RecordChildrenForUseByMutator(
+    const std::vector<ScopedAtspiAccessible>& children) {
+  for (auto& child : children) {
+    std::string name = GetNodeName(child);
+    if (!name.empty() && !kBlockedControls.contains(name)) {
+      known_names.insert(name);
+    }
+    known_roles.insert(GetNodeRole(child));
+  }
 }
 
 ScopedAtspiAccessible AtspiInProcessFuzzer::GetRootNode() {
