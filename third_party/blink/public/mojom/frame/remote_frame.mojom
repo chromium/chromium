@@ -9,6 +9,7 @@ import "cc/mojom/touch_action.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/source_location.mojom";
+import "services/network/public/mojom/storage_access_api.mojom";
 import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/web_sandbox_flags.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
@@ -154,6 +155,13 @@ struct OpenURLParams {
   // True if the initiator explicitly asked for opener relationships to be
   // preserved, via rel="opener".
   bool has_rel_opener = false;
+
+  // The renderer's Storage Access API status (e.g. whether it has opted into
+  // accessing cross-site cookies). Note that this is not trusted; cookies will
+  // not actually be attached unless there is also a matching permission grant
+  // created by the browser process. (Also note that the Storage Access API is
+  // only relevant when third-party cookies are blocked.)
+  network.mojom.StorageAccessApiStatus storage_access_api_status = kNone;
 };
 
 // Implemented in Browser, this interface defines frame-specific methods that

@@ -572,6 +572,34 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
 // This fixture should use the minimal set of features/params.
 class StorageAccessAPIBrowserTest : public StorageAccessAPIBaseBrowserTest {};
 
+// Test fixture for tests whose behavior could be affected by Origin Isolation
+// (kOriginKeyedProcessesByDefault). This is a parameterised version of
+// StorageAccessAPIBrowserTest that runs each test with Origin Isolation
+// enabled and disabled.
+class StorageAccessAPIOriginIsolationBrowserTest
+    : public StorageAccessAPIBaseBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  StorageAccessAPIOriginIsolationBrowserTest() = default;
+  ~StorageAccessAPIOriginIsolationBrowserTest() = default;
+
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    if (GetParam()) {
+      return {
+          {features::kOriginKeyedProcessesByDefault, {}},
+      };
+    }
+    return {};
+  }
+
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    if (!GetParam()) {
+      return {features::kOriginKeyedProcessesByDefault};
+    }
+    return {};
+  }
+};
+
 // Check default values for permissions.query on storage-access.
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, PermissionQueryDefault) {
   SetBlockThirdPartyCookies(true);
@@ -1363,8 +1391,8 @@ IN_PROC_BROWSER_TEST_F(
 // Validate that if an iframe is navigated (by a same-site initiator) to a
 // same-origin endpoint (even if the navigation does not include any
 // cross-origin redirects), the new document cannot inherit storage access.
-IN_PROC_BROWSER_TEST_F(
-    StorageAccessAPIBrowserTest,
+IN_PROC_BROWSER_TEST_P(
+    StorageAccessAPIOriginIsolationBrowserTest,
     Navigation_NonSelfInitiated_SameOriginDestination_SameSiteInitiator) {
   SetBlockThirdPartyCookies(true);
 
@@ -1395,8 +1423,8 @@ IN_PROC_BROWSER_TEST_F(
 // same-origin endpoint (even if the navigation does not include any
 // cross-origin redirects, and the navigated frame has obtained storage access
 // already), the new document cannot inherit storage access.
-IN_PROC_BROWSER_TEST_F(
-    StorageAccessAPIBrowserTest,
+IN_PROC_BROWSER_TEST_P(
+    StorageAccessAPIOriginIsolationBrowserTest,
     Navigation_NonSelfInitiated_SameOriginDestination_SameSiteInitiator_TargetHasStorageAccess) {
   SetBlockThirdPartyCookies(true);
 
@@ -1931,6 +1959,13 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIStorageBrowserTest, MultiTabTest) {
                                             DoesPermissionGrantStorage());
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 }
+
+INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
+                         StorageAccessAPIOriginIsolationBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "origin_keyed" : "site_keyed";
+                         });
 
 INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
                          StorageAccessAPIStorageBrowserTest,

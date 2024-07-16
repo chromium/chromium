@@ -1224,18 +1224,18 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
     bool is_pdf,
     bool is_embedder_initiated_fenced_frame_navigation,
     std::optional<std::u16string> embedder_shared_storage_context) {
-  return Create(frame_tree_node, std::move(common_params),
-                std::move(commit_params),
-                /*browser_initiated=*/true, was_opener_suppressed,
-                std::nullopt /* initiator_frame_token */,
-                ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
-                extra_headers, frame_entry, entry, is_form_submission,
-                std::move(navigation_ui_data), impression,
-                blink::mojom::NavigationInitiatorActivationAndAdStatus::
-                    kDidNotStartWithTransientActivation,
-                is_pdf, is_embedder_initiated_fenced_frame_navigation,
-                /*is_container_initiated=*/false, /*has_rel_opener=*/false,
-                embedder_shared_storage_context);
+  return Create(
+      frame_tree_node, std::move(common_params), std::move(commit_params),
+      /*browser_initiated=*/true, was_opener_suppressed,
+      std::nullopt /* initiator_frame_token */,
+      ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
+      extra_headers, frame_entry, entry, is_form_submission,
+      std::move(navigation_ui_data), impression,
+      blink::mojom::NavigationInitiatorActivationAndAdStatus::
+          kDidNotStartWithTransientActivation,
+      is_pdf, is_embedder_initiated_fenced_frame_navigation,
+      /*is_container_initiated=*/false, /*has_rel_opener=*/false,
+      net::StorageAccessApiStatus::kNone, embedder_shared_storage_context);
 }
 
 // static
@@ -1259,6 +1259,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
     bool is_embedder_initiated_fenced_frame_navigation,
     bool is_container_initiated,
     bool has_rel_opener,
+    net::StorageAccessApiStatus storage_access_api_status,
     std::optional<std::u16string> embedder_shared_storage_context) {
   TRACE_EVENT1("navigation", "NavigationRequest::Create", "browser_initiated",
                browser_initiated);
@@ -1280,7 +1281,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
       base::TimeTicks() /* renderer_before_unload_start */,
       base::TimeTicks() /* renderer_before_unload_end */,
       initiator_activation_and_ad_status, is_container_initiated,
-      net::StorageAccessApiStatus::kNone, has_rel_opener);
+      storage_access_api_status, has_rel_opener);
 
   // Shift-Reload forces bypassing caches and service workers.
   if (common_params->navigation_type ==

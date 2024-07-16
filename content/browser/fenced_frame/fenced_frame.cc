@@ -9,6 +9,7 @@
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "net/storage_access_api/status.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
@@ -181,7 +182,9 @@ void FencedFrame::Navigate(
       /*is_embedder_initiated_fenced_frame_navigation=*/true,
       /*is_unfenced_top_navigation=*/false,
       /*force_new_browsing_instance=*/true, /*is_container_initiated=*/false,
-      /*has_rel_opener=*/false, embedder_shared_storage_context);
+      /*has_rel_opener=*/false,
+      /*storage_access_api_status=*/net::StorageAccessApiStatus::kNone,
+      embedder_shared_storage_context);
 }
 
 bool FencedFrame::IsHidden() {
