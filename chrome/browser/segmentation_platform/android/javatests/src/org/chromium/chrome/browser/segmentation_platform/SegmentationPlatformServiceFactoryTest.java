@@ -12,12 +12,14 @@ import static org.chromium.base.test.util.Batch.PER_CLASS;
 
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -53,7 +55,7 @@ public class SegmentationPlatformServiceFactoryTest {
         LibraryLoader.getInstance().ensureInitialized();
         mActivityTestRule.startMainActivityOnBlankPage();
 
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 new Runnable() {
                     @Override
                     public void run() {
@@ -71,9 +73,7 @@ public class SegmentationPlatformServiceFactoryTest {
                                     public void onResult(ClassificationResult result) {
                                         Assert.assertEquals(
                                                 PredictionStatus.NOT_READY, result.status);
-                                        assertThat(
-                                                result.orderedLabels,
-                                                org.hamcrest.Matchers.empty());
+                                        assertThat(result.orderedLabels, Matchers.empty());
                                         mCallbackHelper.notifyCalled();
                                     }
                                 });
@@ -89,7 +89,7 @@ public class SegmentationPlatformServiceFactoryTest {
         LibraryLoader.getInstance().ensureInitialized();
         mActivityTestRule.startMainActivityOnBlankPage();
 
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 new Runnable() {
                     @Override
                     public void run() {

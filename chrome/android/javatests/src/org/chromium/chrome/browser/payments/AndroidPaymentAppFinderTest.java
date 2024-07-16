@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
@@ -1662,7 +1663,7 @@ public class AndroidPaymentAppFinderTest
             String appStorePackageName, GURL appStorePaymentMethod, Set<String> methodNames)
             throws Throwable {
         mMethodData = buildMethodData(methodNames);
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AndroidPaymentAppFinder finder =
                             new AndroidPaymentAppFinder(
@@ -1670,7 +1671,7 @@ public class AndroidPaymentAppFinderTest
                                     mDownloader,
                                     new PaymentManifestParser(),
                                     mPackageManager,
-                                    /* delegate= */ AndroidPaymentAppFinderTest.this,
+                                    /* delegate= */ this,
                                     /* factory= */ null);
                     finder.bypassIsReadyToPayServiceInTest();
                     if (appStorePackageName != null) {

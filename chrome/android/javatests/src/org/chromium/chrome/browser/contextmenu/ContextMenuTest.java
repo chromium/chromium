@@ -1079,7 +1079,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
 
     private String getClipboardText() throws Throwable {
         final AtomicReference<String> clipboardTextRef = new AtomicReference<>();
-        mDownloadTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ClipboardManager clipMgr =
                             (ClipboardManager)

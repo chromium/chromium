@@ -15,6 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
@@ -69,7 +70,7 @@ public class CompositorVisibilityTest {
     @Test
     @SmallTest
     public void testSetVisibilityHidesSurfaces() throws Throwable {
-        sActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 new Runnable() {
                     @Override
                     public void run() {
@@ -92,7 +93,7 @@ public class CompositorVisibilityTest {
     @Test
     @SmallTest
     public void testSurfaceViewIsAttachedImmediately() throws Throwable {
-        sActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 new Runnable() {
                     @Override
                     public void run() {
@@ -110,7 +111,7 @@ public class CompositorVisibilityTest {
     @Test
     @SmallTest
     public void testInitialVisibility() throws Throwable {
-        sActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 new Runnable() {
                     @Override
                     public void run() {

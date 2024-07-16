@@ -118,7 +118,7 @@ public class PaymentDetailsUpdateServiceHelperTest {
 
     private void installAndInvokePaymentApp() throws Throwable {
         installPaymentApp();
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PaymentDetailsUpdateServiceHelper.getInstance()
                             .initialize(
