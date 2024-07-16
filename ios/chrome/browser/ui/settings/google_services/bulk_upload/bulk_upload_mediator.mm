@@ -166,7 +166,8 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
   _map = map;
   NSMutableArray<BulkUploadViewItem*>* viewItems = [NSMutableArray array];
   for (auto& modelItem : GetUploadModelItems()) {
-    if (_map[modelItem.model_type].item_count == 0) {
+    if (!_map.contains(modelItem.model_type) ||
+        _map.at(modelItem.model_type).item_count == 0) {
       continue;
     }
     _selectedTypes.insert(modelItem.bulk_upload_type);
