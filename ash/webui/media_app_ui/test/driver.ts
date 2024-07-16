@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+
 import {FileSnapshot, LastLoadedFilesResponse, TestMessageQueryData, TestMessageResponseData, TestMessageRunTestCase} from './driver_api.js';
 import {TEST_ONLY} from './launch.js';
 
@@ -375,8 +377,8 @@ export function assertFilenamesToBe(
     expectedFilenames: string, testCase?: string) {
   // Use filenames as an approximation of file uniqueness.
   const currentFilenames = currentFiles.map(d => d.handle.name).join();
-  chai.assert.equal(
-      currentFilenames, expectedFilenames,
+  assertEquals(
+      expectedFilenames, currentFilenames,
       `Expected '${expectedFilenames}' but got '${currentFilenames}'` +
           (testCase ? ` for ${testCase}` : ''));
 }
@@ -427,15 +429,15 @@ export function launchWithFocusFile(directory: FakeFileSystemDirectoryHandle):
 
 export async function assertSingleFileLaunch(
     directory: FakeFileSystemDirectoryHandle, totalFiles: number) {
-  chai.assert.equal(1, currentFiles.length);
+  assertEquals(1, currentFiles.length);
 
   await sendFilesToGuest();
 
   const loadedFiles = await getLoadedFiles();
   // The untrusted context only loads the first file.
-  chai.assert.equal(1, loadedFiles.length);
+  assertEquals(1, loadedFiles.length);
   // All files are in the `FileSystemDirectoryHandle`.
-  chai.assert.equal(totalFiles, directory.files.length);
+  assertEquals(totalFiles, directory.files.length);
 }
 
 /**
@@ -445,11 +447,11 @@ export async function assertSingleFileLaunch(
 export async function assertFilesLoaded(
     directory: FakeFileSystemDirectoryHandle, fileNames: string[],
     testCase?: string) {
-  chai.assert.equal(fileNames.length, directory.files.length);
-  chai.assert.equal(fileNames.length, currentFiles.length);
+  assertEquals(fileNames.length, directory.files.length);
+  assertEquals(fileNames.length, currentFiles.length);
 
   const loadedFiles = await getLoadedFiles();
-  chai.assert.equal(fileNames.length, loadedFiles.length);
+  assertEquals(fileNames.length, loadedFiles.length);
 
   // Check `currentFiles` in the trusted context matches up with files sent
   // to guest.

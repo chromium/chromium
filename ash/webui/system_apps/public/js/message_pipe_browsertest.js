@@ -62,6 +62,7 @@ var MessagePipeBrowserTest = class extends testing.Test {
 };
 
 TEST_F('MessagePipeBrowserTest', 'ReceivesSuccessResponse', async () => {
+  const {assertDeepEquals} = await import('chrome://webui-test/chai_assert.js');
   const request = {'foo': 'bar'};
   const response = await sendTestMessage('success-message', request);
   assertDeepEquals(response, {'success': true, 'request': request});
@@ -69,6 +70,7 @@ TEST_F('MessagePipeBrowserTest', 'ReceivesSuccessResponse', async () => {
 });
 
 TEST_F('MessagePipeBrowserTest', 'IgnoresMessagesWithNoType', async () => {
+  const {assertEquals} = await import('chrome://webui-test/chai_assert.js');
   await sendTestMessage('install-generic-responder');
 
   let messageCount = 0;
@@ -96,6 +98,7 @@ TEST_F('MessagePipeBrowserTest', 'IgnoresMessagesWithNoType', async () => {
 
 // Tests that we receive an error if our message is unhandled.
 TEST_F('MessagePipeBrowserTest', 'ReceivesNoHandlerError', async () => {
+  const {assertEquals} = await import('chrome://webui-test/chai_assert.js');
   window['untrustedMessagePipe'].logClientError = error =>
       console.log(JSON.stringify(error));
   let caughtError = {};
@@ -126,6 +129,7 @@ TEST_F('MessagePipeBrowserTest', 'ReceivesNoHandlerError', async () => {
 
 // Tests that we receive an error if the handler fails.
 TEST_F('MessagePipeBrowserTest', 'ReceivesProxiedError', async () => {
+  const {assertEquals} = await import('chrome://webui-test/chai_assert.js');
   window['untrustedMessagePipe'].logClientError = error =>
       console.log(JSON.stringify(error));
   let caughtError = {};
@@ -158,6 +162,7 @@ TEST_F('MessagePipeBrowserTest', 'ReceivesProxiedError', async () => {
 // Tests `MessagePipe.sendMessage()` properly propagates errors and appends
 // stacktraces.
 TEST_F('MessagePipeBrowserTest', 'CrossContextErrors', async () => {
+  const {assertEquals} = await import('chrome://webui-test/chai_assert.js');
   const untrustedMessagePipe = window['untrustedMessagePipe'];
 
   untrustedMessagePipe.logClientError = error =>

@@ -37,6 +37,7 @@ var NetworkDebugUIBrowserTest = class extends testing.Test {
 
 TEST_F('NetworkDebugUIBrowserTest', 'NetworkDebugUI_TabNames', function() {
   test('checks the title of all tabs', async function() {
+    const {assertEquals} = await import('chrome://webui-test/chai_assert.js');
     const tabs = document.querySelector('network-ui')
                      .shadowRoot.querySelector('cr-tabs')
                      .shadowRoot.querySelectorAll('.tab')
@@ -57,6 +58,7 @@ TEST_F('NetworkDebugUIBrowserTest', 'NetworkDebugUI_TabNames', function() {
 
 TEST_F('NetworkDebugUIBrowserTest', 'NetworkDebugUI_General', function() {
   test('check few items in the General tab', async function() {
+    const {assertEquals} = await import('chrome://webui-test/chai_assert.js');
     const root = document.querySelector('network-ui').shadowRoot
 
     assertEquals(
@@ -69,6 +71,7 @@ TEST_F('NetworkDebugUIBrowserTest', 'NetworkDebugUI_General', function() {
 
 TEST_F('NetworkDebugUIBrowserTest', 'NetworkDebugUI_Health', function() {
   test('check few items in the health tab', async function() {
+    const {assertEquals} = await import('chrome://webui-test/chai_assert.js');
     const root = document.querySelector('network-ui').shadowRoot
 
     const tabs =
@@ -88,6 +91,7 @@ TEST_F('NetworkDebugUIBrowserTest', 'NetworkDebugUI_Health', function() {
 
 TEST_F('NetworkDebugUIBrowserTest', 'NetworkDebugUI_Logs', function() {
   test('check few items in the Logs tab', async function() {
+    const {assertEquals} = await import('chrome://webui-test/chai_assert.js');
     const root = document.querySelector('network-ui').shadowRoot
 
     const tabs =
@@ -108,6 +112,7 @@ TEST_F('NetworkDebugUIBrowserTest', 'NetworkDebugUI_Logs', function() {
 
 TEST_F('NetworkDebugUIBrowserTest', 'NetworkDebugUI_State', function() {
   test('check few items in the State tab', async function() {
+    const {assertEquals} = await import('chrome://webui-test/chai_assert.js');
     const root = document.querySelector('network-ui').shadowRoot
 
     const tabs =
@@ -128,6 +133,7 @@ TEST_F('NetworkDebugUIBrowserTest', 'NetworkDebugUI_State', function() {
 
 TEST_F('NetworkDebugUIBrowserTest', 'NetworkDebugUI_Counters', function() {
   test('check few items in the Counters tab', async function() {
+    const {assertEquals} = await import('chrome://webui-test/chai_assert.js');
     const root = document.querySelector('network-ui').shadowRoot
 
     const tabs =
@@ -148,6 +154,7 @@ TEST_F('NetworkDebugUIBrowserTest', 'NetworkDebugUI_Counters', function() {
 
 TEST_F('NetworkDebugUIBrowserTest', 'NetworkDebugUI_Metrics', function() {
   test('check few items in the Metrics tab', async function() {
+    const {assertEquals} = await import('chrome://webui-test/chai_assert.js');
     const root = document.querySelector('network-ui').shadowRoot
 
     const tabs =
@@ -172,6 +179,7 @@ TEST_F('NetworkDebugUIBrowserTest', 'NetworkDebugUI_Metrics', function() {
 
 TEST_F('NetworkDebugUIBrowserTest', 'NetworkDebugUI_Hotspot', function() {
   test('check few items in the Hotspot tab', async function() {
+    const {assertEquals} = await import('chrome://webui-test/chai_assert.js');
     const root = document.querySelector('network-ui').shadowRoot
 
     const tabs =

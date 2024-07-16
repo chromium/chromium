@@ -48,6 +48,7 @@ var HumanPresenceInternalsUIBrowserTest = class extends testing.Test {
 // Tests that chrome://hps-internals loads successfully.
 TEST_F(
     'HumanPresenceInternalsUIBrowserTest', 'HasChromeSchemeURL', async () => {
+      const {assertEquals} = await import('chrome://webui-test/chai_assert.js');
       assertEquals(document.location.origin, HOST_ORIGIN);
       testDone();
     });
@@ -55,7 +56,9 @@ TEST_F(
 // Tests that the UI reflects the state of HPS.
 TEST_F('HumanPresenceInternalsUIBrowserTest', 'StateSynchronized', async () => {
   document.querySelector('#root').addEventListener(
-      'state-updated-for-test', () => {
+      'state-updated-for-test', async () => {
+        const {assertEquals, assertTrue, assertFalse} =
+            await import('chrome://webui-test/chai_assert.js');
         const senseState = document.querySelector('#sense-state').textContent;
         const notifyState = document.querySelector('#notify-state').textContent;
         // Wait until both features become enabled.

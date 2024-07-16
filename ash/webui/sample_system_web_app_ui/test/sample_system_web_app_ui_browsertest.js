@@ -112,7 +112,8 @@ var SampleSystemWebAppUIUntrustedBrowserTest = class extends testing.Test {
 // embeds a chrome-untrusted:// iframe.
 TEST_F(
     'SampleSystemWebAppUIUntrustedBrowserTest', 'HasChromeUntrustedIframe',
-    () => {
+    async () => {
+      const {assertEquals} = await import('chrome://webui-test/chai_assert.js');
       const iframe = document.querySelector('iframe');
       window.onmessage = (event) => {
         if (event.data.id === 'post-message') {
@@ -127,20 +128,23 @@ TEST_F(
 // Tests that chrome://sample-system-web-app/inter_frame_communication.html
 // can communicate with its embedded chrome-untrusted:// iframe via Mojo
 // method calls.
-TEST_F('SampleSystemWebAppUIUntrustedBrowserTest', 'MojoMethodCall', () => {
-  window.onmessage = (event) => {
-    if (event.data.id === 'mojo-method-call-resp') {
-      assertEquals(event.data.resp, 'Task done');
-      testDone();
-    }
-  };
+TEST_F(
+    'SampleSystemWebAppUIUntrustedBrowserTest', 'MojoMethodCall', async () => {
+      const {assertEquals} = await import('chrome://webui-test/chai_assert.js');
+      window.onmessage = (event) => {
+        if (event.data.id === 'mojo-method-call-resp') {
+          assertEquals(event.data.resp, 'Task done');
+          testDone();
+        }
+      };
 
-  const iframe = document.querySelector('iframe');
-  iframe.contentWindow.postMessage(
-      {id: 'test-mojo-method-call'}, UNTRUSTED_HOST_ORIGIN);
-});
+      const iframe = document.querySelector('iframe');
+      iframe.contentWindow.postMessage(
+          {id: 'test-mojo-method-call'}, UNTRUSTED_HOST_ORIGIN);
+    });
 
-TEST_F('SampleSystemWebAppUIUntrustedBrowserTest', 'MojoMessage', () => {
+TEST_F('SampleSystemWebAppUIUntrustedBrowserTest', 'MojoMessage', async () => {
+  const {assertEquals} = await import('chrome://webui-test/chai_assert.js');
   window.onmessage = (event) => {
     if (event.data.id === 'mojo-did-receive-task') {
       assertEquals(event.data.task, 'Hello from chrome://');

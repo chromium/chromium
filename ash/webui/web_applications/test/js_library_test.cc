@@ -79,6 +79,9 @@ void CreateAndAddTrustedSystemAppTestDataSource(
       std::string("frame-src ") + kUntrustedSystemAppTestURL + ";";
   trusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc, csp);
+  trusted_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome://resources chrome://webui-test 'self';");
 
   SetRequestFilterForDataSource(*trusted_source);
 }
