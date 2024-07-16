@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/check_op.h"
 
 #include <string.h>
@@ -15,7 +10,9 @@
 #include <cstdio>
 #include <sstream>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/strings/cstring_view.h"
 
 namespace logging {
 
@@ -70,13 +67,21 @@ char* CheckOpValueStr(const std::string& v) {
 }
 
 char* CheckOpValueStr(std::string_view v) {
-  // Ideally this would be `strndup`, but `strndup` is not portable.
-  char* ret = static_cast<char*>(malloc(v.size() + 1));
-  if (ret) {
-    std::copy(v.begin(), v.end(), ret);
-    ret[v.size()] = 0;
-  }
+  // Ideally this would be `strndup`, but `strndup` is not portable. We have to
+  // use malloc() instead of HeapArray in order to match strdup() in the other
+  // overloads. The API contract is that the caller uses free() to release the
+  // pointer returned here.
+  char* ret = static_cast<char*>(malloc(v.size() + 1u));
+  auto [val, nul] =
+      // SAFETY: We allocated `ret` as `v.size() + 1` bytes above.
+      UNSAFE_BUFFERS(base::span<char>(ret, v.size() + 1u)).split_at(v.size());
+  val.copy_from(v);
+  nul.copy_from({{'\0'}});
   return ret;
+}
+
+char* CheckOpValueStr(base::cstring_view v) {
+  return strdup(v.c_str());
 }
 
 char* CheckOpValueStr(double v) {

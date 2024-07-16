@@ -38,6 +38,11 @@
 // you use e.g. both CHECK_EQ and CHECK, including this header is enough. If you
 // only use CHECK however, please include the smaller check.h instead.
 
+namespace base {
+template <class Char>
+class basic_cstring_view;
+}
+
 namespace logging {
 
 // Functions for turning check operand values into NUL-terminated C strings.
@@ -59,6 +64,7 @@ BASE_EXPORT char* CheckOpValueStr(double v);
 // versions here too.
 BASE_EXPORT char* CheckOpValueStr(const std::string& v);
 BASE_EXPORT char* CheckOpValueStr(std::string_view v);
+BASE_EXPORT char* CheckOpValueStr(base::basic_cstring_view<char> v);
 
 // Convert a streamable value to string out-of-line to avoid <sstream>.
 BASE_EXPORT char* StreamValToStr(const void* v,
