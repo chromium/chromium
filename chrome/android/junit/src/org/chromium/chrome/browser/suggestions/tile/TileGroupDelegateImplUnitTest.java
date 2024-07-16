@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -50,6 +51,7 @@ import org.chromium.url.JUnitTestGURLs;
 @Config(manifest = Config.NONE)
 public class TileGroupDelegateImplUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
 
     @Mock private SuggestionsDependencyFactory mSuggestionsDependencyFactory;
     @Mock private Profile mProfile;
@@ -67,7 +69,7 @@ public class TileGroupDelegateImplUnitTest {
 
         when(mSuggestionsDependencyFactory.createMostVisitedSites(any(Profile.class)))
                 .thenReturn(mMostVisitedSites);
-        SuggestionsDependencyFactory.setInstanceForTesting(mSuggestionsDependencyFactory);
+        mSuggestionsDeps.getFactory().mostVisitedSites = mMostVisitedSites;
 
         mTileGroupDelegateImpl =
                 new TileGroupDelegateImpl(
@@ -81,7 +83,6 @@ public class TileGroupDelegateImplUnitTest {
     @After
     public void tearDown() {
         mTileGroupDelegateImpl.destroy();
-        SuggestionsDependencyFactory.setInstanceForTesting(null);
     }
 
     @Test
