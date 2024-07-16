@@ -75,21 +75,24 @@ class LegacyRunnerTests(unittest.TestCase):
 
       # Missing json file
       self.subp_mock.returncode = 1
-      _, error_msg = runner.run_recipe()
-      self.assertEqual(error_msg, 'Build/test failure')
+      rc, error_msg = runner.run_recipe()
+      self.assertEqual(rc, 1)
+      self.assertIsNone(error_msg)
 
       # Broken json
       with open(self.tmp_dir.joinpath('out.json'), 'w') as f:
         f.write('this-is-not-json')
-      _, error_msg = runner.run_recipe()
-      self.assertEqual(error_msg, 'Build/test failure')
+      rc, error_msg = runner.run_recipe()
+      self.assertEqual(rc, 1)
+      self.assertIsNone(error_msg)
 
       # Actual json. It'll get printed to the terminal, so all that run_recipe()
       # returns is a generic failure message.
       with open(self.tmp_dir.joinpath('out.json'), 'w') as f:
         json.dump({'failure': {'humanReason': 'it exploded'}}, f)
-      _, error_msg = runner.run_recipe()
-      self.assertEqual(error_msg, 'Build/test failure')
+      rc, error_msg = runner.run_recipe()
+      self.assertEqual(rc, 1)
+      self.assertIsNone(error_msg)
 
   def testReruns(self):
     runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-project',

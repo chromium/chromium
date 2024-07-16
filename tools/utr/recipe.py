@@ -343,6 +343,7 @@ class LegacyRunner:
       # seems the least weird-looking.
       pretty_md = markdown.Markdown(failure_md, inline_code_lexer='python')
       if not rerun_prop_options:
+        logging.warning('')
         if exit_code:
           # Use the markdown printer from "rich" to better format the text in
           # a terminal.
@@ -350,13 +351,7 @@ class LegacyRunner:
           self._console_printer.print(md, style='red')
         else:
           logging.info('[green]Success![/]')
-
-        results_link = adapter.GetTestResultsLink()
-        if results_link:
-          logging.info('')
-          logging.info('For futher information, see the full test results at:')
-          logging.info(results_link)
-        return exit_code, 'Build/test failure' if exit_code else None
+        return exit_code, None  # Assume the recipe's failure_md is sufficient
       logging.warning('')
       self._console_printer.print(pretty_md)
       logging.warning('')
