@@ -1624,6 +1624,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
   EXPECT_EQ(accessibility.GetCachedName(), expected_profile_name_with_account);
   EXPECT_EQ(accessibility.GetCachedDescription(), std::u16string());
 
+  // Explicit text with accessibility text
   const std::u16string explicit_text(u"explicit_text");
   const std::u16string explicit_accessibility_text(u"explicit_text_acc");
   base::ScopedClosureRunner clear_explicit_text_callback =
@@ -1633,6 +1634,19 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
   EXPECT_EQ(accessibility.GetCachedDescription(), explicit_accessibility_text);
 
   clear_explicit_text_callback.RunAndReset();
+
+  EXPECT_EQ(accessibility.GetCachedName(), expected_profile_name_with_account);
+  EXPECT_EQ(accessibility.GetCachedDescription(), std::u16string());
+
+  // Explicit text without accessibility text
+  base::ScopedClosureRunner clear_explicit_text_without_accessibility_callback =
+      avatar->ShowExplicitText(explicit_text, std::nullopt);
+
+  EXPECT_EQ(accessibility.GetCachedName(), explicit_text);
+  EXPECT_EQ(accessibility.GetCachedDescription(),
+            expected_profile_name_with_account);
+
+  clear_explicit_text_without_accessibility_callback.RunAndReset();
 
   EXPECT_EQ(accessibility.GetCachedName(), expected_profile_name_with_account);
   EXPECT_EQ(accessibility.GetCachedDescription(), std::u16string());
