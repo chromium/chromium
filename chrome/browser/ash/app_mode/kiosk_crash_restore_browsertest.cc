@@ -2,18 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
 #include <string>
+#include <utility>
 
 #include "ash/constants/ash_switches.h"
 #include "base/base64.h"
+#include "base/callback_list.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
-#include "base/run_loop.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
@@ -23,16 +26,18 @@
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/termination_notification.h"
-#include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/policy/core/common/device_local_account_type.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 
@@ -213,7 +218,7 @@ class ChromeKioskAfterMigration : public ChromeKioskCrashRestoreTest {
 IN_PROC_BROWSER_TEST_F(ChromeKioskAfterMigration,
                        ShouldStoreAppIdAndTerminateSession) {
   EXPECT_EQ(GetOneTimeAutoLaunchKioskAppId(local_state()),
-            KioskAppId::ForChromeApp(KioskAppsMixin::kKioskAppId,
+            KioskAppId::ForChromeApp(KioskAppsMixin::kTestChromeAppId,
                                      GetTestAppAccountId()));
 
   EXPECT_TRUE(session_termination_waiter_.Wait());

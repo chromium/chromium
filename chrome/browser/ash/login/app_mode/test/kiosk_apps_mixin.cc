@@ -13,20 +13,11 @@
 namespace ash {
 
 namespace {
+
 using enterprise_management::DeviceLocalAccountInfoProto;
 using enterprise_management::DeviceLocalAccountsProto;
+
 }  // namespace
-
-// This is a simple test app that creates an app window and immediately closes
-// it again. Webstore data json is in
-//   chrome/test/data/chromeos/app_mode/webstore/inlineinstall/
-//       detail/ggaeimfdpnmlhdhpcikgoblffmkckdmn
-constexpr char KioskAppsMixin::kKioskAppId[] =
-    "ggaeimfdpnmlhdhpcikgoblffmkckdmn";
-
-constexpr char KioskAppsMixin::kEnterpriseKioskAccountId[] =
-    "enterprise-kiosk-app@localhost";
-constexpr char KioskAppsMixin::kEnterpriseWebKioskAccountId[] = "web_kiosk_id";
 
 // static
 void KioskAppsMixin::WaitForAppsButton() {
@@ -50,6 +41,17 @@ void KioskAppsMixin::AppendKioskAccount(
 }
 
 // static
+void KioskAppsMixin::AppendAutoLaunchKioskAccount(
+    enterprise_management::ChromeDeviceSettingsProto* policy_payload,
+    std::string_view app_id,
+    std::string_view account_id) {
+  AppendKioskAccount(policy_payload, app_id, account_id);
+
+  policy_payload->mutable_device_local_accounts()->set_auto_login_id(
+      std::string(account_id));
+}
+
+// static
 void KioskAppsMixin::AppendWebKioskAccount(
     enterprise_management::ChromeDeviceSettingsProto* policy_payload,
     std::string_view url,
@@ -62,22 +64,6 @@ void KioskAppsMixin::AppendWebKioskAccount(
   account->mutable_web_kiosk_app()->set_url(std::string(url));
 }
 
-// static
-void KioskAppsMixin::AppendAutoLaunchKioskAccount(
-    enterprise_management::ChromeDeviceSettingsProto* policy_payload,
-    std::string_view app_id,
-    std::string_view account_id) {
-  DeviceLocalAccountInfoProto* account =
-      policy_payload->mutable_device_local_accounts()->add_account();
-
-  account->set_account_id(std::string(account_id));
-  account->set_type(DeviceLocalAccountInfoProto::ACCOUNT_TYPE_KIOSK_APP);
-  account->mutable_kiosk_app()->set_app_id(std::string(app_id));
-
-  policy_payload->mutable_device_local_accounts()->set_auto_login_id(
-      std::string(account_id));
-}
-
 KioskAppsMixin::KioskAppsMixin(InProcessBrowserTestMixinHost* host,
                                net::EmbeddedTestServer* embedded_test_server)
     : InProcessBrowserTestMixin(host),
@@ -87,8 +73,8 @@ KioskAppsMixin::~KioskAppsMixin() = default;
 
 void KioskAppsMixin::SetUpInProcessBrowserTestFixture() {
   fake_cws_.Init(embedded_test_server_);
-  fake_cws_.SetUpdateCrx(kKioskAppId, base::StrCat({kKioskAppId, ".crx"}),
-                         "1.0.0");
+  fake_cws_.SetUpdateCrx(kTestChromeAppId,
+                         base::StrCat({kTestChromeAppId, ".crx"}), "1.0.0");
 }
 
 }  // namespace ash

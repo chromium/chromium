@@ -446,7 +446,7 @@ class LoginLogoutReporterKioskBrowserTest
     extensions::browsertest_util::CreateAndInitializeLocalCache();
   }
 
-  std::string GetTestAppId() const { return KioskAppsMixin::kKioskAppId; }
+  std::string GetTestAppId() const { return KioskAppsMixin::kTestChromeAppId; }
 
  private:
   FakeCWS fake_cws_;

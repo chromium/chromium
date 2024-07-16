@@ -17,18 +17,42 @@ namespace ash {
 
 class KioskAppsMixin : public InProcessBrowserTestMixin {
  public:
-  static const char kKioskAppId[];
-  static const char kEnterpriseKioskAccountId[];
-  static const char kEnterpriseWebKioskAccountId[];
+  // This ID refers to the `kiosk_test_app` implemented under
+  // //chrome/test/data/chromeos/app_mode/apps_and_extensions/.
+  //
+  // When configured in `fake_cws_`, the corresponding CRX gets downloaded from
+  // //chrome/test/data/chromeos/app_mode/webstore/downloads/.
+  static constexpr char kTestChromeAppId[] = "ggaeimfdpnmlhdhpcikgoblffmkckdmn";
+
+  static constexpr char kEnterpriseKioskAccountId[] =
+      "enterprise-kiosk-app@localhost";
+  static constexpr char kEnterpriseWebKioskAccountId[] = "web_kiosk_id";
+
+  // Waits for the Kiosk "Apps" button to be visible in the login screen.
   static void WaitForAppsButton();
+
+  // Appends the given Chrome app information into the `policy_payload` to
+  // configure a new Kiosk app.
+  //
+  // Note that if you intend to launch the app in your tests it must be first
+  // registered in `fake_cws_`.
   static void AppendKioskAccount(
       enterprise_management::ChromeDeviceSettingsProto* policy_payload,
-      std::string_view app_id = kKioskAppId,
+      std::string_view app_id = kTestChromeAppId,
       std::string_view account_id = kEnterpriseKioskAccountId);
+
+  // Similar to `AppendKioskAccount`, but also configures this Chrome app for
+  // auto launch.
   static void AppendAutoLaunchKioskAccount(
       enterprise_management::ChromeDeviceSettingsProto* policy_payload,
-      std::string_view app_id = kKioskAppId,
+      std::string_view app_id = kTestChromeAppId,
       std::string_view account_id = kEnterpriseKioskAccountId);
+
+  // Appends the given Web app information into the `policy_payload` to
+  // configure a new Kiosk app.
+  //
+  // Note that if you intend to launch the app in your tests you must ensure its
+  // `url` is served, e.g. via `net::EmbeddedTestServer`.
   static void AppendWebKioskAccount(
       enterprise_management::ChromeDeviceSettingsProto* policy_payload,
       std::string_view url = "https://example.com",

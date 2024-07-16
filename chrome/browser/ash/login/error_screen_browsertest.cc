@@ -382,7 +382,7 @@ class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest, OpenCertificateConfig) {
   KioskAppsMixin::WaitForAppsButton();
   EXPECT_TRUE(LoginScreenTestApi::IsAppsButtonShown());
-  ASSERT_TRUE(LoginScreenTestApi::LaunchApp(KioskAppsMixin::kKioskAppId));
+  ASSERT_TRUE(LoginScreenTestApi::LaunchApp(KioskAppsMixin::kTestChromeAppId));
 
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
   EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
@@ -409,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest,
                        NoBackButtonInNetworkConfigureScreenAfterTimeout) {
   KioskAppsMixin::WaitForAppsButton();
   EXPECT_TRUE(LoginScreenTestApi::IsAppsButtonShown());
-  ASSERT_TRUE(LoginScreenTestApi::LaunchApp(KioskAppsMixin::kKioskAppId));
+  ASSERT_TRUE(LoginScreenTestApi::LaunchApp(KioskAppsMixin::kTestChromeAppId));
   EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
   test::OobeJS().ExpectPathDisplayed(false, kNetworkBackButton);
@@ -430,7 +430,7 @@ IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest,
   SetOnline(true);
   KioskAppsMixin::WaitForAppsButton();
   EXPECT_TRUE(LoginScreenTestApi::IsAppsButtonShown());
-  ASSERT_TRUE(LoginScreenTestApi::LaunchApp(KioskAppsMixin::kKioskAppId));
+  ASSERT_TRUE(LoginScreenTestApi::LaunchApp(KioskAppsMixin::kTestChromeAppId));
   SetBlockAppLaunch(true);
   OobeScreenWaiter(AppLaunchSplashScreenView::kScreenId).Wait();
 

@@ -108,7 +108,7 @@ int KioskBaseTest::WaitForWidthChange(content::DOMMessageQueue* message_queue,
 }
 
 void KioskBaseTest::SetUp() {
-  SetTestApp(KioskAppsMixin::kKioskAppId);
+  SetTestApp(KioskAppsMixin::kTestChromeAppId);
   needs_background_networking_ = true;
   ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
 

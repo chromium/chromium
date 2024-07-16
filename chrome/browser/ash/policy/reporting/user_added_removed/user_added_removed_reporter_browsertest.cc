@@ -398,7 +398,7 @@ class UserAddedRemovedReporterKioskBrowserTest
     extensions::browsertest_util::CreateAndInitializeLocalCache();
   }
 
-  std::string GetTestAppId() const { return KioskAppsMixin::kKioskAppId; }
+  std::string GetTestAppId() const { return KioskAppsMixin::kTestChromeAppId; }
 
   FakeCWS fake_cws_;
   policy::DevicePolicyCrosTestHelper policy_helper_;

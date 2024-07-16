@@ -107,7 +107,7 @@ class AutoLaunchedKioskTest : public OobeBaseTest {
   ~AutoLaunchedKioskTest() override = default;
 
   virtual std::string GetTestAppId() const {
-    return KioskAppsMixin::kKioskAppId;
+    return KioskAppsMixin::kTestChromeAppId;
   }
   virtual std::vector<std::string> GetTestSecondaryAppIds() const {
     return std::vector<std::string>();
@@ -259,9 +259,9 @@ IN_PROC_BROWSER_TEST_F(AutoLaunchedKioskTest, PRE_CrashRestore) {
 
   EXPECT_TRUE(app_window_loaded_listener_->WaitUntilSatisfied());
 
-  EXPECT_TRUE(IsKioskAppAutoLaunched(KioskAppsMixin::kKioskAppId));
+  EXPECT_TRUE(IsKioskAppAutoLaunched(KioskAppsMixin::kTestChromeAppId));
 
-  ASSERT_TRUE(CloseAppWindow(KioskAppsMixin::kKioskAppId));
+  ASSERT_TRUE(CloseAppWindow(KioskAppsMixin::kTestChromeAppId));
 }
 
 IN_PROC_BROWSER_TEST_F(AutoLaunchedKioskTest, CrashRestore) {
@@ -277,9 +277,9 @@ IN_PROC_BROWSER_TEST_F(AutoLaunchedKioskTest, CrashRestore) {
 
   EXPECT_TRUE(app_window_loaded_listener_->WaitUntilSatisfied());
 
-  EXPECT_TRUE(IsKioskAppAutoLaunched(KioskAppsMixin::kKioskAppId));
+  EXPECT_TRUE(IsKioskAppAutoLaunched(KioskAppsMixin::kTestChromeAppId));
 
-  ASSERT_TRUE(CloseAppWindow(KioskAppsMixin::kKioskAppId));
+  ASSERT_TRUE(CloseAppWindow(KioskAppsMixin::kTestChromeAppId));
 }
 
 class AutoLaunchedKioskPowerWashRequestedTest
@@ -324,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(AutoLaunchedKioskEphemeralUsersTest, Launches) {
 
   EXPECT_TRUE(app_window_loaded_listener_->WaitUntilSatisfied());
 
-  EXPECT_TRUE(IsKioskAppAutoLaunched(KioskAppsMixin::kKioskAppId));
+  EXPECT_TRUE(IsKioskAppAutoLaunched(KioskAppsMixin::kTestChromeAppId));
 }
 
 // Used to test app auto-launch flow when the launched app is not kiosk enabled.
@@ -441,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(AutoLaunchWebAppAfterMigration,
 class AutoLaunchChromeAppAfterMigration : public AutoLaunchedKioskTest,
                                           public LocalStateMixin::Delegate {
  public:
-  const char* kMigratedChromeAppId = KioskAppsMixin::kKioskAppId;
+  const char* kMigratedChromeAppId = KioskAppsMixin::kTestChromeAppId;
   const char* kMigratedChromeAppAccountId = "kiosk-app@localhost";
 
   AutoLaunchChromeAppAfterMigration() = default;

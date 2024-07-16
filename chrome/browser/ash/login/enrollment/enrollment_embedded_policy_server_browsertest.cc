@@ -1366,9 +1366,10 @@ class KioskEnrollmentTest : public EnrollmentEmbeddedPolicyServerBase {
   }
 
   void SetupAutoLaunchApp(FakeOwnerSettingsService* service) {
-    KioskChromeAppManager::Get()->AddApp(KioskAppsMixin::kKioskAppId, service);
-    KioskChromeAppManager::Get()->SetAutoLaunchApp(KioskAppsMixin::kKioskAppId,
-                                                   service);
+    KioskChromeAppManager::Get()->AddApp(KioskAppsMixin::kTestChromeAppId,
+                                         service);
+    KioskChromeAppManager::Get()->SetAutoLaunchApp(
+        KioskAppsMixin::kTestChromeAppId, service);
   }
 
  private:
