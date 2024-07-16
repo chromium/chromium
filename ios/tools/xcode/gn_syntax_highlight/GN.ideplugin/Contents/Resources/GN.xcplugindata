@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>plug-in</key>
+	<dict>
+		<key>extensions</key>
+		<dict>
+			<key>Xcode.FileDataType.GN</key>
+			<dict>
+				<key>id</key>
+				<string>Xcode.FileDataType.GN</string>
+				<key>localizedDescription</key>
+				<string>GN Document</string>
+				<key>name</key>
+				<string>File type for GN</string>
+				<key>point</key>
+				<string>Xcode.FileDataType</string>
+				<key>typeConformedTo</key>
+				<array>
+					<dict>
+						<key>typeIdentifier</key>
+						<string>public.source-code</string>
+					</dict>
+				</array>
+				<key>typeIdentifier</key>
+				<string>public.gn-source</string>
+				<key>version</key>
+				<string>1.0</string>
+			</dict>
+			<key>Xcode.FileDataTypeDetector.GN</key>
+			<dict>
+				<key>detectedTypeIdentifier</key>
+				<string>public.gn-source</string>
+				<key>id</key>
+				<string>Xcode.FileDataTypeDetector.GN</string>
+				<key>matchesExtension</key>
+				<string>gn</string>
+				<key>point</key>
+				<string>Xcode.FileDataTypeDetector</string>
+			</dict>
+			<key>Xcode.SourceCodeLanguage.GN</key>
+			<dict>
+				<key>commentSyntaxes</key>
+				<array>
+					<dict>
+						<key>prefix</key>
+						<string>#</string>
+					</dict>
+				</array>
+				<key>conformsTo</key>
+				<array>
+					<dict>
+						<key>identifier</key>
+						<string>Xcode.SourceCodeLanguage.Generic</string>
+					</dict>
+				</array>
+				<key>fileDataType</key>
+				<array>
+					<dict>
+						<key>identifier</key>
+						<string>public.gn-source</string>
+					</dict>
+				</array>
+				<key>id</key>
+				<string>Xcode.SourceCodeLanguage.GN</string>
+				<key>languageName</key>
+				<string>GN</string>
+				<key>languageSpecification</key>
+				<string>xcode.lang.gn</string>
+				<key>name</key>
+				<string>GN Language</string>
+				<key>point</key>
+				<string>Xcode.SourceCodeLanguage</string>
+				<key>version</key>
+				<string>1.0</string>
+			</dict>
+			<key>Xcode.IDEKit.Inspector.FileIdentityAndType.public.gn-source</key>
+			<dict>
+				<key>fileDataType</key>
+				<string>codes.vapor.gn</string>
+				<key>group</key>
+				<string>Xcode.IDEKit.Inspector.FileInspectorTypeGroup.Sourcecode.Various</string>
+				<key>id</key>
+				<string>Xcode.IDEKit.Inspector.FileIdentityAndType.public.GN-source</string>
+				<key>name</key>
+				<string>File Inspector Entry - GN Document</string>
+				<key>point</key>
+				<string>Xcode.IDEKit.FileInspectorTypeGroupEntry</string>
+				<key>version</key>
+				<string>0.1</string>
+			</dict>
+		</dict>
+	</dict>
+</dict>
+</plist>

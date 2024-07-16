@@ -1,0 +1,214 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+(
+    /**************************************************************************/
+    // MARK: GN keywords
+    /**************************************************************************/
+    {
+        Identifier = "xcode.lang.gn.identifier";
+        Syntax = {
+            Words = (
+                "else",
+                "false",
+                "if",
+                "true",
+                "assert",
+                "config",
+                "declare_args",
+                "defined",
+                "exec_script",
+                "foreach",
+                "forward_variables_from",
+                "get_label_info",
+                "get_path_info",
+                "get_target_outputs",
+                "getenv",
+                "import",
+                "not_needed",
+                "print",
+                "process_file_template",
+                "read_file",
+                "rebase_path",
+                "set_default_toolchain",
+                "set_defaults",
+                "split_list",
+                "string_join",
+                "string_split",
+                "template",
+                "tool",
+                "toolchain",
+                "propagates_configs",
+                "write_file",
+                "current_cpu",
+                "current_os",
+                "current_toolchain",
+                "default_toolchain",
+                "host_cpu",
+                "host_os",
+                "invoker",
+                "python_path",
+                "root_build_dir",
+                "root_gen_dir",
+                "root_out_dir",
+                "target_cpu",
+                "target_gen_dir",
+                "target_name",
+                "target_os",
+                "target_out_dir",
+                "all_dependent_configs",
+                "allow_circular_includes_from",
+                "arflags",
+                "args",
+                "asmflags",
+                "assert_no_deps",
+                "bundle_deps_filter",
+                "bundle_executable_dir",
+                "bundle_resources_dir",
+                "bundle_root_dir",
+                "cflags",
+                "cflags_c",
+                "cflags_cc",
+                "cflags_objc",
+                "cflags_objcc",
+                "check_includes",
+                "post_processing_args",
+                "post_processing_outputs",
+                "post_processing_script",
+                "post_processing_sources",
+                "complete_static_lib",
+                "configs",
+                "data",
+                "data_deps",
+                "defines",
+                "depfile",
+                "deps",
+                "framework_dir",
+                "frameworks",
+                "include_dirs",
+                "inputs",
+                "ldflags",
+                "lib_dirs",
+                "libs",
+                "output_dir",
+                "output_extension",
+                "output_name",
+                "output_prefix_override",
+                "outputs",
+                "pool",
+                "precompiled_header",
+                "precompiled_header_type",
+                "precompiled_source",
+                "product_type",
+                "public",
+                "public_configs",
+                "public_deps",
+                "response_file_contents",
+                "script",
+                "sources",
+                "testonly",
+                "visibility",
+                "write_runtime_deps",
+                "bundle_contents_dir",
+                "contents",
+                "output_conversion",
+                "rebase",
+                "data_keys",
+                "walk_keys",
+            );
+            Type = "xcode.syntax.keyword";
+            AltType = "xcode.syntax.identifier";
+        };
+    },
+
+     {
+        Identifier = "xcode.lang.gn.gnspecial";
+        Syntax = {
+            Words = (
+                "is_android",
+            );
+            Type = "xcode.syntax.preprocessor.define";
+            AltType = "xcode.syntax.preprocessor.identifier";
+        };
+    },
+    /**************************************************************************/
+    // MARK: GN Syntax Coloring
+    /**************************************************************************/
+
+    {
+        Identifier = "xcode.lang.gn";
+        Description = "GN Coloring";
+        BasedOn = "xcode.lang.simpleColoring";
+        IncludeInMenu = YES;
+        Name = "GN";
+        Syntax = {
+            Tokenizer = "xcode.lang.gn.lexer";
+            IncludeRules = (
+                "xcode.lang.gn.block",
+                "xcode.lang.gn.bracketexpr",
+                "xcode.lang.gn.parenexpr",
+            );
+            Type = "xcode.syntax.plain";
+        };
+    },
+
+    // The following rule returns tokens to the other rules
+    {
+        Identifier = "xcode.lang.gn.lexer";
+        Syntax = {
+            IncludeRules = (
+                "xcode.lang.comment.singleline.pound",
+                "xcode.lang.string",
+                "xcode.lang.character",
+                "xcode.lang.gn.identifier",
+                "xcode.lang.gn.gnspecial",
+                "xcode.lang.number",
+            );
+        };
+    },
+    /**************************************************************************/
+    // MARK: GN blocks
+    /**************************************************************************/
+    {
+        Identifier = "xcode.lang.gn.block";
+        Syntax = {
+            Tokenizer = "xcode.lang.gn.lexer";
+            Start = "{";
+            End = "}";
+            Foldable = YES;
+            Recursive = YES;
+            IncludeRules = (
+                "xcode.lang.gn.bracketexpr",
+                "xcode.lang.gn.parenexpr",
+            );
+        };
+    },
+    {
+        Identifier = "xcode.lang.gn.parenexpr";
+        Syntax = {
+            Tokenizer = "xcode.lang.gn.lexer";
+            Start = "(";
+            End = ")";
+            Foldable = YES;
+            Recursive = YES;
+            IncludeRules = (
+                "xcode.lang.gn.bracketexpr",
+            );
+        };
+    },
+
+    {
+        Identifier = "xcode.lang.gn.bracketexpr";
+        Syntax = {
+            Tokenizer = "xcode.lang.gn.lexer";
+            Start = "[";
+            End = "]";
+            Foldable = YES;
+            Recursive = YES;
+            IncludeRules = (
+                "xcode.lang.gn.parenexpr",
+            );
+        };
+    },
+)
