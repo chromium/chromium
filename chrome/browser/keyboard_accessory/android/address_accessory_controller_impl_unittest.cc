@@ -12,15 +12,22 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_manual_filling_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/autofill/content/browser/test_autofill_client_injector.h"
+#include "components/autofill/content/browser/test_autofill_driver_injector.h"
+#include "components/autofill/content/browser/test_content_autofill_client.h"
+#include "components/autofill/content/browser/test_content_autofill_driver.h"
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/plus_addresses/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,11 +40,14 @@ using base::ASCIIToUTF16;
 using testing::_;
 using testing::ByMove;
 using testing::Mock;
+using testing::NiceMock;
 using testing::Return;
 using testing::SaveArg;
 using testing::StrictMock;
 using FillingSource = ManualFillingController::FillingSource;
 using IsFillingSourceAvailable = AccessoryController::IsFillingSourceAvailable;
+
+constexpr char kExampleSite[] = "https://example.com";
 
 std::u16string addresses_empty_str() {
   return l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SHEET_EMPTY_MESSAGE);
@@ -64,6 +74,27 @@ std::unique_ptr<KeyedService> BuildTestPersonalDataManager(
   return personal_data_manager;
 }
 
+class MockAutofillClient : public TestContentAutofillClient {
+ public:
+  using autofill::TestContentAutofillClient::TestContentAutofillClient;
+  MOCK_METHOD(void,
+              OfferPlusAddressCreation,
+              (const url::Origin&, PlusAddressCallback),
+              (override));
+};
+
+class MockAutofillDriver : public TestContentAutofillDriver {
+ public:
+  using TestContentAutofillDriver::TestContentAutofillDriver;
+  MOCK_METHOD(void,
+              ApplyFieldAction,
+              (mojom::FieldActionType,
+               mojom::ActionPersistence,
+               const FieldGlobalId&,
+               const std::u16string&),
+              (override));
+};
+
 }  // namespace
 
 class AddressAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
@@ -72,6 +103,9 @@ class AddressAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    NavigateAndCommit(GURL(kExampleSite));
+    FocusWebContentsOnMainFrame();
+
     PersonalDataManagerFactory::GetInstance()->SetTestingFactory(
         GetBrowserContext(),
         base::BindRepeating(&BuildTestPersonalDataManager));
@@ -86,6 +120,7 @@ class AddressAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
+ protected:
   AddressAccessoryController* controller() {
     return AddressAccessoryControllerImpl::FromWebContents(web_contents());
   }
@@ -95,10 +130,22 @@ class AddressAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
         PersonalDataManagerFactory::GetForProfile(profile()));
   }
 
- protected:
+  MockAutofillClient& autofill_client() {
+    return *autofill_client_injector_[web_contents()];
+  }
+
+  MockAutofillDriver& main_frame_autofill_driver() {
+    return *autofill_driver_injector_[web_contents()];
+  }
+
+  test::AutofillUnitTestEnvironment test_environment_;
   StrictMock<MockManualFillingController> mock_manual_filling_controller_;
   base::MockCallback<AccessoryController::FillingSourceObserver>
       filling_source_observer_;
+  TestAutofillClientInjector<NiceMock<MockAutofillClient>>
+      autofill_client_injector_;
+  TestAutofillDriverInjector<NiceMock<MockAutofillDriver>>
+      autofill_driver_injector_;
 };
 
 TEST_F(AddressAccessoryControllerTest, ProvidesEmptySuggestionsMessage) {
@@ -195,6 +242,45 @@ TEST_F(AddressAccessoryControllerTest, TriggersRefreshWhenDataChanges) {
                 /*phone number:*/.AppendSimpleField(std::u16string())
                 .AppendSimpleField(email.GetRawInfo(FieldType::EMAIL_ADDRESS))
                 .Build());
+}
+
+TEST_F(AddressAccessoryControllerTest, AppendsPlusAddressesActions) {
+  base::test::ScopedFeatureList features(
+      plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled);
+
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(false)));
+  controller()->RefreshSuggestions();
+
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      AddressAccessorySheetDataBuilder(addresses_empty_str())
+          .AppendFooterCommand(
+              l10n_util::GetStringUTF16(
+                  IDS_PLUS_ADDRESS_CREATE_NEW_PLUS_ADDRESSES_LINK_ANDROID),
+              AccessoryAction::CREATE_PLUS_ADDRESS)
+          .Build());
+}
+
+TEST_F(AddressAccessoryControllerTest, TriggersPlusAddressCreationBottomSheet) {
+  base::test::ScopedFeatureList features(
+      plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled);
+
+  FieldGlobalId field_id = test::MakeFieldGlobalId();
+  EXPECT_CALL(mock_manual_filling_controller_, GetLastFocusedFieldId)
+      .WillOnce(Return(field_id));
+  EXPECT_CALL(mock_manual_filling_controller_, Hide);
+  const std::string plus_address = "example@gmail.com";
+  EXPECT_CALL(autofill_client(), OfferPlusAddressCreation)
+      .WillOnce(
+          [&plus_address](const url::Origin&, PlusAddressCallback callback) {
+            std::move(callback).Run(plus_address);
+          });
+  EXPECT_CALL(main_frame_autofill_driver(),
+              ApplyFieldAction(mojom::FieldActionType::kReplaceAll,
+                               mojom::ActionPersistence::kFill, field_id,
+                               base::UTF8ToUTF16(plus_address)));
+  controller()->OnOptionSelected(AccessoryAction::CREATE_PLUS_ADDRESS);
 }
 
 }  // namespace autofill

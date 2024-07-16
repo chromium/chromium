@@ -78,4 +78,12 @@ BASE_FEATURE(kPlusAddressAndSingleFieldFormFill,
              "PlusAddressAndSingleFieldFormFill",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, mobile manual fallbacks for addresses and passwords show plus
+// address filling information.
+BASE_FEATURE(kPlusAddressAndroidManualFallbackEnabled,
+             "PlusAddressAndroidManualFallbackEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace plus_addresses::features

@@ -127,6 +127,11 @@ void ManualFillingControllerImpl::NotifyFocusedInputChanged(
   UpdateVisibility();
 }
 
+autofill::FieldGlobalId ManualFillingControllerImpl::GetLastFocusedFieldId()
+    const {
+  return last_focused_field_id_;
+}
+
 void ManualFillingControllerImpl::ShowAccessorySheetTab(
     const autofill::AccessoryTabType& tab_type) {
   if (tab_type == autofill::AccessoryTabType::CREDIT_CARDS) {
@@ -393,6 +398,7 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForAction(
     case AccessoryAction::CROSS_DEVICE_PASSKEY:
       return pwd_controller_.get();
     case AccessoryAction::MANAGE_ADDRESSES:
+    case AccessoryAction::CREATE_PLUS_ADDRESS:
       return address_controller_.get();
     case AccessoryAction::MANAGE_CREDIT_CARDS:
       return payment_method_controller_.get();

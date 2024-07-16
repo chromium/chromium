@@ -70,6 +70,17 @@ class AddressAccessoryControllerImpl
       content::WebContents* web_contents,
       base::WeakPtr<ManualFillingController> mf_controller);
 
+  // Fills `plus_address` into the web form field identified by
+  // `focused_field_id`. Called when manually triggered plus address creation
+  // bottom sheet is accepted by the user.
+  void OnPlusAddressCreated(FieldGlobalId focused_field_id,
+                            const std::string& plus_address);
+
+  // Given that `RenderFrameHost` and `ContentAutofillDriver` exist, enters the
+  // `value` into the field identified by the `focused_field_id`.
+  void FillValueIntoField(FieldGlobalId focused_field_id,
+                          const std::u16string& value);
+
   // Lazy-initializes and returns the ManualFillingController for the current
   // |web_contents_|. The lazy initialization allows injecting mocks for tests.
   base::WeakPtr<ManualFillingController> GetManualFillingController();

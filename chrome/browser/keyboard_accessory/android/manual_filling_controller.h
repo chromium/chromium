@@ -77,6 +77,10 @@ class ManualFillingController {
       autofill::FieldRendererId focused_field_id,
       autofill::mojom::FocusedFieldType focused_field_type) = 0;
 
+  // Returns the last field id passed to `NotifyFocusedInputChanged()`.
+  // TODO: crbug.com/327838324 - Remove this method from the public interface.
+  virtual autofill::FieldGlobalId GetLastFocusedFieldId() const = 0;
+
   // Reports for a source whether it provides suggestions or just default
   // options. The controller then updates the UI visibility accordingly.
   // TODO(crbug.com/40165275): Use

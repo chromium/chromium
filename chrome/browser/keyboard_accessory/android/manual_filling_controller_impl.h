@@ -42,6 +42,7 @@ class ManualFillingControllerImpl
   void NotifyFocusedInputChanged(
       autofill::FieldRendererId focused_field_id,
       autofill::mojom::FocusedFieldType focused_field_type) override;
+  autofill::FieldGlobalId GetLastFocusedFieldId() const override;
   void UpdateSourceAvailability(FillingSource source,
                                 bool has_suggestions) override;
   void Hide() override;
