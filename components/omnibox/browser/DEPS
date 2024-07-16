@@ -23,6 +23,7 @@ include_rules = [
   "+components/keyed_service/content",
   "+components/keyed_service/core",
   "+components/lens/proto/server",
+  "+components/memory_pressure",
   "+components/metrics",
   "+components/navigation_metrics",
   "+components/open_from_clipboard",
