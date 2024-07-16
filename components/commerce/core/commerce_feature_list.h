@@ -114,6 +114,8 @@ extern const base::FeatureParam<int> kMerchantWideBehavior;
 extern const char kNonMerchantWideBehaviorParam[];
 extern const base::FeatureParam<int> kNonMerchantWideBehavior;
 
+BASE_DECLARE_FEATURE(kDiscountsUiRefactor);
+
 BASE_DECLARE_FEATURE(kRetailCoupons);
 BASE_DECLARE_FEATURE(kCommerceDeveloper);
 // Parameter for enabling feature variation of coupons with code.

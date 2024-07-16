@@ -39,6 +39,7 @@ class View;
 
 namespace commerce {
 
+class DiscountsPageActionController;
 class ProductSpecificationsPageActionController;
 
 // This tab helper is used to update and maintain the state of UI for commerce
@@ -57,6 +58,8 @@ class CommerceUiTabHelper
   // Get the image for the last fetched product URL. A reference to this object
   // should not be kept directly, if one is needed, a copy should be made.
   virtual const gfx::Image& GetProductImage();
+  // Return whether the DiscountsPageActionIconView is visible.
+  virtual bool ShouldShowDiscountsIconView();
   // Return whether the PriceTrackingIconView is visible.
   virtual bool ShouldShowPriceTrackingIconView();
   // Return whether the PriceInsightsIconView is visible.
@@ -79,6 +82,10 @@ class CommerceUiTabHelper
   // Returns whether the product in the current page is in the recommended
   // product specifications set.
   virtual bool IsInRecommendedSet();
+
+  // Returns discounts for the last committed URL. A reference to this object
+  // should not be kept directly, if one is needed, a copy should be made.
+  virtual const std::vector<DiscountInfo>& GetDiscounts();
 
   // content::WebContentsObserver implementation
   void DidFinishNavigation(
@@ -109,6 +116,16 @@ class CommerceUiTabHelper
   // A notification that the price tracking icon was clicked.
   void OnPriceTrackingIconClicked();
 
+  // A notification that the coupon code in the Discounts bubble is copied.
+  void OnDiscountsCouponCodeCopied();
+  // Return whether the coupon code is copied. This will reset the copied
+  // status.
+  virtual bool IsDiscountsCouponCodeCopied();
+  // Return whether the Discounts bubble should show automatically for the given
+  // |discount_id|.
+  virtual bool ShouldAutoShowDiscountsBubble(uint64_t discount_id,
+                                             bool is_merchant_wide);
+
   PriceTrackingPageActionController* GetPriceTrackingControllerForTesting();
 
   void SetPriceTrackingControllerForTesting(
@@ -138,6 +155,8 @@ class CommerceUiTabHelper
       const std::optional<PriceInsightsInfo>& info);
 
   void HandleDiscountsResponse(const DiscountsMap& map);
+
+  void UpdateDiscountsIconView();
 
   void UpdatePriceTrackingIconView();
 
@@ -175,6 +194,12 @@ class CommerceUiTabHelper
   void MaybeRecordShoppingInformationUKM(
       std::optional<PageActionIconType> page_action_type);
 
+  void OnPageActionControllerNotification(
+      base::RepeatingClosure page_action_icon_update_callback);
+
+  base::RepeatingClosure GetPageActionControllerNotificationCallback(
+      base::RepeatingClosure page_action_icon_update_callback);
+
   // The shopping service is tied to the lifetime of the browser context
   // which will always outlive this tab helper.
   raw_ptr<ShoppingService, DanglingUntriaged> shopping_service_;
@@ -184,6 +209,8 @@ class CommerceUiTabHelper
   std::unique_ptr<PriceTrackingPageActionController> price_tracking_controller_;
   std::unique_ptr<ProductSpecificationsPageActionController>
       product_specifications_controller_;
+  std::unique_ptr<DiscountsPageActionController>
+      discounts_page_action_controller_;
 
   // The product info available for the current page if available.
   std::optional<ProductInfo> product_info_for_page_;

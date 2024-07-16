@@ -7853,6 +7853,7 @@ test("unit_tests") {
       "../browser/ui/color/material_new_tab_page_color_mixer_unittest.cc",
       "../browser/ui/color/new_tab_page_color_mixer_unittest.cc",
       "../browser/ui/commerce/commerce_ui_tab_helper_unittest.cc",
+      "../browser/ui/commerce/discounts_page_action_controller_unittest.cc",
       "../browser/ui/commerce/price_tracking_page_action_controller_unittest.cc",
       "../browser/ui/commerce/product_specifications_page_action_controller_unittest.cc",
       "../browser/ui/content_settings/content_setting_bubble_model_unittest.cc",

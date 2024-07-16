@@ -5306,6 +5306,8 @@ static_library("ui") {
       "commerce/commerce_page_action_controller.h",
       "commerce/commerce_ui_tab_helper.cc",
       "commerce/commerce_ui_tab_helper.h",
+      "commerce/discounts_page_action_controller.cc",
+      "commerce/discounts_page_action_controller.h",
       "commerce/price_tracking_page_action_controller.cc",
       "commerce/price_tracking_page_action_controller.h",
       "commerce/product_specifications_entry_point_controller.cc",
