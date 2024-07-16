@@ -15,11 +15,15 @@ cr-feedback-buttons {
   color: var(--color-icon);
 }
 
-.feedback {
-  align-items: center;
+.button-row {
   display: flex;
   gap: 8px;
-  justify-content: space-between;
+}
+
+.feedback {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 :host([multi-tab-organization]) .feedback {

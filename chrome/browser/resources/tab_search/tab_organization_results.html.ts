@@ -35,8 +35,18 @@ export function getHtml(this: TabOrganizationResultsElement) {
     </tab-organization-results-actions>
   ` : ''}
   <div class="feedback" role="toolbar" @keydown="${this.onFeedbackKeyDown_}">
+    <div class="button-row">
+      <div class="tab-organization-body">
+        $i18n{learnMoreDisclaimer1}
+      </div>
+      <cr-feedback-buttons id="feedbackButtons"
+          tabindex="-1"
+          selected-option="${this.feedbackSelectedOption_}"
+          @selected-option-changed="${this.onFeedbackSelectedOptionChanged_}">
+      </cr-feedback-buttons>
+    </div>
     <div class="tab-organization-body">
-      $i18n{learnMoreDisclaimer}
+      $i18n{learnMoreDisclaimer2}
       <div id="learnMore" class="tab-organization-link"
           @click="${this.onLearnMoreClick_}"
           @keydown="${this.onLearnMoreKeyDown_}"
@@ -46,11 +56,6 @@ export function getHtml(this: TabOrganizationResultsElement) {
         $i18n{learnMore}
       </div>
     </div>
-    <cr-feedback-buttons id="feedbackButtons"
-        tabindex="-1"
-        selected-option="${this.feedbackSelectedOption_}"
-        @selected-option-changed="${this.onFeedbackSelectedOptionChanged_}">
-    </cr-feedback-buttons>
   </div>
 </div>
 <!--_html_template_end_-->`;

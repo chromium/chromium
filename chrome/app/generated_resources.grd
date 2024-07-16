@@ -11455,8 +11455,11 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_ORGANIZATION_TIP_ARIA_DESCRIPTION" desc="The a11y label of the tip in the tab organization UI" is_accessibility_with_no_ui="true">
         Launch tab group tutorial
       </message>
-      <message name="IDS_TAB_ORGANIZATION_DISCLAIMER" desc="The disclaimer text in the tab organization UI results state for getting more information">
+      <message name="IDS_TAB_ORGANIZATION_DISCLAIMER_1" desc="The first block of disclaimer text in the tab organization UI results state for getting more information">
         Your tab titles and URLs are sent to Google and may be seen by human reviewers to improve this feature.
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_DISCLAIMER_2" desc="The second block of disclaimer text in the tab organization UI results state for getting more information">
+        This is an experimental AI feature and won't always get it right.
       </message>
       <message name="IDS_TAB_ORGANIZATION_LEARN_MORE" desc="The actionable text in the tab organization UI results state for getting more information">
         Learn how to automatically organize your tabs
