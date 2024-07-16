@@ -334,6 +334,9 @@ void LensOverlayController::ShowUIWithPendingRegion(
   pending_region_ = std::move(region);
   pending_region_bitmap_ = region_bitmap;
   ShowUI(invocation_source);
+  // Overrides value set in ShowUI since invoking lens overlay with a pending
+  // region is considered a search.
+  search_performed_in_session_ = true;
 }
 
 void LensOverlayController::ShowUI(
@@ -1349,10 +1352,12 @@ void LensOverlayController::CloseUIPart2(
   state_ = State::kOff;
 
   // Record dismissal and session metrics.
+  // UMA unsliced Dismissed and InvocationResultedInSearch.
   base::UmaHistogramEnumeration("Lens.Overlay.Dismissed", dismissal_source);
 
   base::UmaHistogramBoolean("Lens.Overlay.InvocationResultedInSearch",
                             search_performed_in_session_);
+  // UMA InvocationResultedInSearch sliced by entry point.
   const auto sliced_search_performed_histogram_name =
       "Lens.Overlay.ByInvocationSource." + GetInvocationSourceString() +
       ".InvocationResultedInSearch";
@@ -1360,11 +1365,13 @@ void LensOverlayController::CloseUIPart2(
                             search_performed_in_session_);
 
   DCHECK(!invocation_time_.is_null());
+  // UMA unsliced session duration.
   base::TimeDelta session_duration = base::TimeTicks::Now() - invocation_time_;
   base::UmaHistogramCustomTimes("Lens.Overlay.SessionDuration",
                                 session_duration,
                                 /*min=*/base::Milliseconds(1),
                                 /*max=*/base::Minutes(10), /*buckets=*/50);
+  // UMA session duration sliced by entry point.
   const auto sliced_session_duration_histogram_name =
       "Lens.Overlay.ByInvocationSource." + GetInvocationSourceString() +
       ".SessionDuration";
@@ -1682,6 +1689,7 @@ void LensOverlayController::DoLensRequest(
       region.Clone(), selection_type,
       initialization_data_->additional_search_query_params_, region_bytes);
   results_side_panel_coordinator_->RegisterEntryAndShow();
+  RecordTimeToFirstInteraction();
   search_performed_in_session_ = true;
   state_ = State::kOverlayAndResults;
 }
@@ -1816,6 +1824,7 @@ void LensOverlayController::IssueTextSelectionRequestInner(
       query, lens::TextOnlyQueryType::kLensTextSelection,
       initialization_data_->additional_search_query_params_);
   results_side_panel_coordinator_->RegisterEntryAndShow();
+  RecordTimeToFirstInteraction();
   search_performed_in_session_ = true;
   state_ = State::kOverlayAndResults;
 }
@@ -1877,6 +1886,7 @@ void LensOverlayController::IssueSearchBoxRequest(
         initialization_data_->additional_search_query_params_);
   }
   results_side_panel_coordinator_->RegisterEntryAndShow();
+  RecordTimeToFirstInteraction();
   search_performed_in_session_ = true;
   state_ = State::kOverlayAndResults;
 }
@@ -1927,4 +1937,58 @@ void LensOverlayController::SetSearchboxThumbnail(
     // thumbnail as pending to send it to the searchbox on bind.
     pending_thumbnail_uri_ = thumbnail_uri;
   }
+}
+
+void LensOverlayController::RecordTimeToFirstInteraction() {
+  if (search_performed_in_session_) {
+    return;
+  }
+  DCHECK(!invocation_time_.is_null());
+  base::TimeDelta time_to_first_interaction =
+      base::TimeTicks::Now() - invocation_time_;
+  // UMA unsliced TimeToFirstInteraction.
+  base::UmaHistogramCustomTimes("Lens.Overlay.TimeToFirstInteraction",
+                                time_to_first_interaction,
+                                /*min=*/base::Milliseconds(1),
+                                /*max=*/base::Minutes(10), /*buckets=*/50);
+  // UMA TimeToFirstInteraction sliced by entry point.
+  const auto sliced_time_to_first_interaction_histogram_name =
+      "Lens.Overlay.ByInvocationSource." + GetInvocationSourceString() +
+      ".TimeToFirstInteraction";
+  base::UmaHistogramCustomTimes(sliced_time_to_first_interaction_histogram_name,
+                                time_to_first_interaction,
+                                /*min=*/base::Milliseconds(1),
+                                /*max=*/base::Minutes(10), /*buckets=*/50);
+  ukm::SourceId source_id =
+      tab_->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  // UKM unsliced TimeToFirstInteraction.
+  ukm::builders::Lens_Overlay_TimeToFirstInteraction(source_id)
+      .SetAllEntryPoints(time_to_first_interaction.InMilliseconds())
+      .Record(ukm::UkmRecorder::Get());
+  // UKM TimeToFirstInteraction sliced by entry point.
+  ukm::builders::Lens_Overlay_TimeToFirstInteraction event(source_id);
+  switch (invocation_source_) {
+    case lens::LensOverlayInvocationSource::kAppMenu:
+      event.SetAppMenu(time_to_first_interaction.InMilliseconds());
+      break;
+    case lens::LensOverlayInvocationSource::kContentAreaContextMenuPage:
+      event.SetContentAreaContextMenuPage(
+          time_to_first_interaction.InMilliseconds());
+      break;
+    case lens::LensOverlayInvocationSource::kContentAreaContextMenuImage:
+      // Not recorded since the image menu entry point results in a search
+      // without the user having to interact with the overlay. Time to first
+      // interaction in this case is essentially zero.
+      break;
+    case lens::LensOverlayInvocationSource::kToolbar:
+      event.SetToolbar(time_to_first_interaction.InMilliseconds());
+      break;
+    case lens::LensOverlayInvocationSource::kFindInPage:
+      event.SetFindInPage(time_to_first_interaction.InMilliseconds());
+      break;
+    case lens::LensOverlayInvocationSource::kOmnibox:
+      event.SetOmnibox(time_to_first_interaction.InMilliseconds());
+      break;
+  }
+  event.Record(ukm::UkmRecorder::Get());
 }

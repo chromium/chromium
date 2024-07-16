@@ -3327,4 +3327,122 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserWithPixelsTest,
             lens::mojom::CenterRotatedBox_CoordinateType::kNormalized);
 }
 
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       RecordTimeToFirstInteraction) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  base::HistogramTester histogram_tester;
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // No metrics should be emitted before anything happens.
+  auto entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Lens_Overlay_TimeToFirstInteraction::kEntryName);
+  EXPECT_EQ(0u, entries.size());
+  histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToFirstInteraction",
+                                    /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ByInvocationSource.AppMenu.TimeToFirstInteraction",
+      /*expected_count=*/0);
+
+  // Issue a search.
+  controller->IssueTextSelectionRequestForTesting("oranges", 20, 200);
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToFirstInteraction",
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ByInvocationSource.AppMenu.TimeToFirstInteraction",
+      /*expected_count=*/1);
+  entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Lens_Overlay_TimeToFirstInteraction::kEntryName);
+  EXPECT_EQ(2u, entries.size());
+  const char kAllEntryPoints[] = "AllEntryPoints";
+  const char kAppMenu[] = "AppMenu";
+  EXPECT_TRUE(
+      ukm::TestUkmRecorder::EntryHasMetric(entries[0].get(), kAllEntryPoints));
+  EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(entries[1].get(), kAppMenu));
+
+  // Issue another search.
+  controller->IssueTextSelectionRequestForTesting("apples", 30, 250);
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  // Another search should not log another time to first interaction metric.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToFirstInteraction",
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ByInvocationSource.AppMenu.TimeToFirstInteraction",
+      /*expected_count=*/1);
+  entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Lens_Overlay_TimeToFirstInteraction::kEntryName);
+  EXPECT_EQ(2u, entries.size());
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       RecordTimeToFirstInteractionPendingRegion) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  base::HistogramTester histogram_tester;
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUIWithPendingRegion(
+      LensOverlayInvocationSource::kContentAreaContextMenuImage,
+      kTestRegion->Clone(), CreateNonEmptyBitmap(100, 100));
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
+  EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+  EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
+
+  // No metrics should be emitted before anything happens.
+  auto entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Lens_Overlay_TimeToFirstInteraction::kEntryName);
+  EXPECT_EQ(0u, entries.size());
+  histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToFirstInteraction",
+                                    /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ByInvocationSource.ContentAreaContextMenuImage."
+      "TimeToFirstInteraction",
+      /*expected_count=*/0);
+
+  // Issue a search.
+  controller->IssueTextSelectionRequestForTesting("oranges", 20, 200);
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  // When a lens overlay instance was invoked with an initial region selected,
+  // we shouldn't record TimeToFirstInteraction.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToFirstInteraction",
+                                    /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ByInvocationSource.ContentAreaContextMenuImage."
+      "TimeToFirstInteraction",
+      /*expected_count=*/0);
+  entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Lens_Overlay_TimeToFirstInteraction::kEntryName);
+  EXPECT_EQ(0u, entries.size());
+}
+
 }  // namespace

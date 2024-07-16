@@ -749,6 +749,11 @@ class LensOverlayController : public LensSearchboxClient,
   // `pending_thumbnail_uri_` instead.
   void SetSearchboxThumbnail(const std::string& thumbnail_uri);
 
+  // Records UMA and UKM metrics for time to first interaction. Not recorded
+  // when invocation source is an image's content area menu because in this
+  // case the time to first interaction is essentially zero.
+  void RecordTimeToFirstInteraction();
+
   // Owns this class.
   raw_ptr<tabs::TabInterface> tab_;
 
