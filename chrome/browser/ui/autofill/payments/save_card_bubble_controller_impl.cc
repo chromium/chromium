@@ -58,23 +58,6 @@ namespace autofill {
 
 namespace {
 
-UpdatedDesktopUiTreatmentArm GetUpdatedDesktopUiTreatmentArm() {
-  if (!base::FeatureList::IsEnabled(features::kAutofillUpstreamUpdatedUi)) {
-    return UpdatedDesktopUiTreatmentArm::kDefault;
-  }
-
-  switch (features::kAutofillUpstreamUpdatedUiTreatment.Get()) {
-    case 1:
-      return UpdatedDesktopUiTreatmentArm::kSecurityFocus;
-    case 2:
-      return UpdatedDesktopUiTreatmentArm::kConvenienceFocus;
-    case 3:
-      return UpdatedDesktopUiTreatmentArm::kEducationFocus;
-    default:
-      return UpdatedDesktopUiTreatmentArm::kDefault;
-  }
-}
-
 std::u16string GetWindowTitleForUploadSave() {
   switch (GetUpdatedDesktopUiTreatmentArm()) {
     case UpdatedDesktopUiTreatmentArm::kSecurityFocus:

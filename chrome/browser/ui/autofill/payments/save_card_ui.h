@@ -49,6 +49,10 @@ enum class UpdatedDesktopUiTreatmentArm {
   kEducationFocus
 };
 
+// Returns the active UpdatedDesktopUiTreatmentArm based on the user's current
+// Finch configuration.
+UpdatedDesktopUiTreatmentArm GetUpdatedDesktopUiTreatmentArm();
+
 }  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_SAVE_CARD_UI_H_

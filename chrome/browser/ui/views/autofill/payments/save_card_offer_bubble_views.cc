@@ -59,6 +59,36 @@
 
 namespace autofill {
 
+namespace {
+
+int GetLightModeBannerIdForSaveCard() {
+  switch (autofill::GetUpdatedDesktopUiTreatmentArm()) {
+    case autofill::UpdatedDesktopUiTreatmentArm::kSecurityFocus:
+      return IDR_SAVE_CARD_SECURITY;
+    case autofill::UpdatedDesktopUiTreatmentArm::kConvenienceFocus:
+      return IDR_SAVE_CARD_CONVENIENCE;
+    case autofill::UpdatedDesktopUiTreatmentArm::kEducationFocus:
+      return IDR_SAVE_CARD_EDUCATION;
+    case autofill::UpdatedDesktopUiTreatmentArm::kDefault:
+      return IDR_SAVE_CARD;
+  }
+}
+
+int GetDarkModeBannerIdForSaveCard() {
+  switch (autofill::GetUpdatedDesktopUiTreatmentArm()) {
+    case autofill::UpdatedDesktopUiTreatmentArm::kSecurityFocus:
+      return IDR_SAVE_CARD_SECURITY_DARK;
+    case autofill::UpdatedDesktopUiTreatmentArm::kConvenienceFocus:
+      return IDR_SAVE_CARD_CONVENIENCE_DARK;
+    case autofill::UpdatedDesktopUiTreatmentArm::kEducationFocus:
+      return IDR_SAVE_CARD_EDUCATION_DARK;
+    case autofill::UpdatedDesktopUiTreatmentArm::kDefault:
+      return IDR_SAVE_CARD_DARK;
+  }
+}
+
+}  // namespace
+
 SaveCardOfferBubbleViews::SaveCardOfferBubbleViews(
     views::View* anchor_view,
     content::WebContents* web_contents,
@@ -166,15 +196,31 @@ void SaveCardOfferBubbleViews::AddedToWidget() {
   SaveCardBubbleViews::AddedToWidget();
   // Set the header image.
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
+  int light_mode_banner_id;
+  int dark_mode_banner_id;
 
-  bool is_cvc_save_bubble =
-      controller()->GetBubbleType() == BubbleType::LOCAL_CVC_SAVE ||
-      controller()->GetBubbleType() == BubbleType::UPLOAD_CVC_SAVE;
+  switch (controller()->GetBubbleType()) {
+    case BubbleType::UPLOAD_SAVE:
+    case BubbleType::UPLOAD_IN_PROGRESS:
+    case BubbleType::UPLOAD_COMPLETED:
+      // Updated banner/text pairs are for upload save only.
+      light_mode_banner_id = GetLightModeBannerIdForSaveCard();
+      dark_mode_banner_id = GetDarkModeBannerIdForSaveCard();
+      break;
+    case BubbleType::LOCAL_CVC_SAVE:
+    case BubbleType::UPLOAD_CVC_SAVE:
+      // CVC bubbles show their own CVC-based banner image.
+      light_mode_banner_id = IDR_SAVE_CVC;
+      dark_mode_banner_id = IDR_SAVE_CVC_DARK;
+      break;
+    default:
+      light_mode_banner_id = IDR_SAVE_CARD;
+      dark_mode_banner_id = IDR_SAVE_CARD_DARK;
+  }
+
   auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
-      *bundle.GetImageSkiaNamed(is_cvc_save_bubble ? IDR_SAVE_CVC
-                                                   : IDR_SAVE_CARD),
-      *bundle.GetImageSkiaNamed(is_cvc_save_bubble ? IDR_SAVE_CVC_DARK
-                                                   : IDR_SAVE_CARD_DARK),
+      *bundle.GetImageSkiaNamed(light_mode_banner_id),
+      *bundle.GetImageSkiaNamed(dark_mode_banner_id),
       base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
                           base::Unretained(this)));
   GetBubbleFrameView()->SetHeaderView(std::move(image_view));
