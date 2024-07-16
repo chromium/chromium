@@ -52,10 +52,7 @@ std::string FormatModalDurationMetrics(
 class PlusAddressCreationControllerDesktopEnabledTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  PlusAddressCreationControllerDesktopEnabledTest()
-      : override_profile_selections_(
-            PlusAddressServiceFactory::GetInstance(),
-            PlusAddressServiceFactory::CreateProfileSelections()) {}
+  PlusAddressCreationControllerDesktopEnabledTest() {}
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -80,11 +77,9 @@ class PlusAddressCreationControllerDesktopEnabledTest
   }
 
  protected:
-  base::test::ScopedFeatureList features_{features::kPlusAddressesEnabled};
   // Ensures that the feature is known to be enabled, such that
   // `PlusAddressServiceFactory` doesn't bail early with a null return.
-  profiles::testing::ScopedProfileSelectionsForFactoryTesting
-      override_profile_selections_;
+  base::test::ScopedFeatureList features_{features::kPlusAddressesEnabled};
   signin::IdentityTestEnvironment identity_test_env_;
   base::HistogramTester histogram_tester_;
   raw_ptr<FakePlusAddressService> fake_plus_address_service_ = nullptr;

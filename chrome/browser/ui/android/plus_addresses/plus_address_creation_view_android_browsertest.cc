@@ -26,10 +26,7 @@ namespace plus_addresses {
 // presumably switch to the `PlatformBrowserTest` pattern.
 class PlusAddressCreationViewAndroidBrowserTest : public AndroidBrowserTest {
  public:
-  PlusAddressCreationViewAndroidBrowserTest()
-      : override_profile_selections_(
-            PlusAddressServiceFactory::GetInstance(),
-            PlusAddressServiceFactory::CreateProfileSelections()) {}
+  PlusAddressCreationViewAndroidBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     AndroidBrowserTest::SetUpOnMainThread();
@@ -52,9 +49,10 @@ class PlusAddressCreationViewAndroidBrowserTest : public AndroidBrowserTest {
     return Profile::FromBrowserContext(web_contents->GetBrowserContext());
   }
 
+ private:
+  // Ensures that the feature is known to be enabled, such that
+  // `PlusAddressServiceFactory` doesn't bail early with a null return.
   base::test::ScopedFeatureList features_{features::kPlusAddressesEnabled};
-  profiles::testing::ScopedProfileSelectionsForFactoryTesting
-      override_profile_selections_;
 };
 
 IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest, OfferUi) {

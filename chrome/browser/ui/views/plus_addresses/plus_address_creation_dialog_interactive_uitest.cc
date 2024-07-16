@@ -150,10 +150,7 @@ class ScopedPlusAddressFeatureList {
 
 class PlusAddressCreationDialogInteractiveTest : public InteractiveBrowserTest {
  public:
-  PlusAddressCreationDialogInteractiveTest()
-      : override_profile_selections_(
-            PlusAddressServiceFactory::GetInstance(),
-            PlusAddressServiceFactory::CreateProfileSelections()) {}
+  PlusAddressCreationDialogInteractiveTest() {}
 
   void SetUpInProcessBrowserTestFixture() override {
     unused_subscription_ =
@@ -287,8 +284,6 @@ class PlusAddressCreationDialogInteractiveTest : public InteractiveBrowserTest {
   base::test::TestFuture<const std::string&> future_;
   // Keep the order of these two scoped member variables.
   ScopedPlusAddressFeatureList feature_list_;
-  profiles::testing::ScopedProfileSelectionsForFactoryTesting
-      override_profile_selections_;
 };
 
 // An interactive UI test to exercise successful plus address user flow.
