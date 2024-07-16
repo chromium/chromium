@@ -15,6 +15,8 @@ build_webui("build") {
 
   web_component_files = [
     "app.ts",
+    "info_card/info_card.ts",
+    "info_card/power_thermal_card.ts",
     "line_chart/line_chart.ts",
     "line_chart/menu.ts",
     "line_chart/scrollbar.ts",

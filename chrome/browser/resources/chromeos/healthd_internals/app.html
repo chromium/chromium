@@ -19,6 +19,7 @@
 
   #main {
     flex: 1;
+    padding: 8px;
   }
 
   #settingsButtonContainer {
@@ -52,7 +53,8 @@
 <div id="main">
   <iron-pages class="full-page" selected="[[selectedIndex]]">
     <div>
-      <healthd-internals-telemetry></healthd-internals-telemetry>
+      <healthd-internals-telemetry id="telemetryPage">
+      </healthd-internals-telemetry>
     </div>
     <div class="full-page">
       <healthd-internals-battery-chart id="batteryChart">

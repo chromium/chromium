@@ -1,2 +1,12 @@
-<style include="healthd-internals-shared"></style>
-<h1>Telemetry content will be added here</h1>
+<style include="healthd-internals-shared cr-shared-style">
+  #telemetryInfoContainer {
+    overflow: overlay;
+    max-height: 100vh;
+  }
+</style>
+<div id="telemetryInfoContainer">
+  <div class="cr-centered-card-container">
+    <healthd-internals-power-thermal-card id="powerThermalCard">
+    </healthd-internals-power-thermal-card>
+  </div>
+</div>

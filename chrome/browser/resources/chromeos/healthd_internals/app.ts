@@ -23,6 +23,7 @@ import {getTemplate} from './app.html.js';
 import {PagePath} from './constants.js';
 import {HealthdApiTelemetryResult} from './externs.js';
 import type {HealthdInternalsBatteryChartElement} from './pages/battery_chart.js';
+import type {HealthdInternalsTelemetryElement} from './pages/telemetry.js';
 import type {HealthdInternalsThermalChartElement} from './pages/thermal_chart.js';
 import type {HealthdInternalsSettingsDialogElement} from './settings/settings_dialog.js';
 
@@ -34,6 +35,7 @@ interface Page {
 
 export interface HealthdInternalsAppElement {
   $: {
+    telemetryPage: HealthdInternalsTelemetryElement,
     batteryChart: HealthdInternalsBatteryChartElement,
     thermalChart: HealthdInternalsThermalChartElement,
     settingsDialog: HealthdInternalsSettingsDialogElement,
@@ -139,6 +141,8 @@ export class HealthdInternalsAppElement extends PolymerElement {
   }
 
   private handleHealthdTelemetryInfo(data: HealthdApiTelemetryResult) {
+    this.$.telemetryPage.updateTelemetryData(data);
+
     const timestamp: number = Date.now();
     this.$.batteryChart.updateBatteryData(data.battery, timestamp);
     this.$.thermalChart.updateThermalData(data.thermals, timestamp);
