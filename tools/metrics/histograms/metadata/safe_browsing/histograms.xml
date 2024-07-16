@@ -3366,13 +3366,16 @@ failing to fetch the updates which puts users' security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsing.WebView.AppOptIn" enum="SafeBrowsingAppOptIn"
-    expires_after="2024-06-05">
+    expires_after="2025-01-05">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records whether the application has explicitly opted in or out of Safe
     Browsing by manifest tag, or if they're relying on the default behavior.
     This is recorded once during startup.
+
+    Warning: this histogram was expired from 2024-06-06 to 2024-07-16; data may
+    be missing.
   </summary>
 </histogram>
 
