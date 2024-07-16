@@ -44,6 +44,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
@@ -327,24 +328,31 @@ public class WebappNavigationTest {
     @SmallTest
     @Feature({"Webapps"})
     public void testOpenInChromeFromCustomMenuTabbedChrome() {
-        WebappActivity activity =
-                runWebappActivityAndWaitForIdle(
-                        mActivityTestRule
-                                .createIntent()
-                                .putExtra(
-                                        WebappConstants.EXTRA_DISPLAY_MODE,
-                                        DisplayMode.MINIMAL_UI));
+        try {
+            WebappActivity activity =
+                    runWebappActivityAndWaitForIdle(
+                            mActivityTestRule
+                                    .createIntent()
+                                    .putExtra(
+                                            WebappConstants.EXTRA_DISPLAY_MODE,
+                                            DisplayMode.MINIMAL_UI));
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    activity.getComponent().resolveNavigationController().openCurrentUrlInBrowser();
-                });
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        activity.getComponent().resolveNavigationController().openCurrentUrlInBrowser();
+                    });
 
-        ChromeTabbedActivity tabbedChrome =
-                ChromeActivityTestRule.waitFor(ChromeTabbedActivity.class);
-        ChromeTabUtils.waitForTabPageLoaded(
-                tabbedChrome.getActivityTab(),
-                WebappTestPage.getServiceWorkerUrl(mActivityTestRule.getTestServer()));
+            ChromeTabbedActivity tabbedChrome =
+                    ChromeActivityTestRule.waitFor(ChromeTabbedActivity.class);
+            ChromeTabUtils.waitForTabPageLoaded(
+                    tabbedChrome.getActivityTab(),
+                    WebappTestPage.getServiceWorkerUrl(mActivityTestRule.getTestServer()));
+        } finally {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        WarmupManager.getInstance().destroySpareTab();
+                    });
+        }
     }
 
     @Test
