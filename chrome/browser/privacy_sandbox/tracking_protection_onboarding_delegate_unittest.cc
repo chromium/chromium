@@ -74,5 +74,14 @@ TEST_F(TrackingProtectionOnboardingDelegateTest, IsEnterpriseManagedDetection) {
   EXPECT_TRUE(
       profile_and_delegate_managed()->delegate()->IsEnterpriseManaged());
 }
+
+TEST_F(TrackingProtectionOnboardingDelegateTest, NewProfileDetection) {
+  profile_and_delegate()->profile()->SetIsNewProfile(true);
+  ASSERT_TRUE(profile_and_delegate()->profile()->IsNewProfile());
+  EXPECT_TRUE(profile_and_delegate()->delegate()->IsNewProfile());
+
+  profile_and_delegate()->profile()->SetIsNewProfile(false);
+  EXPECT_FALSE(profile_and_delegate()->delegate()->IsNewProfile());
+}
 }  // namespace
 }  // namespace privacy_sandbox

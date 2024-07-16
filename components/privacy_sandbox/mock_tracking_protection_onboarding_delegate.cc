@@ -9,6 +9,7 @@ MockTrackingProtectionOnboardingDelegate::
   // Setup some reasonable default responses that generally allow APIs.
   // Tests can further override the responses as required.
   SetUpIsEnterpriseManaged(false);
+  SetUpIsNewProfile(true);
 }
 
 MockTrackingProtectionOnboardingDelegate::
@@ -17,4 +18,9 @@ MockTrackingProtectionOnboardingDelegate::
 void MockTrackingProtectionOnboardingDelegate::SetUpIsEnterpriseManaged(
     bool managed) {
   ON_CALL(*this, IsEnterpriseManaged).WillByDefault([=]() { return managed; });
+}
+
+void MockTrackingProtectionOnboardingDelegate::SetUpIsNewProfile(
+    bool new_profile) {
+  ON_CALL(*this, IsNewProfile).WillByDefault([=]() { return new_profile; });
 }

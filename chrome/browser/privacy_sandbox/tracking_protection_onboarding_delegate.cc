@@ -5,6 +5,7 @@
 #include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_delegate.h"
 
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
 
 namespace privacy_sandbox {
@@ -18,4 +19,9 @@ TrackingProtectionOnboardingDelegate::~TrackingProtectionOnboardingDelegate() =
 bool TrackingProtectionOnboardingDelegate::IsEnterpriseManaged() const {
   return chrome::enterprise_util::IsBrowserManaged(profile_);
 }
+
+bool TrackingProtectionOnboardingDelegate::IsNewProfile() const {
+  return profile_->IsNewProfile();
+}
+
 }  // namespace privacy_sandbox

@@ -18,6 +18,7 @@ class TrackingProtectionOnboardingDelegate
   ~TrackingProtectionOnboardingDelegate() override;
 
   bool IsEnterpriseManaged() const override;
+  bool IsNewProfile() const override;
 
  private:
   raw_ptr<Profile> profile_;

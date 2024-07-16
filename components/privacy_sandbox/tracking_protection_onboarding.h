@@ -145,6 +145,10 @@ class TrackingProtectionOnboarding : public KeyedService {
     // Whether the current profile is managed by an enterprise or not. Affects
     // which onboarding notices are shown.
     virtual bool IsEnterpriseManaged() const = 0;
+
+    // Whether the current profile is a new profile or not. Affects
+    // which onboarding notices are shown.
+    virtual bool IsNewProfile() const = 0;
   };
 
   TrackingProtectionOnboarding(std::unique_ptr<Delegate> delegate,
@@ -212,8 +216,12 @@ class TrackingProtectionOnboarding : public KeyedService {
 
  private:
   friend class tpcd::experiment::EligibilityServiceTest;
+  friend class TrackingProtectionOnboardingTest;
 
-  FRIEND_TEST(TrackingProtectionOnboardingTest, IsEnterpriseManaged);
+  FRIEND_TEST(TrackingProtectionOnboardingTest,
+              IsNewProfileReturnsValueProvidedByDelegate);
+  FRIEND_TEST(TrackingProtectionOnboardingTest,
+              IsEnterpriseManagedReturnsValueProvidedByDelegate);
   FRIEND_TEST(TrackingProtectionOnboardingNoticeBrowserTest,
               TreatsAsShownIfPreviouslyDismissed);
 
@@ -226,6 +234,8 @@ class TrackingProtectionOnboarding : public KeyedService {
 
   // Whether the current profile is managed by an enterprise or not.
   virtual bool IsEnterpriseManaged() const;
+  // Whether the current profile is a new profile or not.
+  virtual bool IsNewProfile() const;
 
   base::ObserverList<Observer>::Unchecked observers_;
   std::unique_ptr<Delegate> delegate_;

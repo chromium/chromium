@@ -16,6 +16,9 @@ class MockTrackingProtectionOnboardingDelegate
 
   void SetUpIsEnterpriseManaged(bool managed);
   MOCK_METHOD(bool, IsEnterpriseManaged, (), (const, override));
+
+  void SetUpIsNewProfile(bool new_profile);
+  MOCK_METHOD(bool, IsNewProfile, (), (const, override));
 };
 
 #endif  // COMPONENTS_PRIVACY_SANDBOX_MOCK_TRACKING_PROTECTION_ONBOARDING_DELEGATE_H_

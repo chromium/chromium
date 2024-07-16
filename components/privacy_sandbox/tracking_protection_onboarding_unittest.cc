@@ -66,6 +66,12 @@ class TrackingProtectionOnboardingTest : public testing::Test {
                                                        prefs(), channel);
   }
 
+  MockTrackingProtectionOnboardingDelegate* GetMockDelegate() {
+    return (MockTrackingProtectionOnboardingDelegate*)
+        tracking_protection_onboarding()
+            ->delegate_.get();
+  }
+
   void SetUp() override { RecreateOnboardingService(); }
 
   TrackingProtectionOnboarding* tracking_protection_onboarding() {
@@ -84,16 +90,22 @@ class TrackingProtectionOnboardingTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(TrackingProtectionOnboardingTest, IsEnterpriseManaged) {
+TEST_F(TrackingProtectionOnboardingTest,
+       IsEnterpriseManagedReturnsValueProvidedByDelegate) {
+  GetMockDelegate()->SetUpIsEnterpriseManaged(/*managed=*/false);
   EXPECT_FALSE(tracking_protection_onboarding()->IsEnterpriseManaged());
 
-  delegate_ = std::make_unique<MockTrackingProtectionOnboardingDelegate>();
-  delegate_->SetUpIsEnterpriseManaged(
-      /*managed=*/true);
-  tracking_protection_onboarding_service_ =
-      std::make_unique<TrackingProtectionOnboarding>(
-          std::move(delegate_), prefs(), version_info::Channel::UNKNOWN);
+  GetMockDelegate()->SetUpIsEnterpriseManaged(/*managed=*/true);
   EXPECT_TRUE(tracking_protection_onboarding()->IsEnterpriseManaged());
+}
+
+TEST_F(TrackingProtectionOnboardingTest,
+       IsNewProfileReturnsValueProvidedByDelegate) {
+  GetMockDelegate()->SetUpIsNewProfile(/*new_profile=*/true);
+  EXPECT_TRUE(tracking_protection_onboarding()->IsNewProfile());
+
+  GetMockDelegate()->SetUpIsNewProfile(/*new_profile=*/false);
+  EXPECT_FALSE(tracking_protection_onboarding()->IsNewProfile());
 }
 
 TEST_F(TrackingProtectionOnboardingTest,

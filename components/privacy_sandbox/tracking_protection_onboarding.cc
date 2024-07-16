@@ -448,6 +448,10 @@ bool TrackingProtectionOnboarding::IsEnterpriseManaged() const {
   return delegate_->IsEnterpriseManaged();
 }
 
+bool TrackingProtectionOnboarding::IsNewProfile() const {
+  return delegate_->IsNewProfile();
+}
+
 void TrackingProtectionOnboarding::MaybeMarkModeBEligible() {
   auto status = GetInternalOnboardingStatus(pref_service_);
   if (status != TrackingProtectionOnboardingStatus::kIneligible) {
