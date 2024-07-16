@@ -435,6 +435,19 @@ $ out\Default\unit_tests.exe --gtest_filter="BrowserListUnitTest.*"
 You can find out more about GoogleTest at its
 [GitHub page](https://github.com/google/googletest).
 
+## Build an Installer
+
+Build the `mini_installer` target to create a self-contained installer. This
+has everything needed to install your browser on a machine.
+
+```shell
+$ autoninja -C out\Default mini_installer
+```
+
+See [//chrome/installer/setup/README.md](../chrome/installer/setup/README.md)
+and [//chrome/installer/mini_installer/README.md](../chrome/installer/mini_installer/README.md)
+for more information.
+
 ## Update your checkout
 
 To update an existing checkout, you can run
