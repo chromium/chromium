@@ -8,114 +8,117 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
-# Basic smoke tests for fuzzing
 group("tests") {
   testonly = true
-  deps = [ ":fuzztest_tests" ]
-  if (use_fuzzing_engine && !is_win) {
-    deps += [ ":libfuzzer_tests" ]
-  }
+  deps = [ ":fuzzing_unittests" ]
 }
 
-# TODO(crbug.com/40603084): Get the tests working on Windows. Disable them for now
-# because they cause the Windows clang ToT builder to fail.
-if (!is_win) {
-  test("libfuzzer_tests") {
-    sources = [ "fuzzer_launcher_test.cc" ]
-    deps = [
+# Basic smoke tests for fuzzing
+test("fuzzing_unittests") {
+  # The most basic smoketest for FUZZ_TEST macros.
+  # The main purpose is to ensure that this builds in all configurations:
+  # * on regular builders, this will produce a unit test executable
+  # * on ASAN builders, this will produce a unit test executable which
+  #   additionally has sancov instrumentation to support --fuzz=
+  #   arguments
+  # * on libfuzzer and centipede builders this will enable different
+  #   options again.
+  sources = [ "fuzztest_smoketest.cc" ]
+  fuzztests = [ "FuzzTestSmokeTest.StringsAlwaysOccupyPositiveSpace" ]
+
+  deps = [
+    "//base/test:run_all_unittests",
+    "//testing/gtest",
+    "//third_party/fuzztest",
+  ]
+  data_deps = []
+
+  # TODO(crbug.com/40603084): Get these tests working on Windows.
+  if (use_fuzzing_engine && !is_win) {
+    sources += [ "fuzzer_launcher_test.cc" ]
+    deps += [
+      "//base",
+      "//testing/gmock",
+    ]
+    data_deps += [
+      ":check_fuzzer_config",
+      ":check_seed_corpus_archive",
       ":test_config_and_dict",
       ":test_config_and_seed_corpus",
       ":test_config_and_seed_corpuses",
       ":test_config_only",
       ":test_dict_from_subdir",
       ":test_dict_only",
-      "//base",
-      "//testing/gmock",
-      "//testing/gtest",
-      "//testing/gtest:gtest_main",
-    ]
-    data_deps = [
-      ":check_fuzzer_config",
-      ":check_seed_corpus_archive",
     ]
   }
 }
 
-fuzzer_test("test_dict_only") {
-  sources = [ "../fuzzers/empty_fuzzer.cc" ]
-  dict = "test.dict"
-  additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
-}
+# These fuzzer targets' outputs serve as inputs to `fuzzer_launcher_test.cc`,
+# which checks that `.options`, `.dict` and corpus files are generated
+# correctly. Only compile them when compiling the test itself.
+if (use_fuzzing_engine && !is_win) {
+  fuzzer_test("test_dict_only") {
+    sources = [ "../fuzzers/empty_fuzzer.cc" ]
+    dict = "test.dict"
+    additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
+  }
 
-fuzzer_test("test_config_only") {
-  sources = [ "../fuzzers/empty_fuzzer.cc" ]
-  libfuzzer_options = [
-    "some_test_option=test_value",
-    "max_len=1024",
-  ]
-  additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
-}
+  fuzzer_test("test_config_only") {
+    sources = [ "../fuzzers/empty_fuzzer.cc" ]
+    libfuzzer_options = [
+      "some_test_option=test_value",
+      "max_len=1024",
+    ]
+    additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
+  }
 
-fuzzer_test("test_config_and_dict") {
-  sources = [ "../fuzzers/empty_fuzzer.cc" ]
-  dict = "test.dict"
-  libfuzzer_options = [
-    "max_len=random(1337, 31337)",
-    "timeout   =   666",
-    "use_traces=1",
-  ]
-  additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
-}
+  fuzzer_test("test_config_and_dict") {
+    sources = [ "../fuzzers/empty_fuzzer.cc" ]
+    dict = "test.dict"
+    libfuzzer_options = [
+      "max_len=random(1337, 31337)",
+      "timeout   =   666",
+      "use_traces=1",
+    ]
+    additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
+  }
 
-fuzzer_test("test_config_and_seed_corpus") {
-  sources = [ "../fuzzers/empty_fuzzer.cc" ]
-  seed_corpus = "test_corpus"
-  libfuzzer_options = [
-    "some_test_option=test_value",
-    "max_len=1024",
-  ]
-  additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
-}
+  fuzzer_test("test_config_and_seed_corpus") {
+    sources = [ "../fuzzers/empty_fuzzer.cc" ]
+    seed_corpus = "test_corpus"
+    libfuzzer_options = [
+      "some_test_option=test_value",
+      "max_len=1024",
+    ]
+    additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
+  }
 
-fuzzer_test("test_config_and_seed_corpuses") {
-  sources = [ "../fuzzers/empty_fuzzer.cc" ]
-  seed_corpuses = [
-    "test_corpus",
-    "test_corpus_2",
-  ]
-  libfuzzer_options = [
-    "some_test_option=another_test_value",
-    "max_len=1337",
-  ]
-  additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
-}
+  fuzzer_test("test_config_and_seed_corpuses") {
+    sources = [ "../fuzzers/empty_fuzzer.cc" ]
+    seed_corpuses = [
+      "test_corpus",
+      "test_corpus_2",
+    ]
+    libfuzzer_options = [
+      "some_test_option=another_test_value",
+      "max_len=1337",
+    ]
+    additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
+  }
 
-fuzzer_test("test_dict_from_subdir") {
-  sources = [ "../fuzzers/empty_fuzzer.cc" ]
-  dict = "dicts_subdir/test_subdir.dict"
-  additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
-}
+  fuzzer_test("test_dict_from_subdir") {
+    sources = [ "../fuzzers/empty_fuzzer.cc" ]
+    dict = "dicts_subdir/test_subdir.dict"
+    additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
+  }
 
-copy("check_fuzzer_config") {
-  sources = [ "check_fuzzer_config.py" ]
-  outputs = [ "$root_build_dir/check_fuzzer_config.py" ]
-}
+  copy("check_fuzzer_config") {
+    sources = [ "check_fuzzer_config.py" ]
+    outputs = [ "$root_build_dir/check_fuzzer_config.py" ]
+  }
 
-copy("check_seed_corpus_archive") {
-  sources = [ "check_seed_corpus_archive.py" ]
-  outputs = [ "$root_build_dir/check_seed_corpus_archive.py" ]
-}
-
-# The most basic smoketest for FUZZ_TEST macros.
-# The main purpose is to ensure that this builds in all configurations:
-# * on regular builders, this will produce a unit test executable
-# * on ASAN builders, this will produce a unit test executable which
-#   additionally has sancov instrumentation to support --fuzz=
-#   arguments
-# * on libfuzzer and centipede builders this will enable different
-#   options again.
-test("fuzztest_tests") {
-  fuzztests = [ "FuzzTestSmokeTest.StringsAlwaysOccupyPositiveSpace" ]
-  deps = [ "//third_party/fuzztest:fuzztest_gtest_main" ]
-  sources = [ "fuzztest_smoketest.cc" ]
+  copy("check_seed_corpus_archive") {
+    sources = [ "check_seed_corpus_archive.py" ]
+    outputs = [ "$root_build_dir/check_seed_corpus_archive.py" ]
+  }
 }

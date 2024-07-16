@@ -993,6 +993,7 @@
         'ci_only': True,
       },
       'events_unittests': {},
+      'fuzzing_unittests': {},
       'gcm_unit_tests': {},
       'gin_unittests': {},
       'google_apis_unittests': {},

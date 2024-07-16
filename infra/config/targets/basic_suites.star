@@ -1049,6 +1049,7 @@ targets.legacy_basic_suite(
             ci_only = True,
         ),
         "events_unittests": targets.legacy_test_config(),
+        "fuzzing_unittests": targets.legacy_test_config(),
         "gcm_unit_tests": targets.legacy_test_config(),
         "gin_unittests": targets.legacy_test_config(),
         "google_apis_unittests": targets.legacy_test_config(),

@@ -1106,6 +1106,10 @@ targets.tests.gtest_test(
     binary = "dawn_end2end_tests",
 )
 
+targets.tests.gtest_test(
+    name = "fuzzing_unittests",
+)
+
 targets.tests.gpu_telemetry_test(
     name = "gpu_process_launch_tests",
     telemetry_test_name = "gpu_process",

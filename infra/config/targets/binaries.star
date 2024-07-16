@@ -873,6 +873,11 @@ targets.binaries.generated_script(
 )
 
 targets.binaries.console_test_launcher(
+    name = "fuzzing_unittests",
+    label = "//testing/libfuzzer/tests:fuzzing_unittests",
+)
+
+targets.binaries.console_test_launcher(
     name = "gcm_unit_tests",
     label = "//google_apis/gcm:gcm_unit_tests",
 )
