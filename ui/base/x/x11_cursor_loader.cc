@@ -536,19 +536,15 @@ std::vector<XCursorLoader::Image> ParseCursorFile(
 
   size_t offset = 0u;
 
-  // Reads 32-bit values from `file` and writes them into the `dest` buffer.
-  auto ReadU32s = [&](base::span<uint8_t> dest) {
+  // Reads bytes from `file` and writes them into the `dest` buffer.
+  auto ReadBytes = [&](base::span<uint8_t> dest) {
     CHECK_EQ(dest.size() % 4u, 0u);
-    auto src = base::span(*file);
+    auto src = base::span<const uint8_t>(*file);
     if (auto end = base::CheckAdd(offset, dest.size());
         !end.IsValid() || end.ValueOrDie() > src.size()) {
       return false;
     }
-    for (size_t i = 0; i < dest.size(); i += 4u) {
-      uint32_t pixel = base::numerics::U32FromLittleEndian(
-          src.subspan(offset + i).first<4u>());
-      dest.subspan(i, 4u).copy_from(base::byte_span_from_ref(pixel));
-    }
+    dest.copy_from(src.subspan(offset, dest.size()));
     offset += dest.size();
     return true;
   };
@@ -655,7 +651,7 @@ std::vector<XCursorLoader::Image> ParseCursorFile(
         // API.
         UNSAFE_BUFFERS(base::span(static_cast<uint8_t*>(bitmap.getPixels()),
                                   bitmap.computeByteSize()));
-    if (!ReadU32s(pixels)) {
+    if (!ReadBytes(pixels)) {
       continue;
     }
     images.push_back(XCursorLoader::Image{bitmap,
