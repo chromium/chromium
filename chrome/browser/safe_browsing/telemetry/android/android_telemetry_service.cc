@@ -232,6 +232,7 @@ void AndroidTelemetryService::GetReport(
   report->set_type(ClientSafeBrowsingReportRequest::APK_DOWNLOAD);
   report->set_url(item->GetOriginalUrl().spec());
   report->set_page_url(item->GetTabUrl().spec());
+  report->set_locale(g_browser_process->GetApplicationLocale());
 
   auto* referrer_chain_data = static_cast<ReferrerChainData*>(
       item->GetUserData(ReferrerChainData::kDownloadReferrerChainDataKey));
