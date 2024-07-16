@@ -476,6 +476,8 @@ bool BackgroundTracingManagerImpl::InitializePerfettoTriggerRules(
   }
   for (auto& rule : trigger_rules_) {
     rule->Install(base::BindRepeating([](const BackgroundTracingRule* rule) {
+      base::UmaHistogramSparse("Tracing.Background.Perfetto.Trigger",
+                               variations::HashName(rule->rule_id()));
       perfetto::Tracing::ActivateTriggers({rule->rule_id()},
                                           /*ttl_ms=*/0);
       return true;

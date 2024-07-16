@@ -1381,14 +1381,22 @@ uploading your change for review.  These are checked by presubmit scripts.
     The hash of a Background Tracing Trigger name generated using
     `variations::HashName({Scenario}.{Trigger}`)`.
   </summary>
+  <int value="-1775762480" label="org.chromium.WebViewSlowStartup.Cold"/>
   <int value="-1623843694"
       label="Jank_Detailed.org.chromium.background_tracing.navigation-start"/>
+  <int value="-1536217537" label="org.chromium.GestureScrollBegin"/>
+  <int value="-848877432" label="org.chromium.EventLatency.Jank"/>
   <int value="-818596785"
       label="NonTabWebUIFCP.org.chromium.background_tracing.non-tab-webui-creation"/>
   <int value="-725424469" label="Jank.org.chromium.background_tracing.timer"/>
+  <int value="-624204648" label="org.chromium.CollectWebviewTrace"/>
   <int value="-84416026" label="Jank.Browser.MainThreadsCongestion"/>
   <int value="445229567"
       label="NonTabWebUIFCP.org.chromium.background_tracing.show-tab-search-bubble"/>
+  <int value="742689290" label="org.chromium.WebViewSlowStartup.Warm"/>
+  <int value="796076266" label="org.chromium.NotificationPreUnsubscribe"/>
+  <int value="1648590354"
+      label="org.chromium.WebViewSlowStartup.StartChromiumLocked"/>
   <int value="1736308284" label="Jank_Detailed.Browser.MainThreadsCongestion"/>
   <int value="2096426123"
       label="Jank.org.chromium.background_tracing.navigation-start"/>
