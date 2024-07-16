@@ -418,6 +418,99 @@ TEST_P(MessagePumpLibeventTest, NestedNotification) {
   loop.Run();
 }
 
+class RepeatWatcher : public BaseWatcher {
+ public:
+  RepeatWatcher(MessagePumpLibevent* pump,
+                int fd,
+                MessagePumpForIO::Mode mode,
+                bool persistent,
+                int repeat)
+      : pump_(pump),
+        fd_(fd),
+        mode_(mode),
+        persistent_(persistent),
+        repeat_(repeat),
+        fd_watch_controller_(FROM_HERE) {}
+
+  ~RepeatWatcher() override { EXPECT_EQ(repeat_, 0); }
+
+  void StartWatching() {
+    const bool watch_success = pump_->WatchFileDescriptor(
+        fd_, persistent_, mode_, &fd_watch_controller_, this);
+    ASSERT_TRUE(watch_success);
+  }
+
+  void OnFileCanReadWithoutBlocking(int fd) override {
+    EXPECT_EQ(fd_, fd);
+    EXPECT_GT(repeat_, 0);
+
+    --repeat_;
+
+    if (persistent_) {
+      if (repeat_ == 0) {
+        // Need to stop watching the fd explicitly if it's configured as
+        // persistent.
+        fd_watch_controller_.StopWatchingFileDescriptor();
+      }
+    } else {
+      if (repeat_ > 0) {
+        // Need to restart watching the fd explicitly if it's not configured as
+        // persistent.
+        StartWatching();
+      }
+    }
+  }
+
+ private:
+  raw_ptr<MessagePumpLibevent> pump_;
+  int fd_;
+  MessagePumpForIO::Mode mode_;
+  bool persistent_;
+  int repeat_;
+  MessagePumpLibevent::FdWatchController fd_watch_controller_;
+};
+
+void RepeatEventTest(bool persistent,
+                     int repeat,
+                     std::unique_ptr<MessagePumpLibevent> executor_pump,
+                     int sender,
+                     int receiver) {
+  MessagePumpLibevent* pump = executor_pump.get();
+  SingleThreadTaskExecutor executor(std::move(executor_pump));
+  RunLoop run_loop;
+  RepeatWatcher delegate(pump, receiver, MessagePumpLibevent::WATCH_READ,
+                         persistent, repeat);
+
+  delegate.StartWatching();
+
+  const char null = 0;
+  ASSERT_TRUE(WriteFileDescriptor(sender, std::string_view(&null, 1)));
+
+  // The RunLoop must go to the idle state after the callback is called the
+  // number of times specified by `repeat`.
+  run_loop.RunUntilIdle();
+}
+
+// Tests that MessagePumpLibevent calls FdWatcher's callback repeatedly when
+// it's configured as persistent.
+TEST_P(MessagePumpLibeventTest, RepeatPersistentEvent) {
+  // Delete the old TaskEnvironment so that we can manage our own one here.
+  task_environment_.reset();
+
+  RepeatEventTest(/* persistent= */ true, /* repeat= */ 3, CreateMessagePump(),
+                  sender(), receiver());
+}
+
+// Tests that MessagePumpLibevent calls FdWatcher's callback repeatedly when
+// it's not configured as persistent but reconfigured in the callback.
+TEST_P(MessagePumpLibeventTest, RepeatOneShotEvent) {
+  // Delete the old TaskEnvironment so that we can manage our own one here.
+  task_environment_.reset();
+
+  RepeatEventTest(/* persistent= */ false, /* repeat= */ 3, CreateMessagePump(),
+                  sender(), receiver());
+}
+
 #if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
 #define TEST_PARAM_VALUES kLibevent, kEpoll
 #else
