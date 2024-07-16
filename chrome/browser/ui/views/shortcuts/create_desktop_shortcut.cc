@@ -116,7 +116,11 @@ void ShowCreateDesktopShortcutDialog(
 
   base::RecordAction(
       base::UserMetricsAction("CreateDesktopShortcutDialogShown"));
-  constrained_window::ShowWebModalDialogViews(dialog.release(), web_contents);
+  views::Widget* create_shortcuts_dialog_widget =
+      constrained_window::ShowWebModalDialogViews(dialog.release(),
+                                                  web_contents);
+  delegate_weak_ptr->StartObservingForPictureInPictureOcclusion(
+      create_shortcuts_dialog_widget);
 }
 
 }  // namespace
