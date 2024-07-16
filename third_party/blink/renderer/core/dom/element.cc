@@ -6570,6 +6570,7 @@ bool Element::SupportsFocus(UpdateBehavior update_behavior) const {
 
   return HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly) ||
          IsRootEditableElementWithCounting(*this) ||
+         IsScrollMarkerPseudoElement() ||
          CanBeKeyboardFocusableScroller(update_behavior) ||
          SupportsSpatialNavigationFocus();
 }

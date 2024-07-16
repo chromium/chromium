@@ -281,12 +281,19 @@ static void ExtractSelectorValues(const CSSSelector* selector,
     case CSSSelector::kPagePseudoClass:
       // Must match the cases in RuleSet::FindBestRuleSetAndAdd.
       switch (selector->GetPseudoType()) {
+        case CSSSelector::kPseudoScrollMarker:
+          pseudo_type = CSSSelector::kPseudoScrollMarker;
+          break;
+        case CSSSelector::kPseudoFocus:
+          if (pseudo_type != CSSSelector::kPseudoScrollMarker) {
+            pseudo_type = selector->GetPseudoType();
+          }
+          break;
         case CSSSelector::kPseudoCue:
         case CSSSelector::kPseudoLink:
         case CSSSelector::kPseudoVisited:
         case CSSSelector::kPseudoWebkitAnyLink:
         case CSSSelector::kPseudoAnyLink:
-        case CSSSelector::kPseudoFocus:
         case CSSSelector::kPseudoFocusVisible:
         case CSSSelector::kPseudoPlaceholder:
         case CSSSelector::kPseudoFileSelectorButton:

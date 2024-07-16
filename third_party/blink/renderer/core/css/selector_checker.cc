@@ -395,6 +395,8 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForSubSelector(
 
   next_context.has_selection_pseudo = dynamic_pseudo == kPseudoIdSelection;
   next_context.has_search_text_pseudo = dynamic_pseudo == kPseudoIdSearchText;
+  next_context.has_scroll_marker_pseudo =
+      dynamic_pseudo == kPseudoIdScrollMarker;
   next_context.is_sub_selector = true;
   return MatchSelector(next_context, result);
 }
@@ -1640,7 +1642,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
           }
         }
       }
-      return MatchesFocusPseudoClass(element);
+      return MatchesFocusPseudoClass(element, context.has_scroll_marker_pseudo);
     case CSSSelector::kPseudoFocusVisible:
       if (mode_ == kResolvingStyle) {
         if (UNLIKELY(context.is_inside_has_pseudo_class)) {
@@ -2453,12 +2455,19 @@ bool SelectorChecker::MatchesSelectorFragmentAnchorPseudoClass(
              ->IsSelectorFragmentAnchor();
 }
 
-bool SelectorChecker::MatchesFocusPseudoClass(const Element& element) {
+bool SelectorChecker::MatchesFocusPseudoClass(const Element& element,
+                                              bool has_scroll_marker_pseudo) {
   bool force_pseudo_state = false;
   probe::ForcePseudoState(const_cast<Element*>(&element),
                           CSSSelector::kPseudoFocus, &force_pseudo_state);
   if (force_pseudo_state) {
     return true;
+  }
+  if (has_scroll_marker_pseudo) {
+    if (const Element* scroll_marker =
+            element.GetPseudoElement(kPseudoIdScrollMarker)) {
+      return scroll_marker->IsFocused() && IsFrameFocused(*scroll_marker);
+    }
   }
   return element.IsFocused() && IsFrameFocused(element);
 }

@@ -214,6 +214,9 @@ PseudoElement::PseudoElement(Element* parent,
   parent->GetTreeScope().AdoptIfNeeded(*this);
   SetParentOrShadowHostNode(parent);
   SetHasCustomStyleCallbacks();
+  if (pseudo_id == kPseudoIdScrollMarker) {
+    SetTabIndexExplicitly();
+  }
   if ((pseudo_id == kPseudoIdBefore || pseudo_id == kPseudoIdAfter) &&
       parent->HasTagName(html_names::kInputTag)) {
     UseCounter::Count(parent->GetDocument(),
@@ -376,6 +379,10 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
     }
   }
   context.counters_context.LeaveElement(*this);
+}
+
+int PseudoElement::DefaultTabIndex() const {
+  return 0;
 }
 
 bool PseudoElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {

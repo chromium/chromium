@@ -904,7 +904,8 @@ DISABLE_CFI_PERF bool ElementRuleCollector::CollectMatchingRulesInternal(
       }
     }
   }
-  if (SelectorChecker::MatchesFocusPseudoClass(element)) {
+  if (SelectorChecker::MatchesFocusPseudoClass(
+          element, /*has_scroll_marker_pseudo=*/false)) {
     for (const auto bundle : match_request.AllRuleSets()) {
       if (CollectMatchingRulesForList<stop_at_first_match>(
               bundle.rule_set->FocusPseudoClassRules(), match_request,

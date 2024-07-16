@@ -73,6 +73,7 @@ class CORE_EXPORT PseudoElement : public Element {
 
   static AtomicString PseudoElementNameForEvents(Element*);
   static bool IsWebExposed(PseudoId, const Node*);
+  int DefaultTabIndex() const override;
 
   // Pseudo element are not allowed to be the inner node for hit testing. Find
   // the closest ancestor which is a real dom node.

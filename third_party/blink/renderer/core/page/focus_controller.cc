@@ -223,7 +223,7 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
   }
 
   const Element* NextInDomOrder(const Element& current) {
-    Element* next = ElementTraversal::Next(current, root_);
+    Element* next = ElementTraversal::NextIncludingPseudo(current, root_);
     while (next && !IsOwnedByRoot(*next))
       next = ElementTraversal::Next(*next, root_);
     return next;
@@ -278,7 +278,8 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
   }
 
   const Element* PreviousInDomOrder(const Element& current) {
-    Element* previous = ElementTraversal::Previous(current, root_);
+    Element* previous =
+        ElementTraversal::PreviousIncludingPseudo(current, root_);
     if (previous == root_)
       return nullptr;
     while (previous && !IsOwnedByRoot(*previous))
@@ -1661,6 +1662,9 @@ Element* FocusController::FindFocusableElementInShadowHost(
 HTMLElement* FocusController::FindScopeOwnerSlotOrReadingFlowContainer(
     const Element& current) {
   Element* element = const_cast<Element*>(&current);
+  if (element->IsPseudoElement()) {
+    return nullptr;
+  }
   while (element) {
     if (HTMLSlotElement* slot_element = element->AssignedSlot()) {
       return slot_element;
