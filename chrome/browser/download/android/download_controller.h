@@ -26,11 +26,12 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/download/android/dangerous_download_dialog_bridge.h"
-#include "chrome/browser/download/android/download_app_verification_request.h"
 #include "chrome/browser/download/android/download_callback_validator.h"
 #include "chrome/browser/download/android/download_controller_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
+#include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
 
 class DownloadController : public DownloadControllerBase {
  public:
@@ -84,6 +85,7 @@ class DownloadController : public DownloadControllerBase {
 
   // DownloadItem::Observer interface.
   void OnDownloadUpdated(download::DownloadItem* item) override;
+  void OnDownloadDestroyed(download::DownloadItem* item) override;
 
   // The download item contains dangerous file types.
   void OnDangerousDownload(download::DownloadItem* item);
@@ -99,12 +101,11 @@ class DownloadController : public DownloadControllerBase {
   // Get profile key from download item.
   ProfileKey* GetProfileKey(download::DownloadItem* download_item);
 
-  // Callback for when a DownloadAppVerificationRequest has completed.
-  void OnAppVerificationComplete(bool showed_app_verification_dialog,
-                                 download::DownloadItem* item);
+  // Callback after we prompt the user to enable app verification.
+  void EnableVerifyAppsDone(safe_browsing::VerifyAppsEnabledResult result);
 
-  // Show the "File might be harmful" dialog for this `item`.
-  void ShowDangerousDownloadDialog(download::DownloadItem* item);
+  // Notify Java that download is complete, so the user can be informed.
+  void OnDownloadComplete(download::DownloadItem* item);
 
   std::string default_file_name_;
 
@@ -115,10 +116,10 @@ class DownloadController : public DownloadControllerBase {
   // Whether the user has been prompted to enable app verification this session.
   bool has_seen_app_verification_dialog_ = false;
 
-  // Contains all currently active app verification checks
-  std::map<download::DownloadItem*,
-           std::unique_ptr<DownloadAppVerificationRequest>>
-      app_verification_requests_;
+  // The item currently or previously doing an app verification
+  // prompt. Because we show at most one per session, this does not need
+  // to be a set.
+  raw_ptr<download::DownloadItem> app_verification_prompt_download_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_ANDROID_DOWNLOAD_CONTROLLER_H_

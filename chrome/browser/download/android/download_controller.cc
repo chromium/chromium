@@ -16,6 +16,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
 #include "chrome/browser/android/android_theme_resources.h"
@@ -434,47 +435,31 @@ void DownloadController::OnDownloadUpdated(DownloadItem* item) {
   }
 
   if (item->GetState() == DownloadItem::COMPLETE) {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    ScopedJavaLocalRef<jobject> j_item =
-        DownloadManagerService::CreateJavaDownloadInfo(env, item);
-    // Multiple OnDownloadUpdated() notifications may be issued while the
-    // download is in the COMPLETE state. Only handle one.
-    item->RemoveObserver(this);
-    // Call onDownloadCompleted
-    TabAndroid* tab = nullptr;
-    if (base::FeatureList::IsEnabled(features::kAndroidOpenPdfInline)) {
-      content::WebContents* web_contents =
-          content::DownloadItemUtils::GetWebContents(item);
-      if (web_contents) {
-        tab = TabAndroid::FromWebContents(web_contents);
-      }
+    if (base::FeatureList::IsEnabled(safe_browsing::kGooglePlayProtectPrompt) &&
+        item->GetDangerType() ==
+            download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED &&
+        !has_seen_app_verification_dialog_) {
+      has_seen_app_verification_dialog_ = true;
+      app_verification_prompt_download_ = item;
+      safe_browsing::SafeBrowsingApiHandlerBridge::GetInstance()
+          .StartEnableVerifyApps(base::BindOnce(
+              &DownloadController::EnableVerifyAppsDone,
+              // base::Unretained is safe because `this` is a singleton.
+              base::Unretained(this)));
+    } else if (item != app_verification_prompt_download_) {
+      OnDownloadComplete(item);
     }
-    Java_DownloadController_onDownloadCompleted(
-        env, tab ? tab->GetJavaObject() : nullptr, j_item);
+  }
+}
+
+void DownloadController::OnDownloadDestroyed(download::DownloadItem* item) {
+  item->RemoveObserver(this);
+  if (item == app_verification_prompt_download_) {
+    app_verification_prompt_download_ = nullptr;
   }
 }
 
 void DownloadController::OnDangerousDownload(download::DownloadItem* item) {
-  if (has_seen_app_verification_dialog_ ||
-      !base::FeatureList::IsEnabled(safe_browsing::kGooglePlayProtectPrompt)) {
-    ShowDangerousDownloadDialog(item);
-    return;
-  }
-
-  if (base::Contains(app_verification_requests_, item)) {
-    return;
-  }
-
-  app_verification_requests_[item] =
-      std::make_unique<DownloadAppVerificationRequest>(
-          item, base::BindOnce(&DownloadController::OnAppVerificationComplete,
-                               // Unretained is safe because this is a singleton
-                               base::Unretained(this)));
-  app_verification_requests_[item]->Start();
-}
-
-void DownloadController::ShowDangerousDownloadDialog(
-    download::DownloadItem* item) {
   WebContents* web_contents = content::DownloadItemUtils::GetWebContents(item);
   if (!web_contents) {
     auto download_manager_getter = std::make_unique<DownloadManagerGetter>(
@@ -497,6 +482,36 @@ void DownloadController::ShowDangerousDownloadDialog(
         std::make_unique<DangerousDownloadDialogBridge>();
   }
   dangerous_download_bridge_->Show(item, window_android);
+}
+
+void DownloadController::EnableVerifyAppsDone(
+    safe_browsing::VerifyAppsEnabledResult result) {
+  base::UmaHistogramEnumeration(
+      "SBClientDownload.AndroidAppVerificationPromptResult", result);
+
+  if (app_verification_prompt_download_ != nullptr) {
+    OnDownloadComplete(app_verification_prompt_download_);
+  }
+}
+
+void DownloadController::OnDownloadComplete(download::DownloadItem* item) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> j_item =
+      DownloadManagerService::CreateJavaDownloadInfo(env, item);
+  // Multiple OnDownloadUpdated() notifications may be issued while the
+  // download is in the COMPLETE state. Only handle one.
+  item->RemoveObserver(this);
+  // Call onDownloadCompleted
+  TabAndroid* tab = nullptr;
+  if (base::FeatureList::IsEnabled(features::kAndroidOpenPdfInline)) {
+    content::WebContents* web_contents =
+        content::DownloadItemUtils::GetWebContents(item);
+    if (web_contents) {
+      tab = TabAndroid::FromWebContents(web_contents);
+    }
+  }
+  Java_DownloadController_onDownloadCompleted(
+      env, tab ? tab->GetJavaObject() : nullptr, j_item);
 }
 
 void DownloadController::StartContextMenuDownload(
@@ -525,16 +540,4 @@ ProfileKey* DownloadController::GetProfileKey(DownloadItem* download_item) {
     profile_key = ProfileKeyStartupAccessor::GetInstance()->profile_key();
 
   return profile_key;
-}
-
-void DownloadController::OnAppVerificationComplete(
-    bool showed_app_verification_dialog,
-    download::DownloadItem* item) {
-  const auto it = app_verification_requests_.find(item);
-  CHECK(it != app_verification_requests_.end());
-  app_verification_requests_.erase(it);
-
-  has_seen_app_verification_dialog_ |= showed_app_verification_dialog;
-
-  ShowDangerousDownloadDialog(item);
 }

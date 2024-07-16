@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -72,6 +73,10 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
 #endif
 
 using content::BrowserThread;
@@ -197,6 +202,11 @@ void DownloadTargetDeterminer::DoLoop() {
       case STATE_CHECK_DOWNLOAD_URL:
         result = DoCheckDownloadUrl();
         break;
+#if BUILDFLAG(IS_ANDROID)
+      case STATE_CHECK_APP_VERIFICATION:
+        result = DoCheckAppVerification();
+        break;
+#endif
       case STATE_CHECK_VISITED_REFERRER_BEFORE:
         result = DoCheckVisitedReferrerBefore();
         break;
@@ -941,7 +951,15 @@ DownloadTargetDeterminer::Result
     DownloadTargetDeterminer::DoCheckDownloadUrl() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!virtual_path_.empty());
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(safe_browsing::kGooglePlayProtectPrompt)) {
+    next_state_ = STATE_CHECK_APP_VERIFICATION;
+  } else {
+    next_state_ = STATE_CHECK_VISITED_REFERRER_BEFORE;
+  }
+#else
   next_state_ = STATE_CHECK_VISITED_REFERRER_BEFORE;
+#endif
 
   // If user has validated a dangerous download, don't check.
   if (danger_type_ == download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED)
@@ -958,10 +976,43 @@ void DownloadTargetDeterminer::CheckDownloadUrlDone(
     download::DownloadDangerType danger_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DVLOG(20) << "URL Check Result:" << danger_type;
+#if BUILDFLAG(IS_ANDROID)
+  DCHECK_EQ(
+      base::FeatureList::IsEnabled(safe_browsing::kGooglePlayProtectPrompt)
+          ? STATE_CHECK_APP_VERIFICATION
+          : STATE_CHECK_VISITED_REFERRER_BEFORE,
+      next_state_);
+#else
   DCHECK_EQ(STATE_CHECK_VISITED_REFERRER_BEFORE, next_state_);
+#endif
   danger_type_ = danger_type;
   DoLoop();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+DownloadTargetDeterminer::Result
+DownloadTargetDeterminer::DoCheckAppVerification() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  next_state_ = STATE_CHECK_VISITED_REFERRER_BEFORE;
+  safe_browsing::SafeBrowsingApiHandlerBridge::GetInstance()
+      .StartIsVerifyAppsEnabled(
+          base::BindOnce(&DownloadTargetDeterminer::CheckAppVerificationDone,
+                         weak_ptr_factory_.GetWeakPtr()));
+  return QUIT_DOLOOP;
+}
+
+void DownloadTargetDeterminer::CheckAppVerificationDone(
+    safe_browsing::VerifyAppsEnabledResult result) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_EQ(STATE_CHECK_VISITED_REFERRER_BEFORE, next_state_);
+  base::UmaHistogramEnumeration("SBClientDownload.AndroidAppVerificationResult",
+                                result);
+  is_app_verification_enabled_ =
+      result == safe_browsing::VerifyAppsEnabledResult::SUCCESS_ENABLED;
+  DoLoop();
+}
+#endif
 
 DownloadTargetDeterminer::Result
     DownloadTargetDeterminer::DoCheckVisitedReferrerBefore() {
@@ -988,6 +1039,13 @@ DownloadTargetDeterminer::Result
     return CONTINUE;
 
   if (danger_level_ == DownloadFileType::ALLOW_ON_USER_GESTURE) {
+#if BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(safe_browsing::kGooglePlayProtectPrompt) &&
+        is_app_verification_enabled_) {
+      return CONTINUE;
+    }
+#endif
+
     // HistoryServiceFactory redirects incognito profiles to on-record profiles.
     // There's no history for on-record profiles in unit_tests.
     history::HistoryService* history_service =
