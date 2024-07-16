@@ -3,6 +3,8 @@
  * found in the LICENSE file. */
 
 /* #css_wrapper_metadata_start
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
+ * #include=cr-hidden-style-lit
  * #type=style-lit
  * #import=//resources/cr_elements/cr_page_host_style_lit.css.js
  * #import=//resources/cr_elements/cr_shared_style_lit.css.js
@@ -43,4 +45,42 @@
 
 .inline-text {
   display: inline-block;
+}
+
+@media (max-width: 1036px) {
+  #content {
+    min-width: auto;
+    padding: 0 3px;
+  }
+}
+
+#container {
+  align-items: flex-start;
+  display: flex;
+  flex: 1;
+  overflow: overlay;
+  position: relative;
+}
+
+#sidebar {
+  height: 100%;
+  position: sticky;
+  top: 0;
+  max-width: fit-content;
+}
+
+#content {
+  flex-basis: var(--private-state-tokens-main-basis);
+  height: 100%;
+}
+
+#space-holder {
+  max-width: 250px;
+  min-width: 56px;
+}
+
+#sidebar,
+#content,
+#space-holder {
+  flex: 1 1 0;
 }

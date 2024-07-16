@@ -36,7 +36,7 @@ export class PrivateStateTokensToolbarElement extends CrLitElement {
       clearLabel_: {type: String},
       menuLabel_: {type: String},
       narrow: {type: Boolean},
-      narrowThreshold_: {type: Number},
+      narrowThreshold: {type: Number},
       pageName: {type: String},
       searchPrompt_: {type: String},
       showSearch_: {type: Boolean},
@@ -47,15 +47,11 @@ export class PrivateStateTokensToolbarElement extends CrLitElement {
   protected alwaysShowLogo_: boolean = true;
   protected clearLabel_: string = 'Clear search';
   protected menuLabel_: string = 'Menu';
-  protected narrow: boolean = true;
-  protected narrowThreshold_: number = 1096;
+  protected narrow: boolean = false;
+  narrowThreshold: number = 0;
   protected pageName: string = '';
   protected searchPrompt_: string = 'Search site';
 
-  protected onNarrowChanged_(e: CustomEvent<{value: boolean}>) {
-    this.narrow = e.detail.value;
-    this.requestUpdate();
-  }
 }
 
 declare global {

@@ -17,6 +17,8 @@ build_webui("build") {
     "list_item.ts",
     "list_item.html.ts",
     "private_state_tokens.ts",
+    "sidebar.ts",
+    "sidebar.html.ts",
     "test_data.ts",
     "toolbar.ts",
     "toolbar.html.ts",
@@ -24,9 +26,10 @@ build_webui("build") {
 
   css_files = [
     "app.css",
-    "toolbar.css",
-    "shared_vars.css",
     "list_item.css",
+    "shared_vars.css",
+    "sidebar.css",
+    "toolbar.css",
   ]
 
   ts_composite = true
