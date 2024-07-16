@@ -19,9 +19,12 @@ class GestureNavigationProperties {
      */
     static final WritableBooleanPropertyKey DIRECTION = new WritableBooleanPropertyKey();
 
+    /** Gesture navigation edge as defined in {@link BackGestureEventSwipeEdge}. */
+    static final WritableIntPropertyKey EDGE = new WritableIntPropertyKey();
+
     /**
-     * Whether to allow a sufficiently large pull to trigger the navigation action and
-     * animation sequence. Set for {@link GestureAction.RELEASE}.
+     * Whether to allow a sufficiently large pull to trigger the navigation action and animation
+     * sequence. Set for {@link GestureAction.RELEASE}.
      */
     static final WritableBooleanPropertyKey ALLOW_NAV = new WritableBooleanPropertyKey();
 
@@ -36,6 +39,6 @@ class GestureNavigationProperties {
     static final WritableIntPropertyKey CLOSE_INDICATOR = new WritableIntPropertyKey();
 
     static final PropertyKey[] ALL_KEYS = {
-        ACTION, DIRECTION, ALLOW_NAV, BUBBLE_OFFSET, CLOSE_INDICATOR
+        ACTION, DIRECTION, EDGE, ALLOW_NAV, BUBBLE_OFFSET, CLOSE_INDICATOR
     };
 }

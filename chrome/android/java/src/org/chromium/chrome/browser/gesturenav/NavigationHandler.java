@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.gesturenav.GestureNavigationProperties
 import static org.chromium.chrome.browser.gesturenav.GestureNavigationProperties.BUBBLE_OFFSET;
 import static org.chromium.chrome.browser.gesturenav.GestureNavigationProperties.CLOSE_INDICATOR;
 import static org.chromium.chrome.browser.gesturenav.GestureNavigationProperties.DIRECTION;
+import static org.chromium.chrome.browser.gesturenav.GestureNavigationProperties.EDGE;
 
 import android.app.Activity;
 import android.content.Context;
@@ -237,7 +238,7 @@ class NavigationHandler implements TouchEventObserver {
         mInitialY = y;
         mInitiatingEdge = initiatingEdge;
 
-        boolean forward = initiatingEdge == BackGestureEventSwipeEdge.RIGHT;
+        boolean forward = mInitiatingEdge == BackGestureEventSwipeEdge.RIGHT;
 
         // If the UI uses an RTL layout, it may be necessary to flip the meaning of each edge so
         // that the left edge goes forward and the right goes back.
@@ -246,6 +247,7 @@ class NavigationHandler implements TouchEventObserver {
         }
 
         mModel.set(DIRECTION, forward);
+        mModel.set(EDGE, mInitiatingEdge);
         if (canNavigate(forward)) {
             if (mState != GestureState.STARTED) mModel.set(ACTION, GestureAction.RESET_BUBBLE);
             mModel.set(CLOSE_INDICATOR, getCloseIndicator(forward));

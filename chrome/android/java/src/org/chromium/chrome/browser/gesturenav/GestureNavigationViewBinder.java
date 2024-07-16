@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.gesturenav.GestureNavigationProperties
 import static org.chromium.chrome.browser.gesturenav.GestureNavigationProperties.BUBBLE_OFFSET;
 import static org.chromium.chrome.browser.gesturenav.GestureNavigationProperties.CLOSE_INDICATOR;
 import static org.chromium.chrome.browser.gesturenav.GestureNavigationProperties.DIRECTION;
+import static org.chromium.chrome.browser.gesturenav.GestureNavigationProperties.EDGE;
 
 import android.view.View;
 
@@ -31,7 +32,8 @@ class GestureNavigationViewBinder {
         } else if (ACTION == key) {
             switch (model.get(ACTION)) {
                 case GestureAction.SHOW_ARROW:
-                    topView.showBubble(model.get(DIRECTION), model.get(CLOSE_INDICATOR));
+                    topView.showBubble(
+                            model.get(DIRECTION), model.get(EDGE), model.get(CLOSE_INDICATOR));
                     break;
                 case GestureAction.RELEASE_BUBBLE:
                     topView.releaseBubble(model.get(ALLOW_NAV));

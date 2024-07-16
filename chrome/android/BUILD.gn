@@ -2028,6 +2028,7 @@ if (current_toolchain == default_toolchain) {
       "//third_party/mockito:mockito_java",
       "//ui/accessibility:ax_base_java",
       "//ui/android:clipboard_java_test_support",
+      "//ui/android:ui_android_features_java",
       "//ui/android:ui_java",
       "//ui/android:ui_java_test_support",
       "//ui/base/ime/mojom:mojom_java",

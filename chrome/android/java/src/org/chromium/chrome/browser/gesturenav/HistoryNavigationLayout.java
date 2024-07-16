@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.gesturenav.NavigationBubble.CloseTarget;
+import org.chromium.ui.base.BackGestureEventSwipeEdge;
 
 /** FrameLayout that supports side-wise slide gesture for history navigation. */
 class HistoryNavigationLayout extends FrameLayout implements ViewGroup.OnHierarchyChangeListener {
@@ -62,10 +63,15 @@ class HistoryNavigationLayout extends FrameLayout implements ViewGroup.OnHierarc
 
     /**
      * Start showing arrow widget for navigation back/forward.
+     *
      * @param forward {@code true} for forward navigation, or {@code false} for back.
+     * @param initiatingEdge Which edge of the screen the gesture is navigating from.
      * @param closeIndicator
      */
-    void showBubble(boolean forward, @CloseTarget int closeIndicator) {
+    void showBubble(
+            boolean forward,
+            @BackGestureEventSwipeEdge int initiatingEdge,
+            @CloseTarget int closeIndicator) {
         if (mSideSlideLayout == null) {
             SideSlideLayout sideSlideLayout = createLayout();
             sideSlideLayout.setOnNavigationListener(
@@ -82,6 +88,7 @@ class HistoryNavigationLayout extends FrameLayout implements ViewGroup.OnHierarc
         }
         mSideSlideLayout.setEnabled(true);
         mSideSlideLayout.setDirection(forward);
+        mSideSlideLayout.setInitiatingEdge(initiatingEdge);
         mSideSlideLayout.setCloseIndicator(closeIndicator);
         attachLayoutIfNecessary();
         mSideSlideLayout.start();

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.gesturenav;
 
+import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
+
 import android.os.Build;
 import android.os.SystemClock;
 import android.view.MotionEvent;
@@ -29,6 +31,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
@@ -56,6 +59,7 @@ import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.base.UiAndroidFeatures;
 import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -95,6 +99,7 @@ public class NavigationHandlerTest {
     @After
     public void tearDown() {
         CompositorAnimationHandler.setTestingMode(false);
+        setRtlForTesting(false);
     }
 
     private Tab currentTab() {
@@ -124,6 +129,17 @@ public class NavigationHandlerTest {
                 "Detected a wrong direction.",
                 mNavigationHandler.getInitiatingEdge() == BackGestureEventSwipeEdge.LEFT,
                 edge);
+    }
+
+    /**
+     * Enter or exit the tab switcher with animations and wait for the scene to change.
+     *
+     * @param inSwitcher Whether to enter or exit the tab switcher.
+     */
+    private void setTabSwitcherModeAndWait(boolean inSwitcher) {
+        LayoutManager layoutManager = mActivityTestRule.getActivity().getLayoutManager();
+        @LayoutType int layout = inSwitcher ? LayoutType.TAB_SWITCHER : LayoutType.BROWSING;
+        LayoutTestUtils.startShowingAndWaitForLayout(layoutManager, layout, false);
     }
 
     @Test
@@ -474,14 +490,33 @@ public class NavigationHandlerTest {
                 ThreadUtils.runOnUiThreadBlockingNoException(mNavigationHandler::isActive));
     }
 
-    /**
-     * Enter or exit the tab switcher with animations and wait for the scene to change.
-     *
-     * @param inSwitcher Whether to enter or exit the tab switcher.
-     */
-    private void setTabSwitcherModeAndWait(boolean inSwitcher) {
-        LayoutManager layoutManager = mActivityTestRule.getActivity().getLayoutManager();
-        @LayoutType int layout = inSwitcher ? LayoutType.TAB_SWITCHER : LayoutType.BROWSING;
-        LayoutTestUtils.startShowingAndWaitForLayout(layoutManager, layout, false);
+    @Test
+    @SmallTest
+    @EnableFeatures({UiAndroidFeatures.MIRROR_BACK_FORWARD_GESTURES_IN_RTL})
+    public void testRtlUiMirrorsDirectionsWithFlagEnabled() {
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getContext());
+        mActivityTestRule.loadUrl(mTestServer.getURL(RENDERED_PAGE));
+        mActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+
+        setRtlForTesting(true);
+        assertNavigateOnSwipeFrom(RIGHT_EDGE, mTestServer.getURL(RENDERED_PAGE));
+        assertNavigateOnSwipeFrom(LEFT_EDGE, ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({UiAndroidFeatures.MIRROR_BACK_FORWARD_GESTURES_IN_RTL})
+    public void testRtlUiMirrorsDirectionsWithFlagDisabled() {
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getContext());
+        mActivityTestRule.loadUrl(mTestServer.getURL(RENDERED_PAGE));
+        mActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+
+        setRtlForTesting(true);
+        assertNavigateOnSwipeFrom(LEFT_EDGE, mTestServer.getURL(RENDERED_PAGE));
+        assertNavigateOnSwipeFrom(RIGHT_EDGE, ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
     }
 }

@@ -20,21 +20,21 @@ import android.view.animation.Transformation;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.gesturenav.NavigationBubble.CloseTarget;
 import org.chromium.ui.animation.EmptyAnimationListener;
+import org.chromium.ui.base.BackGestureEventSwipeEdge;
 import org.chromium.ui.interpolators.Interpolators;
 
 /**
- * The SideSlideLayout can be used whenever the user navigates the contents
- * of a view using horizontal gesture. Shows an arrow widget moving horizontally
- * in reaction to the gesture which, if goes over a threshold, triggers navigation.
- * The caller that instantiates this view should add an {@link #OnNavigateListener}
- * to be notified whenever the gesture is completed.
- * Based on {@link org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout}
- * and modified accordingly to support horizontal gesture.
+ * The SideSlideLayout can be used whenever the user navigates the contents of a view using
+ * horizontal gesture. Shows an arrow widget moving horizontally in reaction to the gesture which,
+ * if goes over a threshold, triggers navigation. The caller that instantiates this view should add
+ * an {@link #OnNavigateListener} to be notified whenever the gesture is completed. Based on {@link
+ * org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout} and modified accordingly to
+ * support horizontal gesture.
  */
 public class SideSlideLayout extends ViewGroup {
     /**
-     * Classes that wish to be notified when the swipe gesture correctly
-     * triggers navigation should implement this interface.
+     * Classes that wish to be notified when the swipe gesture correctly triggers navigation should
+     * implement this interface.
      */
     public interface OnNavigateListener {
         void onNavigate(boolean isForward);
@@ -107,6 +107,8 @@ public class SideSlideLayout extends ViewGroup {
 
     private boolean mIsForward;
     private @CloseTarget int mCloseIndicator;
+
+    private @BackGestureEventSwipeEdge int mInitiatingEdge;
 
     // True while swiped to a distance where, if released, the navigation would be triggered.
     private boolean mWillNavigate;
@@ -194,7 +196,9 @@ public class SideSlideLayout extends ViewGroup {
      * @return Absolute swipe distance from the starting edge.
      */
     float getOverscroll() {
-        return mIsForward ? -Math.min(0, mTotalMotion) : Math.max(0, mTotalMotion);
+        return mInitiatingEdge == BackGestureEventSwipeEdge.RIGHT
+                ? -Math.min(0, mTotalMotion)
+                : Math.max(0, mTotalMotion);
     }
 
     private void startHidingAnimation(AnimationListener listener) {
@@ -231,6 +235,10 @@ public class SideSlideLayout extends ViewGroup {
                 forward ? R.drawable.ic_arrow_forward_blue_24dp : R.drawable.ic_arrow_back_24dp);
     }
 
+    public void setInitiatingEdge(@BackGestureEventSwipeEdge int edge) {
+        mInitiatingEdge = edge;
+    }
+
     public void setCloseIndicator(@CloseTarget int target) {
         mCloseIndicator = target;
     }
@@ -258,7 +266,10 @@ public class SideSlideLayout extends ViewGroup {
     }
 
     private void initializeOffset() {
-        mOriginalOffset = mIsForward ? ((View) getParent()).getWidth() : -mArrowViewWidth;
+        mOriginalOffset =
+                mInitiatingEdge == BackGestureEventSwipeEdge.RIGHT
+                        ? ((View) getParent()).getWidth()
+                        : -mArrowViewWidth;
         mCurrentTargetOffset = mOriginalOffset;
     }
 
@@ -325,7 +336,11 @@ public class SideSlideLayout extends ViewGroup {
 
         float extraMove = slingshotDist * tensionPercent * 2;
         int targetDiff = (int) (slingshotDist * dragPercent + extraMove);
-        int targetX = mOriginalOffset + (mIsForward ? -targetDiff : targetDiff);
+        int targetX =
+                mOriginalOffset
+                        + (mInitiatingEdge == BackGestureEventSwipeEdge.RIGHT
+                                ? -targetDiff
+                                : targetDiff);
         setTargetOffsetLeftAndRight(targetX - mCurrentTargetOffset);
     }
 
