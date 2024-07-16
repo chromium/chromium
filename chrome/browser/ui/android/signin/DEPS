@@ -10,7 +10,4 @@ specific_include_rules = {
   : [
   "+content/public/android/java/src/org/chromium/content_public/browser/LoadUrlParams.java"
   ],
-  "SyncPromoController.java": [
-  "+chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/StartSurfaceConfiguration.java"
-  ],
 }

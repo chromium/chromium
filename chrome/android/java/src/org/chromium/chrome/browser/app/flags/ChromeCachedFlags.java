@@ -114,13 +114,7 @@ public class ChromeCachedFlags {
                         SearchActivity.SEARCH_IN_CCT_APPLY_REFERRER_ID,
                         ShoppingPersistedTabDataService
                                 .SKIP_SHOPPING_PERSISTED_TAB_DATA_DELAYED_INITIALIZATION,
-                        StartSurfaceConfiguration.IS_DOODLE_SUPPORTED,
                         StartSurfaceConfiguration.HOME_SURFACE_RETURN_TIME_SECONDS,
-                        StartSurfaceConfiguration.SIGNIN_PROMO_NTP_COUNT_LIMIT,
-                        StartSurfaceConfiguration
-                                .SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS,
-                        StartSurfaceConfiguration.SIGNIN_PROMO_NTP_RESET_AFTER_HOURS,
-                        StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB,
                         StartSurfaceConfiguration.LOGO_POLISH_LARGE_SIZE,
                         StartSurfaceConfiguration.LOGO_POLISH_MEDIUM_SIZE,
                         TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,

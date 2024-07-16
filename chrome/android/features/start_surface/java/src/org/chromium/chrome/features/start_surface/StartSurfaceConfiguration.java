@@ -20,42 +20,8 @@ import org.chromium.chrome.browser.logo.LogoUtils.LogoSizeForLogoPolish;
  */
 public class StartSurfaceConfiguration {
     private static final String TAG = "StartSurfaceConfig";
-    public static final BooleanCachedFieldTrialParameter
-            START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB =
-                    ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                            ChromeFeatureList.START_SURFACE_ANDROID,
-                            "hide_switch_when_no_incognito_tabs",
-                            true);
-
-    private static final String SIGNIN_PROMO_NTP_COUNT_LIMIT_PARAM = "signin_promo_NTP_count_limit";
-    public static final IntCachedFieldTrialParameter SIGNIN_PROMO_NTP_COUNT_LIMIT =
-            ChromeFeatureList.newIntCachedFieldTrialParameter(
-                    ChromeFeatureList.START_SURFACE_ANDROID, SIGNIN_PROMO_NTP_COUNT_LIMIT_PARAM, 5);
-
-    private static final String SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS_PARAM =
-            "signin_promo_NTP_since_first_time_shown_limit_hours";
-    public static final IntCachedFieldTrialParameter
-            SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS =
-                    ChromeFeatureList.newIntCachedFieldTrialParameter(
-                            ChromeFeatureList.START_SURFACE_ANDROID,
-                            SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS_PARAM,
-                            336);
-
-    private static final String SIGNIN_PROMO_NTP_RESET_AFTER_HOURS_PARAM =
-            "signin_promo_NTP_reset_after_hours";
-    public static final IntCachedFieldTrialParameter SIGNIN_PROMO_NTP_RESET_AFTER_HOURS =
-            ChromeFeatureList.newIntCachedFieldTrialParameter(
-                    ChromeFeatureList.START_SURFACE_ANDROID,
-                    SIGNIN_PROMO_NTP_RESET_AFTER_HOURS_PARAM,
-                    672);
-
-    private static final String IS_DOODLE_SUPPORTED_PARAM = "is_doodle_supported";
-    public static final BooleanCachedFieldTrialParameter IS_DOODLE_SUPPORTED =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.START_SURFACE_ANDROID, IS_DOODLE_SUPPORTED_PARAM, false);
 
     // Start return time experiment:
-
     // This parameter isn't just used on tablets anymore.
     public static final String HOME_SURFACE_RETURN_TIME_SECONDS_PARAM =
             "start_surface_return_time_on_tablet_seconds";

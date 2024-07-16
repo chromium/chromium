@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.widget.impression.ImpressionTracker;
 import org.chromium.components.browser_ui.widget.impression.OneShotImpressionListener;
 import org.chromium.components.prefs.PrefService;
@@ -116,6 +115,16 @@ public class SyncPromoController {
     private static final int NTP_SYNC_PROMO_INCREASE_SHOW_COUNT_AFTER_MINUTE = 30;
     private static final String SYNC_ANDROID_NTP_PROMO_MAX_IMPRESSIONS =
             "SyncAndroidNTPPromoMaxImpressions";
+
+    @VisibleForTesting static final int NTP_SYNC_PROMO_NTP_COUNT_LIMIT = 5;
+
+    @VisibleForTesting
+    static final int NTP_SYNC_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS =
+            336; // 14 days in hours.
+
+    @VisibleForTesting
+    static final int NTP_SYNC_PROMO_NTP_RESET_AFTER_HOURS = 672; // 28 days in hours.
+
     @VisibleForTesting static final String GMAIL_DOMAIN = "gmail.com";
 
     /** Strings used for promo shown count histograms. */
@@ -150,14 +159,13 @@ public class SyncPromoController {
                 ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)) {
             return NTP_SYNC_PROMO_RESET_AFTER_DAY * DateUtils.DAY_IN_MILLIS;
         }
-        return StartSurfaceConfiguration.SIGNIN_PROMO_NTP_RESET_AFTER_HOURS.getValue()
-                * DateUtils.HOUR_IN_MILLIS;
+        return NTP_SYNC_PROMO_NTP_RESET_AFTER_HOURS * DateUtils.HOUR_IN_MILLIS;
     }
 
     /**
      * If the signin promo card has been hidden for longer than the {@link
-     * StartSurfaceConfiguration#SIGNIN_PROMO_NTP_RESET_AFTER_HOURS}, resets the impression counts,
-     * {@link ChromePreferenceKeys#SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME} and {@link
+     * NTP_SYNC_PROMO_NTP_RESET_AFTER_HOURS}, resets the impression counts, {@link
+     * ChromePreferenceKeys#SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME} and {@link
      * ChromePreferenceKeys#SIGNIN_PROMO_NTP_LAST_SHOWN_TIME} to allow the promo card to show again.
      */
     public static void resetNtpSyncPromoLimitsIfHiddenForTooLong() {
@@ -182,9 +190,7 @@ public class SyncPromoController {
 
     private static boolean timeElapsedSinceFirstShownExceedsLimit() {
         final long timeSinceFirstShownLimitMs =
-                StartSurfaceConfiguration.SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS
-                                .getValue()
-                        * DateUtils.HOUR_IN_MILLIS;
+                NTP_SYNC_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS * DateUtils.HOUR_IN_MILLIS;
         if (timeSinceFirstShownLimitMs <= 0) return false;
 
         final long currentTime = System.currentTimeMillis();
@@ -202,7 +208,7 @@ public class SyncPromoController {
                     SYNC_ANDROID_NTP_PROMO_MAX_IMPRESSIONS,
                     5);
         }
-        return StartSurfaceConfiguration.SIGNIN_PROMO_NTP_COUNT_LIMIT.getValue();
+        return NTP_SYNC_PROMO_NTP_COUNT_LIMIT;
     }
 
     private static boolean canShowSettingsPromo() {
