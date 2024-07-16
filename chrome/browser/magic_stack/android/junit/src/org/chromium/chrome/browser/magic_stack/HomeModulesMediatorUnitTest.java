@@ -850,7 +850,8 @@ public class HomeModulesMediatorUnitTest {
                     scores[i],
                     inputContext.getEntryForTesting(
                                     HomeModulesMetricsUtils.getFreshnessInputContextString(i))
-                            .intValue);
+                            .floatValue,
+                    0.01);
         }
     }
 
@@ -861,7 +862,8 @@ public class HomeModulesMediatorUnitTest {
                     INVALID_FRESHNESS_SCORE,
                     inputContext.getEntryForTesting(
                                     HomeModulesMetricsUtils.getFreshnessInputContextString(i))
-                            .intValue);
+                            .floatValue,
+                    0.01);
         }
     }
 }

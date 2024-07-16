@@ -210,7 +210,8 @@ std::unique_ptr<Config> AndroidHomeModuleRanker::GetConfig() {
   config->segmentation_key = kAndroidHomeModuleRankerKey;
   config->segmentation_uma_name = kAndroidHomeModuleRankerUmaName;
   config->AddSegmentId(kSegmentId, std::make_unique<AndroidHomeModuleRanker>());
-  config->auto_execute_and_cache = true;
+  config->auto_execute_and_cache = !base::FeatureList::IsEnabled(
+      features::kSegmentationPlatformAndroidHomeModuleRankerV2);
   return config;
 }
 

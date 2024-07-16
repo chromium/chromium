@@ -641,7 +641,7 @@ public class HomeModulesMediator {
         for (@ModuleType int moduleType = 0; moduleType < ModuleType.NUM_ENTRIES; moduleType++) {
             inputContext.addEntry(
                     HomeModulesMetricsUtils.getFreshnessInputContextString(moduleType),
-                    ProcessedValue.fromInt(
+                    ProcessedValue.fromFloat(
                             getFreshnessScore(isHomeModuleRankerV2Enabled(), moduleType)));
         }
 
