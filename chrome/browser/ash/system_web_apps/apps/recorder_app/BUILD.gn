@@ -30,5 +30,6 @@ static_library("recorder_app") {
     "//chromeos/strings",
     "//components/soda",
     "//components/soda:utils",
+    "//url",
   ]
 }

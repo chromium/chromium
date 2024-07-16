@@ -372,6 +372,11 @@ void RecorderAppUI::LoadSpeechRecognizer(
           std::move(callback)));
 }
 
+void RecorderAppUI::OpenAiFeedbackDialog(
+    const std::string& description_template) {
+  delegate_->OpenAiFeedbackDialog(description_template);
+}
+
 WEB_UI_CONTROLLER_TYPE_IMPL(RecorderAppUI)
 
 }  // namespace ash

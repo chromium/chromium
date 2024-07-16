@@ -158,4 +158,8 @@ export class PlatformHandler extends PlatformHandlerBase {
   override handleUncaughtError(_error: unknown): RenderResult|null {
     return null;
   }
+
+  override showAiFeedbackDialog(description: string): void {
+    this.remote.openAiFeedbackDialog(description);
+  }
 }

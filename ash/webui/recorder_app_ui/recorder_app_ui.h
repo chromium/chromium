@@ -108,6 +108,8 @@ class RecorderAppUI
       ::mojo::PendingRemote<recorder_app::mojom::ModelStateMonitor> monitor,
       AddSodaMonitorCallback callback) override;
 
+  void OpenAiFeedbackDialog(const std::string& description_template) override;
+
   // speech::SodaInstaller::Observer:
   void OnSodaInstalled(speech::LanguageCode language_code) override;
 

@@ -177,4 +177,9 @@ export abstract class PlatformHandler {
    * handler.
    */
   abstract handleUncaughtError(error: unknown): RenderResult|null;
+
+  /**
+   * Shows feedback dialog for AI with the given description pre-filled.
+   */
+  abstract showAiFeedbackDialog(description: string): void;
 }

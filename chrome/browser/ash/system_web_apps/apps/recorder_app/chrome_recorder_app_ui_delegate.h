@@ -15,14 +15,19 @@
  */
 class ChromeRecorderAppUIDelegate : public ash::RecorderAppUIDelegate {
  public:
-  explicit ChromeRecorderAppUIDelegate(content::WebUI* webui);
+  explicit ChromeRecorderAppUIDelegate(content::WebUI* web_ui);
 
   ChromeRecorderAppUIDelegate(const ChromeRecorderAppUIDelegate&) = delete;
   ChromeRecorderAppUIDelegate& operator=(const ChromeRecorderAppUIDelegate&) =
       delete;
 
   // ash::RecorderAppUIDelegate
-  void InstallSoda(speech::LanguageCode languageCode) override;
+  void InstallSoda(speech::LanguageCode language_code) override;
+
+  void OpenAiFeedbackDialog(const std::string& description_template) override;
+
+ private:
+  raw_ptr<content::WebUI> web_ui_;  // Owns |this|.
 };
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_RECORDER_APP_CHROME_RECORDER_APP_UI_DELEGATE_H_

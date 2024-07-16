@@ -374,4 +374,9 @@ export class PlatformHandler extends PlatformHandlerBase {
     }
     return null;
   }
+
+  override showAiFeedbackDialog(description: string): void {
+    console.log('Feedback report dialog requested: ', description);
+    window.prompt('fake AI feedback dialog', description);
+  }
 }

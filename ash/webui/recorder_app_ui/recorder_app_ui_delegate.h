@@ -12,7 +12,10 @@ namespace ash {
 // app ui page handler.
 class RecorderAppUIDelegate {
  public:
-  virtual void InstallSoda(speech::LanguageCode languageCode) = 0;
+  virtual void InstallSoda(speech::LanguageCode language_code) = 0;
+
+  virtual void OpenAiFeedbackDialog(
+      const std::string& description_template) = 0;
 
   virtual ~RecorderAppUIDelegate() = default;
 };

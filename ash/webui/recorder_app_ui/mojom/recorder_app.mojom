@@ -93,4 +93,8 @@ interface PageHandler {
       pending_receiver<chromeos.machine_learning.mojom.SodaRecognizer>
           soda_recognizer)
       => (bool result);
+
+  // Opens the chrome feedback dialog for AI and show `description_template` in
+  // the description field.
+  OpenAiFeedbackDialog(string description_template);
 };
