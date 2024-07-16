@@ -9392,9 +9392,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20231115",
+                    "name": "Enabled_20240711",
                     "params": {
                         "pwa-companion-app-id": "ckdjfcfapbgminighllemapmpdlpihia",
+                        "pwa-companion-device-ids": "08A97F,5A36A5,6EDAF7,9ADB11,A7D7A0,C8E228,D87A3E,F2020E,F58DE7,30346C,7862CE,C193F7,05D40E,02FC97,AB442D,FB19ED,C55C79,2EE57B",
                         "pwa-companion-install-uri": "https://mypixelbuds.google.com/",
                         "pwa-companion-play-store-uri": "https://play.google.com/store/apps/details?id=com.google.android.apps.wearables.maestro.companion"
                     },
@@ -9403,9 +9404,10 @@
                     ]
                 },
                 {
-                    "name": "Enabled_20231115_Dogfood",
+                    "name": "Enabled_20240711_Dogfood",
                     "params": {
                         "pwa-companion-app-id": "ckdjfcfapbgminighllemapmpdlpihia",
+                        "pwa-companion-device-ids": "08A97F,5A36A5,6EDAF7,9ADB11,A7D7A0,C8E228,D87A3E,F2020E,F58DE7,30346C,7862CE,C193F7,05D40E,02FC97,AB442D,FB19ED,C55C79,2EE57B",
                         "pwa-companion-install-uri": "https://mypixelbuds.google.com/",
                         "pwa-companion-play-store-uri": "https://play.google.com/store/apps/details?id=com.google.android.apps.wearables.maestro.companion"
                     },
@@ -9417,6 +9419,7 @@
                     "name": "EnabledWithStagingLinks_Dogfood",
                     "params": {
                         "pwa-companion-app-id": "kncedjianpafagdchkiinagaaokkhpaa",
+                        "pwa-companion-device-ids": "08A97F,5A36A5,6EDAF7,9ADB11,A7D7A0,C8E228,D87A3E,F2020E,F58DE7,30346C,7862CE,C193F7,05D40E,02FC97,AB442D,FB19ED,C55C79,2EE57B",
                         "pwa-companion-install-uri": "https://mypixelbuds-preprod.corp.google.com/",
                         "pwa-companion-play-store-uri": "https://play.google.com/store/apps/details?id=com.google.android.apps.wearables.maestro.companion"
                     },
