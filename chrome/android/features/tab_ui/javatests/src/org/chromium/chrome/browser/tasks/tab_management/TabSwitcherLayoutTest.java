@@ -869,6 +869,7 @@ public class TabSwitcherLayoutTest {
         ChromeFeatureList.TAB_GROUP_PANE_ANDROID,
         ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
     })
+    @DisabledTest(message = "crbug.com/353463207")
     public void testTabGroupOverflowMenuInTabSwitcher_deleteGroupDecline() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
