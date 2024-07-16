@@ -1287,6 +1287,9 @@ bool VASupportedProfiles::FillProfileInfo_Locked(
     LOG(ERROR) << "Can't get the maximum number of config attributes";
     return false;
   }
+  const bool is_mesa_gallium = VaapiWrapper::GetImplementationType() ==
+                               media::VAImplementation::kMesaGallium;
+
   std::vector<VAConfigAttrib> config_attributes(max_num_config_attributes);
   int num_config_attributes;
   va_res = vaQueryConfigAttributes(va_display, va_config_id, &va_profile,
@@ -1303,7 +1306,10 @@ bool VASupportedProfiles::FillProfileInfo_Locked(
       profile_info->supported_internal_formats.yuv420_10 = true;
     if (attrib.value & VA_RT_FORMAT_YUV422)
       profile_info->supported_internal_formats.yuv422 = true;
-    if (attrib.value & VA_RT_FORMAT_YUV444)
+    // The Mesa Gallium backend doesn't support converting YUV 4:4:4 surfaces to
+    // any VAImage fourcc that we care about, so don't VA_RT_FORMAT_YUV444 on
+    // that driver.
+    if ((attrib.value & VA_RT_FORMAT_YUV444) && !is_mesa_gallium)
       profile_info->supported_internal_formats.yuv444 = true;
     break;
   }
