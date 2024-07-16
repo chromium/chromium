@@ -11,7 +11,7 @@ requestWillBeSent[
         redirectHasExtraInfo : false
         request : {
             headers : {
-                Accept-Language : en-us
+                Accept-Language : en-us,en;q=0.9
                 Upgrade-Insecure-Requests : 1
                 User-Agent : <string>
                 sec-ch-ua : "content_shell";v="999"
@@ -44,7 +44,7 @@ requestWillBeSent[
         redirectHasExtraInfo : false
         request : {
             headers : {
-                Accept-Language : en-us
+                Accept-Language : en-us,en;q=0.9
                 Referer : http://127.0.0.1:8000/inspector-protocol/network/resources/page-with-webbundle.html
                 User-Agent : <string>
                 sec-ch-ua : "content_shell";v="999"

@@ -53,6 +53,8 @@ PLATFORM_EXPORT bool IsRedirectResponseCode(int);
 
 PLATFORM_EXPORT bool IsCertificateTransparencyRequiredError(int);
 
+PLATFORM_EXPORT WTF::String ExpandLanguageList(const WTF::String&);
+
 PLATFORM_EXPORT WTF::String GenerateAcceptLanguageHeader(const WTF::String&);
 
 PLATFORM_EXPORT Vector<char> ParseMultipartBoundary(

@@ -1,7 +1,7 @@
 Tests overridden headers don't stick across redirects
 Redirected request headers:{
     Accept : */*
-    Accept-Language : en-us
+    Accept-Language : en-us,en;q=0.9
     Referer : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
     User-Agent : <string>
 }

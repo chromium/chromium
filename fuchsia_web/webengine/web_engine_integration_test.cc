@@ -405,7 +405,7 @@ TEST_F(WebEngineIntegrationReduceAcceptLanguageTest, ReduceAcceptLanguage) {
   // expected.
   std::string result =
       ExecuteJavaScriptWithStringResult("document.body.innerText;");
-  EXPECT_EQ(result, "en-US");
+  EXPECT_EQ(result, "en-US,en;q=0.9");
 
   // Query & verify that the navigator.languages is as expected.
   EXPECT_THAT(GetNavigatorLanguages(), testing::ElementsAre("en-US"));

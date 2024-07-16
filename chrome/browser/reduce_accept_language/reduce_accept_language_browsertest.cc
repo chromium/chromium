@@ -593,7 +593,8 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   SetPrefsAcceptLanguage(base::SplitString(
       kLargeLanguages, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL));
   // Expect accept-language set as the negotiation language.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "en-US");
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(),
+                                               "en-US,en;q=0.9");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // same_origin_request_url request has two fetch Prefs requests: one fetch
@@ -611,7 +612,8 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
 
   // Even Script disabled, it still expects reduced accept-language. The second
   // navigation should use the language after negotiation which is en-US.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "en-US");
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(),
+                                               "en-US,en;q=0.9");
 }
 
 IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
@@ -739,7 +741,8 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   SetPrefsAcceptLanguage({"zh", "en-US"});
 
   // Expect accept-language set as negotiated language: en-US.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "en-US");
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(),
+                                               "en-US,en;q=0.9");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // Ensure only restart once.
@@ -760,7 +763,8 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
 
   // The second request should send out with the first matched negotiation
   // language en-US instead of ja.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "en-US");
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(),
+                                               "en-US,en;q=0.9");
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // Ensure no restart happen.
   histograms_after.ExpectBucketCount(
@@ -788,7 +792,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   base::HistogramTester histograms;
   // Expect accept-language set as negotiated language: en-US.
   NavigateAndVerifyAcceptLanguageOfLastRequest(CreateServiceWorkerRequestUrl(),
-                                               "en-US");
+                                               "en-US,en;q=0.9");
   // Register a service worker that uses navigation preload.
   EXPECT_EQ("DONE", EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                            "register('/navigation_preload_worker.js', '/');"));
@@ -810,7 +814,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
       {CreateServiceWorkerRequestUrl(), NavigationPreloadWorkerRequestUrl()});
 
   NavigateAndVerifyAcceptLanguageOfLastRequest(CreateServiceWorkerRequestUrl(),
-                                               "en-US");
+                                               "en-US,en;q=0.9");
   EXPECT_TRUE(HasReceivedHeader("Service-Worker-Navigation-Preload"));
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
@@ -836,7 +840,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
       {CreateServiceWorkerRequestUrl(), NavigationPreloadWorkerRequestUrl()});
 
   NavigateAndVerifyAcceptLanguageOfLastRequest(CreateServiceWorkerRequestUrl(),
-                                               "en-US");
+                                               "en-US,en;q=0.9");
   EXPECT_TRUE(HasReceivedHeader("Service-Worker-Navigation-Preload"));
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
@@ -917,7 +921,8 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   SetPrefsAcceptLanguage({"zh", "en-US", "ja"});
 
   // Expect accept-language set as negotiated language: en-US.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "en-US");
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(),
+                                               "en-US,en;q=0.9");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // Ensure only restart once.
@@ -938,7 +943,8 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
 
   // The second request should send out with the first matched negotiation
   // language en-US instead of ja.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "en-US");
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(),
+                                               "en-US,en;q=0.9");
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // Ensure no restart happen.
   histograms_after.ExpectBucketCount(
@@ -993,7 +999,8 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
 
   SetPrefsAcceptLanguage({"zh", "en-US"});
   // The second request should send out with the new negotiated language en-US.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "en-US");
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(),
+                                               "en-US,en;q=0.9");
 
   base::HistogramTester histograms;
   SetPrefsAcceptLanguage({"zh"});
@@ -1021,7 +1028,8 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
       kLargeLanguages, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL));
 
   // Iframe request expect to be the language after language negotiation.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(), "en-US");
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(),
+                                               "en-US,en;q=0.9");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // Ensure restart happen once.
@@ -1046,7 +1054,8 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
 
   // Even Script disabled, it still expects reduced accept-language. The second
   // navigation should use the language after negotiation which is en-US.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(), "en-US");
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(),
+                                               "en-US,en;q=0.9");
   EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
 }
 
@@ -1066,7 +1075,8 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
 
   // Subresource img request expect to be the language after language
   // negotiation.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginImgUrl(), "en-US");
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginImgUrl(),
+                                               "en-US,en;q=0.9");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // Ensure restart happen once.
@@ -1098,7 +1108,8 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   SetPrefsAcceptLanguage({"zh", "en-US"});
 
   // Iframe request expect to be the language after language negotiation.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(), "en-US");
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(),
+                                               "en-US,en;q=0.9");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // Ensure restart happen once.
@@ -1131,7 +1142,8 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   SetPrefsAcceptLanguage({"zh", "en-US"});
 
   // Iframe request expect to be the language after language negotiation.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(), "en-US");
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(),
+                                               "en-US,en;q=0.9");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // Ensure restart happen once.
@@ -1164,7 +1176,8 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   SetPrefsAcceptLanguage({"zh", "en-US"});
 
   // Iframe request expect to be the language after language negotiation.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(), "en-US");
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(),
+                                               "en-US,en;q=0.9");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // Ensure restart happen once.
@@ -1197,7 +1210,8 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   SetPrefsAcceptLanguage({"zh", "en-US"});
 
   // Iframe request expect to be the language after language negotiation.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(), "en-US");
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(),
+                                               "en-US,en;q=0.9");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // Ensure restart happen once.
@@ -1286,7 +1300,8 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageBrowserTest,
 
   // Third party iframe subrequest expect to be the language of the main frame
   // after language negotiation.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(CrossOriginIframeUrl(), "en-US");
+  NavigateAndVerifyAcceptLanguageOfLastRequest(CrossOriginIframeUrl(),
+                                               "en-US,en;q=0.9");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // Ensure restart happen once.
@@ -1323,7 +1338,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageBrowserTest,
   // Third party iframe subrequest expect to be the language of the main frame
   // after language negotiation.
   NavigateAndVerifyAcceptLanguageOfLastRequest(
-      CrossOriginIframeWithSubresourceUrl(), "en-US");
+      CrossOriginIframeWithSubresourceUrl(), "en-US,en;q=0.9");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // Ensure restart happen once.
@@ -1361,7 +1376,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageBrowserTest,
   // It still expected an accept-language header has the reduced value even the
   // final url is a css style document,
   NavigateAndVerifyAcceptLanguageOfLastRequest(TopLevelWithIframeRedirectUrl(),
-                                               "en-US");
+                                               "en-US,en;q=0.9");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // Ensure restart happen once.
@@ -1647,9 +1662,10 @@ IN_PROC_BROWSER_TEST_F(SameOriginRedirectReduceAcceptLanguageBrowserTest,
   // language negotiation.
   // 3. initial request to B(/ja) with the language matches the expected
   // accept-language.
-  VerifyURLAndAcceptLanguageSequence({{same_origin_redirect().spec(), "zh-CN"},
-                                      {same_origin_redirect().spec(), "ja"},
-                                      {same_origin_redirect_b().spec(), "ja"}});
+  VerifyURLAndAcceptLanguageSequence(
+      {{same_origin_redirect().spec(), "zh-CN,zh;q=0.9"},
+       {same_origin_redirect().spec(), "ja"},
+       {same_origin_redirect_b().spec(), "ja"}});
 }
 
 // Browser tests verify redirect cross origin A to B with different cases.
@@ -1804,9 +1820,9 @@ IN_PROC_BROWSER_TEST_F(CrossOriginRedirectReduceAcceptLanguageBrowserTest,
   // 2. restart request to A with the persisted language zh.
   // 3. initial request to B with the first user accept-language en-US.
   VerifyURLAndAcceptLanguageSequence(
-      {{cross_origin_redirect_a().spec(), "en-US"},
+      {{cross_origin_redirect_a().spec(), "en-US,en;q=0.9"},
        {cross_origin_redirect_a().spec(), "zh"},
-       {cross_origin_redirect_b().spec(), "en-US"}});
+       {cross_origin_redirect_b().spec(), "en-US,en;q=0.9"}});
 
   ResetURLAndAcceptLanguageSequence();
 
@@ -1815,7 +1831,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginRedirectReduceAcceptLanguageBrowserTest,
       ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
   VerifyURLAndAcceptLanguageSequence(
       {{cross_origin_redirect_a().spec(), "zh"},
-       {cross_origin_redirect_b().spec(), "en-US"}});
+       {cross_origin_redirect_b().spec(), "en-US,en;q=0.9"}});
 }
 
 IN_PROC_BROWSER_TEST_F(CrossOriginRedirectReduceAcceptLanguageBrowserTest,
@@ -1833,9 +1849,9 @@ IN_PROC_BROWSER_TEST_F(CrossOriginRedirectReduceAcceptLanguageBrowserTest,
   // 3. restart request to A with first user accept-language en-US.
   // 4. restart request to B with the persisted language zh.
   VerifyURLAndAcceptLanguageSequence(
-      {{cross_origin_redirect_a().spec(), "en-US"},
-       {cross_origin_redirect_b().spec(), "en-US"},
-       {cross_origin_redirect_a().spec(), "en-US"},
+      {{cross_origin_redirect_a().spec(), "en-US,en;q=0.9"},
+       {cross_origin_redirect_b().spec(), "en-US,en;q=0.9"},
+       {cross_origin_redirect_a().spec(), "en-US,en;q=0.9"},
        {cross_origin_redirect_b().spec(), "zh"}});
 
   ResetURLAndAcceptLanguageSequence();
@@ -1844,7 +1860,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginRedirectReduceAcceptLanguageBrowserTest,
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
   VerifyURLAndAcceptLanguageSequence(
-      {{cross_origin_redirect_a().spec(), "en-US"},
+      {{cross_origin_redirect_a().spec(), "en-US,en;q=0.9"},
        {cross_origin_redirect_b().spec(), "zh"}});
 }
 
@@ -1865,9 +1881,9 @@ IN_PROC_BROWSER_TEST_F(CrossOriginRedirectReduceAcceptLanguageBrowserTest,
   // language zh.
   // 5. restart request to B with the persisted language zh.
   VerifyURLAndAcceptLanguageSequence(
-      {{cross_origin_redirect_a().spec(), "en-US"},
+      {{cross_origin_redirect_a().spec(), "en-US,en;q=0.9"},
        {cross_origin_redirect_a().spec(), "zh"},
-       {cross_origin_redirect_b().spec(), "en-US"},
+       {cross_origin_redirect_b().spec(), "en-US,en;q=0.9"},
        {cross_origin_redirect_a().spec(), "zh"},
        {cross_origin_redirect_b().spec(), "zh"}});
 
@@ -2026,7 +2042,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginRedirectReduceAcceptLanguageOTBrowserTest,
   // 3. initial request to B(/ja) with the language matches the expected
   // accept-language.
   VerifyURLAndAcceptLanguageSequence(
-      {{same_origin_redirect().spec(), "zh-CN"},
+      {{same_origin_redirect().spec(), "zh-CN,zh;q=0.9"},
        {same_origin_redirect().spec(), "ja"},
        {same_origin_redirect_b().spec(), "ja"}},
       "Verifying the first request sequence failed in matching non-primary "
@@ -2066,7 +2082,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginRedirectReduceAcceptLanguageOTBrowserTest,
   // accept-language.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), same_origin_redirect()));
   VerifyURLAndAcceptLanguageSequence(
-      {{same_origin_redirect().spec(), "zh-CN"},
+      {{same_origin_redirect().spec(), "zh-CN,zh;q=0.9"},
        {same_origin_redirect().spec(), "ja"},
        {same_origin_redirect_b().spec(), "ja"}},
       "Verifying the fourth request sequence failed in matching non-primary "
@@ -2203,9 +2219,9 @@ IN_PROC_BROWSER_TEST_F(CrossOriginRedirectReduceAcceptLanguageOTBrowserTest,
   // 2. restart request to A with the persisted language zh.
   // 3. initial request to B with reduced user accept-language en-US.
   VerifyURLAndAcceptLanguageSequence(
-      {{cross_origin_redirect_a().spec(), "en-US"},
+      {{cross_origin_redirect_a().spec(), "en-US,en;q=0.9"},
        {cross_origin_redirect_a().spec(), "zh"},
-       {cross_origin_redirect_b().spec(), "en-US"}},
+       {cross_origin_redirect_b().spec(), "en-US,en;q=0.9"}},
       "Verifying RestartOnA the first request sequence failed.");
 
   ResetURLAndAcceptLanguageSequence();
@@ -2217,7 +2233,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginRedirectReduceAcceptLanguageOTBrowserTest,
       ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
   VerifyURLAndAcceptLanguageSequence(
       {{cross_origin_redirect_a().spec(), "zh"},
-       {cross_origin_redirect_b().spec(), "en-US"}},
+       {cross_origin_redirect_b().spec(), "en-US,en;q=0.9"}},
       "Verifying RestartOnA the second request sequence failed.");
 
   // Set A opt-out the deprecation origin trial.
@@ -2233,7 +2249,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginRedirectReduceAcceptLanguageOTBrowserTest,
       ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
   VerifyURLAndAcceptLanguageSequence(
       {{cross_origin_redirect_a().spec(), "zh"},
-       {cross_origin_redirect_b().spec(), "en-US"}},
+       {cross_origin_redirect_b().spec(), "en-US,en;q=0.9"}},
       "Verifying RestartOnA the third request sequence failed.");
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histograms.ExpectTotalCount("ReduceAcceptLanguage.ClearLatency", 0);
@@ -2244,7 +2260,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginRedirectReduceAcceptLanguageOTBrowserTest,
       ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
   VerifyURLAndAcceptLanguageSequence(
       {{cross_origin_redirect_a().spec(), "zh"},
-       {cross_origin_redirect_b().spec(), "en-US"}},
+       {cross_origin_redirect_b().spec(), "en-US,en;q=0.9"}},
       "Verifying RestartOnA the fourth request sequence failed.");
 }
 
@@ -2271,9 +2287,9 @@ IN_PROC_BROWSER_TEST_F(CrossOriginRedirectReduceAcceptLanguageOTBrowserTest,
   // 3. restart request to A still sends the reduced accept-language.
   // 4. restart request to B with the persisted language zh.
   VerifyURLAndAcceptLanguageSequence(
-      {{cross_origin_redirect_a().spec(), "en-US"},
-       {cross_origin_redirect_b().spec(), "en-US"},
-       {cross_origin_redirect_a().spec(), "en-US"},
+      {{cross_origin_redirect_a().spec(), "en-US,en;q=0.9"},
+       {cross_origin_redirect_b().spec(), "en-US,en;q=0.9"},
+       {cross_origin_redirect_a().spec(), "en-US,en;q=0.9"},
        {cross_origin_redirect_b().spec(), "zh"}},
       "Verifying RestartOnB the first request sequence failed.");
 
@@ -2283,7 +2299,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginRedirectReduceAcceptLanguageOTBrowserTest,
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
   VerifyURLAndAcceptLanguageSequence(
-      {{cross_origin_redirect_a().spec(), "en-US"},
+      {{cross_origin_redirect_a().spec(), "en-US,en;q=0.9"},
        {cross_origin_redirect_b().spec(), "en-US,en;q=0.9,zh;q=0.8"}},
       "Verifying RestartOnB the second request sequence failed.");
 
@@ -2296,7 +2312,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginRedirectReduceAcceptLanguageOTBrowserTest,
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
   VerifyURLAndAcceptLanguageSequence(
-      {{cross_origin_redirect_a().spec(), "en-US"},
+      {{cross_origin_redirect_a().spec(), "en-US,en;q=0.9"},
        {cross_origin_redirect_b().spec(), "en-US,en;q=0.9,zh;q=0.8"}},
       "Verifying RestartOnB the third request sequence failed.");
 
@@ -2307,9 +2323,9 @@ IN_PROC_BROWSER_TEST_F(CrossOriginRedirectReduceAcceptLanguageOTBrowserTest,
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
   VerifyURLAndAcceptLanguageSequence(
-      {{cross_origin_redirect_a().spec(), "en-US"},
-       {cross_origin_redirect_b().spec(), "en-US"},
-       {cross_origin_redirect_a().spec(), "en-US"},
+      {{cross_origin_redirect_a().spec(), "en-US,en;q=0.9"},
+       {cross_origin_redirect_b().spec(), "en-US,en;q=0.9"},
+       {cross_origin_redirect_a().spec(), "en-US,en;q=0.9"},
        {cross_origin_redirect_b().spec(), "zh"}},
       "Verifying RestartOnB the fourth request sequence failed.");
 }
@@ -2338,9 +2354,9 @@ IN_PROC_BROWSER_TEST_F(CrossOriginRedirectReduceAcceptLanguageOTBrowserTest,
   // language zh.
   // 5. restart request to B with the persisted language zh.
   VerifyURLAndAcceptLanguageSequence(
-      {{cross_origin_redirect_a().spec(), "en-US"},
+      {{cross_origin_redirect_a().spec(), "en-US,en;q=0.9"},
        {cross_origin_redirect_a().spec(), "zh"},
-       {cross_origin_redirect_b().spec(), "en-US"},
+       {cross_origin_redirect_b().spec(), "en-US,en;q=0.9"},
        {cross_origin_redirect_a().spec(), "zh"},
        {cross_origin_redirect_b().spec(), "zh"}},
       "Verifying the first request sequence failed.");
@@ -2399,7 +2415,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginRedirectReduceAcceptLanguageOTBrowserTest,
       ui_test_utils::NavigateToURL(browser(), cross_origin_redirect_a()));
   VerifyURLAndAcceptLanguageSequence(
       {{cross_origin_redirect_a().spec(), "zh"},
-       {cross_origin_redirect_b().spec(), "en-US"},
+       {cross_origin_redirect_b().spec(), "en-US,en;q=0.9"},
        {cross_origin_redirect_a().spec(), "zh"},
        {cross_origin_redirect_b().spec(), "zh"}},
       "Verifying RestartOnA the fourth request sequence failed.");
@@ -2543,8 +2559,9 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageDeprecationOTBrowserTest,
   SetPrefsAcceptLanguage({"zh", "en-US"});
 
   // First request restarts and send Accept-Language with negotiated language:
-  // en-US, the deprecation origin trial doesn't apply to the first request.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "en-US");
+  // en-us, the deprecation origin trial doesn't apply to the first request.
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(),
+                                               "en-US,en;q=0.9");
   // Ensure only restart once.
   histograms.ExpectBucketCount(
       "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
@@ -2562,7 +2579,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageDeprecationOTBrowserTest,
                                    /*expect_store_count=*/0);
   // Verify requests after invalid token will continue send the reduced
   // accept-language.
-  VerifySameOriginTwoRequestsAfterTokenInvalid("en-US");
+  VerifySameOriginTwoRequestsAfterTokenInvalid("en-US,en;q=0.9");
 }
 
 IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageDeprecationOTBrowserTest,
@@ -2593,7 +2610,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageDeprecationOTBrowserTest,
                                    /*expect_store_count=*/0);
   // Verify requests after invalid token will continue to send the reduced
   // accept-language.
-  VerifySameOriginTwoRequestsAfterTokenInvalid("en-US");
+  VerifySameOriginTwoRequestsAfterTokenInvalid("en-US,en;q=0.9");
 }
 
 IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageDeprecationOTBrowserTest,
@@ -2655,7 +2672,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageDeprecationOTBrowserTest,
       /*expect_fetch_count=*/2,
       /*expect_opt_in_fq_language=*/std::nullopt,
       /*expect_opt_out_fq_language=*/"zh",
-      /*expect_reduced_accept_language=*/"en-US");
+      /*expect_reduced_accept_language=*/"en-US,en;q=0.9");
 }
 
 IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageDeprecationOTBrowserTest,
@@ -2683,8 +2700,8 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageDeprecationOTBrowserTest,
       /*expect_restart_count=*/1,
       /*expect_fetch_count=*/1,
       /*expect_opt_in_fq_language=*/std::nullopt,
-      /*expect_opt_out_fq_language=*/"en-US",
-      /*expect_reduced_accept_language=*/"en-US");
+      /*expect_opt_out_fq_language=*/"en-US,en;q=0.9",
+      /*expect_reduced_accept_language=*/"en-US,en;q=0.9");
 }
 
 IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageDeprecationOTBrowserTest,
@@ -2765,7 +2782,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageDeprecationOTBrowserTest,
       /*expect_fetch_count=*/2,
       /*expect_opt_in_fq_language=*/std::nullopt,
       /*expect_opt_out_fq_language=*/std::nullopt,
-      /*expect_reduced_accept_language=*/"en-US");
+      /*expect_reduced_accept_language=*/"en-US,en;q=0.9");
 }
 
 IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageDeprecationOTBrowserTest,
@@ -2792,7 +2809,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageDeprecationOTBrowserTest,
       /*expect_fetch_count=*/1,
       /*expect_opt_in_fq_language=*/std::nullopt,
       /*expect_opt_out_fq_language=*/std::nullopt,
-      /*expect_reduced_accept_language=*/"en-US");
+      /*expect_reduced_accept_language=*/"en-US,en;q=0.9");
 }
 
 IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageDeprecationOTBrowserTest,
@@ -2868,7 +2885,8 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageDeprecationOTBrowserTest,
 
   // The first third-party iframe subrequest expect continue to send reduced
   // Accept-Language which is inherited from the top-level frame request.
-  NavigateAndVerifyAcceptLanguageOfLastRequest(CrossOriginIframeUrl(), "en-US");
+  NavigateAndVerifyAcceptLanguageOfLastRequest(CrossOriginIframeUrl(),
+                                               "en-US,en;q=0.9");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // Ensure only one restart to do the language negotiation.

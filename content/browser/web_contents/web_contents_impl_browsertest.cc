@@ -2810,7 +2810,7 @@ class WebContentsImplBrowserTestReduceAcceptLanguageOn
           if (request.relative_url.compare("/empty.html") == 0) {
             // Default mock user language is "en-us,en", see
             // content/shell/browser/shell_content_browser_client.h
-            ASSERT_EQ(request.headers.at("Accept-Language"), "en-us");
+            ASSERT_EQ(request.headers.at("Accept-Language"), "en-us,en;q=0.9");
             run_loop->Quit();
           }
         },

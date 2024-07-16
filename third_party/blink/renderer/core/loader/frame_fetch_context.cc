@@ -790,10 +790,12 @@ String FrameFetchContext::GetReducedAcceptLanguage() const {
   // header as the overridden value.
   String override_accept_language;
   probe::ApplyAcceptLanguageOverride(Probe(), &override_accept_language);
-  return override_accept_language.empty()
-             ? frame->GetReducedAcceptLanguage().GetString()
-             : network_utils::GenerateAcceptLanguageHeader(
-                   override_accept_language);
+  if (override_accept_language.empty()) {
+    String expanded_language = network_utils::ExpandLanguageList(
+        frame->GetReducedAcceptLanguage().GetString());
+    return network_utils::GenerateAcceptLanguageHeader(expanded_language);
+  }
+  return network_utils::GenerateAcceptLanguageHeader(override_accept_language);
 }
 
 float FrameFetchContext::GetDevicePixelRatio() const {

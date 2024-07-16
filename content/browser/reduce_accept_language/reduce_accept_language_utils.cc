@@ -12,6 +12,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "net/http/http_util.h"
 #include "services/network/public/cpp/features.h"
 #include "url/origin.h"
 
@@ -131,8 +132,11 @@ ReduceAcceptLanguageUtils::AddNavigationRequestAcceptLanguageHeaders(
   std::optional<std::string> reduced_accept_language =
       LookupReducedAcceptLanguage(request_origin, frame_tree_node);
   if (reduced_accept_language) {
-    headers->SetHeader(net::HttpRequestHeaders::kAcceptLanguage,
-                       reduced_accept_language.value());
+    std::string expanded_language_list =
+        net::HttpUtil::ExpandLanguageList(reduced_accept_language.value());
+    headers->SetHeader(
+        net::HttpRequestHeaders::kAcceptLanguage,
+        net::HttpUtil::GenerateAcceptLanguageHeader(expanded_language_list));
   }
   return reduced_accept_language;
 }
