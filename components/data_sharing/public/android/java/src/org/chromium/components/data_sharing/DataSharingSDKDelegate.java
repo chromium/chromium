@@ -24,10 +24,13 @@ public interface DataSharingSDKDelegate {
 
     void readGroups(ReadGroupsParams params, DataSharingSDKDelegateProtoResponseCallback callback);
 
+    /** Callback return DataSharingSDKDelegateProtoResponseCallback.Status as integer. */
     void addMember(AddMemberParams params, Callback<Integer> callback);
 
+    /** Callback return DataSharingSDKDelegateProtoResponseCallback.Status as integer. */
     void removeMember(RemoveMemberParams params, Callback<Integer> callback);
 
+    /** Callback return DataSharingSDKDelegateProtoResponseCallback.Status as integer. */
     void deleteGroup(DeleteGroupParams params, Callback<Integer> callback);
 
     void lookupGaiaIdByEmail(
