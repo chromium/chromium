@@ -292,17 +292,17 @@
   }
 
   #thumbnailContainer {
-    position: absolute;
-    top: var(--cr-realbox-icon-top-position);
-    height: 100%;
-    left: 48px;
-    z-index: 101;
     align-content: center;
+    inset-block-start: var(--cr-realbox-icon-top-position);
+    inset-inline-start: 48px;
+    height: 100%;
     outline: none;
+    position: absolute;
+    z-index: 101;
   }
 
   :host-context([is-back-arrow-visible]) #thumbnailContainer {
-    left: 16px;
+    inset-inline-start: 16px;
   }
 </style>
 <div id="inputWrapper" on-focusout=onInputWrapperFocusout_

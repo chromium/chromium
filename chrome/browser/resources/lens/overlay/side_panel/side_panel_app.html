@@ -101,11 +101,17 @@
   }
 
   #realbox {
-    margin: 16px 14px 8px 14px;
+    margin-block-start: 16px;
+    margin-inline-end: 14px;
+    margin-block-end: 8px;
+    margin-inline-start: 14px;
   }
 
   :host([is-back-arrow-visible]) #realbox {
-    margin: 16px 14px 8px 0px;
+    margin-block-start: 16px;
+    margin-inline-end: 14px;
+    margin-block-end: 8px;
+    margin-inline-start: 0px;
   }
 
   #realboxContainer {
@@ -185,9 +191,9 @@
   }
 
   cr-icon-button.icon-arrow-back {
+    margin-block-start: 26px;
     margin-inline-start: 8px;
     margin-inline-end: 10px;
-    margin-top: 26px;
   }
 
   :host([dark-mode]) cr-icon-button.icon-arrow-back {
