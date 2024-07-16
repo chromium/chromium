@@ -46,7 +46,10 @@ class GeolocationDialog extends PolymerElement {
 
   static get properties() {
     return {
-      bodyText: {
+      bodyTextParagraph1: {
+        type: String,
+      },
+      bodyTextParagraph2: {
         type: String,
       },
       cancelButtonText: {

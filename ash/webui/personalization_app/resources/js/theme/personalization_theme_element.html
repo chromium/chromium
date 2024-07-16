@@ -138,7 +138,7 @@
 
 <template is="dom-if" if="[[shouldShowGeolocationDialog_]]" restamp>
   <geolocation-dialog id="geolocationDialog"
-      body-text="[[computeAutoModeGeolocationDialogText_(sunriseTime_, sunsetTime_)]]"
+      body-text-paragraph1="[[computeAutoModeGeolocationDialogText_(sunriseTime_, sunsetTime_)]]"
       confirm-button-text="$i18n{autoModeGeolocationDialogConfirmButton}"
       cancel-button-text="$i18n{autoModeGeolocationDialogCancelButton}"
       on-geolocation-enabled="onGeolocationEnabled_"

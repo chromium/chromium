@@ -1,4 +1,8 @@
 <style include="cr-icons common cros-button-style">
+  #paragraph1 {
+    margin-block-start: 0px;
+  }
+
   cr-dialog::part(dialog) {
     width: 410px;
   }
@@ -9,9 +13,14 @@
     $i18n{systemGeolocationDialogTitle}
   </div>
   <div slot="body" id="dialogBody">
-    <localized-link localized-string="[[bodyText]]"
-        link-url="$i18n{geolocationAccuracyLearnMoreUrl}">
-    </localized-link>
+    <p id="paragraph1">[[bodyTextParagraph1]]</p>
+    <template is="dom-if" if="[[bodyTextParagraph2]]">
+      <localized-link
+          aria-describedby="paragraph1"
+          localized-string="[[bodyTextParagraph2]]"
+          link-url="$i18n{geolocationAccuracyLearnMoreUrl}">
+      </localized-link>
+    </template>
   </div>
   <div slot="button-container">
     <cr-button id="cancelButton"

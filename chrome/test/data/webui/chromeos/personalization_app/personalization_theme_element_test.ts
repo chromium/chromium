@@ -8,7 +8,6 @@ import 'chrome://personalization/strings.m.js';
 
 import {emptyState, PersonalizationThemeElement, SetDarkModeEnabledAction, setGeolocationPermissionEnabledAction, SetGeolocationPermissionEnabledActionForTheme, ThemeActionName, ThemeObserver} from 'chrome://personalization/js/personalization_app.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import {LocalizedLinkElement} from 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -267,9 +266,9 @@ suite('PersonalizationThemeTest', function() {
     const geolocationDialog =
         personalizationThemeElement.shadowRoot!.getElementById(
             'geolocationDialog')!;
-    const dialogBodyText = geolocationDialog.shadowRoot!
-                               .querySelector<LocalizedLinkElement>(
-                                   'localized-link')!.localizedString;
+    const dialogBodyText =
+        geolocationDialog.shadowRoot!
+            .querySelector<HTMLDivElement>('#dialogBody')!.innerText;
     assertTrue(
         dialogBodyText.includes('6:00AM-6:00PM'),
         'dialog body doesn\'t include sunrise/sunset times');
