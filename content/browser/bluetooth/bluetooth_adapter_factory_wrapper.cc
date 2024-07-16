@@ -97,7 +97,7 @@ BluetoothAdapter* BluetoothAdapterFactoryWrapper::GetAdapter(
   return nullptr;
 }
 
-void BluetoothAdapterFactoryWrapper::SetBluetoothAdapterForTesting(
+void BluetoothAdapterFactoryWrapper::SetBluetoothAdapterOverride(
     scoped_refptr<BluetoothAdapter> test_adapter) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 

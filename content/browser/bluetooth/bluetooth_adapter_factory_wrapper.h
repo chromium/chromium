@@ -37,7 +37,7 @@ class CONTENT_EXPORT BluetoothAdapterFactoryWrapper {
   static BluetoothAdapterFactoryWrapper& Get();
 
   // Returns true if the platform supports Bluetooth Low Energy or if
-  // SetBluetoothAdapterForTesting has been called.
+  // SetBluetoothAdapterOverride has been called.
   bool IsLowEnergySupported();
 
   // Adds |service| to the set of adapter observers if this is the first time
@@ -59,7 +59,7 @@ class CONTENT_EXPORT BluetoothAdapterFactoryWrapper {
   // Sets a new BluetoothAdapter to be returned by GetAdapter. When setting
   // a new adapter all observers from the old adapter are removed and added
   // to |test_adapter|.
-  void SetBluetoothAdapterForTesting(
+  void SetBluetoothAdapterOverride(
       scoped_refptr<device::BluetoothAdapter> test_adapter);
 
  private:

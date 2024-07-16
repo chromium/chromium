@@ -551,8 +551,7 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness,
     // Set up an adapter.
     adapter_ = new FakeBluetoothAdapter();
     EXPECT_CALL(*adapter_, IsPresent()).WillRepeatedly(Return(true));
-    BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterForTesting(
-        adapter_);
+    BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterOverride(adapter_);
     battery_device_bundle_ = std::make_unique<FakeBluetoothDeviceBundle>(
         adapter_, battery_device_bundle_data);
 

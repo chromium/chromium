@@ -327,8 +327,7 @@ class WebBluetoothServiceImplBrowserTest : public ContentBrowserTest {
   void SetFakeBlueboothAdapter() {
     adapter_ = new FakeBluetoothAdapter();
     EXPECT_CALL(*adapter_, IsPresent()).WillRepeatedly(Return(true));
-    BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterForTesting(
-        adapter_);
+    BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterOverride(adapter_);
   }
 
   void AddFakeDevice(const std::string& device_address) {
@@ -357,7 +356,7 @@ class WebBluetoothServiceImplBrowserTest : public ContentBrowserTest {
 
   void BlockGloballyDisabled() { browser_client_->block_globally_disabled(); }
 
-  WebBluetoothServiceImpl* GetWebBluetoothServiceForTesting(
+  WebBluetoothServiceImpl* GetWebBluetoothServiceOverride(
       RenderFrameHost* render_frame_host) {
     return WebBluetoothServiceImpl::GetForCurrentDocument(render_frame_host);
   }
@@ -395,7 +394,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   EXPECT_TRUE(GetBluetoothDelegate()->showed_bluetooth_scanning_prompt());
 
   WebBluetoothServiceImpl* service_for_main_frame =
-      GetWebBluetoothServiceForTesting(GetWebContents()->GetPrimaryMainFrame());
+      GetWebBluetoothServiceOverride(GetWebContents()->GetPrimaryMainFrame());
   // ScanningClient with the main frame is created.
   EXPECT_EQ(service_for_main_frame->scanning_clients_.size(), 1u);
 
@@ -445,8 +444,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
 
   // Sets BluetoothAdapter for the new primary page since the previous
   // adapter is released by BluetoothAdapterFactoryWrapper::ReleaseAdapter().
-  BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterForTesting(
-      adapter());
+  BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterOverride(adapter());
 
   EXPECT_CALL(*adapter(), AddObserver(_));
 
@@ -461,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   EXPECT_TRUE(GetBluetoothDelegate()->showed_bluetooth_scanning_prompt());
 
   WebBluetoothServiceImpl* service_for_activated_frame =
-      GetWebBluetoothServiceForTesting(GetWebContents()->GetPrimaryMainFrame());
+      GetWebBluetoothServiceOverride(GetWebContents()->GetPrimaryMainFrame());
   // ScanningClient is created after the prerendering activation.
   EXPECT_EQ(service_for_activated_frame->scanning_clients_.size(), 1u);
 
@@ -500,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
 
   // WebBluetoothService is created for the main frame.
   EXPECT_NE(
-      GetWebBluetoothServiceForTesting(GetWebContents()->GetPrimaryMainFrame()),
+      GetWebBluetoothServiceOverride(GetWebContents()->GetPrimaryMainFrame()),
       nullptr);
 
   // Loads a page in the prerender.
@@ -522,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   EXPECT_THAT(result.error, ::testing::HasSubstr(kUserGestureError));
 
   // WebBluetoothService is not created for `prerendered_frame_host`.
-  EXPECT_EQ(GetWebBluetoothServiceForTesting(prerendered_frame_host), nullptr);
+  EXPECT_EQ(GetWebBluetoothServiceOverride(prerendered_frame_host), nullptr);
 
   // Loading a new primary page removes observer.
   EXPECT_CALL(*adapter(), RemoveObserver(_));
@@ -541,8 +539,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
 
   // Sets BluetoothAdapter for the new primary page since the previous
   // adapter is released by BluetoothAdapterFactoryWrapper::ReleaseAdapter().
-  BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterForTesting(
-      adapter());
+  BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterOverride(adapter());
   EXPECT_CALL(*adapter(), AddObserver(_));
   EXPECT_CALL(*adapter(), GetDevice(kDeviceAddress));
 
@@ -552,7 +549,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
 
   // WebBluetoothService is created for the activated page.
   EXPECT_NE(
-      GetWebBluetoothServiceForTesting(GetWebContents()->GetPrimaryMainFrame()),
+      GetWebBluetoothServiceOverride(GetWebContents()->GetPrimaryMainFrame()),
       nullptr);
 
   EXPECT_CALL(*adapter(), RemoveObserver(_));
@@ -584,7 +581,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   )");
 
   // WebBluetoothService is not created for `prerendered_frame_host`.
-  EXPECT_EQ(GetWebBluetoothServiceForTesting(prerendered_frame_host), nullptr);
+  EXPECT_EQ(GetWebBluetoothServiceOverride(prerendered_frame_host), nullptr);
   // It should not be called in the prerendering.
   EXPECT_FALSE(CheckedAllowWebBluetooth());
 
@@ -595,8 +592,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
 
   // Sets BlueboothAdapter for the new primary page since the previous
   // adapter is released by BluetoothAdapterFactoryWrapper::ReleaseAdapter().
-  BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterForTesting(
-      adapter());
+  BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterOverride(adapter());
   EXPECT_CALL(*adapter(), AddObserver(_));
 
   std::string message;
@@ -606,7 +602,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
 
   // It should be called when activated.
   EXPECT_TRUE(CheckedAllowWebBluetooth());
-  EXPECT_NE(GetWebBluetoothServiceForTesting(prerendered_frame_host), nullptr);
+  EXPECT_NE(GetWebBluetoothServiceOverride(prerendered_frame_host), nullptr);
   EXPECT_CALL(*adapter(), RemoveObserver(_));
 }
 
@@ -696,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplFencedFramesBrowserTest,
 
   // WebBluetoothService is created for the main frame.
   EXPECT_NE(
-      GetWebBluetoothServiceForTesting(GetWebContents()->GetPrimaryMainFrame()),
+      GetWebBluetoothServiceOverride(GetWebContents()->GetPrimaryMainFrame()),
       nullptr);
 
   // Loads a fenced frame
@@ -716,9 +712,9 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplFencedFramesBrowserTest,
   EXPECT_THAT(result.error, ::testing::HasSubstr(kFencedFrameError));
 
   // No service should be created, as this is a fenced-frame
-  EXPECT_EQ(nullptr, GetWebBluetoothServiceForTesting(render_frame_host));
+  EXPECT_EQ(nullptr, GetWebBluetoothServiceOverride(render_frame_host));
 
-  EXPECT_CALL(*adapter(), RemoveObserver(GetWebBluetoothServiceForTesting(
+  EXPECT_CALL(*adapter(), RemoveObserver(GetWebBluetoothServiceOverride(
                               GetWebContents()->GetPrimaryMainFrame())));
 }
 
