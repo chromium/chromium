@@ -54,20 +54,80 @@ std::optional<std::string> GetLabelFromBottom(const ProductCategory& category,
       category.category_labels(label_size - 1 - level_from_bottom));
 }
 
-std::optional<std::string> GetShortestLabelAtBottom(
-    const CategoryData& category_data) {
-  std::optional<std::string> title;
-  for (const auto& product_category : category_data.product_categories()) {
-    std::optional<std::string> bottom_label =
-        GetLabelFromBottom(product_category, 0);
-    if (!bottom_label) {
-      continue;
-    }
-    if (!title || title->length() > bottom_label->length()) {
-      title = std::move(bottom_label);
+std::string FindTitleForSimilarProducts(
+    const std::vector<std::pair<GURL, const ProductInfo>>& product_infos) {
+  // Calculate for each label (both bottom and second-to-bottom level), how
+  // many products contain this label.
+  //
+  // Please note that a product can have multiple categories
+  // and contain one label for multiple times (e.g. a product can belong to
+  // category Car > Blue Car and Car > Race Car, second-to-bottom level label
+  // `Car` appearing twice). In this case, we'll only count one product once for
+  // one label.
+  base::flat_set<std::string> bottom_labels;
+  std::map<std::string, int> label_count;
+
+  for (auto pair : product_infos) {
+    base::flat_set<std::string> counted_labels;
+    for (const auto& product_category :
+         pair.second.category_data.product_categories()) {
+      std::optional<std::string> bottom_label =
+          GetLabelFromBottom(product_category, 0);
+      if (bottom_label) {
+        std::string bottom_label_string = bottom_label.value();
+        bottom_labels.insert(bottom_label_string);
+        if (!base::Contains(counted_labels, bottom_label_string)) {
+          counted_labels.insert(bottom_label_string);
+          label_count[bottom_label_string]++;
+        }
+      }
+      std::optional<std::string> second_to_bottom_label =
+          GetLabelFromBottom(product_category, 1);
+      if (second_to_bottom_label) {
+        std::string second_to_bottom_label_string =
+            second_to_bottom_label.value();
+        if (!base::Contains(counted_labels, second_to_bottom_label)) {
+          counted_labels.insert(second_to_bottom_label_string);
+          label_count[second_to_bottom_label_string]++;
+        }
+      }
     }
   }
-  return title;
+
+  // Get the most common bottom label. When tie, picking the shorter label.
+  int max_bottom_count = 0;
+  std::string common_bottom_label;
+  for (const std::string& bottom_label : bottom_labels) {
+    if (label_count[bottom_label] < max_bottom_count) {
+      continue;
+    }
+    if (common_bottom_label.size() == 0 ||
+        bottom_label.size() < common_bottom_label.size()) {
+      common_bottom_label = bottom_label;
+      max_bottom_count = label_count[bottom_label];
+    }
+  }
+
+  // Early return if we can find a bottom label shared by all products.
+  if ((size_t)max_bottom_count == product_infos.size()) {
+    return common_bottom_label;
+  }
+
+  // If we cannot find a bottom label shared by all products, see if we can find
+  // a good second-to-bottom label. For a second-to-bottom label to be good
+  // enough to become title, it has to be shared by all products.
+  std::string alternate_title;
+  for (auto pair : label_count) {
+    if ((size_t)pair.second != product_infos.size()) {
+      continue;
+    }
+    if (alternate_title.size() == 0 ||
+        alternate_title.size() > pair.first.size()) {
+      alternate_title = pair.first;
+    }
+  }
+
+  return alternate_title.size() == 0 ? common_bottom_label : alternate_title;
 }
 
 // Determines if two CategoryData are similar. If the bottom label from one of
@@ -409,15 +469,11 @@ void ClusterManager::GetEntryPointInfoForNavigation(
 
   similar_urls.insert(url);
 
-  std::optional<std::string> title =
-      GetShortestLabelAtBottom(candidate_product_map_[url]->category_data);
-
   auto barrier_callback =
       base::BarrierCallback<std::pair<GURL, const ProductInfo>>(
           similar_urls.size(),
           base::BindOnce(&ClusterManager::OnProductInfoFetchedForSimilarUrls,
-                         weak_ptr_factory_.GetWeakPtr(), title,
-                         std::move(callback)));
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   for (const auto& similar_url : similar_urls) {
     GetProductInfo(similar_url, get_product_info_cb_, barrier_callback);
   }
@@ -439,33 +495,17 @@ void ClusterManager::GetEntryPointInfoForSelection(
   }
   similar_urls.merge(similar_urls_new);
 
-  std::optional<std::string> title_old =
-      GetShortestLabelAtBottom(candidate_product_map_[old_url]->category_data);
-  std::optional<std::string> title_new =
-      GetShortestLabelAtBottom(candidate_product_map_[new_url]->category_data);
-  std::optional<std::string> title;
-  if (!title_old) {
-    title = std::move(title_new);
-  } else if (title_new) {
-    title = title_old->size() < title_new->size() ? std::move(title_old)
-                                                  : std::move(title_new);
-  } else {
-    title = std::move(title_old);
-  }
-
   auto barrier_callback =
       base::BarrierCallback<std::pair<GURL, const ProductInfo>>(
           similar_urls.size(),
           base::BindOnce(&ClusterManager::OnProductInfoFetchedForSimilarUrls,
-                         weak_ptr_factory_.GetWeakPtr(), title,
-                         std::move(callback)));
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   for (const auto& similar_url : similar_urls) {
     GetProductInfo(similar_url, get_product_info_cb_, barrier_callback);
   }
 }
 
 void ClusterManager::OnProductInfoFetchedForSimilarUrls(
-    std::optional<std::string> title,
     GetEntryPointInfoCallback callback,
     const std::vector<std::pair<GURL, const ProductInfo>>& product_infos) {
   std::map<GURL, uint64_t> map;
@@ -475,7 +515,7 @@ void ClusterManager::OnProductInfoFetchedForSimilarUrls(
     }
   }
   std::move(callback).Run(std::make_optional<EntryPointInfo>(
-      title ? title.value() : "", std::move(map)));
+      FindTitleForSimilarProducts(product_infos), std::move(map)));
 }
 
 void ClusterManager::OnGetComparableProducts(

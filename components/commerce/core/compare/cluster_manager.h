@@ -139,7 +139,6 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
       const std::vector<uint64_t>& cluster_product_ids);
 
   void OnProductInfoFetchedForSimilarUrls(
-      std::optional<std::string> title,
       GetEntryPointInfoCallback callback,
       const std::vector<std::pair<GURL, const ProductInfo>>& product_infos);
 
