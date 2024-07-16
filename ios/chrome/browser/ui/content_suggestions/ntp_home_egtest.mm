@@ -1636,6 +1636,11 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // Tests that the customization menu can be used to toggle the visibility of
 // Home surface modules.
 - (void)testToggleModuleVisiblityInCustomizationMenu {
+  // Customization is not yet supported on iPads.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    return;
+  }
+
   // Reset prefs so that this test run is independent.
   [ChromeEarlGrey setBoolValue:YES
                    forUserPref:prefs::kHomeCustomizationShortcutsEnabled];
