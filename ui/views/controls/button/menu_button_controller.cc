@@ -92,6 +92,7 @@ MenuButtonController::MenuButtonController(
   // MenuButtonController::IsTriggerableEventType.
   set_notify_action(ButtonController::NotifyAction::kOnPress);
   button->GetViewAccessibility().SetRole(ax::mojom::Role::kPopUpButton);
+  button->GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kMenu);
 }
 
 MenuButtonController::~MenuButtonController() = default;
@@ -179,8 +180,10 @@ bool MenuButtonController::OnKeyReleased(const ui::KeyEvent& event) {
 }
 
 void MenuButtonController::UpdateAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kPopUpButton;
-  node_data->SetHasPopup(ax::mojom::HasPopup::kMenu);
+  // TODO(crbug.com/325137417): This property needs to be updated whenever the
+  // button's enabled state changes. To do so, we could add the virtual function
+  // `ButtonController::OnButtonEnabledChanged` and override it in this class.
+  // This function would then be called from `Button::OnEnabledChanged`.
   if (button()->GetEnabled()) {
     node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kOpen);
   }

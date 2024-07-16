@@ -44,7 +44,6 @@ class AnnouncementLabel : public views::Label {
   // on that key).
   std::unique_ptr<base::OneShotTimer> delay_timer_;
 
-  const std::u16string label_name_;
   std::u16string announcement_text_;
 };
 

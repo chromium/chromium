@@ -88,13 +88,11 @@ class OmniboxRemoveSuggestionButton : public views::ImageButton {
         base::TimeDelta());
 
     SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-  }
 
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     // Although this appears visually as a button, expose as a list box option
     // so that it matches the other options within its list box container.
-    node_data->role = ax::mojom::Role::kListBoxOption;
-    node_data->SetNameChecked(
+    GetViewAccessibility().SetRole(ax::mojom::Role::kListBoxOption);
+    GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_ACC_REMOVE_SUGGESTION_BUTTON));
   }
 };

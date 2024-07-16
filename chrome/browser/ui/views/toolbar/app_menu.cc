@@ -306,11 +306,8 @@ class InMenuButton : public LabelButton {
     SetBorder(views::CreateEmptyBorder(
         gfx::Insets::TLBR(0, kHorizontalPadding, 0, kHorizontalPadding)));
     label()->SetFontList(MenuConfig::instance().font_list);
-  }
 
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    LabelButton::GetAccessibleNodeData(node_data);
-    node_data->role = ax::mojom::Role::kMenuItem;
+    GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
   }
 
   // views::LabelButton:
@@ -346,11 +343,8 @@ class InMenuImageButton : public ImageButton {
     SetBackground(std::make_unique<InMenuButtonBackground>(type, shape));
     SetBorder(views::CreateEmptyBorder(
         gfx::Insets::TLBR(0, kHorizontalPadding, 0, kHorizontalPadding)));
-  }
 
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    ImageButton::GetAccessibleNodeData(node_data);
-    node_data->role = ax::mojom::Role::kMenuItem;
+    GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
   }
 };
 
@@ -551,6 +545,7 @@ class FullscreenButton : public ImageButton {
     const int accname_string_id =
         is_in_fullscreen ? IDS_ACCNAME_EXIT_FULLSCREEN : IDS_ACCNAME_FULLSCREEN;
     SetTooltipText(l10n_util::GetStringUTF16(accname_string_id));
+    GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
     GetViewAccessibility().SetName(GetAccessibleNameForAppMenuItem(
         menu_model, fullscreen_index, accname_string_id,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -575,11 +570,6 @@ class FullscreenButton : public ImageButton {
     const gfx::Insets insets = GetInsets();
     pref.Enlarge(insets.width(), insets.height());
     return pref;
-  }
-
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    ImageButton::GetAccessibleNodeData(node_data);
-    node_data->role = ax::mojom::Role::kMenuItem;
   }
 };
 

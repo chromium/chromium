@@ -139,14 +139,18 @@ std::u16string BookmarkButton::GetTooltipText(const gfx::Point& p) const {
 void BookmarkButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   BookmarkButtonBase::GetAccessibleNodeData(node_data);
   const std::u16string name = GetViewAccessibility().GetCachedName();
-  node_data->SetNameChecked(
-      name.empty()
-          ? l10n_util::GetStringFUTF16(
-                IDS_UNNAMED_BOOKMARK_BUTTON_ACCESSIBLE_NAME,
-                url_formatter::FormatUrl(
-                    url_.get(), url_formatter::kFormatUrlOmitDefaults,
-                    base::UnescapeRule::NORMAL, nullptr, nullptr, nullptr))
-          : name);
+}
+
+void BookmarkButton::AdjustAccessibleName(std::u16string& new_name,
+                                          ax::mojom::NameFrom& name_from) {
+  if (new_name.empty()) {
+    new_name = l10n_util::GetStringFUTF16(
+        IDS_UNNAMED_BOOKMARK_BUTTON_ACCESSIBLE_NAME,
+        url_formatter::FormatUrl(
+            url_.get(), url_formatter::kFormatUrlOmitDefaults,
+            base::UnescapeRule::NORMAL, nullptr, nullptr, nullptr));
+    name_from = ax::mojom::NameFrom::kContents;
+  }
 }
 
 void BookmarkButton::SetText(const std::u16string& text) {

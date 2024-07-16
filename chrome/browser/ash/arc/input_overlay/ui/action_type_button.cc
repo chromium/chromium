@@ -10,6 +10,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
@@ -65,6 +66,8 @@ ActionTypeButton::ActionTypeButton(PressedCallback callback,
   focus_ring->SetColorId(ui::kColorAshFocusRing);
   focus_ring->SetHaloInset(kHaloInset);
   focus_ring->SetHaloThickness(kHaloThickness);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kRadioButton);
 }
 
 ActionTypeButton::~ActionTypeButton() = default;
@@ -143,8 +146,6 @@ void ActionTypeButton::OnThemeChanged() {
 
 void ActionTypeButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   ash::OptionButtonBase::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kRadioButton;
-  node_data->SetName(label()->GetText());
   node_data->SetCheckedState(selected() ? ax::mojom::CheckedState::kTrue
                                         : ax::mojom::CheckedState::kFalse);
 }

@@ -75,6 +75,10 @@ PinnedActionToolbarButton::PinnedActionToolbarButton(
 
   status_indicator_ =
       PinnedToolbarButtonStatusIndicator::Install(image_container_view());
+
+  // TODO(shibalik): Revisit since all pinned actions should not be toggle
+  // buttons.
+  GetViewAccessibility().SetRole(ax::mojom::Role::kToggleButton);
 }
 
 PinnedActionToolbarButton::~PinnedActionToolbarButton() = default;
@@ -82,9 +86,6 @@ PinnedActionToolbarButton::~PinnedActionToolbarButton() = default;
 void PinnedActionToolbarButton::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
   ToolbarButton::GetAccessibleNodeData(node_data);
-  // TODO(shibalik): Revisit since all pinned actions should not be toggle
-  // buttons.
-  node_data->role = ax::mojom::Role::kToggleButton;
   node_data->SetCheckedState(IsActive() ? ax::mojom::CheckedState::kTrue
                                         : ax::mojom::CheckedState::kFalse);
 }

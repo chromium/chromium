@@ -138,13 +138,8 @@ class BruschettaInstallerView::TitleLabel : public views::Label {
  public:
   using Label::Label;
 
-  TitleLabel() = default;
+  TitleLabel() { GetViewAccessibility().SetRole(ax::mojom::Role::kStatus); }
   ~TitleLabel() override = default;
-
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->role = ax::mojom::Role::kStatus;
-    node_data->SetNameChecked(GetText());
-  }
 };
 
 BEGIN_METADATA(BruschettaInstallerView, TitleLabel)

@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -51,7 +52,6 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -67,6 +67,7 @@
 #include "chrome/browser/ui/views/event_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -225,7 +226,12 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
                              ui::EF_MIDDLE_MOUSE_BUTTON);
 
     GetViewAccessibility().SetName(GetAccessibleText());
+
+    text_changed_callback_ =
+        label()->AddTextChangedCallback(base::BindRepeating(
+            &BookmarkFolderButton::OnTextChanged, base::Unretained(this)));
   }
+
   BookmarkFolderButton(const BookmarkFolderButton&) = delete;
   BookmarkFolderButton& operator=(const BookmarkFolderButton&) = delete;
 
@@ -244,6 +250,8 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
     return BookmarkMenuButtonBase::OnMousePressed(event);
   }
 
+  void OnTextChanged() { GetViewAccessibility().SetName(GetAccessibleText()); }
+
   const std::u16string GetAccessibleText() const {
     // If the folder is unnamed, set the name to a default string for unnamed
     // folders; otherwise set the name to the user-supplied folder name.
@@ -254,7 +262,6 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     BookmarkMenuButtonBase::GetAccessibleNodeData(node_data);
-    node_data->SetNameChecked(GetAccessibleText());
     node_data->AddStringAttribute(
         ax::mojom::StringAttribute::kRoleDescription,
         l10n_util::GetStringUTF8(
@@ -263,6 +270,7 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
 
  private:
   std::unique_ptr<gfx::SlideAnimation> show_animation_;
+  base::CallbackListSubscription text_changed_callback_;
 };
 
 BEGIN_METADATA(BookmarkFolderButton)
@@ -400,6 +408,7 @@ BookmarkBarView::BookmarkBarView(Browser* browser, BrowserView* browser_view)
 
   views::SetCascadingColorProviderColor(this, views::kCascadingBackgroundColor,
                                         kColorBookmarkBarBackground);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kToolbar);
 
   Init();
 }
@@ -1117,7 +1126,6 @@ void BookmarkBarView::AddedToWidget() {
 }
 
 void BookmarkBarView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kToolbar;
   node_data->SetNameChecked(l10n_util::GetStringUTF8(IDS_ACCNAME_BOOKMARKS));
 }
 

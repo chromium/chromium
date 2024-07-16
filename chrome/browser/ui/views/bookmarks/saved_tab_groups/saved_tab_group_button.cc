@@ -169,8 +169,12 @@ bool SavedTabGroupButton::IsTriggerableEvent(const ui::Event& e) {
 
 void SavedTabGroupButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   views::MenuButton::GetAccessibleNodeData(node_data);
-  node_data->SetNameChecked(GetAccessibleNameForButton());
-  node_data->role = ax::mojom::Role::kButton;
+  // We must set the updated accessible name directly in the cache to override
+  // the one set in `LabelButton::SetText`. This is temporary.
+  //
+  // TODO(crbug.com/325137417): Remove this once the accessible name is set in
+  // the cache as soon as the name is updated.
+  GetViewAccessibility().SetName(GetAccessibleNameForButton());
 }
 
 void SavedTabGroupButton::PaintButtonContents(gfx::Canvas* canvas) {

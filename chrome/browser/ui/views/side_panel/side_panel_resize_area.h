@@ -22,8 +22,6 @@ class SidePanelResizeHandle : public ImageView,
 
   void UpdateVisibility(bool visible);
 
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
   // ImageView:
   void AddedToWidget() override;
   void RemovedFromWidget() override;
