@@ -21,6 +21,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {BrowserProxy} from './browser_proxy.js';
 import {getTemplate} from './bypass_warning_confirmation_interstitial.html.js';
 import type {PageHandlerInterface} from './downloads.mojom-webui.js';
+import {DangerousDownloadInterstitialSurveyOptions as surveyOptions} from './downloads.mojom-webui.js';
 
 export interface DownloadsDangerousDownloadInterstitialElement {
   $: {
@@ -48,6 +49,8 @@ export class DownloadsDangerousDownloadInterstitialElement extends
         value: true,
       },
 
+      selectedRadioOption_: String,
+
       trustSiteLine: String,
     };
   }
@@ -57,6 +60,7 @@ export class DownloadsDangerousDownloadInterstitialElement extends
 
   private boundKeydown_: ((e: KeyboardEvent) => void)|null = null;
   private hideSurveyAndDownloadButton_: boolean;
+  private selectedRadioOption_: string;
 
   private mojoHandler_: PageHandlerInterface|null = null;
 
@@ -74,6 +78,20 @@ export class DownloadsDangerousDownloadInterstitialElement extends
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.removeKeydownListener_();
+  }
+
+  getSurveyResponse(): surveyOptions {
+    const surveyResponse = this.$.dialog.returnValue;
+    switch (surveyResponse) {
+      case 'CreatedFile':
+        return surveyOptions.kCreatedFile;
+      case 'TrustSite':
+        return surveyOptions.kTrustSite;
+      case 'AcceptRisk':
+        return surveyOptions.kAcceptRisk;
+      default:
+        return surveyOptions.kNoResponse;
+    }
   }
 
   private disableEscapeKey_() {
@@ -105,8 +123,7 @@ export class DownloadsDangerousDownloadInterstitialElement extends
   }
 
   private onDownloadClick_() {
-    this.$.dialog.close();
-
+    this.$.dialog.close(this.selectedRadioOption_);
     assert(!this.$.dialog.open);
     this.dispatchEvent(
         new CustomEvent('close', {bubbles: true, composed: true}));

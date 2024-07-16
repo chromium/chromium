@@ -27,6 +27,7 @@ import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/ir
 import {Debouncer, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
+import type {DownloadsDangerousDownloadInterstitialElement as DangerousInterstitialElement} from './bypass_warning_confirmation_interstitial.js';
 import type {MojomData} from './data.js';
 import type {PageCallbackRouter, PageHandlerInterface} from './downloads.mojom-webui.js';
 import {State} from './downloads.mojom-webui.js';
@@ -313,9 +314,13 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     this.hideBypassWarningPrompt_();
   }
 
-  private validateInterstitial_() {
-    const interstitial = this.shadowRoot!.querySelector(
+  private getDangerInterstitial_(): DangerousInterstitialElement|null {
+    return this.shadowRoot!.querySelector(
         'downloads-dangerous-download-interstitial');
+  }
+
+  private validateInterstitial_() {
+    const interstitial = this.getDangerInterstitial_();
     assert(interstitial);
     assert(this.bypassPromptItemId_ !== '');
     assert(!!this.mojoHandler_);
@@ -323,6 +328,10 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
 
   private onDangerousDownloadInterstitialClose_() {
     this.validateInterstitial_();
+    const interstitial = this.getDangerInterstitial_();
+    assert(interstitial);
+    this.mojoHandler_.saveDangerousFromInterstitialNeedGesture(
+        this.bypassPromptItemId_, interstitial.getSurveyResponse());
     this.hideBypassWarningPrompt_();
   }
 

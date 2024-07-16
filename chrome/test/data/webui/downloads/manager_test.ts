@@ -380,6 +380,18 @@ suite('manager tests', function() {
             'downloads-dangerous-download-interstitial');
         assertTrue(!!interstitial);
         assertTrue(interstitial.$.dialog.open);
+
+        const surveyResponse = 'kNoResponse';
+        interstitial.$.dialog.close(surveyResponse);
+        interstitial.dispatchEvent(new CustomEvent('close', {
+          bubbles: true,
+          composed: true,
+        }));
+        const saveDangerousId = await testBrowserProxy.handler.whenCalled(
+            'saveDangerousFromInterstitialNeedGesture');
+        assertEquals(surveyResponse, interstitial.$.dialog.returnValue);
+        assertEquals('itemId', saveDangerousId);
+        assertFalse(interstitial.$.dialog.open);
       });
 
   test('dangerousDownloadInterstitial records cancellation', async () => {
