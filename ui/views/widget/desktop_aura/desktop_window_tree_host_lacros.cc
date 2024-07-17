@@ -210,9 +210,15 @@ void DesktopWindowTreeHostLacros::OnTooltipHiddenOnServer() {
 }
 
 void DesktopWindowTreeHostLacros::OnBoundsChanged(const BoundsChange& change) {
+  // DesktopWindowTreeHostPlatform::OnBoundsChanged() may result in |this| being
+  // deleted. As an extra safety guard, keep track of `this` with a weak
+  // pointer, and only call UpdateWindowHints() if it still exists.
+  auto weak_this = weak_factory_.GetWeakPtr();
   DesktopWindowTreeHostPlatform::OnBoundsChanged(change);
 
-  UpdateWindowHints();
+  if (weak_this.get()) {
+    UpdateWindowHints();
+  }
 }
 
 void DesktopWindowTreeHostLacros::AddAdditionalInitProperties(
