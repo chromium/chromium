@@ -28,6 +28,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.DeferredStartupHandler;
+import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
@@ -94,6 +95,15 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
         // indicator for specific tests.
         CommandLine.getInstance()
                 .appendSwitch(ContentSwitches.FORCE_ONLINE_CONNECTION_STATE_FOR_INDICATOR);
+    }
+
+    @Override
+    protected void after() {
+        super.after();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WarmupManager.getInstance().destroySpareTab();
+                });
     }
 
     /** Return the timeout limit for Chrome activty start in tests */

@@ -15,9 +15,7 @@ import org.junit.Assert;
 import org.mockito.Mockito;
 
 import org.chromium.base.Log;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ScalableTimeout;
-import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabTestUtils;
@@ -49,15 +47,6 @@ public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabA
         // Disable IPH to prevent it from interfering with the tests.
         when(tracker.shouldTriggerHelpUI(anyString())).thenReturn(false);
         TrackerFactory.setTrackerForTests(tracker);
-    }
-
-    @Override
-    protected void after() {
-        super.after();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    WarmupManager.getInstance().destroySpareTab();
-                });
     }
 
     public static void putCustomTabIdInIntent(Intent intent) {
