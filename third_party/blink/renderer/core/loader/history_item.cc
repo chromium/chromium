@@ -180,29 +180,28 @@ void HistoryItem::SetReferrerPolicy(network::mojom::ReferrerPolicy policy) {
   referrer_policy_ = policy;
 }
 
+HistoryItem::ViewState& HistoryItem::GetOrCreateViewState() {
+  if (!view_state_) {
+    view_state_ = ViewState();
+  }
+  return *view_state_;
+}
+
 void HistoryItem::SetVisualViewportScrollOffset(const ScrollOffset& offset) {
-  if (!view_state_)
-    view_state_ = std::make_optional<ViewState>();
-  view_state_->visual_viewport_scroll_offset_ = offset;
+  GetOrCreateViewState().visual_viewport_scroll_offset_ = offset;
 }
 
 void HistoryItem::SetScrollOffset(const ScrollOffset& offset) {
-  if (!view_state_)
-    view_state_ = std::make_optional<ViewState>();
-  view_state_->scroll_offset_ = offset;
+  GetOrCreateViewState().scroll_offset_ = offset;
 }
 
 void HistoryItem::SetPageScaleFactor(float scale_factor) {
-  if (!view_state_)
-    view_state_ = std::make_optional<ViewState>();
-  view_state_->page_scale_factor_ = scale_factor;
+  GetOrCreateViewState().page_scale_factor_ = scale_factor;
 }
 
 void HistoryItem::SetScrollAnchorData(
     const ScrollAnchorData& scroll_anchor_data) {
-  if (!view_state_)
-    view_state_ = std::make_optional<ViewState>();
-  view_state_->scroll_anchor_data_ = scroll_anchor_data;
+  GetOrCreateViewState().scroll_anchor_data_ = scroll_anchor_data;
 }
 
 void HistoryItem::SetDocumentState(const Vector<String>& state) {
