@@ -2668,6 +2668,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_OPEN_CHROME_SETTINGS" desc="Text of the primary button to open chrome settings page. [iOS only]">
         Open Settings
       </message>
+      <message name="IDS_IOS_OPEN_PASSWORD_MANAGER" desc="Text of the primary button to open chrome password manager. [iOS only]">
+        Open Password Manager
+      </message>
       <message name="IDS_IOS_OPEN_PDF" desc="Label of the button that lets users open a pdf file in chrome. [Length: 15em] [iOS only]">
         Open
       </message>

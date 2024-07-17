@@ -74,8 +74,9 @@ NSString* GetPrimaryActionTitle(WhatsNewPrimaryAction action) {
     case WhatsNewPrimaryAction::kPrivacySettings:
     case WhatsNewPrimaryAction::kChromeSettings:
     case WhatsNewPrimaryAction::kSafeBrowsingSettings:
-    case WhatsNewPrimaryAction::kChromePasswordManager:
       return l10n_util::GetNSString(IDS_IOS_OPEN_CHROME_SETTINGS);
+    case WhatsNewPrimaryAction::kChromePasswordManager:
+      return l10n_util::GetNSString(IDS_IOS_OPEN_PASSWORD_MANAGER);
     case WhatsNewPrimaryAction::kLens:
       return l10n_util::GetNSString(IDS_IOS_GO_TO_LENS);
     case WhatsNewPrimaryAction::kNoAction:
