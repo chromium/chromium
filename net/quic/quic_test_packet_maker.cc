@@ -167,17 +167,6 @@ QuicTestPacketBuilder& QuicTestPacketMaker::Packet(uint64_t packet_number) {
   return *builder_.get();
 }
 
-std::unique_ptr<quic::QuicReceivedPacket>
-QuicTestPacketMaker::MakeConnectivityProbingPacket(uint64_t packet_number) {
-  auto& builder = Packet(packet_number);
-  if (perspective_ == quic::Perspective::IS_CLIENT) {
-    builder.AddPathChallengeFrame();
-  } else {
-    builder.AddPathResponseFrame();
-  }
-  return builder.AddPaddingFrame().Build();
-}
-
 std::unique_ptr<quic::QuicReceivedPacket> QuicTestPacketMaker::MakePingPacket(
     uint64_t packet_number) {
   return Packet(packet_number).AddPingFrame().Build();

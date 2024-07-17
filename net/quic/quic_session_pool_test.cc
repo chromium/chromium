@@ -2542,11 +2542,15 @@ void QuicSessionPoolTest::TestMigrationOnNetworkMadeDefault(IoMode write_mode) {
   client_maker_.set_connection_id(cid_on_new_path);
   MockQuicData quic_data2(version_);
   // Connectivity probe to be sent on the new path.
-  quic_data2.AddWrite(
-      SYNCHRONOUS, client_maker_.MakeConnectivityProbingPacket(packet_num++));
+  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_num++)
+                                       .AddPathChallengeFrame()
+                                       .AddPaddingFrame()
+                                       .Build());
   quic_data2.AddReadPause();
   // Connectivity probe to receive from the server.
-  quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(1));
+  quic_data2.AddRead(
+      ASYNC,
+      server_maker_.Packet(1).AddPathResponseFrame().AddPaddingFrame().Build());
   // in-flight SETTINGS and requests will be retransmitted. Since data is
   // already sent on the new address, ping will no longer be sent.
   quic_data2.AddWrite(ASYNC,
@@ -2696,15 +2700,21 @@ TEST_P(QuicSessionPoolTest, MigratedToBlockedSocketAfterProbing) {
   client_maker_.set_connection_id(cid_on_new_path);
   MockQuicData quic_data2(version_);
   // First connectivity probe to be sent on the new path.
-  quic_data2.AddWrite(
-      SYNCHRONOUS, client_maker_.MakeConnectivityProbingPacket(packet_num++));
+  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_num++)
+                                       .AddPathChallengeFrame()
+                                       .AddPaddingFrame()
+                                       .Build());
   quic_data2.AddRead(ASYNC,
                      ERR_IO_PENDING);  // Pause so that we can control time.
   // Connectivity probe to receive from the server.
-  quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(1));
+  quic_data2.AddRead(
+      ASYNC,
+      server_maker_.Packet(1).AddPathResponseFrame().AddPaddingFrame().Build());
   // Second connectivity probe which will complete asynchronously.
-  quic_data2.AddWrite(
-      ASYNC, client_maker_.MakeConnectivityProbingPacket(packet_num++));
+  quic_data2.AddWrite(ASYNC, client_maker_.Packet(packet_num++)
+                                 .AddPathChallengeFrame()
+                                 .AddPaddingFrame()
+                                 .Build());
   quic_data2.AddRead(
       ASYNC, ConstructOkResponsePacket(
                  2, GetNthClientInitiatedBidirectionalStreamId(0), false));
@@ -2929,11 +2939,15 @@ void QuicSessionPoolTest::TestOnNetworkMadeDefaultNonMigratableStream(
   client_maker_.set_connection_id(cid_on_new_path);
   MockQuicData quic_data1(version_);
   // Connectivity probe to be sent on the new path.
-  quic_data1.AddWrite(
-      SYNCHRONOUS, client_maker_.MakeConnectivityProbingPacket(packet_num++));
+  quic_data1.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_num++)
+                                       .AddPathChallengeFrame()
+                                       .AddPaddingFrame()
+                                       .Build());
   quic_data1.AddReadPause();
   // Connectivity probe to receive from the server.
-  quic_data1.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(1));
+  quic_data1.AddRead(
+      ASYNC,
+      server_maker_.Packet(1).AddPathResponseFrame().AddPaddingFrame().Build());
 
   if (migrate_idle_sessions) {
     quic_data1.AddReadPauseForever();
@@ -3324,11 +3338,16 @@ void QuicSessionPoolTest::TestOnNetworkMadeDefaultNoOpenStreams(
     client_maker_.set_connection_id(cid_on_new_path);
     // Set up the second socket data provider that is used for probing.
     // Connectivity probe to be sent on the new path.
-    quic_data1.AddWrite(
-        SYNCHRONOUS, client_maker_.MakeConnectivityProbingPacket(packet_num++));
+    quic_data1.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_num++)
+                                         .AddPathChallengeFrame()
+                                         .AddPaddingFrame()
+                                         .Build());
     quic_data1.AddReadPause();
     // Connectivity probe to receive from the server.
-    quic_data1.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(1));
+    quic_data1.AddRead(ASYNC, server_maker_.Packet(1)
+                                  .AddPathResponseFrame()
+                                  .AddPaddingFrame()
+                                  .Build());
     quic_data1.AddReadPauseForever();
     // in-flight SETTINGS and requests will be retransmitted. Since data is
     // already sent on the new address, ping will no longer be sent.
@@ -4217,19 +4236,26 @@ TEST_P(QuicSessionPoolTest, MigrateToProbingSocket) {
       quic::test::TestConnectionId(12345678);
   client_maker_.set_connection_id(cid_on_new_path);
   // Connectivity probe to be sent on the new path.
-  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeConnectivityProbingPacket(
-                                       packet_number++));
+  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_number++)
+                                       .AddPathChallengeFrame()
+                                       .AddPaddingFrame()
+                                       .Build());
   quic_data2.AddReadPause();
   // First connectivity probe to receive from the server, which will complete
   // connection migraiton on path degrading.
-  quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(1));
+  quic_data2.AddRead(
+      ASYNC,
+      server_maker_.Packet(1).AddPathResponseFrame().AddPaddingFrame().Build());
   // Read multiple connectivity probes synchronously.
-  quic_data2.AddRead(SYNCHRONOUS,
-                     server_maker_.MakeConnectivityProbingPacket(2));
-  quic_data2.AddRead(SYNCHRONOUS,
-                     server_maker_.MakeConnectivityProbingPacket(3));
-  quic_data2.AddRead(SYNCHRONOUS,
-                     server_maker_.MakeConnectivityProbingPacket(4));
+  quic_data2.AddRead(
+      SYNCHRONOUS,
+      server_maker_.Packet(2).AddPathResponseFrame().AddPaddingFrame().Build());
+  quic_data2.AddRead(
+      SYNCHRONOUS,
+      server_maker_.Packet(3).AddPathResponseFrame().AddPaddingFrame().Build());
+  quic_data2.AddRead(
+      SYNCHRONOUS,
+      server_maker_.Packet(4).AddPathResponseFrame().AddPaddingFrame().Build());
   quic_data2.AddWrite(ASYNC, client_maker_.MakeAckAndRetransmissionPacket(
                                  packet_number++, 1, 4, 1, {1, 2}));
   quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
@@ -4389,11 +4415,15 @@ void QuicSessionPoolTest::TestMigrationOnPathDegrading(
       quic::test::TestConnectionId(12345678);
   client_maker_.set_connection_id(cid_on_new_path);
   // Connectivity probe to be sent on the new path.
-  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeConnectivityProbingPacket(
-                                       packet_number++));
+  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_number++)
+                                       .AddPathChallengeFrame()
+                                       .AddPaddingFrame()
+                                       .Build());
   quic_data2.AddReadPause();
   // Connectivity probe to receive from the server.
-  quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(1));
+  quic_data2.AddRead(
+      ASYNC,
+      server_maker_.Packet(1).AddPathResponseFrame().AddPaddingFrame().Build());
   // in-flight SETTINGS and requests will be retransmitted. Since data is
   // already sent on the new address, ping will no longer be sent.
   quic_data2.AddWrite(ASYNC,
@@ -4549,7 +4579,9 @@ TEST_P(QuicSessionPoolTest, MigrateSessionEarlyProbingWriterError) {
   quic_data2.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
   ++packet_number;  // Account for the packet encountering write error.
   quic_data2.AddReadPause();
-  quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(1));
+  quic_data2.AddRead(
+      ASYNC,
+      server_maker_.Packet(1).AddPathResponseFrame().AddPaddingFrame().Build());
 
   // Connection ID is retired on the old path.
   client_maker_.set_connection_id(cid_on_old_path);
@@ -4671,7 +4703,9 @@ TEST_P(QuicSessionPoolTest,
   // Connectivity probe to be sent on the new path.
   quic_data2.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
   quic_data2.AddReadPause();
-  quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(1));
+  quic_data2.AddRead(
+      ASYNC,
+      server_maker_.Packet(1).AddPathResponseFrame().AddPaddingFrame().Build());
   packet_number++;  // Account for packet encountering write error.
 
   // Connection ID is retired on the old path.
@@ -4798,11 +4832,15 @@ TEST_P(QuicSessionPoolTest, MultiPortSessionWithMigration) {
 
   client_maker_.set_connection_id(cid_on_new_path);
   // Connectivity probe to be sent on the new path.
-  quic_data2.AddWrite(SYNCHRONOUS,
-                      client_maker_.MakeConnectivityProbingPacket(2));
+  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.Packet(2)
+                                       .AddPathChallengeFrame()
+                                       .AddPaddingFrame()
+                                       .Build());
   quic_data2.AddReadPause();
   // Connectivity probe to receive from the server.
-  quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(1));
+  quic_data2.AddRead(
+      ASYNC,
+      server_maker_.Packet(1).AddPathResponseFrame().AddPaddingFrame().Build());
   quic_data2.AddReadPause();
   quic_data2.AddRead(
       ASYNC, ConstructOkResponsePacket(
@@ -4958,10 +4996,14 @@ TEST_P(QuicSessionPoolTest, SuccessfullyMigratedToServerPreferredAddress) {
   // preferred address.
   MockQuicData quic_data2(version_);
   client_maker_.set_connection_id(kNewCID);
-  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeConnectivityProbingPacket(
-                                       packet_number++));
+  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_number++)
+                                       .AddPathChallengeFrame()
+                                       .AddPaddingFrame()
+                                       .Build());
   quic_data2.AddReadPause();
-  quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(1));
+  quic_data2.AddRead(
+      ASYNC,
+      server_maker_.Packet(1).AddPathResponseFrame().AddPaddingFrame().Build());
   quic_data2.AddReadPauseForever();
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
@@ -5040,9 +5082,10 @@ TEST_P(QuicSessionPoolTest, FailedToValidateServerPreferredAddress) {
   quic_data2.AddReadPauseForever();
   // One PATH_CHALLENGE + 2 retires.
   for (size_t i = 0; i < quic::QuicPathValidator::kMaxRetryTimes + 1; ++i) {
-    quic_data2.AddWrite(
-        SYNCHRONOUS,
-        client_maker_.MakeConnectivityProbingPacket(packet_number++));
+    quic_data2.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_number++)
+                                         .AddPathChallengeFrame()
+                                         .AddPaddingFrame()
+                                         .Build());
   }
   quic_data2.AddSocketDataToFactory(socket_factory_.get());
 
@@ -5248,8 +5291,10 @@ TEST_P(QuicSessionPoolTest,
       quic::test::TestConnectionId(12345678);
   client_maker_.set_connection_id(cid_on_new_path);
   // Connectivity probe to be sent on the new path.
-  quic_data2.AddWrite(
-      SYNCHRONOUS, client_maker_.MakeConnectivityProbingPacket(packet_number));
+  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_number)
+                                       .AddPathChallengeFrame()
+                                       .AddPaddingFrame()
+                                       .Build());
   quic_data2.AddReadPause();
   // Stateless reset to receive from the server.
   quic_data2.AddRead(ASYNC, server_maker_.MakeStatelessResetPacket());
@@ -6080,11 +6125,15 @@ void QuicSessionPoolTest::TestSimplePortMigrationOnPathDegrading() {
 
   client_maker_.set_connection_id(cid_on_new_path);
   // Connectivity probe to be sent on the new path.
-  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeConnectivityProbingPacket(
-                                       packet_number++));
+  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_number++)
+                                       .AddPathChallengeFrame()
+                                       .AddPaddingFrame()
+                                       .Build());
   quic_data2.AddReadPause();
   // Connectivity probe to receive from the server.
-  quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(1));
+  quic_data2.AddRead(
+      ASYNC,
+      server_maker_.Packet(1).AddPathResponseFrame().AddPaddingFrame().Build());
   // Ping packet to send after migration is completed.
   quic_data2.AddWrite(ASYNC, client_maker_.MakePingPacket(packet_number++));
   quic_data2.AddRead(
@@ -6291,14 +6340,17 @@ TEST_P(QuicSessionPoolTest, MultiplePortMigrationsExceedsMaxLimit_iQUICStyle) {
         quic::test::TestConnectionId(new_cid + i);
     client_maker_.set_connection_id(cid_on_new_path);
     MaybeMakeNewConnectionIdAvailableToSession(cid_on_new_path, session, i + 1);
-    quic_data2.AddWrite(
-        SYNCHRONOUS,
-        client_maker_.MakeConnectivityProbingPacket(packet_number));
+    quic_data2.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_number)
+                                         .AddPathChallengeFrame()
+                                         .AddPaddingFrame()
+                                         .Build());
     packet_number++;
     quic_data2.AddReadPause();
     // Connectivity probe to receive from the server.
-    quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(
-                                  server_packet_num++));
+    quic_data2.AddRead(ASYNC, server_maker_.Packet(server_packet_num++)
+                                  .AddPathResponseFrame()
+                                  .AddPaddingFrame()
+                                  .Build());
     if (i == 0) {
       // Retire old connection id and send ping packet after migration is
       // completed.
@@ -6324,12 +6376,15 @@ TEST_P(QuicSessionPoolTest, MultiplePortMigrationsExceedsMaxLimit_iQUICStyle) {
       // Add one more synchronous read on the last probing reader. The
       // reader should be deleted on the read before this one.
       // The test will verify this read is not consumed.
-      quic_data2.AddRead(
-          SYNCHRONOUS,
-          server_maker_.MakeConnectivityProbingPacket(server_packet_num++));
+      quic_data2.AddRead(SYNCHRONOUS, server_maker_.Packet(server_packet_num++)
+                                          .AddPathResponseFrame()
+                                          .AddPaddingFrame()
+                                          .Build());
     } else {
-      quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(
-                                    server_packet_num++));
+      quic_data2.AddRead(ASYNC, server_maker_.Packet(server_packet_num++)
+                                    .AddPathResponseFrame()
+                                    .AddPaddingFrame()
+                                    .Build());
     }
 
     if (i == 3) {
@@ -6337,8 +6392,10 @@ TEST_P(QuicSessionPoolTest, MultiplePortMigrationsExceedsMaxLimit_iQUICStyle) {
       // that ACK is sent. The next round of migration (which hits the limit)
       // will not send any proactive ACK when reading the successful probing
       // response.
-      quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(
-                                    server_packet_num++));
+      quic_data2.AddRead(ASYNC, server_maker_.Packet(server_packet_num++)
+                                    .AddPathResponseFrame()
+                                    .AddPaddingFrame()
+                                    .Build());
       quic_data2.AddWrite(SYNCHRONOUS,
                           client_maker_.MakeAckPacket(packet_number++, 9, 9));
     }
@@ -6449,11 +6506,15 @@ TEST_P(QuicSessionPoolTest,
       quic::test::TestConnectionId(12345678);
   client_maker_.set_connection_id(cid_on_new_path);
   // Connectivity probe to be sent on the new path.
-  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeConnectivityProbingPacket(
-                                       packet_number++));
+  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_number++)
+                                       .AddPathChallengeFrame()
+                                       .AddPaddingFrame()
+                                       .Build());
   quic_data2.AddReadPause();
   // Connectivity probe to receive from the server.
-  quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(2));
+  quic_data2.AddRead(
+      ASYNC,
+      server_maker_.Packet(2).AddPathResponseFrame().AddPaddingFrame().Build());
   quic_data2.AddReadPauseForever();
   // Ping packet to send after migration is completed.
   quic_data2.AddWrite(ASYNC, client_maker_.Packet(packet_number++)
@@ -6739,11 +6800,15 @@ void QuicSessionPoolTest::TestMigrateSessionWithDrainingStream(
       quic::test::TestConnectionId(12345678);
   client_maker_.set_connection_id(cid_on_new_path);
   // Connectivity probe to be sent on the new path.
-  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeConnectivityProbingPacket(
-                                       packet_number++));
+  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_number++)
+                                       .AddPathChallengeFrame()
+                                       .AddPaddingFrame()
+                                       .Build());
   quic_data2.AddReadPause();
   // Connectivity probe to receive from the server.
-  quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(3));
+  quic_data2.AddRead(
+      ASYNC,
+      server_maker_.Packet(3).AddPathResponseFrame().AddPaddingFrame().Build());
   // Ping packet to send after migration is completed.
   quic_data2.AddWrite(write_mode_for_queued_packet,
                       client_maker_.MakeAckAndRetransmissionPacket(
@@ -6873,11 +6938,15 @@ TEST_P(QuicSessionPoolTest, MigrateOnNewNetworkConnectAfterPathDegrading) {
       quic::test::TestConnectionId(12345678);
   client_maker_.set_connection_id(cid_on_new_path);
   // Connectivity probe to be sent on the new path.
-  quic_data2.AddWrite(
-      SYNCHRONOUS, client_maker_.MakeConnectivityProbingPacket(packet_num++));
+  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_num++)
+                                       .AddPathChallengeFrame()
+                                       .AddPaddingFrame()
+                                       .Build());
   quic_data2.AddReadPause();
   // Connectivity probe to receive from the server.
-  quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(1));
+  quic_data2.AddRead(
+      ASYNC,
+      server_maker_.Packet(1).AddPathResponseFrame().AddPaddingFrame().Build());
   // in-flight SETTINGS and requests will be retransmitted. Since data is
   // already sent on the new address, ping will no longer be sent.
   quic_data2.AddWrite(ASYNC,
@@ -7256,11 +7325,15 @@ void QuicSessionPoolTest::TestMigrateSessionEarlyNonMigratableStream(
       quic::test::TestConnectionId(12345678);
   client_maker_.set_connection_id(cid_on_new_path);
   // Connectivity probe to be sent on the new path.
-  quic_data1.AddWrite(
-      SYNCHRONOUS, client_maker_.MakeConnectivityProbingPacket(packet_num++));
+  quic_data1.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_num++)
+                                       .AddPathChallengeFrame()
+                                       .AddPaddingFrame()
+                                       .Build());
   quic_data1.AddReadPause();
   // Connectivity probe to receive from the server.
-  quic_data1.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(1));
+  quic_data1.AddRead(
+      ASYNC,
+      server_maker_.Packet(1).AddPathResponseFrame().AddPaddingFrame().Build());
 
   if (migrate_idle_sessions) {
     quic_data1.AddReadPauseForever();
@@ -7725,11 +7798,15 @@ TEST_P(QuicSessionPoolTest, MigrateBackToDefaultPostMigrationOnWriteError) {
   MockQuicData quic_data3(version_);
   client_maker_.set_connection_id(cid2);
   // Connectivity probe to be sent on the new path.
-  quic_data3.AddWrite(
-      SYNCHRONOUS, client_maker_.MakeConnectivityProbingPacket(packet_num++));
+  quic_data3.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_num++)
+                                       .AddPathChallengeFrame()
+                                       .AddPaddingFrame()
+                                       .Build());
   // Connectivity probe to receive from the server.
-  quic_data3.AddRead(
-      ASYNC, server_maker_.MakeConnectivityProbingPacket(peer_packet_num++));
+  quic_data3.AddRead(ASYNC, server_maker_.Packet(peer_packet_num++)
+                                .AddPathResponseFrame()
+                                .AddPaddingFrame()
+                                .Build());
   quic_data3.AddReadPauseForever();
   // There is no other data to retransmit as they have been acknowledged by
   // the packet containing NEW_CONNECTION_ID frame from the server.
@@ -8010,9 +8087,10 @@ void QuicSessionPoolTest::TestNewConnectionOnAlternateNetworkBeforeHandshake(
   quic::QuicConnectionId cid_on_path1 = quic::test::TestConnectionId(1234567);
   client_maker_.set_connection_id(cid_on_path1);
   probing_data.AddReadPauseForever();
-  probing_data.AddWrite(
-      SYNCHRONOUS,
-      client_maker_.MakeConnectivityProbingPacket(probing_packet_num));
+  probing_data.AddWrite(SYNCHRONOUS, client_maker_.Packet(probing_packet_num)
+                                         .AddPathChallengeFrame()
+                                         .AddPaddingFrame()
+                                         .Build());
   probing_data.AddSocketDataToFactory(socket_factory_.get());
 
   // Create request and QuicHttpStream.
