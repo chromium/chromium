@@ -2924,12 +2924,10 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [[EarlGrey selectElementWithMatcher:offMatcher] assertWithMatcher:grey_nil()];
 
   [PasswordsInOtherAppsAppInterface startFakeManagerWithAutoFillStatus:NO];
-  [[EarlGrey selectElementWithMatcher:offMatcher]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:offMatcher];
 
   [PasswordsInOtherAppsAppInterface setAutoFillStatus:YES];
-  [[EarlGrey selectElementWithMatcher:onMatcher]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:onMatcher];
 }
 
 // Tests that the detail view is dismissed when the last password is deleted,
