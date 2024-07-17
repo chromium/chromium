@@ -52,6 +52,7 @@ static_library("ranking") {
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser/ash/app_list/search/util",
     "//chrome/browser/ash/app_list/search/util:proto",
     "//chrome/browser/profiles:profile",
     "//chromeos/crosapi/mojom",

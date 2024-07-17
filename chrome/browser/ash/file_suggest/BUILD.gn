@@ -35,6 +35,7 @@ static_library("file_suggest") {
     "//chrome/browser/ash/app_list/search/files",
     "//chrome/browser/ash/app_list/search/ranking",
     "//chrome/browser/ash/app_list/search/ranking:proto",
+    "//chrome/browser/ash/app_list/search/util",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/profiles:profile",

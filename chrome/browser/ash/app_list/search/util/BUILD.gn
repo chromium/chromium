@@ -15,6 +15,25 @@ proto_library("proto") {
   ]
 }
 
+static_library("util") {
+  sources = [
+    "ftrl_optimizer.cc",
+    "ftrl_optimizer.h",
+    "keyword_cache.cc",
+    "keyword_cache.h",
+    "mrfu_cache.cc",
+    "mrfu_cache.h",
+    "score_normalizer.cc",
+    "score_normalizer.h",
+  ]
+
+  deps = [
+    ":proto",
+    "//ash",
+    "//base",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -26,6 +45,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":util",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/app_list/search/test:test_support",
