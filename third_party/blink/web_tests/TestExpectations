@@ -2662,7 +2662,7 @@ crbug.com/345936780 [ Mac12 ] external/wpt/editing/other/exec-command-with-text-
 crbug.com/346368803 [ Mac12 ] external/wpt/html/semantics/embedded-content/bfcache/embedded-not-found.html [ Timeout ]
 crbug.com/346088872 [ Mac12 ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay.html [ Timeout ]
 crbug.com/346088872 [ Mac12 ] external/wpt/html/semantics/embedded-content/media-elements/readyState_during_canplay.html [ Timeout ]
-crbug.com/346088873 [ Mac12 ] external/wpt/scroll-to-text-fragment/non-html-documents.html [ Timeout ]
+crbug.com/346088873 [ Mac12 ] external/wpt/scroll-to-text-fragment/non-html-documents.html [ Skip Timeout ]
 crbug.com/346368829 [ Mac12 ] external/wpt/service-workers/service-worker/fetch-event-respond-with-custom-response.https.html [ Timeout ]
 crbug.com/346368829 [ Mac12 ] external/wpt/service-workers/service-worker/tentative/static-router/static-router-resource-timing.https.html [ Timeout ]
 crbug.com/346042379 [ Mac12 ] external/wpt/video-rvfc/request-video-frame-callback-dom.html [ Timeout ]
