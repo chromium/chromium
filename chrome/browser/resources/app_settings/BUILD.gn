@@ -13,25 +13,35 @@ build_webui("build") {
 
   static_files = [ "web_app_settings.html" ]
 
-  web_component_files = [
-    "app.ts",
-    "app_content_dialog.ts",
-    "app_content_item.ts",
-    "file_handling_item.ts",
-    "more_permissions_item.ts",
-    "permission_item.ts",
-    "run_on_os_login_item.ts",
-    "supported_links_dialog.ts",
-    "supported_links_item.ts",
-    "supported_links_overlapping_apps_dialog.ts",
-    "toggle_row.ts",
-    "uninstall_button.ts",
-    "window_mode_item.ts",
-  ]
-
   non_web_component_files = [
+    "app.html.ts",
+    "app.ts",
+    "app_content_dialog.html.ts",
+    "app_content_dialog.ts",
+    "app_content_item.html.ts",
+    "app_content_item.ts",
+    "file_handling_item.html.ts",
+    "file_handling_item.ts",
+    "more_permissions_item.html.ts",
+    "more_permissions_item.ts",
+    "permission_item.html.ts",
+    "permission_item.ts",
+    "run_on_os_login_item.html.ts",
+    "run_on_os_login_item.ts",
+    "supported_links_dialog.html.ts",
+    "supported_links_dialog.ts",
+    "supported_links_item.html.ts",
+    "supported_links_item.ts",
+    "supported_links_overlapping_apps_dialog.html.ts",
+    "supported_links_overlapping_apps_dialog.ts",
+    "toggle_row.html.ts",
+    "toggle_row.ts",
+    "uninstall_button.html.ts",
+    "uninstall_button.ts",
     "web_app_settings.ts",
     "web_app_settings_utils.ts",
+    "window_mode_item.html.ts",
+    "window_mode_item.ts",
   ]
 
   css_files = [

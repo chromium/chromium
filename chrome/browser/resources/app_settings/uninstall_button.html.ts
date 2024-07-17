@@ -1,3 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {UninstallButtonElement} from './uninstall_button.js';
+
+export function getHtml(this: UninstallButtonElement) {
+  return html`<!--_html_template_start_-->
 ${this.showPolicyIndicator_() ? html`
   <cr-tooltip-icon
       id="policyIndicator"
@@ -14,3 +24,5 @@ ${this.showUninstallButton_() ? html`
     ${this.uninstallLabel}
   </cr-button>
 ` : ''}
+<!--_html_template_end_-->`;
+}

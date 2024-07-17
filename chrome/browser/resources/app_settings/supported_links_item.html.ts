@@ -1,7 +1,18 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {SupportedLinksItemElement} from './supported_links_item.js';
+
+export function getHtml(this: SupportedLinksItemElement) {
+  return html`<!--_html_template_start_-->
 <div class="permission-section-header">
   <localized-link id="heading" class="header-text"
       @link-clicked="${this.launchDialog_}"
-      .localizedString="${this.i18nAdvanced('appManagementIntentSettingsTitle')}">
+      .localizedString=
+          "${this.i18nAdvanced('appManagementIntentSettingsTitle')}">
   </localized-link>
 </div>
 ${this.disabled_ ? html`
@@ -46,3 +57,5 @@ ${this.showOverlappingAppsDialog_ ? html`
       .overlappingAppIds="${this.overlappingAppIds_}">
   </app-management-supported-links-overlapping-apps-dialog>
 ` : ''}
+<!--_html_template_end_-->`;
+}
