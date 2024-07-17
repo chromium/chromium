@@ -5,8 +5,10 @@
 #include "components/commerce/core/compare/product_specifications_server_proxy.h"
 
 #include <optional>
+#include <string>
 
 #include "base/command_line.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/commerce/core/commerce_constants.h"
@@ -24,6 +26,7 @@ namespace commerce {
 namespace {
 const char kAltTextKey[] = "alternativeText";
 const char kDescriptionKey[] = "description";
+const char kFaviconUrlKey[] = "faviconUrl";
 const char kGPCKey[] = "gpcId";
 const char kIdentifiersKey[] = "identifiers";
 const char kImageURLKey[] = "imageUrl";
@@ -36,10 +39,11 @@ const char kProductSpecificationSectionsKey[] = "productSpecificationSections";
 const char kProductSpecificationValuesKey[] = "productSpecificationValues";
 const char kSpecificationDescriptionsKey[] = "specificationDescriptions";
 const char kSummaryKey[] = "summaryDescription";
+const char kThumbnailUrlKey[] = "thumbnailImageUrl";
 const char kTitleKey[] = "title";
-
 const char kTextKey[] = "text";
 const char kUrlKey[] = "url";
+const char kUrlsKey[] = "urls";
 
 const uint64_t kTimeoutMs = 5000;
 
@@ -89,10 +93,29 @@ std::optional<ProductSpecifications::DescriptionText> ParseDescriptionText(
   description.emplace();
 
   const std::string* description_text = desc_text_dict->FindString(kTextKey);
-  const std::string* description_url = desc_text_dict->FindString(kUrlKey);
+
+  const base::Value::List* url_list = desc_text_dict->FindList(kUrlsKey);
+  if (url_list) {
+    for (const auto& url_object : *url_list) {
+      if (!url_object.is_dict()) {
+        continue;
+      }
+      const std::string* url_string = url_object.GetDict().FindString(kUrlKey);
+      const std::string* title = url_object.GetDict().FindString(kTitleKey);
+      const std::string* favicon_url =
+          url_object.GetDict().FindString(kFaviconUrlKey);
+      const std::string* thumbnail_url =
+          url_object.GetDict().FindString(kThumbnailUrlKey);
+      description->urls.push_back(UrlInfo(
+          GURL(url_string ? *url_string : ""),
+          base::UTF8ToUTF16(title ? *title : ""),
+          favicon_url ? std::make_optional(GURL(*favicon_url)) : std::nullopt,
+          thumbnail_url ? std::make_optional(GURL(*thumbnail_url))
+                        : std::nullopt));
+    }
+  }
 
   description->text = description_text ? *description_text : "";
-  description->url = description_url ? GURL(*description_url) : GURL();
 
   return description;
 }

@@ -262,7 +262,15 @@ suite('AppTest', () => {
   test('populates specs table', async () => {
     const detailTitle = 'foo';
     const dimensionValues = {
-      summary: [{text: 'summary', url: {url: ''}}],
+      summary: [{
+        text: 'summary',
+        urls: [{
+          url: {url: ''},
+          title: '',
+          faviconUrl: {url: ''},
+          thumbnailUrl: {url: ''},
+        }],
+      }],
       specificationDescriptions: [
         {
           label: '',
@@ -270,10 +278,23 @@ suite('AppTest', () => {
           options: [
             {
               descriptions: [
-                {text: 'bar', url: {url: ''}},
+                {
+                  text: 'bar',
+                  urls: [{
+                    url: {url: ''},
+                    title: '',
+                    faviconUrl: {url: ''},
+                    thumbnailUrl: {url: ''},
+                  }],
+                },
                 {
                   text: 'baz',
-                  url: {url: ''},
+                  urls: [{
+                    url: {url: ''},
+                    title: '',
+                    faviconUrl: {url: ''},
+                    thumbnailUrl: {url: ''},
+                  }],
                 },
               ],
             },
@@ -362,7 +383,12 @@ suite('AppTest', () => {
               descriptions: [
                 {
                   text: 'bar',
-                  url: {url: ''},
+                  urls: [{
+                    url: {url: ''},
+                    title: '',
+                    faviconUrl: {url: ''},
+                    thumbnailUrl: {url: ''},
+                  }],
                 },
               ],
             },
@@ -427,7 +453,12 @@ suite('AppTest', () => {
               descriptions: [
                 {
                   text: 'desc 1',
-                  url: {url: ''},
+                  urls: [{
+                    url: {url: ''},
+                    title: '',
+                    faviconUrl: {url: ''},
+                    thumbnailUrl: {url: ''},
+                  }],
                 },
               ],
             },
@@ -462,7 +493,12 @@ suite('AppTest', () => {
               descriptions: [
                 {
                   text: 'desc 2',
-                  url: {url: ''},
+                  urls: [{
+                    url: {url: ''},
+                    title: '',
+                    faviconUrl: {url: ''},
+                    thumbnailUrl: {url: ''},
+                  }],
                 },
               ],
             },
@@ -543,7 +579,12 @@ suite('AppTest', () => {
               descriptions: [
                 {
                   text: 'desc 1',
-                  url: {url: ''},
+                  urls: [{
+                    url: {url: ''},
+                    title: '',
+                    faviconUrl: {url: ''},
+                    thumbnailUrl: {url: ''},
+                  }],
                 },
               ],
             },
@@ -579,7 +620,12 @@ suite('AppTest', () => {
               descriptions: [
                 {
                   text: 'desc 2',
-                  url: {url: ''},
+                  urls: [{
+                    url: {url: ''},
+                    title: '',
+                    faviconUrl: {url: ''},
+                    thumbnailUrl: {url: ''},
+                  }],
                 },
               ],
             },

@@ -58,6 +58,20 @@ struct PricePoint {
   string formatted_price;
 };
 
+struct UrlInfo {
+  // Title of the page represented by the URL.
+  string title;
+
+  // Url.
+  url.mojom.Url url;
+
+  // Favicon URL if it exists, otherwise an empty URL.
+  url.mojom.Url favicon_url;
+
+  // Thumbnail URL if it exists, otherwise an empty URL.
+  url.mojom.Url thumbnail_url;
+};
+
 struct PriceInsightsInfo {
   enum PriceBucket { kUnknown, kLow, kTypical, kHigh };
 
@@ -97,7 +111,7 @@ struct ProductSpecificationsDescriptionText {
   string text;
 
   // A context URL for the description if available.
-  url.mojom.Url url;
+  array<UrlInfo> urls;
 };
 
 struct ProductSpecificationsOption {
@@ -162,14 +176,6 @@ struct ProductSpecificationsSet {
 
   // The user's product URLs.
   array<url.mojom.Url> urls;
-};
-
-struct UrlInfo {
-  // Title of the page represented by the URL.
-  string title;
-
-  // Url.
-  url.mojom.Url url;
 };
 
 // Used by surfaces like the price tracking section in side panel, product

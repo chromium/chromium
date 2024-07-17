@@ -179,6 +179,25 @@ shopping_service::mojom::PriceInsightsInfoPtr PriceInsightsInfoToMojoObject(
   return insights_info;
 }
 
+shopping_service::mojom::ProductSpecificationsDescriptionTextPtr
+DescriptionTextToMojo(const ProductSpecifications::DescriptionText& desc_text) {
+  auto desc_text_ptr =
+      shopping_service::mojom::ProductSpecificationsDescriptionText::New();
+  desc_text_ptr->text = desc_text.text;
+  for (const auto& url_info : desc_text.urls) {
+    if (!url_info.url.SchemeIsHTTPOrHTTPS()) {
+      continue;
+    }
+    auto url_info_ptr = shopping_service::mojom::UrlInfo::New();
+    url_info_ptr->url = url_info.url;
+    url_info_ptr->title = base::UTF16ToUTF8(url_info.title);
+    url_info_ptr->favicon_url = url_info.favicon_url.value_or(GURL());
+    url_info_ptr->thumbnail_url = url_info.thumbnail_url.value_or(GURL());
+    desc_text_ptr->urls.push_back(std::move(url_info_ptr));
+  }
+  return desc_text_ptr;
+}
+
 shopping_service::mojom::ProductSpecificationsPtr ProductSpecsToMojo(
     const ProductSpecifications& specs) {
   auto specs_ptr = shopping_service::mojom::ProductSpecifications::New();
@@ -196,11 +215,7 @@ shopping_service::mojom::ProductSpecificationsPtr ProductSpecsToMojo(
 
     // Top-level product summaries.
     for (const auto& summary : product.summary) {
-      auto desc_text_ptr =
-          shopping_service::mojom::ProductSpecificationsDescriptionText::New();
-      desc_text_ptr->text = summary.text;
-      desc_text_ptr->url = summary.url;
-      product_ptr->summary.push_back(std::move(desc_text_ptr));
+      product_ptr->summary.push_back(DescriptionTextToMojo(summary));
     }
 
     for (const auto& [dimen_id, value] : product.product_dimension_values) {
@@ -209,11 +224,7 @@ shopping_service::mojom::ProductSpecificationsPtr ProductSpecsToMojo(
 
       // Summaries for the dimension as a whole.
       for (const auto& summary : value.summary) {
-        auto desc_text_ptr = shopping_service::mojom::
-            ProductSpecificationsDescriptionText::New();
-        desc_text_ptr->text = summary.text;
-        desc_text_ptr->url = summary.url;
-        value_ptr->summary.push_back(std::move(desc_text_ptr));
+        value_ptr->summary.push_back(DescriptionTextToMojo(summary));
       }
 
       for (const auto& description : value.descriptions) {
@@ -227,11 +238,8 @@ shopping_service::mojom::ProductSpecificationsPtr ProductSpecsToMojo(
               shopping_service::mojom::ProductSpecificationsOption::New();
 
           for (const auto& description_text : option.descriptions) {
-            auto desc_text_ptr = shopping_service::mojom::
-                ProductSpecificationsDescriptionText::New();
-            desc_text_ptr->text = description_text.text;
-            desc_text_ptr->url = description_text.url;
-            option_ptr->descriptions.push_back(std::move(desc_text_ptr));
+            option_ptr->descriptions.push_back(
+                DescriptionTextToMojo(description_text));
           }
 
           desc_ptr->options.push_back(std::move(option_ptr));

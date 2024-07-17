@@ -48,7 +48,14 @@ const std::string kSimpleResponse = R"(
             "summaryDescription": [
               {
                 "text": "Circle is round",
-                "url": "http://example.com/circle/"
+                "urls": [
+                  {
+                    "url": "http://example.com/circle/",
+                    "title": "Circles",
+                    "faviconUrl": "http://example.com/favicon.png",
+                    "thumbnailImageUrl": "http://example.com/thumbnail.png"
+                  }
+                ]
               }
             ],
             "imageUrl": "http://example.com/image.png",
@@ -62,7 +69,9 @@ const std::string kSimpleResponse = R"(
                         "description": [
                           {
                             "text": "Red",
-                            "url": "http://example.com/red/"
+                            "urls": [
+                              {"url": "http://example.com/red/"}
+                            ]
                           }
                         ]
                       }
@@ -75,7 +84,9 @@ const std::string kSimpleResponse = R"(
                 "summaryDescription": [
                   {
                     "text": "Descriptions summary",
-                    "url": "http://example.com/descriptions/"
+                    "urls": [
+                      {"url": "http://example.com/descriptions/"}
+                    ]
                   }
                 ]
               }
@@ -158,7 +169,19 @@ TEST_F(ProductSpecificationsServerProxyTest, JsonToProductSpecifications) {
                       spec->products[0].image_url.spec());
             ASSERT_EQ("Circle is round", spec->products[0].summary[0].text);
             ASSERT_EQ("http://example.com/circle/",
-                      spec->products[0].summary[0].url.spec());
+                      spec->products[0].summary[0].urls[0].url.spec());
+            ASSERT_EQ("http://example.com/favicon.png", spec->products[0]
+                                                            .summary[0]
+                                                            .urls[0]
+                                                            .favicon_url.value()
+                                                            .spec());
+            ASSERT_EQ("http://example.com/thumbnail.png",
+                      spec->products[0]
+                          .summary[0]
+                          .urls[0]
+                          .thumbnail_url.value()
+                          .spec());
+            ASSERT_EQ(u"Circles", spec->products[0].summary[0].urls[0].title);
 
             const ProductSpecifications::Description& color_desc =
                 spec->products[0]
@@ -168,7 +191,7 @@ TEST_F(ProductSpecificationsServerProxyTest, JsonToProductSpecifications) {
             ASSERT_EQ("The circle color", color_desc.alt_text);
             ASSERT_EQ("Red", color_desc.options[0].descriptions[0].text);
             ASSERT_EQ("http://example.com/red/",
-                      color_desc.options[0].descriptions[0].url.spec());
+                      color_desc.options[0].descriptions[0].urls[0].url.spec());
 
             looper->Quit();
           },
@@ -208,7 +231,7 @@ TEST_F(ProductSpecificationsServerProxyTest,
                      ASSERT_EQ("Circle is round",
                                spec->products[0].summary[0].text);
                      ASSERT_EQ("http://example.com/circle/",
-                               spec->products[0].summary[0].url.spec());
+                               spec->products[0].summary[0].urls[0].url.spec());
 
                      const ProductSpecifications::Description& color_desc =
                          spec->products[0]
@@ -218,9 +241,10 @@ TEST_F(ProductSpecificationsServerProxyTest,
                      ASSERT_EQ("The circle color", color_desc.alt_text);
                      ASSERT_EQ("Red",
                                color_desc.options[0].descriptions[0].text);
-                     ASSERT_EQ(
-                         "http://example.com/red/",
-                         color_desc.options[0].descriptions[0].url.spec());
+                     ASSERT_EQ("http://example.com/red/", color_desc.options[0]
+                                                              .descriptions[0]
+                                                              .urls[0]
+                                                              .url.spec());
 
                      looper->Quit();
                    },

@@ -60,8 +60,14 @@ DiscountInfo& DiscountInfo::operator=(const DiscountInfo&) = default;
 DiscountInfo::~DiscountInfo() = default;
 
 UrlInfo::UrlInfo() = default;
-UrlInfo::UrlInfo(const GURL& url, const std::u16string& title)
-    : url(url), title(title) {}
+UrlInfo::UrlInfo(const GURL& url,
+                 const std::u16string& title,
+                 const std::optional<GURL> favicon_url,
+                 const std::optional<GURL> thumbnail_url)
+    : url(url),
+      title(title),
+      favicon_url(favicon_url),
+      thumbnail_url(thumbnail_url) {}
 UrlInfo::UrlInfo(const UrlInfo&) = default;
 UrlInfo& UrlInfo::operator=(const UrlInfo& other) = default;
 UrlInfo::~UrlInfo() = default;

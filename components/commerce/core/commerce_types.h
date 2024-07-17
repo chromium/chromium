@@ -132,6 +132,26 @@ struct ProductInfo {
   bool server_image_available{false};
 };
 
+// Details about a particular URL.
+struct UrlInfo {
+  UrlInfo();
+  UrlInfo(const GURL& url,
+          const std::u16string& title,
+          const std::optional<GURL> favicon_url = std::nullopt,
+          const std::optional<GURL> thumbnail_url = std::nullopt);
+  UrlInfo(const UrlInfo&);
+  UrlInfo& operator=(const UrlInfo&);
+  bool operator==(const UrlInfo& other) const {
+    return url == other.url && title == other.title;
+  }
+  ~UrlInfo();
+
+  GURL url;
+  std::u16string title;
+  std::optional<GURL> favicon_url;
+  std::optional<GURL> thumbnail_url;
+};
+
 // Information provided by the product specifications backend.
 struct ProductSpecifications {
  public:
@@ -148,7 +168,7 @@ struct ProductSpecifications {
     DescriptionText(const DescriptionText&);
     ~DescriptionText();
     std::string text;
-    GURL url;
+    std::vector<UrlInfo> urls;
   };
 
   struct Description {
@@ -221,21 +241,6 @@ struct ParcelTrackingStatus {
   ParcelStatus::ParcelState state = ParcelStatus::UNKNOWN;
   GURL tracking_url;
   std::optional<base::Time> estimated_delivery_time;
-};
-
-// Details about a particular URL.
-struct UrlInfo {
-  UrlInfo();
-  UrlInfo(const GURL& url, const std::u16string& title);
-  UrlInfo(const UrlInfo&);
-  UrlInfo& operator=(const UrlInfo&);
-  bool operator==(const UrlInfo& other) const {
-    return url == other.url && title == other.title;
-  }
-  ~UrlInfo();
-
-  GURL url;
-  std::u16string title;
 };
 
 // Class representing the tap strip entry point.
