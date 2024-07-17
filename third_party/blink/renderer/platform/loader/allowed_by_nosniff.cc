@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/loader/allowed_by_nosniff.h"
 
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
@@ -30,44 +25,44 @@ using WebFeature = mojom::WebFeature;
 // future decisions about which types can be safely be disallowed. Below
 // is a number of constants about which use counters to report.
 
-const WebFeature kApplicationFeatures[2] = {
+const std::array<WebFeature, 2> kApplicationFeatures = {
     WebFeature::kCrossOriginApplicationScript,
     WebFeature::kSameOriginApplicationScript};
 
-const WebFeature kTextFeatures[2] = {WebFeature::kCrossOriginTextScript,
-                                     WebFeature::kSameOriginTextScript};
+const std::array<WebFeature, 2> kTextFeatures = {
+    WebFeature::kCrossOriginTextScript, WebFeature::kSameOriginTextScript};
 
-const WebFeature kApplicationOctetStreamFeatures[2] = {
+const std::array<WebFeature, 2> kApplicationOctetStreamFeatures = {
     WebFeature::kCrossOriginApplicationOctetStream,
     WebFeature::kSameOriginApplicationOctetStream,
 };
 
-const WebFeature kApplicationXmlFeatures[2] = {
+const std::array<WebFeature, 2> kApplicationXmlFeatures = {
     WebFeature::kCrossOriginApplicationXml,
     WebFeature::kSameOriginApplicationXml,
 };
 
-const WebFeature kTextHtmlFeatures[2] = {
+const std::array<WebFeature, 2> kTextHtmlFeatures = {
     WebFeature::kCrossOriginTextHtml,
     WebFeature::kSameOriginTextHtml,
 };
 
-const WebFeature kTextPlainFeatures[2] = {
+const std::array<WebFeature, 2> kTextPlainFeatures = {
     WebFeature::kCrossOriginTextPlain,
     WebFeature::kSameOriginTextPlain,
 };
 
-const WebFeature kTextXmlFeatures[2] = {
+const std::array<WebFeature, 2> kTextXmlFeatures = {
     WebFeature::kCrossOriginTextXml,
     WebFeature::kSameOriginTextXml,
 };
 
-const WebFeature kJsonFeatures[2] = {
+const std::array<WebFeature, 2> kJsonFeatures = {
     WebFeature::kCrossOriginJsonTypeForScript,
     WebFeature::kSameOriginJsonTypeForScript,
 };
 
-const WebFeature kUnknownFeatures[2] = {
+const std::array<WebFeature, 2> kUnknownFeatures = {
     WebFeature::kCrossOriginStrictNosniffWouldBlock,
     WebFeature::kSameOriginStrictNosniffWouldBlock,
 };
