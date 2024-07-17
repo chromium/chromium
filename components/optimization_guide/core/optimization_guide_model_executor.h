@@ -71,6 +71,10 @@ using OptimizationGuideModelExecutionResultStreamingCallback =
     base::RepeatingCallback<void(
         OptimizationGuideModelStreamingExecutionResult)>;
 
+// The callback for receiving the token size of the given input.
+using OptimizationGuideModelSizeInTokenCallback =
+    base::OnceCallback<void(uint32_t)>;
+
 // Params used to control sampling output tokens for the on-device model.
 struct SamplingParams {
   uint32_t top_k = 1;
@@ -184,6 +188,12 @@ class OptimizationGuideModelExecutor {
     virtual void ExecuteModel(
         const google::protobuf::MessageLite& request_metadata,
         OptimizationGuideModelExecutionResultStreamingCallback callback) = 0;
+
+    // Call `GetSizeInTokens()` from the model to get the size of the given text
+    // in tokens. The result will be passed back through the callback.
+    virtual void GetSizeInTokens(
+        const std::string& text,
+        OptimizationGuideModelSizeInTokenCallback callback) = 0;
   };
 
   // Whether an on-device session can be created for `feature`. An optional

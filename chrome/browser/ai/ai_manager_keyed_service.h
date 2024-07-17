@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_AI_AI_MANAGER_KEYED_SERVICE_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
@@ -47,6 +46,7 @@ class AIManagerKeyedService : public KeyedService,
   void CanOptimizationGuideKeyedServiceCreateGenericSession(
       CanCreateTextSessionCallback callback);
 
+  // A `KeyedService` should never outlive the `BrowserContext`.
   raw_ptr<content::BrowserContext> browser_context_;
   mojo::ReceiverSet<blink::mojom::AIManager> receivers_;
 

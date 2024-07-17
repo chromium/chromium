@@ -149,6 +149,9 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   void ExecuteModel(
       const google::protobuf::MessageLite& request_metadata,
       OptimizationGuideModelExecutionResultStreamingCallback callback) override;
+  void GetSizeInTokens(
+      const std::string& text,
+      OptimizationGuideModelSizeInTokenCallback callback) override;
 
   // on_device_model::mojom::StreamingResponder:
   void OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) override;

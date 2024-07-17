@@ -982,4 +982,10 @@ SessionImpl::ExecuteModelHistogramLogger::~ExecuteModelHistogramLogger() {
       result_);
 }
 
+void SessionImpl::GetSizeInTokens(
+    const std::string& text,
+    OptimizationGuideModelSizeInTokenCallback callback) {
+  GetOrCreateSession().GetSizeInTokens(text, std::move(callback));
+}
+
 }  // namespace optimization_guide

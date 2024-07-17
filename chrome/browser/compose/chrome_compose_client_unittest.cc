@@ -144,6 +144,11 @@ class MockSession
       (const google::protobuf::MessageLite& request_metadata,
        optimization_guide::
            OptimizationGuideModelExecutionResultStreamingCallback callback));
+  MOCK_METHOD(
+      void,
+      GetSizeInTokens,
+      (const std::string& text,
+       optimization_guide::OptimizationGuideModelSizeInTokenCallback callback));
 };
 
 // A wrapper that passes through calls to the underlying MockSession. Allows for
@@ -167,6 +172,12 @@ class MockSessionWrapper
       optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
           callback) override {
     session_->ExecuteModel(request_metadata, std::move(callback));
+  }
+  void GetSizeInTokens(
+      const std::string& text,
+      optimization_guide::OptimizationGuideModelSizeInTokenCallback callback)
+      override {
+    session_->GetSizeInTokens(text, std::move(callback));
   }
 
  private:
