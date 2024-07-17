@@ -20,10 +20,9 @@
 #
 # Apply all pre-commit hooks to all files:
 #   $ pre-commit run --all-files
-default_stages: [pre-push, manual]
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v4.6.0
     hooks:
       - id: check-docstring-first
       - id: check-executables-have-shebangs
@@ -40,14 +39,14 @@ repos:
       - id: requirements-txt-fixer
       - id: trailing-whitespace
   - repo: https://github.com/compilerla/conventional-pre-commit
-    rev: v3.1.0
+    rev: v3.2.0
     hooks:
       # Most common ones: [build, chore, ci, docs, feat, fix, refactor, test]
       # https://conventionalcommits.org
       - id: conventional-pre-commit
         stages: [commit-msg]
   - repo: https://github.com/PyCQA/flake8.git
-    rev: 7.0.0
+    rev: 7.1.0
     hooks:
       - id: flake8
   - repo: https://github.com/google/yapf
@@ -63,26 +62,26 @@ repos:
     hooks:
       - id: isort
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.8.0
+    rev: v1.10.1
     hooks:
       - id: mypy
         additional_dependencies: [types-requests]
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.15.0
+    rev: v3.16.0
     hooks:
       - id: pyupgrade
         args: [--py310-plus]
   - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.7
+    rev: 1.7.9
     hooks:
       - id: bandit
         args: [--ini, .bandit]
   - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.9.0.6
+    rev: v0.10.0.1
     hooks:
       - id: shellcheck
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.6
+    rev: v2.3.0
     hooks:
       - id: codespell
         # skip false positives
@@ -91,10 +90,11 @@ repos:
             --skip=package-lock.json,
             --skip=tests/screenshot/test_screenshot.py,
             --skip=*.py.ini,
+            -L=thirdParty,
           ]
         exclude_types: [pem]
   - repo: https://github.com/google/keep-sorted
-    rev: v0.3.0
+    rev: v0.4.0
     hooks:
       - id: keep-sorted
   - repo: local
