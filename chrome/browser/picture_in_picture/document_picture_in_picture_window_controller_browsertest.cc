@@ -170,7 +170,8 @@ class DocumentPictureInPictureWindowControllerBrowserTest
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {blink::features::kDocumentPictureInPictureAPI,
-         blink::features::kCSSDisplayModePictureInPicture},
+         blink::features::kCSSDisplayModePictureInPicture,
+         blink::features::kDocumentPictureInPicturePreferInitialPlacement},
         /*disabled_features=*/{});
     InProcessBrowserTest::SetUp();
   }
@@ -196,7 +197,8 @@ class DocumentPictureInPictureWindowControllerBrowserTest
 
   void LoadTabAndEnterPictureInPicture(
       Browser* browser,
-      const gfx::Size& window_size = gfx::Size(500, 500)) {
+      const gfx::Size& window_size = gfx::Size(500, 500),
+      bool prefer_initial_window_placement = false) {
     GURL test_page_url = ui_test_utils::GetTestUrl(
         base::FilePath(base::FilePath::kCurrentDirectory),
         base::FilePath(kPictureInPictureDocumentPipPage));
@@ -208,10 +210,13 @@ class DocumentPictureInPictureWindowControllerBrowserTest
 
     SetUpWindowController(active_web_contents);
 
-    const std::string script = base::StrCat(
-        {"createDocumentPipWindow({width:",
-         base::NumberToString(window_size.width()),
-         ",height:", base::NumberToString(window_size.height()), "})"});
+    std::string script =
+        base::StrCat({"createDocumentPipWindow({width:",
+                      base::NumberToString(window_size.width()),
+                      ",height:", base::NumberToString(window_size.height()),
+                      ",preferInitialWindowPlacement:",
+                      prefer_initial_window_placement ? "true" : "false"});
+    script = base::StrCat({script, "})"});
     ASSERT_EQ(true, EvalJs(active_web_contents, script));
     ASSERT_TRUE(window_controller() != nullptr);
     // Especially on Linux, this isn't synchronous.
@@ -698,7 +703,8 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   CheckOriginSet(browser_view);
 
   // Get the bounds, which might not be the same size we asked for.
-  gfx::Rect window_bounds = browser_view->GetBounds();
+  const gfx::Rect original_window_bounds = browser_view->GetBounds();
+  gfx::Rect window_bounds = original_window_bounds;
 
   // Move the window and change the size.  Make sure that it stays on-screen.
   // Also make sure it gets smaller, in case one of the bounds was clipped to
@@ -762,6 +768,17 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   // The new window should match the bounds we set for the old one, which differ
   // from the default.
   EXPECT_EQ(browser_view_2->GetBounds(), window_bounds);
+
+  // Close the window and re-open it, but request no cache this time.  This
+  // should revert it to its original bounds.
+  LoadTabAndEnterPictureInPicture(browser(), size,
+                                  /*prefer_initial_window_placement=*/true);
+  auto* pip_web_contents_3 = window_controller()->GetChildWebContents();
+  ASSERT_NE(nullptr, pip_web_contents_3);
+  WaitForPageLoad(pip_web_contents_3);
+  auto* browser_view_3 = BrowserView::GetBrowserViewForNativeWindow(
+      pip_web_contents_3->GetTopLevelNativeWindow());
+  EXPECT_EQ(browser_view_3->GetBounds(), original_window_bounds);
 }
 
 INSTANTIATE_TEST_SUITE_P(WindowSizes,

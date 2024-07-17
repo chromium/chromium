@@ -1425,6 +1425,15 @@
         "default": "stable",
       },
     },
+    // Enables `preferInitialWindowPlacement` Document PiP option to skip
+    // re-using the previous pip window bounds.
+    {
+      name: "DocumentPictureInPicturePreferInitialPlacement",
+      status: {
+        "Android": "",
+        "default": "experimental",
+      },
+    },
     // Enables propagating user activation from a document picture-in-picture
     // window up to its opener window and vice versa.
     {

@@ -281,7 +281,7 @@ gfx::Rect PictureInPictureWindowManager::CalculateOuterWindowBounds(
   gfx::Rect window_bounds;
 
   // If the outer bounds for this request are cached, then ignore everything
-  // else and use those.
+  // else and use those, unless the site requested that we don't.
   //
   // Typically, we have a window controller at this point, but often during
   // tests we don't.  Don't worry about the cache if it's missing.
@@ -294,7 +294,10 @@ gfx::Rect PictureInPictureWindowManager::CalculateOuterWindowBounds(
     auto cached_window_bounds =
         PictureInPictureBoundsCache::GetBoundsForNewWindow(
             web_contents, display, requested_content_bounds);
-    if (cached_window_bounds) {
+    // Ignore the result if we're asked to do so.  Note that we still have to
+    // ask the cache, so that it's set up to accept position updates later for
+    // this request.
+    if (cached_window_bounds && !pip_options.prefer_initial_window_placement) {
       // Cache hit!  Just return it as the window bounds.
       return *cached_window_bounds;
     }

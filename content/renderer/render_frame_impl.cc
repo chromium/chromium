@@ -6644,6 +6644,8 @@ WebView* RenderFrameImpl::CreateNewWindow(
     pip_mojom_opts->height = pip_options->height;
     pip_mojom_opts->disallow_return_to_opener =
         pip_options->disallow_return_to_opener;
+    pip_mojom_opts->prefer_initial_window_placement =
+        pip_options->prefer_initial_window_placement;
     params->pip_options = std::move(pip_mojom_opts);
   }
 

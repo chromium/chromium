@@ -17,4 +17,8 @@ struct PictureInPictureWindowOptions {
   // the opener does not make sense for the given document picture-in-picture
   // experience.
   bool disallow_return_to_opener;
+
+  // When true, don't try to re-use the previous window bounds from the
+  // bounds cache.  Instead, just use the default position and size.
+  bool prefer_initial_window_placement;
 };
