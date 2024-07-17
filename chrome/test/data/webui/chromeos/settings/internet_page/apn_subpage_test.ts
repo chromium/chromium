@@ -37,6 +37,7 @@ suite('<apn-subpage>', () => {
       managedNetworkAvailable: false,
       serial: undefined,
       isCarrierLocked: false,
+      isFlashing: false,
     };
   }
 

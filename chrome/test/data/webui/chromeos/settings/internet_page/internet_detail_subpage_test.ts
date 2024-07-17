@@ -162,6 +162,7 @@ suite('<settings-internet-detail-subpage>', () => {
       managedNetworkAvailable: false,
       serial: undefined,
       isCarrierLocked: false,
+      isFlashing: false,
     };
   }
 

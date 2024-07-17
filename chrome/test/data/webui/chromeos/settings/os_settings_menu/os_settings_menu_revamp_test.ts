@@ -842,6 +842,7 @@ suite('<os-settings-menu>', () => {
         managedNetworkAvailable: false,
         serial: undefined,
         isCarrierLocked: false,
+        isFlashing: false,
       };
     }
 

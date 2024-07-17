@@ -53,21 +53,22 @@ suite('CrComponentsActivationCodePageTest', function() {
     MojoInterfaceProviderImpl.getInstance().setMojoServiceRemoteForTest(
         networkConfigRemote);
     networkConfigRemote.setDeviceStateForTest({
-        ipv4Address: undefined,
-        ipv6Address: undefined,
-        imei: undefined,
-        macAddress: undefined,
-        scanning: false,
-        simLockStatus: undefined,
-        simInfos: undefined,
-        inhibitReason: InhibitReason.kNotInhibited,
-        simAbsent: false,
-        managedNetworkAvailable: false,
-        serial: undefined,
-        isCarrierLocked: true,
-        type: NetworkType.kCellular,
-        deviceState: DeviceStateType.kEnabled,
-      });
+      ipv4Address: undefined,
+      ipv6Address: undefined,
+      imei: undefined,
+      macAddress: undefined,
+      scanning: false,
+      simLockStatus: undefined,
+      simInfos: undefined,
+      inhibitReason: InhibitReason.kNotInhibited,
+      simAbsent: false,
+      managedNetworkAvailable: false,
+      serial: undefined,
+      isCarrierLocked: true,
+      isFlashing: false,
+      type: NetworkType.kCellular,
+      deviceState: DeviceStateType.kEnabled,
+    });
 
     await flushAsync();
 
@@ -673,21 +674,22 @@ suite('CrComponentsActivationCodePageTest', function() {
       'check carrier lock warning not displayed for consumer devices',
       async function() {
         networkConfigRemote.setDeviceStateForTest({
-            ipv4Address: undefined,
-            ipv6Address: undefined,
-            imei: undefined,
-            macAddress: undefined,
-            scanning: false,
-            simLockStatus: undefined,
-            simInfos: undefined,
-            inhibitReason: InhibitReason.kNotInhibited,
-            simAbsent: false,
-            managedNetworkAvailable: false,
-            serial: undefined,
-            isCarrierLocked: false,
-            type: NetworkType.kCellular,
-            deviceState: DeviceStateType.kEnabled,
-          });
+          ipv4Address: undefined,
+          ipv6Address: undefined,
+          imei: undefined,
+          macAddress: undefined,
+          scanning: false,
+          simLockStatus: undefined,
+          simInfos: undefined,
+          inhibitReason: InhibitReason.kNotInhibited,
+          simAbsent: false,
+          managedNetworkAvailable: false,
+          serial: undefined,
+          isCarrierLocked: false,
+          isFlashing: false,
+          type: NetworkType.kCellular,
+          deviceState: DeviceStateType.kEnabled,
+        });
         await flushAsync();
         const page = document.createElement('activation-code-page');
         assertFalse(

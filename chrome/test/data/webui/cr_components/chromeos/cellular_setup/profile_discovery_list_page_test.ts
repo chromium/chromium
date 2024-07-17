@@ -39,6 +39,7 @@ suite('CrComponentsProfileDiscoveryListPageTest', function() {
       managedNetworkAvailable: false,
       serial: undefined,
       isCarrierLocked: isCarrierLocked,
+      isFlashing: false,
       type: NetworkType.kCellular,
       deviceState: DeviceStateType.kEnabled,
     });

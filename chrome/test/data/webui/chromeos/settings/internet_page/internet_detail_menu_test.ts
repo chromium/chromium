@@ -263,6 +263,7 @@ suite('<settings-internet-detail-menu>', () => {
       managedNetworkAvailable: false,
       serial: '',
       isCarrierLocked: false,
+      isFlashing: false,
     };
     assertTrue(tripleDot.disabled);
 

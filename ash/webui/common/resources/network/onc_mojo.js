@@ -225,6 +225,18 @@ export class OncMojo {
   }
 
   /**
+   * @param {?MojomDeviceStateProperties|undefined} device
+   * @return {boolean}
+   */
+  static deviceIsFlashing(device) {
+    if (!device) {
+      return false;
+    }
+
+    return device.isFlashing;
+  }
+
+  /**
    * @param {!NetworkType} value
    * @return {string}
    */

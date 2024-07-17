@@ -161,6 +161,7 @@ suite('internet-detail-dialog', () => {
       managedNetworkAvailable: false,
       serial: undefined,
       isCarrierLocked: false,
+      isFlashing: false,
     });
   }
 

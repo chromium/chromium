@@ -52,6 +52,7 @@ suite('CrComponentsCellularSetupTest', function() {
       managedNetworkAvailable: false,
       serial: undefined,
       isCarrierLocked: false,
+      isFlashing: false,
       type: NetworkType.kCellular,
       deviceState: DeviceStateType.kEnabled,
       simInfos: [{

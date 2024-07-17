@@ -669,6 +669,7 @@ mojom::DeviceStatePropertiesPtr DeviceStateToMojo(
     if (status == carrier_lock::ModemLockStatus::kCarrierLocked) {
       result->is_carrier_locked = true;
     }
+    result->is_flashing = device->flashing();
   }
   return result;
 }

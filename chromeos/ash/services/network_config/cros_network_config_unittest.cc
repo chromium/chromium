@@ -504,6 +504,13 @@ class CrosNetworkConfigTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void SetCellularFlashing(bool flashing) {
+    helper()->device_test()->SetDeviceProperty(
+        kCellularDevicePath, shill::kFlashingProperty, base::Value(flashing),
+        /*notify_changed=*/true);
+    base::RunLoop().RunUntilIdle();
+  }
+
   void SetupAPNList() {
     base::Value::List apn_entries;
     TestApnData apn_entry1;
@@ -1671,6 +1678,26 @@ TEST_F(CrosNetworkConfigTest, GetDeviceStateListCarrierUnlocked) {
   EXPECT_EQ(3, cellular->sim_lock_status->retries_left);
   EXPECT_EQ(kCellularTestImei, cellular->imei);
   ASSERT_FALSE(cellular->is_carrier_locked);
+}
+
+TEST_F(CrosNetworkConfigTest, GetDeviceStateListFlashing) {
+  SetCellularFlashing(true);
+
+  std::vector<mojom::DeviceStatePropertiesPtr> devices = GetDeviceStateList();
+  ASSERT_EQ(4u, devices.size());
+
+  mojom::DeviceStateProperties* cellular = devices[2].get();
+  EXPECT_EQ(mojom::NetworkType::kCellular, cellular->type);
+  ASSERT_TRUE(cellular->is_flashing);
+
+  SetCellularFlashing(false);
+
+  devices = GetDeviceStateList();
+  ASSERT_EQ(4u, devices.size());
+
+  cellular = devices[2].get();
+  EXPECT_EQ(mojom::NetworkType::kCellular, cellular->type);
+  ASSERT_FALSE(cellular->is_flashing);
 }
 
 TEST_F(CrosNetworkConfigTest, GetManagedPropertiesCellularProvider) {

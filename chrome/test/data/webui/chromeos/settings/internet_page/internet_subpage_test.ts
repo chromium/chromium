@@ -75,6 +75,7 @@ suite('<settings-internet-subpage>', () => {
       managedNetworkAvailable: false,
       serial: undefined,
       isCarrierLocked: false,
+      isFlashing: false,
     };
   }
 
@@ -766,6 +767,7 @@ suite('<settings-internet-subpage>', () => {
             managedNetworkAvailable: false,
             serial: undefined,
             isCarrierLocked: false,
+            isFlashing: false,
           });
           assertFalse(mojoApi.getIsDeviceScanning(NetworkType.kTether));
 
@@ -815,6 +817,7 @@ suite('<settings-internet-subpage>', () => {
           managedNetworkAvailable: false,
           serial: undefined,
           isCarrierLocked: false,
+          isFlashing: false,
         });
         assertFalse(mojoApi.getIsDeviceScanning(NetworkType.kTether));
 
@@ -853,6 +856,7 @@ suite('<settings-internet-subpage>', () => {
             managedNetworkAvailable: false,
             serial: undefined,
             isCarrierLocked: false,
+            isFlashing: false,
           });
           assertFalse(mojoApi.getIsDeviceScanning(NetworkType.kTether));
 

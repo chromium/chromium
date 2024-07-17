@@ -347,6 +347,9 @@ struct DeviceStateProperties {
   // Reported only for cellular devices. Defaults to false
   // for other device types.
   bool is_carrier_locked = false;
+  // Indicates whether the device is in the flashing state. Reported only
+  // for cellular devices. Defaults to false for other device types.
+  bool is_flashing = false;
 };
 
 const int32 kNoLimit = 0;
