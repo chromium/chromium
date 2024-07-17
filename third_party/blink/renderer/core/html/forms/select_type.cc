@@ -473,17 +473,23 @@ void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
 void MenuListSelectType::ManuallyAssignSlots() {
   VectorOf<Node> option_nodes;
   VectorOf<Node> buttons;
+  VectorOf<Node> all_children_except_button_and_datalist;
   Node* first_datalist = nullptr;
   for (Node& child : NodeTraversal::ChildrenOf(*select_)) {
     if (!child.IsSlotable()) {
       continue;
     }
-    if (CanAssignToSelectSlot(child)) {
-      option_nodes.push_back(child);
-    } else if (IsA<HTMLButtonElement>(child)) {
+    if (IsA<HTMLButtonElement>(child)) {
       buttons.push_back(child);
-    } else if (!first_datalist && IsA<HTMLDataListElement>(child)) {
-      first_datalist = &child;
+    } else if (IsA<HTMLDataListElement>(child)) {
+      if (!first_datalist) {
+        first_datalist = &child;
+      }
+    } else {
+      all_children_except_button_and_datalist.push_back(child);
+      if (CanAssignToSelectSlot(child)) {
+        option_nodes.push_back(child);
+      }
     }
   }
 
@@ -494,8 +500,15 @@ void MenuListSelectType::ManuallyAssignSlots() {
     button_slot_->Assign(buttons);
     datalist_slot_->Assign(first_datalist);
     if (default_datalist_->popoverOpen()) {
-      default_datalist_options_slot_->Assign(option_nodes);
+      default_datalist_options_slot_->Assign(
+          all_children_except_button_and_datalist);
+      option_slot_->Assign(nullptr);
     } else {
+      // When the popover is closed, we need to assign the <option>s into
+      // option_slot_ in order to prevent the closed popover's display:none from
+      // preventing computed style reaching the <option>s which is needed for
+      // appearance:auto.
+      default_datalist_options_slot_->Assign(nullptr);
       option_slot_->Assign(option_nodes);
     }
   } else {

@@ -86,11 +86,11 @@ instead of "initial value".
 |   <option>
 |     "initial value"
 |     <shadow:root>
-|       "initial value"
+|       <slot>
 |   <option>
 |     "inserted value"
 |     <shadow:root>
-|       "inserted value"
+|       <slot>
 |   <shadow:root>
 |     <div>
 |       aria-hidden="true"

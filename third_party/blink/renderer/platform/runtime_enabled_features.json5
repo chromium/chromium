@@ -3627,6 +3627,13 @@
       status: "stable",
     },
     {
+      // Makes the HTML parser allow most tags inside of <select> instead of
+      // only <option>, <optgroup>, and <hr>.
+      // https://github.com/whatwg/html/issues/10310
+      name: "SelectParserRelaxation",
+      status: "experimental",
+    },
+    {
       // If enabled, the type to search in a select element will ignore accents.
       // This should land in M128, and can be cleaned up (assuming no problems)
       // after M130.
@@ -3882,13 +3889,16 @@
       status: "experimental",
     },
     {
-      // Allows <button> and <datalist> in <select> which replace the default
-      // button and listbox respectively.
+      // Adds the appearance:base-select CSS value which makes <select>
+      // rendering using alternate content in the UA shadowroot which is
+      // stylable.
       name: "StylableSelect",
       status: "experimental",
       // :open is used in the UA stylesheet for StylableSelect, so this feature
       // will not work properly without CSSPseudoOpenClosed.
-      depends_on: ["CSSPseudoOpenClosed"],
+      // SelectParserRelaxation is needed to allow more content in <select>
+      // than just <option>s etc.
+      depends_on: ["CSSPseudoOpenClosed", "SelectParserRelaxation"],
     },
     {
       name: "StylusHandwriting",

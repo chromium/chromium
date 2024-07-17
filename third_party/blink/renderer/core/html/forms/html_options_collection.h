@@ -91,18 +91,10 @@ inline bool HTMLOptionsCollection::ElementMatches(
       parent->parentNode() == &RootNode()) {
     return true;
   }
-  if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
-    if (auto* datalist =
-            To<HTMLSelectElement>(RootNode()).FirstChildDatalist()) {
-      for (auto* ancestor = element.parentNode(); ancestor;
-           ancestor = ancestor->parentNode()) {
-        if (ancestor == datalist) {
-          return true;
-        } else if (IsA<HTMLSelectElement>(ancestor)) {
-          break;
-        }
-      }
-    }
+  if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+    // If there is another <select> in between RootNode and element, then
+    // RootNode should not include element in its options.
+    return To<HTMLOptionElement>(element).OwnerSelectElement() == RootNode();
   }
   return false;
 }

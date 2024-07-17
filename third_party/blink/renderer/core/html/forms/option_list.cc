@@ -16,8 +16,7 @@ void OptionListIterator::Advance(HTMLOptionElement* previous) {
   // This function returns only
   // - An OPTION child of select_, or
   // - An OPTION child of an OPTGROUP child of select_.
-  // - An OPTION descendant of a DATALIST child of select_ if StylableSelect is
-  // enabled.
+  // - An OPTION descendant of select_ if SelectParserRelaxation is enabled.
 
   Element* current;
   if (previous) {
@@ -31,26 +30,21 @@ void OptionListIterator::Advance(HTMLOptionElement* previous) {
       current_ = option;
       return;
     }
-    if (IsA<HTMLOptGroupElement>(current) && current->parentNode() == select_) {
-      if ((current_ = Traversal<HTMLOptionElement>::FirstChild(*current)))
-        return;
-    }
-    if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
-      // TODO(crbug.com/1511354): Consider using a flat tree traversal here
-      // instead of a node traversal. That would probably also require changing
-      // HTMLOptionsCollection to support flat tree traversals as well.
-      if (auto* datalist = select_->FirstChildDatalist()) {
-        // TODO(crbug.com/1511354): We shouldn't have to call IsDescendantOf
-        // here since we are already doing a tree traversal. This increases
-        // runtime.
-        if (current == datalist || (current->IsDescendantOf(datalist) &&
-                                    !IsA<HTMLSelectElement>(current))) {
-          current = ElementTraversal::Next(*current, select_);
-          continue;
+    if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+      if (IsA<HTMLSelectElement>(current)) {
+        current = ElementTraversal::NextSkippingChildren(*current, select_);
+      } else {
+        current = ElementTraversal::Next(*current, select_);
+      }
+    } else {
+      if (IsA<HTMLOptGroupElement>(current) &&
+          current->parentNode() == select_) {
+        if ((current_ = Traversal<HTMLOptionElement>::FirstChild(*current))) {
+          return;
         }
       }
+      current = ElementTraversal::NextSkippingChildren(*current, select_);
     }
-    current = ElementTraversal::NextSkippingChildren(*current, select_);
   }
   current_ = nullptr;
 }

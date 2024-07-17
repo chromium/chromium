@@ -223,14 +223,6 @@ class CORE_EXPORT HTMLSelectElement final
   // This <datalist> is the one which will get rendered as a popover.
   HTMLDataListElement* DisplayedDatalist() const;
 
-  // FirstChildDatalist returns the first child <datalist> of this <select>,
-  // which will get slotted into the UA shadowroot. It is kept up to date with a
-  // mutation observer, which calls RecalcFirstChildDatalist. This doesn't just
-  // look at the slot's assigned nodes because we can't run slot assignment in
-  // some cases when we need to find the datalist.
-  HTMLDataListElement* FirstChildDatalist() const;
-  void RecalcFirstChildDatalist();
-
   // This method returns true if the computed style is appearance:base-select and
   // the SelectType supports alternate rendering based on appearance:base-select.
   bool IsAppearanceBaseSelect() const;
@@ -341,7 +333,6 @@ class CORE_EXPORT HTMLSelectElement final
   Member<HTMLSlotElement> option_slot_;
   Member<HTMLOptionElement> last_on_change_option_;
   Member<HTMLOptionElement> suggested_option_;
-  Member<HTMLDataListElement> first_child_datalist_;
   HeapHashSet<Member<HTMLSelectedOptionElement>> descendant_selectedoptions_;
   bool uses_menu_list_ = true;
   bool is_multiple_;

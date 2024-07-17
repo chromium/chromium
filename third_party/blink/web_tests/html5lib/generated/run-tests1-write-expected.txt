@@ -1,2 +1,48 @@
 CONSOLE ERROR: Uncaught SyntaxError: Unexpected token '<'
-../resources/tests1.dat: PASS
+../resources/tests1.dat:
+30
+102
+
+Test 30 of 114 in ../resources/tests1.dat failed. Input:
+<select><b><option><select><option></b></select>X
+Got:
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <b>
+|         <option>
+|     <b>
+|     <select>
+|       <b>
+|         <option>
+|     "X"
+Expected:
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <option>
+|     <option>
+|       "X"
+
+Test 102 of 114 in ../resources/tests1.dat failed. Input:
+<select><b><option><select><option></b></select>
+Got:
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <b>
+|         <option>
+|     <b>
+|     <select>
+|       <b>
+|         <option>
+Expected:
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <option>
+|     <option>

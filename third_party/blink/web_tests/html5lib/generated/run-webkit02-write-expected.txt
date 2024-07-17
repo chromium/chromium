@@ -1,5 +1,6 @@
 ../resources/webkit02.dat:
 12
+13
 
 Test 12 of 16 in ../resources/webkit02.dat failed. Input:
 <isindex action="x">
@@ -15,3 +16,11 @@ Expected:
 |   <input>
 |     name="isindex"
 | <hr>
+
+Test 13 of 16 in ../resources/webkit02.dat failed. Input:
+<option><XH<optgroup></optgroup>
+Got:
+| <option>
+|   <xh<optgroup>
+Expected:
+| <option>

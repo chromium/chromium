@@ -1,0 +1,24 @@
+../resources/tests2.dat:
+43
+
+Test 43 of 61 in ../resources/tests2.dat failed. Input:
+<isindex test=x name=x>
+Got:
+| <html>
+|   <head>
+|   <body>
+|     <isindex>
+|       name="x"
+|       test="x"
+Expected:
+| <html>
+|   <head>
+|   <body>
+|     <form>
+|       <hr>
+|       <label>
+|         "This is a searchable index. Enter search keywords: "
+|         <input>
+|           name="isindex"
+|           test="x"
+|       <hr>

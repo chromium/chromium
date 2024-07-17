@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] html5lib_menuitem-element.html d4586cd7706bbb3a5b127c52c1f2861d1a3fb781
+  assert_equals: expected "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <select>" but got "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <select>\\n|       <menuitem>"
+Harness: the test ran to completion.
+

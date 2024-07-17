@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] option is child of div
+  assert_equals: expected "" but got "1"
+Harness: the test ran to completion.
+

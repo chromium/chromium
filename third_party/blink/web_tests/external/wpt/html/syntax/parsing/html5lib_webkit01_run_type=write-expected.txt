@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] html5lib_webkit01.html 7e8f1399f9c87dbd103303c6051873079b265360
+  assert_equals: expected "#document\\n| <html>\\n|   <head>\\n|   <body>\\n|     <select>\\n|       <option>\\n|         \\"A\\"\\n|     <option>\\n|       \\"B\\"\\n|       <select>\\n|         <option>\\n|           \\"C\\"\\n|     <option>\\n|       \\"D\\"\\n|       <select>\\n|         <option>\\n|           \\"E\\"\\n|     <option>\\n|       \\"F\\"\\n|       <select>\\n|         <option>\\n|           \\"G\\"" but got "#document\\n| <html>\\n|   <head>\\n|   <body>\\n|     <select>\\n|       <option>\\n|         \\"A\\"\\n|     <select>\\n|       <option>\\n|         \\"B\\"\\n|     <select>\\n|       <option>\\n|         \\"C\\"\\n|     <select>\\n|       <option>\\n|         \\"D\\"\\n|     <select>\\n|       <option>\\n|         \\"E\\"\\n|     <select>\\n|       <option>\\n|         \\"F\\"\\n|     <select>\\n|       <option>\\n|         \\"G\\"\\n|     <select>"
+Harness: the test ran to completion.
+

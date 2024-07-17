@@ -1,7 +1,3 @@
 Test for bug 17421: Lack of end tag of SELECT element causes inaccessible (blank) a rest of a page rendered.
 
 There should be two green bars below.
-
-PASS
-
-PASS

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Select with appearance:base-select should open and close when clicking the button.
+  promise_test: Unhandled rejection with value: object "Error: element click intercepted error"
+[FAIL] Clicking an option in an appearance:base-select select should choose the option and close the popover.
+  promise_test: Unhandled rejection with value: object "Error: element click intercepted error"
+Harness: the test ran to completion.
+

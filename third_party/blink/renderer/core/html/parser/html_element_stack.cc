@@ -499,7 +499,15 @@ bool HTMLElementStack::InButtonScope(html_names::HTMLTag tag) const {
 }
 
 bool HTMLElementStack::InSelectScope(html_names::HTMLTag tag) const {
-  return InScopeCommon<IsSelectScopeMarker>(top_.Get(), tag);
+  // IsSelectScopeMarker has rigid checks about having <option>s or
+  // <optgroup>s between the top and the <select> which don't hold
+  // true anymore when permitting other tags when SelectParserRelaxation is
+  // enabled.
+  if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+    return InScopeCommon<IsScopeMarker>(top_.Get(), tag);
+  } else {
+    return InScopeCommon<IsSelectScopeMarker>(top_.Get(), tag);
+  }
 }
 
 bool HTMLElementStack::HasTemplateInHTMLScope() const {

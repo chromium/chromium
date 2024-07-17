@@ -59,7 +59,9 @@ TEST_F(OptionListTest, OptionOnly) {
   ++iter;
   EXPECT_EQ("o2", Id(*iter));
   ++iter;
-  // No "o3" because it's in DIV.
+  // Include "o3" even though it's in a DIV.
+  EXPECT_EQ("o3", Id(*iter));
+  ++iter;
   EXPECT_EQ(list.end(), iter);
 }
 
@@ -90,7 +92,7 @@ TEST_F(OptionListTest, Optgroup) {
           "<option id=g11></option>");
   list = Select().GetOptionList();
   iter = list.begin();
-  EXPECT_EQ("g11", Id(*iter)) << "Nested OPTGROUP should be ignored.";
+  EXPECT_EQ("gg11", Id(*iter)) << "Nested OPTGROUP should be included.";
 }
 
 }  // naemespace blink

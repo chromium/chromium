@@ -1,0 +1,3 @@
+CONSOLE MESSAGE: PASS
+CONSOLE MESSAGE: FOO<span>BAR</span>BAZ
+../resources/webkit01.dat: PASS

@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] showPopover and hidePopover should work on the select datalist.
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'showPopover' on 'HTMLElement': Not supported on elements that do not have a valid value for the 'popover' attribute."
+[FAIL] showPicker should show the select datalist.
+  assert_true: expected true got false
+[FAIL] preventDefault on beforetoggle should prevent the datalist from showing.
+  promise_test: Unhandled rejection with value: object "NotAllowedError: Failed to execute 'showPicker' on 'HTMLSelectElement': showPicker() requires a user gesture."
+[FAIL] showPopover on a disconnected datalist should throw an exception.
+  assert_throws_dom: function "() => datalist.showPopover()" threw object "NotSupportedError: Failed to execute 'showPopover' on 'HTMLElement': Not supported on elements that do not have a valid value for the 'popover' attribute." that is not a DOMException InvalidStateError: property "code" is equal to 9, expected 11
+[FAIL] Disconnecting while internally showing the datalist should not crash or show the popover.
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'showPicker' on 'HTMLSelectElement': showPicker() requires the select is rendered."
+[FAIL] Disconnecting while internally hiding the datalist should not crash.
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'showPopover' on 'HTMLElement': Not supported on elements that do not have a valid value for the 'popover' attribute."
+Harness: the test ran to completion.
+

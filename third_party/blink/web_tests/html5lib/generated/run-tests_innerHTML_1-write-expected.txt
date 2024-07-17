@@ -5,4 +5,31 @@ html
 | <head>
 | <body>
 
-../resources/tests_innerHTML_1.dat: PASS
+../resources/tests_innerHTML_1.dat:
+80
+81
+82
+
+Test 80 of 85 in ../resources/tests_innerHTML_1.dat failed. Input:
+<input><option>
+Got:
+| <input>
+| <option>
+Expected:
+| <option>
+
+Test 81 of 85 in ../resources/tests_innerHTML_1.dat failed. Input:
+<keygen><option>
+Got:
+| <keygen>
+| <option>
+Expected:
+| <option>
+
+Test 82 of 85 in ../resources/tests_innerHTML_1.dat failed. Input:
+<textarea><option>
+Got:
+| <textarea>
+|   "<option>"
+Expected:
+| <option>

@@ -1,0 +1,4 @@
+CONSOLE ERROR: Uncaught SyntaxError: Unexpected token '<'
+CONSOLE WARNING: A input tag was parsed inside of a <select> which caused a </select> to be inserted before this tag. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE WARNING: A keygen tag was parsed inside of a <select> which caused a </select> to be inserted before this tag. This is not valid HTML and the behavior may be changed in future versions of chrome.
+../resources/tests7.dat: PASS

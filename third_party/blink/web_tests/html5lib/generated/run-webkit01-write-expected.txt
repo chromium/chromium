@@ -1,3 +1,55 @@
 CONSOLE MESSAGE: PASS
 CONSOLE MESSAGE: FOO<span>BAR</span>BAZ
-../resources/webkit01.dat: PASS
+../resources/webkit01.dat:
+31
+
+Test 31 of 51 in ../resources/webkit01.dat failed. Input:
+<select><option>A<select><option>B<select><option>C<select><option>D<select><option>E<select><option>F<select><option>G<select>
+Got:
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <option>
+|         "A"
+|     <select>
+|       <option>
+|         "B"
+|     <select>
+|       <option>
+|         "C"
+|     <select>
+|       <option>
+|         "D"
+|     <select>
+|       <option>
+|         "E"
+|     <select>
+|       <option>
+|         "F"
+|     <select>
+|       <option>
+|         "G"
+|     <select>
+Expected:
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <option>
+|         "A"
+|     <option>
+|       "B"
+|       <select>
+|         <option>
+|           "C"
+|     <option>
+|       "D"
+|       <select>
+|         <option>
+|           "E"
+|     <option>
+|       "F"
+|       <select>
+|         <option>
+|           "G"

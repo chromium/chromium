@@ -1,0 +1,81 @@
+This is a testharness.js-based test.
+[FAIL] <form><select><option><iframe>1<element></element>
+  assert_equals: select expected "1" but got "1<element></element>"
+[FAIL] <form><select><option>1<iframe>2<element></element>
+  assert_equals: select expected "12" but got "12<element></element>"
+[FAIL] <form><select><option>1<iframe>2<element></element>3
+  assert_equals: select expected "123" but got "12<element></element>3"
+[FAIL] <form><select><option><noembed>1<element></element>
+  assert_equals: select expected "1" but got "1<element></element>"
+[FAIL] <form><select><option>1<noembed>2<element></element>
+  assert_equals: select expected "12" but got "12<element></element>"
+[FAIL] <form><select><option>1<noembed>2<element></element>3
+  assert_equals: select expected "123" but got "12<element></element>3"
+[FAIL] <form><select><option>1<input><noembed>2<element></element>
+  assert_equals: select expected "1" but got "12<element></element>"
+[FAIL] <form><select><option>1<keygen><noembed>2<element></element>
+  assert_equals: select expected "1" but got "12<element></element>"
+[FAIL] <form><select><option>1<textarea></textarea><noembed>2<element></element>
+  assert_equals: select expected "1" but got "12<element></element>"
+[FAIL] <form><select><option><noframes>1<element></element>
+  assert_equals: select expected "1" but got "1<element></element>"
+[FAIL] <form><select><option>1<noframes>2<element></element>
+  assert_equals: select expected "12" but got "12<element></element>"
+[FAIL] <form><select><option>1<noframes>2<element></element>3
+  assert_equals: select expected "123" but got "12<element></element>3"
+[FAIL] <form><select><option>1<input><noframes>2<element></element>
+  assert_equals: select expected "1" but got "12<element></element>"
+[FAIL] <form><select><option>1<keygen><noframes>2<element></element>
+  assert_equals: select expected "1" but got "12<element></element>"
+[FAIL] <form><select><option>1<textarea></textarea><noframes>2<element></element>
+  assert_equals: select expected "1" but got "12<element></element>"
+[FAIL] <form><select><option><noscript>1<element></element>
+  assert_equals: select expected "1" but got "1<element></element>"
+[FAIL] <form><select><option>1<noscript>2<element></element>
+  assert_equals: select expected "12" but got "12<element></element>"
+[FAIL] <form><select><option>1<noscript>2<element></element>3
+  assert_equals: select expected "123" but got "12<element></element>3"
+[FAIL] <form><select><option>1<input><noscript>2<element></element>
+  assert_equals: select expected "1" but got "12<element></element>"
+[FAIL] <form><select><option>1<keygen><noscript>2<element></element>
+  assert_equals: select expected "1" but got "12<element></element>"
+[FAIL] <form><select><option>1<textarea></textarea><noscript>2<element></element>
+  assert_equals: select expected "1" but got "12<element></element>"
+[FAIL] <form><select><option><plaintext>1<element></element>
+  assert_equals: select expected "1" but got "1<element></element>"
+[FAIL] <form><select><option>1<plaintext>2<element></element>
+  assert_equals: select expected "12" but got "12<element></element>"
+[FAIL] <form><select><option>1<plaintext>2<element></element>3
+  assert_equals: select expected "123" but got "12<element></element>3"
+[FAIL] <form><select><option>1<input><plaintext>2<element></element>
+  assert_equals: select expected "1" but got "12<element></element>"
+[FAIL] <form><select><option>1<keygen><plaintext>2<element></element>
+  assert_equals: select expected "1" but got "12<element></element>"
+[FAIL] <form><select><option>1<textarea></textarea><plaintext>2<element></element>
+  assert_equals: select expected "1" but got "12<element></element>"
+[FAIL] <form><select><option><style>1<element></element>
+  assert_equals: select expected "1" but got "1<element></element>"
+[FAIL] <form><select><option>1<style>2<element></element>
+  assert_equals: select expected "12" but got "12<element></element>"
+[FAIL] <form><select><option>1<style>2<element></element>3
+  assert_equals: select expected "123" but got "12<element></element>3"
+[FAIL] <form><select><option>1<input><style>2<element></element>
+  assert_equals: select expected "1" but got "12<element></element>"
+[FAIL] <form><select><option>1<keygen><style>2<element></element>
+  assert_equals: select expected "1" but got "12<element></element>"
+[FAIL] <form><select><option>1<textarea></textarea><style>2<element></element>
+  assert_equals: select expected "1" but got "12<element></element>"
+[FAIL] <form><select><option><xmp>1<element></element>
+  assert_equals: select expected "1" but got "1<element></element>"
+[FAIL] <form><select><option>1<xmp>2<element></element>
+  assert_equals: select expected "12" but got "12<element></element>"
+[FAIL] <form><select><option>1<xmp>2<element></element>3
+  assert_equals: select expected "123" but got "12<element></element>3"
+[FAIL] <form><select><option>1<input><xmp>2<element></element>
+  assert_equals: select expected "1" but got "12<element></element>"
+[FAIL] <form><select><option>1<keygen><xmp>2<element></element>
+  assert_equals: select expected "1" but got "12<element></element>"
+[FAIL] <form><select><option>1<textarea></textarea><xmp>2<element></element>
+  assert_equals: select expected "1" but got "12<element></element>"
+Harness: the test ran to completion.
+

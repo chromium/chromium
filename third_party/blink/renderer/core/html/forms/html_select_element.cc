@@ -592,30 +592,71 @@ void HTMLSelectElement::RecalcListItems() const {
 
   should_recalc_list_items_ = false;
 
+  HTMLOptGroupElement* current_ancestor_optgroup = nullptr;
+
   for (Element* current_element = ElementTraversal::FirstWithin(*this);
        current_element && list_items_.size() < kMaxListItems;) {
     auto* current_html_element = DynamicTo<HTMLElement>(current_element);
     if (!current_html_element) {
       current_element =
+          RuntimeEnabledFeatures::SelectParserRelaxationEnabled()
+              ? ElementTraversal::Next(*current_element, this)
+              : ElementTraversal::NextSkippingChildren(*current_element, this);
+      continue;
+    }
+
+    // If there is a nested <select>, then its descendant <option>s belong to
+    // it, not this.
+    if (IsA<HTMLSelectElement>(current_html_element)) {
+      current_element =
           ElementTraversal::NextSkippingChildren(*current_element, this);
       continue;
     }
 
-    // Descendants <option>s of a child <datalist> should be included in the
-    // native popup.
-    if (RuntimeEnabledFeatures::StylableSelectEnabled() &&
-        IsA<HTMLDataListElement>(*current_html_element)) {
-      for (Node& datalist_descendant :
-           NodeTraversal::DescendantsOf(*current_html_element)) {
-        if (IsA<HTMLOptionElement>(datalist_descendant) ||
-            IsA<HTMLHRElement>(datalist_descendant)) {
-          list_items_.push_back(To<HTMLElement>(datalist_descendant));
+    if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+      bool skip_children = false;
+      // If the parser is allowed to have more than just <option>s and
+      // <optgroup>s, then we need to iterate over all descendants.
+      if (auto* current_optgroup =
+              DynamicTo<HTMLOptGroupElement>(*current_html_element)) {
+        if (current_ancestor_optgroup) {
+          // For compat, don't look at descendants of a nested <optgroup>.
+          skip_children = true;
+        } else {
+          current_ancestor_optgroup = current_optgroup;
+          list_items_.push_back(current_html_element);
         }
+      } else if (IsA<HTMLOptionElement>(*current_html_element) ||
+                 IsA<HTMLHRElement>(*current_html_element)) {
+        list_items_.push_back(current_html_element);
       }
+
+      Element* (*next_element_fn)(const Node&, const Node*) =
+          &ElementTraversal::Next;
+      if (skip_children) {
+        next_element_fn = &ElementTraversal::NextSkippingChildren;
+      }
+      if (current_ancestor_optgroup) {
+        // In order to keep current_ancestor_optgroup up to date, try traversing
+        // to the next element within it. If we can't, then we have reached the
+        // end of the optgroup and should set it to nullptr.
+        auto* next_within_optgroup =
+            next_element_fn(*current_element, current_ancestor_optgroup);
+        if (!next_within_optgroup) {
+          current_ancestor_optgroup = nullptr;
+          current_element = next_element_fn(*current_element, this);
+        } else {
+          current_element = next_within_optgroup;
+        }
+      } else {
+        current_element = next_element_fn(*current_element, this);
+      }
+
+      continue;
     }
 
     // We should ignore nested optgroup elements. The HTML parser flatten
-    // them.  However we need to ignore nested optgroups built by DOM APIs.
+    // them. However we need to ignore nested optgroups built by DOM APIs.
     // This behavior matches to IE and Firefox.
     if (IsA<HTMLOptGroupElement>(*current_html_element)) {
       if (current_html_element->parentNode() != this) {
@@ -748,9 +789,6 @@ void HTMLSelectElement::OptionSelectionStateChanged(HTMLOptionElement* option,
 
 void HTMLSelectElement::ChildrenChanged(const ChildrenChange& change) {
   HTMLFormControlElementWithState::ChildrenChanged(change);
-  if (IsA<HTMLDataListElement>(change.sibling_changed)) {
-    RecalcFirstChildDatalist();
-  }
   if (change.type ==
       ChildrenChangeType::kFinishedBuildingDocumentFragmentTree) {
     for (Node& node : NodeTraversal::ChildrenOf(*this)) {
@@ -768,7 +806,6 @@ void HTMLSelectElement::ChildrenChanged(const ChildrenChange& change) {
         OptionRemoved(child_option);
     }
   } else if (change.type == ChildrenChangeType::kAllChildrenRemoved) {
-    RecalcFirstChildDatalist();
     for (Node* node : change.removed_nodes) {
       if (auto* option = DynamicTo<HTMLOptionElement>(node)) {
         OptionRemoved(*option);
@@ -778,9 +815,6 @@ void HTMLSelectElement::ChildrenChanged(const ChildrenChange& change) {
           OptionRemoved(child_option);
       }
     }
-  } else if (change.type ==
-             ChildrenChangeType::kFinishedBuildingDocumentFragmentTree) {
-    RecalcFirstChildDatalist();
   }
 }
 
@@ -1276,7 +1310,6 @@ void HTMLSelectElement::Trace(Visitor* visitor) const {
   visitor->Trace(last_on_change_option_);
   visitor->Trace(suggested_option_);
   visitor->Trace(descendant_selectedoptions_);
-  visitor->Trace(first_child_datalist_);
   visitor->Trace(select_type_);
   HTMLFormControlElementWithState::Trace(visitor);
 }
@@ -1479,6 +1512,14 @@ void HTMLSelectElement::ChangeRendering() {
   if (UsesMenuList() != old_uses_menu_list) {
     select_type_->WillBeDestroyed();
     select_type_ = SelectType::Create(*this);
+
+    if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+      // Make <option>s render all child content when in MenuList mode in order
+      // to support appearance:base-select.
+      for (HTMLOptionElement* option : GetOptionList()) {
+        option->SetTextOnlyRendering(!UsesMenuList());
+      }
+    }
   }
   if (!InActiveDocument())
     return;
@@ -1604,19 +1645,6 @@ HTMLButtonElement* HTMLSelectElement::SlottedButton() const {
 
 HTMLDataListElement* HTMLSelectElement::DisplayedDatalist() const {
   return select_type_->DisplayedDatalist();
-}
-
-HTMLDataListElement* HTMLSelectElement::FirstChildDatalist() const {
-  return first_child_datalist_;
-}
-
-void HTMLSelectElement::RecalcFirstChildDatalist() {
-  first_child_datalist_ = nullptr;
-  Node* next_child = firstChild();
-  while (next_child && !first_child_datalist_) {
-    first_child_datalist_ = DynamicTo<HTMLDataListElement>(next_child);
-    next_child = next_child->nextSibling();
-  }
 }
 
 bool HTMLSelectElement::IsAppearanceBaseSelect() const {

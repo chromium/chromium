@@ -1,2 +1,57 @@
 CONSOLE ERROR: Uncaught SyntaxError: Unexpected token '<'
-../resources/tests7.dat: PASS
+../resources/tests7.dat:
+13
+14
+30
+
+Test 13 of 30 in ../resources/tests7.dat failed. Input:
+<!doctype html><select><input>X
+Got:
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <input>
+|       "X"
+Expected:
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|     <input>
+|     "X"
+
+Test 14 of 30 in ../resources/tests7.dat failed. Input:
+<!doctype html><select><select>X
+Got:
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|     <select>
+|       "X"
+Expected:
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|     "X"
+
+Test 30 of 30 in ../resources/tests7.dat failed. Input:
+<select><keygen>
+Got:
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <keygen>
+Expected:
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|     <keygen>

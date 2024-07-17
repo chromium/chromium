@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] appearance:base-select options should have a checkmark with empty alt text.
+  assert_equals: expected "\\"✓\\" / \\"\\"" but got "none"
+Harness: the test ran to completion.
+
