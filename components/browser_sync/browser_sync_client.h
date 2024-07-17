@@ -67,6 +67,9 @@ class BrowserSyncClient : public syncer::SyncClient {
   virtual syncer::ModelTypeStoreService* GetModelTypeStoreService() = 0;
 
   // DataType specific service getters.
+  // TODO(crbug.com/335688372): Remove all below, and perhaps this class
+  // altogether, once the controller builder is exercised directly from the
+  // client.
   virtual consent_auditor::ConsentAuditor* GetConsentAuditor() = 0;
   virtual syncer::DeviceInfoSyncService* GetDeviceInfoSyncService() = 0;
   virtual favicon::FaviconService* GetFaviconService() = 0;

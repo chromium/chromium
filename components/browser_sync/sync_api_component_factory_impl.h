@@ -17,7 +17,6 @@
 
 namespace syncer {
 class ModelTypeController;
-class ModelTypeControllerDelegate;
 class SyncInvalidationsService;
 class SyncService;
 }  // namespace syncer
@@ -92,6 +91,8 @@ class SyncApiComponentFactoryImpl : public syncer::SyncApiComponentFactory {
   // Creates and returns enabled datatypes and their controllers.
   // `disabled_types` allows callers to prevent certain types from being
   // created.
+  // TODO(crbug.com/335688372): Remove function below once the controller
+  // builder is exercised directly from the client.
   syncer::ModelTypeController::TypeVector CreateCommonModelTypeControllers(
       syncer::ModelTypeSet disabled_types,
       syncer::SyncService* sync_service);
@@ -112,23 +113,11 @@ class SyncApiComponentFactoryImpl : public syncer::SyncApiComponentFactory {
       const signin::GaiaIdHash& gaia_id_hash) override;
 
  private:
-  // Factory function for ModelTypeController instances for wallet-related
-  // datatypes, which live in `db_thread_` and have a delegate accessible via
-  // AutofillWebDataService.
-  // If `with_transport_mode_support` is true, the controller will support
-  // transport mode, implemented via an independent AutofillWebDataService,
-  // namely `web_data_service_in_memory_`.
-  std::unique_ptr<syncer::ModelTypeController> CreateWalletModelTypeController(
-      syncer::ModelType type,
-      const base::RepeatingCallback<
-          base::WeakPtr<syncer::ModelTypeControllerDelegate>(
-              autofill::AutofillWebDataService*)>& delegate_from_web_data,
-      syncer::SyncService* sync_service,
-      bool with_transport_mode_support);
-
   // Client/platform specific members.
   const raw_ptr<BrowserSyncClient> sync_client_;
   const version_info::Channel channel_;
+  // TODO(crbug.com/335688372): Remove all members once the builder is
+  // implemented in a separate file and can be added as member field.
   const scoped_refptr<base::SequencedTaskRunner> ui_thread_;
   const scoped_refptr<base::SequencedTaskRunner> db_thread_;
   const scoped_refptr<base::SequencedTaskRunner>
