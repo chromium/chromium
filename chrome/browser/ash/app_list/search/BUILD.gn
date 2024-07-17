@@ -32,15 +32,6 @@ source_set("unit_tests") {
     "search_session_metrics_manager_unittest.cc",
   ]
 
-  public_deps = [
-    "//base",
-    "//base/test:test_support",
-    "//chrome/browser/ash/app_list:test_support",
-    "//chrome/browser/ash/app_list/arc:test_support",
-    "//chrome/browser/ui",
-    "//extensions/common:mojom",
-  ]
-
   deps = [
     "//ash",
     "//ash/components/arc:arc_test_support",
@@ -53,18 +44,24 @@ source_set("unit_tests") {
     "//ash/webui/personalization_app",
     "//ash/webui/shortcut_customization_ui/backend",
     "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings",
+    "//base",
     "//base:i18n",
+    "//base/test:test_support",
     "//chrome/app:generated_resources",
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/app_list:test_support",
+    "//chrome/browser/ash/app_list/arc:test_support",
+    "//chrome/browser/ash/app_list/search/common",
     "//chrome/browser/ash/app_list/search/test:test_support",
     "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/ash/crostini:test_support",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync:factories",
+    "//chrome/browser/ui",
     "//chrome/browser/ui:test_support",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
@@ -95,6 +92,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//content/test:test_support",
     "//extensions:test_support",
+    "//extensions/common:mojom",
     "//mojo/core/embedder",
     "//testing/gmock",
     "//testing/gtest",

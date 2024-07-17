@@ -16,6 +16,7 @@ static_library("local_image_search") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/ash/app_list/search/common",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
   ]

@@ -32,6 +32,7 @@ source_set("unit_tests") {
     "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/ash/app_list/search/common",
     "//chrome/browser/ash/app_list/search/ranking:proto",
     "//chrome/browser/ash/app_list/search/test:test_support",
     "//chrome/browser/ash/file_suggest",
