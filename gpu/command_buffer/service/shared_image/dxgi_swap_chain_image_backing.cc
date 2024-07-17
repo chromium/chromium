@@ -96,9 +96,6 @@ std::unique_ptr<DXGISwapChainImageBacking> DXGISwapChainImageBacking::Create(
   HRESULT hr = dxgi_factory->CreateSwapChainForComposition(
       d3d11_device.Get(), &desc, nullptr, &dxgi_swap_chain);
 
-  base::UmaHistogramSparse(
-      "GPU.DirectComposition.CreateSwapChainForComposition", hr);
-
   // If CreateSwapChainForComposition fails, we cannot draw to the
   // browser window. Return false after disabling Direct Composition support
   // and let the Renderer handle it. Either the GPU command buffer or the GPU
