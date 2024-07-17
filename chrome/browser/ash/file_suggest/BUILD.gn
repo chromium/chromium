@@ -33,6 +33,7 @@ static_library("file_suggest") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_list/search/files",
+    "//chrome/browser/ash/app_list/search/ranking",
     "//chrome/browser/ash/app_list/search/ranking:proto",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/file_manager",
@@ -47,8 +48,10 @@ static_library("file_suggest") {
     "//storage/browser",
   ]
 
-  allow_circular_includes_from =
-      [ "//chrome/browser/ash/app_list/search/files" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/app_list/search/files",
+    "//chrome/browser/ash/app_list/search/ranking",
+  ]
 }
 
 static_library("test_support") {

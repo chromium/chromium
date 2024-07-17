@@ -68,6 +68,7 @@ static_library("arc") {
     "//base",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list/search/ranking",
     "//chrome/browser/ash/arc/boot_phase_monitor",
     "//chrome/browser/image_decoder",
     "//chrome/browser/profiles:profile",

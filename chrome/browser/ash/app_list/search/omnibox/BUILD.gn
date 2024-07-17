@@ -30,6 +30,7 @@ static_library("omnibox") {
     "//base",
     "//chrome/app:generated_resources",
     "//chrome/browser/ash/app_list/search/common",
+    "//chrome/browser/ash/app_list/search/ranking",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/chromeos/launcher_search:search_util",
@@ -57,6 +58,9 @@ static_library("omnibox") {
     "//ui/gfx",
     "//url",
   ]
+
+  allow_circular_includes_from =
+      [ "//chrome/browser/ash/app_list/search/ranking" ]
 }
 
 source_set("unit_tests") {

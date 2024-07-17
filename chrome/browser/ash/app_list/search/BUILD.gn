@@ -55,6 +55,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/app_list:test_support",
     "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/ash/app_list/search/common",
+    "//chrome/browser/ash/app_list/search/ranking",
     "//chrome/browser/ash/app_list/search/test:test_support",
     "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/ash/crostini:test_support",

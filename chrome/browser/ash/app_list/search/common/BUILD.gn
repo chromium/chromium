@@ -25,6 +25,7 @@ static_library("common") {
   deps = [
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser/ash/app_list/search/ranking",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/string_matching",
@@ -32,6 +33,9 @@ static_library("common") {
     "//ui/gfx",
     "//url",
   ]
+
+  allow_circular_includes_from =
+      [ "//chrome/browser/ash/app_list/search/ranking" ]
 }
 
 source_set("unit_tests") {

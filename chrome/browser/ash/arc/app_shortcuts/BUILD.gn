@@ -20,6 +20,7 @@ static_library("app_shortcuts") {
     "//base",
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/app_list/search/ranking",
     "//chrome/browser/profiles:profile",
     "//ui/base",
   ]
