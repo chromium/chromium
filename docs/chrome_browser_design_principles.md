@@ -1,4 +1,6 @@
-These design principles make it easier to write, debug, and maintain code in //chrome/browser.
+These design principles make it easier to write, debug, and maintain desktop
+code in //chrome/browser. Most, but not all code in //chrome/browser is desktop
+code. Some code is used on Android.
 
 ## Caveats:
 * These are recommendations, not requirements.
@@ -296,4 +298,98 @@ class CarSalesPerson {
 };
 ```
 
+* Circular dependencies are a symptom of problematic design.
 
+Bad. FeatureShowcase depends on FeatureA. FeatureA depends on FeatureB.
+FeatureB depends on FeatureShowcase. The root problem is that the design for
+FeatureShowcase uses both a pull and a push model for control flow.
+```cpp
+// Shows an icon per feature. Needs to know whether each icon is visible.
+class FeatureShowcase {
+  FeatureShowcase() {
+    // Checks whether A should be visible, and if so, shows A.
+    if (FeatureA::IsVisible())
+      ShowFeatureA();
+  }
+
+  // Called to make B visible.
+  void ShowFeatureB();
+
+};
+
+class FeatureA {
+  // Feature A depends on feature B.
+  FeatureA(FeatureB* b);
+
+  static bool IsVisible();
+};
+
+class FeatureB {
+  FeatureB(FeatureShowcase* showcase) {
+    if (IsVisible())
+      showcase->ShowFeatureB();
+  }
+  static bool IsVisible();
+};
+```
+
+Good, version 1. FeatureShowcase uses a pull model for control flow.
+FeatureShowcase depends on FeatureA and FeatureB. FeatureA depends on FeatureB.
+There is no circular dependency.
+```cpp
+// Shows an icon per feature. Needs to know whether each icon is visible.
+class FeatureShowcase {
+  FeatureShowcase() {
+    if (FeatureA::IsVisible())
+      ShowFeatureA();
+    if (FeatureB::IsVisible())
+      ShowFeatureB();
+  }
+};
+
+class FeatureA {
+  // Feature A depends on feature B.
+  FeatureA(FeatureB* b);
+
+  static bool IsVisible();
+};
+
+class FeatureB {
+  FeatureB();
+  static bool IsVisible();
+};
+```
+
+Good, version 2. FeatureShowcase uses a push model for control flow. FeatureA
+and FeatureB both depend on FeatureShowcase. There is no circular dependency.
+```cpp
+// Shows an icon per feature. Needs to know whether each icon is visible.
+class FeatureShowcase {
+  FeatureShowcase();
+
+  // Called to make A visible.
+  void ShowFeatureA();
+
+  // Called to make B visible.
+  void ShowFeatureB();
+};
+
+class FeatureA {
+  // Feature A depends on feature B.
+  FeatureA(FeatureB* b, FeatureShowcase* showcase) {
+    if (IsVisible())
+        showcase->ShowFeatureA();
+  }
+
+  static bool IsVisible();
+};
+
+class FeatureB {
+  FeatureB(FeatureShowcase* showcase) {
+    if (IsVisible())
+        showcase->ShowFeatureB();
+  }
+
+  static bool IsVisible();
+};
+```
