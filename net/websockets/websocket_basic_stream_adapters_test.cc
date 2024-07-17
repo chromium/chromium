@@ -1418,8 +1418,11 @@ TEST_P(WebSocketQuicStreamAdapterTest, AsyncAdapterCreation) {
                        .Build());
 
   mock_quic_data_.AddRead(
-      ASYNC, server_maker_.MakeMaxStreamsPacket(1, kMaxOpenStreams + 2,
-                                                /* unidirectional = */ false));
+      ASYNC, server_maker_.Packet(1)
+                 .AddMaxStreamsFrame(/*control_frame_id=*/1,
+                                     /*stream_count=*/kMaxOpenStreams + 2,
+                                     /* unidirectional = */ false)
+                 .Build());
 
   mock_quic_data_.AddRead(ASYNC, ERR_IO_PENDING);
   mock_quic_data_.AddRead(ASYNC, ERR_CONNECTION_CLOSED);

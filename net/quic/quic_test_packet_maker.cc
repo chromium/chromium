@@ -183,15 +183,6 @@ QuicTestPacketMaker::MakeDummyCHLOPacket(uint64_t packet_number) {
   return builder.Build();
 }
 
-std::unique_ptr<quic::QuicReceivedPacket>
-QuicTestPacketMaker::MakeMaxStreamsPacket(uint64_t packet_number,
-                                          quic::QuicStreamCount stream_count,
-                                          bool unidirectional) {
-  return Packet(packet_number)
-      .AddMaxStreamsFrame(1, stream_count, unidirectional)
-      .Build();
-}
-
 std::unique_ptr<quic::QuicReceivedPacket> QuicTestPacketMaker::MakeRstPacket(
     uint64_t packet_number,
     quic::QuicStreamId stream_id,

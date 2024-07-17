@@ -1769,9 +1769,11 @@ TEST_P(QuicSessionPoolTest, MaxOpenStream) {
   }
   socket_data.AddRead(ASYNC, server_maker_.MakeRstPacket(
                                  1, stream_id, quic::QUIC_STREAM_CANCELLED));
-  socket_data.AddRead(
-      ASYNC, server_maker_.MakeMaxStreamsPacket(2, 52,
-                                                /*unidirectional=*/false));
+  socket_data.AddRead(ASYNC, server_maker_.Packet(2)
+                                 .AddMaxStreamsFrame(/*control_frame_id=*/1,
+                                                     /*stream_count=*/52,
+                                                     /*unidirectional=*/false)
+                                 .Build());
   socket_data.AddWrite(SYNCHRONOUS,
                        client_maker_.MakeAckPacket(packet_num++, 2, 1));
   socket_data.AddReadPauseForever();

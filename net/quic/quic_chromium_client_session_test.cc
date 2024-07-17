@@ -640,9 +640,11 @@ TEST_P(QuicChromiumClientSessionTest, AsyncStreamRequest) {
                                   /*include_stop_sending_if_v99=*/false));
   // After the STREAMS_BLOCKED is sent, receive a MAX_STREAMS to increase
   // the limit to 100.
-  quic_data.AddRead(
-      ASYNC, server_maker_.MakeMaxStreamsPacket(1, 100,
-                                                /*unidirectional=*/false));
+  quic_data.AddRead(ASYNC, server_maker_.Packet(1)
+                               .AddMaxStreamsFrame(/*control_frame_id=*/1,
+                                                   /*stream_count=*/100,
+                                                   /*unidirectional=*/false)
+                               .Build());
   quic_data.AddRead(ASYNC, ERR_IO_PENDING);
   quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   quic_data.AddSocketDataToFactory(&socket_factory_);
@@ -1071,9 +1073,11 @@ TEST_P(QuicChromiumClientSessionTest, MaxNumStreams) {
           .AddStreamsBlockedFrame(/*control_frame_id=*/1, /*stream_count=*/50,
                                   /*unidirectional=*/false)
           .Build());
-  quic_data.AddRead(
-      ASYNC, server_maker_.MakeMaxStreamsPacket(1, 50 + 2,
-                                                /*unidirectional=*/false));
+  quic_data.AddRead(ASYNC, server_maker_.Packet(1)
+                               .AddMaxStreamsFrame(/*control_frame_id=*/1,
+                                                   /*stream_count=*/50 + 2,
+                                                   /*unidirectional=*/false)
+                               .Build());
   quic_data.AddRead(ASYNC, ERR_IO_PENDING);
   quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   quic_data.AddSocketDataToFactory(&socket_factory_);
@@ -1177,9 +1181,11 @@ TEST_P(QuicChromiumClientSessionTest, MaxNumStreamsViaRequest) {
                      client_maker_.MakeRstPacket(
                          3, GetNthClientInitiatedBidirectionalStreamId(0),
                          quic::QUIC_RST_ACKNOWLEDGEMENT));
-  quic_data.AddRead(
-      ASYNC, server_maker_.MakeMaxStreamsPacket(1, 52,
-                                                /*unidirectional=*/false));
+  quic_data.AddRead(ASYNC, server_maker_.Packet(1)
+                               .AddMaxStreamsFrame(/*control_frame_id=*/1,
+                                                   /*stream_count=*/52,
+                                                   /*unidirectional=*/false)
+                               .Build());
   quic_data.AddRead(ASYNC, ERR_IO_PENDING);
   quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   quic_data.AddSocketDataToFactory(&socket_factory_);
