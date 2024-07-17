@@ -7,6 +7,7 @@
 #include <netinet/in.h>
 
 #include "base/files/scoped_file.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/services/sharing/nearby/platform/wifi_direct_server_socket.h"
@@ -244,7 +245,10 @@ void WifiDirectMedium::OnCapabilities(
     base::WaitableEvent* waitable_event,
     ash::wifi_direct::mojom::WifiP2PCapabilitiesPtr capabilities) const {
   CHECK(io_thread_->task_runner()->RunsTasksInCurrentSequence());
+  CHECK(capabilities);
   *is_capability_supported = capabilities->is_p2p_supported;
+  base::UmaHistogramBoolean("Nearby.Connections.WifiDirect.IsP2pSupported",
+                            capabilities->is_p2p_supported);
   waitable_event->Signal();
 }
 

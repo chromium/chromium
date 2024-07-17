@@ -8,6 +8,7 @@
 
 #include "base/rand_util.h"
 #include "base/task/thread_pool.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/services/sharing/nearby/platform/wifi_direct_server_socket.h"
 #include "chromeos/ash/services/nearby/public/cpp/fake_firewall_hole_factory.h"
@@ -23,6 +24,9 @@ constexpr uint16_t kMinPort = 50000;  // Arbitrary port.
 constexpr uint16_t kMaxPort = 65535;
 constexpr char kTestSSID[] = "DIRECT-xx";
 constexpr char kTestPassword[] = "ABCD1234";
+
+constexpr char kIsP2pSupportedMetricName[] =
+    "Nearby.Connections.WifiDirect.IsP2pSupported";
 
 // Pick a random port for each test run, otherwise the `Listen` call has a
 // chance to return ADDRESS_IN_USE(-147).
@@ -190,6 +194,7 @@ class WifiDirectMediumTest : public ::testing::Test {
   ash::nearby::FakeFirewallHoleFactory* firewall_hole_factory() {
     return firewall_hole_factory_;
   }
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
   void RunOnTaskRunner(base::OnceClosure task) {
     base::RunLoop run_loop;
@@ -210,26 +215,39 @@ class WifiDirectMediumTest : public ::testing::Test {
   std::unique_ptr<WifiDirectMedium> medium_;
   std::unique_ptr<net::TCPServerSocket> server_socket_;
   std::unique_ptr<net::StreamSocket> accepted_socket_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(WifiDirectMediumTest, IsInterfaceValid_Valid) {
   manager()->SetIsInterfaceValid(true);
+  histogram_tester().ExpectTotalCount(kIsP2pSupportedMetricName, 0);
+
   RunOnTaskRunner(base::BindOnce(
       [](WifiDirectMedium* medium) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
         EXPECT_TRUE(medium->IsInterfaceValid());
       },
       medium()));
+
+  histogram_tester().ExpectTotalCount(kIsP2pSupportedMetricName, 1);
+  histogram_tester().ExpectBucketCount(kIsP2pSupportedMetricName,
+                                       /*bucket:true=*/1, 1);
 }
 
 TEST_F(WifiDirectMediumTest, IsInterfaceValid_Invalid) {
   manager()->SetIsInterfaceValid(false);
+  histogram_tester().ExpectTotalCount(kIsP2pSupportedMetricName, 0);
+
   RunOnTaskRunner(base::BindOnce(
       [](WifiDirectMedium* medium) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
         EXPECT_FALSE(medium->IsInterfaceValid());
       },
       medium()));
+
+  histogram_tester().ExpectTotalCount(kIsP2pSupportedMetricName, 1);
+  histogram_tester().ExpectBucketCount(kIsP2pSupportedMetricName,
+                                       /*bucket:false=*/0, 1);
 }
 
 TEST_F(WifiDirectMediumTest, StartWifiDirect_MissingConnection) {

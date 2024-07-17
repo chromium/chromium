@@ -539,6 +539,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Connections.WifiDirect.IsP2pSupported" enum="Boolean"
+    expires_after="2025-04-30">
+  <owner>jackshira@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records if the WiFi Direct interface currently supports P2P. If P2P support
+    is true, it indicates that the interface is valid and ready to use. Emitted
+    when Nearby Connections initiates a bandwidth upgrade and checks for
+    available transfer mediums.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Connections.WifiLan.ConnectResult"
     enum="NearbyConnectionsWifiLanConnectResult" expires_after="2025-04-30">
   <owner>hansenmichael@google.com</owner>
