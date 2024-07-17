@@ -72,12 +72,12 @@ InputMethodContextImplGtk::InputMethodContextImplGtk(
 
   gtk_context_ = gtk_im_multicontext_new();
 
-  // switch to allow wayland IM module if it is picked.
   static const char kAllowGtkWaylandIm[] = "allow-gtk-wayland-im";
   static const gchar* const kContextIdWayland = "wayland";
   static const gchar* kContextIdIbus = "ibus";
   const gchar* context_id = gtk_im_multicontext_get_context_id(
       GTK_IM_MULTICONTEXT(gtk_context_.get()));
+  // switch to allow wayland IM module if it is picked.
   if (context_id) {
     if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
             kAllowGtkWaylandIm) &&
@@ -255,6 +255,7 @@ void InputMethodContextImplGtk::SetCursorLocation(const gfx::Rect& rect) {
 void InputMethodContextImplGtk::SetSurroundingText(
     const std::u16string& text,
     const gfx::Range& text_range,
+    const gfx::Range& composition_range,
     const gfx::Range& selection_range,
     const std::optional<ui::GrammarFragment>& fragment,
     const std::optional<ui::AutocorrectInfo>& autocorrect) {}

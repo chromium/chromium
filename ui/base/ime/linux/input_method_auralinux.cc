@@ -399,11 +399,16 @@ void InputMethodAuraLinux::OnCaretBoundsChanged(const TextInputClient* client) {
   NotifyTextInputCaretBoundsChanged(client);
   context_->SetCursorLocation(GetTextInputClient()->GetCaretBounds());
 
-  gfx::Range text_range, selection_range;
+  gfx::Range text_range, composition_range, selection_range;
   std::u16string text;
   if (client->GetTextRange(&text_range) &&
       client->GetTextFromRange(text_range, &text) &&
       client->GetEditableSelectionRange(&selection_range)) {
+    if (!client->GetCompositionTextRange(&composition_range)) {
+      // Some TextInputClients, like ARC for ChromeOS, may not support getting
+      // composition text. So set it to invalid range in that case.
+      composition_range = gfx::Range::InvalidRange();
+    }
     std::optional<GrammarFragment> fragment;
     std::optional<AutocorrectInfo> autocorrect;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -418,8 +423,8 @@ void InputMethodAuraLinux::OnCaretBoundsChanged(const TextInputClient* client) {
       surrounding_text_ = text;
       text_range_ = text_range;
       selection_range_ = selection_range;
-      context_->SetSurroundingText(text, text_range, selection_range, fragment,
-                                   autocorrect);
+      context_->SetSurroundingText(text, text_range, composition_range,
+                                   selection_range, fragment, autocorrect);
     }
   }
 }

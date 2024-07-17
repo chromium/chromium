@@ -165,6 +165,7 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
   void SetSurroundingText(
       const std::u16string& text,
       const gfx::Range& text_range,
+      const gfx::Range& composition_range,
       const gfx::Range& selection_range,
       const std::optional<GrammarFragment>& fragment,
       const std::optional<AutocorrectInfo>& autocorrect) override {
@@ -173,6 +174,12 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
         base::StringPrintf("textrangestart:%zu", text_range.start())));
     TestResult::GetInstance()->RecordAction(base::ASCIIToUTF16(
         base::StringPrintf("textrangeend:%zu", text_range.end())));
+    TestResult::GetInstance()->RecordAction(
+        base::ASCIIToUTF16(base::StringPrintf("compositionrangestart:%zu",
+                                              composition_range.start())));
+    TestResult::GetInstance()->RecordAction(
+        base::ASCIIToUTF16(base::StringPrintf("compositionrangeend:%zu",
+                                              composition_range.end())));
     TestResult::GetInstance()->RecordAction(
         base::ASCIIToUTF16(base::StringPrintf("selectionrangestart:%zu",
                                               selection_range.start())));
@@ -228,6 +235,7 @@ class TextInputClientForTesting : public DummyTextInputClient {
 
   std::u16string composition_text;
   gfx::Range text_range;
+  gfx::Range composition_range;
   gfx::Range selection_range;
   std::u16string surrounding_text;
 
@@ -286,6 +294,10 @@ class TextInputClientForTesting : public DummyTextInputClient {
 
   bool GetTextRange(gfx::Range* range) const override {
     *range = text_range;
+    return true;
+  }
+  bool GetCompositionTextRange(gfx::Range* range) const override {
+    *range = composition_range;
     return true;
   }
   bool GetEditableSelectionRange(gfx::Range* range) const override {
@@ -1081,6 +1093,8 @@ TEST_F(InputMethodAuraLinuxTest, SurroundingText_NoSelectionTest) {
   test_result_->ExpectAction("surroundingtext:abcdef");
   test_result_->ExpectAction("textrangestart:0");
   test_result_->ExpectAction("textrangeend:6");
+  test_result_->ExpectAction("compositionrangestart:0");
+  test_result_->ExpectAction("compositionrangeend:0");
   test_result_->ExpectAction("selectionrangestart:3");
   test_result_->ExpectAction("selectionrangeend:3");
   test_result_->Verify();
@@ -1103,7 +1117,58 @@ TEST_F(InputMethodAuraLinuxTest, SurroundingText_SelectionTest) {
   test_result_->ExpectAction("surroundingtext:abcdef");
   test_result_->ExpectAction("textrangestart:0");
   test_result_->ExpectAction("textrangeend:6");
+  test_result_->ExpectAction("compositionrangestart:0");
+  test_result_->ExpectAction("compositionrangeend:0");
   test_result_->ExpectAction("selectionrangestart:2");
+  test_result_->ExpectAction("selectionrangeend:5");
+  test_result_->Verify();
+
+  RemoveLastClient(client.get());
+}
+
+TEST_F(InputMethodAuraLinuxTest, SurroundingText_NoCompositionTest) {
+  auto client =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  InstallFirstClient(client.get());
+
+  client->surrounding_text = u"abcdef";
+  client->text_range = gfx::Range(0, 6);
+  client->composition_range = gfx::Range(3, 3);
+  client->selection_range = gfx::Range(2, 5);
+
+  input_method_auralinux_->OnCaretBoundsChanged(client.get());
+
+  test_result_->ExpectAction("surroundingtext:abcdef");
+  test_result_->ExpectAction("textrangestart:0");
+  test_result_->ExpectAction("textrangeend:6");
+  test_result_->ExpectAction("compositionrangestart:3");
+  test_result_->ExpectAction("compositionrangeend:3");
+  test_result_->ExpectAction("selectionrangestart:2");
+  test_result_->ExpectAction("selectionrangeend:5");
+  test_result_->Verify();
+
+  input_method_auralinux_->DetachTextInputClient(client.get());
+  context_->DropClients();
+}
+
+TEST_F(InputMethodAuraLinuxTest, SurroundingText_CompositionTest) {
+  auto client =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  InstallFirstClient(client.get());
+
+  client->surrounding_text = u"abcdef";
+  client->text_range = gfx::Range(0, 6);
+  client->composition_range = gfx::Range(2, 5);
+  client->selection_range = gfx::Range(3, 5);
+
+  input_method_auralinux_->OnCaretBoundsChanged(client.get());
+
+  test_result_->ExpectAction("surroundingtext:abcdef");
+  test_result_->ExpectAction("textrangestart:0");
+  test_result_->ExpectAction("textrangeend:6");
+  test_result_->ExpectAction("compositionrangestart:2");
+  test_result_->ExpectAction("compositionrangeend:5");
+  test_result_->ExpectAction("selectionrangestart:3");
   test_result_->ExpectAction("selectionrangeend:5");
   test_result_->Verify();
 
@@ -1124,6 +1189,8 @@ TEST_F(InputMethodAuraLinuxTest, SurroundingText_PartialText) {
   test_result_->ExpectAction("surroundingtext:fghij");
   test_result_->ExpectAction("textrangestart:5");
   test_result_->ExpectAction("textrangeend:10");
+  test_result_->ExpectAction("compositionrangestart:0");
+  test_result_->ExpectAction("compositionrangeend:0");
   test_result_->ExpectAction("selectionrangestart:7");
   test_result_->ExpectAction("selectionrangeend:9");
   test_result_->Verify();
@@ -1147,6 +1214,8 @@ TEST_F(InputMethodAuraLinuxTest, SetPreeditRegionSingleCharTest) {
   test_result_->ExpectAction("surroundingtext:a");
   test_result_->ExpectAction("textrangestart:0");
   test_result_->ExpectAction("textrangeend:1");
+  test_result_->ExpectAction("compositionrangestart:0");
+  test_result_->ExpectAction("compositionrangeend:0");
   test_result_->ExpectAction("selectionrangestart:1");
   test_result_->ExpectAction("selectionrangeend:1");
 
@@ -1180,6 +1249,8 @@ TEST_F(InputMethodAuraLinuxTest, SetPreeditRegionCompositionEndTest) {
   test_result_->ExpectAction("surroundingtext:a");
   test_result_->ExpectAction("textrangestart:0");
   test_result_->ExpectAction("textrangeend:1");
+  test_result_->ExpectAction("compositionrangestart:0");
+  test_result_->ExpectAction("compositionrangeend:0");
   test_result_->ExpectAction("selectionrangestart:1");
   test_result_->ExpectAction("selectionrangeend:1");
 
@@ -1311,6 +1382,8 @@ TEST_F(InputMethodAuraLinuxTest, UpdateCompositionIfTextSelected) {
   test_result_->ExpectAction("surroundingtext:abcdef");
   test_result_->ExpectAction("textrangestart:0");
   test_result_->ExpectAction("textrangeend:6");
+  test_result_->ExpectAction("compositionrangestart:0");
+  test_result_->ExpectAction("compositionrangeend:0");
   test_result_->ExpectAction("selectionrangestart:3");
   test_result_->ExpectAction("selectionrangeend:3");
   test_result_->Verify();
@@ -1323,6 +1396,8 @@ TEST_F(InputMethodAuraLinuxTest, UpdateCompositionIfTextSelected) {
   test_result_->ExpectAction("surroundingtext:abcdef");
   test_result_->ExpectAction("textrangestart:0");
   test_result_->ExpectAction("textrangeend:6");
+  test_result_->ExpectAction("compositionrangestart:0");
+  test_result_->ExpectAction("compositionrangeend:0");
   test_result_->ExpectAction("selectionrangestart:2");
   test_result_->ExpectAction("selectionrangeend:5");
   test_result_->Verify();

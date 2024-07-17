@@ -42,7 +42,8 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
       delete;
   ~WaylandInputMethodContext() override;
 
-  void Init(bool initialize_for_testing = false);
+  void Init(bool initialize_for_testing = false,
+            std::unique_ptr<ZWPTextInputWrapper> wrapper_for_testing = nullptr);
 
   // LinuxInputMethodContext overrides:
   bool DispatchKeyEvent(const KeyEvent& key_event) override;
@@ -53,6 +54,7 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   void SetSurroundingText(
       const std::u16string& text,
       const gfx::Range& text_range,
+      const gfx::Range& composition_range,
       const gfx::Range& selection_range,
       const std::optional<GrammarFragment>& fragment,
       const std::optional<AutocorrectInfo>& autocorrect) override;

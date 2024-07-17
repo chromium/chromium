@@ -224,6 +224,7 @@ void ZWPTextInputWrapperV1::SetCursorRect(const gfx::Rect& rect) {
 
 void ZWPTextInputWrapperV1::SetSurroundingText(
     const std::string& text,
+    const gfx::Range& preedit_range,
     const gfx::Range& selection_range) {
   // Wayland packet has a limit of size due to its serialization format,
   // so if it exceeds 16 bits, it may be broken.

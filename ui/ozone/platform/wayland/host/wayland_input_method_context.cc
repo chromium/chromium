@@ -270,7 +270,14 @@ WaylandInputMethodContext::~WaylandInputMethodContext() {
   connection_->window_manager()->RemoveObserver(this);
 }
 
-void WaylandInputMethodContext::Init(bool initialize_for_testing) {
+void WaylandInputMethodContext::Init(
+    bool initialize_for_testing,
+    std::unique_ptr<ZWPTextInputWrapper> wrapper_for_testing) {
+  if (wrapper_for_testing) {
+    text_input_ = std::move(wrapper_for_testing);
+    return;
+  }
+
   bool use_ozone_wayland_vkb = initialize_for_testing || IsImeEnabled();
 
   // If text input instance is not created then all ime context operations
@@ -389,9 +396,13 @@ void WaylandInputMethodContext::SetCursorLocation(const gfx::Rect& rect) {
 void WaylandInputMethodContext::SetSurroundingText(
     const std::u16string& text,
     const gfx::Range& text_range,
+    const gfx::Range& composition_range,
     const gfx::Range& selection_range,
     const std::optional<GrammarFragment>& fragment,
     const std::optional<AutocorrectInfo>& autocorrect) {
+  DVLOG(1) << __func__ << " text=" << text << " text_range=" << text_range
+           << " composition_range=" << composition_range
+           << " selection_range=" << selection_range;
   if (!selection_range.IsBoundedBy(text_range)) {
     // There seems some edge case that selection_range is outside of text_range.
     // In the case we ignore it temporarily, wishing the next event will
@@ -436,6 +447,8 @@ void WaylandInputMethodContext::SetSurroundingText(
       static_cast<uint32_t>(offsets_for_adjustment[0]),
       static_cast<uint32_t>(offsets_for_adjustment[1])};
 
+  // To ensure trimming around cursor position, selection is used and not
+  // preedit.
   auto trimmed =
       text_input_->HasAdvancedSurroundingTextSupport()
           ? TrimSurroundingTextForExtension(text_utf8, offsets_for_adjustment)
@@ -486,10 +499,43 @@ void WaylandInputMethodContext::SetSurroundingText(
   }
 
   text_input_->SetSurroundingTextOffsetUtf16(utf16_offset + extra_offset_utf16);
+
+  gfx::Range relocated_preedit_range;
+  if (composition_range.IsValid()) {
+    if (!composition_range.IsBoundedBy(text_range)) {
+      // This is caused by incorrect value passed from the caller.
+      // As this likely indicates something went wrong in the input method stack
+      // ignore this request.
+      LOG(ERROR) << "composition_range is not bounded by text_range: "
+                 << composition_range.ToString() << ", "
+                 << text_range.ToString();
+      return;
+    }
+    std::vector<size_t> preedit_range = {
+        composition_range.start() - utf16_offset,
+        composition_range.end() - utf16_offset};
+    base::UTF16ToUTF8AndAdjustOffsets(text, &preedit_range);
+    if (preedit_range[0] < surrounding_text_offset_ ||
+        preedit_range[1] < surrounding_text_offset_ ||
+        preedit_range[0] > (surrounding_text_offset_ + text_utf8.size()) ||
+        preedit_range[1] > (surrounding_text_offset_ + text_utf8.size())) {
+      // The preedit range is outside of the surrounding text range.
+      // This can happen when the surrounding text is trimmed.
+      // In this case, the preedit range is invalid.
+      relocated_preedit_range = gfx::Range::InvalidRange();
+    } else {
+      relocated_preedit_range = {preedit_range[0] - surrounding_text_offset_,
+                                 preedit_range[1] - surrounding_text_offset_};
+    }
+  } else {
+    relocated_preedit_range = gfx::Range::InvalidRange();
+  }
+
   gfx::Range relocated_selection_range(
       selection_range_utf8.start() - surrounding_text_offset_,
       selection_range_utf8.end() - surrounding_text_offset_);
-  text_input_->SetSurroundingText(text_utf8, relocated_selection_range);
+  text_input_->SetSurroundingText(text_utf8, relocated_preedit_range,
+                                  relocated_selection_range);
 }
 
 VirtualKeyboardController*
