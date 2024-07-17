@@ -736,7 +736,9 @@ TEST_F(AutofillOptimizationGuideTest, AutofillAblation) {
                   {optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST1,
                    optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST2,
                    optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST3,
-                   optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST4})));
+                   optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST4,
+                   optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST5,
+                   optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST6})));
   autofill_optimization_guide_->OnDidParseForm(form_structure,
                                                personal_data_manager_.get());
 

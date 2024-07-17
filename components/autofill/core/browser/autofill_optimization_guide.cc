@@ -118,6 +118,10 @@ void AddAblationOptimizationTypes(
       optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST3);
   optimization_types.insert(
       optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST4);
+  optimization_types.insert(
+      optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST5);
+  optimization_types.insert(
+      optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST6);
 }
 
 // Maps the credit card category optimizations type to the
@@ -293,7 +297,9 @@ bool AutofillOptimizationGuide::IsEligibleForAblation(
   CHECK(type == optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST1 ||
         type == optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST2 ||
         type == optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST3 ||
-        type == optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST4)
+        type == optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST4 ||
+        type == optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST5 ||
+        type == optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST6)
       << type;
   optimization_guide::OptimizationGuideDecision decision =
       decider_->CanApplyOptimization(url, type,

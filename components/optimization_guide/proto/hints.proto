@@ -273,6 +273,8 @@ enum OptimizationType {
   AUTOFILL_ABLATION_SITES_LIST2 = 61;
   AUTOFILL_ABLATION_SITES_LIST3 = 62;
   AUTOFILL_ABLATION_SITES_LIST4 = 63;
+  AUTOFILL_ABLATION_SITES_LIST5 = 64;
+  AUTOFILL_ABLATION_SITES_LIST6 = 65;
 }
 
 // Presents semantics for how page load URLs should be matched.

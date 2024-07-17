@@ -227,6 +227,12 @@ extern const base::FeatureParam<int>
     kAutofillAblationStudyAblationWeightPerMilleList4Param;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<int>
+    kAutofillAblationStudyAblationWeightPerMilleList5Param;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<int>
+    kAutofillAblationStudyAblationWeightPerMilleList6Param;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<int>
     kAutofillAblationStudyAblationWeightPerMilleParam;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<bool> kAutofillAblationStudyIsDryRun;

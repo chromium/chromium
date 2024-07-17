@@ -720,6 +720,12 @@ const base::FeatureParam<int>
 const base::FeatureParam<int>
     kAutofillAblationStudyAblationWeightPerMilleList4Param{
         &kAutofillEnableAblationStudy, "ablation_weight_per_mille_param4", 0};
+const base::FeatureParam<int>
+    kAutofillAblationStudyAblationWeightPerMilleList5Param{
+        &kAutofillEnableAblationStudy, "ablation_weight_per_mille_param5", 0};
+const base::FeatureParam<int>
+    kAutofillAblationStudyAblationWeightPerMilleList6Param{
+        &kAutofillEnableAblationStudy, "ablation_weight_per_mille_param6", 0};
 // If true, the ablation study runs as an A/A study (no behavioral changes) but
 // clients are assigned to the respective groups.
 const base::FeatureParam<bool> kAutofillAblationStudyIsDryRun{

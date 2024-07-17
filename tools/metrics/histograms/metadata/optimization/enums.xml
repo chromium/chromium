@@ -711,6 +711,8 @@ chromium-metrics-reviews@google.com.
   <int value="61" label="AUTOFILL_ABLATION_SITES_LIST2"/>
   <int value="62" label="AUTOFILL_ABLATION_SITES_LIST3"/>
   <int value="63" label="AUTOFILL_ABLATION_SITES_LIST4"/>
+  <int value="64" label="AUTOFILL_ABLATION_SITES_LIST5"/>
+  <int value="65" label="AUTOFILL_ABLATION_SITES_LIST6"/>
 </enum>
 
 <enum name="PageContentAnnotationsStorageStatus">

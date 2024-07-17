@@ -37,6 +37,10 @@ using ::autofill::features::
     kAutofillAblationStudyAblationWeightPerMilleList3Param;
 using ::autofill::features::
     kAutofillAblationStudyAblationWeightPerMilleList4Param;
+using ::autofill::features::
+    kAutofillAblationStudyAblationWeightPerMilleList5Param;
+using ::autofill::features::
+    kAutofillAblationStudyAblationWeightPerMilleList6Param;
 using ::autofill::features::kAutofillAblationStudyAblationWeightPerMilleParam;
 using ::autofill::features::kAutofillAblationStudyEnabledForAddressesParam;
 using ::autofill::features::kAutofillAblationStudyEnabledForPaymentsParam;
@@ -179,18 +183,22 @@ AblationGroup AutofillAblationStudy::GetAblationGroup(
       break;
   }
 
-  std::array<const base::FeatureParam<int>*, 4> ablation_list_params = {
+  std::array<const base::FeatureParam<int>*, 6> ablation_list_params = {
       &kAutofillAblationStudyAblationWeightPerMilleList1Param,
       &kAutofillAblationStudyAblationWeightPerMilleList2Param,
       &kAutofillAblationStudyAblationWeightPerMilleList3Param,
       &kAutofillAblationStudyAblationWeightPerMilleList4Param,
+      &kAutofillAblationStudyAblationWeightPerMilleList5Param,
+      &kAutofillAblationStudyAblationWeightPerMilleList6Param,
   };
   using OptimizationType = optimization_guide::proto::OptimizationType;
-  constexpr std::array<OptimizationType, 4> ablation_optimization_types = {
+  constexpr std::array<OptimizationType, 6> ablation_optimization_types = {
       OptimizationType::AUTOFILL_ABLATION_SITES_LIST1,
       OptimizationType::AUTOFILL_ABLATION_SITES_LIST2,
       OptimizationType::AUTOFILL_ABLATION_SITES_LIST3,
-      OptimizationType::AUTOFILL_ABLATION_SITES_LIST4};
+      OptimizationType::AUTOFILL_ABLATION_SITES_LIST4,
+      OptimizationType::AUTOFILL_ABLATION_SITES_LIST5,
+      OptimizationType::AUTOFILL_ABLATION_SITES_LIST6};
 
   base::Time now = AutofillClock::Now();
   for (size_t i = 0; i < ablation_list_params.size(); ++i) {
