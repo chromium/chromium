@@ -573,6 +573,19 @@ class NavigationRequestBrowserTest : public ContentBrowserTest {
   }
 };
 
+// A test class that calls IsolateAllSitesForTesting() early enough in the setup
+// that we get consistent results for AreOriginKeyedProcessesEnabledByDefault()
+// if kOriginKeyedProcessesByDefault is enabled. Specifically, make sure the
+// initial shell's main frame's BrowsingInstance gets the correct default
+// isolation state, which depends on AreOriginKeyedProcessesEnabledByDefault().
+class NavigationRequestBrowserTest_IsolateAllSites
+    : public NavigationRequestBrowserTest {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    NavigationRequestBrowserTest::SetUpCommandLine(command_line);
+    IsolateAllSitesForTesting(command_line);
+  }
+};
+
 class NavigationRequestDownloadBrowserTest
     : public NavigationRequestBrowserTest {
  protected:
@@ -2834,7 +2847,8 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, StartToCommitMetrics) {
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest_IsolateAllSites,
+                       StartToCommitMetrics) {
   enum class FrameType {
     kMain,
     kSub,
@@ -2898,7 +2912,6 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, StartToCommitMetrics) {
   };
 
   // Main frame tests.
-  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/hello.html")));
   {
