@@ -432,7 +432,6 @@
 ./tools/wptrunner/wptrunner/testdriver-extra.js
 ./tools/wptrunner/wptrunner/testdriver-vendor.js
 ./tools/wptrunner/wptrunner/testharness_runner.html
-./tools/wptrunner/wptrunner/testharnessreport-content-shell.js
 ./tools/wptrunner/wptrunner/testharnessreport-servo.js
 ./tools/wptrunner/wptrunner/testharnessreport-servodriver.js
 ./tools/wptrunner/wptrunner/testharnessreport.js

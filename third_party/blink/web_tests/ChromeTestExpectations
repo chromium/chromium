@@ -56,6 +56,7 @@ external/wpt/webdriver/tests/bidi/input/set_files/set_files.py [ Timeout ]
 [ Debug ] external/wpt/webdriver/tests/bidi/storage/delete_cookies/filter.py [ Timeout ]
 [ Debug ] external/wpt/webdriver/tests/bidi/storage/delete_cookies/invalid.py [ Timeout ]
 [ Debug ] external/wpt/webdriver/tests/bidi/storage/get_cookies/invalid.py [ Timeout ]
+external/wpt/webdriver/tests/bidi/browsing_context/close/prompt_unload.py [ Timeout ]
 
 # Gardener 2024-02-08
 crbug.com/324436866 [ Debug ] external/wpt/webdriver/tests/bidi/browsing_context/context_destroyed/context_destroyed.py [ Failure Timeout ]

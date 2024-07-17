@@ -1,4 +1,0 @@
-This is a wdspec test.
-[ERROR] test_file_protocol
-  setup error: KeyError: 'target_platform'
-Harness: the test ran to completion.
