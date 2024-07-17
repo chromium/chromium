@@ -14,6 +14,7 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/management/management_service.h"
@@ -233,6 +234,10 @@ std::optional<base::Time> ChromeEnterpriseRealTimeUrlLookupService::
 bool ChromeEnterpriseRealTimeUrlLookupService::CanSendRTSampleRequest() const {
   // Do not send sampled pings for enterprise users.
   return false;
+}
+
+std::string ChromeEnterpriseRealTimeUrlLookupService::GetUserEmail() const {
+  return GetProfileEmail(profile_);
 }
 
 }  // namespace safe_browsing

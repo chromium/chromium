@@ -46,7 +46,11 @@ message RTLookupRequest {
   // For more information on DM tokens, see go/cbe-dmtoken
   optional string browser_dm_token = 12;
 
-  // |version| helps the Safe Browsing server understand what verison of the
+  // Email of the signed-in user that triggered the request, if available.
+  // Only populated for enterprise requests.
+  optional string email = 13;
+
+  // |version| helps the Safe Browsing server understand what version of the
   // proto Chrome understands, and also what kinds of behaviours it supports.
   // It should be incremented when adding new fields and/or when making changes
   // to how existing fields may be interpreted.

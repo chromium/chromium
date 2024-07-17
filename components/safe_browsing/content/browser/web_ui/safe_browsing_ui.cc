@@ -2558,6 +2558,9 @@ std::string SerializeURTLookupPing(const URTLookupRequest& ping) {
                    SerializeChromeUserPopulation(request.population()));
   request_dict.Set("scoped_oauth_token", ping.token);
   request_dict.Set("dm_token", request.dm_token());
+  request_dict.Set("profile_dm_token", request.profile_dm_token());
+  request_dict.Set("browser_dm_token", request.browser_dm_token());
+  request_dict.Set("email", request.email());
 
   std::string lookupType;
   switch (request.lookup_type()) {

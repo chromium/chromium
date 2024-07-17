@@ -41,6 +41,10 @@ bool FakeRealTimeUrlLookupService::CanSendRTSampleRequest() const {
   return false;
 }
 
+std::string FakeRealTimeUrlLookupService::GetUserEmail() const {
+  return "test@user.com";
+}
+
 std::string FakeRealTimeUrlLookupService::GetMetricSuffix() const {
   return ".Mock";
 }

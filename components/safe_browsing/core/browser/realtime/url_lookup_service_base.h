@@ -143,6 +143,10 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // Checks if a sample ping can be sent to Safe Browsing.
   virtual bool CanSendRTSampleRequest() const = 0;
 
+  // Returns an email address to be attached to lookup requests, or an empty
+  // string if none is available.
+  virtual std::string GetUserEmail() const = 0;
+
   // KeyedService:
   // Called before the actual deletion of the object.
   void Shutdown() override;

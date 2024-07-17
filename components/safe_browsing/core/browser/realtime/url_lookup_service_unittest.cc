@@ -744,6 +744,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
         RTLookupRequest request_proto;
         ASSERT_TRUE(GetRequestProto(request, &request_proto));
         EXPECT_FALSE(request_proto.has_dm_token());
+        EXPECT_FALSE(request_proto.has_email());
 
         // Cookies should be removed when token is set.
         EXPECT_EQ(request.credentials_mode,
@@ -795,6 +796,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
         RTLookupRequest request_proto;
         ASSERT_TRUE(GetRequestProto(request, &request_proto));
         EXPECT_FALSE(request_proto.has_dm_token());
+        EXPECT_FALSE(request_proto.has_email());
 
         EXPECT_FALSE(
             request.headers.HasHeader(net::HttpRequestHeaders::kAuthorization));

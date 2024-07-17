@@ -606,6 +606,11 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
   std::optional<std::string> dm_token_string = GetDMTokenString();
   if (dm_token_string.has_value()) {
     request->set_dm_token(dm_token_string.value());
+
+    std::string email = GetUserEmail();
+    if (!email.empty()) {
+      request->set_email(std::move(email));
+    }
   }
 
   *request->mutable_population() = get_user_population_callback_.Run();
