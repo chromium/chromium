@@ -33,6 +33,7 @@ static_library("files") {
     "//base",
     "//base:i18n",
     "//chrome/browser/ash/app_list/search/common",
+    "//chrome/browser/ash/app_list/search/local_image_search",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/profiles:profile",
@@ -55,6 +56,9 @@ static_library("files") {
     "//ui/gfx/geometry",
     "//url",
   ]
+
+  allow_circular_includes_from =
+      [ "//chrome/browser/ash/app_list/search/local_image_search" ]
 }
 
 source_set("unit_tests") {
