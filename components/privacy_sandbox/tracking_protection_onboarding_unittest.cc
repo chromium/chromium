@@ -415,6 +415,66 @@ TEST_F(TrackingProtectionOnboardingTest,
             NoticeType::kNone);
 }
 
+TEST_F(TrackingProtectionOnboardingTest, GetRequiredNotice_Full3PCDDisabled) {
+  feature_list_.InitAndDisableFeature(
+      privacy_sandbox::kTrackingProtectionOnboarding);
+
+  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(
+                SurfaceType::kDesktop),
+            NoticeType::kNone);
+}
+
+TEST_F(TrackingProtectionOnboardingTest, GetRequiredNotice_Full3PCDEnabled) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      privacy_sandbox::kTrackingProtectionOnboarding,
+      {{privacy_sandbox::kTrackingProtectionBlock3PC.name, "true"}});
+
+  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(
+                SurfaceType::kDesktop),
+            NoticeType::kFull3PCDOnboarding);
+}
+
+TEST_F(TrackingProtectionOnboardingTest,
+       GetRequiredNotice_Full3PCDSilentOnboarding) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      privacy_sandbox::kTrackingProtectionOnboarding,
+      {{privacy_sandbox::kTrackingProtectionBlock3PC.name, "false"}});
+
+  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(
+                SurfaceType::kDesktop),
+            NoticeType::kFull3PCDSilentOnboarding);
+}
+
+TEST_F(TrackingProtectionOnboardingTest,
+       GetRequiredNotice_Full3PCDEnabledWithIPP) {
+  feature_list_.InitWithFeaturesAndParameters(
+      {{privacy_sandbox::kTrackingProtectionOnboarding,
+        {{privacy_sandbox::kTrackingProtectionBlock3PC.name, "true"}}},
+       {privacy_sandbox::kIpProtectionUx, {}}},
+      {});
+
+  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(
+                SurfaceType::kDesktop),
+            NoticeType::kFull3PCDOnboardingWithIPP);
+}
+
+TEST_F(TrackingProtectionOnboardingTest, GetRequiredNotice_ModeBAlreadyAcked) {
+  tracking_protection_onboarding()->MaybeMarkModeBEligible();
+  tracking_protection_onboarding()->NoticeShown(SurfaceType::kDesktop,
+                                                NoticeType::kModeBOnboarding);
+  tracking_protection_onboarding()->NoticeActionTaken(
+      SurfaceType::kDesktop, NoticeType::kModeBOnboarding,
+      NoticeAction::kGotIt);
+
+  feature_list_.InitAndEnableFeatureWithParameters(
+      privacy_sandbox::kTrackingProtectionOnboarding,
+      {{privacy_sandbox::kTrackingProtectionBlock3PC.name, "true"}});
+
+  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(
+                SurfaceType::kDesktop),
+            NoticeType::kNone);
+}
+
 TEST_F(TrackingProtectionOnboardingTest, MaybeResetOnboardingPrefsInStable) {
   // Setup
   delegate_ = std::make_unique<MockTrackingProtectionOnboardingDelegate>();
