@@ -89,7 +89,10 @@ class TranslateManager {
   // Returns the language to translate to.
   //
   // If provided a non-undefined |source_language|, returns the language from
-  // the auto translate list (if not empty).
+  // the auto translate list (if not empty and it supports translate).
+  //
+  // If the recent target language is not empty and supports translate returns
+  // that.
   //
   // If provided a non-null |language_model|, returns the first language from
   // the model that is supported by the translation service and that is not to
