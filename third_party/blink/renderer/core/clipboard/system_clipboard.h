@@ -211,6 +211,10 @@ class CORE_EXPORT SystemClipboard final
   // made.
   std::unique_ptr<Snapshot> snapshot_;
   size_t snapshot_count_ = 0;
+  // Declared SystemClipboardTest class as friend to access the private members
+  // of this class as we need to use clipboard_ and buffer_ for unbound remote
+  // tests.
+  friend class SystemClipboardTest;
 };
 
 // When in scope, forces the specified system clipboard to take a snapshot
