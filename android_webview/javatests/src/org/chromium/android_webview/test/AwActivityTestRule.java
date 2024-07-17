@@ -234,10 +234,6 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
         }
     }
 
-    public void runOnUiThread(Runnable r) {
-        ThreadUtils.runOnUiThreadBlocking(r);
-    }
-
     public static void enableJavaScriptOnUiThread(final AwContents awContents) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> awContents.getSettings().setJavaScriptEnabled(true));
@@ -399,7 +395,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
             final String baseUrl,
             final String historyUrl)
             throws Throwable {
-        runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         awContents.loadDataWithBaseURL(
                                 baseUrl,

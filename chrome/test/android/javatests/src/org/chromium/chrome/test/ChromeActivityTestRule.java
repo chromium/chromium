@@ -120,14 +120,6 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     }
 
     /**
-     * TODO(crbug.com/40156325): This only exists here because legacy ActivityTestRule inherited
-     * from UiThreadTestRule. This function should be removed.
-     */
-    public void runOnUiThread(Runnable r) {
-        ThreadUtils.runOnUiThreadBlocking(r);
-    }
-
-    /**
      * @return The {@link AppMenuCoordinator} for the activity.
      */
     public AppMenuCoordinator getAppMenuCoordinator() {
