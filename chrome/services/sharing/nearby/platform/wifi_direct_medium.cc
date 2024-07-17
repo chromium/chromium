@@ -368,6 +368,8 @@ void WifiDirectMedium::AssociateSocket(bool* did_associate,
 void WifiDirectMedium::OnSocketAssociated(bool* did_associate,
                                           base::WaitableEvent* waitable_event,
                                           bool success) {
+  base::UmaHistogramBoolean(
+      "Nearby.Connections.WifiDirect.AssociateSocket.Result", success);
   *did_associate = success;
   waitable_event->Signal();
 }

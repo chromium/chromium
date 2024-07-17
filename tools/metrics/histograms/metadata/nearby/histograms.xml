@@ -539,6 +539,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Connections.WifiDirect.AssociateSocket.Result"
+    enum="BooleanSuccess" expires_after="2025-04-30">
+  <owner>jackshira@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records if the socket was able to be associated with the WiFi Direct
+    interface. Emitted when both connecting and listening for Nearby
+    Connections.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Connections.WifiDirect.ConnectToWifiDirectGroup.Error"
     enum="NearbyConnectionsWifiDirectResult" expires_after="2025-04-30">
   <owner>jackshira@google.com</owner>
