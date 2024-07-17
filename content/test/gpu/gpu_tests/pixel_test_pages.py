@@ -716,19 +716,22 @@ class PixelTestPages():
         'accelerated_two_copy': True
     }
 
+    standard_crop = ca.NonWhiteContentCropAction(
+        initial_crop=ca.FixedRectCropAction(0, 0, 500, 500))
+
     # Setting grace_period_end to monitor the affects on bots for 2 weeks
     # without making the bots red unexpectedly.
     return [
         # Enabled OneCopyCapture
         PixelTestPage('pixel_webgpu_canvas_capture_to_video.html',
                       base_name + '_WebGPUCanvasOneCopyCapture',
-                      test_rect=[0, 0, 400, 200],
+                      crop_action=standard_crop,
                       matching_algorithm=GENERAL_MP4_ALGO,
                       browser_args=browser_args_canvas_one_copy_capture,
                       other_args=other_args_canvas_one_copy_capture),
         PixelTestPage('pixel_webgpu_canvas_capture_to_video.html?hidden=true',
                       base_name + '_WebGPUCanvasOneCopyCapture_Hidden',
-                      test_rect=[0, 0, 200, 200],
+                      crop_action=standard_crop,
                       matching_algorithm=GENERAL_MP4_ALGO,
                       browser_args=browser_args_canvas_one_copy_capture,
                       other_args=other_args_canvas_one_copy_capture),
@@ -736,11 +739,10 @@ class PixelTestPages():
         PixelTestPage(
             'pixel_webgpu_canvas_capture_to_video.html?has_alpha=false',
             base_name + '_WebGPUCanvasDisableOneCopyCapture_Accelerated',
-            test_rect=[0, 0, 400, 200],
+            crop_action=standard_crop,
             matching_algorithm=GENERAL_MP4_ALGO,
             browser_args=browser_args_canvas_disable_one_copy_capture,
-            other_args=other_args_canvas_accelerated_two_copy,
-            grace_period_end=date(2022, 8, 30)),
+            other_args=other_args_canvas_accelerated_two_copy),
     ]
 
 
@@ -751,19 +753,25 @@ class PixelTestPages():
         cba.ENABLE_GPU_RASTERIZATION,
         cba.DISABLE_SOFTWARE_COMPOSITING_FALLBACK,
     ]
+
     return [
         PixelTestPage('pixel_background.html',
                       base_name + '_GpuRasterization_BlueBox',
-                      test_rect=[0, 0, 220, 220],
+                      crop_action=ca.FixedRectCropAction(0, 0, 220, 220),
                       browser_args=browser_args),
         PixelTestPage('concave_paths.html',
                       base_name + '_GpuRasterization_ConcavePaths',
-                      test_rect=[0, 0, 100, 100],
+                      crop_action=ca.NonWhiteContentCropAction(
+                          initial_crop=ca.FixedRectCropAction(0, 0, None, 200)),
                       browser_args=browser_args),
         PixelTestPage(
             'pixel_precision_rounded_corner.html',
             base_name + '_PrecisionRoundedCorner',
-            test_rect=[0, 0, 400, 400],
+            # Entire image is typically too big to be captured fully via the
+            # default screenshot path, so continue to use the historical crop
+            # bounds which results in a small section of the rendered circle
+            # being captured.
+            crop_action=ca.FixedRectCropAction(0, 0, 400, 400),
             browser_args=browser_args,
             matching_algorithm=algo.SobelMatchingAlgorithm(
                 max_different_pixels=10,
@@ -783,11 +791,11 @@ class PixelTestPages():
     ]
 
     return [
-        PixelTestPage(
-            'pixel_paintWorklet_transform.html',
-            base_name + '_PaintWorkletTransform',
-            test_rect=[0, 0, 200, 200],
-            browser_args=browser_args),
+        PixelTestPage('pixel_paintWorklet_transform.html',
+                      base_name + '_PaintWorkletTransform',
+                      crop_action=ca.NonWhiteContentCropAction(
+                          initial_crop=ca.FixedRectCropAction(0, 0, 200, 200)),
+                      browser_args=browser_args),
     ]
 
   # Pages that should be run with experimental canvas features.
@@ -929,36 +937,40 @@ class PixelTestPages():
         cba.DISABLE_ACCELERATED_2D_CANVAS,
         cba.DISABLE_GPU_COMPOSITING,
     ]
+
+    standard_crop = ca.NonWhiteContentCropAction(
+        initial_crop=ca.FixedRectCropAction(0, 0, 250, 250))
+
     return [
         PixelTestPage('pixel_canvas_low_latency_2d.html',
                       base_name + '_CanvasLowLatency2D',
-                      test_rect=[0, 0, 100, 100]),
+                      crop_action=standard_crop),
         PixelTestPage('pixel_canvas_low_latency_2d.html',
                       base_name + '_CanvasUnacceleratedLowLatency2D',
-                      test_rect=[0, 0, 100, 100],
+                      crop_action=standard_crop,
                       browser_args=unaccelerated_args),
         PixelTestPage('pixel_canvas_low_latency_webgl.html',
                       base_name + '_CanvasLowLatencyWebGL',
-                      test_rect=[0, 0, 200, 200]),
+                      crop_action=standard_crop),
         PixelTestPage('pixel_canvas_low_latency_webgl_alpha_false.html',
                       base_name + '_CanvasLowLatencyWebGLAlphaFalse',
-                      test_rect=[0, 0, 200, 200]),
+                      crop_action=standard_crop),
         PixelTestPage('pixel_canvas_low_latency_2d_draw_image.html',
                       base_name + '_CanvasLowLatency2DDrawImage',
-                      test_rect=[0, 0, 200, 100]),
+                      crop_action=standard_crop),
         PixelTestPage('pixel_canvas_low_latency_webgl_draw_image.html',
                       base_name + '_CanvasLowLatencyWebGLDrawImage',
-                      test_rect=[0, 0, 200, 100]),
+                      crop_action=standard_crop),
         PixelTestPage('pixel_canvas_low_latency_2d_image_data.html',
                       base_name + '_CanvasLowLatency2DImageData',
-                      test_rect=[0, 0, 200, 100]),
+                      crop_action=standard_crop),
         PixelTestPage('pixel_canvas_low_latency_webgl_rounded_corners.html',
                       base_name + '_CanvasLowLatencyWebGLRoundedCorners',
-                      test_rect=[0, 0, 100, 100],
+                      crop_action=standard_crop,
                       matching_algorithm=ROUNDING_ERROR_ALGO),
         PixelTestPage('pixel_canvas_low_latency_webgl_occluded.html',
                       base_name + '_CanvasLowLatencyWebGLOccluded',
-                      test_rect=[0, 0, 100, 100],
+                      crop_action=standard_crop,
                       other_args={'no_overlay': True}),
     ]
 
