@@ -11647,6 +11647,21 @@
             ]
         }
     ],
+    "IOSSaveToPhotosImprovements": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SaveToPhotosImprovements"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSSaveUsernameInUff": [
         {
             "platforms": [

@@ -851,7 +851,7 @@ BASE_FEATURE(kSpotlightNeverRetainIndex,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIOSSaveToPhotosImprovements,
-             "enable-save-to-photos-improvements",
+             "SaveToPhotosImprovements",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kSaveToPhotosContextMenuImprovementParam[] =
