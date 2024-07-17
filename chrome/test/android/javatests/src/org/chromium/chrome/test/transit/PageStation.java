@@ -151,7 +151,12 @@ public class PageStation extends Station {
         assert builder.mNumTabsBeingSelected != null;
         mNumTabsBeingSelected = builder.mNumTabsBeingSelected;
 
+        // Pages must have an already selected tab, or be selecting a tab.
         mTabAlreadySelected = builder.mTabAlreadySelected;
+        assert mIsEntryPoint || (mTabAlreadySelected != null) != (mNumTabsBeingSelected != 0)
+                : String.format(
+                        "mTabAlreadySelected=%s mNumTabsBeingSelected=%s",
+                        mTabAlreadySelected, mNumTabsBeingSelected);
 
         // path is optional
         mPath = builder.mPath;
