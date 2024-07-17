@@ -98,8 +98,15 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
     // Set up layout:
     SetLayoutManager(std::make_unique<views::FillLayout>());
     views::View* root_view = AddChildView(std::make_unique<views::View>());
-    views::FlexLayout* flex_layout =
-        root_view->SetLayoutManager(std::make_unique<views::FlexLayout>());
+    views::AnimatingLayoutManager* animating_layout =
+        root_view->SetLayoutManager(
+            std::make_unique<views::AnimatingLayoutManager>());
+    animating_layout
+        ->SetBoundsAnimationMode(views::AnimatingLayoutManager::
+                                     BoundsAnimationMode::kAnimateMainAxis)
+        .SetOrientation(views::LayoutOrientation::kVertical);
+    views::FlexLayout* flex_layout = animating_layout->SetTargetLayoutManager(
+        std::make_unique<views::FlexLayout>());
     flex_layout->SetOrientation(views::LayoutOrientation::kVertical)
         .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
         .SetIgnoreDefaultMainAxisMargins(true)
@@ -341,10 +348,9 @@ void PasswordSaveUpdateView::AnnounceBubbleChange() {
     return;
   }
 
-  std::u16string accessibility_alert_text = GetWindowTitle();
   views::ViewAccessibility& ax = accessibility_alert_->GetViewAccessibility();
   ax.SetRole(ax::mojom::Role::kAlert);
-  ax.SetName(accessibility_alert_text, ax::mojom::NameFrom::kAttribute);
+  ax.SetName(GetWindowTitle(), ax::mojom::NameFrom::kAttribute);
   accessibility_alert_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
                                                  true);
 }
