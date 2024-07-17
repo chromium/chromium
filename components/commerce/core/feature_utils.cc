@@ -44,8 +44,6 @@ bool IsProductSpecificationsEnabled(AccountChecker* account_checker) {
   // TODO(352761768): Reintroduce the "region launched" version of the flag
   //                  with a supplementary kill switch flag so that it's
   //                  possible turn the whole feature off
-  LOG(ERROR) << "MDJONES================================= "
-             << (account_checker ? "OK" : "NULL CHECKER");
   return base::FeatureList::IsEnabled(kProductSpecifications) &&
          IsEnabledForCountryAndLocale(kProductSpecifications,
                                       account_checker->GetCountry(),
