@@ -11,11 +11,6 @@
       "chromiumos_preflight"
     ]
   },
-  "chromeos-betty-arc-r-chrome": {
-    "additional_compile_targets": [
-      "chromiumos_preflight"
-    ]
-  },
   "chromeos-betty-cfi-thin-lto-chrome": {
     "additional_compile_targets": [
       "chromiumos_preflight"

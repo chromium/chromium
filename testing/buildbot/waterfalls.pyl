@@ -27,15 +27,6 @@
           'chromiumos_preflight',
         ],
       },
-      'chromeos-betty-arc-r-chrome': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-        # Temporarily stop running tests on betty-arc-r builders, because of ARC
-        # VM. Due to the nature of the ARC VM inside CrOS, betty-arc-r tests
-        # can't run on GCE images. GCE VM -> CrOS VM -> Android VM proves to be
-        # too many layers of virtualization for the tests.
-      },
       'chromeos-betty-cfi-thin-lto-chrome': {
         'additional_compile_targets': [
           'chromiumos_preflight',
