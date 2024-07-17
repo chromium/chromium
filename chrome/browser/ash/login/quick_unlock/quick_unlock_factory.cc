@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 
+#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"

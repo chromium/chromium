@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_selections.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

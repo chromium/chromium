@@ -154,13 +154,13 @@ TEST_F(ProfileKeyedServiceFactoryUnittest, DefaultFactoryTest) {
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  TestProfileToUse(factory, signin_profile(), signin_profile());
+  TestProfileToUse(factory, signin_profile(), nullptr);
   TestProfileToUse(factory, signin_profile_otr(), nullptr);
 
-  TestProfileToUse(factory, lockscreen_profile(), lockscreen_profile());
+  TestProfileToUse(factory, lockscreen_profile(), nullptr);
   TestProfileToUse(factory, lockscreen_profile_otr(), nullptr);
 
-  TestProfileToUse(factory, lockscreenapp_profile(), lockscreenapp_profile());
+  TestProfileToUse(factory, lockscreenapp_profile(), nullptr);
   TestProfileToUse(factory, lockscreenapp_profile_otr(), nullptr);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
@@ -267,13 +267,13 @@ TEST_F(ProfileKeyedServiceFactoryUnittest, DefaultRefcountedFactoryTest) {
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  TestProfileToUse(factory, signin_profile(), signin_profile());
+  TestProfileToUse(factory, signin_profile(), nullptr);
   TestProfileToUse(factory, signin_profile_otr(), nullptr);
 
-  TestProfileToUse(factory, lockscreen_profile(), lockscreen_profile());
+  TestProfileToUse(factory, lockscreen_profile(), nullptr);
   TestProfileToUse(factory, lockscreen_profile_otr(), nullptr);
 
-  TestProfileToUse(factory, lockscreenapp_profile(), lockscreenapp_profile());
+  TestProfileToUse(factory, lockscreenapp_profile(), nullptr);
   TestProfileToUse(factory, lockscreenapp_profile_otr(), nullptr);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }

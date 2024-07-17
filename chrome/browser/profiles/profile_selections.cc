@@ -128,11 +128,7 @@ ProfileSelection ProfileSelections::GetProfileSelection(
   // `profile->IsRegularProfile()` because profiles that are internal ASH
   // (non-user) profiles will also satisfy the later condition.
   if (!ash::IsUserBrowserContext(profile)) {
-    // If the value for `ash_internals_profile_selection_` is not set, redirect
-    // to the default behavior, which is the behavior given to the
-    // RegularProfile.
-    return ash_internals_profile_selection_.value_or(
-        regular_profile_selection_);
+    return ash_internals_profile_selection_;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -144,17 +140,11 @@ ProfileSelection ProfileSelections::GetProfileSelection(
   }
 
   if (profile->IsGuestSession()) {
-    // If a value is not set for the Guest Profile Selection,
-    // `ProfileSelection::kNone` is set by default, meaning no profile will be
-    // selected.
-    return guest_profile_selection_.value_or(ProfileSelection::kNone);
+    return guest_profile_selection_;
   }
 
   if (profile->IsSystemProfile()) {
-    // If a value is not set for the System Profile Selection,
-    // `ProfileSelection::kNone` is set by default, meaning no profile will be
-    // selected.
-    return system_profile_selection_.value_or(ProfileSelection::kNone);
+    return system_profile_selection_;
   }
 
   NOTREACHED_IN_MIGRATION();

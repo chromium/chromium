@@ -7,6 +7,7 @@
 #include "base/android/callback_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "chrome/browser/offline_pages/android/offline_page_auto_fetcher_service_factory.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
 #include "chrome/browser/offline_pages/request_coordinator_factory.h"
@@ -37,8 +38,9 @@ static jboolean JNI_BackgroundSchedulerBridge_StartScheduledProcessing(
   j_callback_ref.Reset(env, j_callback_obj);
 
   Profile* profile = ProfileManager::GetLastUsedProfile();
-  if (!profile)
+  if (!profile) {
     return false;
+  }
 
   // Make sure the auto-fetch service is running, so it can respond to completed
   // pages.
@@ -47,8 +49,7 @@ static jboolean JNI_BackgroundSchedulerBridge_StartScheduledProcessing(
   // Lookup/create RequestCoordinator KeyedService and call
   // StartScheduledProcessing on it with bound j_callback_obj.
   RequestCoordinator* coordinator =
-      RequestCoordinatorFactory::GetInstance()->
-      GetForBrowserContext(profile);
+      RequestCoordinatorFactory::GetInstance()->GetForBrowserContext(profile);
   DVLOG(2) << "resource_coordinator: " << coordinator;
   DeviceConditions device_conditions(
       j_power_connected, j_battery_percentage,
@@ -63,13 +64,15 @@ static jboolean JNI_BackgroundSchedulerBridge_StartScheduledProcessing(
 // JNI call to stop request processing in scheduled mode.
 static void JNI_BackgroundSchedulerBridge_StopScheduledProcessing(JNIEnv* env) {
   Profile* profile = ProfileManager::GetLastUsedProfile();
-  if (!profile)
+  if (!profile) {
     return;
+  }
   RequestCoordinator* coordinator =
       RequestCoordinatorFactory::GetInstance()->GetForBrowserContext(profile);
   DVLOG(2) << "resource_coordinator: " << coordinator;
-  if (!coordinator)
+  if (!coordinator) {
     return;
+  }
   coordinator->CancelProcessing();
 }
 
@@ -95,8 +98,8 @@ void BackgroundSchedulerBridge::BackupSchedule(
       CreateTriggerConditions(env, trigger_conditions.require_power_connected,
                               trigger_conditions.minimum_battery_percentage,
                               trigger_conditions.require_unmetered_network);
-  Java_BackgroundSchedulerBridge_backupSchedule(
-      env, j_conditions, delay_in_seconds);
+  Java_BackgroundSchedulerBridge_backupSchedule(env, j_conditions,
+                                                delay_in_seconds);
 }
 
 void BackgroundSchedulerBridge::Unschedule() {
