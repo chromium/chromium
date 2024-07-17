@@ -4,20 +4,21 @@
 
 import 'chrome://privacy-sandbox-internals/related_website_sets/related_website_sets.js';
 
-import type {RelatedWebsiteSetsListContainerElement} from 'chrome://privacy-sandbox-internals/related_website_sets/related_website_sets.js';
+import type {RelatedWebsiteSet, RelatedWebsiteSetsListContainerElement} from 'chrome://privacy-sandbox-internals/related_website_sets/related_website_sets.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {dummySets} from './test_data.js';
+import {SAMPLE_RELATED_WEBSITE_SETS} from './test_data.js';
 
 suite('ContainerTest', () => {
   let container: RelatedWebsiteSetsListContainerElement;
+  const sampleSets: RelatedWebsiteSet[] = SAMPLE_RELATED_WEBSITE_SETS;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     container = document.createElement('related-website-sets-list-container');
     document.body.appendChild(container);
-    container.setRelatedWebsiteSetsForTesting(dummySets);
+    container.setRelatedWebsiteSetsForTesting(sampleSets);
     await microtasksFinished();
   });
 
@@ -25,7 +26,7 @@ suite('ContainerTest', () => {
     assertTrue(isVisible(container));
     const renderedItems =
         container.shadowRoot!.querySelectorAll('related-website-set-list-item');
-    assertEquals(dummySets.length, renderedItems.length);
+    assertEquals(sampleSets.length, renderedItems.length);
   });
 
   test('check expand collapse', async () => {

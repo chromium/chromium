@@ -7,70 +7,77 @@ import 'chrome://privacy-sandbox-internals/related_website_sets/related_website_
 import type {RelatedWebsiteSet} from 'chrome://privacy-sandbox-internals/related_website_sets/related_website_sets.js';
 import {SiteType} from 'chrome://privacy-sandbox-internals/related_website_sets/related_website_sets.js';
 
-export const set1: RelatedWebsiteSet = {
+export const SAMPLE_RELATED_WEBSITE_SET: RelatedWebsiteSet = {
   primarySite: 'set1-primary.example',
   memberSites: [
     {
       site: 'set1-associated1.example',
-      type: SiteType.ASSOCIATED,
+      type: SiteType.kAssociated,
     },
     {
       site: 'set1-associated2.example',
-      type: SiteType.ASSOCIATED,
+      type: SiteType.kAssociated,
     },
     {
       site: 'set1-service1.example',
-      type: SiteType.SERVICE,
+      type: SiteType.kService,
     },
     {
       site: 'set1-service2.example',
-      type: SiteType.SERVICE,
+      type: SiteType.kService,
     },
   ],
+  managedByEnterprise: false,
 };
 
-const set2: RelatedWebsiteSet = {
+const SAMPLE_RELATED_WEBSITE_SET2: RelatedWebsiteSet = {
   primarySite: 'set2-primary.example',
   memberSites: [
     {
       site: 'set2-associated1.example',
-      type: SiteType.ASSOCIATED,
+      type: SiteType.kAssociated,
     },
     {
       site: 'set2-associated2.example',
-      type: SiteType.ASSOCIATED,
+      type: SiteType.kAssociated,
     },
     {
       site: 'set2-service1.example',
-      type: SiteType.SERVICE,
+      type: SiteType.kService,
     },
     {
       site: 'set2-service2.example',
-      type: SiteType.SERVICE,
+      type: SiteType.kService,
     },
   ],
+  managedByEnterprise: false,
 };
 
-const set3: RelatedWebsiteSet = {
+const SAMPLE_RELATED_WEBSITE_SET3: RelatedWebsiteSet = {
   primarySite: 'set3-primary.example',
   memberSites: [
     {
       site: 'set3-associated1.example',
-      type: SiteType.ASSOCIATED,
+      type: SiteType.kAssociated,
     },
     {
       site: 'set3-associated2.example',
-      type: SiteType.ASSOCIATED,
+      type: SiteType.kAssociated,
     },
     {
       site: 'set3-service1.example',
-      type: SiteType.SERVICE,
+      type: SiteType.kService,
     },
     {
       site: 'set3-service2.example',
-      type: SiteType.SERVICE,
+      type: SiteType.kService,
     },
   ],
+  managedByEnterprise: false,
 };
 
-export const dummySets: RelatedWebsiteSet[] = [set1, set2, set3];
+export const SAMPLE_RELATED_WEBSITE_SETS = [
+  SAMPLE_RELATED_WEBSITE_SET,
+  SAMPLE_RELATED_WEBSITE_SET2,
+  SAMPLE_RELATED_WEBSITE_SET3,
+];

@@ -378,7 +378,7 @@
     "includes": [3700],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/privacy_sandbox/resources.grd": {
-    "META": {"sizes": {"includes": [80],}},
+    "META": {"sizes": {"includes": [50],}},
     "includes": [3720],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/sandbox_internals/resources.grd": {

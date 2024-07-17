@@ -12,17 +12,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './related_website_set_list_item.css.js';
 import {getHtml} from './related_website_set_list_item.html.js';
-import type {RelatedWebsiteSet} from './related_website_sets_list_container.js';
-
-export enum SiteType {
-  ASSOCIATED = 'Associated',
-  SERVICE = 'Service',
-}
-
-export interface MemberSite {
-  site: string;
-  type: SiteType;
-}
+import type {Member, RelatedWebsiteSet} from './related_website_sets.mojom-webui.js';
 
 export interface RelatedWebsiteSetListItemElement {
   $: {
@@ -54,7 +44,7 @@ export class RelatedWebsiteSetListItemElement extends CrLitElement {
 
   protected expanded: boolean = false;
   protected primarySite: string = '';
-  protected memberSites: MemberSite[] = [];
+  protected memberSites: Member[] = [];
 
   protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
     this.expanded = e.detail.value;

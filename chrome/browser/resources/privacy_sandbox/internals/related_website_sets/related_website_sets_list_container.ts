@@ -10,14 +10,9 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {RelatedWebsiteSetListItemElement} from 'related_website_set_list_item.js';
 
-import type {MemberSite} from './related_website_set_list_item.js';
+import type {RelatedWebsiteSet} from './related_website_sets.mojom-webui.js';
 import {getCss} from './related_website_sets_list_container.css.js';
 import {getHtml} from './related_website_sets_list_container.html.js';
-
-export interface RelatedWebsiteSet {
-  primarySite: string;
-  memberSites: MemberSite[];
-}
 
 export interface RelatedWebsiteSetsListContainerElement {
   $: {

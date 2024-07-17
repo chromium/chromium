@@ -82,8 +82,8 @@ void PrivacySandboxInternalsUI::BindInterface(
         related_website_sets::mojom::RelatedWebsiteSetsPageHandler> receiver) {
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(privacy_sandbox::kRelatedWebsiteSetsDevUI)) {
-    related_website_sets_handler_ =
-        std::make_unique<RelatedWebsiteSetsHandler>(std::move(receiver));
+    related_website_sets_handler_ = std::make_unique<RelatedWebsiteSetsHandler>(
+        web_ui(), std::move(receiver));
   }
 #endif
 }

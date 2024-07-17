@@ -4,20 +4,21 @@
 
 import 'chrome://privacy-sandbox-internals/related_website_sets/related_website_sets.js';
 
-import type {RelatedWebsiteSetListItemElement} from 'chrome://privacy-sandbox-internals/related_website_sets/related_website_sets.js';
+import type {RelatedWebsiteSet, RelatedWebsiteSetListItemElement} from 'chrome://privacy-sandbox-internals/related_website_sets/related_website_sets.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {set1} from './test_data.js';
+import {SAMPLE_RELATED_WEBSITE_SET} from './test_data.js';
 
 suite('ListItemTest', () => {
   let item: RelatedWebsiteSetListItemElement;
+  const sampleSet: RelatedWebsiteSet = SAMPLE_RELATED_WEBSITE_SET;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     item = document.createElement('related-website-set-list-item');
     document.body.appendChild(item);
-    item.setItemForTesting(set1);
+    item.setItemForTesting(sampleSet);
     await microtasksFinished();
   });
 
@@ -32,7 +33,7 @@ suite('ListItemTest', () => {
 
     assertTrue(item.$.expandedContent.opened);
     const memberSites = Array.from(item.$.expandedContent.children);
-    assertEquals(set1.memberSites.length, memberSites.length);
+    assertEquals(sampleSet.memberSites.length, memberSites.length);
 
     memberSites.forEach(member => assertTrue(isVisible(member)));
   });
