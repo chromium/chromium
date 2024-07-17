@@ -12,19 +12,17 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/webui/untrusted_web_ui_controller.h"
 
 namespace ash {
 
-bool BocaUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
-  return ash::features::IsBocaEnabled();
-}
-
-BocaUI::BocaUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
+BocaUI::BocaUI(content::WebUI* web_ui) : UntrustedWebUIController(web_ui) {
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   auto* html_source = content::WebUIDataSource::CreateAndAdd(
       browser_context, ash::kChromeBocaAppHost);
 
   html_source->AddResourcePath("index.html", IDR_ASH_BOCA_UI_INDEX_HTML);
+
 #if !DCHECK_IS_ON()
   // If a user goes to an invalid url and non-DCHECK mode (DHECK = debug mode)
   // is set, serve a default page so the user sees your default page instead
@@ -37,4 +35,5 @@ BocaUI::BocaUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
 BocaUI::~BocaUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(BocaUI)
+
 }  // namespace ash

@@ -8,6 +8,8 @@ assert(is_chromeos_ash)
 
 static_library("apps") {
   sources = [
+    "boca_web_app_config.cc",
+    "boca_web_app_config.h",
     "boca_web_app_info.cc",
     "boca_web_app_info.h",
     "chrome_demo_mode_app_delegate.cc",

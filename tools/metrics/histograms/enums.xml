@@ -34884,6 +34884,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1846714330" label="chrome://sanitize/"/>
   <int value="1887784693" label="chrome://policy/"/>
   <int value="1906728906" label="chrome://privacy-sandbox-internals/"/>
+  <int value="1914132589" label="chrome-untrusted://boca-app/"/>
   <int value="1918190389" label="chrome-untrusted://projector-annotator/"/>
   <int value="1926101309" label="chrome://cryptohome/"/>
   <int value="1928106753" label="chrome://app-disabled/"/>
