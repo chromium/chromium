@@ -829,7 +829,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     startElement.scrollIntoViewIfNeeded();
   }
 
-  updateLinks() {
+  updateLinks(shouldRehighlightCurrentNodes: boolean = true) {
+    const originallyHadHighlights =
+        document.querySelectorAll<HTMLElement>('.' + currentReadHighlightClass)
+            .length > 0;
+
     const selector = this.shouldShowLinks() ? 'span[data-link]' : 'a';
     const elements = this.querySelectorAll(selector);
 
@@ -839,6 +843,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       assert(nodeId !== undefined, 'link node id is undefined');
       const replacement = this.buildSubtree_(nodeId);
       this.replaceElement(elem, replacement);
+    }
+
+    // Rehighlight the current granularity text after links have been
+    // toggled on or off to ensure the entire granularity segment is
+    // highlighted.
+    if (shouldRehighlightCurrentNodes && originallyHadHighlights) {
+      this.highlightCurrentGranularity(chrome.readingMode.getCurrentText());
     }
   }
 
@@ -1340,7 +1351,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // don't flash off and on.
     if (chrome.readingMode.linksEnabled && pausedFromButton) {
       this.updateLinks();
-      this.highlightCurrentGranularity(chrome.readingMode.getCurrentText());
     }
   }
 
@@ -1430,17 +1440,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // Hide links when speech resumes. We only hide links when the page was
       // paused from the play/pause button.
       if (chrome.readingMode.linksEnabled && pausedFromButton) {
-        this.updateLinks();
-        // Now that links are toggled, ensure that the new nodes are also
-        // highlighted.
-        if (!playedFromSelection) {
-          this.highlightCurrentGranularity(chrome.readingMode.getCurrentText());
-        }
+        // Toggle links and ensure that the new nodes are also highlighted.
+        this.updateLinks(
+            /* shouldRehiglightCurrentNodes= */ !playedFromSelection);
       }
 
       // If the current read highlight has been cleared from a call to
-      // updateContent, such as for links being toggled on or off via a Read
-      // Aloud play / pause or via a preference change, rehighlight the nodes
+      // updateContent, such as via a preference change, rehighlight the nodes
       // after a pause.
       if (!playedFromSelection &&
           !container.querySelector('.' + currentReadHighlightClass)) {

@@ -163,8 +163,9 @@ suite('ReadAloud_UpdateContentSelectionPDF', () => {
   });
 
   suite('While Read Aloud paused', () => {
-    setup(() => {
+    setup(async () => {
       app.playSpeech();
+      await waitForPlayFromSelection();
       app.stopSpeech(PauseActionSource.BUTTON_CLICK);
     });
     test('inner html of container matches expected html', () => {
