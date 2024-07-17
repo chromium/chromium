@@ -358,6 +358,8 @@ void SigninManager::OnErrorStateOfRefreshTokenUpdatedForAccount(
 }
 
 void SigninManager::OnSigninAllowedPrefChanged() {
+  // TODO(crbug.com/350699437): Use kUserDisabledAllowChromeSignIn instead of
+  // kSigninManagerUpdateUPA in UpdateUnconsentedPrimaryAccount().
   UpdateUnconsentedPrimaryAccount();
 }
 

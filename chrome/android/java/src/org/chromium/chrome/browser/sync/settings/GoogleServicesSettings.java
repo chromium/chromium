@@ -230,7 +230,7 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
                 // Don't show signout dialog if there's no sync consent, as it never wipes the data.
                 IdentityServicesProvider.get()
                         .getSigninManager(getProfile())
-                        .signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, null, false);
+                        .signOut(SignoutReason.USER_DISABLED_ALLOW_CHROME_SIGN_IN, null, false);
                 mPrefService.setBoolean(Pref.SIGNIN_ALLOWED, false);
                 return true;
             }
@@ -242,7 +242,7 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
                     getChildFragmentManager(),
                     ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
                     mSnackbarManager,
-                    SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
+                    SignoutReason.USER_DISABLED_ALLOW_CHROME_SIGN_IN,
                     /* showConfirmDialog= */ true,
                     () -> {
                         mPrefService.setBoolean(Pref.SIGNIN_ALLOWED, false);

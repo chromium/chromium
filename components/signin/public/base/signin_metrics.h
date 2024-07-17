@@ -120,8 +120,10 @@ enum class ProfileSignout {
   kChangeAccountInAccountMenu = 35,
   // User clicked to signout from the account menu view.
   kUserClickedSignoutInAccountMenu = 36,
+  // User disabled allow chrome sign-in from google settings page.
+  kUserDisabledAllowChromeSignIn = 37,
   // Keep this as the last enum.
-  kMaxValue = kUserClickedSignoutInAccountMenu
+  kMaxValue = kUserDisabledAllowChromeSignIn
 };
 
 // Enum values which enumerates all access points where sign in could be

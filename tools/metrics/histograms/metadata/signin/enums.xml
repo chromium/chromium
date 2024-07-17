@@ -819,6 +819,9 @@ chromium-metrics-reviews@google.com.
   <int value="36" label="Signed out from the account menu">
     In the account menu, the user selected the sign-out button.
   </int>
+  <int value="37" label="User disabled allow chrome sign-in toggle">
+    User disabled &quot;Allow Chrome sign-in&quot; toggle.
+  </int>
 </enum>
 
 <enum name="SigninSSOIdentityListRequestCacheState">

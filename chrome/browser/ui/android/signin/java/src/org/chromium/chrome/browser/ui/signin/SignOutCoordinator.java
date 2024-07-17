@@ -159,6 +159,7 @@ public class SignOutCoordinator {
         switch (signOutReason) {
             case SignoutReason.USER_CLICKED_SIGNOUT_FROM_CLEAR_BROWSING_DATA_PAGE:
             case SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS:
+            case SignoutReason.USER_DISABLED_ALLOW_CHROME_SIGN_IN:
                 assert !profile.isChild() : "Child accounts can only revoke sync consent";
                 return;
             case SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS:
