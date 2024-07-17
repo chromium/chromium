@@ -401,6 +401,8 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::
               kSharedStorageAPI_CreateWorklet_CrossOriginScriptDefaultDataOrigin,
           WebFeature::kSharedStorageAPI_AddModule_CrossOriginScript,
+          WebFeature::kIdentityDigitalCredentials,
+          WebFeature::kIdentityDigitalCredentialsDeepLink,
       }));
   return *opt_in_features;
 }
