@@ -247,7 +247,7 @@ void WorkerMainScriptLoader::OnReadable(MojoResult) {
     base::span<const char> chars = base::as_chars(buffer);
     client_->DidReceiveDataWorkerMainScript(chars);
     resource_load_observer_->DidReceiveData(initial_request_.InspectorId(),
-                                            chars);
+                                            base::SpanOrSize(chars));
   }
 
   rv = data_pipe_->EndReadData(buffer.size());

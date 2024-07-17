@@ -44,7 +44,7 @@ class ResourceLoadObserverForWorker final : public ResourceLoadObserver {
                           const Resource* resource,
                           ResponseSource) override;
   void DidReceiveData(uint64_t identifier,
-                      base::span<const char> chunk) override;
+                      base::SpanOrSize<const char> chunk) override;
   void DidReceiveTransferSizeUpdate(uint64_t identifier,
                                     int transfer_size_diff) override;
   void DidDownloadToBlob(uint64_t identifier, BlobDataHandle*) override;

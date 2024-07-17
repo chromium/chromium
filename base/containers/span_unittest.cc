@@ -198,6 +198,21 @@ TEST(SpanTest, ConstructFromDataAndSize) {
   }
 }
 
+TEST(SpanTest, ConstructFromDataAndZeroSize) {
+  char* nullptr_to_char = nullptr;
+
+  auto empty_span = UNSAFE_BUFFERS(span<char>(nullptr_to_char, 0u));
+  EXPECT_EQ(empty_span.size(), 0u);
+  EXPECT_EQ(empty_span.data(), nullptr);
+  EXPECT_TRUE(empty_span.empty());
+
+  // We expect a `DCHECK` to catch construction of a dangling span - let's cover
+  // this expectation in a test, so that future `//base` refactorings (e.g.
+  // maybe switching to `std::span`) won't just silently change of this aspect
+  // of span behavior.
+  EXPECT_DCHECK_DEATH({ UNSAFE_BUFFERS(span<char>(nullptr_to_char, 123u)); });
+}
+
 TEST(SpanTest, ConstructFromIterAndSize) {
   constexpr int* kNull = nullptr;
   // SAFETY: zero size is correct when pointer argument is NULL.

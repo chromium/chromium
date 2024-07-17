@@ -269,12 +269,12 @@ void ResourceLoadObserverForFrame::DidReceiveResponse(
 
 void ResourceLoadObserverForFrame::DidReceiveData(
     uint64_t identifier,
-    base::span<const char> chunk) {
+    base::SpanOrSize<const char> chunk) {
   LocalFrame* frame = document_->GetFrame();
   DCHECK(frame);
   frame->Loader().Progress().IncrementProgress(identifier, chunk.size());
-  probe::DidReceiveData(GetProbe(), identifier, document_loader_, chunk.data(),
-                        chunk.size());
+  probe::DidReceiveData(GetProbe(), identifier, document_loader_,
+                        chunk.ptr_or_null_if_no_data(), chunk.size());
 }
 
 void ResourceLoadObserverForFrame::DidReceiveTransferSizeUpdate(

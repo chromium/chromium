@@ -21,6 +21,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_encoding_data.h"
+#include "third_party/blink/public/platform/web_navigation_body_loader.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/core/dom/visited_link_state.h"
@@ -62,12 +63,13 @@ class DecodedBodyLoader : public StaticDataNavigationBodyLoader {
     void BodyDataReceived(base::span<const char> data) override {
       client_->DecodedBodyDataReceived(
           String(data.data(), data.size()).UpperASCII(),
-          WebEncodingData{.encoding = "utf-8"}, data);
+          WebEncodingData{.encoding = "utf-8"}, base::SpanOrSize(data));
     }
 
-    void DecodedBodyDataReceived(const WebString& data,
-                                 const WebEncodingData& encoding_data,
-                                 base::span<const char> encoded_data) override {
+    void DecodedBodyDataReceived(
+        const WebString& data,
+        const WebEncodingData& encoding_data,
+        base::SpanOrSize<const char> encoded_data) override {
       client_->DecodedBodyDataReceived(data, encoding_data, encoded_data);
     }
 

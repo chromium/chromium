@@ -98,10 +98,13 @@ class OversizedWebUIDataSource final : public URLDataSource {
 
     // base::RefCountedMemory implementation:
     base::span<const uint8_t> AsSpan() const override {
+      // This uses `reinterpret_cast` of `1` to avoid nullness `CHECK` in the
+      // constructor of `span`.
+      //
       // SAFETY: This is unsound, but any use of the pointer will crash as the
       // first page is not mapped. The test does not actually use the pointer.
       return UNSAFE_BUFFERS(base::span<const uint8_t>(
-          static_cast<const uint8_t*>(nullptr), size_));
+          reinterpret_cast<const uint8_t*>(1), size_));
     }
 
    private:

@@ -1085,7 +1085,8 @@ void ResourceLoader::DidReceiveDataImpl(
     data_size = absl::get<SegmentedBuffer>(data).size();
     if (auto* observer = fetcher_->GetResourceLoadObserver()) {
       for (const auto& span : absl::get<SegmentedBuffer>(data)) {
-        observer->DidReceiveData(resource_->InspectorId(), span);
+        observer->DidReceiveData(resource_->InspectorId(),
+                                 base::SpanOrSize(span));
       }
     }
   } else {
@@ -1093,7 +1094,8 @@ void ResourceLoader::DidReceiveDataImpl(
     base::span<const char> span = absl::get<base::span<const char>>(data);
     data_size = span.size();
     if (auto* observer = fetcher_->GetResourceLoadObserver()) {
-      observer->DidReceiveData(resource_->InspectorId(), span);
+      observer->DidReceiveData(resource_->InspectorId(),
+                               base::SpanOrSize(span));
     }
   }
   resource_->AppendData(std::move(data));
@@ -1455,9 +1457,9 @@ void ResourceLoader::OnProgress(uint64_t delta) {
   }
 
   if (auto* observer = fetcher_->GetResourceLoadObserver()) {
-    observer->DidReceiveData(resource_->InspectorId(),
-                             base::make_span(static_cast<const char*>(nullptr),
-                                             static_cast<size_t>(delta)));
+    observer->DidReceiveData(
+        resource_->InspectorId(),
+        base::SpanOrSize<const char>(base::checked_cast<size_t>(delta)));
   }
   resource_->DidDownloadData(delta);
 }

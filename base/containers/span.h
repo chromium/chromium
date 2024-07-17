@@ -314,6 +314,11 @@ class GSL_POINTER span {
         data_(base::to_address(first)) {
     // Guarantees that the N in the type signature is correct.
     CHECK(N == count);
+
+    // `count != 0` implies non-null `data_`.  Consider using
+    // `base::SpanOrSize<T>` to represent a size that may or may not be
+    // accompanied by the actual data.
+    DCHECK(count == 0 || !!data_);
   }
 
   // Constructs a span from a contiguous iterator and a size.
@@ -865,7 +870,12 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
       // We can not protect here generally against an invalid iterator/count
       // being passed in, since we have no context to determine if the
       // iterator or count are valid.
-      : data_(base::to_address(first)), size_(count) {}
+      : data_(base::to_address(first)), size_(count) {
+    // `count != 0` implies non-null `data_`.  Consider using
+    // `base::SpanOrSize<T>` to represent a size that may or may not be
+    // accompanied by the actual data.
+    DCHECK(count == 0 || !!data_);
+  }
 
   // Constructs a span from a contiguous iterator and a size.
   //

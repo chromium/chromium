@@ -11,6 +11,7 @@ include_rules = [
     "+base/containers/heap_array.h",
     "+base/containers/flat_map.h",
     "+base/containers/span.h",
+    "+base/containers/span_or_size.h",
     "+base/cpu.h",
     "+base/files",
     "+base/functional/bind_internal.h",

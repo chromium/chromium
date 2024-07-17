@@ -5,6 +5,7 @@ include_rules = [
     "+base/containers/flat_set.h",
     "+base/containers/flat_map.h",
     "+base/containers/span.h",
+    "+base/containers/span_or_size.h",
     "+base/files/file.h",
     "+base/location.h",
     "+base/logging.h",

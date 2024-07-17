@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/navigation_body_loader.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
@@ -65,14 +66,43 @@ size_t GetMaxDataToProcessPerTask() {
   return kMaxDataToProcessParam.Get();
 }
 
+// Either 1) owns the original, encoded data (if
+// `should_keep_encoded_data` was passed to `StartLoadingBodyInBackground()`)
+// or, or 2) just stores the data size (if `!should_keep_encoded_data`).
+class HeapArrayOrSize {
+ public:
+  HeapArrayOrSize(base::span<const char> data, bool should_keep_encoded_data)
+      : heap_array_or_size_(should_keep_encoded_data
+                                ? std::variant<base::HeapArray<char>, size_t>(
+                                      base::HeapArray<char>::CopiedFrom(data))
+                                : data.size()) {}
+
+  ~HeapArrayOrSize() = default;
+
+  HeapArrayOrSize(const HeapArrayOrSize&) = delete;
+  HeapArrayOrSize& operator=(const HeapArrayOrSize&) = delete;
+  HeapArrayOrSize(HeapArrayOrSize&&) = default;
+  HeapArrayOrSize& operator=(HeapArrayOrSize&&) = default;
+
+  base::SpanOrSize<const char> AsSpanOrSize() const {
+    return std::visit(
+        [](const auto& value) { return base::SpanOrSize<const char>(value); },
+        heap_array_or_size_);
+  }
+
+  size_t size() const { return AsSpanOrSize().size(); }
+
+ private:
+  std::variant<base::HeapArray<char>, size_t> heap_array_or_size_;
+};
+
 // A chunk of data read by the OffThreadBodyReader. This will be created on a
 // background thread and processed on the main thread.
 struct DataChunk {
   String decoded_data;
   bool has_seen_end_of_data = false;
   bool has_error = false;
-  std::unique_ptr<char[]> encoded_data;
-  size_t encoded_data_size = 0;
+  HeapArrayOrSize encoded_data;
   WebEncodingData encoding_data;
 };
 
@@ -165,7 +195,7 @@ class NavigationBodyLoader::OffThreadBodyReader : public BodyReader {
     size_t data_processed = 0;
     while (!data_chunks_.empty() && data_processed < max_data_to_process) {
       data.emplace_back(std::move(data_chunks_.front()));
-      data_processed += data.back().encoded_data_size;
+      data_processed += data.back().encoded_data.size();
       data_chunks_.erase(data_chunks_.begin());
     }
     if (!data_chunks_.empty()) {
@@ -247,12 +277,8 @@ class NavigationBodyLoader::OffThreadBodyReader : public BodyReader {
                 base::span<const char> encoded_data,
                 bool has_error) {
     DCHECK(reader_task_runner_->RunsTasksInCurrentSequence());
-    std::unique_ptr<char[]> encoded_data_copy;
-    // Avoid copying the encoded data unless the caller needs it.
-    if (should_keep_encoded_data_) {
-      encoded_data_copy.reset(
-          base::HeapArray<char>::CopiedFrom(encoded_data).leak().data());
-    }
+    HeapArrayOrSize encoded_data_or_size(encoded_data,
+                                         should_keep_encoded_data_);
 
     bool post_task = false;
     {
@@ -267,8 +293,7 @@ class NavigationBodyLoader::OffThreadBodyReader : public BodyReader {
           DataChunk{.decoded_data = decoded_data,
                     .has_seen_end_of_data = has_seen_end_of_data_,
                     .has_error = has_error,
-                    .encoded_data = std::move(encoded_data_copy),
-                    .encoded_data_size = encoded_data.size(),
+                    .encoded_data = std::move(encoded_data_or_size),
                     .encoding_data = decoder_->GetEncodingData()});
     }
     if (post_task) {
@@ -497,16 +522,12 @@ void NavigationBodyLoader::ProcessOffThreadData() {
     return;
   }
 
-  auto chunks =
+  Vector<DataChunk> chunks =
       off_thread_body_reader_->TakeData(max_data_to_process_per_task_);
   auto weak_self = weak_factory_.GetWeakPtr();
   for (const DataChunk& chunk : chunks) {
-    // TODO(https://crbug.com/347786042): Ensure that `chunk.encoded_data.get()`
-    // is not `nullptr`.
-    base::span<const char> encoded_data =
-        base::make_span(chunk.encoded_data.get(), chunk.encoded_data_size);
     client_->DecodedBodyDataReceived(chunk.decoded_data, chunk.encoding_data,
-                                     encoded_data);
+                                     chunk.encoded_data.AsSpanOrSize());
     if (!weak_self)
       return;
 
@@ -663,4 +684,5 @@ void WebNavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
         std::move(resource_load_info_notifier_wrapper)));
   }
 }
+
 }  // namespace blink

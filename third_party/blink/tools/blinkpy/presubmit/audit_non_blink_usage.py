@@ -153,7 +153,7 @@ _CONFIG = [
             'base::sequence_manager::TaskTimeObserver',
             'base::span',
             'base::span(_with_nul)?_from_cstring',
-            'base::Span(Reader|Writer)',
+            'base::Span(OrSize|Reader|Writer)',
             'base::as_byte_span',
             'base::as_writable_byte_span',
             'base::as_bytes',

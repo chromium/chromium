@@ -141,7 +141,7 @@ class ResourceFetcherTest : public testing::Test {
                             const Resource* resource,
                             ResponseSource source) override {}
     void DidReceiveData(uint64_t identifier,
-                        base::span<const char> chunk) override {}
+                        base::SpanOrSize<const char> chunk) override {}
     void DidReceiveTransferSizeUpdate(uint64_t identifier,
                                       int transfer_size_diff) override {}
     void DidDownloadToBlob(uint64_t identifier, BlobDataHandle*) override {}

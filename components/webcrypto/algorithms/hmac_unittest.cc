@@ -565,9 +565,12 @@ TEST_F(WebCryptoHmacTest, ImportRawKeyWithZeroLength) {
 
 // Import a huge hmac key (UINT_MAX bytes).
 TEST_F(WebCryptoHmacTest, ImportRawKeyTooLarge) {
+  // This uses `reinterpret_cast` of `1` to avoid nullness `CHECK` in the
+  // constructor of `span`.
+  const void* invalid_data = reinterpret_cast<void*>(1);
   // Invalid data of big length. This span is invalid, but ImportKey should fail
   // before actually reading the bytes, as the key is too large.
-  base::span<const uint8_t> big_data(static_cast<const uint8_t*>(nullptr),
+  base::span<const uint8_t> big_data(static_cast<const uint8_t*>(invalid_data),
                                      UINT_MAX);
 
   blink::WebCryptoKey key;

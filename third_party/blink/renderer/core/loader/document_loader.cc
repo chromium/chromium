@@ -73,6 +73,7 @@
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_content_security_policy_struct.h"
+#include "third_party/blink/public/platform/web_navigation_body_loader.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
@@ -424,7 +425,7 @@ class DocumentLoader::BodyData {
   virtual ~BodyData() = default;
   virtual void AppendToParser(DocumentLoader* loader) = 0;
   virtual void Buffer(DocumentLoader* loader) = 0;
-  virtual base::span<const char> EncodedData() const = 0;
+  virtual base::SpanOrSize<const char> EncodedData() const = 0;
 };
 
 // Wraps encoded data received by the loader.
@@ -443,7 +444,9 @@ class DocumentLoader::EncodedBodyData : public BodyData {
     loader->data_buffer_->Append(data_.data(), data_.size());
   }
 
-  base::span<const char> EncodedData() const override { return data_; }
+  base::SpanOrSize<const char> EncodedData() const override {
+    return base::SpanOrSize(data_);
+  }
 
  private:
   base::span<const char> data_;
@@ -454,7 +457,7 @@ class DocumentLoader::DecodedBodyData : public BodyData {
  public:
   DecodedBodyData(const String& data,
                   const DocumentEncodingData& encoding_data,
-                  base::span<const char> encoded_data)
+                  base::SpanOrSize<const char> encoded_data)
       : data_(data),
         encoding_data_(encoding_data),
         encoded_data_(encoded_data) {}
@@ -467,12 +470,14 @@ class DocumentLoader::DecodedBodyData : public BodyData {
     loader->decoded_data_buffer_.push_back(*this);
   }
 
-  base::span<const char> EncodedData() const override { return encoded_data_; }
+  base::SpanOrSize<const char> EncodedData() const override {
+    return encoded_data_;
+  }
 
  private:
   String data_;
   DocumentEncodingData encoding_data_;
-  base::span<const char> encoded_data_;
+  base::SpanOrSize<const char> encoded_data_;
 };
 
 DocumentLoader::DocumentLoader(
@@ -1222,7 +1227,7 @@ void DocumentLoader::BodyDataReceived(base::span<const char> data) {
 void DocumentLoader::DecodedBodyDataReceived(
     const WebString& data,
     const WebEncodingData& encoding_data,
-    base::span<const char> encoded_data) {
+    base::SpanOrSize<const char> encoded_data) {
   // Decoding has already happened, we don't need the decoder anymore.
   parser_->SetDecoder(nullptr);
   DecodedBodyData body_data(data, DocumentEncodingData(encoding_data),
@@ -1245,16 +1250,16 @@ void DocumentLoader::BodyDataReceivedImpl(BodyData& data) {
   TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::BodyDataReceivedImpl",
                          TRACE_ID_LOCAL(this),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-  base::span<const char> encoded_data = data.EncodedData();
+  base::SpanOrSize<const char> encoded_data = data.EncodedData();
   if (encoded_data.size()) {
     if (response_.WasFetchedViaServiceWorker()) {
       total_body_size_from_service_worker_ += encoded_data.size();
     }
     GetFrameLoader().Progress().IncrementProgress(main_resource_identifier_,
                                                   encoded_data.size());
-    probe::DidReceiveData(probe::ToCoreProbeSink(GetFrame()),
-                          main_resource_identifier_, this, encoded_data.data(),
-                          encoded_data.size());
+    probe::DidReceiveData(
+        probe::ToCoreProbeSink(GetFrame()), main_resource_identifier_, this,
+        encoded_data.ptr_or_null_if_no_data(), encoded_data.size());
   }
 
   TRACE_EVENT_WITH_FLOW1("loading", "DocumentLoader::HandleData",

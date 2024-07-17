@@ -131,9 +131,10 @@ class NavigationBodyLoaderTest : public ::testing::Test,
       run_loop_->Quit();
   }
 
-  void DecodedBodyDataReceived(const WebString& data,
-                               const WebEncodingData& encoding_data,
-                               base::span<const char> encoded_data) override {
+  void DecodedBodyDataReceived(
+      const WebString& data,
+      const WebEncodingData& encoding_data,
+      base::SpanOrSize<const char> encoded_data) override {
     ASSERT_FALSE(did_receive_data_);
     ASSERT_TRUE(expecting_decoded_data_received_);
     did_receive_decoded_data_ = true;
@@ -526,9 +527,10 @@ class ChunkingLoaderClient : public WebNavigationBodyLoader::Client {
   void BodyDataReceived(base::span<const char> data) override {
     NOTREACHED_IN_MIGRATION();
   }
-  void DecodedBodyDataReceived(const WebString& data,
-                               const WebEncodingData& encoding_data,
-                               base::span<const char> encoded_data) override {
+  void DecodedBodyDataReceived(
+      const WebString& data,
+      const WebEncodingData& encoding_data,
+      base::SpanOrSize<const char> encoded_data) override {
     scheduler::GetSingleThreadTaskRunnerForTesting()->PostTask(
         FROM_HERE, base::BindOnce(&ChunkingLoaderClient::CreateNewChunk,
                                   base::Unretained(this)));
