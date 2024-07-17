@@ -46,6 +46,10 @@ class UiModelObserverBridge
       scoped_model_observation_{this};
 };
 
+// The delay between showing the confirmation and dismissing the virtual card
+// enrollment prompt.
+const base::TimeDelta kConfirmationDismissDelay = base::Seconds(1.5);
+
 }  // namespace
 
 @interface VirtualCardEnrollmentBottomSheetMediator () {
@@ -153,11 +157,16 @@ class UiModelObserverBridge
 - (void)modelDidChangeEnrollmentProgress:
     (autofill::VirtualCardEnrollUiModel::EnrollmentProgress)enrollmentProgress {
   switch (enrollmentProgress) {
-    case autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kEnrolled:
+    case autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kEnrolled: {
       [self.consumer showConfirmationState];
-      // TODO(crbug.com/339887700): Additionally, dismiss automatically after a
-      // set duration.
+      __weak __typeof__(self) weakSelf = self;
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, base::BindOnce(^{
+            [weakSelf onFinishedConfirmationDelay];
+          }),
+          kConfirmationDismissDelay);
       break;
+    }
     case autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kFailed:
       // Dismiss the virtual card enrollment bottom sheet. Failure messages are
       // expected to be initiated by the IOSChromePaymentsAutofillClient.
@@ -177,6 +186,11 @@ class UiModelObserverBridge
   autofill::VirtualCardEnrollMetricsLogger::OnDismissed(
       result, _model->enrollment_fields().virtual_card_enrollment_source,
       /*is_reshow=*/false, _model->enrollment_fields().previously_declined);
+}
+
+// Handles dismissal after confirmation was shown with a delay.
+- (void)onFinishedConfirmationDelay {
+  [_browserCoordinatorHandler dismissVirtualCardEnrollmentBottomSheet];
 }
 
 @end

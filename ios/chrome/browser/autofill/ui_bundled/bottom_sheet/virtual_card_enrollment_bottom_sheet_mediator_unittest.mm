@@ -8,6 +8,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/task_environment.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
 #import "components/autofill/core/browser/payments/test_legal_message_line.h"
@@ -24,6 +25,10 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/gfx/image/image_skia.h"
 #import "ui/gfx/image/image_unittest_util.h"
+
+// Expected time delay between showing the confirmation and dismissing the
+// virtual card enrollment prompt.
+const base::TimeDelta kExpectedConfirmationDismissDelay = base::Seconds(1.5);
 
 @interface TestVirtualCardEnrollmentBottomSheetConsumer
     : NSObject <VirtualCardEnrollmentBottomSheetConsumer>
@@ -94,6 +99,8 @@ class VirtualCardEnrollmentBottomSheetMediatorTest : public PlatformTest {
   id<BrowserCoordinatorCommands> mock_browser_coordinator_handler_;
   VirtualCardEnrollmentBottomSheetMediator* mediator_;
   base::WeakPtr<autofill::VirtualCardEnrollUiModel> model_;
+  base::test::TaskEnvironment task_env_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest, SetsCardDataOnConsumer) {
@@ -307,6 +314,43 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
       autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kEnrolled);
 
   EXPECT_OCMOCK_VERIFY((id)mock_consumer);
+}
+
+TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
+       DelayAfterShowingConfirmation) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
+  // Hold a strong reference to the mediator during the duration of the test.
+  [[maybe_unused]] VirtualCardEnrollmentBottomSheetMediator* unused_mediator =
+      MakeMediator(MakeModel());
+  model_->SetEnrollmentProgress(
+      autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kEnrolled);
+
+  // Do not dismiss before the delay.
+  OCMReject([mock_browser_coordinator_handler_
+      dismissVirtualCardEnrollmentBottomSheet]);
+  task_env_.FastForwardBy(kExpectedConfirmationDismissDelay -
+                          base::Milliseconds(1));
+
+  EXPECT_OCMOCK_VERIFY((id)mock_browser_coordinator_handler_);
+}
+
+TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
+       DismissAfterConfirmationAndDelay) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
+  // Hold a strong reference to the mediator during the duration of the test.
+  [[maybe_unused]] VirtualCardEnrollmentBottomSheetMediator* unused_mediator =
+      MakeMediator(MakeModel());
+  model_->SetEnrollmentProgress(
+      autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kEnrolled);
+
+  // Dismiss after the delay.
+  OCMExpect([mock_browser_coordinator_handler_
+      dismissVirtualCardEnrollmentBottomSheet]);
+  task_env_.FastForwardBy(kExpectedConfirmationDismissDelay);
+
+  EXPECT_OCMOCK_VERIFY((id)mock_browser_coordinator_handler_);
 }
 
 TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
