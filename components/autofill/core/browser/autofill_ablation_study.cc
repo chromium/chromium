@@ -17,9 +17,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/autofill_optimization_guide.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "url/gurl.h"
@@ -27,6 +29,14 @@
 
 namespace autofill {
 
+using ::autofill::features::
+    kAutofillAblationStudyAblationWeightPerMilleList1Param;
+using ::autofill::features::
+    kAutofillAblationStudyAblationWeightPerMilleList2Param;
+using ::autofill::features::
+    kAutofillAblationStudyAblationWeightPerMilleList3Param;
+using ::autofill::features::
+    kAutofillAblationStudyAblationWeightPerMilleList4Param;
 using ::autofill::features::kAutofillAblationStudyAblationWeightPerMilleParam;
 using ::autofill::features::kAutofillAblationStudyEnabledForAddressesParam;
 using ::autofill::features::kAutofillAblationStudyEnabledForPaymentsParam;
@@ -143,7 +153,8 @@ const AutofillAblationStudy& AutofillAblationStudy::disabled_study() {
 
 AblationGroup AutofillAblationStudy::GetAblationGroup(
     const GURL& url,
-    FormTypeForAblationStudy form_type) const {
+    FormTypeForAblationStudy form_type,
+    AutofillOptimizationGuide* autofill_optimization_guide) const {
   if (!base::FeatureList::IsEnabled(kAutofillEnableAblationStudy)) {
     return AblationGroup::kDefault;
   }
@@ -168,15 +179,43 @@ AblationGroup AutofillAblationStudy::GetAblationGroup(
       break;
   }
 
-  // Do some basic checks for plausibility. Note that for testing purposes we
-  // allow that ablation_weight == 1000. In this case 100% of forms are
-  // in the ablation case. In practice ablation_weight * 2 <= total_weight
-  // should be true to get meaningful results (have an equally sized ablation
-  // and control group).
+  std::array<const base::FeatureParam<int>*, 4> ablation_list_params = {
+      &kAutofillAblationStudyAblationWeightPerMilleList1Param,
+      &kAutofillAblationStudyAblationWeightPerMilleList2Param,
+      &kAutofillAblationStudyAblationWeightPerMilleList3Param,
+      &kAutofillAblationStudyAblationWeightPerMilleList4Param,
+  };
+  using OptimizationType = optimization_guide::proto::OptimizationType;
+  constexpr std::array<OptimizationType, 4> ablation_optimization_types = {
+      OptimizationType::AUTOFILL_ABLATION_SITES_LIST1,
+      OptimizationType::AUTOFILL_ABLATION_SITES_LIST2,
+      OptimizationType::AUTOFILL_ABLATION_SITES_LIST3,
+      OptimizationType::AUTOFILL_ABLATION_SITES_LIST4};
+
+  base::Time now = AutofillClock::Now();
+  for (size_t i = 0; i < ablation_list_params.size(); ++i) {
+    // Do some basic checks for plausibility. Note that for testing purposes
+    // we allow that ablation_weight == 1000. In this case 100% of forms are
+    // in the ablation case. In practice ablation_weight * 2 <= total_weight
+    // should be true to get meaningful results (have an equally sized
+    // ablation and control group).
+    int ablation_weight = ablation_list_params[i]->Get();
+    if (ablation_weight <= 0 || ablation_weight > 1000) {
+      continue;
+    }
+    if (!autofill_optimization_guide ||
+        !autofill_optimization_guide->IsEligibleForAblation(
+            url, ablation_optimization_types[i])) {
+      continue;
+    }
+    return GetAblationGroupImpl(url, now, ablation_weight);
+  }
+
+  // Do some basic checks for plausibility. See above.
   int ablation_weight = kAutofillAblationStudyAblationWeightPerMilleParam.Get();
   if (ablation_weight <= 0 || ablation_weight > 1000)
     return AblationGroup::kDefault;
-  return GetAblationGroupImpl(url, AutofillClock::Now(), ablation_weight);
+  return GetAblationGroupImpl(url, now, ablation_weight);
 }
 
 AblationGroup AutofillAblationStudy::GetAblationGroupImpl(

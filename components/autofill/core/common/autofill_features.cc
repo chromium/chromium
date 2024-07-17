@@ -691,16 +691,35 @@ BASE_FEATURE(kAutofillEnableAblationStudy,
              "AutofillEnableAblationStudy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 // The following parameters are only effective if the study is enabled.
+// If "enabled_for_addresses" is true this means that the ablation study is
+// enabled for addresses meaning that autofill may be disabled on some forms.
 const base::FeatureParam<bool> kAutofillAblationStudyEnabledForAddressesParam{
     &kAutofillEnableAblationStudy, "enabled_for_addresses", false};
 const base::FeatureParam<bool> kAutofillAblationStudyEnabledForPaymentsParam{
     &kAutofillEnableAblationStudy, "enabled_for_payments", false};
 // The ratio of ablation_weight_per_mille / 1000 determines the chance of
-// autofill being disabled on a given combination of site * day * browser
-// session.
+// autofill being disabled on a given combination of site * time_window * client
+// session. E.g. an ablation_weight_per_mille = 10 means that there is a 1%
+// ablation chance.
 const base::FeatureParam<int> kAutofillAblationStudyAblationWeightPerMilleParam{
-    &kAutofillEnableAblationStudy, "ablation_weight_per_mille", 10};
-
+    &kAutofillEnableAblationStudy, "ablation_weight_per_mille", 0};
+// If not 0, the kAutofillAblationStudyAblationWeightPerMilleListXParam
+// specify the ablation chances for sites that are on the respective list X.
+// These parameters are different from
+// kAutofillAblationStudyAblationWeightPerMilleParam which applies to all
+// domains.
+const base::FeatureParam<int>
+    kAutofillAblationStudyAblationWeightPerMilleList1Param{
+        &kAutofillEnableAblationStudy, "ablation_weight_per_mille_param1", 0};
+const base::FeatureParam<int>
+    kAutofillAblationStudyAblationWeightPerMilleList2Param{
+        &kAutofillEnableAblationStudy, "ablation_weight_per_mille_param2", 0};
+const base::FeatureParam<int>
+    kAutofillAblationStudyAblationWeightPerMilleList3Param{
+        &kAutofillEnableAblationStudy, "ablation_weight_per_mille_param3", 0};
+const base::FeatureParam<int>
+    kAutofillAblationStudyAblationWeightPerMilleList4Param{
+        &kAutofillEnableAblationStudy, "ablation_weight_per_mille_param4", 0};
 // Improves the selection of phone country codes by also considering address
 // country codes / names.
 // See GetStreetAddressForInput() in field_filling_address_util.cc for a details

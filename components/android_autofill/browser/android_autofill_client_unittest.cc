@@ -54,7 +54,7 @@ TEST_F(AndroidAutofillClientTest, TestAblationStudyReturnsDefault) {
       client()->GetAblationStudy();
   EXPECT_EQ(ablation_study.GetAblationGroup(
                 web_contents()->GetLastCommittedURL(),
-                autofill::FormTypeForAblationStudy::kAddress),
+                autofill::FormTypeForAblationStudy::kAddress, nullptr),
             autofill::AblationGroup::kDefault);
 }
 

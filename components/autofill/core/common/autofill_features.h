@@ -215,6 +215,18 @@ extern const base::FeatureParam<bool>
     kAutofillAblationStudyEnabledForPaymentsParam;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<int>
+    kAutofillAblationStudyAblationWeightPerMilleList1Param;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<int>
+    kAutofillAblationStudyAblationWeightPerMilleList2Param;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<int>
+    kAutofillAblationStudyAblationWeightPerMilleList3Param;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<int>
+    kAutofillAblationStudyAblationWeightPerMilleList4Param;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<int>
     kAutofillAblationStudyAblationWeightPerMilleParam;
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(

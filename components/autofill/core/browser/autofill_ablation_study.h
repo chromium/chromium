@@ -15,6 +15,9 @@ class PrefService;
 namespace base {
 class Time;
 }
+namespace autofill {
+class AutofillOptimizationGuide;
+}
 
 namespace autofill {
 
@@ -78,9 +81,13 @@ class AutofillAblationStudy {
   static const AutofillAblationStudy& disabled_study();
 
   // Returns for a site and form type, whether autofill should give the ablated
-  // experience.
-  AblationGroup GetAblationGroup(const GURL& url,
-                                 FormTypeForAblationStudy form_type) const;
+  // experience. If `autofill_optimization_guide` is null, the
+  // optimization_guide::proto::AUTOFILL_ABLATION_SITES_LISTx guides are not
+  // consulted.
+  AblationGroup GetAblationGroup(
+      const GURL& url,
+      FormTypeForAblationStudy form_type,
+      AutofillOptimizationGuide* autofill_optimization_guide) const;
 
  private:
   AblationGroup GetAblationGroupImpl(const GURL& url,
