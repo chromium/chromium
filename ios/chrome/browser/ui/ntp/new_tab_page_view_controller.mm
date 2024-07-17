@@ -450,6 +450,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
 
   if (self.isFeedVisible) {
     _feedContainer = [[UIView alloc] initWithFrame:CGRectZero];
+    _feedContainer.userInteractionEnabled = YES;
     _feedContainer.translatesAutoresizingMaskIntoConstraints = NO;
     _feedContainer.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
