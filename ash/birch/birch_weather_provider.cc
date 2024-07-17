@@ -11,6 +11,7 @@
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/weather_info.h"
 #include "ash/public/cpp/image_downloader.h"
@@ -19,6 +20,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "components/prefs/pref_service.h"
@@ -90,6 +92,14 @@ BirchWeatherProvider::BirchWeatherProvider(BirchModel* birch_model)
 BirchWeatherProvider::~BirchWeatherProvider() = default;
 
 void BirchWeatherProvider::RequestBirchDataFetch() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kDisableBirchWeatherApiForTesting) &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kEnableBirchWeatherApiForTestingOverride)) {
+    // Avoid calling into the Weather API when the switch is set for testing.
+    Shell::Get()->birch_model()->SetWeatherItems({});
+    return;
+  }
   const auto* pref_service =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
   if (!pref_service ||

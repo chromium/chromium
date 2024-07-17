@@ -428,6 +428,12 @@ const char kDisableArcCpuRestriction[] = "disable-arc-cpu-restriction";
 // Disables ARC Opt-in verification process and ARC is enabled by default.
 const char kDisableArcOptInVerification[] = "disable-arc-opt-in-verification";
 
+// Disables the Weather API from being called by Birch. Allows fake users in
+// tast tests to avoid making API calls using an invalid GAIA ID, which causes
+// errors on the weather server side.
+const char kDisableBirchWeatherApiForTesting[] =
+    "disable-birch-weather-api-for-testing";
+
 // Disables the Chrome OS demo.
 const char kDisableDemoMode[] = "disable-demo-mode";
 
@@ -505,6 +511,10 @@ const char kEnableArcVmRtVcpu[] = "enable-arcvm-rt-vcpu";
 
 // Adds ash-browser back to launcher, even if in LacrosOnly mode.
 const char kEnableAshDebugBrowser[] = "enable-ash-debug-browser";
+
+// Used to override `kDisableBirchWeatherApiForTesting` for specific tast tests.
+const char kEnableBirchWeatherApiForTestingOverride[] =
+    "enable-birch-weather-api-for-testing-override";
 
 // Enables the Cast Receiver.
 const char kEnableCastReceiver[] = "enable-cast-receiver";

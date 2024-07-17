@@ -128,6 +128,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDerelictIdleTimeout[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableArcCpuRestriction[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDisableArcOptInVerification[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kDisableBirchWeatherApiForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableDemoMode[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableDeviceDisabling[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableDriveFsForTesting[];
@@ -155,6 +157,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableArc[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableArcVm[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableArcVmRtVcpu[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableAshDebugBrowser[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kEnableBirchWeatherApiForTestingOverride[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableCastReceiver[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableConsumerKiosk[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableDimShelf[];
