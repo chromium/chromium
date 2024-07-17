@@ -16,6 +16,7 @@
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -1405,6 +1406,10 @@ std::unique_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
   web_view->SetProperty(views::kElementIdentifierKey, kOverlayId);
   views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
       web_view->GetWebContents(), SK_ColorTRANSPARENT);
+
+  // Set the label for the renderer process in Chrome Task Manager.
+  task_manager::WebContentsTags::CreateForToolContents(
+      web_view->GetWebContents(), IDS_LENS_OVERLAY_RENDERER_LABEL);
 
   // Create glue so that WebUIControllers created by this instance can
   // communicate with this instance.

@@ -17289,6 +17289,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_LENS_SEND_FEEDBACK_PLACEHOLDER" desc="Placeholder text that is shown in the feedback dialog to send feedback for the Lens Overlay.">
       Send feedback for search with Lens
     </message>
+    <message name="IDS_LENS_OVERLAY_RENDERER_LABEL" desc="The label for the renderer process housing the Lens overlay.">
+      Google Lens
+    </message>
     <!-- Lens Permission bubble dialog-->
     <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_CANCEL_BUTTON" desc="Text on the cancel button in the dialog for choosing not to allow the sending of the Lens screenshot to Google.">
       Cancel
