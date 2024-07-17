@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/timer/timer.h"
 #include "net/base/load_states.h"
 #include "net/dns/host_resolver.h"
 #include "net/http/http_network_session.h"
@@ -77,8 +78,10 @@ struct HttpStreamPool::Job::InFlightAttempt {
   ~InFlightAttempt() = default;
 
   std::unique_ptr<StreamAttempt> attempt;
-  // TODO(crbug.com/346835898): Add timer to start another attempt when the
-  // attempt is slow. The timer will be shorter than StreamAttempt timeouts.
+  // Timer to start a next attempt. When fired, `this` is treated as a slow
+  // attempt but `this` is not timed out yet.
+  base::OneShotTimer slow_timer;
+  bool is_slow = false;
 };
 
 HttpStreamPool::Job::Job(Group* group, NetLog* net_log)
@@ -159,12 +162,15 @@ void HttpStreamPool::Job::ProcessPendingRequest() {
 }
 
 size_t HttpStreamPool::Job::PendingRequestCount() const {
-  // The number of in-flight attempts could be larger than the number of
-  // requests (e.g. a request was cancelled in the middle of an attempt).
-  if (requests_.size() <= in_flight_attempts_.size()) {
+  CHECK_GE(in_flight_attempts_.size(), slow_attempt_count_);
+  size_t non_slow_attempts = in_flight_attempts_.size() - slow_attempt_count_;
+  // The number of in-flight, non-slow attempts could be larger than the number
+  // of requests (e.g. a request was cancelled in the middle of an attempt).
+  if (requests_.size() <= non_slow_attempts) {
     return 0;
   }
-  return requests_.size() - in_flight_attempts_.size();
+
+  return requests_.size() - non_slow_attempts;
 }
 
 const HttpStreamKey& HttpStreamPool::Job::stream_key() const {
@@ -269,6 +275,11 @@ void HttpStreamPool::Job::MaybeAttemptConnection(
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&Job::OnInFlightAttemptComplete,
                                     base::Unretained(this), raw_attempt, rv));
+    } else {
+      raw_attempt->slow_timer.Start(
+          FROM_HERE, kConnectionAttemptDelay,
+          base::BindOnce(&Job::OnInFlightAttemptSlow, base::Unretained(this),
+                         raw_attempt));
     }
 
     ++num_attempts;
@@ -284,18 +295,22 @@ std::optional<IPEndPoint> HttpStreamPool::Job::GetIPEndPointToAttempt() {
     return std::nullopt;
   }
 
-  // TODO(crbug.com/346835898): Stagger IPv4/IPv6.
+  // Look for an IPEndPoint from the preferred address family first.
   for (auto& endpoint : service_endpoint_request_->GetEndpointResults()) {
     std::optional<IPEndPoint> ip_endpoint =
-        FindUnattemptedIPEndPoint(endpoint.ipv6_endpoints);
+        prefer_ipv6_ ? FindUnattemptedIPEndPoint(endpoint.ipv6_endpoints)
+                     : FindUnattemptedIPEndPoint(endpoint.ipv4_endpoints);
     if (ip_endpoint.has_value()) {
       return ip_endpoint;
     }
   }
 
+  // If there is no IPEndPoint from the preferred address family, check the
+  // another address family.
   for (auto& endpoint : service_endpoint_request_->GetEndpointResults()) {
     std::optional<IPEndPoint> ip_endpoint =
-        FindUnattemptedIPEndPoint(endpoint.ipv4_endpoints);
+        prefer_ipv6_ ? FindUnattemptedIPEndPoint(endpoint.ipv4_endpoints)
+                     : FindUnattemptedIPEndPoint(endpoint.ipv6_endpoints);
     if (ip_endpoint.has_value()) {
       return ip_endpoint;
     }
@@ -307,9 +322,13 @@ std::optional<IPEndPoint> HttpStreamPool::Job::GetIPEndPointToAttempt() {
 std::optional<IPEndPoint> HttpStreamPool::Job::FindUnattemptedIPEndPoint(
     const std::vector<IPEndPoint>& ip_endpoints) {
   for (const auto& ip_endpoint : ip_endpoints) {
-    if (!base::Contains(failed_ip_endpoints_, ip_endpoint)) {
-      return ip_endpoint;
+    if (base::Contains(failed_ip_endpoints_, ip_endpoint)) {
+      continue;
     }
+    if (base::Contains(slow_ip_endpoints_, ip_endpoint)) {
+      continue;
+    }
+    return ip_endpoint;
   }
   return std::nullopt;
 }
@@ -399,6 +418,12 @@ void HttpStreamPool::Job::OnRequestComplete(RequestEntry* entry) {
 void HttpStreamPool::Job::OnInFlightAttemptComplete(
     InFlightAttempt* raw_attempt,
     int rv) {
+  raw_attempt->slow_timer.Stop();
+  if (raw_attempt->is_slow) {
+    CHECK_GT(slow_attempt_count_, 0u);
+    --slow_attempt_count_;
+  }
+
   auto it = in_flight_attempts_.find(raw_attempt);
   CHECK(it != in_flight_attempts_.end());
   std::unique_ptr<InFlightAttempt> in_flight_attempt =
@@ -421,6 +446,18 @@ void HttpStreamPool::Job::OnInFlightAttemptComplete(
   // TODO(crbug.com/346835898): Support HTTP/2.
   CHECK_NE(stream_socket->GetNegotiatedProtocol(), NextProto::kProtoHTTP2);
   CreateTextBasedStreamAndNotify(std::move(stream_socket));
+}
+
+void HttpStreamPool::Job::OnInFlightAttemptSlow(InFlightAttempt* raw_attempt) {
+  auto it = in_flight_attempts_.find(raw_attempt);
+  CHECK(it != in_flight_attempts_.end());
+
+  raw_attempt->is_slow = true;
+  ++slow_attempt_count_;
+  slow_ip_endpoints_.emplace(raw_attempt->attempt->ip_endpoint());
+  prefer_ipv6_ = !raw_attempt->attempt->ip_endpoint().address().IsIPv6();
+
+  MaybeAttemptConnection();
 }
 
 void HttpStreamPool::Job::MaybeComplete() {

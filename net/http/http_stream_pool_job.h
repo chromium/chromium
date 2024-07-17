@@ -62,8 +62,8 @@ class HttpStreamPool::Job
   size_t InFlightAttemptCount() const { return in_flight_attempts_.size(); }
 
   // Returns the number of pending requests. The number is calculated by
-  // subtracting the number of in-flight attempts from the number of total
-  // requests.
+  // subtracting the number of in-flight attempts (excluding slow attempts) from
+  // the number of total requests.
   size_t PendingRequestCount() const;
 
   // Returns the highest priority in `requests_`.
@@ -150,6 +150,7 @@ class HttpStreamPool::Job
   void OnRequestComplete(RequestEntry* entry);
 
   void OnInFlightAttemptComplete(InFlightAttempt* raw_attempt, int rv);
+  void OnInFlightAttemptSlow(InFlightAttempt* raw_attempt);
 
   void MaybeComplete();
 
@@ -179,9 +180,17 @@ class HttpStreamPool::Job
   StreamAttemptParams attempt_params_;
   std::set<std::unique_ptr<InFlightAttempt>, base::UniquePtrComparator>
       in_flight_attempts_;
+  // The number of in-flight attempts that are treated as slow.
+  size_t slow_attempt_count_ = 0;
+
+  // When true, try to use IPv6 for the next attempt first.
+  bool prefer_ipv6_ = true;
   // Updated when a stream attempt failed. Used to calculate next IPEndPoint to
   // attempt.
   std::set<IPEndPoint> failed_ip_endpoints_;
+  // Updated when a stream attempt is considered slow. Used to calculate next
+  // IPEndPoint to attempt.
+  std::set<IPEndPoint> slow_ip_endpoints_;
 
   base::WeakPtrFactory<Job> weak_ptr_factory_{this};
 };

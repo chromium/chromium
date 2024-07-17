@@ -27,6 +27,7 @@
 #include "net/http/http_stream_pool_group.h"
 #include "net/http/http_stream_pool_test_util.h"
 #include "net/socket/socket_test_util.h"
+#include "net/socket/tcp_stream_attempt.h"
 #include "net/spdy/spdy_test_util_common.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
@@ -543,6 +544,72 @@ TEST_F(HttpStreamPoolJobTest, OneIPEndPointFailed) {
       EndpointHelper().add_v6("2001:db8::1").add_v4("192.0.2.1").endpoint());
   endpoint_request->CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
+  EXPECT_THAT(*requester.result(), IsOk());
+}
+
+TEST_F(HttpStreamPoolJobTest, IPEndPointTimedout) {
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  StreamRequester requester;
+  requester.RequestStream(pool());
+
+  auto data = std::make_unique<SequencedSocketData>();
+  data->set_connect_data(MockConnect(ASYNC, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(data.get());
+
+  endpoint_request->add_endpoint(
+      EndpointHelper().add_v4("192.0.2.1").endpoint());
+  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
+  ASSERT_FALSE(requester.result().has_value());
+
+  FastForwardBy(HttpStreamPool::kConnectionAttemptDelay);
+  ASSERT_FALSE(requester.result().has_value());
+
+  FastForwardBy(TcpStreamAttempt::kTcpHandshakeTimeout);
+  ASSERT_TRUE(requester.result().has_value());
+  EXPECT_THAT(*requester.result(), IsError(ERR_TIMED_OUT));
+}
+
+TEST_F(HttpStreamPoolJobTest, IPEndPointsSlow) {
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  StreamRequester requester;
+  HttpStreamRequest* request = requester.RequestStream(pool());
+
+  auto data1 = std::make_unique<SequencedSocketData>();
+  // Make the first and the second attempt stalled.
+  data1->set_connect_data(MockConnect(ASYNC, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(data1.get());
+  auto data2 = std::make_unique<SequencedSocketData>();
+  data2->set_connect_data(MockConnect(ASYNC, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(data2.get());
+  // The third attempt succeeds.
+  auto data3 = std::make_unique<SequencedSocketData>();
+  data3->set_connect_data(MockConnect(ASYNC, OK));
+  socket_factory()->AddSocketDataProvider(data3.get());
+
+  endpoint_request->add_endpoint(EndpointHelper()
+                                     .add_v6("2001:db8::1")
+                                     .add_v6("2001:db8::2")
+                                     .add_v4("192.0.2.1")
+                                     .endpoint());
+  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
+  RunUntilIdle();
+  Job* job = pool()
+                 .GetOrCreateGroupForTesting(requester.GetStreamKey())
+                 .GetJobForTesting();
+  ASSERT_EQ(job->InFlightAttemptCount(), 1u);
+  ASSERT_FALSE(request->completed());
+
+  FastForwardBy(HttpStreamPool::kConnectionAttemptDelay);
+  ASSERT_EQ(job->InFlightAttemptCount(), 2u);
+  ASSERT_EQ(job->PendingRequestCount(), 0u);
+  ASSERT_FALSE(request->completed());
+
+  // FastForwardBy() executes non-delayed tasks so the request finishes
+  // immediately.
+  FastForwardBy(HttpStreamPool::kConnectionAttemptDelay);
+  ASSERT_TRUE(request->completed());
   EXPECT_THAT(*requester.result(), IsOk());
 }
 

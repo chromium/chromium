@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 
@@ -32,6 +33,10 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   // The maximum number of socket per group. The same as
   // ClientSocketPoolManager::max_sockets_per_group().
   static constexpr size_t kMaxStreamSocketsPerGroup = 6;
+
+  // The time to wait between connection attempts.
+  static constexpr base::TimeDelta kConnectionAttemptDelay =
+      base::Milliseconds(250);
 
   class NET_EXPORT_PRIVATE Group;
   class NET_EXPORT_PRIVATE Job;
