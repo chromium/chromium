@@ -46,7 +46,7 @@ const CountryLocaleMap& GetAllowedCountryToLocaleMap() {
     map[&ntp_features::kNtpChromeCartModule] = {{"us", {"en-us"}}};
     map[&kParcelTrackingRegionLaunched] = {{"us", {"en-us"}}};
     map[&kPriceInsightsRegionLaunched] = {{"us", {"en-us"}}};
-    map[&kProductSpecificationsRegionLaunched] = {{"us", {"en-us"}}};
+    map[&kProductSpecifications] = {{"us", {"en-us"}}};
     map[&kShoppingListRegionLaunched] = {{"us", {"en-us"}}};
     map[&kShoppingPageTypesRegionLaunched] = {{"us", {"en-us"}}};
     map[&kShoppingPDPMetricsRegionLaunched] = {{"us", {"en-us"}}};
@@ -210,10 +210,6 @@ BASE_FEATURE(kProductSpecificationsClearMetadataOnNewlySupportedFields,
 // Stores Product Specifications across multiple specifics instead of one.
 BASE_FEATURE(kProductSpecificationsMultiSpecifics,
              "ProductSpecificationsMultiSpecifics",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kProductSpecificationsRegionLaunched,
-             "ProductSpecificationsRegionLaunched",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShoppingIconColorVariant,

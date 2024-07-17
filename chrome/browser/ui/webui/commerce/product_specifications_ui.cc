@@ -19,6 +19,7 @@
 #include "chrome/grit/commerce_product_specifications_resources_map.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/webui/shopping_service_handler.h"
 #include "components/favicon_base/favicon_url_parser.h"
@@ -37,8 +38,7 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
   commerce::ShoppingService* shopping_service =
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
   if (!shopping_service ||
-      !shopping_service->IsRegionLockedFeatureEnabled(
-          kProductSpecifications, kProductSpecificationsRegionLaunched)) {
+      !IsProductSpecificationsEnabled(shopping_service->GetAccountChecker())) {
     return;
   }
   // Add ThemeSource to serve the chrome logo.
