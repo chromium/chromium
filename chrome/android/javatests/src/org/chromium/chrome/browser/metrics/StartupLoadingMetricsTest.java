@@ -69,8 +69,6 @@ public class StartupLoadingMetricsTest {
             "Startup.Android.Cold.FirstNavigationCommitOccurredPreForeground";
     private static final String FIRST_COMMIT_COLD_START_TRACKER_HISTOGRAM =
             "Startup.Android.Experimental.FirstNavigationCommit.Tabbed.ColdStartTracker";
-    private static final String FIRST_COMMIT_ACTIVITY_CREATED_WHILE_INIT_HISTOGRAM =
-            "Startup.Android.Experimental.FirstNavigationCommit.Tabbed.ActivityCreatedWhileInit";
 
     private CustomTabsConnection mConnectionToCleanup;
 
@@ -164,10 +162,6 @@ public class StartupLoadingMetricsTest {
                 isTabbedSuffix ? expectedCount : 0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         FIRST_COMMIT_COLD_START_TRACKER_HISTOGRAM));
-        Assert.assertEquals(
-                isTabbedSuffix ? expectedCount : 0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        FIRST_COMMIT_ACTIVITY_CREATED_WHILE_INIT_HISTOGRAM));
 
         int firstCommitSamples =
                 RecordHistogram.getHistogramTotalCountForTesting(

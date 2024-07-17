@@ -319,14 +319,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Startup.Android.Experimental.{name}.Tabbed.{suffix}"
+<histogram name="Startup.Android.Experimental.{name}.Tabbed.ColdStartTracker"
     units="ms" expires_after="2024-12-30">
   <owner>pasko@chromium.org</owner>
   <owner>mthiesse@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
     The time from activity creation on a cold start to the {name} happening in
-    this activity. Cold start is determined by whether the {suffix}.
+    this activity. Cold start is determined by whether the process creation
+    reason is Activity.
 
     Recorded only for tabbed activity and on cold starts. Therefore it cannot be
     recorded more than once in the application lifetime.
@@ -347,24 +348,19 @@ chromium-metrics-reviews@google.com.
 
     6. when the first navigation was preceded by showing a NTP (New Tab Page).
 
-    For cold start detection based on process creation reason (suffix
-    .ColdStartTracker) it is recommended to limit analysis of data on the UMA
-    dashboard to Android P+ because on prior versions the cold start detection
-    is time-based and therefore less robust.
+    For cold start detection based on process creation reason it is recommended
+    to limit analysis of data on the UMA dashboard to Android P+ because on
+    prior versions the cold start detection is time-based and therefore less
+    robust.
 
-    TODO(pasko): Rename the suffix when graduating these histograms out of
-    experimental. The preference is to avoid Java class names in metric names.
+    TODO(pasko): Rename the .ColdStartTracker suffix when graduating these
+    histograms out of experimental. The preference is to avoid Java class names
+    in metric names.
   </summary>
   <token key="name">
     <variant name="FirstContentfulPaint"
         summary="first contentful paint (FCP)"/>
     <variant name="FirstNavigationCommit" summary="first navigation commit"/>
-  </token>
-  <token key="suffix">
-    <variant name="ActivityCreatedWhileInit"
-        summary="activity was created before post-inflation"/>
-    <variant name="ColdStartTracker"
-        summary="process creation reason is Activity"/>
   </token>
 </histogram>
 

@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.base.ColdStartTracker;
-import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.page_load_metrics.PageLoadMetrics;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -26,10 +25,7 @@ import org.chromium.url.GURL;
  * Records UMA page load metrics for the first navigation on a cold start.
  *
  * <p>Uses different cold start heuristics from {@link ActivityTabStartupMetricsTracker}. These
- * heuristics are currently experimental.
- *
- * <p>One pair of histograms is based on {@link ColdStartTracker}. The other heuristic is more
- * speculative, it assumes that cold start finishes as soon as post-inflation startup is complete.
+ * heuristics aim to replace a few metrics from Startup.Android.Cold.*.
  */
 public class ExperimentalStartupMetricsTracker {
 
@@ -125,13 +121,10 @@ public class ExperimentalStartupMetricsTracker {
     private TabModelSelectorTabObserver mTabObserver;
     private PageObserver mPageObserver;
     private boolean mShouldTrack = true;
-    private final boolean mCreatedWhileBrowserNotFullyInitialized;
 
     public ExperimentalStartupMetricsTracker(
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mActivityStartTimeMs = SystemClock.uptimeMillis();
-        mCreatedWhileBrowserNotFullyInitialized =
-                !ChromeBrowserInitializer.getInstance().isPostInflationStartupComplete();
         tabModelSelectorSupplier.addObserver(this::registerObservers);
     }
 
@@ -154,28 +147,22 @@ public class ExperimentalStartupMetricsTracker {
         }
     }
 
-    private void recordHistogram(String name, String suffix, long ms) {
+    private void recordHistogram(String name, long ms) {
         RecordHistogram.recordMediumTimesHistogram(
-                "Startup.Android.Experimental." + name + ".Tabbed." + suffix, ms);
+                "Startup.Android.Experimental." + name + ".Tabbed.ColdStartTracker", ms);
     }
 
     private void recordNavigationCommitMetrics(long firstCommitMs) {
         if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) return;
         if (ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) {
-            recordHistogram("FirstNavigationCommit", "ColdStartTracker", firstCommitMs);
-        }
-        if (mCreatedWhileBrowserNotFullyInitialized) {
-            recordHistogram("FirstNavigationCommit", "ActivityCreatedWhileInit", firstCommitMs);
+            recordHistogram("FirstNavigationCommit", firstCommitMs);
         }
     }
 
     private void recordFcpMetrics(long firstFcpMs) {
         if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) return;
         if (ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) {
-            recordHistogram("FirstContentfulPaint", "ColdStartTracker", firstFcpMs);
-        }
-        if (mCreatedWhileBrowserNotFullyInitialized) {
-            recordHistogram("FirstContentfulPaint", "ActivityCreatedWhileInit", firstFcpMs);
+            recordHistogram("FirstContentfulPaint", firstFcpMs);
         }
     }
 }
