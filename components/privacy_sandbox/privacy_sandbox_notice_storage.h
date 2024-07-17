@@ -66,6 +66,19 @@ enum class NoticeActionTaken {
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivacySandboxNoticeAction)
 
+// Different notice action outcomes.
+// LINT.IfChange(NoticeActionBehavior)
+enum class NoticeActionBehavior {
+  // Action taken on notice set successfully.
+  kSuccess = 0,
+  // Tried to set action taken before notice was shown, unexpected behavior.
+  kActionBeforeShown = 1,
+  // Tried to set action taken twice, unexpected behavior.
+  kDuplicateActionTaken = 2,
+  kMaxValue = kDuplicateActionTaken,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivacySandboxNoticeActionBehavior)
+
 // Stores information about profile interactions on a notice.
 struct PrivacySandboxNoticeData {
   PrivacySandboxNoticeData();
@@ -96,11 +109,6 @@ class PrivacySandboxNoticeStorage {
   void RecordHistogramsOnStartup(PrefService* pref_service,
                                  std::string_view notice);
 
-  // Sets the data model's schema version the prefs are following.
-  void SetSchemaVersion(PrefService* pref_service,
-                        std::string_view notice,
-                        int schema_version);
-
   // Sets the pref and histogram controlling the action taken on the notice.
   void SetNoticeActionTaken(PrefService* pref_service,
                             std::string_view notice,
@@ -112,6 +120,14 @@ class PrivacySandboxNoticeStorage {
   void SetNoticeShown(PrefService* pref_service,
                       std::string_view notice,
                       base::Time notice_shown_time);
+
+  // Functionality should only be used to migrate pre-notice storage prefs.
+  // TODO(crbug.com/333406690): Remove this once the old privacy sandbox prefs
+  // are migrated to the new data model.
+  void MigratePrivacySandboxNoticeData(
+      PrefService* pref_service,
+      const PrivacySandboxNoticeData& notice_data,
+      std::string_view notice);
 
   PrivacySandboxNoticeStorage(const PrivacySandboxNoticeStorage&) = delete;
   PrivacySandboxNoticeStorage& operator=(const PrivacySandboxNoticeStorage&) =

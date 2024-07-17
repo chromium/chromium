@@ -27,6 +27,7 @@ class PrivacySandboxNoticeStorageTest : public testing::Test {
 
   PrivacySandboxNoticeData NoticeTestData() {
     PrivacySandboxNoticeData data;
+    data.schema_version = 1;
     data.notice_action_taken = NoticeActionTaken::kAck;
     data.notice_action_taken_time =
         base::Time::FromMillisecondsSinceUnixEpoch(200);
@@ -43,15 +44,20 @@ class PrivacySandboxNoticeStorageTest : public testing::Test {
   // Sets notice related prefs.
   void SaveNoticeData(const PrivacySandboxNoticeData& notice_data,
                       std::string_view notice) {
-    notice_storage()->SetSchemaVersion(prefs(), notice,
-                                       notice_data.schema_version);
-    notice_storage()->SetNoticeShown(prefs(), notice,
-                                     notice_data.notice_first_shown);
-    notice_storage()->SetNoticeShown(prefs(), notice,
-                                     notice_data.notice_last_shown);
-    notice_storage()->SetNoticeActionTaken(
-        prefs(), notice, notice_data.notice_action_taken,
-        notice_data.notice_action_taken_time);
+    if (notice_data.notice_first_shown != base::Time()) {
+      notice_storage()->SetNoticeShown(prefs(), notice,
+                                       notice_data.notice_first_shown);
+    }
+    if (notice_data.notice_last_shown != base::Time()) {
+      notice_storage()->SetNoticeShown(prefs(), notice,
+                                       notice_data.notice_last_shown);
+    }
+
+    if (notice_data.notice_action_taken != NoticeActionTaken::kNotSet) {
+      notice_storage()->SetNoticeActionTaken(
+          prefs(), notice, notice_data.notice_action_taken,
+          notice_data.notice_action_taken_time);
+    }
   }
 
   // Compares notice related data.
@@ -128,16 +134,18 @@ TEST_F(PrivacySandboxNoticeStorageTest, NoticePathNotFound) {
   EXPECT_FALSE(actual.has_value());
 }
 
-TEST_F(PrivacySandboxNoticeStorageTest, StartupStateNotShown) {
+TEST_F(PrivacySandboxNoticeStorageTest, StartupStateDoesNotExist) {
   notice_storage()->RecordHistogramsOnStartup(prefs(),
                                               /*notice=*/"NoticeTest1_v0");
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.Notice.NoticeStartupState.NoticeTest1_v0",
-      NoticeStartupState::kPromptNotShown, 1);
+  const std::string histograms = histogram_tester_.GetAllHistogramsRecorded();
+  EXPECT_THAT(histograms,
+              testing::Not(testing::AnyOf(
+                  "PrivacySandbox.Notice.NoticeStartupState.NoticeTest1_v0")));
 }
 
 TEST_F(PrivacySandboxNoticeStorageTest, StartupStateUnknownState) {
   PrivacySandboxNoticeData data;
+  data.notice_first_shown = base::Time::Now();
   data.notice_action_taken = NoticeActionTaken::kUnknownActionPreMigration;
   SaveNoticeData(data, /*notice=*/"NoticeTest1_v0");
   notice_storage()->RecordHistogramsOnStartup(prefs(),
@@ -170,6 +178,7 @@ TEST_F(PrivacySandboxNoticeStorageTest, StartupStateFlowComplete) {
       "PrivacySandbox.Notice.NoticeStartupState.NoticeTest1_v0",
       NoticeStartupState::kFlowCompleted, 1);
 }
+
 TEST_F(PrivacySandboxNoticeStorageTest, StartupStateFlowCompleteOptIn) {
   PrivacySandboxNoticeData data;
   data.notice_action_taken = NoticeActionTaken::kOptIn;
@@ -181,6 +190,7 @@ TEST_F(PrivacySandboxNoticeStorageTest, StartupStateFlowCompleteOptIn) {
       "PrivacySandbox.Notice.NoticeStartupState.NoticeTest1_v0",
       NoticeStartupState::kFlowCompletedWithOptIn, 1);
 }
+
 TEST_F(PrivacySandboxNoticeStorageTest, StartupStateFlowCompleteOptOut) {
   PrivacySandboxNoticeData data;
   data.notice_action_taken = NoticeActionTaken::kOptOut;
@@ -192,6 +202,7 @@ TEST_F(PrivacySandboxNoticeStorageTest, StartupStateFlowCompleteOptOut) {
       "PrivacySandbox.Notice.NoticeStartupState.NoticeTest1_v0",
       NoticeStartupState::kFlowCompletedWithOptOut, 1);
 }
+
 TEST_F(PrivacySandboxNoticeStorageTest, StartupStateFlowCompleteAck) {
   PrivacySandboxNoticeData data;
   data.notice_action_taken = NoticeActionTaken::kAck;
@@ -202,25 +213,6 @@ TEST_F(PrivacySandboxNoticeStorageTest, StartupStateFlowCompleteAck) {
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeStartupState.NoticeTest1_v0",
       NoticeStartupState::kFlowCompleted, 1);
-}
-
-TEST_F(PrivacySandboxNoticeStorageTest, NoNoticeDataSet) {
-  PrivacySandboxNoticeData data = {};
-  SaveNoticeData(data, /*notice=*/"NoticeTest1_v0");
-  const auto actual =
-      notice_storage()->ReadNoticeData(prefs(),
-                                       /*notice=*/"NoticeTest1_v0");
-  CompareNoticeData(data, *actual);
-}
-
-TEST_F(PrivacySandboxNoticeStorageTest, OnlySchemaVersionSet) {
-  PrivacySandboxNoticeData data;
-  data.schema_version = 1;
-  SaveNoticeData(data, /*notice=*/"NoticeTest1_v0");
-  const auto actual =
-      notice_storage()->ReadNoticeData(prefs(),
-                                       /*notice=*/"NoticeTest1_v0");
-  CompareNoticeData(data, *actual);
 }
 
 TEST_F(PrivacySandboxNoticeStorageTest, SetsValuesAndReadsData) {
@@ -241,6 +233,28 @@ TEST_F(PrivacySandboxNoticeStorageTest, SetsValuesAndReadsData) {
       base::Milliseconds(100), 1);
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeShown.NoticeTest1_v0", true, 1);
+}
+
+TEST_F(PrivacySandboxNoticeStorageTest,
+       ReActionDoesNotRegisterAndEmitsHistogram) {
+  std::string notice_name = "NoticeTest1_v0";
+  SaveNoticeData(NoticeTestData(), notice_name);
+  auto actual = notice_storage()->ReadNoticeData(prefs(), notice_name);
+  EXPECT_EQ(NoticeActionTaken::kAck, actual->notice_action_taken);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.Notice.NoticeAction.NoticeTest1_v0",
+      NoticeActionTaken::kAck, 1);
+
+  // Tries to override action, should not override and emits histograms.
+  notice_storage()->SetNoticeActionTaken(
+      prefs(), notice_name, NoticeActionTaken::kLearnMore, base::Time::Now());
+  EXPECT_EQ(NoticeActionTaken::kAck, actual->notice_action_taken);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.Notice.NoticeAction.NoticeTest1_v0",
+      NoticeActionTaken::kLearnMore, 0);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.Notice.NoticeActionTakenBehavior.NoticeTest1_v0",
+      NoticeActionBehavior::kDuplicateActionTaken, 1);
 }
 
 TEST_F(PrivacySandboxNoticeStorageTest, UpdateNoticeShownValue) {
@@ -322,6 +336,131 @@ TEST_F(PrivacySandboxNoticeStorageTest, SetMultipleNotices) {
       base::Milliseconds(200), 1);
   histogram_tester_.ExpectBucketCount(
       "PrivacySandbox.Notice.NoticeShown.NoticeTest2_v0", true, 1);
+}
+
+TEST_F(PrivacySandboxNoticeStorageTest,
+       MigrateNoticeDataNoticeActionOnlyMigratePrefsSuccess) {
+  PrivacySandboxNoticeData expected_notice;
+  expected_notice.schema_version = 1;
+  expected_notice.notice_action_taken = NoticeActionTaken::kSettings;
+  expected_notice.notice_action_taken_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(500);
+  std::string notice_name = "NoticeTest1_v0";
+  notice_storage()->MigratePrivacySandboxNoticeData(prefs(), expected_notice,
+                                                    notice_name);
+  const auto actual_notice =
+      notice_storage()->ReadNoticeData(prefs(), notice_name);
+
+  CompareNoticeData(expected_notice, *actual_notice);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.Notice.NoticeAction.NoticeTest1_v0",
+      NoticeActionTaken::kSettings, 1);
+  const std::string histograms = histogram_tester_.GetAllHistogramsRecorded();
+  EXPECT_THAT(histograms,
+              testing::Not(testing::AnyOf(
+                  "PrivacySandbox.Notice.FirstShownToInteractedDuration."
+                  "NoticeTest1_v0_Settings")));
+  EXPECT_THAT(histograms,
+              testing::Not(testing::AnyOf(
+                  "PrivacySandbox.Notice.LastShownToInteractedDuration."
+                  "NoticeTest1_v0_Settings")));
+}
+
+TEST_F(PrivacySandboxNoticeStorageTest,
+       MigrateNoticeDataNoticeShownOnlyMigratePrefsSuccess) {
+  PrivacySandboxNoticeData expected_notice;
+  expected_notice.schema_version = 1;
+  expected_notice.notice_first_shown = base::Time::Now();
+  expected_notice.notice_last_shown = base::Time::Now();
+  std::string notice_name = "NoticeTest1_v0";
+  notice_storage()->MigratePrivacySandboxNoticeData(prefs(), expected_notice,
+                                                    notice_name);
+  const auto actual_notice =
+      notice_storage()->ReadNoticeData(prefs(), notice_name);
+
+  CompareNoticeData(expected_notice, *actual_notice);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.Notice.NoticeShown.NoticeTest1_v0", true, 1);
+}
+
+TEST_F(PrivacySandboxNoticeStorageTest,
+       MigrateNoticeDataAllValuesMigratePrefsSuccess) {
+  const auto expected_notice = NoticeTestData();
+  std::string notice_name = "NoticeTest1_v0";
+
+  notice_storage()->MigratePrivacySandboxNoticeData(prefs(), expected_notice,
+                                                    notice_name);
+
+  const auto actual_notice =
+      notice_storage()->ReadNoticeData(prefs(), notice_name);
+
+  CompareNoticeData(expected_notice, *actual_notice);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.Notice.NoticeAction.NoticeTest1_v0",
+      NoticeActionTaken::kAck, 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "PrivacySandbox.Notice.FirstShownToInteractedDuration.NoticeTest1_v0_Ack",
+      base::Milliseconds(100), 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "PrivacySandbox.Notice.LastShownToInteractedDuration.NoticeTest1_v0_Ack",
+      base::Milliseconds(100), 1);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.Notice.NoticeShown.NoticeTest1_v0", true, 1);
+}
+
+TEST_F(PrivacySandboxNoticeStorageTest,
+       MigrateNoticeDataReNoticeActionDoesNotOverwrite) {
+  // Original notice.
+  const auto expected_notice = NoticeTestData();
+  std::string notice_name = "NoticeTest1_v0";
+
+  notice_storage()->MigratePrivacySandboxNoticeData(prefs(), expected_notice,
+                                                    notice_name);
+
+  // Notice data 2.
+  PrivacySandboxNoticeData notice_data2;
+  notice_data2.notice_action_taken = NoticeActionTaken::kSettings;
+  notice_data2.notice_action_taken_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(500);
+
+  notice_storage()->MigratePrivacySandboxNoticeData(prefs(), notice_data2,
+                                                    notice_name);
+
+  // Prefs should still match original notice data.
+  const auto actual_notice =
+      notice_storage()->ReadNoticeData(prefs(), notice_name);
+  CompareNoticeData(expected_notice, *actual_notice);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.Notice.NoticeAction.NoticeTest1_v0",
+      NoticeActionTaken::kAck, 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "PrivacySandbox.Notice.FirstShownToInteractedDuration.NoticeTest1_v0_Ack",
+      base::Milliseconds(100), 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "PrivacySandbox.Notice.LastShownToInteractedDuration.NoticeTest1_v0_Ack",
+      base::Milliseconds(100), 1);
+}
+
+TEST_F(PrivacySandboxNoticeStorageTest,
+       MigrateNoticeDataReNoticeShownDoesNotOverwrite) {
+  // Original notice.
+  auto expected_notice = NoticeTestData();
+  std::string notice_name = "NoticeTest1_v0";
+
+  notice_storage()->MigratePrivacySandboxNoticeData(prefs(), expected_notice,
+                                                    notice_name);
+
+  // Notice data 2.
+  PrivacySandboxNoticeData notice_data2;
+  notice_data2.notice_first_shown = base::Time::Now();
+  notice_data2.notice_last_shown = base::Time::Now();
+  notice_storage()->MigratePrivacySandboxNoticeData(prefs(), notice_data2,
+                                                    notice_name);
+
+  // Prefs should still match original notice data.
+  const auto actual_notice =
+      notice_storage()->ReadNoticeData(prefs(), notice_name);
+  CompareNoticeData(expected_notice, *actual_notice);
 }
 
 }  // namespace

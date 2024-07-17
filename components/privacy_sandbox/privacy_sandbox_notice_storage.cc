@@ -15,6 +15,8 @@
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/privacy_sandbox/privacy_sandbox_notice_constants.h"
+#include "privacy_sandbox_notice_constants.h"
 #include "privacy_sandbox_notice_storage.h"
 
 namespace privacy_sandbox {
@@ -82,6 +84,13 @@ std::string GetNoticeActionString(
   }
 }
 
+void SetSchemaVersion(PrefService* pref_service, std::string_view notice) {
+  ScopedDictPrefUpdate update(pref_service, kPrivacySandboxNoticeDataPath);
+  update.Get().SetByDottedPath(
+      CreatePrefPath(notice, kPrivacySandboxSchemaVersion),
+      kPrivacySandboxNoticeSchemaVersion);
+}
+
 }  // namespace
 
 // PrivacySandboxNoticeData definitions.
@@ -102,6 +111,12 @@ void PrivacySandboxNoticeStorage::RecordHistogramsOnStartup(
   auto notice_data = ReadNoticeData(pref_service, notice);
 
   NoticeStartupState startup_state;
+
+  // If the notice entry doesn't exist, we don't emit any histograms.
+  if (!pref_service->GetDict(kPrivacySandboxNoticeDataPath).contains(notice)) {
+    return;
+  }
+
   if (!notice_data.has_value() ||
       (notice_data->notice_first_shown == base::Time() &&
        notice_data->notice_action_taken == NoticeActionTaken::kNotSet)) {
@@ -144,7 +159,7 @@ PrivacySandboxNoticeStorage::ReadNoticeData(PrefService* pref_service,
                                             std::string_view notice) {
   const base::Value::Dict& pref_data =
       pref_service->GetDict(kPrivacySandboxNoticeDataPath);
-  if (pref_data.empty()) {
+  if (!pref_data.contains(notice)) {
     return std::nullopt;
   }
   // Populate notice data values.
@@ -202,57 +217,72 @@ PrivacySandboxNoticeStorage::ReadNoticeData(PrefService* pref_service,
   return notice_data;
 }
 
-void PrivacySandboxNoticeStorage::SetSchemaVersion(PrefService* pref_service,
-                                                   std::string_view notice,
-                                                   int schema_version) {
-  ScopedDictPrefUpdate update(pref_service, kPrivacySandboxNoticeDataPath);
-  update.Get().SetByDottedPath(
-      CreatePrefPath(notice, kPrivacySandboxSchemaVersion), schema_version);
-}
-
 void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
     PrefService* pref_service,
     std::string_view notice,
     NoticeActionTaken notice_action_taken,
     base::Time notice_action_taken_time) {
   ScopedDictPrefUpdate update(pref_service, kPrivacySandboxNoticeDataPath);
+  auto notice_data = ReadNoticeData(pref_service, notice);
+
+  // The notice should be shown first before action can be taken on it.
+  if (!notice_data.has_value() ||
+      notice_data->notice_first_shown == base::Time() ||
+      notice_data->notice_last_shown == base::Time()) {
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {"PrivacySandbox.Notice.NoticeActionTakenBehavior.", notice}),
+        NoticeActionBehavior::kActionBeforeShown);
+    return;
+  }
+
+  // Overriding an existing notice action is unexpected.
+  if (!(notice_data->notice_action_taken == NoticeActionTaken::kNotSet)) {
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {"PrivacySandbox.Notice.NoticeActionTakenBehavior.", notice}),
+        NoticeActionBehavior::kDuplicateActionTaken);
+    return;
+  }
+
   update.Get().SetByDottedPath(
       CreatePrefPath(notice, kPrivacySandboxNoticeActionTaken),
       static_cast<int>(notice_action_taken));
   update.Get().SetByDottedPath(
       CreatePrefPath(notice, kPrivacySandboxNoticeActionTakenTime),
       base::TimeToValue(notice_action_taken_time));
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"PrivacySandbox.Notice.NoticeActionTakenBehavior.", notice}),
+      NoticeActionBehavior::kSuccess);
 
   // Emitting histograms.
   base::UmaHistogramEnumeration(
       base::StrCat({"PrivacySandbox.Notice.NoticeAction.", notice}),
       notice_action_taken);
-  auto notice_data = ReadNoticeData(pref_service, notice);
-
-  if (notice_data.has_value()) {
-    // First shown to interacted duration.
-    base::TimeDelta first_shown_to_interacted_duration =
-        notice_action_taken_time - notice_data->notice_first_shown;
-    update.Get().SetByDottedPath(
-        CreatePrefPath(notice, kPrivacySandboxNoticeShownDuration),
-        base::TimeDeltaToValue(first_shown_to_interacted_duration));
-
-    // Last shown to interacted duration.
-    auto last_shown_to_interacted_duration =
-        notice_action_taken_time - notice_data->notice_last_shown;
 
     std::string notice_action_str = GetNoticeActionString(notice_action_taken);
+    // First shown to interacted duration.
     if (!notice_action_str.empty()) {
+      // Set first shown to interacted.
+      base::TimeDelta first_shown_to_interacted_duration =
+          notice_action_taken_time - notice_data->notice_first_shown;
+      update.Get().SetByDottedPath(
+          CreatePrefPath(notice, kPrivacySandboxNoticeShownDuration),
+          base::TimeDeltaToValue(first_shown_to_interacted_duration));
       CreateTimingHistogram(
           base::StrCat({"PrivacySandbox.Notice.FirstShownToInteractedDuration.",
                         notice, "_", notice_action_str}),
           first_shown_to_interacted_duration);
+
+      // Set last shown to interacted.
+      auto last_shown_to_interacted_duration =
+          notice_action_taken_time - notice_data->notice_last_shown;
       CreateTimingHistogram(
           base::StrCat({"PrivacySandbox.Notice.LastShownToInteractedDuration.",
                         notice, "_", notice_action_str}),
           last_shown_to_interacted_duration);
     }
-  }
 }
 
 void PrivacySandboxNoticeStorage::SetNoticeShown(PrefService* pref_service,
@@ -266,6 +296,7 @@ void PrivacySandboxNoticeStorage::SetNoticeShown(PrefService* pref_service,
     update.Get().SetByDottedPath(
         CreatePrefPath(notice, kPrivacySandboxNoticeFirstShown),
         base::TimeToValue(notice_shown_time));
+    SetSchemaVersion(pref_service, notice);
     base::UmaHistogramBoolean(
         base::StrCat({"PrivacySandbox.Notice.NoticeShown.", notice}), true);
   }
@@ -274,6 +305,80 @@ void PrivacySandboxNoticeStorage::SetNoticeShown(PrefService* pref_service,
   update.Get().SetByDottedPath(
       CreatePrefPath(notice, kPrivacySandboxNoticeLastShown),
       base::TimeToValue(notice_shown_time));
+}
+
+void PrivacySandboxNoticeStorage::MigratePrivacySandboxNoticeData(
+    PrefService* pref_service,
+    const PrivacySandboxNoticeData& input,
+    std::string_view notice) {
+  ScopedDictPrefUpdate update(pref_service, kPrivacySandboxNoticeDataPath);
+
+  SetSchemaVersion(pref_service, notice);
+
+  auto existing_notice_data = ReadNoticeData(pref_service, notice);
+  if (input.notice_action_taken != NoticeActionTaken::kNotSet &&
+      (!existing_notice_data.has_value() ||
+       existing_notice_data->notice_action_taken ==
+           NoticeActionTaken::kNotSet)) {
+    update.Get().SetByDottedPath(
+        CreatePrefPath(notice, kPrivacySandboxNoticeActionTaken),
+        static_cast<int>(input.notice_action_taken));
+    base::UmaHistogramEnumeration(
+        base::StrCat({"PrivacySandbox.Notice.NoticeAction.", notice}),
+        input.notice_action_taken);
+  }
+
+  if (input.notice_action_taken_time != base::Time() &&
+      (!existing_notice_data.has_value() ||
+       existing_notice_data->notice_action_taken_time == base::Time())) {
+    update.Get().SetByDottedPath(
+        CreatePrefPath(notice, kPrivacySandboxNoticeActionTakenTime),
+        base::TimeToValue(input.notice_action_taken_time));
+
+    // First shown to interacted histogram.
+    std::string notice_action_str =
+        GetNoticeActionString(input.notice_action_taken);
+    if (!notice_action_str.empty() &&
+        input.notice_first_shown != base::Time()) {
+      base::TimeDelta first_shown_to_interacted_duration =
+          input.notice_action_taken_time - input.notice_first_shown;
+      update.Get().SetByDottedPath(
+          CreatePrefPath(notice, kPrivacySandboxNoticeShownDuration),
+          base::TimeDeltaToValue(first_shown_to_interacted_duration));
+      CreateTimingHistogram(
+          base::StrCat({"PrivacySandbox.Notice.FirstShownToInteractedDuration.",
+                        notice, "_", notice_action_str}),
+          first_shown_to_interacted_duration);
+    }
+
+    // Last shown to interacted histogram.
+    if (!notice_action_str.empty() && input.notice_last_shown != base::Time()) {
+      auto last_shown_to_interacted_duration =
+          input.notice_action_taken_time - input.notice_last_shown;
+      CreateTimingHistogram(
+          base::StrCat({"PrivacySandbox.Notice.LastShownToInteractedDuration.",
+                        notice, "_", notice_action_str}),
+          last_shown_to_interacted_duration);
+    }
+  }
+
+  if (input.notice_first_shown != base::Time() &&
+      (!existing_notice_data.has_value() ||
+       existing_notice_data->notice_first_shown == base::Time())) {
+    update.Get().SetByDottedPath(
+        CreatePrefPath(notice, kPrivacySandboxNoticeFirstShown),
+        base::TimeToValue(input.notice_first_shown));
+    base::UmaHistogramBoolean(
+        base::StrCat({"PrivacySandbox.Notice.NoticeShown.", notice}), true);
+  }
+
+  if (input.notice_last_shown != base::Time() &&
+      (!existing_notice_data.has_value() ||
+       existing_notice_data->notice_last_shown == base::Time())) {
+    update.Get().SetByDottedPath(
+        CreatePrefPath(notice, kPrivacySandboxNoticeLastShown),
+        base::TimeToValue(input.notice_last_shown));
+  }
 }
 
 }  // namespace privacy_sandbox

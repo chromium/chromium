@@ -1217,7 +1217,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.Notice.FirstShownToInteractedDuration.{PSNotice}_{PSNoticeAction}"
-    units="ms" expires_after="2025-04-29">
+    units="ms" expires_after="2025-06-11">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1230,7 +1230,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.Notice.LastShownToInteractedDuration.{PSNotice}_{PSNoticeAction}"
-    units="ms" expires_after="2025-04-29">
+    units="ms" expires_after="2025-06-11">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1242,7 +1242,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.Notice.NoticeAction.{PSNotice}"
-    enum="PrivacySandboxNoticeAction" expires_after="2025-04-29">
+    enum="PrivacySandboxNoticeAction" expires_after="2025-06-11">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <owner>koilos-team@google.com</owner>
@@ -1252,8 +1252,19 @@ reviewer.
   <token key="PSNotice" variants="PSNotice"/>
 </histogram>
 
+<histogram name="PrivacySandbox.Notice.NoticeActionTakenBehavior.{PSNotice}"
+    enum="PrivacySandboxNoticeActionBehavior" expires_after="2025-06-11">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records if the action taken on a notice {PSNotice} was taken successfully or
+    failed.
+  </summary>
+  <token key="PSNotice" variants="PSNotice"/>
+</histogram>
+
 <histogram name="PrivacySandbox.Notice.NoticeShown.{PSNotice}" enum="Boolean"
-    expires_after="2025-04-29">
+    expires_after="2025-06-11">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>Records if a notice {PSNotice} was shown to a profile.</summary>
@@ -1261,7 +1272,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.Notice.NoticeStartupState.{PSNotice}"
-    enum="PrivacySandboxNoticeStartupState" expires_after="2025-04-29">
+    enum="PrivacySandboxNoticeStartupState" expires_after="2025-06-11">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <owner>koilos-team@google.com</owner>

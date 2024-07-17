@@ -59,8 +59,6 @@ void PrivacySandboxNoticeService::MigratePrivacySandboxPrefsToDataModel() {
 #else
     std::string topics_notice_name = kTopicsConsentModal;
 #endif  // BUILDFLAG(IS_ANDROID)
-    // Set schema version.
-    notice_storage_->SetSchemaVersion(pref_service_, topics_notice_name, 0);
 
     const auto consent_update_time = GetTimeFromPref(
         pref_service_, prefs::kPrivacySandboxTopicsConsentLastUpdateTime);
@@ -80,20 +78,25 @@ void PrivacySandboxNoticeService::MigratePrivacySandboxPrefsToDataModel() {
       auto* consent_decision_given = pref_service_->GetUserPrefValue(
           prefs::kPrivacySandboxTopicsConsentGiven);
       if (consent_decision_given) {
-        notice_storage_->SetNoticeActionTaken(pref_service_, topics_notice_name,
-                                              consent_decision_given->GetBool()
-                                                  ? NoticeActionTaken::kOptIn
-                                                  : NoticeActionTaken::kOptOut,
-                                              consent_update_time);
+        PrivacySandboxNoticeData notice_data;
+        notice_data.notice_action_taken = consent_decision_given->GetBool()
+                                              ? NoticeActionTaken::kOptIn
+                                              : NoticeActionTaken::kOptOut;
+        notice_data.notice_action_taken_time = consent_update_time;
+        notice_storage_->MigratePrivacySandboxNoticeData(
+            pref_service_, notice_data, topics_notice_name);
       }
     } else if (update_reason && static_cast<TopicsConsentUpdateSource>(
                                     update_reason->GetInt()) ==
                                     TopicsConsentUpdateSource::kSettings) {
       // Prefs set by settings are mapped to 'kUnknownActionPreMigration'
       // since it's unknown what action the user took on a notice, if any
-      notice_storage_->SetNoticeActionTaken(
-          pref_service_, topics_notice_name,
-          NoticeActionTaken::kUnknownActionPreMigration, base::Time());
+      PrivacySandboxNoticeData notice_data;
+      notice_data.notice_action_taken =
+          NoticeActionTaken::kUnknownActionPreMigration;
+      notice_data.notice_action_taken_time = base::Time();
+      notice_storage_->MigratePrivacySandboxNoticeData(
+          pref_service_, notice_data, topics_notice_name);
     }
   }
 }

@@ -29864,6 +29864,16 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(/components/privacy_sandbox/privacy_sandbox_notice_storage.h:NoticeActionTaken) -->
 
+<!-- LINT.IfChange(PrivacySandboxNoticeActionBehavior) -->
+
+<enum name="PrivacySandboxNoticeActionBehavior">
+  <int value="0" label="Success"/>
+  <int value="1" label="ActionBeforeShown"/>
+  <int value="2" label="DuplicateActionTaken"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/privacy_sandbox/privacy_sandbox_notice_storage.h:NoticeActionBehavior) -->
+
 <!-- LINT.IfChange(PrivacySandboxNoticeStartupState) -->
 
 <enum name="PrivacySandboxNoticeStartupState">
