@@ -1663,9 +1663,8 @@ extern const char kPasswordGenerationStrongLabelExperimentDescription[];
 extern const char kPasswordManagerShadowDomSupportName[];
 extern const char kPasswordManagerShadowDomSupportDescription[];
 
-extern const char kPasswordManagerShowWebauthnSuggestionsOnAutofocusName[];
-extern const char
-    kPasswordManagerShowWebauthnSuggestionsOnAutofocusDescription[];
+extern const char kPasswordManagerShowSuggestionsOnAutofocusName[];
+extern const char kPasswordManagerShowSuggestionsOnAutofocusDescription[];
 
 extern const char kPasswordManualFallbackAvailableName[];
 extern const char kPasswordManualFallbackAvailableDescription[];
