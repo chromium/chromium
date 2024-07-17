@@ -900,6 +900,7 @@ static_library("test_support") {
 
     deps += [
       "//ash/constants",
+      "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/ash/arc",
       "//chrome/browser/ash/arc/boot_phase_monitor",
       "//chrome/browser/ash/arc/session",
@@ -2213,6 +2214,7 @@ if (!is_android) {
         "//chrome/browser/ash/accessibility/service",
         "//chrome/browser/ash/app_list:test_support",
         "//chrome/browser/ash/app_list/app_service",
+        "//chrome/browser/ash/app_list/arc",
         "//chrome/browser/ash/app_list/arc:test_support",
         "//chrome/browser/ash/app_list/search/test:test_support",
         "//chrome/browser/ash/app_list/test:test_support",
@@ -4558,7 +4560,6 @@ if (!is_android) {
         "../browser/apps/platform_apps/app_window_interactive_uitest_base.h",
         "../browser/ash/app_list/app_list_client_impl_browsertest.cc",
         "../browser/ash/app_list/app_list_sort_browsertest.cc",
-        "../browser/ash/app_list/arc/arc_usb_host_permission_browsertest.cc",
         "../browser/ash/app_list/chrome_app_list_item_browsertest.cc",
         "../browser/ash/app_list/chrome_app_list_model_updater_browsertest.cc",
         "../browser/ash/app_list/launcher_continue_section_browsertest.cc",
@@ -12235,6 +12236,7 @@ if (!is_android) {
         "//chrome/browser/sync/test/integration/two_client_workspace_desk_sync_test.cc",
       ]
       deps += [
+        "//chrome/browser/ash/app_list/arc",
         "//chrome/browser/ash/app_list/test:test_support",
         "//chrome/browser/ash/crosapi:browser_util",
         "//chrome/browser/ash/sync",

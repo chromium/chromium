@@ -37,6 +37,7 @@ static_library("input_overlay") {
     "//ash/components/arc/mojom",
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc/input_overlay/actions",
     "//chrome/browser/ash/arc/input_overlay/db",
     "//chrome/browser/ash/arc/input_overlay/db/proto",

@@ -30,6 +30,7 @@ static_library("apps") {
   deps = [
     "//ash/components/arc/session:connection_holder",
     "//ash/constants",
+    "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//components/pref_registry",
     "//components/prefs",
@@ -65,6 +66,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/profiles:profile",

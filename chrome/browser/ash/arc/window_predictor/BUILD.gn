@@ -19,9 +19,12 @@ static_library("window_predictor") {
   deps = [
     "//ash/components/arc/mojom",
     "//base",
+    "//chrome/browser/ash/app_list/arc",
     "//chromeos/ui/base",
     "//components/app_restore",
     "//ui/display",
     "//ui/gfx",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/app_list/arc" ]
 }

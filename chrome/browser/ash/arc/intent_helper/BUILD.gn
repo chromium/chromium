@@ -25,6 +25,7 @@ static_library("intent_helper") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service/app_icon",
+    "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/system",
     "//chrome/browser/profiles:profile",
     "//chrome/common",

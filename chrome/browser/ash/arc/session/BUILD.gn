@@ -40,6 +40,7 @@ static_library("session") {
     "//base",
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/apps",
     "//chrome/browser/ash/arc/accessibility",
     "//chrome/browser/ash/arc/adbd",
@@ -117,6 +118,7 @@ static_library("session") {
   ]
 
   allow_circular_includes_from = [
+    "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc/adbd",
     "//chrome/browser/ash/arc/auth",
     "//chrome/browser/ash/arc/boot_phase_monitor",

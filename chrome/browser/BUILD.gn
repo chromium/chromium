@@ -5321,6 +5321,7 @@ static_library("browser") {
       "//chrome/browser/ash/accessibility/service",
       "//chrome/browser/ash/account_manager",
       "//chrome/browser/ash/android_sms",
+      "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/ash/app_mode",
       "//chrome/browser/ash/app_mode/auto_sleep",
       "//chrome/browser/ash/app_mode/web_app",
@@ -5663,6 +5664,7 @@ static_library("browser") {
 
     allow_circular_includes_from += [
       "//chrome/browser/ash",
+      "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/ash/app_mode",
       "//chrome/browser/ash/app_mode/auto_sleep",
       "//chrome/browser/ash/app_mode/web_app",

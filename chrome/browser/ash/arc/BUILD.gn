@@ -36,6 +36,7 @@ static_library("arc") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service/app_icon",
+    "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/apps",
     "//chrome/browser/ash/arc/app_shortcuts",
@@ -98,6 +99,7 @@ static_library("arc") {
 
   allow_circular_includes_from = [
     "//chrome/browser/apps/app_service/app_icon",
+    "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/apps",
     "//chrome/browser/ash/arc/app_shortcuts",

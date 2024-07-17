@@ -58,6 +58,7 @@ static_library("child_accounts") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/ash/app_list/arc",
     "//chromeos/ash/components/dbus/system_clock",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",

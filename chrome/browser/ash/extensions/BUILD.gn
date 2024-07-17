@@ -54,6 +54,7 @@ static_library("extensions") {
     "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/extensions/language_packs",
     "//chrome/browser/ash/extensions/speech",

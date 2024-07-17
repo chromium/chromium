@@ -29,6 +29,7 @@ static_library("app_list") {
     "//ash/webui/mall:app_id",
     "//ash/webui/projector_app/public/cpp",
     "//build:branding_buildflags",
+    "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/web_applications",
@@ -76,18 +77,12 @@ source_set("unit_tests") {
     "md_icon_normalizer_unittest.cc",
   ]
 
-  public_deps = [
-    "//base",
-    "//chrome/test:test_support",
-    "//components/sync/model",
-    "//components/sync/protocol",
-  ]
-
   deps = [
     "//ash/app_list/model:app_list_model",
     "//ash/components/arc:arc_test_support",
     "//ash/constants",
     "//ash/public/cpp",
+    "//base",
     "//base/test:test_support",
     "//cc/base",
     "//chrome/browser/apps/app_preload_service",
@@ -96,6 +91,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash",
     "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/app_list/app_service",
+    "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/ash/arc",
@@ -108,11 +104,14 @@ source_set("unit_tests") {
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
+    "//chrome/test:test_support",
     "//chromeos/ash/components/standalone_browser",
     "//components/app_constants",
     "//components/crx_file",
     "//components/keyed_service/core",
     "//components/sync:test_support",
+    "//components/sync/model",
+    "//components/sync/protocol",
     "//components/user_manager",
     "//extensions/common",
     "//services/data_decoder/public/cpp:test_support",

@@ -29,6 +29,7 @@ static_library("accessibility") {
     "//ash/public/cpp/external_arc",
     "//base",
     "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc/input_method_manager",
     "//chrome/browser/profiles:profile",
     "//chrome/common",

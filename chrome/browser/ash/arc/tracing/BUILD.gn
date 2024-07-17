@@ -48,6 +48,7 @@ static_library("tracing") {
     "//ash/components/arc/mojom",
     "//ash/constants",
     "//base",
+    "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync:factories",
     "//components/app_restore",

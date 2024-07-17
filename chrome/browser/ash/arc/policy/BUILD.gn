@@ -29,6 +29,7 @@ static_library("policy") {
     "//ash/constants",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc/auth",
     "//chrome/browser/ash/arc/enterprise/cert_store",
     "//chrome/browser/ash/arc/intent_helper",
@@ -52,6 +53,7 @@ static_library("policy") {
   ]
 
   allow_circular_includes_from = [
+    "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc/auth",
     "//chrome/browser/ash/arc/enterprise/cert_store",
     "//chrome/browser/ash/arc/intent_helper",

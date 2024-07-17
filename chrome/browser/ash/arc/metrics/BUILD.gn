@@ -16,6 +16,7 @@ static_library("metrics") {
     "//ash/components/arc",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list/arc",
     "//components/keyed_service/core",
   ]
 }

@@ -172,6 +172,7 @@ source_set("sync") {
       "//ash/components/arc:arc_base_utils",
       "//ash/constants",
       "//ash/public/cpp",
+      "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/ash/app_restore",
       "//chrome/browser/ash/arc",
       "//chrome/browser/ash/arc/tracing",
@@ -187,7 +188,10 @@ source_set("sync") {
       "//components/desks_storage",
       "//ui/events/ash",
     ]
-    allow_circular_includes_from = [ "//chrome/browser/ash/login/session" ]
+    allow_circular_includes_from = [
+      "//chrome/browser/ash/app_list/arc",
+      "//chrome/browser/ash/login/session",
+    ]
   }
 }
 

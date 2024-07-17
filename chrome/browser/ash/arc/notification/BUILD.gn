@@ -28,6 +28,7 @@ static_library("notification") {
     "//base",
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc/policy",
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/policy/core",
@@ -45,6 +46,8 @@ static_library("notification") {
     "//ui/message_center",
     "//url",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/app_list/arc" ]
 }
 
 source_set("unit_tests") {

@@ -336,6 +336,7 @@ static_library("crosapi") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/apps",
     "//chrome/browser/ash/arc",
