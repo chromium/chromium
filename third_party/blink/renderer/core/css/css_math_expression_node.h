@@ -453,19 +453,22 @@ struct DowncastTraits<CSSMathExpressionIdentifierLiteral> {
 class CORE_EXPORT CSSMathExpressionKeywordLiteral final
     : public CSSMathExpressionNode {
  public:
+  enum class Context { kMediaProgress, kCalcSize };
+
   static CSSMathExpressionKeywordLiteral* Create(CSSValueID keyword,
-                                                 CSSMathOperator op) {
-    return MakeGarbageCollected<CSSMathExpressionKeywordLiteral>(keyword, op);
+                                                 Context context) {
+    return MakeGarbageCollected<CSSMathExpressionKeywordLiteral>(keyword,
+                                                                 context);
   }
 
-  CSSMathExpressionKeywordLiteral(CSSValueID keyword, CSSMathOperator op);
+  CSSMathExpressionKeywordLiteral(CSSValueID keyword, Context context);
 
   CSSMathExpressionNode* Copy() const final {
-    return Create(keyword_, operator_);
+    return Create(keyword_, context_);
   }
 
   CSSValueID GetValue() const { return keyword_; }
-  CSSMathOperator GetOperator() const { return operator_; }
+  Context GetContext() const { return context_; }
 
   bool IsKeywordLiteral() const final { return true; }
 
@@ -524,7 +527,7 @@ class CORE_EXPORT CSSMathExpressionKeywordLiteral final
   bool operator==(const CSSMathExpressionNode& other) const final {
     auto* other_keyword = DynamicTo<CSSMathExpressionKeywordLiteral>(other);
     return other_keyword && other_keyword->GetValue() == GetValue() &&
-           other_keyword->GetOperator() == GetOperator();
+           other_keyword->GetContext() == GetContext();
   }
   CSSPrimitiveValue::UnitType ResolvedUnitType() const final {
     return CSSPrimitiveValue::UnitType::kIdent;
@@ -542,7 +545,7 @@ class CORE_EXPORT CSSMathExpressionKeywordLiteral final
 
  private:
   CSSValueID keyword_;
-  CSSMathOperator operator_;
+  Context context_;
 };
 
 template <>

@@ -1182,15 +1182,14 @@ CSSValueID SizingKeywordToCSSValueID(
   NOTREACHED_NORETURN();
 }
 
-CalculationResultCategory DetermineKeywordCategory(CSSValueID keyword,
-                                                   CSSMathOperator op) {
-  switch (op) {
-    case CSSMathOperator::kMediaProgress:
+CalculationResultCategory DetermineKeywordCategory(
+    CSSValueID keyword,
+    CSSMathExpressionKeywordLiteral::Context context) {
+  switch (context) {
+    case CSSMathExpressionKeywordLiteral::Context::kMediaProgress:
       return kCalcLength;
-    case CSSMathOperator::kCalcSize:
+    case CSSMathExpressionKeywordLiteral::Context::kCalcSize:
       return kCalcLengthFunction;
-    default:
-      NOTREACHED_NORETURN();
   };
 }
 
@@ -1198,19 +1197,19 @@ CalculationResultCategory DetermineKeywordCategory(CSSValueID keyword,
 
 CSSMathExpressionKeywordLiteral::CSSMathExpressionKeywordLiteral(
     CSSValueID keyword,
-    CSSMathOperator op)
-    : CSSMathExpressionNode(DetermineKeywordCategory(keyword, op),
+    Context context)
+    : CSSMathExpressionNode(DetermineKeywordCategory(keyword, context),
                             false /* has_comparisons*/,
                             false /* has_anchor_unctions*/,
                             false /* needs_tree_scope_population*/),
       keyword_(keyword),
-      operator_(op) {}
+      context_(context) {}
 
 scoped_refptr<const CalculationExpressionNode>
 CSSMathExpressionKeywordLiteral::ToCalculationExpression(
     const CSSLengthResolver& length_resolver) const {
-  switch (operator_) {
-    case CSSMathOperator::kMediaProgress: {
+  switch (context_) {
+    case CSSMathExpressionKeywordLiteral::Context::kMediaProgress: {
       switch (keyword_) {
         case CSSValueID::kWidth:
           return base::MakeRefCounted<
@@ -1224,18 +1223,16 @@ CSSMathExpressionKeywordLiteral::ToCalculationExpression(
           NOTREACHED_NORETURN();
       }
     }
-    case CSSMathOperator::kCalcSize:
+    case CSSMathExpressionKeywordLiteral::Context::kCalcSize:
       return base::MakeRefCounted<CalculationExpressionSizingKeywordNode>(
           CSSValueIDToSizingKeyword(keyword_));
-    default:
-      NOTREACHED_NORETURN();
   };
 }
 
 double CSSMathExpressionKeywordLiteral::ComputeDouble(
     const CSSLengthResolver& length_resolver) const {
-  switch (operator_) {
-    case CSSMathOperator::kMediaProgress: {
+  switch (context_) {
+    case CSSMathExpressionKeywordLiteral::Context::kMediaProgress: {
       switch (keyword_) {
         case CSSValueID::kWidth:
           return length_resolver.ViewportWidth();
@@ -1245,9 +1242,7 @@ double CSSMathExpressionKeywordLiteral::ComputeDouble(
           NOTREACHED_NORETURN();
       }
     }
-    case CSSMathOperator::kCalcSize:
-      NOTREACHED_NORETURN();
-    default:
+    case CSSMathExpressionKeywordLiteral::Context::kCalcSize:
       NOTREACHED_NORETURN();
   };
 }
@@ -1255,8 +1250,8 @@ double CSSMathExpressionKeywordLiteral::ComputeDouble(
 std::optional<PixelsAndPercent>
 CSSMathExpressionKeywordLiteral::ToPixelsAndPercent(
     const CSSLengthResolver& length_resolver) const {
-  switch (operator_) {
-    case CSSMathOperator::kMediaProgress:
+  switch (context_) {
+    case CSSMathExpressionKeywordLiteral::Context::kMediaProgress:
       switch (keyword_) {
         case CSSValueID::kWidth:
           return PixelsAndPercent(length_resolver.ViewportWidth());
@@ -1265,7 +1260,7 @@ CSSMathExpressionKeywordLiteral::ToPixelsAndPercent(
         default:
           NOTREACHED_NORETURN();
       }
-    default:
+    case CSSMathExpressionKeywordLiteral::Context::kCalcSize:
       return std::nullopt;
   }
 }
@@ -1847,7 +1842,9 @@ std::tuple<const CSSMathExpressionNode*, wtf_size_t> SubstituteForSizeKeyword(
   }
 
   auto* literal = DynamicTo<CSSMathExpressionKeywordLiteral>(source);
-  if (literal && literal->GetOperator() == CSSMathOperator::kCalcSize &&
+  if (literal &&
+      literal->GetContext() ==
+          CSSMathExpressionKeywordLiteral::Context::kCalcSize &&
       literal->GetValue() == CSSValueID::kSize) {
     return std::make_tuple(size_substitution, count_in_substitution);
   }
@@ -1951,7 +1948,8 @@ CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           const auto* literal =
               DynamicTo<CSSMathExpressionKeywordLiteral>(node);
           return literal && literal->GetValue() == CSSValueID::kAny &&
-                 literal->GetOperator() == CSSMathOperator::kCalcSize;
+                 literal->GetContext() ==
+                     CSSMathExpressionKeywordLiteral::Context::kCalcSize;
         };
         if (is_any_keyword(left_basis)) {
           final_basis = right_basis;
@@ -1982,7 +1980,8 @@ CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           const auto* literal =
               DynamicTo<CSSMathExpressionKeywordLiteral>(node);
           if (!literal ||
-              literal->GetOperator() != CSSMathOperator::kCalcSize) {
+              literal->GetContext() !=
+                  CSSMathExpressionKeywordLiteral::Context::kCalcSize) {
             return false;
           }
           CHECK(literal->GetValue() != CSSValueID::kAny)
@@ -2001,7 +2000,8 @@ CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
         }
 
         final_basis = CSSMathExpressionKeywordLiteral::Create(
-            CSSValueID::kAny, CSSMathOperator::kCalcSize);
+            CSSValueID::kAny,
+            CSSMathExpressionKeywordLiteral::Context::kCalcSize);
         std::tie(right_calculation, std::ignore) =
             SubstituteForSizeKeyword(right_calculation, right_basis, 1);
         std::tie(left_calculation, std::ignore) =
@@ -3565,8 +3565,9 @@ class CSSMathExpressionNodeParser {
     CSSMathExpressionOperation::Operands nodes;
     tokens.ConsumeWhitespace();
     if (function_id == CSSValueID::kMediaProgress) {
-      if (CSSMathExpressionKeywordLiteral* node =
-              ParseKeywordLiteral(tokens, CSSMathOperator::kMediaProgress)) {
+      if (CSSMathExpressionKeywordLiteral* node = ParseKeywordLiteral(
+              tokens,
+              CSSMathExpressionKeywordLiteral::Context::kMediaProgress)) {
         nodes.push_back(node);
       }
     } else if (function_id == CSSValueID::kContainerProgress) {
@@ -3663,7 +3664,7 @@ class CSSMathExpressionNodeParser {
       // it's not meaningful for animation, since it's equivalent to infinity.
       tokens.ConsumeIncludingWhitespace();
       basis = CSSMathExpressionKeywordLiteral::Create(
-          id, CSSMathOperator::kCalcSize);
+          id, CSSMathExpressionKeywordLiteral::Context::kCalcSize);
     } else {
       basis = ParseValueExpression(tokens, state);
       if (!basis) {
@@ -3686,8 +3687,8 @@ class CSSMathExpressionNodeParser {
       // it to the two-argument form.
       bool argument_is_basis;
       if (basis->IsKeywordLiteral()) {
-        CHECK(To<CSSMathExpressionKeywordLiteral>(basis)->GetOperator() ==
-              CSSMathOperator::kCalcSize);
+        CHECK(To<CSSMathExpressionKeywordLiteral>(basis)->GetContext() ==
+              CSSMathExpressionKeywordLiteral::Context::kCalcSize);
         if (basis_is_any) {
           return nullptr;
         }
@@ -3701,11 +3702,13 @@ class CSSMathExpressionNodeParser {
 
       if (argument_is_basis) {
         calculation = CSSMathExpressionKeywordLiteral::Create(
-            CSSValueID::kSize, CSSMathOperator::kCalcSize);
+            CSSValueID::kSize,
+            CSSMathExpressionKeywordLiteral::Context::kCalcSize);
       } else {
         std::swap(basis, calculation);
         basis = CSSMathExpressionKeywordLiteral::Create(
-            CSSValueID::kAny, CSSMathOperator::kCalcSize);
+            CSSValueID::kAny,
+            CSSMathExpressionKeywordLiteral::Context::kCalcSize);
       }
     }
 
@@ -3955,7 +3958,8 @@ class CSSMathExpressionNodeParser {
     }
     if (state.allow_size_keyword && token.Id() == CSSValueID::kSize) {
       return CSSMathExpressionKeywordLiteral::Create(
-          CSSValueID::kSize, CSSMathOperator::kCalcSize);
+          CSSValueID::kSize,
+          CSSMathExpressionKeywordLiteral::Context::kCalcSize);
     }
     if (!(token.GetType() == kNumberToken ||
           (token.GetType() == kPercentageToken &&
@@ -4123,10 +4127,10 @@ class CSSMathExpressionNodeParser {
 
   CSSMathExpressionKeywordLiteral* ParseKeywordLiteral(
       CSSParserTokenRange& tokens,
-      CSSMathOperator op) {
+      CSSMathExpressionKeywordLiteral::Context context) {
     const CSSParserToken& token = tokens.ConsumeIncludingWhitespace();
     if (token.GetType() == kIdentToken) {
-      return CSSMathExpressionKeywordLiteral::Create(token.Id(), op);
+      return CSSMathExpressionKeywordLiteral::Create(token.Id(), context);
     }
     return nullptr;
   }
@@ -4229,7 +4233,7 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
     return CSSMathExpressionKeywordLiteral::Create(
         SizingKeywordToCSSValueID(
             To<CalculationExpressionSizingKeywordNode>(node).Value()),
-        CSSMathOperator::kCalcSize);
+        CSSMathExpressionKeywordLiteral::Context::kCalcSize);
   }
 
   if (node.IsNumber()) {

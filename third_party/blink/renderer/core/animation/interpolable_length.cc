@@ -248,7 +248,8 @@ bool InterpolableLength::CanMergeValues(const InterpolableValue* start,
       // keyword literal that was created for calc-size().
       auto* keyword_literal = DynamicTo<CSSMathExpressionKeywordLiteral>(node);
       CHECK(!keyword_literal ||
-            keyword_literal->GetOperator() == CSSMathOperator::kCalcSize);
+            keyword_literal->GetContext() ==
+                CSSMathExpressionKeywordLiteral::Context::kCalcSize);
       return !keyword_literal;
     };
     return start_basis == end_basis || is_any_keyword(start_basis) ||
@@ -487,9 +488,9 @@ const CSSMathExpressionNode& InterpolableLength::AsExpression() const {
 
   if (IsKeyword()) {
     const auto* basis = CSSMathExpressionKeywordLiteral::Create(
-        keyword_, CSSMathOperator::kCalcSize);
+        keyword_, CSSMathExpressionKeywordLiteral::Context::kCalcSize);
     const auto* calculation = CSSMathExpressionKeywordLiteral::Create(
-        CSSValueID::kSize, CSSMathOperator::kCalcSize);
+        CSSValueID::kSize, CSSMathExpressionKeywordLiteral::Context::kCalcSize);
     return *CSSMathExpressionOperation::CreateCalcSizeOperation(basis,
                                                                 calculation);
   }
