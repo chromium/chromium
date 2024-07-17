@@ -40,6 +40,7 @@
 #include "chrome/browser/webauthn/fake_security_domain_service.h"
 #include "chrome/browser/webauthn/proto/enclave_local_state.pb.h"
 #include "chrome/browser/webauthn/test_util.h"
+#include "chrome/browser/webauthn/unexportable_key_utils.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -1394,8 +1395,8 @@ TEST_F(EnclaveManagerMockTimeTest, AutomaticRenewal) {
   task_env_.FastForwardBy(base::Hours(1));
 }
 
-// UV keys are only supported on Windows and macOS at this time.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+// UV keys are only supported on Windows macOS, and ChromeOS at this time.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
 
 std::string ToString(base::span<const uint8_t> v) {
   return std::string(v.begin(), v.end());
@@ -1410,12 +1411,28 @@ class EnclaveUVTest : public EnclaveManagerTest {
 #endif  // BUILDFLAG(IS_MAC)
   }
 
+  void TearDown() override {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    OverrideWebAuthnChromeosUserVerifyingKeyProviderForTesting(nullptr);
+#endif
+  }
+
   void DisableUVKeySupport() {
     fake_provider_.emplace<crypto::ScopedNullUserVerifyingKeyProvider>();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // The scoped fake provider doesn't cover ChromeOS.
+    OverrideWebAuthnChromeosUserVerifyingKeyProviderForTesting([]() {
+      return std::unique_ptr<crypto::UserVerifyingKeyProvider>(nullptr);
+    });
+#endif
   }
 
   void UseFailingUVKeySupport() {
     fake_provider_.emplace<crypto::ScopedFailingUserVerifyingKeyProvider>();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // The scoped fake provider doesn't cover ChromeOS.
+    NOTIMPLEMENTED();
+#endif
   }
 
   absl::variant<crypto::ScopedFakeUserVerifyingKeyProvider,
@@ -1755,7 +1772,7 @@ TEST_F(EnclaveUVTest, UnregisterOnFailedDeferredUVKeyCreation) {
 
 #endif  // BUILDFLAG(IS_WIN)
 
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 

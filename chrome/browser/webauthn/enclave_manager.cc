@@ -48,6 +48,7 @@
 #include "base/types/expected.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/webauthn/proto/enclave_local_state.pb.h"
 #include "chrome/browser/webauthn/unexportable_key_utils.h"
 #include "components/cbor/diagnostic_writer.h"
@@ -74,6 +75,7 @@
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "components/unexportable_keys/ref_counted_unexportable_signing_key.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
+#include "content/public/browser/render_frame_host.h"
 #include "crypto/aead.h"
 #include "crypto/hkdf.h"
 #include "crypto/random.h"
@@ -101,6 +103,10 @@
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/rand.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/shell.h"
+#endif
 
 #if BUILDFLAG(IS_MAC)
 #include "crypto/scoped_lacontext.h"
@@ -692,7 +698,8 @@ base::flat_set<std::string> GetGaiaIDs(
 }
 
 std::string UserVerifyingLabelToString(crypto::UserVerifyingKeyLabel label) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_ASH)
   return label;
 #else
   return std::string("placeholder");
@@ -701,7 +708,8 @@ std::string UserVerifyingLabelToString(crypto::UserVerifyingKeyLabel label) {
 
 std::optional<crypto::UserVerifyingKeyLabel> UserVerifyingKeyLabelFromString(
     std::string saved_label) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_ASH)
   return saved_label;
 #else
   return std::nullopt;
@@ -896,6 +904,21 @@ base::flat_map<int32_t, std::vector<uint8_t>> GetNewSecretsToStore(
   return new_secrets;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+UserVerifyingKeyProviderConfigChromeos MakeUserVerifyingKeyConfig(
+    EnclaveManager::UVKeyOptions options) {
+  UserVerifyingKeyProviderConfigChromeos config{.dialog_controller =
+                                                    options.dialog_controller};
+  if (options.render_frame_host_id) {
+    auto* rfh = content::RenderFrameHost::FromID(options.render_frame_host_id);
+    // This is ultimately invoked from GpmEnclaveController, which can't outlive
+    // the RFH where the request originated.
+    CHECK(rfh);
+    config.window = rfh->GetNativeView()->GetToplevelWindow();
+  }
+  return config;
+}
+#else
 crypto::UserVerifyingKeyProvider::Config MakeUserVerifyingKeyConfig(
     EnclaveManager::UVKeyOptions options) {
   crypto::UserVerifyingKeyProvider::Config config;
@@ -905,6 +928,22 @@ crypto::UserVerifyingKeyProvider::Config MakeUserVerifyingKeyConfig(
   config.lacontext = std::move(options.lacontext);
 #endif  // BUILDFLAG(IS_MAC)
   return config;
+}
+#endif
+
+std::unique_ptr<crypto::UserVerifyingKeyProvider>
+GetUserVerifyingKeyProviderForSigning(EnclaveManager::UVKeyOptions options) {
+  return GetWebAuthnUserVerifyingKeyProvider(
+      MakeUserVerifyingKeyConfig(std::move(options)));
+}
+
+std::unique_ptr<crypto::UserVerifyingKeyProvider>
+GetUserVerifyingKeyProviderForCreateAndDeleteOnly() {
+  // Passing an empty UVKeyOptions suffices to call
+  // `GenerateUserVerifyingSigningKey()` and `DeleteUserVerifyingSigningKey()`,
+  // but you must not attempt to generate a signature.
+  return GetWebAuthnUserVerifyingKeyProvider(
+      MakeUserVerifyingKeyConfig(EnclaveManager::UVKeyOptions{}));
 }
 
 struct HashedPIN {
@@ -1550,16 +1589,17 @@ class EnclaveManager::StateMachine {
 
     manager_->user_verifying_key_.reset();
 
-    crypto::AreUserVerifyingKeysSupported(
-        MakeUserVerifyingKeyConfig(/*options=*/{}),
+    AreUserVerifyingKeysSupported(
         base::BindOnce(
             [](base::WeakPtr<StateMachine> state_machine,
                bool is_uv_key_supported) {
               if (!state_machine) {
                 return;
               }
-              auto key_provider = crypto::GetUserVerifyingKeyProvider(
-                  MakeUserVerifyingKeyConfig(/*options=*/{}));
+              // The key provider is only used to create a new key, but not sign
+              // with it, so passing empty options here is ok.
+              auto key_provider =
+                  GetUserVerifyingKeyProviderForCreateAndDeleteOnly();
               if (!is_uv_key_supported || !key_provider) {
                 // UV keys are not available, so skip to generating an identity
                 // key.
@@ -3022,8 +3062,8 @@ void EnclaveManager::GetUserVerifyingKeyForSignature(
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-  auto user_verifying_key_provider = crypto::GetUserVerifyingKeyProvider(
-      MakeUserVerifyingKeyConfig(std::move(options)));
+  auto user_verifying_key_provider =
+      GetUserVerifyingKeyProviderForSigning(std::move(options));
   if (!user_verifying_key_provider) {
     FIDO_LOG(ERROR)
         << "Attempted a UV signature but UV key provider is unavailable";
@@ -3152,9 +3192,11 @@ EnclaveManager::UserVerifyingKeyCreationCallback() {
         }
         // Unregister the device with the enclave if there are any errors from
         // this point, because UV key creation is a necessary step to have a
-        // useable state.
-        auto key_provider = crypto::GetUserVerifyingKeyProvider(
-            MakeUserVerifyingKeyConfig(/*options=*/{}));
+        // usable state.
+        //
+        // The key provider is only used for creating a new key, not for
+        // signing, so passing empty options here is ok.
+        auto key_provider = GetUserVerifyingKeyProviderForCreateAndDeleteOnly();
         if (!key_provider) {
           enclave_manager->ClearRegistration();
           std::move(public_key_callback).Run(std::vector<uint8_t>());
@@ -3304,8 +3346,13 @@ void EnclaveManager::AreUserVerifyingKeysSupported(Callback callback) {
         FROM_HERE, base::BindOnce(std::move(callback), true));
     return;
   }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // ChromeOS doesn't have HW-backed UV keys, but uses a software provider.
+  std::move(callback).Run(true);
+#else
   crypto::AreUserVerifyingKeysSupported(
       MakeUserVerifyingKeyConfig(/*options=*/{}), std::move(callback));
+#endif
 }
 
 std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
@@ -3770,8 +3817,10 @@ void EnclaveManager::ClearRegistration() {
           },
           ToVector(user_->wrapped_identity_private_key())));
   if (!user_->wrapped_uv_private_key().empty()) {
-    if (auto user_verifying_key_provider = crypto::GetUserVerifyingKeyProvider(
-            MakeUserVerifyingKeyConfig(/*options=*/{}))) {
+    // The key provider is only used to delete, not sign, so passing empty
+    // options here is ok.
+    if (auto user_verifying_key_provider =
+            GetUserVerifyingKeyProviderForCreateAndDeleteOnly()) {
       auto key_label =
           UserVerifyingKeyLabelFromString(user_->wrapped_uv_private_key());
       CHECK(key_label);

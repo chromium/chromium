@@ -69,6 +69,10 @@
 #include "device/fido/fido_types.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/webauthn_dialog_controller.h"
+#endif
+
 #if BUILDFLAG(IS_MAC)
 #include "chrome/common/chrome_version.h"
 #include "device/fido/enclave/icloud_recovery_key_mac.h"
@@ -1205,9 +1209,14 @@ void GPMEnclaveController::StartEnclaveTransaction(
     case EnclaveUserVerificationMethod::kUVKeyWithChromeUI:
     case EnclaveUserVerificationMethod::kUVKeyWithSystemUI: {
       EnclaveManager::UVKeyOptions uv_options;
+      uv_options.rp_id = rp_id_;
+      uv_options.render_frame_host_id = render_frame_host_id_;
 #if BUILDFLAG(IS_MAC)
       uv_options.lacontext = std::move(model_->lacontext);
 #endif  // BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      uv_options.dialog_controller = ash::WebAuthNDialogController::Get();
+#endif
       request->signing_callback =
           enclave_manager_->UserVerifyingKeySigningCallback(
               std::move(uv_options));

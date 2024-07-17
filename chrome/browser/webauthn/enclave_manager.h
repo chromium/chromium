@@ -19,9 +19,14 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/webauthn/enclave_manager_interface.h"
+#include "chrome/browser/webauthn/unexportable_key_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
+#include "content/public/browser/global_routing_id.h"
+#include "crypto/user_verifying_key.h"
 #include "device/fido/enclave/types.h"
 #include "device/fido/network_context_factory.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
@@ -34,6 +39,12 @@
 namespace crypto {
 class RefCountedUserVerifyingSigningKey;
 }  // namespace crypto
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+namespace ash {
+class WebAuthNDialogController;
+}
+#endif
 
 #if BUILDFLAG(IS_MAC)
 namespace device::enclave {
@@ -101,6 +112,16 @@ class EnclaveManager : public EnclaveManagerInterface {
     UVKeyOptions(UVKeyOptions&&);
     UVKeyOptions& operator=(UVKeyOptions&&);
     ~UVKeyOptions();
+
+    // The RP for the request, to be included in the UV dialog.
+    std::string rp_id;
+
+    // The RenderFrameHost from which the request originates.
+    content::GlobalRenderFrameHostId render_frame_host_id;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    raw_ptr<ash::WebAuthNDialogController> dialog_controller;
+#endif
 
 #if BUILDFLAG(IS_MAC)
     // An optional LAcontext to pass to apple keychain operations.
@@ -238,6 +259,7 @@ class EnclaveManager : public EnclaveManagerInterface {
     kUsesChromeUI,
   };
   UvKeyState uv_key_state(bool platform_has_biometrics) const;
+
   // Calls the given callback with `true` if the current platform supports
   // making user-verifying keys.
   static void AreUserVerifyingKeysSupported(Callback callback);

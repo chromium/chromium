@@ -5242,6 +5242,7 @@ static_library("browser") {
       "upgrade_detector/installed_version_updater_chromeos.h",
       "upgrade_detector/upgrade_detector_chromeos.cc",
       "upgrade_detector/upgrade_detector_chromeos.h",
+      "webauthn/unexportable_key_utils_chromeos.cc",
     ]
 
     public_deps += [
