@@ -795,6 +795,7 @@ source_set("extensions") {
   # browser, then we can clean up these dependencies.
   public_deps = [
     "//chrome/browser/extensions/api:api_registration",
+    "//chrome/browser/resource_coordinator:tab_lifecycle_observer",
     "//chrome/common",
     "//chrome/common/extensions/api",
     "//components/omnibox/browser",

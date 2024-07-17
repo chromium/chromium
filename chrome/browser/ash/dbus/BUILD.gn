@@ -56,6 +56,7 @@ static_library("dbus") {
     "//chrome/browser/ash/dbus/vm",
     "//chrome/browser/ash/fusebox",
     "//chrome/browser/policy/messaging_layer/storage_selector",
+    "//chrome/browser/resource_coordinator:tab_lifecycle_observer",
     "//chromeos/ash/components/dbus:metrics_event_proto",
     "//chromeos/ash/components/dbus/services",
     "//chromeos/dbus/missive",

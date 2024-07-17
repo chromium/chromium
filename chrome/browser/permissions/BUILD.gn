@@ -97,6 +97,9 @@ source_set("permissions") {
     "//services/device/public/cpp/geolocation",
   ]
 
+  public_deps =
+      [ "//chrome/browser/resource_coordinator:tab_lifecycle_observer" ]
+
   if (is_android) {
     sources += [
       "permission_blocked_dialog_controller_android.cc",
