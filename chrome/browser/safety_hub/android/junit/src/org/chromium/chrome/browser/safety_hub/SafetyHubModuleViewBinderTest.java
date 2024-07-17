@@ -270,19 +270,14 @@ public class SafetyHubModuleViewBinderTest {
     public void testUpdateCheckModule_UpToDate() {
         UpdateStatusProvider.UpdateStatus updateStatus = new UpdateStatusProvider.UpdateStatus();
         updateStatus.updateState = UpdateStatusProvider.UpdateState.NONE;
-        updateStatus.latestVersion = "1.1.1.1";
 
         mUpdateCheckPropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
 
         String expectedTitle = mActivity.getString(R.string.safety_check_updates_updated);
-        String expectedSummary =
-                mActivity.getString(
-                        R.string.safety_hub_version_summary, updateStatus.latestVersion);
         String expectedSecondaryButtonText =
                 mActivity.getString(R.string.safety_hub_go_to_google_play_button);
 
         assertEquals(expectedTitle, mUpdateCheckPreference.getTitle().toString());
-        assertEquals(expectedSummary, mUpdateCheckPreference.getSummary().toString());
         assertEquals(SAFE_ICON, shadowOf(mUpdateCheckPreference.getIcon()).getCreatedFromResId());
         assertNull(mUpdateCheckPreference.getPrimaryButtonText());
         assertEquals(expectedSecondaryButtonText, mUpdateCheckPreference.getSecondaryButtonText());

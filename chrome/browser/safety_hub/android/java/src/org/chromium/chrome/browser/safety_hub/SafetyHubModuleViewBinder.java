@@ -10,6 +10,7 @@ import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.components.browser_ui.settings.CardPreference;
@@ -343,13 +344,14 @@ public class SafetyHubModuleViewBinder {
                             preference
                                     .getContext()
                                     .getString(R.string.safety_check_updates_updated);
-                    if (updateStatus.latestVersion != null) {
+                    String currentVersion = BuildInfo.getInstance().versionName;
+                    if (currentVersion != null && !currentVersion.isEmpty()) {
                         summary =
                                 preference
                                         .getContext()
                                         .getString(
                                                 R.string.safety_hub_version_summary,
-                                                updateStatus.latestVersion);
+                                                currentVersion);
                     }
                     secondaryButtonText =
                             preference
