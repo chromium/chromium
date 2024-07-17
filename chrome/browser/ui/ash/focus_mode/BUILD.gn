@@ -1,0 +1,43 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("focus_mode") {
+  sources = [
+    "chrome_focus_mode_delegate.cc",
+    "chrome_focus_mode_delegate.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//base",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
+    "//google_apis/common",
+    "//net/traffic_annotation",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "focus_mode_browsertest.cc" ]
+
+  deps = [
+    ":focus_mode",
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base/test:test_support",
+    "//chrome/browser/ui/ash",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//ui/views",
+  ]
+}

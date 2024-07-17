@@ -2343,8 +2343,6 @@ static_library("ui") {
       "ash/auth/cryptohome_pin_engine.h",
       "ash/auth/legacy_fingerprint_engine.cc",
       "ash/auth/legacy_fingerprint_engine.h",
-      "ash/focus_mode/chrome_focus_mode_delegate.cc",
-      "ash/focus_mode/chrome_focus_mode_delegate.h",
       "ash/game_dashboard/chrome_game_dashboard_delegate.cc",
       "ash/game_dashboard/chrome_game_dashboard_delegate.h",
       "ash/glanceables/glanceables_classroom_client_impl.cc",
