@@ -850,6 +850,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(QUICK_DELETE_FOR_ANDROID, true);
     public static final MutableFlagWithSafeDefault sQuickDeleteAndroidFollowup =
             newMutableFlagWithSafeDefault(QUICK_DELETE_ANDROID_FOLLOWUP, false);
+    public static final MutableFlagWithSafeDefault sReadAloudTapToSeek =
+            newMutableFlagWithSafeDefault(READALOUD_TAP_TO_SEEK, false);
     public static final MutableFlagWithSafeDefault sReaderModeCct =
             newMutableFlagWithSafeDefault(READER_MODE_IN_CCT, false);
     public static final MutableFlagWithSafeDefault sRecordSuppressionMetrics =

@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -1358,5 +1359,16 @@ public class ContextualSearchInstrumentationBase {
     /** Waits for the Action Bar to be visible in response to a selection. */
     protected void waitForSelectActionBarVisible() {
         assertWaitForSelectActionBarVisible(true);
+    }
+
+    /** Updates Read Aloud Controller's active playback tab. */
+    protected void changeReadAloudActivePlaybackTab() {
+        ReadAloudController readAloudController =
+                sActivityTestRule.getActivity().getReadAloudControllerForTesting();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        readAloudController.setActivePlaybackTab(
+                                sActivityTestRule.getActivity().getActivityTab()));
     }
 }

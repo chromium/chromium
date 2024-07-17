@@ -1766,6 +1766,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/quick_delete:java",
       "//chrome/browser/quick_delete:javatests",
+      "//chrome/browser/readaloud/android:java",
       "//chrome/browser/safe_browsing/android:java",
       "//chrome/browser/safe_browsing/android:javatests",
       "//chrome/browser/safety_check/android:java",

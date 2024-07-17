@@ -2885,6 +2885,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         return mRootUiCoordinator.getContextualSearchManagerSupplier().get();
     }
 
+    public ReadAloudController getReadAloudControllerForTesting() {
+        return mRootUiCoordinator.getReadAloudControllerSupplier().get();
+    }
+
     // NightModeStateProvider.Observer implementation.
     @Override
     public void onNightModeStateChanged() {

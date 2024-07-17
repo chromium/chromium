@@ -388,4 +388,22 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
         fakeResponse(resolvedSearchTerm);
         waitForSelectionToBe("United States Intelligence");
     }
+
+    // ============================================================================================
+    // Read Aloud Tap to Seek Suppression
+    // ============================================================================================
+
+    /**
+     * Tests that Contextual Search does not show when ReadAloud has an active playback on the tab.
+     */
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch", "ReadAloud"})
+    @EnableFeatures(ChromeFeatureList.READALOUD_TAP_TO_SEEK)
+    public void testTapToSeekSuppression() throws Exception {
+        changeReadAloudActivePlaybackTab();
+
+        clickNode("intelligence");
+        Assert.assertEquals(null, getSelectedText());
+    }
 }
