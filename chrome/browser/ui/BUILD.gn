@@ -2343,10 +2343,6 @@ static_library("ui") {
       "ash/auth/cryptohome_pin_engine.h",
       "ash/auth/legacy_fingerprint_engine.cc",
       "ash/auth/legacy_fingerprint_engine.h",
-      "ash/device_scheduled_reboot/reboot_notification_controller.cc",
-      "ash/device_scheduled_reboot/reboot_notification_controller.h",
-      "ash/device_scheduled_reboot/scheduled_reboot_dialog.cc",
-      "ash/device_scheduled_reboot/scheduled_reboot_dialog.h",
       "ash/download_status/display_client.cc",
       "ash/download_status/display_client.h",
       "ash/download_status/display_manager.cc",
@@ -3610,6 +3606,7 @@ static_library("ui") {
       "//chrome/browser/ui/ash/birch",
       "//chrome/browser/ui/ash/capture_mode",
       "//chrome/browser/ui/ash/desks",
+      "//chrome/browser/ui/ash/device_scheduled_reboot",
       "//chrome/browser/ui/quick_answers",
       "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings",
       "//chrome/browser/ui/webui/ash/app_install:mojo_bindings",
@@ -3985,6 +3982,7 @@ static_library("ui") {
       "//chrome/browser/ui/ash/birch",
       "//chrome/browser/ui/ash/capture_mode",
       "//chrome/browser/ui/ash/desks",
+      "//chrome/browser/ui/ash/device_scheduled_reboot",
     ]
 
     if (is_chrome_branded) {
