@@ -107,6 +107,8 @@ void LineRelativeRect::Unite(const LineRelativeRect& other) {
 void LineRelativeRect::AdjustLineStartToInkOverflow(
     const FragmentItem& fragment) {
   WritingMode writing_mode = fragment.GetWritingMode();
+  // Offset from the inline-start position of `fragment`.
+  // It should be negative or zero.
   LayoutUnit ink_left(0);
   switch (writing_mode) {
     case WritingMode::kHorizontalTb:
@@ -118,7 +120,7 @@ void LineRelativeRect::AdjustLineStartToInkOverflow(
       ink_left = fragment.InkOverflowRect().Y();
       break;
     case WritingMode::kSidewaysLr:
-      ink_left = fragment.InkOverflowRect().Bottom();
+      ink_left = fragment.Size().height - fragment.InkOverflowRect().Bottom();
       break;
   }
   offset.line_left += ink_left;
@@ -128,6 +130,8 @@ void LineRelativeRect::AdjustLineStartToInkOverflow(
 void LineRelativeRect::AdjustLineEndToInkOverflow(
     const FragmentItem& fragment) {
   WritingMode writing_mode = fragment.GetWritingMode();
+  // Offset from the inline-start position of `fragment`.
+  // It should be equal to or greater than the inline-size of `fragment`.
   LayoutUnit ink_right(0);
   switch (writing_mode) {
     case WritingMode::kHorizontalTb:
@@ -139,7 +143,7 @@ void LineRelativeRect::AdjustLineEndToInkOverflow(
       ink_right = fragment.InkOverflowRect().Bottom();
       break;
     case WritingMode::kSidewaysLr:
-      ink_right = fragment.InkOverflowRect().Y();
+      ink_right = fragment.Size().height - fragment.InkOverflowRect().Y();
       break;
   }
   if (UNLIKELY(fragment.IsSvgText())) {
