@@ -1302,6 +1302,128 @@ TEST_P(QuotaDatabaseTest, Stale) {
   EXPECT_EQ(evict_stale_buckets() ? 3U : 1U, stale_buckets.size());
 }
 
+TEST_P(QuotaDatabaseTest, Orphan) {
+  // Setup database and check no orphaned buckets counted.
+  QuotaDatabase db(ProfilePath());
+  clock()->SetNow(base::Time::Now() + base::Minutes(1));
+  {
+    base::HistogramTester histograms;
+    ASSERT_OK_AND_ASSIGN(std::set<BucketInfo> buckets,
+                         db.GetExpiredBuckets(nullptr));
+    EXPECT_EQ(0U, buckets.size());
+    EXPECT_EQ(0, histograms.GetTotalSum("Quota.OrphanBucketCount"));
+  }
+
+  // First party bucket doesn't qualify, even if it's old.
+  BucketInitParams first_party_params(
+      StorageKey::CreateFromStringForTesting("http://firstparty/"),
+      kDefaultBucketName);
+  ASSERT_OK_AND_ASSIGN(BucketInfo first_party_bucket,
+                       db.UpdateOrCreateBucket(first_party_params, 0));
+  {
+    base::HistogramTester histograms;
+    ASSERT_OK_AND_ASSIGN(std::set<BucketInfo> buckets,
+                         db.GetExpiredBuckets(nullptr));
+    EXPECT_EQ(0U, buckets.size());
+    EXPECT_EQ(0, histograms.GetTotalSum("Quota.OrphanBucketCount"));
+
+    EXPECT_EQ(db.SetBucketLastAccessTime(first_party_bucket.id,
+                                         base::Time::Now() - base::Days(2)),
+              QuotaError::kNone);
+    EXPECT_EQ(db.SetBucketLastModifiedTime(first_party_bucket.id,
+                                           base::Time::Now() - base::Days(2)),
+              QuotaError::kNone);
+    ASSERT_OK_AND_ASSIGN(buckets, db.GetExpiredBuckets(nullptr));
+    EXPECT_EQ(0U, buckets.size());
+    EXPECT_EQ(0, histograms.GetTotalSum("Quota.OrphanBucketCount"));
+  }
+
+  // First party nonce bucket does qualify, but only if it's old.
+  BucketInitParams first_party_nonce_params(
+      StorageKey::CreateWithNonce(
+          url::Origin::Create(GURL("http://firstpartynonce/")),
+          base::UnguessableToken::Create()),
+      kDefaultBucketName);
+  ASSERT_OK_AND_ASSIGN(BucketInfo first_party_nonce_bucket,
+                       db.UpdateOrCreateBucket(first_party_nonce_params, 0));
+  {
+    base::HistogramTester histograms;
+    ASSERT_OK_AND_ASSIGN(std::set<BucketInfo> buckets,
+                         db.GetExpiredBuckets(nullptr));
+    EXPECT_EQ(0U, buckets.size());
+    EXPECT_EQ(0, histograms.GetTotalSum("Quota.OrphanBucketCount"));
+
+    EXPECT_EQ(db.SetBucketLastAccessTime(first_party_nonce_bucket.id,
+                                         base::Time::Now() - base::Days(2)),
+              QuotaError::kNone);
+    EXPECT_EQ(db.SetBucketLastModifiedTime(first_party_nonce_bucket.id,
+                                           base::Time::Now() - base::Days(2)),
+              QuotaError::kNone);
+    ASSERT_OK_AND_ASSIGN(buckets, db.GetExpiredBuckets(nullptr));
+    EXPECT_EQ(0U, buckets.size());
+    EXPECT_EQ(evict_stale_buckets() ? 1 : 0,
+              histograms.GetTotalSum("Quota.OrphanBucketCount"));
+  }
+
+  // Third party bucket doesn't qualify, even if it's old.
+  BucketInitParams third_party_params(
+      StorageKey::Create(url::Origin::Create(GURL("https://thirdparty/")),
+                         net::SchemefulSite(GURL("https://thirdparty2/")),
+                         blink::mojom::AncestorChainBit::kCrossSite),
+      kDefaultBucketName);
+  ASSERT_OK_AND_ASSIGN(BucketInfo third_party_bucket,
+                       db.UpdateOrCreateBucket(third_party_params, 0));
+  {
+    base::HistogramTester histograms;
+    ASSERT_OK_AND_ASSIGN(std::set<BucketInfo> buckets,
+                         db.GetExpiredBuckets(nullptr));
+    EXPECT_EQ(0U, buckets.size());
+    EXPECT_EQ(evict_stale_buckets() ? 1 : 0,
+              histograms.GetTotalSum("Quota.OrphanBucketCount"));
+
+    EXPECT_EQ(db.SetBucketLastAccessTime(third_party_bucket.id,
+                                         base::Time::Now() - base::Days(2)),
+              QuotaError::kNone);
+    EXPECT_EQ(db.SetBucketLastModifiedTime(third_party_bucket.id,
+                                           base::Time::Now() - base::Days(2)),
+              QuotaError::kNone);
+    ASSERT_OK_AND_ASSIGN(buckets, db.GetExpiredBuckets(nullptr));
+    EXPECT_EQ(0U, buckets.size());
+    EXPECT_EQ(evict_stale_buckets() ? 2 : 0,
+              histograms.GetTotalSum("Quota.OrphanBucketCount"));
+  }
+
+  // Third party nonce bucket does qualify, but only if it's old.
+  BucketInitParams third_party_nonce_params(
+      StorageKey::Create(
+          url::Origin::Create(GURL("https://thirdparty/")),
+          net::SchemefulSite(url::Origin::Create(GURL("http://thirdparty2/"))
+                                 .DeriveNewOpaqueOrigin()),
+          blink::mojom::AncestorChainBit::kCrossSite),
+      kDefaultBucketName);
+  ASSERT_OK_AND_ASSIGN(BucketInfo third_party_nonce_bucket,
+                       db.UpdateOrCreateBucket(third_party_nonce_params, 0));
+  {
+    base::HistogramTester histograms;
+    ASSERT_OK_AND_ASSIGN(std::set<BucketInfo> buckets,
+                         db.GetExpiredBuckets(nullptr));
+    EXPECT_EQ(0U, buckets.size());
+    EXPECT_EQ(evict_stale_buckets() ? 1 : 0,
+              histograms.GetTotalSum("Quota.OrphanBucketCount"));
+
+    EXPECT_EQ(db.SetBucketLastAccessTime(third_party_nonce_bucket.id,
+                                         base::Time::Now() - base::Days(2)),
+              QuotaError::kNone);
+    EXPECT_EQ(db.SetBucketLastModifiedTime(third_party_nonce_bucket.id,
+                                           base::Time::Now() - base::Days(2)),
+              QuotaError::kNone);
+    ASSERT_OK_AND_ASSIGN(buckets, db.GetExpiredBuckets(nullptr));
+    EXPECT_EQ(0U, buckets.size());
+    EXPECT_EQ(evict_stale_buckets() ? 3 : 0,
+              histograms.GetTotalSum("Quota.OrphanBucketCount"));
+  }
+}
+
 TEST_P(QuotaDatabaseTest, PersistentPolicy) {
   QuotaDatabase db(ProfilePath());
   const auto storage_key =

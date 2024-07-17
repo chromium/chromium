@@ -101,6 +101,8 @@ chromium-metrics-reviews@google.com.
     <variant name="GetBucketsForType"/>
     <variant name="GetBucketsModifiedBetween"/>
     <variant name="GetExpired"/>
+    <variant name="GetOrphan"/>
+    <variant name="GetStale"/>
     <variant name="GetStorageKeys"/>
     <variant name="Open"/>
     <variant name="SetBucketLastAccessTime"/>
@@ -220,6 +222,20 @@ chromium-metrics-reviews@google.com.
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>Number of evicted buckets per round.</summary>
+</histogram>
+
+<histogram name="Quota.OrphanBucketCount" units="areas"
+    expires_after="2024-12-01">
+  <owner>arichiv@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records the amount of orphan (nonce-bound buckets which will never be
+    loaded) on QuotaTemporaryStorageEvictor rounds. Starts recording one minute
+    after initialization of QuotaDatabase to ensure session restore has
+    completed.
+
+    See crbug.com/353555346 for more info.
+  </summary>
 </histogram>
 
 <histogram name="Quota.PercentDiskAvailable" units="%"

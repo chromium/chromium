@@ -865,6 +865,32 @@ QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetExpiredBuckets(
     buckets_found++;
   }
   base::UmaHistogramCounts100000("Quota.StaleBucketCount", buckets_found);
+
+  // TODO(crbug.com/353555346): Merge this with the query above and start
+  // clearing storage. For now, we are just gathering metrics on orphaned
+  // storage (inactive quota buckets with a nonce which cannot be reused).
+  // We only need to check for ^1 and ^4 are these are indicators for the
+  // presence of a nonce in the storage key.
+  // For more on StorageKey encoding see EncodedAttribute in
+  // clang-format off
+  // third_party/blink/common/storage_key/storage_key.cc
+  static constexpr char kSqlOrphan[] =
+      "SELECT count(*) "
+        "FROM buckets "
+        "WHERE storage_key REGEXP '.*\\^(1|4).*' AND "
+              "last_accessed < ? AND last_modified < ?";
+  // clang-format on
+  last_operation_ = "GetOrphan";
+  sql::Statement statement_orphan(
+      db_->GetCachedStatement(SQL_FROM_HERE, kSqlOrphan));
+  base::Time orphan_cutoff = GetNow() - base::Days(1);
+  statement_orphan.BindTime(0, orphan_cutoff);
+  statement_orphan.BindTime(1, orphan_cutoff);
+  if (statement_orphan.Step()) {
+    base::UmaHistogramCounts100000("Quota.OrphanBucketCount",
+                                   statement_orphan.ColumnInt64(0));
+  }
+
   return expired_buckets;
 }
 
