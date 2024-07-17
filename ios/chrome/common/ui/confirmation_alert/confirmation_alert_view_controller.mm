@@ -67,7 +67,8 @@ void SetConfigurationActivityIndicator(UIButton* button,
   button.configuration = button_configuration;
 }
 
-// Sets the image in the button's configuration.
+// Sets the image in the button's configuration and the accessiblitityIdentifier
+// on the button's image.
 void SetConfigurationImage(UIButton* button,
                            UIImage* image,
                            UIColor* image_color) {
@@ -77,6 +78,7 @@ void SetConfigurationImage(UIButton* button,
     return image_color ? image_color : input_color;
   };
   button.configuration = button_configuration;
+  button.imageView.accessibilityIdentifier = image.accessibilityIdentifier;
 }
 
 // Sets the color of the button's background in the button configuration's
@@ -97,8 +99,10 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
       configurationWithPointSize:point_size
                           weight:UIImageSymbolWeightMedium
                            scale:UIImageSymbolScaleMedium];
-  return [UIImage systemImageNamed:kCheckmarkSymbol
-                 withConfiguration:configuration];
+  UIImage* image = [UIImage systemImageNamed:kCheckmarkSymbol
+                           withConfiguration:configuration];
+  image.accessibilityIdentifier = kConfirmationAlertCheckmarkSymbolIdentifier;
+  return image;
 }
 
 }  // namespace

@@ -85,6 +85,9 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Tear down the FakeCreditCardServer, unregister it and delete it.
 + (void)tearDownFakeCreditCardServer;
 
+// Clears the virtual card enrollment strike data.
++ (void)clearVirtualCardEnrollmentStrikes;
+
 // Sets the Autofill events that are expected to be triggered.
 + (void)resetEventWaiterForEvents:(NSArray*)events
                           timeout:(base::TimeDelta)timeout;

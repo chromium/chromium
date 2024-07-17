@@ -255,6 +255,10 @@ void VirtualCardEnrollmentManager::SetSaveCardBubbleAcceptedTimestamp(
       std::move(save_card_bubble_accepted_timestamp);
 }
 
+void VirtualCardEnrollmentManager::ClearAllStrikesForTesting() {
+  GetVirtualCardEnrollmentStrikeDatabase()->ClearAllStrikes();
+}
+
 void VirtualCardEnrollmentManager::OnDidGetUpdateVirtualCardEnrollmentResponse(
     VirtualCardEnrollmentRequestType type,
     PaymentsRpcResult result) {

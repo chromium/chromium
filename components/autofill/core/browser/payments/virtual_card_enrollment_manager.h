@@ -185,6 +185,10 @@ class VirtualCardEnrollmentManager {
   void RemoveAllStrikesToBlockOfferingVirtualCardEnrollment(
       const std::string& instrument_id);
 
+  // Clears the strikes on the associated virtual card enrollment strike
+  // database.
+  void ClearAllStrikesForTesting();
+
   // Sets |save_card_bubble_accepted_timestamp_|, which will be the start time
   // for the LatencySinceUpstream metrics.
   void SetSaveCardBubbleAcceptedTimestamp(

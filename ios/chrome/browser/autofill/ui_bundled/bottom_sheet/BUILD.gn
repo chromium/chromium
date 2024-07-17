@@ -11,6 +11,14 @@ group("unit_tests") {
   ]
 }
 
+group("eg2_tests") {
+  testonly = true
+  deps = [
+    ":bottom_sheet_egtest",
+    ":virtual_card_enrollment_bottom_sheet_egtest",
+  ]
+}
+
 source_set("constants") {
   sources = [
     "bottom_sheet_constants.h",
@@ -127,7 +135,7 @@ source_set("bottom_sheet_unit_tests") {
   ]
 }
 
-source_set("eg2_tests") {
+source_set("bottom_sheet_egtest") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "payments_suggestion_bottom_sheet_egtest.mm" ]
@@ -288,4 +296,28 @@ source_set("virtual_card_enrollment_bottom_sheet_view_controller") {
 source_set("virtual_card_enrollment_bottom_sheet_delegate") {
   sources = [ "virtual_card_enrollment_bottom_sheet_delegate.h" ]
   deps = []
+}
+
+source_set("virtual_card_enrollment_bottom_sheet_egtest") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "virtual_card_enrollment_bottom_sheet_egtest.mm" ]
+  deps = [
+    "//components/autofill/core/browser:test_support",
+    "//components/autofill/ios/browser:autofill_test_bundle_data",
+    "//components/strings:strings",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/autofill/ui_bundled/authentication:egtest_util",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/settings:settings_root_constants",
+    "//ios/chrome/common/ui/confirmation_alert:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }

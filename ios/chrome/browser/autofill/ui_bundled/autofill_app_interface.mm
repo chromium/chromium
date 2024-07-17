@@ -18,6 +18,7 @@
 #import "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
+#import "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #import "components/autofill/core/browser/payments_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_prefs.h"
@@ -30,11 +31,11 @@
 #import "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/ui_bundled/scoped_autofill_payment_reauth_module_override.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/autofill/ui_bundled/scoped_autofill_payment_reauth_module_override.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/mock_reauthentication_module.h"
 #import "ios/chrome/test/app/tab_test_util.h"
@@ -189,6 +190,8 @@ void AddAutofillProfile(autofill::PersonalDataManager* personalDataManager,
 
 namespace autofill {
 
+class VirtualCardEnrollmentManager;
+
 // Helper class that provides access to private members of
 // BrowserAutofillManager, FormDataImporter and CreditCardSaveManager. This
 // class is friend with some autofill internal classes to access private fields.
@@ -205,20 +208,26 @@ class FakeCreditCardServer : public CreditCardSaveManager::ObserverForTest {
 
   // Access the CreditCardSaveManager.
   static CreditCardSaveManager* GetCreditCardSaveManager() {
-    web::WebState* web_state = chrome_test_util::GetCurrentWebState();
-    web::WebFramesManager* frames_manager =
-        autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
-            web_state);
-    web::WebFrame* main_frame = frames_manager->GetMainWebFrame();
-    return AutofillDriverIOS::FromWebStateAndWebFrame(web_state, main_frame)
-        ->GetAutofillManager()
-        .client()
+    return GetAutofillClient()
         .GetFormDataImporter()
         ->GetCreditCardSaveManager();
   }
 
+  // Access the VirtualCardEnrollmentManager.
+  static VirtualCardEnrollmentManager* GetVirtualCardEnrollmentManager() {
+    return GetAutofillClient()
+        .GetPaymentsAutofillClient()
+        ->GetVirtualCardEnrollmentManager();
+  }
+
   // Access the PaymentsNetworkInterface.
   static payments::PaymentsNetworkInterface* GetPaymentsNetworkInterface() {
+    return GetAutofillClient()
+        .GetPaymentsAutofillClient()
+        ->GetPaymentsNetworkInterface();
+  }
+
+  static AutofillClient& GetAutofillClient() {
     web::WebState* web_state = chrome_test_util::GetCurrentWebState();
     web::WebFramesManager* frames_manager =
         autofill::AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
@@ -227,9 +236,7 @@ class FakeCreditCardServer : public CreditCardSaveManager::ObserverForTest {
     DCHECK(web_state);
     return AutofillDriverIOS::FromWebStateAndWebFrame(web_state, main_frame)
         ->GetAutofillManager()
-        .client()
-        .GetPaymentsAutofillClient()
-        ->GetPaymentsNetworkInterface();
+        .client();
   }
 
   // Delete all failed attempds registered on every cards.
@@ -237,6 +244,10 @@ class FakeCreditCardServer : public CreditCardSaveManager::ObserverForTest {
     GetCreditCardSaveManager()
         ->GetCreditCardSaveStrikeDatabase()
         ->ClearAllStrikes();
+  }
+
+  static void ClearVirtualCardEnrollmentStrikes() {
+    GetVirtualCardEnrollmentManager()->ClearAllStrikesForTesting();
   }
 
   // Set the number of failed attempds registered on a card.
@@ -503,6 +514,12 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
 
 + (void)tearDownFakeCreditCardServer {
   autofill::FakeCreditCardServer::SharedInstance()->TearDown();
+}
+
+// Clears the virtual card enrollment strike data.
++ (void)clearVirtualCardEnrollmentStrikes {
+  autofill::FakeCreditCardServer::SharedInstance()
+      ->ClearVirtualCardEnrollmentStrikes();
 }
 
 + (void)resetEventWaiterForEvents:(NSArray*)events
