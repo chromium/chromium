@@ -14,6 +14,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/commerce_utils.h"
+#include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/shopping_service.h"
 
 namespace {
@@ -24,6 +25,9 @@ constexpr int kEligibleWindowUrlCountForValidation = 2;
 // Number of URLs of the same cluster that a window needs to contain in order
 // for the entry point to trigger for navigation.
 constexpr int kEligibleWindowUrlCountForNavigationTriggering = 3;
+// The maximum enforced interval (in days) between two triggering of the entry
+// point.
+constexpr int kMaxEntryPointTriggeringInterval = 64;
 
 bool CheckWindowContainsEntryPointURLs(
     TabStripModel* tab_strip_model,
@@ -133,6 +137,9 @@ void ProductSpecificationsEntryPointController::OnEntryPointExecuted() {
   if (!current_entry_point_info_.has_value()) {
     return;
   }
+  // Reset entry point show gap time.
+  browser_->profile()->GetPrefs()->SetInteger(
+      commerce::kProductSpecificationsEntryPointShowIntervalInDays, 0);
   DCHECK(product_specifications_service_);
   std::set<GURL> urls;
   auto candidate_products =
@@ -154,7 +161,24 @@ void ProductSpecificationsEntryPointController::OnEntryPointExecuted() {
 }
 
 void ProductSpecificationsEntryPointController::OnEntryPointDismissed() {
-  // TODO(b/325661685): Add implementation for back-off mechanism.
+  DCHECK(current_entry_point_info_.has_value());
+  current_entry_point_info_.reset();
+
+  auto* prefs = browser_->profile()->GetPrefs();
+  int current_gap_time = prefs->GetInteger(
+      commerce::kProductSpecificationsEntryPointShowIntervalInDays);
+  // Double the gap time for every dismiss, starting from one day.
+  if (current_gap_time == 0) {
+    current_gap_time = 1;
+  } else {
+    current_gap_time =
+        std::min(2 * current_gap_time, kMaxEntryPointTriggeringInterval);
+  }
+  prefs->SetInteger(
+      commerce::kProductSpecificationsEntryPointShowIntervalInDays,
+      current_gap_time);
+  prefs->SetTime(commerce::kProductSpecificationsEntryPointLastDismissedTime,
+                 base::Time::Now());
 }
 
 void ProductSpecificationsEntryPointController::OnEntryPointHidden() {
@@ -271,6 +295,16 @@ void ProductSpecificationsEntryPointController::
 
 void ProductSpecificationsEntryPointController::ShowEntryPointWithTitle(
     std::optional<EntryPointInfo> entry_point_info) {
+  auto* prefs = browser_->profile()->GetPrefs();
+  int current_gap_time = prefs->GetInteger(
+      commerce::kProductSpecificationsEntryPointShowIntervalInDays);
+  // Back off triggering if gap time is not finished yet.
+  if (base::Time::Now() -
+          prefs->GetTime(
+              commerce::kProductSpecificationsEntryPointLastDismissedTime) <=
+      base::Days(current_gap_time)) {
+    return;
+  }
   current_entry_point_info_ = entry_point_info;
   for (auto& observer : observers_) {
     observer.ShowEntryPointWithTitle(entry_point_info->title);

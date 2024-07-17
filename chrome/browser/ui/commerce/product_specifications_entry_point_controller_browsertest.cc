@@ -15,6 +15,7 @@
 #include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/mock_cluster_manager.h"
 #include "components/commerce/core/mock_shopping_service.h"
+#include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/product_specifications/mock_product_specifications_service.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
@@ -238,6 +239,40 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
+                       TriggerEntryPointWithNavigation_NotShowWithinGapTime) {
+  // Mock that the gap time for entry point show has not finished now.
+  browser()->profile()->GetPrefs()->SetInteger(
+      commerce::kProductSpecificationsEntryPointShowIntervalInDays, 2);
+  browser()->profile()->GetPrefs()->SetTime(
+      commerce::kProductSpecificationsEntryPointLastDismissedTime,
+      base::Time::Now() - base::Days(1));
+
+  // Mock EntryPointInfo returned by ClusterManager.
+  std::map<GURL, uint64_t> similar_products = {{GURL(kTestUrl1), kProductId1},
+                                               {GURL(kTestUrl2), kProductId2}};
+  auto info =
+      std::make_optional<commerce::EntryPointInfo>(kTitle, similar_products);
+  mock_cluster_manager_->SetResponseForGetEntryPointInfoForSelection(info);
+
+  // Set up observer.
+  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(kTitle)).Times(0);
+
+  // Create two tabs and simulate selection.
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(kTestUrl1),
+                                     ui::PAGE_TRANSITION_LINK, true));
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, GURL(kTestUrl2),
+                                     ui::PAGE_TRANSITION_LINK, true));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
+
+  browser()->tab_strip_model()->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kMouse));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
                        HideEntryPoint) {
   // Trigger entry point with selection.
   std::map<GURL, uint64_t> similar_products = {{GURL(kTestUrl1), kProductId1},
@@ -259,6 +294,76 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   // Reset EntryPointInfo when entry point has hidden.
   controller_->OnEntryPointHidden();
   ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
+                       DismissEntryPoint_InitializeGapTime) {
+  ASSERT_EQ(0,
+            browser()->profile()->GetPrefs()->GetInteger(
+                commerce::kProductSpecificationsEntryPointShowIntervalInDays));
+  base::Time last_dismiss_time = browser()->profile()->GetPrefs()->GetTime(
+      commerce::kProductSpecificationsEntryPointLastDismissedTime);
+
+  // Trigger entry point with selection.
+  std::map<GURL, uint64_t> similar_products = {{GURL(kTestUrl1), kProductId1},
+                                               {GURL(kTestUrl2), kProductId2}};
+  auto info =
+      std::make_optional<commerce::EntryPointInfo>(kTitle, similar_products);
+  mock_cluster_manager_->SetResponseForGetEntryPointInfoForSelection(info);
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(kTestUrl1),
+                                     ui::PAGE_TRANSITION_LINK, true));
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, GURL(kTestUrl2),
+                                     ui::PAGE_TRANSITION_LINK, true));
+  base::RunLoop().RunUntilIdle();
+  browser()->tab_strip_model()->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kMouse));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
+
+  controller_->OnEntryPointDismissed();
+  ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
+  ASSERT_EQ(1,
+            browser()->profile()->GetPrefs()->GetInteger(
+                commerce::kProductSpecificationsEntryPointShowIntervalInDays));
+  ASSERT_GT(browser()->profile()->GetPrefs()->GetTime(
+                commerce::kProductSpecificationsEntryPointLastDismissedTime),
+            last_dismiss_time);
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
+                       DismissEntryPoint_DoubleGapTime) {
+  // Mock that the current gap time for entry point show is not 0.
+  browser()->profile()->GetPrefs()->SetInteger(
+      commerce::kProductSpecificationsEntryPointShowIntervalInDays, 2);
+  base::Time last_dismiss_time = browser()->profile()->GetPrefs()->GetTime(
+      commerce::kProductSpecificationsEntryPointLastDismissedTime);
+
+  // Trigger entry point with selection.
+  std::map<GURL, uint64_t> similar_products = {{GURL(kTestUrl1), kProductId1},
+                                               {GURL(kTestUrl2), kProductId2}};
+  auto info =
+      std::make_optional<commerce::EntryPointInfo>(kTitle, similar_products);
+  mock_cluster_manager_->SetResponseForGetEntryPointInfoForSelection(info);
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(kTestUrl1),
+                                     ui::PAGE_TRANSITION_LINK, true));
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, GURL(kTestUrl2),
+                                     ui::PAGE_TRANSITION_LINK, true));
+  base::RunLoop().RunUntilIdle();
+  browser()->tab_strip_model()->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kMouse));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
+
+  controller_->OnEntryPointDismissed();
+  ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
+  ASSERT_EQ(4,
+            browser()->profile()->GetPrefs()->GetInteger(
+                commerce::kProductSpecificationsEntryPointShowIntervalInDays));
+  ASSERT_GT(browser()->profile()->GetPrefs()->GetTime(
+                commerce::kProductSpecificationsEntryPointLastDismissedTime),
+            last_dismiss_time);
 }
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
@@ -291,6 +396,10 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
   ASSERT_EQ(3, browser()->tab_strip_model()->count());
 
+  // Mock that the current gap time for entry point show is not 0.
+  browser()->profile()->GetPrefs()->SetInteger(
+      commerce::kProductSpecificationsEntryPointShowIntervalInDays, 2);
+
   // Execute entry point and check a new tab is created with product
   // specification URL.
   controller_->OnEntryPointExecuted();
@@ -301,6 +410,9 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_EQ(commerce::GetProductSpecsTabUrlForID(uuid),
             current_tab->GetVisibleURL());
+  ASSERT_EQ(0,
+            browser()->profile()->GetPrefs()->GetInteger(
+                commerce::kProductSpecificationsEntryPointShowIntervalInDays));
 }
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,

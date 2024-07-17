@@ -266,6 +266,11 @@ void CommerceInternalsHandler::ResetProductSpecifications() {
   if (!product_specifications_service) {
     return;
   }
+  shopping_service_->pref_service_->SetInteger(
+      commerce::kProductSpecificationsEntryPointShowIntervalInDays, 0);
+  shopping_service_->pref_service_->SetTime(
+      commerce::kProductSpecificationsEntryPointLastDismissedTime,
+      base::Time::Now());
   product_specifications_service->GetAllProductSpecifications(base::BindOnce(
       &CommerceInternalsHandler::DeleteAllProductSpecificationSets,
       weak_ptr_factory_.GetWeakPtr()));
