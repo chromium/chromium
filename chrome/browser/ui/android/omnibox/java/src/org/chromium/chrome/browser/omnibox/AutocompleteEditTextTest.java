@@ -813,9 +813,9 @@ public class AutocompleteEditTextTest {
         mInOrder.verify(mVerifier).onUpdateSelection(11, 11);
         verifyOnPopulateAccessibilityEvent(
                 AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED,
-                "hello world - www.foo.com",
+                "hello world",
                 "",
-                25,
+                11,
                 11,
                 11,
                 -1,
@@ -826,13 +826,54 @@ public class AutocompleteEditTextTest {
         mInOrder.verify(mVerifier).onUpdateSelection(0, 11);
         verifyOnPopulateAccessibilityEvent(
                 AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED,
-                "hello world - www.foo.com",
+                "hello world",
                 "",
-                25,
+                11,
                 0,
                 11,
                 -1,
                 -1);
+    }
+
+    @Test
+    public void testAppendWithAdditionalText_removeAutocompleteAndAddtionalText() {
+        OmniboxFeatures.sRichInlineAutocomplete.setForTesting(true);
+        OmniboxFeatures.sRichInlineShowFullUrl.setForTesting(true);
+        OmniboxFeatures.sRichInlineMinimumInputChars.setForTesting(1);
+
+        // User types "hello".
+        assertTrue(mInputConnection.commitText("hello", 1));
+        mInOrder.verify(mVerifier).onUpdateSelection(5, 5);
+        verifyOnPopulateAccessibilityEvent(
+                AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED, "hello", "", -1, 0, -1, 0, 5);
+        verifyOnPopulateAccessibilityEvent(
+                AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED, "hello", "", 5, 5, 5, -1, -1);
+        mInOrder.verify(mVerifier).onAutocompleteTextStateChanged(false);
+        assertVerifierCallCounts(2, 2);
+        mInOrder.verifyNoMoreInteractions();
+        assertTrue(mAutocomplete.shouldAutocomplete());
+        // The controller kicks in.
+        mAutocomplete.setAutocompleteText("hello", " world", Optional.of("www.foo.com"));
+        assertFalse(mAutocomplete.isCursorVisible());
+        verifyOnPopulateAccessibilityEvent(
+                AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED,
+                "hello world - www.foo.com",
+                "hello",
+                -1,
+                5,
+                -1,
+                0,
+                6);
+        assertVerifierCallCounts(0, 1);
+        assertTexts("hello", " world", "www.foo.com");
+        mInOrder.verifyNoMoreInteractions();
+        assertTrue(mAutocomplete.shouldAutocomplete());
+
+        // User taps on "he[|]llo world - www.foo.com", the autocomplete and additional text will be
+        // removed.
+        mAutocomplete.onSelectionChanged(2, 2);
+        verifyOnPopulateAccessibilityEvent(
+                AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED, "hello", "", 5, 5, 5, -1, -1);
     }
 
     @Test
