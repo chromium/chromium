@@ -1,0 +1,65 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("exclusive_access") {
+  sources = [
+    "exclusive_access_bubble.cc",
+    "exclusive_access_bubble.h",
+    "exclusive_access_bubble_hide_callback.h",
+    "exclusive_access_bubble_type.cc",
+    "exclusive_access_bubble_type.h",
+    "exclusive_access_context.h",
+    "exclusive_access_controller_base.cc",
+    "exclusive_access_controller_base.h",
+    "exclusive_access_manager.cc",
+    "exclusive_access_manager.h",
+    "exclusive_access_permission_manager.cc",
+    "exclusive_access_permission_manager.h",
+    "fullscreen_controller.cc",
+    "fullscreen_controller.h",
+    "fullscreen_observer.h",
+    "fullscreen_within_tab_helper.cc",
+    "fullscreen_within_tab_helper.h",
+    "keyboard_lock_controller.cc",
+    "keyboard_lock_controller.h",
+    "pointer_lock_controller.cc",
+    "pointer_lock_controller.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/content_settings/core/common",
+    "//content/public/browser",
+    "//third_party/blink/public/common:headers",
+    "//ui/display/types",
+    "//url",
+  ]
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
+    "//components/content_settings/core/browser",
+    "//components/history/core/browser",
+    "//components/input",
+    "//components/prefs",
+    "//components/safe_browsing/core/browser/db:database_manager",
+    "//components/strings:components_strings",
+    "//components/strings:components_strings_grit",
+    "//extensions/browser",
+    "//extensions/common",
+    "//services/metrics/public/cpp:gen_ukm_builders",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//ui/base",
+    "//ui/display",
+    "//ui/events:events_base",
+  ]
+}

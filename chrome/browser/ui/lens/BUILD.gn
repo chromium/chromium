@@ -39,6 +39,7 @@ source_set("lens") {
   # public_deps while circular dependencies are allowed.
   public_deps = [
     ":lens_internal",
+    "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/views/side_panel",
     "//components/lens:enterprise_policy",
   ]
@@ -193,6 +194,7 @@ source_set("browser_tests") {
     "//chrome/browser/themes",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/views/side_panel",
     "//chrome/test:test_support",

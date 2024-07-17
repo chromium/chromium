@@ -1822,6 +1822,7 @@ if (!is_android) {
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/color:color_headers",
+      "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/views/bubble",
@@ -8325,6 +8326,7 @@ test("unit_tests") {
       "//chrome/browser/ui/actions:unit_tests",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/color:mixers",
+      "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/lens:unit_tests",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
@@ -10644,6 +10646,7 @@ if (!is_android) {
 
     public_deps = [
       "//chrome/browser:test_support_ui",
+      "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/views/side_panel",
       "//components/supervised_user/core/browser",
       "//content/public/browser",
@@ -11135,6 +11138,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/lens:interactive_ui_tests",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/side_panel",

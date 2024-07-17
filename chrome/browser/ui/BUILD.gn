@@ -1178,27 +1178,6 @@ static_library("ui") {
       "download/download_item_mode.cc",
       "download/download_item_mode.h",
       "download/download_started_animation.h",
-      "exclusive_access/exclusive_access_bubble.cc",
-      "exclusive_access/exclusive_access_bubble.h",
-      "exclusive_access/exclusive_access_bubble_hide_callback.h",
-      "exclusive_access/exclusive_access_bubble_type.cc",
-      "exclusive_access/exclusive_access_bubble_type.h",
-      "exclusive_access/exclusive_access_context.h",
-      "exclusive_access/exclusive_access_controller_base.cc",
-      "exclusive_access/exclusive_access_controller_base.h",
-      "exclusive_access/exclusive_access_manager.cc",
-      "exclusive_access/exclusive_access_manager.h",
-      "exclusive_access/exclusive_access_permission_manager.cc",
-      "exclusive_access/exclusive_access_permission_manager.h",
-      "exclusive_access/fullscreen_controller.cc",
-      "exclusive_access/fullscreen_controller.h",
-      "exclusive_access/fullscreen_observer.h",
-      "exclusive_access/fullscreen_within_tab_helper.cc",
-      "exclusive_access/fullscreen_within_tab_helper.h",
-      "exclusive_access/keyboard_lock_controller.cc",
-      "exclusive_access/keyboard_lock_controller.h",
-      "exclusive_access/pointer_lock_controller.cc",
-      "exclusive_access/pointer_lock_controller.h",
       "find_bar/find_bar_controller.cc",
       "find_bar/find_bar_controller.h",
       "find_bar/find_bar_platform_helper.cc",
@@ -2079,6 +2058,7 @@ static_library("ui") {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/color:mixers",
+      "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/views/side_panel:side_panel_enums",
       "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",
@@ -2204,6 +2184,8 @@ static_library("ui") {
       # TODO(crbug.com/40246046): Remove allow_circular_includes_from when
       # dependencies for controller are fixed.
       "//chrome/browser/lens/region_search",
+
+      "//chrome/browser/ui/exclusive_access",
     ]
 
     if (use_ozone && !is_chromeos_ash) {
@@ -7535,6 +7517,7 @@ static_library("test_support") {
       "//components/ukm:test_support",
       "//services/metrics/public/mojom",
     ]
+    public_deps += [ "//chrome/browser/ui/exclusive_access" ]
   }
 
   if (is_win || is_mac || is_linux || is_chromeos_ash) {

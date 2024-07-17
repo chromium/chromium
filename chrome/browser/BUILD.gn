@@ -2676,6 +2676,7 @@ static_library("browser") {
       "//chrome/browser/lens/region_search",
       "//chrome/browser/new_tab_page/chrome_colors",
       "//chrome/browser/search/background",
+      "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
@@ -2693,6 +2694,8 @@ static_library("browser") {
 
       # TODO(crbug.com/345487716): Remove this circular dependency.
       "//chrome/browser/ui/views/side_panel",
+
+      "//chrome/browser/ui/exclusive_access",
     ]
   }
 

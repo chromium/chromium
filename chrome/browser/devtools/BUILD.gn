@@ -143,6 +143,7 @@ static_library("devtools") {
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/themes",
+      "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/web_applications",
       "//chrome/common",
       "//components/guest_view/browser",
