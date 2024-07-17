@@ -16,6 +16,7 @@
 #include "base/containers/flat_map.h"
 #include "base/i18n/rtl.h"
 #include "components/autofill/content/renderer/form_tracker.h"
+#include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
@@ -83,6 +84,7 @@ std::optional<FormData> ExtractFormData(
     const blink::WebDocument& document,
     const blink::WebFormElement& form_element,
     const FieldDataManager& field_data_manager,
+    const CallTimerState& timer_state,
     DenseSet<ExtractOption> extract_options = {});
 
 // Helper function to assist in getting the canonical form of the action and
@@ -172,6 +174,7 @@ std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
 FindFormAndFieldForFormControlElement(
     const blink::WebFormControlElement& element,
     const FieldDataManager& field_data_manager,
+    const CallTimerState& timer_state,
     DenseSet<ExtractOption> extract_options);
 
 // Creates a FormData containing a single field out of a contenteditable

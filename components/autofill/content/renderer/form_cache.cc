@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
+#include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/blink/public/common/features.h"
@@ -62,6 +63,10 @@ void FormCache::Reset() {
 
 FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
     const FieldDataManager& field_data_manager) {
+  constexpr auto kUpdateFormCache = CallTimerState::CallSite::kUpdateFormCache;
+  ScopedCallTimer timer("UpdateFormCache",
+                        agent_->GetCallTimerState(kUpdateFormCache));
+
   // |extracted_forms_| is re-populated below in ProcessForm().
   std::map<FormRendererId, FormData> old_extracted_forms =
       std::move(extracted_forms_);
@@ -120,7 +125,8 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
            ? document.GetTopLevelForms()
            : document.Forms()) {
     if (std::optional<FormData> form = form_util::ExtractFormData(
-            document, form_element, field_data_manager)) {
+            document, form_element, field_data_manager,
+            agent_->GetCallTimerState(kUpdateFormCache))) {
       if (!ProcessForm(std::move(*form))) {
         return r;
       }
@@ -130,7 +136,8 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
   // Look for more extractable fields outside of forms. Create a synthetic form
   // from them.
   std::optional<FormData> synthetic_form = form_util::ExtractFormData(
-      document, blink::WebFormElement(), field_data_manager);
+      document, blink::WebFormElement(), field_data_manager,
+      agent_->GetCallTimerState(kUpdateFormCache));
   if (synthetic_form) {
     ProcessForm(std::move(*synthetic_form));
   }

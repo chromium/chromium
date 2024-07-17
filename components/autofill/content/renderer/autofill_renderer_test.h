@@ -122,6 +122,18 @@ class AutofillRendererTest : public content::RenderViewTest {
 
   blink::WebDocument GetDocument() { return GetMainFrame()->GetDocument(); }
 
+  blink::WebElement GetWebElementById(std::string_view id) {
+    return GetDocument().GetElementById(blink::WebString::FromUTF8(id));
+  }
+
+  blink::WebFormControlElement GetFormControlElementById(std::string_view id) {
+    return GetWebElementById(id).DynamicTo<blink::WebFormControlElement>();
+  }
+
+  blink::WebInputElement GetInputElementById(std::string_view id) {
+    return GetWebElementById(id).DynamicTo<blink::WebInputElement>();
+  }
+
   // Simulates a click on the element with id `element_id` and, if, successful,
   // runs until the task environment is idle. Waits until the `TaskEnvironment`
   // is idle to ensure that the `AutofillDriver` is notified via mojo.

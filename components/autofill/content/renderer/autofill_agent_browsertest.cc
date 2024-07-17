@@ -64,6 +64,12 @@ using ::testing::Property;
 using ::testing::SaveArg;
 using ::testing::SizeIs;
 
+constexpr CallTimerState kCallTimerStateDummy = {
+    .call_site = CallTimerState::CallSite::kUpdateFormCache,
+    .last_autofill_agent_reset = {},
+    .last_dom_content_loaded = {},
+};
+
 class MockAutofillAgent : public AutofillAgent {
  public:
   using AutofillAgent::AutofillAgent;
@@ -156,21 +162,12 @@ class AutofillAgentTest : public test::AutofillRendererTest {
             autofill_agent()));
   }
 
-  blink::WebElement GetWebElementById(std::string_view id) {
-    return GetMainFrame()->GetDocument().GetElementById(
-        blink::WebString::FromUTF8(id));
-  }
-
   FormRendererId GetFormRendererIdById(std::string_view id) {
-    return form_util::GetFormRendererId(
-        GetMainFrame()->GetDocument().GetElementById(
-            blink::WebString::FromUTF8(id)));
+    return form_util::GetFormRendererId(GetWebElementById(id));
   }
 
   FieldRendererId GetFieldRendererIdById(std::string_view id) {
-    return form_util::GetFieldRendererId(
-        GetMainFrame()->GetDocument().GetElementById(
-            blink::WebString::FromUTF8(id)));
+    return form_util::GetFieldRendererId(GetWebElementById(id));
   }
 
   void Focus(const char* id) {
@@ -674,11 +671,11 @@ TEST_F(AutofillAgentTest, PreviewThenClear) {
   )");
 
   blink::WebVector<blink::WebFormElement> forms =
-      GetMainFrame()->GetDocument().GetTopLevelForms();
+      GetDocument().GetTopLevelForms();
   ASSERT_EQ(1U, forms.size());
-  FormData form =
-      *form_util::ExtractFormData(forms[0].GetDocument(), forms[0],
-                                  *base::MakeRefCounted<FieldDataManager>());
+  FormData form = *form_util::ExtractFormData(
+      forms[0].GetDocument(), forms[0],
+      *base::MakeRefCounted<FieldDataManager>(), kCallTimerStateDummy);
   ASSERT_EQ(form.fields().size(), 1u);
   blink::WebFormControlElement field =
       GetWebElementById("text_id").DynamicTo<blink::WebFormControlElement>();
@@ -786,10 +783,8 @@ TEST_P(AutofillAgentSubmissionTest,
       features::kAutofillReplaceFormElementObserver};
   LoadHTML(R"(<form id="form_id"><input id="text_id"></form>)");
 
-  blink::WebFormElement form = GetMainFrame()
-                                   ->GetDocument()
-                                   .GetElementById("form_id")
-                                   .DynamicTo<blink::WebFormElement>();
+  blink::WebFormElement form =
+      GetWebElementById("form_id").DynamicTo<blink::WebFormElement>();
   FormRendererId form_id = form_util::GetFormRendererId(form);
 
   ExecuteJavaScriptForTests(
@@ -874,9 +869,9 @@ TEST_P(AutofillAgentSubmissionTest,
   ASSERT_TRUE(field);
   ASSERT_EQ("text_id", field.GetIdAttribute().Ascii());
 
-  FormData form =
-      *form_util::ExtractFormData(form_element.GetDocument(), form_element,
-                                  *base::MakeRefCounted<FieldDataManager>());
+  FormData form = *form_util::ExtractFormData(
+      form_element.GetDocument(), form_element,
+      *base::MakeRefCounted<FieldDataManager>(), kCallTimerStateDummy);
 
   ASSERT_EQ(1u, form.fields().size());
   test_api(form).field(0).set_value(u"autofilled");
@@ -1095,9 +1090,9 @@ TEST_P(AutofillAgentSubmissionTest,
   blink::WebFormElement form_element =
       GetWebElementById("form").DynamicTo<blink::WebFormElement>();
   ASSERT_TRUE(form_element);
-  std::optional<FormData> form =
-      form_util::ExtractFormData(GetMainFrame()->GetDocument(), form_element,
-                                 autofill_agent().field_data_manager());
+  std::optional<FormData> form = form_util::ExtractFormData(
+      GetDocument(), form_element, autofill_agent().field_data_manager(),
+      kCallTimerStateDummy);
   ASSERT_TRUE(form.has_value());
 
   blink::WebVector<blink::WebFormControlElement> field_elements =

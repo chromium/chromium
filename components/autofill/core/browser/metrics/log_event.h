@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/form_filler.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
+#include "components/autofill/core/common/is_required.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill {
@@ -50,18 +51,6 @@ enum class FillDataType : uint8_t {
 // redundant events.
 bool AreCollapsible(const absl::monostate& event1,
                     const absl::monostate& event2);
-
-namespace internal {
-
-// Auxiliary type to mark members of a struct as required.
-struct IsRequired {
-  // This function is not defined and consteval. Therefore, any evaluation will
-  // fail and fail at compile time.
-  template <typename T>
-  consteval operator T();  // NOLINT
-};
-
-}  // namespace internal
 
 // Log the field that shows a dropdown list of suggestions for autofill.
 struct AskForValuesToFillFieldLogEvent {

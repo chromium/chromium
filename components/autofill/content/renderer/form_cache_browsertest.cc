@@ -434,7 +434,7 @@ TEST_F(FormCacheBrowserTest,
   values_to_fill[1].value = u"Smith";
   values_to_fill[1].is_autofilled = true;
 
-  auto fname = GetFormControlElementById(GetDocument(), "fname");
+  auto fname = GetFormControlElementById("fname");
 
   // Simulate filling the form using Autofill.
   form_util::ApplyFieldsAction(

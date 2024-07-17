@@ -35,6 +35,8 @@ static_library("renderer") {
     "renderer_save_password_progress_logger.h",
     "suggestion_properties.cc",
     "suggestion_properties.h",
+    "timing.cc",
+    "timing.h",
   ]
 
   deps = [

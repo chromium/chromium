@@ -1607,9 +1607,11 @@ void PasswordAutofillAgent::TriggerFormSubmission() {
 
 std::unique_ptr<FormData> PasswordAutofillAgent::GetFormDataFromWebForm(
     const WebFormElement& web_form) {
-  return CreateFormDataFromWebForm(web_form, field_data_manager(),
-                                   &username_detector_cache_,
-                                   &button_titles_cache_);
+  return CreateFormDataFromWebForm(
+      web_form, field_data_manager(), &username_detector_cache_,
+      &button_titles_cache_,
+      autofill_agent_->GetCallTimerState(
+          CallTimerState::CallSite::kGetFormDataFromWebForm));
 }
 
 std::unique_ptr<FormData>
@@ -1626,7 +1628,9 @@ PasswordAutofillAgent::GetFormDataFromUnownedInputElements() {
     return nullptr;
   return CreateFormDataFromUnownedInputElements(
       *web_frame, field_data_manager(), &username_detector_cache_,
-      *enable_heavy_form_data_scraping_ ? &button_titles_cache_ : nullptr);
+      *enable_heavy_form_data_scraping_ ? &button_titles_cache_ : nullptr,
+      autofill_agent_->GetCallTimerState(
+          CallTimerState::CallSite::kGetFormDataFromUnownedInputElements));
 }
 
 void PasswordAutofillAgent::InformAboutFormClearing(
@@ -1797,7 +1801,10 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
   FormFieldData field;
   if (std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
           form_and_field = form_util::FindFormAndFieldForFormControlElement(
-              user_input, field_data_manager(), /*extract_options=*/{})) {
+              user_input, field_data_manager(),
+              autofill_agent_->GetCallTimerState(
+                  CallTimerState::CallSite::kShowSuggestionPopup),
+              /*extract_options=*/{})) {
     form = std::move(form_and_field->first);
     field = *form_and_field->second;
   }
@@ -2344,7 +2351,10 @@ void PasswordAutofillAgent::NotifyPasswordManagerAboutClearedForm(
                              ? render_frame()->GetWebFrame()->GetDocument()
                              : WebDocument();
   if (std::optional<FormData> form_data = form_util::ExtractFormData(
-          document, cleared_form, field_data_manager())) {
+          document, cleared_form, field_data_manager(),
+          autofill_agent_->GetCallTimerState(
+              CallTimerState::CallSite::
+                  kNotifyPasswordManagerAboutClearedForm))) {
     GetPasswordManagerDriver().PasswordFormCleared(*form_data);
   }
 }

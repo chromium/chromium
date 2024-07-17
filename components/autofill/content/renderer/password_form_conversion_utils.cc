@@ -8,6 +8,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "components/autofill/content/renderer/html_based_username_detector.h"
+#include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -123,12 +124,13 @@ std::unique_ptr<FormData> CreateFormDataFromWebForm(
     const WebFormElement& web_form,
     const FieldDataManager& field_data_manager,
     UsernameDetectorCache* username_detector_cache,
-    form_util::ButtonTitlesCache* button_titles_cache) {
+    form_util::ButtonTitlesCache* button_titles_cache,
+    const CallTimerState& timer_state) {
   if (!web_form) {
     return nullptr;
   }
   std::optional<FormData> form = form_util::ExtractFormData(
-      web_form.GetDocument(), web_form, field_data_manager);
+      web_form.GetDocument(), web_form, field_data_manager, timer_state);
   if (!form) {
     return nullptr;
   }
@@ -155,14 +157,15 @@ std::unique_ptr<FormData> CreateFormDataFromUnownedInputElements(
     const WebLocalFrame& frame,
     const FieldDataManager& field_data_manager,
     UsernameDetectorCache* username_detector_cache,
-    form_util::ButtonTitlesCache* button_titles_cache) {
+    form_util::ButtonTitlesCache* button_titles_cache,
+    const CallTimerState& timer_state) {
   std::vector<WebFormControlElement> control_elements =
       form_util::GetOwnedFormControls(frame.GetDocument(), WebFormElement());
   if (control_elements.empty()) {
     return nullptr;
   }
   std::optional<FormData> form = form_util::ExtractFormData(
-      frame.GetDocument(), WebFormElement(), field_data_manager);
+      frame.GetDocument(), WebFormElement(), field_data_manager, timer_state);
   if (!form) {
     return nullptr;
   }

@@ -303,11 +303,16 @@ void ApplyFieldsAction(
                                *base::MakeRefCounted<FieldDataManager>());
 }
 
-FormData FindForm(const blink::WebFormControlElement& element,
-                  const FieldDataManager& field_data_manager,
-                  DenseSet<ExtractOption> extract_options) {
+constexpr CallTimerState kCallTimerStateDummy = {
+    .call_site = CallTimerState::CallSite::kUpdateFormCache,
+    .last_autofill_agent_reset = {},
+    .last_dom_content_loaded = {},
+};
+
+FormData FindForm(const blink::WebFormControlElement& element) {
   if (auto p = FindFormAndFieldForFormControlElement(
-          element, field_data_manager, extract_options)) {
+          element, *base::MakeRefCounted<FieldDataManager>(),
+          kCallTimerStateDummy, {})) {
     return p->first;
   }
   return FormData();
@@ -337,6 +342,23 @@ class FormAutofillTest : public test::AutofillRendererTest {
   void TearDown() override {
     form_cache_.reset();
     test::AutofillRendererTest::TearDown();
+  }
+
+  std::optional<FormData> ExtractFormData(
+      WebFormElement form,
+      DenseSet<ExtractOption> extract_options = {}) {
+    return form_util::ExtractFormData(GetDocument(), form,
+                                      *base::MakeRefCounted<FieldDataManager>(),
+                                      kCallTimerStateDummy, extract_options);
+  }
+
+  std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
+  FindFormAndFieldForFormControlElement(
+      WebFormControlElement control,
+      DenseSet<ExtractOption> extract_options = {}) {
+    return form_util::FindFormAndFieldForFormControlElement(
+        control, *base::MakeRefCounted<FieldDataManager>(),
+        kCallTimerStateDummy, extract_options);
   }
 
   FormCache::UpdateFormCacheResult UpdateFormCache() {
@@ -464,9 +486,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
     WebInputElement input_element = GetInputElementById("firstname");
 
     // Find the form that contains the input element.
-    FormData form =
-        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
-                 /*extract_options=*/{});
+    FormData form = FindForm(input_element);
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form.name());
       EXPECT_EQ(GURL("http://abc.com"), form.action());
@@ -525,8 +545,8 @@ class FormAutofillTest : public test::AutofillRendererTest {
     SCOPED_TRACE(base::StringPrintf("Verify autofilled value for field %s",
                                     field_case.id_attribute));
     WebString value;
-    WebFormControlElement element = GetFormControlElementById(
-        WebString::FromASCII(field_case.id_attribute));
+    WebFormControlElement element =
+        GetFormControlElementById(field_case.id_attribute);
     if ((element.FormControlType() ==
          blink::mojom::FormControlType::kSelectOne) ||
         (element.FormControlType() ==
@@ -551,14 +571,6 @@ class FormAutofillTest : public test::AutofillRendererTest {
               action_persistence == mojom::ActionPersistence::kFill
                   ? element.IsAutofilled()
                   : element.IsPreviewed());
-  }
-
-  WebFormControlElement GetFormControlElementById(const WebString& id) {
-    return GetDocument().GetElementById(id).DynamicTo<WebFormControlElement>();
-  }
-
-  WebInputElement GetInputElementById(const WebString& id) {
-    return GetDocument().GetElementById(id).DynamicTo<WebInputElement>();
   }
 
   void TestFillForm(const char* html, bool unowned, const char* url_override) {
@@ -698,9 +710,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
     WebInputElement input_element = GetInputElementById("firstname");
 
     // Find the form and verify it's the correct form.
-    FormData form =
-        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
-                 /*extract_options=*/{});
+    FormData form = FindForm(input_element);
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form.name());
       EXPECT_EQ(GURL("http://abc.com"), form.action());
@@ -752,9 +762,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
         element.To<WebFormControlElement>();
 
     // Find the form and verify it's the correct form.
-    FormData form =
-        FindForm(textarea_element, *base::MakeRefCounted<FieldDataManager>(),
-                 /*extract_options=*/{});
+    FormData form = FindForm(textarea_element);
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form.name());
       EXPECT_EQ(GURL("http://abc.com"), form.action());
@@ -810,9 +818,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
     WebInputElement input_element = GetInputElementById("firstname");
 
     // Find the form that contains the input element.
-    FormData form =
-        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
-                 /*extract_options=*/{});
+    FormData form = FindForm(input_element);
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form.name());
       EXPECT_EQ(GURL("http://abc.com"), form.action());
@@ -854,9 +860,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
                       mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
-    FormData form2 =
-        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
-                 /*extract_options=*/{});
+    FormData form2 = FindForm(input_element);
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form2.name());
       EXPECT_EQ(GURL("http://abc.com"), form2.action());
@@ -899,9 +903,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
     WebInputElement input_element = GetInputElementById("firstname");
 
     // Find the form that contains the input element.
-    FormData form =
-        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
-                 /*extract_options=*/{});
+    FormData form = FindForm(input_element);
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form.name());
       EXPECT_EQ(GURL("http://abc.com"), form.action());
@@ -935,9 +937,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
                       mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
-    FormData form2 =
-        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
-                 /*extract_options=*/{});
+    FormData form2 = FindForm(input_element);
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form2.name());
       EXPECT_EQ(GURL("http://abc.com"), form2.action());
@@ -972,9 +972,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
     WebInputElement input_element = GetInputElementById("firstname");
 
     // Find the form that contains the input element.
-    FormData form =
-        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
-                 /*extract_options=*/{});
+    FormData form = FindForm(input_element);
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form.name());
       EXPECT_EQ(GURL("http://abc.com"), form.action());
@@ -1008,9 +1006,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
                       mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
-    FormData form2 =
-        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
-                 /*extract_options=*/{});
+    FormData form2 = FindForm(input_element);
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form2.name());
       EXPECT_EQ(GURL("http://abc.com"), form2.action());
@@ -1049,9 +1045,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
     WebInputElement input_element = GetInputElementById("apple");
 
     // Find the form that contains the input element.
-    FormData form =
-        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
-                 /*extract_options=*/{});
+    FormData form = FindForm(input_element);
     if (!unowned) {
       EXPECT_TRUE(form.name().empty());
       EXPECT_EQ(GURL("http://abc.com"), form.action());
@@ -1092,9 +1086,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
                       mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
-    FormData form2 =
-        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
-                 /*extract_options=*/{});
+    FormData form2 = FindForm(input_element);
     if (!unowned) {
       EXPECT_TRUE(form2.name().empty());
       EXPECT_EQ(GURL("http://abc.com"), form2.action());
@@ -1141,9 +1133,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
     input_element.SetValue(WebString::FromASCII("Wy"));
 
     // Find the form that contains the input element.
-    FormData form =
-        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
-                 /*extract_options=*/{});
+    FormData form = FindForm(input_element);
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form.name());
       EXPECT_EQ(GURL("http://abc.com"), form.action());
@@ -1217,9 +1207,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
                       mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
-    FormData form2 =
-        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
-                 /*extract_options=*/{});
+    FormData form2 = FindForm(input_element);
     if (!unowned) {
       EXPECT_EQ(u"TestForm", form2.name());
       EXPECT_EQ(GURL("http://abc.com"), form2.action());
@@ -1328,9 +1316,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
     control_elements[5].SetValue(WebString::FromUTF16(u"AK"));
 
     // Find the form that contains the input element.
-    FormData form =
-        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
-                 /*extract_options=*/{});
+    FormData form = FindForm(input_element);
     EXPECT_EQ(u"TestForm", form.name());
     EXPECT_EQ(GURL("http://abc.com"), form.action());
 
@@ -1359,9 +1345,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
                       mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
-    FormData form2 =
-        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
-                 /*extract_options=*/{});
+    FormData form2 = FindForm(input_element);
     EXPECT_EQ(u"TestForm", form2.name());
     EXPECT_EQ(GURL("http://abc.com"), form2.action());
 
@@ -1490,9 +1474,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
     // This will be considered.
     control_elements[2].SetValue(WebString::FromUTF16(u"john@smith.com"));
     // Find the form that contains the input element.
-    FormData form =
-        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
-                 /*extract_options=*/{});
+    FormData form = FindForm(input_element);
     EXPECT_EQ(u"TestForm", form.name());
     EXPECT_EQ(GURL("http://abc.com"), form.action());
 
@@ -1515,9 +1497,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
                       mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
-    FormData form2 =
-        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
-                 /*extract_options=*/{});
+    FormData form2 = FindForm(input_element);
     EXPECT_EQ(u"TestForm", form2.name());
     EXPECT_EQ(GURL("http://abc.com"), form2.action());
 
@@ -1598,9 +1578,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
     control_elements[2].SetUserHasEditedTheField(true);
 
     // Find the form that contains the input element.
-    FormData form =
-        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
-                 /*extract_options=*/{});
+    FormData form = FindForm(input_element);
     EXPECT_EQ(u"TestForm", form.name());
     EXPECT_EQ(GURL("http://abc.com"), form.action());
 
@@ -1626,9 +1604,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
                       mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
-    FormData form2 =
-        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
-                 /*extract_options=*/{});
+    FormData form2 = FindForm(input_element);
     EXPECT_EQ(u"TestForm", form2.name());
     EXPECT_EQ(GURL("http://abc.com"), form2.action());
 
@@ -1717,9 +1693,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
         "document.getElementById('name').value = 'John Smith';");
 
     // Find the form that contains the input element.
-    FormData form =
-        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
-                 /*extract_options=*/{});
+    FormData form = FindForm(input_element);
     EXPECT_EQ(u"TestForm", form.name());
     EXPECT_EQ(GURL("http://abc.com"), form.action());
 
@@ -1745,9 +1719,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
                       mojom::ActionPersistence::kFill);
 
     // Find the newly-filled form that contains the input element.
-    FormData form2 =
-        FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
-                 /*extract_options=*/{});
+    FormData form2 = FindForm(input_element);
     EXPECT_EQ(u"TestForm", form2.name());
     EXPECT_EQ(GURL("http://abc.com"), form2.action());
 
@@ -2376,7 +2348,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldAutocompletetype) {
   WebDocument document = frame->GetDocument();
   for (auto& test_case : test_cases) {
     WebFormControlElement element =
-        GetFormControlElementById(WebString::FromASCII(test_case.element_id));
+        GetFormControlElementById(test_case.element_id);
     FormFieldData result;
     WebFormControlElementToFormFieldForTesting(WebFormElement(), element,
                                                nullptr,
@@ -2576,8 +2548,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData) {
 
   WebInputElement input_element = GetInputElementById("firstname");
 
-  FormData form =
-      FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(), {});
+  FormData form = FindForm(input_element);
 
   EXPECT_EQ(u"TestForm", form.name());
   EXPECT_EQ(GetFormRendererId(forms[0]), form.renderer_id());
@@ -2658,9 +2629,7 @@ TEST_F(FormAutofillTest, WebFormElementConsiderNonControlLabelableElements) {
       frame->GetDocument().GetElementById("form").To<WebFormElement>();
   ASSERT_TRUE(web_form);
 
-  FormData form = *ExtractFormData(web_form.GetDocument(), web_form,
-                                   *base::MakeRefCounted<FieldDataManager>(),
-                                   /*extract_options=*/{});
+  FormData form = *ExtractFormData(web_form);
 
   const std::vector<FormFieldData>& fields = form.fields();
   ASSERT_EQ(1U, fields.size());
@@ -2688,8 +2657,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_TooManyFields) {
                                       .front()
                                       .DynamicTo<WebInputElement>();
   EXPECT_THAT(
-      FindFormAndFieldForFormControlElement(
-          input_element, *base::MakeRefCounted<FieldDataManager>(), {}),
+      FindFormAndFieldForFormControlElement(input_element),
       Optional(Pair(
           Property(&FormData::fields,
                    ElementsAre(Property(&FormFieldData::renderer_id,
@@ -2717,9 +2685,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_AutocompleteOff_OnForm) {
       frame->GetDocument().GetElementById("form").To<WebFormElement>();
   ASSERT_TRUE(web_form);
 
-  FormData form = *ExtractFormData(web_form.GetDocument(), web_form,
-                                   *base::MakeRefCounted<FieldDataManager>(),
-                                   /*extract_options=*/{});
+  FormData form = *ExtractFormData(web_form);
   for (const FormFieldData& field : form.fields()) {
     EXPECT_FALSE(field.should_autocomplete());
   }
@@ -2745,12 +2711,8 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_AutocompleteOff_OnField) {
       frame->GetDocument().GetElementById("form").To<WebFormElement>();
   ASSERT_TRUE(web_form);
 
-  FormData form = *ExtractFormData(web_form.GetDocument(), web_form,
-                                   *base::MakeRefCounted<FieldDataManager>(),
-                                   /*extract_options=*/{});
-
+  FormData form = *ExtractFormData(web_form);
   ASSERT_EQ(3U, form.fields().size());
-
   EXPECT_FALSE(form.fields()[0].should_autocomplete());
   EXPECT_TRUE(form.fields()[1].should_autocomplete());
   EXPECT_TRUE(form.fields()[2].should_autocomplete());
@@ -2770,10 +2732,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_AutocompleteOff_OneTimeCode) {
       frame->GetDocument().GetElementById("form").To<WebFormElement>();
   ASSERT_TRUE(web_form);
 
-  FormData form = *ExtractFormData(web_form.GetDocument(), web_form,
-                                   *base::MakeRefCounted<FieldDataManager>(),
-                                   /*extract_options=*/{});
-
+  FormData form = *ExtractFormData(web_form);
   ASSERT_EQ(1U, form.fields().size());
   EXPECT_FALSE(form.fields()[0].should_autocomplete());
 }
@@ -2794,10 +2753,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_CssClasses) {
       frame->GetDocument().GetElementById("form").To<WebFormElement>();
   ASSERT_TRUE(web_form);
 
-  FormData form = *ExtractFormData(web_form.GetDocument(), web_form,
-                                   *base::MakeRefCounted<FieldDataManager>(),
-                                   /*extract_options=*/{});
-
+  FormData form = *ExtractFormData(web_form);
   ASSERT_EQ(3U, form.fields().size());
   EXPECT_EQ(u"firstname_field", form.fields()[0].css_classes());
   EXPECT_EQ(u"lastname_field", form.fields()[1].css_classes());
@@ -2821,10 +2777,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_IdAttributes) {
       frame->GetDocument().GetElementById("form").To<WebFormElement>();
   ASSERT_TRUE(web_form);
 
-  FormData form = *ExtractFormData(web_form.GetDocument(), web_form,
-                                   *base::MakeRefCounted<FieldDataManager>(),
-                                   /*extract_options=*/{});
-
+  FormData form = *ExtractFormData(web_form);
   EXPECT_EQ(4U, form.fields().size());
 
   // id attributes.
@@ -3064,9 +3017,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_Autocomplete) {
     ASSERT_EQ(1U, web_forms.size());
     WebFormElement web_form = web_forms[0];
 
-    EXPECT_TRUE(ExtractFormData(web_form.GetDocument(), web_form,
-                                *base::MakeRefCounted<FieldDataManager>(),
-                                /*extract_options=*/{}));
+    EXPECT_TRUE(ExtractFormData(web_form));
   }
 }
 
@@ -3188,9 +3139,7 @@ TEST_F(FormAutofillTest, LabelForAttribute) {
 
   base::HistogramTester histogram_tester;
   // Simulate seeing an unowned form containing just the input "fieldID".
-  FormData form =
-      *ExtractFormData(GetMainFrame()->GetDocument(), WebFormElement(),
-                       *base::MakeRefCounted<FieldDataManager>());
+  FormData form = *ExtractFormData(WebFormElement());
   ASSERT_EQ(form.fields().size(), 1u);
   FormFieldData& form_field_data = test_api(form).field(0);
 
@@ -4380,8 +4329,7 @@ TEST_F(FormAutofillTest, ThreePartPhone) {
   WebVector<WebFormElement> forms = frame->GetDocument().GetTopLevelForms();
   ASSERT_EQ(1U, forms.size());
 
-  FormData form = *ExtractFormData(forms[0].GetDocument(), forms[0],
-                                   *base::MakeRefCounted<FieldDataManager>());
+  FormData form = *ExtractFormData(forms[0]);
   EXPECT_EQ(u"TestForm", form.name());
   EXPECT_EQ(GURL("http://cnn.com"), form.action());
 
@@ -4442,8 +4390,7 @@ TEST_F(FormAutofillTest, MaxLengthFields) {
   WebVector<WebFormElement> forms = frame->GetDocument().GetTopLevelForms();
   ASSERT_EQ(1U, forms.size());
 
-  FormData form = *ExtractFormData(forms[0].GetDocument(), forms[0],
-                                   *base::MakeRefCounted<FieldDataManager>());
+  FormData form = *ExtractFormData(forms[0]);
   EXPECT_EQ(u"TestForm", form.name());
   EXPECT_EQ(GURL("http://cnn.com"), form.action());
 
@@ -4677,8 +4624,7 @@ TEST_F(FormAutofillTest, UndoAutofill) {
       GetMainFrame()->GetDocument().GetTopLevelForms();
   EXPECT_EQ(1U, forms.size());
 
-  FormData form = *ExtractFormData(forms[0].GetDocument(), forms[0],
-                                   *base::MakeRefCounted<FieldDataManager>());
+  FormData form = *ExtractFormData(forms[0]);
 
   EXPECT_EQ(form.fields().size(), 6u);
   std::vector<FormFieldData> undo_fields;
@@ -4872,8 +4818,7 @@ TEST_F(FormAutofillTest, SelectOneAsText) {
   WebVector<WebFormElement> forms = frame->GetDocument().GetTopLevelForms();
   ASSERT_EQ(1U, forms.size());
 
-  FormData form = *ExtractFormData(forms[0].GetDocument(), forms[0],
-                                   *base::MakeRefCounted<FieldDataManager>());
+  FormData form = *ExtractFormData(forms[0]);
   EXPECT_EQ(u"TestForm", form.name());
   EXPECT_EQ(GURL("http://cnn.com"), form.action());
 
@@ -4919,9 +4864,7 @@ TEST_F(FormAutofillTest, UnownedFormElementsToFormDataWithoutForm) {
                 <label for=email>Email:</label>
                 <input id=email value='john@example.com'>
               </div>)");
-  FormData form =
-      *ExtractFormData(GetMainFrame()->GetDocument(), WebFormElement(),
-                       *base::MakeRefCounted<FieldDataManager>());
+  FormData form = *ExtractFormData(WebFormElement());
 
   EXPECT_TRUE(form.name().empty());
   EXPECT_FALSE(form.action().is_valid());
@@ -4954,14 +4897,12 @@ TEST_F(FormAutofillTest, UnownedFormElementsToFormDataWithoutForm) {
 
 TEST_F(FormAutofillTest, UnownedFormElementsToFormDataWithForm) {
   LoadHTML(kFormHtml);
-  EXPECT_FALSE(ExtractFormData(GetMainFrame()->GetDocument(), WebFormElement(),
-                               *base::MakeRefCounted<FieldDataManager>()));
+  EXPECT_FALSE(ExtractFormData(WebFormElement()));
 }
 
 TEST_F(FormAutofillTest, FormlessForms) {
   LoadHTML(kUnownedUntitledFormHtml);
-  EXPECT_TRUE(ExtractFormData(GetMainFrame()->GetDocument(), WebFormElement(),
-                              *base::MakeRefCounted<FieldDataManager>()));
+  EXPECT_TRUE(ExtractFormData(WebFormElement()));
 }
 
 TEST_F(FormAutofillTest, FormCache_ExtractNewForms) {
@@ -5057,8 +4998,7 @@ TEST_F(FormAutofillTest, AriaLabelAndDescription) {
   WebFormControlElement control_element =
       frame->GetDocument().GetElementById("field0").To<WebFormControlElement>();
   ASSERT_TRUE(control_element);
-  FormData form =
-      FindForm(control_element, *base::MakeRefCounted<FieldDataManager>(), {});
+  FormData form = FindForm(control_element);
 
   const std::vector<FormFieldData>& fields = form.fields();
   ASSERT_EQ(3U, fields.size());
@@ -5096,8 +5036,7 @@ TEST_F(FormAutofillTest, AriaLabelAndDescription2) {
   WebFormControlElement control_element =
       frame->GetDocument().GetElementById("field0").To<WebFormControlElement>();
   ASSERT_TRUE(control_element);
-  FormData form =
-      FindForm(control_element, *base::MakeRefCounted<FieldDataManager>(), {});
+  FormData form = FindForm(control_element);
 
   const std::vector<FormFieldData>& fields = form.fields();
   ASSERT_EQ(3U, fields.size());

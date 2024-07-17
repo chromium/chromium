@@ -34,6 +34,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -2148,7 +2149,9 @@ std::optional<FormData> ExtractFormData(
     const WebDocument& document,
     const WebFormElement& form_element,
     const FieldDataManager& field_data_manager,
+    const CallTimerState& timer_state,
     DenseSet<ExtractOption> extract_options) {
+  ScopedCallTimer timer("ExtractFormData", timer_state);
   return ExtractFormDataWithFieldsAndFrames(
       document, form_element, field_data_manager, extract_options);
 }
@@ -2380,6 +2383,7 @@ std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
 FindFormAndFieldForFormControlElement(
     const WebFormControlElement& element,
     const FieldDataManager& field_data_manager,
+    const CallTimerState& timer_state,
     DenseSet<ExtractOption> extract_options) {
   DCHECK(element);
 
@@ -2390,7 +2394,7 @@ FindFormAndFieldForFormControlElement(
   WebDocument document = element.GetDocument();
   WebFormElement form_element = GetOwningForm(element);
   std::optional<FormData> form = ExtractFormData(
-      document, form_element, field_data_manager, extract_options);
+      document, form_element, field_data_manager, timer_state, extract_options);
   const bool extract_form_data_succeeded = form.has_value();
 
   if (!form) {

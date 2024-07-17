@@ -24,8 +24,10 @@
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_cache.h"
 #include "components/autofill/content/renderer/form_tracker.h"
+#include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/field_data_manager.h"
+#include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -65,6 +67,7 @@ class PasswordGenerationAgent;
 // To handle this state, care must be taken to check for nullptrs:
 // - `unsafe_autofill_driver()`
 // - `unsafe_render_frame()`
+// - `GetDocument()`
 //
 // This RenderFrame owns all forms and fields in the renderer-browser
 // communication:
@@ -153,6 +156,8 @@ class AutofillAgent : public content::RenderFrameObserver,
   // the `autofill_driver_` has not been bound yet.
   mojom::AutofillDriver* unsafe_autofill_driver();
   mojom::PasswordManagerDriver& GetPasswordManagerDriver();
+
+  CallTimerState GetCallTimerState(CallTimerState::CallSite call_site) const;
 
   // mojom::AutofillAgent:
   void TriggerFormExtraction() override;
@@ -568,6 +573,11 @@ class AutofillAgent : public content::RenderFrameObserver,
     // The timer for the next CaretMovedInFormField().
     base::OneShotTimer timer;
   } caret_state_;
+
+  struct {
+    base::TimeTicks last_autofill_agent_reset = base::TimeTicks::Now();
+    base::TimeTicks last_dom_content_loaded;
+  } timing_;
 
   base::WeakPtrFactory<AutofillAgent> weak_ptr_factory_{this};
 };

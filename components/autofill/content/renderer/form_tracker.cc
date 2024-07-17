@@ -488,7 +488,9 @@ void FormTracker::UpdateLastInteractedElement(
       unsafe_render_frame()
           ? form_util::ExtractFormData(
                 unsafe_render_frame()->GetWebFrame()->GetDocument(),
-                last_interacted_.form.GetForm(), agent_->field_data_manager())
+                last_interacted_.form.GetForm(), agent_->field_data_manager(),
+                agent_->GetCallTimerState(
+                    CallTimerState::CallSite::kUpdateLastInteractedElement))
           : std::nullopt;
 }
 

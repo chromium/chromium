@@ -25,6 +25,12 @@ using blink::mojom::GenericIssueErrorType;
 namespace autofill::form_issues {
 namespace {
 
+constexpr CallTimerState kCallTimerStateDummy = {
+    .call_site = CallTimerState::CallSite::kUpdateFormCache,
+    .last_autofill_agent_reset = {},
+    .last_dom_content_loaded = {},
+};
+
 // Checks if the provided list `form_issues` contains a certain issue type.
 // Optionally checks whether the expected issue type has the specified
 // `violating_attr`.
@@ -237,7 +243,7 @@ TEST_F(FormAutofillIssuesTest, FormLabelForNameError) {
   WebLocalFrame* web_frame = GetMainFrame();
   FormData form_data = *form_util::ExtractFormData(
       web_frame->GetDocument(), WebFormElementFromHTML(kHtml),
-      *base::MakeRefCounted<FieldDataManager>());
+      *base::MakeRefCounted<FieldDataManager>(), kCallTimerStateDummy);
 
   std::vector<FormIssue> form_issues =
       CheckForLabelsWithIncorrectForAttributeForTesting(
@@ -260,7 +266,7 @@ TEST_F(FormAutofillIssuesTest, FormLabelForMatchesNonExistingIdError) {
   WebLocalFrame* web_frame = GetMainFrame();
   FormData form_data = *form_util::ExtractFormData(
       web_frame->GetDocument(), WebFormElementFromHTML(kHtml),
-      *base::MakeRefCounted<FieldDataManager>());
+      *base::MakeRefCounted<FieldDataManager>(), kCallTimerStateDummy);
 
   std::vector<FormIssue> form_issues =
       CheckForLabelsWithIncorrectForAttributeForTesting(

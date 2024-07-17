@@ -268,6 +268,32 @@ chromium-metrics-reviews@google.com.
       summary="Snackbar shown after virtual card is autofilled."/>
 </variants>
 
+<variants name="Autofill.TimingPrecise.Callee">
+  <variant name="ExtractFormData"/>
+  <variant name="UpdateFormCache"/>
+</variants>
+
+<variants name="Autofill.TimingPrecise.Caller">
+  <variant name="ApplyFieldsAction"/>
+  <variant name="BatchSelectOrSelectListOptionChange"/>
+  <variant name="DidChangeScrollOffsetImpl"/>
+  <variant name="ExtractForm"/>
+  <variant name="FocusedElementChanged"/>
+  <variant name="FocusedElementChangedDeprecated"/>
+  <variant name="GetFormDataFromUnownedInputElements"/>
+  <variant name="GetFormDataFromWebForm"/>
+  <variant name="GetSubmittedForm"/>
+  <variant name="HandleCaretMovedInFormField"/>
+  <variant name="JavaScriptChangedValue"/>
+  <variant name="NotifyPasswordManagerAboutClearedForm"/>
+  <variant name="OnProvisionallySaveForm"/>
+  <variant name="OnTextFieldDidChange"/>
+  <variant name="QueryAutofillSuggestions"/>
+  <variant name="ShowSuggestionPopup"/>
+  <variant name="UpdateFormCache"/>
+  <variant name="UpdateLastInteractedElement"/>
+</variants>
+
 <variants name="Autofill.VirtualCard.RequestSource">
   <variant name="Downstream"
       summary="The enrollment change happens after an Autofill Downstream
@@ -5711,7 +5737,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.Timing.ParseFormUntilInteraction2" units="ms"
     expires_after="2024-12-12">
-  <owner>schwering@chromium.org</owner>
+  <owner>schwering@google.com</owner>
   <owner>brunobraga@google.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -5723,7 +5749,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.Timing.{AutofillTimedFunction}" units="ms"
     expires_after="2024-12-12">
-  <owner>schwering@chromium.org</owner>
+  <owner>schwering@google.com</owner>
   <owner>kenjitoyama@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -5743,6 +5769,53 @@ chromium-metrics-reviews@google.com.
     <variant name="ParseFormsAsync.RunHeuristics"/>
     <variant name="ParseFormsAsync.UpdateCache"/>
   </token>
+</histogram>
+
+<histogram name="Autofill.TimingInterval.{Caller}.{Callee}.{Event}"
+    units="microseconds" expires_after="2025-12-12">
+  <owner>schwering@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the number of microseconds passed the last preceding {Event} event
+    and (the end of) {Callee}, which has been called by {Caller}. The metric is
+    recorded on all platforms except for iOS and is only recorded for clients
+    with high-resolution clocks.
+  </summary>
+  <token key="Callee" variants="Autofill.TimingPrecise.Callee"/>
+  <token key="Caller" variants="Autofill.TimingPrecise.Caller"/>
+  <token key="Event">
+    <variant name="AutofillAgentReset"/>
+    <variant name="DOMContentLoaded"/>
+  </token>
+</histogram>
+
+<histogram name="Autofill.TimingPrecise.{Callee}" units="microseconds"
+    expires_after="2025-12-12">
+  <owner>schwering@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the number of microseconds passed between the start and end of
+    {Callee}. This is effectively the aggregation of
+    Autofill.TimingPrecise.{Callee}.*. The metric is recorded on all platforms
+    except for iOS and is only recorded for clients with high-resolution clocks.
+  </summary>
+  <token key="Callee" variants="Autofill.TimingPrecise.Callee"/>
+</histogram>
+
+<histogram name="Autofill.TimingPrecise.{Callee}.{Caller}" units="microseconds"
+    expires_after="2025-12-12">
+  <owner>schwering@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the number of microseconds passed between the start and end of
+    {Callee} called by {Caller}. The metric is recorded on all platforms except
+    for iOS and is only recorded for clients with high-resolution clocks.
+  </summary>
+  <token key="Callee" variants="Autofill.TimingPrecise.Callee"/>
+  <token key="Caller" variants="Autofill.TimingPrecise.Caller"/>
 </histogram>
 
 <histogram

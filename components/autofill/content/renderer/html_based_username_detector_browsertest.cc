@@ -66,9 +66,14 @@ class HtmlBasedUsernameDetectorTest : public content::RenderViewTest {
   }
 
   FormData GetFormData(const WebFormElement& form) {
+    constexpr CallTimerState kCallTimerStateDummy = {
+        .call_site = CallTimerState::CallSite::kUpdateFormCache,
+        .last_autofill_agent_reset = {},
+        .last_dom_content_loaded = {},
+    };
     return *form_util::ExtractFormData(
         form.GetDocument(), form, *base::MakeRefCounted<FieldDataManager>(),
-        /*extract_options=*/{});
+        kCallTimerStateDummy, /*extract_options=*/{});
   }
 
   FieldRendererId GetRendererIdFromWebElementId(const WebString& id) {
