@@ -944,7 +944,7 @@ v8::Isolate* V8Initializer::InitializeMainThread() {
   if (Platform::Current()->IsolateStartsInBackground()) {
     // If we do not track widget visibility, then assume conservatively that
     // the isolate is in background. This reduces memory usage.
-    isolate->IsolateInBackgroundNotification();
+    isolate->SetPriority(v8::Isolate::Priority::kBestEffort);
   }
 
   return isolate;

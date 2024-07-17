@@ -776,6 +776,11 @@ BASE_FEATURE(kRestrictThreadPoolInBackground,
              "RestrictThreadPoolInBackground",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Set a tri-state priority on v8 isolates reflecting the renderer priority.
+BASE_FEATURE(kSetIsolatesPriority,
+             "SetIsolatesPriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Reuse compositor instances with RenderDocument
 BASE_FEATURE(kRenderDocumentCompositorReuse,
              "RenderDocumentCompositorReuse",
