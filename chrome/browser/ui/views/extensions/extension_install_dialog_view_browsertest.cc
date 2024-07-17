@@ -44,6 +44,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/permissions/permission_message_provider.h"
@@ -254,6 +255,48 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTest, NotifyDelegate) {
     // TODO(devlin): Should this be ABORTED?
     EXPECT_EQ(ExtensionInstallPrompt::Result::USER_CANCELED, helper.result());
   }
+}
+
+// Regression test for crbug.com/40059470. Tests that the originating web
+// contents are activated and the installation prompt is shown there, if the
+// user switches the tab after starting the installation.
+IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTest,
+                       ActivateWebContentsOnTabChange) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  content::WebContents* originating_web_contents =
+      tab_strip_model->GetActiveWebContents();
+
+  AddBlankTabAndShow(browser());
+  ASSERT_NE(tab_strip_model->GetActiveWebContents(), originating_web_contents);
+
+  base::RunLoop run_loop;
+  auto show_dialog_callback =
+      [&](std::unique_ptr<ExtensionInstallPromptShowParams> show_params,
+          ExtensionInstallPrompt::DoneCallback done_callback,
+          std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt) {
+        // show_params_weak won't be dangling till the dialog is closed.
+        ExtensionInstallPromptShowParams* show_params_weak = show_params.get();
+        std::move(ExtensionInstallPrompt::GetDefaultShowDialogCallback())
+            .Run(std::move(show_params), /*done_callback=*/base::DoNothing(),
+                 std::move(prompt));
+
+        // Ensure that show_params has the correct parent window and the
+        // originating web contents are activated.
+        EXPECT_TRUE(show_params_weak->GetParentWindow());
+        EXPECT_EQ(show_params_weak->GetParentWindow(),
+                  browser()->window()->GetNativeWindow());
+        EXPECT_EQ(tab_strip_model->GetActiveWebContents(),
+                  originating_web_contents);
+        run_loop.Quit();
+      };
+
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder("Test extension").Build();
+  ExtensionInstallPrompt prompt(originating_web_contents);
+  prompt.ShowDialog(/*install_callback=*/base::DoNothing(), extension.get(),
+                    /*icon=*/nullptr,
+                    base::BindLambdaForTesting(show_dialog_callback));
+  run_loop.Run();
 }
 
 // Verifies that the "Add extension" button is disabled initially, but

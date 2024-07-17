@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_is_test.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,28 +19,38 @@
 
 namespace {
 
-gfx::NativeWindow NativeWindowForWebContents(content::WebContents* contents) {
-  if (!contents)
-    return nullptr;
-
-  return contents->GetTopLevelNativeWindow();
-}
-
 #if defined(USE_AURA)
 bool g_root_checking_enabled = true;
 #endif
 
+bool RootCheck(gfx::NativeWindow window) {
+#if defined(USE_AURA)
+  // If the window is not contained in a root window, then it's not connected
+  // to a display and can't be used as the context. To do otherwise results in
+  // checks later on assuming context has a root.
+  return !g_root_checking_enabled || (window->GetRootWindow() != nullptr);
+#else
+  return true;
+#endif
+}
 }  // namespace
 
 ExtensionInstallPromptShowParams::ExtensionInstallPromptShowParams(
     content::WebContents* contents)
-    : profile_(contents
-                   ? Profile::FromBrowserContext(contents->GetBrowserContext())
-                   : nullptr),
-      parent_web_contents_(contents ? contents->GetWeakPtr() : nullptr),
-      parent_window_(NativeWindowForWebContents(contents)) {
-  if (parent_window_)
-    native_window_tracker_ = views::NativeWindowTracker::Create(parent_window_);
+    : profile_(Profile::FromBrowserContext(contents->GetBrowserContext())),
+      parent_web_contents_(contents->GetWeakPtr()) {
+  DCHECK(profile_);
+  DCHECK(parent_web_contents_);
+
+  if (!parent_web_contents_->GetTopLevelNativeWindow()) {
+    // Some tests construct this with a WebContents that has no window. If we
+    // keep web contents in this case, WasParentDestroyed() will always return
+    // true, even though there is no real window to check. Thus, there is no
+    // window to track here. Reset the web contents in this case, and just keep
+    // the profile.
+    CHECK_IS_TEST();
+    parent_web_contents_.reset();
+  }
 }
 
 ExtensionInstallPromptShowParams::ExtensionInstallPromptShowParams(
@@ -48,8 +59,10 @@ ExtensionInstallPromptShowParams::ExtensionInstallPromptShowParams(
     : profile_(profile),
       parent_web_contents_(nullptr),
       parent_window_(parent_window) {
-  if (parent_window_)
+  DCHECK(profile);
+  if (parent_window_) {
     native_window_tracker_ = views::NativeWindowTracker::Create(parent_window_);
+  }
 }
 
 ExtensionInstallPromptShowParams::~ExtensionInstallPromptShowParams() = default;
@@ -59,32 +72,39 @@ content::WebContents* ExtensionInstallPromptShowParams::GetParentWebContents() {
 }
 
 gfx::NativeWindow ExtensionInstallPromptShowParams::GetParentWindow() {
-  return (native_window_tracker_ &&
-          !native_window_tracker_->WasNativeWindowDestroyed())
-             ? parent_window_
-             : nullptr;
+  if (WasParentDestroyed()) {
+    return nullptr;
+  }
+
+  if (WasConfiguredForWebContents()) {
+    return parent_web_contents_->GetTopLevelNativeWindow();
+  }
+
+  return parent_window_;
 }
 
 bool ExtensionInstallPromptShowParams::WasParentDestroyed() {
-  const bool parent_web_contents_destroyed =
-      parent_web_contents_.WasInvalidated();
-  if (parent_web_contents_destroyed) {
+  if (profile_->ShutdownStarted()) {
     return true;
   }
-  if (native_window_tracker_) {
-    if (native_window_tracker_->WasNativeWindowDestroyed()) {
-      return true;
-    }
-#if defined(USE_AURA)
-    // If the window is not contained in a root window, then it's not connected
-    // to a display and can't be used as the context. To do otherwise results in
-    // checks later on assuming context has a root.
-    if (g_root_checking_enabled && !parent_window_->GetRootWindow()) {
-      return true;
-    }
-#endif
+
+  if (WasConfiguredForWebContents()) {
+    return !parent_web_contents_ || parent_web_contents_->IsBeingDestroyed() ||
+           !parent_web_contents_->GetTopLevelNativeWindow() ||
+           !RootCheck(parent_web_contents_->GetTopLevelNativeWindow());
   }
+
+  if (native_window_tracker_) {
+    return native_window_tracker_->WasNativeWindowDestroyed() ||
+           !RootCheck(parent_window_);
+  }
+
   return false;
+}
+
+bool ExtensionInstallPromptShowParams::WasConfiguredForWebContents() {
+  // If we ever had a valid web contents, it means we were configured for it.
+  return parent_web_contents_ || parent_web_contents_.WasInvalidated();
 }
 
 namespace test {
