@@ -9648,8 +9648,17 @@ TEST_P(DeskBarTest, HoverBasic) {
     EXPECT_FALSE(DesksTestApi::IsDeskShortcutViewVisible(mini_view));
     event_generator->MoveMouseTo(
         mini_view->desk_preview()->GetBoundsInScreen().CenterPoint());
-    EXPECT_TRUE(
-        mini_view->desk_action_view()->combine_desks_button()->GetVisible());
+
+    if (features::IsForestFeatureEnabled()) {
+      EXPECT_TRUE(mini_view->desk_action_view()->context_menu_button());
+      EXPECT_TRUE(
+          mini_view->desk_action_view()->context_menu_button()->GetVisible());
+    } else {
+      EXPECT_TRUE(mini_view->desk_action_view()->combine_desks_button());
+      EXPECT_TRUE(
+          mini_view->desk_action_view()->combine_desks_button()->GetVisible());
+    }
+
     EXPECT_TRUE(
         mini_view->desk_action_view()->close_all_button()->GetVisible());
 
@@ -10119,6 +10128,13 @@ TEST_P(DeskBarTest, AutoHideKeyBack) {
 }
 
 TEST_P(DeskBarTest, ForwardTabbing) {
+  // The context menu button that replaces the combine desks button when Forest
+  // is enabled is not compatible with old overview focus.
+  if (!features::IsOverviewNewFocusEnabled() &&
+      features::IsForestFeatureEnabled()) {
+    return;
+  }
+
   // Add a saved desk, so that the library button can show up.
   AddSavedDeskEntry(desk_model(), base::Uuid::GenerateRandomV4(),
                     "saved_desk_1", base::Time::Now(),
@@ -10163,8 +10179,16 @@ TEST_P(DeskBarTest, ForwardTabbing) {
 
     if (i == 0) {
       PressAndReleaseKey(ui::VKEY_TAB);
-      ASSERT_TRUE(OverviewItemHasFocus(
-          mini_view->desk_action_view()->combine_desks_button()));
+
+      if (features::IsForestFeatureEnabled()) {
+        ASSERT_TRUE(mini_view->desk_action_view()->context_menu_button());
+        ASSERT_TRUE(OverviewItemHasFocus(
+            mini_view->desk_action_view()->context_menu_button()));
+      } else {
+        ASSERT_TRUE(mini_view->desk_action_view()->combine_desks_button());
+        ASSERT_TRUE(OverviewItemHasFocus(
+            mini_view->desk_action_view()->combine_desks_button()));
+      }
     }
 
     PressAndReleaseKey(ui::VKEY_TAB);
@@ -10193,6 +10217,13 @@ TEST_P(DeskBarTest, ForwardTabbing) {
 }
 
 TEST_P(DeskBarTest, ReverseTabbing) {
+  // The context menu button that replaces the combine desks button when Forest
+  // is enabled is not compatible with old overview focus.
+  if (!features::IsOverviewNewFocusEnabled() &&
+      features::IsForestFeatureEnabled()) {
+    return;
+  }
+
   // Add a saved desk, so that the library button can show up.
   AddSavedDeskEntry(desk_model(), base::Uuid::GenerateRandomV4(),
                     "saved_desk_1", base::Time::Now(),
@@ -10245,8 +10276,16 @@ TEST_P(DeskBarTest, ReverseTabbing) {
 
     if (i == 0) {
       PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-      ASSERT_TRUE(OverviewItemHasFocus(
-          mini_view->desk_action_view()->combine_desks_button()));
+
+      if (features::IsForestFeatureEnabled()) {
+        ASSERT_TRUE(mini_view->desk_action_view()->context_menu_button());
+        ASSERT_TRUE(OverviewItemHasFocus(
+            mini_view->desk_action_view()->context_menu_button()));
+      } else {
+        ASSERT_TRUE(mini_view->desk_action_view()->combine_desks_button());
+        ASSERT_TRUE(OverviewItemHasFocus(
+            mini_view->desk_action_view()->combine_desks_button()));
+      }
     }
 
     if (use_desk_profiles_) {
@@ -10820,8 +10859,17 @@ TEST_P(DeskBarTest, DeskActionButtonTooltipForNewDesk) {
   auto* desk_bar_view = GetDeskBarView();
   ClickOrPressOnView(desk_bar_view->new_desk_button());
   auto* desk_action_view = desk_bar_view->mini_views()[1]->desk_action_view();
-  EXPECT_THAT(desk_action_view->combine_desks_button()->GetTooltipText(),
-              u"Combine with Desk 1");
+
+  if (features::IsForestFeatureEnabled()) {
+    EXPECT_TRUE(desk_action_view->context_menu_button());
+    EXPECT_THAT(desk_action_view->context_menu_button()->GetTooltipText(),
+                u"Open context menu");
+  } else {
+    EXPECT_TRUE(desk_action_view->combine_desks_button());
+    EXPECT_THAT(desk_action_view->combine_desks_button()->GetTooltipText(),
+                u"Combine with Desk 1");
+  }
+
   EXPECT_THAT(desk_action_view->close_all_button()->GetTooltipText(),
               u"Close Desk 2 and windows");
 
@@ -10829,8 +10877,17 @@ TEST_P(DeskBarTest, DeskActionButtonTooltipForNewDesk) {
   PressAndReleaseKey(ui::VKEY_D, ui::EF_SHIFT_DOWN);
   PressAndReleaseKey(ui::VKEY_2);
   PressAndReleaseKey(ui::VKEY_RETURN);
-  EXPECT_THAT(desk_action_view->combine_desks_button()->GetTooltipText(),
-              u"Combine with Desk 1");
+
+  if (features::IsForestFeatureEnabled()) {
+    EXPECT_TRUE(desk_action_view->context_menu_button());
+    EXPECT_THAT(desk_action_view->context_menu_button()->GetTooltipText(),
+                u"Open context menu");
+  } else {
+    EXPECT_TRUE(desk_action_view->combine_desks_button());
+    EXPECT_THAT(desk_action_view->combine_desks_button()->GetTooltipText(),
+                u"Combine with Desk 1");
+  }
+
   EXPECT_THAT(desk_action_view->close_all_button()->GetTooltipText(),
               u"Close D2 and windows");
 
