@@ -93,12 +93,6 @@ class QuicTestPacketMaker {
   // Clone all frames from |packet_number|.
   quic::QuicFrames CloneSavedFrames(uint64_t packet_number);
 
-  std::unique_ptr<quic::QuicReceivedPacket> MakeNewConnectionIdPacket(
-      uint64_t packet_number,
-      const quic::QuicConnectionId& cid,
-      uint64_t sequence_number,
-      uint64_t retire_prior_to);
-
   std::unique_ptr<quic::QuicReceivedPacket> MakeDummyCHLOPacket(
       uint64_t packet_number);
 
@@ -435,8 +429,7 @@ class QuicTestPacketBuilder {
   QuicTestPacketBuilder& AddNewConnectionIdFrame(
       const quic::QuicConnectionId& cid,
       uint64_t sequence_number,
-      uint64_t retire_prior_to,
-      quic::StatelessResetToken reset_token);
+      uint64_t retire_prior_to);
   QuicTestPacketBuilder& AddMaxStreamsFrame(
       quic::QuicControlFrameId control_frame_id,
       quic::QuicStreamCount stream_count,

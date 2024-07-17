@@ -7753,15 +7753,12 @@ TEST_P(QuicSessionPoolTest, MigrateBackToDefaultPostMigrationOnWriteError) {
                       client_maker_.Packet(packet_num++)
                           .AddRetireConnectionIdFrame(/*sequence_number=*/0u)
                           .Build());
-  quic_data2.AddRead(ASYNC,
-                     server_maker_.Packet(peer_packet_num++)
-                         .AddAckFrame(1, packet_num - 1, 1u)
-                         .AddNewConnectionIdFrame(
-                             cid2,
-                             /*sequence_number=*/2u,
-                             /*retire_prior_to=*/1u,
-                             quic::QuicUtils::GenerateStatelessResetToken(cid2))
-                         .Build());
+  quic_data2.AddRead(ASYNC, server_maker_.Packet(peer_packet_num++)
+                                .AddAckFrame(1, packet_num - 1, 1u)
+                                .AddNewConnectionIdFrame(cid2,
+                                                         /*sequence_number=*/2u,
+                                                         /*retire_prior_to=*/1u)
+                                .Build());
   quic_data2.AddRead(ASYNC,
                      ConstructOkResponsePacket(
                          peer_packet_num++,
@@ -10350,10 +10347,11 @@ TEST_P(QuicSessionPoolTest, DefaultRetransmittableOnWireTimeoutForMigration) {
   int peer_packet_num = 1;
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_num++));
-  socket_data.AddRead(ASYNC, server_maker_.MakeNewConnectionIdPacket(
-                                 peer_packet_num++, cid_on_new_path,
-                                 /*sequence_number=*/1u,
-                                 /*retire_prior_to=*/0u));
+  socket_data.AddRead(ASYNC, server_maker_.Packet(peer_packet_num++)
+                                 .AddNewConnectionIdFrame(
+                                     cid_on_new_path, /*sequence_number=*/1u,
+                                     /*retire_prior_to=*/0u)
+                                 .Build());
   socket_data.AddReadPause();
   socket_data.AddRead(ASYNC, ERR_ADDRESS_UNREACHABLE);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
@@ -10519,10 +10517,11 @@ TEST_P(QuicSessionPoolTest, CustomRetransmittableOnWireTimeoutForMigration) {
   int peer_packet_num = 1;
   socket_data.AddWrite(SYNCHRONOUS,
                        ConstructInitialSettingsPacket(packet_num++));
-  socket_data.AddRead(ASYNC, server_maker_.MakeNewConnectionIdPacket(
-                                 peer_packet_num++, cid_on_new_path,
-                                 /*sequence_number=*/1u,
-                                 /*retire_prior_to=*/0u));
+  socket_data.AddRead(ASYNC, server_maker_.Packet(peer_packet_num++)
+                                 .AddNewConnectionIdFrame(
+                                     cid_on_new_path, /*sequence_number=*/1u,
+                                     /*retire_prior_to=*/0u)
+                                 .Build());
   socket_data.AddReadPause();
   socket_data.AddRead(ASYNC, ERR_ADDRESS_UNREACHABLE);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
@@ -11517,10 +11516,10 @@ TEST_P(QuicSessionPoolTest, DefaultIdleMigrationPeriod) {
   int peer_packet_num = 1;
   MockQuicData default_socket_data(version_);
   default_socket_data.AddRead(
-      SYNCHRONOUS,
-      server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid1,
-                                              /*sequence_number=*/1u,
-                                              /*retire_prior_to=*/0u));
+      SYNCHRONOUS, server_maker_.Packet(peer_packet_num++)
+                       .AddNewConnectionIdFrame(cid1, /*sequence_number=*/1u,
+                                                /*retire_prior_to=*/0u)
+                       .Build());
   default_socket_data.AddReadPauseForever();
   int packet_num = 1;
   default_socket_data.AddWrite(SYNCHRONOUS,
@@ -11544,9 +11543,10 @@ TEST_P(QuicSessionPoolTest, DefaultIdleMigrationPeriod) {
                  .AddRetireConnectionIdFrame(/*sequence_number=*/0u)
                  .Build());
   alternate_socket_data.AddRead(
-      ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid2,
-                                                     /*sequence_number=*/2u,
-                                                     /*retire_prior_to=*/1u));
+      ASYNC, server_maker_.Packet(peer_packet_num++)
+                 .AddNewConnectionIdFrame(cid2, /*sequence_number=*/2u,
+                                          /*retire_prior_to=*/1u)
+                 .Build());
   ++packet_num;  // Probing packet on default network encounters write error.
   alternate_socket_data.AddWrite(
       ASYNC, client_maker_.Packet(packet_num++)
@@ -11557,9 +11557,10 @@ TEST_P(QuicSessionPoolTest, DefaultIdleMigrationPeriod) {
                  .Build());
   alternate_socket_data.AddReadPause();
   alternate_socket_data.AddRead(
-      ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid3,
-                                                     /*sequence_number=*/3u,
-                                                     /*retire_prior_to=*/1u));
+      ASYNC, server_maker_.Packet(peer_packet_num++)
+                 .AddNewConnectionIdFrame(cid3, /*sequence_number=*/3u,
+                                          /*retire_prior_to=*/1u)
+                 .Build());
   ++packet_num;  // Probing packet on default network encounters write error.
   alternate_socket_data.AddWrite(
       ASYNC, client_maker_.Packet(packet_num++)
@@ -11570,9 +11571,10 @@ TEST_P(QuicSessionPoolTest, DefaultIdleMigrationPeriod) {
                  .Build());
   alternate_socket_data.AddReadPause();
   alternate_socket_data.AddRead(
-      ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid4,
-                                                     /*sequence_number=*/4u,
-                                                     /*retire_prior_to=*/1u));
+      ASYNC, server_maker_.Packet(peer_packet_num++)
+                 .AddNewConnectionIdFrame(cid4, /*sequence_number=*/4u,
+                                          /*retire_prior_to=*/1u)
+                 .Build());
   ++packet_num;  // Probing packet on default network encounters write error.
   alternate_socket_data.AddWrite(
       ASYNC, client_maker_.Packet(packet_num++)
@@ -11583,9 +11585,10 @@ TEST_P(QuicSessionPoolTest, DefaultIdleMigrationPeriod) {
                  .Build());
   alternate_socket_data.AddReadPause();
   alternate_socket_data.AddRead(
-      ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid5,
-                                                     /*sequence_number=*/5u,
-                                                     /*retire_prior_to=*/1u));
+      ASYNC, server_maker_.Packet(peer_packet_num++)
+                 .AddNewConnectionIdFrame(cid5, /*sequence_number=*/5u,
+                                          /*retire_prior_to=*/1u)
+                 .Build());
   ++packet_num;  // Probing packet on default network encounters write error.
   alternate_socket_data.AddWrite(
       ASYNC, client_maker_.Packet(packet_num++)
@@ -11596,9 +11599,10 @@ TEST_P(QuicSessionPoolTest, DefaultIdleMigrationPeriod) {
                  .Build());
   alternate_socket_data.AddReadPause();
   alternate_socket_data.AddRead(
-      ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid6,
-                                                     /*sequence_number=*/6u,
-                                                     /*retire_prior_to=*/1u));
+      ASYNC, server_maker_.Packet(peer_packet_num++)
+                 .AddNewConnectionIdFrame(cid6, /*sequence_number=*/6u,
+                                          /*retire_prior_to=*/1u)
+                 .Build());
   ++packet_num;  // Probing packet on default network encounters write error.
   alternate_socket_data.AddWrite(
       ASYNC, client_maker_.Packet(packet_num++)
@@ -11609,9 +11613,10 @@ TEST_P(QuicSessionPoolTest, DefaultIdleMigrationPeriod) {
                  .Build());
   alternate_socket_data.AddReadPause();
   alternate_socket_data.AddRead(
-      ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid7,
-                                                     /*sequence_number=*/7u,
-                                                     /*retire_prior_to=*/1u));
+      ASYNC, server_maker_.Packet(peer_packet_num++)
+                 .AddNewConnectionIdFrame(cid7, /*sequence_number=*/7u,
+                                          /*retire_prior_to=*/1u)
+                 .Build());
   alternate_socket_data.AddRead(SYNCHRONOUS,
                                 ERR_IO_PENDING);  // Hanging read.
   alternate_socket_data.AddSocketDataToFactory(socket_factory_.get());
@@ -11731,10 +11736,10 @@ TEST_P(QuicSessionPoolTest, CustomIdleMigrationPeriod) {
   int peer_packet_num = 1;
   MockQuicData default_socket_data(version_);
   default_socket_data.AddRead(
-      SYNCHRONOUS,
-      server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid1,
-                                              /*sequence_number=*/1u,
-                                              /*retire_prior_to=*/0u));
+      SYNCHRONOUS, server_maker_.Packet(peer_packet_num++)
+                       .AddNewConnectionIdFrame(cid1, /*sequence_number=*/1u,
+                                                /*retire_prior_to=*/0u)
+                       .Build());
   default_socket_data.AddReadPauseForever();
   int packet_num = 1;
   default_socket_data.AddWrite(SYNCHRONOUS,
@@ -11759,9 +11764,10 @@ TEST_P(QuicSessionPoolTest, CustomIdleMigrationPeriod) {
                  .Build());
   alternate_socket_data.AddReadPause();
   alternate_socket_data.AddRead(
-      ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid2,
-                                                     /*sequence_number=*/2u,
-                                                     /*retire_prior_to=*/1u));
+      ASYNC, server_maker_.Packet(peer_packet_num++)
+                 .AddNewConnectionIdFrame(cid2, /*sequence_number=*/2u,
+                                          /*retire_prior_to=*/1u)
+                 .Build());
   ++packet_num;  // Probing packet on default network encounters write error.
   alternate_socket_data.AddWrite(
       ASYNC, client_maker_.Packet(packet_num++)
@@ -11772,9 +11778,10 @@ TEST_P(QuicSessionPoolTest, CustomIdleMigrationPeriod) {
                  .Build());
   alternate_socket_data.AddReadPause();
   alternate_socket_data.AddRead(
-      ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid3,
-                                                     /*sequence_number=*/3u,
-                                                     /*retire_prior_to=*/1u));
+      ASYNC, server_maker_.Packet(peer_packet_num++)
+                 .AddNewConnectionIdFrame(cid3, /*sequence_number=*/3u,
+                                          /*retire_prior_to=*/1u)
+                 .Build());
   ++packet_num;  // Probing packet on default network encounters write error.
   alternate_socket_data.AddWrite(
       ASYNC, client_maker_.Packet(packet_num++)
@@ -11785,9 +11792,10 @@ TEST_P(QuicSessionPoolTest, CustomIdleMigrationPeriod) {
                  .Build());
   alternate_socket_data.AddReadPause();
   alternate_socket_data.AddRead(
-      ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid4,
-                                                     /*sequence_number=*/4u,
-                                                     /*retire_prior_to=*/1u));
+      ASYNC, server_maker_.Packet(peer_packet_num++)
+                 .AddNewConnectionIdFrame(cid4, /*sequence_number=*/4u,
+                                          /*retire_prior_to=*/1u)
+                 .Build());
   ++packet_num;  // Probing packet on default network encounters write error.
   alternate_socket_data.AddWrite(
       ASYNC, client_maker_.Packet(packet_num++)
@@ -11798,9 +11806,10 @@ TEST_P(QuicSessionPoolTest, CustomIdleMigrationPeriod) {
                  .Build());
   alternate_socket_data.AddReadPause();
   alternate_socket_data.AddRead(
-      ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid5,
-                                                     /*sequence_number=*/5u,
-                                                     /*retire_prior_to=*/1u));
+      ASYNC, server_maker_.Packet(peer_packet_num++)
+                 .AddNewConnectionIdFrame(cid5, /*sequence_number=*/5u,
+                                          /*retire_prior_to=*/1u)
+                 .Build());
   alternate_socket_data.AddRead(SYNCHRONOUS,
                                 ERR_IO_PENDING);  // Hanging read.
   alternate_socket_data.AddSocketDataToFactory(socket_factory_.get());

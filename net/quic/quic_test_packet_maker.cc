@@ -168,19 +168,6 @@ QuicTestPacketBuilder& QuicTestPacketMaker::Packet(uint64_t packet_number) {
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>
-QuicTestPacketMaker::MakeNewConnectionIdPacket(
-    uint64_t packet_number,
-    const quic::QuicConnectionId& cid,
-    uint64_t sequence_number,
-    uint64_t retire_prior_to) {
-  return Packet(packet_number)
-      .AddNewConnectionIdFrame(
-          cid, sequence_number, retire_prior_to,
-          quic::QuicUtils::GenerateStatelessResetToken(cid))
-      .Build();
-}
-
-std::unique_ptr<quic::QuicReceivedPacket>
 QuicTestPacketMaker::MakeDummyCHLOPacket(uint64_t packet_number) {
   SetEncryptionLevel(quic::ENCRYPTION_INITIAL);
 
@@ -904,13 +891,13 @@ QuicTestPacketBuilder& QuicTestPacketBuilder::AddRetireConnectionIdFrame(
 QuicTestPacketBuilder& QuicTestPacketBuilder::AddNewConnectionIdFrame(
     const quic::QuicConnectionId& cid,
     uint64_t sequence_number,
-    uint64_t retire_prior_to,
-    quic::StatelessResetToken reset_token) {
+    uint64_t retire_prior_to) {
   auto* new_cid_frame = new quic::QuicNewConnectionIdFrame();
   new_cid_frame->connection_id = cid;
   new_cid_frame->sequence_number = sequence_number;
   new_cid_frame->retire_prior_to = retire_prior_to;
-  new_cid_frame->stateless_reset_token = reset_token;
+  new_cid_frame->stateless_reset_token =
+      quic::QuicUtils::GenerateStatelessResetToken(cid);
   AddFrame(quic::QuicFrame(new_cid_frame));
   return *this;
 }

@@ -1508,10 +1508,11 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocket) {
   quic_data.AddRead(ASYNC, ERR_IO_PENDING);
   quic_data.AddWrite(ASYNC,
                      client_maker_.MakeInitialSettingsPacket(packet_num++));
-  quic_data.AddRead(ASYNC, server_maker_.MakeNewConnectionIdPacket(
-                               peer_packet_num++, cid_on_new_path,
-                               /*sequence_number=*/1u,
-                               /*retire_prior_to=*/0u));
+  quic_data.AddRead(ASYNC, server_maker_.Packet(peer_packet_num++)
+                               .AddNewConnectionIdFrame(cid_on_new_path,
+                                                        /*sequence_number=*/1u,
+                                                        /*retire_prior_to=*/0u)
+                               .Build());
   quic_data.AddRead(ASYNC, ERR_IO_PENDING);
   quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   quic_data.AddSocketDataToFactory(&socket_factory_);
@@ -1592,9 +1593,11 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
                      client_maker_.MakeInitialSettingsPacket(packet_num++));
   quic_data.AddRead(ASYNC, ERR_IO_PENDING);
   quic_data.AddRead(ASYNC,
-                    server_maker_.MakeNewConnectionIdPacket(
-                        peer_packet_num++, next_cid, next_cid_sequence_number,
-                        /*retire_prior_to=*/next_cid_sequence_number - 1));
+                    server_maker_.Packet(peer_packet_num++)
+                        .AddNewConnectionIdFrame(
+                            next_cid, next_cid_sequence_number,
+                            /*retire_prior_to=*/next_cid_sequence_number - 1)
+                        .Build());
   quic_data.AddRead(ASYNC, ERR_IO_PENDING);
   quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   quic_data.AddSocketDataToFactory(&socket_factory_);
@@ -1624,10 +1627,12 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
     next_cid = quic::QuicUtils::CreateRandomConnectionId(
         quiche::QuicheRandom::GetInstance());
     ++next_cid_sequence_number;
-    quic_data2.AddRead(
-        ASYNC, server_maker_.MakeNewConnectionIdPacket(
-                   peer_packet_num++, next_cid, next_cid_sequence_number,
-                   /*retire_prior_to=*/next_cid_sequence_number - 1));
+    quic_data2.AddRead(ASYNC,
+                       server_maker_.Packet(peer_packet_num++)
+                           .AddNewConnectionIdFrame(
+                               next_cid, next_cid_sequence_number,
+                               /*retire_prior_to=*/next_cid_sequence_number - 1)
+                           .Build());
     quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging read.
     quic_data2.AddSocketDataToFactory(&socket_factory_);
 
@@ -1711,10 +1716,11 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketReadError) {
   quic_data.AddRead(ASYNC, ERR_IO_PENDING);
   quic_data.AddWrite(ASYNC,
                      client_maker_.MakeInitialSettingsPacket(packet_num++));
-  quic_data.AddRead(ASYNC, server_maker_.MakeNewConnectionIdPacket(
-                               peer_packet_num++, cid_on_new_path,
-                               /*sequence_number=*/1u,
-                               /*retire_prior_to=*/0u));
+  quic_data.AddRead(ASYNC, server_maker_.Packet(peer_packet_num++)
+                               .AddNewConnectionIdFrame(cid_on_new_path,
+                                                        /*sequence_number=*/1u,
+                                                        /*retire_prior_to=*/0u)
+                               .Build());
   quic_data.AddRead(ASYNC, ERR_IO_PENDING);
   quic_data.AddRead(ASYNC, ERR_NETWORK_CHANGED);
 
