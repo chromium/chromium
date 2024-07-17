@@ -116,7 +116,7 @@
     </picture>
     <template is="dom-if" if="[[!is3pcdRedesignEnabled_]]">
       <div id="explanationText" class="secondary">
-        $i18n{thirdPartyCookiesAlignedPageDescription}
+        [[getThirdPartyCookiesPageTitle_()]]
       </div>
       <div id="generalControls">
         <settings-radio-group id="primarySettingGroup" no-set-pref
@@ -299,7 +299,7 @@
         on-click="onSiteDataClick_" label="$i18n{cookiePageAllSitesLink}"
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
-    <template is="dom-if" if="[[!enableTrackingProtectionRolloutUx_]]">
+    <template is="dom-if" if="[[!showTrackingProtectionExceptions_]]">
       <div id="exceptionHeader3pcd">
         <h2>$i18n{trackingProtectionSitesAllowedCookiesTitle}</h2>
       </div>
@@ -311,14 +311,14 @@
           cookies-exception-type="third-party">
       </site-list>
     </template>
-    <template is="dom-if" if="[[enableTrackingProtectionRolloutUx_]]">
+    <template is="dom-if" if="[[showTrackingProtectionExceptions_]]">
       <div id="exceptionHeaderTrackingProtection">
-        <h2>$i18n{trackingProtectionExceptionsListTitle}</h2>
+        <h2>[[getTrackingProtectionExceptionsTitle_()]]</h2>
       </div>
       <site-list id="trackingProtectionExceptionsList"
           category="[[trackingProtectionContentSettingType_]]"
           category-subtype="[[contentSetting_.ALLOW]]"
-          category-header="$i18n{trackingProtectionExceptionsListDescription}"
+          category-header="[[getTrackingProtectionExceptionsDescription_()]]"
           search-filter="[[searchTerm]]">
       </site-list>
     </template>

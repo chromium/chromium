@@ -139,6 +139,18 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         value: () =>
             loadTimeData.getBoolean('isFingerprintingProtectionEnabled'),
       },
+
+      thirdPartyCookiesAndKnownTrackersUx_: {
+        type: Boolean,
+        // TODO(https://b/353548465): Read from feature.
+        value: () => false,
+      },
+
+      showTrackingProtectionExceptions_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('enableTrackingProtectionRolloutUx'),
+      },
     };
   }
 
@@ -152,6 +164,8 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   private is3pcdRedesignEnabled_: boolean;
   private isIpProtectionAvailable_: boolean;
   private isFingerprintingProtectionAvailable_: boolean;
+  private thirdPartyCookiesAndKnownTrackersUx_: boolean;
+  private showTrackingProtectionExceptions_: boolean;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
@@ -183,46 +197,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     } else if (route !== routes.COOKIES) {
       this.$.toast.hide();
     }
-  }
-
-  private getTrackingProtectionDefaultDescription_(): TrustedHTML {
-    if (this.enableTrackingProtectionRolloutUx_) {
-      return this.i18nAdvanced(
-          'trackingProtectionDefaultDescription',
-          {attrs: ['href', 'aria-label', 'aria-description']});
-    }
-    return this.i18nAdvanced('trackingProtectionPageDescription');
-  }
-
-  private getTrackingProtectionBulletTwo_(): TrustedHTML {
-    if (this.enableTrackingProtectionRolloutUx_) {
-      return this.i18nAdvanced('trackingProtectionTpcdBulletTwoDescription');
-    }
-    return this.i18nAdvanced(
-        'trackingProtectionBulletTwoDescription',
-        {attrs: ['href', 'aria-label', 'aria-description']});
-  }
-
-  private getTrackingProtectionAdditionalProtectionsHeader_(): string {
-    return this.i18n(
-        this.enableTrackingProtectionRolloutUx_ ?
-            'trackingProtectionAdditionalProtectionsHeader' :
-            'trackingProtectionAdvancedLabel');
-  }
-
-  private getThirdPartyCookiesPageBlockThirdPartyIncognitoBulTwoLabel_():
-      string {
-    return this.i18n(
-        this.enableFirstPartySetsUI_ ?
-            'cookiePageBlockThirdIncognitoBulTwoFps' :
-            'thirdPartyCookiesPageBlockIncognitoBulTwo');
-  }
-
-  private getCookiesPageBlockThirdPartyIncognitoBulTwoLabel_(): string {
-    return this.i18n(
-        this.enableFirstPartySetsUI_ ?
-            'cookiePageBlockThirdIncognitoBulTwoFps' :
-            'cookiePageBlockThirdIncognitoBulTwo');
   }
 
   private onSiteDataClick_() {
@@ -316,6 +290,67 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   private firstPartySetsToggleDisabled_() {
     return this.getPref('profile.cookie_controls_mode').value !==
         CookieControlsMode.BLOCK_THIRD_PARTY;
+  }
+
+  private getThirdPartyCookiesPageTitle_(): string {
+    return this.i18n(
+        this.thirdPartyCookiesAndKnownTrackersUx_ ?
+            'tpcAndKnownTrackersPageTitle' :
+            'thirdPartyCookiesAlignedPageDescription');
+  }
+
+  private getTrackingProtectionExceptionsTitle_(): string {
+    return this.i18n(
+        this.thirdPartyCookiesAndKnownTrackersUx_ ?
+            'tpcAndKnownTrackersExceptionsListTitle' :
+            'trackingProtectionExceptionsListTitle');
+  }
+
+  private getTrackingProtectionExceptionsDescription_(): string {
+    return this.i18n(
+        this.thirdPartyCookiesAndKnownTrackersUx_ ?
+            'tpcAndKnownTrackersExceptionsListDescription' :
+            'trackingProtectionExceptionsListDescription');
+  }
+
+  private getTrackingProtectionDefaultDescription_(): TrustedHTML {
+    if (this.enableTrackingProtectionRolloutUx_) {
+      return this.i18nAdvanced(
+          'trackingProtectionDefaultDescription',
+          {attrs: ['href', 'aria-label', 'aria-description']});
+    }
+    return this.i18nAdvanced('trackingProtectionPageDescription');
+  }
+
+  private getTrackingProtectionBulletTwo_(): TrustedHTML {
+    if (this.enableTrackingProtectionRolloutUx_) {
+      return this.i18nAdvanced('trackingProtectionTpcdBulletTwoDescription');
+    }
+    return this.i18nAdvanced(
+        'trackingProtectionBulletTwoDescription',
+        {attrs: ['href', 'aria-label', 'aria-description']});
+  }
+
+  private getTrackingProtectionAdditionalProtectionsHeader_(): string {
+    return this.i18n(
+        this.enableTrackingProtectionRolloutUx_ ?
+            'trackingProtectionAdditionalProtectionsHeader' :
+            'trackingProtectionAdvancedLabel');
+  }
+
+  private getThirdPartyCookiesPageBlockThirdPartyIncognitoBulTwoLabel_():
+      string {
+    return this.i18n(
+        this.enableFirstPartySetsUI_ ?
+            'cookiePageBlockThirdIncognitoBulTwoFps' :
+            'thirdPartyCookiesPageBlockIncognitoBulTwo');
+  }
+
+  private getCookiesPageBlockThirdPartyIncognitoBulTwoLabel_(): string {
+    return this.i18n(
+        this.enableFirstPartySetsUI_ ?
+            'cookiePageBlockThirdIncognitoBulTwoFps' :
+            'cookiePageBlockThirdIncognitoBulTwo');
   }
 }
 
