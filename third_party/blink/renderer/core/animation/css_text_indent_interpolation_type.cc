@@ -68,8 +68,8 @@ class InheritedIndentChecker
 };
 
 InterpolationValue CreateValue(const Length& length, double zoom) {
-  InterpolationValue converted_length(
-      InterpolableLength::MaybeConvertLength(length, zoom));
+  InterpolationValue converted_length(InterpolableLength::MaybeConvertLength(
+      length, zoom, /*interpolate_size=*/std::nullopt));
   DCHECK(converted_length);
   return InterpolationValue(std::move(converted_length.interpolable_value),
                             CSSTextIndentNonInterpolableValue::Create(std::move(

@@ -156,7 +156,8 @@ static InterpolableValue* ConvertClipComponent(const Length& length,
   if (length.IsAuto()) {
     return MakeGarbageCollected<InterpolableList>(0);
   }
-  return InterpolableLength::MaybeConvertLength(length, zoom);
+  return InterpolableLength::MaybeConvertLength(
+      length, zoom, /*interpolate_size=*/std::nullopt);
 }
 
 static InterpolationValue CreateClipValue(const LengthBox& clip, double zoom) {

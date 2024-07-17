@@ -362,8 +362,8 @@ InterpolationValue CSSInterpolationType::MaybeConvertCustomPropertyDeclaration(
 
 InterpolationValue CSSInterpolationType::MaybeConvertUnderlyingValue(
     const InterpolationEnvironment& environment) const {
-  const ComputedStyle& style =
-      To<CSSInterpolationEnvironment>(environment).BaseStyle();
+  const auto& css_environment = To<CSSInterpolationEnvironment>(environment);
+  const ComputedStyle& style = css_environment.BaseStyle();
   if (!GetProperty().IsCSSCustomProperty()) {
     return MaybeConvertStandardPropertyUnderlyingValue(style);
   }
@@ -376,7 +376,8 @@ InterpolationValue CSSInterpolationType::MaybeConvertUnderlyingValue(
     return nullptr;
   // TODO(alancutter): Remove the need for passing in conversion checkers.
   ConversionCheckers dummy_conversion_checkers;
-  return MaybeConvertValue(*underlying_value, nullptr,
+  return MaybeConvertValue(*underlying_value,
+                           css_environment.GetOptionalState(),
                            dummy_conversion_checkers);
 }
 

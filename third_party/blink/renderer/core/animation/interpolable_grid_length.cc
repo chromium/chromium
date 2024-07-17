@@ -57,7 +57,11 @@ InterpolableGridLength* InterpolableGridLength::Create(const Length& length,
   if (length.IsFlex()) {
     value = MakeGarbageCollected<InterpolableNumber>(length.GetFloatValue());
   } else {
-    value = InterpolableLength::MaybeConvertLength(length, zoom);
+    // TODO(https://crbug.com/40339056): We need to propagate
+    // interpolate-size through here when we add support to grid track
+    // sizes.
+    value = InterpolableLength::MaybeConvertLength(
+        length, zoom, /*interpolate_size=*/std::nullopt);
   }
   return MakeGarbageCollected<InterpolableGridLength>(std::move(value), type);
 }

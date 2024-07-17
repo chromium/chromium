@@ -121,8 +121,10 @@ Length::Type InterpolableLength::CSSValueIDToLengthType(CSSValueID id) {
 }
 
 // static
-InterpolableLength* InterpolableLength::MaybeConvertLength(const Length& length,
-                                                           float zoom) {
+InterpolableLength* InterpolableLength::MaybeConvertLength(
+    const Length& length,
+    float zoom,
+    std::optional<EInterpolateSize> interpolate_size) {
   if (!length.IsSpecified()) {
     if (!RuntimeEnabledFeatures::CSSCalcSizeFunctionEnabled()) {
       return nullptr;
@@ -131,7 +133,7 @@ InterpolableLength* InterpolableLength::MaybeConvertLength(const Length& length,
     if (keyword == CSSValueID::kInvalid) {
       return nullptr;
     }
-    return MakeGarbageCollected<InterpolableLength>(keyword);
+    return MakeGarbageCollected<InterpolableLength>(keyword, interpolate_size);
   }
 
   if (length.IsCalculated() && length.GetCalculationValue().IsExpression()) {
@@ -306,14 +308,54 @@ void InterpolableLength::SetExpression(
   expression_ = &expression;
 }
 
-InterpolableLength::InterpolableLength(CSSValueID keyword) {
-  SetKeyword(keyword);
+InterpolableLength::InterpolableLength(
+    CSSValueID keyword,
+    std::optional<EInterpolateSize> interpolate_size) {
+  SetKeyword(keyword, interpolate_size);
 }
 
-void InterpolableLength::SetKeyword(CSSValueID keyword) {
-  type_ = Type::kKeyword;
+void InterpolableLength::SetKeyword(
+    CSSValueID keyword,
+    std::optional<EInterpolateSize> interpolate_size) {
+  if (interpolate_size) {
+    switch (*interpolate_size) {
+      case EInterpolateSize::kNumericOnly:
+        type_ = Type::kRestrictedKeyword;
+        break;
+      case EInterpolateSize::kAllowKeywords:
+        type_ = Type::kFullyInterpolableKeyword;
+        break;
+      default:
+        NOTREACHED();
+    }
+  } else {
+    type_ = Type::kUnknownKeyword;
+  }
   keyword_ = keyword;
   expression_.Clear();
+}
+
+void InterpolableLength::SetInterpolateSize(EInterpolateSize interpolate_size) {
+  if (!IsKeyword()) {
+    return;
+  }
+
+  // We can't make useful assertions about this not changing an
+  // already-set type because, for CSS transitions, we do exactly that,
+  // for the length that comes from the before-change style (in the case
+  // where it comes from an underlying value), so that it uses the
+  // interpolate-size value from the after-change style.
+
+  switch (interpolate_size) {
+    case EInterpolateSize::kNumericOnly:
+      type_ = Type::kRestrictedKeyword;
+      break;
+    case EInterpolateSize::kAllowKeywords:
+      type_ = Type::kFullyInterpolableKeyword;
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 InterpolableLength* InterpolableLength::RawClone() const {
@@ -322,7 +364,9 @@ InterpolableLength* InterpolableLength::RawClone() const {
 
 bool InterpolableLength::HasPercentage() const {
   switch (type_) {
-    case Type::kKeyword:
+    case Type::kRestrictedKeyword:
+    case Type::kFullyInterpolableKeyword:
+    case Type::kUnknownKeyword:
       return false;
     case Type::kLengthArray:
       return length_array_.type_flags.test(

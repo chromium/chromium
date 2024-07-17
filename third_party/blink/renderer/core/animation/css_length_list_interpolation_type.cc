@@ -51,8 +51,8 @@ static InterpolationValue MaybeConvertLengthList(
 
   return ListInterpolationFunctions::CreateList(
       length_list.size(), [&length_list, zoom](wtf_size_t index) {
-        return InterpolationValue(
-            InterpolableLength::MaybeConvertLength(length_list[index], zoom));
+        return InterpolationValue(InterpolableLength::MaybeConvertLength(
+            length_list[index], zoom, /*interpolate_size=*/std::nullopt));
       });
 }
 

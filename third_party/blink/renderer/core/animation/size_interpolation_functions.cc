@@ -88,8 +88,9 @@ InterpolationValue SizeInterpolationFunctions::ConvertFillSizeSide(
           convert_width ? fill_size.size.Width() : fill_size.size.Height();
       if (side.IsAuto())
         return ConvertKeyword(CSSValueID::kAuto);
-      return WrapConvertedLength(InterpolationValue(
-          InterpolableLength::MaybeConvertLength(side, zoom)));
+      return WrapConvertedLength(
+          InterpolationValue(InterpolableLength::MaybeConvertLength(
+              side, zoom, /*interpolate_size=*/std::nullopt)));
     }
     case EFillSizeType::kContain:
       return ConvertKeyword(CSSValueID::kContain);

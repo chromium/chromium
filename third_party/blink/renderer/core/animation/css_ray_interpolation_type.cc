@@ -137,8 +137,8 @@ class InheritedRayChecker : public CSSInterpolationType::CSSConversionChecker {
 InterpolableValue* ConvertCoordinate(
     const BasicShapeCenterCoordinate& coordinate,
     double zoom) {
-  return InterpolableLength::MaybeConvertLength(coordinate.ComputedLength(),
-                                                zoom);
+  return InterpolableLength::MaybeConvertLength(
+      coordinate.ComputedLength(), zoom, /*interpolate_size=*/std::nullopt);
 }
 
 InterpolableValue* CreateNeutralInterpolableCoordinate() {

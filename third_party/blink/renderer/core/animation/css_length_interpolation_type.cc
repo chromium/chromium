@@ -65,8 +65,8 @@ InterpolationValue CSSLengthInterpolationType::MaybeConvertInitial(
           CssProperty(), state.GetDocument().GetStyleResolver().InitialStyle(),
           initial_length))
     return nullptr;
-  return InterpolationValue(
-      InterpolableLength::MaybeConvertLength(initial_length, 1));
+  return InterpolationValue(InterpolableLength::MaybeConvertLength(
+      initial_length, 1, state.StyleBuilder().InterpolateSize()));
 }
 
 InterpolationValue CSSLengthInterpolationType::MaybeConvertInherit(
@@ -85,19 +85,22 @@ InterpolationValue CSSLengthInterpolationType::MaybeConvertInherit(
     return nullptr;
   }
   return InterpolationValue(InterpolableLength::MaybeConvertLength(
-      inherited_length, EffectiveZoom(state.ParentStyle()->EffectiveZoom())));
+      inherited_length, EffectiveZoom(state.ParentStyle()->EffectiveZoom()),
+      state.StyleBuilder().InterpolateSize()));
 }
 
 InterpolationValue CSSLengthInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState* state,
     ConversionCheckers& conversion_checkers) const {
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     CSSValueID value_id = identifier_value->GetValueID();
 
     if (LengthPropertyFunctions::CanAnimateKeyword(CssProperty(), value_id)) {
-      return InterpolationValue(
-          MakeGarbageCollected<InterpolableLength>(value_id));
+      return InterpolationValue(MakeGarbageCollected<InterpolableLength>(
+          value_id,
+          state ? std::make_optional(state->StyleBuilder().InterpolateSize())
+                : std::nullopt));
     }
 
     double pixels;
@@ -108,6 +111,24 @@ InterpolationValue CSSLengthInterpolationType::MaybeConvertValue(
   }
 
   return InterpolationValue(InterpolableLength::MaybeConvertCSSValue(value));
+}
+
+InterpolationValue CSSLengthInterpolationType::MaybeConvertUnderlyingValue(
+    const InterpolationEnvironment& environment) const {
+  InterpolationValue result =
+      CSSInterpolationType::MaybeConvertUnderlyingValue(environment);
+
+  // At this point, MaybeConvertUnderlyingValue might or might not have set an
+  // interpolate-size, depending on which codepath it took.  However, it used
+  // the style from the base style, but we want the style from the animation
+  // controls style.
+  if (auto* length = To<InterpolableLength>(result.interpolable_value.Get())) {
+    const auto& css_environment = To<CSSInterpolationEnvironment>(environment);
+    length->SetInterpolateSize(
+        css_environment.AnimationControlsStyle().InterpolateSize());
+  }
+
+  return result;
 }
 
 void CSSLengthInterpolationType::Composite(
@@ -142,7 +163,8 @@ CSSLengthInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
                                           underlying_length))
     return nullptr;
   return InterpolationValue(InterpolableLength::MaybeConvertLength(
-      underlying_length, EffectiveZoom(style.EffectiveZoom())));
+      underlying_length, EffectiveZoom(style.EffectiveZoom()),
+      style.InterpolateSize()));
 }
 
 const CSSValue* CSSLengthInterpolationType::CreateCSSValue(

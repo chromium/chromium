@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/inert_effect.h"
+#include "third_party/blink/renderer/core/animation/interpolable_length.h"
 #include "third_party/blink/renderer/core/animation/interpolation.h"
 #include "third_party/blink/renderer/core/animation/interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/interpolation_type.h"
@@ -2329,8 +2330,10 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
   }
 
   CSSInterpolationTypesMap map(registry, state.animating_element.GetDocument());
-  CSSInterpolationEnvironment old_environment(map, *state.before_change_style);
-  CSSInterpolationEnvironment new_environment(map, state.base_style);
+  CSSInterpolationEnvironment old_environment(map, *state.before_change_style,
+                                              state.base_style);
+  CSSInterpolationEnvironment new_environment(map, state.base_style,
+                                              state.base_style);
   const InterpolationType* transition_type = nullptr;
   InterpolationValue start = nullptr;
   InterpolationValue end = nullptr;
@@ -2346,6 +2349,7 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
     if (!end) {
       continue;
     }
+
     // If MaybeMergeSingles succeeds, then the two values have a defined
     // interpolation behavior. However, some properties like display and
     // content-visibility have an interpolation which behaves like a discrete

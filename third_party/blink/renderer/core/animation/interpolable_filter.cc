@@ -64,7 +64,8 @@ InterpolableFilter* InterpolableFilter::MaybeCreate(
 
     case FilterOperation::OperationType::kBlur:
       value = InterpolableLength::MaybeConvertLength(
-          To<BlurFilterOperation>(filter).StdDeviation(), zoom);
+          To<BlurFilterOperation>(filter).StdDeviation(), zoom,
+          /*interpolate_size=*/std::nullopt);
       break;
 
     case FilterOperation::OperationType::kDropShadow:

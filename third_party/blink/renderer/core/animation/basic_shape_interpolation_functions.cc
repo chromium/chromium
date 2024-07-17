@@ -96,14 +96,15 @@ InterpolableValue* ConvertCSSCoordinate(const CSSValue* coordinate) {
         CSSPositionAxisListInterpolationType::ConvertPositionAxisCSSValue(
             *coordinate));
   }
-  return InterpolableLength::MaybeConvertLength(Length::Percent(50), 1);
+  return InterpolableLength::MaybeConvertLength(
+      Length::Percent(50), 1, /*interpolate_size=*/std::nullopt);
 }
 
 InterpolableValue* ConvertCoordinate(
     const BasicShapeCenterCoordinate& coordinate,
     double zoom) {
-  return InterpolableLength::MaybeConvertLength(coordinate.ComputedLength(),
-                                                zoom);
+  return InterpolableLength::MaybeConvertLength(
+      coordinate.ComputedLength(), zoom, /*interpolate_size=*/std::nullopt);
 }
 
 InterpolableValue* CreateNeutralInterpolableCoordinate() {
@@ -130,7 +131,9 @@ InterpolableValue* ConvertRadius(const BasicShapeRadius& radius, double zoom) {
   if (radius.GetType() != BasicShapeRadius::kValue) {
     return nullptr;
   }
-  return InterpolableLength::MaybeConvertLength(radius.Value(), zoom);
+  return InterpolableLength::MaybeConvertLength(
+      radius.Value(), zoom,
+      /*interpolate_size=*/std::nullopt);
 }
 
 InterpolableValue* CreateNeutralInterpolableRadius() {
@@ -220,7 +223,8 @@ InterpolableLength* ConvertCSSLengthOrAutoSubtractedFrom100Percent(
 }
 
 InterpolableValue* ConvertLength(const Length& length, double zoom) {
-  return InterpolableLength::MaybeConvertLength(length, zoom);
+  return InterpolableLength::MaybeConvertLength(
+      length, zoom, /*interpolate_size=*/std::nullopt);
 }
 
 InterpolableValue* ConvertCSSBorderRadiusWidth(const CSSValuePair* pair) {

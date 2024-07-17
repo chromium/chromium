@@ -78,11 +78,14 @@ InterpolationValue ConvertTranslateOperation(
   auto* result =
       MakeGarbageCollected<InterpolableList>(kTranslateComponentIndexCount);
   result->Set(kTranslateX,
-              InterpolableLength::MaybeConvertLength(translate->X(), zoom));
+              InterpolableLength::MaybeConvertLength(
+                  translate->X(), zoom, /*interpolate_size=*/std::nullopt));
   result->Set(kTranslateY,
-              InterpolableLength::MaybeConvertLength(translate->Y(), zoom));
+              InterpolableLength::MaybeConvertLength(
+                  translate->Y(), zoom, /*interpolate_size=*/std::nullopt));
   result->Set(kTranslateZ, InterpolableLength::MaybeConvertLength(
-                               Length::Fixed(translate->Z()), zoom));
+                               Length::Fixed(translate->Z()), zoom,
+                               /*interpolate_size=*/std::nullopt));
   return InterpolationValue(result);
 }
 

@@ -80,7 +80,7 @@ class CORE_EXPORT CSSInterpolationType : public InterpolationType {
   }
 
   InterpolationValue MaybeConvertUnderlyingValue(
-      const InterpolationEnvironment&) const final;
+      const InterpolationEnvironment&) const override;
   virtual InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(
       const ComputedStyle&) const = 0;
 

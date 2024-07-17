@@ -254,8 +254,8 @@ InterpolationValue ConvertBorderImageLengthBox(const BorderImageLengthBox& box,
           return ConvertBorderImageNumberSide(side.Number());
         if (side.length().IsAuto())
           return ConvertBorderImageAutoSide();
-        return InterpolationValue(
-            InterpolableLength::MaybeConvertLength(side.length(), zoom));
+        return InterpolationValue(InterpolableLength::MaybeConvertLength(
+            side.length(), zoom, /*interpolate_size=*/std::nullopt));
       });
 }
 
