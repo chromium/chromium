@@ -14,7 +14,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionNoticeController.NoticeControllerEvent;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.messages.DismissReason;
@@ -34,6 +33,7 @@ public class TrackingProtectionOnboardingController {
     private final MessageDispatcher mMessageDispatcher;
     private final SettingsLauncher mSettingsLauncher;
     private final ActivityTabProvider mActivityTabProvider;
+    private final @SurfaceType int mSurfaceType;
 
     private ActivityTabTabObserver mActivityTabTabObserver;
     private TrackingProtectionOnboardingView mTrackingProtectionOnboardingView;
@@ -52,12 +52,14 @@ public class TrackingProtectionOnboardingController {
             TrackingProtectionBridge trackingProtectionBridge,
             ActivityTabProvider activityTabProvider,
             MessageDispatcher messageDispatcher,
-            SettingsLauncher settingsLauncher) {
+            SettingsLauncher settingsLauncher,
+            @SurfaceType int surfaceType) {
         mActivityTabProvider = activityTabProvider;
         mContext = context;
         mTrackingProtectionBridge = trackingProtectionBridge;
         mMessageDispatcher = messageDispatcher;
         mSettingsLauncher = settingsLauncher;
+        mSurfaceType = surfaceType;
 
         createActivityTabTabObserver(tab -> maybeOnboard(tab));
     }
@@ -77,8 +79,9 @@ public class TrackingProtectionOnboardingController {
             TrackingProtectionBridge trackingProtectionBridge,
             ActivityTabProvider activityTabProvider,
             MessageDispatcher messageDispatcher,
-            SettingsLauncher settingsLauncher) {
-        if (!trackingProtectionBridge.shouldRunUILogic(SurfaceType.BR_APP)) {
+            SettingsLauncher settingsLauncher,
+            @SurfaceType int surfaceType) {
+        if (!trackingProtectionBridge.shouldRunUILogic(surfaceType)) {
             return false;
         }
         new TrackingProtectionOnboardingController(
@@ -86,7 +89,8 @@ public class TrackingProtectionOnboardingController {
                 trackingProtectionBridge,
                 activityTabProvider,
                 messageDispatcher,
-                settingsLauncher);
+                settingsLauncher,
+                surfaceType);
 
         return true;
     }
@@ -113,7 +117,7 @@ public class TrackingProtectionOnboardingController {
             }
 
             if (isSilentOnboarding(noticeType)) {
-                mTrackingProtectionBridge.noticeShown(SurfaceType.BR_APP, noticeType);
+                mTrackingProtectionBridge.noticeShown(mSurfaceType, noticeType);
                 return;
             }
 
@@ -170,24 +174,13 @@ public class TrackingProtectionOnboardingController {
                 NOTICE_CONTROLLER_EVENT_HISTOGRAM, action, NoticeControllerEvent.COUNT);
     }
 
-    /**
-     * Checks whether the Tracking Protection Notice should be shown.
-     *
-     * @param profile The {@link Profile} associated with the tracking protection state.
-     * @return boolean value indicating if the Notice should be shown.
-     */
-    public static boolean shouldShowNotice(Profile profile) {
-        return shouldShowNotice(new TrackingProtectionBridge(profile));
-    }
-
-    static boolean shouldShowNotice(TrackingProtectionBridge trackingProtectionBridge) {
-        return trackingProtectionBridge.shouldRunUILogic(SurfaceType.BR_APP)
-                && trackingProtectionBridge.getRequiredNotice(SurfaceType.BR_APP)
-                        != NoticeType.NONE;
+    boolean shouldShowNotice(TrackingProtectionBridge trackingProtectionBridge) {
+        return trackingProtectionBridge.shouldRunUILogic(mSurfaceType)
+                && trackingProtectionBridge.getRequiredNotice(mSurfaceType) != NoticeType.NONE;
     }
 
     private @NoticeType int getNoticeType() {
-        return mTrackingProtectionBridge.getRequiredNotice(SurfaceType.BR_APP);
+        return mTrackingProtectionBridge.getRequiredNotice(mSurfaceType);
     }
 
     private void createActivityTabTabObserver(Callback<Tab> showNoticeCallback) {
@@ -211,7 +204,7 @@ public class TrackingProtectionOnboardingController {
     private Callback<Boolean> getOnNoticeShownCallback() {
         return (shown) -> {
             if (shown) {
-                mTrackingProtectionBridge.noticeShown(SurfaceType.BR_APP, getNoticeType());
+                mTrackingProtectionBridge.noticeShown(mSurfaceType, getNoticeType());
                 logNoticeControllerEvent(NoticeControllerEvent.NOTICE_REQUESTED_AND_SHOWN);
             }
         };
@@ -222,7 +215,7 @@ public class TrackingProtectionOnboardingController {
             switch (dismissReason) {
                 case DismissReason.GESTURE:
                     mTrackingProtectionBridge.noticeActionTaken(
-                            SurfaceType.BR_APP, getNoticeType(), NoticeAction.CLOSED);
+                            mSurfaceType, getNoticeType(), NoticeAction.CLOSED);
                     break;
                 case DismissReason.PRIMARY_ACTION:
                 case DismissReason.SECONDARY_ACTION:
@@ -235,7 +228,7 @@ public class TrackingProtectionOnboardingController {
                     break;
                 default:
                     mTrackingProtectionBridge.noticeActionTaken(
-                            SurfaceType.BR_APP, getNoticeType(), NoticeAction.OTHER);
+                            mSurfaceType, getNoticeType(), NoticeAction.OTHER);
             }
         };
     }
@@ -243,7 +236,7 @@ public class TrackingProtectionOnboardingController {
     private Supplier<Integer> getInNoticePrimaryActionSupplier() {
         return () -> {
             mTrackingProtectionBridge.noticeActionTaken(
-                    SurfaceType.BR_APP, getNoticeType(), NoticeAction.GOT_IT);
+                    mSurfaceType, getNoticeType(), NoticeAction.GOT_IT);
             return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
         };
     }

@@ -15,6 +15,9 @@ import org.chromium.chrome.browser.flags.ActivityType;
  * used for tracking privacy-related data.
  */
 public class ActivityTypeMapper {
+    /** Used for non browser app and non agsa cct surface types. */
+    public static final int OTHER_SURFACE_TYPE = -1;
+
     /**
      * Maps a browser activity type to a corresponding privacy sandbox storage activity type.
      *
@@ -72,6 +75,37 @@ public class ActivityTypeMapper {
             }
             default -> {
                 return PrivacySandboxStorageActivityType.OTHER;
+            }
+        }
+    }
+
+    /**
+     * Converts an activity type using {@link BrowserServicesIntentDataProvider} into a {@link
+     * SurfaceType}.
+     *
+     * <p>This method determines the surface type based on the combination of the activity type and
+     * the intent data provider. It handles cases specifically related to AGSA Custom Tabs and
+     * tabbed activities, returning appropriate surface types.
+     *
+     * @param activityType The activity type to be converted.
+     * @param intentDataProvider The intent data provider associated with the activity.
+     * @return The corresponding surface type. Returns {@link #OTHER_SURFACE_TYPE} if the
+     *     combination of activity type and intent data provider does not map to a valid surface
+     *     type.
+     */
+    public static int toSurfaceType(
+            @ActivityType int activityType, BrowserServicesIntentDataProvider intentDataProvider) {
+        @PrivacySandboxStorageActivityType
+        int psActivityType = toPrivacySandboxStorageActivityType(activityType, intentDataProvider);
+        switch (psActivityType) {
+            case PrivacySandboxStorageActivityType.AGSA_CUSTOM_TAB -> {
+                return SurfaceType.AGACCT;
+            }
+            case PrivacySandboxStorageActivityType.TABBED -> {
+                return SurfaceType.BR_APP;
+            }
+            default -> {
+                return OTHER_SURFACE_TYPE;
             }
         }
     }

@@ -67,7 +67,8 @@ public class TrackingProtectionOnboardingControllerTest {
                         mTrackingProtectionBridge,
                         mActivityTabProvider,
                         mMessageDispatcher,
-                        mSettingsLauncher);
+                        mSettingsLauncher,
+                        SurfaceType.BR_APP);
         mController.setTrackingProtectionOnboardingView(mTrackingProtectionOnboardingView);
 
         mJniMocker.mock(SecurityStateModelJni.TEST_HOOKS, mSecurityStateModelNatives);
@@ -128,8 +129,7 @@ public class TrackingProtectionOnboardingControllerTest {
         when(mTrackingProtectionBridge.getRequiredNotice(anyInt()))
                 .thenReturn(NoticeType.FULL3PCD_ONBOARDING);
 
-        assertFalse(
-                TrackingProtectionOnboardingController.shouldShowNotice(mTrackingProtectionBridge));
+        assertFalse(mController.shouldShowNotice(mTrackingProtectionBridge));
         mController.maybeOnboard(mTab);
         verify(mTrackingProtectionOnboardingView, never())
                 .showNotice(any(), any(), any(), anyInt());
@@ -143,8 +143,7 @@ public class TrackingProtectionOnboardingControllerTest {
         when(mTrackingProtectionBridge.getRequiredNotice(anyInt()))
                 .thenReturn(NoticeType.MODE_B_ONBOARDING);
 
-        assertFalse(
-                TrackingProtectionOnboardingController.shouldShowNotice(mTrackingProtectionBridge));
+        assertFalse(mController.shouldShowNotice(mTrackingProtectionBridge));
         mController.maybeOnboard(mTab);
         verify(mTrackingProtectionOnboardingView, never())
                 .showNotice(any(), any(), any(), anyInt());

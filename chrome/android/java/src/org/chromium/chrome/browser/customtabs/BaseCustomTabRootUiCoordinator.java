@@ -64,6 +64,9 @@ import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.privacy_sandbox.ActivityTypeMapper;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
+import org.chromium.chrome.browser.privacy_sandbox.SurfaceType;
+import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionBridge;
+import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionOnboardingController;
 import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionSnackbarController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudIPHController;
@@ -617,15 +620,23 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                             boolean shouldShowPrivacySandboxDialog =
                                     PrivacySandboxDialogController.shouldShowPrivacySandboxDialog(
                                             currentModelProfile);
+                            int activityType = mIntentDataProvider.get().getActivityType();
                             boolean isCustomTab =
-                                    mIntentDataProvider.get().getActivityType()
-                                                    == ActivityType.CUSTOM_TAB
+                                    activityType == ActivityType.CUSTOM_TAB
                                             && !(mIntentDataProvider.get().isPartialCustomTab());
                             if (isCustomTab) {
                                 RecordHistogram.recordBooleanHistogram(
                                         "Startup.Android.PrivacySandbox.ShouldShowAdsNoticeCCT",
                                         shouldShowPrivacySandboxDialog);
                             }
+
+                            didShowPrompt =
+                                    maybeOnboardTrackingProtection(
+                                            profile,
+                                            didShowPrompt,
+                                            activityType,
+                                            new TrackingProtectionBridge(profile));
+
                             if (isAdsNoticeInCCTFeatureEnabled()
                                     && shouldShowPrivacySandboxDialog
                                     && isCustomTab) {
@@ -683,6 +694,27 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 () -> maybeRecordPrivacySandboxActivityType(),
                 mIntentDataProvider,
                 mProfileSupplier);
+    }
+
+    boolean maybeOnboardTrackingProtection(
+            Profile profile,
+            boolean didShowPrompt,
+            int activityType,
+            TrackingProtectionBridge trackingProtectionBridge) {
+        if (didShowPrompt) return true;
+        if (!ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.TRACKING_PROTECTION_FULL_ONBOARDING_MOBILE_TRIGGER)
+                || ActivityTypeMapper.toSurfaceType(activityType, mIntentDataProvider.get())
+                        != SurfaceType.AGACCT) {
+            return false;
+        }
+        return TrackingProtectionOnboardingController.maybeCreate(
+                mActivity,
+                trackingProtectionBridge,
+                mActivityTabProvider,
+                mMessageDispatcher,
+                new SettingsLauncherImpl(),
+                SurfaceType.AGACCT);
     }
 
     private void maybeRecordPrivacySandboxActivityType() {

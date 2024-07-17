@@ -87,6 +87,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.privacy_sandbox.ActivityTypeMapper;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
+import org.chromium.chrome.browser.privacy_sandbox.SurfaceType;
 import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionBridge;
 import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionNoticeController;
 import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionOnboardingController;
@@ -850,7 +851,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             new TrackingProtectionBridge(profile),
                             mActivityTabProvider,
                             mMessageDispatcher,
-                            new SettingsLauncherImpl());
+                            new SettingsLauncherImpl(),
+                            SurfaceType.BR_APP);
         }
 
         if (!wasPromoTriggered && TrackingProtectionNoticeController.shouldShowNotice(profile)) {
