@@ -661,6 +661,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(REDIRECT_EXPLICIT_CTA_INTENTS_TO_EXISTING_ACTIVITY, true);
     public static final CachedFlag sSafeBrowsingCallNewGmsApiOnStartup =
             newCachedFlag(SAFE_BROWSING_CALL_NEW_GMS_API_ON_STARTUP, false);
+    public static final CachedFlag sSafetyHub = newCachedFlag(SAFETY_HUB, false);
     public static final CachedFlag sSearchEngineChoice = newCachedFlag(SEARCH_ENGINE_CHOICE, false);
     public static final CachedFlag sSearchInCCT = newCachedFlag(SEARCH_IN_CCT, false);
     public static final CachedFlag sSmallerTabStripTitleLimit =
@@ -779,6 +780,7 @@ public abstract class ChromeFeatureList {
                     sQueryTiles,
                     sRedirectExplicitCTAIntentsToExistingActivity,
                     sSafeBrowsingCallNewGmsApiOnStartup,
+                    sSafetyHub,
                     sSearchEngineChoice,
                     sSearchInCCT,
                     sSmallerTabStripTitleLimit,
@@ -852,8 +854,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(READER_MODE_IN_CCT, false);
     public static final MutableFlagWithSafeDefault sRecordSuppressionMetrics =
             newMutableFlagWithSafeDefault(RECORD_SUPPRESSION_METRICS, true);
-    public static final MutableFlagWithSafeDefault sSafetyHub =
-            newMutableFlagWithSafeDefault(SAFETY_HUB, false);
     public static final MutableFlagWithSafeDefault sSuppressionToolbarCaptures =
             newMutableFlagWithSafeDefault(SUPPRESS_TOOLBAR_CAPTURES, false);
     public static final MutableFlagWithSafeDefault sSuppressToolbarCapturesAtGestureEnd =

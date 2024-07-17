@@ -166,6 +166,7 @@ import org.chromium.chrome.browser.quick_delete.QuickDeleteDelegateImpl;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteMetricsDelegate;
 import org.chromium.chrome.browser.read_later.ReadingListBackPressHandler;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
+import org.chromium.chrome.browser.safety_hub.SafetyHubMagicStackBuilder;
 import org.chromium.chrome.browser.search_engines.SearchEngineChoiceNotification;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareHelper;
@@ -2206,6 +2207,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             getTabModelSelectorSupplier(),
                             getTabContentManagerSupplier());
             moduleRegistry.registerModule(ModuleType.TAB_RESUMPTION, tabResumptionModuleBuilder);
+        }
+
+        if (ChromeFeatureList.sSafetyHub.isEnabled()) {
+            SafetyHubMagicStackBuilder safetyHubMagicStackBuilder =
+                    new SafetyHubMagicStackBuilder(
+                            this, mTabModelProfileSupplier, mTabModelSelector, SETTINGS_LAUNCHER);
+            moduleRegistry.registerModule(ModuleType.SAFETY_HUB, safetyHubMagicStackBuilder);
         }
 
         mModuleRegistrySupplier.set(moduleRegistry);

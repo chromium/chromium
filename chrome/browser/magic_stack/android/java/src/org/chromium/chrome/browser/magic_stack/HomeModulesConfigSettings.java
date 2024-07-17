@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.magic_stack;
 
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SAFETY_HUB;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_RESUMPTION;
 
@@ -74,6 +75,8 @@ public class HomeModulesConfigSettings extends ChromeBaseSettingsFragment {
                 return resources.getQuantityString(R.plurals.home_modules_tab_resumption_title, 1);
             case PRICE_CHANGE:
                 return resources.getString(R.string.price_change_module_name);
+            case SAFETY_HUB:
+                return resources.getString(R.string.safety_hub_magic_stack_module_name);
             default:
                 assert false : "Module type not supported!";
                 return null;
