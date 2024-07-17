@@ -53,13 +53,9 @@ bool FakeIdentityRequestDialogController::ShowAccountsDialog(
       break;
   };
 
-  if (is_interception_enabled_) {
-    // Browser automation will handle selecting an account/canceling.
-    return true;
-  }
   // Use the provided account, if any. Otherwise do not run the callback right
   // away.
-  if (selected_account_) {
+  if (selected_account_ && !is_interception_enabled_) {
     std::move(on_selected)
         .Run(identity_provider_data[0].idp_metadata.config_url,
              *selected_account_,
