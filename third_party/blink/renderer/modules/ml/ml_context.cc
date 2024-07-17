@@ -313,14 +313,7 @@ ScriptPromise<DOMArrayBuffer> MLContext::readBuffer(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
-  if (device_type_ == V8MLDeviceType::Enum::kGpu) {
-    src_buffer->ReadBufferImpl(resolver);
-    return promise;
-  }
-
-  resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
-                                   "Not implemented");
-
+  src_buffer->ReadBufferImpl(resolver);
   return promise;
 }
 
@@ -399,16 +392,10 @@ void MLContext::WriteWebNNBuffer(ScriptState* script_state,
     return;
   }
 
-  if (device_type_ == V8MLDeviceType::Enum::kGpu) {
-    dst_buffer->WriteBufferImpl(
-        src_data.subspan(checked_src_byte_offset.ValueOrDie(),
-                         checked_write_byte_size.ValueOrDie()),
-        exception_state);
-    return;
-  }
-
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Not implemented");
+  dst_buffer->WriteBufferImpl(
+      src_data.subspan(checked_src_byte_offset.ValueOrDie(),
+                       checked_write_byte_size.ValueOrDie()),
+      exception_state);
 }
 
 void MLContext::dispatch(ScriptState* script_state,
