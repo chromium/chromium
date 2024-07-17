@@ -445,18 +445,42 @@ void SharedStorageWorkletHost::SelectURL(
                                 std::move(reporting_metadata));
   }
 
-  if (private_aggregation_config->context_id.has_value() &&
-      !blink::IsValidPrivateAggregationContextId(
-          private_aggregation_config->context_id.value())) {
-    receiver_.ReportBadMessage("Invalid context_id.");
-    LogSharedStorageWorkletError(blink::SharedStorageWorkletErrorType::
-                                     kSelectURLNonWebVisibleInvalidContextId);
-    return;
+  if (private_aggregation_config->context_id.has_value()) {
+    if (!blink::IsValidPrivateAggregationContextId(
+            private_aggregation_config->context_id.value())) {
+      receiver_.ReportBadMessage("Invalid context_id.");
+      LogSharedStorageWorkletError(blink::SharedStorageWorkletErrorType::
+                                       kSelectURLNonWebVisibleInvalidContextId);
+      return;
+    }
+
+    if (document_service_->render_frame_host().IsNestedWithinFencedFrame() &&
+        base::FeatureList::IsEnabled(
+            blink::features::kFencedFramesLocalUnpartitionedDataAccess)) {
+      receiver_.ReportBadMessage(
+          "contextId cannot be set inside of fenced frames.");
+      LogSharedStorageWorkletError(blink::SharedStorageWorkletErrorType::
+                                       kSelectURLNonWebVisibleInvalidContextId);
+      return;
+    }
   }
 
   if (!blink::IsValidPrivateAggregationFilteringIdMaxBytes(
           private_aggregation_config->filtering_id_max_bytes)) {
     receiver_.ReportBadMessage("Invalid fitering_id_byte_size.");
+    LogSharedStorageWorkletError(
+        blink::SharedStorageWorkletErrorType::
+            kSelectURLNonWebVisibleInvalidFilteringIdMaxBytes);
+    return;
+  }
+
+  if (document_service_->render_frame_host().IsNestedWithinFencedFrame() &&
+      private_aggregation_config->filtering_id_max_bytes !=
+          blink::kPrivateAggregationApiDefaultFilteringIdMaxBytes &&
+      base::FeatureList::IsEnabled(
+          blink::features::kFencedFramesLocalUnpartitionedDataAccess)) {
+    receiver_.ReportBadMessage(
+        "filteringIdMaxBytes cannot be set inside of fenced frames.");
     LogSharedStorageWorkletError(
         blink::SharedStorageWorkletErrorType::
             kSelectURLNonWebVisibleInvalidFilteringIdMaxBytes);
@@ -608,18 +632,42 @@ void SharedStorageWorkletHost::Run(
     return;
   }
 
-  if (private_aggregation_config->context_id.has_value() &&
-      !blink::IsValidPrivateAggregationContextId(
-          private_aggregation_config->context_id.value())) {
-    receiver_.ReportBadMessage("Invalid context_id.");
-    LogSharedStorageWorkletError(blink::SharedStorageWorkletErrorType::
-                                     kRunNonWebVisibleInvalidContextId);
-    return;
+  if (private_aggregation_config->context_id.has_value()) {
+    if (!blink::IsValidPrivateAggregationContextId(
+            private_aggregation_config->context_id.value())) {
+      receiver_.ReportBadMessage("Invalid context_id.");
+      LogSharedStorageWorkletError(blink::SharedStorageWorkletErrorType::
+                                       kRunNonWebVisibleInvalidContextId);
+      return;
+    }
+
+    if (document_service_->render_frame_host().IsNestedWithinFencedFrame() &&
+        base::FeatureList::IsEnabled(
+            blink::features::kFencedFramesLocalUnpartitionedDataAccess)) {
+      receiver_.ReportBadMessage(
+          "contextId cannot be set inside of fenced frames.");
+      LogSharedStorageWorkletError(blink::SharedStorageWorkletErrorType::
+                                       kRunNonWebVisibleInvalidContextId);
+      return;
+    }
   }
 
   if (!blink::IsValidPrivateAggregationFilteringIdMaxBytes(
           private_aggregation_config->filtering_id_max_bytes)) {
     receiver_.ReportBadMessage("Invalid fitering_id_byte_size.");
+    LogSharedStorageWorkletError(
+        blink::SharedStorageWorkletErrorType::
+            kRunNonWebVisibleInvalidFilteringIdMaxBytes);
+    return;
+  }
+
+  if (document_service_->render_frame_host().IsNestedWithinFencedFrame() &&
+      private_aggregation_config->filtering_id_max_bytes !=
+          blink::kPrivateAggregationApiDefaultFilteringIdMaxBytes &&
+      base::FeatureList::IsEnabled(
+          blink::features::kFencedFramesLocalUnpartitionedDataAccess)) {
+    receiver_.ReportBadMessage(
+        "filteringIdMaxBytes cannot be set inside of fenced frames.");
     LogSharedStorageWorkletError(
         blink::SharedStorageWorkletErrorType::
             kRunNonWebVisibleInvalidFilteringIdMaxBytes);

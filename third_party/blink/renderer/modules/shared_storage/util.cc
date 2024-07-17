@@ -106,12 +106,23 @@ bool CheckPrivateAggregationConfig(
     return true;
   }
 
+  bool is_in_fenced_frame =
+      ExecutionContext::From(&script_state)->IsInFencedFrame();
+
   if (options.privateAggregationConfig()->hasContextId()) {
     if (options.privateAggregationConfig()->contextId().length() >
         kPrivateAggregationApiContextIdMaxLength) {
       resolver.Reject(V8ThrowDOMException::CreateOrEmpty(
           script_state.GetIsolate(), DOMExceptionCode::kDataError,
           "contextId length cannot be larger than 64"));
+      return false;
+    }
+    if (is_in_fenced_frame &&
+        base::FeatureList::IsEnabled(
+            features::kFencedFramesLocalUnpartitionedDataAccess)) {
+      resolver.Reject(V8ThrowDOMException::CreateOrEmpty(
+          script_state.GetIsolate(), DOMExceptionCode::kDataError,
+          "contextId cannot be set inside of fenced frames."));
       return false;
     }
     out_context_id = options.privateAggregationConfig()->contextId();
@@ -152,6 +163,14 @@ bool CheckPrivateAggregationConfig(
       resolver.Reject(V8ThrowDOMException::CreateOrEmpty(
           script_state.GetIsolate(), DOMExceptionCode::kDataError,
           "filteringIdMaxBytes is too big"));
+      return false;
+    }
+    if (is_in_fenced_frame &&
+        base::FeatureList::IsEnabled(
+            features::kFencedFramesLocalUnpartitionedDataAccess)) {
+      resolver.Reject(V8ThrowDOMException::CreateOrEmpty(
+          script_state.GetIsolate(), DOMExceptionCode::kDataError,
+          "filteringIdMaxBytes cannot be set inside of fenced frames."));
       return false;
     }
     out_filtering_id_max_bytes = static_cast<uint32_t>(
