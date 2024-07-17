@@ -441,7 +441,6 @@ public abstract class ChromeFeatureList {
     public static final String SAFE_BROWSING_NEW_GMS_API_FOR_SUBRESOURCE_FILTER_CHECK =
             "SafeBrowsingNewGmsApiForSubresourceFilterCheck";
     public static final String SEARCH_IN_CCT = "SearchInCCT";
-    public static final String SEARCH_ENGINES_PROMO_V3 = "SearchEnginesPromoV3";
     public static final String SEARCH_ENGINE_CHOICE = "SearchEngineChoice";
     public static final String SHARE_CUSTOM_ACTIONS_IN_CCT = "ShareCustomActionsInCCT";
     public static final String PERSISTENT_SEARCH_ENGINE_CHOICE_IMPORT =
