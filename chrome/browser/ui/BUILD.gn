@@ -2343,8 +2343,6 @@ static_library("ui") {
       "ash/auth/cryptohome_pin_engine.h",
       "ash/auth/legacy_fingerprint_engine.cc",
       "ash/auth/legacy_fingerprint_engine.h",
-      "ash/capture_mode/chrome_capture_mode_delegate.cc",
-      "ash/capture_mode/chrome_capture_mode_delegate.h",
       "ash/desks/admin_template_service_factory.cc",
       "ash/desks/admin_template_service_factory.h",
       "ash/desks/chrome_desks_util.cc",
@@ -3620,6 +3618,7 @@ static_library("ui") {
       "//chrome/browser/ui/ash/assistant",
       "//chrome/browser/ui/ash/auth",
       "//chrome/browser/ui/ash/birch",
+      "//chrome/browser/ui/ash/capture_mode",
       "//chrome/browser/ui/quick_answers",
       "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings",
       "//chrome/browser/ui/webui/ash/app_install:mojo_bindings",
@@ -3993,6 +3992,7 @@ static_library("ui") {
       "//chrome/browser/ui/ash/annotator",
       "//chrome/browser/ui/ash/assistant",
       "//chrome/browser/ui/ash/birch",
+      "//chrome/browser/ui/ash/capture_mode",
     ]
 
     if (is_chrome_branded) {
