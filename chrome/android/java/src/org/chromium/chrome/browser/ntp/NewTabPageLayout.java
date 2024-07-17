@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
@@ -225,11 +224,11 @@ public class NewTabPageLayout extends LinearLayout {
         mNewTabPageUma = uma;
         mWindowAndroid = windowAndroid;
         mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
-        mIsLogoPolishFlagEnabled = StartSurfaceConfiguration.isLogoPolishEnabled();
+        mIsLogoPolishFlagEnabled = LogoUtils.isLogoPolishEnabled();
         mIsLogoPolishEnabled =
-                StartSurfaceConfiguration.isLogoPolishEnabledWithGoogleDoodle(
+                LogoUtils.isLogoPolishEnabledWithGoogleDoodle(
                         mSearchProviderIsGoogle && mShowingNonStandardGoogleLogo);
-        mLogoSizeForLogoPolish = StartSurfaceConfiguration.getLogoSizeForLogoPolish();
+        mLogoSizeForLogoPolish = LogoUtils.getLogoSizeForLogoPolish();
         mIsTablet = isTablet;
         mTabStripHeightSupplier = tabStripHeightSupplier;
 
@@ -394,7 +393,7 @@ public class NewTabPageLayout extends LinearLayout {
                             mSnapshotTileGridChanged = true;
                             mShowingNonStandardGoogleLogo = logo != null && mSearchProviderIsGoogle;
                             mIsLogoPolishEnabled =
-                                    StartSurfaceConfiguration.isLogoPolishEnabledWithGoogleDoodle(
+                                    LogoUtils.isLogoPolishEnabledWithGoogleDoodle(
                                             mShowingNonStandardGoogleLogo);
                         });
 
@@ -618,8 +617,7 @@ public class NewTabPageLayout extends LinearLayout {
         if (!mSearchProviderIsGoogle) {
             mShowingNonStandardGoogleLogo = false;
             mIsLogoPolishEnabled =
-                    StartSurfaceConfiguration.isLogoPolishEnabledWithGoogleDoodle(
-                            mShowingNonStandardGoogleLogo);
+                    LogoUtils.isLogoPolishEnabledWithGoogleDoodle(mShowingNonStandardGoogleLogo);
         }
 
         setSearchProviderTopMargin();

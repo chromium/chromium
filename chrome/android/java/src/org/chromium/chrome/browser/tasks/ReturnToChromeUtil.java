@@ -25,6 +25,7 @@ import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -527,21 +528,13 @@ public final class ReturnToChromeUtil {
     public static Point calculateContextMenuStartPosition(Resources resources) {
         // On the single tab module, the x starts from the right of the tab thumbnail.
         int contextMenuStartX =
-                resources.getDimensionPixelSize(
-                                org.chromium.chrome.start_surface.R.dimen
-                                        .single_tab_module_lateral_margin)
+                resources.getDimensionPixelSize(R.dimen.single_tab_module_lateral_margin)
+                        + resources.getDimensionPixelSize(R.dimen.single_tab_module_padding_bottom)
                         + resources.getDimensionPixelSize(
-                                org.chromium.chrome.start_surface.R.dimen
-                                        .single_tab_module_padding_bottom)
-                        + resources.getDimensionPixelSize(
-                                org.chromium.chrome.start_surface.R.dimen
-                                        .single_tab_module_tab_thumbnail_size);
+                                R.dimen.single_tab_module_tab_thumbnail_size);
         // The y starts from the same height of the tab thumbnail.
         int contextMenuStartY =
-                resources.getDimensionPixelSize(
-                                org.chromium.chrome.start_surface.R.dimen
-                                        .single_tab_module_padding_top)
-                        * 3;
+                resources.getDimensionPixelSize(R.dimen.single_tab_module_padding_top) * 3;
         return new Point(contextMenuStartX, contextMenuStartY);
     }
 

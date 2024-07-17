@@ -28,10 +28,7 @@ android_resources("java_resources") {
 }
 
 android_library("public_java") {
-  sources = [
-    "java/src/org/chromium/chrome/features/start_surface/StartSurfaceConfiguration.java",
-    "java/src/org/chromium/chrome/features/start_surface/StartSurfaceUserData.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/features/start_surface/StartSurfaceUserData.java" ]
 
   deps = [
     "//base:base_java",

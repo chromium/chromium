@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.Minimi
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
+import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
@@ -45,7 +46,6 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.omnibox.OmniboxFeatures;
 
 import java.util.ArrayList;
@@ -116,8 +116,8 @@ public class ChromeCachedFlags {
                         ShoppingPersistedTabDataService
                                 .SKIP_SHOPPING_PERSISTED_TAB_DATA_DELAYED_INITIALIZATION,
                         ReturnToChromeUtil.HOME_SURFACE_RETURN_TIME_SECONDS,
-                        StartSurfaceConfiguration.LOGO_POLISH_LARGE_SIZE,
-                        StartSurfaceConfiguration.LOGO_POLISH_MEDIUM_SIZE,
+                        LogoUtils.LOGO_POLISH_LARGE_SIZE,
+                        LogoUtils.LOGO_POLISH_MEDIUM_SIZE,
                         TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,
                         HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES,
                         HomeModulesMetricsUtils.TAB_RESUMPTION_COMBINE_TABS,
