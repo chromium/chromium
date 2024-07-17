@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_restrictions.h"
 #include "net/base/io_buffer.h"
 #include "net/socket/stream_socket.h"
@@ -80,8 +81,12 @@ ExceptionOr<ByteArray> SocketInputStream::Read(std::int64_t size) {
   waitable_event.Wait();
 
   if (exception) {
+    UMA_HISTOGRAM_BOOLEAN("Nearby.Connections.WifiDirect.Socket.Read.Result",
+                          false);
     return ExceptionOr<ByteArray>(exception.value());
   } else {
+    UMA_HISTOGRAM_BOOLEAN("Nearby.Connections.WifiDirect.Socket.Read.Result",
+                          true);
     return ExceptionOr<ByteArray>(
         ByteArray(response_buffer->data(), bytes_read));
   }
@@ -154,6 +159,8 @@ Exception SocketOutputStream::Write(const ByteArray& data) {
                      &response_buffer, &waitable_event, &output));
   waitable_event.Wait();
 
+  UMA_HISTOGRAM_BOOLEAN("Nearby.Connections.WifiDirect.Socket.Write.Result",
+                        output.Ok());
   return output;
 }
 

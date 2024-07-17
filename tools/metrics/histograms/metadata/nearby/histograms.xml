@@ -676,6 +676,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Connections.WifiDirect.Socket.Read.Result"
+    enum="BooleanSuccess" expires_after="2025-04-30">
+  <owner>jackshira@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the result of attempting to read bytes from a connected TCP socket
+    on a connected WiFi Direct medium. Read is called repeatedly during the
+    duration of a connection.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Connections.WifiDirect.Socket.Write.Result"
+    enum="BooleanSuccess" expires_after="2025-04-30">
+  <owner>jackshira@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the result of attempting to write bytes to a connected TCP socket on
+    a connected WiFi Direct medium. Write is called repeatedly during the
+    duration of a connection.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Connections.WifiLan.ConnectResult"
     enum="NearbyConnectionsWifiLanConnectResult" expires_after="2025-04-30">
   <owner>hansenmichael@google.com</owner>

@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/task/thread_pool.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -17,6 +18,11 @@
 namespace {
 
 const std::vector<uint8_t> kTestData = {0x01, 0x02, 0x03, 0x04};
+
+constexpr char kReadResultMetricName[] =
+    "Nearby.Connections.WifiDirect.Socket.Read.Result";
+constexpr char kWriteResultMetricName[] =
+    "Nearby.Connections.WifiDirect.Socket.Write.Result";
 
 void RunOnTaskRunner(base::OnceClosure task) {
   base::RunLoop run_loop;
@@ -180,16 +186,19 @@ class SocketInputStreamTest : public ::testing::Test {
 
   SocketInputStream* input_stream() { return input_stream_.get(); }
   FakeStreamSocket* stream_socket() { return stream_socket_.get(); }
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
   std::unique_ptr<FakeStreamSocket> stream_socket_;
   std::unique_ptr<SocketInputStream> input_stream_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(SocketInputStreamTest, Read) {
   stream_socket()->SetReadData(kTestData);
+  histogram_tester().ExpectTotalCount(kReadResultMetricName, 0);
 
   RunOnTaskRunner(base::BindOnce(
       [](SocketInputStream* input_stream) {
@@ -199,10 +208,15 @@ TEST_F(SocketInputStreamTest, Read) {
         EXPECT_EQ(result.GetResult(), ToByteArray(kTestData));
       },
       input_stream()));
+
+  histogram_tester().ExpectTotalCount(kReadResultMetricName, 1);
+  histogram_tester().ExpectBucketCount(kReadResultMetricName,
+                                       /*bucket:true=*/1, 1);
 }
 
 TEST_F(SocketInputStreamTest, Read_Error) {
   stream_socket()->SetReadError(net::ERR_FAILED);
+  histogram_tester().ExpectTotalCount(kReadResultMetricName, 0);
 
   RunOnTaskRunner(base::BindOnce(
       [](SocketInputStream* input_stream) {
@@ -212,10 +226,15 @@ TEST_F(SocketInputStreamTest, Read_Error) {
         EXPECT_EQ(result.GetException(), Exception{Exception::kFailed});
       },
       input_stream()));
+
+  histogram_tester().ExpectTotalCount(kReadResultMetricName, 1);
+  histogram_tester().ExpectBucketCount(kReadResultMetricName,
+                                       /*bucket:false=*/0, 1);
 }
 
 TEST_F(SocketInputStreamTest, Read_AfterClose) {
   stream_socket()->SetReadData(kTestData);
+  histogram_tester().ExpectTotalCount(kReadResultMetricName, 0);
 
   RunOnTaskRunner(base::BindOnce(
       [](SocketInputStream* input_stream) {
@@ -226,6 +245,10 @@ TEST_F(SocketInputStreamTest, Read_AfterClose) {
         EXPECT_EQ(result.GetException(), Exception{Exception::kFailed});
       },
       input_stream()));
+
+  histogram_tester().ExpectTotalCount(kReadResultMetricName, 1);
+  histogram_tester().ExpectBucketCount(kReadResultMetricName,
+                                       /*bucket:false=*/0, 1);
 }
 
 // SocketOutputStream
@@ -240,23 +263,32 @@ class SocketOutputStreamTest : public ::testing::Test {
 
   SocketOutputStream* output_stream() { return output_stream_.get(); }
   FakeStreamSocket* stream_socket() { return stream_socket_.get(); }
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
   std::unique_ptr<FakeStreamSocket> stream_socket_;
   std::unique_ptr<SocketOutputStream> output_stream_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(SocketOutputStreamTest, Write) {
+  histogram_tester().ExpectTotalCount(kWriteResultMetricName, 0);
+
   RunOnTaskRunner(base::BindOnce(
       [](SocketOutputStream* output_stream, FakeStreamSocket* socket) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+
         auto result = output_stream->Write(ToByteArray(kTestData));
         EXPECT_TRUE(result.Ok());
         EXPECT_EQ(socket->GetWriteData(), kTestData);
       },
       output_stream(), stream_socket()));
+
+  histogram_tester().ExpectTotalCount(kWriteResultMetricName, 1);
+  histogram_tester().ExpectBucketCount(kWriteResultMetricName,
+                                       /*bucket:true=*/1, 1);
 }
 
 TEST_F(SocketOutputStreamTest, Write_AfterClose) {
@@ -269,6 +301,10 @@ TEST_F(SocketOutputStreamTest, Write_AfterClose) {
         EXPECT_TRUE(socket->GetWriteData().empty());
       },
       output_stream(), stream_socket()));
+
+  histogram_tester().ExpectTotalCount(kWriteResultMetricName, 1);
+  histogram_tester().ExpectBucketCount(kWriteResultMetricName,
+                                       /*bucket:false=*/0, 1);
 }
 
 }  // namespace nearby::chrome
