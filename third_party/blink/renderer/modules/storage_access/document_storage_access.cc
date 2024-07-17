@@ -211,14 +211,16 @@ ScriptPromise<StorageAccessHandle> DocumentStorageAccess::requestStorageAccess(
           [](LocalDOMWindow* window,
              const StorageAccessTypes* storage_access_types,
              ScriptPromiseResolver<StorageAccessHandle>* resolver) {
-            DCHECK(window);
+            if (!window) {
+                return;
+            }
             DCHECK(storage_access_types);
             DCHECK(resolver);
             resolver->Resolve(MakeGarbageCollected<StorageAccessHandle>(
                 *window, storage_access_types));
           },
           WrapWeakPersistent(GetSupplementable()->domWindow()),
-          WrapWeakPersistent(storage_access_types)));
+          WrapPersistent(storage_access_types)));
 }
 
 ScriptPromise<IDLBoolean> DocumentStorageAccess::hasUnpartitionedCookieAccess(
