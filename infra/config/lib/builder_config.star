@@ -640,6 +640,11 @@ def _get_builder_mirror_description(bucket_name, builder, bc_state):
         fail("A builder can't both mirror and be mirrored:", builder.name)
 
     description = builder.description_html
+    if not description and len(mirrored_builders) == 1:
+        m_id = _builder_id(mirrored_builders[0])
+        mirror_node = _BUILDER_CONFIG.get(m_id["bucket"], m_id["builder"])
+        if mirror_node.props.description_html:
+            description += "<br>%s<br/>" % mirror_node.props.description_html
     if description:
         description += "<br/>"
     if mirrored_builders:
@@ -656,10 +661,6 @@ def _get_builder_mirror_description(bucket_name, builder, bc_state):
     for m_id in sorted(m_ids, key = _builder_id_sort_key):
         link = linkify_builder(m_id["bucket"], m_id["builder"])
         description += "<li>%s</li>" % link
-        if not builder.description_html and len(mirrored_builders) == 1:
-            mirror_node = _BUILDER_CONFIG.get(m_id["bucket"], m_id["builder"])
-            if mirror_node.props.description_html:
-                description += "<br>%s<br/>" % mirror_node.props.description_html
     return description + "</ul>"
 
 def _targets_spec(bc_state, nodes):
