@@ -1086,19 +1086,8 @@ void SwapChainPresenter::AdjustTargetForFullScreenLetterboxing(
   // Here the destination surface size is set to the whole monitor, while the
   // target region is set to the visual clip rectangle on the screen.
   if (params.z_order > 0) {
-    if (base::FeatureList::IsEnabled(kApplyTransformToLetterboxing)) {
-      // The transform scaling ratio should be applied in the process of
-      // calculating dest_size and target_rect.
-      float inverse_scale_x = 1.0f / std::abs(visual_transform->rc(0, 0));
-      float inverse_scale_y = 1.0f / std::abs(visual_transform->rc(1, 1));
-      *dest_size =
-          gfx::ScaleSize(monitor_size, inverse_scale_x, inverse_scale_y);
-      *target_rect =
-          gfx::ScaleRect(*visual_clip_rect, inverse_scale_x, inverse_scale_y);
-    } else {
-      *dest_size = monitor_size;
-      *target_rect = *visual_clip_rect;
-    }
+    *dest_size = monitor_size;
+    *target_rect = *visual_clip_rect;
   } else {
     // For underlay scenario, keep the destination surface size and target
     // region according to swap chain size.
