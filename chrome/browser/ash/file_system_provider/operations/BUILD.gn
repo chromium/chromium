@@ -1,0 +1,98 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("operations") {
+  sources = [
+    "abort.cc",
+    "abort.h",
+    "add_watcher.cc",
+    "add_watcher.h",
+    "close_file.cc",
+    "close_file.h",
+    "configure.cc",
+    "configure.h",
+    "copy_entry.cc",
+    "copy_entry.h",
+    "create_directory.cc",
+    "create_directory.h",
+    "create_file.cc",
+    "create_file.h",
+    "delete_entry.cc",
+    "delete_entry.h",
+    "execute_action.cc",
+    "execute_action.h",
+    "get_actions.cc",
+    "get_actions.h",
+    "get_metadata.cc",
+    "get_metadata.h",
+    "move_entry.cc",
+    "move_entry.h",
+    "open_file.cc",
+    "open_file.h",
+    "operation.cc",
+    "operation.h",
+    "read_directory.cc",
+    "read_directory.h",
+    "read_file.cc",
+    "read_file.h",
+    "remove_watcher.cc",
+    "remove_watcher.h",
+    "truncate.cc",
+    "truncate.h",
+    "unmount.cc",
+    "unmount.h",
+    "write_file.cc",
+    "write_file.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/common",
+    "//extensions/browser",
+    "//storage/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "abort_unittest.cc",
+    "add_watcher_unittest.cc",
+    "close_file_unittest.cc",
+    "configure_unittest.cc",
+    "copy_entry_unittest.cc",
+    "create_directory_unittest.cc",
+    "create_file_unittest.cc",
+    "delete_entry_unittest.cc",
+    "execute_action_unittest.cc",
+    "get_actions_unittest.cc",
+    "get_metadata_unittest.cc",
+    "move_entry_unittest.cc",
+    "open_file_unittest.cc",
+    "read_directory_unittest.cc",
+    "read_file_unittest.cc",
+    "remove_watcher_unittest.cc",
+    "test_util.cc",
+    "test_util.h",
+    "truncate_unittest.cc",
+    "unmount_unittest.cc",
+    "write_file_unittest.cc",
+  ]
+
+  deps = [
+    ":operations",
+    "//base",
+    "//chrome/browser/ash/file_system_provider",
+    "//chrome/common",
+    "//extensions/browser",
+    "//net",
+    "//storage/browser",
+    "//testing/gtest",
+  ]
+}
