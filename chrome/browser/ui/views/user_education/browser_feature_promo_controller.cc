@@ -55,16 +55,19 @@ BrowserFeaturePromoController::~BrowserFeaturePromoController() = default;
 // static
 BrowserFeaturePromoController* BrowserFeaturePromoController::GetForView(
     views::View* view) {
-  if (!view)
+  if (!view) {
     return nullptr;
+  }
   views::Widget* widget = view->GetWidget();
-  if (!widget)
+  if (!widget) {
     return nullptr;
+  }
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForNativeWindow(
       widget->GetPrimaryWindowWidget()->GetNativeWindow());
-  if (!browser_view)
+  if (!browser_view) {
     return nullptr;
+  }
 
   return browser_view->GetFeaturePromoController();
 }
@@ -177,15 +180,26 @@ BrowserFeaturePromoController::GetFocusHelpBubbleScreenReaderHint(
     user_education::FeaturePromoSpecification::PromoType promo_type,
     ui::TrackedElement* anchor_element,
     bool is_critical_promo) const {
+  return GetFocusHelpBubbleScreenReaderHintCommon(
+      promo_type, browser_view_, anchor_element, is_critical_promo);
+}
+
+std::u16string GetFocusHelpBubbleScreenReaderHintCommon(
+    user_education::FeaturePromoSpecification::PromoType promo_type,
+    const ui::AcceleratorProvider* accelerator_provider,
+    ui::TrackedElement* anchor_element,
+    bool is_critical_promo) {
   // No message is required as this is a background bubble with a
   // screen reader-specific prompt and will dismiss itself.
   if (promo_type ==
-      user_education::FeaturePromoSpecification::PromoType::kToast)
+      user_education::FeaturePromoSpecification::PromoType::kToast) {
     return std::u16string();
+  }
 
   ui::Accelerator accelerator;
   std::u16string accelerator_text;
-  CHECK(browser_view_->GetAccelerator(IDC_FOCUS_NEXT_PANE, &accelerator));
+  CHECK(accelerator_provider->GetAcceleratorForCommandId(IDC_FOCUS_NEXT_PANE,
+                                                         &accelerator));
   accelerator_text = accelerator.GetShortcutText();
 
   // Present the user with the full help bubble navigation shortcut.
@@ -203,8 +217,9 @@ BrowserFeaturePromoController::GetFocusHelpBubbleScreenReaderHint(
 
   // If the bubble starts focused and focus cannot traverse to the anchor view,
   // do not use a promo.
-  if (is_critical_promo)
+  if (is_critical_promo) {
     return std::u16string();
+  }
 
   // Present the user with an abridged help bubble navigation shortcut.
   return l10n_util::GetStringFUTF16(IDS_FOCUS_HELP_BUBBLE_DESCRIPTION,

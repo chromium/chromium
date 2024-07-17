@@ -67,6 +67,10 @@ UserEducationServiceFactory::UserEducationServiceFactory()
               // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOriginalOnly)
+              // The service is needed by the System Profile OTR (that manages
+              // the Profile Picker) to control the IPHs displayed in the
+              // Profile Picker.
+              .WithSystem(ProfileSelection::kOffTheRecordOnly)
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)

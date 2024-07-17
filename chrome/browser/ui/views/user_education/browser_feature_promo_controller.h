@@ -99,4 +99,11 @@ class BrowserFeaturePromoController
   const raw_ptr<BrowserView> browser_view_;
 };
 
+// Shared logic with `ProfilePickerFeaturePromoController`.
+std::u16string GetFocusHelpBubbleScreenReaderHintCommon(
+    user_education::FeaturePromoSpecification::PromoType promo_type,
+    const ui::AcceleratorProvider* accelerator_provider,
+    ui::TrackedElement* anchor_element,
+    bool is_critical_promo);
+
 #endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_BROWSER_FEATURE_PROMO_CONTROLLER_H_

@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_force_signin_dialog_host.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/user_education/common/feature_promo_controller.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
@@ -33,6 +34,7 @@ class ScopedProfileKeepAlive;
 class ProfileManagementFlowController;
 class ProfilePickerFlowController;
 class Browser;
+class ProfilePickerFeaturePromoController;
 
 namespace content {
 struct ContextMenuParams;
@@ -45,7 +47,8 @@ class WebContents;
 class ProfilePickerView : public views::WidgetDelegateView,
                           public ProfilePickerWebContentsHost,
                           public content::WebContentsDelegate,
-                          public web_modal::WebContentsModalDialogHost {
+                          public web_modal::WebContentsModalDialogHost,
+                          public ui::AcceleratorProvider {
  public:
   ProfilePickerView(const ProfilePickerView&) = delete;
   ProfilePickerView& operator=(const ProfilePickerView&) = delete;
@@ -102,6 +105,10 @@ class ProfilePickerView : public views::WidgetDelegateView,
       const views::SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
+
+  // ui::AcceleratorProvider
+  bool GetAcceleratorForCommandId(int command_id,
+                                  ui::Accelerator* accelerator) const override;
 
   // Exposed for testing
   enum State {
@@ -278,6 +285,10 @@ class ProfilePickerView : public views::WidgetDelegateView,
   void NotifyAccountSelected(const std::string& gaia_id);
 #endif
 
+  // Create the feature promo that manages the IPH logic that can be displayed
+  // through the Profile Picker.
+  void InitializeFeaturePromo(Profile* system_profile);
+
   ScopedKeepAlive keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 
@@ -324,6 +335,9 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
   // Hosts dialog displayed when a locked profile is selected in ProfilePicker.
   ProfilePickerForceSigninDialogHost dialog_host_;
+
+  // Manages IPH promos displayed through the Profile Picker.
+  std::unique_ptr<ProfilePickerFeaturePromoController> feature_promo_;
 
   base::WeakPtrFactory<ProfilePickerView> weak_ptr_factory_{this};
 };

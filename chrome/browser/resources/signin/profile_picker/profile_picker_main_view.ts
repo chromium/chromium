@@ -14,6 +14,7 @@ import './profile_picker_shared.css.js';
 import './strings.m.js';
 
 import {listenOnce} from '//resources/js/util.js';
+import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -43,7 +44,7 @@ export interface ProfilePickerMainViewElement {
 }
 
 const ProfilePickerMainViewElementBase =
-    WebUiListenerMixin(NavigationMixin(PolymerElement));
+    HelpBubbleMixin(WebUiListenerMixin(NavigationMixin(PolymerElement)));
 
 export class ProfilePickerMainViewElement extends
     ProfilePickerMainViewElementBase implements DraggableTileListInterface {

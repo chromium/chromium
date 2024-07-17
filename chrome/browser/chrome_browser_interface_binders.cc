@@ -1294,7 +1294,12 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       help_bubble::mojom::HelpBubbleHandlerFactory, InternalsUI,
       settings::SettingsUI, ReadingListUI, NewTabPageUI, CustomizeChromeUI,
-      PasswordManagerUI, HistoryUI>(map);
+      PasswordManagerUI, HistoryUI
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+      ,
+      ProfilePickerUI
+#endif  //! BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+      >(map);
 
 #if !defined(OFFICIAL_BUILD)
   RegisterWebUIControllerInterfaceBinder<foo::mojom::FooHandler, NewTabPageUI>(

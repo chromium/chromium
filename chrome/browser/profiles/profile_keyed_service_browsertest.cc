@@ -684,6 +684,11 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "PermissionsUpdaterShutdownFactory",
     "PluginInfoHostImpl",
     "TurnSyncOnHelperShutdownNotifier",
+
+    // Those services are needed to be able to display IPHs in the Profile
+    // Picker.
+    "feature_engagement::Tracker",
+    "UserEducationService",
   };
   // clang-format on
 
