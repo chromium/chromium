@@ -721,54 +721,27 @@ public class DOMUtils {
      * focused at first to bring up the keyboard.
      *
      * @param webContents The WebContents in which the node lives.
-     * @param inputMethodManagerWrapper The test input method manager wrapper, that will be used for
-     *     inputting.
      * @param nodeId The id of the text input node.
      * @param input The text to be entered into the text field.
      */
-    public static void enterInputIntoTextField(
-            WebContents webContents,
-            TestInputMethodManagerWrapper inputMethodManagerWrapper,
-            String nodeId,
-            String input)
-            throws TimeoutException {
-        enterInputIntoTextField(
-                webContents, inputMethodManagerWrapper, nodeId, input, /* shouldFocusNode= */ true);
-    }
-
-    /**
-     * Prints the text into the text field node simulating the keyboard input. The node needs to be
-     * focused at first to bring up the keyboard.
-     *
-     * @param webContents The WebContents in which the node lives.
-     * @param inputMethodManagerWrapper The test input method manager wrapper, that will be used for
-     *     inputting.
-     * @param nodeId The id of the text input node.
-     * @param input The text to be entered into the text field.
-     * @param shouldFocusNode specifies whether the input field should be focused before entering
-     *     input.
-     */
-    public static void enterInputIntoTextField(
-            WebContents webContents,
-            TestInputMethodManagerWrapper inputMethodManagerWrapper,
-            String nodeId,
-            String input,
-            boolean shouldFocusNode)
+    public static void enterInputIntoTextField(WebContents webContents, String nodeId, String input)
             throws TimeoutException {
         Assert.assertTrue(
                 "Input should be a non-empty string", input != null && input.length() > 0);
+        ImeAdapter imeAdapter = WebContentsUtils.getImeAdapter(webContents);
+        TestInputMethodManagerWrapper inputMethodManagerWrapper =
+                TestInputMethodManagerWrapper.create(imeAdapter);
+        imeAdapter.setInputMethodManagerWrapper(inputMethodManagerWrapper);
         // Click the text field node, so that it would get focus.
-        if (shouldFocusNode) {
-            DOMUtils.clickNode(webContents, nodeId);
-            CriteriaHelper.pollInstrumentationThread(
-                    () -> {
-                        try {
-                            Criteria.checkThat(DOMUtils.getFocusedNode(webContents), is(nodeId));
-                        } catch (TimeoutException e) {
-                            throw new CriteriaNotSatisfiedException(e);
-                        }
-                    });
-        }
+        DOMUtils.clickNode(webContents, nodeId);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        Criteria.checkThat(DOMUtils.getFocusedNode(webContents), is(nodeId));
+                    } catch (TimeoutException e) {
+                        throw new CriteriaNotSatisfiedException(e);
+                    }
+                });
 
         // Wait for the text field to get focused and the virtual keyboard to be activated.
         CriteriaHelper.pollInstrumentationThread(
@@ -779,7 +752,6 @@ public class DOMUtils {
                             is(true));
                 });
 
-        ImeAdapter imeAdapter = WebContentsUtils.getImeAdapter(webContents);
         // Enter the text.
         imeAdapter.setComposingTextForTest(input, 1);
         // Wait for the input to finish. After finishing the input, it will update the selection to
@@ -795,32 +767,44 @@ public class DOMUtils {
         func.append("  return element && element.value == '" + value + "';");
         func.append("}");
 
-        func.append("new Promise(resolve => {");
+        func.append("(async function() {");
+        func.append("var res = await new Promise(resolve => {");
         func.append("  if (valueCheck()) {");
-        func.append("    return resolve(" + RESULT_OK + ");");
+        func.append("    return resolve('" + RESULT_OK + "');");
 
         func.append("  } else {");
         func.append("    var element = document.getElementById('" + textFieldId + "');");
         func.append("    if (!element)");
-        func.append("      return resolve(" + RESULT_ELEMENT_NOT_FOUND + ");");
+        func.append("      return resolve('" + RESULT_ELEMENT_NOT_FOUND + "');");
 
         func.append("    element.oninput = function() {");
         func.append("      if (valueCheck()) {");
         func.append("        element.oninput = undefined;");
-        func.append("        return resolve(" + RESULT_OK + ");");
+        func.append("        return resolve('" + RESULT_OK + "');");
         func.append("      }");
         func.append("    };");
         func.append("  }");
         func.append("});");
+        func.append("window.domAutomationController.send([res]);");
+        func.append("})();");
 
-        String result =
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(webContents, func.toString());
+        String jsonText =
+                JavaScriptUtils.runJavascriptWithAsyncResult(webContents, func.toString());
+        Assert.assertFalse(
+                "Failed to verify input for field " + textFieldId,
+                jsonText.trim().equalsIgnoreCase("null"));
+        String result = readValue(jsonText, String.class);
         if (RESULT_ELEMENT_NOT_FOUND.equals(result)) {
             Assert.fail(
-                    "The expected value of the element with id "
+                    "Expected to find element with id " + textFieldId + ", but didn't find any.");
+        }
+        if (!RESULT_OK.equals(result)) {
+            Assert.fail(
+                    "Actual value of the field "
                             + textFieldId
                             + " is different from the expected value "
-                            + value);
+                            + value
+                            + ".");
         }
     }
 

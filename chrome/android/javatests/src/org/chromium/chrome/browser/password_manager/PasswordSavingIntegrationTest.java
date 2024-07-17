@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Before;
@@ -125,10 +124,8 @@ public class PasswordSavingIntegrationTest {
     public void testSavingNewPassword() throws InterruptedException, TimeoutException {
         mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(SIGNIN_FORM_URL));
 
-        enterInputIntoTextField(
-                mWebContents, mInputMethodManagerWrapper, USERNAME_FIELD_ID, USERNAME_TEXT);
-        enterInputIntoTextField(
-                mWebContents, mInputMethodManagerWrapper, PASSWORD_NODE_ID, PASSWORD_TEXT);
+        enterInputIntoTextField(mWebContents, USERNAME_FIELD_ID, USERNAME_TEXT);
+        enterInputIntoTextField(mWebContents, PASSWORD_NODE_ID, PASSWORD_TEXT);
         waitForPmParserAnnotation(mWebContents, PASSWORD_NODE_ID);
 
         DOMUtils.clickNodeWithJavaScript(mWebContents, SUBMIT_BUTTON_ID);
@@ -193,31 +190,19 @@ public class PasswordSavingIntegrationTest {
         waitForBottomSheetClosed();
 
         // Enter the new password.
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         DOMUtils.clickNode(
                 mWebContents,
                 NEW_PASSWORD_NODE_ID,
                 /* goThroughRootAndroidView= */ true,
                 /* shouldScrollIntoView= */ false);
-        enterInputIntoTextField(
-                mWebContents,
-                mInputMethodManagerWrapper,
-                NEW_PASSWORD_NODE_ID,
-                NEW_PASSWORD_TEXT,
-                /* shouldFocusNode= */ false);
+        enterInputIntoTextField(mWebContents, NEW_PASSWORD_NODE_ID, NEW_PASSWORD_TEXT);
         // Repeat the new password.
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         DOMUtils.clickNode(
                 mWebContents,
                 NEW_PASSWORD_REPEAT_NODE_ID,
                 /* goThroughRootAndroidView= */ true,
                 /* shouldScrollIntoView= */ false);
-        enterInputIntoTextField(
-                mWebContents,
-                mInputMethodManagerWrapper,
-                NEW_PASSWORD_REPEAT_NODE_ID,
-                NEW_PASSWORD_TEXT,
-                /* shouldFocusNode= */ false);
+        enterInputIntoTextField(mWebContents, NEW_PASSWORD_REPEAT_NODE_ID, NEW_PASSWORD_TEXT);
 
         // Submit the form and wait for the success page to load.
         DOMUtils.clickNodeWithJavaScript(mWebContents, CHANGE_PASSWORD_BUTTON_ID);
