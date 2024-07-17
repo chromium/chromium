@@ -11,7 +11,10 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
+#include "net/base/completion_once_callback.h"
+#include "net/base/host_port_pair.h"
 #include "net/base/load_states.h"
+#include "net/base/net_errors.h"
 #include "net/dns/host_resolver.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_stream_key.h"
@@ -19,6 +22,7 @@
 #include "net/log/net_log_with_source.h"
 #include "net/socket/stream_attempt.h"
 #include "net/socket/tcp_stream_attempt.h"
+#include "net/socket/tls_stream_attempt.h"
 
 namespace net {
 
@@ -100,6 +104,7 @@ HttpStreamPool::Job::~Job() = default;
 std::unique_ptr<HttpStreamRequest> HttpStreamPool::Job::RequestStream(
     HttpStreamRequest::Delegate* delegate,
     RequestPriority priority,
+    const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     const NetLogWithSource& net_log) {
   auto entry = std::make_unique<RequestEntry>(this);
   std::unique_ptr<HttpStreamRequest> request =
@@ -119,6 +124,8 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Job::RequestStream(
     return request;
   }
 
+  allowed_bad_certs_ = allowed_bad_certs;
+
   if (service_endpoint_request_ || service_endpoint_request_finished_) {
     MaybeAttemptConnection();
   } else {
@@ -129,7 +136,7 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Job::RequestStream(
 }
 
 void HttpStreamPool::Job::OnServiceEndpointsUpdated() {
-  MaybeAttemptConnection();
+  ProcessServiceEndpoindChanges();
 }
 
 void HttpStreamPool::Job::OnServiceEndpointRequestFinished(int rv) {
@@ -144,7 +151,22 @@ void HttpStreamPool::Job::OnServiceEndpointRequestFinished(int rv) {
   }
 
   CHECK(!service_endpoint_request_->GetEndpointResults().empty());
-  MaybeAttemptConnection();
+  ProcessServiceEndpoindChanges();
+}
+
+int HttpStreamPool::Job::WaitForSSLConfigReady(
+    CompletionOnceCallback callback) {
+  if (ssl_config_.has_value()) {
+    return OK;
+  }
+
+  ssl_config_waiting_callbacks_.emplace_back(std::move(callback));
+  return ERR_IO_PENDING;
+}
+
+SSLConfig HttpStreamPool::Job::GetSSLConfig() {
+  CHECK(ssl_config_.has_value());
+  return *ssl_config_;
 }
 
 void HttpStreamPool::Job::ProcessPendingRequest() {
@@ -229,11 +251,55 @@ void HttpStreamPool::Job::MaybeChangeServiceEndpointRequestPriority() {
   }
 }
 
+void HttpStreamPool::Job::ProcessServiceEndpoindChanges() {
+  MaybeCalculateSSLConfig();
+  MaybeAttemptConnection();
+}
+
+void HttpStreamPool::Job::MaybeCalculateSSLConfig() {
+  if (!UsingTls() || ssl_config_.has_value()) {
+    return;
+  }
+
+  CHECK(service_endpoint_request_);
+  if (!service_endpoint_request_->EndpointsCryptoReady()) {
+    return;
+  }
+
+  SSLConfig ssl_config;
+
+  ssl_config.allowed_bad_certs = allowed_bad_certs_;
+  ssl_config.privacy_mode = stream_key().privacy_mode();
+  ssl_config.disable_cert_verification_network_fetches =
+      stream_key().disable_cert_network_fetches();
+  ssl_config.early_data_enabled =
+      http_network_session()->params().enable_early_data;
+
+  ssl_config.alpn_protos = http_network_session()->GetAlpnProtos();
+  ssl_config.application_settings =
+      http_network_session()->GetApplicationSettings();
+  http_network_session()->http_server_properties()->MaybeForceHTTP11(
+      stream_key().destination(), stream_key().network_anonymization_key(),
+      &ssl_config);
+
+  ssl_config.ignore_certificate_errors =
+      http_network_session()->params().ignore_certificate_errors;
+  ssl_config.network_anonymization_key =
+      stream_key().network_anonymization_key();
+
+  // TODO(crbug.com/346835898): Support ECH.
+
+  ssl_config_.emplace(std::move(ssl_config));
+
+  for (auto& callback : ssl_config_waiting_callbacks_) {
+    std::move(callback).Run(OK);
+  }
+  ssl_config_waiting_callbacks_.clear();
+}
+
 void HttpStreamPool::Job::MaybeAttemptConnection(
     std::optional<size_t> max_attempts) {
   CHECK_EQ(group_->IdleStreamSocketCount(), 0u);
-  // TODO(crbug.com/346835898): Support https scheme.
-  CHECK(!UsingTls()) << "https scheme is not supported yet";
 
   if (PendingRequestCount() == 0) {
     // There are no requests waiting for streams.
@@ -261,8 +327,17 @@ void HttpStreamPool::Job::MaybeAttemptConnection(
       }
     }
 
-    std::unique_ptr<StreamAttempt> attempt = std::make_unique<TcpStreamAttempt>(
-        &attempt_params_, *ip_endpoint, &net_log_);
+    std::unique_ptr<StreamAttempt> attempt;
+    if (UsingTls()) {
+      attempt = std::make_unique<TlsStreamAttempt>(
+          &attempt_params_, *ip_endpoint,
+          HostPortPair::FromSchemeHostPort(stream_key().destination()),
+          /*ssl_config_provider=*/this);
+    } else {
+      attempt = std::make_unique<TcpStreamAttempt>(&attempt_params_,
+                                                   *ip_endpoint, &net_log_);
+    }
+
     auto in_flight_attempt =
         std::make_unique<InFlightAttempt>(std::move(attempt));
     InFlightAttempt* raw_attempt = in_flight_attempt.get();

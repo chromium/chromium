@@ -62,12 +62,14 @@ HttpStreamPool::Group::~Group() {
 std::unique_ptr<HttpStreamRequest> HttpStreamPool::Group::RequestStream(
     HttpStreamRequest::Delegate* delegate,
     RequestPriority priority,
+    const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     const NetLogWithSource& net_log) {
   if (!in_flight_job_) {
     in_flight_job_ = std::make_unique<Job>(this, net_log.net_log());
   }
 
-  return in_flight_job_->RequestStream(delegate, priority, net_log);
+  return in_flight_job_->RequestStream(delegate, priority, allowed_bad_certs,
+                                       net_log);
 }
 
 std::unique_ptr<HttpStream> HttpStreamPool::Group::CreateTextBasedStream(

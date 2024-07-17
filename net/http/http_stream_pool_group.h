@@ -55,6 +55,7 @@ class HttpStreamPool::Group {
   std::unique_ptr<HttpStreamRequest> RequestStream(
       HttpStreamRequest::Delegate* delegate,
       RequestPriority priority,
+      const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
       const NetLogWithSource& net_log);
 
   // Creates a text-based HttpStream from `socket`. Call sites must ensure that

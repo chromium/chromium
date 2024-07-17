@@ -57,28 +57,36 @@ class FakeServiceEndpointRequest : public HostResolver::ServiceEndpointRequest {
     endpoints_ = std::move(endpoints);
   }
 
-  void add_endpoint(ServiceEndpoint endpoint) {
+  FakeServiceEndpointRequest& add_endpoint(ServiceEndpoint endpoint) {
     endpoints_.emplace_back(std::move(endpoint));
+    return *this;
   }
 
-  void set_aliases(std::set<std::string> aliases) {
+  FakeServiceEndpointRequest& set_aliases(std::set<std::string> aliases) {
     aliases_ = std::move(aliases);
+    return *this;
   }
 
-  void set_endpoints_crypto_ready(bool endpoints_crypto_ready) {
+  FakeServiceEndpointRequest& set_crypto_ready(bool endpoints_crypto_ready) {
     endpoints_crypto_ready_ = endpoints_crypto_ready;
+    return *this;
   }
 
-  void set_resolve_error_info(ResolveErrorInfo resolve_error_info) {
+  FakeServiceEndpointRequest& set_resolve_error_info(
+      ResolveErrorInfo resolve_error_info) {
     resolve_error_info_ = resolve_error_info;
+    return *this;
   }
 
   RequestPriority priority() const { return priority_; }
-  void set_priority(RequestPriority priority) { priority_ = priority; }
+  FakeServiceEndpointRequest& set_priority(RequestPriority priority) {
+    priority_ = priority;
+    return *this;
+  }
 
-  void CallOnServiceEndpointsUpdated();
+  FakeServiceEndpointRequest& CallOnServiceEndpointsUpdated();
 
-  void CallOnServiceEndpointRequestFinished(int rv);
+  FakeServiceEndpointRequest& CallOnServiceEndpointRequestFinished(int rv);
 
   // HostResolver::ServiceEndpointRequest methods:
   int Start(Delegate* delegate) override;
@@ -94,19 +102,24 @@ class FakeServiceEndpointRequest : public HostResolver::ServiceEndpointRequest {
   int start_result_ = ERR_IO_PENDING;
   std::vector<ServiceEndpoint> endpoints_;
   std::set<std::string> aliases_;
-  bool endpoints_crypto_ready_ = true;
+  bool endpoints_crypto_ready_ = false;
   ResolveErrorInfo resolve_error_info_;
   RequestPriority priority_ = RequestPriority::IDLE;
 };
 
-void FakeServiceEndpointRequest::CallOnServiceEndpointsUpdated() {
+FakeServiceEndpointRequest&
+FakeServiceEndpointRequest::CallOnServiceEndpointsUpdated() {
   CHECK(delegate_);
   delegate_->OnServiceEndpointsUpdated();
+  return *this;
 }
 
-void FakeServiceEndpointRequest::CallOnServiceEndpointRequestFinished(int rv) {
+FakeServiceEndpointRequest&
+FakeServiceEndpointRequest::CallOnServiceEndpointRequestFinished(int rv) {
   CHECK(delegate_);
+  endpoints_crypto_ready_ = true;
   delegate_->OnServiceEndpointRequestFinished(rv);
+  return *this;
 }
 
 int FakeServiceEndpointRequest::Start(Delegate* delegate) {
@@ -256,6 +269,10 @@ class StreamRequester : public HttpStreamRequest::Delegate {
 
   ~StreamRequester() override = default;
 
+  StreamRequester& set_destination(std::string_view destination) {
+    return set_destination(url::SchemeHostPort(GURL(destination)));
+  }
+
   StreamRequester& set_destination(url::SchemeHostPort destination) {
     destination_ = std::move(destination);
     return *this;
@@ -275,7 +292,8 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   HttpStreamRequest* RequestStream(HttpStreamPool& pool) {
     HttpStreamKey stream_key = GetStreamKey();
     Group& group = pool.GetOrCreateGroupForTesting(stream_key);
-    request_ = group.RequestStream(this, priority_, NetLogWithSource());
+    request_ = group.RequestStream(this, priority_, allowed_bad_certs_,
+                                   NetLogWithSource());
     return request_.get();
   }
 
@@ -340,6 +358,8 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   bool disable_cert_network_fetches_ = true;
 
   RequestPriority priority_ = RequestPriority::IDLE;
+
+  std::vector<SSLConfig::CertAndStatus> allowed_bad_certs_;
 
   std::unique_ptr<HttpStreamRequest> request_;
 
@@ -504,6 +524,46 @@ TEST_F(HttpStreamPoolJobTest, TcpFailAsync) {
   endpoint_request->CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
   EXPECT_THAT(*requester.result(), IsError(ERR_FAILED));
+}
+
+TEST_F(HttpStreamPoolJobTest, TlsOk) {
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  auto data = std::make_unique<SequencedSocketData>();
+  socket_factory()->AddSocketDataProvider(data.get());
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+  StreamRequester requester;
+  requester.set_destination("https://a.test").RequestStream(pool());
+
+  endpoint_request
+      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointRequestFinished(OK);
+  RunUntilIdle();
+  EXPECT_THAT(*requester.result(), IsOk());
+}
+
+TEST_F(HttpStreamPoolJobTest, TlsCryptoReadyDelayed) {
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  auto data = std::make_unique<SequencedSocketData>();
+  socket_factory()->AddSocketDataProvider(data.get());
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+  StreamRequester requester;
+  requester.set_destination("https://a.test").RequestStream(pool());
+
+  endpoint_request
+      ->add_endpoint(EndpointHelper().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointsUpdated();
+  RunUntilIdle();
+  EXPECT_FALSE(requester.result().has_value());
+
+  endpoint_request->set_crypto_ready(true).CallOnServiceEndpointsUpdated();
+  RunUntilIdle();
+  EXPECT_THAT(*requester.result(), IsOk());
 }
 
 TEST_F(HttpStreamPoolJobTest, RequestCancelledBeforeAttemptSuccess) {

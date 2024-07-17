@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <vector>
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
@@ -23,6 +24,7 @@
 #include "net/http/http_stream_request.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/stream_attempt.h"
+#include "net/socket/tls_stream_attempt.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -33,7 +35,8 @@ class HttpStreamKey;
 
 // Maintains in-flight HTTP stream requests. Peforms DNS resolution.
 class HttpStreamPool::Job
-    : public HostResolver::ServiceEndpointRequest::Delegate {
+    : public HostResolver::ServiceEndpointRequest::Delegate,
+      public TlsStreamAttempt::SSLConfigProvider {
  public:
   // `group` must outlive `this`.
   Job(Group* group, NetLog* net_log);
@@ -49,11 +52,16 @@ class HttpStreamPool::Job
   std::unique_ptr<HttpStreamRequest> RequestStream(
       HttpStreamRequest::Delegate* delegate,
       RequestPriority priority,
+      const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
       const NetLogWithSource& net_log);
 
   // HostResolver::ServiceEndpointRequest::Delegate implementation:
   void OnServiceEndpointsUpdated() override;
   void OnServiceEndpointRequestFinished(int rv) override;
+
+  // TlsStreamAttempt::SSLConfigProvider implementation:
+  int WaitForSSLConfigReady(CompletionOnceCallback callback) override;
+  SSLConfig GetSSLConfig() override;
 
   // Tries to process a pending request.
   void ProcessPendingRequest();
@@ -121,6 +129,13 @@ class HttpStreamPool::Job
 
   void MaybeChangeServiceEndpointRequestPriority();
 
+  // Called when service endpoint results have changed or finished.
+  void ProcessServiceEndpoindChanges();
+
+  // Calculate SSLConfig if it's not calculated yet and `this` has received
+  // enough information to calculate it.
+  void MaybeCalculateSSLConfig();
+
   // Attempts connections if there are pending requests and IPEndPoints that
   // haven't failed. If `max_attempts` is given, attempts connections up to
   // `max_attempts`.
@@ -176,6 +191,15 @@ class HttpStreamPool::Job
   // Set to the latest stream attempt failure result. Used to notify delegates
   // when all attempts failed.
   int last_attempt_error_ = ERR_FAILED;
+
+  // Allowed bad certificates from the newest request.
+  std::vector<SSLConfig::CertAndStatus> allowed_bad_certs_;
+  // SSLConfig for all TLS connection attempts. Calculated after the service
+  // endpoint request is ready to proceed cryptographic handshakes.
+  // TODO(crbug.com/40812426): We need to have separate SSLConfigs when we
+  // support multiple HTTPS RR that have different service endpoints.
+  std::optional<SSLConfig> ssl_config_;
+  std::vector<CompletionOnceCallback> ssl_config_waiting_callbacks_;
 
   StreamAttemptParams attempt_params_;
   std::set<std::unique_ptr<InFlightAttempt>, base::UniquePtrComparator>
