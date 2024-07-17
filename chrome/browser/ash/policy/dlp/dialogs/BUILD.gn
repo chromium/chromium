@@ -25,7 +25,7 @@ static_library("dialogs") {
     "//base",
     "//chrome/app:generated_resources",
     "//chrome/common:chrome_features",
-    "//components/enterprise/data_controls",
+    "//components/enterprise/data_controls/core",
     "//components/strings:components_strings",
     "//ui/base",
     "//ui/base:types",

@@ -12,10 +12,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/substring_set_matcher/matcher_string_pattern.h"
-#include "components/enterprise/data_controls/action_context.h"
-#include "components/enterprise/data_controls/dlp_rules_manager_base.h"
-#include "components/enterprise/data_controls/rule.h"
-#include "components/enterprise/data_controls/verdict.h"
+#include "components/enterprise/data_controls/core/action_context.h"
+#include "components/enterprise/data_controls/core/dlp_rules_manager_base.h"
+#include "components/enterprise/data_controls/core/rule.h"
+#include "components/enterprise/data_controls/core/verdict.h"
 #include "components/url_matcher/url_matcher.h"
 
 class Profile;
@@ -24,7 +24,6 @@ namespace data_controls {
 
 class ChromeDlpRulesManagerTest;
 class RulesService;
-class RulesServiceFactory;
 
 // Implementation of DlpRulesManagerBase common to all desktop platforms.
 class ChromeDlpRulesManager : public DlpRulesManagerBase {
@@ -60,7 +59,6 @@ class ChromeDlpRulesManager : public DlpRulesManagerBase {
  protected:
   friend class data_controls::ChromeDlpRulesManagerTest;
   friend class data_controls::RulesService;
-  friend class data_controls::RulesServiceFactory;
 
   explicit ChromeDlpRulesManager(Profile* profile);
 

@@ -551,7 +551,7 @@
 #endif
 
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
-#include "components/enterprise/data_controls/prefs.h"
+#include "components/enterprise/data_controls/core/prefs.h"
 #endif
 
 namespace {

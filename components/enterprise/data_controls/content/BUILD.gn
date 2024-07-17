@@ -1,0 +1,22 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//components/enterprise/buildflags/buildflags.gni")
+
+assert(enterprise_data_controls)
+
+source_set("content") {
+  sources = [
+    "rules_service.cc",
+    "rules_service.h",
+    "rules_service_factory.h",
+  ]
+  deps = [
+    "//components/enterprise/data_controls/core",
+    "//components/enterprise/data_controls/core:features",
+    "//components/prefs",
+    "//content/public/browser/",
+  ]
+}

@@ -41,7 +41,7 @@ enum ContentRestriction {
 };
 
 // Represents the enforcement level of DLP restrictions.
-// See components/enterprise/data_controls/rule.h for Level enum.
+// See components/enterprise/data_controls/core/rule.h for Level enum.
 enum Level {
   kNotSet = 0,
   kReport = 1,

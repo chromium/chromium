@@ -19,7 +19,7 @@
 #include "components/enterprise/common/files_scan_data.h"
 #include "components/enterprise/connectors/connectors_prefs.h"
 #include "components/enterprise/content/clipboard_restriction_service.h"
-#include "components/enterprise/data_controls/prefs.h"
+#include "components/enterprise/data_controls/core/prefs.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/clipboard_types.h"
@@ -318,14 +318,14 @@ void PasteIfAllowedByDataControls(
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
   DCHECK(!SkipDataControlOrContentAnalysisChecks(destination));
 
-  auto verdict = data_controls::ChromeRulesServiceFactory::GetForBrowserContext(
-                     destination.browser_context())
+  auto verdict = data_controls::ChromeRulesServiceFactory::GetInstance()
+                     ->GetForBrowserContext(destination.browser_context())
                      ->GetPasteVerdict(source, destination, metadata);
   if (source.browser_context() &&
       source.browser_context() != destination.browser_context()) {
     verdict = data_controls::Verdict::MergePasteVerdicts(
-        data_controls::ChromeRulesServiceFactory::GetForBrowserContext(
-            source.browser_context())
+        data_controls::ChromeRulesServiceFactory::GetInstance()
+            ->GetForBrowserContext(source.browser_context())
             ->GetPasteVerdict(source, destination, metadata),
         std::move(verdict));
   }
@@ -402,8 +402,8 @@ void IsCopyToOSClipboardRestricted(
     return;
   }
 
-  auto verdict = data_controls::ChromeRulesServiceFactory::GetForBrowserContext(
-                     source.browser_context())
+  auto verdict = data_controls::ChromeRulesServiceFactory::GetInstance()
+                     ->GetForBrowserContext(source.browser_context())
                      ->GetCopyToOSClipboardVerdict(
                          *source.data_transfer_endpoint()->GetURL());
 
@@ -448,8 +448,8 @@ void IsCopyRestrictedByDialog(
   }
 
   auto source_only_verdict =
-      data_controls::ChromeRulesServiceFactory::GetForBrowserContext(
-          source.browser_context())
+      data_controls::ChromeRulesServiceFactory::GetInstance()
+          ->GetForBrowserContext(source.browser_context())
           ->GetCopyRestrictedBySourceVerdict(
               *source.data_transfer_endpoint()->GetURL());
 
@@ -467,8 +467,8 @@ void IsCopyRestrictedByDialog(
   // The "warn" level of copying to the OS clipboard is to show a warning
   // dialog, not to do a string replacement.
   auto os_clipboard_verdict =
-      data_controls::ChromeRulesServiceFactory::GetForBrowserContext(
-          source.browser_context())
+      data_controls::ChromeRulesServiceFactory::GetInstance()
+          ->GetForBrowserContext(source.browser_context())
           ->GetCopyToOSClipboardVerdict(
               *source.data_transfer_endpoint()->GetURL());
 

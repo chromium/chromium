@@ -7,8 +7,8 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/enterprise/data_controls/features.h"
-#include "components/enterprise/data_controls/prefs.h"
+#include "components/enterprise/data_controls/core/features.h"
+#include "components/enterprise/data_controls/core/prefs.h"
 #include "components/prefs/pref_service.h"
 #include "url/origin.h"
 

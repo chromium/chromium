@@ -15,7 +15,7 @@
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_files_test_base.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
-#include "components/enterprise/data_controls/component.h"
+#include "components/enterprise/data_controls/core/component.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

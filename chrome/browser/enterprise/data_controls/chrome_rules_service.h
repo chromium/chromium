@@ -6,8 +6,9 @@
 #define CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_CHROME_RULES_SERVICE_H_
 
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "components/enterprise/data_controls/rules_service.h"
-#include "components/enterprise/data_controls/verdict.h"
+#include "components/enterprise/data_controls/content/rules_service.h"
+#include "components/enterprise/data_controls/content/rules_service_factory.h"
+#include "components/enterprise/data_controls/core/verdict.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/browser_context.h"
@@ -25,28 +26,15 @@ class ChromeRulesService : public RulesService {
  public:
   ~ChromeRulesService() override;
 
-  Verdict GetPrintVerdict(const GURL& printed_page_url) const;
-  Verdict GetPasteVerdict(const content::ClipboardEndpoint& source,
-                          const content::ClipboardEndpoint& destination,
-                          const content::ClipboardMetadata& metadata) const;
-
-  // Returns a clipboard verdict only based the source of the copy, without
-  // making any special destination assumptions. This is meant to trigger rules
-  // that only have "sources" conditions, and blocking/warning verdicts returned
-  // by this function should trigger a dialog.
-  Verdict GetCopyRestrictedBySourceVerdict(const GURL& source) const;
-
-  // Returns a clipboard verdict with the provided source attributes, and with
-  // the "os_clipboard" destination. This is meant to trigger rules that make
-  // use of the "os_clipboard" destination attribute. Blocking verdicts returned
-  // by this function should replace the data put in the clipboard, and warning
-  // verdicts should trigger a dialog.
-  Verdict GetCopyToOSClipboardVerdict(const GURL& source) const;
-
-  // Returns true if rules indicate screenshots should be blocked. Only the
-  // "block" level is supported, a "warn" screenshot rule will not make this
-  // functions return true.
-  bool BlockScreenshots(const GURL& url) const;
+  // data_controls::RulesService:
+  Verdict GetPrintVerdict(const GURL& printed_page_url) const override;
+  Verdict GetPasteVerdict(
+      const content::ClipboardEndpoint& source,
+      const content::ClipboardEndpoint& destination,
+      const content::ClipboardMetadata& metadata) const override;
+  Verdict GetCopyRestrictedBySourceVerdict(const GURL& source) const override;
+  Verdict GetCopyToOSClipboardVerdict(const GURL& source) const override;
+  bool BlockScreenshots(const GURL& url) const override;
 
  protected:
   friend class ChromeRulesServiceFactory;
@@ -76,10 +64,11 @@ class ChromeRulesService : public RulesService {
   std::vector<Rule> rules_;
 };
 
-class ChromeRulesServiceFactory : public ProfileKeyedServiceFactory {
+class ChromeRulesServiceFactory : public RulesServiceFactory,
+                                  public ProfileKeyedServiceFactory {
  public:
-  static ChromeRulesService* GetForBrowserContext(
-      content::BrowserContext* context);
+  // data_controls::RulesServiceFactory:
+  RulesService* GetForBrowserContext(content::BrowserContext* context) override;
 
   static ChromeRulesServiceFactory* GetInstance();
 

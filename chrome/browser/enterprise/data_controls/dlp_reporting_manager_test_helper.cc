@@ -9,7 +9,7 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
-#include "components/enterprise/data_controls/dlp_policy_event.pb.h"
+#include "components/enterprise/data_controls/core/dlp_policy_event.pb.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

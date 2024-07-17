@@ -15,7 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
-#include "components/enterprise/data_controls/features.h"
+#include "components/enterprise/data_controls/core/features.h"
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -177,8 +177,8 @@ void LogVerdictSource(
 
 bool IsScreenshotAllowedByDataControls(content::BrowserContext* context,
                                        const GURL& url) {
-  auto* rules =
-      data_controls::ChromeRulesServiceFactory::GetForBrowserContext(context);
+  auto* rules = data_controls::ChromeRulesServiceFactory::GetInstance()
+                    ->GetForBrowserContext(context);
   return rules ? !rules->BlockScreenshots(url) : true;
 }
 

@@ -7,7 +7,7 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
-#include "components/enterprise/data_controls/component.h"
+#include "components/enterprise/data_controls/core/component.h"
 #include "url/gurl.h"
 
 namespace policy {

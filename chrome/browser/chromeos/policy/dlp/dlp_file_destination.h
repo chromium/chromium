@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "components/enterprise/data_controls/component.h"
+#include "components/enterprise/data_controls/core/component.h"
 #include "url/gurl.h"
 
 namespace policy {

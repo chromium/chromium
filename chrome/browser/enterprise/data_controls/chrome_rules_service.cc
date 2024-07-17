@@ -7,15 +7,15 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/enterprise/data_controls/features.h"
-#include "components/enterprise/data_controls/prefs.h"
+#include "components/enterprise/data_controls/core/features.h"
+#include "components/enterprise/data_controls/core/prefs.h"
 #include "components/prefs/pref_service.h"
 
 namespace data_controls {
 
-// ---------------------------
+// ---------------------------------
 // ChromeRulesService implementation
-// ---------------------------
+// ---------------------------------
 
 ChromeRulesService::ChromeRulesService(content::BrowserContext* browser_context)
     : RulesService(Profile::FromBrowserContext(browser_context)->GetPrefs()),
@@ -50,10 +50,15 @@ Verdict ChromeRulesService::GetCopyRestrictedBySourceVerdict(
 
 Verdict ChromeRulesService::GetCopyToOSClipboardVerdict(
     const GURL& source) const {
-  return GetVerdict(
-      Rule::Restriction::kClipboard,
-      {.source = {.url = source, .incognito = profile_->IsIncognitoProfile()},
-       .destination = {.os_clipboard = true}});
+  return GetVerdict(Rule::Restriction::kClipboard,
+                    {
+                        .source = {.url = source,
+                                   .incognito = profile_->IsIncognitoProfile()},
+                        .destination =
+                            {
+                                .os_clipboard = true,
+                            },
+                    });
 }
 
 bool ChromeRulesService::BlockScreenshots(const GURL& url) const {
@@ -93,14 +98,13 @@ ActionSourceOrDestination ChromeRulesService::ExtractPasteActionContext(
   return action;
 }
 
-// ----------------------------------
+// ----------------------------------------
 // ChromeRulesServiceFactory implementation
-// ----------------------------------
+// ----------------------------------------
 
-// static
-ChromeRulesService* ChromeRulesServiceFactory::GetForBrowserContext(
+RulesService* ChromeRulesServiceFactory::GetForBrowserContext(
     content::BrowserContext* context) {
-  return static_cast<ChromeRulesService*>(
+  return static_cast<RulesService*>(
       GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
 }
 
