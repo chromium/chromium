@@ -10,8 +10,6 @@ static_library("mall") {
   sources = [
     "chrome_mall_ui_delegate.cc",
     "chrome_mall_ui_delegate.h",
-    "mall_features.cc",
-    "mall_features.h",
     "mall_url.cc",
     "mall_url.h",
   ]
