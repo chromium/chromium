@@ -32,7 +32,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
@@ -361,13 +360,6 @@ public class DesktopSiteSettingsIPHControllerUnitTest {
 
         command.onDismissCallback.run();
         verify(mAppMenuHandler).clearMenuHighlight();
-
-        Assert.assertEquals(
-                "<Android.RequestDesktopSite.PerSiteIphDismissed.AppMenuOpened> should be recorded"
-                        + " when the IPH is dismissed.",
-                1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "Android.RequestDesktopSite.PerSiteIphDismissed.AppMenuOpened"));
     }
 
     private void initializeController() {

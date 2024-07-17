@@ -14,7 +14,6 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
@@ -238,9 +237,6 @@ public class DesktopSiteSettingsIPHController {
                         .setOnDismissCallback(
                                 () -> {
                                     turnOffHighlightForMenuItem();
-                                    RecordHistogram.recordBooleanHistogram(
-                                            "Android.RequestDesktopSite.PerSiteIphDismissed.AppMenuOpened",
-                                            mAppMenuHandler.isAppMenuShowing());
                                 })
                         .build());
     }

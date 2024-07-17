@@ -3975,16 +3975,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.RequestDesktopSite.PerSiteIphDismissed.AppMenuOpened"
-    enum="Boolean" expires_after="2024-06-30">
-  <owner>aishwaryarj@google.com</owner>
-  <owner>shuyng@google.com</owner>
-  <summary>
-    Records if a user opened the app menu as a consequence of showing the
-    per-site IPH, emitted when the IPH is dismissed.
-  </summary>
-</histogram>
-
 <histogram name="Android.RequestDesktopSite.SubDomainSettingChanged"
     enum="Boolean" expires_after="2024-10-20">
   <owner>shuyng@google.com</owner>
