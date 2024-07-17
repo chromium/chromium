@@ -313,6 +313,37 @@ TEST(LayerAnimationSequenceTest, ToString) {
       sequence.ToString());
 }
 
+// TODO(b/352744702): Remove this test or convert to DEATH test after
+// https://crrev.com/c/5713998 has rolled out and any cases like this have been
+// removed.
+#if !DCHECK_IS_ON()
+// Check that the sequence doesn't get stuck in an infinite loop when it's
+// repeating and has a total duration of zero.
+TEST(LayerAnimationSequenceTest, RepeatingWithZeroDuration) {
+  const float final_brightness = 1.f;
+  const int num_steps_to_test = 3;
+  const base::TimeDelta animation_step_size = base::Seconds(1);
+
+  LayerAnimationSequence sequence;
+  sequence.set_is_repeating(true);
+  sequence.AddElement(
+      LayerAnimationElement::CreateBrightnessElement(0.5f, base::TimeDelta()));
+  sequence.AddElement(LayerAnimationElement::CreateBrightnessElement(
+      final_brightness, base::TimeDelta()));
+  TestLayerAnimationDelegate delegate;
+  delegate.SetBrightnessFromAnimation(0.f,
+                                      PropertyChangeReason::NOT_FROM_ANIMATION);
+
+  base::TimeTicks now = base::TimeTicks::Now();
+  sequence.set_start_time(now);
+  sequence.Start(&delegate);
+  for (int i = 0; i < num_steps_to_test; ++i, now += animation_step_size) {
+    sequence.Progress(now, &delegate);
+    EXPECT_FLOAT_EQ(delegate.GetBrightnessForAnimation(), final_brightness);
+  }
+}
+#endif
+
 } // namespace
 
 } // namespace ui

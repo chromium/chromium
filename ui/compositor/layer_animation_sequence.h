@@ -171,6 +171,9 @@ class COMPOSITOR_EXPORT LayerAnimationSequence {
   // The currently animating element.
   LayerAnimationElement* CurrentElement() const;
 
+  // Returns the total duration of all `LayerAnimationElement`s in the sequence.
+  base::TimeDelta GetTotalDurationOfAllElements() const;
+
   // The union of all the properties modified by all elements in the sequence.
   LayerAnimationElement::AnimatableProperties properties_;
 
