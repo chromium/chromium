@@ -292,8 +292,18 @@ void PermissionChipView::UpdateIconAndColors() {
   if (!GetWidget()) {
     return;
   }
-  SetEnabledTextColors(GetForegroundColor());
-  SetImageModel(views::Button::STATE_NORMAL, GetIconImageModel());
+
+  SkColor foreground_color = GetForegroundColor();
+  SetEnabledTextColors(foreground_color);
+  // On macOS the chip view could get disabled if a browser's window lost its
+  // focus. This can lead to low contrast between the chip's text and background
+  // color.
+  SetTextColor(views::Button::STATE_DISABLED, foreground_color);
+
+  ui::ImageModel image_model = GetIconImageModel();
+  SetImageModel(views::Button::STATE_NORMAL, image_model);
+  SetImageModel(views::Button::STATE_DISABLED, image_model);
+
   ConfigureInkDropForRefresh2023(this, kColorOmniboxChipInkDropHover,
                                  kColorOmniboxChipInkDropRipple);
 }
