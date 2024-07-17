@@ -104,7 +104,7 @@ export {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-li
 export {AccessibilityBrowserProxy, AccessibilityBrowserProxyImpl} from './a11y_page/a11y_browser_proxy.js';
 export {SettingsA11yPageElement} from './a11y_page/a11y_page.js';
 // <if expr="is_win or is_linux or is_macosx">
-export {SettingsAxAnnotationsSubpageElement} from './a11y_page/ax_annotations_subpage.js';
+export {SettingsAxAnnotationsSectionElement} from './a11y_page/ax_annotations_section.js';
 // </if>
 // <if expr="not is_chromeos">
 export {SettingsLiveCaptionElement} from './a11y_page/live_caption_section.js';

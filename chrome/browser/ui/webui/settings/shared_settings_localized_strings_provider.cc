@@ -60,7 +60,7 @@ std::u16string GetHelpUrlWithBoard(const std::u16string& original_url) {
 }  // namespace
 #endif
 
-void AddAxAnnotationsSubpageStrings(content::WebUIDataSource* html_source) {
+void AddAxAnnotationsSectionStrings(content::WebUIDataSource* html_source) {
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"mainNodeAnnotationsDownloadErrorLabel",

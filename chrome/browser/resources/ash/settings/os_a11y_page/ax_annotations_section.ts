@@ -4,9 +4,8 @@
 
 /**
  * @fileoverview
- * 'settings-ax-annotations-subpage' is a subpage holding the toggle for main
- * node accessibility annotations. It appears on the accessibility page
- * (chrome://settings/accessibility) on Windows, macOS, and Linux.
+ * 'settings-ax-annotations-section' is a section holding the toggle for main
+ * node accessibility annotations. It appears on the chromevox settings page.
  */
 
 import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
@@ -21,16 +20,15 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './ax_annotations_subpage.html.js';
+import {getTemplate} from './ax_annotations_section.html.js';
 
-// TODO(340877990): Rename AxAnnotationsSubpage to AxAnnotationSection.
-const SettingsAxAnnotationsSubpageBaseElement =
+const SettingsAxAnnotationsSectionBaseElement =
     PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
 
-export class SettingsAxAnnotationsSubpageElement extends
-    SettingsAxAnnotationsSubpageBaseElement {
+export class SettingsAxAnnotationsSectionElement extends
+    SettingsAxAnnotationsSectionBaseElement {
   static get is() {
-    return 'settings-ax-annotations-subpage' as const;
+    return 'settings-ax-annotations-section' as const;
   }
 
   static get template() {
@@ -99,11 +97,11 @@ export class SettingsAxAnnotationsSubpageElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    [SettingsAxAnnotationsSubpageElement.is]:
-        SettingsAxAnnotationsSubpageElement;
+    [SettingsAxAnnotationsSectionElement.is]:
+        SettingsAxAnnotationsSectionElement;
   }
 }
 
 customElements.define(
-    SettingsAxAnnotationsSubpageElement.is,
-    SettingsAxAnnotationsSubpageElement);
+    SettingsAxAnnotationsSectionElement.is,
+    SettingsAxAnnotationsSectionElement);

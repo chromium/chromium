@@ -57,11 +57,11 @@
             sub-label="$i18n{accessibleImageLabelsSubtitle}">
         </settings-toggle-button>
 <if expr="is_win or is_linux or is_macosx">
-        <template is="dom-if" if="[[showAxAnnotationsSubpage_]]">
-          <settings-ax-annotations-subpage
-              id="AxAnnotationsSubpage"
+        <template is="dom-if" if="[[showAxAnnotationsSection_]]">
+          <settings-ax-annotations-section
+              id="AxAnnotationsSection"
               prefs="{{prefs}}">
-          </settings-ax-annotations-subpage>
+          </settings-ax-annotations-section>
         </template>
 </if>
 <if expr="is_win or is_linux">

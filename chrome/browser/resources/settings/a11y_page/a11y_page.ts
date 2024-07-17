@@ -19,7 +19,7 @@ import '../settings_page/settings_subpage.js';
 // </if>
 
 // <if expr="is_win or is_linux or is_macosx">
-import './ax_annotations_subpage.js';
+import './ax_annotations_section.js';
 // </if>
 
 // <if expr="is_win or is_macosx">
@@ -112,9 +112,9 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
       /**
        * Whether to show the AxAnnotations subpage.
        */
-      showAxAnnotationsSubpage_: {
+      showAxAnnotationsSection_: {
         type: Boolean,
-        computed: 'computeShowAxAnnotationsSubpage_(hasScreenReader_)',
+        computed: 'computeShowAxAnnotationsSection_(hasScreenReader_)',
       },
       // </if>
 
@@ -173,7 +173,7 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   private hasScreenReader_: boolean;
   private showOverscrollHistoryNavigationToggle_: boolean;
   // <if expr="is_win or is_linux or is_macosx">
-  private showAxAnnotationsSubpage_: boolean;
+  private showAxAnnotationsSection_: boolean;
   // </if>
 
   override connectedCallback() {
@@ -213,7 +213,7 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
    * Note: on ChromeOS, the AxAnnotations subpage is shown on a different
    * settings page; i.e. Settings > Accessibility > Text-to-Speech.
    */
-  private computeShowAxAnnotationsSubpage_(): boolean {
+  private computeShowAxAnnotationsSection_(): boolean {
     const anyAxAnnotationsFeatureEnabled =
         loadTimeData.getBoolean('mainNodeAnnotationsEnabled');
     return anyAxAnnotationsFeatureEnabled && this.hasScreenReader_;

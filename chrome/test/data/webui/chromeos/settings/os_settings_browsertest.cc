@@ -1363,8 +1363,8 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
 }
 
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampOsA11yTestMainNodeAnnotationsEnabled,
-                       OsA11yPageAxAnnotationsSubpage) {
-  RunSettingsTest("os_a11y_page/ax_annotations_subpage_test.js");
+                       OsA11yPageAxAnnotationsSection) {
+  RunSettingsTest("os_a11y_page/ax_annotations_section_test.js");
 }
 
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsA11yPageTtsVoiceSubpage) {

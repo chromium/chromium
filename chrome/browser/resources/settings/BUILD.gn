@@ -261,7 +261,7 @@ build_webui("build") {
     web_component_files += [ "autofill_page/passkeys_subpage.ts" ]
   }
   if (is_win || is_mac || is_linux) {
-    web_component_files += [ "a11y_page/ax_annotations_subpage.ts" ]
+    web_component_files += [ "a11y_page/ax_annotations_section.ts" ]
   }
   if (is_chrome_branded) {
     static_files += [

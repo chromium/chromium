@@ -80,8 +80,8 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, AutofillSection) {
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(SettingsTest, AxAnnotationsSubpage) {
-  RunTest("settings/ax_annotations_subpage_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(SettingsTest, AxAnnotationsSection) {
+  RunTest("settings/ax_annotations_section_test.js", "mocha.run()");
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 

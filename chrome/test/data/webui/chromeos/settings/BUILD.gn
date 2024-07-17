@@ -193,7 +193,7 @@ build_webui_tests("build") {
     "nearby_share_page/test_nearby_account_manager_browser_proxy.ts",
 
     "os_a11y_page/audio_and_captions_page_test.ts",
-    "os_a11y_page/ax_annotations_subpage_test.ts",
+    "os_a11y_page/ax_annotations_section_test.ts",
     "os_a11y_page/change_dictation_locale_dialog_test.ts",
     "os_a11y_page/chromevox_subpage_test.ts",
     "os_a11y_page/cursor_and_touchpad_page_test.ts",

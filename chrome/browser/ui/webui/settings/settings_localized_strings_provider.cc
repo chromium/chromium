@@ -289,7 +289,7 @@ void AddA11yStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  AddAxAnnotationsSubpageStrings(html_source);
+  AddAxAnnotationsSectionStrings(html_source);
   AddCaptionSubpageStrings(html_source);
 }
 

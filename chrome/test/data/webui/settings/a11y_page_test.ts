@@ -7,7 +7,7 @@ import 'chrome://settings/lazy_load.js';
 // clang-format off
 // <if expr="is_win or is_linux or is_macosx">
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import type {SettingsAxAnnotationsSubpageElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsAxAnnotationsSectionElement} from 'chrome://settings/lazy_load.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -104,21 +104,21 @@ suite('A11yPage', () => {
     webUIListenerCallback('screen-reader-state-changed', false);
 
     await flushTasks();
-    let axAnnotationsSubpage =
-        a11yPage.shadowRoot!.querySelector<SettingsAxAnnotationsSubpageElement>(
-            '#AxAnnotationsSubpage');
-    assertFalse(!!axAnnotationsSubpage);
+    let axAnnotationsSection =
+        a11yPage.shadowRoot!.querySelector<SettingsAxAnnotationsSectionElement>(
+            '#AxAnnotationsSection');
+    assertFalse(!!axAnnotationsSection);
 
     // Simulate enabling a screen reader to include the ax annotations subpage
     // in a DOM.
     webUIListenerCallback('screen-reader-state-changed', true);
 
     await flushTasks();
-    axAnnotationsSubpage =
-        a11yPage.shadowRoot!.querySelector<SettingsAxAnnotationsSubpageElement>(
-            '#AxAnnotationsSubpage');
-    assertTrue(!!axAnnotationsSubpage);
-    assertTrue(isVisible(axAnnotationsSubpage));
+    axAnnotationsSection =
+        a11yPage.shadowRoot!.querySelector<SettingsAxAnnotationsSectionElement>(
+            '#AxAnnotationsSection');
+    assertTrue(!!axAnnotationsSection);
+    assertTrue(isVisible(axAnnotationsSection));
   });
   // </if>
 

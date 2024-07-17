@@ -202,7 +202,7 @@ build_webui_tests("build") {
   if (is_win || is_mac || is_linux) {
     files += [
       "a11y_page_test.ts",
-      "ax_annotations_subpage_test.ts",
+      "ax_annotations_section_test.ts",
     ]
   }
 

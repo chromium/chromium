@@ -1331,7 +1331,7 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean("isAccessibilityOverscrollSettingFeatureEnabled",
                           IsAccessibilityOverscrollSettingFeatureEnabled());
 
-  ::settings::AddAxAnnotationsSubpageStrings(html_source);
+  ::settings::AddAxAnnotationsSectionStrings(html_source);
   ::settings::AddCaptionSubpageStrings(html_source);
 }
 

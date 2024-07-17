@@ -2,30 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://settings/lazy_load.js';
+import 'chrome://os-settings/lazy_load.js';
+import 'chrome://os-settings/os_settings.js';
 
+import type {SettingsAxAnnotationsSectionElement} from 'chrome://os-settings/lazy_load.js';
+import {ScreenAiInstallStatus} from 'chrome://os-settings/lazy_load.js';
+import type {SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {SettingsAxAnnotationsSubpageElement, SettingsToggleButtonElement} from 'chrome://settings/lazy_load.js';
-import {ScreenAiInstallStatus} from 'chrome://settings/lazy_load.js';
-import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-suite('SettingsAxAnnotationsSubpageTest', () => {
-  let testElement: SettingsAxAnnotationsSubpageElement;
+import {clearBody} from '../utils.js';
+
+suite('SettingsAxAnnotationsSectionTest', () => {
+  let testElement: SettingsAxAnnotationsSectionElement;
   let settingsPrefs: SettingsPrefsElement;
 
-  suiteSetup(function() {
+  suiteSetup(() => {
     loadTimeData.overrideValues({
       mainNodeAnnotationsEnabled: true,
     });
   });
 
-  setup(async function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testElement = document.createElement('settings-ax-annotations-subpage');
+  setup(async () => {
+    assertTrue(loadTimeData.getBoolean('mainNodeAnnotationsEnabled'));
+    clearBody();
+    testElement = document.createElement('settings-ax-annotations-section');
     settingsPrefs = document.createElement('settings-prefs');
     document.body.appendChild(settingsPrefs);
     await CrSettingsPrefs.initialized;
@@ -36,8 +41,6 @@ suite('SettingsAxAnnotationsSubpageTest', () => {
   });
 
   test('test main node annotations toggle and pref', async () => {
-    assertTrue(loadTimeData.getBoolean('mainNodeAnnotationsEnabled'));
-
     // Main node annotations toggle visibility depends on the screen reader
     // state, but is managed by a11y_page.ts. Thus, no need to simulate enabling
     // screen reader in this test.
@@ -63,8 +66,6 @@ suite('SettingsAxAnnotationsSubpageTest', () => {
   });
 
   test('test main node annotations toggle subtitle', async () => {
-    assertTrue(loadTimeData.getBoolean('mainNodeAnnotationsEnabled'));
-
     // Main node annotations toggle visibility depends on the screen reader
     // state, but is managed by a11y_page.ts. Thus, no need to simulate enabling
     // screen reader in this test.

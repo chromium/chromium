@@ -33,7 +33,7 @@ import './internet_page/internet_known_networks_subpage.js';
 import './internet_page/internet_subpage.js';
 import './internet_page/passpoint_subpage.js';
 import './kerberos_page/kerberos_accounts_subpage.js';
-import './os_a11y_page/ax_annotations_subpage.js';
+import './os_a11y_page/ax_annotations_section.js';
 import './os_a11y_page/chromevox_subpage.js';
 import './os_a11y_page/cursor_and_touchpad_page.js';
 import './os_a11y_page/display_and_magnification_subpage.js';
@@ -227,7 +227,7 @@ export {NearbyShareReceiveDialogElement} from './nearby_share_page/nearby_share_
 export {SettingsNearbyShareSubpageElement} from './nearby_share_page/nearby_share_subpage.js';
 export {SettingsAudioAndCaptionsPageElement} from './os_a11y_page/audio_and_captions_page.js';
 export {AudioAndCaptionsPageBrowserProxy, AudioAndCaptionsPageBrowserProxyImpl} from './os_a11y_page/audio_and_captions_page_browser_proxy.js';
-export {SettingsAxAnnotationsSubpageElement} from './os_a11y_page/ax_annotations_subpage.js';
+export {SettingsAxAnnotationsSectionElement} from './os_a11y_page/ax_annotations_section.js';
 export {BluetoothBrailleDisplayListener, BluetoothBrailleDisplayManager} from './os_a11y_page/bluetooth_braille_display_manager.js';
 export {BluetoothBrailleDisplayUiElement} from './os_a11y_page/bluetooth_braille_display_ui.js';
 export {ChangeDictationLocaleDialog, DictationLocaleOption} from './os_a11y_page/change_dictation_locale_dialog.js';

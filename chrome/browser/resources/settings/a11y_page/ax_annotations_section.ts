@@ -4,7 +4,7 @@
 
 /**
  * @fileoverview
- * 'settings-ax-annotations-subpage' is a subpage holding the toggle for main
+ * 'settings-ax-annotations-section' is a section holding the toggle for main
  * node accessibility annotations. It appears on the accessibility page
  * (chrome://settings/accessibility) on Windows, macOS, and Linux.
  */
@@ -22,16 +22,15 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {loadTimeData} from '../i18n_setup.js';
 
-import {getTemplate} from './ax_annotations_subpage.html.js';
+import {getTemplate} from './ax_annotations_section.html.js';
 
-// TODO(340877990): Rename AxAnnotationsSubpage to AxAnnotationSection.
-const SettingsAxAnnotationsSubpageBaseElement =
+const SettingsAxAnnotationsSectionBaseElement =
     PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
 
-export class SettingsAxAnnotationsSubpageElement extends
-    SettingsAxAnnotationsSubpageBaseElement {
+export class SettingsAxAnnotationsSectionElement extends
+    SettingsAxAnnotationsSectionBaseElement {
   static get is() {
-    return 'settings-ax-annotations-subpage';
+    return 'settings-ax-annotations-section' as const;
   }
 
   static get template() {
@@ -40,14 +39,6 @@ export class SettingsAxAnnotationsSubpageElement extends
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       /**
        * `screenAIProgress_` stores the downloading progress in percentage of
        * the ScreenAI library, which ranges from 0.0 to 100.0.
@@ -107,10 +98,11 @@ export class SettingsAxAnnotationsSubpageElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-ax-annotations-subpage': SettingsAxAnnotationsSubpageElement;
+    [SettingsAxAnnotationsSectionElement.is]:
+        SettingsAxAnnotationsSectionElement;
   }
 }
 
 customElements.define(
-    SettingsAxAnnotationsSubpageElement.is,
-    SettingsAxAnnotationsSubpageElement);
+    SettingsAxAnnotationsSectionElement.is,
+    SettingsAxAnnotationsSectionElement);
