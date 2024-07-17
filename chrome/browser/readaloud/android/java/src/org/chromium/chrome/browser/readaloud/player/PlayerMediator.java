@@ -26,6 +26,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /** Mediator class in charge of updating player UI property model. */
 class PlayerMediator implements InteractionHandler {
@@ -46,6 +47,8 @@ class PlayerMediator implements InteractionHandler {
     private @PlaybackListener.State int mLastState;
     private long mLastStartTimeMillis;
     private long mTotalTimeMillis;
+
+    private long mSeekbarStartTimeNanos;
 
     // members to record total duration listened to playback with the screen locked
     private boolean mScreenLocked;
@@ -106,11 +109,22 @@ class PlayerMediator implements InteractionHandler {
                 public void onStartTrackingTouch(SeekBar seekBar) {
                     mPrevState = mModel.get(PlayerProperties.PLAYBACK_STATE);
                     setPlaybackState(PlaybackListener.State.PAUSED);
+                    mSeekbarStartTimeNanos = mModel.get(PlayerProperties.ELAPSED_NANOS);
                 }
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
                     setPlaybackState(mPrevState);
+                    long seekbarDurationMillis =
+                            TimeUnit.NANOSECONDS.toMillis(
+                                    mModel.get(PlayerProperties.ELAPSED_NANOS)
+                                            - mSeekbarStartTimeNanos);
+                    if (seekbarDurationMillis < 0) {
+                        ReadAloudMetrics.recordDurationScrubbingBackwards(
+                                Math.abs(seekbarDurationMillis));
+                    } else {
+                        ReadAloudMetrics.recordDurationScrubbingForwards(seekbarDurationMillis);
+                    }
                 }
             };
     private final PlaybackListener mPreviewPlaybackListener =

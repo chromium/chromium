@@ -52,6 +52,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ReadAloud.DurationScrubbingBackwardsSeekbar" units="ms"
+    expires_after="2024-12-27">
+  <owner>sanaakbani@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <summary>
+    Records when a user scrubs backwards on the expanded player seekbar.
+    Measures the duration (in milliseconds) between the user starting and
+    stopping a touch on the seekbar. Max value is 1 hour. Any interval longer
+    than 1 hour will be logged as 1 hour.
+  </summary>
+</histogram>
+
+<histogram name="ReadAloud.DurationScrubbingForwardsSeekbar" units="ms"
+    expires_after="2024-12-27">
+  <owner>sanaakbani@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <summary>
+    Records when a user scrubs forwards on the expanded player seekbar. Measures
+    the duration (in milliseconds) between the user starting and stopping a
+    touch on the seekbar. Max value is 1 hour. Any interval longer than 1 hour
+    will be logged as 1 hour.
+  </summary>
+</histogram>
+
 <histogram name="ReadAloud.Eligibility.IneligiblityReason"
     enum="ReadAloudIneligibilityReason" expires_after="2024-12-08">
   <owner>andreaxg@google.com</owner>

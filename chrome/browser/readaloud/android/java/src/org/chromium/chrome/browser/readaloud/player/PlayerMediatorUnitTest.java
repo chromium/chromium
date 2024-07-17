@@ -518,6 +518,45 @@ public class PlayerMediatorUnitTest {
     }
 
     @Test
+    public void testScrubbingSeekbarHistogramRecords() {
+        // should record only the duration scrubbed forwards on the seekbar
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ReadAloudMetrics.DURATION_SCRUBBING_FORWARDS_SEEKBAR, 20000);
+        mMediator.setPlayback(mPlayback);
+        verify(mPlayback).addListener(mPlaybackListenerCaptor.capture());
+
+        mPlaybackData.mState = PLAYING;
+
+        mPlaybackData.mAbsolutePositionNanos = 0L;
+        mPlaybackData.mTotalDurationNanos = 40 * 1_000_000_000L;
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
+
+        mOnSeekBarChangeListener.onStartTrackingTouch(mSeekbar);
+        mPlaybackData.mAbsolutePositionNanos = 20 * 1_000_000_000L;
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
+        mOnSeekBarChangeListener.onStopTrackingTouch(mSeekbar);
+
+        histogram.assertExpected();
+
+        // should record only the duration scrubbed backwards on the seekbar
+        histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ReadAloudMetrics.DURATION_SCRUBBING_BACKWARDS_SEEKBAR, 20000);
+
+        mPlaybackData.mAbsolutePositionNanos = 40 * 1_000_000_000L;
+        mPlaybackData.mTotalDurationNanos = 40 * 1_000_000_000L;
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
+
+        mOnSeekBarChangeListener.onStartTrackingTouch(mSeekbar);
+        mPlaybackData.mAbsolutePositionNanos = 20 * 1_000_000_000L;
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
+        mOnSeekBarChangeListener.onStopTrackingTouch(mSeekbar);
+
+        histogram.assertExpected();
+    }
+
+    @Test
     public void testObserveVoiceList() {
         // Set up a Spanish voice pref that isn't the first in the list.
         MockPrefServiceHelper.setVoices(mPrefsNative, Map.of("es", "c"));

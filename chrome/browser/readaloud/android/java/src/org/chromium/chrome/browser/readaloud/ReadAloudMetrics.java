@@ -32,6 +32,10 @@ public class ReadAloudMetrics {
     public static String TAP_TO_SEEK_TIME = "ReadAloud.TapToSeekTime";
     public static String EMPTY_URL_PLAYBACK = "ReadAloud.EmptyURLPlayback";
     public static String REASON_FOR_STOPPING_PLAYBACK = "ReadAloud.TabPlaybackStoppedReason";
+    public static String DURATION_SCRUBBING_FORWARDS_SEEKBAR =
+            "ReadAloud.DurationScrubbingForwardsSeekbar";
+    public static String DURATION_SCRUBBING_BACKWARDS_SEEKBAR =
+            "ReadAloud.DurationScrubbingBackwardsSeekbar";
 
     /**
      * The reason why we clear the prepared message.
@@ -159,6 +163,14 @@ public class ReadAloudMetrics {
             RecordHistogram.recordLongTimesHistogram(
                     TIME_SPENT_LISTENING_LOCKED_SCREEN, durationMs);
         }
+    }
+
+    public static void recordDurationScrubbingForwards(long durationMs) {
+        RecordHistogram.recordTimesHistogram(DURATION_SCRUBBING_FORWARDS_SEEKBAR, durationMs);
+    }
+
+    public static void recordDurationScrubbingBackwards(long durationMs) {
+        RecordHistogram.recordTimesHistogram(DURATION_SCRUBBING_BACKWARDS_SEEKBAR, durationMs);
     }
 
     public static void recordSeekForwardTapped() {
