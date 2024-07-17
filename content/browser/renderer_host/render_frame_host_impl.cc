@@ -1228,84 +1228,6 @@ bool IsDocumentLoadedWithoutUrlLoaderClient(
          url.SchemeIs(url::kDataScheme) || !IsURLHandledByNetworkStack(url);
 }
 
-// These are directly cast to UKM enums of the same name and logged,
-// be sure not to change ordering or delete lines.
-enum class WindowProxyFrameContext {
-  kTopFrame,
-  kSubFrameSameSite,
-  kSubFrameCrossSite,
-};
-
-WindowProxyFrameContext GetWindowProxyFrameContext(RenderFrameHostImpl* frame) {
-  if (frame->GetStorageKey().IsFirstPartyContext()) {
-    if (frame == frame->GetOutermostMainFrame()) {
-      return WindowProxyFrameContext::kTopFrame;
-    } else {
-      return WindowProxyFrameContext::kSubFrameSameSite;
-    }
-  } else {
-    return WindowProxyFrameContext::kSubFrameCrossSite;
-  }
-}
-
-// These are directly cast to UKM enums of the same name and logged,
-// be sure not to change ordering or delete lines.
-enum class WindowProxyPageContext {
-  kWindow,
-  kPopup,
-};
-
-WindowProxyPageContext GetWindowProxyPageContext(RenderFrameHostImpl* frame) {
-  if (frame->delegate()->IsPopup()) {
-    return WindowProxyPageContext::kPopup;
-  }
-  return WindowProxyPageContext::kWindow;
-}
-
-// These are directly cast to UKM enums of the same name and logged,
-// be sure not to change ordering or delete lines.
-enum class WindowProxyStorageKeyComparison {
-  kSameKey,
-  kSameTopSiteCrossOrigin,
-  kCrossTopSiteSameOrigin,
-  kCrossKey,
-};
-
-WindowProxyStorageKeyComparison GetWindowProxyStorageKeyComparison(
-    const blink::StorageKey& local_storage_key,
-    const blink::StorageKey& remote_storage_key) {
-  if (local_storage_key == remote_storage_key) {
-    return WindowProxyStorageKeyComparison::kSameKey;
-  } else if (local_storage_key.top_level_site() ==
-             remote_storage_key.top_level_site()) {
-    return WindowProxyStorageKeyComparison::kSameTopSiteCrossOrigin;
-  } else if (local_storage_key.origin() == remote_storage_key.origin() &&
-             local_storage_key.nonce() == remote_storage_key.nonce()) {
-    return WindowProxyStorageKeyComparison::kCrossTopSiteSameOrigin;
-  } else {
-    return WindowProxyStorageKeyComparison::kCrossKey;
-  }
-}
-
-// These are directly cast to UKM enums of the same name and logged,
-// be sure not to change ordering or delete lines.
-enum class WindowProxyUserActivationState {
-  kIsActive,
-  kHasBeenActive,
-  kNeverActive,
-};
-
-WindowProxyUserActivationState GetWindowProxyUserActivationState(
-    const RenderFrameHostImpl* frame) {
-  if (frame->IsActiveUserActivation()) {
-    return WindowProxyUserActivationState::kIsActive;
-  } else if (frame->HasStickyUserActivation()) {
-    return WindowProxyUserActivationState::kHasBeenActive;
-  } else {
-    return WindowProxyUserActivationState::kNeverActive;
-  }
-}
-
 }  // namespace
 
 class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
@@ -9757,42 +9679,6 @@ void RenderFrameHostImpl::NotifyStorageAccessed(
     blink::mojom::StorageTypeAccessed storage_type,
     bool blocked) {
   delegate_->NotifyStorageAccessed(this, storage_type, blocked);
-}
-
-void RenderFrameHostImpl::RecordWindowProxyUsageMetrics(
-    const blink::FrameToken& target_frame_token,
-    blink::mojom::WindowProxyAccessType access_type) {
-  if (IsInLifecycleState(LifecycleState::kPrerendering)) {
-    // We cannot use GetPageUkmSourceId if we are prerendering.
-    return;
-  }
-  RenderFrameHostImpl* target_frame =
-      LookupRenderFrameHostOrProxy(GetProcess()->GetID(), target_frame_token)
-          .GetCurrentFrameHost();
-  if (!target_frame) {
-    return;
-  }
-  ukm::builders::WindowProxyUsage(GetPageUkmSourceId())
-      .SetAccessType(static_cast<int64_t>(access_type))
-      .SetIsSameFrame(target_frame == this)
-      .SetIsSamePage(target_frame->GetOutermostMainFrame() ==
-                     this->GetOutermostMainFrame())
-      .SetLocalFrameContext(
-          static_cast<int64_t>(GetWindowProxyFrameContext(this)))
-      .SetLocalPageContext(
-          static_cast<int64_t>(GetWindowProxyPageContext(this)))
-      .SetLocalUserActivationState(
-          static_cast<int64_t>(GetWindowProxyUserActivationState(this)))
-      .SetRemoteFrameContext(
-          static_cast<int64_t>(GetWindowProxyFrameContext(target_frame)))
-      .SetRemotePageContext(
-          static_cast<int64_t>(GetWindowProxyPageContext(target_frame)))
-      .SetRemoteUserActivationState(
-          static_cast<int64_t>(GetWindowProxyUserActivationState(target_frame)))
-      .SetStorageKeyComparison(
-          static_cast<int64_t>(GetWindowProxyStorageKeyComparison(
-              this->GetStorageKey(), target_frame->GetStorageKey())))
-      .Record(ukm::UkmRecorder::Get());
 }
 
 void RenderFrameHostImpl::CreateNewPopupWidget(

@@ -723,9 +723,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void DraggableRegionsChanged(
       const std::vector<blink::mojom::DraggableRegionPtr>& regions) {}
 
-  // Whether this window was initially opened as a new popup.
-  virtual bool IsPopup() const;
-
  protected:
   virtual ~RenderFrameHostDelegate() = default;
 };

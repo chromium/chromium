@@ -2492,9 +2492,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
           receiver) override;
   void NotifyStorageAccessed(blink::mojom::StorageTypeAccessed storage_type,
                              bool blocked) override;
-  void RecordWindowProxyUsageMetrics(
-      const blink::FrameToken& target_frame_token,
-      blink::mojom::WindowProxyAccessType access_type) override;
 
   // blink::mojom::BackForwardCacheControllerHost:
   void EvictFromBackForwardCache(

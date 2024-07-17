@@ -789,10 +789,6 @@ std::optional<double> WebContentsImpl::AdjustedChildZoom(
   return std::nullopt;
 }
 
-bool WebContentsImpl::IsPopup() const {
-  return is_popup_;
-}
-
 void WebContents::SetScreenOrientationDelegate(
     ScreenOrientationDelegate* delegate) {
   ScreenOrientationProvider::SetDelegate(delegate);
@@ -4603,8 +4599,6 @@ FrameTree* WebContentsImpl::CreateNewWindow(
     if (!web_contents_impl) {
       return nullptr;
     }
-    web_contents_impl->is_popup_ =
-        params.disposition == WindowOpenDisposition::NEW_POPUP;
     return &web_contents_impl->GetPrimaryFrameTree();
   }
 
@@ -4688,8 +4682,6 @@ FrameTree* WebContentsImpl::CreateNewWindow(
   }
 
   auto* new_contents_impl = new_contents.get();
-  new_contents_impl->is_popup_ =
-      params.disposition == WindowOpenDisposition::NEW_POPUP;
 
   // If the new frame has a name, make sure any SiteInstances that can find
   // this named frame have proxies for it.  Must be called after

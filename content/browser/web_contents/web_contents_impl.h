@@ -1468,8 +1468,6 @@ class CONTENT_EXPORT WebContentsImpl
   std::optional<double> AdjustedChildZoom(
       const RenderWidgetHostViewChildFrame* render_widget) override;
 
-  bool IsPopup() const override;
-
  private:
   using FrameTreeIterationCallback = base::RepeatingCallback<void(FrameTree&)>;
   using RenderViewHostIterationCallback =
@@ -2527,9 +2525,6 @@ class CONTENT_EXPORT WebContentsImpl
   // WebContents is created and will not change during the life cycle of
   // WebContents.
   net::handles::NetworkHandle target_network_ = net::handles::kInvalidNetworkHandle;
-
-  // Whether this contents represents a window initially opened as a new popup.
-  bool is_popup_{false};
 
   base::WeakPtrFactory<WebContentsImpl> loading_weak_factory_{this};
   base::WeakPtrFactory<WebContentsImpl> weak_factory_{this};
