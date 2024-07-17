@@ -30,11 +30,6 @@ class PlusAddressSettingService : public KeyedService {
   virtual bool GetIsPlusAddressesEnabled() const = 0;
   // Whether the user went through the onboarding flow.
   virtual bool GetHasAcceptedNotice() const = 0;
-  // Whether the signed-in user is enrolled in the beta rollout of the feature.
-  // This is different from `!GetIsPlusAddressesEnabled()`, since for users that
-  // have not opted in, no UI will be shown.
-  // This is necessary, since group targeted rollouts are per installation.
-  virtual bool GetIsOptedInToDogfood() const = 0;
 
   // Setters for the settings writable from Chrome.
   // Sets the state that the user has accepted the notice to true.

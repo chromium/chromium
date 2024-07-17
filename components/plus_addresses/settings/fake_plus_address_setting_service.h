@@ -24,7 +24,6 @@ class FakePlusAddressSettingService : public PlusAddressSettingService {
   // PlusAddressSettingService:
   bool GetIsPlusAddressesEnabled() const override;
   bool GetHasAcceptedNotice() const override;
-  bool GetIsOptedInToDogfood() const override;
   void SetHasAcceptedNotice() override;
   std::unique_ptr<syncer::ModelTypeControllerDelegate>
   GetSyncControllerDelegate() override;

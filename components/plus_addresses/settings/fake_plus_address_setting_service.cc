@@ -20,10 +20,6 @@ bool FakePlusAddressSettingService::GetHasAcceptedNotice() const {
   return has_accepted_notice_;
 }
 
-bool FakePlusAddressSettingService::GetIsOptedInToDogfood() const {
-  return true;
-}
-
 void FakePlusAddressSettingService::SetHasAcceptedNotice() {
   set_has_accepted_notice(true);
 }

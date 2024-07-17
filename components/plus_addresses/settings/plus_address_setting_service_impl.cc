@@ -29,8 +29,6 @@ constexpr std::string_view kPlusAddressEnabledSetting =
     "plus_address.is_enabled";
 constexpr std::string_view kAcceptedNoticeSetting =
     "plus_address.has_accepted_notice";
-constexpr std::string_view kIsOptedInToDogfoodSetting =
-    "plus_address.is_opted_in_to_dogfood";
 
 }  // namespace
 
@@ -46,10 +44,6 @@ bool PlusAddressSettingServiceImpl::GetIsPlusAddressesEnabled() const {
 
 bool PlusAddressSettingServiceImpl::GetHasAcceptedNotice() const {
   return GetBoolean(kAcceptedNoticeSetting);
-}
-
-bool PlusAddressSettingServiceImpl::GetIsOptedInToDogfood() const {
-  return GetBoolean(kIsOptedInToDogfoodSetting);
 }
 
 void PlusAddressSettingServiceImpl::SetHasAcceptedNotice() {

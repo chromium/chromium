@@ -62,14 +62,10 @@ TEST_F(PlusAddressSettingServiceImplTest, GetValue) {
   ON_CALL(bridge(), GetSetting("plus_address.is_enabled"))
       .WillByDefault(
           Return(CreateSettingSpecifics("plus_address.is_enabled", true)));
-  ON_CALL(bridge(), GetSetting("plus_address.has_accepted_notice"))
-      .WillByDefault(Return(
-          CreateSettingSpecifics("plus_address.has_accepted_notice", false)));
   // For settings that the client knows about, the correct values are returned.
   EXPECT_TRUE(service().GetIsPlusAddressesEnabled());
-  EXPECT_FALSE(service().GetHasAcceptedNotice());
   // For settings that the client hasn't received, defaults are returned.
-  EXPECT_FALSE(service().GetIsOptedInToDogfood());
+  EXPECT_FALSE(service().GetHasAcceptedNotice());
 }
 
 TEST_F(PlusAddressSettingServiceImplTest, SetValue) {

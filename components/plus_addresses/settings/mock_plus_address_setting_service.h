@@ -18,7 +18,6 @@ class MockPlusAddressSettingService : public PlusAddressSettingService {
 
   MOCK_METHOD(bool, GetIsPlusAddressesEnabled, (), (const, override));
   MOCK_METHOD(bool, GetHasAcceptedNotice, (), (const override));
-  MOCK_METHOD(bool, GetIsOptedInToDogfood, (), (const override));
   MOCK_METHOD(void, SetHasAcceptedNotice, (), (override));
 
   MOCK_METHOD(std::unique_ptr<syncer::ModelTypeControllerDelegate>,
