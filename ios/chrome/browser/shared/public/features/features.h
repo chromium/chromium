@@ -220,9 +220,6 @@ BASE_DECLARE_FEATURE(kRemoveExcessNTPs);
 // Chrome.
 BASE_DECLARE_FEATURE(kEnableShortenedPasswordAutoFillInstruction);
 
-// Feature flag to enable startup latency improvements.
-BASE_DECLARE_FEATURE(kEnableStartupImprovements);
-
 // Feature flag / Kill Switch for TCRex.
 BASE_DECLARE_FEATURE(kTCRexKillSwitch);
 

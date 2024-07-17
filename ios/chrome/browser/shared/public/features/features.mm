@@ -185,10 +185,6 @@ BASE_FEATURE(kEnableShortenedPasswordAutoFillInstruction,
              "EnableShortenedPasswordAutoFillInstruction",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableStartupImprovements,
-             "EnableStartupImprovements",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTCRexKillSwitch,
              "kTCRexKillSwitch",
              base::FEATURE_DISABLED_BY_DEFAULT);

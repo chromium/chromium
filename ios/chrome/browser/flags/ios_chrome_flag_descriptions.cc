@@ -476,12 +476,6 @@ const char kEnableSignedOutViewDemotionDescription[] =
     "Enable signed out user view demotion to avoid repeated content for signed "
     "out users.";
 
-const char kEnableStartupImprovementsName[] =
-    "Enable startup latency improvements";
-const char kEnableStartupImprovementsDescription[] =
-    "Enables startup latency improvements to make startup faster.";
-
-
 const char kEnableWebChannelsName[] = "Enable WebFeed";
 const char kEnableWebChannelsDescription[] =
     "Enable folowing content from web and display Following feed on NTP based "
