@@ -10,8 +10,6 @@ Found 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: origin expected "null" but got "file://"
 [FAIL] Parsing origin: <x> against <sc://ñ>
   assert_equals: origin expected "null" but got ""
-[FAIL] Parsing origin: <http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿?U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿> against <about:blank>
-  assert_equals: origin expected "http://example.com" but got ""
 [FAIL] Parsing origin: <http://!"$&'()*+,-.;=_`{}~/> against <about:blank>
   assert_equals: origin expected "http://!\\"$&'()*+,-.;=_`{}~" but got "http://!\\"$&'()%2A+,-.;=_`{}~"
 [FAIL] Parsing origin: <#x> against <sc://ñ>
@@ -28,5 +26,7 @@ Found 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: origin expected "wss://!\\"$&'()*+,-.;=_`{}~" but got "wss://!\\"$&'()%2A+,-.;=_`{}~"
 [FAIL] Parsing origin: <w://x:0> against <about:blank>
   assert_equals: origin expected "null" but got "file://"
+[FAIL] Parsing origin: <http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿?U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿> against <about:blank>
+  assert_equals: origin expected "http://example.com" but got ""
 Harness: the test ran to completion.
 
