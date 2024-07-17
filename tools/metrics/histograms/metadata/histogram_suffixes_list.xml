@@ -2064,7 +2064,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="dummy2" label="Module ID for another dummy module"/>
   <suffix name="history_clusters"
       label="Module ID for History Clusters module"/>
-  <suffix name="photos" label="Module ID for Google Photos module"/>
   <suffix name="shopping_tasks" label="Module ID for Shopping Tasks"/>
   <suffix name="tab_resumption" label="Module ID for Tab Resumption"/>
   <affected-histogram name="NewTabPage.Modules.Dismissed"/>

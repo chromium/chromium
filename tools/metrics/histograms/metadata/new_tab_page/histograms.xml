@@ -1029,7 +1029,6 @@ chromium-metrics-reviews@google.com.
     <variant name="chrome_cart" summary="the Chrome Cart module"/>
     <variant name="drive" summary="the Drive module"/>
     <variant name="history_clusters" summary="the History clusters module"/>
-    <variant name="photos" summary="the Photos module"/>
     <variant name="shopping_tasks" summary="the Shopping Tasks module"/>
     <variant name="tab_resumption" summary="the Tab Resumption module"/>
   </token>
@@ -1224,74 +1223,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Histogram of the time, in milliseconds since navigation start, it took until
     the OneGoogleBar showed up on the NTP. Recorded only on the local NTP.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.Photos.DataRequest"
-    enum="PhotosModuleRequestResult" expires_after="2023-06-04">
-  <owner>jerem@google.com</owner>
-  <owner>tiborg@chromium.org</owner>
-  <owner>chrome-desktop-ntp@google.com</owner>
-  <summary>
-    Logs the state of Photos module API requests. Only logged on the 1P NTP.
-    Note that even if the user has Google as their default search engine,
-    Incognito and Guest mode NTPs are not considered 1P and don't log this
-    histogram.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.Photos.DataResponseCount" units="count"
-    expires_after="2023-06-04">
-  <owner>jerem@google.com</owner>
-  <owner>tiborg@chromium.org</owner>
-  <owner>chrome-desktop-ntp@google.com</owner>
-  <summary>
-    Logs the number of memories in the photos module response. Only logged on
-    the 1P NTP. Note that even if the user has Google as their default search
-    engine, Incognito and Guest mode NTPs are not considered 1P and don't log
-    this histogram.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.Photos.ImageLoad" enum="BooleanSuccess"
-    expires_after="2023-03-19">
-  <owner>tiborg@chromium.org</owner>
-  <owner>jerem@google.com</owner>
-  <owner>chrome-desktop-ntp@google.com</owner>
-  <summary>
-    Logged every time we try to load an image in the photos module. This
-    histogram logs 'Success' when loading was successful and 'Failure' when
-    there was an error. Only logged on the 1P NTP. Note that even if the user
-    has Google as their default search engine, Incognito and Guest mode NTPs are
-    not considered 1P and don't log this histogram.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.Photos.ModuleShown" enum="BooleanPhotosOptedIn"
-    expires_after="2023-06-04">
-  <owner>tiborg@chromium.org</owner>
-  <owner>jerem@google.com</owner>
-  <owner>chrome-desktop-ntp@google.com</owner>
-  <summary>
-    Logged every time the photos module is shown to the user. This histogram
-    logs 'Not opted-in' when the opt-in screen was shown and 'Opted-in' when
-    memories were shown. Only logged on the 1P NTP. Note that even if the user
-    has Google as their default search engine, Incognito and Guest mode NTPs are
-    not considered 1P and don't log this histogram.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.Photos.UserOptIn" enum="NtpPhotosModuleOptInStatus"
-    expires_after="2023-03-19">
-  <owner>tiborg@chromium.org</owner>
-  <owner>jerem@google.com</owner>
-  <owner>mplg@google.com</owner>
-  <owner>chrome-desktop-ntp@google.com</owner>
-  <summary>
-    Logged every time the user changes the opt-in status of the photos module
-    (OptIn/SoftOptOut/HardOptOut). Only logged on the 1P NTP. Note that even if
-    the user has Google as their default search engine, Incognito and Guest mode
-    NTPs are not considered 1P and don't log this histogram.
   </summary>
 </histogram>
 
