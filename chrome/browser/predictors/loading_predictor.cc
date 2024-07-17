@@ -255,27 +255,28 @@ bool LoadingPredictor::PrepareForPageLoad(
     if (lcpp_stat) {
       size_t count = 0;
       std::vector<PreconnectRequest> additional_preconnects;
-      auto page_url_origin = url::Origin::Create(url);
+      auto anonymization_key =
+          net::NetworkAnonymizationKey::CreateSameSite(net::SchemefulSite(url));
       for (const GURL& preconnect_origin :
            PredictPreconnectableOrigins(*lcpp_stat)) {
         additional_preconnects.emplace_back(
-            url::Origin::Create(preconnect_origin), 1,
-            net::NetworkAnonymizationKey::CreateSameSite(
-                net::SchemefulSite(page_url_origin)));
+            url::Origin::Create(preconnect_origin), 1, anonymization_key);
         ++count;
       }
 
       if (count) {
-        // The first preconnect record is to the url origin itself. With
-        // insertion at begin() + 1, we prioritize LCP preconnects just after
-        // the page origin preconnect, to minimize any performance regression.
-        // If no new requests were identified, leave the existing set as-is.
-        auto insertion_point =
-            prediction.requests.begin() + (prediction.requests.empty() ? 0 : 1);
-        prediction.requests.reserve(count + prediction.requests.size());
-        prediction.requests.insert(insertion_point,
-                                   additional_preconnects.begin(),
-                                   additional_preconnects.end());
+        // The first preconnect record is usually to the url origin itself.
+        // We want to prioritize LCP preconnects just after the page origin
+        // preconnect, to minimize any performance regression. If no new
+        // requests were identified, leave the existing set as-is.
+        if (prediction.requests.empty()) {
+          prediction.requests = std::move(additional_preconnects);
+        } else {
+          prediction.requests.reserve(count + prediction.requests.size());
+          prediction.requests.insert(++prediction.requests.begin(),
+                                     additional_preconnects.begin(),
+                                     additional_preconnects.end());
+        }
       }
       base::UmaHistogramCounts10000("Blink.LCPP.PreconnectPredictionCount",
                                     count);
