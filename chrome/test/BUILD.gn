@@ -11497,8 +11497,8 @@ if (!is_android && !is_chromeos_device) {
         ]
 
         if (is_chrome_branded) {
-          sources += [ "../browser/ui/ash/container_app/container_app_interactive_uitest.cc" ]
-          deps += [ "//chromeos/components/libsegmentation:buildflags" ]
+          deps +=
+              [ "//chrome/browser/ui/ash/container_app:interactive_ui_tests" ]
         }
 
         deps += [
