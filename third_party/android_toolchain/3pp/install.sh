@@ -40,6 +40,9 @@ GLOB_EXCLUDES=(
   toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/linux/netfilter/xt_TCPMSS.h
 )
 
+# Fix an compile error in the Android NDK (crbug.com/352592408).
+sed -i 's/1UL << 32/1ULL << 32/g' toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/hardware_buffer.h
+
 # Move included files from the working directory to the staging directory.
 for pattern in "${GLOB_INCLUDES[@]}"; do
   cp --parents -r $pattern "$PREFIX"
@@ -49,3 +52,4 @@ done
 for pattern in "${GLOB_EXCLUDES[@]}"; do
   rm -rf "${PREFIX}/${pattern}"
 done
+
