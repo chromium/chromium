@@ -8,8 +8,10 @@
 #include <map>
 #include <memory>
 
+#include "android_webview/browser/aw_context_permissions_delegate.h"
 #include "base/containers/id_map.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/permission_controller_delegate.h"
 #include "content/public/browser/permission_result.h"
@@ -25,7 +27,8 @@ class LastRequestResultCache;
 
 class AwPermissionManager : public content::PermissionControllerDelegate {
  public:
-  AwPermissionManager();
+  explicit AwPermissionManager(
+      const AwContextPermissionsDelegate& context_delegate);
 
   AwPermissionManager(const AwPermissionManager&) = delete;
   AwPermissionManager& operator=(const AwPermissionManager&) = delete;
@@ -102,6 +105,16 @@ class AwPermissionManager : public content::PermissionControllerDelegate {
   virtual AwBrowserPermissionRequestDelegate* GetDelegate(int render_process_id,
                                                           int render_frame_id);
 
+  blink::mojom::PermissionStatus GetPermissionStatusInternal(
+      blink::PermissionType permission,
+      const GURL& requesting_origin,
+      const GURL& embedding_origin,
+      content::WebContents* web_contents);
+
+  blink::mojom::PermissionStatus GetGeolocationPermission(
+      const GURL& requesting_origin,
+      content::WebContents* web_contents);
+
   // The weak pointer to this is used to clean up any information which is
   // stored in the pending request or result cache maps. However, the callback
   // should be run regardless of whether the class is still alive so the method
@@ -112,6 +125,7 @@ class AwPermissionManager : public content::PermissionControllerDelegate {
       blink::PermissionType permission,
       bool allowed);
 
+  base::raw_ref<const AwContextPermissionsDelegate> context_delegate_;
   PendingRequestsMap pending_requests_;
   std::unique_ptr<LastRequestResultCache> result_cache_;
   // Maps origins to whether they can view device labels.
@@ -123,4 +137,4 @@ class AwPermissionManager : public content::PermissionControllerDelegate {
 
 } // namespace android_webview
 
-#endif // ANDROID_WEBVIEW_BROWSER_AW_PERMISSION_MANAGER_H_
+#endif  // ANDROID_WEBVIEW_BROWSER_AW_PERMISSION_MANAGER_H_
