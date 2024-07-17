@@ -207,28 +207,29 @@ bool InterpolableLength::CanMergeValues(const InterpolableValue* start,
   if (start_is_keyword || end_is_keyword) {
     // Only animate to or from width keywords if the other endpoint of the
     // animation is a calc-size() expression.
+    const InterpolableLength* keyword;
     const InterpolableLength* non_keyword;
-    CSSValueID keyword;
     if (start_is_keyword) {
       if (end_is_keyword) {
         return false;
       }
-      keyword = start_length.keyword_;
+      keyword = &start_length;
       non_keyword = &end_length;
     } else {
       non_keyword = &start_length;
-      keyword = end_length.keyword_;
+      keyword = &end_length;
     }
 
     if (!non_keyword->IsCalcSize()) {
-      return RuntimeEnabledFeatures::CSSSizingKeywordAnimationEnabled();
+      // Check the 'interpolate-size' value stored with the keyword.
+      return keyword->IsKeywordFullyInterpolable();
     }
     const CSSMathExpressionNode& basis =
         ExtractCalcSizeBasis(non_keyword->expression_);
 
     if (const auto* basis_literal =
             DynamicTo<CSSMathExpressionKeywordLiteral>(basis)) {
-      return basis_literal->GetValue() == keyword ||
+      return basis_literal->GetValue() == keyword->keyword_ ||
              basis_literal->GetValue() == CSSValueID::kAny;
     }
 

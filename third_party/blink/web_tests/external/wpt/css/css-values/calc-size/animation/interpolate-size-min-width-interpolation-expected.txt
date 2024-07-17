@@ -1,0 +1,100 @@
+This is a testharness.js-based test.
+Found 48 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] CSS Transitions: property <min-width> from [0px] to [stretch] at (-0.3) should be [calc-size(stretch, 0px + size * -0.3)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <min-width> from [0px] to [stretch] at (0) should be [calc-size(stretch, 0px + size * 0)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <min-width> from [0px] to [stretch] at (0.3) should be [calc-size(stretch, 0px + size * 0.3)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <min-width> from [0px] to [stretch] at (0.6) should be [calc-size(stretch, 0px + size * 0.6)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <min-width> from [0px] to [stretch] at (1) should be [calc-size(stretch, 0px + size * 1)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <min-width> from [0px] to [stretch] at (1.5) should be [calc-size(stretch, 0px + size * 1.5)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <min-width> from [0px] to [stretch] at (-0.3) should be [calc-size(stretch, 0px + size * -0.3)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <min-width> from [0px] to [stretch] at (0) should be [calc-size(stretch, 0px + size * 0)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <min-width> from [0px] to [stretch] at (0.3) should be [calc-size(stretch, 0px + size * 0.3)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <min-width> from [0px] to [stretch] at (0.6) should be [calc-size(stretch, 0px + size * 0.6)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <min-width> from [0px] to [stretch] at (1) should be [calc-size(stretch, 0px + size * 1)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <min-width> from [0px] to [stretch] at (1.5) should be [calc-size(stretch, 0px + size * 1.5)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <min-width> from [0px] to [stretch] at (-0.3) should be [calc-size(stretch, 0px + size * -0.3)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <min-width> from [0px] to [stretch] at (0) should be [calc-size(stretch, 0px + size * 0)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <min-width> from [0px] to [stretch] at (0.3) should be [calc-size(stretch, 0px + size * 0.3)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <min-width> from [0px] to [stretch] at (0.6) should be [calc-size(stretch, 0px + size * 0.6)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <min-width> from [0px] to [stretch] at (1) should be [calc-size(stretch, 0px + size * 1)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <min-width> from [0px] to [stretch] at (1.5) should be [calc-size(stretch, 0px + size * 1.5)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <min-width> from [0px] to [stretch] at (-0.3) should be [calc-size(stretch, 0px + size * -0.3)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <min-width> from [0px] to [stretch] at (0) should be [calc-size(stretch, 0px + size * 0)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <min-width> from [0px] to [stretch] at (0.3) should be [calc-size(stretch, 0px + size * 0.3)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <min-width> from [0px] to [stretch] at (0.6) should be [calc-size(stretch, 0px + size * 0.6)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <min-width> from [0px] to [stretch] at (1) should be [calc-size(stretch, 0px + size * 1)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <min-width> from [0px] to [stretch] at (1.5) should be [calc-size(stretch, 0px + size * 1.5)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <min-width> from [fit-content] to neutral at (-0.3) should be [calc-size(fit-content, -3px + size * 1.3)]
+  assert_equals: expected "calc - size ( fit - content , - 3px + size * 1.3 ) " but got "calc - size ( fit - content , - 3px + 0px + size * 1.3 ) "
+[FAIL] CSS Animations: property <min-width> from [fit-content] to neutral at (0) should be [calc-size(fit-content, 0px + size * 1)]
+  assert_equals: expected "calc - size ( fit - content , 0px + size * 1 ) " but got "calc - size ( fit - content , 0px + 0px + size * 1 ) "
+[FAIL] CSS Animations: property <min-width> from [fit-content] to neutral at (0.3) should be [calc-size(fit-content, 3px + size * 0.7)]
+  assert_equals: expected "calc - size ( fit - content , 3px + size * 0.7 ) " but got "calc - size ( fit - content , 3px + 0px + size * 0.7 ) "
+[FAIL] CSS Animations: property <min-width> from [fit-content] to neutral at (0.6) should be [calc-size(fit-content, 6px + size * 0.4)]
+  assert_equals: expected "calc - size ( fit - content , 6px + size * 0.4 ) " but got "calc - size ( fit - content , 6px + 0px + size * 0.4 ) "
+[FAIL] CSS Animations: property <min-width> from [fit-content] to neutral at (1) should be [calc-size(fit-content, 10px + size * 0)]
+  assert_equals: expected "calc - size ( fit - content , 10px + size * 0 ) " but got "calc - size ( fit - content , 10px + 0px + size * 0 ) "
+[FAIL] CSS Animations: property <min-width> from [fit-content] to neutral at (1.5) should be [calc-size(fit-content, 15px + size * -0.5)]
+  assert_equals: expected "calc - size ( fit - content , 15px + size * - 0.5 ) " but got "calc - size ( fit - content , 15px + 0px + size * - 0.5 ) "
+[FAIL] Web Animations: property <min-width> from [fit-content] to neutral at (-0.3) should be [calc-size(fit-content, -3px + size * 1.3)]
+  assert_equals: expected "calc - size ( fit - content , - 3px + size * 1.3 ) " but got "calc - size ( fit - content , - 3px + 0px + size * 1.3 ) "
+[FAIL] Web Animations: property <min-width> from [fit-content] to neutral at (0) should be [calc-size(fit-content, 0px + size * 1)]
+  assert_equals: expected "calc - size ( fit - content , 0px + size * 1 ) " but got "calc - size ( fit - content , 0px + 0px + size * 1 ) "
+[FAIL] Web Animations: property <min-width> from [fit-content] to neutral at (0.3) should be [calc-size(fit-content, 3px + size * 0.7)]
+  assert_equals: expected "calc - size ( fit - content , 3px + size * 0.7 ) " but got "calc - size ( fit - content , 3px + 0px + size * 0.7 ) "
+[FAIL] Web Animations: property <min-width> from [fit-content] to neutral at (0.6) should be [calc-size(fit-content, 6px + size * 0.4)]
+  assert_equals: expected "calc - size ( fit - content , 6px + size * 0.4 ) " but got "calc - size ( fit - content , 6px + 0px + size * 0.4 ) "
+[FAIL] Web Animations: property <min-width> from [fit-content] to neutral at (1) should be [calc-size(fit-content, 10px + size * 0)]
+  assert_equals: expected "calc - size ( fit - content , 10px + size * 0 ) " but got "calc - size ( fit - content , 10px + 0px + size * 0 ) "
+[FAIL] Web Animations: property <min-width> from [fit-content] to neutral at (1.5) should be [calc-size(fit-content, 15px + size * -0.5)]
+  assert_equals: expected "calc - size ( fit - content , 15px + size * - 0.5 ) " but got "calc - size ( fit - content , 15px + 0px + size * - 0.5 ) "
+[FAIL] CSS Animations: property <min-width> from neutral to [max-content] at (-0.3) should be [calc-size(max-content, 13px + size * -0.3)]
+  assert_equals: expected "calc - size ( max - content , 13px + size * - 0.3 ) " but got "calc - size ( max - content , 13px + 0px + size * - 0.3 ) "
+[FAIL] CSS Animations: property <min-width> from neutral to [max-content] at (0) should be [calc-size(max-content, 10px + size * 0)]
+  assert_equals: expected "calc - size ( max - content , 10px + size * 0 ) " but got "calc - size ( max - content , 10px + 0px + size * 0 ) "
+[FAIL] CSS Animations: property <min-width> from neutral to [max-content] at (0.3) should be [calc-size(max-content, 7px + size * 0.3)]
+  assert_equals: expected "calc - size ( max - content , 7px + size * 0.3 ) " but got "calc - size ( max - content , 7px + 0px + size * 0.3 ) "
+[FAIL] CSS Animations: property <min-width> from neutral to [max-content] at (0.6) should be [calc-size(max-content, 4px + size * 0.6)]
+  assert_equals: expected "calc - size ( max - content , 4px + size * 0.6 ) " but got "calc - size ( max - content , 4px + 0px + size * 0.6 ) "
+[FAIL] CSS Animations: property <min-width> from neutral to [max-content] at (1) should be [calc-size(max-content, 0px + size * 1)]
+  assert_equals: expected "calc - size ( max - content , 0px + size * 1 ) " but got "calc - size ( max - content , 0px + 0px + size * 1 ) "
+[FAIL] CSS Animations: property <min-width> from neutral to [max-content] at (1.5) should be [calc-size(max-content, -5px + size * 1.5)]
+  assert_equals: expected "calc - size ( max - content , - 5px + size * 1.5 ) " but got "calc - size ( max - content , - 5px + 0px + size * 1.5 ) "
+[FAIL] Web Animations: property <min-width> from neutral to [max-content] at (-0.3) should be [calc-size(max-content, 13px + size * -0.3)]
+  assert_equals: expected "calc - size ( max - content , 13px + size * - 0.3 ) " but got "calc - size ( max - content , 13px + 0px + size * - 0.3 ) "
+[FAIL] Web Animations: property <min-width> from neutral to [max-content] at (0) should be [calc-size(max-content, 10px + size * 0)]
+  assert_equals: expected "calc - size ( max - content , 10px + size * 0 ) " but got "calc - size ( max - content , 10px + 0px + size * 0 ) "
+[FAIL] Web Animations: property <min-width> from neutral to [max-content] at (0.3) should be [calc-size(max-content, 7px + size * 0.3)]
+  assert_equals: expected "calc - size ( max - content , 7px + size * 0.3 ) " but got "calc - size ( max - content , 7px + 0px + size * 0.3 ) "
+[FAIL] Web Animations: property <min-width> from neutral to [max-content] at (0.6) should be [calc-size(max-content, 4px + size * 0.6)]
+  assert_equals: expected "calc - size ( max - content , 4px + size * 0.6 ) " but got "calc - size ( max - content , 4px + 0px + size * 0.6 ) "
+[FAIL] Web Animations: property <min-width> from neutral to [max-content] at (1) should be [calc-size(max-content, 0px + size * 1)]
+  assert_equals: expected "calc - size ( max - content , 0px + size * 1 ) " but got "calc - size ( max - content , 0px + 0px + size * 1 ) "
+[FAIL] Web Animations: property <min-width> from neutral to [max-content] at (1.5) should be [calc-size(max-content, -5px + size * 1.5)]
+  assert_equals: expected "calc - size ( max - content , - 5px + size * 1.5 ) " but got "calc - size ( max - content , - 5px + 0px + size * 1.5 ) "
+Harness: the test ran to completion.
+
