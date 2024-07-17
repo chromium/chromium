@@ -7,6 +7,9 @@
 #ifndef CHROME_INSTALLER_SETUP_SETUP_CONSTANTS_H_
 #define CHROME_INSTALLER_SETUP_SETUP_CONSTANTS_H_
 
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
+
 namespace installer {
 
 extern const wchar_t kChromeArchive[];
@@ -18,6 +21,10 @@ extern const wchar_t kInstallSourceDir[];
 extern const wchar_t kInstallSourceChromeDir[];
 
 extern const wchar_t kMediaPlayerRegPath[];
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+extern const wchar_t kOsUpdateHandlerExe[];
+#endif
 
 // The range of error values among the installer, Courgette, BSDiff and
 // Zucchini overlap. These offset values disambiguate between different sets

@@ -34,14 +34,14 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split_win.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
-#include "build/branding_buildflags.h"
-#include "build/build_config.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/install_util.h"
@@ -837,5 +837,29 @@ void AddUpdateDowngradeVersionItem(HKEY root,
                                     kRegDowngradeVersion);
   }
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+std::wstring UpdateLastWindowsVersion(base::wcstring_view os_version) {
+  constexpr wchar_t kLastWindowsVersion[] = L"LastWindowsVersion";
+
+  base::win::RegKey key;
+  std::wstring last_version;
+  if (key.Create(HKEY_CURRENT_USER, install_static::GetRegistryPath().c_str(),
+                 KEY_QUERY_VALUE | KEY_SET_VALUE) == ERROR_SUCCESS) {
+    key.ReadValue(kLastWindowsVersion, &last_version);
+    if (last_version == os_version) {
+      return last_version;
+    }
+    base::Version version(base::WideToASCII(last_version));
+    // Verify that last_version has a valid Windows version format, and if not,
+    // return an empty string.
+    if (!version.IsValid() || version.components().size() != 4) {
+      last_version.clear();
+    }
+    key.WriteValue(kLastWindowsVersion, os_version.c_str());
+  }
+  return last_version;
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace installer

@@ -16,8 +16,11 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/cstring_view.h"
 #include "base/time/time.h"
 #include "base/win/windows_types.h"
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/installer/util/lzma_util.h"
 #include "chrome/installer/util/util_constants.h"
 
@@ -175,6 +178,13 @@ void AddUpdateDowngradeVersionItem(HKEY root,
                                    const base::Version& current_version,
                                    const base::Version& new_version,
                                    WorkItemList* list);
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Store the current Windows version in the Windows registry, and return the
+// previously stored last version.
+std::wstring UpdateLastWindowsVersion(base::wcstring_view os_version);
+
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace installer
 

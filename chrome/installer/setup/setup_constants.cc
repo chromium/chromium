@@ -23,6 +23,10 @@ const char kCourgette[] = "courgette";
 const char kBsdiff[] = "bsdiff";
 const char kZucchini[] = "zucchini";
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+const wchar_t kOsUpdateHandlerExe[] = L"os_update_handler.exe";
+#endif
+
 namespace switches {
 
 // Sets the operation to do for the downgrade cleanup. Only the values "revert"

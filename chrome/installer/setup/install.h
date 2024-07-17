@@ -7,9 +7,14 @@
 #ifndef CHROME_INSTALLER_SETUP_INSTALL_H_
 #define CHROME_INSTALLER_SETUP_INSTALL_H_
 
+#include <optional>
+
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/installer/util/util_constants.h"
 
 namespace base {
+class CommandLine;
 class FilePath;
 class Version;
 }  // namespace base
@@ -52,6 +57,15 @@ enum InstallShortcutLevel {
 // supposed to be created, but fails to be.
 bool CreateVisualElementsManifest(const base::FilePath& src_path,
                                   const base::Version& version);
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Returns the command line to run os_update_handler, if the Windows version
+// changed, std::nullopt otherwise. `target_path` is the path to the Chrome
+// install directory.
+std::optional<base::CommandLine> GetOsUpdateHandlerCommand(
+    const base::FilePath& target_path,
+    const std::wstring& installed_version);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 // Overwrites shortcuts (desktop, quick launch, and start menu) if they are
 // present on the system.

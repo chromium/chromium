@@ -49,6 +49,10 @@
 #include "chrome/installer/util/work_item_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "base/win/windows_version.h"
+#endif
+
 // Test that we are parsing Chrome version correctly.
 TEST(SetupUtilTest, GetMaxVersionFromArchiveDirTest) {
   // Create a version dir
@@ -372,6 +376,28 @@ TEST(SetupUtilTest, DeleteDowngradeVersion) {
   ASSERT_TRUE(list->Do());
   ASSERT_FALSE(InstallUtil::GetDowngradeVersion());
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+TEST(SetupUtilTest, UpdateLastWindowsVersion) {
+  registry_util::RegistryOverrideManager registry_override_manager;
+  ASSERT_NO_FATAL_FAILURE(
+      registry_override_manager.OverrideRegistry(HKEY_CURRENT_USER));
+  const auto os_version = base::ASCIIToWide(
+      base::win::OSInfo::GetInstance()->Kernel32BaseVersion().GetString());
+  std::wstring old_version = installer::UpdateLastWindowsVersion(os_version);
+  // Old version starts empty.
+  EXPECT_TRUE(old_version.empty());
+  // Store an invalid version. Chrome would never do that, but we will protect
+  // against using a bad version read from the registry.
+  old_version = installer::UpdateLastWindowsVersion(L"10.0.0");
+  // Now it should be the current os version.
+  EXPECT_EQ(old_version, os_version);
+  old_version = installer::UpdateLastWindowsVersion(L"11.0.0.0");
+  // Since we stored an invalid version before, UpdateLastWindowsVersion will
+  // return an empty string.
+  EXPECT_TRUE(old_version.empty());
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace {
 
