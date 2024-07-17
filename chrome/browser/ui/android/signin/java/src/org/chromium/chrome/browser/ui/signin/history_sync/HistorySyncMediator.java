@@ -108,12 +108,22 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
     }
 
     private void onAcceptClicked(View view) {
-        int syncButtonType =
-                mModel.get(HistorySyncProperties.MINOR_MODE_RESTRICTION_STATUS)
-                                == ScreenMode.RESTRICTED
-                        ? SyncButtonClicked.HISTORY_SYNC_OPT_IN_EQUAL_WEIGHTED
-                        : SyncButtonClicked.HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED;
-        SigninMetricsUtils.logHistorySyncAcceptButtonClicked(mAccessPoint, syncButtonType);
+        int syncButtonType = mModel.get(HistorySyncProperties.MINOR_MODE_RESTRICTION_STATUS);
+
+        switch (syncButtonType) {
+            case ScreenMode.RESTRICTED:
+            case ScreenMode.DEADLINED:
+                SigninMetricsUtils.logHistorySyncAcceptButtonClicked(
+                        mAccessPoint, SyncButtonClicked.HISTORY_SYNC_OPT_IN_EQUAL_WEIGHTED);
+                break;
+            case ScreenMode.UNRESTRICTED:
+                SigninMetricsUtils.logHistorySyncAcceptButtonClicked(
+                        mAccessPoint, SyncButtonClicked.HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED);
+                break;
+            case ScreenMode.UNSUPPORTED:
+            case ScreenMode.PENDING:
+                throw new IllegalStateException("Unrecognized restriction status.");
+        }
 
         mSyncService.setSelectedType(UserSelectableType.HISTORY, /* isTypeOn= */ true);
         mSyncService.setSelectedType(UserSelectableType.TABS, /* isTypeOn= */ true);
@@ -122,13 +132,22 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
     }
 
     private void onDeclineClicked(View view) {
-        @SyncButtonClicked
-        int syncButtonType =
-                mModel.get(HistorySyncProperties.MINOR_MODE_RESTRICTION_STATUS)
-                                == ScreenMode.RESTRICTED
-                        ? SyncButtonClicked.HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED
-                        : SyncButtonClicked.HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED;
-        SigninMetricsUtils.logHistorySyncDeclineButtonClicked(mAccessPoint, syncButtonType);
+        int syncButtonType = mModel.get(HistorySyncProperties.MINOR_MODE_RESTRICTION_STATUS);
+
+        switch (syncButtonType) {
+            case ScreenMode.RESTRICTED:
+            case ScreenMode.DEADLINED:
+                SigninMetricsUtils.logHistorySyncDeclineButtonClicked(
+                        mAccessPoint, SyncButtonClicked.HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED);
+                break;
+            case ScreenMode.UNRESTRICTED:
+                SigninMetricsUtils.logHistorySyncDeclineButtonClicked(
+                        mAccessPoint, SyncButtonClicked.HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED);
+                break;
+            case ScreenMode.UNSUPPORTED:
+            case ScreenMode.PENDING:
+                throw new IllegalStateException("Unrecognized restriction status.");
+        }
 
         if (mShouldSignOutOnDecline) {
             mSigninManager.signOut(
