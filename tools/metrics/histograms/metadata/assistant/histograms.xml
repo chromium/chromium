@@ -141,9 +141,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.OptInFlow.LoadingTimeoutCount" units="timeouts"
-    expires_after="2024-08-13">
-  <owner>updowndota@chromium.org</owner>
-  <owner>croissant-eng@chromium.org</owner>
+    expires_after="2025-08-13">
+  <owner>yawano@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
   <summary>
     Number of times that the loading timeout triggers. The loading timeout is
     set by the Assistant OptIn Flow loading screen, which shows up during the
@@ -195,7 +195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.ServiceReadyTime" units="ms"
-    expires_after="2024-07-21">
+    expires_after="2025-07-21">
   <owner>xiaohuic@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
