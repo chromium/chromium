@@ -6,6 +6,7 @@ from .allow_deleting_browser_history.allow_deleting_browser_history import *
 from .apps_shortcut.apps_shortcut import *
 from .bookmarkbar_enabled.bookmarkbar_enabled import *
 from .cloud_management_enrollment_token.cloud_management_enrollment_token import *
+from .cloud_reporting_enabled.cloud_reporting_enabled import *
 from .default_search_provider.default_search_provider import *
 from .extension_blocklist.extension_blocklist import *
 from .extension_forcelist.extension_forcelist import *

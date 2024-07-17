@@ -11,11 +11,6 @@ from chrome_ent_test.infra.core import category
 from chrome_ent_test.infra.core import environment
 from chrome_ent_test.infra.core import test
 
-FLAGS = flags.FLAGS
-flags.DEFINE_string(
-    'enrollToken', None,
-    'The enrollment token to use, it overwrites the default token')
-
 
 @category("chrome_only")
 @environment(file="../policy_test.asset.textpb")
@@ -30,11 +25,11 @@ class CloudManagementEnrollmentTokenTest(ChromeEnterpriseTestCase):
 
   @test
   def test_browser_enrolled_prod(self):
-    token = FLAGS.enrollToken
-    if token == None:
-      path = "gs://%s/secrets/enrollToken" % self.gsbucket
-      cmd = r'gsutil cat ' + path
-      token = self.RunCommand(self.win_config['dc'], cmd).rstrip().decode()
+    # Domain: chromepizzatest.com / OrgUnit: CBCM-enrollment
+    path = "gs://%s/secrets/enrollToken" % self.gsbucket
+    cmd = r'gsutil cat ' + path
+    token = self.RunCommand(self.win_config['dc'], cmd).rstrip().decode()
+
     self.SetPolicy(self.win_config['dc'], r'CloudManagementEnrollmentToken',
                    token, 'String')
     self.RunCommand(self.win_config['client'], 'gpupdate /force')

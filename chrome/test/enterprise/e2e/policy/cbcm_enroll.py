@@ -36,8 +36,9 @@ def main(argv):
                                 'machine-enrollment-device-id').text
     print("DEVICE_ID=" + device_id.strip())
 
-    ## Upload a report
+    ## Upload a report and wait 5 seconds for the completion
     driver.find_element(By.ID, 'upload-report').click
+    time.sleep(5)
   except Exception as error:
     print(error)
   finally:
