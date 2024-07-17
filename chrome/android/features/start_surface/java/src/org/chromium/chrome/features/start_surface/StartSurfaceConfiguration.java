@@ -30,11 +30,6 @@ public class StartSurfaceConfiguration {
 
     private static final String STARTUP_UMA_PREFIX = "Startup.Android.";
 
-    /** Returns whether a magic stack is enabled on Start surface. */
-    public static boolean useMagicStack() {
-        return ChromeFeatureList.sMagicStackAndroid.isEnabled();
-    }
-
     /** Returns whether logo polish flag is enabled in the given context. */
     public static boolean isLogoPolishEnabled() {
         return ChromeFeatureList.sLogoPolish.isEnabled();

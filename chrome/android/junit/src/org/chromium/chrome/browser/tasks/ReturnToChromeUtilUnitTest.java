@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
+import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -70,7 +71,6 @@ import org.chromium.chrome.browser.tasks.ReturnToChromeUtil.FailToShowHomeSurfac
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtilUnitTest.ShadowHomepagePolicyManager;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.JUnitTestGURLs;
@@ -386,7 +386,7 @@ public class ReturnToChromeUtilUnitTest {
     @SmallTest
     @EnableFeatures({ChromeFeatureList.MAGIC_STACK_ANDROID})
     public void testColdStartupWithOnlyLastActiveTabUrl_MagicStack() {
-        assertTrue(StartSurfaceConfiguration.useMagicStack());
+        assertTrue(HomeModulesMetricsUtils.useMagicStack());
 
         when(mTab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
         when(mNtpTab.isNativePage()).thenReturn(true);

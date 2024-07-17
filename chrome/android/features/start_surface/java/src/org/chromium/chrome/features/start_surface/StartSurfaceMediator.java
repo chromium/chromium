@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.logo.LogoCoordinator;
 import org.chromium.chrome.browser.logo.LogoView;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.magic_stack.HomeModulesCoordinator;
+import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegateHost;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
@@ -201,7 +202,7 @@ class StartSurfaceMediator
             @Nullable BackPressManager backPressManager,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             ObservableSupplier<Profile> profileSupplier) {
-        mUseMagicStack = isStartSurfaceEnabled && StartSurfaceConfiguration.useMagicStack();
+        mUseMagicStack = isStartSurfaceEnabled && HomeModulesMetricsUtils.useMagicStack();
         assert mUseMagicStack;
 
         mTabModelSelector = tabModelSelector;
@@ -904,7 +905,7 @@ class StartSurfaceMediator
 
     @VisibleForTesting
     void setMagicStackVisibility(boolean isVisible) {
-        if (!StartSurfaceConfiguration.useMagicStack()) return;
+        if (!HomeModulesMetricsUtils.useMagicStack()) return;
 
         assert mModuleDelegateCreator != null;
         if (isVisible) {

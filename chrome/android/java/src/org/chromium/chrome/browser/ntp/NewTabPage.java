@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.magic_stack.HomeModulesCoordinator;
+import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegateHost;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
@@ -97,7 +98,6 @@ import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.chrome.browser.xsurface.feed.FeedLaunchReliabilityLogger.SurfaceType;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -651,7 +651,7 @@ public class NewTabPage
         // 3) The home surface NewTabPage which is created at startup. The magic stack will be
         // initialized later since its tracking Tab hasn't been available yet.
         // The launch type of a home surface NTP is TabLaunchType.FROM_STARTUP.
-        if (StartSurfaceConfiguration.useMagicStack()) {
+        if (HomeModulesMetricsUtils.useMagicStack()) {
             mContextMenuStartPosition =
                     ReturnToChromeUtil.calculateContextMenuStartPosition(mActivity.getResources());
             if (isTrackingTabReady) {

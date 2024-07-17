@@ -26,6 +26,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -35,7 +36,6 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
@@ -139,7 +139,7 @@ public class SingleTabSwitcherOnNtpMediator {
 
     private static Size getThumbnailSize(Context context) {
         int resourceId =
-                StartSurfaceConfiguration.useMagicStack()
+                HomeModulesMetricsUtils.useMagicStack()
                         ? R.dimen.single_tab_module_tab_thumbnail_size_big
                         : R.dimen.single_tab_module_tab_thumbnail_size;
         int size = context.getResources().getDimensionPixelSize(resourceId);
@@ -280,7 +280,7 @@ public class SingleTabSwitcherOnNtpMediator {
     }
 
     private static String getDomainUrl(GURL url) {
-        if (StartSurfaceConfiguration.useMagicStack()) {
+        if (HomeModulesMetricsUtils.useMagicStack()) {
             String domainUrl = UrlUtilities.getDomainAndRegistry(url.getSpec(), false);
             return !TextUtils.isEmpty(domainUrl) ? domainUrl : url.getHost();
         } else {

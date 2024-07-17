@@ -79,6 +79,7 @@ import org.chromium.chrome.browser.logo.LogoBridge;
 import org.chromium.chrome.browser.logo.LogoBridgeJni;
 import org.chromium.chrome.browser.logo.LogoView;
 import org.chromium.chrome.browser.magic_stack.HomeModulesCoordinator;
+import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
@@ -550,7 +551,7 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.MAGIC_STACK_ANDROID})
     public void testSetMagicStackVisibility() {
-        assertTrue(StartSurfaceConfiguration.useMagicStack());
+        assertTrue(HomeModulesMetricsUtils.useMagicStack());
         StartSurfaceMediator mediator = createStartSurfaceMediator(/* hadWarmStart= */ false);
         assertNull(mediator.getHomeModulesCoordinatorForTesting());
 

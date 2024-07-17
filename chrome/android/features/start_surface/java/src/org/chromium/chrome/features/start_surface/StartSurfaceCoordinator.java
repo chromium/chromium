@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.magic_stack.HomeModulesCoordinator;
+import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -241,7 +242,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mModuleRegistrySupplier = moduleRegistrySupplier;
 
-        mUseMagicSpace = mIsStartSurfaceEnabled && StartSurfaceConfiguration.useMagicStack();
+        mUseMagicSpace = mIsStartSurfaceEnabled && HomeModulesMetricsUtils.useMagicStack();
         mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
 
         assert mIsStartSurfaceEnabled;

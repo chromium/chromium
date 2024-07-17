@@ -401,6 +401,11 @@ public class HomeModulesMetricsUtils {
                 HISTOGRAM_OS_PREFIX + umaName, moduleType, ModuleType.NUM_ENTRIES);
     }
 
+    /** Returns whether a magic stack is enabled on Start surface. */
+    public static boolean useMagicStack() {
+        return ChromeFeatureList.sMagicStackAndroid.isEnabled();
+    }
+
     // TODO(b/340578084): Clean up all deprecated metrics.
     private static void recordUmaWithPosition(
             @HostSurface int hostSurface,
