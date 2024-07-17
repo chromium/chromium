@@ -1,0 +1,91 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("global_media_controls") {
+  sources = [
+    "cast_media_notification_producer_keyed_service.cc",
+    "cast_media_notification_producer_keyed_service.h",
+    "cast_media_notification_producer_keyed_service_factory.cc",
+    "cast_media_notification_producer_keyed_service_factory.h",
+    "media_item_ui_device_selector_delegate_ash.cc",
+    "media_item_ui_device_selector_delegate_ash.h",
+    "media_notification_provider_impl.cc",
+    "media_notification_provider_impl.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/media/router",
+    "//chrome/browser/media/router:media_router_feature",
+    "//chrome/browser/profiles:profile",
+    "//components/global_media_controls",
+    "//components/keyed_service/core",
+    "//components/user_manager",
+    "//media",
+    "//mojo/public/cpp/bindings",
+    "//services/media_session/public/cpp",
+    "//ui/views",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "global_media_controls_cast_start_browsertest.cc" ]
+
+  deps = [
+    ":global_media_controls",
+    "//ash",
+    "//base/test:test_support",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//components/global_media_controls",
+    "//components/global_media_controls:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/events",
+    "//ui/views",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "media_notification_provider_impl_unittest.cc" ]
+
+  deps = [
+    ":global_media_controls",
+    "//ash",
+    "//ash:test_support",
+    "//base/test:test_support",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/crosapi:test_support",
+    "//chrome/browser/media/router/discovery",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_unit",
+    "//components/global_media_controls",
+    "//components/global_media_controls:test_support",
+    "//components/media_message_center:test_support",
+    "//components/media_router/common",
+    "//content/test:test_support",
+    "//services/media_session/public/cpp",
+    "//services/media_session/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/events",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}

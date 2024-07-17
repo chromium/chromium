@@ -1370,6 +1370,7 @@ static_library("ash") {
     "//chrome/browser/ui/ash/desks",
     "//chrome/browser/ui/ash/device_scheduled_reboot",
     "//chrome/browser/ui/ash/glanceables",
+    "//chrome/browser/ui/ash/global_media_controls",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/webui/ash/cloud_upload:mojo_bindings_shared",
     "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings",
