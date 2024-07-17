@@ -60,6 +60,7 @@
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
 #include "chrome/browser/ash/arc/enterprise/arc_enterprise_reporting_service.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
+#include "chrome/browser/ash/arc/error_notification/arc_error_notification_bridge.h"
 #include "chrome/browser/ash/arc/file_system_watcher/arc_file_system_watcher_service.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map_factory.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
@@ -257,6 +258,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   ArcDigitalGoodsBridge::GetForBrowserContext(profile);
   ArcDiskSpaceBridge::GetForBrowserContext(profile);
   ArcEnterpriseReportingService::GetForBrowserContext(profile);
+  ArcErrorNotificationBridge::GetForBrowserContext(profile);
   ArcFileSystemBridge::GetForBrowserContext(profile);
   ArcFileSystemMounter::GetForBrowserContext(profile);
   ArcFileSystemWatcherService::GetForBrowserContext(profile);
@@ -451,6 +453,7 @@ void ArcServiceLauncher::EnsureFactoriesBuilt() {
   ArcDiskSpaceBridge::EnsureFactoryBuilt();
   ArcDocumentsProviderRootMapFactory::GetInstance();
   ArcEnterpriseReportingService::EnsureFactoryBuilt();
+  ArcErrorNotificationBridge::EnsureFactoryBuilt();
   ArcFileSystemMounter::EnsureFactoryBuilt();
   ArcFileSystemOperationRunner::EnsureFactoryBuilt();
   ArcFileSystemWatcherService::EnsureFactoryBuilt();

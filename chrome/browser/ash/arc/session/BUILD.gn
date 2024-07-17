@@ -48,6 +48,7 @@ static_library("session") {
     "//chrome/browser/ash/arc/boot_phase_monitor",
     "//chrome/browser/ash/arc/enterprise",
     "//chrome/browser/ash/arc/enterprise/cert_store",
+    "//chrome/browser/ash/arc/error_notification",
     "//chrome/browser/ash/arc/extensions",
     "//chrome/browser/ash/arc/file_system_watcher",
     "//chrome/browser/ash/arc/fileapi",
