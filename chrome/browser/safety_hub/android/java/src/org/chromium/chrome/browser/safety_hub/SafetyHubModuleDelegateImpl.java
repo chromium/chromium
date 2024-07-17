@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
+import static org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge.usesSplitStoresAndUPMForLocal;
+
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -21,11 +23,13 @@ import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** An implementation of {@link SafetyHubModuleDelegate} */
 public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
+    private static final int INVALID_PASSWORD_COUNT = -1;
     private final @NonNull Profile mProfile;
     private final @NonNull Supplier<ModalDialogManager> mModalDialogManagerSupplier;
 
@@ -93,7 +97,16 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
     }
 
     @Override
-    public int getAccountPasswordsCount() {
-        return new PasswordStoreBridge(mProfile).getPasswordStoreCredentialsCountForAccountStore();
+    public int getAccountPasswordsCount(PasswordStoreBridge passwordStoreBridge) {
+        PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(mProfile);
+        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
+        if (!PasswordManagerHelper.hasChosenToSyncPasswords(syncService)
+                || !passwordManagerHelper.canUseUpm()) return INVALID_PASSWORD_COUNT;
+
+        if (usesSplitStoresAndUPMForLocal(UserPrefs.get(mProfile))) {
+            return passwordStoreBridge.getPasswordStoreCredentialsCountForAccountStore();
+        }
+        // If using split stores is disabled, all passwords reside in the profile store.
+        return passwordStoreBridge.getPasswordStoreCredentialsCountForProfileStore();
     }
 }

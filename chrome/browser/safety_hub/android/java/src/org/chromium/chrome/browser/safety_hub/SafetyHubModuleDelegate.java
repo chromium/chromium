@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
+import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 
 /** A delegate for Safety Hub to handle UI related behaviour. */
@@ -52,7 +53,8 @@ public interface SafetyHubModuleDelegate {
     boolean isSafeBrowsingManaged();
 
     /**
+     * @param passwordStoreBridge Provides access to stored passwords.
      * @return the total passwords count for Account-level passwords.
      */
-    int getAccountPasswordsCount();
+    int getAccountPasswordsCount(PasswordStoreBridge passwordStoreBridge);
 }

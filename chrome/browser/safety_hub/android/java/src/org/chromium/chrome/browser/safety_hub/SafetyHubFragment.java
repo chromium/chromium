@@ -18,6 +18,8 @@ import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
+import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
+import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
@@ -39,7 +41,8 @@ import java.util.List;
 public class SafetyHubFragment extends SafetyHubBaseFragment
         implements UnusedSitePermissionsBridge.Observer,
                 NotificationPermissionReviewBridge.Observer,
-                SafetyHubFetchService.Observer {
+                SafetyHubFetchService.Observer,
+                PasswordStoreBridge.PasswordStoreObserver {
     /**
      * Functional interface to start a Chrome Custom Tab for the given intent, e.g. by using {@link
      * org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent}.
@@ -87,6 +90,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     private PropertyModel mNotificationsModel;
     private PropertyModel mBrowserStateModule;
     private CustomTabIntentHelper mCustomTabIntentHelper;
+    private PasswordStoreBridge mPasswordStoreBridge;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
@@ -98,6 +102,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 NotificationPermissionReviewBridge.getForProfile(getProfile());
         mSafetyHubFetchService = SafetyHubFetchServiceFactory.getForProfile(getProfile());
         mSafetyHubFetchService.addObserver(this);
+        mPasswordStoreBridge = new PasswordStoreBridge(getProfile());
+        mPasswordStoreBridge.addObserver(this, true);
 
         setUpAccountPasswordCheckModule();
         setUpUpdateCheckModule();
@@ -113,7 +119,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         CardPreference browserStatePreference = findPreference(PREF_BROWSER_STATE_INDICATOR);
         int compromisedPasswordsCount =
                 UserPrefs.get(getProfile()).getInteger(Pref.BREACHED_CREDENTIALS_COUNT);
-        int totalPasswordsCount = mDelegate.getAccountPasswordsCount();
+        int totalPasswordsCount = mDelegate.getAccountPasswordsCount(mPasswordStoreBridge);
         int sitesWithUnusedPermissionsCount =
                 mUnusedSitePermissionsBridge.getRevokedPermissions().length;
         int notificationPermissionsForReviewCount =
@@ -411,6 +417,14 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         updateUpdateCheckPreference();
     }
 
+    @Override
+    public void onSavedPasswordsChanged(int count) {
+        updatePasswordCheckPreference();
+    }
+
+    @Override
+    public void onEdit(PasswordStoreCredential credential) {}
+
     public void setDelegate(SafetyHubModuleDelegate safetyHubModuleDelegate) {
         mDelegate = safetyHubModuleDelegate;
     }
@@ -449,7 +463,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     private void updatePasswordCheckPreference() {
         int compromisedPasswordsCount =
                 UserPrefs.get(getProfile()).getInteger(Pref.BREACHED_CREDENTIALS_COUNT);
-        int totalPasswordsCount = mDelegate.getAccountPasswordsCount();
+        int totalPasswordsCount = mDelegate.getAccountPasswordsCount(mPasswordStoreBridge);
         boolean disabledByPolicy =
                 UserPrefs.get(getProfile()).isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE);
 
