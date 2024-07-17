@@ -242,10 +242,20 @@
         aria-label="$i18n{tooltipRotateCCW}" title="$i18n{tooltipRotateCCW}"
         on-click="onRotateClick_">
     </cr-icon-button>
+<if expr="enable_pdf_ink2">
+    <template is="dom-if" if="[[showInk2AnnotationButton_]]">
+      <span class="vertical-separator"></span>
+      <cr-icon-button id="annotate" iron-icon="cr:create"
+          on-click="onAnnotationClick_"
+          aria-label="$i18n{tooltipAnnotate}"
+          disabled="[[!annotationsAvailable]]"
+          title="$i18n{tooltipAnnotate}"></cr-icon-button>
+    </template>
+</if>
   </div>
   <div id="end">
-  <if expr="enable_ink or enable_pdf_ink2">
-    <template is="dom-if" if="[[pdfAnnotationsEnabled]]">
+  <if expr="enable_ink">
+    <template is="dom-if" if="[[showInkAnnotationButton_]]">
       <cr-icon-button id="annotate" iron-icon="cr:create"
           on-click="onAnnotationClick_"
           aria-label="$i18n{tooltipAnnotate}"

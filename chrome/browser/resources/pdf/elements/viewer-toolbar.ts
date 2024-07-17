@@ -134,6 +134,24 @@ export class ViewerToolbarElement extends PolymerElement {
         type: Boolean,
         value: false,
       },
+
+      showInkAnnotationButton_: {
+        type: Boolean,
+        computed: 'computeShowInkAnnotationButton_(' +
+            'pdfAnnotationsEnabled' +
+            // <if expr="enable_pdf_ink2">
+            ', pdfInk2Enabled' +
+            // </if> enable_pdf_ink2
+            ')',
+      },
+      // </if> enable_ink
+
+      // <if expr="enable_pdf_ink2">
+      showInk2AnnotationButton_: {
+        type: Boolean,
+        computed: 'computeShowInk2AnnotationButton_(' +
+            'pdfAnnotationsEnabled, pdfInk2Enabled)',
+      },
       // </if>
 
       // <if expr="enable_ink or enable_pdf_ink2">
@@ -215,6 +233,25 @@ export class ViewerToolbarElement extends PolymerElement {
   private viewportZoomPercentChanged_() {
     this.getZoomInput_().value = `${this.viewportZoomPercent_}%`;
   }
+
+  // <if expr="enable_ink">
+  private computeShowInkAnnotationButton_(): boolean {
+    // <if expr="enable_pdf_ink2">
+    if (this.pdfInk2Enabled) {
+      return false;
+    }
+    // </if> enable_pdf_ink2
+
+    return this.pdfAnnotationsEnabled;
+  }
+  // </if> enable_ink
+
+
+  // <if expr="enable_pdf_ink2">
+  private computeShowInk2AnnotationButton_(): boolean {
+    return this.pdfInk2Enabled && this.pdfAnnotationsEnabled;
+  }
+  // </if>
 
   // <if expr="enable_ink or enable_pdf_ink2">
   private computeShowAnnotationsBar_(): boolean {
