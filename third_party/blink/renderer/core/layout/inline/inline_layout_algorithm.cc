@@ -1454,7 +1454,8 @@ PositionedFloat InlineLayoutAlgorithm::PositionFloat(
       /* break_token */ nullptr, space.AvailableSize(),
       space.PercentageResolutionSize(),
       space.ReplacedPercentageResolutionSize(), origin_bfc_offset, space,
-      Style(), space.FragmentainerBlockSize(), is_hidden_for_paint);
+      Style(), space.FragmentainerBlockSize(), space.FragmentainerOffset(),
+      is_hidden_for_paint);
 
   PositionedFloat positioned_float =
       ::blink::PositionFloat(&unpositioned_float, exclusion_space);

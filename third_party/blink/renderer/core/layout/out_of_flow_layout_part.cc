@@ -2438,7 +2438,8 @@ const LayoutResult* OutOfFlowLayoutPart::GenerateFragment(
       //
       // See https://github.com/w3c/csswg-drafts/issues/10553
       SetupSpaceBuilderForFragmentation(
-          *fragmentainer_constraint_space, node, block_offset,
+          *fragmentainer_constraint_space, node,
+          fragmentainer_constraint_space->FragmentainerOffset() + block_offset,
           fragmentainer_constraint_space->FragmentainerBlockSize(),
           node_info.requires_content_before_breaking, &builder);
 
@@ -2464,7 +2465,8 @@ const LayoutResult* OutOfFlowLayoutPart::GenerateFragment(
     }
   } else if (container_builder_->IsInitialColumnBalancingPass()) {
     SetupSpaceBuilderForFragmentation(
-        GetConstraintSpace(), node, block_offset,
+        GetConstraintSpace(), node,
+        GetConstraintSpace().FragmentainerOffset() + block_offset,
         GetConstraintSpace().FragmentainerBlockSize(),
         /*requires_content_before_breaking=*/false, &builder);
   }

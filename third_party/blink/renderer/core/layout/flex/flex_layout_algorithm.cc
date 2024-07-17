@@ -1800,7 +1800,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
       }
       break_status = BreakBeforeChildIfNeeded(
           flex_item->ng_input_node, *layout_result,
-          GetConstraintSpace().FragmentainerOffset() + offset.block_offset,
+          FragmentainerOffsetForChildren() + offset.block_offset,
           has_container_separation, !is_column_, current_column_break_info);
 
       if (current_column_break_info) {
@@ -2280,7 +2280,7 @@ BreakStatus FlexLayoutAlgorithm::BreakBeforeRowIfNeeded(
   DCHECK(InvolvedInBlockFragmentation(container_builder_));
 
   LayoutUnit fragmentainer_block_offset =
-      GetConstraintSpace().FragmentainerOffset() + row_block_offset;
+      FragmentainerOffsetForChildren() + row_block_offset;
   LayoutUnit fragmentainer_block_size = FragmentainerCapacityForChildren();
 
   if (has_container_separation) {

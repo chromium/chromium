@@ -297,7 +297,7 @@ LogicalOffset GetFragmentainerProgression(const BoxFragmentBuilder& builder,
 
 void SetupSpaceBuilderForFragmentation(const ConstraintSpace& parent_space,
                                        const LayoutInputNode& child,
-                                       LayoutUnit fragmentainer_offset_delta,
+                                       LayoutUnit fragmentainer_offset,
                                        LayoutUnit fragmentainer_block_size,
                                        bool requires_content_before_breaking,
                                        ConstraintSpaceBuilder* builder) {
@@ -316,8 +316,6 @@ void SetupSpaceBuilderForFragmentation(const ConstraintSpace& parent_space,
   }
 
   builder->SetFragmentainerBlockSize(fragmentainer_block_size);
-  LayoutUnit fragmentainer_offset =
-      parent_space.FragmentainerOffset() + fragmentainer_offset_delta;
   builder->SetFragmentainerOffset(fragmentainer_offset);
   if (fragmentainer_offset <= LayoutUnit())
     builder->SetIsAtFragmentainerStart();
@@ -359,31 +357,14 @@ void SetupSpaceBuilderForFragmentation(
     const LayoutInputNode& child,
     LayoutUnit fragmentainer_offset_delta,
     ConstraintSpaceBuilder* builder) {
-  const ConstraintSpace& parent_space =
-      parent_fragment_builder.GetConstraintSpace();
-  LayoutUnit fragmentainer_block_size = parent_space.FragmentainerBlockSize();
-  if (parent_fragment_builder.ShouldCloneBoxEndDecorations() &&
-      parent_space.HasKnownFragmentainerBlockSize()) {
-    // Having cloned box decorations on a parent effectively shrinks the
-    // fragmentainer space available to descendants.
-    fragmentainer_block_size -=
-        parent_fragment_builder.BorderScrollbarPadding().BlockSum();
-
-    // Adjust the fragmentainer offset, so that any child inside that's at the
-    // block-start content edge is seen as offset 0, which helps the
-    // fragmentainer machinery to not insert a break right after another break,
-    // before there has been some content progress. This fragmentainer offset
-    // isn't used to position things in layout, but only to determine whether
-    // we're at the beginning of a fragmentainer, and by the layout cache (so
-    // that we miss if a fragmented box got its offset changed), so adjusting it
-    // like this should be fine.
-    fragmentainer_offset_delta -=
-        parent_fragment_builder.BorderScrollbarPadding().block_start;
-  }
-
+  LayoutUnit fragmentainer_block_size =
+      FragmentainerCapacity(parent_fragment_builder, /*is_for_children=*/true);
+  LayoutUnit fragmentainer_block_offset =
+      FragmentainerOffset(parent_fragment_builder, /*is_for_children=*/true) +
+      fragmentainer_offset_delta;
   return SetupSpaceBuilderForFragmentation(
       parent_fragment_builder.GetConstraintSpace(), child,
-      fragmentainer_offset_delta, fragmentainer_block_size,
+      fragmentainer_block_offset, fragmentainer_block_size,
       parent_fragment_builder.RequiresContentBeforeBreaking(), builder);
 }
 
@@ -470,9 +451,8 @@ void SetupFragmentBuilderForFragmentation(
       // incorrectly seems to be enough to contain the remaining fragment when
       // subtracting previously consumed block-size from its max size.
       if (max_block_size != LayoutUnit::Max()) {
-        // TODO(mstensho): is_for_children should be false.
         LayoutUnit space_left =
-            FragmentainerSpaceLeft(*builder, /*is_for_children=*/true);
+            FragmentainerSpaceLeft(*builder, /*is_for_children=*/false);
         LayoutUnit previously_consumed_block_size;
         if (previous_break_token) {
           previously_consumed_block_size =

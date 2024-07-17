@@ -1518,7 +1518,7 @@ void BlockLayoutAlgorithm::HandleFloat(
       child, child_break_token, ChildAvailableSize(), child_percentage_size_,
       replaced_child_percentage_size_, origin_bfc_offset, constraint_space,
       Style(), FragmentainerCapacityForChildren(),
-      line_clamp_data_.ShouldHideForPaint());
+      FragmentainerOffsetForChildren(), line_clamp_data_.ShouldHideForPaint());
 
   if (!container_builder_.BfcBlockOffset()) {
     container_builder_.AddAdjoiningObjectTypes(
@@ -2803,7 +2803,7 @@ BreakStatus BlockLayoutAlgorithm::BreakBeforeChildIfNeeded(
   DCHECK(container_builder_.BfcBlockOffset());
 
   LayoutUnit fragmentainer_block_offset =
-      FragmentainerOffsetAtBfc(GetConstraintSpace()) + bfc_block_offset -
+      FragmentainerOffsetAtBfc(container_builder_) + bfc_block_offset -
       layout_result.AnnotationBlockOffsetAdjustment();
 
   if (has_container_separation) {

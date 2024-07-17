@@ -80,7 +80,8 @@ ConstraintSpace CreateConstraintSpaceForFloat(
     DCHECK_EQ(style.GetWritingMode(), parent_space.GetWritingMode());
 
     SetupSpaceBuilderForFragmentation(
-        parent_space, unpositioned_float.node, *origin_block_offset,
+        parent_space, unpositioned_float.node,
+        unpositioned_float.fragmentainer_block_offset + *origin_block_offset,
         unpositioned_float.fragmentainer_block_size,
         /*requires_content_before_breaking=*/false, &builder);
 
@@ -88,8 +89,9 @@ ConstraintSpace CreateConstraintSpaceForFloat(
     // is at the fragmentainer start, but for floats, it's the block start
     // *margin* edge, since float margins are unbreakable and are never
     // truncated.
-    LayoutUnit margin_edge_offset = parent_space.FragmentainerOffset() +
-                                    *origin_block_offset - margins->block_start;
+    LayoutUnit margin_edge_offset =
+        unpositioned_float.fragmentainer_block_offset + *origin_block_offset -
+        margins->block_start;
     if (margin_edge_offset <= LayoutUnit())
       builder.SetIsAtFragmentainerStart();
   } else {
@@ -337,7 +339,7 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
     // behavior is currently unspecified.
     if (!is_at_fragmentainer_start) {
       LayoutUnit fragmentainer_block_offset =
-          FragmentainerOffsetAtBfc(parent_space) +
+          unpositioned_float->FragmentainerOffsetAtBfc() +
           opportunity.rect.start_offset.block_offset +
           fragment_margins.block_start;
       const auto* break_token = To<BlockBreakToken>(
@@ -397,10 +399,9 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
   if (need_break_before) {
     // Create a special exclusion past everything, so that the container(s) may
     // grow to encompass the floats, if appropriate.
-    BfcOffset past_everything(
-        LayoutUnit(),
-        FragmentainerSpaceLeft(parent_space, fragmentainer_block_size) +
-            parent_space.ExpectedBfcBlockOffset());
+    BfcOffset past_everything(LayoutUnit(),
+                              unpositioned_float->FragmentainerSpaceLeft() +
+                                  parent_space.ExpectedBfcBlockOffset());
     const ExclusionArea* exclusion = ExclusionArea::Create(
         BfcRect(past_everything, past_everything), float_type,
         unpositioned_float->is_hidden_for_paint);
@@ -445,7 +446,7 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
     if (parent_space.HasKnownFragmentainerBlockSize() &&
         parent_space.BlockFragmentationType() == kFragmentColumn) {
       LayoutUnit fragmentainer_block_offset =
-          FragmentainerOffsetAtBfc(parent_space) +
+          unpositioned_float->FragmentainerOffsetAtBfc() +
           float_bfc_offset.block_offset;
       minimum_space_shortage = CalculateSpaceShortage(
           parent_space, layout_result, fragmentainer_block_offset,

@@ -3687,7 +3687,8 @@ void LineBreaker::HandleFloat(const InlineItem& item,
       constraint_space_.ReplacedPercentageResolutionSize(),
       {constraint_space_.GetBfcOffset().line_offset, bfc_block_offset},
       constraint_space_, node_.Style(),
-      constraint_space_.FragmentainerBlockSize(), is_hidden_for_paint);
+      constraint_space_.FragmentainerBlockSize(),
+      constraint_space_.FragmentainerOffset(), is_hidden_for_paint);
 
   bool float_after_line =
       ShouldPushFloatAfterLine(&unpositioned_float, line_info);

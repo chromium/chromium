@@ -419,9 +419,9 @@ class CORE_EXPORT ConstraintSpace final {
   // fragmentainer, we'll return the block-offset relative to the current
   // fragmentainer.
   LayoutUnit FragmentainerOffset() const {
-    DCHECK(HasBlockFragmentation());
-    if (HasRareData())
+    if (HasRareData() && HasBlockFragmentation()) {
       return rare_data_->fragmentainer_offset;
+    }
     return LayoutUnit();
   }
 

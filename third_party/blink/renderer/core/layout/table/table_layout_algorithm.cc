@@ -81,7 +81,8 @@ ConstraintSpace CreateCaptionConstraintSpace(
   // of overflow clipping.
   if (block_offset && table_constraint_space.HasBlockFragmentation()) {
     SetupSpaceBuilderForFragmentation(
-        table_constraint_space, caption, *block_offset,
+        table_constraint_space, caption,
+        table_constraint_space.FragmentainerOffset() + *block_offset,
         table_constraint_space.FragmentainerBlockSize(),
         /*requires_content_before_breaking=*/false, &builder);
   }
@@ -1376,7 +1377,7 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
     if (constraint_space.HasBlockFragmentation() &&
         (!child_break_token || !is_repeated_section)) {
       LayoutUnit fragmentainer_block_offset =
-          constraint_space.FragmentainerOffset() + child_block_start_margin +
+          FragmentainerOffsetForChildren() + child_block_start_margin +
           child_block_offset - repeated_header_block_size;
       BreakStatus break_status = BreakBeforeChildIfNeeded(
           child, *child_result, fragmentainer_block_offset,
@@ -1523,7 +1524,7 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
       // out of space before a repeatable footer. So insert a break if
       // necessary.
       LayoutUnit fragmentainer_block_offset =
-          constraint_space.FragmentainerOffset() + offset.block_offset;
+          FragmentainerOffsetForChildren() + offset.block_offset;
       break_status = BreakBeforeChildIfNeeded(grouped_children.footer, *result,
                                               fragmentainer_block_offset,
                                               has_container_separation);

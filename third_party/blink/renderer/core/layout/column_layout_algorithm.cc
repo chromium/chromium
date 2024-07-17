@@ -996,7 +996,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
       row_offset > LayoutUnit()) {
     // If we have container separation, breaking before this row is fine.
     LayoutUnit fragmentainer_block_offset =
-        GetConstraintSpace().FragmentainerOffset() + row_offset;
+        FragmentainerOffsetForChildren() + row_offset;
     // TODO(layout-dev): Consider adjusting break appeal based on the preceding
     // column spanner (if any), e.g. if it has break-after:avoid, so that we can
     // support early-breaks.
@@ -1094,7 +1094,7 @@ BreakStatus ColumnLayoutAlgorithm::LayoutSpanner(
     // point, and determine whether we should break.
 
     LayoutUnit fragmentainer_block_offset =
-        GetConstraintSpace().FragmentainerOffset() + block_offset;
+        FragmentainerOffsetForChildren() + block_offset;
 
     BreakStatus break_status = BreakBeforeChildIfNeeded(
         spanner_node, *result, fragmentainer_block_offset,

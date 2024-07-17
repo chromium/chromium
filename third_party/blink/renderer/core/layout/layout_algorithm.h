@@ -150,6 +150,10 @@ class CORE_EXPORT LayoutAlgorithm {
     return FragmentainerCapacity(container_builder_, /*is_for_children=*/true);
   }
 
+  LayoutUnit FragmentainerOffsetForChildren() const {
+    return FragmentainerOffset(container_builder_, /*is_for_children=*/true);
+  }
+
   LayoutUnit FragmentainerSpaceLeftForChildren() const {
     return FragmentainerSpaceLeft(container_builder_, /*is_for_children=*/true);
   }

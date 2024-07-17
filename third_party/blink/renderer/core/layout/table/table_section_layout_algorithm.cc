@@ -88,7 +88,7 @@ const LayoutResult* TableSectionLayoutAlgorithm::Layout() {
 
     if (constraint_space.HasBlockFragmentation()) {
       LayoutUnit fragmentainer_block_offset =
-          constraint_space.FragmentainerOffset() + offset.block_offset;
+          FragmentainerOffsetForChildren() + offset.block_offset;
       BreakStatus break_status =
           BreakBeforeChildIfNeeded(row, *row_result, fragmentainer_block_offset,
                                    !is_first_non_collapsed_row);
