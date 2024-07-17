@@ -1,0 +1,24 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+    test(() => assert_selection(
+        [
+            '<div contenteditable>',
+                '<h1>',
+                    '<span style="background-color:red;">Back|</span>',
+                '</h1>',
+                '<h1>',
+                    '<span style="background-color:red;">space</span>',
+                '</h1>',
+            '</div>',
+        ].join(''),
+        'ForwardDelete',
+        [
+            '<div contenteditable>',
+                '<h1><span style="background-color:red;">Back|</span><span style="background-color: red;">space</span></h1>',
+            '</div>',
+        ].join('')),
+        'Pressing Forward Delete does not preserve the span style.');
+</script>

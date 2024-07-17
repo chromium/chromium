@@ -74,6 +74,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -889,14 +890,28 @@ static bool FollowBlockElementStyle(const Node* node) {
     return false;
   }
 
-  return IsListItem(node) || IsTableCell(node) ||
-         element->HasTagName(html_names::kPreTag) ||
-         element->HasTagName(html_names::kH1Tag) ||
-         element->HasTagName(html_names::kH2Tag) ||
-         element->HasTagName(html_names::kH3Tag) ||
-         element->HasTagName(html_names::kH4Tag) ||
-         element->HasTagName(html_names::kH5Tag) ||
-         element->HasTagName(html_names::kH6Tag);
+  bool should_follow_block_element_style =
+  // TODO(https://crbug.com/352610616): Investigate preserving styles within
+  // list elements in block merge scenarios.
+      IsListItem(node) ||
+
+      IsTableCell(node) ||
+
+  // TODO(https://crbug.com/352038138): Investigate preserving styles within
+  // pre elements in block merge scenarios.
+      element->HasTagName(html_names::kPreTag);
+  if (RuntimeEnabledFeatures::
+          PreserveFollowingBlockStylesDuringBlockMergeEnabled()) {
+    return should_follow_block_element_style;
+  } else {
+    return should_follow_block_element_style ||
+           element->HasTagName(html_names::kH1Tag) ||
+           element->HasTagName(html_names::kH2Tag) ||
+           element->HasTagName(html_names::kH3Tag) ||
+           element->HasTagName(html_names::kH4Tag) ||
+           element->HasTagName(html_names::kH5Tag) ||
+           element->HasTagName(html_names::kH6Tag);
+  }
 }
 
 // Remove style spans before insertion if they are unnecessary.  It's faster

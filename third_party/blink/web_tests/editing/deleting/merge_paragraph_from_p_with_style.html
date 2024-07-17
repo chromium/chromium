@@ -56,7 +56,8 @@ test(() =>assert_selection(
         'delete',
         [
             '<div contenteditable style="color: red;">',
-                '<h1>foo|bar</h1>',
+                // Correct expectation would be retaining style for span element.
+                '<h1>foo|<span style="color: green;">bar</span></h1>',
             '</div>',
         ].join('')),
         '3 deleting line break before P+FONT+style');
