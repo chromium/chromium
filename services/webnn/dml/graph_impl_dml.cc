@@ -5391,6 +5391,14 @@ void GraphImplDml::OnCompilationComplete(
     ComputeResourceInfo compute_resource_info,
     ComPtr<IDMLCompiledOperator> compiled_operator) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::OnCompilationComplete");
+
+  if (!context) {
+    std::move(callback).Run(base::unexpected(CreateError(
+        mojom::Error::Code::kUnknownError,
+        "Failed to create graph because the context was destroyed.")));
+    return;
+  }
+
   if (!compiled_operator) {
     std::move(callback).Run(base::unexpected(CreateError(
         mojom::Error::Code::kUnknownError, "Failed to compile the graph.")));
@@ -5604,6 +5612,14 @@ void GraphImplDml::OnInitializationComplete(
     WebNNContextImpl::CreateGraphImplCallback callback,
     HRESULT hr) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::OnInitializationComplete");
+
+  if (!context) {
+    std::move(callback).Run(base::unexpected(CreateError(
+        mojom::Error::Code::kUnknownError,
+        "Failed to create graph because the context was destroyed.")));
+    return;
+  }
+
   if (FAILED(hr)) {
     HandleGraphCreationFailure(
         "Failed to wait for the initialization to complete.",
@@ -5638,13 +5654,6 @@ void GraphImplDml::OnInitializationComplete(
     HandleGraphCreationFailure(
         "Failed to record commands and bind resources for execution.",
         std::move(callback), context.get(), hr);
-    return;
-  }
-
-  if (!context) {
-    std::move(callback).Run(base::unexpected(CreateError(
-        mojom::Error::Code::kUnknownError,
-        "Failed to create graph because the context was destroyed.")));
     return;
   }
 
