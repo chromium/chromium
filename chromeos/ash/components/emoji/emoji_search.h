@@ -52,8 +52,6 @@ class EmojiSearch {
 
   // A mapping of emojis, emoticons, and symbols to their names in English.
   std::map<std::string, std::string, std::less<>> names_;
-
-  std::optional<std::string> curr_language_code_;
 };
 
 }  // namespace emoji
