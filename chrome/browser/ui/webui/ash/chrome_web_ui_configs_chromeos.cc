@@ -84,7 +84,6 @@
 #include "chrome/browser/ui/webui/ash/enterprise_reporting/enterprise_reporting_ui.h"
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_ui.h"
 #include "chrome/browser/ui/webui/ash/healthd_internals/healthd_internals_ui.h"
-#include "chrome/browser/ui/webui/ash/human_presence_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_ui.h"
 #include "chrome/browser/ui/webui/ash/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/ash/internet_detail_dialog.h"
@@ -273,7 +272,6 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(
       MakeComponentConfigWithDelegate<HelpAppUIConfig, HelpAppUI,
                                       ChromeHelpAppUIDelegate>());
-  map.AddWebUIConfig(std::make_unique<HumanPresenceInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<InternetConfigDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<InternetDetailDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<KerberosInBrowserUIConfig>());

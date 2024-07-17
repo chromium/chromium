@@ -1052,7 +1052,6 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
     GURL(chrome::kChromeUIFirmwareUpdaterAppURL),
     GURL(chrome::kChromeUIFocusModeMediaURL),
     GURL(chrome::kChromeUIHealthdInternalsURL),
-    GURL(chrome::kChromeUIHumanPresenceInternalsURL),
     GURL(chrome::kChromeUIInternetConfigDialogURL),
     GURL(chrome::kChromeUIInternetDetailDialogURL),
     GURL(chrome::kChromeUILauncherInternalsURL),

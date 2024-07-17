@@ -3650,7 +3650,6 @@ if (!is_android) {
         "//chrome/test/data/webui/chromeos:browser_tests_js_mojo_lite_webui",
         "//chrome/test/data/webui/chromeos:browser_tests_js_mojo_webui",
         "//chrome/test/data/webui/chromeos:browser_tests_js_webui",
-        "//chromeos/ash/components/human_presence:browser_tests_js",
       ]
 
       data += js2gtest_js_libraries

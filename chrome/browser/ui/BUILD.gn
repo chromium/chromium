@@ -2745,8 +2745,6 @@ static_library("ui") {
       "webui/ash/healthd_internals/healthd_internals_message_handler.h",
       "webui/ash/healthd_internals/healthd_internals_ui.cc",
       "webui/ash/healthd_internals/healthd_internals_ui.h",
-      "webui/ash/human_presence_internals_ui.cc",
-      "webui/ash/human_presence_internals_ui.h",
       "webui/ash/image_source.cc",
       "webui/ash/image_source.h",
       "webui/ash/in_session_password_change/confirm_password_change_handler.cc",
