@@ -46,7 +46,6 @@ struct AnnotationBrushMessageParams {
   int color_r;
   int color_g;
   int color_b;
-  double size;
 };
 
 // Constants to support a layout of 2 pages, arranged vertically with a small
@@ -172,20 +171,20 @@ class PdfInkModuleTest : public testing::Test {
  protected:
   base::Value::Dict CreateSetAnnotationBrushMessage(
       const std::string& type,
+      double size,
       const AnnotationBrushMessageParams* params) {
     base::Value::Dict message;
     message.Set("type", "setAnnotationBrush");
 
     base::Value::Dict data;
     data.Set("type", type);
+    data.Set("size", size);
     if (params) {
       base::Value::Dict color;
       color.Set("r", params->color_r);
       color.Set("g", params->color_g);
       color.Set("b", params->color_b);
       data.Set("color", std::move(color));
-
-      data.Set("size", params->size);
     }
     message.Set("data", std::move(data));
     return message;
@@ -225,11 +224,13 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageEraser) {
   EXPECT_EQ(true, ink_module().enabled());
 
   base::Value::Dict message =
-      CreateSetAnnotationBrushMessage("eraser", nullptr);
+      CreateSetAnnotationBrushMessage("eraser", /*size=*/2.5, nullptr);
   EXPECT_TRUE(ink_module().OnMessage(message));
 
   const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
   EXPECT_FALSE(brush);
+  std::optional<float> eraser = ink_module().GetEraserSizeForTesting();
+  EXPECT_THAT(eraser, testing::Optional(2.5f));
 }
 
 // Verify that a set pen message sets the annotation brush to a pen, with the
@@ -239,9 +240,9 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessagePen) {
   EXPECT_EQ(true, ink_module().enabled());
 
   AnnotationBrushMessageParams message_params{/*color_r=*/10, /*color_g=*/255,
-                                              /*color_b=*/50, /*size=*/8.0f};
+                                              /*color_b=*/50};
   base::Value::Dict message =
-      CreateSetAnnotationBrushMessage("pen", &message_params);
+      CreateSetAnnotationBrushMessage("pen", /*size=*/8.0, &message_params);
   EXPECT_TRUE(ink_module().OnMessage(message));
 
   const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
@@ -260,9 +261,9 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
   EXPECT_EQ(true, ink_module().enabled());
 
   AnnotationBrushMessageParams message_params{/*color_r=*/240, /*color_g=*/133,
-                                              /*color_b=*/0, /*size=*/4.5f};
-  base::Value::Dict message =
-      CreateSetAnnotationBrushMessage("highlighter", &message_params);
+                                              /*color_b=*/0};
+  base::Value::Dict message = CreateSetAnnotationBrushMessage(
+      "highlighter", /*size=*/4.5, &message_params);
   EXPECT_TRUE(ink_module().OnMessage(message));
 
   const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
@@ -281,9 +282,9 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageColorZero) {
   EXPECT_EQ(true, ink_module().enabled());
 
   AnnotationBrushMessageParams message_params{/*color_r=*/0, /*color_g=*/0,
-                                              /*color_b=*/0, /*size=*/4.5f};
+                                              /*color_b=*/0};
   base::Value::Dict message =
-      CreateSetAnnotationBrushMessage("pen", &message_params);
+      CreateSetAnnotationBrushMessage("pen", /*size=*/4.5, &message_params);
   EXPECT_TRUE(ink_module().OnMessage(message));
 
   const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
@@ -364,8 +365,9 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
   }
 
   void SelectEraserTool() {
+    // TODO(crbug.com/352720912): Test multiple eraser sizes.
     EXPECT_TRUE(ink_module().OnMessage(
-        CreateSetAnnotationBrushMessage("eraser", nullptr)));
+        CreateSetAnnotationBrushMessage("eraser", /*size=*/3.0, nullptr)));
   }
 
   PdfInkModule::DocumentStrokeInputPointsMap StrokeInputPositions() const {
@@ -592,7 +594,7 @@ TEST_F(PdfInkModuleStrokeTest, EraseStroke) {
       kMouseDownPoint, base::span_from_ref(kMouseDownPoint), kMouseDownPoint);
 
   // Now there are no visible strokes left.
-  // TODO(crbug.com/339682315): Update the test expectations when the Ink
+  // TODO(crbug.com/352720912): Update the test expectations when the Ink
   // library is no longer just a stub.
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   // Erasing counts as another stroke action.

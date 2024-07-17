@@ -110,8 +110,13 @@ class PdfInkModule {
   // Returns whether the message was handled or not.
   bool OnMessage(const base::Value::Dict& message);
 
-  // For testing only. Returns the current `PdfInkBrush` used to draw strokes.
+  // For testing only. Returns the current `PdfInkBrush` used to draw strokes,
+  // or nullptr if there is no brush.
   const PdfInkBrush* GetPdfInkBrushForTesting() const;
+
+  // For testing only. Returns the current eraser size, or nullopt if the
+  // eraser is not in use.
+  std::optional<float> GetEraserSizeForTesting() const;
 
   // For testing only. Returns the (visible) input positions used for all
   // strokes in the document.
@@ -201,6 +206,7 @@ class PdfInkModule {
   struct EraserState {
     bool erasing = false;
     bool did_erase_strokes = false;
+    float eraser_size = 0;
   };
 
   // Returns whether the event was handled or not.

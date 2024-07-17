@@ -103,6 +103,11 @@ gfx::Rect InkRectToEnclosingGfxRect(const InkRect& rect) {
   return gfx::ToEnclosingRect(gfx::RectF(x, y, width, height));
 }
 
+void CheckToolSizeIsInRange(float size) {
+  CHECK_GE(size, 1);
+  CHECK_LE(size, 16);
+}
+
 }  // namespace
 
 PdfInkModule::PdfInkModule(Client& client) : client_(client) {
@@ -199,6 +204,13 @@ bool PdfInkModule::OnMessage(const base::Value::Dict& message) {
 
 const PdfInkBrush* PdfInkModule::GetPdfInkBrushForTesting() const {
   return is_drawing_stroke() ? drawing_stroke_state().brush.get() : nullptr;
+}
+
+std::optional<float> PdfInkModule::GetEraserSizeForTesting() const {
+  if (is_erasing_stroke()) {
+    return erasing_stroke_state().eraser_size;
+  }
+  return std::nullopt;
 }
 
 PdfInkModule::DocumentStrokeInputPointsMap
@@ -471,10 +483,8 @@ bool PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
 
   gfx::PointF canonical_position =
       ConvertEventPositionToCanonicalPosition(position, page_index);
-  // TODO(crbug.com/349198718): Support multiple eraser sizes.
-  constexpr int kDistanceToCenter = 3;
   const InkRect eraser_rect =
-      GetEraserRect(canonical_position, kDistanceToCenter);
+      GetEraserRect(canonical_position, erasing_stroke_state().eraser_size);
   std::optional<InkRect> invalidate_rect;
   for (auto& stroke : it->second) {
     if (!stroke.should_draw) {
@@ -528,7 +538,9 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
 
   const std::string& brush_type_string = *data->FindString("type");
   if (brush_type_string == "eraser") {
-    current_tool_state_.emplace<EraserState>();
+    auto& eraser_state = current_tool_state_.emplace<EraserState>();
+    eraser_state.eraser_size = data->FindDouble("size").value();
+    CheckToolSizeIsInRange(eraser_state.eraser_size);
     return;
   }
 
