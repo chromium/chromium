@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/new_tab_page/modules/feed/feed.mojom.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom.h"
-#include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption.mojom.h"
@@ -79,7 +78,6 @@ class GURL;
 class MostRelevantTabResumptionPageHandler;
 class MostVisitedHandler;
 class NewTabPageHandler;
-class PhotosHandler;
 class PrefRegistrySimple;
 class PrefService;
 class Profile;
@@ -160,11 +158,6 @@ class NewTabPageUI
   void BindInterface(
       mojo::PendingReceiver<ntp::calendar::mojom::GoogleCalendarPageHandler>
           pending_receiver);
-
-  // Instantiates the implementor of photos::mojom::PhotosHandler mojo interface
-  // passing the pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<photos::mojom::PhotosHandler> pending_receiver);
 
   // Instantiates the implementor of ntp::feed::mojom::FeedHandler mojo
   // interface passing the pending receiver that will be internally bound.
@@ -282,7 +275,6 @@ class NewTabPageUI
   // Mojo implementations for modules:
   std::unique_ptr<GoogleCalendarPageHandler> google_calendar_handler_;
   std::unique_ptr<FileSuggestionHandler> file_handler_;
-  std::unique_ptr<PhotosHandler> photos_handler_;
 #if BUILDFLAG(ENABLE_FEED_V2)
   std::unique_ptr<ntp::FeedHandler> feed_handler_;
 #endif  // BUILDFLAG(ENABLE_FEED_V2)

@@ -153,7 +153,6 @@ Refer to README.md for content description and update process.
  <item id="pdf_plugin_placeholder" added_in_milestone="63" content_hash_code="0101fbd5" os_list="linux,windows,chromeos" file_path="chrome/browser/plugins/plugin_observer.cc" />
  <item id="per_user_topic_registration_request" added_in_milestone="68" content_hash_code="04531c3a" os_list="linux,windows,chromeos,android" file_path="components/invalidation/impl/per_user_topic_subscription_request.cc" />
  <item id="permission_predictions" added_in_milestone="88" content_hash_code="0556d9f7" os_list="linux,windows,chromeos,android" file_path="components/permissions/prediction_service/prediction_service.cc" />
- <item id="photos_service" added_in_milestone="94" content_hash_code="0573af72" os_list="linux,windows,chromeos" file_path="chrome/browser/new_tab_page/modules/photos/photos_service.cc" />
  <item id="popular_sites_fetch" added_in_milestone="62" content_hash_code="00697083" os_list="linux,windows,chromeos,android" file_path="components/ntp_tiles/popular_sites_impl.cc" />
  <item id="port_forwarding_controller_socket" added_in_milestone="65" content_hash_code="074810e4" os_list="linux,windows,chromeos" file_path="chrome/browser/devtools/device/port_forwarding_controller.cc" />
  <item id="ppapi_download_request" added_in_milestone="62" content_hash_code="04241b24" os_list="linux,windows,chromeos" file_path="chrome/browser/safe_browsing/download_protection/ppapi_download_request.cc" />

@@ -285,7 +285,6 @@
 #include "chrome/browser/metrics/tab_stats/tab_stats_tracker.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/drive_service.h"
-#include "chrome/browser/new_tab_page/modules/photos/photos_service.h"
 #include "chrome/browser/new_tab_page/modules/safe_browsing/safe_browsing_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler.h"
@@ -1008,11 +1007,19 @@ inline constexpr char kFirstRunStudyGroup[] = "browser.first_run_study_group";
 #if !BUILDFLAG(IS_ANDROID)
 // Deprecated 07/2024
 constexpr char kNtpRecipesDismissedTasks[] = "NewTabPage.DismissedRecipeTasks";
-
-// Deprecated 07/2024
 constexpr char kNtpModulesFirstShownTime[] = "NewTabPage.ModulesFirstShownTime";
 constexpr char kNtpModulesFreVisible[] = "NewTabPage.ModulesFreVisible";
 constexpr char kNtpModulesShownCount[] = "NewTabPage.ModulesShownCount";
+constexpr char kNtpPhotosLastDismissedTimePrefName[] =
+    "NewTabPage.Photos.LastDimissedTime";
+constexpr char kNtpPhotosOptInAcknowledgedPrefName[] =
+    "NewTabPage.Photos.OptInAcknowledged";
+constexpr char kNtpPhotosLastMemoryOpenTimePrefName[] =
+    "NewTabPage.Photos.LastMemoryOpenTime";
+constexpr char kNtpPhotosSoftOptOutCountPrefName[] =
+    "NewTabPage.Photos.SoftOptOutCount";
+constexpr char kNtpPhotosLastSoftOptedOutTimePrefName[] =
+    "NewTabPage.Photos.LastSoftOptedoutTime";
 #endif
 
 // Deprecated 07/2024.
@@ -1388,11 +1395,16 @@ void RegisterProfilePrefsForMigration(
 #if !BUILDFLAG(IS_ANDROID)
   // Deprecated 07/2024
   registry->RegisterListPref(kNtpRecipesDismissedTasks);
-
-  // Deprecated 07/2024
   registry->RegisterBooleanPref(kNtpModulesFreVisible, true);
   registry->RegisterIntegerPref(kNtpModulesShownCount, 0);
   registry->RegisterTimePref(kNtpModulesFirstShownTime, base::Time());
+  registry->RegisterTimePref(kNtpPhotosLastDismissedTimePrefName, base::Time());
+  registry->RegisterBooleanPref(kNtpPhotosOptInAcknowledgedPrefName, false);
+  registry->RegisterTimePref(kNtpPhotosLastMemoryOpenTimePrefName,
+                             base::Time());
+  registry->RegisterTimePref(kNtpPhotosLastSoftOptedOutTimePrefName,
+                             base::Time());
+  registry->RegisterIntegerPref(kNtpPhotosSoftOptOutCountPrefName, 0);
 #endif
 
   // Deprecated 07/2024.
@@ -1925,7 +1937,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   NewTabPageUI::RegisterProfilePrefs(registry);
   ntp::SafeBrowsingHandler::RegisterProfilePrefs(registry);
   ntp_tiles::CustomLinksManagerImpl::RegisterProfilePrefs(registry);
-  PhotosService::RegisterProfilePrefs(registry);
   PinnedTabCodec::RegisterProfilePrefs(registry);
   policy::DeveloperToolsPolicyHandler::RegisterProfilePrefs(registry);
   PromoService::RegisterProfilePrefs(registry);
@@ -2675,11 +2686,14 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 #if !BUILDFLAG(IS_ANDROID)
   // Added 07/2024.
   profile_prefs->ClearPref(kNtpRecipesDismissedTasks);
-
-  // Added 07/2024.
   profile_prefs->ClearPref(kNtpModulesFirstShownTime);
   profile_prefs->ClearPref(kNtpModulesFreVisible);
   profile_prefs->ClearPref(kNtpModulesShownCount);
+  profile_prefs->ClearPref(kNtpPhotosLastDismissedTimePrefName);
+  profile_prefs->ClearPref(kNtpPhotosOptInAcknowledgedPrefName);
+  profile_prefs->ClearPref(kNtpPhotosLastMemoryOpenTimePrefName);
+  profile_prefs->ClearPref(kNtpPhotosLastSoftOptedOutTimePrefName);
+  profile_prefs->ClearPref(kNtpPhotosSoftOptOutCountPrefName);
 #endif
 
   // Added 07/2024.
