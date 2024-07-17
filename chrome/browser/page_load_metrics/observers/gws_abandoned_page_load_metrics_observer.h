@@ -24,6 +24,8 @@ extern const char kSuffixWasNonSRP[];
 class GWSAbandonedPageLoadMetricsObserver
     : public AbandonedPageLoadMetricsObserver {
  public:
+  static const char* GetSuffixForRTT(std::optional<base::TimeDelta> rtt);
+
   GWSAbandonedPageLoadMetricsObserver();
   ~GWSAbandonedPageLoadMetricsObserver() override;
 
@@ -38,7 +40,7 @@ class GWSAbandonedPageLoadMetricsObserver
  private:
   // AbandonedPageLoadMetricsObserver overrides:
   std::string GetHistogramPrefix() const override;
-  std::string GetAdditionalSuffix() const override;
+  std::vector<std::string> GetAdditionalSuffixes() const override;
   ObservePolicy OnNavigationEvent(
       content::NavigationHandle* navigation_handle) override;
   bool IsAllowedToLogMetrics() const override;

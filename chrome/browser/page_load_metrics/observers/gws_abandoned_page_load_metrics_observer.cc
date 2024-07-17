@@ -13,6 +13,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "content/public/browser/navigation_handle.h"
+#include "services/network/public/cpp/network_quality_tracker.h"
 
 namespace internal {
 
@@ -20,7 +21,27 @@ const char kGWSAbandonedPageLoadMetricsHistogramPrefix[] =
     "PageLoad.Clients.GoogleSearch.Leakage.";
 const char kSuffixWasNonSRP[] = ".WasNonSRP";
 
+const char kSuffixRTTUnknown[] = ".RTTUnkown";
+const char kSuffixRTTBelow200[] = ".RTTBelow200";
+const char kSuffixRTT200to450[] = ".RTT200To450";
+const char kSuffixRTTAbove450[] = ".RTTAbove450";
+
 }  // namespace internal
+
+const char* GWSAbandonedPageLoadMetricsObserver::GetSuffixForRTT(
+    std::optional<base::TimeDelta> rtt) {
+  if (!rtt.has_value()) {
+    return internal::kSuffixRTTUnknown;
+  }
+  if (rtt.value().InMilliseconds() < 200) {
+    return internal::kSuffixRTTBelow200;
+  }
+  if (rtt.value().InMilliseconds() <= 450) {
+    return internal::kSuffixRTT200to450;
+  }
+
+  return internal::kSuffixRTTAbove450;
+}
 
 GWSAbandonedPageLoadMetricsObserver::GWSAbandonedPageLoadMetricsObserver() =
     default;
@@ -63,9 +84,18 @@ std::string GWSAbandonedPageLoadMetricsObserver::GetHistogramPrefix() const {
   return internal::kGWSAbandonedPageLoadMetricsHistogramPrefix;
 }
 
-std::string GWSAbandonedPageLoadMetricsObserver::GetAdditionalSuffix() const {
+std::vector<std::string>
+GWSAbandonedPageLoadMetricsObserver::GetAdditionalSuffixes() const {
   // Add suffix that indicates the navigation prevviously requested a non-SRP
   // URL (instead of immediately targeting a SRP URL) to all histograms, if
   // necessary.
-  return did_request_non_srp_ ? internal::kSuffixWasNonSRP : "";
+  std::string suffix = did_request_non_srp_ ? internal::kSuffixWasNonSRP : "";
+  // Make sure each histogram logged will log a version without connection type,
+  // and a version with the connection type, to allow filtering if needed.
+  // TODO(https://crbug.com/347706997): Consider doing this for the WebView
+  // version as well.
+  return {
+      suffix,
+      suffix + GetSuffixForRTT(
+                   g_browser_process->network_quality_tracker()->GetHttpRTT())};
 }

@@ -173,8 +173,9 @@ std::string AbandonedPageLoadMetricsObserver::GetHistogramPrefix() const {
   return internal::kAbandonedPageLoadMetricsHistogramPrefix;
 }
 
-std::string AbandonedPageLoadMetricsObserver::GetAdditionalSuffix() const {
-  return "";
+std::vector<std::string>
+AbandonedPageLoadMetricsObserver::GetAdditionalSuffixes() const {
+  return {""};
 }
 
 std::string AbandonedPageLoadMetricsObserver::GetHistogramSuffix(
@@ -194,9 +195,6 @@ std::string AbandonedPageLoadMetricsObserver::GetHistogramSuffix(
       suffix += internal::kSuffixWasHidden;
     }
   }
-
-  // Get extra suffixes from child classes.
-  suffix += GetAdditionalSuffix();
 
   return suffix;
 }
@@ -241,11 +239,14 @@ void AbandonedPageLoadMetricsObserver::LogMilestoneHistogram(
     NavigationMilestone milestone,
     base::TimeTicks event_time,
     base::TimeTicks relative_start_time) {
-  PAGE_LOAD_HISTOGRAM(
-      GetHistogramPrefix() +
-          GetMilestoneHistogramNameWithoutPrefixSuffix(milestone) +
-          GetHistogramSuffix(milestone, event_time),
-      event_time - relative_start_time);
+  std::string base_suffix = GetHistogramSuffix(milestone, event_time);
+  for (std::string additional_suffix : GetAdditionalSuffixes()) {
+    std::string suffix = base_suffix + additional_suffix;
+    PAGE_LOAD_HISTOGRAM(
+        GetHistogramPrefix() +
+            GetMilestoneHistogramNameWithoutPrefixSuffix(milestone) + suffix,
+        event_time - relative_start_time);
+  }
 }
 
 void AbandonedPageLoadMetricsObserver::LogAbandonHistograms(
@@ -253,25 +254,29 @@ void AbandonedPageLoadMetricsObserver::LogAbandonHistograms(
     NavigationMilestone milestone,
     base::TimeTicks event_time,
     base::TimeTicks relative_start_time) {
-  std::string histogram_suffix = GetHistogramSuffix(milestone, event_time);
-  PAGE_LOAD_HISTOGRAM(GetHistogramPrefix() +
-                          GetMilestoneToAbandonHistogramNameWithoutPrefixSuffix(
-                              milestone, abandon_reason) +
-                          histogram_suffix,
-                      event_time - relative_start_time);
-  std::string milestone_string = NavigationMilestoneToString(milestone);
-  base::UmaHistogramEnumeration(
-      GetHistogramPrefix() +
-          GetAbandonReasonAtMilestoneHistogramNameWithoutPrefixSuffix(
-              milestone) +
-          histogram_suffix,
-      abandon_reason);
-  base::UmaHistogramEnumeration(
-      GetHistogramPrefix() +
-          GetLastMilestoneBeforeAbandonHistogramNameWithoutPrefixSuffix(
-              abandon_reason) +
-          histogram_suffix,
-      milestone);
+  std::string base_suffix = GetHistogramSuffix(milestone, event_time);
+  for (std::string additional_suffix : GetAdditionalSuffixes()) {
+    std::string suffix = base_suffix + additional_suffix;
+    PAGE_LOAD_HISTOGRAM(
+        GetHistogramPrefix() +
+            GetMilestoneToAbandonHistogramNameWithoutPrefixSuffix(
+                milestone, abandon_reason) +
+            suffix,
+        event_time - relative_start_time);
+    std::string milestone_string = NavigationMilestoneToString(milestone);
+    base::UmaHistogramEnumeration(
+        GetHistogramPrefix() +
+            GetAbandonReasonAtMilestoneHistogramNameWithoutPrefixSuffix(
+                milestone) +
+            suffix,
+        abandon_reason);
+    base::UmaHistogramEnumeration(
+        GetHistogramPrefix() +
+            GetLastMilestoneBeforeAbandonHistogramNameWithoutPrefixSuffix(
+                abandon_reason) +
+            suffix,
+        milestone);
+  }
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy

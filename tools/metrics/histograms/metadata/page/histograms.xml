@@ -144,6 +144,14 @@ chromium-metrics-reviews@google.com.
   <variant name="xslt"/>
 </variants>
 
+<variants name="RTTBucketSuffix">
+  <variant name="" summary="any"/>
+  <variant name=".RTT200To450" summary="RTT between 200 to 450ms"/>
+  <variant name=".RTTAbove450" summary="RTT greater than 450ms"/>
+  <variant name=".RTTUnder200" summary="RTT less than 200ms"/>
+  <variant name=".RTTUnkown" summary="RTT unkown"/>
+</variants>
+
 <variants name="WebUIName">
   <variant name=""/>
   <variant name=".BookmarksSidePanel"/>
@@ -1817,26 +1825,28 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients{ObservedNavigation}.Leakage.AbandonReasonAt.{NavigationMilestone}{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}"
+    name="PageLoad.Clients{ObservedNavigation}.Leakage.AbandonReasonAt.{NavigationMilestone}{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}{RTTBucketSuffix}"
     enum="NavigationAbandonReasonEnum" expires_after="2024-12-08">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     Logs the navigation abandonment reason that happens when the last milestone
-    is {NavigationMilestone} on a main frame navigation for
-    {ObservedNavigation}, with potentially some suffixes detaling the navigation
-    {BackgroundSuffix}, {HiddenSuffix}, and/or {NonSRPSuffix}. The metric is
-    emitted when the navigation gets abandoned.
+    is {NavigationMilestone} on a main frame navigation for {ObservedNavigation}
+    with {RTTBucketSuffix} connection, with potentially some suffixes detaling
+    the navigation {BackgroundSuffix}, {HiddenSuffix}, and/or {NonSRPSuffix}.
+
+    The metric is emitted when the navigation gets abandoned.
   </summary>
-  <token key="NavigationMilestone" variants="NavigationMilestone"/>
   <token key="BackgroundSuffix" variants="BackgroundSuffix"/>
   <token key="HiddenSuffix" variants="HiddenSuffix"/>
+  <token key="NavigationMilestone" variants="NavigationMilestone"/>
   <token key="NonSRPSuffix" variants="NonSRPSuffix"/>
   <token key="ObservedNavigation" variants="ObservedNavigation"/>
+  <token key="RTTBucketSuffix" variants="RTTBucketSuffix"/>
 </histogram>
 
 <histogram
-    name="PageLoad.Clients{ObservedNavigation}.Leakage.LastMilestoneBeforeAbandon.{NavigationAbandonReason}{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}"
+    name="PageLoad.Clients{ObservedNavigation}.Leakage.LastMilestoneBeforeAbandon.{NavigationAbandonReason}{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}{RTTBucketSuffix}"
     enum="NavigationMilestoneEnum" expires_after="2024-12-08">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
@@ -1847,28 +1857,16 @@ chromium-metrics-reviews@google.com.
     navigation {BackgroundSuffix}, {HiddenSuffix}, and/or {NonSRPSuffix}. The
     metric is emitted when the navigation gets abandoned.
   </summary>
-  <token key="NavigationAbandonReason" variants="NavigationAbandonReason"/>
   <token key="BackgroundSuffix" variants="BackgroundSuffix"/>
   <token key="HiddenSuffix" variants="HiddenSuffix"/>
+  <token key="NavigationAbandonReason" variants="NavigationAbandonReason"/>
   <token key="NonSRPSuffix" variants="NonSRPSuffix"/>
   <token key="ObservedNavigation" variants="ObservedNavigation"/>
-</histogram>
-
-<histogram name="PageLoad.Clients{ObservedNavigation}.Leakage.NavigationStart"
-    units="ms" expires_after="2024-12-08">
-  <owner>rakina@chromium.org</owner>
-  <owner>chrome-loading@google.com</owner>
-  <summary>
-    The time relative to navigation start that a navigation takes to emit this
-    metric, on a main frame navigation for {ObservedNavigation}. The metric is
-    emitted when the navigation finishes committing or it gets abandoned for the
-    first time.
-  </summary>
-  <token key="ObservedNavigation" variants="ObservedNavigation"/>
+  <token key="RTTBucketSuffix" variants="RTTBucketSuffix"/>
 </histogram>
 
 <histogram
-    name="PageLoad.Clients{ObservedNavigation}.Leakage.NavigationStartTo{NavigationMilestone}{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}"
+    name="PageLoad.Clients{ObservedNavigation}.Leakage.NavigationStartTo{NavigationMilestone}{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}{RTTBucketSuffix}"
     units="ms" expires_after="2024-12-08">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
@@ -1885,15 +1883,32 @@ chromium-metrics-reviews@google.com.
     non-terminal, so only the milestones that haven't been logged will be
     logged).
   </summary>
-  <token key="NavigationMilestone" variants="NavigationMilestone"/>
   <token key="BackgroundSuffix" variants="BackgroundSuffix"/>
   <token key="HiddenSuffix" variants="HiddenSuffix"/>
+  <token key="NavigationMilestone" variants="NavigationMilestone"/>
   <token key="NonSRPSuffix" variants="NonSRPSuffix"/>
   <token key="ObservedNavigation" variants="ObservedNavigation"/>
+  <token key="RTTBucketSuffix" variants="RTTBucketSuffix"/>
 </histogram>
 
 <histogram
-    name="PageLoad.Clients{ObservedNavigation}.Leakage.{NavigationMilestone}ToAbandon.{NavigationAbandonReason}{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}"
+    name="PageLoad.Clients{ObservedNavigation}.Leakage.NavigationStart{NonSRPSuffix}{RTTBucketSuffix}"
+    units="ms" expires_after="2024-12-08">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The time relative to navigation start that a navigation takes to emit this
+    metric, on a main frame navigation for {ObservedNavigation}. The metric is
+    emitted when the navigation finishes committing or it gets abandoned for the
+    first time.
+  </summary>
+  <token key="NonSRPSuffix" variants="NonSRPSuffix"/>
+  <token key="ObservedNavigation" variants="ObservedNavigation"/>
+  <token key="RTTBucketSuffix" variants="RTTBucketSuffix"/>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients{ObservedNavigation}.Leakage.{NavigationMilestone}ToAbandon.{NavigationAbandonReason}{BackgroundSuffix}{HiddenSuffix}{NonSRPSuffix}{RTTBucketSuffix}"
     units="ms" expires_after="2024-12-08">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
@@ -1911,12 +1926,13 @@ chromium-metrics-reviews@google.com.
     latest milestone (if there are multiple milestones reached before the
     abandonment). The metric is emitted when the navigation gets abandoned.
   </summary>
-  <token key="NavigationMilestone" variants="NavigationMilestone"/>
-  <token key="NavigationAbandonReason" variants="NavigationAbandonReason"/>
   <token key="BackgroundSuffix" variants="BackgroundSuffix"/>
   <token key="HiddenSuffix" variants="HiddenSuffix"/>
+  <token key="NavigationAbandonReason" variants="NavigationAbandonReason"/>
+  <token key="NavigationMilestone" variants="NavigationMilestone"/>
   <token key="NonSRPSuffix" variants="NonSRPSuffix"/>
   <token key="ObservedNavigation" variants="ObservedNavigation"/>
+  <token key="RTTBucketSuffix" variants="RTTBucketSuffix"/>
 </histogram>
 
 <histogram base="true" name="PageLoad.Cpu" units="units"

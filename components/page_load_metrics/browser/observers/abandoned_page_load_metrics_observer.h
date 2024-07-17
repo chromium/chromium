@@ -153,7 +153,7 @@ class AbandonedPageLoadMetricsObserver
   // Carveouts for child classes that want to differentiate the logged histogram
   // or react differently on the navigation events (e.g. filtering the URL).
   virtual std::string GetHistogramPrefix() const;
-  virtual std::string GetAdditionalSuffix() const;
+  virtual std::vector<std::string> GetAdditionalSuffixes() const;
   virtual ObservePolicy OnNavigationEvent(
       content::NavigationHandle* navigation_handle);
   virtual bool IsAllowedToLogMetrics() const;
