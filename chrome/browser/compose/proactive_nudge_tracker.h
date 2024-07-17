@@ -105,7 +105,6 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
         segmentation_result = std::nullopt;
     bool segmentation_result_ignored_for_training = false;
     base::OneShotTimer timer;
-    bool timer_complete = false;
     bool selection_nudge_requested = false;
     bool timer_canceled = false;
 
@@ -167,7 +166,7 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
   void ResetState();
 
   void UpdateStateForCurrentFormField();
-  std::optional<ShowState> CheckForStateTransition(ShowState current_state);
+  std::optional<ShowState> CheckForStateTransition();
   void TransitionToState(ShowState new_show_state);
 
   void BeginWaitingForTimer();
@@ -188,6 +187,8 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
       ProactiveNudgeDerivedEngagement engagement);
 
   std::unique_ptr<State> state_;
+
+  bool nudge_currently_requested = false;
 
   // Map indicating if the classification result from the segmentation platform
   // allows the nudge to be shown for previously queried fields.
