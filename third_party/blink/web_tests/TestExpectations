@@ -7578,3 +7578,6 @@ crbug.com/353204670 [ Mac11-arm64 ] virtual/oopr-canvas2d/fast/canvas/OffscreenC
 
 # Gardener 2024-07-16
 crbug.com/353392059 [ Linux ] fast/forms/select-popup/select-many-options-hang.html [ Pass Timeout ]
+
+# Flaky on Linux
+crbug.com/352481804 [ Linux ] external/wpt/html/semantics/embedded-content/the-object-element/object-image-only-for-print.html [ Failure Pass ]
