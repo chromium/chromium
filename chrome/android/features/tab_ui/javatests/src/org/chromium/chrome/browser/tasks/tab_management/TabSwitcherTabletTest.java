@@ -110,7 +110,7 @@ public class TabSwitcherTabletTest {
                 && !layoutManager.isLayoutStartingToHide(LayoutType.TAB_SWITCHER)) {
             TabModelSelector selector = cta.getTabModelSelectorSupplier().get();
             if (selector.getModel(false).getCount() == 0) {
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             TabCreator tabCreator = cta.getTabCreator(/* incognito= */ false);
                             return tabCreator.createNewTab(

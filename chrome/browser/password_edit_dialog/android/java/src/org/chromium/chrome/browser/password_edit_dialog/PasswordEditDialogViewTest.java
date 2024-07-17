@@ -67,8 +67,7 @@ public class PasswordEditDialogViewTest {
     @BeforeClass
     public static void setupSuite() {
         sActivityTestRule.launchActivity(null);
-        sActivity =
-                ThreadUtils.runOnUiThreadBlockingNoException(() -> sActivityTestRule.getActivity());
+        sActivity = ThreadUtils.runOnUiThreadBlocking(() -> sActivityTestRule.getActivity());
     }
 
     @Before

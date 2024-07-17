@@ -1679,7 +1679,7 @@ public class AwSettingsTest {
     }
 
     public static int calcDisplayWidthDp(Context context) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     DisplayAndroid displayAndroid = DisplayAndroid.getNonMultiDisplay(context);
                     return DisplayUtil.pxToDp(displayAndroid, displayAndroid.getDisplayWidth());

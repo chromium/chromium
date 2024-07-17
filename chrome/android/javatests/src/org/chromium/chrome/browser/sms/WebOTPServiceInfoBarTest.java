@@ -60,7 +60,7 @@ public class WebOTPServiceInfoBarTest {
     }
 
     private WebOTPServiceInfoBar createInfoBar() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Tab tab = mActivity.getActivityTab();
                     WebOTPServiceInfoBar infoBar =

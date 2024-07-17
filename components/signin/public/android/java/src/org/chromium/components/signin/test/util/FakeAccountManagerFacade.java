@@ -137,7 +137,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
             throws AuthException {
         @Nullable
         AccessTokenData result =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             @Nullable
                             AccountHolder accountHolder = getAccountHolder(coreAccountInfo.getId());

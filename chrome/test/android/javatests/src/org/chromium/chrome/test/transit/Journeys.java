@@ -30,7 +30,7 @@ public class Journeys {
         assert numTabs >= 1;
         assert url != null;
         TabModelSelector tabModelSelector =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> startingStation.getActivity().getTabModelSelector());
         int currentTabCount = tabModelSelector.getModel(/* incognito= */ false).getCount();
         int currentIncognitoTabCount = tabModelSelector.getModel(/* incognito= */ true).getCount();

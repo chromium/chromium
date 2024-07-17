@@ -101,7 +101,7 @@ public abstract class WebXrTestFramework extends XrTestFramework {
             if (canvasClicked) break;
 
             PropertyModel dialog =
-                    ThreadUtils.runOnUiThreadBlockingNoException(
+                    ThreadUtils.runOnUiThreadBlocking(
                             () ->
                                     getRule()
                                             .getActivity()

@@ -221,13 +221,13 @@ public class TabsTest {
     public void testOpenAndCloseNewTabButton() {
         sActivityTestRule.loadUrl(getUrl(TEST_FILE_PATH));
         Tab tab0 =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return sActivityTestRule.getActivity().getCurrentTabModel().getTabAt(0);
                         });
         Assert.assertEquals("Data file for TabsTest", ChromeTabUtils.getTitleOnUiThread(tab0));
         final int originalTabCount =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return sActivityTestRule.getActivity().getCurrentTabModel().getCount();
                         });
@@ -246,7 +246,7 @@ public class TabsTest {
                 sActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
 
         int currentTabCount =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return sActivityTestRule.getActivity().getCurrentTabModel().getCount();
                         });
@@ -264,7 +264,7 @@ public class TabsTest {
         ChromeTabUtils.closeCurrentTab(
                 InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
         currentTabCount =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return sActivityTestRule.getActivity().getCurrentTabModel().getCount();
                         });
@@ -607,7 +607,7 @@ public class TabsTest {
         }
 
         boolean hasFocus() {
-            return ThreadUtils.runOnUiThreadBlockingNoException(
+            return ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         return mView.hasFocus();
                     });
@@ -898,7 +898,7 @@ public class TabsTest {
 
     private JavascriptTabModalDialog getCurrentAlertDialog() {
         return (JavascriptTabModalDialog)
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             PropertyModel dialogModel =
                                     sActivityTestRule

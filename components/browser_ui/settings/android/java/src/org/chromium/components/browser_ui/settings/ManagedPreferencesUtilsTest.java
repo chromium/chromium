@@ -50,7 +50,7 @@ public class ManagedPreferencesUtilsTest {
     @Test
     @SmallTest
     public void testShowManagedByAdministratorToast() {
-        ThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return ManagedPreferencesUtils.showManagedByAdministratorToast(mActivity);
                 });
@@ -65,7 +65,7 @@ public class ManagedPreferencesUtilsTest {
     @Test
     @SmallTest
     public void testShowManagedByParentToastNullDelegate() {
-        ThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return ManagedPreferencesUtils.showManagedByParentToast(mActivity, null);
                 });
@@ -80,7 +80,7 @@ public class ManagedPreferencesUtilsTest {
     @Test
     @SmallTest
     public void testShowManagedByParentToastSingleCustodian() {
-        ThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return ManagedPreferencesUtils.showManagedByParentToast(
                             mActivity, ManagedPreferenceTestDelegates.SINGLE_CUSTODIAN_DELEGATE);
@@ -96,7 +96,7 @@ public class ManagedPreferencesUtilsTest {
     @Test
     @SmallTest
     public void testShowManagedByParentToastMultipleCustodians() {
-        ThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return ManagedPreferencesUtils.showManagedByParentToast(
                             mActivity, ManagedPreferenceTestDelegates.MULTI_CUSTODIAN_DELEGATE);
@@ -112,7 +112,7 @@ public class ManagedPreferencesUtilsTest {
     @Test
     @SmallTest
     public void testShowManagedSettingsCannotBeResetToast() {
-        ThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return ManagedPreferencesUtils.showManagedSettingsCannotBeResetToast(mActivity);
                 });

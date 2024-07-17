@@ -28,7 +28,7 @@ public class FencedFrameUtils {
     }
 
     private static int getCount(final RenderFrameHost frame) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return FencedFrameUtilsJni.get().getCount(frame);
                 });
@@ -36,7 +36,7 @@ public class FencedFrameUtils {
 
     public static RenderFrameHost getLastFencedFrame(
             final RenderFrameHost frame, final String url) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return FencedFrameUtilsJni.get().getLastFencedFrame(frame, url);
                 });
@@ -46,8 +46,7 @@ public class FencedFrameUtils {
             final WebContents webContents, final RenderFrameHost parentFrame, String url)
             throws TimeoutException {
         RenderFrameHostTestExt frameExt =
-                ThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> new RenderFrameHostTestExt(parentFrame));
+                ThreadUtils.runOnUiThreadBlocking(() -> new RenderFrameHostTestExt(parentFrame));
 
         int previousFencedFrameCount = getCount(parentFrame);
         final CountDownLatch latch = new CountDownLatch(1);

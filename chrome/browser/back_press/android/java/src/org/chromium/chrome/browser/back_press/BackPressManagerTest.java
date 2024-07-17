@@ -54,8 +54,7 @@ public class BackPressManagerTest {
                 HistogramWatcher.newBuilder().expectNoRecords(BackPressManager.HISTOGRAM).build();
 
         BackPressManager manager = new BackPressManager();
-        EmptyBackPressHandler h1 =
-                ThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
+        EmptyBackPressHandler h1 = ThreadUtils.runOnUiThreadBlocking(EmptyBackPressHandler::new);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     manager.addHandler(h1, BackPressHandler.Type.FIND_TOOLBAR);
@@ -94,10 +93,8 @@ public class BackPressManagerTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         BackPressManager.HISTOGRAM, 18); // 18 is XR_DELEGATE
         BackPressManager manager = new BackPressManager();
-        EmptyBackPressHandler h1 =
-                ThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
-        EmptyBackPressHandler h2 =
-                ThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
+        EmptyBackPressHandler h1 = ThreadUtils.runOnUiThreadBlocking(EmptyBackPressHandler::new);
+        EmptyBackPressHandler h2 = ThreadUtils.runOnUiThreadBlocking(EmptyBackPressHandler::new);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     manager.addHandler(h1, BackPressHandler.Type.TEXT_BUBBLE);
@@ -128,9 +125,8 @@ public class BackPressManagerTest {
     public void testFailedHandlers() {
         BackPressManager manager = new BackPressManager();
         var textBubbleFailedHandler =
-                ThreadUtils.runOnUiThreadBlockingNoException(FailedBackPressHandler::new);
-        var arSuccessHandler =
-                ThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
+                ThreadUtils.runOnUiThreadBlocking(FailedBackPressHandler::new);
+        var arSuccessHandler = ThreadUtils.runOnUiThreadBlocking(EmptyBackPressHandler::new);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     manager.addHandler(textBubbleFailedHandler, BackPressHandler.Type.TEXT_BUBBLE);
@@ -161,7 +157,7 @@ public class BackPressManagerTest {
         BackPressManager manager = new BackPressManager();
         manager.setFallbackOnBackPressed(callbackHelper::notifyCalled);
         var textBubbleFailedHandler =
-                ThreadUtils.runOnUiThreadBlockingNoException(FailedBackPressHandler::new);
+                ThreadUtils.runOnUiThreadBlocking(FailedBackPressHandler::new);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     manager.addHandler(textBubbleFailedHandler, BackPressHandler.Type.TEXT_BUBBLE);
@@ -185,8 +181,7 @@ public class BackPressManagerTest {
     public void testNoRecordWhenBackIsCancelled() {
         BackPressManager manager = new BackPressManager();
 
-        EmptyBackPressHandler h1 =
-                ThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
+        EmptyBackPressHandler h1 = ThreadUtils.runOnUiThreadBlocking(EmptyBackPressHandler::new);
 
         var record =
                 HistogramWatcher.newBuilder()
@@ -218,10 +213,8 @@ public class BackPressManagerTest {
         BackPressManager manager = new BackPressManager();
         manager.setIsGestureNavEnabledSupplier(() -> true);
 
-        EmptyBackPressHandler h1 =
-                ThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
-        EmptyBackPressHandler h2 =
-                ThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
+        EmptyBackPressHandler h1 = ThreadUtils.runOnUiThreadBlocking(EmptyBackPressHandler::new);
+        EmptyBackPressHandler h2 = ThreadUtils.runOnUiThreadBlocking(EmptyBackPressHandler::new);
 
         var edgeRecords =
                 HistogramWatcher.newBuilder()
@@ -285,8 +278,7 @@ public class BackPressManagerTest {
         BackPressManager manager = new BackPressManager();
         manager.setIsGestureNavEnabledSupplier(() -> true);
 
-        EmptyBackPressHandler h1 =
-                ThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
+        EmptyBackPressHandler h1 = ThreadUtils.runOnUiThreadBlocking(EmptyBackPressHandler::new);
 
         var edgeRecords =
                 HistogramWatcher.newBuilder()

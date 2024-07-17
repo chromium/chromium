@@ -179,7 +179,7 @@ public class NewTabPageTest {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityWithURL("about:blank");
         TemplateUrlService originalService =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 TemplateUrlServiceFactory.getForProfile(
                                         ProfileManager.getLastUsedRegularProfile()));
@@ -992,7 +992,7 @@ public class NewTabPageTest {
     }
 
     private boolean getUrlFocusAnimationsDisabled() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 new Callable<Boolean>() {
                     @Override
                     public Boolean call() {
@@ -1035,7 +1035,7 @@ public class NewTabPageTest {
      * @return The position of the top of the fakebox relative to the window.
      */
     private int getFakeboxTop(final NewTabPage ntp) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 new Callable<Integer>() {
                     @Override
                     public Integer call() {

@@ -56,7 +56,7 @@ public class ChromeDownloadDelegateTest {
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
         mActivityTestRule.loadUrl("about:blank");
         ChromeDownloadDelegate delegate =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         (Callable<ChromeDownloadDelegate>)
                                 () -> new MockChromeDownloadDelegate(tab));
         Assert.assertFalse(

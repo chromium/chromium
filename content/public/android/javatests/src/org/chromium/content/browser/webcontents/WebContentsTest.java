@@ -461,7 +461,7 @@ public class WebContentsTest {
     }
 
     private boolean isWebContentsDestroyed(final WebContents webContents) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 new Callable<Boolean>() {
                     @Override
                     public Boolean call() {

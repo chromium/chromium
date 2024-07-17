@@ -430,7 +430,7 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
     void notifyVirtualKeyboardOverlayRect(int x, int y, int width, int height) {
         final WebContentsImpl webContents = (WebContentsImpl) getWebContents();
         RenderFrameHostTestExt rfh =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> new RenderFrameHostTestExt(webContents.getMainFrame()));
         Assert.assertTrue("Did not get a focused frame", rfh != null);
         ThreadUtils.runOnUiThreadBlocking(

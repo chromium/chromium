@@ -21,13 +21,13 @@ public class ChromeModalDialogTestUtils {
      */
     public static void checkBrowserControls(ChromeActivity activity, boolean restricted) {
         boolean isViewObscuringTabContent =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> activity.getTabObscuringHandler().isTabContentObscured());
         boolean isViewObscuringToolbar =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> activity.getTabObscuringHandler().isToolbarObscured());
         boolean isMenuEnabled =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             View menu = activity.getToolbarManager().getMenuButtonView();
                             Assert.assertNotNull("Toolbar menu is incorrectly null.", menu);

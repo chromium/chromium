@@ -157,7 +157,7 @@ public class BluetoothChooserDialogTest {
     }
 
     private BluetoothChooserDialog createDialog() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mWindowAndroid = sActivityTestRule.getActivity().getWindowAndroid();
                     BluetoothChooserDialog dialog =
@@ -202,7 +202,7 @@ public class BluetoothChooserDialogTest {
                     return position >= visibleStart && position <= visibleEnd;
                 };
 
-        if (!ThreadUtils.runOnUiThreadBlockingNoException(isVisible)) {
+        if (!ThreadUtils.runOnUiThreadBlocking(isVisible)) {
             ThreadUtils.runOnUiThreadBlocking(() -> listView.setSelection(position));
             CriteriaHelper.pollUiThread(isVisible);
         }
@@ -615,7 +615,7 @@ public class BluetoothChooserDialogTest {
 
         BluetoothChooserDialog dialog;
         dialog =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return BluetoothChooserDialog.create(
                                     mockWindowAndroid,

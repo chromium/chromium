@@ -128,7 +128,7 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
                         statusIdleSomeFound,
                         positiveButton);
         Activity activity = sActivityTestRule.getActivity();
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return new ItemChooserDialog(
                             activity, activity.getWindow(), ItemChooserDialogTest.this, labels);

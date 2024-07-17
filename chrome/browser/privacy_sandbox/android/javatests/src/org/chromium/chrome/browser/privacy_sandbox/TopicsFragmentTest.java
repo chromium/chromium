@@ -150,7 +150,7 @@ public final class TopicsFragmentTest {
     }
 
     private boolean isTopicsPrefEnabled() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         TopicsFragment.isTopicsPrefEnabled(
                                 ProfileManager.getLastUsedRegularProfile()));

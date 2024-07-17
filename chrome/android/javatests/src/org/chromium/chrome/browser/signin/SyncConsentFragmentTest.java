@@ -194,7 +194,7 @@ public class SyncConsentFragmentTest {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
 
         OneshotSupplier<ProfileProvider> profileProviderSupplier =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             OneshotSupplierImpl<ProfileProvider> supplierImpl =
                                     new OneshotSupplierImpl<>();

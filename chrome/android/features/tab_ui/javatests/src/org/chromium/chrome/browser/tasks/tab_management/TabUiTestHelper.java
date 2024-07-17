@@ -593,7 +593,7 @@ public class TabUiTestHelper {
             int currentTabIndex = currentTabModel.index();
 
             boolean fixPendingReadbacks =
-                    ThreadUtils.runOnUiThreadBlockingNoException(
+                    ThreadUtils.runOnUiThreadBlocking(
                             () -> {
                                 return cta.getTabContentManager().getInFlightCapturesForTesting()
                                         != 0;

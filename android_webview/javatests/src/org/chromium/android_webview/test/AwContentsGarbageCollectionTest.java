@@ -362,8 +362,7 @@ public class AwContentsGarbageCollectionTest extends AwParameterizedTest {
                     containerView.getAwContents(), ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
             mActivityTestRule.recreateActivity();
-            boolean destroyed =
-                    ThreadUtils.runOnUiThreadBlockingNoException(() -> activity.isDestroyed());
+            boolean destroyed = ThreadUtils.runOnUiThreadBlocking(() -> activity.isDestroyed());
             Assert.assertTrue(destroyed);
         }
 

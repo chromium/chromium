@@ -115,7 +115,7 @@ public class DeferredStartupHandler {
         ThreadUtils.assertOnBackgroundThread();
         // sInstance could become null while executing this function, so keep a ref here.
         DeferredStartupHandler instance =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             if (sInstance != null) {
                                 sInstance.mLatchForTesting = new CountDownLatch(1);

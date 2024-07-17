@@ -109,7 +109,7 @@ public class BookmarkTestUtil {
      */
     public static void waitForBookmarkModelLoaded() {
         final BookmarkModel bookmarkModel =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return BookmarkModel.getForProfile(
                                     ProfileManager.getLastUsedRegularProfile());

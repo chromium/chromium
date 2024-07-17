@@ -423,7 +423,7 @@ public class OMADownloadHandlerTest {
 
         DownloadInfo info = new DownloadInfo.Builder().build();
         final OMADownloadHandlerForTest omaHandler =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return new OMADownloadHandlerForTest(context) {
                                 @Override

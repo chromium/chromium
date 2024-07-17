@@ -88,7 +88,7 @@ public class BlankCTATabInitialStateRule implements TestRule {
     }
 
     private int regularTabCount() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return sActivity.getTabModelSelector().getModel(false).getCount();
                 });
@@ -133,7 +133,7 @@ public class BlankCTATabInitialStateRule implements TestRule {
     // about:blank state.
     private void resetTabStateThorough() {
         Tab createdTab =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             // We have to avoid closing all tabs and triggering CTA's self-finish
                             // logic when all tabs are closed.

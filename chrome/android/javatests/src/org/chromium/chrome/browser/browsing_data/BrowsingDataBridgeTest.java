@@ -86,7 +86,7 @@ public class BrowsingDataBridgeTest {
     }
 
     private BrowsingDataBridge getBrowsingDataBridge() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> BrowsingDataBridge.getForProfile(ProfileManager.getLastUsedRegularProfile()));
     }
 

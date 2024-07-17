@@ -415,7 +415,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
      * Checks if server has any credit card information to autofill.
      */
     public boolean hasServerAutofillCreditCards() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     List<CreditCard> cards =
                             AutofillTestHelper.getPersonalDataManagerForLastUsedProfile()

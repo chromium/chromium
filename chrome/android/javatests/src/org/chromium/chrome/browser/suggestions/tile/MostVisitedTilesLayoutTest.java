@@ -302,7 +302,7 @@ public class MostVisitedTilesLayoutTest {
 
         ViewGroup contentView = new FrameLayout(activity);
 
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     setOfflinePageBridge(offlineUrls);
                     activity.setContentView(contentView);

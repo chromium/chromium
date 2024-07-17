@@ -153,7 +153,7 @@ public class RepostFormWarningTest {
     }
 
     private PropertyModel getCurrentModalDialog() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         sActivityTestRule
                                 .getActivity()

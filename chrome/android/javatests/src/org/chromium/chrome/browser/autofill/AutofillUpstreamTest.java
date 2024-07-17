@@ -90,7 +90,7 @@ public class AutofillUpstreamTest {
     }
 
     private PropertyModel getPropertyModelForDialog() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mActivityTestRule
                                 .getActivity()

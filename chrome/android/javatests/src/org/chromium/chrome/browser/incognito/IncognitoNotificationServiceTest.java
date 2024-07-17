@@ -119,7 +119,7 @@ public class IncognitoNotificationServiceTest {
         pollUiThreadForChromeActivityIncognitoTabCount(2);
 
         final Profile incognitoProfile =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         new Callable<Profile>() {
                             @Override
                             public Profile call() {

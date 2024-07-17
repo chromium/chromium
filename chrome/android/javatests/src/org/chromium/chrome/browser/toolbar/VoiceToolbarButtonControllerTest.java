@@ -190,7 +190,7 @@ public final class VoiceToolbarButtonControllerTest {
                 };
 
         PropertyModel dialogModel =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                                     .with(ModalDialogProperties.CONTROLLER, controller)

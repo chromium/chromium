@@ -701,7 +701,7 @@ public class MessageBannerViewTest {
     @MediumTest
     public void testSecondaryIconContentDescription() {
         PropertyModel model =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                                     .with(

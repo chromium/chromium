@@ -172,7 +172,7 @@ public class WebappActivityTestRule extends ChromeActivityTestRule<WebappActivit
     }
 
     public static @BrowserControlsState int getToolbarShowState(ChromeActivity activity) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         TabBrowserControlsConstraintsHelper.getConstraints(
                                 activity.getActivityTab()));

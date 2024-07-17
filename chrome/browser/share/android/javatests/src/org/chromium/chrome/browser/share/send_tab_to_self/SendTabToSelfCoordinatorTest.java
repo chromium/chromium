@@ -129,7 +129,7 @@ public class SendTabToSelfCoordinatorTest {
 
     private View getBottomSheetView() {
         WindowAndroid windowAndroid = mSyncTestRule.getActivity().getWindowAndroid();
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return BottomSheetControllerProvider.from(windowAndroid)
                             .getCurrentSheetContent()

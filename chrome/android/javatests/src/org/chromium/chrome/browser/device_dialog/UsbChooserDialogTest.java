@@ -88,7 +88,7 @@ public class UsbChooserDialogTest {
     }
 
     private UsbChooserDialog createDialog() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     UsbChooserDialog dialog =
                             new UsbChooserDialog(
@@ -212,7 +212,7 @@ public class UsbChooserDialogTest {
 
         UsbChooserDialog dialog;
         dialog =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return UsbChooserDialog.create(
                                     mockWindowAndroid,

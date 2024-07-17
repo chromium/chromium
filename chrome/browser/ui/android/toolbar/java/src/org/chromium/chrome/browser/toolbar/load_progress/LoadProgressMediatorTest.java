@@ -60,7 +60,7 @@ public class LoadProgressMediatorTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mModel =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> new PropertyModel(LoadProgressProperties.ALL_KEYS));
         when(mTab.getUrl()).thenReturn(URL_1);
         mShadowLooper = Shadows.shadowOf(Looper.getMainLooper());

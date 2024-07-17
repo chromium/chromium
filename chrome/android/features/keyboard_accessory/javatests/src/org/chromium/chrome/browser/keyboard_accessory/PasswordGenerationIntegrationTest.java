@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.keyboard_accessory;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
-import static org.chromium.base.ThreadUtils.runOnUiThreadBlockingNoException;
 import static org.chromium.base.test.util.Matchers.is;
 import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationTestHelper.acceptPasswordInGenerationBottomSheet;
 import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationTestHelper.rejectPasswordInGenerationBottomSheet;
@@ -238,7 +237,7 @@ public class PasswordGenerationIntegrationTest {
                         mActivity.getString(R.string.password_generation_accessory_button),
                         View.FIND_VIEWS_WITH_TEXT);
         View generationButton = selectedViews.get(0);
-        runOnUiThreadBlockingNoException(generationButton::callOnClick);
+        runOnUiThreadBlocking(generationButton::callOnClick);
     }
 
     private void toggleAccessorySheet() {

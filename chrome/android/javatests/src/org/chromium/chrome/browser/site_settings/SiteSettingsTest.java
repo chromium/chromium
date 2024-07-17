@@ -299,7 +299,7 @@ public class SiteSettingsTest {
     }
 
     private int getTabCount() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> mPermissionRule.getActivity().getTabModelSelector().getTotalTabCount());
     }
 

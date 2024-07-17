@@ -47,7 +47,7 @@ public class PrivacySandboxBridgeTest {
     @Before
     public void setUp() {
         mPrivacySandboxBridge =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> new PrivacySandboxBridge(ProfileManager.getLastUsedRegularProfile()));
     }
 

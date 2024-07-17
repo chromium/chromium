@@ -237,7 +237,7 @@ public class TabGridDialogTest {
         CriteriaHelper.pollUiThread(
                 sActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
         mModalDialogManager =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         sActivityTestRule.getActivity()::getModalDialogManager);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -267,7 +267,7 @@ public class TabGridDialogTest {
         if (cta == null) return;
 
         boolean isDestroyed =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return sMonitor.getLifecycleStageOf(cta) == Stage.DESTROYED;
                         });

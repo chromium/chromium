@@ -81,7 +81,7 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
                                 FormFactor.DESKTOP,
                                 todayTimestamp - TimeUnit.DAYS.toMillis(1)));
         View view =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             DevicePickerBottomSheetContent sheetContent =
                                     new DevicePickerBottomSheetContent(
@@ -132,7 +132,7 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
     public void testNoTargetDeviceBottomSheet() throws Throwable {
         setUpAccountData(createFakeAccount());
         View view =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             NoTargetDeviceBottomSheetContent sheetContent =
                                     new NoTargetDeviceBottomSheetContent(getActivity(), mProfile);

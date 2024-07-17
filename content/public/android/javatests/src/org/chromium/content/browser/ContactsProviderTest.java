@@ -75,8 +75,7 @@ public class ContactsProviderTest {
     private static String executeJavaScript(
             final RenderFrameHost frame, String js, boolean userGesture) {
         RenderFrameHostTestExt rfh =
-                ThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> new RenderFrameHostTestExt(frame));
+                ThreadUtils.runOnUiThreadBlocking(() -> new RenderFrameHostTestExt(frame));
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<String> result = new AtomicReference<String>();
         ThreadUtils.runOnUiThreadBlocking(
@@ -162,7 +161,7 @@ public class ContactsProviderTest {
                 });
 
         RenderFrameHost frame =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> mActivityTestRule.getWebContents().getMainFrame());
         executeJavaScript(frame, CONTACTS_SCRIPT, true);
         waitUntilHasValue(frame);
@@ -176,7 +175,7 @@ public class ContactsProviderTest {
     @SmallTest
     public void testGetContactsInPrimaryPageWithoutUserGesture() throws Exception {
         RenderFrameHost frame =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> mActivityTestRule.getWebContents().getMainFrame());
         executeJavaScript(frame, CONTACTS_SCRIPT, false);
         waitUntilHasValue(frame);
@@ -201,7 +200,7 @@ public class ContactsProviderTest {
                         ServerCertificate.CERT_OK);
         String url = testServer.getURL(FENCED_FRAME_URL);
         RenderFrameHost frame =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> mActivityTestRule.getWebContents().getMainFrame());
         RenderFrameHost fencedFrame =
                 FencedFrameUtils.createFencedFrame(mActivityTestRule.getWebContents(), frame, url);

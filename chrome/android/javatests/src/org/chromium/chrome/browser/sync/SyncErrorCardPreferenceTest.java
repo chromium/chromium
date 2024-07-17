@@ -119,7 +119,7 @@ public class SyncErrorCardPreferenceTest {
     private void assertSyncError(@SyncSettingsUtils.SyncError int expectedSyncError) {
         @SyncSettingsUtils.SyncError
         int currentSyncError =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 SyncSettingsUtils.getSyncError(
                                         ProfileManager.getLastUsedRegularProfile()));
@@ -371,7 +371,7 @@ public class SyncErrorCardPreferenceTest {
 
         ViewUtils.waitForVisibleView(withId(R.id.signin_promo_view_wrapper));
         View view =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return mSettingsActivityTestRule
                                     .getActivity()

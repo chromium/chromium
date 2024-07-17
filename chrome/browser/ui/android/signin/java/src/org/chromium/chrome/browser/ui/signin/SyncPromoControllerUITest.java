@@ -125,7 +125,7 @@ public class SyncPromoControllerUITest {
     @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testBookmarkSyncPromoViewSignedOutAndNoAccountAvailable() throws Throwable {
         ProfileDataCache profileDataCache =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
                                     mActivityTestRule.getActivity());
@@ -146,7 +146,7 @@ public class SyncPromoControllerUITest {
     public void testBookmarkSyncPromoViewSignedOutAndNoAccountAvailable_replaceSyncBySigninEnabled()
             throws Throwable {
         ProfileDataCache profileDataCache =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
                                     mActivityTestRule.getActivity());
@@ -220,7 +220,7 @@ public class SyncPromoControllerUITest {
     @MediumTest
     public void testExistsNonGmailAccountReturnsTrue() {
         SigninManager signinManager =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 IdentityServicesProvider.get()
                                         .getSigninManager(
@@ -240,7 +240,7 @@ public class SyncPromoControllerUITest {
     @MediumTest
     public void testExistsNonGmailAccountReturnsFalse() {
         SigninManager signinManager =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 IdentityServicesProvider.get()
                                         .getSigninManager(
@@ -406,7 +406,7 @@ public class SyncPromoControllerUITest {
     @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testSettingsSyncPromoViewSignedOutAndNoAccountAvailable() throws Throwable {
         ProfileDataCache profileDataCache =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
                                     mActivityTestRule.getActivity());
@@ -469,7 +469,7 @@ public class SyncPromoControllerUITest {
     @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testRecentTabsSyncPromoViewSignedOutAndNoAccountAvailable() throws Throwable {
         ProfileDataCache profileDataCache =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
                                     mActivityTestRule.getActivity());
@@ -489,7 +489,7 @@ public class SyncPromoControllerUITest {
     public void testRecentTabsSyncPromoViewSignedOutAndNoAccountAvailableLaunchesSigninFlow()
             throws Throwable {
         ProfileDataCache profileDataCache =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
                                     mActivityTestRule.getActivity());
@@ -641,7 +641,7 @@ public class SyncPromoControllerUITest {
             throws Throwable {
         setUpNightMode(nightModeEnabled);
         ProfileDataCache profileDataCache =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
                                     mActivityTestRule.getActivity());
@@ -665,7 +665,7 @@ public class SyncPromoControllerUITest {
             boolean nightModeEnabled) throws Throwable {
         setUpNightMode(nightModeEnabled);
         ProfileDataCache profileDataCache =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
                                     mActivityTestRule.getActivity());
@@ -724,7 +724,7 @@ public class SyncPromoControllerUITest {
     // for each entry point. In the long term, we should have a single observer internal to the UI
     // component. Then these tests can just wait for the right data to appear with espresso.
     private ProfileDataCache createProfileDataCache() throws Throwable {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
                             mActivityTestRule.getActivity());
@@ -734,7 +734,7 @@ public class SyncPromoControllerUITest {
     private View setUpSyncPromoView(
             @AccessPoint int accessPoint, ProfileDataCache profileDataCache, int layoutResId) {
         View view =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             View promoView =
                                     LayoutInflater.from(mActivityTestRule.getActivity())

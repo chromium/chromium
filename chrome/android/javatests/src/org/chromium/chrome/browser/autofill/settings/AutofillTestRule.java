@@ -67,7 +67,7 @@ class AutofillTestRule extends ChromeBrowserTestRule
             throws TimeoutException {
         int callCount = mClickUpdate.getCallCount();
         int updateCallCount =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             int updateCallCountBeforeButtonClick = mPreferenceUpdate.getCallCount();
                             mEditorDialog.findViewById(resourceId).performClick();
@@ -87,7 +87,7 @@ class AutofillTestRule extends ChromeBrowserTestRule
         if (mEditorDialog.getConfirmationDialogForTest() != null) {
             int callCount = mClickUpdate.getCallCount();
             int updateCallCount =
-                    ThreadUtils.runOnUiThreadBlockingNoException(
+                    ThreadUtils.runOnUiThreadBlocking(
                             () -> {
                                 int updateCallCountBeforeButtonClick =
                                         mPreferenceUpdate.getCallCount();
@@ -107,7 +107,7 @@ class AutofillTestRule extends ChromeBrowserTestRule
     protected void clickInEditorAndWaitForValidationError(final int resourceId)
             throws TimeoutException {
         int callCount = mValidationUpdate.getCallCount();
-        ThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mEditorDialog.findViewById(resourceId).performClick());
         mValidationUpdate.waitForCallback(callCount);
     }
@@ -115,7 +115,7 @@ class AutofillTestRule extends ChromeBrowserTestRule
     protected void clickInEditorAndWaitForConfirmationDialog(final int resourceId)
             throws TimeoutException {
         int callCount = mConfirmationDialogUpdate.getCallCount();
-        ThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mEditorDialog.findViewById(resourceId).performClick());
         mConfirmationDialogUpdate.waitForCallback(callCount);
     }

@@ -123,7 +123,7 @@ public class TabGridIphTest {
         CriteriaHelper.pollUiThread(
                 mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
         mModalDialogManager =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         mActivityTestRule.getActivity()::getModalDialogManager);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

@@ -408,13 +408,12 @@ public class TabGroupsTest {
 
     private void assertOrderValid(boolean expectedState) {
         boolean isOrderValid =
-                ThreadUtils.runOnUiThreadBlockingNoException(mTabGroupModelFilter::isOrderValid);
+                ThreadUtils.runOnUiThreadBlocking(mTabGroupModelFilter::isOrderValid);
         assertEquals(expectedState, isOrderValid);
     }
 
     private void assertFixedTabGroupRootIdCount(int expectedCount) {
-        int fixedRootIdCount =
-                ThreadUtils.runOnUiThreadBlockingNoException(mTabGroupModelFilter::fixRootIds);
+        int fixedRootIdCount = ThreadUtils.runOnUiThreadBlocking(mTabGroupModelFilter::fixRootIds);
         assertEquals(expectedCount, fixedRootIdCount);
     }
 
@@ -431,7 +430,7 @@ public class TabGroupsTest {
      */
     private Tab addTabAt(int index, Tab parent) {
         Tab tab =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             @TabLaunchType
                             int type =

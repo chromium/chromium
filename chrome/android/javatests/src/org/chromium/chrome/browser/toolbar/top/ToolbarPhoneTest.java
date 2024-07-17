@@ -131,7 +131,7 @@ public class ToolbarPhoneTest {
 
         mActivityTestRule.startMainActivityOnBlankPage();
         TemplateUrlService originalService =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 TemplateUrlServiceFactory.getForProfile(
                                         ProfileManager.getLastUsedRegularProfile()));

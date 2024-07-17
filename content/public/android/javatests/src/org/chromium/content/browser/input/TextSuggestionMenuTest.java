@@ -513,7 +513,7 @@ public class TextSuggestionMenuTest {
     }
 
     private TextSuggestionHost getTextSuggestionHost(WebContents webContents) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> TextSuggestionHost.fromWebContents(webContents));
     }
 

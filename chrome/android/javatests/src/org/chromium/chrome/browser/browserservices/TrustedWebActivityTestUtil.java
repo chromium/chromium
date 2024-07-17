@@ -94,7 +94,7 @@ public class TrustedWebActivityTestUtil {
         // A key part of the Trusted Web Activity UI is the lack of browser controls.
         @BrowserControlsState
         int constraints =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return TabBrowserControlsConstraintsHelper.getConstraints(
                                     activity.getActivityTab());

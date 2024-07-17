@@ -23,7 +23,7 @@ import java.util.concurrent.TimeoutException;
 /** Graphics-related test utils. */
 public class GraphicsTestUtils {
     public static float dipScaleForContext(Context context) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return DisplayAndroid.getNonMultiDisplay(context).getDipScale();
                 });
@@ -42,8 +42,7 @@ public class GraphicsTestUtils {
 
     public static Bitmap drawAwContentsOnUiThread(
             final AwContents awContents, final int width, final int height) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
-                () -> drawAwContents(awContents, width, height));
+        return ThreadUtils.runOnUiThreadBlocking(() -> drawAwContents(awContents, width, height));
     }
 
     /**
@@ -84,7 +83,7 @@ public class GraphicsTestUtils {
     // Gets the pixel color at the center of AwContents.
     public static int getPixelColorAtCenterOfView(
             final AwContents awContents, final AwTestContainerView testContainerView) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         drawAwContents(
                                         awContents,

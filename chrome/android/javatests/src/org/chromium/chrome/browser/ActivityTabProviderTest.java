@@ -48,7 +48,7 @@ public class ActivityTabProviderTest {
 
         public TestActivityTabTabObserver(ActivityTabProvider provider) {
             super(provider);
-            ThreadUtils.runOnUiThreadBlockingNoException(() -> mObservedTab = provider.get());
+            ThreadUtils.runOnUiThreadBlocking(() -> mObservedTab = provider.get());
         }
 
         @Override

@@ -106,7 +106,7 @@ class PasswordSettingsTestHelper {
                 });
 
         PasswordManagerHandlerProvider handlerProvider =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 PasswordManagerHandlerProvider.getForProfile(
                                         ProfileManager.getLastUsedRegularProfile()));
@@ -133,7 +133,7 @@ class PasswordSettingsTestHelper {
                 });
 
         PasswordManagerHandlerProvider handlerProvider =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 PasswordManagerHandlerProvider.getForProfile(
                                         ProfileManager.getLastUsedRegularProfile()));

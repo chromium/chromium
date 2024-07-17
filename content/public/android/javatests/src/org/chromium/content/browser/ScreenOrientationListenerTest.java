@@ -147,7 +147,7 @@ public class ScreenOrientationListenerTest {
     }
 
     private int getCurrentRotation() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 new Callable<Integer>() {
                     @Override
                     public Integer call() {

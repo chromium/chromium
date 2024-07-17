@@ -384,7 +384,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
     }
 
     private void clickPreference(final Preference pref) {
-        ThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> pref.getOnPreferenceClickListener().onPreferenceClick(pref));
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }

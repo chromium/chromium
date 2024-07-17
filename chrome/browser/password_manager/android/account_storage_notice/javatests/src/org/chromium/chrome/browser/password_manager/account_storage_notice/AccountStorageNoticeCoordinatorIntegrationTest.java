@@ -193,7 +193,7 @@ public class AccountStorageNoticeCoordinatorIntegrationTest {
     }
 
     private AccountStorageNoticeCoordinator createCoordinator() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile = ProfileManager.getLastUsedRegularProfile();
                     // The logic for when to show the coordinator is tested in the UnitTest.java.

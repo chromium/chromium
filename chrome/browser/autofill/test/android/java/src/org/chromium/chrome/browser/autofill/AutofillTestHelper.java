@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.autofill;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
-import static org.chromium.base.ThreadUtils.runOnUiThreadBlockingNoException;
 
 import android.os.SystemClock;
 import android.view.InputDevice;
@@ -64,7 +63,7 @@ public class AutofillTestHelper {
      * ProfileManager#getLastUsedRegularProfile()}.
      */
     public static PersonalDataManager getPersonalDataManagerForLastUsedProfile() {
-        return runOnUiThreadBlockingNoException(
+        return runOnUiThreadBlocking(
                 () ->
                         PersonalDataManagerFactory.getForProfile(
                                 ProfileManager.getLastUsedRegularProfile()));
@@ -76,19 +75,19 @@ public class AutofillTestHelper {
     }
 
     AutofillProfile getProfile(final String guid) {
-        return runOnUiThreadBlockingNoException(
+        return runOnUiThreadBlocking(
                 () -> getPersonalDataManagerForLastUsedProfile().getProfile(guid));
     }
 
     List<AutofillProfile> getProfilesToSuggest(final boolean includeNameInLabel) {
-        return runOnUiThreadBlockingNoException(
+        return runOnUiThreadBlocking(
                 () ->
                         getPersonalDataManagerForLastUsedProfile()
                                 .getProfilesToSuggest(includeNameInLabel));
     }
 
     List<AutofillProfile> getProfilesForSettings() {
-        return runOnUiThreadBlockingNoException(
+        return runOnUiThreadBlocking(
                 () -> getPersonalDataManagerForLastUsedProfile().getProfilesForSettings());
     }
 
@@ -103,7 +102,7 @@ public class AutofillTestHelper {
     public String setProfile(final AutofillProfile profile) throws TimeoutException {
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
         String guid =
-                runOnUiThreadBlockingNoException(
+                runOnUiThreadBlocking(
                         () -> getPersonalDataManagerForLastUsedProfile().setProfile(profile));
         mOnPersonalDataChangedHelper.waitForCallback(callCount);
         return guid;
@@ -116,17 +115,17 @@ public class AutofillTestHelper {
     }
 
     public CreditCard getCreditCard(final String guid) {
-        return runOnUiThreadBlockingNoException(
+        return runOnUiThreadBlocking(
                 () -> getPersonalDataManagerForLastUsedProfile().getCreditCard(guid));
     }
 
     List<CreditCard> getCreditCardsToSuggest() {
-        return runOnUiThreadBlockingNoException(
+        return runOnUiThreadBlocking(
                 () -> getPersonalDataManagerForLastUsedProfile().getCreditCardsToSuggest());
     }
 
     List<CreditCard> getCreditCardsForSettings() {
-        return runOnUiThreadBlockingNoException(
+        return runOnUiThreadBlocking(
                 () -> getPersonalDataManagerForLastUsedProfile().getCreditCardsForSettings());
     }
 
@@ -141,7 +140,7 @@ public class AutofillTestHelper {
     public String setCreditCard(final CreditCard card) throws TimeoutException {
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
         String guid =
-                runOnUiThreadBlockingNoException(
+                runOnUiThreadBlocking(
                         () -> getPersonalDataManagerForLastUsedProfile().setCreditCard(card));
         mOnPersonalDataChangedHelper.waitForCallback(callCount);
         return guid;
@@ -212,7 +211,7 @@ public class AutofillTestHelper {
      * @return The non-negative use count of the profile.
      */
     public int getProfileUseCountForTesting(final String guid) {
-        return runOnUiThreadBlockingNoException(
+        return runOnUiThreadBlocking(
                 () ->
                         getPersonalDataManagerForLastUsedProfile()
                                 .getProfileUseCountForTesting(guid));
@@ -223,11 +222,11 @@ public class AutofillTestHelper {
      *
      * @param guid The GUID of the profile to query.
      * @return A non-negative long representing the last use date of the profile. It represents an
-     *         absolute point in coordinated universal time (UTC) represented as microseconds since
-     *         the Windows epoch. For more details see the comment header in time.h.
+     *     absolute point in coordinated universal time (UTC) represented as microseconds since the
+     *     Windows epoch. For more details see the comment header in time.h.
      */
     public long getProfileUseDateForTesting(final String guid) {
-        return runOnUiThreadBlockingNoException(
+        return runOnUiThreadBlocking(
                 () -> getPersonalDataManagerForLastUsedProfile().getProfileUseDateForTesting(guid));
     }
 
@@ -271,7 +270,7 @@ public class AutofillTestHelper {
      * @return The non-negative use count of the credit card.
      */
     public int getCreditCardUseCountForTesting(final String guid) {
-        return runOnUiThreadBlockingNoException(
+        return runOnUiThreadBlocking(
                 () ->
                         getPersonalDataManagerForLastUsedProfile()
                                 .getCreditCardUseCountForTesting(guid));
@@ -282,11 +281,11 @@ public class AutofillTestHelper {
      *
      * @param guid The GUID of the credit card to query.
      * @return A non-negative long representing the last use date of the credit card. It represents
-     *         an absolute point in coordinated universal time (UTC) represented as microseconds
-     *         since the Windows epoch. For more details see the comment header in time.h.
+     *     an absolute point in coordinated universal time (UTC) represented as microseconds since
+     *     the Windows epoch. For more details see the comment header in time.h.
      */
     public long getCreditCardUseDateForTesting(final String guid) {
-        return runOnUiThreadBlockingNoException(
+        return runOnUiThreadBlocking(
                 () ->
                         getPersonalDataManagerForLastUsedProfile()
                                 .getCreditCardUseDateForTesting(guid));
@@ -296,11 +295,11 @@ public class AutofillTestHelper {
      * Get the current use date to be used in test to compare with credit card or profile use dates.
      *
      * @return A non-negative long representing the current date. It represents an absolute point in
-     *         coordinated universal time (UTC) represented as microseconds since the Windows epoch.
-     *         For more details see the comment header in time.h.
+     *     coordinated universal time (UTC) represented as microseconds since the Windows epoch. For
+     *     more details see the comment header in time.h.
      */
     public long getCurrentDateForTesting() {
-        return runOnUiThreadBlockingNoException(
+        return runOnUiThreadBlocking(
                 () -> getPersonalDataManagerForLastUsedProfile().getCurrentDateForTesting());
     }
 
@@ -309,28 +308,28 @@ public class AutofillTestHelper {
      *
      * @param days The number of days from today.
      * @return A non-negative long representing the time N days ago. It represents an absolute point
-     *         in coordinated universal time (UTC) represented as microseconds since the Windows
-     *         epoch. For more details see the comment header in time.h.
+     *     in coordinated universal time (UTC) represented as microseconds since the Windows epoch.
+     *     For more details see the comment header in time.h.
      */
     public long getDateNDaysAgoForTesting(final int days) {
-        return runOnUiThreadBlockingNoException(
+        return runOnUiThreadBlocking(
                 () -> getPersonalDataManagerForLastUsedProfile().getDateNDaysAgoForTesting(days));
     }
 
     public Iban getIban(final String guid) {
-        return runOnUiThreadBlockingNoException(
+        return runOnUiThreadBlocking(
                 () -> getPersonalDataManagerForLastUsedProfile().getIban(guid));
     }
 
     Iban[] getLocalIbansForSettings() throws TimeoutException {
-        return runOnUiThreadBlockingNoException(
+        return runOnUiThreadBlocking(
                 () -> getPersonalDataManagerForLastUsedProfile().getLocalIbansForSettings());
     }
 
     public String addOrUpdateLocalIban(final Iban iban) throws TimeoutException {
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
         String guid =
-                runOnUiThreadBlockingNoException(
+                runOnUiThreadBlocking(
                         () ->
                                 getPersonalDataManagerForLastUsedProfile()
                                         .addOrUpdateLocalIban(iban));
@@ -476,7 +475,7 @@ public class AutofillTestHelper {
         try {
             int callCount = mOnPersonalDataChangedHelper.getCallCount();
             boolean isDataLoaded =
-                    runOnUiThreadBlockingNoException(
+                    runOnUiThreadBlocking(
                             () -> {
                                 return getPersonalDataManagerForLastUsedProfile()
                                         .registerDataObserver(

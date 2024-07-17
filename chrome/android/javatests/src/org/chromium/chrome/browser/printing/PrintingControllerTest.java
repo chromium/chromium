@@ -317,7 +317,7 @@ public class PrintingControllerTest {
         final WaitForOnWriteHelper onWriteHelper = new WaitForOnWriteHelper();
         final Tab currentTab = mActivityTestRule.getActivity().getActivityTab();
         final PrintingControllerImpl printingController =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> new PrintingControllerImplPdfWritingDone(onWriteHelper));
 
         startControllerOnUiThread(printingController, currentTab);
@@ -378,7 +378,7 @@ public class PrintingControllerTest {
     }
 
     private PrintingControllerImpl createControllerOnUiThread() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> (PrintingControllerImpl) PrintingControllerImpl.getInstance());
     }
 

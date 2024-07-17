@@ -267,7 +267,7 @@ public class ScrimTest {
     public void testGestureDetector() throws ExecutionException, TimeoutException {
         ColorDrawable customDrawable = new ColorDrawable(Color.BLUE);
         PropertyModel model =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                                     .with(ScrimProperties.TOP_MARGIN, 0)
@@ -349,7 +349,7 @@ public class ScrimTest {
     public void testAffectsNavigationBar_enabled() throws TimeoutException {
         int callCount = mNavigationBarCallbackHelper.getCallCount();
         PropertyModel model =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                                     .with(ScrimProperties.TOP_MARGIN, 0)
@@ -374,7 +374,7 @@ public class ScrimTest {
     public void testAffectsNavigationBar_disabled() throws TimeoutException {
         int callCount = mStatusBarCallbackHelper.getCallCount();
         PropertyModel model =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                                     .with(ScrimProperties.TOP_MARGIN, 0)
@@ -402,7 +402,7 @@ public class ScrimTest {
     public void testCustomDrawable() throws TimeoutException {
         ColorDrawable customDrawable = new ColorDrawable(Color.BLUE);
         PropertyModel model =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                                     .with(ScrimProperties.TOP_MARGIN, 0)
@@ -443,7 +443,7 @@ public class ScrimTest {
     public void testTopMargin() throws TimeoutException {
         int topMargin = 100;
         PropertyModel model =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return new PropertyModel.Builder(ScrimProperties.REQUIRED_KEYS)
                                     .with(ScrimProperties.TOP_MARGIN, topMargin)
@@ -509,7 +509,7 @@ public class ScrimTest {
             boolean affectsStatusBar,
             boolean showInFrontOfAnchor,
             @ColorInt int color) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel model =
                             new PropertyModel.Builder(

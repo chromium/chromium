@@ -448,7 +448,7 @@ public class ArchivedTabsDialogCoordinatorTest {
     }
 
     private Tab addArchivedTab(GURL url, String title) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mArchivedTabModelOrchestrator
                                 .getArchivedTabCreatorForTesting()
@@ -461,7 +461,7 @@ public class ArchivedTabsDialogCoordinatorTest {
     }
 
     private void removeArchivedTab(Tab tab) {
-        ThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mArchivedTabModel.removeTab(tab);
                     return null;
@@ -470,7 +470,7 @@ public class ArchivedTabsDialogCoordinatorTest {
 
     private void waitForArchivedTabModelsToLoad(
             ArchivedTabModelOrchestrator archivedTabModelOrchestrator) {
-        ThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     CallbackHelper callbackHelper = new CallbackHelper();
                     if (archivedTabModelOrchestrator.isTabModelInitialized()) {

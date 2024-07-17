@@ -228,7 +228,7 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
                 });
 
         int virtualViewId =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> findNodeMatching(View.NO_ID, matcher, element));
         Assert.assertNotEquals(View.NO_ID, virtualViewId);
         return virtualViewId;

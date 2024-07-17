@@ -156,7 +156,7 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
     public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         OneshotSupplierImpl<ProfileProvider> profileSupplier =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             OneshotSupplierImpl<ProfileProvider> supplier =
                                     new OneshotSupplierImpl<>();

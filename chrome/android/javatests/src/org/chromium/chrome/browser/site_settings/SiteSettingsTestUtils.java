@@ -57,7 +57,7 @@ public class SiteSettingsTestUtils {
         fragmentArgs.putString(
                 SingleCategorySettings.EXTRA_CATEGORY, SiteSettingsCategory.preferenceKey(type));
         String title =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             Context context =
                                     InstrumentationRegistry.getInstrumentation().getContext();

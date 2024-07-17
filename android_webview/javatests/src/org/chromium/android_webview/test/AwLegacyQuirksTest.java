@@ -60,7 +60,7 @@ public class AwLegacyQuirksTest extends AwParameterizedTest {
         settings.setJavaScriptEnabled(true);
 
         DisplayAndroid displayAndroid =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return DisplayAndroid.getNonMultiDisplay(
                                     InstrumentationRegistry.getInstrumentation()
@@ -107,7 +107,7 @@ public class AwLegacyQuirksTest extends AwParameterizedTest {
         settings.setUseWideViewPort(true);
 
         DisplayAndroid displayAndroid =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return DisplayAndroid.getNonMultiDisplay(
                                     InstrumentationRegistry.getInstrumentation()
@@ -141,7 +141,7 @@ public class AwLegacyQuirksTest extends AwParameterizedTest {
         settings.setJavaScriptEnabled(true);
 
         DisplayAndroid displayAndroid =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return DisplayAndroid.getNonMultiDisplay(
                                     InstrumentationRegistry.getInstrumentation()
@@ -178,7 +178,7 @@ public class AwLegacyQuirksTest extends AwParameterizedTest {
                 awContents, onPageFinishedHelper, ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
         DisplayAndroid displayAndroid =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return DisplayAndroid.getNonMultiDisplay(
                                     InstrumentationRegistry.getInstrumentation()

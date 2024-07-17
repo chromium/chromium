@@ -60,8 +60,7 @@ public abstract class LiveSigninTestUtil {
                 MAX_TIME_TO_POLL_MS,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         CoreAccountInfo coreAccountInfo =
-                ThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> findAccountByEmailAddress(accountName));
+                ThreadUtils.runOnUiThreadBlocking(() -> findAccountByEmailAddress(accountName));
         return coreAccountInfo;
     }
 

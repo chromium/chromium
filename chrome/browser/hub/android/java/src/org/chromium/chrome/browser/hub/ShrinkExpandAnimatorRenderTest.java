@@ -177,7 +177,7 @@ public class ShrinkExpandAnimatorRenderTest extends BlankUiTestActivityTestCase 
 
     private ShrinkExpandAnimator createAnimator(
             Rect startValue, Rect endValue, @Nullable Size thumbnailSize) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShrinkExpandAnimator animator =
                             new ShrinkExpandAnimator(mView, startValue, endValue);
@@ -213,7 +213,7 @@ public class ShrinkExpandAnimatorRenderTest extends BlankUiTestActivityTestCase 
         float fractionPerStep = 1.0f / (steps - 1);
 
         ObjectAnimator animator =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return ObjectAnimator.ofObject(
                                     rectAnimator,

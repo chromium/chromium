@@ -99,7 +99,7 @@ public class ModalDialogTestUtils {
             @Nullable TestDialogDismissedObserver observer,
             @ModalDialogProperties.ButtonStyles int buttonStyles,
             @ModalDialogProperties.DialogStyles int dialogStyles) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ModalDialogProperties.Controller controller =
                             new ModalDialogProperties.Controller() {
@@ -237,7 +237,7 @@ public class ModalDialogTestUtils {
      */
     public static PropertyModel createModel(
             PropertyModel.Builder modelBuilder, ModalDialogView view) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel model = modelBuilder.build();
                     PropertyModelChangeProcessor.create(model, view, new ModalDialogViewBinder());

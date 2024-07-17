@@ -180,7 +180,7 @@ public class RecentTabsPageTest {
         setRecentlyClosedEntries(Collections.singletonList(group));
         Assert.assertEquals(1, mManager.getRecentlyClosedEntries(1).size());
         final String groupString =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return mActivity
                                     .getResources()
@@ -236,7 +236,7 @@ public class RecentTabsPageTest {
         setRecentlyClosedEntries(Collections.singletonList(group));
         Assert.assertEquals(1, mManager.getRecentlyClosedEntries(1).size());
         final String groupString =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return mActivity
                                     .getResources()
@@ -302,7 +302,7 @@ public class RecentTabsPageTest {
         Assert.assertEquals(1, mManager.getRecentlyClosedEntries(1).size());
         final int size = event.getTabs().size();
         final String eventString =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return mActivity
                                     .getResources()

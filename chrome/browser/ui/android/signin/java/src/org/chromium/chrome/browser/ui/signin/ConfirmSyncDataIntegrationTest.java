@@ -103,7 +103,7 @@ public class ConfirmSyncDataIntegrationTest extends BlankUiTestActivityTestCase 
         when(mUserPrefsNativeMock.get(mProfile)).thenReturn(mPrefService);
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
         mDelegate =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return new ConfirmSyncDataStateMachineDelegate(
                                     getActivity(),

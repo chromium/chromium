@@ -300,7 +300,7 @@ public class CustomTabTabPersistencePolicyTest {
         // Create a tab model and associated tabs. Ensure it is not marked for deletion as it is
         // new enough.
         TabModelSelectorMetadata data =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             TabModelSelectorImpl selectorImpl =
                                     buildTestTabModelSelector(new int[] {111, 222, 333}, null);

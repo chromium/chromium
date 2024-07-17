@@ -84,7 +84,7 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
         MockitoAnnotations.initMocks(this);
 
         mWindowAndroid =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return new ActivityWindowAndroid(
                                     getActivity(),

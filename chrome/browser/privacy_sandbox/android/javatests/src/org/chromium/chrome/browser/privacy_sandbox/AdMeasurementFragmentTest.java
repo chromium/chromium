@@ -122,7 +122,7 @@ public final class AdMeasurementFragmentTest {
     }
 
     private boolean isAdMeasurementPrefEnabled() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         AdMeasurementFragment.isAdMeasurementPrefEnabled(
                                 ProfileManager.getLastUsedRegularProfile()));

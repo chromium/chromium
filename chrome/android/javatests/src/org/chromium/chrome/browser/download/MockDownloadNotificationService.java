@@ -74,7 +74,7 @@ public class MockDownloadNotificationService extends DownloadNotificationService
             final boolean shouldPromoteOrigin,
             final GURL referrer,
             final long totalBytes) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         MockDownloadNotificationService.super.notifyDownloadSuccessful(
                                 id,

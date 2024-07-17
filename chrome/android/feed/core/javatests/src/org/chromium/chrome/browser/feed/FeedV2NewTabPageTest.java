@@ -478,7 +478,7 @@ public class FeedV2NewTabPageTest {
      * @return The position of the top of the fakebox relative to the window.
      */
     private int getFakeboxTop(final NewTabPage ntp) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 new Callable<Integer>() {
                     @Override
                     public Integer call() {

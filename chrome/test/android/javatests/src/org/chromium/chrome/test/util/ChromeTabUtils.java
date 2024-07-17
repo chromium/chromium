@@ -253,8 +253,7 @@ public class ChromeTabUtils {
             }
         }
 
-        boolean complete =
-                ThreadUtils.runOnUiThreadBlockingNoException(() -> loadComplete(tab, url));
+        boolean complete = ThreadUtils.runOnUiThreadBlocking(() -> loadComplete(tab, url));
 
         if (complete) return;
 
@@ -270,8 +269,7 @@ public class ChromeTabUtils {
         boolean shouldShowLoadingUI = false;
         if (webContents != null) {
             shouldShowLoadingUI =
-                    ThreadUtils.runOnUiThreadBlockingNoException(
-                            () -> webContents.shouldShowLoadingUI());
+                    ThreadUtils.runOnUiThreadBlocking(() -> webContents.shouldShowLoadingUI());
         }
         return String.format(
                 Locale.ENGLISH,
@@ -594,7 +592,7 @@ public class ChromeTabUtils {
 
     /** Fetch the number of tabs open in the current model. */
     public static int getNumOpenTabs(final ChromeActivity activity) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 new Callable<Integer>() {
                     @Override
                     public Integer call() {

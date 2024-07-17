@@ -34,7 +34,7 @@ public class CustomTabFromChromeExternalNavigationTest {
     @Rule public CustomTabActivityTestRule mActivityRule = new CustomTabActivityTestRule();
 
     private Intent getCustomTabFromChromeIntent(final String url, final boolean markFromChrome) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

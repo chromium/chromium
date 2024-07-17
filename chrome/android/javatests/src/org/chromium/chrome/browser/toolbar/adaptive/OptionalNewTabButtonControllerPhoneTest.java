@@ -123,7 +123,7 @@ public class OptionalNewTabButtonControllerPhoneTest {
         // 2: opened by the click
         assertEquals(
                 Integer.valueOf(2),
-                ThreadUtils.<Integer>runOnUiThreadBlockingNoException(
+                ThreadUtils.<Integer>runOnUiThreadBlocking(
                         () ->
                                 sActivityTestRule
                                         .getActivity()
@@ -161,7 +161,7 @@ public class OptionalNewTabButtonControllerPhoneTest {
         // 2: opened by the click
         assertEquals(
                 Integer.valueOf(2),
-                ThreadUtils.<Integer>runOnUiThreadBlockingNoException(
+                ThreadUtils.<Integer>runOnUiThreadBlocking(
                         () -> {
                             return sActivityTestRule
                                     .getActivity()
@@ -189,7 +189,7 @@ public class OptionalNewTabButtonControllerPhoneTest {
         // 2: opened by the click
         assertEquals(
                 Integer.valueOf(2),
-                ThreadUtils.<Integer>runOnUiThreadBlockingNoException(
+                ThreadUtils.<Integer>runOnUiThreadBlocking(
                         () ->
                                 sActivityTestRule
                                         .getActivity()
@@ -197,7 +197,7 @@ public class OptionalNewTabButtonControllerPhoneTest {
                                         .getComprehensiveModel()
                                         .getCount()));
         assertTrue(
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 sActivityTestRule
                                         .getActivity()

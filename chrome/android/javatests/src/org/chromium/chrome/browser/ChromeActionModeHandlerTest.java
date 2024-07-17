@@ -53,7 +53,7 @@ public class ChromeActionModeHandlerTest {
 
         LoadUrlParams urlParams = new LoadUrlParams(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         // Assert that a new tab has an action mode callback set as expected.
-        ThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Tab tab = mActivityTestRule.getActivity().getActivityTabProvider().get();
                     return mActivityTestRule

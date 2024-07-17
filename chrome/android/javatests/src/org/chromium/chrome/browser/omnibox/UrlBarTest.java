@@ -153,8 +153,7 @@ public class UrlBarTest {
     }
 
     private void assertUrlDirection(int expectedDirection) {
-        int actualDirection =
-                ThreadUtils.runOnUiThreadBlockingNoException(() -> mUrlBar.getUrlDirection());
+        int actualDirection = ThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.getUrlDirection());
         Assert.assertEquals(expectedDirection, actualDirection);
     }
 

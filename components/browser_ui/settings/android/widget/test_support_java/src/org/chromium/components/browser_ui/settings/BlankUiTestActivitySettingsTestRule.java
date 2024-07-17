@@ -64,7 +64,7 @@ public class BlankUiTestActivitySettingsTestRule extends BaseActivityTestRule<Bl
         if (getActivity() == null) launchActivity(null);
 
         PreferenceFragmentCompat preference =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             PreferenceFragmentCompat fragment =
                                     (PreferenceFragmentCompat)

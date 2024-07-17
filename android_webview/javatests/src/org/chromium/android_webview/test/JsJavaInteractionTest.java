@@ -1517,7 +1517,7 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
             final AwContents awContents, final String script, final String[] allowedOriginRules)
             throws Exception {
         AwActivityTestRule.checkJavaScriptEnabled(awContents);
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> awContents.addDocumentStartJavaScript(script, allowedOriginRules));
     }
 

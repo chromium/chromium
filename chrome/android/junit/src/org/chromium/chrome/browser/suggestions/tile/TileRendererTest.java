@@ -131,7 +131,7 @@ public class TileRendererTest {
     }
 
     private SuggestionsTileView buildTileView(@TileStyle int style, int titleLines) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TileRenderer tileRenderer =
                             new TileRenderer(mActivity, style, titleLines, mMockImageFetcher);

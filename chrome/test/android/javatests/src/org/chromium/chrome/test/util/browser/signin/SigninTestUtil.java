@@ -42,7 +42,7 @@ public final class SigninTestUtil {
      * @return The primary account of the requested {@link ConsentLevel}.
      */
     static CoreAccountInfo getPrimaryAccount(@ConsentLevel int consentLevel) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return IdentityServicesProvider.get()
                             .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
@@ -244,11 +244,11 @@ public final class SigninTestUtil {
 
     /**
      * Simulates completing the device lock challenge for SigninFirstRunFragment.
+     *
      * @param fragment The fragment under test.
      */
     public static void completeAutoDeviceLockIfNeeded(SigninFirstRunFragment fragment) {
-        if (!ThreadUtils.runOnUiThreadBlockingNoException(
-                () -> BuildInfo.getInstance().isAutomotive)) {
+        if (!ThreadUtils.runOnUiThreadBlocking(() -> BuildInfo.getInstance().isAutomotive)) {
             return;
         }
 

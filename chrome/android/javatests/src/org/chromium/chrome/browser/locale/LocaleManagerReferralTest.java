@@ -72,7 +72,7 @@ public class LocaleManagerReferralTest {
     public void testYandexReferralId() throws TimeoutException {
         final CallbackHelper templateUrlServiceLoaded = new CallbackHelper();
         TemplateUrlService templateUrlService =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 TemplateUrlServiceFactory.getForProfile(
                                         ProfileManager.getLastUsedRegularProfile()));

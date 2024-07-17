@@ -83,12 +83,12 @@ public class PermissionInfoTest {
     }
 
     private static Profile getRegularProfile() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 (Callable<Profile>) () -> ProfileManager.getLastUsedRegularProfile());
     }
 
     private static Profile getNonPrimaryOTRProfile() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 (Callable<Profile>)
                         () -> {
                             OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
@@ -99,7 +99,7 @@ public class PermissionInfoTest {
     }
 
     private static Profile getPrimaryOTRProfile() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 (Callable<Profile>)
                         () ->
                                 ProfileManager.getLastUsedRegularProfile()

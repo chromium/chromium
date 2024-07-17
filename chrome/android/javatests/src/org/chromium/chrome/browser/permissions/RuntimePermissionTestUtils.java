@@ -188,7 +188,7 @@ public class RuntimePermissionTestUtils {
             // deny.
             PermissionTestRule.waitForDialog(activity);
             final ModalDialogManager manager =
-                    ThreadUtils.runOnUiThreadBlockingNoException(activity::getModalDialogManager);
+                    ThreadUtils.runOnUiThreadBlocking(activity::getModalDialogManager);
             askPermissionDialogModel = manager.getCurrentDialogForTest();
 
             PermissionTestRule.replyToDialog(promptDecision, activity);
@@ -201,7 +201,7 @@ public class RuntimePermissionTestUtils {
 
         if (waitForMissingPermissionPrompt) {
             final ModalDialogManager manager =
-                    ThreadUtils.runOnUiThreadBlockingNoException(activity::getModalDialogManager);
+                    ThreadUtils.runOnUiThreadBlocking(activity::getModalDialogManager);
 
             // Wait for the dialog that informs the user permissions are missing, when the initial
             // prompt is rejected or expected to not be shown.

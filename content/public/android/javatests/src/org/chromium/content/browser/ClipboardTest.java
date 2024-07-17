@@ -63,7 +63,7 @@ public class ClipboardTest {
     @DisabledTest(message = "https://crbug.com/791021")
     public void testCopyDocumentFragment() {
         ClipboardManager clipboardManager =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         new Callable<ClipboardManager>() {
                             @Override
                             public ClipboardManager call() {

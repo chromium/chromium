@@ -208,7 +208,7 @@ public class HomepagePolicyIntegrationTest {
     }
 
     private String getHomepageUrlOnUiThread() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> HomepageManager.getInstance().getHomepageGurl().getSpec());
     }
 }

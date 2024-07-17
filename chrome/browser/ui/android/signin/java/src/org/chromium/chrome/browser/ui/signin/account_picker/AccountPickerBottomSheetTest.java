@@ -104,7 +104,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class AccountPickerBottomSheetTest {
     private static class CustomFakeAccountInfoService extends FakeAccountInfoService {
         int getNumberOfObservers() {
-            return ThreadUtils.runOnUiThreadBlockingNoException(mObservers::size);
+            return ThreadUtils.runOnUiThreadBlocking(mObservers::size);
         }
     }
 

@@ -96,12 +96,11 @@ public class UrlBarUiUnitTest {
     }
 
     private CharSequence getUrlText() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(() -> mUrlBar.getText());
+        return ThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.getText());
     }
 
     private CharSequence getVisibleTextPrefixHint() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mUrlBar.getVisibleTextPrefixHint());
+        return ThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.getVisibleTextPrefixHint());
     }
 
     @Test

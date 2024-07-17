@@ -54,7 +54,7 @@ public class PasswordCheckIntegrationTest {
     @Test
     @MediumTest
     public void testDestroysComponentIfFirstInSettingsStack() {
-        ThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> PasswordCheckFactory.getOrCreate(mMockSettingsLauncher));
         Activity activity = setUpUiLaunchedFromDialog();
         activity.finish();
@@ -65,7 +65,7 @@ public class PasswordCheckIntegrationTest {
     @Test
     @MediumTest
     public void testDoesNotDestroyComponentIfNotFirstInSettingsStack() {
-        ThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> PasswordCheckFactory.getOrCreate(mMockSettingsLauncher));
         Activity activity = setUpUiLaunchedFromSettings();
         activity.finish();

@@ -75,8 +75,7 @@ public class MultiProfileTest extends AwParameterizedTest {
         Assert.assertNotSame(nonDefaultProfile2, defaultProfile);
 
         final List<String> names =
-                ThreadUtils.runOnUiThreadBlockingNoException(
-                        AwBrowserContextStore::listAllContexts);
+                ThreadUtils.runOnUiThreadBlocking(AwBrowserContextStore::listAllContexts);
         Assert.assertTrue(names.contains("1"));
         Assert.assertTrue(names.contains("2"));
         Assert.assertTrue(names.contains("Default"));
@@ -272,7 +271,7 @@ public class MultiProfileTest extends AwParameterizedTest {
     public void testSetBrowserContextAfterEvaluateJavascriptThrowsException() {
         mRule.startBrowserProcess();
         AwContents awContents = mRule.createAwContents();
-        ThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     awContents.evaluateJavaScript("", null);
                     return null;

@@ -202,7 +202,7 @@ public class BookmarkSearchBoxRowTest {
         CriteriaHelper.pollUiThread(() -> checkThat(mEditText.hasFocus(), is(false)));
         verifyNoInteractions(mFocusChangeCallback);
 
-        ThreadUtils.runOnUiThreadBlockingNoException(() -> mEditText.requestFocus());
+        ThreadUtils.runOnUiThreadBlocking(() -> mEditText.requestFocus());
         verify(mFocusChangeCallback).onResult(true);
 
         ThreadUtils.runOnUiThreadBlocking(() -> mEditText.clearFocus());
@@ -233,7 +233,7 @@ public class BookmarkSearchBoxRowTest {
     @Test
     @MediumTest
     public void testTapSearchRowLayoutClearsSearchFocus() {
-        ThreadUtils.runOnUiThreadBlockingNoException(() -> mEditText.requestFocus());
+        ThreadUtils.runOnUiThreadBlocking(() -> mEditText.requestFocus());
         verify(mFocusChangeCallback).onResult(true);
 
         onView(withId(R.id.bookmark_toolbar)).perform(click());
@@ -243,7 +243,7 @@ public class BookmarkSearchBoxRowTest {
     @Test
     @MediumTest
     public void testTogglingChipDoesNotClearSearchFocus() {
-        ThreadUtils.runOnUiThreadBlockingNoException(() -> mEditText.requestFocus());
+        ThreadUtils.runOnUiThreadBlocking(() -> mEditText.requestFocus());
         verify(mFocusChangeCallback).onResult(true);
 
         onView(withId(R.id.shopping_filter_chip)).perform(click());
@@ -256,7 +256,7 @@ public class BookmarkSearchBoxRowTest {
     @Test
     @MediumTest
     public void testTapFilterLayoutClearsSearchFocus() {
-        ThreadUtils.runOnUiThreadBlockingNoException(() -> mEditText.requestFocus());
+        ThreadUtils.runOnUiThreadBlocking(() -> mEditText.requestFocus());
         verify(mFocusChangeCallback).onResult(true);
 
         onView(withChild(withId(R.id.shopping_filter_chip))).perform(click());

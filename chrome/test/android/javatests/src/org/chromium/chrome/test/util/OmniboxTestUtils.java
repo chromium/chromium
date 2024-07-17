@@ -204,7 +204,7 @@ public class OmniboxTestUtils {
      * @return Whether the UrlBar has focus.
      */
     public boolean getFocus() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(() -> mUrlBar.hasFocus());
+        return ThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.hasFocus());
     }
 
     /** Request the Omnibox focus and wait for soft keyboard to show. */
@@ -381,7 +381,7 @@ public class OmniboxTestUtils {
      *     suggestion.
      */
     private @Nullable <T extends View> T getSuggestionViewForIndex(int indexOfSuggestion) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OmniboxSuggestionsDropdown dropdown =
                             mLocationBar
@@ -636,8 +636,7 @@ public class OmniboxTestUtils {
      * @return The text contents of the omnibox (without the Autocomplete part).
      */
     public String getText() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mUrlBar.getTextWithoutAutocomplete());
+        return ThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.getTextWithoutAutocomplete());
     }
 
     /**

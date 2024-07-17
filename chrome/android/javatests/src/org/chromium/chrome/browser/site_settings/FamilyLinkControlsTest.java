@@ -72,7 +72,7 @@ public class FamilyLinkControlsTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mSettingsActivity = SiteSettingsTestUtils.startSiteSettingsMenu("");
-        ThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> SigninCheckerProvider.get(ProfileManager.getLastUsedRegularProfile()));
         mAccountInfo = mSigninTestRule.addChildTestAccountThenWaitForSignin();
 

@@ -683,7 +683,7 @@ public class AutofillProfilesFragmentTest {
 
     private void checkPreferenceCount(int expectedPreferenceCount) {
         int preferenceCount =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 sSettingsActivityTestRule
                                         .getFragment()
@@ -694,7 +694,7 @@ public class AutofillProfilesFragmentTest {
 
     @Nullable
     private AutofillProfileEditorPreference findPreference(String title) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> sSettingsActivityTestRule.getFragment().findPreference(title));
     }
 

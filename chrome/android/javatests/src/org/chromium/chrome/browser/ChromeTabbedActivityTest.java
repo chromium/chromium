@@ -137,7 +137,7 @@ public class ChromeTabbedActivityTest {
     @SmallTest
     public void testTabAnimationsCorrectlyEnabled() {
         boolean animationsEnabled =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> mActivity.getLayoutManager().animationsEnabled());
         Assert.assertEquals(animationsEnabled, DeviceClassManager.enableAnimations());
     }

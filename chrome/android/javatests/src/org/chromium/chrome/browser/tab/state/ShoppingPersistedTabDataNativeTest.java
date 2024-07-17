@@ -44,8 +44,7 @@ public class ShoppingPersistedTabDataNativeTest {
                     ShoppingPersistedTabData.onDeferredStartup();
                 });
         Profile profile =
-                ThreadUtils.runOnUiThreadBlockingNoException(
-                        ProfileManager::getLastUsedRegularProfile);
+                ThreadUtils.runOnUiThreadBlocking(ProfileManager::getLastUsedRegularProfile);
         final Tab tab0 = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(0, profile);
         final Tab tab1 = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(1, profile);
         final Tab tab2 = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(2, profile);

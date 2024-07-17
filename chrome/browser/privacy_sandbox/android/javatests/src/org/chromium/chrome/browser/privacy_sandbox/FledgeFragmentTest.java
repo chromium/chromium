@@ -152,7 +152,7 @@ public final class FledgeFragmentTest {
     }
 
     private boolean isFledgePrefEnabled() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         FledgeFragment.isFledgePrefEnabled(
                                 ProfileManager.getLastUsedRegularProfile()));

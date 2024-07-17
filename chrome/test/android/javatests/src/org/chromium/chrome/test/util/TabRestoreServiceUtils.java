@@ -39,7 +39,7 @@ public class TabRestoreServiceUtils {
 
     /** Fetches entries from the TabRestoreService::entries(). */
     public static List<RecentlyClosedEntry> getEntries(TabModelSelector tabModelSelector) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     final TabModel tabModel = tabModelSelector.getModel(false);
                     final RecentlyClosedBridge bridge =

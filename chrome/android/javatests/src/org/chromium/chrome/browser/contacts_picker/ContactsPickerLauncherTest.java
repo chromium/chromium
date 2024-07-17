@@ -72,7 +72,7 @@ public class ContactsPickerLauncherTest {
     }
 
     private boolean showContactsPicker(WebContents webContents) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return ContactsPicker.showContactsPicker(
                             webContents,

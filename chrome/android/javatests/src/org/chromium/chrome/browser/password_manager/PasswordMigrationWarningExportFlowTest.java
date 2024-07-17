@@ -288,7 +288,7 @@ public class PasswordMigrationWarningExportFlowTest {
 
     private void setPasswordSource(String origin, String username, String password) {
         PasswordManagerHandlerProvider handlerProvider =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 PasswordManagerHandlerProvider.getForProfile(
                                         mChromeActivityRule.getProfile(false)));

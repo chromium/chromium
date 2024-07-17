@@ -218,7 +218,7 @@ public class ProfileResolverTest {
     public void testResolveProfileKeyBeforeProfileInit() throws ExecutionException {
         initToReducedMode();
         ProfileKey key =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> ProfileKeyUtil.getLastUsedRegularProfileKey());
 
         String token = tokenizeOnUiThread(key);

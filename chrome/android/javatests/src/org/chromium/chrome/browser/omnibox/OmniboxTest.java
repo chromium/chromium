@@ -340,7 +340,7 @@ public class OmniboxTest {
 
     private void setNonDefaultSearchEngine() {
         TemplateUrlService templateUrlService =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 TemplateUrlServiceFactory.getForProfile(
                                         ProfileManager.getLastUsedRegularProfile()));

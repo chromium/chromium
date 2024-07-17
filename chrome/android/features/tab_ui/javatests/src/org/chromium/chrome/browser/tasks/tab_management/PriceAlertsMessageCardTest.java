@@ -135,7 +135,7 @@ public class PriceAlertsMessageCardTest {
     }
 
     private boolean isPriceAlertsMessageCardEnabled() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return PriceTrackingUtilities.isPriceAlertsMessageCardEnabled(
                             ProfileManager.getLastUsedRegularProfile());

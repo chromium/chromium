@@ -215,7 +215,7 @@ public class SigninFirstRunFragmentTest {
         when(mFirstRunPageDelegateMock.isLaunchedFromCct()).thenReturn(false);
 
         OneshotSupplierImpl<ProfileProvider> profileSupplier =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             OneshotSupplierImpl<ProfileProvider> supplier =
                                     new OneshotSupplierImpl<>();

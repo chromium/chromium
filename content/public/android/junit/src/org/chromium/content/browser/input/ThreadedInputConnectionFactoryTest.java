@@ -161,7 +161,7 @@ public class ThreadedInputConnectionFactoryTest {
                         (InvocationOnMock invocation) -> {
                             mFactory.setTriggerDelayedOnCreateInputConnection(false);
                             InputConnection connection =
-                                    ThreadUtils.runOnUiThreadBlockingNoException(callable);
+                                    ThreadUtils.runOnUiThreadBlocking(callable);
                             mFactory.setTriggerDelayedOnCreateInputConnection(true);
                             return connection;
                         });

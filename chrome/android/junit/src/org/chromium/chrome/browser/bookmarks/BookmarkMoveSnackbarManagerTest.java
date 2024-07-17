@@ -12,7 +12,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-import static org.chromium.base.ThreadUtils.runOnUiThreadBlockingNoException;
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
 import android.app.Activity;
 
@@ -93,25 +93,25 @@ public class BookmarkMoveSnackbarManagerTest {
     private FakeBookmarkModel setupFakeBookmarkModel() {
         FakeBookmarkModel bookmarkModel = FakeBookmarkModel.createModel();
         mAccountMobileFolderId =
-                runOnUiThreadBlockingNoException(() -> bookmarkModel.getAccountMobileFolderId());
-        mMobileFolderId = runOnUiThreadBlockingNoException(() -> bookmarkModel.getMobileFolderId());
+                runOnUiThreadBlocking(() -> bookmarkModel.getAccountMobileFolderId());
+        mMobileFolderId = runOnUiThreadBlocking(() -> bookmarkModel.getMobileFolderId());
         mBookmarkId1 =
-                runOnUiThreadBlockingNoException(
+                runOnUiThreadBlocking(
                         () ->
                                 bookmarkModel.addBookmark(
                                         mMobileFolderId, 0, "bookmark 1", new GURL("test1.com")));
         mBookmarkId2 =
-                runOnUiThreadBlockingNoException(
+                runOnUiThreadBlocking(
                         () ->
                                 bookmarkModel.addBookmark(
                                         mMobileFolderId, 0, "bookmark 2", new GURL("test2.com")));
         mBookmarkId3 =
-                runOnUiThreadBlockingNoException(
+                runOnUiThreadBlocking(
                         () ->
                                 bookmarkModel.addBookmark(
                                         mMobileFolderId, 0, "bookmark 3", new GURL("test3.com")));
         mLongTextFolderId =
-                runOnUiThreadBlockingNoException(
+                runOnUiThreadBlocking(
                         () ->
                                 bookmarkModel.addFolder(
                                         mMobileFolderId,

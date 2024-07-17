@@ -401,7 +401,7 @@ public class BookmarksTest {
 
     private BookmarkId addClientBookmark(final String title, final GURL url) {
         BookmarkId id =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             BookmarkId parentId = mBookmarkModel.getMobileFolderId();
                             return mBookmarkModel.addBookmark(parentId, 0, title, url);
@@ -412,7 +412,7 @@ public class BookmarksTest {
 
     private BookmarkId addClientBookmarkFolder(final String title) {
         BookmarkId id =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             BookmarkId parentId = mBookmarkModel.getMobileFolderId();
                             return mBookmarkModel.addFolder(parentId, 0, title);
@@ -422,7 +422,7 @@ public class BookmarksTest {
     }
 
     private String getBookmarkBarGuid() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return mBookmarkModel.getBookmarkGuidByIdForTesting(
                             mBookmarkModel.getDesktopFolderId());

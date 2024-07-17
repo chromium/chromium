@@ -169,7 +169,7 @@ public class OverlayPanelManagerTest {
     @Before
     public void setupTest() {
         mWindowAndroid =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             mActivity = activityTestRule.getActivity();
                             return new ActivityWindowAndroid(

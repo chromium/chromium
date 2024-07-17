@@ -135,7 +135,7 @@ public final class ShareButtonControllerTest {
                 };
 
         PropertyModel dialogModel =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                                         .with(ModalDialogProperties.CONTROLLER, controller)

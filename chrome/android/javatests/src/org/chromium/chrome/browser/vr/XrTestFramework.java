@@ -459,7 +459,7 @@ public abstract class XrTestFramework {
     private static String runJavaScriptInFrameInternal(
             String js, int timeout, final WebContents webContents, boolean failOnTimeout) {
         RenderFrameHostTestExt rfh =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 new RenderFrameHostTestExt(
                                         WebContentsUtils.getFocusedFrame(webContents)));
@@ -541,8 +541,7 @@ public abstract class XrTestFramework {
         // It is possible, particularly with multiple sessions and navigations within a single test,
         // for the page to get zoomed in on navigation. So, ensure that we are always zoomed out
         // enough to see all page content after we do a page load.
-        ThreadUtils.runOnUiThreadBlockingNoException(
-                () -> ZoomController.zoomReset(mRule.getWebContents()));
+        ThreadUtils.runOnUiThreadBlocking(() -> ZoomController.zoomReset(mRule.getWebContents()));
         return result;
     }
 

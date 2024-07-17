@@ -97,7 +97,7 @@ public class SafeBrowsingSettingsFragmentTest {
 
     @SafeBrowsingState
     private int getSafeBrowsingState() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return new SafeBrowsingBridge(ProfileManager.getLastUsedRegularProfile())
                             .getSafeBrowsingState();
@@ -105,7 +105,7 @@ public class SafeBrowsingSettingsFragmentTest {
     }
 
     private boolean isSafeBrowsingManaged() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return new SafeBrowsingBridge(ProfileManager.getLastUsedRegularProfile())
                             .isSafeBrowsingManaged();

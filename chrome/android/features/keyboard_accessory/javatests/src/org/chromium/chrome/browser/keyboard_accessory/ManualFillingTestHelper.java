@@ -174,7 +174,7 @@ public class ManualFillingTestHelper {
 
     public RecyclerView getAccessoryBarView() {
         final ViewGroup keyboardAccessory =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 mActivityTestRule
                                         .getActivity()

@@ -26,9 +26,7 @@ public final class DeviceRestriction {
 
     private static boolean isAuto() {
         if (sIsAuto == null) {
-            sIsAuto =
-                    ThreadUtils.runOnUiThreadBlockingNoException(
-                            () -> BuildInfo.getInstance().isAutomotive);
+            sIsAuto = ThreadUtils.runOnUiThreadBlocking(() -> BuildInfo.getInstance().isAutomotive);
         }
         return sIsAuto;
     }

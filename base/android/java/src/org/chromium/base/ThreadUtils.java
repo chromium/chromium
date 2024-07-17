@@ -168,27 +168,13 @@ public class ThreadUtils {
      * Run the supplied Runnable on the main thread. The method will block until the Runnable
      * completes.
      *
-     * Note that non-test usage of this function is heavily discouraged. For non-tests, use
+     * <p>Note that non-test usage of this function is heavily discouraged. For non-tests, use
      * callbacks rather than blocking threads.
      *
      * @param r The Runnable to run.
      */
-    public static void runOnUiThreadBlocking(final Runnable r) {
+    public static void runOnUiThreadBlocking(Runnable r) {
         PostTask.runSynchronously(TaskTraits.UI_DEFAULT, r);
-    }
-
-    /**
-     * Run the supplied Callable on the main thread, wrapping any exceptions in a RuntimeException.
-     * The method will block until the Callable completes.
-     *
-     * <p>Note that non-test usage of this function is heavily discouraged. For non-tests, use
-     * callbacks rather than blocking threads.
-     *
-     * @param c The Callable to run
-     * @return The result of the callable
-     */
-    public static <T> T runOnUiThreadBlockingNoException(Callable<T> c) {
-        return runOnUiThreadBlocking(c);
     }
 
     /**

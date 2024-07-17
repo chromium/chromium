@@ -120,7 +120,7 @@ public class PassphraseActivityTest {
     }
 
     private FakeSyncServiceImpl overrideSyncService() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // PSS has to be constructed on the UI thread.
                     FakeSyncServiceImpl fakeSyncService = new FakeSyncServiceImpl();

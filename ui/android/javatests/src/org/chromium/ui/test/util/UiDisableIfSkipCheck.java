@@ -30,7 +30,7 @@ public class UiDisableIfSkipCheck extends DisableIfSkipCheck {
         if (!phoneOnly && !tabletOnly && !largeTabletOnly) {
             return false;
         }
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     boolean isTablet =
                             DeviceFormFactor.isNonMultiDisplayContextOnTablet(mTargetContext);

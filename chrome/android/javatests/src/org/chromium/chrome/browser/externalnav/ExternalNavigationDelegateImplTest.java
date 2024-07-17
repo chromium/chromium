@@ -74,10 +74,10 @@ public class ExternalNavigationDelegateImplTest {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         doReturn(mMockWindowAndroid).when(mMockTab).getWindowAndroid();
         mExternalNavigationDelegateImpl =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> new ExternalNavigationDelegateImpl(mMockTab));
         mExternalNavigationDelegateImplForTesting =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> new ExternalNavigationDelegateImplForTesting(mMockTab));
     }
 

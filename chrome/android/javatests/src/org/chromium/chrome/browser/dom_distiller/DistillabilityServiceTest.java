@@ -67,7 +67,7 @@ public class DistillabilityServiceTest {
         final CallbackHelper readerShownCallbackHelper = new CallbackHelper();
 
         TestWebContentsObserver observer =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> new TestWebContentsObserver(mActivityTestRule.getWebContents()));
         OnPageFinishedHelper finishHelper = observer.getOnPageFinishedHelper();
 

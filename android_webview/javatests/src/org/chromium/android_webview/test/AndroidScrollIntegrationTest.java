@@ -249,7 +249,7 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
             final ScrollTestContainerView testContainerView,
             final int scrollXPix,
             final int scrollYPix) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         scrollXPix == testContainerView.getScrollX()
                                 && scrollYPix == testContainerView.getScrollY());

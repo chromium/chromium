@@ -40,7 +40,7 @@ public class HubTabSwitcherAppMenuFacility extends AppMenuFacility<HubTabSwitche
         if (!mIsIncognito) {
             // Regular Hub Tab Switcher
             int tabCount =
-                    ThreadUtils.runOnUiThreadBlockingNoException(
+                    ThreadUtils.runOnUiThreadBlocking(
                             () ->
                                     mHostStation
                                             .getActivity()

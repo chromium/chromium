@@ -76,7 +76,7 @@ public class TemplateUrlServiceTest {
     @Before
     public void setUp() {
         mTemplateUrlService =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 TemplateUrlServiceFactory.getForProfile(
                                         ProfileManager.getLastUsedRegularProfile()));
@@ -89,7 +89,7 @@ public class TemplateUrlServiceTest {
         waitForTemplateUrlServiceToLoad();
 
         Assert.assertTrue(
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         new Callable<Boolean>() {
                             @Override
                             public Boolean call() {
@@ -162,7 +162,7 @@ public class TemplateUrlServiceTest {
         waitForTemplateUrlServiceToLoad();
 
         Assert.assertTrue(
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         new Callable<Boolean>() {
                             @Override
                             public Boolean call() {
@@ -420,7 +420,7 @@ public class TemplateUrlServiceTest {
         waitForTemplateUrlServiceToLoad();
 
         Assert.assertTrue(
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         new Callable<Boolean>() {
                             @Override
                             public Boolean call() {
@@ -450,7 +450,7 @@ public class TemplateUrlServiceTest {
             String imageTranslateSourceLanguageParamKey,
             String imageTranslateTargetLanguageParamKey,
             boolean setAsDefault) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return templateUrlService.setPlayAPISearchEngine(
                             name,
@@ -469,12 +469,12 @@ public class TemplateUrlServiceTest {
     }
 
     private TemplateUrl getDefaultSearchEngine(TemplateUrlService templateUrlService) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 templateUrlService::getDefaultSearchEngineTemplateUrl);
     }
 
     private List<TemplateUrl> getSearchEngines(TemplateUrlService templateUrlService) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(templateUrlService::getTemplateUrls);
+        return ThreadUtils.runOnUiThreadBlocking(templateUrlService::getTemplateUrls);
     }
 
     private int getSearchEngineCount(TemplateUrlService templateUrlService) {

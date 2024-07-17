@@ -62,7 +62,7 @@ public class MultiWindowTestHelper {
         // Get the class name to use for the second ChromeTabbedActivity. This step is important
         // for initializing things in MultiWindowUtils.java.
         Class<? extends Activity> secondActivityClass =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 MultiWindowUtils.getInstance()
                                         .getOpenInOtherWindowActivity(activity));

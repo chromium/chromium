@@ -86,7 +86,7 @@ public class StandardProtectionSettingsFragmentTest {
     }
 
     private boolean isSafeBrowsingExtendedReportingEnabled() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return new SafeBrowsingBridge(ProfileManager.getLastUsedRegularProfile())
                             .isSafeBrowsingExtendedReportingEnabled();

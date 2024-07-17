@@ -272,7 +272,7 @@ public class WebContentsAccessibilityTest {
     }
 
     public AccessibilityNodeInfoCompat createAccessibilityNodeInfo(int virtualViewId) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.mNodeProvider.createAccessibilityNodeInfo(virtualViewId));
     }
 
@@ -2042,7 +2042,7 @@ public class WebContentsAccessibilityTest {
 
         // Perform the "cut" action, and poll for clipboard to be non-null.
         ClipboardManager clipboardManager =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return (ClipboardManager)
                                     mActivityTestRule
@@ -2098,7 +2098,7 @@ public class WebContentsAccessibilityTest {
 
         // Perform the "copy" action, and poll for clipboard to be non-null.
         ClipboardManager clipboardManager =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return (ClipboardManager)
                                     mActivityTestRule

@@ -323,7 +323,7 @@ public class DownloadTest {
         final TabModel model = sDownloadTestRule.getActivity().getCurrentTabModel();
         final int count = model.getCount();
         final Tab newTab =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return tabCreator.createNewTab(
                                     new LoadUrlParams(url, PageTransition.LINK),

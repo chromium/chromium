@@ -237,7 +237,7 @@ public class TabTest {
     @Feature({"Tab"})
     public void testRestoreTabState() {
         TabState tabState =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return TabStateExtractor.from(mTab);
                         });
@@ -415,7 +415,7 @@ public class TabTest {
 
     private Tab createSecondFrozenTab(String url) {
         Tab tab = sActivityTestRule.loadUrlInNewTab(url, /* incognito= */ false);
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabState state = TabStateExtractor.from(tab);
                     sActivityTestRule.getActivity().getCurrentTabModel().closeTab(tab);

@@ -588,7 +588,7 @@ public class AccountManagementFragmentTest {
     }
 
     private FakeSyncServiceImpl overrideSyncService() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     FakeSyncServiceImpl fakeSyncService = new FakeSyncServiceImpl();
                     SyncServiceFactory.setInstanceForTesting(fakeSyncService);

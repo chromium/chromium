@@ -71,7 +71,7 @@ public class DownloadDialogIncognitoTest {
                     AppModalPresenter mAppModalPresenter =
                             new AppModalPresenter(mActivityTestRule.getActivity());
                     mModalDialogManager =
-                            ThreadUtils.runOnUiThreadBlockingNoException(
+                            ThreadUtils.runOnUiThreadBlocking(
                                     () -> {
                                         return new ModalDialogManager(
                                                 mAppModalPresenter,

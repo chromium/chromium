@@ -134,7 +134,7 @@ public class SelectionPopupBackPressTest {
                 mActivityTestRule.getWebContents(),
                 "document.getElementById('selection_popup_text')");
         SelectionPopupController controller =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return SelectionPopupController.fromWebContents(
                                     mActivityTestRule.getWebContents());
@@ -186,7 +186,7 @@ public class SelectionPopupBackPressTest {
     }
 
     private boolean find(Iterator<TabObserver> observers, BackPressHandler handler) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     while (observers.hasNext()) {
                         if (observers.next() == handler) {

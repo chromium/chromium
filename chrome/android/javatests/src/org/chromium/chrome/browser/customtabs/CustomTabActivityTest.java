@@ -377,8 +377,7 @@ public class CustomTabActivityTest {
                             });
                 });
 
-        ThreadUtils.runOnUiThreadBlockingNoException(
-                () -> getSessionDataHolder().handleIntent(intent));
+        ThreadUtils.runOnUiThreadBlocking(() -> getSessionDataHolder().handleIntent(intent));
         pageLoadFinishedHelper.waitForCallback(0);
     }
 
@@ -869,7 +868,7 @@ public class CustomTabActivityTest {
         assertEquals(getActivity().getIntentDataProvider().getSession(), session);
         Assert.assertFalse(
                 "CustomTabContentHandler handled intent with wrong session",
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return getSessionDataHolder()
                                     .handleIntent(
@@ -884,7 +883,7 @@ public class CustomTabActivityTest {
                 });
         Assert.assertTrue(
                 "CustomTabContentHandler can't handle intent with same session",
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             intent.setData(Uri.parse(mTestPage2));
                             return getSessionDataHolder().handleIntent(intent);
@@ -981,7 +980,7 @@ public class CustomTabActivityTest {
                 });
         Assert.assertTrue(
                 "CustomTabContentHandler can't handle intent with same session",
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> getSessionDataHolder().handleIntent(intent)));
         pageLoadFinishedHelper.waitForCallback(0);
     }
@@ -1030,7 +1029,7 @@ public class CustomTabActivityTest {
                 });
         Assert.assertTrue(
                 "CustomTabContentHandler can't handle intent with same session",
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> getSessionDataHolder().handleIntent(intent)));
         pageLoadFinishedHelper.waitForCallback(0);
     }

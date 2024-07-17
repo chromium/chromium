@@ -255,7 +255,7 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
                     mActivityTabSupplier = new ObservableSupplierImpl<>();
                 });
         mHandler =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 new MinimizeAppAndCloseTabBackPressHandler(
                                         mActivityTabSupplier,

@@ -479,7 +479,7 @@ public class MainSettingsFragmentTest {
     @SmallTest
     public void testSigninRowShowsNoAlertForIdentityErrorsForSyncingUsers() {
         FakeSyncServiceImpl fakeSyncService =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
                             SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
@@ -501,7 +501,7 @@ public class MainSettingsFragmentTest {
     @SmallTest
     public void testSigninRowShowsAlertForIdentityErrors() {
         FakeSyncServiceImpl fakeSyncService =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
                             SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
@@ -529,7 +529,7 @@ public class MainSettingsFragmentTest {
     public void testRenderOnIdentityErrorForSignedInUsers_withoutReplaceSyncPromos()
             throws IOException {
         FakeSyncServiceImpl fakeSyncService =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
                             SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
@@ -558,7 +558,7 @@ public class MainSettingsFragmentTest {
     public void testRenderOnIdentityErrorForSignedInUsers_withReplaceSyncPromos()
             throws IOException {
         FakeSyncServiceImpl fakeSyncService =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
                             SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);

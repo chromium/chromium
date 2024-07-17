@@ -54,7 +54,7 @@ public class RestoreMigrateTest {
 
     private void writeStateFile(final TabModelSelector selector, int index) throws IOException {
         TabModelSelectorMetadata data =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         new Callable<TabModelSelectorMetadata>() {
                             @Override
                             public TabModelSelectorMetadata call() throws Exception {
@@ -122,7 +122,7 @@ public class RestoreMigrateTest {
 
     private TabPersistentStore buildTabPersistentStore(
             final TabModelSelector selector, final int selectorIndex) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabPersistencePolicy persistencePolicy =
                             new TabbedModeTabPersistencePolicy(selectorIndex, false, true);

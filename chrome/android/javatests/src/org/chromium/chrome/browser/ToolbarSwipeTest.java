@@ -215,7 +215,7 @@ public class ToolbarSwipeTest {
         final ChromeTabbedActivity activity = sActivityTestRule.getActivity();
         final int id = activity.getCurrentTabModel().getTabAt(finalIndex).getId();
         final TabModelSelectorTabModelObserver observer =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return new TabModelSelectorTabModelObserver(
                                     activity.getTabModelSelector()) {

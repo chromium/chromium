@@ -263,7 +263,7 @@ public class IdentityErrorCardPreferenceTest {
     private View getIdentityErrorCardView() {
         ViewUtils.waitForVisibleView(withId(R.id.identity_error_card));
         View view =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return mSettingsActivityTestRule
                                     .getActivity()

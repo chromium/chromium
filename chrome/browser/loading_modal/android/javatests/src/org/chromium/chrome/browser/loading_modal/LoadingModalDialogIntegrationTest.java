@@ -9,7 +9,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
-import static org.chromium.base.ThreadUtils.runOnUiThreadBlockingNoException;
 import static org.chromium.ui.modaldialog.DialogDismissalCause.ACTIVITY_DESTROYED;
 
 import android.os.Handler;
@@ -78,7 +77,7 @@ public class LoadingModalDialogIntegrationTest {
     @BeforeClass
     public static void setupSuite() {
         sActivityTestRule.launchActivity(null);
-        sActivity = runOnUiThreadBlockingNoException(() -> sActivityTestRule.getActivity());
+        sActivity = runOnUiThreadBlocking(() -> sActivityTestRule.getActivity());
     }
 
     @Before
@@ -96,7 +95,7 @@ public class LoadingModalDialogIntegrationTest {
     @MediumTest
     public void testShownAndDismissed() throws TimeoutException {
         LoadingModalDialogCoordinator coordinator =
-                runOnUiThreadBlockingNoException(
+                runOnUiThreadBlocking(
                         () ->
                                 LoadingModalDialogCoordinator.create(
                                         getDialogManager(),
@@ -118,7 +117,7 @@ public class LoadingModalDialogIntegrationTest {
     @MediumTest
     public void testShownAndCancelled() throws TimeoutException, ExecutionException {
         LoadingModalDialogCoordinator coordinator =
-                runOnUiThreadBlockingNoException(
+                runOnUiThreadBlocking(
                         () ->
                                 LoadingModalDialogCoordinator.create(
                                         getDialogManager(),
@@ -140,7 +139,7 @@ public class LoadingModalDialogIntegrationTest {
     @MediumTest
     public void testShownAndDestroyed() throws TimeoutException {
         LoadingModalDialogCoordinator coordinator =
-                runOnUiThreadBlockingNoException(
+                runOnUiThreadBlocking(
                         () ->
                                 LoadingModalDialogCoordinator.create(
                                         getDialogManager(),

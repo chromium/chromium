@@ -121,7 +121,7 @@ public class ChromeTabModalPresenterTest {
     public void setUp() {
         mActivity = sActivityTestRule.getActivity();
         mOmnibox = new OmniboxTestUtils(mActivity);
-        mManager = ThreadUtils.runOnUiThreadBlockingNoException(mActivity::getModalDialogManager);
+        mManager = ThreadUtils.runOnUiThreadBlocking(mActivity::getModalDialogManager);
         mTestObserver = new TestObserver();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -619,7 +619,7 @@ public class ChromeTabModalPresenterTest {
     }
 
     private @BrowserControlsState int getBrowserControlsConstraints() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> mTabModalPresenter.getBrowserControlsVisibilityDelegate().get());
     }
 

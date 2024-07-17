@@ -26,8 +26,7 @@ public final class UiRestriction {
 
     private static boolean isTablet() {
         if (sIsTablet == null) {
-            sIsTablet =
-                    ThreadUtils.runOnUiThreadBlockingNoException(() -> DeviceFormFactor.isTablet());
+            sIsTablet = ThreadUtils.runOnUiThreadBlocking(() -> DeviceFormFactor.isTablet());
         }
         return sIsTablet;
     }

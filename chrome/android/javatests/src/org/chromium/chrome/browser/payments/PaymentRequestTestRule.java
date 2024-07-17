@@ -503,7 +503,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
     /** Gets the retry error message. */
     /* package */ String getRetryErrorMessage() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         ((TextView) mUI.getDialogForTest().findViewById(R.id.retry_error))
                                 .getText()
@@ -512,19 +512,19 @@ import java.util.concurrent.atomic.AtomicReference;
 
     /** Gets the button state for the shipping summary section. */
     /* package */ int getShippingAddressSectionButtonState() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> mUI.getShippingAddressSectionForTest().getEditButtonState());
     }
 
     /** Gets the button state for the contact details section. */
     /* package */ int getContactDetailsButtonState() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> mUI.getContactDetailsSectionForTest().getEditButtonState());
     }
 
     /** Returns the label of the payment app at the specified |index|. */
     /* package */ String getPaymentAppLabel(final int index) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         ((OptionSection) mUI.getPaymentMethodSectionForTest())
                                 .getOptionLabelsForTest(index)
@@ -534,7 +534,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
     /** Returns the label of the selected payment app. */
     /* package */ String getSelectedPaymentAppLabel() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OptionSection section = ((OptionSection) mUI.getPaymentMethodSectionForTest());
                     int size = section.getNumberOfOptionLabelsForTest();
@@ -549,13 +549,13 @@ import java.util.concurrent.atomic.AtomicReference;
 
     /** Returns the total amount in order summary section. */
     /* package */ String getOrderSummaryTotal() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> mUI.getOrderSummaryTotalTextViewForTest().getText().toString());
     }
 
     /** Returns the amount text corresponding to the line item at the specified |index|. */
     /* package */ String getLineItemAmount(int index) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mUI.getOrderSummarySectionForTest()
                                 .getLineItemAmountForTest(index)
@@ -566,7 +566,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
     /** Returns the amount text corresponding to the line item at the specified |index|. */
     /* package */ int getNumberOfLineItems() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> mUI.getOrderSummarySectionForTest().getNumberOfLineItemsForTest());
     }
 
@@ -575,7 +575,7 @@ import java.util.concurrent.atomic.AtomicReference;
      * |suggestionIndex|.
      */
     /* package */ String getContactDetailsSuggestionLabel(final int suggestionIndex) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         ((OptionSection) mUI.getContactDetailsSectionForTest())
                                 .getOptionLabelsForTest(suggestionIndex)
@@ -585,7 +585,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
     /** Returns the number of payment apps. */
     /* package */ int getNumberOfPaymentApps() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         ((OptionSection) mUI.getPaymentMethodSectionForTest())
                                 .getNumberOfOptionLabelsForTest());
@@ -598,7 +598,7 @@ import java.util.concurrent.atomic.AtomicReference;
     /* package */ String getPaymentMethodSuggestionLabel(final int suggestionIndex) {
         Assert.assertTrue(suggestionIndex < getNumberOfPaymentApps());
 
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         ((OptionSection) mUI.getPaymentMethodSectionForTest())
                                 .getOptionLabelsForTest(suggestionIndex)
@@ -608,7 +608,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
     /** Returns the number of contact detail suggestions. */
     /* package */ int getNumberOfContactDetailSuggestions() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         ((OptionSection) mUI.getContactDetailsSectionForTest())
                                 .getNumberOfOptionLabelsForTest());
@@ -621,7 +621,7 @@ import java.util.concurrent.atomic.AtomicReference;
     /* package */ String getShippingAddressSuggestionLabel(final int suggestionIndex) {
         Assert.assertTrue(suggestionIndex < getNumberOfShippingAddressSuggestions());
 
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mUI.getShippingAddressSectionForTest()
                                 .getOptionLabelsForTest(suggestionIndex)
@@ -630,7 +630,7 @@ import java.util.concurrent.atomic.AtomicReference;
     }
 
     /* package */ String getShippingAddressSummary() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mUI.getShippingAddressSectionForTest()
                                 .getLeftSummaryLabelForTest()
@@ -639,7 +639,7 @@ import java.util.concurrent.atomic.AtomicReference;
     }
 
     /* package */ String getShippingOptionSummary() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mUI.getShippingOptionSectionForTest()
                                 .getLeftSummaryLabelForTest()
@@ -648,7 +648,7 @@ import java.util.concurrent.atomic.AtomicReference;
     }
 
     /* package */ String getShippingOptionCostSummaryOnBottomSheet() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mUI.getShippingOptionSectionForTest()
                                 .getRightSummaryLabelForTest()
@@ -657,7 +657,7 @@ import java.util.concurrent.atomic.AtomicReference;
     }
 
     /* package */ String getShippingAddressWarningLabel() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     View view =
                             mUI.getShippingAddressSectionForTest()
@@ -669,7 +669,7 @@ import java.util.concurrent.atomic.AtomicReference;
     }
 
     /* package */ String getShippingAddressDescriptionLabel() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     View view =
                             mUI.getShippingAddressSectionForTest()
@@ -770,7 +770,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
     /** Returns the number of shipping address suggestions. */
     /* package */ int getNumberOfShippingAddressSuggestions() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         ((OptionSection) mUI.getShippingAddressSectionForTest())
                                 .getNumberOfOptionLabelsForTest());
@@ -778,7 +778,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
     /** Returns the {@link OptionRow} at the given index for the shipping address section. */
     /* package */ OptionRow getShippingAddressOptionRowAtIndex(final int index) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         ((OptionSection) mUI.getShippingAddressSectionForTest())
                                 .getOptionRowAtIndex(index));
@@ -939,7 +939,7 @@ import java.util.concurrent.atomic.AtomicReference;
     }
 
     /* package */ View getPaymentRequestView() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> mUI.getDialogForTest().findViewById(R.id.payment_request));
     }
 

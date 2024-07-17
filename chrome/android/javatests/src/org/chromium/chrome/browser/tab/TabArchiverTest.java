@@ -13,7 +13,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
-import static org.chromium.base.ThreadUtils.runOnUiThreadBlockingNoException;
 
 import androidx.test.filters.MediumTest;
 
@@ -88,7 +87,7 @@ public class TabArchiverTest {
     @Before
     public void setUp() throws Exception {
         mArchivedTabModelOrchestrator =
-                runOnUiThreadBlockingNoException(
+                runOnUiThreadBlocking(
                         () ->
                                 ArchivedTabModelOrchestrator.getForProfile(
                                         sActivityTestRule
@@ -111,7 +110,7 @@ public class TabArchiverTest {
                 });
 
         mTabArchiver =
-                runOnUiThreadBlockingNoException(
+                runOnUiThreadBlocking(
                         () ->
                                 new TabArchiver(
                                         mArchivedTabModel,

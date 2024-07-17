@@ -130,7 +130,7 @@ public class TabModelSelectorTabObserverTest {
     @SmallTest
     public void testObserverAddedBeforeInitialize() {
         TabModelSelectorBase selector =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return new TabModelSelectorBase(null, TabGroupModelFilter::new, false) {
                                 @Override
@@ -170,7 +170,7 @@ public class TabModelSelectorTabObserverTest {
 
     private TestTabModelSelectorTabObserver createTabModelSelectorTabObserver() {
         final TestTabModelSelectorTabObserver observer =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> new TestTabModelSelectorTabObserver(sTestRule.getSelector()));
         // Initially tabs are added in deferred state, wait for this to complete before proceeding
         // to ensure all tabs are registered. In production the observer should only ever be
@@ -193,7 +193,7 @@ public class TabModelSelectorTabObserverTest {
     }
 
     private Tab createTestTab(boolean incognito) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return new MockTab(mTabId++, incognito ? mIncognitoProfile : mProfile);
                 });
@@ -247,7 +247,7 @@ public class TabModelSelectorTabObserverTest {
     private void assertTabHasObserver(Tab tab, TestTabModelSelectorTabObserver observer) {
         Assert.assertTrue(tabHasObserver(tab, observer));
         Assert.assertTrue(
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return observer.isRegisteredTab(tab);
                         }));
@@ -258,14 +258,14 @@ public class TabModelSelectorTabObserverTest {
         Assert.assertFalse(tabHasObserver(tab, observer));
         if (!checkUnregistration) return;
         Assert.assertTrue(
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return observer.isUnregisteredTab(tab);
                         }));
     }
 
     private static boolean tabHasObserver(Tab tab, TestTabModelSelectorTabObserver observer) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     RewindableIterator<TabObserver> tabObservers =
                             TabTestUtils.getTabObservers(tab);

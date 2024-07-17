@@ -800,7 +800,7 @@ public class ShoppingPersistedTabDataTest {
                 OptimizationGuideDecision.TRUE,
                 null);
         MockTab tab =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             MockTab mockTab =
                                     MockTab.createAndInitialize(

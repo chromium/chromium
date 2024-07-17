@@ -126,8 +126,7 @@ public class GoogleServicesSettingsTest {
     public void allowSigninOptionHiddenFromChildUser() {
         mSigninTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_NAME);
         final Profile profile =
-                ThreadUtils.runOnUiThreadBlockingNoException(
-                        ProfileManager::getLastUsedRegularProfile);
+                ThreadUtils.runOnUiThreadBlocking(ProfileManager::getLastUsedRegularProfile);
         CriteriaHelper.pollUiThread(profile::isChild);
 
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
@@ -516,7 +515,7 @@ public class GoogleServicesSettingsTest {
     }
 
     private boolean isPasswordSyncEnabled() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         SyncServiceFactory.getForProfile(ProfileManager.getLastUsedRegularProfile())
                                 .getSelectedTypes()

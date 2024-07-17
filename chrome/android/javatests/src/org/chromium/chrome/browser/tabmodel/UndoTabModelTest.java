@@ -211,7 +211,7 @@ public class UndoTabModelTest {
         TabModelSelector selector = orchestrator.getTabModelSelector();
         TabModel model = selector.getModel(false);
         ChromeTabCreator tabCreator =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> sActivityTestRule.getActivity().getTabCreator(false));
         createTabOnUiThread(tabCreator);
 

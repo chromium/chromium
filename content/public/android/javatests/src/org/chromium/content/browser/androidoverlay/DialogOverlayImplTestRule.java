@@ -183,7 +183,7 @@ public class DialogOverlayImplTestRule extends ContentShellActivityTestRule {
 
         // Fetch the routing token.
         mRoutingToken =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             RenderFrameHostImpl host =
                                     (RenderFrameHostImpl) getWebContents().getMainFrame();
@@ -206,7 +206,7 @@ public class DialogOverlayImplTestRule extends ContentShellActivityTestRule {
 
     // Create an overlay with the given parameters and return it.
     DialogOverlayImpl createOverlay(final int x, final int y, final int width, final int height) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AndroidOverlayConfig config = new AndroidOverlayConfig();
                     config.routingToken = mRoutingToken;

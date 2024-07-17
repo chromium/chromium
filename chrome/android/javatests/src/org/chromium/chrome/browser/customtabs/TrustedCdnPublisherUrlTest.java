@@ -351,7 +351,7 @@ public class TrustedCdnPublisherUrlTest {
 
         // TODO (https://crbug.com/1063807):  Add incognito mode tests.
         OfflinePageBridge offlinePageBridge =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             Profile profile = ProfileManager.getLastUsedRegularProfile();
                             return OfflinePageBridge.getForProfile(profile);

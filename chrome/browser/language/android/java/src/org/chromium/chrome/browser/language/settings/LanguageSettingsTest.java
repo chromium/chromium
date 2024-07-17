@@ -66,8 +66,7 @@ public class LanguageSettingsTest {
     public void setUp() throws Exception {
         mActivity = mSettingsActivityTestRule.startSettingsActivity();
         mProfile =
-                ThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> ProfileManager.getLastUsedRegularProfile());
+                ThreadUtils.runOnUiThreadBlocking(() -> ProfileManager.getLastUsedRegularProfile());
     }
 
     private void addLanguage() {

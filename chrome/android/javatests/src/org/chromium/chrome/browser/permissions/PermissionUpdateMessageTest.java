@@ -223,7 +223,7 @@ public class PermissionUpdateMessageTest {
 
             expectMessagesCount(windowAndroid, 1);
             final WebContents webContents =
-                    ThreadUtils.runOnUiThreadBlockingNoException(
+                    ThreadUtils.runOnUiThreadBlocking(
                             () ->
                                     mActivityTestRule
                                             .getActivity()
@@ -344,7 +344,7 @@ public class PermissionUpdateMessageTest {
         final var windowAndroid = mActivityTestRule.getActivity().getWindowAndroid();
         final String locationUrl = mTestServer.getURL(GEOLOCATION_PAGE);
         final PermissionInfo geolocationSettings =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         new Callable<PermissionInfo>() {
                             @Override
                             public PermissionInfo call() {
@@ -386,7 +386,7 @@ public class PermissionUpdateMessageTest {
                     });
 
             final WebContents webContents =
-                    ThreadUtils.runOnUiThreadBlockingNoException(
+                    ThreadUtils.runOnUiThreadBlocking(
                             new Callable<WebContents>() {
                                 @Override
                                 public WebContents call() {

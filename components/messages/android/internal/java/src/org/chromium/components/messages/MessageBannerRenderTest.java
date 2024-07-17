@@ -253,7 +253,7 @@ public class MessageBannerRenderTest extends BlankUiTestActivityTestCase {
     @Restriction({RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testBasic_resetPrimaryButtonText() throws Exception {
         MessageBannerView result =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             Activity activity = getActivity();
                             final String veryLongButtonText =

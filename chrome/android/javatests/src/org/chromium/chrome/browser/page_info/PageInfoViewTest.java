@@ -384,7 +384,7 @@ public class PageInfoViewTest {
 
     private List<ContentSettingException> getNonWildcardContentSettingExceptions(
             @ContentSettingsType.EnumType int type) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     List<ContentSettingException> exceptions =
                             new ArrayList<ContentSettingException>();

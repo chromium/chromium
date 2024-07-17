@@ -80,7 +80,7 @@ public class BluetoothScanningPermissionDialogTest {
     }
 
     private BluetoothScanningPermissionDialog createDialog() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mWindowAndroid = sActivityTestRule.getActivity().getWindowAndroid();
                     BluetoothScanningPermissionDialog dialog =

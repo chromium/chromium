@@ -189,12 +189,12 @@ public class FontSizePrefsTest {
     }
 
     private FontSizePrefs getFontSizePrefs(final Context context) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> FontSizePrefs.getInstance(ProfileManager.getLastUsedRegularProfile()));
     }
 
     private TestingObserver createAndAddFontSizePrefsObserver() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TestingObserver observer = new TestingObserver();
                     mFontSizePrefs.addObserver(observer);
@@ -207,13 +207,11 @@ public class FontSizePrefsTest {
     }
 
     private float getUserFontScaleFactor() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mFontSizePrefs.getUserFontScaleFactor());
+        return ThreadUtils.runOnUiThreadBlocking(() -> mFontSizePrefs.getUserFontScaleFactor());
     }
 
     private float getFontScaleFactor() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mFontSizePrefs.getFontScaleFactor());
+        return ThreadUtils.runOnUiThreadBlocking(() -> mFontSizePrefs.getFontScaleFactor());
     }
 
     private void setForceEnableZoomFromUser(final boolean enabled) {
@@ -221,8 +219,7 @@ public class FontSizePrefsTest {
     }
 
     private boolean getForceEnableZoom() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mFontSizePrefs.getForceEnableZoom());
+        return ThreadUtils.runOnUiThreadBlocking(() -> mFontSizePrefs.getForceEnableZoom());
     }
 
     private void setSystemFontScaleForTest(final float systemFontScale) {

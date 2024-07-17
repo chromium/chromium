@@ -359,7 +359,7 @@ public class TabbedAppMenuTest {
                             && requestDesktopSiteIndex <= visibleEnd;
                 };
         CriteriaHelper.pollUiThread(() -> getListView().getChildAt(0) != null);
-        if (!ThreadUtils.runOnUiThreadBlockingNoException(isVisible)) {
+        if (!ThreadUtils.runOnUiThreadBlocking(isVisible)) {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> getListView().smoothScrollToPosition(requestDesktopSiteIndex));
             CriteriaHelper.pollUiThread(isVisible);
@@ -388,7 +388,7 @@ public class TabbedAppMenuTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         CriteriaHelper.pollUiThread(() -> getListView().getChildAt(0) != null);
-        if (!ThreadUtils.runOnUiThreadBlockingNoException(isVisible)) {
+        if (!ThreadUtils.runOnUiThreadBlocking(isVisible)) {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> getListView().smoothScrollToPosition(requestDesktopSiteIndex));
             CriteriaHelper.pollUiThread(isVisible);
@@ -475,7 +475,7 @@ public class TabbedAppMenuTest {
         ThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
 
         FakeSyncServiceImpl fakeSyncService =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
                             SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
@@ -515,7 +515,7 @@ public class TabbedAppMenuTest {
     public void testSettingsMenuItem_BadgeShownForSyncingUsersOnSyncError() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
         FakeSyncServiceImpl fakeSyncService =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
                             SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
@@ -632,13 +632,13 @@ public class TabbedAppMenuTest {
                     return position >= visibleStart && position <= visibleEnd;
                 };
 
-        if (!ThreadUtils.runOnUiThreadBlockingNoException(isVisible)) {
+        if (!ThreadUtils.runOnUiThreadBlocking(isVisible)) {
             ThreadUtils.runOnUiThreadBlocking(() -> getListView().setSelection(position));
             CriteriaHelper.pollUiThread(isVisible);
         }
 
         View view =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return getListView()
                                     .getChildAt(position - getListView().getFirstVisiblePosition());

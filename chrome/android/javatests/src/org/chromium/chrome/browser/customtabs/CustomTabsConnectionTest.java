@@ -363,7 +363,7 @@ public class CustomTabsConnectionTest {
         invalidBundle.putParcelable(CustomTabsService.KEY_URL, new Intent());
         invalidBundles.add(invalidBundle);
 
-        ThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mCustomTabsConnection.lowConfidenceMayLaunchUrl(invalidBundles));
     }
 

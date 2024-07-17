@@ -366,7 +366,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
     /** Wait for the permission dialog to be in the expected shown state. */
     public static void waitForDialogShownState(ChromeActivity activity, boolean expectedShowState) {
         ModalDialogManager dialogManager =
-                ThreadUtils.runOnUiThreadBlockingNoException(activity::getModalDialogManager);
+                ThreadUtils.runOnUiThreadBlocking(activity::getModalDialogManager);
         CriteriaHelper.pollUiThread(
                 () -> {
                     boolean isDialogShownForTest =

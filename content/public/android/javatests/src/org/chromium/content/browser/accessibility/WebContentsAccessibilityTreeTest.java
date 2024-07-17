@@ -235,7 +235,7 @@ public class WebContentsAccessibilityTreeTest {
 
     // Helper method to create an AccessibilityNodeInfo object.
     private AccessibilityNodeInfoCompat createAccessibilityNodeInfo(int virtualViewId) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.mNodeProvider.createAccessibilityNodeInfo(virtualViewId));
     }
 

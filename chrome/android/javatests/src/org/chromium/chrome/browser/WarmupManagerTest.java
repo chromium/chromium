@@ -162,7 +162,7 @@ public class WarmupManagerTest {
 
     private void assertOrderValid(boolean expectedState) {
         boolean isOrderValid =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return mTabGroupModelFilter.isOrderValid();
                         });
@@ -196,7 +196,7 @@ public class WarmupManagerTest {
         final String url = mWebServer.setResponse(MAIN_FRAME_FILE, data, null);
 
         Tab tab =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             @TabLaunchType
                             int type =
@@ -226,7 +226,7 @@ public class WarmupManagerTest {
     }
 
     private static Profile getNonPrimaryOTRProfile() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 (Callable<Profile>)
                         () -> {
                             OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
@@ -237,7 +237,7 @@ public class WarmupManagerTest {
     }
 
     private static Profile getPrimaryOTRProfile() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 (Callable<Profile>)
                         () ->
                                 ProfileManager.getLastUsedRegularProfile()
@@ -245,7 +245,7 @@ public class WarmupManagerTest {
     }
 
     private static Profile getRegularProfile() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 (Callable<Profile>) () -> ProfileManager.getLastUsedRegularProfile());
     }
 

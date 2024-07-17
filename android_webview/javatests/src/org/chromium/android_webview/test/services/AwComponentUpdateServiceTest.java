@@ -73,7 +73,7 @@ public class AwComponentUpdateServiceTest {
         AwComponentUpdateService svc = new AwComponentUpdateService();
         int cbCount = mCallbackHelper.getCallCount();
         boolean success =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return svc.maybeStartUpdates(false);
                         });

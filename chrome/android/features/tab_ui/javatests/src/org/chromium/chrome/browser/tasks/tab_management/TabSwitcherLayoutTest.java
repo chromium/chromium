@@ -162,8 +162,7 @@ public class TabSwitcherLayoutTest {
         cta.getTabContentManager().setCaptureMinRequestTimeForTesting(0);
 
         CriteriaHelper.pollUiThread(cta.getTabModelSelector()::isTabStateInitialized);
-        mModalDialogManager =
-                ThreadUtils.runOnUiThreadBlockingNoException(cta::getModalDialogManager);
+        mModalDialogManager = ThreadUtils.runOnUiThreadBlocking(cta::getModalDialogManager);
     }
 
     @After
@@ -440,8 +439,7 @@ public class TabSwitcherLayoutTest {
         Tab parentTab = cta.getTabModelSelector().getCurrentTab();
 
         // Create a tab group.
-        TabCreator tabCreator =
-                ThreadUtils.runOnUiThreadBlockingNoException(() -> cta.getTabCreator(false));
+        TabCreator tabCreator = ThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(false));
         LoadUrlParams loadUrlParams = new LoadUrlParams(mUrl);
         ThreadUtils.runOnUiThreadBlocking(
                 () ->

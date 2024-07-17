@@ -162,7 +162,7 @@ public class SelectableTabListEditorTest {
         // Eagerly inflate the tab switcher.
 
         boolean isTabSwitcherReady =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return cta.getTabSwitcherSupplierForTesting().get() != null;
                         });
@@ -739,7 +739,7 @@ public class SelectableTabListEditorTest {
 
         // Force the position to something fixed to 100% avoid flakes here.
         TabListRecyclerView tabListRecyclerView =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             TabListRecyclerView recyclerView =
                                     mTabListEditorLayout.findViewById(R.id.tab_list_recycler_view);
@@ -1118,8 +1118,7 @@ public class SelectableTabListEditorTest {
                 });
 
         mRobot.resultRobot.verifyTabListEditorIsVisible();
-        ThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mTabListEditorController.handleBackPressed());
+        ThreadUtils.runOnUiThreadBlocking(() -> mTabListEditorController.handleBackPressed());
         mRobot.resultRobot.verifyTabListEditorIsHidden();
         Snackbar currentSnackbar = mSnackbarManager.getCurrentSnackbarForTesting();
         Assert.assertEquals("Bookmarked", currentSnackbar.getTextForTesting());
@@ -1349,7 +1348,7 @@ public class SelectableTabListEditorTest {
         mRobot.resultRobot.verifyTabListEditorIsVisible();
 
         TabListRecyclerView tabListRecyclerView =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return mTabListEditorLayout.findViewById(R.id.tab_list_recycler_view);
                         });
@@ -1390,7 +1389,7 @@ public class SelectableTabListEditorTest {
         mRobot.resultRobot.verifyTabListEditorIsVisible();
 
         TabListRecyclerView tabListRecyclerView =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return mTabListEditorLayout.findViewById(R.id.tab_list_recycler_view);
                         });
@@ -1431,7 +1430,7 @@ public class SelectableTabListEditorTest {
 
         mRobot.resultRobot.verifyTabListEditorIsVisible();
         TabListRecyclerView tabListRecyclerView =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return mTabListEditorLayout.findViewById(R.id.tab_list_recycler_view);
                         });
@@ -1472,7 +1471,7 @@ public class SelectableTabListEditorTest {
 
         mRobot.resultRobot.verifyTabListEditorIsVisible();
         TabListRecyclerView tabListRecyclerView =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return mTabListEditorLayout.findViewById(R.id.tab_list_recycler_view);
                         });
@@ -1513,7 +1512,7 @@ public class SelectableTabListEditorTest {
 
         mRobot.resultRobot.verifyTabListEditorIsVisible();
         TabListRecyclerView tabListRecyclerView =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return mTabListEditorLayout.findViewById(R.id.tab_list_recycler_view);
                         });
@@ -1562,7 +1561,7 @@ public class SelectableTabListEditorTest {
                 .verifyItemSelectedAtAdapterPosition(2)
                 .verifyToolbarSelectionText("3 tabs");
         TabListRecyclerView tabListRecyclerView =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return mTabListEditorLayout.findViewById(R.id.tab_list_recycler_view);
                         });
@@ -1850,8 +1849,7 @@ public class SelectableTabListEditorTest {
         showSelectionEditor(tabs, null);
         mRobot.resultRobot.verifyTabListEditorIsVisible();
 
-        ThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mTabListEditorController.handleBackPressed());
+        ThreadUtils.runOnUiThreadBlocking(() -> mTabListEditorController.handleBackPressed());
         mRobot.resultRobot.verifyTabListEditorIsHidden();
         showSelectionEditor(tabs, null);
         mRobot.resultRobot.verifyTabListEditorIsVisible();

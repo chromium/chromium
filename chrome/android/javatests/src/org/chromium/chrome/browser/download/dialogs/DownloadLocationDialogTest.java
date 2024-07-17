@@ -95,7 +95,7 @@ public class DownloadLocationDialogTest extends BlankUiTestActivityTestCase {
 
         mAppModalPresenter = new AppModalPresenter(getActivity());
         mModalDialogManager =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return new ModalDialogManager(
                                     mAppModalPresenter, ModalDialogManager.ModalDialogType.APP);

@@ -210,7 +210,7 @@ public class SyncErrorMessageTest {
 
         @SyncError
         int syncError =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return SyncSettingsUtils.getSyncError(
                                     mSyncTestRule.getProfile(/* incognito= */ false));
@@ -230,7 +230,7 @@ public class SyncErrorMessageTest {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         @SyncError
         int syncError =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return SyncSettingsUtils.getSyncError(
                                     mSyncTestRule.getProfile(/* incognito= */ false));
@@ -521,7 +521,7 @@ public class SyncErrorMessageTest {
     }
 
     private @Nullable SyncErrorMessage getSyncErrorMessage() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         SyncErrorMessage.getKeyForTesting()
                                 .retrieveDataFromHost(

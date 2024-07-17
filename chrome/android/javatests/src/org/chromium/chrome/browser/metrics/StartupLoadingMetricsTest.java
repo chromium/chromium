@@ -116,14 +116,12 @@ public class StartupLoadingMetricsTest {
     private void runAndWaitForPageLoadMetricsRecorded(Runnable runnable) throws Exception {
         PageLoadMetricsTest.PageLoadMetricsTestObserver testObserver =
                 new PageLoadMetricsTest.PageLoadMetricsTestObserver();
-        ThreadUtils.runOnUiThreadBlockingNoException(
-                () -> PageLoadMetrics.addObserver(testObserver, false));
+        ThreadUtils.runOnUiThreadBlocking(() -> PageLoadMetrics.addObserver(testObserver, false));
         runnable.run();
         // First Contentful Paint may be recorded asynchronously after a page load is finished, we
         // have to wait the event to occur.
         testObserver.waitForFirstContentfulPaintEvent();
-        ThreadUtils.runOnUiThreadBlockingNoException(
-                () -> PageLoadMetrics.removeObserver(testObserver));
+        ThreadUtils.runOnUiThreadBlocking(() -> PageLoadMetrics.removeObserver(testObserver));
     }
 
     private void loadUrlAndWaitForPageLoadMetricsRecorded(

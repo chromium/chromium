@@ -425,7 +425,7 @@ public class TabPersistentStoreTest {
             final TabPersistencePolicy persistencePolicy,
             final TabModelSelector modelSelector,
             final TabCreatorManager creatorManager) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return new TabPersistentStore(
                             persistencePolicy,
@@ -437,7 +437,7 @@ public class TabPersistentStoreTest {
 
     private static TabbedModeTabPersistencePolicy createTabPersistencePolicy(
             int selectorIndex, boolean mergeTabs, boolean tabMergingEnabled) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return new TabbedModeTabPersistencePolicy(
                             selectorIndex, mergeTabs, tabMergingEnabled);
@@ -1332,7 +1332,7 @@ public class TabPersistentStoreTest {
 
             // Undoing tab closures one-by-one results in the first tab always being selected after
             // the initial restoration.
-            Tab currentTab = ThreadUtils.runOnUiThreadBlockingNoException(selector::getCurrentTab);
+            Tab currentTab = ThreadUtils.runOnUiThreadBlocking(selector::getCurrentTab);
             if (i == 0) {
                 Assert.assertEquals(info.selectedTabId, currentTab.getId());
             } else {

@@ -272,7 +272,7 @@ public class RenderTestRule extends TestWatcher {
         // TODO(crbug.com/40260566): Remove this and properly fix flaky tests.
         TestThreadUtils.flushNonDelayedLooperTasks();
         Bitmap testBitmap =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         new Callable<Bitmap>() {
                             @Override
                             public Bitmap call() {

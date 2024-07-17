@@ -38,7 +38,7 @@ public class FakeServerHelper {
      * returning null.
      */
     public static @Nullable FakeServerHelper createInstanceAndGet() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (sFakeServerHelper == null) {
                         sFakeServerHelper = new FakeServerHelper();
@@ -81,7 +81,7 @@ public class FakeServerHelper {
      */
     public boolean verifyEntityCountByTypeAndName(
             final int count, final int modelType, final String name) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         FakeServerHelperJni.get()
                                 .verifyEntityCountByTypeAndName(
@@ -95,7 +95,7 @@ public class FakeServerHelper {
      * @return whether the sessions on the server match the given urls.
      */
     public boolean verifySessions(final String[] urls) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> FakeServerHelperJni.get().verifySessions(mNativeFakeServer, urls));
     }
 
@@ -108,7 +108,7 @@ public class FakeServerHelper {
     public List<SyncEntity> getSyncEntitiesByModelType(final int modelType)
             throws InvalidProtocolBufferException {
         byte[][] serializedEntities =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 FakeServerHelperJni.get()
                                         .getSyncEntitiesByModelType(mNativeFakeServer, modelType));
@@ -319,7 +319,7 @@ public class FakeServerHelper {
      * @return the opaque ID of the bookmark bar entity stored in the server
      */
     public String getBookmarkBarFolderId() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> FakeServerHelperJni.get().getBookmarkBarFolderId(mNativeFakeServer));
     }
 

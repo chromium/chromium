@@ -41,7 +41,7 @@ public final class SyncTestUtil {
      * Return the {@link SyncService} for the {@link ProfileManager#getLastUsedRegularProfile()}.
      */
     public static SyncService getSyncServiceForLastUsedProfile() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return SyncServiceFactory.getForProfile(
                             ProfileManager.getLastUsedRegularProfile());
@@ -55,19 +55,19 @@ public final class SyncTestUtil {
      * codebase. See ConsentLevel::kSync documentation for details.
      */
     public static boolean hasSyncConsent() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> getSyncServiceForLastUsedProfile().hasSyncConsent());
     }
 
     /** Returns whether sync-the-feature is enabled. */
     public static boolean isSyncFeatureEnabled() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> getSyncServiceForLastUsedProfile().isSyncFeatureEnabled());
     }
 
     /** Returns whether sync-the-feature is active. */
     public static boolean isSyncFeatureActive() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> getSyncServiceForLastUsedProfile().isSyncFeatureActive());
     }
 
@@ -154,7 +154,7 @@ public final class SyncTestUtil {
 
     /** Returns whether history sync is active. */
     public static boolean isHistorySyncEnabled() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         getSyncServiceForLastUsedProfile()
                                 .getSelectedTypes()
@@ -203,7 +203,7 @@ public final class SyncTestUtil {
     }
 
     private static long getCurrentSyncTime() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> getSyncServiceForLastUsedProfile().getLastSyncedTimeForDebugging());
     }
 

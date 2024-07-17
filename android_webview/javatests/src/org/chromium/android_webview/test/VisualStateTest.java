@@ -454,7 +454,7 @@ public class VisualStateTest extends AwParameterizedTest {
 
     private AwTestContainerView createDetachedTestContainerViewOnMainSync(
             final AwContentsClient awContentsClient) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AwTestContainerView detachedView =
                             mActivityTestRule.createDetachedAwTestContainerView(awContentsClient);

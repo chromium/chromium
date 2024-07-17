@@ -430,7 +430,7 @@ public class UrlOverridingTest {
     }
 
     private Intent getCustomTabFromChromeIntent(final String url, final boolean markFromChrome) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -649,7 +649,7 @@ public class UrlOverridingTest {
     }
 
     private static InterceptNavigationDelegateImpl getInterceptNavigationDelegate(Tab tab) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> InterceptNavigationDelegateTabHelper.get(tab));
     }
 
@@ -1552,7 +1552,7 @@ public class UrlOverridingTest {
         // navigation to commit before continuing.
         final String fencedFrameUrl = mTestServer.getURL(NAVIGATION_FROM_USER_GESTURE_PAGE);
         RenderFrameHost mainFrame =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> mActivityTestRule.getWebContents().getMainFrame());
         CriteriaHelper.pollUiThread(
                 () -> {

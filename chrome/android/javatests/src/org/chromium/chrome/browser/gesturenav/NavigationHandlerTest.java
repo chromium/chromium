@@ -103,7 +103,7 @@ public class NavigationHandlerTest {
     }
 
     private Tab currentTab() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.getActivity().getActivityTabProvider().get());
     }
 
@@ -365,10 +365,10 @@ public class NavigationHandlerTest {
     private void testLeftEdgeSwipeClosesTabLaunchedFromLinkInternal() {
         Tab oldTab = currentTab();
         TabCreator tabCreator =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> mActivityTestRule.getActivity().getTabCreator(false));
         Tab newTab =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return tabCreator.createNewTab(
                                     new LoadUrlParams(
@@ -404,7 +404,7 @@ public class NavigationHandlerTest {
         // page. Make sure this won't crash after the handler(and also
         // handler action delegate) is destroyed.
         Assert.assertTrue(
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> mNavigationHandler.triggerUi(BackGestureEventSwipeEdge.LEFT, 0, 0)));
 
         // Just check we're still on the same URL.
@@ -425,7 +425,7 @@ public class NavigationHandlerTest {
         // |triggerUi| can be invoked by SwipeRefreshHandler on the rendered
         // page. Make sure this won't crash after the current tab is destroyed.
         Assert.assertFalse(
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> mNavigationHandler.triggerUi(BackGestureEventSwipeEdge.LEFT, 0, 0)));
     }
 
@@ -450,7 +450,7 @@ public class NavigationHandlerTest {
                         /* x= */ 10,
                         /* y= */ 100,
                         0);
-        ThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mActivityTestRule
                                 .getActivity()
@@ -487,7 +487,7 @@ public class NavigationHandlerTest {
         setTabSwitcherModeAndWait(true);
         Assert.assertFalse(
                 "Navigation UI should be reset.",
-                ThreadUtils.runOnUiThreadBlockingNoException(mNavigationHandler::isActive));
+                ThreadUtils.runOnUiThreadBlocking(mNavigationHandler::isActive));
     }
 
     @Test

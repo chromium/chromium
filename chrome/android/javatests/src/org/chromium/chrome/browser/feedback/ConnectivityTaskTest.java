@@ -47,7 +47,7 @@ public class ConnectivityTaskTest {
     @Feature({"Feedback"})
     public void testNormalCaseShouldWork() {
         final ConnectivityTask task =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         new Callable<ConnectivityTask>() {
                             @Override
                             public ConnectivityTask call() {
@@ -177,7 +177,7 @@ public class ConnectivityTaskTest {
     @Feature({"Feedback"})
     public void testTwoTimeoutsShouldFillInTheRest() {
         final ConnectivityTask task =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         new Callable<ConnectivityTask>() {
                             @Override
                             public ConnectivityTask call() {
@@ -233,7 +233,7 @@ public class ConnectivityTaskTest {
 
     private static FeedbackData getResult(final ConnectivityTask task) {
         final FeedbackData result =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         new Callable<FeedbackData>() {
                             @Override
                             public FeedbackData call() {

@@ -28,7 +28,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
-import static org.chromium.base.ThreadUtils.runOnUiThreadBlockingNoException;
 import static org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils.checkHighlightOff;
 import static org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils.checkHighlightPulse;
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
@@ -1858,7 +1857,7 @@ public class BookmarkTest {
     }
 
     private boolean isItemPresentInBookmarkList(final String expectedTitle) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 new Callable<Boolean>() {
                     @Override
                     public Boolean call() {
@@ -1913,13 +1912,11 @@ public class BookmarkTest {
     }
 
     private boolean isViewHolderPassivelyDraggable(ViewHolder viewHolder) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mAdapter.isPassivelyDraggable(viewHolder));
+        return ThreadUtils.runOnUiThreadBlocking(() -> mAdapter.isPassivelyDraggable(viewHolder));
     }
 
     private boolean isViewHoldersActivelyDraggable(ViewHolder viewHolder) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mAdapter.isActivelyDraggable(viewHolder));
+        return ThreadUtils.runOnUiThreadBlocking(() -> mAdapter.isActivelyDraggable(viewHolder));
     }
 
     private TestingDelegate getTestingDelegate() {
@@ -1965,7 +1962,7 @@ public class BookmarkTest {
      * @return The unique view, if one exists. Throws an exception if one doesn't exist.
      */
     private static View getViewWithText(final ViewGroup viewGroup, final String expectedText) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 new Callable<View>() {
                     @Override
                     public View call() {
@@ -2034,7 +2031,7 @@ public class BookmarkTest {
                 () -> {
                     View moreButton = improvedBookmarkRow.findViewById(R.id.more);
                     assertEquals(View.VISIBLE, moreButton.getVisibility());
-                    runOnUiThreadBlockingNoException(moreButton::callOnClick);
+                    runOnUiThreadBlocking(moreButton::callOnClick);
 
                     // Doesn't have a stable id to look up with. Use resolved text instead.
                     String selectText =

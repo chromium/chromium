@@ -21,6 +21,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 /** This class is an {@link AccountInfoService} stub intended for testing. */
 public class FakeAccountInfoService implements IdentityManager.Observer, AccountInfoService {
@@ -29,7 +30,7 @@ public class FakeAccountInfoService implements IdentityManager.Observer, Account
     protected final ObserverList<Observer> mObservers;
 
     public FakeAccountInfoService() {
-        mObservers = ThreadUtils.runOnUiThreadBlockingNoException(ObserverList::new);
+        mObservers = ThreadUtils.runOnUiThreadBlocking((Callable<ObserverList>) ObserverList::new);
     }
 
     @Override

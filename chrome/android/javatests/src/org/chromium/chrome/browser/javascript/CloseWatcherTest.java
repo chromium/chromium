@@ -46,7 +46,7 @@ public class CloseWatcherTest {
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
         mTab =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> mActivityTestRule.getActivity().getActivityTab());
     }
 

@@ -201,7 +201,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
             throw new AndroidRuntimeException("There should only be one browser context.");
         }
         launchActivity(); // The Activity must be launched in order to load native code
-        ThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mBrowserContext = createAwBrowserContextOnUiThread());
     }
 
@@ -535,7 +535,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
             final AwContentsClient client,
             final boolean supportsLegacyQuirks,
             final TestDependencyFactory testDependencyFactory) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         createAwTestContainerView(
                                 client, supportsLegacyQuirks, testDependencyFactory));

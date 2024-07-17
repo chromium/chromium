@@ -319,11 +319,11 @@ public class FullscreenManagerTest {
 
     private boolean getPersistentFullscreenMode() {
         boolean b1 =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         mActivityTestRule.getActivity().getFullscreenManager()
                                 ::getPersistentFullscreenMode);
         Boolean b2 =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         mActivityTestRule
                                         .getActivity()
                                         .getFullscreenManager()
@@ -1194,7 +1194,7 @@ public class FullscreenManagerTest {
                 });
 
         final SelectionPopupController controller =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return SelectionPopupController.fromWebContents(tab.getWebContents());
                         });
@@ -1247,7 +1247,7 @@ public class FullscreenManagerTest {
                 });
 
         final SelectionPopupController controller =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return SelectionPopupController.fromWebContents(tab.getWebContents());
                         });

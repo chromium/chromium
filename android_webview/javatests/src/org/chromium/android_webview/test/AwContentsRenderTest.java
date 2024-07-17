@@ -151,10 +151,8 @@ public class AwContentsRenderTest extends AwParameterizedTest {
         Assert.assertTrue(
                 latch.await(AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
-        final int width =
-                ThreadUtils.runOnUiThreadBlockingNoException(() -> mContainerView.getWidth());
-        final int height =
-                ThreadUtils.runOnUiThreadBlockingNoException(() -> mContainerView.getHeight());
+        final int width = ThreadUtils.runOnUiThreadBlocking(() -> mContainerView.getWidth());
+        final int height = ThreadUtils.runOnUiThreadBlocking(() -> mContainerView.getHeight());
         visibleBitmap = GraphicsTestUtils.drawAwContentsOnUiThread(mAwContents, width, height);
 
         // Things that affect DOM page visibility:

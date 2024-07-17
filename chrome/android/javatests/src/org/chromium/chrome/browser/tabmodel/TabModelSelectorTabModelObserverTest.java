@@ -49,7 +49,7 @@ public class TabModelSelectorTabModelObserverTest {
     public void testAlreadyInitializedSelector() throws TimeoutException {
         final CallbackHelper registrationCompleteCallback = new CallbackHelper();
         TabModelSelectorTabModelObserver observer =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 new TabModelSelectorTabModelObserver(mSelector) {
                                     @Override

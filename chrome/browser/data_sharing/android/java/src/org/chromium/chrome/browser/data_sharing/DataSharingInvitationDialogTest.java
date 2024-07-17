@@ -9,7 +9,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
-import static org.chromium.base.ThreadUtils.runOnUiThreadBlockingNoException;
 
 import androidx.test.filters.MediumTest;
 
@@ -44,7 +43,7 @@ public class DataSharingInvitationDialogTest {
     @BeforeClass
     public static void setupSuite() {
         sActivityTestRule.launchActivity(null);
-        sActivity = runOnUiThreadBlockingNoException(() -> sActivityTestRule.getActivity());
+        sActivity = runOnUiThreadBlocking(() -> sActivityTestRule.getActivity());
     }
 
     @Before
@@ -62,7 +61,7 @@ public class DataSharingInvitationDialogTest {
     @MediumTest
     public void testShownAndDismissed() throws TimeoutException {
         DataSharingInvitationDialogCoordinator coordinator =
-                runOnUiThreadBlockingNoException(
+                runOnUiThreadBlocking(
                         () ->
                                 new DataSharingInvitationDialogCoordinator(
                                         sActivity, sActivity.getModalDialogManager()));

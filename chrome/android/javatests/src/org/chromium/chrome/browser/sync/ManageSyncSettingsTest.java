@@ -706,8 +706,7 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
         mSyncTestRule.signOut();
-        ThreadUtils.runOnUiThreadBlockingNoException(
-                () -> fragment.onPassphraseEntered("passphrase"));
+        ThreadUtils.runOnUiThreadBlocking(() -> fragment.onPassphraseEntered("passphrase"));
         // No crash means we passed.
     }
 
@@ -902,7 +901,7 @@ public class ManageSyncSettingsTest {
 
         ViewUtils.waitForVisibleView(withId(R.id.central_account_card));
         View view =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return fragment.getActivity().findViewById(R.id.central_account_card);
                         });
@@ -921,7 +920,7 @@ public class ManageSyncSettingsTest {
 
         ViewUtils.waitForVisibleView(withId(R.id.central_account_card));
         View view =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return fragment.getActivity().findViewById(R.id.central_account_card);
                         });
@@ -940,7 +939,7 @@ public class ManageSyncSettingsTest {
 
         ViewUtils.waitForVisibleView(withId(R.id.central_account_card));
         View view =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return fragment.getActivity().findViewById(R.id.central_account_card);
                         });
@@ -960,7 +959,7 @@ public class ManageSyncSettingsTest {
 
         ViewUtils.waitForVisibleView(withId(R.id.central_account_card));
         View view =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return fragment.getActivity().findViewById(R.id.central_account_card);
                         });
@@ -1716,7 +1715,7 @@ public class ManageSyncSettingsTest {
     }
 
     private void clickPreference(final Preference pref) {
-        ThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> pref.getOnPreferenceClickListener().onPreferenceClick(pref));
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
