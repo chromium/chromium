@@ -2253,6 +2253,36 @@ BASE_FEATURE(kOrcaRephrase, "OrcaRephrase", base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables or disables shorten for Orca.
 BASE_FEATURE(kOrcaShorten, "OrcaShorten", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables elaborate for internationalized Orca.
+BASE_FEATURE(kOrcaInternationalizeElaborate,
+             "OrcaInternationalizeElaborate",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables or disables emojify for internationalized Orca.
+BASE_FEATURE(kOrcaInternationalizeEmojify,
+             "OrcaInternationalizeEmojify",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables or disables formalize for internationalized Orca.
+BASE_FEATURE(kOrcaInternationalizeFormalize,
+             "OrcaInternationalizeFormalize",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables or disables proofread for internationalized Orca.
+BASE_FEATURE(kOrcaInternationalizeProofread,
+             "OrcaInternationalizeProofread",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables or disables rephrase for internationalized Orca.
+BASE_FEATURE(kOrcaInternationalizeRephrase,
+             "OrcaInternationalizeRephrase",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables or disables shorten for internationalized Orca.
+BASE_FEATURE(kOrcaInternationalizeShorten,
+             "OrcaInternationalizeShorten",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables or disables French support for Orca.
 BASE_FEATURE(kOrcaFrench, "OrcaFrench", base::FEATURE_ENABLED_BY_DEFAULT);
 

@@ -8,53 +8,24 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
+#include "chrome/browser/ash/input_method/editor_config_factory.h"
+#include "chrome/browser/ash/input_method/editor_context.h"
 #include "chrome/browser/ash/input_method/editor_helpers.h"
+#include "chrome/browser/ash/input_method/input_methods_by_language.h"
 #include "chrome/browser/browser_process.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "content/public/browser/service_process_host.h"
 
 namespace ash::input_method {
-namespace {
 
-constexpr char kDefaultLanguageCode[] = "en";
-
-orca::mojom::EditorConfigPtr GenerateConfig() {
-  std::vector<orca::mojom::PresetTextQueryType> allowed;
-  if (base::FeatureList::IsEnabled(features::kOrcaElaborate)) {
-    allowed.push_back(orca::mojom::PresetTextQueryType::kElaborate);
-  }
-  if (base::FeatureList::IsEnabled(features::kOrcaEmojify)) {
-    allowed.push_back(orca::mojom::PresetTextQueryType::kEmojify);
-  }
-  if (base::FeatureList::IsEnabled(features::kOrcaFormalize)) {
-    allowed.push_back(orca::mojom::PresetTextQueryType::kFormalize);
-  }
-  if (base::FeatureList::IsEnabled(features::kOrcaProofread)) {
-    allowed.push_back(orca::mojom::PresetTextQueryType::kProofread);
-  }
-  if (base::FeatureList::IsEnabled(features::kOrcaRephrase)) {
-    allowed.push_back(orca::mojom::PresetTextQueryType::kRephrase);
-  }
-  if (base::FeatureList::IsEnabled(features::kOrcaShorten)) {
-    allowed.push_back(orca::mojom::PresetTextQueryType::kShorten);
-  }
-  return orca::mojom::EditorConfig::New(
-      /*allowed_types=*/std::move(allowed),
-      /*language_code=*/ShouldUseL10nStrings()
-          ? GetSystemLocale()
-          : std::string{kDefaultLanguageCode});
-}
-
-}  // namespace
-
-EditorServiceConnector::EditorServiceConnector() {
+EditorServiceConnector::EditorServiceConnector(EditorContext* context)
+    : context_(context) {
   content::ServiceProcessHost::Launch(
       remote_orca_service_connector_.BindNewPipeAndPassReceiver(),
       content::ServiceProcessHost::Options()
           // replace with IDS strings
           .WithDisplayName("EditorService")
           .Pass());
-
   remote_orca_service_connector_.reset_on_disconnect();
 }
 
@@ -71,7 +42,8 @@ void EditorServiceConnector::BindEditor(
   remote_orca_service_connector_->BindEditor(
       std::move(system_actuator), std::move(text_query_provider),
       std::move(editor_client_connector), std::move(editor_event_sink),
-      GenerateConfig());
+      BuildConfigFor(
+          InputMethodToLanguageCategory(context_->active_engine_id())));
 }
 
 bool EditorServiceConnector::IsBound() {

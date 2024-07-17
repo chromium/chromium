@@ -63,6 +63,7 @@ class EditorMediator : public EditorContext::Observer,
 
   // EditorContext::Observer
   void OnContextUpdated() override;
+  void OnImeChange(std::string_view engine_id) override;
 
   // EditorContext::System
   std::optional<ukm::SourceId> GetUkmSourceId() override;

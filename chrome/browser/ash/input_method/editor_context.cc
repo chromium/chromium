@@ -41,8 +41,14 @@ void EditorContext::OnInputContextUpdated(
 }
 
 void EditorContext::OnActivateIme(std::string_view engine_id) {
+  bool ime_did_change = active_engine_id_ != engine_id;
+
   active_engine_id_ = engine_id;
   observer_->OnContextUpdated();
+
+  if (ime_did_change) {
+    observer_->OnImeChange(engine_id);
+  }
 }
 
 void EditorContext::OnTabletModeUpdated(bool is_enabled) {

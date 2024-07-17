@@ -40,6 +40,7 @@ class FakeContextObserver : public EditorContext::Observer {
 
   // EditorContext::Observer overrides
   void OnContextUpdated() override {}
+  void OnImeChange(std::string_view engine_id) override {}
 };
 
 class FakeSystem : public EditorContext::System {

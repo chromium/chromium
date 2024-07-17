@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_SERVICE_CONNECTOR_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_SERVICE_CONNECTOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -14,10 +15,11 @@
 
 namespace ash::input_method {
 
-// TODO(b/328330399): Modify this class to make testing easier and add tests.
+class EditorContext;
+
 class EditorServiceConnector {
  public:
-  EditorServiceConnector();
+  explicit EditorServiceConnector(EditorContext* context);
   ~EditorServiceConnector();
 
   void BindEditor(
@@ -33,6 +35,9 @@ class EditorServiceConnector {
   bool IsBound();
 
  private:
+  // Not owned by this class
+  raw_ptr<EditorContext> context_;
+
   mojo::Remote<orca::mojom::OrcaService> remote_orca_service_connector_;
 
   base::WeakPtrFactory<EditorServiceConnector> weak_ptr_factory_{this};

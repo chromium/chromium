@@ -88,6 +88,13 @@ void EditorMediator::OnContextUpdated() {
   editor_switch_->OnContextUpdated();
 }
 
+void EditorMediator::OnImeChange(std::string_view engine_id) {
+  if (base::FeatureList::IsEnabled(ash::features::kOrcaServiceConnection) &&
+      service_connection_) {
+    ResetEditorConnections();
+  }
+}
+
 std::optional<ukm::SourceId> EditorMediator::GetUkmSourceId() {
   TextInputTarget* text_input = IMEBridge::Get()->GetInputContextHandler();
   if (!text_input) {
@@ -108,7 +115,8 @@ void EditorMediator::OnFocus(int context_id) {
   }
 
   if (IsAllowedForUse() && !editor_service_connector_) {
-    editor_service_connector_ = std::make_unique<EditorServiceConnector>();
+    editor_service_connector_ =
+        std::make_unique<EditorServiceConnector>(&editor_context_);
     ResetEditorConnections();
   }
 

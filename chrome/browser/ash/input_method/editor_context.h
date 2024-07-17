@@ -26,6 +26,7 @@ class EditorContext {
    public:
     virtual ~Observer() = default;
     virtual void OnContextUpdated() = 0;
+    virtual void OnImeChange(std::string_view engine_id) = 0;
   };
 
   class System {

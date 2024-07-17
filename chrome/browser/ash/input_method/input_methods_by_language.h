@@ -10,7 +10,7 @@
 
 namespace ash::input_method {
 
-enum LanguageCategory {
+enum class LanguageCategory {
   kEnglish,
   kFrench,
   kGerman,
