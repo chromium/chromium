@@ -13,7 +13,8 @@ namespace autofill::autofill_metrics {
 // Like other form event loggers, the lifetime of this class is attached to that
 // of BrowserAutofillManager. It collects events until it is destroyed, at
 // which point metrics are emitted.
-// Context menu related tests are in autofill_context_menu_manager_unittest.cc.
+// Context menu related tests are in
+// autofill_context_menu_manager_browsertest.cc.
 class AutocompleteUnrecognizedFallbackEventLogger {
  public:
   // Emits metrics before destruction.
@@ -55,9 +56,9 @@ class AutocompleteUnrecognizedFallbackEventLogger {
   // Tracks if the manual fallback context menu entry was shown or accepted.
   // Since the metric is split by the triggering field's autocomplete attribute,
   // this is tracked twice.
-  ContextMenuEntryState ac_unrecognized_context_menu_state =
+  ContextMenuEntryState ac_unrecognized_context_menu_state_ =
       ContextMenuEntryState::kNotShown;
-  ContextMenuEntryState ac_recognized_context_menu_state =
+  ContextMenuEntryState ac_recognized_context_menu_state_ =
       ContextMenuEntryState::kNotShown;
 
   // Tracks if suggestions on an ac=unrecognized field were shown/filled.

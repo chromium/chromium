@@ -28,7 +28,7 @@ void LogAddNewAddressPromptOutcome(AutofillAddNewAddressPromptOutcome outcome);
 // other form event loggers, the lifetime of this class is attached to that of
 // the BrowserAutofillManager. It collects events until it is destroyed, at
 // which point metrics are emitted. Context menu related tests are in
-// autofill_context_menu_manager_unittest.cc.
+// autofill_context_menu_manager_browsertest.cc.
 class ManualFallbackEventLogger {
  public:
   // Emits metrics before destruction.
@@ -89,9 +89,9 @@ class ManualFallbackEventLogger {
 
   // For addresses and credit cards filling, tracks if the manual fallback
   // context menu entry was shown or accepted.
-  ContextMenuEntryState not_classified_as_target_filling_address =
+  ContextMenuEntryState address_context_menu_state_ =
       ContextMenuEntryState::kNotShown;
-  ContextMenuEntryState not_classified_as_target_filling_credit_card =
+  ContextMenuEntryState credit_card_context_menu_state_ =
       ContextMenuEntryState::kNotShown;
 
   // Tracks if address suggestions were shown/filled.

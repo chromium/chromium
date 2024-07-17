@@ -20,10 +20,8 @@ ManualFallbackEventLogger::~ManualFallbackEventLogger() {
   // Emit the explicit triggering metric for fields that were either
   // unclassified or classified as something differently from the targeted
   // `FillingProduct`.
-  EmitExplicitlyTriggeredMetric(not_classified_as_target_filling_address,
-                                "Address");
-  EmitExplicitlyTriggeredMetric(not_classified_as_target_filling_credit_card,
-                                "CreditCard");
+  EmitExplicitlyTriggeredMetric(address_context_menu_state_, "Address");
+  EmitExplicitlyTriggeredMetric(credit_card_context_menu_state_, "CreditCard");
   EmitFillAfterSuggestionMetric(address_suggestions_state_, "Address");
   EmitFillAfterSuggestionMetric(credit_card_suggestions_state_, "CreditCard");
 }
@@ -45,11 +43,11 @@ void ManualFallbackEventLogger::ContextMenuEntryShown(
     bool payments_fallback_present) {
   if (address_fallback_present) {
     UpdateContextMenuEntryState(ContextMenuEntryState::kShown,
-                                not_classified_as_target_filling_address);
+                                address_context_menu_state_);
   }
   if (payments_fallback_present) {
     UpdateContextMenuEntryState(ContextMenuEntryState::kShown,
-                                not_classified_as_target_filling_credit_card);
+                                credit_card_context_menu_state_);
   }
 }
 
@@ -58,11 +56,11 @@ void ManualFallbackEventLogger::ContextMenuEntryAccepted(
   switch (target_filling_product) {
     case FillingProduct::kAddress:
       UpdateContextMenuEntryState(ContextMenuEntryState::kAccepted,
-                                  not_classified_as_target_filling_address);
+                                  address_context_menu_state_);
       break;
     case FillingProduct::kCreditCard:
       UpdateContextMenuEntryState(ContextMenuEntryState::kAccepted,
-                                  not_classified_as_target_filling_credit_card);
+                                  credit_card_context_menu_state_);
       break;
     case FillingProduct::kNone:
     case FillingProduct::kMerchantPromoCode:
