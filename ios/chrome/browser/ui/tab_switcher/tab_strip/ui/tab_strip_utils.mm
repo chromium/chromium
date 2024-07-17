@@ -20,13 +20,10 @@
 }
 
 + (UIColor*)newTabButtonSymbolColor {
-  if ([TabStripFeaturesUtils isTabStripCloserNTBEnabled] ||
-      [TabStripFeaturesUtils isTabStripDarkerBackgroundEnabled] ||
-      [TabStripFeaturesUtils isTabStripCloserNTBDarkerBackgroundEnabled] ||
-      [TabStripFeaturesUtils isTabStripNTBNoBackgroundEnabled]) {
-    return [UIColor colorNamed:kTabStripNewTabButtonColor];
-  } else if ([TabStripFeaturesUtils isTabStripBlackBackgroundEnabled]) {
+  if ([TabStripFeaturesUtils isTabStripBlackBackgroundEnabled]) {
     return [UIColor colorNamed:kStaticGrey600Color];
+  } else if ([TabStripFeaturesUtils isTabStripV2]) {
+    return [UIColor colorNamed:kTabStripNewTabButtonColor];
   }
   return [UIColor colorNamed:kTextSecondaryColor];
 }

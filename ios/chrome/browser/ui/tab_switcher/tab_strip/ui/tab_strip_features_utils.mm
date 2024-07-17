@@ -56,7 +56,8 @@
          [self isTabStripDarkerBackgroundEnabled] ||
          [self isTabStripCloserNTBDarkerBackgroundEnabled] ||
          [self isTabStripNTBNoBackgroundEnabled] ||
-         [self isTabStripBlackBackgroundEnabled];
+         [self isTabStripBlackBackgroundEnabled] ||
+         [self isTabStripBiggerCloseTargetEnabled];
 }
 
 + (BOOL)isTabStripBiggerCloseTargetEnabled {
