@@ -547,13 +547,6 @@ TEST_F(GpuDataManagerImplPrivateTest, ChromecastStartsWithGpuDisabled) {
 #if BUILDFLAG(ENABLE_VULKAN)
 // TODO(crbug.com/40735511): enable tests when Vulkan is supported on LaCrOS.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithUseVulkanFlag) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kUseVulkan, switches::kVulkanImplementationNameNative);
-  ScopedGpuDataManagerImplPrivate manager;
-  EXPECT_EQ(gpu::GpuMode::HARDWARE_VULKAN, manager->GetGpuMode());
-}
-
 TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithVulkanFeatureFlag) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kVulkan);

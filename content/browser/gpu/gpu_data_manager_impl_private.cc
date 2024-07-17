@@ -420,23 +420,6 @@ bool SwiftShaderAllowed() {
 #endif
 }
 
-// Determines if Vulkan is available for the GPU process.
-[[maybe_unused]] bool VulkanAllowed() {
-#if BUILDFLAG(ENABLE_VULKAN)
-  // Vulkan will be enabled if certain flags are present.
-  // --enable-features=Vulkan will cause Vulkan to be used for compositing and
-  // rasterization. --use-vulkan by itself will initialize Vulkan so that it can
-  // be used for other purposes, such as WebGPU.
-  const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
-  gpu::VulkanImplementationName use_vulkan =
-      gpu::gles2::ParseVulkanImplementationName(command_line);
-  return use_vulkan != gpu::VulkanImplementationName::kNone;
-#else
-  return false;
-#endif
-}
-
 // These values are logged to UMA. Entries should not be renumbered and numeric
 // values should never be reused. Please keep in sync with "CompositingMode" in
 // src/tools/metrics/histograms/enums.xml.
@@ -578,9 +561,10 @@ void GpuDataManagerImplPrivate::InitializeGpuModes() {
     fallback_modes_.push_back(gpu::GpuMode::HARDWARE_VULKAN);
 #else
     fallback_modes_.push_back(gpu::GpuMode::HARDWARE_GL);
-
-    if (VulkanAllowed())
+    // Prefer Vulkan over GL if enabled.
+    if (features::IsUsingVulkan()) {
       fallback_modes_.push_back(gpu::GpuMode::HARDWARE_VULKAN);
+    }
 #endif  // BUILDFLAG(IS_FUCHSIA)
   }
 
@@ -1202,8 +1186,7 @@ void GpuDataManagerImplPrivate::UpdateGpuFeatureInfo(
         gpu_feature_info_for_hardware_gpu) {
   gpu_feature_info_ = gpu_feature_info;
 #if !BUILDFLAG(IS_FUCHSIA)
-  // With Vulkan or Metal, GL might be blocked, so make sure we don't fallback
-  // to it later.
+  // With Vulkan or Graphite, GL might be blocked so don't fallback to it later.
   if (HardwareAccelerationEnabled() &&
       gpu_feature_info_.status_values[gpu::GPU_FEATURE_TYPE_ACCELERATED_GL] !=
           gpu::GpuFeatureStatus::kGpuFeatureStatusEnabled) {
@@ -1375,10 +1358,10 @@ void GpuDataManagerImplPrivate::UpdateGpuPreferences(
                                            .message_pump_type_for_gpu;
 #endif
 
-#if BUILDFLAG(ENABLE_VULKAN)
-  if (gpu_mode_ != gpu::GpuMode::HARDWARE_VULKAN)
+  // Disable loading VulkanImplementation if not using Ganesh/Vulkan.
+  if (gpu_mode_ != gpu::GpuMode::HARDWARE_VULKAN) {
     gpu_preferences->use_vulkan = gpu::VulkanImplementationName::kNone;
-#endif
+  }
 
   if (!HardwareAccelerationEnabled()) {
     gpu_preferences->gr_context_type = gpu::GrContextType::kNone;
