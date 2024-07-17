@@ -45,7 +45,7 @@ class ScopedOverviewHideWindows : public aura::WindowObserver {
 
  private:
   std::map<aura::Window*, bool> window_visibility_;
-  bool force_hidden_;
+  const bool force_hidden_;
 };
 
 }  // namespace ash

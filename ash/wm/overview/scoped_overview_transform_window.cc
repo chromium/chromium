@@ -70,6 +70,11 @@ bool immediate_close_for_tests = false;
 // Delay closing window to allow it to shrink and fade out.
 constexpr int kCloseWindowDelayInMilliseconds = 150;
 
+void ClearWindowProperties(aura::Window* window) {
+  window->ClearProperty(chromeos::kIsShowingInOverviewKey);
+  window->ClearProperty(kHideInOverviewKey);
+}
+
 // Layer animation observer that is attached to a clip and/or rounded corners
 // animation. We need this for the exit animation, where we want to animate
 // properties but the overview session has been destroyed. We want to use this
@@ -229,7 +234,7 @@ ScopedOverviewTransformWindow::~ScopedOverviewTransformWindow() {
   }
 
   for (auto* transient : GetTransientTreeIterator(window_)) {
-    transient->ClearProperty(chromeos::kIsShowingInOverviewKey);
+    ClearWindowProperties(transient);
     DCHECK(event_targeting_blocker_map_.contains(transient));
     event_targeting_blocker_map_.erase(transient);
   }
@@ -604,7 +609,7 @@ void ScopedOverviewTransformWindow::OnTransientChildWindowRemoved(
   if (parent != window_ && !::wm::HasTransientAncestor(parent, window_))
     return;
 
-  transient_child->ClearProperty(chromeos::kIsShowingInOverviewKey);
+  ClearWindowProperties(transient_child);
   DCHECK(event_targeting_blocker_map_.contains(transient_child));
   event_targeting_blocker_map_.erase(transient_child);
 

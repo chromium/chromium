@@ -3532,6 +3532,53 @@ TEST_F(SnapGroupTest, NoDumpWithoutCrashOnMinimize) {
   }
 }
 
+// Verifies no crashes occur when re-snapping a secondary window (with transient
+// child) to the primary position within a Snap Group, triggering a partial
+// Overview and subsequent selection of the previous primary window. And the
+// transient child window remains visible in partial Overview. Regression test
+// for http://b/353574797.
+TEST_F(SnapGroupTest, NoCrashWhenReSnappingSecondaryToPrimaryWithTransient) {
+  std::unique_ptr<aura::Window> w0(CreateAppWindow(gfx::Rect(0, 0, 300, 300)));
+  std::unique_ptr<aura::Window> w1(
+      CreateAppWindow(gfx::Rect(500, 0, 300, 300)));
+  // Create a bubble widget that's anchored to `w1`.
+  auto bubble_delegate1 = std::make_unique<views::BubbleDialogDelegateView>(
+      NonClientFrameViewAsh::Get(w1.get()), views::BubbleBorder::TOP_RIGHT);
+  // The line below is essential to make sure that the bubble doesn't get closed
+  // when entering overview.
+  bubble_delegate1->set_close_on_deactivate(false);
+  bubble_delegate1->set_parent_window(w1.get());
+  views::Widget* bubble_widget1(views::BubbleDialogDelegateView::CreateBubble(
+      std::move(bubble_delegate1)));
+  bubble_widget1->Show();
+  aura::Window* bubble_window1 = bubble_widget1->GetNativeWindow();
+  ASSERT_TRUE(bubble_window1->IsVisible());
+  ASSERT_TRUE(window_util::AsBubbleDialogDelegate(bubble_window1));
+
+  auto* event_generator = GetEventGenerator();
+  SnapTwoTestWindows(w0.get(), w1.get(), /*horizontal=*/true, event_generator);
+  EXPECT_TRUE(bubble_window1->IsVisible());
+  EXPECT_FALSE(bubble_window1->GetProperty(chromeos::kIsShowingInOverviewKey));
+  EXPECT_FALSE(bubble_window1->GetProperty(kHideInOverviewKey));
+
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio);
+  VerifySplitViewOverviewSession(w1.get());
+
+  // Induce visibility changes on `bubble_widget1`.
+  bubble_widget1->Hide();
+  bubble_widget1->Show();
+  EXPECT_TRUE(bubble_window1->IsVisible());
+
+  // Verify that there is no crash when selecting OverviewItem for `w0` in
+  // partial Overview.
+  event_generator->MoveMouseTo(gfx::ToRoundedPoint(
+      GetOverviewItemForWindow(w0.get())->target_bounds().CenterPoint()));
+  event_generator->ClickLeftButton();
+  EXPECT_TRUE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w0.get()));
+}
+
 // -----------------------------------------------------------------------------
 // SnapGroupPhantomBoundsTest:
 
