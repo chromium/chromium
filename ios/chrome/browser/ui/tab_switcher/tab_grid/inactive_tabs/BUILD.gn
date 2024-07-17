@@ -141,6 +141,7 @@ swift_source_set("inactive_tabs_button_ui_swift") {
     ":inactive_tabs_constants",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/common/ui/colors:swift",
     "//ui/base",
   ]
@@ -160,6 +161,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/reading_list:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings/tabs:tabs_constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui_constants",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/browser/ui/tab_switcher/test:utils",
     "//ios/chrome/common/ui/confirmation_alert:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

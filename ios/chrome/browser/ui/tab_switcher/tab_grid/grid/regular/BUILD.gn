@@ -47,18 +47,25 @@ source_set("regular") {
 
 source_set("regular_ui") {
   sources = [
+    "inactive_tabs_button_cell.h",
+    "inactive_tabs_button_cell.mm",
     "regular_grid_view_controller.h",
     "regular_grid_view_controller.mm",
   ]
 
   deps = [
     "//base",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_item_identifier",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs:inactive_tabs_button_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs:inactive_tabs_button_ui_swift",
+    "//ios/chrome/common/ui/colors",
+    "//ui/base",
   ]
 }
 

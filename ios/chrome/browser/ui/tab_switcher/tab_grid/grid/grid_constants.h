@@ -15,6 +15,9 @@ extern NSString* const kGridOpenTabsSectionIdentifier;
 // Identifier for the section containing the suggested actions.
 extern NSString* const kSuggestedActionsSectionIdentifier;
 
+// Accessibility identifier for the Inactive Tabs button (entry point).
+extern NSString* const kInactiveTabsButtonAccessibilityIdentifier;
+
 // Accessibility identifier prefix of a grid cell. To reference a specific cell,
 // concatenate `kGridCellIdentifierPrefix` with the index of the cell. For
 // example, [NSString stringWithFormat:@"%@%d", kGridCellIdentifierPrefix,

@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/inactive_tabs_button_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_button_ui_swift.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_preamble_header.h"
 
@@ -98,12 +99,11 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   if (IsInactiveTabButtonRefactoringEnabled()) {
     // Register InactiveTabsButtonCell.
     auto configureInactiveTabsButtonCell =
-        ^(UICollectionViewCell* cell, NSIndexPath* indexPath, id item) {
-          // TODO(crbug.com/352722446): use a correct cell.
-          cell.backgroundColor = UIColor.greenColor;
+        ^(InactiveTabsButtonCell* cell, NSIndexPath* indexPath, id item) {
+          [weakSelf configureInativeTabsButtonCell:cell];
         };
     _inactiveTabsButtonCellRegistration = [UICollectionViewCellRegistration
-        registrationWithCellClass:UICollectionViewCell.class
+        registrationWithCellClass:InactiveTabsButtonCell.class
              configurationHandler:configureInactiveTabsButtonCell];
   } else {
     // Register InactiveTabsButtonHeader.
@@ -337,6 +337,12 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   // Note: At this point, `header` could be nil if not visible, or if the
   // supplementary view is not an InactiveTabsPreambleHeader.
   header.daysThreshold = _inactiveTabsDaysThreshold;
+}
+
+// Configures `cell` according to the current state.
+- (void)configureInativeTabsButtonCell:(InactiveTabsButtonCell*)cell {
+  cell.count = _inactiveTabsCount;
+  cell.daysThreshold = _inactiveTabsDaysThreshold;
 }
 
 // Configures the Inactive Tabs Button header according to the current state.

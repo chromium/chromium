@@ -10,6 +10,9 @@ NSString* const kGridOpenTabsSectionIdentifier = @"OpenTabsSectionIdentifier";
 NSString* const kSuggestedActionsSectionIdentifier =
     @"SuggestedActionsSectionIdentifier";
 
+NSString* const kInactiveTabsButtonAccessibilityIdentifier =
+    @"InactiveTabsButtonAccessibilityIdentifier";
+
 // Accessibility identifier prefix of a grid cell.
 NSString* const kGridCellIdentifierPrefix = @"GridCellIdentifierPrefix";
 
