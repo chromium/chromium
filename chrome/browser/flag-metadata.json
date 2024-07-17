@@ -4400,7 +4400,7 @@
   {
     "name": "esb-download-row-promo",
     "owners": [ "awado@google.com", "jacastro@chromium.org", "chrome-counter-abuse-alerts@google.com" ],
-    "expiry_milestone": 127
+    "expiry_milestone": 129
   },
   {
     "name": "ev-details-in-page-info",
