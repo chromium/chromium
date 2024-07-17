@@ -1144,6 +1144,22 @@
       <message name="IDS_SAFETY_HUB_MAGIC_STACK_MODULE_NAME" translateable="false">
         Safety Check
       </message>
+      <message name="IDS_SAFETY_HUB_MAGIC_STACK_HIDE_TEXT" translateable="false">
+        Hide Safety Check
+      </message>
+      <message name="IDS_SAFETY_HUB_MAGIC_STACK_SAFE_STATE_TITLE" translateable="false">
+        No urgent issues found
+      </message>
+      <message name="IDS_SAFETY_HUB_MAGIC_STACK_SAFE_STATE_BUTTON_TEXT" translateable="false">
+        Review
+      </message>
+      <message name="IDS_SAFETY_HUB_MAGIC_STACK_SAFE_BROWSING_TITLE" translateable="false">
+        Turn on Safe Browsing
+      </message>
+      <message name="IDS_SAFETY_HUB_MAGIC_STACK_SAFE_BROWSING_BUTTON_TEXT" translateable="false">
+        Go to settings
+      </message>
+
     </messages>
   </release>
 </grit>

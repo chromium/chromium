@@ -43,8 +43,12 @@ public class SafetyHubMagicStackBuilder implements ModuleProviderBuilder, Module
     @Override
     public boolean build(
             ModuleDelegate moduleDelegate, Callback<ModuleProvider> onModuleBuiltCallback) {
-        // TODO(crbug.com/324562205): Add the Safety Hub Magic Stack Coordinator.
-        return false;
+        Profile profile = getRegularProfile();
+        SafetyHubMagicStackCoordinator coordinator =
+                new SafetyHubMagicStackCoordinator(
+                        mContext, profile, mTabModelSelector, moduleDelegate, mSettingsLauncher);
+        onModuleBuiltCallback.onResult(coordinator);
+        return true;
     }
 
     @Override
@@ -62,5 +66,13 @@ public class SafetyHubMagicStackBuilder implements ModuleProviderBuilder, Module
     @Override
     public boolean isEligible() {
         return true;
+    }
+
+    private Profile getRegularProfile() {
+        assert mProfileSupplier.hasValue();
+
+        Profile profile = mProfileSupplier.get();
+        // It is possible that an incognito profile is provided by the supplier. See b/326619334.
+        return profile.isOffTheRecord() ? profile.getOriginalProfile() : profile;
     }
 }
