@@ -249,7 +249,7 @@ const base::FeatureParam<int> kAutofillUpstreamUpdatedUiTreatment{
 // on Bling.
 BASE_FEATURE(kAutofillEnableVirtualCards,
              "AutofillEnableVirtualCards",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
