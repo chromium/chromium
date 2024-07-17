@@ -7,10 +7,13 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -26,18 +29,41 @@
 
 namespace enterprise_connectors {
 
-#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 namespace {
 
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 static constexpr enterprise_connectors::AnalysisConnector
     kLocalAnalysisConnectors[] = {
         AnalysisConnector::BULK_DATA_ENTRY,
         AnalysisConnector::FILE_ATTACHED,
         AnalysisConnector::PRINT,
 };
+#endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
+
+constexpr char kReportingConnectorUrlFlag[] = "reporting-connector-url";
+
+std::optional<GURL> GetReportingConnectorUrlOverride() {
+  // Ignore this flag on Stable and Beta to avoid abuse.
+  if (!g_browser_process || !g_browser_process->browser_policy_connector()
+                                 ->IsCommandLineSwitchSupported()) {
+    return std::nullopt;
+  }
+
+  base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
+  if (cmd->HasSwitch(kReportingConnectorUrlFlag)) {
+    GURL url = GURL(cmd->GetSwitchValueASCII(kReportingConnectorUrlFlag));
+    if (url.is_valid()) {
+      return url;
+    } else {
+      VLOG(1) << "--" << kReportingConnectorUrlFlag
+              << " is set to an invalid URL";
+    }
+  }
+
+  return std::nullopt;
+}
 
 }  // namespace
-#endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
 ConnectorsManager::ConnectorsManager(PrefService* pref_service,
                                      const ServiceProviderConfig* config,
@@ -114,7 +140,15 @@ std::optional<ReportingSettings> ConnectorsManager::GetReportingSettings(
 
   // While multiple services can be set by the connector policies, only the
   // first one is considered for now.
-  return reporting_connector_settings_[connector][0].GetReportingSettings();
+  auto reporting_settings =
+      reporting_connector_settings_[connector][0].GetReportingSettings();
+
+  std::optional<GURL> url_override = GetReportingConnectorUrlOverride();
+  if (reporting_settings && url_override) {
+    reporting_settings->reporting_url = std::move(*url_override);
+  }
+
+  return reporting_settings;
 }
 
 std::optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
@@ -268,7 +302,7 @@ void ConnectorsManager::CacheReportingConnectorPolicy(
         !telemetry_observer_callback_.is_null()) {
       telemetry_observer_callback_.Run(
           settings.GetReportingSettings()->enabled_event_names.count(
-              ReportingServiceSettings::kExtensionTelemetryEvent) == 1);
+              kExtensionTelemetryEvent) == 1);
     }
   }
 }

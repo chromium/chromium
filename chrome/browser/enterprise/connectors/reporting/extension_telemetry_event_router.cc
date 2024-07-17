@@ -5,8 +5,9 @@
 #include "chrome/browser/enterprise/connectors/reporting/extension_telemetry_event_router.h"
 
 #include "chrome/browser/enterprise/connectors/reporting/extension_telemetry_event_router_factory.h"
+#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
-#include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
+#include "components/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "components/safe_browsing/core/common/features.h"
 
 namespace enterprise_connectors {
@@ -259,8 +260,7 @@ bool ExtensionTelemetryEventRouter::IsPolicyEnabled() {
   std::optional<ReportingSettings> settings =
       reporting_client->GetReportingSettings();
   return settings.has_value() &&
-         settings->enabled_event_names.count(
-             ReportingServiceSettings::kExtensionTelemetryEvent) > 0;
+         settings->enabled_event_names.count(kExtensionTelemetryEvent) > 0;
 }
 
 void ExtensionTelemetryEventRouter::UploadTelemetryReport(
@@ -277,8 +277,7 @@ void ExtensionTelemetryEventRouter::UploadTelemetryReport(
       reporting_client->GetReportingSettings();
 
   reporting_client->ReportRealtimeEvent(
-      ReportingServiceSettings::kExtensionTelemetryEvent,
-      std::move(settings.value()),
+      kExtensionTelemetryEvent, std::move(settings.value()),
       CreateExtensionTelemetryReportRequestDict(*telemetry_report_request));
 }
 

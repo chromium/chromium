@@ -18,12 +18,12 @@
 #include "chrome/browser/enterprise/connectors/reporting/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
-#include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/test_event_router.h"
@@ -231,9 +231,8 @@ TEST_F(RealtimeReportingClientUmaTest, TestUmaEventUploadSucceeds) {
   EXPECT_CALL(*client_.get(), UploadSecurityEventReport(_, _, _, _))
       .WillOnce(MoveArg<3>(&upload_callback));
 
-  reporting_client_->ReportRealtimeEvent(
-      ReportingServiceSettings::kExtensionInstallEvent, std::move(settings),
-      std::move(event));
+  reporting_client_->ReportRealtimeEvent(kExtensionInstallEvent,
+                                         std::move(settings), std::move(event));
 
   std::move(upload_callback)
       .Run(policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS));
@@ -251,9 +250,8 @@ TEST_F(RealtimeReportingClientUmaTest, TestUmaEventUploadFails) {
   EXPECT_CALL(*client_.get(), UploadSecurityEventReport(_, _, _, _))
       .WillOnce(MoveArg<3>(&upload_callback));
 
-  reporting_client_->ReportRealtimeEvent(
-      ReportingServiceSettings::kExtensionInstallEvent, std::move(settings),
-      std::move(event));
+  reporting_client_->ReportRealtimeEvent(kExtensionInstallEvent,
+                                         std::move(settings), std::move(event));
 
   std::move(upload_callback)
       .Run(policy::CloudPolicyClient::Result(policy::DM_STATUS_REQUEST_FAILED));
@@ -266,10 +264,9 @@ TEST_F(RealtimeReportingClientUmaTest, TestUmaEventUploadFails) {
 
 TEST_F(RealtimeReportingClientTestBase,
        TestEventNameToUmaEnumMapIncludesAllEvents) {
-  EXPECT_EQ(sizeof(ReportingServiceSettings::kAllReportingEvents) /
-                sizeof(ReportingServiceSettings::kAllReportingEvents[0]),
+  EXPECT_EQ(sizeof(kAllReportingEvents) / sizeof(kAllReportingEvents[0]),
             kEventNameToUmaEnumMap.size());
-  for (const char* eventName : ReportingServiceSettings::kAllReportingEvents) {
+  for (const char* eventName : kAllReportingEvents) {
     EXPECT_TRUE(kEventNameToUmaEnumMap.contains(eventName));
   }
 }

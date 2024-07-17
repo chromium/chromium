@@ -7,12 +7,12 @@
 #include "base/files/scoped_temp_dir.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
-#include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/connectors/connectors_prefs.h"
+#include "components/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/version_info/version_info.h"
@@ -139,8 +139,8 @@ TEST_F(CrashReportingContextTest, UploadToReportingServer) {
           RealtimeReportingClientFactory::GetForProfile(profile));
 
   EXPECT_CALL(*reporting_client,
-              ReportPastEvent(ReportingServiceSettings::kBrowserCrashEvent, _,
-                              _, base::Time::FromTimeT(timestamp)))
+              ReportPastEvent(kBrowserCrashEvent, _, _,
+                              base::Time::FromTimeT(timestamp)))
       .Times(1);
   UploadToReportingServer(reporting_client->GetWeakPtr(), &pref_service,
                           reports);

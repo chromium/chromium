@@ -20,7 +20,6 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/reporting/metrics_utils.h"
-#include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -28,6 +27,7 @@
 #include "chrome/browser/profiles/reporting_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
+#include "components/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -458,7 +458,7 @@ void RealtimeReportingClient::ReportEventWithTimestamp(
 #ifndef NDEBUG
   // Make sure the event is included in the kAllReportingEvents array.
   bool found = false;
-  for (const char* event_name : ReportingServiceSettings::kAllReportingEvents) {
+  for (const char* event_name : kAllReportingEvents) {
     if (event_name == name) {
       found = true;
       break;

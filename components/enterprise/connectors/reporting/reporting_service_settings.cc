@@ -2,36 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
+#include "components/enterprise/connectors/reporting/reporting_service_settings.h"
 
-#include "base/command_line.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/enterprise/connectors/service_provider_config.h"
 
 namespace enterprise_connectors {
 namespace {
-
-constexpr char kReportingConnectorUrlFlag[] = "reporting-connector-url";
-
-std::optional<GURL> GetUrlOverride() {
-  // Ignore this flag on Stable and Beta to avoid abuse.
-  if (!g_browser_process || !g_browser_process->browser_policy_connector()
-                                 ->IsCommandLineSwitchSupported()) {
-    return std::nullopt;
-  }
-
-  base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
-  if (cmd->HasSwitch(kReportingConnectorUrlFlag)) {
-    GURL url = GURL(cmd->GetSwitchValueASCII(kReportingConnectorUrlFlag));
-    if (url.is_valid())
-      return url;
-    else
-      VLOG(1) << "--reporting-connector-url is set to an invalid URL";
-  }
-
-  return std::nullopt;
-}
 
 }  // namespace
 
@@ -106,8 +82,7 @@ ReportingServiceSettings::GetReportingSettings() const {
 
   ReportingSettings settings;
 
-  settings.reporting_url =
-      GetUrlOverride().value_or(GURL(reporting_config_->url));
+  settings.reporting_url = GURL(reporting_config_->url);
   DCHECK(settings.reporting_url.is_valid());
 
   settings.enabled_event_names.insert(enabled_event_names_.begin(),

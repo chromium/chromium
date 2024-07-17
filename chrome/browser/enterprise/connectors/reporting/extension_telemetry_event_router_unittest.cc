@@ -7,13 +7,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/values_test_util.h"
+#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
-#include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -267,10 +268,9 @@ TEST_P(ExtensionTelemetryEventInstallLocationTest,
 
   EXPECT_CALL(*mock_realtime_reporting_client_, GetProfileUserName())
       .WillRepeatedly(Return(kFakeProfileUsername));
-  EXPECT_CALL(
-      *mock_realtime_reporting_client_,
-      ReportRealtimeEvent(ReportingServiceSettings::kExtensionTelemetryEvent, _,
-                          Eq(ByRef(expected_event))));
+  EXPECT_CALL(*mock_realtime_reporting_client_,
+              ReportRealtimeEvent(kExtensionTelemetryEvent, _,
+                                  Eq(ByRef(expected_event))));
   extension_telemetry_event_router_->UploadTelemetryReport(
       GenerateTelemetryReportRequest(install_location_));
 }

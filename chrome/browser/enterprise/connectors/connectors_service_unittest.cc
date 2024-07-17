@@ -289,8 +289,8 @@ TEST_P(ConnectorsServiceReportingFeatureTest, CheckTelemetryPolicyObserver) {
       connectors_manager->GetReportingConnectorsSettingsForTesting().empty());
 
   // Enable browser crash event
-  test::SetOnSecurityEventReporting(
-      pref_service(), true, {ReportingServiceSettings::kBrowserCrashEvent}, {});
+  test::SetOnSecurityEventReporting(pref_service(), true, {kBrowserCrashEvent},
+                                    {});
   EXPECT_FALSE(future.Take());
 
   // Clear enabled events (not cached when cleared)
@@ -299,9 +299,8 @@ TEST_P(ConnectorsServiceReportingFeatureTest, CheckTelemetryPolicyObserver) {
       connectors_manager->GetReportingConnectorsSettingsForTesting().empty());
 
   // Enable telemetry event
-  test::SetOnSecurityEventReporting(
-      pref_service(), true,
-      {ReportingServiceSettings::kExtensionTelemetryEvent}, {});
+  test::SetOnSecurityEventReporting(pref_service(), true,
+                                    {kExtensionTelemetryEvent}, {});
   EXPECT_TRUE(future.Take());
 }
 

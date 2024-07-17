@@ -22,7 +22,6 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
-#include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -32,6 +31,8 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/extensions/api/safe_browsing_private.h"
+#include "components/enterprise/connectors/reporting/constants.h"
+#include "components/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -344,7 +345,8 @@ void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordReuseDetected(
   std::optional<enterprise_connectors::ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
-      settings->enabled_event_names.count(kKeyPasswordReuseEvent) == 0) {
+      settings->enabled_event_names.count(
+          enterprise_connectors::kKeyPasswordReuseEvent) == 0) {
     return;
   }
 
@@ -358,7 +360,8 @@ void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordReuseDetected(
                               : safe_browsing::EventResult::ALLOWED));
 
   reporting_client_->ReportRealtimeEvent(
-      kKeyPasswordReuseEvent, std::move(settings.value()), std::move(event));
+      enterprise_connectors::kKeyPasswordReuseEvent,
+      std::move(settings.value()), std::move(event));
 }
 
 void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordChanged(
@@ -378,7 +381,8 @@ void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordChanged(
   std::optional<enterprise_connectors::ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
-      settings->enabled_event_names.count(kKeyPasswordChangedEvent) == 0) {
+      settings->enabled_event_names.count(
+          enterprise_connectors::kKeyPasswordChangedEvent) == 0) {
     return;
   }
 
@@ -386,7 +390,8 @@ void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordChanged(
   event.Set(kKeyUserName, user_name);
 
   reporting_client_->ReportRealtimeEvent(
-      kKeyPasswordChangedEvent, std::move(settings.value()), std::move(event));
+      enterprise_connectors::kKeyPasswordChangedEvent,
+      std::move(settings.value()), std::move(event));
 }
 
 void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
@@ -419,7 +424,8 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
   std::optional<enterprise_connectors::ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
-      settings->enabled_event_names.count(kKeyDangerousDownloadEvent) == 0) {
+      settings->enabled_event_names.count(
+          enterprise_connectors::kKeyDangerousDownloadEvent) == 0) {
     return;
   }
 
@@ -448,9 +454,9 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
     event.Set(kKeyScanId, scan_id);
   }
 
-  reporting_client_->ReportRealtimeEvent(kKeyDangerousDownloadEvent,
-                                         std::move(settings.value()),
-                                         std::move(event));
+  reporting_client_->ReportRealtimeEvent(
+      enterprise_connectors::kKeyDangerousDownloadEvent,
+      std::move(settings.value()), std::move(event));
 }
 
 void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialShown(
@@ -480,7 +486,8 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialShown(
   std::optional<enterprise_connectors::ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
-      settings->enabled_event_names.count(kKeyInterstitialEvent) == 0) {
+      settings->enabled_event_names.count(
+          enterprise_connectors::kKeyInterstitialEvent) == 0) {
     return;
   }
 
@@ -497,7 +504,8 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialShown(
   event.Set(kKeyEventResult, safe_browsing::EventResultToString(event_result));
 
   reporting_client_->ReportRealtimeEvent(
-      kKeyInterstitialEvent, std::move(settings.value()), std::move(event));
+      enterprise_connectors::kKeyInterstitialEvent, std::move(settings.value()),
+      std::move(event));
 }
 
 void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialProceeded(
@@ -527,7 +535,8 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialProceeded(
   std::optional<enterprise_connectors::ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
-      settings->enabled_event_names.count(kKeyInterstitialEvent) == 0) {
+      settings->enabled_event_names.count(
+          enterprise_connectors::kKeyInterstitialEvent) == 0) {
     return;
   }
 
@@ -540,7 +549,8 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialProceeded(
                                  safe_browsing::EventResult::BYPASSED));
 
   reporting_client_->ReportRealtimeEvent(
-      kKeyInterstitialEvent, std::move(settings.value()), std::move(event));
+      enterprise_connectors::kKeyInterstitialEvent, std::move(settings.value()),
+      std::move(event));
 }
 
 void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorResult(
@@ -590,7 +600,8 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDeepScanningResult(
   std::optional<enterprise_connectors::ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
-      settings->enabled_event_names.count(kKeyDangerousDownloadEvent) == 0) {
+      settings->enabled_event_names.count(
+          enterprise_connectors::kKeyDangerousDownloadEvent) == 0) {
     return;
   }
 
@@ -624,9 +635,9 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDeepScanningResult(
     event.Set(kKeyContentTransferMethod, content_transfer_method);
   }
 
-  reporting_client_->ReportRealtimeEvent(kKeyDangerousDownloadEvent,
-                                         std::move(settings.value()),
-                                         std::move(event));
+  reporting_client_->ReportRealtimeEvent(
+      enterprise_connectors::kKeyDangerousDownloadEvent,
+      std::move(settings.value()), std::move(event));
 }
 
 void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
@@ -646,7 +657,8 @@ void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
   std::optional<enterprise_connectors::ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
-      settings->enabled_event_names.count(kKeySensitiveDataEvent) == 0) {
+      settings->enabled_event_names.count(
+          enterprise_connectors::kKeySensitiveDataEvent) == 0) {
     return;
   }
 
@@ -678,7 +690,8 @@ void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
   AddAnalysisConnectorVerdictToEvent(result, event);
 
   reporting_client_->ReportRealtimeEvent(
-      kKeySensitiveDataEvent, std::move(settings.value()), std::move(event));
+      enterprise_connectors::kKeySensitiveDataEvent,
+      std::move(settings.value()), std::move(event));
 }
 
 void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
@@ -699,7 +712,8 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
   std::optional<enterprise_connectors::ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
-      settings->enabled_event_names.count(kKeySensitiveDataEvent) == 0) {
+      settings->enabled_event_names.count(
+          enterprise_connectors::kKeySensitiveDataEvent) == 0) {
     return;
   }
 
@@ -734,7 +748,8 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
   AddAnalysisConnectorVerdictToEvent(result, event);
 
   reporting_client_->ReportRealtimeEvent(
-      kKeySensitiveDataEvent, std::move(settings.value()), std::move(event));
+      enterprise_connectors::kKeySensitiveDataEvent,
+      std::move(settings.value()), std::move(event));
 }
 
 void SafeBrowsingPrivateEventRouter::OnUnscannedFileEvent(
@@ -754,7 +769,8 @@ void SafeBrowsingPrivateEventRouter::OnUnscannedFileEvent(
   std::optional<enterprise_connectors::ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
-      settings->enabled_event_names.count(kKeyUnscannedFileEvent) == 0) {
+      settings->enabled_event_names.count(
+          enterprise_connectors::kKeyUnscannedFileEvent) == 0) {
     return;
   }
 
@@ -784,7 +800,8 @@ void SafeBrowsingPrivateEventRouter::OnUnscannedFileEvent(
   }
 
   reporting_client_->ReportRealtimeEvent(
-      kKeyUnscannedFileEvent, std::move(settings.value()), std::move(event));
+      enterprise_connectors::kKeyUnscannedFileEvent,
+      std::move(settings.value()), std::move(event));
 }
 
 void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
@@ -815,7 +832,8 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
   std::optional<enterprise_connectors::ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
-      settings->enabled_event_names.count(kKeyDangerousDownloadEvent) == 0) {
+      settings->enabled_event_names.count(
+          enterprise_connectors::kKeyDangerousDownloadEvent) == 0) {
     return;
   }
 
@@ -844,9 +862,9 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
     event.Set(kKeyScanId, scan_id);
   }
 
-  reporting_client_->ReportRealtimeEvent(kKeyDangerousDownloadEvent,
-                                         std::move(settings.value()),
-                                         std::move(event));
+  reporting_client_->ReportRealtimeEvent(
+      enterprise_connectors::kKeyDangerousDownloadEvent,
+      std::move(settings.value()), std::move(event));
 }
 
 void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
@@ -875,7 +893,8 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
   std::optional<enterprise_connectors::ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
-      settings->enabled_event_names.count(kKeyDangerousDownloadEvent) == 0) {
+      settings->enabled_event_names.count(
+          enterprise_connectors::kKeyDangerousDownloadEvent) == 0) {
     return;
   }
 
@@ -904,9 +923,9 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
     event.Set(kKeyScanId, scan_id);
   }
 
-  reporting_client_->ReportRealtimeEvent(kKeyDangerousDownloadEvent,
-                                         std::move(settings.value()),
-                                         std::move(event));
+  reporting_client_->ReportRealtimeEvent(
+      enterprise_connectors::kKeyDangerousDownloadEvent,
+      std::move(settings.value()), std::move(event));
 }
 
 void SafeBrowsingPrivateEventRouter::OnLoginEvent(
@@ -921,7 +940,8 @@ void SafeBrowsingPrivateEventRouter::OnLoginEvent(
   }
 
   std::unique_ptr<url_matcher::URLMatcher> matcher =
-      CreateURLMatcherForOptInEvent(settings.value(), kKeyLoginEvent);
+      CreateURLMatcherForOptInEvent(settings.value(),
+                                    enterprise_connectors::kKeyLoginEvent);
   if (!IsOptInEventEnabled(matcher.get(), url)) {
     return;
   }
@@ -934,8 +954,9 @@ void SafeBrowsingPrivateEventRouter::OnLoginEvent(
   }
   event.Set(kKeyLoginUserName, MaskUsername(username));
 
-  reporting_client_->ReportRealtimeEvent(
-      kKeyLoginEvent, std::move(settings.value()), std::move(event));
+  reporting_client_->ReportRealtimeEvent(enterprise_connectors::kKeyLoginEvent,
+                                         std::move(settings.value()),
+                                         std::move(event));
 }
 
 void SafeBrowsingPrivateEventRouter::OnPasswordBreach(
@@ -948,7 +969,8 @@ void SafeBrowsingPrivateEventRouter::OnPasswordBreach(
   }
 
   std::unique_ptr<url_matcher::URLMatcher> matcher =
-      CreateURLMatcherForOptInEvent(settings.value(), kKeyPasswordBreachEvent);
+      CreateURLMatcherForOptInEvent(
+          settings.value(), enterprise_connectors::kKeyPasswordBreachEvent);
   if (!matcher) {
     return;
   }
@@ -976,7 +998,8 @@ void SafeBrowsingPrivateEventRouter::OnPasswordBreach(
   event.Set(kKeyPasswordBreachIdentities, std::move(identities_list));
 
   reporting_client_->ReportRealtimeEvent(
-      kKeyPasswordBreachEvent, std::move(settings.value()), std::move(event));
+      enterprise_connectors::kKeyPasswordBreachEvent,
+      std::move(settings.value()), std::move(event));
 }
 
 void SafeBrowsingPrivateEventRouter::OnUrlFilteringInterstitial(
@@ -985,8 +1008,9 @@ void SafeBrowsingPrivateEventRouter::OnUrlFilteringInterstitial(
     const safe_browsing::RTLookupResponse& response) {
   std::optional<enterprise_connectors::ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
-  if (!settings.has_value() || settings->enabled_event_names.count(
-                                   kKeyUrlFilteringInterstitialEvent) == 0) {
+  if (!settings.has_value() ||
+      settings->enabled_event_names.count(
+          enterprise_connectors::kKeyUrlFilteringInterstitialEvent) == 0) {
     return;
   }
   base::Value::Dict event;
@@ -1001,9 +1025,9 @@ void SafeBrowsingPrivateEventRouter::OnUrlFilteringInterstitial(
   AddTriggeredRuleInfoToUrlFilteringInterstitialEvent(response, event);
   event.Set(kKeyEventResult, safe_browsing::EventResultToString(event_result));
 
-  reporting_client_->ReportRealtimeEvent(kKeyUrlFilteringInterstitialEvent,
-                                         std::move(settings.value()),
-                                         std::move(event));
+  reporting_client_->ReportRealtimeEvent(
+      enterprise_connectors::kKeyUrlFilteringInterstitialEvent,
+      std::move(settings.value()), std::move(event));
 }
 
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
@@ -1020,7 +1044,8 @@ void SafeBrowsingPrivateEventRouter::OnDataControlsSensitiveDataEvent(
   std::optional<enterprise_connectors::ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
-      !base::Contains(settings->enabled_event_names, kKeySensitiveDataEvent)) {
+      !base::Contains(settings->enabled_event_names,
+                      enterprise_connectors::kKeySensitiveDataEvent)) {
     return;
   }
 
@@ -1055,7 +1080,8 @@ void SafeBrowsingPrivateEventRouter::OnDataControlsSensitiveDataEvent(
             std::move(triggered_rule_info));
 
   reporting_client_->ReportRealtimeEvent(
-      kKeySensitiveDataEvent, std::move(settings.value()), std::move(event));
+      enterprise_connectors::kKeySensitiveDataEvent,
+      std::move(settings.value()), std::move(event));
 }
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 

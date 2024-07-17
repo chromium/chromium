@@ -10,8 +10,8 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
-#include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
+#include "components/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
@@ -65,8 +65,7 @@ void ExtensionInstallEventRouter::ReportExtensionInstallEvent(
   std::optional<ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
-      settings->enabled_event_names.count(
-          ReportingServiceSettings::kExtensionInstallEvent) == 0) {
+      settings->enabled_event_names.count(kExtensionInstallEvent) == 0) {
     return;
   }
 
@@ -80,8 +79,7 @@ void ExtensionInstallEventRouter::ReportExtensionInstallEvent(
                                                    : kExternalSource);
 
   reporting_client_->ReportRealtimeEvent(
-      ReportingServiceSettings::kExtensionInstallEvent,
-      std::move(settings.value()), std::move(event));
+      kExtensionInstallEvent, std::move(settings.value()), std::move(event));
 }
 
 void ExtensionInstallEventRouter::OnExtensionInstalled(

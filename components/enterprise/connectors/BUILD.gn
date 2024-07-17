@@ -18,6 +18,9 @@ source_set("connectors") {
     "device_trust/prefs.h",
     "enterprise_connectors_policy_handler.cc",
     "enterprise_connectors_policy_handler.h",
+    "reporting/constants.h",
+    "reporting/reporting_service_settings.cc",
+    "reporting/reporting_service_settings.h",
     "service_provider_config.cc",
     "service_provider_config.h",
   ]
@@ -45,6 +48,7 @@ source_set("unit_tests") {
 
   sources = [
     "enterprise_connectors_policy_handler_unittest.cc",
+    "reporting/reporting_service_settings_unittest.cc",
     "service_provider_config_unittest.cc",
   ]
 

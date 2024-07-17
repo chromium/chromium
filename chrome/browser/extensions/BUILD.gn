@@ -898,6 +898,7 @@ source_set("extensions") {
     "//components/embedder_support:browser_util",
     "//components/enterprise",
     "//components/enterprise/buildflags",
+    "//components/enterprise/connectors",
     "//components/favicon/content",
     "//components/feedback",
     "//components/gcm_driver",
