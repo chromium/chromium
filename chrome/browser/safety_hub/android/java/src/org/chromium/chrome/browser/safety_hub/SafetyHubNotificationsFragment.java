@@ -41,9 +41,13 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
         super.onDestroy();
         mNotificationPermissionReviewBridge.removeObserver(this);
 
-        if (mBulkActionConfirmed) {
-            List<NotificationPermissions> notificationPermissionsList =
-                    mNotificationPermissionReviewBridge.getNotificationPermissions();
+        if (mLargeIconBridge != null) {
+            mLargeIconBridge.destroy();
+        }
+
+        List<NotificationPermissions> notificationPermissionsList =
+                mNotificationPermissionReviewBridge.getNotificationPermissions();
+        if (mBulkActionConfirmed && !notificationPermissionsList.isEmpty()) {
             mNotificationPermissionReviewBridge.bulkResetNotificationPermissions();
             showSnackbarOnLastFocusedActivity(
                     getString(
@@ -121,6 +125,7 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
 
         List<NotificationPermissions> notificationPermissionsList =
                 mNotificationPermissionReviewBridge.getNotificationPermissions();
+        mBottomButton.setEnabled(!notificationPermissionsList.isEmpty());
         for (NotificationPermissions notificationPermissions : notificationPermissionsList) {
             SafetyHubNotificationsPreference preference =
                     new SafetyHubNotificationsPreference(

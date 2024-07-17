@@ -16,6 +16,7 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.anyIntent;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
@@ -273,6 +274,47 @@ public final class SafetyHubTest {
     @Test
     @LargeTest
     @Feature({"SafetyHubPermissions"})
+    public void testPermissionsBottomButtonState() {
+        mUnusedPermissionsBridge.setPermissionsDataForReview(
+                new PermissionsData[] {PERMISSIONS_DATA_1});
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+
+        // Verify the permissions module is displaying the info state.
+        String permissionsTitle =
+                mSafetyHubFragmentTestRule
+                        .getActivity()
+                        .getResources()
+                        .getQuantityString(R.plurals.safety_hub_permissions_warning_title, 1, 1);
+        scrollToPreference(withText(permissionsTitle));
+        onView(withText(permissionsTitle)).check(matches(isDisplayed()));
+
+        // Module should be collapsed initially since it's in an info state.
+        verifyButtonsNextToTextVisibility(permissionsTitle, false);
+        clickOnExpandButtonNextToText(permissionsTitle);
+
+        // Open the permissions subpage.
+        scrollToExpandedPreference(permissionsTitle);
+        clickOnSecondaryButtonNextToText(permissionsTitle);
+
+        // Check that the button is enabled.
+        onView(withText(R.string.got_it)).check(matches(isEnabled()));
+
+        // Regrant the permissions by clicking the corresponding action button.
+        clickOnButtonNextToText(PERMISSIONS_DATA_1.getOrigin());
+
+        // Check that the button is disabled.
+        onView(withText(R.string.got_it)).check(matches(not(isEnabled())));
+
+        // Click on the action button of the snackbar to undo the above action.
+        onViewWaiting(withText(R.string.undo)).perform(click());
+
+        // Check that the button is enabled.
+        onView(withText(R.string.got_it)).check(matches(isEnabled()));
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"SafetyHubPermissions"})
     public void testPermissionsToSiteSettings() {
         SettingsActivity activity = mPermissionsFragmentTestRule.startSettingsActivity();
         openActionBarOverflowOrOptionsMenu(activity);
@@ -369,6 +411,52 @@ public final class SafetyHubTest {
     @Test
     @LargeTest
     @Feature({"SafetyHubNotifications"})
+    public void testNotificationsBottomButtonState() {
+        mNotificationPermissionReviewBridge.setNotificationPermissionsForReview(
+                new NotificationPermissions[] {NOTIFICATION_PERMISSIONS_1});
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+
+        // Verify the notifications module is displaying the info state.
+        String notificationsTitle =
+                mSafetyHubFragmentTestRule
+                        .getActivity()
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_notifications_review_warning_title, 1, 1);
+        scrollToPreference(withText(notificationsTitle));
+        onView(withText(notificationsTitle)).check(matches(isDisplayed()));
+
+        // Module should be collapsed initially since it's in an info state.
+        verifyButtonsNextToTextVisibility(notificationsTitle, false);
+        clickOnExpandButtonNextToText(notificationsTitle);
+
+        // Open the notifications subpage.
+        scrollToExpandedPreference(notificationsTitle);
+        clickOnSecondaryButtonNextToText(notificationsTitle);
+
+        // Check that the button is enabled.
+        onView(withText(R.string.safety_hub_notifications_reset_all_button))
+                .check(matches(isEnabled()));
+
+        // Reset the notification by clicking the corresponding menu button.
+        clickOnButtonNextToText(NOTIFICATION_PERMISSIONS_1.getPrimaryPattern());
+        onViewWaiting(withText(R.string.safety_hub_reset_notifications_menu_item)).perform(click());
+
+        // Check that the button is disabled.
+        onView(withText(R.string.safety_hub_notifications_reset_all_button))
+                .check(matches(not(isEnabled())));
+
+        // Click on the action button of the snackbar to undo the above action.
+        onViewWaiting(withText(R.string.undo)).perform(click());
+
+        // Check that the button is enabled.
+        onView(withText(R.string.safety_hub_notifications_reset_all_button))
+                .check(matches(isEnabled()));
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"SafetyHubNotifications"})
     public void testNotificationsToNotificationSettings() {
         SettingsActivity activity = mNotificationsFragmentTestRule.startSettingsActivity();
         openActionBarOverflowOrOptionsMenu(activity);
@@ -415,8 +503,8 @@ public final class SafetyHubTest {
         ChromeSwitches.FORCE_UPDATE_MENU_UPDATE_TYPE + "=update_available",
     })
     public void testUpdateCheckModule() {
-        // TODO(crbug.com/324562205): Move the initialization of the SafetyHubFetchService so that
-        // there is no dependency on ChromeTabbedActivity.
+        // TODO(crbug.com/324562205): Move the initialization of the SafetyHubFetchService so
+        // that there is no dependency on ChromeTabbedActivity.
         mSafetyHubFragmentTestRule.startSettingsActivity();
         SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
 
@@ -495,7 +583,8 @@ public final class SafetyHubTest {
         verifyButtonsNextToTextVisibility(permissionsTitle, false);
         clickOnExpandButtonNextToText(permissionsTitle);
 
-        // Click on the Got it button and verify the permissions module has changed to a safe state.
+        // Click on the Got it button and verify the permissions module has changed to a safe
+        // state.
         scrollToExpandedPreference(permissionsTitle);
         clickOnPrimaryButtonNextToText(permissionsTitle);
         onViewWaiting(withText(R.string.safety_hub_permissions_ok_title))
@@ -572,8 +661,8 @@ public final class SafetyHubTest {
         onViewWaiting(withText(R.string.safety_hub_notifications_review_ok_title))
                 .check(matches(isDisplayed()));
 
-        // Click on the snackbar action button and verify that the notifications are allowed again
-        // and the info state is displayed.
+        // Click on the snackbar action button and verify that the notifications are allowed
+        // again and the info state is displayed.
         onViewWaiting(withText(R.string.undo)).perform(click());
         onViewWaiting(withText(notificationsTitle)).check(matches(isDisplayed()));
 
@@ -608,7 +697,8 @@ public final class SafetyHubTest {
         verifyButtonsNextToTextVisibility(notificationsTitle, false);
         clickOnExpandButtonNextToText(notificationsTitle);
 
-        // Click on the secondary button and verify that notifications site settings page is opened.
+        // Click on the secondary button and verify that notifications site settings page is
+        // opened.
         scrollToExpandedPreference(notificationsTitle);
         clickOnSecondaryButtonNextToText(notificationsTitle);
         onViewWaiting(
@@ -667,8 +757,9 @@ public final class SafetyHubTest {
         clickOnExpandButtonNextToText(safetyTipsTitle);
         scrollToLastPosition();
 
-        // Verify the Safety tools preference is displayed and clicking on it opens the correct link
-        // in CCT.
+        // The module should be expanded in it's initial state and all its children are visible.
+        // Verify the Safety tools preference is displayed and clicking on it opens the correct
+        // link in CCT.
         String safetyToolsTitle =
                 mSafetyHubFragmentTestRule
                         .getActivity()
@@ -696,8 +787,9 @@ public final class SafetyHubTest {
         clickOnExpandButtonNextToText(safetyTipsTitle);
         scrollToLastPosition();
 
-        // Verify the Incognito preference is displayed and clicking on it opens the correct link in
-        // CCT.
+        // The module should be expanded in it's initial state and all its children are visible.
+        // Verify the Incognito preference is displayed and clicking on it opens the correct
+        // link in CCT.
         String incognitoTitle =
                 mSafetyHubFragmentTestRule
                         .getActivity()

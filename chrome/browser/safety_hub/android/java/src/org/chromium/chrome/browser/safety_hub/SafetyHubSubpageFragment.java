@@ -28,6 +28,7 @@ public abstract class SafetyHubSubpageFragment extends SafetyHubBaseFragment {
     private static final String PREF_LIST = "preference_list";
 
     protected PreferenceCategory mPreferenceList;
+    protected ButtonCompat mBottomButton;
     protected boolean mBulkActionConfirmed;
 
     @Override
@@ -52,9 +53,9 @@ public abstract class SafetyHubSubpageFragment extends SafetyHubBaseFragment {
                 (LinearLayout) super.onCreateView(inflater, container, savedInstanceState);
         LinearLayout bottomView =
                 (LinearLayout) inflater.inflate(R.layout.safety_hub_bottom_elements, view, false);
-        ButtonCompat bottomButton = bottomView.findViewById(R.id.safety_hub_permissions_button);
-        bottomButton.setText(getButtonTextId());
-        bottomButton.setOnClickListener(
+        mBottomButton = bottomView.findViewById(R.id.safety_hub_permissions_button);
+        mBottomButton.setText(getButtonTextId());
+        mBottomButton.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {

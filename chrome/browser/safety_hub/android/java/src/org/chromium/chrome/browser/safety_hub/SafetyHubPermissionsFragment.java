@@ -43,9 +43,9 @@ public class SafetyHubPermissionsFragment extends SafetyHubSubpageFragment
             mLargeIconBridge.destroy();
         }
 
-        if (mBulkActionConfirmed) {
-            PermissionsData[] permissionsDataList =
-                    mUnusedSitePermissionsBridge.getRevokedPermissions();
+        PermissionsData[] permissionsDataList =
+                mUnusedSitePermissionsBridge.getRevokedPermissions();
+        if (mBulkActionConfirmed && permissionsDataList.length != 0) {
             mUnusedSitePermissionsBridge.clearRevokedPermissionsReviewList();
             showSnackbarOnLastFocusedActivity(
                     getString(
@@ -109,6 +109,7 @@ public class SafetyHubPermissionsFragment extends SafetyHubSubpageFragment
 
         PermissionsData[] permissionsDataList =
                 mUnusedSitePermissionsBridge.getRevokedPermissions();
+        mBottomButton.setEnabled(permissionsDataList.length != 0);
         for (PermissionsData permissionsData : permissionsDataList) {
             SafetyHubPermissionsPreference preference =
                     new SafetyHubPermissionsPreference(
