@@ -605,6 +605,12 @@ bool AtspiInProcessFuzzer::AttemptMutateMessage(
   if (action->path_to_control_size() == 0) {
     return false;
   }
+  // Some of the time, add another path element (so we reach into
+  // deeper controls)
+  if (std::uniform_int_distribution<size_t>(0, 2)(random) > 1) {
+    action->add_path_to_control();
+  }
+
   // About 50% of the time, choose the last path element to mutate
   size_t chosen_path_element = std::uniform_int_distribution<size_t>(
       0, action->path_to_control_size() * 2)(random);
@@ -612,7 +618,9 @@ bool AtspiInProcessFuzzer::AttemptMutateMessage(
       action->mutable_path_to_control(
           std::min(chosen_path_element,
                    static_cast<size_t>(action->path_to_control_size()) - 1));
-  if (path_element->has_named()) {
+  // Sometimes, switch anonymous elements to named
+  if (path_element->has_named() ||
+      std::uniform_int_distribution<size_t>(0, 2)(random) > 1) {
     if (known_names.empty()) {
       return false;
     }
