@@ -318,7 +318,7 @@ gpu_linux_builder(
 )
 
 def gpu_mac_builder(*, name, **kwargs):
-    kwargs["cpu"] = kwargs.get("cpu", None)
+    kwargs.setdefault("cpu", None)
     return try_.builder(
         name = name,
         builder_group = "tryserver.chromium.mac",
@@ -399,6 +399,7 @@ gpu_mac_builder(
     ],
     gn_args = "ci/GPU FYI Mac arm64 Builder",
     pool = "luci.chromium.gpu.mac.arm64.apple.m1.try",
+    cpu = cpu.ARM64,
 )
 
 gpu_mac_builder(
