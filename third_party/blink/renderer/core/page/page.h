@@ -532,9 +532,8 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   // Called on a new Page, passing an old Page as the parameter, when doing a
   // LocalFrame <-> LocalFrame swap when committing a navigation, to ensure that
-  // e.g. the close task will still be processed after the swap, the list of
-  // related pages will include the new page instead of the old page, etc.
-  void TakePropertiesForLocalMainFrameSwap(Page* old_page);
+  // the close task will still be processed after the swap.
+  void TakeCloseTaskHandler(Page* old_page);
 
  private:
   friend class ScopedPagePauser;
