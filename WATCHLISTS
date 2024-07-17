@@ -561,7 +561,7 @@
                   '|third_party/blink/public/platform/scheduler'
     },
     'blink_scheduling_api': {
-      'filepath': 'third_party/blink/renderer/modules/scheduler'
+      'filepath': 'third_party/blink/renderer/core/scheduler'
     },
     'blink_script': {
       'filepath': 'third_party/blink/renderer/bindings/core/v8/.*module' \
