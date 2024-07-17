@@ -1021,6 +1021,11 @@ constexpr char kAppDeduplicationServiceLastGetTimestamp[] =
     "apps.app_deduplication_service.last_get_data_from_server_timestamp";
 #endif
 
+// Deprecated 07/2024
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kShowTunaScreenEnabled[] = "ash.tuna_screen_oobe_enabled";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1395,6 +1400,11 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterTimePref(kAppDeduplicationServiceLastGetTimestamp,
                              base::Time());
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Deprecated 07/2024.
+  registry->RegisterBooleanPref(kShowTunaScreenEnabled, true);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2675,6 +2685,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 07/2024.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   profile_prefs->ClearPref(kAppDeduplicationServiceLastGetTimestamp);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 07/2024.
+  profile_prefs->ClearPref(kShowTunaScreenEnabled);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

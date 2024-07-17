@@ -1628,7 +1628,7 @@ const KNOWN_SCREENS: ScreenDefType[] = [
     kind: ScreenKind.NORMAL,
   },
   {
-    id: 'tuna',
+    id: 'gemini-intro',
     kind: ScreenKind.NORMAL,
   },
   {

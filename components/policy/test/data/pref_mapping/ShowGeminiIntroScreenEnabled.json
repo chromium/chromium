@@ -8,27 +8,27 @@
         "note": "The default value is changed by default_for_enterprise_users",
         "policies": {},
         "prefs": {
-          "ash.tuna_screen_oobe_enabled": {
+          "ash.gemini_intro_screen_oobe_enabled": {
             "value": false
           }
         }
       },
       {
         "policies": {
-          "ShowTunaScreenEnabled": false
+          "ShowGeminiIntroScreenEnabled": false
         },
         "prefs": {
-          "ash.tuna_screen_oobe_enabled": {
+          "ash.gemini_intro_screen_oobe_enabled": {
             "value": false
           }
         }
       },
       {
         "policies": {
-          "ShowTunaScreenEnabled": true
+          "ShowGeminiIntroScreenEnabled": true
         },
         "prefs": {
-          "ash.tuna_screen_oobe_enabled": {
+          "ash.gemini_intro_screen_oobe_enabled": {
             "value": true
           }
         }

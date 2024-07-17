@@ -1513,14 +1513,15 @@ inline constexpr char kTouchscreenEnabled[] = "events.touch_screen.enabled";
 inline constexpr char kShowAiIntroScreenEnabled[] =
     "ash.ai_intro_screen_oobe_enabled";
 
+// Boolean value indicating that the gemini intro screen should be shown to the
+// user during oobe common or add person flow.
+inline constexpr char kShowGeminiIntroScreenEnabled[] =
+    "ash.gemini_intro_screen_oobe_enabled";
+
 // Boolean value indicating that the touchpad scroll direction screen should be
 // shown to the user during oobe.
 inline constexpr char kShowTouchpadScrollScreenEnabled[] =
     "ash.touchpad_scroll_screen_oobe_enabled";
-
-// Boolean value indicating that the tuna screen should be shown to the
-// user during oobe common or add person flow.
-inline constexpr char kShowTunaScreenEnabled[] = "ash.tuna_screen_oobe_enabled";
 
 // Boolean value indicating that the human presence sesnsor screen should be
 // shown to the user during oobe.

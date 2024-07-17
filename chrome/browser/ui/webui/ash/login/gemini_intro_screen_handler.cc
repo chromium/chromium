@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/ash/login/tuna_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/gemini_intro_screen_handler.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
@@ -16,37 +17,37 @@
 
 namespace ash {
 
-TunaScreenHandler::TunaScreenHandler() : BaseScreenHandler(kScreenId) {}
+GeminiIntroScreenHandler::GeminiIntroScreenHandler() :
+    BaseScreenHandler(kScreenId) {}
 
-TunaScreenHandler::~TunaScreenHandler() = default;
+GeminiIntroScreenHandler::~GeminiIntroScreenHandler() = default;
 
 // Add localized values that you want to propagate to the JS side here.
-void TunaScreenHandler::DeclareLocalizedValues(
+void GeminiIntroScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
-  // TODO(b/334819371) Cleanup strings
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (base::FeatureList::IsEnabled(features::kFeatureManagementOobeTuna)) {
+  if (base::FeatureList::IsEnabled(
+      features::kFeatureManagementOobeGeminiIntro)) {
     auto product_name =
         ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
             IDR_CROS_OOBE_PRODUCT_NAME);
-    // Trim trailing space
-    product_name = product_name.substr(0, product_name.length() - 1);
-    builder->AddF("tunaScreenTitle", IDS_TUNA_TITLE,
+    product_name = base::TrimWhitespaceASCII(product_name, base::TRIM_TRAILING);
+    builder->AddF("geminiIntroScreenTitle", IDS_GEMINI_INTRO_TITLE,
                   base::UTF8ToUTF16(product_name));
   } else
 #endif
   {
-    builder->AddF("tunaScreenTitle", IDS_TUNA_TITLE,
+    builder->AddF("geminiIntroScreenTitle", IDS_GEMINI_INTRO_TITLE,
                   ui::GetChromeOSDeviceName());
   }
-  builder->Add("tunaScreenSubtitle", IDS_TUNA_SUBTITLE);
+  builder->Add("geminiIntroScreenSubtitle", IDS_GEMINI_INTRO_SUBTITLE);
 }
 
-void TunaScreenHandler::Show(base::Value::Dict data) {
+void GeminiIntroScreenHandler::Show(base::Value::Dict data) {
   ShowInWebUI(std::move(data));
 }
 
-base::WeakPtr<TunaScreenView> TunaScreenHandler::AsWeakPtr() {
+base::WeakPtr<GeminiIntroScreenView> GeminiIntroScreenHandler::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 

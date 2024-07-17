@@ -629,9 +629,9 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(prefs::kShowAiIntroScreenEnabled, true);
 
-  registry->RegisterBooleanPref(prefs::kShowTouchpadScrollScreenEnabled, true);
+  registry->RegisterBooleanPref(prefs::kShowGeminiIntroScreenEnabled, true);
 
-  registry->RegisterBooleanPref(prefs::kShowTunaScreenEnabled, true);
+  registry->RegisterBooleanPref(prefs::kShowTouchpadScrollScreenEnabled, true);
 
   // Settings HaTS survey prefs for Settings and Settings Search features.
   registry->RegisterInt64Pref(::prefs::kHatsOsSettingsSearchSurveyCycleEndTs,

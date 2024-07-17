@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_TUNA_SCREEN_H_
-#define CHROME_BROWSER_ASH_LOGIN_SCREENS_TUNA_SCREEN_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_GEMINI_INTRO_SCREEN_H_
+#define CHROME_BROWSER_ASH_LOGIN_SCREENS_GEMINI_INTRO_SCREEN_H_
 
 #include <memory>
 #include <string>
@@ -18,14 +18,14 @@
 
 namespace ash {
 
-class TunaScreenView;
+class GeminiIntroScreenView;
 
-class TunaScreen
+class GeminiIntroScreen
     : public BaseScreen,
-      public screens_common::mojom::TunaPageHandler,
-      public OobeMojoBinder<screens_common::mojom::TunaPageHandler> {
+      public screens_common::mojom::GeminiIntroPageHandler,
+      public OobeMojoBinder<screens_common::mojom::GeminiIntroPageHandler> {
  public:
-  using TView = TunaScreenView;
+  using TView = GeminiIntroScreenView;
 
   enum class Result {
     kNext = 0,
@@ -35,13 +35,13 @@ class TunaScreen
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
-  TunaScreen(base::WeakPtr<TunaScreenView> view,
+  GeminiIntroScreen(base::WeakPtr<GeminiIntroScreenView> view,
               const ScreenExitCallback& exit_callback);
 
-  TunaScreen(const TunaScreen&) = delete;
-  TunaScreen& operator=(const TunaScreen&) = delete;
+  GeminiIntroScreen(const GeminiIntroScreen&) = delete;
+  GeminiIntroScreen& operator=(const GeminiIntroScreen&) = delete;
 
-  ~TunaScreen() override;
+  ~GeminiIntroScreen() override;
 
   void set_exit_callback_for_testing(const ScreenExitCallback& exit_callback) {
     exit_callback_ = exit_callback;
@@ -59,14 +59,14 @@ class TunaScreen
   bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  // screens_common::mojom::TunaPageHandler
+  // screens_common::mojom::GeminiIntroPageHandler
   void OnBackClicked() override;
   void OnNextClicked() override;
 
-  base::WeakPtr<TunaScreenView> view_;
+  base::WeakPtr<GeminiIntroScreenView> view_;
   ScreenExitCallback exit_callback_;
 };
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_TUNA_SCREEN_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_GEMINI_INTRO_SCREEN_H_

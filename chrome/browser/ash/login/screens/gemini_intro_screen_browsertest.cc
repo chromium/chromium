@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/screens/tuna_screen.h"
+#include "chrome/browser/ash/login/screens/gemini_intro_screen.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,7 +16,7 @@
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/ash/login/ai_intro_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/tuna_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/gemini_intro_screen_handler.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "components/account_id/account_id.h"
 #include "content/public/test/browser_test.h"
@@ -26,21 +26,21 @@ namespace {
 
 constexpr char kNextButton[] = "nextButton";
 constexpr char kBackButton[] = "backButton";
-constexpr test::UIPath kNextButtonPath = {TunaScreenView::kScreenId.name,
+constexpr test::UIPath kNextButtonPath = {GeminiIntroScreenView::kScreenId.name,
                                           kNextButton};
-constexpr test::UIPath kBackButtonPath = {TunaScreenView::kScreenId.name,
+constexpr test::UIPath kBackButtonPath = {GeminiIntroScreenView::kScreenId.name,
                                           kBackButton};
 
-class TunaScreenTest : public OobeBaseTest {
+class GeminiIntroScreenTest : public OobeBaseTest {
  public:
-  TunaScreenTest() {
+  GeminiIntroScreenTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kOobeAiIntro, features::kFeatureManagementOobeAiIntro,
-         features::kOobeTuna, features::kFeatureManagementOobeTuna},
+        {features::kFeatureManagementOobeAiIntro,
+         features::kFeatureManagementOobeGeminiIntro},
         {});
   }
 
-  ~TunaScreenTest() override = default;
+  ~GeminiIntroScreenTest() override = default;
 
   void SetUpOnMainThread() override {
     OobeBaseTest::SetUpOnMainThread();
@@ -49,16 +49,16 @@ class TunaScreenTest : public OobeBaseTest {
     LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
         true;
 
-    TunaScreen* tuna_screen =
-        WizardController::default_controller()->GetScreen<TunaScreen>();
+    GeminiIntroScreen* gemini_intro_screen =
+        WizardController::default_controller()->GetScreen<GeminiIntroScreen>();
 
-    original_callback_ = tuna_screen->get_exit_callback_for_testing();
-    tuna_screen->set_exit_callback_for_testing(
+    original_callback_ = gemini_intro_screen->get_exit_callback_for_testing();
+    gemini_intro_screen->set_exit_callback_for_testing(
         screen_result_waiter_.GetRepeatingCallback());
   }
 
-  TunaScreen::Result WaitForScreenExitResult() {
-    TunaScreen::Result result = screen_result_waiter_.Take();
+  GeminiIntroScreen::Result WaitForScreenExitResult() {
+    GeminiIntroScreen::Result result = screen_result_waiter_.Take();
     original_callback_.Run(result);
     return result;
   }
@@ -66,43 +66,43 @@ class TunaScreenTest : public OobeBaseTest {
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  base::test::TestFuture<TunaScreen::Result> screen_result_waiter_;
-  TunaScreen::ScreenExitCallback original_callback_;
+  base::test::TestFuture<GeminiIntroScreen::Result> screen_result_waiter_;
+  GeminiIntroScreen::ScreenExitCallback original_callback_;
 
   FakeGaiaMixin fake_gaia_{&mixin_host_};
   LoginManagerMixin login_manager_{&mixin_host_, {}, &fake_gaia_};
 };
 
-IN_PROC_BROWSER_TEST_F(TunaScreenTest, ForwardFlow) {
+IN_PROC_BROWSER_TEST_F(GeminiIntroScreenTest, ForwardFlow) {
   login_manager_.LoginAsNewRegularUser();
   OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
 
   WizardController::default_controller()->AdvanceToScreen(
-      TunaScreenView::kScreenId);
+      GeminiIntroScreenView::kScreenId);
 
   test::OobeJS().TapOnPath(kNextButtonPath);
-  EXPECT_EQ(WaitForScreenExitResult(), TunaScreen::Result::kNext);
+  EXPECT_EQ(WaitForScreenExitResult(), GeminiIntroScreen::Result::kNext);
 }
 
-IN_PROC_BROWSER_TEST_F(TunaScreenTest, BackwardFlow) {
+IN_PROC_BROWSER_TEST_F(GeminiIntroScreenTest, BackwardFlow) {
   login_manager_.LoginAsNewRegularUser();
   OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
 
   WizardController::default_controller()->AdvanceToScreen(
-      TunaScreenView::kScreenId);
+      GeminiIntroScreenView::kScreenId);
 
   test::OobeJS().TapOnPath(kBackButtonPath);
-  EXPECT_EQ(WaitForScreenExitResult(), TunaScreen::Result::kBack);
+  EXPECT_EQ(WaitForScreenExitResult(), GeminiIntroScreen::Result::kBack);
   OobeScreenWaiter(AiIntroScreenView::kScreenId).Wait();
 }
 
-class TunaScreenChildTest : public TunaScreenTest {
+class GeminiIntroScreenChildTest : public GeminiIntroScreenTest {
  public:
   // Child users require a user policy, set up an empty one so the user can
   // get through login.
   void SetUpInProcessBrowserTestFixture() override {
     ASSERT_TRUE(user_policy_mixin_.RequestPolicyUpdate());
-    TunaScreenTest::SetUpInProcessBrowserTestFixture();
+    GeminiIntroScreenTest::SetUpInProcessBrowserTestFixture();
   }
 
  protected:
@@ -111,7 +111,7 @@ class TunaScreenChildTest : public TunaScreenTest {
   UserPolicyMixin user_policy_mixin_{&mixin_host_, test_user_.account_id};
 };
 
-IN_PROC_BROWSER_TEST_F(TunaScreenChildTest, SkipScreenForChildUser) {
+IN_PROC_BROWSER_TEST_F(GeminiIntroScreenChildTest, SkipScreenForChildUser) {
   LoginDisplayHost::default_host()
       ->GetWizardContextForTesting()
       ->sign_in_as_child = true;
@@ -119,26 +119,28 @@ IN_PROC_BROWSER_TEST_F(TunaScreenChildTest, SkipScreenForChildUser) {
   OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
 
   WizardController::default_controller()->AdvanceToScreen(
-      TunaScreenView::kScreenId);
-  EXPECT_EQ(WaitForScreenExitResult(), TunaScreen::Result::kNotApplicable);
+      GeminiIntroScreenView::kScreenId);
+  EXPECT_EQ(WaitForScreenExitResult(),
+      GeminiIntroScreen::Result::kNotApplicable);
 }
 
-class TunaScreenManagedTest : public TunaScreenTest {
+class GeminiIntroScreenManagedTest : public GeminiIntroScreenTest {
  protected:
   const LoginManagerMixin::TestUserInfo test_user_{
       AccountId::FromUserEmailGaiaId("user@example.com", "1111")};
   UserPolicyMixin user_policy_mixin_{&mixin_host_, test_user_.account_id};
 };
 
-IN_PROC_BROWSER_TEST_F(TunaScreenManagedTest, SkipScreenForManagedUser) {
+IN_PROC_BROWSER_TEST_F(GeminiIntroScreenManagedTest, SkipScreenForManagedUser) {
   // Mark user as managed.
   user_policy_mixin_.RequestPolicyUpdate();
   login_manager_.LoginWithDefaultContext(test_user_);
   OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
 
   WizardController::default_controller()->AdvanceToScreen(
-      TunaScreenView::kScreenId);
-  EXPECT_EQ(WaitForScreenExitResult(), TunaScreen::Result::kNotApplicable);
+      GeminiIntroScreenView::kScreenId);
+  EXPECT_EQ(WaitForScreenExitResult(),
+      GeminiIntroScreen::Result::kNotApplicable);
 }
 
 }  // namespace

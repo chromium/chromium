@@ -1247,7 +1247,7 @@ policies:
   1246: ApplicationBoundEncryptionEnabled
   1247: DeviceAuthenticationFlowAutoReloadInterval
   1248: ShowAiIntroScreenEnabled
-  1249: ShowTunaScreenEnabled
+  1249: ''
   1250: EnterpriseBadgingTemporarySetting
   1251: GenAILocalFoundationalModelSettings
   1252: DeviceExtensionsSystemLogEnabled
@@ -1287,6 +1287,8 @@ policies:
   1286: StandardizedBrowserZoomEnabled
   1287: ReportingEndpoints
   1288: PrintingLPACSandboxEnabled
+  1289: ShowGeminiIntroScreenEnabled
+
 atomic_groups:
   1: Homepage
   2: RemoteAccess

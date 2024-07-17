@@ -353,12 +353,12 @@ class AiIntroScreenTester extends ScreenElementApi {
   }
 }
 
-class TunaScreenTester extends ScreenElementApi {
+class GeminiIntroScreenTester extends ScreenElementApi {
   constructor() {
-    super('tuna');
+    super('gemini-intro');
   }
   override shouldSkip(): boolean {
-    return loadTimeData.getBoolean('testapi_shouldSkipTuna');
+    return loadTimeData.getBoolean('testapi_shouldSkipGeminiIntro');
   }
 }
 
@@ -1477,7 +1477,7 @@ export class OobeApiProvider {
       PasswordSelectionScreen: new PasswordSelectionScreenTester(),
       FingerprintScreen: new FingerprintScreenTester(),
       AiIntroScreen: new AiIntroScreenTester(),
-      TunaScreen: new TunaScreenTester(),
+      GeminiIntroScreen: new GeminiIntroScreenTester(),
       AssistantScreen: new AssistantScreenTester(),
       MarketingOptInScreen: new MarketingOptInScreenTester(),
       ConfirmSamlPasswordScreen: new ConfirmSamlPasswordScreenTester(),

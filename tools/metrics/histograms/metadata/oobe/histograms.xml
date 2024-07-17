@@ -48,6 +48,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Gaia-password-changed"
       summary="(obsolete) Not used since M-122"/>
   <variant name="Gaia-signin"/>
+  <variant name="GeminiIntro"/>
   <variant name="Gesture-navigation"/>
   <variant name="Guest-tos"/>
   <variant name="Hw-data-collection"/>
@@ -80,7 +81,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Theme-selection"/>
   <variant name="Touchpad-scroll"/>
   <variant name="Tpm-error-message"/>
-  <variant name="Tuna"/>
+  <variant name="Tuna" summary="(obsolete) Not used since M-128"/>
   <variant name="Update-required"/>
   <variant name="User-allowlist-check-screen"/>
   <variant name="User-creation"/>
@@ -136,6 +137,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Gaia-password-changed"
       summary="(obsolete) Not used since M-122"/>
   <variant name="Gaia-signin"/>
+  <variant name="Gemini-intro"/>
   <variant name="Gesture-navigation"/>
   <variant name="Guest-tos"/>
   <variant name="Hid-detection"/>
@@ -172,7 +174,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Tos"/>
   <variant name="Touchpad-scroll"/>
   <variant name="Tpm-error-message"/>
-  <variant name="Tuna"/>
+  <variant name="Tuna" summary="(obsolete) Not used since M-128"/>
   <variant name="Update-required"/>
   <variant name="User-allowlist-check-screen"/>
   <variant name="User-creation"/>
@@ -321,6 +323,8 @@ chromium-metrics-reviews@google.com.
   <variant name="Gaia-signin.EnterpriseEnroll"/>
   <variant name="Gaia-signin.EnterQuickStart"/>
   <variant name="Gaia-signin.StartConsumerKiosk"/>
+  <variant name="Gemini-intro.Back"/>
+  <variant name="Gemini-intro.Next"/>
   <variant name="Gesture-navigation.Next"/>
   <variant name="Gesture-navigation.Skip"/>
   <variant name="Guest-Tos.Accept"/>
@@ -403,8 +407,8 @@ chromium-metrics-reviews@google.com.
   <variant name="Terms-of-service.Declined"/>
   <variant name="Theme-selection.Proceed"/>
   <variant name="Touchpad-scroll.Next"/>
-  <variant name="Tuna.Back"/>
-  <variant name="Tuna.Next"/>
+  <variant name="Tuna.Back" summary="(obsolete) Not used since M-128"/>
+  <variant name="Tuna.Next" summary="(obsolete) Not used since M-128"/>
   <variant name="User-allowlist-check-screen.Retry"/>
   <variant name="User-creation.AddChild"/>
   <variant name="User-creation.Cancel"/>

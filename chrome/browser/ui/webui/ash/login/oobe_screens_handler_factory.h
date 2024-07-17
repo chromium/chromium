@@ -52,13 +52,13 @@ class OobeScreensHandlerFactory
           receiver,
       EstablishGaiaInfoScreenPipeCallback callback) override;
 
+  void EstablishGeminiIntroScreenPipe(
+      mojo::PendingReceiver<screens_common::mojom::GeminiIntroPageHandler>
+          receiver) override;
+
   void EstablishGestureNavigationScreenPipe(
       mojo::PendingReceiver<screens_common::mojom::GestureNavigationPageHandler>
           receiver) override;
-
-  void EstablishTunaScreenPipe(
-      mojo::PendingReceiver<screens_common::mojom::TunaPageHandler> receiver)
-      override;
 
   void EstablishConsumerUpdateScreenPipe(
       mojo::PendingReceiver<screens_oobe::mojom::ConsumerUpdatePageHandler>

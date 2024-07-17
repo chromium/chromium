@@ -12,7 +12,6 @@ default_for_enterprise_users: false
 example_value: false
 features:
   dynamic_refresh: false
-  internal_only: true
   per_profile: true
 items:
 - caption: Display the AI introduction screen during sign-in

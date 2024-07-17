@@ -12,10 +12,10 @@
 #include "chrome/browser/ash/login/screens/consumer_update_screen.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_info_screen.h"
+#include "chrome/browser/ash/login/screens/gemini_intro_screen.h"
 #include "chrome/browser/ash/login/screens/lacros_data_backward_migration_screen.h"
 #include "chrome/browser/ash/login/screens/lacros_data_migration_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/local_data_loss_warning_screen.h"
-#include "chrome/browser/ash/login/screens/tuna_screen.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/ash/login/ai_intro_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/webui/ash/login/drive_pinning_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/encryption_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/gemini_intro_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gesture_navigation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_migration_screen_handler.h"
@@ -32,7 +33,6 @@
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_oobe.mojom.h"
 #include "chrome/browser/ui/webui/ash/login/osauth/local_data_loss_warning_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/packaged_license_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/tuna_screen_handler.h"
 
 namespace ash {
 
@@ -102,6 +102,15 @@ void OobeScreensHandlerFactory::EstablishGaiaInfoScreenPipe(
   gaia_info->PassPagePendingReceiverWithCallback(std::move(callback));
 }
 
+void OobeScreensHandlerFactory::EstablishGeminiIntroScreenPipe(
+    mojo::PendingReceiver<screens_common::mojom::GeminiIntroPageHandler>
+        receiver) {
+  GeminiIntroScreen* gemini_intro =
+      CHECK_DEREF(WizardController::default_controller())
+          .GetScreen<GeminiIntroScreen>();
+  gemini_intro->BindPageHandlerReceiver(std::move(receiver));
+}
+
 void OobeScreensHandlerFactory::EstablishGestureNavigationScreenPipe(
     mojo::PendingReceiver<screens_common::mojom::GestureNavigationPageHandler>
         receiver) {
@@ -109,14 +118,6 @@ void OobeScreensHandlerFactory::EstablishGestureNavigationScreenPipe(
       CHECK_DEREF(WizardController::default_controller())
           .GetScreen<GestureNavigationScreen>();
   gesture_navigation->BindPageHandlerReceiver(std::move(receiver));
-}
-
-void OobeScreensHandlerFactory::EstablishTunaScreenPipe(
-    mojo::PendingReceiver<screens_common::mojom::TunaPageHandler> receiver) {
-  TunaScreen* tuna_navigation =
-      CHECK_DEREF(WizardController::default_controller())
-          .GetScreen<TunaScreen>();
-  tuna_navigation->BindPageHandlerReceiver(std::move(receiver));
 }
 
 void OobeScreensHandlerFactory::EstablishConsumerUpdateScreenPipe(

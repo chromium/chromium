@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/screens/tuna_screen.h"
+#include "chrome/browser/ash/login/screens/gemini_intro_screen.h"
 
 #include "ai_intro_screen.h"
 #include "ash/constants/ash_features.h"
@@ -14,14 +14,14 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/webui/ash/login/tuna_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/gemini_intro_screen_handler.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash {
 
 // static
-std::string TunaScreen::GetResultString(Result result) {
+std::string GeminiIntroScreen::GetResultString(Result result) {
   // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::kNext:
@@ -35,8 +35,8 @@ std::string TunaScreen::GetResultString(Result result) {
 }
 
 // static
-bool TunaScreen::ShouldBeSkipped() {
-  if (!features::IsOobeTunaEnabled()) {
+bool GeminiIntroScreen::ShouldBeSkipped() {
+  if (!features::IsOobeGeminiIntroEnabled()) {
     return true;
   }
 
@@ -45,11 +45,11 @@ bool TunaScreen::ShouldBeSkipped() {
     return true;
   }
 
-  // Skip the screen if `kShowTunaScreenEnabled` preference is set by
+  // Skip the screen if `kShowGeminiIntroScreenEnabled` preference is set by
   // managed user default or admin to false.
   const PrefService::Preference* pref =
       ProfileManager::GetActiveUserProfile()->GetPrefs()->FindPreference(
-          prefs::kShowTunaScreenEnabled);
+          prefs::kShowGeminiIntroScreenEnabled);
   if (pref->IsManaged() && !pref->GetValue()->GetBool()) {
     return true;
   }
@@ -57,22 +57,22 @@ bool TunaScreen::ShouldBeSkipped() {
   return false;
 }
 
-TunaScreen::TunaScreen(base::WeakPtr<TunaScreenView> view,
+GeminiIntroScreen::GeminiIntroScreen(base::WeakPtr<GeminiIntroScreenView> view,
                        const ScreenExitCallback& exit_callback)
-    : BaseScreen(TunaScreenView::kScreenId, OobeScreenPriority::DEFAULT),
+    : BaseScreen(GeminiIntroScreenView::kScreenId, OobeScreenPriority::DEFAULT),
       OobeMojoBinder(this),
       view_(std::move(view)),
       exit_callback_(exit_callback) {}
 
-TunaScreen::~TunaScreen() = default;
+GeminiIntroScreen::~GeminiIntroScreen() = default;
 
-bool TunaScreen::MaybeSkip(WizardContext& context) {
+bool GeminiIntroScreen::MaybeSkip(WizardContext& context) {
   if (context.skip_post_login_screens_for_tests) {
     exit_callback_.Run(Result::kNotApplicable);
     return true;
   }
 
-  if (TunaScreen::ShouldBeSkipped()) {
+  if (GeminiIntroScreen::ShouldBeSkipped()) {
     exit_callback_.Run(Result::kNotApplicable);
     return true;
   }
@@ -80,7 +80,7 @@ bool TunaScreen::MaybeSkip(WizardContext& context) {
   return false;
 }
 
-void TunaScreen::ShowImpl() {
+void GeminiIntroScreen::ShowImpl() {
   if (!view_) {
     return;
   }
@@ -90,9 +90,9 @@ void TunaScreen::ShowImpl() {
   view_->Show(std::move(params));
 }
 
-void TunaScreen::HideImpl() {}
+void GeminiIntroScreen::HideImpl() {}
 
-void TunaScreen::OnBackClicked() {
+void GeminiIntroScreen::OnBackClicked() {
   if (is_hidden()) {
     return;
   }
@@ -100,7 +100,7 @@ void TunaScreen::OnBackClicked() {
   exit_callback_.Run(Result::kBack);
 }
 
-void TunaScreen::OnNextClicked() {
+void GeminiIntroScreen::OnNextClicked() {
   if (is_hidden()) {
     return;
   }

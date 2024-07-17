@@ -97,7 +97,8 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
 
   dict->Set("testapi_shouldSkipAiIntro", AiIntroScreen::ShouldBeSkipped());
 
-  dict->Set("testapi_shouldSkipTuna", TunaScreen::ShouldBeSkipped());
+  dict->Set("testapi_shouldSkipGeminiIntro",
+            GeminiIntroScreen::ShouldBeSkipped());
 
   dict->Set("testapi_shouldSkipAssistant",
             features::IsOobeSkipAssistantEnabled() ||

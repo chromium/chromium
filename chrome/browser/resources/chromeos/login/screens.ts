@@ -24,6 +24,7 @@ import './screens/common/error_message.js';
 import './screens/common/family_link_notice.js';
 import './screens/common/gaia_info.js';
 import './screens/common/gaia_signin.js';
+import './screens/common/gemini_intro.js';
 import './screens/common/gesture_navigation.js';
 import './screens/common/guest_tos.js';
 import './screens/common/hw_data_collection.js';
@@ -49,7 +50,6 @@ import './screens/common/sync_consent.js';
 import './screens/common/theme_selection.js';
 import './screens/common/touchpad_scroll.js';
 import './screens/common/tpm_error.js';
-import './screens/common/tuna.js';
 import './screens/common/user_allowlist_check_screen.js';
 import './screens/common/wrong_hwid.js';
 // COMMON SCREENS USED TO SET UP AUTHENTICATION
@@ -148,6 +148,11 @@ export const commonScreensList: OobeTypes.ScreensList = [
     condition: 'isOobeGaiaInfoScreenEnabled',
   },
   {tag: 'gaia-signin-element', id: 'gaia-signin'},
+  {
+    tag: 'gemini-intro-element',
+    id: 'gemini-intro',
+    condition: 'isOobeGeminiIntroEnabled',
+  },
   {tag: 'gesture-navigation-element', id: 'gesture-navigation'},
   {tag: 'guest-tos-element', id: 'guest-tos'},
   {tag: 'hw-data-collection-element', id: 'hw-data-collection'},
@@ -210,11 +215,6 @@ export const commonScreensList: OobeTypes.ScreensList = [
     condition: 'isTouchpadScrollEnabled',
   },
   {tag: 'tpm-error-message-element', id: 'tpm-error-message'},
-  {
-    tag: 'tuna-element',
-    id: 'tuna',
-    condition: 'isOobeTunaEnabled',
-  },
   {
     tag: 'install-attributes-error-message-element',
     id: 'install-attributes-error-message',

@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/ash/login/ai_intro_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/tuna_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/gemini_intro_screen_handler.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "components/account_id/account_id.h"
 #include "content/public/test/browser_test.h"
@@ -33,8 +33,8 @@ class AiIntroScreenTest : public OobeBaseTest {
  public:
   AiIntroScreenTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kOobeAiIntro, features::kFeatureManagementOobeAiIntro,
-         features::kOobeTuna, features::kFeatureManagementOobeTuna},
+        {features::kFeatureManagementOobeAiIntro,
+         features::kFeatureManagementOobeGeminiIntro},
         {});
   }
 
@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(AiIntroScreenTest, ForwardFlow) {
 
   test::OobeJS().TapOnPath(kNextButtonPath);
   EXPECT_EQ(WaitForScreenExitResult(), AiIntroScreen::Result::kNext);
-  OobeScreenWaiter(TunaScreenView::kScreenId).Wait();
+  OobeScreenWaiter(GeminiIntroScreenView::kScreenId).Wait();
 }
 
 class AiIntroScreenChildTest : public AiIntroScreenTest {

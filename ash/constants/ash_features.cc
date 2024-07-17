@@ -2189,22 +2189,18 @@ BASE_FEATURE(kOobePerksDiscovery,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables OOBE ai intro feature.
-BASE_FEATURE(kOobeAiIntro, "OobeAiIntro", base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kFeatureManagementOobeAiIntro,
              "FeatureManagementOobeAiIntro",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables OOBE gemini intro feature.
+BASE_FEATURE(kFeatureManagementOobeGeminiIntro,
+             "FeatureManagementOobeGeminiIntro",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables boot animation feature.
 BASE_FEATURE(kFeatureManagementOobeSimon,
              "FeatureManagementOobeSimon",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables OOBE tuna feature.
-BASE_FEATURE(kOobeTuna, "OobeTuna", base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kFeatureManagementOobeTuna,
-             "FeatureManagementOobeTuna",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables Skipping the assistant setup screen in OOBE.
@@ -4295,8 +4291,11 @@ bool IsSplitKeyboardRefactorEnabled() {
 }
 
 bool IsOobeAiIntroEnabled() {
-  return base::FeatureList::IsEnabled(kOobeAiIntro) &&
-         base::FeatureList::IsEnabled(kFeatureManagementOobeAiIntro);
+  return base::FeatureList::IsEnabled(kFeatureManagementOobeAiIntro);
+}
+
+bool IsOobeGeminiIntroEnabled() {
+  return base::FeatureList::IsEnabled(kFeatureManagementOobeGeminiIntro);
 }
 
 bool IsOobeJellyModalEnabled() {
@@ -4329,11 +4328,6 @@ bool IsOobePersonalizedOnboardingEnabled() {
 
 bool IsOobeSoftwareUpdateEnabled() {
   return base::FeatureList::IsEnabled(kOobeSoftwareUpdate);
-}
-
-bool IsOobeTunaEnabled() {
-  return base::FeatureList::IsEnabled(kOobeTuna) &&
-         base::FeatureList::IsEnabled(kFeatureManagementOobeTuna);
 }
 
 bool IsOobeLazyLoadingEnabled() {

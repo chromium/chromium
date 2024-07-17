@@ -1475,12 +1475,12 @@
   <message name="IDS_AI_INTRO_UNSELECTED_BUTTON_LABEL" desc="Text of carousel unselected button label for accessibility.">
     Navigate to extra content <ph name="CURRENT_ELEMENT">$1<ex>1</ex></ph> out of <ph name="TOTAL_ELEMENTS">$2<ex>2</ex></ph>
   </message>
-  <!-- Strings for tuna screen -->
-  <message name="IDS_TUNA_TITLE" desc="The title of the tuna dialog">
+  <!-- Strings for gemini intro screen -->
+  <message name="IDS_GEMINI_INTRO_TITLE" desc="The title of the gemini intro dialog">
     Your <ph name="DEVICE_TYPE">$1<ex>Chromebook Plus</ex></ph> comes with Gemini
   </message>
-  <message name="IDS_TUNA_SUBTITLE" desc="The subtitle of the tuna dialog">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Chat with Gemini to start writing, planning, learning and more with Google AI.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+  <message name="IDS_GEMINI_INTRO_SUBTITLE" desc="The subtitle of the gemini intro dialog">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Chat with Gemini to start writing, planning, learning, and more with Google AI.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>After setup, start using Gemini by selecting the Gemini app on your shelf, at the bottom of your screen.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
   </message>
   <!-- Strings for marketing optin screen -->

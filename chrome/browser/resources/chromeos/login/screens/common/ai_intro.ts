@@ -54,6 +54,7 @@ export class AiIntroScreen extends AiIntroScreenElementBase {
 
   override ready(): void {
     super.ready();
+    this.initializeLoginScreen('AiIntro');
     this.callbackRouter = new AiIntroPageCallbackRouter();
     this.handler = new AiIntroPageHandlerRemote();
     OobeScreensFactoryBrowserProxy.getInstance()

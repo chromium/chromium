@@ -65,6 +65,7 @@
 #include "chrome/browser/ui/webui/ash/login/display_size_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/gemini_intro_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gesture_navigation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/marketing_opt_in_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/password_selection_screen_handler.h"
@@ -74,7 +75,6 @@
 #include "chrome/browser/ui/webui/ash/login/theme_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/touchpad_scroll_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/tpm_error_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/tuna_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
@@ -299,15 +299,16 @@ void HandleAiIntroScreen() {
   LOG(INFO) << "OobeInteractiveUITest: 'ai-intro' screen done.";
 }
 
-// Waits for TunaScreen to be shown and clicks next to go to the next screen.
-void HandleTunaScreen() {
-  OobeScreenWaiter(TunaScreenView::kScreenId).Wait();
-  LOG(INFO) << "OobeInteractiveUITest: Switched to 'tuna' screen.";
+// Waits for GeminiIntroScreen to be shown and clicks next to go to the next
+// screen.
+void HandleGeminiIntroScreen() {
+  OobeScreenWaiter(GeminiIntroScreenView::kScreenId).Wait();
+  LOG(INFO) << "OobeInteractiveUITest: Switched to 'gemini-intro' screen.";
 
-  test::OobeJS().TapOnPathAsync({"tuna", "nextButton"});
+  test::OobeJS().TapOnPathAsync({"gemini-intro", "nextButton"});
 
-  OobeScreenExitWaiter(TunaScreenView::kScreenId).Wait();
-  LOG(INFO) << "OobeInteractiveUITest: 'tuna' screen done.";
+  OobeScreenExitWaiter(GeminiIntroScreenView::kScreenId).Wait();
+  LOG(INFO) << "OobeInteractiveUITest: 'gemini-intro' screen done.";
 }
 
 // Waits for AssistantOptInFlowScreen to be shown, skips the opt-in, and waits
@@ -599,7 +600,7 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
         parameters;
     std::vector<base::test::FeatureRef> enabled_features = {
         ash::features::kFeatureManagementOobeAiIntro,
-        ash::features::kFeatureManagementOobeTuna,
+        ash::features::kFeatureManagementOobeGeminiIntro,
     };
     std::vector<base::test::FeatureRef> disabled_features;
     if (params_.hide_shelf_controls_in_tablet_mode) {
@@ -833,8 +834,8 @@ void OobeInteractiveUITest::PerformSessionSignInSteps() {
     HandleAiIntroScreen();
   }
 
-  if (ash::features::IsOobeTunaEnabled()) {
-    HandleTunaScreen();
+  if (ash::features::IsOobeGeminiIntroEnabled()) {
+    HandleGeminiIntroScreen();
   }
 
   if (!features::IsOobeSkipAssistantEnabled()) {
@@ -1184,8 +1185,8 @@ IN_PROC_BROWSER_TEST_P(EphemeralUserOobeTest, RegularEphemeralUser) {
     HandleAiIntroScreen();
   }
 
-  if (ash::features::IsOobeTunaEnabled()) {
-    HandleTunaScreen();
+  if (ash::features::IsOobeGeminiIntroEnabled()) {
+    HandleGeminiIntroScreen();
   }
 
   HandleThemeSelectionScreen();

@@ -44,10 +44,10 @@ interface ScreensFactory {
       pending_receiver<ash.screens_common.mojom.GestureNavigationPageHandler>
           handler);
 
-  // Establish a TunaScreen pipe for handling the communication for the
-  // TunaPageHandler and the TunaPage component.
-  EstablishTunaScreenPipe(
-      pending_receiver<ash.screens_common.mojom.TunaPageHandler> handler);
+  // Establish a GeminiIntroScreen pipe for handling the communication for the
+  // GeminiIntroPageHandler and the GeminiIntroPage component.
+  EstablishGeminiIntroScreenPipe(
+      pending_receiver<ash.screens_common.mojom.GeminiIntroPageHandler> handler);
 
   // ash.screens_oobe.mojom
 

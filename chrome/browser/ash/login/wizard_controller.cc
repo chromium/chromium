@@ -79,6 +79,7 @@
 #include "chrome/browser/ash/login/screens/fingerprint_setup_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_info_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
+#include "chrome/browser/ash/login/screens/gemini_intro_screen.h"
 #include "chrome/browser/ash/login/screens/gesture_navigation_screen.h"
 #include "chrome/browser/ash/login/screens/hardware_data_collection_screen.h"
 #include "chrome/browser/ash/login/screens/hid_detection_screen.h"
@@ -120,14 +121,12 @@
 #include "chrome/browser/ash/login/screens/theme_selection_screen.h"
 #include "chrome/browser/ash/login/screens/touchpad_scroll_screen.h"
 #include "chrome/browser/ash/login/screens/tpm_error_screen.h"
-#include "chrome/browser/ash/login/screens/tuna_screen.h"
 #include "chrome/browser/ash/login/screens/update_required_screen.h"
 #include "chrome/browser/ash/login/screens/update_screen.h"
 #include "chrome/browser/ash/login/screens/user_allowlist_check_screen.h"
 #include "chrome/browser/ash/login/screens/user_creation_screen.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 #include "chrome/browser/ash/login/screens/wrong_hwid_screen.h"
-#include "chrome/browser/ash/login/screens/categories_selection_screen.h"
 // Add new screens before this block. Add screens and exit reasons to
 // OOBE histograms.
 // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
@@ -182,6 +181,7 @@
 #include "chrome/browser/ui/webui/ash/login/fingerprint_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/gemini_intro_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gesture_navigation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/guest_tos_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/hardware_data_collection_screen_handler.h"
@@ -225,7 +225,6 @@
 #include "chrome/browser/ui/webui/ash/login/theme_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/touchpad_scroll_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/tpm_error_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/tuna_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/update_required_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_allowlist_check_screen_handler.h"
@@ -307,7 +306,7 @@ const StaticOobeScreenId kResumablePostLoginScreens[] = {
     GestureNavigationScreenView::kScreenId,
     RecommendAppsScreenView::kScreenId,
     AiIntroScreenView::kScreenId,
-    TunaScreenView::kScreenId,
+    GeminiIntroScreenView::kScreenId,
     PinSetupScreenView::kScreenId,
     MarketingOptInScreenView::kScreenId,
     MultiDeviceSetupScreenView::kScreenId,
@@ -724,10 +723,10 @@ WizardController::CreateScreens() {
                             weak_factory_.GetWeakPtr())));
   }
 
-  if (features::IsOobeTunaEnabled()) {
-    append(std::make_unique<TunaScreen>(
-        oobe_ui->GetView<TunaScreenHandler>()->AsWeakPtr(),
-        base::BindRepeating(&WizardController::OnTunaScreenExit,
+  if (features::IsOobeGeminiIntroEnabled()) {
+    append(std::make_unique<GeminiIntroScreen>(
+        oobe_ui->GetView<GeminiIntroScreenHandler>()->AsWeakPtr(),
+        base::BindRepeating(&WizardController::OnGeminiIntroScreenExit,
                             weak_factory_.GetWeakPtr())));
   }
 
@@ -1213,8 +1212,8 @@ void WizardController::ShowAiIntroScreen() {
   SetCurrentScreen(GetScreen(AiIntroScreenView::kScreenId));
 }
 
-void WizardController::ShowTunaScreen() {
-  SetCurrentScreen(GetScreen(TunaScreenView::kScreenId));
+void WizardController::ShowGeminiIntroScreen() {
+  SetCurrentScreen(GetScreen(GeminiIntroScreenView::kScreenId));
 }
 
 void WizardController::ShowWrongHWIDScreen() {
@@ -1915,8 +1914,8 @@ void WizardController::OnPersonalizedRecomendAppsScreenExit(
     case PersonalizedRecommendAppsScreen::Result::kTimeout:
       if (features::IsOobeAiIntroEnabled()) {
         ShowAiIntroScreen();
-      } else if (features::IsOobeTunaEnabled()) {
-        ShowTunaScreen();
+      } else if (features::IsOobeGeminiIntroEnabled()) {
+        ShowGeminiIntroScreen();
       } else {
         ShowAssistantOptInFlowScreen();
       }
@@ -2619,8 +2618,8 @@ void WizardController::OnRecommendAppsScreenExit(
     case RecommendAppsScreen::Result::kLoadError:
       if (features::IsOobeAiIntroEnabled()) {
         ShowAiIntroScreen();
-      } else if (features::IsOobeTunaEnabled()) {
-        ShowTunaScreen();
+      } else if (features::IsOobeGeminiIntroEnabled()) {
+        ShowGeminiIntroScreen();
       } else {
         ShowAssistantOptInFlowScreen();
       }
@@ -2650,8 +2649,8 @@ void WizardController::OnAppDownloadingScreenExit() {
 
   if (features::IsOobeAiIntroEnabled()) {
     ShowAiIntroScreen();
-  } else if (features::IsOobeTunaEnabled()) {
-    ShowTunaScreen();
+  } else if (features::IsOobeGeminiIntroEnabled()) {
+    ShowGeminiIntroScreen();
   } else {
     ShowAssistantOptInFlowScreen();
   }
@@ -2661,17 +2660,19 @@ void WizardController::OnAiIntroScreenExit(AiIntroScreen::Result result) {
   OnScreenExit(AiIntroScreenView::kScreenId,
                AiIntroScreen::GetResultString(result));
 
-  if (features::IsOobeTunaEnabled()) {
-    ShowTunaScreen();
+  if (features::IsOobeGeminiIntroEnabled()) {
+    ShowGeminiIntroScreen();
   } else {
     ShowAssistantOptInFlowScreen();
   }
 }
 
-void WizardController::OnTunaScreenExit(TunaScreen::Result result) {
-  OnScreenExit(TunaScreenView::kScreenId, TunaScreen::GetResultString(result));
+void WizardController::OnGeminiIntroScreenExit(
+    GeminiIntroScreen::Result result) {
+  OnScreenExit(GeminiIntroScreenView::kScreenId,
+               GeminiIntroScreen::GetResultString(result));
 
-  if (result == TunaScreen::Result::kBack) {
+  if (result == GeminiIntroScreen::Result::kBack) {
     CHECK(!AiIntroScreen::ShouldBeSkipped());
     ShowAiIntroScreen();
     return;
@@ -3106,8 +3107,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowAppDownloadingScreen();
   } else if (screen_id == AiIntroScreenView::kScreenId) {
     ShowAiIntroScreen();
-  } else if (screen_id == TunaScreenView::kScreenId) {
-    ShowTunaScreen();
+  } else if (screen_id == GeminiIntroScreenView::kScreenId) {
+    ShowGeminiIntroScreen();
   } else if (screen_id == WrongHWIDScreenView::kScreenId) {
     ShowWrongHWIDScreen();
   } else if (screen_id == AutoEnrollmentCheckScreenView::kScreenId) {

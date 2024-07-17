@@ -18,24 +18,24 @@ import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.
 import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
 import {OobeDialogHostMixin} from '../../components/mixins/oobe_dialog_host_mixin.js';
 import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
-import {TunaPageHandlerRemote} from '../../mojom-webui/screens_common.mojom-webui.js';
+import {GeminiIntroPageHandlerRemote} from '../../mojom-webui/screens_common.mojom-webui.js';
 import {OobeScreensFactoryBrowserProxy} from '../../oobe_screens_factory_proxy.js';
 
-import {getTemplate} from './tuna.html.js';
+import {getTemplate} from './gemini_intro.html.js';
 
-export const TunaScreenElementBase =
+export const GeminiIntroScreenElementBase =
     OobeDialogHostMixin(LoginScreenMixin(OobeI18nMixin(PolymerElement)));
 
 /**
  * Data that is passed to the screen during onBeforeShow.
  */
-interface TunaScreenData {
+interface GeminiIntroScreenData {
   backButtonVisible: boolean;
 }
 
-export class TunaScreen extends TunaScreenElementBase {
+export class GeminiIntroScreen extends GeminiIntroScreenElementBase {
   static get is() {
-    return 'tuna-element' as const;
+    return 'gemini-intro-element' as const;
   }
 
   static get template(): HTMLTemplateElement {
@@ -52,23 +52,24 @@ export class TunaScreen extends TunaScreenElementBase {
   }
 
   private backButtonVisible: boolean;
-  private handler: TunaPageHandlerRemote;
+  private handler: GeminiIntroPageHandlerRemote;
 
   override ready(): void {
     super.ready();
-    this.handler = new TunaPageHandlerRemote();
+    this.initializeLoginScreen('GeminiIntro');
+    this.handler = new GeminiIntroPageHandlerRemote();
     OobeScreensFactoryBrowserProxy.getInstance()
-        .screenFactory.establishTunaScreenPipe(
+        .screenFactory.establishGeminiIntroScreenPipe(
             this.handler.$.bindNewPipeAndPassReceiver());
   }
 
   override get defaultControl(): HTMLElement {
-    const dialog =  this.shadowRoot?.querySelector('#tunaDialog');
+    const dialog =  this.shadowRoot?.querySelector('#geminiIntroDialog');
     assertInstanceof(dialog, OobeAdaptiveDialog);
     return dialog;
   }
 
-  override onBeforeShow(data: TunaScreenData): void {
+  override onBeforeShow(data: GeminiIntroScreenData): void {
     super.onBeforeShow(data);
     this.backButtonVisible = data['backButtonVisible'];
   }
@@ -84,8 +85,8 @@ export class TunaScreen extends TunaScreenElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    [TunaScreen.is]: TunaScreen;
+    [GeminiIntroScreen.is]: GeminiIntroScreen;
   }
 }
 
-customElements.define(TunaScreen.is, TunaScreen);
+customElements.define(GeminiIntroScreen.is, GeminiIntroScreen);
