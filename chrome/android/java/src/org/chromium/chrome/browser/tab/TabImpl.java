@@ -1371,6 +1371,11 @@ class TabImpl implements Tab {
     void handleDidFinishNavigation(GURL url, int transitionType, boolean isPdf) {
         mIsNativePageCommitPending = false;
         boolean isReload = (transitionType & PageTransition.CORE_MASK) == PageTransition.RELOAD;
+        // Set isPdf param based on the url. This is because the isPdf param in NavigationHandle is
+        // not set in some cases (e.g. Chrome restart or navigate backward to pdf page). When the
+        // pdf file is downloaded to media store, we should set isPdf param and open pdf page
+        // immediately, because no re-download is expected.
+        isPdf |= PdfUtils.isDownloadedPdf(url.getSpec());
         if (!maybeShowNativePage(url.getSpec(), isReload, isPdf ? new PdfInfo() : null)) {
             String downloadUrl = PdfUtils.decodePdfPageUrl(url.getSpec());
             if (downloadUrl != null) {

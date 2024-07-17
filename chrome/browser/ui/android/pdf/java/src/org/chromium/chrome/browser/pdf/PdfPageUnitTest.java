@@ -84,18 +84,19 @@ public class PdfPageUnitTest {
 
     @Test
     public void testCreatePdfPage_WithContentUri() {
+        String encodedUrl = PdfUtils.encodePdfPageUrl(CONTENT_URL);
         PdfPage pdfPage =
                 new PdfPage(
                         mMockNativePageHost,
                         mMockProfile,
                         mActivity,
-                        CONTENT_URL,
+                        encodedUrl,
                         mPdfInfo,
                         DEFAULT_TAB_TITLE);
         Assert.assertNotNull(pdfPage);
         Assert.assertEquals(
                 "Pdf page host should match.", UrlConstants.PDF_HOST, pdfPage.getHost());
-        Assert.assertEquals("Pdf page url should match.", CONTENT_URL, pdfPage.getUrl());
+        Assert.assertEquals("Pdf page url should match.", encodedUrl, pdfPage.getUrl());
         Assert.assertFalse(
                 "Pdf should not be loaded when the view is not attached to window.",
                 pdfPage.mPdfCoordinator.getIsPdfLoadedForTesting());
@@ -112,19 +113,20 @@ public class PdfPageUnitTest {
 
     @Test
     public void testCreatePdfPage_WithFileUri() {
+        String encodedUrl = PdfUtils.encodePdfPageUrl(FILE_URL);
         PdfPage pdfPage =
                 new PdfPage(
                         mMockNativePageHost,
                         mMockProfile,
                         mActivity,
-                        FILE_URL,
+                        encodedUrl,
                         mPdfInfo,
                         DEFAULT_TAB_TITLE);
         Assert.assertNotNull(pdfPage);
         Assert.assertEquals("Pdf page title should match.", FILE_NAME, pdfPage.getTitle());
         Assert.assertEquals(
                 "Pdf page host should match.", UrlConstants.PDF_HOST, pdfPage.getHost());
-        Assert.assertEquals("Pdf page url should match.", FILE_URL, pdfPage.getUrl());
+        Assert.assertEquals("Pdf page url should match.", encodedUrl, pdfPage.getUrl());
         Assert.assertFalse(
                 "Pdf should not be loaded when the view is not attached to window.",
                 pdfPage.mPdfCoordinator.getIsPdfLoadedForTesting());

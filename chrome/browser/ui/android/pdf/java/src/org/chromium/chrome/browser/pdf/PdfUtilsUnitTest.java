@@ -85,17 +85,19 @@ public class PdfUtilsUnitTest {
         String filename = PdfUtils.getFileNameFromUrl(FILE_URL, DEFAULT_TAB_TITLE);
         Assert.assertEquals("Filename does not match for file url.", FILE_NAME, filename);
 
-        filename = PdfUtils.getFileNameFromUrl(mPdfPageUrl, DEFAULT_TAB_TITLE);
+        filename = PdfUtils.getFileNameFromUrl(PDF_LINK, DEFAULT_TAB_TITLE);
         Assert.assertEquals("Filename does not match for pdf link.", DEFAULT_TAB_TITLE, filename);
     }
 
     @Test
     public void testIsPdfNavigation_FileScheme() {
         boolean result = PdfUtils.isPdfNavigation(FILE_URL, null);
-        Assert.assertTrue("It is pdf navigation when file extension is pdf.", result);
+        Assert.assertFalse(
+                "It is not pdf navigation when the url does not start with chrome-native://pdf/.",
+                result);
 
-        result = PdfUtils.isPdfNavigation(IMAGE_FILE_URL, null);
-        Assert.assertFalse("It is not pdf navigation when file extension is not pdf.", result);
+        result = PdfUtils.isPdfNavigation(PdfUtils.encodePdfPageUrl(FILE_URL), null);
+        Assert.assertTrue("It is pdf navigation when the decoded url is file scheme.", result);
     }
 
     @Test
@@ -115,10 +117,29 @@ public class PdfUtilsUnitTest {
 
     @Test
     public void testIsPdfNavigation_SchemeNotMatch() {
-        boolean result = PdfUtils.isPdfNavigation(UrlConstants.HISTORY_URL, null);
+        boolean result =
+                PdfUtils.isPdfNavigation(PdfUtils.encodePdfPageUrl(UrlConstants.HISTORY_URL), null);
         Assert.assertFalse(
                 "It is not pdf navigation when the scheme is not one of content/file/http/https.",
                 result);
+    }
+
+    @Test
+    public void testIsDownloadedPdf_ContentScheme() {
+        boolean result = PdfUtils.isDownloadedPdf(CONTENT_URL);
+        Assert.assertFalse(
+                "It is not downloaded pdf when the url does not start with chrome-native://pdf/.",
+                result);
+
+        result = PdfUtils.isDownloadedPdf(PdfUtils.encodePdfPageUrl(CONTENT_URL));
+        Assert.assertTrue("It is downloaded pdf when the decoded url is content scheme.", result);
+    }
+
+    @Test
+    public void testIsDownloadedPdf_SchemeNotMatch() {
+        boolean result = PdfUtils.isDownloadedPdf(mPdfPageUrl);
+        Assert.assertFalse(
+                "It is not downloaded pdf when the scheme is not content or file.", result);
     }
 
     @Test

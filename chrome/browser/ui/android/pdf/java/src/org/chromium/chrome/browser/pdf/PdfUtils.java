@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.pdf;
 
 import android.net.Uri;
 import android.text.TextUtils;
-import android.webkit.MimeTypeMap;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -28,7 +27,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.url.GURL;
 
 import java.io.File;
@@ -36,7 +34,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.Locale;
 import java.util.Objects;
 
 /** Utilities for inline pdf support. */
@@ -62,27 +59,46 @@ public class PdfUtils {
      * @return Whether the navigation is to a pdf file.
      */
     public static boolean isPdfNavigation(String url, @Nullable LoadUrlParams params) {
-        if (!shouldOpenPdfInline()) {
-            return false;
-        }
-        Uri uri = Uri.parse(url);
-        String scheme = uri.getScheme();
+        String scheme = getDecodedScheme(url);
         if (scheme == null) {
             return false;
         }
-        if (scheme.equals(UrlConstants.FILE_SCHEME)) {
-            // TODO(shuyng): ask the download subsystem for MIME type.
-            String fileExtension = MimeTypeMap.getFileExtensionFromUrl(url).toLowerCase(Locale.US);
-            return !TextUtils.isEmpty(fileExtension) && fileExtension.equals(PDF_EXTENSION);
+
+        if (scheme.equals(UrlConstants.FILE_SCHEME) || scheme.equals(UrlConstants.CONTENT_SCHEME)) {
+            return true;
         }
-        if (scheme.equals(UrlConstants.CONTENT_SCHEME)) {
-            String type = ContentUriUtils.getMimeType(url);
-            return type != null && type.equals(MimeTypeUtils.PDF_MIME_TYPE);
-        }
-        if (scheme.equals(UrlConstants.CHROME_NATIVE_SCHEME)) {
+        if (scheme.equals(UrlConstants.HTTP_SCHEME) || scheme.equals(UrlConstants.HTTPS_SCHEME)) {
             return params != null && params.getIsPdf();
         }
         return false;
+    }
+
+    /**
+     * Determines whether the navigation is to a permanent downloaded pdf file.
+     *
+     * @param url The url of the navigation.
+     * @return Whether the navigation is to a permanent downloaded pdf file.
+     */
+    public static boolean isDownloadedPdf(String url) {
+        String scheme = getDecodedScheme(url);
+        if (scheme == null) {
+            return false;
+        }
+
+        return scheme.equals(UrlConstants.FILE_SCHEME)
+                || scheme.equals(UrlConstants.CONTENT_SCHEME);
+    }
+
+    private static String getDecodedScheme(String url) {
+        if (!shouldOpenPdfInline()) {
+            return null;
+        }
+        String decodedUrl = PdfUtils.decodePdfPageUrl(url);
+        if (decodedUrl == null) {
+            return null;
+        }
+        Uri uri = Uri.parse(decodedUrl);
+        return uri.getScheme();
     }
 
     /** Determines whether to open pdf inline. */
@@ -105,9 +121,10 @@ public class PdfUtils {
         Uri uri = Uri.parse(url);
         String scheme = uri.getScheme();
         assert scheme != null;
-        assert scheme.equals(UrlConstants.CONTENT_SCHEME)
-                || scheme.equals(UrlConstants.FILE_SCHEME)
-                || scheme.equals(UrlConstants.CHROME_NATIVE_SCHEME);
+        assert scheme.equals(UrlConstants.HTTP_SCHEME)
+                || scheme.equals(UrlConstants.HTTPS_SCHEME)
+                || scheme.equals(UrlConstants.CONTENT_SCHEME)
+                || scheme.equals(UrlConstants.FILE_SCHEME);
         String fileName = defaultTitle;
         if (scheme.equals(UrlConstants.CONTENT_SCHEME)) {
             String displayName = ContentUriUtils.maybeGetDisplayName(url);

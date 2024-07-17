@@ -511,7 +511,7 @@ public class DownloadUtils {
             if (otrProfileID == null && tab != null) {
                 otrProfileID = tab.getProfile().getOTRProfileID();
             }
-            LoadUrlParams params = new LoadUrlParams(filePath);
+            LoadUrlParams params = new LoadUrlParams(PdfUtils.encodePdfPageUrl(filePath));
             ChromeAsyncTabLauncher delegate =
                     new ChromeAsyncTabLauncher(OTRProfileID.isOffTheRecord(otrProfileID));
             delegate.launchNewTab(params, TabLaunchType.FROM_CHROME_UI, /* parent= */ null);

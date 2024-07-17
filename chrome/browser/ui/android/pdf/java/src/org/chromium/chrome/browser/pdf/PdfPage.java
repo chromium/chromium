@@ -40,11 +40,14 @@ public class PdfPage extends BasicNativePage {
             String defaultTitle) {
         super(host);
 
+        String decodedUrl = PdfUtils.decodePdfPageUrl(url);
         String filepath =
-                pdfInfo.filepath == null ? PdfUtils.getFilePathFromUrl(url) : pdfInfo.filepath;
+                pdfInfo.filepath == null
+                        ? PdfUtils.getFilePathFromUrl(decodedUrl)
+                        : pdfInfo.filepath;
         mTitle =
                 pdfInfo.filename == null
-                        ? PdfUtils.getFileNameFromUrl(url, defaultTitle)
+                        ? PdfUtils.getFileNameFromUrl(decodedUrl, defaultTitle)
                         : pdfInfo.filename;
         mUrl = url;
         mPdfCoordinator = new PdfCoordinator(host, profile, activity, filepath, url);
