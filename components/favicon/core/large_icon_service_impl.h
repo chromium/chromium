@@ -135,7 +135,9 @@ class LargeIconServiceImpl : public LargeIconService {
       int min_source_size_in_pixel,
       std::optional<int> size_in_pixel_to_resize_to,
       favicon_base::LargeIconCallback callback,
-      base::CancelableTaskTracker* tracker,
+      base::CancelableTaskTracker::IsCanceledCallback
+          was_task_canceled_callback,
+      MayBeDangling<base::CancelableTaskTracker> tracker,
       favicon_base::GoogleFaviconServerRequestStatus status);
 
   const raw_ptr<FaviconService> favicon_service_;

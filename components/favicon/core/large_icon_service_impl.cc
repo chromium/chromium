@@ -398,11 +398,17 @@ void LargeIconServiceImpl::OnIconFetchedFromCache(
     return;
   }
 
+  // `was_task_canceled_callback` tracks whether `tracker` has been destroyed.
+  base::CancelableTaskTracker::IsCanceledCallback was_task_canceled_callback;
+  tracker->NewTrackedTaskId(&was_task_canceled_callback);
+
   GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
       page_url, should_trim_page_url_path, traffic_annotation,
       base::BindOnce(&LargeIconServiceImpl::OnIconFetchedFromServer,
                      base::Unretained(this), page_url, min_source_size_in_pixel,
-                     size_in_pixel_to_resize_to, std::move(callback), tracker));
+                     size_in_pixel_to_resize_to, std::move(callback),
+                     std::move(was_task_canceled_callback),
+                     base::UnsafeDangling(tracker)));
 }
 
 void LargeIconServiceImpl::OnIconFetchedFromServer(
@@ -410,8 +416,14 @@ void LargeIconServiceImpl::OnIconFetchedFromServer(
     int min_source_size_in_pixel,
     std::optional<int> size_in_pixel_to_resize_to,
     favicon_base::LargeIconCallback callback,
-    base::CancelableTaskTracker* tracker,
+    base::CancelableTaskTracker::IsCanceledCallback was_task_canceled_callback,
+    MayBeDangling<base::CancelableTaskTracker> tracker,
     favicon_base::GoogleFaviconServerRequestStatus status) {
+  // Check whether `tracker` has been destroyed.
+  if (was_task_canceled_callback.Run()) {
+    return;
+  }
+
   if (status == favicon_base::GoogleFaviconServerRequestStatus::SUCCESS) {
     GetLargeIconOrFallbackStyleImpl(
         page_url, min_source_size_in_pixel, size_in_pixel_to_resize_to,
