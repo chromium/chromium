@@ -39,6 +39,7 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
   ~XkbKeyboardLayoutEngine() override;
 
   // KeyboardLayoutEngine:
+  std::string_view GetLayoutName() const override;
   bool CanSetCurrentLayout() const override;
   void SetCurrentLayoutByName(const std::string& layout_name,
                               base::OnceCallback<void(bool)> callback) override;
