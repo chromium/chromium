@@ -59,12 +59,22 @@ function getSizeButtons(): NodeListOf<HTMLElement> {
   return sizeButtons;
 }
 
+/**
+ * Helper to get a non-null list of brush color buttons. Can be empty.
+ * @returns A list of color buttons.
+ */
+function getColorButtons(): NodeListOf<HTMLElement> {
+  const colorButtons =
+      sidePanel.shadowRoot!.querySelectorAll<HTMLElement>('#colors input');
+  assert(colorButtons);
+  return colorButtons;
+}
+
 chrome.test.runTests([
   // Test that the pen can be selected. Test that its size and color can be
   // selected.
   async function testSelectPen() {
-    // Default to pen.
-    // TODO(crbug.com/351868764): Set the actual value for the color.
+    // Default to a black pen.
     assertAnnotationBrush({
       type: AnnotationBrushType.PEN,
       color: {r: 0, g: 0, b: 0},
@@ -82,7 +92,20 @@ chrome.test.runTests([
       size: 1,
     });
 
-    // TODO(crbug.com/351868764): Change the pen color.
+    // Change the pen color.
+    // Pens should have 20 color options.
+    const colorButtons = getColorButtons();
+    chrome.test.assertEq(20, colorButtons.length);
+
+    // Click the color corresponding to '#fdd663'.
+    colorButtons[6].click();
+    await microtasksFinished();
+
+    assertAnnotationBrush({
+      type: AnnotationBrushType.PEN,
+      color: {r: 253, g: 214, b: 99},
+      size: 1,
+    });
     chrome.test.succeed();
   },
 
@@ -106,6 +129,10 @@ chrome.test.runTests([
       type: AnnotationBrushType.ERASER,
       size: 2,
     });
+
+    // There shouldn't be any color buttons.
+    const colorButtons = getColorButtons();
+    chrome.test.assertTrue(!colorButtons.length);
     chrome.test.succeed();
   },
 
@@ -115,10 +142,9 @@ chrome.test.runTests([
     sidePanel.$.highlighter.click();
     await microtasksFinished();
 
-    // TODO(crbug.com/351868764): Set the actual value for the color.
     assertAnnotationBrush({
       type: AnnotationBrushType.HIGHLIGHTER,
-      color: {r: 0, g: 0, b: 0},
+      color: {r: 242, g: 139, b: 130},
       size: 8,
     });
 
@@ -129,11 +155,24 @@ chrome.test.runTests([
 
     assertAnnotationBrush({
       type: AnnotationBrushType.HIGHLIGHTER,
-      color: {r: 0, g: 0, b: 0},
+      color: {r: 242, g: 139, b: 130},
       size: 16,
     });
 
-    // TODO(crbug.com/351868764): Change the highlighter color.
+    // Change the highlighter color.
+    // Highlighters should have 10 color options.
+    const colorButtons = getColorButtons();
+    chrome.test.assertEq(10, colorButtons.length);
+
+    // Click the color corresponding to '#34a853'.
+    colorButtons[2].click();
+    await microtasksFinished();
+
+    assertAnnotationBrush({
+      type: AnnotationBrushType.HIGHLIGHTER,
+      color: {r: 52, g: 168, b: 83},
+      size: 16,
+    });
     chrome.test.succeed();
   },
 
@@ -144,10 +183,9 @@ chrome.test.runTests([
     sidePanel.$.pen.click();
     await microtasksFinished();
 
-    // TODO(crbug.com/351868764): Set the actual value for the color.
     assertAnnotationBrush({
       type: AnnotationBrushType.PEN,
-      color: {r: 0, g: 0, b: 0},
+      color: {r: 253, g: 214, b: 99},
       size: 1,
     });
 
@@ -164,10 +202,9 @@ chrome.test.runTests([
     sidePanel.$.highlighter.click();
     await microtasksFinished();
 
-    // TODO(crbug.com/351868764): Set the actual value for the color.
     assertAnnotationBrush({
       type: AnnotationBrushType.HIGHLIGHTER,
-      color: {r: 0, g: 0, b: 0},
+      color: {r: 52, g: 168, b: 83},
       size: 16,
     });
     chrome.test.succeed();

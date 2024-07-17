@@ -6,6 +6,7 @@ import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {AnnotationBrushType} from '../constants.js';
 
+import {HIGHLIGHTER_COLORS, PEN_COLORS} from './viewer-side-panel.js';
 import type {ViewerSidePanelElement} from './viewer-side-panel.js';
 
 export function getHtml(this: ViewerSidePanelElement) {
@@ -33,6 +34,28 @@ export function getHtml(this: ViewerSidePanelElement) {
           <cr-icon-button iron-icon="cr20:menu" data-size="${item.size}"
               @click="${this.onSizeClick_}"></cr-icon-button>`)}
       </div>
+      ${this.shouldShowColorOptions_() ? html`
+        <h2>Color</h2>
+        <div id="colors">
+          ${this.isCurrentType_(AnnotationBrushType.HIGHLIGHTER) ? html`
+            ${HIGHLIGHTER_COLORS.map(item => html`
+              <label class="color-item">
+                <input type="radio" class="color-chip"
+                    name="highlighterColors" .value="${item.color}"
+                    .style="--item-color: ${item.color}"
+                    @click="${this.onColorClick_}"
+                    ?checked="${this.isCurrentColor_(item.color)}">
+              </label>`)}` : ''}
+          ${this.isCurrentType_(AnnotationBrushType.PEN) ? html`
+            ${PEN_COLORS.map(item => html`
+              <label class="color-item">
+                <input type="radio" class="color-chip"
+                    name="penColors" .value="${item.color}"
+                    .style="--item-color: ${item.color}"
+                    @click="${this.onColorClick_}"
+                    ?checked="${this.isCurrentColor_(item.color)}">
+              </label>`)}
+        </div>` : ''}` : ''}
     </div>
   `;
   // clang-format on

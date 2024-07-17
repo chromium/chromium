@@ -109,6 +109,10 @@ build_webui("build") {
     "pdf_viewer_shared_style.css",
   ]
 
+  if (enable_pdf_ink2) {
+    css_files += [ "elements/viewer-side-panel.css" ]
+  }
+
   icons_html_files = [ "elements/icons.html" ]
 
   html_to_wrapper_scheme = "chrome"
