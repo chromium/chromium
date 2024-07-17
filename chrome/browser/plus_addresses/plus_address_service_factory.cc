@@ -8,6 +8,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
+#include "chrome/browser/plus_addresses/plus_address_setting_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -56,6 +57,7 @@ PlusAddressServiceFactory::PlusAddressServiceFactory()
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(WebDataServiceFactory::GetInstance());
   DependsOn(AffiliationServiceFactory::GetInstance());
+  DependsOn(PlusAddressSettingServiceFactory::GetInstance());
 }
 
 PlusAddressServiceFactory::~PlusAddressServiceFactory() = default;
@@ -79,6 +81,7 @@ PlusAddressServiceFactory::BuildServiceInstanceForBrowserContext(
   std::unique_ptr<plus_addresses::PlusAddressService> plus_address_service =
       std::make_unique<plus_addresses::PlusAddressService>(
           identity_manager,
+          PlusAddressSettingServiceFactory::GetForBrowserContext(context),
           std::make_unique<plus_addresses::PlusAddressHttpClientImpl>(
               identity_manager, profile->GetURLLoaderFactory()),
           WebDataServiceFactory::GetPlusAddressWebDataForProfile(

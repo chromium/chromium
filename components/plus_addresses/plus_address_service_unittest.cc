@@ -32,6 +32,7 @@
 #include "components/plus_addresses/plus_address_http_client_impl.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/settings/fake_plus_address_setting_service.h"
 #include "components/plus_addresses/webdata/plus_address_sync_util.h"
 #include "components/plus_addresses/webdata/plus_address_table.h"
 #include "components/plus_addresses/webdata/plus_address_webdata_service.h"
@@ -185,7 +186,7 @@ class PlusAddressServiceTest : public ::testing::Test {
   // Forces (re-)initialization of the `PlusAddressService`, which can be useful
   // when classes override feature parameters.
   void InitService() {
-    service_.emplace(identity_manager(),
+    service_.emplace(identity_manager(), &setting_service_,
                      std::make_unique<PlusAddressHttpClientImpl>(
                          identity_manager(), shared_loader_factory()),
                      /*webdata_service=*/nullptr,
@@ -196,6 +197,7 @@ class PlusAddressServiceTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   signin::IdentityTestEnvironment identity_test_env_;
+  FakePlusAddressSettingService setting_service_;
   testing::NiceMock<affiliations::MockAffiliationService>
       mock_affiliation_service_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -838,7 +840,7 @@ class PlusAddressServiceWebDataTest : public ::testing::Test {
     task_environment_.RunUntilIdle();
     // Initialize the `service_` using the `plus_webdata_service_`.
     service_.emplace(
-        identity_test_env_.identity_manager(),
+        identity_test_env_.identity_manager(), &setting_service_,
         std::make_unique<PlusAddressHttpClientImpl>(
             /*identity_manager=*/identity_test_env_.identity_manager(),
             /*url_loader_factory=*/nullptr),
@@ -856,6 +858,7 @@ class PlusAddressServiceWebDataTest : public ::testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
+  FakePlusAddressSettingService setting_service_;
   scoped_refptr<WebDatabaseService> webdatabase_service_;
   scoped_refptr<PlusAddressWebDataService> plus_webdata_service_;
   testing::NiceMock<affiliations::MockAffiliationService>

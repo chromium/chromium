@@ -21,9 +21,12 @@ class IdentityManager;
 
 namespace plus_addresses {
 
+class PlusAddressSettingService;
+
 class FakePlusAddressService : public PlusAddressService {
  public:
-  explicit FakePlusAddressService(signin::IdentityManager* identity_manager);
+  FakePlusAddressService(signin::IdentityManager* identity_manager,
+                         PlusAddressSettingService* setting_service);
   ~FakePlusAddressService() override;
 
   static constexpr char kFakeProfileId[] = "123";

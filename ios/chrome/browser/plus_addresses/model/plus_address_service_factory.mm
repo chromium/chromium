@@ -15,6 +15,7 @@
 #import "components/plus_addresses/plus_address_http_client_impl.h"
 #import "components/plus_addresses/plus_address_service.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
+#import "ios/chrome/browser/plus_addresses/model/plus_address_setting_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -42,6 +43,7 @@ PlusAddressServiceFactory::PlusAddressServiceFactory()
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ios::WebDataServiceFactory::GetInstance());
   DependsOn(IOSChromeAffiliationServiceFactory::GetInstance());
+  DependsOn(PlusAddressSettingServiceFactory::GetInstance());
 }
 
 PlusAddressServiceFactory::~PlusAddressServiceFactory() {}
@@ -65,6 +67,7 @@ PlusAddressServiceFactory::BuildServiceInstanceFor(
   std::unique_ptr<plus_addresses::PlusAddressService> plus_address_service =
       std::make_unique<plus_addresses::PlusAddressService>(
           identity_manager,
+          PlusAddressSettingServiceFactory::GetForBrowserState(browser_state),
           std::make_unique<plus_addresses::PlusAddressHttpClientImpl>(
               identity_manager, browser_state->GetSharedURLLoaderFactory()),
           ios::WebDataServiceFactory::GetPlusAddressWebDataForBrowserState(

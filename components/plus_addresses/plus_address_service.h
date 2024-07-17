@@ -21,6 +21,7 @@
 #include "components/plus_addresses/metrics/plus_address_submission_logger.h"
 #include "components/plus_addresses/plus_address_cache.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/settings/plus_address_setting_service.h"
 #include "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -41,6 +42,7 @@ namespace plus_addresses {
 
 class PlusAddressAllocator;
 class PlusAddressHttpClient;
+class PlusAddressSettingService;
 
 // An experimental class for filling plus addresses (asdf+123@some-domain.com).
 // Not intended for widespread use.
@@ -75,6 +77,7 @@ class PlusAddressService : public KeyedService,
 
   PlusAddressService(
       signin::IdentityManager* identity_manager,
+      PlusAddressSettingService* setting_service,
       std::unique_ptr<PlusAddressHttpClient> plus_address_http_client,
       scoped_refptr<PlusAddressWebDataService> webdata_service,
       affiliations::AffiliationService* affiliation_service);
@@ -230,6 +233,10 @@ class PlusAddressService : public KeyedService,
   PlusAddressCache plus_address_cache_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   const raw_ref<signin::IdentityManager> identity_manager_;
+
+  // Allows reading and writing global (i.e. across device and across
+  // application) settings state for plus addresses.
+  const raw_ref<PlusAddressSettingService> setting_service_;
 
   metrics::PlusAddressSubmissionLogger submission_logger_;
 

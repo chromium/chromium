@@ -22,6 +22,8 @@ source_set("settings") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "fake_plus_address_setting_service.cc",
+    "fake_plus_address_setting_service.h",
     "mock_plus_address_setting_service.cc",
     "mock_plus_address_setting_service.h",
     "plus_address_setting_sync_test_util.h",

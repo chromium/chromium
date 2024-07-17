@@ -17,29 +17,34 @@
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/settings/fake_plus_address_setting_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace plus_addresses {
+
 namespace {
+
 using ::affiliations::FacetURI;
 using ::affiliations::MockAffiliationService;
 using ::base::test::RunOnceCallback;
+using ::testing::NiceMock;
 using ::testing::UnorderedElementsAreArray;
 
 constexpr const char kAffiliatedAndroidApp[] =
     "android://"
     "5Z0D_o6B8BqileZyWhXmqO_wkO8uO0etCEXvMn5tUzEqkWUgfTSjMcTM7eMMTY_"
     "FGJC9RlpRNt_8Qp5tgDocXw==@com.bambuna.podcastaddict/";
+
 }  // namespace
 
 class PlusAddressAffiliationMatchHelperTest : public testing::Test {
  public:
   PlusAddressAffiliationMatchHelperTest() {
     plus_address_service_ = std::make_unique<PlusAddressService>(
-        identity_test_env_.identity_manager(),
-        std::make_unique<testing::NiceMock<MockPlusAddressHttpClient>>(),
+        identity_test_env_.identity_manager(), &setting_service_,
+        std::make_unique<NiceMock<MockPlusAddressHttpClient>>(),
         /*webdata_service=*/nullptr,
         /*affiliation_service=*/mock_affiliation_service());
 
@@ -86,6 +91,7 @@ class PlusAddressAffiliationMatchHelperTest : public testing::Test {
   base::test::ScopedFeatureList features_{features::kPlusAddressAffiliations};
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
+  FakePlusAddressSettingService setting_service_;
   testing::StrictMock<MockAffiliationService> mock_affiliation_service_;
   std::unique_ptr<PlusAddressService> plus_address_service_;
   std::unique_ptr<PlusAddressAffiliationMatchHelper> match_helper_;

@@ -44,7 +44,8 @@ class PlusAddressBottomSheetMediatorTest : public PlatformTest {
         browser_state_(TestChromeBrowserState::Builder().Build()),
         browser_(browser_state_.get()),
         service_(
-            IdentityManagerFactory::GetForBrowserState(browser_state_.get())) {
+            IdentityManagerFactory::GetForBrowserState(browser_state_.get()),
+            &plus_address_setting_service_) {
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(&browser_);
     FakeUrlLoadingBrowserAgent::InjectForBrowser(&browser_);
     url_loader_ = FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
