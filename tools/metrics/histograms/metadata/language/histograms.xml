@@ -100,6 +100,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="LanguageDetection.TFLiteModel.UpdateLanaguageDetectionModelTime"
+    units="ms" expires_after="2024-12-10">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The duration of `TranslateAgent::UpdateLanaguageDetectionModel`. This is
+    recorded whenever this method is called. It is used to measure and breakdown
+    the initilization time incurred by `TranslateAgent` for the renderer process
+    initilization.
+  </summary>
+</histogram>
+
 <histogram name="LanguageDetection.TFLiteModel.WasModelAvailableForDetection"
     enum="BooleanAvailable" expires_after="2024-12-10">
   <owner>mcrouse@chromium.org</owner>

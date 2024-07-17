@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/json/string_escape.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/no_destructor.h"
@@ -654,6 +655,8 @@ std::string TranslateAgent::BuildTranslationScript(
 
 void TranslateAgent::UpdateLanguageDetectionModel(base::File model_file) {
   TRACE_EVENT("browser", "TranslateAgent::UpdateLanguageDetectionModel");
+  base::ScopedUmaHistogramTimer timer(
+      "LanguageDetection.TFLiteModel.UpdateLanaguageDetectionModelTime");
   translate::LanguageDetectionModel& language_detection_model =
       GetLanguageDetectionModel();
   language_detection_model.UpdateWithFile(std::move(model_file));
