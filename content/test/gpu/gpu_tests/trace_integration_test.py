@@ -116,7 +116,7 @@ _STATIC_BITMAP_TO_VID_FRAME_CONVERT_EVENT_NAME =\
 
 _MFD3D11VC_CAPTURE_EVENT_NAME = 'CopyTextureToGpuMemoryBuffer'
 _MFD3D11VC_MAP_EVENT_NAME = 'GpuMemoryBufferTrackerWin::DuplicateAsUnsafeRegion'
-_MFD3D11VC_PRESENT_EVENT_NAME = 'D3DImageBacking::ProduceGLTexturePassthrough'
+_MFD3D11VC_PRESENT_EVENT_NAME = 'DXGISharedHandleState::AcquireKeyedMutex'
 
 # Caching events and constants
 _GPU_HOST_STORE_BLOB_EVENT_NAME =\

@@ -10,6 +10,7 @@
 
 #include "base/atomic_ref_count.h"
 #include "base/logging.h"
+#include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "ui/gl/gl_angle_util_win.h"
 
@@ -134,6 +135,7 @@ bool DXGISharedHandleState::AcquireKeyedMutex(
   if (!has_keyed_mutex_) {
     return true;
   }
+  TRACE_EVENT0("gpu", "DXGISharedHandleState::AcquireKeyedMutex");
   base::AutoLock auto_lock(lock_);
   auto& d3d11_state = d3d11_texture_state_map_.at(d3d11_device);
   CHECK(d3d11_state.dxgi_keyed_mutex);
