@@ -456,8 +456,6 @@ public class StripLayoutHelperManager
         mStripVisibilityStateSupplier = new ObservableSupplierImpl<>(StripVisibilityState.UNKNOWN);
         mStripVisibilityStateObserver =
                 state -> {
-                    assert state != StripVisibilityState.UNKNOWN
-                            : "Strip visibility state should be valid.";
                     // Consume motion events only on a visible strip.
                     mEventFilter.setEventArea(
                             state == StripVisibilityState.VISIBLE ? mStripFilterArea : null);
