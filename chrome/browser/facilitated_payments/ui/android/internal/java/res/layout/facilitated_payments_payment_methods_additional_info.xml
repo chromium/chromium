@@ -19,4 +19,12 @@ found in the LICENSE file.
           android:layout_width="match_parent"
           android:textAlignment="center"
           android:textAppearance="@style/TextAppearance.TextSmall.Secondary"/>
+
+    <!-- TODO(b/352590525): Add facilitated payments render test. -->
+    <org.chromium.ui.widget.TextViewWithClickableSpans
+          android:id="@+id/description_line_2"
+          android:layout_height="wrap_content"
+          android:layout_width="match_parent"
+          android:textAlignment="center"
+          android:textAppearance="@style/TextAppearance.TextSmall.Secondary"/>
 </LinearLayout>

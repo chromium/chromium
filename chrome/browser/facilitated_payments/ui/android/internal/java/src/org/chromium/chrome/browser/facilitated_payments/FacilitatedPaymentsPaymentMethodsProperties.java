@@ -137,8 +137,14 @@ class FacilitatedPaymentsPaymentMethodsProperties {
     static class AdditionalInfoProperties {
         static final ReadableIntPropertyKey DESCRIPTION_1_ID =
                 new ReadableIntPropertyKey("description_1_id");
+        static final ReadableIntPropertyKey DESCRIPTION_2_ID =
+                new ReadableIntPropertyKey("description_2_id");
+        static final ReadableObjectPropertyKey<Runnable> SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK =
+                new ReadableObjectPropertyKey<>("show_payment_method_settings_callback");
 
-        static final PropertyKey[] ALL_KEYS = {DESCRIPTION_1_ID};
+        static final PropertyKey[] ALL_KEYS = {
+            DESCRIPTION_1_ID, DESCRIPTION_2_ID, SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK
+        };
 
         private AdditionalInfoProperties() {}
     }

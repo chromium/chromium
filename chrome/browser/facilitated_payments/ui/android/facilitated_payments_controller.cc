@@ -9,6 +9,7 @@
 #include "base/android/jni_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/SettingsLauncherImpl_jni.h"
 #include "chrome/browser/facilitated_payments/ui/android/internal/jni/FacilitatedPaymentsPaymentMethodsControllerBridge_jni.h"
 
 namespace {
@@ -73,9 +74,10 @@ void FacilitatedPaymentsController::OnBankAccountSelected(JNIEnv* env,
 base::android::ScopedJavaLocalRef<jobject>
 FacilitatedPaymentsController::GetJavaObject() {
   if (!java_object_) {
+    JNIEnv* env = base::android::AttachCurrentThread();
     java_object_ = payments::facilitated::
         Java_FacilitatedPaymentsPaymentMethodsControllerBridge_create(
-            base::android::AttachCurrentThread(),
+            env, Java_SettingsLauncherImpl_create(env),
             reinterpret_cast<intptr_t>(this));
   }
   return base::android::ScopedJavaLocalRef<jobject>(java_object_);

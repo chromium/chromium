@@ -4,26 +4,32 @@
 
 package org.chromium.chrome.browser.facilitated_payments;
 
+import android.content.Context;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
+
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /** JNI wrapper for C++ FacilitatedPaymentsController. */
 @JNINamespace("payments::facilitated")
 class FacilitatedPaymentsPaymentMethodsControllerBridge
         implements FacilitatedPaymentsPaymentMethodsComponent.Delegate {
     private long mNativeFacilitatedPaymentsController;
+    private SettingsLauncher mSettingsLauncher;
 
     private FacilitatedPaymentsPaymentMethodsControllerBridge(
-            long nativeFacilitatedPaymentsController) {
+            SettingsLauncher settingsLauncher, long nativeFacilitatedPaymentsController) {
+        mSettingsLauncher = settingsLauncher;
         mNativeFacilitatedPaymentsController = nativeFacilitatedPaymentsController;
     }
 
     @CalledByNative
     static FacilitatedPaymentsPaymentMethodsControllerBridge create(
-            long nativeFacilitatedPaymentsController) {
+            SettingsLauncher settingsLauncher, long nativeFacilitatedPaymentsController) {
         return new FacilitatedPaymentsPaymentMethodsControllerBridge(
-                nativeFacilitatedPaymentsController);
+                settingsLauncher, nativeFacilitatedPaymentsController);
     }
 
     // FacilitatedPaymentsPaymentMethodsComponent.Delegate
@@ -41,6 +47,16 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
             FacilitatedPaymentsPaymentMethodsControllerBridgeJni.get()
                     .onBankAccountSelected(mNativeFacilitatedPaymentsController, instrumentId);
         }
+    }
+
+    @Override
+    public boolean showFinancialAccountsManagementSettings(Context context) {
+        if (context == null) {
+            return false;
+        }
+        mSettingsLauncher.launchSettingsActivity(
+                context, SettingsLauncher.SettingsFragment.FINANCIAL_ACCOUNTS);
+        return true;
     }
 
     @NativeMethods

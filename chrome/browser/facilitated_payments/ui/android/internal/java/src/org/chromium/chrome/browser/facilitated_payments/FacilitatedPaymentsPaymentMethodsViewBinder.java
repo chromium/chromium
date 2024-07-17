@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.facilitated_payments;
 
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.AdditionalInfoProperties.DESCRIPTION_1_ID;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.AdditionalInfoProperties.DESCRIPTION_2_ID;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.AdditionalInfoProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_DRAWABLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_ICON_BITMAP;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_SUMMARY;
@@ -25,6 +27,9 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.SHOWN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.SWAPPING_SCREEN;
 
+import android.content.Context;
+import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +40,9 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /**
  * Provides functions that map {@link FacilitatedPaymentsPaymentMethodsProperties} changes in a
@@ -172,6 +180,16 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
             TextView descriptionLine1 = view.findViewById(R.id.description_line_1);
             descriptionLine1.setText(
                     view.getContext().getResources().getString(model.get(DESCRIPTION_1_ID)));
+        } else if (propertyKey == DESCRIPTION_2_ID
+                || propertyKey == SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK) {
+            TextViewWithClickableSpans descriptionLine2 =
+                    (TextViewWithClickableSpans) view.findViewById(R.id.description_line_2);
+            descriptionLine2.setText(
+                    getSpannableStringWithClickableSpansToOpenLinks(
+                            view.getContext(),
+                            model.get(DESCRIPTION_2_ID),
+                            model.get(SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK)));
+            descriptionLine2.setMovementMethod(LinkMovementMethod.getInstance());
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
@@ -197,5 +215,15 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
+    }
+
+    static SpannableString getSpannableStringWithClickableSpansToOpenLinks(
+            Context context, int stringResourceId, Runnable callback) {
+        return SpanApplier.applySpans(
+                context.getResources().getString(stringResourceId),
+                new SpanApplier.SpanInfo(
+                        "<link1>",
+                        "</link1>",
+                        new NoUnderlineClickableSpan(context, unused -> callback.run())));
     }
 }

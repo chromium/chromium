@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.facilitated_payments;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
 
@@ -216,21 +218,26 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
     @Test
     @MediumTest
-    public void testDescriptionLine1() {
+    public void testDescriptionLine() {
         runOnUiThreadBlocking(
                 () -> {
                     mModel.set(SCREEN, FOP_SELECTOR);
                     mModel.get(SCREEN_VIEW_MODEL)
                             .get(SCREEN_ITEMS)
-                            .add(FacilitatedPaymentsPaymentMethodsMediator.buildAdditionalInfo());
+                            .add(mMediator.buildAdditionalInfo());
                     mModel.set(VISIBLE_STATE, SHOWN);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         TextView descriptionLine1 = mView.getContentView().findViewById(R.id.description_line_1);
+        TextView descriptionLine2 = mView.getContentView().findViewById(R.id.description_line_2);
         assertThat(
                 descriptionLine1.getText(),
                 is("Limits from your financial institution are applied."));
+        assertThat(
+                descriptionLine2.getText(),
+                hasToString(
+                        containsString("To turn off PIX in Chrome, go to your payment settings")));
     }
 
     @Test

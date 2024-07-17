@@ -17,6 +17,7 @@ import org.jni_zero.CalledByNative;
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.accessibility.settings.AccessibilitySettings;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
+import org.chromium.chrome.browser.autofill.settings.FinancialAccountsManagementFragment;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragmentAdvanced;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
@@ -143,6 +144,8 @@ public class SettingsLauncherImpl implements SettingsLauncher {
                 return GoogleServicesSettings.class;
             case SettingsFragment.MANAGE_SYNC:
                 return ManageSyncSettings.class;
+            case SettingsFragment.FINANCIAL_ACCOUNTS:
+                return FinancialAccountsManagementFragment.class;
         }
         assert false;
         return null;

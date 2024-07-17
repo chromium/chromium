@@ -20,6 +20,7 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.AdditionalInfoProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_NAME;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.ON_BANK_ACCOUNT_CLICK_ACTION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.DISMISS_HANDLER;
@@ -63,6 +64,7 @@ import org.chromium.components.autofill.payments.PaymentRail;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.payments.InputProtector;
 import org.chromium.components.payments.test_support.FakeClock;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -115,6 +117,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private FacilitatedPaymentsPaymentMethodsComponent.Delegate mDelegateMock;
     @Mock private Profile mProfile;
+    @Mock private SettingsLauncher mMockLauncher;
 
     public FacilitatedPaymentsPaymentMethodsControllerRobolectricTest() {
         mCoordinator = new FacilitatedPaymentsPaymentMethodsCoordinator();
@@ -193,6 +196,29 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                 .onResult(StateChangeReason.SWIPE);
 
         verify(mDelegateMock).onDismissed();
+    }
+
+    @Test
+    public void testShowFinancialAccountsManagementSettings() {
+        mCoordinator.showSheet(List.of(BANK_ACCOUNT_1, BANK_ACCOUNT_2));
+
+        // The additional info is the last item of the screen items list right now.
+        // TODO(b/340576718): The position needs to minus 2 after the footer is added.
+        int lastItemPos =
+                mFacilitatedPaymentsPaymentMethodsModel
+                                .get(SCREEN_VIEW_MODEL)
+                                .get(SCREEN_ITEMS)
+                                .size()
+                        - 1;
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(SCREEN_VIEW_MODEL)
+                .get(SCREEN_ITEMS)
+                .get(lastItemPos)
+                .model
+                .get(SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK)
+                .run();
+
+        verify(mDelegateMock).showFinancialAccountsManagementSettings(mContext);
     }
 
     @Test

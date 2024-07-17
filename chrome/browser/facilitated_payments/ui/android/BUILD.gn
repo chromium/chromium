@@ -15,6 +15,7 @@ static_library("android") {
   deps = [
     ":jni_headers",
     "//base:base",
+    "//chrome/android:chrome_jni_headers",
     "//chrome/browser/autofill",
     "//content/public/browser:browser",
     "//ui/android:android",

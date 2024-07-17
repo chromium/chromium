@@ -43,6 +43,9 @@
   <message name="IDS_PIX_PAYMENT_TRANSACTION_EXCEEDING_BALANCE_NOTE" desc="A note shown to remind user that transactions exceeding their account balance will not be processed. It is shown in the bottom sheet that displays user's PIX bank accounts prompting them to pay." formatter_data="android_java">
     Limits from your financial institution are applied.
   </message>
+  <message name="IDS_PIX_PAYMENT_TURN_OFF_PIX_NOTE" desc="A note shown to remind user that they can turn off PIX by going to PIX settings page. It is shown in the bottom sheet that displays user's PIX bank accounts prompting them to pay." formatter_data="android_java">
+    To turn off PIX in Chrome, go to your <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>payment settings<ph name="END_LINK1">&lt;/link1&gt;</ph>
+  </message>
   <message name="IDS_PIX_PAYMENT_ERROR_SCREEN_TITLE" desc="Title for the PIX payment error screen. It is shown if PIX payment fails after the user has selected an account to pay from." formatter_data="android_java">
     Something went wrong
   </message>
