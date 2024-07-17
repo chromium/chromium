@@ -600,6 +600,10 @@
 // contains the preferences that are shared between all browser states.
 + (void)setTimeValue:(base::Time)value forLocalStatePref:(NSString*)prefName;
 
+// Sets the time value for the user pref with `prefName` in the original
+// browser state.
++ (void)setTimeValue:(base::Time)value forUserPref:(NSString*)prefName;
+
 // Sets the string value for the local state pref with `prefName`. Local State
 // contains the preferences that are shared between all browser states.
 + (void)setStringValue:(NSString*)value forLocalStatePref:(NSString*)prefName;

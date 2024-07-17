@@ -1528,6 +1528,12 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                                 forLocalStatePref:prefName];
 }
 
+- (void)setTimeValue:(base::Time)value
+         forUserPref:(const std::string&)UTF8PrefName {
+  NSString* prefName = base::SysUTF8ToNSString(UTF8PrefName);
+  return [ChromeEarlGreyAppInterface setTimeValue:value forUserPref:prefName];
+}
+
 - (void)setStringValue:(const std::string&)UTF8Value
      forLocalStatePref:(const std::string&)UTF8PrefName {
   NSString* value = base::SysUTF8ToNSString(UTF8Value);

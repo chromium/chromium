@@ -825,6 +825,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)setTimeValue:(base::Time)value
     forLocalStatePref:(const std::string&)prefName;
 
+// Sets the time value for the user pref in the original browser state.
+- (void)setTimeValue:(base::Time)value
+         forUserPref:(const std::string&)UTF8PrefName;
+
 // Sets the string value for the local state pref with `prefName`. `value` Local
 // State contains the preferences that are shared between all browser states.
 - (void)setStringValue:(const std::string&)value

@@ -1291,6 +1291,13 @@ NSString* SerializedValue(const base::Value* value) {
   prefService->SetTime(path, value);
 }
 
++ (void)setTimeValue:(base::Time)value forUserPref:(NSString*)prefName {
+  std::string path = base::SysNSStringToUTF8(prefName);
+  PrefService* prefService =
+      chrome_test_util::GetOriginalBrowserState()->GetPrefs();
+  prefService->SetTime(path, value);
+}
+
 + (void)setStringValue:(NSString*)value forLocalStatePref:(NSString*)prefName {
   std::string UTF8Value = base::SysNSStringToUTF8(value);
   std::string path = base::SysNSStringToUTF8(prefName);
