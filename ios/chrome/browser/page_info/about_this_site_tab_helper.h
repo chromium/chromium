@@ -35,7 +35,9 @@ class AboutThisSiteTabHelper
   GetAboutThisSiteMetadata() const override;
 
  private:
-  explicit AboutThisSiteTabHelper(web::WebState* web_state);
+  explicit AboutThisSiteTabHelper(
+      web::WebState* web_state,
+      optimization_guide::OptimizationGuideDecider* optimization_guide_decider);
   friend class web::WebStateUserData<AboutThisSiteTabHelper>;
 
   // Callback from OptimizationGuide with the AboutThisSite data proto.

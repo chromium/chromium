@@ -19003,22 +19003,6 @@
             ]
         }
     ],
-    "RevampPageInfoIos": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240530",
-                    "enable_features": [
-                        "PageInfoAboutThisSite",
-                        "RevampPageInfoIos"
-                    ]
-                }
-            ]
-        }
-    ],
     "RichInlineAutocompleteAndroid": [
         {
             "platforms": [

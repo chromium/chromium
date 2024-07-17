@@ -7,22 +7,20 @@
 #import "components/optimization_guide/core/optimization_guide_decider.h"
 #import "components/optimization_guide/core/optimization_metadata.h"
 #import "components/optimization_guide/proto/hints.pb.h"
-#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
-#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
-AboutThisSiteTabHelper::AboutThisSiteTabHelper(web::WebState* web_state)
+AboutThisSiteTabHelper::AboutThisSiteTabHelper(
+    web::WebState* web_state,
+    optimization_guide::OptimizationGuideDecider* optimization_guide_decider)
     : web_state_(web_state),
-      optimization_guide_decider_(
-          OptimizationGuideServiceFactory::GetForBrowserState(
-              ChromeBrowserState::FromBrowserState(
-                  web_state->GetBrowserState()))) {
+      optimization_guide_decider_(optimization_guide_decider) {
+  CHECK(web_state);
+  CHECK(optimization_guide_decider);
   web_state->AddObserver(this);
-  CHECK(optimization_guide_decider_);
 }
 
 AboutThisSiteTabHelper::~AboutThisSiteTabHelper() {

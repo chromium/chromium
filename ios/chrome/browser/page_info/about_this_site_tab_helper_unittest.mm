@@ -96,7 +96,8 @@ class AboutThisSiteTabHelperTest : public PlatformTest {
     optimization_guide_service_->DoFinalInit();
     web_state_.SetBrowserState(browser_state_.get());
 
-    AboutThisSiteTabHelper::CreateForWebState(&web_state_);
+    AboutThisSiteTabHelper::CreateForWebState(&web_state_,
+                                              optimization_guide_service_);
   }
 
   // Initializes the OptimizationGuide service as well as the
@@ -114,7 +115,8 @@ class AboutThisSiteTabHelperTest : public PlatformTest {
     optimization_guide_service_otr_->DoFinalInit();
     web_state_otr_.SetBrowserState(otr_browser_state);
 
-    AboutThisSiteTabHelper::CreateForWebState(&web_state_otr_);
+    AboutThisSiteTabHelper::CreateForWebState(&web_state_otr_,
+                                              optimization_guide_service_otr_);
   }
 
   void CommitToUrlAndNavigate(const GURL& url, bool is_off_the_record = false) {
