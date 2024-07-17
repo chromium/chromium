@@ -175,11 +175,11 @@ bool IsPasswordFormField(ContentPasswordManagerDriver* password_manager_driver,
                          const content::ContextMenuParams& params) {
   const autofill::FieldRendererId current_field_renderer_id(
       params.field_renderer_id);
-  // `PasswordManager::GetParsedObservedForm` returns true iff the current field
-  // is part of a password form.
   return password_manager_driver &&
-         password_manager_driver->GetPasswordManager()->GetParsedObservedForm(
-             password_manager_driver, current_field_renderer_id);
+         password_manager_driver->GetPasswordManager()
+             ->GetPasswordFormCache()
+             ->HasPasswordForm(password_manager_driver,
+                               current_field_renderer_id);
 }
 
 // Returns true if the user has autofillable passwords saved.

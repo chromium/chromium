@@ -57,6 +57,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -355,6 +356,11 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
 
   ChromePasswordManagerClient* password_manager_client() {
     return ChromePasswordManagerClient::FromWebContents(web_contents());
+  }
+
+  password_manager::ContentPasswordManagerDriver* password_manager_driver() {
+    return password_manager::ContentPasswordManagerDriver::
+        GetForRenderFrameHost(main_rfh());
   }
 
   void TearDownOnMainThread() override {
@@ -1358,9 +1364,23 @@ class ManualFallbackMetricsTest
   std::string GetExplicitlyTriggeredMetricName() const {
     const ManualFallbackMetricsTestParams& params = GetParam();
     std::string classified_or_unclassified_field_metric_name_substr =
-        params.is_field_unclassified
-            ? "NotClassifiedAsTargetFilling"
-            : "ClassifiedFieldAutocompleteUnrecognized";
+        [&]() -> std::string {
+      if (params.is_field_unclassified) {
+        return "NotClassifiedAsTargetFilling";
+      }
+      // The field is classified as target filling.
+      switch (params.manual_fallback_option) {
+        // For addresses, the field is classified as target filling only if the
+        // field has unrecognized autocomplete.
+        case AutofillSuggestionTriggerSource::kManualFallbackAddress:
+          return "ClassifiedFieldAutocompleteUnrecognized";
+        case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
+          return "ClassifiedAsTargetFilling";
+        default:
+          NOTREACHED_NORETURN();
+      }
+    }();
+
     return "Autofill.ManualFallback.ExplicitlyTriggered." +
            classified_or_unclassified_field_metric_name_substr +
            GetFillingProductBucketName();
@@ -1373,8 +1393,11 @@ class ManualFallbackMetricsTest
       return "Autofill.ManualFallback.ExplicitlyTriggered."
              "NotClassifiedAsTargetFilling.Total";
     }
-    return "Autofill.ManualFallback.ExplicitlyTriggered.Total" +
-           GetFillingProductBucketName();
+    // Only addresses have a "Total" variant of the metric when the field is
+    // classified as target filling.
+    CHECK_EQ(params.manual_fallback_option,
+             AutofillSuggestionTriggerSource::kManualFallbackAddress);
+    return "Autofill.ManualFallback.ExplicitlyTriggered.Total.Address";
   }
 
   int CommandToExecute() const {
@@ -1385,6 +1408,29 @@ class ManualFallbackMetricsTest
         return IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS;
       case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
         return IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD;
+      default:
+        NOTREACHED_NORETURN();
+    }
+  }
+
+  FormData CreateAndAttachForm() {
+    if (GetParam().is_field_unclassified) {
+      return CreateAndAttachUnclassifiedForm();
+    }
+    // The field is classified as target filling.
+    switch (GetParam().manual_fallback_option) {
+      // For addresses, the field is classified as target filling only if the
+      // field has unrecognized autocomplete.
+      case AutofillSuggestionTriggerSource::kManualFallbackAddress:
+        return CreateAndAttachAutocompleteUnrecognizedForm();
+      case AutofillSuggestionTriggerSource::kManualFallbackPasswords: {
+        FormData form = CreateAndAttachPasswordForm();
+        // Create a password form manager for this form, to simulate that its
+        // fields are classified as password form fields.
+        password_manager_driver()->GetPasswordManager()->OnPasswordFormsParsed(
+            password_manager_driver(), {form});
+        return form;
+      }
       default:
         NOTREACHED_NORETURN();
     }
@@ -1412,9 +1458,7 @@ class ManualFallbackMetricsTest
 IN_PROC_BROWSER_TEST_P(ManualFallbackMetricsTest,
                        EmitExplicitlyTriggeredMetric) {
   const ManualFallbackMetricsTestParams& params = GetParam();
-  FormData form = params.is_field_unclassified
-                      ? CreateAndAttachUnclassifiedForm()
-                      : CreateAndAttachAutocompleteUnrecognizedForm();
+  FormData form = CreateAndAttachForm();
   autofill_context_menu_manager()->set_params_for_testing(
       CreateContextMenuParams(form.renderer_id(),
                               form.fields()[0].renderer_id()));
@@ -1434,8 +1478,22 @@ IN_PROC_BROWSER_TEST_P(ManualFallbackMetricsTest,
 
   histogram_tester.ExpectUniqueSample(GetExplicitlyTriggeredMetricName(),
                                       params.option_accepted, 1);
-  histogram_tester.ExpectUniqueSample(GetExpectedTotalMetricName(),
-                                      params.option_accepted, 1);
+  // Only classified password fields don't emit a "Total" variant of the metric,
+  // because only passwords record the "ClassifiedAsTargetFilling" metric
+  // variant. I.e. The other filling products (addresses and credit cards), do
+  // not record the "ClassifiedAsTargetFilling" metric variant. This is because
+  // classified address fields fall into the autocomplete
+  // recognized/unrecognized metrics, while classified credit card fields do not
+  // trigger any different behaviour and work the same as regular left click
+  // (therefore, no specific metric is emitted for them). On the other hand,
+  // password manual fallback always triggers a different behavior on
+  // right-click (suggestions have a search bar).
+  if (params.manual_fallback_option !=
+          AutofillSuggestionTriggerSource::kManualFallbackPasswords ||
+      params.is_field_unclassified) {
+    histogram_tester.ExpectUniqueSample(GetExpectedTotalMetricName(),
+                                        params.option_accepted, 1);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1502,6 +1560,20 @@ INSTANTIATE_TEST_SUITE_P(
              .option_accepted = false,
              .is_field_unclassified = true,
              .test_name = "UnclassifiedField_Passwords_NotAccepted",
+         },
+         {
+             .manual_fallback_option =
+                 AutofillSuggestionTriggerSource::kManualFallbackPasswords,
+             .option_accepted = true,
+             .is_field_unclassified = false,
+             .test_name = "ClassifiedField_Passwords_Accepted",
+         },
+         {
+             .manual_fallback_option =
+                 AutofillSuggestionTriggerSource::kManualFallbackPasswords,
+             .option_accepted = false,
+             .is_field_unclassified = false,
+             .test_name = "ClassifiedField_Passwords_NotAccepted",
          }})),
     [](const ::testing::TestParamInfo<ManualFallbackMetricsTest::ParamType>&
            info) { return info.param.test_name; });

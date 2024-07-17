@@ -2574,6 +2574,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Autofill.Funnel.ClassifiedAsTargetFilling.FillAfterSuggestion.Password"
+    enum="BooleanAutofillFillAfterSuggestion" expires_after="2025-01-05">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Counts whether users accepted any password suggestion that was shown to them
+    for a given form. This metric is conditioned to those suggestions that were
+    triggered via the context menu on a field that matches the target filling
+    product password.
+
+    This metric is only recorded if a suggestion for the password form was
+    shown, accepted, and the suggestion was filled successfully. This is
+    recorded once per navigation. It is reported as &quot;User chose to
+    fill&quot; once. It does not matter if the user clears the filled values nor
+    if the user accepts a different suggestion later.
+
+    If the accepted suggestion is not filled (e.g., if it required
+    authentication and the user cancelled or failed that step), then this metric
+    is not recorded.
+  </summary>
+</histogram>
+
+<histogram
     name="Autofill.Funnel.ClassifiedFieldAutocompleteUnrecognized.FillAfterSuggestion.Address"
     enum="BooleanAutofillFillAfterSuggestion" expires_after="2025-01-05">
   <owner>fleimgruber@google.com</owner>
@@ -3284,6 +3307,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Autofill.ManualFallback.ExplicitlyTriggered.ClassifiedAsTargetFilling.Password"
+    enum="BooleanSelectManualFallback" expires_after="2025-01-20">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records per form type the acceptance of manual fallback suggestions on
+    fields that are classified as the target filling product password. This
+    tracks the number of times a user accepted/didn't accept the manual fallback
+    option in the context menu. Emitted on navigation (when the
+    PasswordAutofillManager is destroyed/reset), at most once per page.
+  </summary>
+</histogram>
+
+<histogram
     name="Autofill.ManualFallback.ExplicitlyTriggered.NotClassifiedAsTargetFilling.Total"
     enum="BooleanSelectManualFallback" expires_after="2025-01-20">
   <owner>brunobraga@google.com</owner>
@@ -3324,6 +3361,10 @@ chromium-metrics-reviews@google.com.
     number of times a user accepted/didn't accept the manual fallback option in
     the context menu. Emitted on navigation (when the AutofillManager is
     destroyed), at most once per page.
+
+    The &quot;Total&quot; variant of this metric is recorded only on classified
+    address fields. It represents the sum of classified address fields with
+    autocomplete unrecognized and with autocomplete recognized.
   </summary>
   <token key="AutocompleteState">
     <variant name="ClassifiedFieldAutocompleteRecognized"

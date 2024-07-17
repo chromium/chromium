@@ -19,11 +19,16 @@ PasswordManualFallbackMetricsRecorder::PasswordManualFallbackMetricsRecorder() =
 
 PasswordManualFallbackMetricsRecorder::
     ~PasswordManualFallbackMetricsRecorder() {
-  // TODO(crbug.com/321678141): Record metrics for "classified as target
-  // filling".
+  EmitExplicitlyTriggeredMetric(
+      classified_as_target_filling_context_menu_state_,
+      "ClassifiedAsTargetFilling",
+      /*record_to_total_not_classified_as_target_filling_bucket=*/false);
   EmitExplicitlyTriggeredMetric(
       not_classified_as_target_filling_context_menu_state_,
-      "NotClassifiedAsTargetFilling");
+      "NotClassifiedAsTargetFilling",
+      /*record_to_total_not_classified_as_target_filling_bucket=*/true);
+  EmitFillAfterSuggestionMetric(classified_as_target_filling_suggestion_state_,
+                                "ClassifiedAsTargetFilling");
   EmitFillAfterSuggestionMetric(
       not_classified_as_target_filling_suggestion_state_,
       "NotClassifiedAsTargetFilling");
@@ -83,7 +88,8 @@ void PasswordManualFallbackMetricsRecorder::ContextMenuEntryAccepted(
 
 void PasswordManualFallbackMetricsRecorder::EmitExplicitlyTriggeredMetric(
     ContextMenuEntryState context_menu_state,
-    std::string_view bucket) {
+    std::string_view bucket,
+    bool record_to_total_not_classified_as_target_filling_bucket) {
   if (context_menu_state == ContextMenuEntryState::kNotShown) {
     return;
   }
@@ -95,7 +101,9 @@ void PasswordManualFallbackMetricsRecorder::EmitExplicitlyTriggeredMetric(
   const bool was_accepted =
       context_menu_state == ContextMenuEntryState::kAccepted;
   base::UmaHistogramBoolean(metric_name(bucket, "Password"), was_accepted);
-  base::UmaHistogramBoolean(metric_name(bucket, "Total"), was_accepted);
+  if (record_to_total_not_classified_as_target_filling_bucket) {
+    base::UmaHistogramBoolean(metric_name(bucket, "Total"), was_accepted);
+  }
 }
 
 void PasswordManualFallbackMetricsRecorder::EmitFillAfterSuggestionMetric(

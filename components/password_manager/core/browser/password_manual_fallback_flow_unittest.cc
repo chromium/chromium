@@ -1090,12 +1090,6 @@ class PasswordManualFallbackFlowFillAfterSuggestionMetricsTest
 
 TEST_P(PasswordManualFallbackFlowFillAfterSuggestionMetricsTest,
        MetricsAreRecorded) {
-  // TODO(crbug.com/321678141): Remove once the "classified as target filling
-  // password" metric is implemented.
-  if (IsClassifiedAsTargetFillingPassword()) {
-    GTEST_SKIP() << "The \"classified as target filing password\" metric is "
-                    "not yet implemented.";
-  }
   InitializeFlow();
   ProcessPasswordStoreUpdates();
 
