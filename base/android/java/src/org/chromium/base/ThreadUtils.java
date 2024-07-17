@@ -218,17 +218,6 @@ public class ThreadUtils {
     }
 
     /**
-     * Run the supplied Callable on the main thread. The method will block only if the current
-     * thread is the main thread.
-     *
-     * @param c The Callable to run
-     * @return A FutureTask wrapping the callable to retrieve results
-     */
-    public static <T> FutureTask<T> runOnUiThread(Callable<T> c) {
-        return runOnUiThread(new FutureTask<T>(c));
-    }
-
-    /**
      * Run the supplied Runnable on the main thread. The method will block only if the current
      * thread is the main thread.
      *
