@@ -1448,8 +1448,7 @@ void NativeWidgetPrivate::ReparentNativeView(gfx::NativeView native_view,
 
   Widget* child_widget = Widget::GetWidgetForNativeView(native_view);
 
-  if (base::FeatureList::IsEnabled(features::kDesktopWidgetReparentAura) &&
-      child_widget) {
+  if (child_widget) {
     child_widget->native_widget_private()->ReparentNativeViewImpl(new_parent);
   } else {
     ReparentAuraWindow(native_view, new_parent);
