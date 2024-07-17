@@ -287,7 +287,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 - (void)setUpBottomSheetDetents {
   UISheetPresentationController* presentationController =
       self.sheetPresentationController;
-  if (@available(iOS 16, *)) {
     CGFloat bottomSheetHeight = [self preferredHeightForContent];
     auto resolver = ^CGFloat(
         id<UISheetPresentationControllerDetentResolutionContext> context) {
@@ -300,14 +299,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
     presentationController.detents = @[ customDetent ];
     presentationController.selectedDetentIdentifier =
         kCustomMinimizedDetentIdentifier;
-  } else {
-    presentationController.detents = @[
-      [UISheetPresentationControllerDetent mediumDetent],
-      [UISheetPresentationControllerDetent largeDetent]
-    ];
-    presentationController.selectedDetentIdentifier =
-        UISheetPresentationControllerDetentIdentifierMedium;
-  }
 }
 
 // Returns preferred height according to the container view width.
