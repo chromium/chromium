@@ -96,12 +96,6 @@ class QuicTestPacketMaker {
   std::unique_ptr<quic::QuicReceivedPacket> MakeDummyCHLOPacket(
       uint64_t packet_number);
 
-  std::unique_ptr<quic::QuicReceivedPacket>
-  MakeRetransmissionAndRetireConnectionIdPacket(
-      uint64_t packet_number,
-      const std::vector<uint64_t>& original_packet_numbers,
-      uint64_t sequence_number);
-
   std::unique_ptr<quic::QuicReceivedPacket> MakeStreamsBlockedPacket(
       uint64_t packet_number,
       quic::QuicStreamCount stream_count,

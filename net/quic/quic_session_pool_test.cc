@@ -9846,11 +9846,11 @@ void QuicSessionPoolTest::TestMigrationOnWriteErrorPauseBeforeConnected(
       ASYNC, ConstructOkResponsePacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false));
   socket_data1.AddReadPauseForever();
-  socket_data1.AddWrite(
-      SYNCHRONOUS, client_maker_.MakeRetransmissionAndRetireConnectionIdPacket(
-                       packet_num++,
-                       /*original_packet_numbers=*/{1, 2},
-                       /*sequence_number=*/0u));
+  socket_data1.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_num++)
+                                         .AddPacketRetransmission(1)
+                                         .AddPacketRetransmission(2)
+                                         .AddRetireConnectionIdFrame(0)
+                                         .Build());
   socket_data1.AddWrite(
       SYNCHRONOUS, client_maker_.Packet(packet_num++).AddPingFrame().Build());
   if (GetQuicRestartFlag(quic_opport_bundle_qpack_decoder_data5)) {

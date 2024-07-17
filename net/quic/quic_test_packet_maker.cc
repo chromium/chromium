@@ -184,20 +184,6 @@ QuicTestPacketMaker::MakeDummyCHLOPacket(uint64_t packet_number) {
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>
-QuicTestPacketMaker::MakeRetransmissionAndRetireConnectionIdPacket(
-    uint64_t packet_number,
-    const std::vector<uint64_t>& original_packet_numbers,
-    uint64_t sequence_number) {
-  auto& builder = Packet(packet_number);
-  for (auto it : original_packet_numbers) {
-    builder.AddPacketRetransmission(it);
-  }
-
-  builder.AddRetireConnectionIdFrame(sequence_number);
-  return builder.Build();
-}
-
-std::unique_ptr<quic::QuicReceivedPacket>
 QuicTestPacketMaker::MakeStreamsBlockedPacket(
     uint64_t packet_number,
     quic::QuicStreamCount stream_count,
