@@ -41,14 +41,13 @@ CSecurityDesc GetAdminDaclSecurityDescriptor() {
 
 namespace enterprise_companion {
 
-std::unique_ptr<ScopedLock> CreateScopedLock() {
+std::unique_ptr<ScopedLock> CreateScopedLock(base::TimeDelta timeout) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  return named_system_lock::ScopedLock::Create(kLockName, base::Seconds(0));
+  return named_system_lock::ScopedLock::Create(kLockName, timeout);
 #elif BUILDFLAG(IS_WIN)
   CSecurityAttributes sa =
       CSecurityAttributes(GetAdminDaclSecurityDescriptor());
-  return named_system_lock::ScopedLock::Create(kLockName, &sa,
-                                               base::Seconds(0));
+  return named_system_lock::ScopedLock::Create(kLockName, &sa, timeout);
 #endif
 }
 

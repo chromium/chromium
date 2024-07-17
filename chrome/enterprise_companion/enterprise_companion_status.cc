@@ -85,6 +85,8 @@ constexpr std::string ApplicationErrorToString(ApplicationError error) {
       return "Failed to acquire global singleton lock.";
     case ApplicationError::kEnterpriseCompanionServiceConnectionFailed:
       return "The EnterpriseCompanion IPC interface could not be reached.";
+    case ApplicationError::kInstallationFailed:
+      return "The application could not be installed.";
   }
 }
 

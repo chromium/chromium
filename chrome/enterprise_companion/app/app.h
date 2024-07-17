@@ -7,11 +7,14 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "chrome/enterprise_companion/enterprise_companion_client.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
+#include "chrome/enterprise_companion/installer.h"
+#include "chrome/enterprise_companion/lock.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 
 namespace enterprise_companion {
@@ -46,6 +49,13 @@ std::unique_ptr<App> CreateAppShutdown(
     base::TimeDelta connection_timeout = base::Seconds(10),
     const mojo::NamedPlatformChannel::ServerName& server_name =
         GetServerName());
+
+std::unique_ptr<App> CreateAppInstall(
+    base::OnceCallback<EnterpriseCompanionStatus()> shutdown_remote_task =
+        base::BindOnce([] { return CreateAppShutdown()->Run(); }),
+    base::OnceCallback<std::unique_ptr<ScopedLock>(base::TimeDelta timeout)>
+        lock_provider = base::BindOnce(&CreateScopedLock),
+    base::OnceCallback<bool()> install_task = base::BindOnce(&Install));
 
 }  // namespace enterprise_companion
 

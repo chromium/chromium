@@ -49,6 +49,7 @@ source_set("base") {
   sources = [
     "app/app.cc",
     "app/app.h",
+    "app/app_install.cc",
     "app/app_server.cc",
     "app/app_shutdown.cc",
     "crash_client.cc",
@@ -123,6 +124,7 @@ test("enterprise_companion_tests") {
   testonly = true
 
   sources = [
+    "app/app_install_unittest.cc",
     "app/app_shutdown_unittest.cc",
     "crash_client_unittest.cc",
     "dm_client_unittest.cc",

@@ -31,6 +31,7 @@ const char kCrashHandlerSwitch[] = "crash-handler";
 const char kCrashMeSwitch[] = "crash-me";
 const char kEnableUsageStatsSwitch[] = "enable-usage-stats";
 const char kShutdownSwitch[] = "shutdown";
+const char kInstallSwitch[] = "install";
 
 namespace {
 
@@ -104,9 +105,14 @@ int EnterpriseCompanionMain(int argc, const char* const* argv) {
 
   ScopedIPCSupportWrapper ipc_support;
 
-  std::unique_ptr<App> app = command_line->HasSwitch(kShutdownSwitch)
-                                 ? CreateAppShutdown()
-                                 : CreateAppServer();
+  std::unique_ptr<App> app;
+  if (command_line->HasSwitch(kShutdownSwitch)) {
+    app = CreateAppShutdown();
+  } else if (command_line->HasSwitch(kInstallSwitch)) {
+    app = CreateAppInstall();
+  } else {
+    app = CreateAppServer();
+  }
   EnterpriseCompanionStatus status = app->Run();
   LOG_IF(ERROR, !status.ok())
       << "Application completed with error: " << status.description();

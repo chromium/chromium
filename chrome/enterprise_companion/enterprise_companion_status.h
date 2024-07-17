@@ -32,6 +32,8 @@ enum class ApplicationError {
   kCannotAcquireLock,
   // The EnterpriseCompanion IPC service could not be reached.
   kEnterpriseCompanionServiceConnectionFailed,
+  // Installation failed.
+  kInstallationFailed,
 };
 
 // Represents an error which was deserialized from an external source (e.g.
