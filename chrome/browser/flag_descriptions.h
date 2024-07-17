@@ -2831,9 +2831,6 @@ extern const char kTabStripTransitionInDesktopWindowDescription[];
 extern const char kTouchDragAndContextMenuName[];
 extern const char kTouchDragAndContextMenuDescription[];
 
-extern const char kTranslateMessageUIName[];
-extern const char kTranslateMessageUIDescription[];
-
 extern const char
     kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarningName[];
 extern const char

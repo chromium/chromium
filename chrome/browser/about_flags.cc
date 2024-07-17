@@ -2884,16 +2884,6 @@ const FeatureEntry::FeatureVariation kSCTAuditingVariations[] = {
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-// The variations of TranslateMessageUI
-const FeatureEntry::FeatureParam kTranslateMessageUISnackbar[] = {
-    {translate::kTranslateMessageUISnackbarParam, "true"}};
-
-const FeatureEntry::FeatureVariation kTranslateMessageUIVariations[] = {
-    {"With Snackbar", kTranslateMessageUISnackbar,
-     std::size(kTranslateMessageUISnackbar), nullptr}};
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const FeatureEntry::FeatureParam kProductivityLauncher_WithoutContinue[] = {
     {"enable_continue", "false"}};
@@ -4929,13 +4919,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kVulkanFromAngleDescription,
      kOsLinux | kOsAndroid | kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(features::kVulkanFromANGLE)},
-#if BUILDFLAG(IS_ANDROID)
-    {"translate-message-ui", flag_descriptions::kTranslateMessageUIName,
-     flag_descriptions::kTranslateMessageUIDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(translate::kTranslateMessageUI,
-                                    kTranslateMessageUIVariations,
-                                    "TranslateMessageUI")},
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS) && !BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-system-notifications",

@@ -4811,11 +4811,6 @@ const char kTouchDragAndContextMenuDescription[] =
     "Enables touch dragging and a context menu to start simultaneously, with"
     "the assumption that the menu is non-modal.";
 
-const char kTranslateMessageUIName[] = "Translate Message UI";
-const char kTranslateMessageUIDescription[] =
-    "Controls whether the Translate Message UI will be shown instead of the "
-    "Translate InfoBar.";
-
 const char kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarningName[] =
     "Access loss warning for unmigrated password manager users";
 const char
