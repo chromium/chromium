@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/time/time.h"
+#import "base/uuid.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
@@ -14,7 +15,6 @@ using TabGroupsPanelItemTest = PlatformTest;
 
 // Tests item's equality.
 TEST_F(TabGroupsPanelItemTest, Equality) {
-  // TODO(crbug.com/350493712): Compare based on SavedTabGroupID instead.
   TabGroupsPanelItem* item_1 = [[TabGroupsPanelItem alloc] init];
   EXPECT_NSEQ(item_1, item_1);
   EXPECT_NSNE(item_1, nil);
@@ -23,12 +23,18 @@ TEST_F(TabGroupsPanelItemTest, Equality) {
   TabGroupsPanelItem* item_2 = [[TabGroupsPanelItem alloc] init];
   EXPECT_NSEQ(item_1, item_2);
 
-  // Changing one title breaks equality.
-  item_1.title = @"Title";
+  // Changing one saved tab group ID breaks equality.
+  base::Uuid first_uuid = base::Uuid::GenerateRandomV4();
+  item_1.savedTabGroupID = first_uuid;
   EXPECT_NSNE(item_1, item_2);
 
-  // Setting the same title brings back equality.
-  item_2.title = @"Title";
+  // Setting the same saved tab group ID brings back equality.
+  item_2.savedTabGroupID = first_uuid;
+  EXPECT_NSEQ(item_1, item_2);
+
+  // Changing the title doesn't affect equality.
+  item_1.title = @"Title 1";
+  item_2.title = @"Title 2";
   EXPECT_NSEQ(item_1, item_2);
 
   // Changing the color doesn't affect equality.

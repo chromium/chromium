@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_item.h"
 
 #import "base/time/time.h"
+#import "base/uuid.h"
 
 @implementation TabGroupsPanelItem
 
@@ -21,8 +22,7 @@
 }
 
 - (NSUInteger)hash {
-  // TODO(crbug.com/350493712): Compare based on SavedTabGroupID.
-  return [_title hash];
+  return base::UuidHash()(_savedTabGroupID);
 }
 
 #pragma mark Private
@@ -31,9 +31,7 @@
   if (self == item) {
     return YES;
   }
-  // TODO(crbug.com/350493712): Compare based on SavedTabGroupID.
-  return (_title == nil && item.title == nil) ||
-         [_title isEqualToString:item.title];
+  return _savedTabGroupID == item.savedTabGroupID;
 }
 
 @end

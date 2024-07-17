@@ -7,6 +7,7 @@
 #import "base/memory/weak_ptr.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/disabled_grid_view_controller.h"
@@ -67,10 +68,14 @@
     _gridContainerViewController.containedViewController = _gridViewController;
   }
 
+  tab_groups::TabGroupSyncService* tabGroupSyncService =
+      tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
+          _regularBrowser->GetBrowserState());
   WebStateList* regularWebStateList = _regularBrowser->GetWebStateList();
 
   _mediator = [[TabGroupsPanelMediator alloc]
-      initWithRegularWebStateList:regularWebStateList
+      initWithTabGroupSyncService:tabGroupSyncService
+              regularWebStateList:regularWebStateList
                  disabledByPolicy:regularModeDisabled];
   _mediator.toolbarsMutator = _toolbarsMutator;
   _mediator.toolbarTabGridDelegate = _toolbarTabGridDelegate;
@@ -81,6 +86,7 @@
 - (void)stop {
   [super stop];
 
+  [_mediator disconnect];
   _mediator.toolbarsMutator = nil;
   _mediator.toolbarTabGridDelegate = nil;
   _mediator = nil;

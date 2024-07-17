@@ -7,8 +7,10 @@
 #import "base/test/task_environment.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/saved_tab_groups/mock_tab_group_sync_service.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/disabled_grid_view_controller.h"
@@ -20,6 +22,19 @@
 #import "testing/platform_test.h"
 
 @class TabGridToolbarsConfiguration;
+
+namespace {
+
+// Creates a nice mock of TabGroupSyncService. It's "nice" since these tests
+// don't really care what is called on the service, they just need to pass it
+// down to the coordinator's mediator.
+std::unique_ptr<KeyedService> CreateMockSyncService(
+    web::BrowserState* context) {
+  return std::make_unique<
+      ::testing::NiceMock<tab_groups::MockTabGroupSyncService>>();
+}
+
+}  // namespace
 
 @interface TestDisabledGridViewControllerDelegate
     : NSObject <DisabledGridViewControllerDelegate>
@@ -87,7 +102,11 @@
 class TabGroupsPanelCoordinatorTest : public PlatformTest {
  protected:
   TabGroupsPanelCoordinatorTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    TestChromeBrowserState::Builder builder;
+    builder.AddTestingFactory(
+        tab_groups::TabGroupSyncServiceFactory::GetInstance(),
+        base::BindRepeating(&CreateMockSyncService));
+    browser_state_ = builder.Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     base_view_controller_ = [[UIViewController alloc] init];
     toolbars_mutator_ = [[TestToolbarsMutator alloc] init];

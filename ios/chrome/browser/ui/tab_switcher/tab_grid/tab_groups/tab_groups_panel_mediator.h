@@ -15,15 +15,21 @@
 @protocol TabGroupsPanelConsumer;
 class WebStateList;
 
+namespace tab_groups {
+class TabGroupSyncService;
+}  // namespace tab_groups
+
 // TabGroupsPanelMediator controls the Tab Groups panel in Tab Grid.
 @interface TabGroupsPanelMediator
     : NSObject <TabGridPageMutator, TabGroupsPanelMutator>
 
-// WebStateList-s are used to configure the Done button.
-// `regularWebStateList` must not be null.
-// `disabled` tells the mediator whether the Tab Groups panel is disabled, to
-// configure the toolbars.
-- (instancetype)initWithRegularWebStateList:(WebStateList*)regularWebStateList
+// - `tabGroupSyncService`: the data source for the Tab Groups panel.
+// - `regularWebStateList`: used to configure the Done button. Must not be null.
+// - `disabled`: tells the mediator whether the Tab Groups panel is disabled, to
+//     configure the toolbars.
+- (instancetype)initWithTabGroupSyncService:
+                    (tab_groups::TabGroupSyncService*)tabGroupSyncService
+                        regularWebStateList:(WebStateList*)regularWebStateList
                            disabledByPolicy:(BOOL)disabled
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
@@ -37,6 +43,9 @@ class WebStateList;
 // Delegate handling the Tab Grid modifications.
 @property(nonatomic, weak) id<TabGridToolbarsMainTabGridDelegate>
     toolbarTabGridDelegate;
+
+// Disconnects the mediator.
+- (void)disconnect;
 
 @end
 

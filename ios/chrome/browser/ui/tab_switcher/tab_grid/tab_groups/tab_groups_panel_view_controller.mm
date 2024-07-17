@@ -166,8 +166,7 @@ NSString* CreationText(base::Time creation_date) {
   TabGroupsPanelSnapshot* snapshot = [[TabGroupsPanelSnapshot alloc] init];
   [snapshot appendSectionsWithIdentifiers:@[ kTabGroupsSection ]];
   [snapshot appendItemsWithIdentifiers:items];
-  [snapshot reconfigureItemsWithIdentifiers:items];  // TODO: doesn't
-                                                     // reconfigure properly
+  [snapshot reconfigureItemsWithIdentifiers:items];
   [_dataSource applySnapshot:snapshot animatingDifferences:YES];
 
   // Invalidate the layout when getting to or coming from 1 item.
