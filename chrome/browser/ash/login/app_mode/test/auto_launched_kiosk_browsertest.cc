@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "apps/test/app_window_waiter.h"
@@ -11,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/gtest_tags.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
@@ -49,8 +52,13 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
+
+using testing::UnorderedElementsAre;
+
 namespace {
 
 namespace em = ::enterprise_management;
@@ -92,6 +100,34 @@ AccountId GetWebKioskAccountId(std::string_view account_id) {
 AccountId GetChromeAppAccountId(std::string_view account_id) {
   return GetAccountId(account_id, policy::DeviceLocalAccountType::kKioskApp);
 }
+
+std::vector<std::string> DeviceLocalAccountIdsFromPolicy(
+    DeviceStateMixin& device_state) {
+  auto scoped_policy_update = device_state.RequestDevicePolicyUpdate();
+  auto* policy = scoped_policy_update->policy_payload();
+
+  std::vector<std::string> account_ids;
+  for (int i = 0; i < policy->device_local_accounts().account_size(); i++) {
+    auto& account = policy->device_local_accounts().account(i);
+    if (!account.has_account_id()) {
+      continue;
+    }
+    account_ids.push_back(account.account_id());
+  }
+
+  return account_ids;
+}
+
+std::optional<std::string> AutoLoginAccountIdFromPolicy(
+    DeviceStateMixin& device_state) {
+  auto scoped_policy_update = device_state.RequestDevicePolicyUpdate();
+  auto* policy = scoped_policy_update->policy_payload();
+  if (policy->device_local_accounts().has_auto_login_id()) {
+    return policy->device_local_accounts().auto_login_id();
+  }
+  return std::nullopt;
+}
+
 }  // namespace
 
 class AutoLaunchedKioskTest : public OobeBaseTest {
@@ -109,6 +145,11 @@ class AutoLaunchedKioskTest : public OobeBaseTest {
   virtual std::string GetTestAppId() const {
     return KioskAppsMixin::kTestChromeAppId;
   }
+
+  virtual std::string GetTestAppAccountId() const {
+    return KioskAppsMixin::kEnterpriseKioskAccountId;
+  }
+
   virtual std::vector<std::string> GetTestSecondaryAppIds() const {
     return std::vector<std::string>();
   }
@@ -145,13 +186,13 @@ class AutoLaunchedKioskTest : public OobeBaseTest {
 
     KioskAppsMixin::AppendAutoLaunchKioskAccount(
         device_policy_update->policy_payload(), GetTestAppId(),
-        KioskAppsMixin::kEnterpriseKioskAccountId);
+        GetTestAppAccountId());
 
     device_policy_update.reset();
 
     std::unique_ptr<ScopedUserPolicyUpdate> device_local_account_policy_update =
         device_state_.RequestDeviceLocalAccountPolicyUpdate(
-            KioskAppsMixin::kEnterpriseKioskAccountId);
+            GetTestAppAccountId());
     device_local_account_policy_update.reset();
 
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
@@ -184,8 +225,7 @@ class AutoLaunchedKioskTest : public OobeBaseTest {
 
   const std::string GetTestAppUserId() const {
     return policy::GenerateDeviceLocalAccountUserId(
-        KioskAppsMixin::kEnterpriseKioskAccountId,
-        policy::DeviceLocalAccountType::kKioskApp);
+        GetTestAppAccountId(), policy::DeviceLocalAccountType::kKioskApp);
   }
 
   bool CloseAppWindow(const std::string& app_id) {
@@ -238,8 +278,9 @@ class AutoLaunchedKioskTest : public OobeBaseTest {
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 
- private:
   FakeCWS fake_cws_;
+
+ private:
   extensions::SandboxedUnpacker::ScopedVerifierFormatOverrideForTest
       verifier_format_override_;
   base::AutoReset<bool> skip_splash_wait_override_ =
@@ -441,14 +482,22 @@ IN_PROC_BROWSER_TEST_F(AutoLaunchWebAppAfterMigration,
 class AutoLaunchChromeAppAfterMigration : public AutoLaunchedKioskTest,
                                           public LocalStateMixin::Delegate {
  public:
-  const char* kMigratedChromeAppId = KioskAppsMixin::kTestChromeAppId;
-  const char* kMigratedChromeAppAccountId = "kiosk-app@localhost";
+  // This ID refers to the `offline_enabled_kiosk_app` implemented under
+  // chrome/test/data/chromeos/app_mode/apps_and_extensions/.
+  //
+  // When configured in `fake_cws_`, the corresponding CRX gets downloaded from
+  // chrome/test/data/chromeos/app_mode/webstore/downloads/.
+  static constexpr std::string_view kMigratedChromeAppId =
+      "iiigpodgfihagabpagjehoocpakbnclp";
+  static constexpr std::string_view kMigratedChromeAppAccountId =
+      "kiosk-app@localhost";
 
   AutoLaunchChromeAppAfterMigration() = default;
   ~AutoLaunchChromeAppAfterMigration() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
-    // Create Chrome app
+    // The base class sets up `GetTestAppId()` in policies to auto launch.
+    // Additionally, this configures the `kMigratedChromeAppId` Kiosk app.
     {
       std::unique_ptr<ScopedDevicePolicyUpdate> scoped_policy_update =
           device_state_.RequestDevicePolicyUpdate();
@@ -456,6 +505,10 @@ class AutoLaunchChromeAppAfterMigration : public AutoLaunchedKioskTest,
       KioskAppsMixin::AppendKioskAccount(scoped_policy_update->policy_payload(),
                                          kMigratedChromeAppId,
                                          kMigratedChromeAppAccountId);
+      // Setup the app on CWS so Kiosk can download and launch it.
+      fake_cws_.SetUpdateCrx(std::string(kMigratedChromeAppId),
+                             base::StrCat({kMigratedChromeAppId, "_v1.crx"}),
+                             "1.0.0");
 
       scoped_policy_update.reset();
     }
@@ -478,9 +531,20 @@ class AutoLaunchChromeAppAfterMigration : public AutoLaunchedKioskTest,
 
 IN_PROC_BROWSER_TEST_F(AutoLaunchChromeAppAfterMigration,
                        ShouldLaunchMigratedChromeApp) {
+  // Verify the pre-conditions:
+  // * There are two Chrome apps configured in policies.
+  // * One of them is the migrated app.
+  // * The non-migrated app is configured for auto launch.
+  ASSERT_NE(kMigratedChromeAppId, GetTestAppId());
+  ASSERT_NE(kMigratedChromeAppAccountId, GetTestAppAccountId());
+  ASSERT_THAT(
+      DeviceLocalAccountIdsFromPolicy(device_state_),
+      UnorderedElementsAre(GetTestAppAccountId(), kMigratedChromeAppAccountId));
+  ASSERT_EQ(AutoLoginAccountIdFromPolicy(device_state_), GetTestAppAccountId());
+
   KioskSessionInitializedWaiter().Wait();
 
-  // Check the correct app is launched.
+  // Check the migrated app launched instead of the auto launch app.
   const auto* active_user = user_manager::UserManager::Get()->GetActiveUser();
   ASSERT_NE(active_user, nullptr);
   EXPECT_EQ(active_user->GetAccountId(),
