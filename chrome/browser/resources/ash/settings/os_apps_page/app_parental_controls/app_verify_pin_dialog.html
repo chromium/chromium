@@ -40,6 +40,11 @@
     padding-top: var(--cr-dialog-button-container-padding-top, 16px);
   }
 
+  cr-dialog::part(dialog) {
+    /* Make sure pin dialog is usable for small window sizes. */
+    max-width: 100%;
+  }
+
   #pinKeyboardDiv {
     justify-content: center;
   }

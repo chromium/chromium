@@ -12,6 +12,11 @@
     min-height: 48px;
     padding-bottom: 16px;
   }
+
+  cr-dialog::part(dialog) {
+    /* Make sure pin dialog is usable for small window sizes. */
+    max-width: 100%;
+  }
 </style>
 <cr-dialog id="dialog" on-close="close"
     close-text="$i18n{close}">
