@@ -1369,10 +1369,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
     }
 
-    private void disablePaintPreviewOnRestore() {
-        StartupPaintPreviewHelper.setShouldShowOnRestore(false);
-    }
-
     private void setTrackColdStartupMetrics(boolean shouldTrackColdStartupMetrics) {
         assert getActivityTabStartupMetricsTracker() != null;
 
@@ -1997,7 +1993,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // interactions changing the course of restoring the page.
         if (ColdStartTracker.wasColdOnFirstActivityCreationOrNow()
                 && !SimpleStartupForegroundSessionDetector.isSessionDiscarded()) {
-            StartupPaintPreviewHelper.setShouldShowOnRestore(true);
+            StartupPaintPreviewHelper.enableShowOnRestore();
         }
 
         supportRequestWindowFeature(Window.FEATURE_ACTION_MODE_OVERLAY);
