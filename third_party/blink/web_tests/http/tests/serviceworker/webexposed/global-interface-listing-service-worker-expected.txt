@@ -1344,7 +1344,6 @@ interface OffscreenCanvasRenderingContext2D
     method clearRect
     method clip
     method closePath
-    method commit
     method constructor
     method createConicGradient
     method createImageData

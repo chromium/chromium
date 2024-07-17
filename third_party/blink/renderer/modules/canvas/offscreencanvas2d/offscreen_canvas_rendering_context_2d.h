@@ -51,8 +51,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
     return static_cast<OffscreenCanvas*>(Host());
   }
 
-  void commit();
-
   // CanvasRenderingContext implementation
   ~OffscreenCanvasRenderingContext2D() override;
   bool IsComposited() const override { return false; }

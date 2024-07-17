@@ -7628,7 +7628,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1657" label="RTCIceServerURLs"/>
   <int value="1658" label="OffscreenCanvasTransferToImageBitmap2D"/>
   <int value="1659" label="OffscreenCanvasTransferToImageBitmapWebGL"/>
-  <int value="1660" label="OffscreenCanvasCommit2D"/>
+  <int value="1660" label="OBSOLETE_OffscreenCanvasCommit2D"/>
   <int value="1661" label="OffscreenCanvasCommitWebGL"/>
   <int value="1662" label="RTCConfigurationIceTransportPolicy"/>
   <int value="1663" label="RTCConfigurationIceTransportPolicyNone"/>

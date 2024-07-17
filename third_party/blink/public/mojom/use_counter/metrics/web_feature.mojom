@@ -1141,7 +1141,7 @@ enum WebFeature {
   kRTCIceServerURLs = 1657,
   kOffscreenCanvasTransferToImageBitmap2D = 1658,
   kOffscreenCanvasTransferToImageBitmapWebGL = 1659,
-  kOffscreenCanvasCommit2D = 1660,
+  kOBSOLETE_OffscreenCanvasCommit2D = 1660,
   kOffscreenCanvasCommitWebGL = 1661,
   kRTCConfigurationIceTransportPolicy = 1662,
   kRTCConfigurationIceTransports = 1664,

@@ -235,7 +235,7 @@ enum class FlushReason {
 
   // `OffscreenCanvas::commit` was called.
   // Should not happen while printing.
-  kOffscreenCanvasCommit = 5,
+  kOffscreenCanvasCommit_OBSOLETE = 5,
 
   // `OffscreenCanvas` dispatched a frame to the compositor as part of the
   // regular animation frame presentation flow.

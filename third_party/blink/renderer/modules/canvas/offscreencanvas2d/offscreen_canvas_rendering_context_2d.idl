@@ -11,8 +11,6 @@
     // back-reference to the canvas
     [ImplementedAs=offscreenCanvasForBinding] readonly attribute OffscreenCanvas canvas;
 
-    [RuntimeEnabled=OffscreenCanvasCommit] void commit();
-
     // state
     void save(); // push state on state stack
     [NoAllocDirectCall, RaisesException] void restore(); // pop state stack if top state was pushed by save, and restore state

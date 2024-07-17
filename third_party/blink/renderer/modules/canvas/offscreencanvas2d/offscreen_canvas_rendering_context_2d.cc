@@ -127,16 +127,6 @@ void OffscreenCanvasRenderingContext2D::Trace(Visitor* visitor) const {
   BaseRenderingContext2D::Trace(visitor);
 }
 
-void OffscreenCanvasRenderingContext2D::commit() {
-  // TODO(fserb): consolidate this with PushFrame
-  SkIRect damage_rect(dirty_rect_for_commit_);
-  dirty_rect_for_commit_.setEmpty();
-  FinalizeFrame(FlushReason::kOffscreenCanvasCommit);
-  Host()->Commit(ProduceCanvasResource(FlushReason::kOffscreenCanvasCommit),
-                 damage_rect);
-  GetOffscreenFontCache().PruneLocalFontCache(kMaxCachedFonts);
-}
-
 void OffscreenCanvasRenderingContext2D::FlushRecording(FlushReason reason) {
   CanvasResourceProvider* provider = GetCanvasResourceProvider();
   if (UNLIKELY(provider == nullptr) ||

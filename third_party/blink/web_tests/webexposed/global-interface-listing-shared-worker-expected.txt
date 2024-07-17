@@ -1284,7 +1284,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method clearRect
 [Worker]     method clip
 [Worker]     method closePath
-[Worker]     method commit
 [Worker]     method constructor
 [Worker]     method createConicGradient
 [Worker]     method createImageData
