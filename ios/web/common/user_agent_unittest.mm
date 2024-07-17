@@ -77,7 +77,13 @@ TEST_F(UserAgentTest, MobileUserAgentForProduct) {
   int32_t os_bugfix_version = 0;
   base::SysInfo::OperatingSystemVersionNumbers(
       &os_major_version, &os_minor_version, &os_bugfix_version);
-  base::StringAppendF(&os_version, "%d_%d", os_major_version, os_minor_version);
+  if (base::FeatureList::IsEnabled(web::features::kUserAgentBugFixVersion)) {
+    base::StringAppendF(&os_version, "%d_%d_%d", os_major_version,
+                        os_minor_version, os_bugfix_version);
+  } else {
+    base::StringAppendF(&os_version, "%d_%d", os_major_version,
+                        os_minor_version);
+  }
 
   std::string expected_user_agent;
   base::StringAppendF(

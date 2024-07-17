@@ -93,6 +93,9 @@ bool IsWebInspectorSupportEnabled();
 // Feature flag to disable the raccoon.
 BASE_DECLARE_FEATURE(kDisableRaccoon);
 
+// Feature flag adds bugfix numbers to the iOS User-Agent header for Chrome
+BASE_DECLARE_FEATURE(kUserAgentBugFixVersion);
+
 }  // namespace features
 }  // namespace web
 

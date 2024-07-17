@@ -37,11 +37,20 @@ std::string OSVersion() {
   int32_t os_major_version = 0;
   int32_t os_minor_version = 0;
   int32_t os_bugfix_version = 0;
+
   base::SysInfo::OperatingSystemVersionNumbers(
       &os_major_version, &os_minor_version, &os_bugfix_version);
 
   std::string os_version;
-  base::StringAppendF(&os_version, "%d_%d", os_major_version, os_minor_version);
+
+  if (base::FeatureList::IsEnabled(web::features::kUserAgentBugFixVersion)) {
+    base::StringAppendF(&os_version, "%d_%d_%d", os_major_version,
+                        os_minor_version, os_bugfix_version);
+  } else {
+    base::StringAppendF(&os_version, "%d_%d", os_major_version,
+                        os_minor_version);
+  }
+
   return os_version;
 }
 

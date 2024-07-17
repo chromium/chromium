@@ -110,5 +110,9 @@ BASE_FEATURE(kDisableRaccoon,
              "DisableRaccoon",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUserAgentBugFixVersion,
+             "UserAgentBugFixVersion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace web
