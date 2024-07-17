@@ -315,6 +315,21 @@ source_set("enterprise_app_agent") {
   ]
 }
 
+source_set("identity_confirmation_app_agent") {
+  sources = [
+    "identity_confirmation_app_agent.h",
+    "identity_confirmation_app_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/application_delegate:observing_app_state_agent",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/util:snackbar_util",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/ui/ntp:feature_flags",
+  ]
+}
+
 source_set("launch_screen_ui") {
   sources = [
     "launch_screen_view_controller.h",
@@ -505,6 +520,7 @@ source_set("app_internal") {
     ":fast_app_terminate_buildflags",
     ":feed_app_agent",
     ":first_run_app_state_agent",
+    ":identity_confirmation_app_agent",
     ":launch_screen_ui",
     ":mode",
     ":post_restore_app_agent",

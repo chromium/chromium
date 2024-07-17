@@ -48,6 +48,7 @@
 #import "ios/chrome/app/features.h"
 #import "ios/chrome/app/feed_app_agent.h"
 #import "ios/chrome/app/first_run_app_state_agent.h"
+#import "ios/chrome/app/identity_confirmation_app_agent.h"
 #import "ios/chrome/app/launch_screen_view_controller.h"
 #import "ios/chrome/app/memory_monitor.h"
 #import "ios/chrome/app/post_restore_app_agent.h"
@@ -853,6 +854,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
   [appState addAgent:[[FeedAppAgent alloc] init]];
   [appState addAgent:[[SearchEngineChoiceAppAgent alloc] init]];
   [appState addAgent:[[VariationsAppStateAgent alloc] init]];
+  [appState addAgent:[[IdentityConfirmationAppAgent alloc] init]];
 
   // Create the window accessibility agent only when multiple windows are
   // possible.
