@@ -7010,6 +7010,11 @@
           'CROS_RELEASE_LKGM',
         ],
       },
+      'chromeos_integration_tests_suite': {
+        'variants': [
+          'CROS_RELEASE_LKGM',
+        ],
+      },
     },
 
     'chromeos_volteer_skylab_tests': {
