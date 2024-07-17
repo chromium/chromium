@@ -20,6 +20,7 @@
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/manta.pb.h"
 #include "components/manta/proto/sparky.pb.h"
+#include "components/manta/sparky/sparky_context.h"
 #include "components/manta/sparky/sparky_delegate.h"
 #include "components/manta/sparky/sparky_util.h"
 #include "components/manta/sparky/system_info_delegate.h"
@@ -165,8 +166,8 @@ TEST_F(SparkyProviderTest, SimpleRequestPayload) {
   dialog_turns.emplace_back("In July", Role::kAssistant);
 
   sparky_provider->QuestionAndAnswer(
-      "page content", dialog_turns, "What is the climate like then",
-      proto::Task::TASK_PLANNER, nullptr, false,
+      std::make_unique<SparkyContext>(
+          dialog_turns, "What is the climate like then", "page content"),
       base::BindLambdaForTesting(
           [&quit_closure](MantaStatus manta_status, DialogTurn* latest_dialog) {
             ASSERT_EQ(manta_status.status_code, MantaStatusCode::kOk);
@@ -199,8 +200,8 @@ TEST_F(SparkyProviderTest, EmptyResponseIfSparkyDataIsNotSet) {
   auto quit_closure = task_environment_.QuitClosure();
 
   sparky_provider->QuestionAndAnswer(
-      "page content", dialog_turns, "my question", proto::Task::TASK_PLANNER,
-      nullptr, false,
+      std::make_unique<SparkyContext>(dialog_turns, "my question",
+                                      "page content"),
       base::BindLambdaForTesting([&quit_closure](MantaStatus manta_status,
                                                  DialogTurn* latest_dialog) {
         ASSERT_EQ(manta_status.status_code, MantaStatusCode::kBlockedOutputs);
@@ -225,8 +226,8 @@ TEST_F(SparkyProviderTest, EmptyResponseAfterIdentityManagerShutdown) {
   auto quit_closure = task_environment_.QuitClosure();
 
   sparky_provider->QuestionAndAnswer(
-      "page content", dialog_turns, "my question", proto::Task::TASK_PLANNER,
-      nullptr, false,
+      std::make_unique<SparkyContext>(dialog_turns, "my question",
+                                      "page content"),
       base::BindLambdaForTesting(
           [&quit_closure](MantaStatus manta_status, DialogTurn* latest_dialog) {
             ASSERT_EQ(manta_status.status_code,
@@ -275,9 +276,12 @@ TEST_F(SparkyProviderTest, SettingAction) {
                        ->CheckSettingValue("power.adaptive_charging_enabled")
                        ->GetBool());
 
+  auto sparky_context = std::make_unique<SparkyContext>(
+      dialog_turns, "Turn on adaptive charging", "page content");
+  sparky_context->task = proto::Task::TASK_SETTINGS;
+
   sparky_provider->QuestionAndAnswer(
-      "page content", dialog_turns, "Turn on adaptive charging",
-      proto::Task::TASK_SETTINGS, nullptr, true,
+      std::move(sparky_context),
       base::BindLambdaForTesting(
           [&quit_closure](MantaStatus manta_status, DialogTurn* latest_dialog) {
             ASSERT_EQ(manta_status.status_code, MantaStatusCode::kOk);
@@ -339,9 +343,12 @@ TEST_F(SparkyProviderTest, SettingActionWith2Actions) {
                      ->CheckSettingValue("ash.night_light.color_temperature")
                      ->GetDouble());
 
+  auto sparky_context = std::make_unique<SparkyContext>(
+      dialog_turns, "Turn on night light", "page content");
+  sparky_context->task = proto::Task::TASK_SETTINGS;
+
   sparky_provider->QuestionAndAnswer(
-      "page content", dialog_turns, "Turn on adaptive charging",
-      proto::Task::TASK_SETTINGS, nullptr, false,
+      std::move(sparky_context),
       base::BindLambdaForTesting(
           [&quit_closure](MantaStatus manta_status, DialogTurn* latest_dialog) {
             ASSERT_EQ(manta_status.status_code, MantaStatusCode::kOk);
@@ -393,10 +400,11 @@ TEST_F(SparkyProviderTest, SettingActionInvalidProto) {
   std::unique_ptr<FakeSparkyProvider> sparky_provider = CreateSparkyProvider();
 
   auto quit_closure = task_environment_.QuitClosure();
-
+  auto sparky_context = std::make_unique<SparkyContext>(
+      dialog_turns, "Turn on adaptive charging", "page content");
+  sparky_context->task = proto::Task::TASK_SETTINGS;
   sparky_provider->QuestionAndAnswer(
-      "page content", dialog_turns, "Turn on adaptive charging",
-      proto::Task::TASK_SETTINGS, nullptr, true,
+      std::move(sparky_context),
       base::BindLambdaForTesting(
           [&quit_closure](MantaStatus manta_status, DialogTurn* latest_dialog) {
             ASSERT_EQ(manta_status.status_code, MantaStatusCode::kOk);

@@ -75,7 +75,7 @@ std::vector<Diagnostics> COMPONENT_EXPORT(MANTA)
         const ::manta::proto::DiagnosticsRequest& diagnostics_request);
 
 void COMPONENT_EXPORT(MANTA)
-    AddDiagnosticsProto(std::unique_ptr<DiagnosticsData> diagnostics_data,
+    AddDiagnosticsProto(std::optional<DiagnosticsData> diagnostics_data,
                         proto::DiagnosticsData* diagnostics_proto);
 
 void COMPONENT_EXPORT(MANTA) AddAppsData(base::span<const AppsData> apps_data,

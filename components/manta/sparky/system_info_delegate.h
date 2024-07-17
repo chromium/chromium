@@ -22,8 +22,8 @@ struct COMPONENT_EXPORT(MANTA) StorageData {
   StorageData(const std::string& in_use_bytes, const std::string& total_bytes);
   ~StorageData();
 
-  StorageData(const StorageData&) = delete;
-  StorageData& operator=(const StorageData&) = delete;
+  StorageData(const StorageData&);
+  StorageData& operator=(const StorageData&);
 };
 
 struct COMPONENT_EXPORT(MANTA) BatteryData {
@@ -38,8 +38,8 @@ struct COMPONENT_EXPORT(MANTA) BatteryData {
               int battery_percentage);
   ~BatteryData();
 
-  BatteryData(const BatteryData&) = delete;
-  BatteryData& operator=(const BatteryData&) = delete;
+  BatteryData(const BatteryData&);
+  BatteryData& operator=(const BatteryData&);
 };
 
 struct COMPONENT_EXPORT(MANTA) CpuData {
@@ -53,8 +53,8 @@ struct COMPONENT_EXPORT(MANTA) CpuData {
 
   ~CpuData();
 
-  CpuData(const CpuData&) = delete;
-  CpuData& operator=(const CpuData&) = delete;
+  CpuData(const CpuData&);
+  CpuData& operator=(const CpuData&);
 };
 
 struct COMPONENT_EXPORT(MANTA) MemoryData {
@@ -65,23 +65,23 @@ struct COMPONENT_EXPORT(MANTA) MemoryData {
 
   ~MemoryData();
 
-  MemoryData(const MemoryData&) = delete;
-  MemoryData& operator=(const MemoryData&) = delete;
+  MemoryData(const MemoryData&);
+  MemoryData& operator=(const MemoryData&);
 };
 
 struct COMPONENT_EXPORT(MANTA) DiagnosticsData {
-  std::unique_ptr<BatteryData> battery_data;
-  std::unique_ptr<CpuData> cpu_data;
-  std::unique_ptr<MemoryData> memory_data;
+  std::optional<BatteryData> battery_data;
+  std::optional<CpuData> cpu_data;
+  std::optional<MemoryData> memory_data;
 
-  DiagnosticsData(std::unique_ptr<BatteryData> battery_data,
-                  std::unique_ptr<CpuData> cpu_data,
-                  std::unique_ptr<MemoryData> memory_data);
+  DiagnosticsData(std::optional<BatteryData> battery_data,
+                  std::optional<CpuData> cpu_data,
+                  std::optional<MemoryData> memory_data);
 
   ~DiagnosticsData();
 
-  DiagnosticsData(const DiagnosticsData&) = delete;
-  DiagnosticsData& operator=(const DiagnosticsData&) = delete;
+  DiagnosticsData(const DiagnosticsData&);
+  DiagnosticsData& operator=(const DiagnosticsData&);
 };
 
 using DiagnosticsDataCallback =

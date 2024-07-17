@@ -43,6 +43,8 @@ component("manta") {
       "orca_provider.h",
       "snapper_provider.cc",
       "snapper_provider.h",
+      "sparky/sparky_context.cc",
+      "sparky/sparky_context.h",
       "sparky/sparky_delegate.cc",
       "sparky/sparky_delegate.h",
       "sparky/sparky_provider.cc",

@@ -118,9 +118,13 @@ void SystemInfoDelegateImpl::OnDiagnosticsUpdated() {
   }
   if (diagnostics_callback_) {
     std::move(diagnostics_callback_)
-        .Run(std::make_unique<manta::DiagnosticsData>(std::move(battery_data_),
-                                                      std::move(cpu_data_),
-                                                      std::move(memory_data_)));
+        .Run(std::make_unique<manta::DiagnosticsData>(
+            battery_data_ ? std::optional<manta::BatteryData>(*battery_data_)
+                          : std::nullopt,
+            cpu_data_ ? std::optional<manta::CpuData>(*cpu_data_)
+                      : std::nullopt,
+            memory_data_ ? std::optional<manta::MemoryData>(*memory_data_)
+                         : std::nullopt));
   }
 }
 

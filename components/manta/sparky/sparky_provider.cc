@@ -95,26 +95,15 @@ SparkyProvider::SparkyProvider(
 SparkyProvider::~SparkyProvider() = default;
 
 void SparkyProvider::QuestionAndAnswer(
-    const std::string& original_content,
-    const std::vector<DialogTurn>& dialog,
-    const std::string& question,
-    proto::Task task,
-    std::unique_ptr<DiagnosticsData> diagnostics_data,
-    bool collect_settings,
+    std::unique_ptr<SparkyContext> sparky_context,
     SparkyShowAnswerCallback done_callback) {
   sparky_delegate_->GetScreenshot(base::BindOnce(
       &SparkyProvider::OnScreenshotObtained, weak_ptr_factory_.GetWeakPtr(),
-      original_content, dialog, question, task, std::move(diagnostics_data),
-      collect_settings, std::move(done_callback)));
+      std::move(sparky_context), std::move(done_callback)));
 }
 
 void SparkyProvider::OnScreenshotObtained(
-    const std::string& original_content,
-    const std::vector<DialogTurn>& dialog,
-    const std::string& question,
-    proto::Task task,
-    std::unique_ptr<DiagnosticsData> diagnostics_data,
-    bool collect_settings,
+    std::unique_ptr<SparkyContext> sparky_context,
     SparkyShowAnswerCallback done_callback,
     scoped_refptr<base::RefCountedMemory> jpeg_screenshot) {
   proto::Request request;
@@ -125,10 +114,13 @@ void SparkyProvider::OnScreenshotObtained(
 
   auto* sparky_context_data = input_data->mutable_sparky_context_data();
 
-  AddDialogToSparkyContext(dialog, sparky_context_data);
+  AddDialogToSparkyContext(sparky_context->dialog, sparky_context_data);
 
-  sparky_context_data->set_task(task);
-  sparky_context_data->set_page_contents(original_content);
+  sparky_context_data->set_task(sparky_context->task);
+  if (sparky_context->page_content) {
+    sparky_context_data->set_page_contents(
+        sparky_context->page_content.value());
+  }
 
   if (jpeg_screenshot) {
     proto::Image* image_proto = sparky_context_data->mutable_screenshot();
@@ -143,23 +135,23 @@ void SparkyProvider::OnScreenshotObtained(
   auto* apps_data = sparky_context_data->mutable_apps_data();
   AddAppsData(sparky_delegate_->GetAppsList(), apps_data);
 
-  if (collect_settings) {
+  if (sparky_context->collect_settings) {
     auto* settings_list = sparky_delegate_->GetSettingsList();
     if (settings_list) {
       auto* settings_data = sparky_context_data->mutable_settings_data();
       AddSettingsProto(*settings_list, settings_data);
     }
   }
-  if (diagnostics_data) {
+  if (sparky_context->diagnostics_data) {
     auto* diagnostics_proto = sparky_context_data->mutable_diagnostics_data();
-    AddDiagnosticsProto(std::move(diagnostics_data), diagnostics_proto);
+    AddDiagnosticsProto(sparky_context->diagnostics_data, diagnostics_proto);
   }
 
   MantaProtoResponseCallback internal_callback = base::BindOnce(
       &OnQAServerResponseOrErrorReceived,
       base::BindOnce(&SparkyProvider::OnResponseReceived,
                      weak_ptr_factory_.GetWeakPtr(), std::move(done_callback),
-                     original_content, dialog, question));
+                     std::move(sparky_context)));
 
   // TODO(b:338501686): MISSING_TRAFFIC_ANNOTATION should be resolved before
   // launch.
@@ -170,9 +162,7 @@ void SparkyProvider::OnScreenshotObtained(
 
 void SparkyProvider::OnResponseReceived(
     SparkyShowAnswerCallback done_callback,
-    const std::string& original_content,
-    const std::vector<DialogTurn>& dialog,
-    const std::string& question,
+    std::unique_ptr<SparkyContext> sparky_context,
     std::unique_ptr<proto::SparkyResponse> sparky_response,
     manta::MantaStatus status) {
   if (status.status_code != manta::MantaStatusCode::kOk) {
@@ -182,14 +172,13 @@ void SparkyProvider::OnResponseReceived(
 
   if (sparky_response->has_context_request()) {
     RequestAdditionalInformation(sparky_response->context_request(),
-                                 original_content, dialog, question,
+                                 std::move(sparky_context),
                                  std::move(done_callback), status);
     return;
   }
   if (sparky_response->has_latest_reply()) {
-    OnDialogResponse(original_content, dialog, question,
-                     sparky_response->latest_reply(), std::move(done_callback),
-                     status);
+    OnDialogResponse(std::move(sparky_context), sparky_response->latest_reply(),
+                     std::move(done_callback), status);
     return;
   }
 
@@ -200,16 +189,14 @@ void SparkyProvider::OnResponseReceived(
 
 void SparkyProvider::RequestAdditionalInformation(
     proto::ContextRequest context_request,
-    const std::string& original_content,
-    const std::vector<DialogTurn>& dialog,
-    const std::string& question,
+    std::unique_ptr<SparkyContext> sparky_context,
     SparkyShowAnswerCallback done_callback,
     manta::MantaStatus status) {
   if (context_request.has_settings()) {
     if (!sparky_delegate_->GetSettingsList()->empty()) {
-      QuestionAndAnswer(original_content, dialog, question,
-                        proto::TASK_SETTINGS, /*diagnostics_data=*/nullptr,
-                        /*collect_settings=*/true, std::move(done_callback));
+      sparky_context->collect_settings = true;
+      sparky_context->task = proto::TASK_SETTINGS;
+      QuestionAndAnswer(std::move(sparky_context), std::move(done_callback));
       return;
     }
     std::move(done_callback).Run(status, nullptr);
@@ -222,8 +209,9 @@ void SparkyProvider::RequestAdditionalInformation(
       system_info_delegate_->ObtainDiagnostics(
           diagnostics_vector,
           base::BindOnce(&SparkyProvider::OnDiagnosticsReceived,
-                         weak_ptr_factory_.GetWeakPtr(), original_content,
-                         dialog, question, std::move(done_callback), status));
+                         weak_ptr_factory_.GetWeakPtr(),
+                         std::move(sparky_context), std::move(done_callback),
+                         status));
       return;
     }
     std::move(done_callback).Run(status, nullptr);
@@ -235,24 +223,20 @@ void SparkyProvider::RequestAdditionalInformation(
 }
 
 void SparkyProvider::OnDiagnosticsReceived(
-    const std::string& original_content,
-    const std::vector<DialogTurn>& dialog,
-    const std::string& question,
+    std::unique_ptr<SparkyContext> sparky_context,
     SparkyShowAnswerCallback done_callback,
     manta::MantaStatus status,
     std::unique_ptr<DiagnosticsData> diagnostics_data) {
   if (diagnostics_data) {
-    QuestionAndAnswer(original_content, dialog, question,
-                      proto::TASK_DIAGNOSTICS, std::move(diagnostics_data),
-                      /*collect_settings=*/false, std::move(done_callback));
+    sparky_context->diagnostics_data = std::make_optional(*diagnostics_data);
+    sparky_context->task = proto::TASK_DIAGNOSTICS;
+    QuestionAndAnswer(std::move(sparky_context), std::move(done_callback));
     return;
   }
   std::move(done_callback).Run(status, nullptr);
 }
 
-void SparkyProvider::OnDialogResponse(const std::string& original_content,
-                                      const std::vector<DialogTurn>& dialog,
-                                      const std::string& question,
+void SparkyProvider::OnDialogResponse(std::unique_ptr<SparkyContext>,
                                       proto::Turn latest_reply,
                                       SparkyShowAnswerCallback done_callback,
                                       manta::MantaStatus status) {

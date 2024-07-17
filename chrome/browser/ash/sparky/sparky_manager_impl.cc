@@ -30,6 +30,7 @@
 #include "components/manta/features.h"
 #include "components/manta/manta_service.h"
 #include "components/manta/proto/sparky.pb.h"
+#include "components/manta/sparky/sparky_context.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
@@ -93,10 +94,9 @@ void SparkyManagerImpl::AnswerQuestion(const std::u16string& question,
                                        MahiAnswerQuestionCallback callback) {
   if (current_panel_content) {
     sparky_provider_->QuestionAndAnswer(
-        base::UTF16ToUTF8(current_panel_content_->page_content), dialog_turns_,
-        base::UTF16ToUTF8(question), manta::proto::Task::TASK_PLANNER,
-        /*diagnostics_data=*/nullptr,
-        /*collect_settings=*/false,
+        std::make_unique<manta::SparkyContext>(
+            dialog_turns_, base::UTF16ToUTF8(question),
+            base::UTF16ToUTF8(current_panel_content_->page_content)),
         base::BindOnce(&SparkyManagerImpl::OnSparkyProviderQAResponse,
                        weak_ptr_factory_.GetWeakPtr(), question,
                        std::move(callback)));
@@ -222,10 +222,9 @@ void SparkyManagerImpl::OnSparkyProviderQAResponse(
     if (!latest_turn->actions.empty() &&
         !latest_turn->actions.back().all_done) {
       sparky_provider_->QuestionAndAnswer(
-          base::UTF16ToUTF8(current_panel_content_->page_content),
-          dialog_turns_, base::UTF16ToUTF8(question),
-          manta::proto::Task::TASK_GENERIC,
-          /*diagnostics_data=*/nullptr, /*collect_settings=*/false,
+          std::make_unique<manta::SparkyContext>(
+              dialog_turns_, base::UTF16ToUTF8(question),
+              base::UTF16ToUTF8(current_panel_content_->page_content)),
           base::BindOnce(&SparkyManagerImpl::OnSparkyProviderQAResponse,
                          weak_ptr_factory_.GetWeakPtr(), question,
                          std::move(callback)));
@@ -251,9 +250,9 @@ void SparkyManagerImpl::OnGetPageContentForQA(
   current_panel_content_ = std::move(mahi_content_ptr);
 
   sparky_provider_->QuestionAndAnswer(
-      base::UTF16ToUTF8(current_panel_content_->page_content), dialog_turns_,
-      base::UTF16ToUTF8(question), manta::proto::Task::TASK_PLANNER,
-      /*diagnostics_data=*/nullptr, /*collect_settings=*/false,
+      std::make_unique<manta::SparkyContext>(
+          dialog_turns_, base::UTF16ToUTF8(question),
+          base::UTF16ToUTF8(current_panel_content_->page_content)),
       base::BindOnce(&SparkyManagerImpl::OnSparkyProviderQAResponse,
                      weak_ptr_factory_.GetWeakPtr(), question,
                      std::move(callback)));

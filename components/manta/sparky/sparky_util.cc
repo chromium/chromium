@@ -207,7 +207,7 @@ std::vector<Diagnostics> COMPONENT_EXPORT(MANTA)
 }
 
 void COMPONENT_EXPORT(MANTA)
-    AddDiagnosticsProto(std::unique_ptr<DiagnosticsData> diagnostics_data,
+    AddDiagnosticsProto(std::optional<DiagnosticsData> diagnostics_data,
                         proto::DiagnosticsData* diagnostics_proto) {
   if (diagnostics_data) {
     if (diagnostics_data->cpu_data) {

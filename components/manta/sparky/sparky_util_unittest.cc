@@ -156,12 +156,12 @@ TEST_F(SparkyUtilTest, AddSettingsProto) {
 }
 
 TEST_F(SparkyUtilTest, AddDiagnosticsProto) {
-  auto cpu_data = std::make_unique<CpuData>(40, 60, 5.0);
-  auto memory_data = std::make_unique<MemoryData>(4.0, 8.0);
+  auto cpu_data = std::make_optional<CpuData>(40, 60, 5.0);
+  auto memory_data = std::make_optional<MemoryData>(4.0, 8.0);
   auto battery_data =
-      std::make_unique<BatteryData>(158, 76, "36 minutes until full", 80);
-  std::unique_ptr<DiagnosticsData> diagnostics_data =
-      std::make_unique<DiagnosticsData>(
+      std::make_optional<BatteryData>(158, 76, "36 minutes until full", 80);
+  std::optional<DiagnosticsData> diagnostics_data =
+      std::make_optional<DiagnosticsData>(
           std::move(battery_data), std::move(cpu_data), std::move(memory_data));
   proto::SparkyContextData sparky_context_data;
   auto* diagnostics_proto = sparky_context_data.mutable_diagnostics_data();

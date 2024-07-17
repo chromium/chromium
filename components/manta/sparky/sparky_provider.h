@@ -23,6 +23,7 @@
 #include "components/manta/proto/manta.pb.h"
 #include "components/manta/proto/sparky.pb.h"
 #include "components/manta/provider_params.h"
+#include "components/manta/sparky/sparky_context.h"
 #include "components/manta/sparky/sparky_delegate.h"
 #include "components/manta/sparky/sparky_util.h"
 #include "components/manta/sparky/system_info_delegate.h"
@@ -60,12 +61,7 @@ class COMPONENT_EXPORT(MANTA) SparkyProvider : virtual public BaseProvider {
       base::OnceCallback<void(std::unique_ptr<manta::proto::SparkyResponse>,
                               MantaStatus)>;
 
-  void QuestionAndAnswer(const std::string& content,
-                         const std::vector<DialogTurn>& dialog,
-                         const std::string& question,
-                         proto::Task task,
-                         std::unique_ptr<DiagnosticsData> diagnostics_data,
-                         bool collect_settings,
+  void QuestionAndAnswer(std::unique_ptr<SparkyContext> sparky_context,
                          SparkyShowAnswerCallback done_callback);
 
  protected:
@@ -80,43 +76,31 @@ class COMPONENT_EXPORT(MANTA) SparkyProvider : virtual public BaseProvider {
 
   // Called if more information is requested from the client. It will make an
   // additional call to QuestionAndAnswer.
-  void RequestAdditionalInformation(proto::ContextRequest,
-                                    const std::string& original_content,
-                                    const std::vector<DialogTurn>& dialog,
-                                    const std::string& question,
-                                    SparkyShowAnswerCallback done_callback,
-                                    manta::MantaStatus status);
+  void RequestAdditionalInformation(
+      proto::ContextRequest,
+      std::unique_ptr<SparkyContext> sparky_context,
+      SparkyShowAnswerCallback done_callback,
+      manta::MantaStatus status);
 
   void OnScreenshotObtained(
-      const std::string& content,
-      const std::vector<DialogTurn>& dialog,
-      const std::string& question,
-      proto::Task task,
-      std::unique_ptr<DiagnosticsData> diagnostics_data,
-      bool collect_settings,
+      std::unique_ptr<SparkyContext> sparky_context,
       SparkyShowAnswerCallback done_callback,
       scoped_refptr<base::RefCountedMemory> jpeg_screenshot);
 
   void OnResponseReceived(
       SparkyShowAnswerCallback done_callback,
-      const std::string& original_content,
-      const std::vector<DialogTurn>& dialog,
-      const std::string& question,
+      std::unique_ptr<SparkyContext> sparky_context,
       std::unique_ptr<proto::SparkyResponse> sparky_response,
       manta::MantaStatus status);
 
   // If the response back is a dialog response with a message to show to the
   // user and potentially actions.
-  void OnDialogResponse(const std::string& original_content,
-                        const std::vector<DialogTurn>& dialog,
-                        const std::string& question,
+  void OnDialogResponse(std::unique_ptr<SparkyContext> sparky_context,
                         proto::Turn latest_reply,
                         SparkyShowAnswerCallback done_callback,
                         manta::MantaStatus status);
 
-  void OnDiagnosticsReceived(const std::string& original_content,
-                             const std::vector<DialogTurn>& dialog,
-                             const std::string& question,
+  void OnDiagnosticsReceived(std::unique_ptr<SparkyContext> sparky_context,
                              SparkyShowAnswerCallback done_callback,
                              manta::MantaStatus status,
                              std::unique_ptr<DiagnosticsData> diagnostics_data);
