@@ -355,6 +355,40 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Geolocation) {
   RunTestAndVerify(test_case, test_param);
 }
 
+IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest,
+                       RequestFileSystem) {
+  PermissionRequestTestCase test_case;
+  test_case.test_script = R"(
+    (async function() {
+      return new Promise((resolve) => {
+        window.requestFileSystem = window.requestFileSystem ||
+                                   window.webkitRequestFileSystem;
+
+        if (!window.requestFileSystem) {
+          resolve("FAILURE: This browser does not support requestFileSystem.");
+          return;
+        }
+
+        const storageType = window.PERSISTENT;
+        const requestedBytes = 1024 * 1024;
+
+        window.requestFileSystem(storageType, requestedBytes,
+          (fileSystem) => {
+            resolve("SUCCESS");
+          },
+          (error) => {
+            resolve("FAILURE: " + error.message);
+          }
+        );
+      });
+    })();
+  )";
+  test_case.permission_name = "filesystem";
+
+  PermissionRequestTestParam test_param = GetParam();
+  RunTestAndVerify(test_case, test_param);
+}
+
 class TestDownloadManagerObserver : public content::DownloadManager::Observer {
  public:
   void OnDownloadCreated(content::DownloadManager* manager,
