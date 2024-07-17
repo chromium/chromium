@@ -6,6 +6,59 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
+static_library("omnibox") {
+  sources = [
+    "omnibox_answer_result.cc",
+    "omnibox_answer_result.h",
+    "omnibox_lacros_provider.cc",
+    "omnibox_lacros_provider.h",
+    "omnibox_provider.cc",
+    "omnibox_provider.h",
+    "omnibox_result.cc",
+    "omnibox_result.h",
+    "omnibox_util.cc",
+    "omnibox_util.h",
+    "open_tab_result.cc",
+    "open_tab_result.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/public/cpp/app_list/vector_icons",
+    "//ash/strings",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ash/app_list/search/common",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/bitmap_fetcher",
+    "//chrome/browser/chromeos/launcher_search:search_util",
+    "//chrome/browser/favicon",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
+    "//chromeos/ash/components/string_matching",
+    "//chromeos/crosapi/cpp",
+    "//chromeos/crosapi/mojom",
+    "//components/favicon/core",
+    "//components/omnibox/browser",
+    "//components/omnibox/browser:location_bar",
+    "//components/omnibox/browser:vector_icons",
+    "//components/prefs",
+    "//components/search_engines",
+    "//components/strings:components_strings",
+    "//extensions/common",
+    "//mojo/public/cpp/bindings",
+    "//net/traffic_annotation",
+    "//services/network/public/cpp",
+    "//third_party/metrics_proto",
+    "//third_party/omnibox_proto",
+    "//ui/base",
+    "//ui/base:types",
+    "//ui/gfx",
+    "//url",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -18,6 +71,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":omnibox",
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/strings",
