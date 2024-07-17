@@ -846,12 +846,7 @@ BUILDERS = {
         64,
         'dimension': {
             'pool': 'chrome.tests.perf',
-            # Explicitly set GPU driver version and Windows OS version such
-            # that we can be informed if this
-            # version ever changes or becomes inconsistent. It is important
-            # that bots are homogeneous. See crbug.com/988045 for history.
-            'os': 'Windows-10-19045.2006',
-            'gpu': '8086:5912-31.0.101.2127',
+            'os': 'Windows-10',
             'synthetic_product_name': 'OptiPlex 7050 (Dell Inc.)'
         },
     },
@@ -870,12 +865,7 @@ BUILDERS = {
         64,
         'dimension': {
             'pool': 'chrome.tests.perf',
-            # Explicitly set GPU driver version and Windows OS version such
-            # that we can be informed if this
-            # version ever changes or becomes inconsistent. It is important
-            # that bots are homogeneous. See crbug.com/988045 for history.
-            'os': 'Windows-10-18363.476',
-            'gpu': '8086:5912-27.20.100.8681',
+            'os': 'Windows-10',
             'synthetic_product_name': 'OptiPlex 7050 (Dell Inc.)'
         },
     },
