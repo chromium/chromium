@@ -1643,8 +1643,8 @@ TEST_F(LayoutTextTest, SetTextWithOffsetInsertSameCharacters) {
   text.insertData(0, "aa", ASSERT_NO_EXCEPTION);
 
   EXPECT_EQ(
-      "*{'aaa', ShapeResult=0+3 width=\"150\"}\n"
-      "{'aa', ShapeResult=3+2 width=\"20\"}\n",
+      "*{'aaa', ShapeResult=0+3 width=150}\n"
+      "{'aa', ShapeResult=3+2 width=20}\n",
       GetItemsAsString(*text.GetLayoutObject(), 0, kIncludeSnappedWidth));
 }
 

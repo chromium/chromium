@@ -23,18 +23,18 @@ String FromLayoutUnit(LayoutUnit value) {
 
 String LayoutUnit::ToString() const {
   if (value_ == LayoutUnit::Max().RawValue())
-    return "LayoutUnit::max(" + FromLayoutUnit(*this) + ")";
+    return "LayoutUnit::Max(" + FromLayoutUnit(*this) + ")";
   if (value_ == LayoutUnit::Min().RawValue())
-    return "LayoutUnit::min(" + FromLayoutUnit(*this) + ")";
+    return "LayoutUnit::Min(" + FromLayoutUnit(*this) + ")";
   if (value_ == LayoutUnit::NearlyMax().RawValue())
-    return "LayoutUnit::nearlyMax(" + FromLayoutUnit(*this) + ")";
+    return "LayoutUnit::NearlyMax(" + FromLayoutUnit(*this) + ")";
   if (value_ == LayoutUnit::NearlyMin().RawValue())
-    return "LayoutUnit::nearlyMin(" + FromLayoutUnit(*this) + ")";
+    return "LayoutUnit::NearlyMin(" + FromLayoutUnit(*this) + ")";
   return FromLayoutUnit(*this);
 }
 
 std::ostream& operator<<(std::ostream& stream, const LayoutUnit& value) {
-  return stream << value.ToString();
+  return stream << value.ToString().Utf8();
 }
 
 WTF::TextStream& operator<<(WTF::TextStream& ts, const LayoutUnit& unit) {
