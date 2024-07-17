@@ -20,14 +20,15 @@ InterpolableGridTrackRepeater::InterpolableGridTrackRepeater(
 InterpolableGridTrackRepeater* InterpolableGridTrackRepeater::Create(
     const NGGridTrackRepeater& repeater,
     const Vector<GridTrackSize, 1>& repeater_track_sizes,
+    const CSSProperty& property,
     float zoom) {
   DCHECK_EQ(repeater_track_sizes.size(), repeater.repeat_size);
 
   InterpolableList* values =
       MakeGarbageCollected<InterpolableList>(repeater_track_sizes.size());
   for (wtf_size_t i = 0; i < repeater_track_sizes.size(); ++i) {
-    InterpolableGridTrackSize* result =
-        InterpolableGridTrackSize::Create(repeater_track_sizes[i], zoom);
+    InterpolableGridTrackSize* result = InterpolableGridTrackSize::Create(
+        repeater_track_sizes[i], property, zoom);
     DCHECK(result);
     values->Set(i, std::move(result));
   }

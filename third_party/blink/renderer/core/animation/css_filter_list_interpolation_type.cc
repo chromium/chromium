@@ -110,6 +110,7 @@ class InheritedFilterListChecker
 };
 
 InterpolationValue ConvertFilterList(const FilterOperations& filter_operations,
+                                     const CSSProperty& property,
                                      double zoom,
                                      mojom::blink::ColorScheme color_scheme,
                                      const ui::ColorProvider* color_provider) {
@@ -117,7 +118,8 @@ InterpolationValue ConvertFilterList(const FilterOperations& filter_operations,
   auto* interpolable_list = MakeGarbageCollected<InterpolableList>(length);
   for (wtf_size_t i = 0; i < length; i++) {
     InterpolableFilter* result = InterpolableFilter::MaybeCreate(
-        *filter_operations.Operations()[i], zoom, color_scheme, color_provider);
+        *filter_operations.Operations()[i], property, zoom, color_scheme,
+        color_provider);
     if (!result) {
       return nullptr;
     }
@@ -159,7 +161,7 @@ InterpolationValue CSSFilterListInterpolationType::MaybeConvertInitial(
   return ConvertFilterList(
       GetFilterList(CssProperty(),
                     state.GetDocument().GetStyleResolver().InitialStyle()),
-      1, color_scheme, color_provider);
+      CssProperty(), 1, color_scheme, color_provider);
 }
 
 InterpolationValue CSSFilterListInterpolationType::MaybeConvertInherit(
@@ -174,7 +176,7 @@ InterpolationValue CSSFilterListInterpolationType::MaybeConvertInherit(
       state.StyleBuilder().UsedColorScheme();
   const ui::ColorProvider* color_provider =
       state.GetDocument().GetColorProviderForPainting(color_scheme);
-  return ConvertFilterList(inherited_filter_operations,
+  return ConvertFilterList(inherited_filter_operations, CssProperty(),
                            state.StyleBuilder().EffectiveZoom(), color_scheme,
                            color_provider);
 }
@@ -216,7 +218,7 @@ InterpolationValue
 CSSFilterListInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
     const ComputedStyle& style) const {
   // TODO(crbug.com/1231644): Need to pass an appropriate color provider here.
-  return ConvertFilterList(GetFilterList(CssProperty(), style),
+  return ConvertFilterList(GetFilterList(CssProperty(), style), CssProperty(),
                            style.EffectiveZoom(), style.UsedColorScheme(),
                            /*color_provider=*/nullptr);
 }

@@ -9,6 +9,8 @@
 
 namespace blink {
 
+class CSSProperty;
+
 class CSSGridTemplatePropertyInterpolationType : public CSSInterpolationType {
  public:
   explicit CSSGridTemplatePropertyInterpolationType(PropertyHandle property)
@@ -33,6 +35,7 @@ class CSSGridTemplatePropertyInterpolationType : public CSSInterpolationType {
 
   static InterpolableValue* CreateInterpolableGridTrackList(
       const NGGridTrackList& track_list,
+      const CSSProperty& property,
       float zoom);
 
  private:

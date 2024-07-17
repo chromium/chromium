@@ -80,6 +80,7 @@ static InterpolationValue WrapConvertedLength(
 
 InterpolationValue SizeInterpolationFunctions::ConvertFillSizeSide(
     const FillSize& fill_size,
+    const CSSProperty& property,
     float zoom,
     bool convert_width) {
   switch (fill_size.type) {
@@ -90,7 +91,7 @@ InterpolationValue SizeInterpolationFunctions::ConvertFillSizeSide(
         return ConvertKeyword(CSSValueID::kAuto);
       return WrapConvertedLength(
           InterpolationValue(InterpolableLength::MaybeConvertLength(
-              side, zoom, /*interpolate_size=*/std::nullopt)));
+              side, property, zoom, /*interpolate_size=*/std::nullopt)));
     }
     case EFillSizeType::kContain:
       return ConvertKeyword(CSSValueID::kContain);

@@ -152,20 +152,24 @@ enum ClipComponentIndex : unsigned {
 };
 
 static InterpolableValue* ConvertClipComponent(const Length& length,
+                                               const CSSProperty& property,
                                                double zoom) {
   if (length.IsAuto()) {
     return MakeGarbageCollected<InterpolableList>(0);
   }
   return InterpolableLength::MaybeConvertLength(
-      length, zoom, /*interpolate_size=*/std::nullopt);
+      length, property, zoom,
+      /*interpolate_size=*/std::nullopt);
 }
 
-static InterpolationValue CreateClipValue(const LengthBox& clip, double zoom) {
+static InterpolationValue CreateClipValue(const LengthBox& clip,
+                                          const CSSProperty& property,
+                                          double zoom) {
   auto* list = MakeGarbageCollected<InterpolableList>(kClipComponentIndexCount);
-  list->Set(kClipTop, ConvertClipComponent(clip.Top(), zoom));
-  list->Set(kClipRight, ConvertClipComponent(clip.Right(), zoom));
-  list->Set(kClipBottom, ConvertClipComponent(clip.Bottom(), zoom));
-  list->Set(kClipLeft, ConvertClipComponent(clip.Left(), zoom));
+  list->Set(kClipTop, ConvertClipComponent(clip.Top(), property, zoom));
+  list->Set(kClipRight, ConvertClipComponent(clip.Right(), property, zoom));
+  list->Set(kClipBottom, ConvertClipComponent(clip.Bottom(), property, zoom));
+  list->Set(kClipLeft, ConvertClipComponent(clip.Left(), property, zoom));
   return InterpolationValue(
       list, CSSClipNonInterpolableValue::Create(ClipAutos(clip)));
 }
@@ -184,7 +188,7 @@ InterpolationValue CSSClipInterpolationType::MaybeConvertNeutral(
       underlying_autos.is_right_auto ? Length::Auto() : Length::Fixed(0),
       underlying_autos.is_bottom_auto ? Length::Auto() : Length::Fixed(0),
       underlying_autos.is_left_auto ? Length::Auto() : Length::Fixed(0));
-  return CreateClipValue(neutral_box, 1);
+  return CreateClipValue(neutral_box, CssProperty(), 1);
 }
 
 InterpolationValue CSSClipInterpolationType::MaybeConvertInitial(
@@ -200,7 +204,7 @@ InterpolationValue CSSClipInterpolationType::MaybeConvertInherit(
       InheritedClipChecker::Create(*state.ParentStyle()));
   if (state.ParentStyle()->HasAutoClip())
     return nullptr;
-  return CreateClipValue(state.ParentStyle()->Clip(),
+  return CreateClipValue(state.ParentStyle()->Clip(), CssProperty(),
                          state.ParentStyle()->EffectiveZoom());
 }
 
@@ -238,7 +242,7 @@ CSSClipInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
     const ComputedStyle& style) const {
   if (style.HasAutoClip())
     return nullptr;
-  return CreateClipValue(style.Clip(), style.EffectiveZoom());
+  return CreateClipValue(style.Clip(), CssProperty(), style.EffectiveZoom());
 }
 
 PairwiseInterpolationValue CSSClipInterpolationType::MaybeMergeSingles(

@@ -66,7 +66,8 @@ InterpolationValue CSSLengthInterpolationType::MaybeConvertInitial(
           initial_length))
     return nullptr;
   return InterpolationValue(InterpolableLength::MaybeConvertLength(
-      initial_length, 1, state.StyleBuilder().InterpolateSize()));
+      initial_length, CssProperty(), 1,
+      state.StyleBuilder().InterpolateSize()));
 }
 
 InterpolationValue CSSLengthInterpolationType::MaybeConvertInherit(
@@ -85,7 +86,8 @@ InterpolationValue CSSLengthInterpolationType::MaybeConvertInherit(
     return nullptr;
   }
   return InterpolationValue(InterpolableLength::MaybeConvertLength(
-      inherited_length, EffectiveZoom(state.ParentStyle()->EffectiveZoom()),
+      inherited_length, CssProperty(),
+      EffectiveZoom(state.ParentStyle()->EffectiveZoom()),
       state.StyleBuilder().InterpolateSize()));
 }
 
@@ -163,7 +165,7 @@ CSSLengthInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
                                           underlying_length))
     return nullptr;
   return InterpolationValue(InterpolableLength::MaybeConvertLength(
-      underlying_length, EffectiveZoom(style.EffectiveZoom()),
+      underlying_length, CssProperty(), EffectiveZoom(style.EffectiveZoom()),
       style.InterpolateSize()));
 }
 

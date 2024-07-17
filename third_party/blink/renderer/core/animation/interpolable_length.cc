@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/animation/interpolable_length.h"
 
+#include "third_party/blink/renderer/core/animation/length_property_functions.h"
 #include "third_party/blink/renderer/core/animation/underlying_value.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
@@ -123,6 +124,7 @@ Length::Type InterpolableLength::CSSValueIDToLengthType(CSSValueID id) {
 // static
 InterpolableLength* InterpolableLength::MaybeConvertLength(
     const Length& length,
+    const CSSProperty& property,
     float zoom,
     std::optional<EInterpolateSize> interpolate_size) {
   if (!length.IsSpecified()) {
@@ -130,7 +132,8 @@ InterpolableLength* InterpolableLength::MaybeConvertLength(
       return nullptr;
     }
     CSSValueID keyword = LengthTypeToCSSValueID(length.GetType());
-    if (keyword == CSSValueID::kInvalid) {
+    if (keyword == CSSValueID::kInvalid ||
+        !LengthPropertyFunctions::CanAnimateKeyword(property, keyword)) {
       return nullptr;
     }
     return MakeGarbageCollected<InterpolableLength>(keyword, interpolate_size);

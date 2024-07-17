@@ -18,6 +18,7 @@ InterpolableGridTrackList::InterpolableGridTrackList(InterpolableList* values,
 // static
 InterpolableGridTrackList* InterpolableGridTrackList::MaybeCreate(
     const NGGridTrackList& track_list,
+    const CSSProperty& property,
     float zoom) {
   // Subgrids do not have sizes stored on their track list to interpolate.
   if (track_list.HasAutoRepeater() || track_list.IsSubgriddedAxis()) {
@@ -39,7 +40,7 @@ InterpolableGridTrackList* InterpolableGridTrackList::MaybeCreate(
         track_list.RepeatType(i));
     InterpolableGridTrackRepeater* result =
         InterpolableGridTrackRepeater::Create(repeater, repeater_track_sizes,
-                                              zoom);
+                                              property, zoom);
     DCHECK(result);
     values->Set(i, result);
   }

@@ -50,8 +50,10 @@ InterpolableGridLength::InterpolableGridLength(InterpolableValue* value,
 }
 
 // static
-InterpolableGridLength* InterpolableGridLength::Create(const Length& length,
-                                                       float zoom) {
+InterpolableGridLength* InterpolableGridLength::Create(
+    const Length& length,
+    const CSSProperty& property,
+    float zoom) {
   InterpolableGridLengthType type = GetInterpolableGridLengthType(length);
   InterpolableValue* value = nullptr;
   if (length.IsFlex()) {
@@ -61,7 +63,8 @@ InterpolableGridLength* InterpolableGridLength::Create(const Length& length,
     // interpolate-size through here when we add support to grid track
     // sizes.
     value = InterpolableLength::MaybeConvertLength(
-        length, zoom, /*interpolate_size=*/std::nullopt);
+        length, property, zoom,
+        /*interpolate_size=*/std::nullopt);
   }
   return MakeGarbageCollected<InterpolableGridLength>(std::move(value), type);
 }

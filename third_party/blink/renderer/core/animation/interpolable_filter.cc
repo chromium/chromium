@@ -40,6 +40,7 @@ double ClampParameter(double value, FilterOperation::OperationType type) {
 // static
 InterpolableFilter* InterpolableFilter::MaybeCreate(
     const FilterOperation& filter,
+    const CSSProperty& property,
     double zoom,
     mojom::blink::ColorScheme color_scheme,
     const ui::ColorProvider* color_provider) {
@@ -64,7 +65,7 @@ InterpolableFilter* InterpolableFilter::MaybeCreate(
 
     case FilterOperation::OperationType::kBlur:
       value = InterpolableLength::MaybeConvertLength(
-          To<BlurFilterOperation>(filter).StdDeviation(), zoom,
+          To<BlurFilterOperation>(filter).StdDeviation(), property, zoom,
           /*interpolate_size=*/std::nullopt);
       break;
 

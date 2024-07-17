@@ -22,6 +22,7 @@ namespace blink {
 
 class CSSToLengthConversionData;
 class CSSMathExpressionNode;
+class CSSProperty;
 
 class CORE_EXPORT InterpolableLength final : public InterpolableValue {
  public:
@@ -37,6 +38,7 @@ class CORE_EXPORT InterpolableLength final : public InterpolableValue {
   static InterpolableLength* MaybeConvertCSSValue(const CSSValue& value);
   static InterpolableLength* MaybeConvertLength(
       const Length& length,
+      const CSSProperty& property,
       float zoom,
       std::optional<EInterpolateSize> interpolate_size);
 

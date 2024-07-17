@@ -135,7 +135,7 @@ InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertInitial(
   return basic_shape_interpolation_functions::MaybeConvertBasicShape(
       GetBasicShape(CssProperty(),
                     state.GetDocument().GetStyleResolver().InitialStyle()),
-      1);
+      CssProperty(), 1);
 }
 
 InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertInherit(
@@ -145,15 +145,17 @@ InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertInherit(
   conversion_checkers.push_back(
       MakeGarbageCollected<InheritedShapeChecker>(CssProperty(), shape));
   return basic_shape_interpolation_functions::MaybeConvertBasicShape(
-      shape, state.ParentStyle()->EffectiveZoom());
+      shape, CssProperty(), state.ParentStyle()->EffectiveZoom());
 }
 
 InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState*,
     ConversionCheckers&) const {
-  if (!value.IsBaseValueList())
-    return basic_shape_interpolation_functions::MaybeConvertCSSValue(value);
+  if (!value.IsBaseValueList()) {
+    return basic_shape_interpolation_functions::MaybeConvertCSSValue(
+        value, CssProperty());
+  }
 
   const auto& list = To<CSSValueList>(value);
   // Path and Ray shapes are handled by PathInterpolationType and
@@ -163,7 +165,7 @@ InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertValue(
     return nullptr;
   }
   return basic_shape_interpolation_functions::MaybeConvertCSSValue(
-      list.Item(0));
+      list.Item(0), CssProperty());
 }
 
 PairwiseInterpolationValue CSSBasicShapeInterpolationType::MaybeMergeSingles(
@@ -181,7 +183,8 @@ InterpolationValue
 CSSBasicShapeInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
     const ComputedStyle& style) const {
   return basic_shape_interpolation_functions::MaybeConvertBasicShape(
-      GetBasicShape(CssProperty(), style), style.EffectiveZoom());
+      GetBasicShape(CssProperty(), style), CssProperty(),
+      style.EffectiveZoom());
 }
 
 void CSSBasicShapeInterpolationType::Composite(

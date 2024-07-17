@@ -67,15 +67,17 @@ class InheritedSizeListChecker final
   SizeList inherited_size_list_;
 };
 
-InterpolationValue ConvertSizeList(const SizeList& size_list, float zoom) {
+InterpolationValue ConvertSizeList(const SizeList& size_list,
+                                   const CSSProperty& property,
+                                   float zoom) {
   // Flatten pairs of width/height into individual items, even for contain and
   // cover keywords.
   return ListInterpolationFunctions::CreateList(
       size_list.size() * 2,
-      [&size_list, zoom](wtf_size_t index) -> InterpolationValue {
+      [&size_list, &property, zoom](wtf_size_t index) -> InterpolationValue {
         bool convert_width = index % 2 == 0;
         return SizeInterpolationFunctions::ConvertFillSizeSide(
-            size_list[index / 2], zoom, convert_width);
+            size_list[index / 2], property, zoom, convert_width);
       });
 }
 
@@ -122,7 +124,7 @@ InterpolationValue CSSSizeListInterpolationType::MaybeConvertInitial(
   return ConvertSizeList(
       SizeListPropertyFunctions::GetInitialSizeList(
           CssProperty(), state.GetDocument().GetStyleResolver().InitialStyle()),
-      1);
+      CssProperty(), 1);
 }
 
 InterpolationValue CSSSizeListInterpolationType::MaybeConvertInherit(
@@ -132,7 +134,7 @@ InterpolationValue CSSSizeListInterpolationType::MaybeConvertInherit(
       CssProperty(), *state.ParentStyle());
   conversion_checkers.push_back(MakeGarbageCollected<InheritedSizeListChecker>(
       CssProperty(), inherited_size_list));
-  return ConvertSizeList(inherited_size_list,
+  return ConvertSizeList(inherited_size_list, CssProperty(),
                          state.StyleBuilder().EffectiveZoom());
 }
 
@@ -157,7 +159,7 @@ CSSSizeListInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
     const ComputedStyle& style) const {
   return ConvertSizeList(
       SizeListPropertyFunctions::GetSizeList(CssProperty(), style),
-      style.EffectiveZoom());
+      CssProperty(), style.EffectiveZoom());
 }
 
 void CSSSizeListInterpolationType::Composite(

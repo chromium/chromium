@@ -169,8 +169,9 @@ class InheritedGridTrackListChecker
 InterpolableValue*
 CSSGridTemplatePropertyInterpolationType::CreateInterpolableGridTrackList(
     const NGGridTrackList& track_list,
+    const CSSProperty& property,
     float zoom) {
-  return InterpolableGridTrackList::MaybeCreate(track_list, zoom);
+  return InterpolableGridTrackList::MaybeCreate(track_list, property, zoom);
 }
 
 PairwiseInterpolationValue
@@ -228,7 +229,7 @@ CSSGridTemplatePropertyInterpolationType::MaybeConvertInherit(
       MakeGarbageCollected<InheritedGridTrackListChecker>(parent_track_list,
                                                           property_id_));
   return InterpolationValue(
-      CreateInterpolableGridTrackList(parent_track_list,
+      CreateInterpolableGridTrackList(parent_track_list, CssProperty(),
                                       parent_style->EffectiveZoom()),
       CSSGridTrackListNonInterpolableValue::Create(
           parent_computed_grid_track_list.named_grid_lines,
@@ -244,7 +245,7 @@ InterpolationValue CSSGridTemplatePropertyInterpolationType::
           : style.GridTemplateRows();
   return InterpolationValue(
       CreateInterpolableGridTrackList(computed_grid_track_list.track_list,
-                                      style.EffectiveZoom()),
+                                      CssProperty(), style.EffectiveZoom()),
       CSSGridTrackListNonInterpolableValue::Create(
           computed_grid_track_list.named_grid_lines,
           computed_grid_track_list.ordered_named_grid_lines));
@@ -264,6 +265,7 @@ InterpolationValue CSSGridTemplatePropertyInterpolationType::MaybeConvertValue(
       value, computed_grid_track_list, *const_cast<StyleResolverState*>(state));
   return InterpolationValue(
       CreateInterpolableGridTrackList(computed_grid_track_list.track_list,
+                                      CssProperty(),
                                       state->StyleBuilder().EffectiveZoom()),
       CSSGridTrackListNonInterpolableValue::Create(
           computed_grid_track_list.named_grid_lines,

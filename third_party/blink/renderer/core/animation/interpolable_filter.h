@@ -13,6 +13,7 @@
 
 namespace blink {
 
+class CSSProperty;
 class CSSValue;
 class StyleResolverState;
 
@@ -30,6 +31,7 @@ class CORE_EXPORT InterpolableFilter final : public InterpolableValue {
 
   static InterpolableFilter* MaybeCreate(
       const FilterOperation&,
+      const CSSProperty& property,
       double zoom,
       mojom::blink::ColorScheme color_scheme,
       const ui::ColorProvider* color_provider);
