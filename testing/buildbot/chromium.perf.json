@@ -1981,6 +1981,8 @@
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
+            "gpu": "8086:5912-31.0.101.2127",
+            "os": "Windows-10-19045.2006",
             "pool": "chrome.tests.perf",
             "synthetic_product_name": "OptiPlex 7050 (Dell Inc.)"
           },
@@ -1988,7 +1990,7 @@
           "hard_timeout": 21600,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 18
+          "shards": 6
         },
         "test": "performance_test_suite",
         "trigger_script": {
@@ -2023,6 +2025,8 @@
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
+            "gpu": "8086:5912-27.20.100.8681",
+            "os": "Windows-10-18363.476",
             "pool": "chrome.tests.perf",
             "synthetic_product_name": "OptiPlex 7050 (Dell Inc.)"
           },
@@ -2030,7 +2034,7 @@
           "hard_timeout": 21600,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 18
+          "shards": 26
         },
         "test": "performance_test_suite",
         "trigger_script": {
