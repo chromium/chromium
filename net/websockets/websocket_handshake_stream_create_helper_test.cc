@@ -439,11 +439,16 @@ class WebSocketHandshakeStreamCreateHelperTest
 
         mock_quic_data_.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
 
-        mock_quic_data_.AddWrite(SYNCHRONOUS,
-                                 client_maker.MakeAckAndRstPacket(
-                                     packet_number++, client_data_stream_id,
-                                     quic::QUIC_STREAM_CANCELLED, 1, 0,
-                                     /*include_stop_sending_if_v99=*/true));
+        mock_quic_data_.AddWrite(
+            SYNCHRONOUS,
+            client_maker.Packet(packet_number++)
+                .AddAckFrame(/*first_received=*/1, /*largest_received=*/1,
+                             /*smallest_received=*/0)
+                .AddStopSendingFrame(client_data_stream_id,
+                                     quic::QUIC_STREAM_CANCELLED)
+                .AddRstStreamFrame(client_data_stream_id,
+                                   quic::QUIC_STREAM_CANCELLED)
+                .Build());
         auto socket = std::make_unique<MockUDPClientSocket>(
             mock_quic_data_.InitializeAndGetSequencedSocketData(),
             NetLog::Get());

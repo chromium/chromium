@@ -184,27 +184,6 @@ QuicTestPacketMaker::MakeDummyCHLOPacket(uint64_t packet_number) {
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>
-QuicTestPacketMaker::MakeAckAndRstPacket(
-    uint64_t packet_number,
-    quic::QuicStreamId stream_id,
-    quic::QuicRstStreamErrorCode error_code,
-    uint64_t largest_received,
-    uint64_t smallest_received,
-    bool include_stop_sending_if_v99) {
-  auto& builder = Packet(packet_number);
-  builder.AddAckFrame(/*first_received=*/1, largest_received,
-                      smallest_received);
-
-  if (include_stop_sending_if_v99) {
-    builder.AddStopSendingFrame(stream_id, error_code);
-  }
-  if (quic::QuicUtils::IsBidirectionalStreamId(stream_id, version_)) {
-    builder.AddRstStreamFrame(stream_id, error_code);
-  }
-  return builder.Build();
-}
-
-std::unique_ptr<quic::QuicReceivedPacket>
 QuicTestPacketMaker::MakeAckDataAndRst(uint64_t packet_number,
                                        quic::QuicStreamId stream_id,
                                        quic::QuicRstStreamErrorCode error_code,

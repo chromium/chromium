@@ -1230,10 +1230,11 @@ class WebSocketQuicStreamAdapterTest
       quic::QuicRstStreamErrorCode error_code,
       uint64_t largest_received,
       uint64_t smallest_received) {
-    return client_maker_.MakeAckAndRstPacket(
-        packet_number, client_data_stream_id1_, error_code, largest_received,
-        smallest_received,
-        /*include_stop_sending_if_v99=*/true);
+    return client_maker_.Packet(packet_number)
+        .AddAckFrame(/*first_received=*/1, largest_received, smallest_received)
+        .AddStopSendingFrame(client_data_stream_id1_, error_code)
+        .AddRstStreamFrame(client_data_stream_id1_, error_code)
+        .Build();
   }
 
   void Initialize() {

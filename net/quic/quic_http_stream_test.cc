@@ -560,8 +560,12 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructAckAndRstStreamPacket(
       uint64_t packet_number) {
-    return client_maker_.MakeAckAndRstPacket(packet_number, stream_id_,
-                                             quic::QUIC_STREAM_CANCELLED, 2, 1);
+    return client_maker_.Packet(packet_number)
+        .AddAckFrame(/*first_received=*/1, /*largest_received=*/2,
+                     /*smallest_received=*/1)
+        .AddStopSendingFrame(stream_id_, quic::QUIC_STREAM_CANCELLED)
+        .AddRstStreamFrame(stream_id_, quic::QUIC_STREAM_CANCELLED)
+        .Build();
   }
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructClientAckPacket(
@@ -1665,9 +1669,11 @@ TEST_P(QuicHttpStreamTest, SendChunkedPostRequestAbortedByResetStream) {
       DEFAULT_PRIORITY, &spdy_request_headers_frame_length,
       {header, kUploadData}));
   AddWrite(ConstructClientAckPacket(packet_number++, 3, 1));
-  AddWrite(client_maker_.MakeAckAndRstPacket(
-      packet_number++, stream_id_, quic::QUIC_STREAM_NO_ERROR, 4, 1,
-      /* include_stop_sending_if_v99 = */ false));
+  AddWrite(client_maker_.Packet(packet_number++)
+               .AddAckFrame(/*first_received=*/1, /*largest_received=*/4,
+                            /*smallest_received=*/1)
+               .AddRstStreamFrame(stream_id_, quic::QUIC_STREAM_NO_ERROR)
+               .Build());
 
   Initialize();
 

@@ -710,9 +710,11 @@ class BidirectionalStreamQuicImplTest
   std::unique_ptr<quic::QuicReceivedPacket>
   ConstructClientAckAndRstStreamPacket(uint64_t largest_received,
                                        uint64_t smallest_received) {
-    return client_maker_.MakeAckAndRstPacket(
-        ++packet_number_, stream_id_, quic::QUIC_STREAM_CANCELLED,
-        largest_received, smallest_received);
+    return client_maker_.Packet(++packet_number_)
+        .AddAckFrame(/*first_received=*/1, largest_received, smallest_received)
+        .AddStopSendingFrame(stream_id_, quic::QUIC_STREAM_CANCELLED)
+        .AddRstStreamFrame(stream_id_, quic::QUIC_STREAM_CANCELLED)
+        .Build();
   }
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructAckAndDataPacket(

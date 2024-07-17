@@ -399,8 +399,11 @@ class QuicNetworkTransactionTest
       quic::QuicRstStreamErrorCode error_code,
       uint64_t largest_received,
       uint64_t smallest_received) {
-    return client_maker_->MakeAckAndRstPacket(
-        num, stream_id, error_code, largest_received, smallest_received);
+    return client_maker_->Packet(num)
+        .AddAckFrame(/*first_received=*/1, largest_received, smallest_received)
+        .AddStopSendingFrame(stream_id, error_code)
+        .AddRstStreamFrame(stream_id, error_code)
+        .Build();
   }
 
   std::unique_ptr<quic::QuicEncryptedPacket> ConstructClientRstPacket(
@@ -3487,10 +3490,12 @@ TEST_P(QuicNetworkTransactionTest, ResetAfterHandshakeConfirmedThenBroken) {
   if (GetQuicRestartFlag(quic_opport_bundle_qpack_decoder_data5)) {
     quic_data.AddWrite(
         SYNCHRONOUS,
-        client_maker_->MakeAckAndRstPacket(
-            packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
-            quic::QUIC_HEADERS_TOO_LARGE, 1, 1,
-            /*include_stop_sending_if_v99=*/false));
+        client_maker_->Packet(packet_num++)
+            .AddAckFrame(/*first_received=*/1, /*largest_received=*/1,
+                         /*smallest_received=*/1)
+            .AddRstStreamFrame(GetNthClientInitiatedBidirectionalStreamId(0),
+                               quic::QUIC_HEADERS_TOO_LARGE)
+            .Build());
   } else {
     quic_data.AddWrite(
         SYNCHRONOUS,
@@ -3765,10 +3770,12 @@ TEST_P(QuicNetworkTransactionTest,
   if (GetQuicRestartFlag(quic_opport_bundle_qpack_decoder_data5)) {
     mock_quic_data.AddWrite(
         SYNCHRONOUS,
-        client_maker_->MakeAckAndRstPacket(
-            packet_num++, GetNthClientInitiatedBidirectionalStreamId(1),
-            quic::QUIC_HEADERS_TOO_LARGE, 3, 2,
-            /*include_stop_sending_if_v99=*/false));
+        client_maker_->Packet(packet_num++)
+            .AddAckFrame(/*first_received=*/1, /*largest_received=*/3,
+                         /*smallest_received=*/2)
+            .AddRstStreamFrame(GetNthClientInitiatedBidirectionalStreamId(1),
+                               quic::QUIC_HEADERS_TOO_LARGE)
+            .Build());
   } else {
     mock_quic_data.AddWrite(
         SYNCHRONOUS,
@@ -5110,10 +5117,12 @@ TEST_P(QuicNetworkTransactionTest, RstStreamErrorHandling) {
   if (GetQuicRestartFlag(quic_opport_bundle_qpack_decoder_data5)) {
     mock_quic_data.AddWrite(
         SYNCHRONOUS,
-        client_maker_->MakeAckAndRstPacket(
-            packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
-            quic::QUIC_STREAM_CANCELLED, 2, 1,
-            /*include_stop_sending_if_v99=*/false));
+        client_maker_->Packet(packet_num++)
+            .AddAckFrame(/*first_received=*/1, /*largest_received=*/2,
+                         /*smallest_received=*/1)
+            .AddRstStreamFrame(GetNthClientInitiatedBidirectionalStreamId(0),
+                               quic::QUIC_STREAM_CANCELLED)
+            .Build());
   } else {
     mock_quic_data.AddWrite(
         SYNCHRONOUS,
@@ -5188,10 +5197,12 @@ TEST_P(QuicNetworkTransactionTest, RstStreamBeforeHeaders) {
   if (GetQuicRestartFlag(quic_opport_bundle_qpack_decoder_data5)) {
     mock_quic_data.AddWrite(
         SYNCHRONOUS,
-        client_maker_->MakeAckAndRstPacket(
-            packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
-            quic::QUIC_STREAM_CANCELLED, 1, 1,
-            /*include_stop_sending_if_v99=*/false));
+        client_maker_->Packet(packet_num++)
+            .AddAckFrame(/*first_received=*/1, /*largest_received=*/1,
+                         /*smallest_received=*/1)
+            .AddRstStreamFrame(GetNthClientInitiatedBidirectionalStreamId(0),
+                               quic::QUIC_STREAM_CANCELLED)
+            .Build());
   } else {
     mock_quic_data.AddWrite(
         SYNCHRONOUS,
