@@ -6210,6 +6210,120 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.OnGeolocationPermissionsShowPrompt.Granted"
+    enum="BooleanGranted" expires_after="2025-06-30">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether geolocation permission was granted by the embedded app.
+
+    This histogram is emitted when the app calls the result callback for the
+    permission prompt.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.WebView.OnGeolocationPermissionsShowPrompt.ResponseTime"
+    units="ms" expires_after="2025-06-30">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the response time from the embedding app to a
+    onGeoLocationPermissionShowPrompt callback. This metric will help us
+    determine if apps are likely responding based on internal logic or if they
+    are showing a UI prompt to the user, as the latter will be reflected in
+    longer response times. Since geo-location requires an Android permission, we
+    might see two peaks in this histogram for apps that only show the Android
+    permission prompt.
+
+    This histogram is emitted when the app calls the result callback for the
+    permission prompt.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.OnGeolocationPermissionsShowPrompt.Retain"
+    enum="BooleanRetain" expires_after="2025-06-30">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether the app indicated that geolocation permission decision
+    should be retained by WebView.
+
+    This histogram is emitted when the app calls the result callback for the
+    permission prompt.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.OnPermissionRequest.Granted"
+    enum="BooleanGranted" expires_after="2025-06-30">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records if the permissions requested by the web contents were granted by the
+    embedding app. We only record this histogram if the app responds, so it will
+    not contain any default implementation results. The intention of the
+    histogram is to understand how apps interact with the current permission
+    APIs.
+
+    This histogram is emitted when the app calls either the grant or deny
+    callback method.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.OnPermissionRequest.RequestedResourceCount"
+    units="resources" expires_after="2025-06-30">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records how many resources are in a callback to onPermissionRequest. The
+    onPermissionRequests callback method supports requests for more than one
+    resource at a time, and requires that the app grants all permissions,
+    otherwise the whole request is denied. This histogram will help us
+    understand how often apps actually see more than a single resource in a
+    request, to help us plan a new permission solution.
+
+    This histogram is emitted when the WebChromeClient.onPermissionRequest
+    callback is invoked by WebView.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.OnPermissionRequest.RequestedResources"
+    enum="PermissionResourceBitfield" expires_after="2025-06-30">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records which resources are in a callback to onPermissionRequest. The
+    histogram is a sparse histogram and records the set of resources as a
+    bitfield, which is how it is also represented internally.
+
+    The onPermissionRequests callback method supports requests for more than one
+    resource at a time, and requires that the app grants all permissions,
+    otherwise the whole request is denied. This histogram will help us
+    understand which resources are requested together, to help us plan a new
+    permission solution.
+
+    This histogram is emitted when the WebChromeClient.onPermissionRequest
+    callback is invoked by WebView.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.OnPermissionRequest.ResponseTime" units="ms"
+    expires_after="2025-06-30">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the response time from the embedding app to a onPermissionRequest
+    callback. This metric will help us determine if apps are likely responding
+    based on internal logic or if they are showing a UI prompt to the user, as
+    the latter will be reflected in longer response times. Since video and
+    microphone requires an Android permission, we might see two peaks in this
+    histogram for apps that only show the Android permission prompt.
+
+    This histogram is emitted when the app calls either the grant or deny
+    callback method.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.OnRenderProcessGoneResult"
     enum="AndroidWebViewRenderProcessGoneResult" expires_after="2024-06-21">
   <owner>ntfschr@chromium.org</owner>

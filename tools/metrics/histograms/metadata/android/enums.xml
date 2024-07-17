@@ -674,6 +674,21 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Android version not supported"/>
 </enum>
 
+<enum name="BooleanGranted">
+  <int value="0" label="Not granted"/>
+  <int value="1" label="Granted"/>
+</enum>
+
+<enum name="BooleanRetain">
+  <int value="0" label="Do not retain"/>
+  <int value="1" label="Retain"/>
+</enum>
+
+<enum name="BooleanSameArray">
+  <int value="0" label="Not the same resource array"/>
+  <int value="1" label="App returned same resource array instance"/>
+</enum>
+
 <enum name="ChromeActivityType">
   <int value="0" label="Tabbed Chrome"/>
   <int value="1" label="Custom Tab"/>
@@ -1209,6 +1224,19 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Cancelled - timeout"/>
   <int value="4" label="Exception thrown"/>
   <int value="5" label="Task skipped"/>
+</enum>
+
+<enum name="PermissionResourceBitfield">
+<!-- The histogram that uses this enum is recorded as a sparse histogram, since it is recording bitfield values.
+      However, the most likely values are the individual resources mapped below.
+      Any combinations will hopefully just show up as unmapped numeric values.
+      -->
+
+  <int value="1" label="GELOLOCATION"/>
+  <int value="2" label="VIDEO_CAPTURE"/>
+  <int value="4" label="AUDIO_CAPTURE"/>
+  <int value="8" label="PROTECTED_MEDIA_ID"/>
+  <int value="16" label="MIDI_SYSEX"/>
 </enum>
 
 <enum name="PhotoPickerDialogAction">

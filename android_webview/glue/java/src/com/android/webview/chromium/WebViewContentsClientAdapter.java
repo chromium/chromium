@@ -510,12 +510,21 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
                 return;
             }
             if (TRACE) Log.i(TAG, "onGeolocationPermissionsShowPrompt");
+            final long requestStartTime = System.currentTimeMillis();
+            GeolocationPermissions.Callback callbackWrapper =
+                    (callbackOrigin, allow, retain) -> {
+                        RecordHistogram.recordTimesHistogram(
+                                "Android.WebView.OnGeolocationPermissionsShowPrompt.ResponseTime",
+                                System.currentTimeMillis() - requestStartTime);
+                        RecordHistogram.recordBooleanHistogram(
+                                "Android.WebView.OnGeolocationPermissionsShowPrompt.Allow", allow);
+                        RecordHistogram.recordBooleanHistogram(
+                                "Android.WebView.OnGeolocationPermissionsShowPrompt.Retain",
+                                retain);
+                        callback.invoke(callbackOrigin, allow, retain);
+                    };
             mWebChromeClient.onGeolocationPermissionsShowPrompt(
-                    origin,
-                    callback == null
-                            ? null
-                            : (callbackOrigin, allow, retain) ->
-                                    callback.invoke(callbackOrigin, allow, retain));
+                    origin, callback == null ? null : callbackWrapper);
         }
     }
 
@@ -542,13 +551,10 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
             if (mWebChromeClient != null) {
                 if (TRACE) Log.i(TAG, "onPermissionRequest");
                 if (mOngoingPermissionRequests == null) {
-                    mOngoingPermissionRequests =
-                            new WeakHashMap<
-                                    AwPermissionRequest, WeakReference<PermissionRequestAdapter>>();
+                    mOngoingPermissionRequests = new WeakHashMap<>();
                 }
                 PermissionRequestAdapter adapter = new PermissionRequestAdapter(permissionRequest);
-                mOngoingPermissionRequests.put(
-                        permissionRequest, new WeakReference<PermissionRequestAdapter>(adapter));
+                mOngoingPermissionRequests.put(permissionRequest, new WeakReference<>(adapter));
                 mWebChromeClient.onPermissionRequest(adapter);
             } else {
                 // By default, we deny the permission.
@@ -1151,10 +1157,20 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
         private AwPermissionRequest mAwPermissionRequest;
         private final String[] mResources;
 
+        private final long mCreationTime;
+
         public PermissionRequestAdapter(AwPermissionRequest awPermissionRequest) {
             assert awPermissionRequest != null;
             mAwPermissionRequest = awPermissionRequest;
             mResources = toPermissionResources(mAwPermissionRequest.getResources());
+            mCreationTime = System.currentTimeMillis();
+            RecordHistogram.recordCount100Histogram(
+                    "Android.WebView.OnPermissionRequest.RequestedResourceCount",
+                    mResources.length);
+            // The resources result is a bitmask of size 2^5 (32 distinct values).
+            RecordHistogram.recordSparseHistogram(
+                    "Android.WebView.OnPermissionRequest.RequestedResources",
+                    (int) mAwPermissionRequest.getResources());
         }
 
         @Override
@@ -1169,17 +1185,34 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
 
         @Override
         public void grant(String[] resources) {
+            recordResponseTime();
             long requestedResource = mAwPermissionRequest.getResources();
             if ((requestedResource & toAwPermissionResources(resources)) == requestedResource) {
+                recordPermissionResult(true);
                 mAwPermissionRequest.grant();
             } else {
+                recordPermissionResult(false);
                 mAwPermissionRequest.deny();
             }
         }
 
         @Override
         public void deny() {
+            recordResponseTime();
+            recordPermissionResult(false);
             mAwPermissionRequest.deny();
+        }
+
+        private void recordPermissionResult(boolean granted) {
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.WebView.OnPermissionRequest.Granted", granted);
+        }
+
+        /** Record the response time from the app to a histogram. */
+        private void recordResponseTime() {
+            long duration = System.currentTimeMillis() - mCreationTime;
+            RecordHistogram.recordTimesHistogram(
+                    "Android.WebView.OnPermissionRequest.ResponseTime", duration);
         }
     }
 
