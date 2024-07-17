@@ -13,6 +13,8 @@
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+class Profile;
+
 namespace arc {
 
 class ArcBridgeService;
@@ -45,9 +47,14 @@ class ArcErrorNotificationBridge
       SendErrorDetailsCallback callback) override;
 
  private:
+  std::string GenerateNotificationId(mojom::ErrorType type,
+                                     const std::string& app_name);
+
   friend class ArcErrorNotificationBridgeFactory;
 
   raw_ptr<ArcBridgeService> arc_bridge_service_;
+
+  raw_ptr<Profile> profile_;
 
   base::WeakPtrFactory<ArcErrorNotificationBridge> weak_ptr_factory_{this};
 };

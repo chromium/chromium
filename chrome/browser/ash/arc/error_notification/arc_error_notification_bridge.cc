@@ -4,8 +4,19 @@
 
 #include "chrome/browser/ash/arc/error_notification/arc_error_notification_bridge.h"
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/public/cpp/notification_utils.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/memory/singleton.h"
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/arc/error_notification/arc_error_notification_item.h"
+#include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/profiles/profile.h"
+#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notification_delegate.h"
+#include "ui/message_center/public/cpp/notification_types.h"
+#include "ui/message_center/public/cpp/notifier_id.h"
 
 namespace arc {
 
@@ -44,7 +55,8 @@ void ArcErrorNotificationBridge::EnsureFactoryBuilt() {
 ArcErrorNotificationBridge::ArcErrorNotificationBridge(
     content::BrowserContext* context,
     ArcBridgeService* bridge_service)
-    : arc_bridge_service_(bridge_service) {
+    : arc_bridge_service_(bridge_service),
+      profile_(Profile::FromBrowserContext(context)) {
   arc_bridge_service_->error_notification()->SetHost(this);
 }
 
@@ -52,12 +64,80 @@ ArcErrorNotificationBridge::~ArcErrorNotificationBridge() {
   arc_bridge_service_->error_notification()->SetHost(nullptr);
 }
 
+class ErrorNotificationDelegate : public message_center::NotificationDelegate {
+ public:
+  explicit ErrorNotificationDelegate(
+      base::WeakPtr<ArcErrorNotificationBridge> bridge,
+      mojo::PendingRemote<mojom::ErrorNotificationActionHandler> action_handler)
+      : bridge_(bridge), action_handler_(std::move(action_handler)) {}
+
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override {
+    if (button_index && bridge_ && action_handler_) {
+      action_handler_->OnNotificationButtonClicked(
+          static_cast<uint32_t>(button_index.value()));
+
+      // TODO(b/332459217): close notification.
+    }
+  }
+
+ protected:
+  ~ErrorNotificationDelegate() override = default;
+
+ private:
+  base::WeakPtr<ArcErrorNotificationBridge> bridge_;
+  mojo::Remote<mojom::ErrorNotificationActionHandler> action_handler_;
+};
+
 void ArcErrorNotificationBridge::SendErrorDetails(
     mojom::ErrorDetailsPtr details,
     mojo::PendingRemote<mojom::ErrorNotificationActionHandler> action_handler,
     SendErrorDetailsCallback callback) {
-  // TODO(b/332459217): Add implementation.
-  std::move(callback).Run(mojo::NullRemote());
+  if (!base::FeatureList::IsEnabled(arc::kEnableFriendlierErrorDialog)) {
+    LOG(WARNING) << "ARC is currently sending Chrome Error details, but the "
+                    "Friendlier Error Dialog feature is not activated.";
+    return;
+  }
+
+  const std::string& name = details->name;
+
+  message_center::Notification notification = ash::CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE /* type */,
+      GenerateNotificationId(details->type, name) /* id */,
+      base::UTF8ToUTF16(details->title.c_str()), u"" /* message */,
+      base::UTF8ToUTF16(name.c_str()) /* display_source */,
+      GURL() /* origin_url */, message_center::NotifierId(),
+      message_center::RichNotificationData() /* optional_fields */,
+      base::MakeRefCounted<ErrorNotificationDelegate>(
+          weak_ptr_factory_.GetWeakPtr(), std::move(action_handler)),
+      // TODO(b/332459217): correct icon.
+      ash::kSystemMenuUpdateIcon /* small_image */,
+      message_center::SystemNotificationWarningLevel::WARNING);
+
+  std::vector<message_center::ButtonInfo> buttons;
+  for (const std::string& label : *details->buttonLabels) {
+    buttons.push_back(message_center::ButtonInfo(base::UTF8ToUTF16(label)));
+  }
+  notification.set_buttons(buttons);
+
+  notification.set_never_timeout(true);
+
+  NotificationDisplayService::GetForProfile(profile_)->Display(
+      NotificationHandler::Type::TRANSIENT, notification,
+      nullptr /* metadata */);
+
+  std::move(callback).Run(ArcErrorNotificationItem::Create());
+}
+
+std::string ArcErrorNotificationBridge::GenerateNotificationId(
+    mojom::ErrorType type,
+    const std::string& name) {
+  switch (type) {
+    case mojom::ErrorType::ANR:
+      return "ANR_" + name;
+    case mojom::ErrorType::CRASH:
+      return "CRASH_" + name;
+  }
 }
 
 }  // namespace arc
