@@ -131,6 +131,11 @@ Browser* GetOrCreateBrowser(Profile* profile, bool user_gesture) {
   return browser;
 }
 
+bool IncognitoModeForced(const Profile* profile) {
+  return IncognitoModePrefs::GetAvailability(profile->GetPrefs()) ==
+         policy::IncognitoModeAvailability::kForced;
+}
+
 // Change some of the navigation parameters based on the particular URL.
 // Currently this applies to some chrome:// pages which we always want to open
 // in a non-incognito window. Note that even though a ChromeOS guest session is
@@ -151,12 +156,9 @@ bool AdjustNavigateParamsForURL(NavigateParams* params) {
     profile = profile->GetOriginalProfile();
 
     // If incognito is forced, we punt.
-    PrefService* prefs = profile->GetPrefs();
-    if (prefs && IncognitoModePrefs::GetAvailability(prefs) ==
-                     policy::IncognitoModeAvailability::kForced) {
+    if (IncognitoModeForced(profile)) {
       return false;
     }
-
     params->disposition = WindowOpenDisposition::SINGLETON_TAB;
     params->browser = GetOrCreateBrowser(profile, params->user_gesture);
     params->window_action = NavigateParams::SHOW_WINDOW;
@@ -622,6 +624,22 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     params->initiating_profile = source_browser->profile();
   }
   DCHECK(params->initiating_profile);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (params->initiating_profile->IsOffTheRecord() &&
+      params->initiating_profile->GetOTRProfileID().IsCaptivePortal() &&
+      params->disposition != WindowOpenDisposition::NEW_POPUP &&
+      params->disposition != WindowOpenDisposition::CURRENT_TAB &&
+      !IncognitoModeForced(params->initiating_profile)) {
+    // Navigation outside of the current tab or the initial popup window from a
+    // captive portal signin window should open from the original profile.
+    params->initiating_profile =
+        params->initiating_profile->GetOriginalProfile();
+    params->browser =
+        GetOrCreateBrowser(params->initiating_profile, params->user_gesture);
+    source_browser = params->browser;
+  }
+#endif
 
   if (params->initiating_profile->ShutdownStarted()) {
     // Don't navigate when the profile is shutting down.

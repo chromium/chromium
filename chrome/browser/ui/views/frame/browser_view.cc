@@ -4944,6 +4944,11 @@ void BrowserView::LoadAccelerators() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const bool is_lacros_only = !crosapi::browser_util::IsAshWebBrowserEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+  const bool is_captive_portal_signin_window =
+      browser_->profile()->IsOffTheRecord() &&
+      browser_->profile()->GetOTRProfileID().IsCaptivePortal();
+#endif
   const std::vector<AcceleratorMapping> accelerator_list(GetAcceleratorList());
   for (const auto& entry : accelerator_list) {
     // In app mode, only allow accelerators of white listed commands to pass
@@ -4958,6 +4963,23 @@ void BrowserView::LoadAccelerators() {
     if (is_lacros_only && ShouldBeHandledByLacrosInstead(entry.command_id))
       continue;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
+    if (is_captive_portal_signin_window) {
+      int command = entry.command_id;
+      // Captive portal signin uses an OTR profile without history.
+      if (command == IDC_SHOW_HISTORY) {
+        continue;
+      }
+      // The NewTab command expects navigation to occur in the same browser
+      // window. For captive portal signin this is not the case, so hide these
+      // to reduce confusion.
+      if (command == IDC_NEW_TAB || command == IDC_NEW_TAB_TO_RIGHT ||
+          command == IDC_CREATE_NEW_TAB_GROUP) {
+        continue;
+      }
+    }
+#endif
 
     ui::Accelerator accelerator(entry.keycode, entry.modifiers);
     accelerator_table_[accelerator] = entry.command_id;
