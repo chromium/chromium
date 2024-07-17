@@ -258,9 +258,19 @@ bool InterpolableLength::CanMergeValues(const InterpolableValue* start,
                 CSSMathExpressionKeywordLiteral::Context::kCalcSize);
       return !keyword_literal;
     };
-    return start_basis == end_basis || is_any_keyword(start_basis) ||
-           is_any_keyword(end_basis) ||
-           (is_calc_sum(start_basis) && is_calc_sum(end_basis));
+    if (!(start_basis == end_basis || is_any_keyword(start_basis) ||
+          is_any_keyword(end_basis) ||
+          (is_calc_sum(start_basis) && is_calc_sum(end_basis)))) {
+      return false;
+    }
+    // We can interpolate in theory, but we need to test this to make
+    // sure we don't hit the expansion limit for nested calc-size()
+    // (which fortunately depends only on the bases and not on any
+    // addition or multiplication of numbers).
+    return CSSMathExpressionOperation::
+               CreateArithmeticOperationAndSimplifyCalcSize(
+                   start_length.expression_, end_length.expression_,
+                   CSSMathOperator::kAdd) != nullptr;
   }
 
   return true;
@@ -602,12 +612,8 @@ void InterpolableLength::Add(const InterpolableValue& other) {
   CSSMathExpressionNode* result =
       CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           &AsExpression(), &other_length.AsExpression(), CSSMathOperator::kAdd);
-  if (!result) {
-    // TODO(https://crbug.com/40339056): This should really behave as though
-    // the property is IACVT.
-    SetLengthArray(CSSLengthArray());
-    return;
-  }
+  CHECK(result)
+      << "should not attempt to interpolate when result would be IACVT";
   SetExpression(*result);
 }
 
@@ -629,12 +635,8 @@ void InterpolableLength::ScaleAndAdd(double scale,
   CSSMathExpressionNode* result =
       CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           scaled, &other_length.AsExpression(), CSSMathOperator::kAdd);
-  if (!result) {
-    // TODO(https://crbug.com/40339056): This should really behave as though
-    // the property is IACVT.
-    SetLengthArray(CSSLengthArray());
-    return;
-  }
+  CHECK(result)
+      << "should not attempt to interpolate when result would be IACVT";
   SetExpression(*result);
 }
 
@@ -680,12 +682,8 @@ void InterpolableLength::Interpolate(const InterpolableValue& to,
   CSSMathExpressionNode* result_expression =
       CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           blended_from, blended_to, CSSMathOperator::kAdd);
-  if (!result_expression) {
-    // TODO(https://crbug.com/40339056): This should really behave as though
-    // the property is IACVT.
-    result_length.SetLengthArray(CSSLengthArray());
-    return;
-  }
+  CHECK(result_expression)
+      << "should not attempt to interpolate when result would be IACVT";
   result_length.SetExpression(*result_expression);
 }
 
