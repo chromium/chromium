@@ -114,6 +114,8 @@ component("network_service") {
     "pending_callback_chain.h",
     "prefetch_cache.cc",
     "prefetch_cache.h",
+    "prefetch_matching_url_loader_factory.cc",
+    "prefetch_matching_url_loader_factory.h",
     "prefetch_url_loader_client.cc",
     "prefetch_url_loader_client.h",
     "private_network_access_checker.cc",

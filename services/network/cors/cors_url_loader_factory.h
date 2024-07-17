@@ -28,6 +28,7 @@
 
 namespace network {
 
+class PrefetchMatchingURLLoaderFactory;
 class ResourceSchedulerClient;
 class URLLoader;
 class URLLoaderFactory;
@@ -61,7 +62,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
       mojom::URLLoaderFactoryParamsPtr params,
       scoped_refptr<ResourceSchedulerClient> resource_scheduler_client,
       mojo::PendingReceiver<mojom::URLLoaderFactory> receiver,
-      const OriginAccessList* origin_access_list);
+      const OriginAccessList* origin_access_list,
+      PrefetchMatchingURLLoaderFactory* owner);
 
   CorsURLLoaderFactory(const CorsURLLoaderFactory&) = delete;
   CorsURLLoaderFactory& operator=(const CorsURLLoaderFactory&) = delete;
@@ -71,17 +73,26 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   mojom::URLLoaderNetworkServiceObserver* url_loader_network_service_observer()
       const;
 
+  // Implements mojom::URLLoaderFactory.
+  void CreateLoaderAndStart(mojo::PendingReceiver<mojom::URLLoader> receiver,
+                            int32_t request_id,
+                            uint32_t options,
+                            const ResourceRequest& resource_request,
+                            mojo::PendingRemote<mojom::URLLoaderClient> client,
+                            const net::MutableNetworkTrafficAnnotationTag&
+                                traffic_annotation) override;
+  void Clone(mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) override;
+
+  // Methods for use by network::URLLoaderFactory.
   void OnURLLoaderCreated(std::unique_ptr<URLLoader> loader);
   void OnCorsURLLoaderCreated(std::unique_ptr<CorsURLLoader> loader);
   void DestroyURLLoader(URLLoader* loader);
-  void DestroyCorsURLLoader(CorsURLLoader* loader);
 
   // Clears the bindings for this factory, but does not touch any in-progress
   // URLLoaders. Calling this may delete this factory and remove it from the
   // network context.
   void ClearBindings();
 
-  int32_t process_id() const { return process_id_; }
   mojom::CrossOriginEmbedderPolicyReporter* coep_reporter() {
     return coep_reporter_ ? coep_reporter_.get() : nullptr;
   }
@@ -118,15 +129,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
  private:
   class FactoryOverride;
 
-  // Implements mojom::URLLoaderFactory.
-  void CreateLoaderAndStart(mojo::PendingReceiver<mojom::URLLoader> receiver,
-                            int32_t request_id,
-                            uint32_t options,
-                            const ResourceRequest& resource_request,
-                            mojo::PendingRemote<mojom::URLLoaderClient> client,
-                            const net::MutableNetworkTrafficAnnotationTag&
-                                traffic_annotation) override;
-  void Clone(mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) override;
+  void DestroyCorsURLLoader(CorsURLLoader* loader);
 
   void DeleteIfNeeded();
 
@@ -202,6 +205,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   const raw_ptr<const OriginAccessList> origin_access_list_;
 
   scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage_;
+
+  const raw_ptr<PrefetchMatchingURLLoaderFactory> owner_;
 
   static bool allow_external_preflights_for_testing_;
 };

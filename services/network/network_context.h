@@ -124,6 +124,7 @@ class NetworkServiceNetworkDelegate;
 class P2PSocketManager;
 class PendingTrustTokenStore;
 class PrefetchCache;
+class PrefetchMatchingURLLoaderFactory;
 class ProxyLookupRequest;
 class ResourceSchedulerClient;
 class SCTAuditingHandler;
@@ -134,10 +135,6 @@ class WebSocketFactory;
 class WebTransport;
 
 struct ResourceRequest;
-
-namespace cors {
-class CorsURLLoaderFactory;
-}  // namespace cors
 
 // A NetworkContext creates and manages access to a URLRequestContext.
 //
@@ -568,7 +565,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   // Destroys the specified factory. Called by the factory itself when it has
   // no open pipes.
-  void DestroyURLLoaderFactory(cors::CorsURLLoaderFactory* url_loader_factory);
+  void DestroyURLLoaderFactory(
+      PrefetchMatchingURLLoaderFactory* url_loader_factory);
 
   // Removes |transport| and destroys it.
   void Remove(WebTransport* transport);
@@ -998,6 +996,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // calls to DestroyURLLoaderFactory().
   bool is_destructing_ = false;
 
+  // True if the Prefetch() method is enabled.
+  // TODO(ricea): Remove this when it is enabled by default.
+  const bool prefetch_enabled_;
+
   // Indicating whether
   // https://fetch.spec.whatwg.org/#cors-non-wildcard-request-header-name is
   // supported.
@@ -1008,7 +1010,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // live longer than the factory.  Therefore we want the factories to be
   // destroyed before other fields above.  This is accomplished by explicitly
   // clearing `url_loader_factories_` in the destructor.
-  std::set<std::unique_ptr<cors::CorsURLLoaderFactory>,
+  std::set<std::unique_ptr<PrefetchMatchingURLLoaderFactory>,
            base::UniquePtrComparator>
       url_loader_factories_;
 

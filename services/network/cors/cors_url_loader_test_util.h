@@ -15,6 +15,7 @@
 
 #include "base/check.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -52,6 +53,7 @@ struct CorsErrorStatus;
 class MockDevToolsObserver;
 class NetworkContext;
 class NetworkService;
+class PrefetchMatchingURLLoaderFactory;
 class TestURLLoaderClient;
 
 namespace cors {
@@ -332,8 +334,11 @@ class CorsURLLoaderTestBase : public testing::Test {
   std::unique_ptr<NetworkContext> network_context_;
   mojo::Remote<mojom::NetworkContext> network_context_remote_;
 
+  // Owner for the CorsURLLoaderFactory. Otherwise ignored by this class.
+  std::unique_ptr<PrefetchMatchingURLLoaderFactory> factory_owner_;
+
   // `CorsURLLoaderFactory` instance under test.
-  std::unique_ptr<mojom::URLLoaderFactory> cors_url_loader_factory_;
+  raw_ptr<mojom::URLLoaderFactory> cors_url_loader_factory_;
   mojo::Remote<mojom::URLLoaderFactory> cors_url_loader_factory_remote_;
 
   // The URL loader factory used inside `CorsURLLoader`.

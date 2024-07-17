@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/network/cors/cors_url_loader_factory.h"
+
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -15,11 +18,11 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
-#include "services/network/cors/cors_url_loader_factory.h"
 #include "services/network/cors/cors_url_loader_test_util.h"
 #include "services/network/is_browser_initiated.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
+#include "services/network/prefetch_matching_url_loader_factory.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -86,11 +89,13 @@ class CorsURLLoaderFactoryTest : public testing::Test {
             ResourceScheduler::ClientId::Create(), IsBrowserInitiated(false),
             &resource_scheduler_,
             url_request_context_->network_quality_estimator());
-    cors_url_loader_factory_ = std::make_unique<CorsURLLoaderFactory>(
+    factory_owner_ = std::make_unique<PrefetchMatchingURLLoaderFactory>(
         network_context_.get(), std::move(factory_params),
         resource_scheduler_client,
         cors_url_loader_factory_remote_.BindNewPipeAndPassReceiver(),
-        &origin_access_list_);
+        &origin_access_list_, nullptr);
+    cors_url_loader_factory_ =
+        factory_owner_->GetCorsURLLoaderFactoryForTesting();
   }
 
   void SetUp() override {
@@ -109,7 +114,10 @@ class CorsURLLoaderFactoryTest : public testing::Test {
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
   }
 
-  void ResetFactory() { cors_url_loader_factory_.reset(); }
+  void ResetFactory() {
+    cors_url_loader_factory_ = nullptr;
+    factory_owner_.reset();
+  }
 
   net::test_server::EmbeddedTestServer* test_server() { return &test_server_; }
 
@@ -130,8 +138,11 @@ class CorsURLLoaderFactoryTest : public testing::Test {
 
   net::test_server::EmbeddedTestServer test_server_;
 
+  // Holder for the CorsURLLoaderFactory.
+  std::unique_ptr<PrefetchMatchingURLLoaderFactory> factory_owner_;
+
   // CorsURLLoaderFactory instance under tests.
-  std::unique_ptr<mojom::URLLoaderFactory> cors_url_loader_factory_;
+  raw_ptr<mojom::URLLoaderFactory> cors_url_loader_factory_;
   mojo::Remote<mojom::URLLoaderFactory> cors_url_loader_factory_remote_;
 
   // Holds the URLLoaders that CreateLoaderAndStart() creates.

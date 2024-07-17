@@ -98,7 +98,6 @@
 #include "net/url_request/url_request_context_builder.h"
 #include "services/network/brokered_client_socket_factory.h"
 #include "services/network/cookie_manager.h"
-#include "services/network/cors/cors_url_loader_factory.h"
 #include "services/network/data_remover_util.h"
 #include "services/network/disk_cache/mojo_backend_file_operations_factory.h"
 #include "services/network/host_resolver.h"
@@ -115,6 +114,7 @@
 #include "services/network/network_service_proxy_delegate.h"
 #include "services/network/oblivious_http_request_handler.h"
 #include "services/network/prefetch_cache.h"
+#include "services/network/prefetch_matching_url_loader_factory.h"
 #include "services/network/prefetch_url_loader_client.h"
 #include "services/network/proxy_config_service_mojo.h"
 #include "services/network/proxy_lookup_request.h"
@@ -638,8 +638,12 @@ NetworkContext::NetworkContext(
       cors_preflight_controller_(network_service),
       http_auth_merged_preferences_(network_service),
       ohttp_handler_(this),
+      prefetch_enabled_(
+          base::FeatureList::IsEnabled(features::kNetworkContextPrefetch)),
       cors_non_wildcard_request_headers_support_(base::FeatureList::IsEnabled(
-          features::kCorsNonWildcardRequestHeadersSupport)) {
+          features::kCorsNonWildcardRequestHeadersSupport)),
+      prefetch_cache_(prefetch_enabled_ ? std::make_unique<PrefetchCache>()
+                                        : nullptr) {
 #if BUILDFLAG(IS_WIN) && DCHECK_IS_ON()
   if (params_->file_paths) {
     DCHECK(params_->win_permissions_set)
@@ -777,6 +781,10 @@ NetworkContext::NetworkContext(
         base::MakeRefCounted<MojoBackendFileOperationsFactory>(
             std::move(params_->http_cache_file_operations_factory));
   }
+
+  if (prefetch_enabled_) {
+    InitializePrefetchURLLoaderFactory();
+  }
 }
 
 NetworkContext::NetworkContext(
@@ -805,7 +813,11 @@ NetworkContext::NetworkContext(
                                           url_request_context)),
       cors_preflight_controller_(network_service),
       http_auth_merged_preferences_(network_service),
-      ohttp_handler_(this) {
+      ohttp_handler_(this),
+      prefetch_enabled_(
+          base::FeatureList::IsEnabled(features::kNetworkContextPrefetch)),
+      prefetch_cache_(prefetch_enabled_ ? std::make_unique<PrefetchCache>()
+                                        : nullptr) {
   // May be nullptr in tests.
   if (network_service_)
     network_service_->RegisterNetworkContext(this);
@@ -817,6 +829,10 @@ NetworkContext::NetworkContext(
   acam_preflight_spec_conformant_ = base::FeatureList::IsEnabled(
       network::features::
           kAccessControlAllowMethodsInCORSPreflightSpecConformant);
+
+  if (prefetch_enabled_) {
+    InitializePrefetchURLLoaderFactory();
+  }
 }
 
 NetworkContext::~NetworkContext() {
@@ -875,7 +891,7 @@ NetworkContext::~NetworkContext() {
 
   // Clear `url_loader_factories_` before deleting the contents, as it can
   // result in re-entrant calls to DestroyURLLoaderFactory().
-  std::set<std::unique_ptr<cors::CorsURLLoaderFactory>,
+  std::set<std::unique_ptr<PrefetchMatchingURLLoaderFactory>,
            base::UniquePtrComparator>
       url_loader_factories = std::move(url_loader_factories_);
 }
@@ -911,9 +927,11 @@ void NetworkContext::CreateURLLoaderFactory(
     mojo::PendingReceiver<mojom::URLLoaderFactory> receiver,
     mojom::URLLoaderFactoryParamsPtr params,
     scoped_refptr<ResourceSchedulerClient> resource_scheduler_client) {
-  url_loader_factories_.emplace(std::make_unique<cors::CorsURLLoaderFactory>(
-      this, std::move(params), std::move(resource_scheduler_client),
-      std::move(receiver), &cors_origin_access_list_));
+  url_loader_factories_.emplace(
+      std::make_unique<PrefetchMatchingURLLoaderFactory>(
+          this, std::move(params), std::move(resource_scheduler_client),
+          std::move(receiver), &cors_origin_access_list_,
+          prefetch_cache_.get()));
 }
 
 void NetworkContext::CreateURLLoaderFactoryForCertNetFetcher(
@@ -959,7 +977,7 @@ void NetworkContext::CreateURLLoaderFactory(
 void NetworkContext::ResetURLLoaderFactories() {
   // Move all factories to a temporary vector so ClearBindings() does not
   // invalidate the iterator if the factory gets deleted.
-  std::vector<cors::CorsURLLoaderFactory*> factories;
+  std::vector<PrefetchMatchingURLLoaderFactory*> factories;
   factories.reserve(url_loader_factories_.size());
   for (const auto& factory : url_loader_factories_)
     factories.push_back(factory.get());
@@ -1118,7 +1136,7 @@ void NetworkContext::DisableQuic() {
 }
 
 void NetworkContext::DestroyURLLoaderFactory(
-    cors::CorsURLLoaderFactory* url_loader_factory) {
+    PrefetchMatchingURLLoaderFactory* url_loader_factory) {
   if (is_destructing_) {
     return;
   }
@@ -3196,18 +3214,8 @@ void NetworkContext::Prefetch(
     uint32_t options,
     const ResourceRequest& request,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-  if (!base::FeatureList::IsEnabled(features::kNetworkContextPrefetch)) {
+  if (!prefetch_enabled_) {
     return;
-  }
-
-  if (!prefetch_cache_) {
-    // Lazily initialized to avoid slowing down startup.
-    prefetch_cache_ = std::make_unique<PrefetchCache>();
-  }
-
-  if (!prefetch_url_loader_factory_remote_.is_bound() ||
-      !prefetch_url_loader_factory_remote_.is_connected()) {
-    InitializePrefetchURLLoaderFactory();
   }
 
   PrefetchURLLoaderClient* client = prefetch_cache_->Emplace(request);

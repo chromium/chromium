@@ -21,6 +21,7 @@
 #include "services/network/cors/cors_url_loader_factory.h"
 #include "services/network/is_browser_initiated.h"
 #include "services/network/network_service.h"
+#include "services/network/prefetch_matching_url_loader_factory.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
@@ -187,11 +188,6 @@ CorsURLLoaderTestBase::CorsURLLoaderTestBase(bool shared_dictionary_enabled)
 
 CorsURLLoaderTestBase::~CorsURLLoaderTestBase() = default;
 
-// C++14 requires us to define storage for these static class constants.
-// These can be removed once C++17 is supported.
-constexpr uint32_t CorsURLLoaderTestBase::kRendererProcessId;
-constexpr char CorsURLLoaderTestBase::kTestCorsExemptHeader[];
-
 void CorsURLLoaderTestBase::CreateLoaderAndStart(
     const GURL& origin,
     const GURL& url,
@@ -306,12 +302,17 @@ void CorsURLLoaderTestBase::ResetFactory(std::optional<url::Origin> initiator,
           IsBrowserInitiated(process_id == mojom::kBrowserProcessId),
           &resource_scheduler_,
           url_request_context_->network_quality_estimator());
+
+  // Avoid the raw_ptr<> becoming dangling.
+  cors_url_loader_factory_ = nullptr;
   cors_url_loader_factory_remote_.reset();
-  cors_url_loader_factory_ = std::make_unique<CorsURLLoaderFactory>(
+  factory_owner_ = std::make_unique<PrefetchMatchingURLLoaderFactory>(
       network_context_.get(), std::move(factory_params),
       resource_scheduler_client,
       cors_url_loader_factory_remote_.BindNewPipeAndPassReceiver(),
-      &origin_access_list_);
+      &origin_access_list_, nullptr);
+  cors_url_loader_factory_ =
+      factory_owner_->GetCorsURLLoaderFactoryForTesting();
 }
 
 std::vector<net::NetLogEntry> CorsURLLoaderTestBase::GetEntries() const {
