@@ -68,7 +68,8 @@ void StartupHelper::UpdateTabIdMappings() {
 
     std::vector<LocalTabID> local_tab_ids =
         platform_delegate_->GetLocalTabIdsForTabGroup(*local_tab_group_id);
-    CHECK_EQ(saved_tab_group.saved_tabs().size(), local_tab_ids.size());
+    // TODO(b/350622883): Reenable the CHECK after fixing.
+    // CHECK_EQ(saved_tab_group.saved_tabs().size(), local_tab_ids.size());
     for (size_t i = 0;
          i < saved_tab_group.saved_tabs().size() && i < local_tab_ids.size();
          ++i) {
