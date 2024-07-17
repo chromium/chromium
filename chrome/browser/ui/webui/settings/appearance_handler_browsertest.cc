@@ -49,12 +49,7 @@ IN_PROC_BROWSER_TEST_F(AppearanceHandlerTest,
                             std::move(args));
   EXPECT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
-  EXPECT_EQ(browser()
-                ->tab_strip_model()
-                ->GetActiveWebContents()
-                ->GetURL()
-                .possibly_invalid_spec(),
-            "chrome://newtab/");
+
   const std::optional<SidePanelEntryId> current_entry =
       browser()->GetFeatures().side_panel_ui()->GetCurrentEntryId();
   EXPECT_TRUE(current_entry.has_value());

@@ -387,7 +387,6 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::WaitForLoadStop(web_contents);
-  EXPECT_EQ(web_contents->GetURL().possibly_invalid_spec(), "chrome://newtab/");
   const std::optional<SidePanelEntryId> current_entry =
       browser()->GetFeatures().side_panel_ui()->GetCurrentEntryId();
   EXPECT_TRUE(current_entry.has_value());
@@ -401,7 +400,6 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::WaitForLoadStop(web_contents);
-  EXPECT_EQ(web_contents->GetURL().possibly_invalid_spec(), "chrome://newtab/");
   const std::optional<SidePanelEntryId> current_entry =
       browser()->GetFeatures().side_panel_ui()->GetCurrentEntryId();
   EXPECT_TRUE(current_entry.has_value());

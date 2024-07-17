@@ -12,9 +12,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/views/side_panel/companion/companion_tab_helper.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "components/lens/buildflags.h"
 #include "content/public/browser/web_contents_observer.h"
 

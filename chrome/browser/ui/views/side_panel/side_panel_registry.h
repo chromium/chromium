@@ -10,9 +10,9 @@
 
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 
 namespace content {
 class WebContents;
