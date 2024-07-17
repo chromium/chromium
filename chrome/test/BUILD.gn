@@ -7521,6 +7521,7 @@ test("unit_tests") {
       "../browser/ui/android/hats/survey_client_android_unittest.cc",
       "../browser/ui/android/plus_addresses/plus_address_creation_controller_android_unittest.cc",
       "../browser/ui/android/tab_model/tab_model_list_unittest.cc",
+      "../browser/ui/android/toolbar/adaptive_toolbar_bridge_unittest.cc",
       "../browser/ui/android/toolbar/location_bar_model_android_unittest.cc",
       "../browser/ui/autofill/autofill_keyboard_accessory_controller_impl_unittest.cc",
       "../browser/ui/autofill/payments/autofill_message_controller_test_api.h",

@@ -59,19 +59,32 @@ AnnotatedNumericResult& AnnotatedNumericResult::operator=(
 
 std::optional<float> AnnotatedNumericResult::GetResultForLabel(
     std::string_view label) const {
-  if (status != PredictionStatus::kSucceeded ||
-      !result.output_config().predictor().has_generic_predictor()) {
+  if (status != PredictionStatus::kSucceeded) {
     return std::nullopt;
   }
 
-  const auto& labels =
-      result.output_config().predictor().generic_predictor().output_labels();
-  DCHECK_EQ(result.result_size(), labels.size());
-  for (int index = 0; index < labels.size(); ++index) {
-    if (labels.at(index) == label) {
-      return result.result().at(index);
+  if (result.output_config().predictor().has_generic_predictor()) {
+    const auto& labels =
+        result.output_config().predictor().generic_predictor().output_labels();
+    DCHECK_EQ(result.result_size(), labels.size());
+    for (int index = 0; index < labels.size(); ++index) {
+      if (labels.at(index) == label) {
+        return result.result().at(index);
+      }
+    }
+  } else if (result.output_config().predictor().has_multi_class_classifier()) {
+    const auto& labels = result.output_config()
+                             .predictor()
+                             .multi_class_classifier()
+                             .class_labels();
+    DCHECK_EQ(result.result_size(), labels.size());
+    for (int index = 0; index < labels.size(); ++index) {
+      if (labels.at(index) == label) {
+        return result.result().at(index);
+      }
     }
   }
+
   return std::nullopt;
 }
 

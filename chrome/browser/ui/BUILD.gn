@@ -924,6 +924,7 @@ static_library("ui") {
       "android/tab_model/tab_model_test_helper.cc",
       "android/tab_model/tab_model_test_helper.h",
       "android/toolbar/adaptive_toolbar_bridge.cc",
+      "android/toolbar/adaptive_toolbar_bridge.h",
       "android/toolbar/adaptive_toolbar_enums.h",
       "android/toolbar/location_bar_model_android.cc",
       "android/toolbar/location_bar_model_android.h",
