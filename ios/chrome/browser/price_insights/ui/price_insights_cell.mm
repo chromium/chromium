@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
@@ -341,6 +342,8 @@ std::u16string getFormattedCurrentPrice(int64_t amount_micro,
   _buyingOptionsStackView.accessibilityTraits = UIAccessibilityTraitLink;
   _buyingOptionsStackView.accessibilityLabel =
       l10n_util::GetNSString(IDS_BUYING_OPTIONS_ACCESSIBILITY_DESCRIPTION);
+  [_buyingOptionsStackView
+      addInteraction:[[ViewPointerInteraction alloc] init]];
 
   UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
       initWithTarget:self
@@ -528,6 +531,7 @@ std::u16string getFormattedCurrentPrice(int64_t amount_micro,
     _trackButtonWidthConstraint =
         [_trackButton.widthAnchor constraintEqualToConstant:0];
     _trackButtonWidthConstraint.active = YES;
+    _trackButton.pointerInteractionEnabled = YES;
   }
 
   if (!self.item.isPriceTracked) {

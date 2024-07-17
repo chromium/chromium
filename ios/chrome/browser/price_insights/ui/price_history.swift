@@ -120,6 +120,14 @@ struct HistoryGraph: View {
   /// The width of the entire chart.
   @State private var chartWidth: CGFloat?
 
+  /// If the user is currently dragging on the graph. This lets the hover code
+  /// know if the user is also dragging for any necessary adjustments.
+  @State private var dragging = false
+
+  //. If the user is currently hovering over the graph. This lets the drag code
+  /// know if the user is also hovering for any necessary adjustments.
+  @State private var hovering = false
+
   /// Color scheme environment value .
   @Environment(\.colorScheme) var colorScheme
 
@@ -205,23 +213,30 @@ struct HistoryGraph: View {
       /// Gesture for selecting date on the graph.
       GeometryReader { geometry in
         Rectangle().fill(.clear).contentShape(Rectangle())
+          .onContinuousHover(perform: { phase in
+            switch phase {
+            case .active(let location):
+              hovering = true
+              updateSelectionData(location: location, geometry: geometry, chart: proxy)
+            case .ended:
+              hovering = false
+              if dragging {
+                return
+              }
+              selectedDate = nil
+            }
+          })
           .gesture(
             DragGesture()
               .onChanged { value in
-                let startX = geometry[proxy.plotAreaFrame].origin.x
-                let currentX = value.location.x - startX
-                if let index: Date = proxy.value(atX: currentX) {
-                  selectedDate = closestDate(to: index, in: history)
-                }
-
-                if let selectedDate = selectedDate {
-                  if let xPosition = proxy.position(forX: selectedDate) {
-                    selectedXPosition = xPosition + startX
-                  }
-                }
-                chartWidth = geometry.size.width
+                dragging = true
+                updateSelectionData(location: value.location, geometry: geometry, chart: proxy)
               }
               .onEnded { _ in
+                dragging = false
+                if hovering {
+                  return
+                }
                 selectedDate = nil
               }
           )
@@ -242,6 +257,23 @@ struct HistoryGraph: View {
         }
       }
     )
+  }
+
+  /// Updates the selected data when the given `location` is selected inside the given
+  /// `geometry` and `chart`.
+  private func updateSelectionData(location: CGPoint, geometry: GeometryProxy, chart: ChartProxy) {
+    let startX = geometry[chart.plotAreaFrame].origin.x
+    let currentX = location.x - startX
+    if let index: Date = chart.value(atX: currentX) {
+      selectedDate = closestDate(to: index, in: history)
+    }
+
+    if let selectedDate = selectedDate {
+      if let xPosition = chart.position(forX: selectedDate) {
+        selectedXPosition = xPosition + startX
+      }
+    }
+    chartWidth = geometry.size.width
   }
 
   /// Finds the closest date to the given date from the price history dictionary.

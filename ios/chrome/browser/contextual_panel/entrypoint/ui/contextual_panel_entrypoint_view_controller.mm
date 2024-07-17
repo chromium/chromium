@@ -161,6 +161,8 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   button.backgroundColor =
       [UIColor colorNamed:kContextualPanelEntrypointBackgroundColor];
   button.clipsToBounds = NO;
+  button.pointerInteractionEnabled = YES;
+  button.pointerStyleProvider = CreateLiftEffectCirclePointerStyleProvider();
 
   // Configure shadow.
   button.layer.shadowColor = [[UIColor blackColor] CGColor];

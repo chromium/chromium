@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/contextual_panel/ui/panel_content_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/check_op.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
@@ -65,7 +66,8 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
 
 }  // namespace
 
-@interface PanelContentViewController () <UICollectionViewDelegate>
+@interface PanelContentViewController () <UICollectionViewDelegate,
+                                          UIPointerInteractionDelegate>
 
 @end
 
@@ -422,14 +424,17 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
                 primaryAction:[UIAction actionWithHandler:^(UIAction* action) {
                   [weakSelf closeButtonTapped];
                 }]];
-  _closeButton.accessibilityIdentifier = kCloseButtonAccessibilityIdentifier;
   _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
+  _closeButton.accessibilityIdentifier = kCloseButtonAccessibilityIdentifier;
+  _closeButton.pointerInteractionEnabled = YES;
 }
 
 - (void)createDragHandleView {
   _dragHandleView = [[UIView alloc] init];
   _dragHandleView.translatesAutoresizingMaskIntoConstraints = NO;
   _dragHandleView.backgroundColor = UIColor.systemGray2Color;
+  [_dragHandleView
+      addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
   _dragHandleView.layer.cornerRadius = kDragHandleHeight / 2;
 
   [NSLayoutConstraint activateConstraints:@[
@@ -484,6 +489,32 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
   [self updateTimeDisplayedForCell:panelCell atIndexPath:indexPath];
 
   [panelCell cellDidDisappear];
+}
+
+#pragma mark - UIPointerInteractionDelegate
+
+- (UIPointerStyle*)pointerInteraction:(UIPointerInteraction*)interaction
+                       styleForRegion:(UIPointerRegion*)region {
+  // If the view is no longer in a window due to a race condition, no
+  // pointer style is needed.
+  if (!interaction.view.window) {
+    return nil;
+  }
+
+  DCHECK_EQ(_dragHandleView, interaction.view);
+
+  UITargetedPreview* preview =
+      [[UITargetedPreview alloc] initWithView:_dragHandleView];
+  UIPointerEffect* effect =
+      [UIPointerHighlightEffect effectWithPreview:preview];
+
+  // Make the pointer frame slightly larger than the view, like the system drag
+  // handle.
+  CGRect pointerFrame = CGRectInset(_dragHandleView.frame, -5, -5);
+  UIPointerShape* shape = [UIPointerShape shapeWithRoundedRect:pointerFrame];
+
+  UIPointerStyle* style = [UIPointerStyle styleWithEffect:effect shape:shape];
+  return style;
 }
 
 @end
