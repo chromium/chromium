@@ -10166,7 +10166,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4053" label="V8Navigator_CreateAdRequest_Method"/>
   <int value="4054" label="V8Navigator_FinalizeAd_Method"/>
   <int value="4055" label="RegionCapture"/>
-  <int value="4056" label="AppHistory"/>
+  <int value="4056" label="NavigationAPI"/>
   <int value="4057" label="FlexboxAlignSingleLineDifference"/>
   <int value="4058" label="ExternalProtocolBlockedBySandbox"/>
   <int value="4059" label="OBSOLETE_WebAssemblyDynamicTiering"/>

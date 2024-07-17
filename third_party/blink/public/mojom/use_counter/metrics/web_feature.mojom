@@ -3366,7 +3366,7 @@ enum WebFeature {
   kV8Navigator_CreateAdRequest_Method = 4053,
   kV8Navigator_FinalizeAd_Method = 4054,
   kRegionCapture = 4055,
-  kAppHistory = 4056,
+  kNavigationAPI = 4056,
   kFlexboxAlignSingleLineDifference = 4057,
   kExternalProtocolBlockedBySandbox = 4058,
   kOBSOLETE_WebAssemblyDynamicTiering = 4059,

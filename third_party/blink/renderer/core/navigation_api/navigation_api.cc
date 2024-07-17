@@ -115,7 +115,7 @@ NavigationActivation* NavigationApi::activation() const {
 }
 
 void NavigationApi::setOnnavigate(EventListener* listener) {
-  UseCounter::Count(window_, WebFeature::kAppHistory);
+  UseCounter::Count(window_, WebFeature::kNavigationAPI);
   SetAttributeEventListener(event_type_names::kNavigate, listener);
 }
 
