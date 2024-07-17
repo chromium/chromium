@@ -31,13 +31,12 @@
 class TabGroupEditorBubbleViewDialogBrowserTest : public DialogBrowserTest {
  protected:
   void ShowUi(const std::string& name) override {
-    std::optional<tab_groups::TabGroupId> group =
-        browser()->tab_strip_model()->AddToNewGroup({0});
-    browser()->tab_strip_model()->OpenTabGroupEditor(group.value());
+    group_ = browser()->tab_strip_model()->AddToNewGroup({0});
+    browser()->tab_strip_model()->OpenTabGroupEditor(group_.value());
 
     BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
     TabGroupHeader* header =
-        browser_view->tabstrip()->group_header(group.value());
+        browser_view->tabstrip()->group_header(group_.value());
     ASSERT_NE(nullptr, header);
     ASSERT_TRUE(header->editor_bubble_tracker_.is_open());
   }
@@ -47,6 +46,12 @@ class TabGroupEditorBubbleViewDialogBrowserTest : public DialogBrowserTest {
                ? header->editor_bubble_tracker_.widget()
                : nullptr;
   }
+
+  TabGroupModel* group_model() {
+    return browser()->tab_strip_model()->group_model();
+  }
+
+  std::optional<tab_groups::TabGroupId> group_;
 };
 
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
@@ -163,16 +168,14 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
                        MoveGroupToNewWindow) {
-  ShowUi("SetUp");
+  // Add a tab so theres more than just the group in the tabstrip
+  InProcessBrowserTest::AddBlankTabAndShow(browser());
 
-  TabGroupModel* group_model = browser()->tab_strip_model()->group_model();
-  std::vector<tab_groups::TabGroupId> group_list = group_model->ListTabGroups();
-  ASSERT_EQ(1u, group_list.size());
-  ASSERT_EQ(1u, group_model->GetTabGroup(group_list[0])->ListTabs().length());
+  ShowUi("SetUp");
 
   BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
   TabGroupHeader* header =
-      browser_view->tabstrip()->group_header(group_list[0]);
+      browser_view->tabstrip()->group_header(group_.value());
   views::Widget* editor_bubble = GetEditorBubbleWidget(header);
   ASSERT_NE(nullptr, editor_bubble);
 
@@ -189,9 +192,9 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
   views::test::ButtonTestApi(move_group_button).NotifyClick(released_event);
   ui_test_utils::WaitForBrowserSetLastActive(new_browser_observer.Wait());
 
-  EXPECT_EQ(0u, group_model->ListTabGroups().size());
-  EXPECT_FALSE(group_model->ContainsTabGroup(group_list[0]));
-  EXPECT_EQ(0, browser()->tab_strip_model()->count());
+  EXPECT_EQ(0u, group_model()->ListTabGroups().size());
+  EXPECT_FALSE(group_model()->ContainsTabGroup(group_.value()));
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
   Browser* active_browser = chrome::FindLastActive();
   ASSERT_NE(active_browser, browser());
@@ -199,6 +202,30 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
   EXPECT_EQ(
       1u,
       active_browser->tab_strip_model()->group_model()->ListTabGroups().size());
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
+                       MoveGroupToNewWindowDisabledWhenOnlyGroup) {
+  TabStripModel* tsm = browser()->tab_strip_model();
+  for (int index = tsm->count() - 1; index >= 0; --index) {
+    if (tsm->GetTabAtIndex(index)->group() != group_) {
+      tsm->CloseWebContentsAt(index, TabCloseTypes::CLOSE_NONE);
+    }
+  }
+
+  ShowUi("SetUp");
+
+  BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
+  TabGroupHeader* header =
+      browser_view->tabstrip()->group_header(group_.value());
+  views::Widget* editor_bubble = GetEditorBubbleWidget(header);
+  ASSERT_NE(nullptr, editor_bubble);
+
+  views::Button* const move_group_button =
+      views::Button::AsButton(editor_bubble->GetContentsView()->GetViewByID(
+          TabGroupEditorBubbleView::
+              TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW));
+  EXPECT_EQ(nullptr, move_group_button);
 }
 
 class TabGroupEditorBubbleViewDialogBrowserTestWithFreezingEnabled

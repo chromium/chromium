@@ -84,6 +84,10 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
   void DeleteGroupPressed();
   void MoveGroupToNewWindowPressed();
 
+  // The action for moving a group to a new window is only enabled when the
+  // tabstrip contains more than just the tabs in the current group.
+  bool CanMoveGroupToNewWindow();
+
   // If the saved tab group service exists, this method disconnects the group
   // from the saved tab group so that actions can be performed on the group
   // without updating the saved group. If the service doesnt exist, it does
