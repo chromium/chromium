@@ -227,6 +227,10 @@ class NET_EXPORT GrowableIOBuffer : public IOBuffer {
   base::span<uint8_t> everything();
   base::span<const uint8_t> everything() const;
 
+  // Return a span before the `offset()`.
+  base::span<uint8_t> span_before_offset();
+  base::span<const uint8_t> span_before_offset() const;
+
  private:
   ~GrowableIOBuffer() override;
 

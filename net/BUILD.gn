@@ -2540,6 +2540,7 @@ test("net_unittests") {
     "base/host_mapping_rules_unittest.cc",
     "base/host_port_pair_unittest.cc",
     "base/interval_test.cc",
+    "base/io_buffer_unittest.cc",
     "base/ip_address_unittest.cc",
     "base/ip_endpoint_unittest.cc",
     "base/isolation_info_unittest.cc",

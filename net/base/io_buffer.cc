@@ -145,6 +145,14 @@ base::span<const uint8_t> GrowableIOBuffer::everything() const {
           base::span(real_data_.get(), base::checked_cast<size_t>(capacity_))));
 }
 
+base::span<uint8_t> GrowableIOBuffer::span_before_offset() {
+  return everything().first(base::checked_cast<size_t>(offset_));
+}
+
+base::span<const uint8_t> GrowableIOBuffer::span_before_offset() const {
+  return everything().first(base::checked_cast<size_t>(offset_));
+}
+
 GrowableIOBuffer::~GrowableIOBuffer() {
   data_ = nullptr;
 }
