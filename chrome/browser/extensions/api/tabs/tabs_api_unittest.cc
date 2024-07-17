@@ -122,10 +122,6 @@ class TabsApiUnitTest : public ExtensionServiceTestBase {
   aura::Window* root_window() { return test_helper_.GetContext(); }
 #endif
 
-  // Returns whether the commit succeeded or not.
-  bool CommitPendingLoadForController(
-      content::NavigationController& controller);
-
  private:
   // ExtensionServiceTestBase:
   void SetUp() override;
@@ -169,16 +165,6 @@ void TabsApiUnitTest::TearDown() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   test_helper_.TearDown();
 #endif
-}
-
-bool TabsApiUnitTest::CommitPendingLoadForController(
-    content::NavigationController& controller) {
-  if (!controller.GetPendingEntry()) {
-    return false;
-  }
-
-  content::RenderFrameHostTester::CommitPendingLoad(&controller);
-  return true;
 }
 
 // Bug fix for crbug.com/1196309. Ensure that an extension can't update the tab
@@ -508,8 +494,9 @@ TEST_F(TabsApiUnitTest, TabsUpdate) {
       base::StringPrintf(kFormatArgs, tab_id, kChromiumOrg.spec().c_str());
   ASSERT_TRUE(api_test_utils::RunFunction(function.get(), args, profile(),
                                           api_test_utils::FunctionMode::kNone));
-  ASSERT_TRUE(
-      CommitPendingLoadForController(GetActiveWebContents()->GetController()));
+  content::NavigationController& controller =
+      GetActiveWebContents()->GetController();
+  content::RenderFrameHostTester::CommitPendingLoad(&controller);
   EXPECT_EQ(kChromiumOrg, raw_contents->GetLastCommittedURL());
 }
 
@@ -753,8 +740,9 @@ TEST_F(TabsApiUnitTest,
       base::StringPrintf(kFormatArgs, tab_id, kChromiumOrg.spec().c_str());
   ASSERT_TRUE(api_test_utils::RunFunction(function.get(), args, profile(),
                                           api_test_utils::FunctionMode::kNone));
-  ASSERT_TRUE(
-      CommitPendingLoadForController(GetActiveWebContents()->GetController()));
+  content::NavigationController& controller =
+      GetActiveWebContents()->GetController();
+  content::RenderFrameHostTester::CommitPendingLoad(&controller);
   EXPECT_EQ(kChromiumOrg, raw_contents->GetLastCommittedURL());
 
   // Clean up.
@@ -1668,7 +1656,7 @@ TEST_F(TabsApiUnitTest, TabsGoForwardAndBack) {
   content::WebContents* active_webcontent = GetActiveWebContents();
   content::NavigationController& controller =
       active_webcontent->GetController();
-  ASSERT_TRUE(CommitPendingLoadForController(controller));
+  content::RenderFrameHostTester::CommitPendingLoad(&controller);
   EXPECT_EQ(urls[0], web_contents->GetLastCommittedURL());
   EXPECT_EQ(urls[0], web_contents->GetVisibleURL());
   EXPECT_TRUE(ui::PAGE_TRANSITION_FORWARD_BACK &
@@ -1681,7 +1669,8 @@ TEST_F(TabsApiUnitTest, TabsGoForwardAndBack) {
                               base::StringPrintf("[%d]", tab_id), profile(),
                               api_test_utils::FunctionMode::kIncognito);
 
-  ASSERT_TRUE(CommitPendingLoadForController(controller));
+  content::RenderFrameHostTester::CommitPendingLoad(
+      &active_webcontent->GetController());
   EXPECT_EQ(urls[1], web_contents->GetLastCommittedURL());
   EXPECT_EQ(urls[1], web_contents->GetVisibleURL());
   EXPECT_TRUE(ui::PAGE_TRANSITION_FORWARD_BACK &
@@ -1719,7 +1708,8 @@ TEST_F(TabsApiUnitTest, TabsGoForwardAndBackSavedTabGroupTabNotAllowed) {
     api_test_utils::RunFunction(goback_function.get(),
                                 base::StringPrintf("[%d]", tab_id), profile(),
                                 api_test_utils::FunctionMode::kIncognito);
-    ASSERT_TRUE(CommitPendingLoadForController(web_contents->GetController()));
+    content::NavigationController& controller = web_contents->GetController();
+    content::RenderFrameHostTester::CommitPendingLoad(&controller);
   }
 
   EXPECT_EQ(urls[1], web_contents->GetLastCommittedURL());
@@ -1798,7 +1788,8 @@ TEST_F(
     api_test_utils::RunFunction(goback_function.get(),
                                 base::StringPrintf("[%d]", tab_id), profile(),
                                 api_test_utils::FunctionMode::kIncognito);
-    ASSERT_TRUE(CommitPendingLoadForController(web_contents->GetController()));
+    content::NavigationController& controller = web_contents->GetController();
+    content::RenderFrameHostTester::CommitPendingLoad(&controller);
   }
 
   EXPECT_EQ(urls[1], web_contents->GetLastCommittedURL());
@@ -1828,7 +1819,8 @@ TEST_F(
     ASSERT_TRUE(api_test_utils::RunFunction(
         goback_function.get(), base::StringPrintf("[%d]", tab_id), profile(),
         api_test_utils::FunctionMode::kIncognito));
-    ASSERT_TRUE(CommitPendingLoadForController(web_contents->GetController()));
+    content::NavigationController& controller = web_contents->GetController();
+    content::RenderFrameHostTester::CommitPendingLoad(&controller);
   }
   EXPECT_EQ(urls[0], web_contents->GetLastCommittedURL());
   EXPECT_EQ(urls[0], web_contents->GetVisibleURL());
@@ -1839,7 +1831,8 @@ TEST_F(
     ASSERT_TRUE(api_test_utils::RunFunction(
         goforward_function.get(), base::StringPrintf("[%d]", tab_id), profile(),
         api_test_utils::FunctionMode::kIncognito));
-    ASSERT_TRUE(CommitPendingLoadForController(web_contents->GetController()));
+    content::NavigationController& controller = web_contents->GetController();
+    content::RenderFrameHostTester::CommitPendingLoad(&controller);
   }
   EXPECT_EQ(urls[1], web_contents->GetLastCommittedURL());
   EXPECT_EQ(urls[1], web_contents->GetVisibleURL());
@@ -1892,7 +1885,7 @@ TEST_F(TabsApiUnitTest, TabsGoForwardAndBackWithoutTabId) {
                               api_test_utils::FunctionMode::kIncognito);
 
   content::NavigationController& controller = tab1_webcontents->GetController();
-  ASSERT_TRUE(CommitPendingLoadForController(controller));
+  content::RenderFrameHostTester::CommitPendingLoad(&controller);
   EXPECT_EQ(tab1_urls[0], tab1_webcontents->GetLastCommittedURL());
   EXPECT_EQ(tab1_urls[0], tab1_webcontents->GetVisibleURL());
   EXPECT_TRUE(ui::PAGE_TRANSITION_FORWARD_BACK &
@@ -1904,7 +1897,7 @@ TEST_F(TabsApiUnitTest, TabsGoForwardAndBackWithoutTabId) {
   api_test_utils::RunFunction(goforward_function.get(), "[]", profile(),
                               api_test_utils::FunctionMode::kIncognito);
 
-  ASSERT_TRUE(CommitPendingLoadForController(controller));
+  content::RenderFrameHostTester::CommitPendingLoad(&controller);
   EXPECT_EQ(tab1_urls[1], tab1_webcontents->GetLastCommittedURL());
   EXPECT_EQ(tab1_urls[1], tab1_webcontents->GetVisibleURL());
   EXPECT_TRUE(ui::PAGE_TRANSITION_FORWARD_BACK &
@@ -1922,7 +1915,7 @@ TEST_F(TabsApiUnitTest, TabsGoForwardAndBackWithoutTabId) {
 
   content::NavigationController& controller2 =
       tab2_webcontents->GetController();
-  ASSERT_TRUE(CommitPendingLoadForController(controller2));
+  content::RenderFrameHostTester::CommitPendingLoad(&controller2);
   EXPECT_EQ(tab2_urls[0], tab2_webcontents->GetLastCommittedURL());
   EXPECT_EQ(tab2_urls[0], tab2_webcontents->GetVisibleURL());
   EXPECT_TRUE(ui::PAGE_TRANSITION_FORWARD_BACK &
