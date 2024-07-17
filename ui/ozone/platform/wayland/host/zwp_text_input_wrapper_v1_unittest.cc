@@ -16,55 +16,13 @@
 #include "ui/ozone/platform/wayland/test/mock_zwp_text_input.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/test_zcr_text_input_extension.h"
+#include "ui/ozone/platform/wayland/test/test_zwp_text_input_wrapper_client.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 
 using ::testing::InSequence;
 using ::testing::Mock;
 
 namespace ui {
-
-class TestZWPTextInputWrapperClient : public ZWPTextInputWrapperClient {
- public:
-  TestZWPTextInputWrapperClient() = default;
-  TestZWPTextInputWrapperClient(const TestZWPTextInputWrapperClient&) = delete;
-  TestZWPTextInputWrapperClient& operator=(
-      const TestZWPTextInputWrapperClient&) = delete;
-  ~TestZWPTextInputWrapperClient() override = default;
-
-  void OnPreeditString(std::string_view text,
-                       const std::vector<SpanStyle>& spans,
-                       int32_t preedit_cursor) override {}
-  void OnCommitString(std::string_view text) override {}
-  void OnCursorPosition(int32_t index, int32_t anchor) override {}
-  void OnDeleteSurroundingText(int32_t index, uint32_t length) override {}
-  void OnKeysym(uint32_t key,
-                uint32_t state,
-                uint32_t modifiers,
-                uint32_t time) override {
-    last_keysym_time_ = time;
-  }
-  void OnSetPreeditRegion(int32_t index,
-                          uint32_t length,
-                          const std::vector<SpanStyle>& spans) override {}
-  void OnClearGrammarFragments(const gfx::Range& range) override {}
-  void OnAddGrammarFragment(const ui::GrammarFragment& fragment) override {}
-  void OnSetAutocorrectRange(const gfx::Range& range) override {}
-  void OnSetVirtualKeyboardOccludedBounds(
-      const gfx::Rect& screen_bounds) override {}
-  void OnConfirmPreedit(bool keep_selection) override {}
-  void OnInputPanelState(uint32_t state) override {}
-  void OnModifiersMap(std::vector<std::string> modifiers_map) override {}
-  void OnInsertImage(const GURL& src) override {
-    last_inserted_image_url_ = src;
-  }
-
-  GURL last_inserted_image_url() const { return last_inserted_image_url_; }
-  uint32_t last_keysym_time() const { return last_keysym_time_; }
-
- private:
-  GURL last_inserted_image_url_;
-  uint32_t last_keysym_time_;
-};
 
 class ZWPTextInputWrapperV1Test : public WaylandTestSimple {
  public:

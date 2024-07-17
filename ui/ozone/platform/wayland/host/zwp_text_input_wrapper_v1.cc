@@ -104,6 +104,32 @@ std::vector<std::string> ParseModifiersMap(wl_array* array) {
       base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 }
 
+// Returns ImeTextSpan style to be assigned. Maybe nullopt if it is not
+// supported.
+std::optional<ZWPTextInputWrapperClient::SpanStyle::Style> ConvertStyle(
+    uint32_t style) {
+  switch (style) {
+    case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_DEFAULT:
+      return {{ImeTextSpan::Type::kComposition, ImeTextSpan::Thickness::kNone}};
+    case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_HIGHLIGHT:
+      return {
+          {ImeTextSpan::Type::kComposition, ImeTextSpan::Thickness::kThick}};
+    case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_UNDERLINE:
+      return {{ImeTextSpan::Type::kComposition, ImeTextSpan::Thickness::kThin}};
+    case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_SELECTION:
+      return {{ImeTextSpan::Type::kSuggestion, ImeTextSpan::Thickness::kNone}};
+    case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_INCORRECT:
+      return {{ImeTextSpan::Type::kMisspellingSuggestion,
+               ImeTextSpan::Thickness::kNone}};
+    case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_NONE:
+    case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_ACTIVE:
+    case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_INACTIVE:
+    default:
+      VLOG(1) << "Unsupported style. Skipped: " << style;
+  }
+  return std::nullopt;
+}
+
 }  // namespace
 
 ZWPTextInputWrapperV1::ZWPTextInputWrapperV1(
@@ -403,7 +429,10 @@ void ZWPTextInputWrapperV1::OnPreeditString(
   auto spans = std::move(self->spans_);
   int32_t preedit_cursor = self->preedit_cursor_;
   self->ResetInputEventState();
-  self->client_->OnPreeditString(text, spans, preedit_cursor);
+  self->client_->OnPreeditString(text, spans,
+                                 preedit_cursor < 0
+                                     ? gfx::Range::InvalidRange()
+                                     : gfx::Range(preedit_cursor));
 }
 
 // static
@@ -415,7 +444,7 @@ void ZWPTextInputWrapperV1::OnPreeditStyling(
     uint32_t style) {
   auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
   self->spans_.push_back(
-      ZWPTextInputWrapperClient::SpanStyle{index, length, style});
+      ZWPTextInputWrapperClient::SpanStyle{index, length, ConvertStyle(style)});
 }
 
 // static

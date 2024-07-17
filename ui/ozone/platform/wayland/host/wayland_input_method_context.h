@@ -25,7 +25,6 @@
 namespace ui {
 
 class WaylandConnection;
-class ZWPTextInputWrapper;
 
 class WaylandInputMethodContext : public LinuxInputMethodContext,
                                   public VirtualKeyboardController,
@@ -80,7 +79,7 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   // ZWPTextInputWrapperClient overrides:
   void OnPreeditString(std::string_view text,
                        const std::vector<SpanStyle>& spans,
-                       int32_t preedit_cursor) override;
+                       const gfx::Range& preedit_cursor) override;
   void OnCommitString(std::string_view text) override;
   void OnCursorPosition(int32_t index, int32_t anchor) override;
   void OnDeleteSurroundingText(int32_t index, uint32_t length) override;

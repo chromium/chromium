@@ -32,6 +32,7 @@
 #include <surface-augmenter-client-protocol.h>
 #include <text-input-extension-unstable-v1-client-protocol.h>
 #include <text-input-unstable-v1-client-protocol.h>
+#include <text-input-unstable-v3-client-protocol.h>
 #include <touchpad-haptics-unstable-v1-client-protocol.h>
 #include <viewporter-client-protocol.h>
 #include <wayland-client-core.h>
@@ -297,6 +298,8 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_relative_pointer_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_relative_pointer_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_text_input_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_text_input_v1)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_text_input_manager_v3)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_text_input_v3)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zxdg_decoration_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zxdg_exporter_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zxdg_exported_v1)

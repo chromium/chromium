@@ -145,7 +145,10 @@ wayland_protocol("text_input_extension_protocol") {
 }
 
 wayland_protocol("text_input_protocol") {
-  sources = [ "src/unstable/text-input/text-input-unstable-v1.xml" ]
+  sources = [
+    "src/unstable/text-input/text-input-unstable-v1.xml",
+    "src/unstable/text-input/text-input-unstable-v3.xml",
+  ]
 }
 
 wayland_protocol("touchpad_haptics_protocol") {

@@ -377,8 +377,6 @@ class WaylandInputMethodContextTestBase : public WaylandTest {
       input_method_context_delegate_;
   std::unique_ptr<TestKeyboardDelegate> keyboard_delegate_;
   std::unique_ptr<WaylandInputMethodContext> input_method_context_;
-  raw_ptr<wl::MockZwpTextInput> zwp_text_input_ = nullptr;
-  raw_ptr<wl::MockZcrExtendedTextInput> zcr_extended_text_input_ = nullptr;
 
   uint32_t surface_id_ = 0u;
 };
@@ -1472,7 +1470,7 @@ TEST_P(WaylandInputMethodContextTest,
   input_method_context_->SetSurroundingText(
       u"abcd", gfx::Range(0, 4), gfx::Range::InvalidRange(), gfx::Range(2),
       std::nullopt, std::nullopt);
-  input_method_context_->OnPreeditString("xyz", {}, 1);
+  input_method_context_->OnPreeditString("xyz", {}, gfx::Range(1));
   connection_->Flush();
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
@@ -1517,7 +1515,7 @@ TEST_P(WaylandInputMethodContextTest,
   input_method_context_->SetSurroundingText(
       u"abcd", gfx::Range(0, 4), gfx::Range::InvalidRange(), gfx::Range(2),
       std::nullopt, std::nullopt);
-  input_method_context_->OnPreeditString("xyz", {}, 1);
+  input_method_context_->OnPreeditString("xyz", {}, gfx::Range(1));
   connection_->Flush();
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
@@ -2223,6 +2221,50 @@ TEST_F(WaylandInputMethodContextWithMockWrapperTest,
       text);
   EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
             kSelectionRange);
+}
+
+TEST_F(WaylandInputMethodContextWithMockWrapperTest, OnPreeditChanged) {
+  const std::u16string text(50, u'あ');
+  const std::string text_utf8 = base::UTF16ToUTF8(text);
+
+  input_method_context_->OnPreeditString(text_utf8, {}, {30, 60});
+  EXPECT_EQ(
+      input_method_context_->predicted_state_for_testing().surrounding_text,
+      text);
+  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
+            gfx::Range(10, 20));
+
+  // cursor end before begin
+  input_method_context_->OnPreeditString(text_utf8, {}, {60, 30});
+  EXPECT_EQ(
+      input_method_context_->predicted_state_for_testing().surrounding_text,
+      text);
+  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
+            gfx::Range(20, 10));
+}
+
+TEST_F(WaylandInputMethodContextWithMockWrapperTest,
+       OnPreeditChangedInvalidCursorEnd) {
+  const std::u16string text(50, u'あ');
+  const std::string text_utf8 = base::UTF16ToUTF8(text);
+
+  // Cursor end is outside of preedit text. So neither surrounding text nor
+  // selection should be updated.
+  input_method_context_->OnPreeditString(text_utf8, {}, {30, 999999});
+  EXPECT_EQ(
+      input_method_context_->predicted_state_for_testing().surrounding_text,
+      u"");
+  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
+            gfx::Range(0, 0));
+
+  // Cursor end is in the middle of a character. So neither surrounding text nor
+  // selection should be updated.
+  input_method_context_->OnPreeditString(text_utf8, {}, {30, 32});
+  EXPECT_EQ(
+      input_method_context_->predicted_state_for_testing().surrounding_text,
+      u"");
+  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
+            gfx::Range(0, 0));
 }
 
 }  // namespace ui
