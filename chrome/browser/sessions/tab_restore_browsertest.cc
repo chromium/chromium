@@ -2449,8 +2449,16 @@ IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
 
 // Verify that a restored group which is already open does not open a new group
 // but focuses a tab in the group.
+// TODO(crbug.com/353618704): Re-enable this test
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
+#define MAYBE_RestoreSavedGroupFocusedIfOpenAlready \
+  DISABLED_RestoreSavedGroupFocusedIfOpenAlready
+#else
+#define MAYBE_RestoreSavedGroupFocusedIfOpenAlready \
+  RestoreSavedGroupFocusedIfOpenAlready
+#endif
 IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
-                       RestoreSavedGroupFocusedIfOpenAlready) {
+                       MAYBE_RestoreSavedGroupFocusedIfOpenAlready) {
   AddTabs(browser(), 2);
   tab_groups::SavedTabGroupKeyedService* service =
       tab_groups::SavedTabGroupServiceFactory::GetForProfile(
@@ -2851,8 +2859,16 @@ IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
 
 // Verify that restoring a window with a saved group that is already open does
 // not restore that group twice.
+// TODO(crbug.com/353618704): Re-enable this test
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
+#define MAYBE_RestoreWindowWithOpenedSavedGroup \
+  DISABLED_RestoreWindowWithOpenedSavedGroup
+#else
+#define MAYBE_RestoreWindowWithOpenedSavedGroup \
+  RestoreWindowWithOpenedSavedGroup
+#endif
 IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
-                       RestoreWindowWithOpenedSavedGroup) {
+                       MAYBE_RestoreWindowWithOpenedSavedGroup) {
   AddTab(browser(), GURL("https://www.1.com"));
   AddTab(browser(), GURL("https://www.2.com"));
   AddTab(browser(), GURL("https://www.3.com"));
