@@ -80,13 +80,17 @@ const char kMilestoneFirstRedirectedRequestStart[] =
     "FirstRedirectedRequestStart";
 const char kMilestoneFirstRedirectResponseStart[] =
     "FirstRedirectResponseStart";
+const char kMilestoneFirstRedirectResponseLoaderCallback[] =
+    "FirstRedirectResponseLoaderCallback";
 const char kMilestoneNonRedirectedRequestStart[] = "NonRedirectedRequestStart";
 const char kMilestoneNonRedirectResponseStart[] = "NonRedirectResponseStart";
+const char kMilestoneNonRedirectResponseLoaderCallback[] =
+    "NonRedirectResponseLoaderCallback";
 const char kMilestoneCommitSent[] = "CommitSent";
 const char kMilestoneDidCommit[] = "DidCommit";
 
-// TODO(https://crbug.com/347706997): Record more milestones related to loading,
-// loader callbacks, and process creation timing.
+// TODO(https://crbug.com/347706997): Record more milestones related to loading
+// and process creation timing.
 
 }  // namespace internal
 
@@ -135,18 +139,18 @@ std::string AbandonedPageLoadMetricsObserver::NavigationMilestoneToString(
       return internal::kMilestoneFirstRedirectedRequestStart;
     case NavigationMilestone::kFirstRedirectResponseStart:
       return internal::kMilestoneFirstRedirectResponseStart;
+    case NavigationMilestone::kFirstRedirectResponseLoaderCallback:
+      return internal::kMilestoneFirstRedirectResponseLoaderCallback;
     case NavigationMilestone::kNonRedirectedRequestStart:
       return internal::kMilestoneNonRedirectedRequestStart;
     case NavigationMilestone::kNonRedirectResponseStart:
       return internal::kMilestoneNonRedirectResponseStart;
+    case NavigationMilestone::kNonRedirectResponseLoaderCallback:
+      return internal::kMilestoneNonRedirectResponseLoaderCallback;
     case NavigationMilestone::kCommitSent:
       return internal::kMilestoneCommitSent;
     case NavigationMilestone::kDidCommit:
       return internal::kMilestoneDidCommit;
-    case NavigationMilestone::kFirstRedirectResponseLoaderCallback:
-    case NavigationMilestone::kNonRedirectResponseLoaderCallback:
-      // These milestones are not processed yet and are explicitly not handled.
-      NOTREACHED_NORETURN();
   }
 }
 
@@ -499,32 +503,35 @@ void AbandonedPageLoadMetricsObserver::LogMetricsOnAbandon(
 
   // Log the time from the latest navigation milestone received. This helps us
   // know at what point of the navigation the abandonment happened. Note that
-  // for redirects and non-redirects we only check "response" milestones and not
-  // the "request" counterparts, since we're only notified of
-  // NavigationHandleTiming update when we get the response. Thus, the response
-  // timing must be more recent than the request counterpart.
+  // for redirects and non-redirects we only check "loader callback" milestones
+  // and not the "response start" or "request start" counterparts, since we're
+  // only notified of NavigationHandleTiming update when we get the loader
+  // callback. Thus, the loader callback timing must be more recent than the
+  // response start or request start counterpart.
   if (!latest_navigation_handle_timing_.navigation_commit_sent_time.is_null() &&
       abandon_timing >
           latest_navigation_handle_timing_.navigation_commit_sent_time) {
     LogAbandonHistograms(
         abandon_reason, NavigationMilestone::kCommitSent, abandon_timing,
         latest_navigation_handle_timing_.navigation_commit_sent_time);
-  } else if (!latest_navigation_handle_timing_.non_redirect_response_start_time
-                  .is_null() &&
+  } else if (!latest_navigation_handle_timing_
+                  .non_redirect_response_loader_callback_time.is_null() &&
              abandon_timing > latest_navigation_handle_timing_
-                                  .non_redirect_response_start_time) {
+                                  .non_redirect_response_loader_callback_time) {
     LogAbandonHistograms(
-        abandon_reason, NavigationMilestone::kNonRedirectResponseStart,
+        abandon_reason, NavigationMilestone::kNonRedirectResponseLoaderCallback,
         abandon_timing,
-        latest_navigation_handle_timing_.non_redirect_response_start_time);
-  } else if (!latest_navigation_handle_timing_.first_response_start_time
+        latest_navigation_handle_timing_
+            .non_redirect_response_loader_callback_time);
+  } else if (!latest_navigation_handle_timing_.first_loader_callback_time
                   .is_null() &&
              abandon_timing >
-                 latest_navigation_handle_timing_.first_response_start_time) {
+                 latest_navigation_handle_timing_.first_loader_callback_time) {
     LogAbandonHistograms(
-        abandon_reason, NavigationMilestone::kFirstRedirectResponseStart,
+        abandon_reason,
+        NavigationMilestone::kFirstRedirectResponseLoaderCallback,
         abandon_timing,
-        latest_navigation_handle_timing_.first_response_start_time);
+        latest_navigation_handle_timing_.first_loader_callback_time);
   } else if (!latest_navigation_handle_timing_.loader_start_time.is_null() &&
              abandon_timing >
                  latest_navigation_handle_timing_.loader_start_time) {
@@ -563,30 +570,44 @@ void AbandonedPageLoadMetricsObserver::LogNavigationMilestoneMetrics() {
         navigation_start_time);
   }
 
-  if (!latest_navigation_handle_timing_.non_redirect_response_start_time
-           .is_null() &&
-      last_logged_navigation_handle_timing_.non_redirect_response_start_time
-          .is_null()) {
+  if (!latest_navigation_handle_timing_
+           .non_redirect_response_loader_callback_time.is_null() &&
+      last_logged_navigation_handle_timing_
+          .non_redirect_response_loader_callback_time.is_null()) {
     // The navigation had received its final non-redirect response.
-    CHECK(!latest_navigation_handle_timing_.non_redirected_request_start_time
-               .is_null());
     LogMilestoneHistogram(
-        NavigationMilestone::kNonRedirectResponseStart,
-        latest_navigation_handle_timing_.non_redirect_response_start_time,
+        NavigationMilestone::kNonRedirectResponseLoaderCallback,
+        latest_navigation_handle_timing_
+            .non_redirect_response_loader_callback_time,
         navigation_start_time);
-    LogMilestoneHistogram(
-        NavigationMilestone::kNonRedirectedRequestStart,
-        latest_navigation_handle_timing_.non_redirected_request_start_time,
-        navigation_start_time);
+    if (!latest_navigation_handle_timing_.non_redirect_response_start_time
+             .is_null()) {
+      LogMilestoneHistogram(
+          NavigationMilestone::kNonRedirectResponseStart,
+          latest_navigation_handle_timing_.non_redirect_response_start_time,
+          navigation_start_time);
+    }
+    if (!latest_navigation_handle_timing_.non_redirected_request_start_time
+             .is_null()) {
+      LogMilestoneHistogram(
+          NavigationMilestone::kNonRedirectedRequestStart,
+          latest_navigation_handle_timing_.non_redirected_request_start_time,
+          navigation_start_time);
+    }
   }
 
-  if (!latest_navigation_handle_timing_.first_response_start_time.is_null() &&
-      latest_navigation_handle_timing_.first_response_start_time !=
-          latest_navigation_handle_timing_.non_redirect_response_start_time &&
-      last_logged_navigation_handle_timing_.first_response_start_time
-          .is_null()) {
+  if (!latest_navigation_handle_timing_.first_loader_callback_time.is_null() &&
+      last_logged_navigation_handle_timing_.first_loader_callback_time
+          .is_null() &&
+      latest_navigation_handle_timing_.first_loader_callback_time !=
+          latest_navigation_handle_timing_
+              .non_redirect_response_loader_callback_time) {
     // If we got a response that is not the final response, it must be a
     // redirect response.
+    LogMilestoneHistogram(
+        NavigationMilestone::kFirstRedirectResponseLoaderCallback,
+        latest_navigation_handle_timing_.first_loader_callback_time,
+        navigation_start_time);
     if (!latest_navigation_handle_timing_.first_response_start_time.is_null()) {
       LogMilestoneHistogram(
           NavigationMilestone::kFirstRedirectResponseStart,

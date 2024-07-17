@@ -6544,6 +6544,8 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnResponseReceived(
         response_head_->load_timing.send_start;
     navigation_handle_timing_.non_redirect_response_start_time =
         response_head_->load_timing.receive_headers_start;
+    navigation_handle_timing_.non_redirect_response_loader_callback_time =
+        loader_callback_time;
   }
 
   navigation_handle_timing_.final_request_start_time =

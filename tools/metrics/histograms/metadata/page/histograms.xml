@@ -73,9 +73,11 @@ chromium-metrics-reviews@google.com.
   <variant name="CommitSent"/>
   <variant name="DidCommit"/>
   <variant name="FirstRedirectedRequestStart"/>
+  <variant name="FirstRedirectResponseLoaderCallback"/>
   <variant name="FirstRedirectResponseStart"/>
   <variant name="LoaderStart"/>
   <variant name="NonRedirectedRequestStart"/>
+  <variant name="NonRedirectResponseLoaderCallback"/>
   <variant name="NonRedirectResponseStart"/>
 </variants>
 

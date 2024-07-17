@@ -72,28 +72,28 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
 
  protected:
   std::vector<NavigationMilestone> all_milestones() {
-    // TODO(https://crbug.com/347706997): Once they're handled, include
-    // k{First,Non}RedirectResponseLoaderCallback milestones.
     return {NavigationMilestone::kNavigationStart,
             NavigationMilestone::kLoaderStart,
             NavigationMilestone::kFirstRedirectedRequestStart,
             NavigationMilestone::kFirstRedirectResponseStart,
+            NavigationMilestone::kFirstRedirectResponseLoaderCallback,
             NavigationMilestone::kNonRedirectedRequestStart,
             NavigationMilestone::kNonRedirectResponseStart,
+            NavigationMilestone::kNonRedirectResponseLoaderCallback,
             NavigationMilestone::kCommitSent,
             NavigationMilestone::kDidCommit};
   }
   std::vector<NavigationMilestone> all_testable_milestones() {
     return {NavigationMilestone::kNavigationStart,
             NavigationMilestone::kLoaderStart,
-            NavigationMilestone::kFirstRedirectResponseStart,
-            NavigationMilestone::kNonRedirectResponseStart};
+            NavigationMilestone::kFirstRedirectResponseLoaderCallback,
+            NavigationMilestone::kNonRedirectResponseLoaderCallback};
   }
 
   std::vector<NavigationMilestone> all_throttleable_milestones() {
     return {NavigationMilestone::kNavigationStart,
-            NavigationMilestone::kFirstRedirectResponseStart,
-            NavigationMilestone::kNonRedirectResponseStart};
+            NavigationMilestone::kFirstRedirectResponseLoaderCallback,
+            NavigationMilestone::kNonRedirectResponseLoaderCallback};
   }
 
   GURL url_srp() {
@@ -130,7 +130,8 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
   }
 
   GURL GetTargetURLForMilestone(NavigationMilestone milestone) {
-    if (milestone == NavigationMilestone::kFirstRedirectResponseStart) {
+    if (milestone ==
+        NavigationMilestone::kFirstRedirectResponseLoaderCallback) {
       return url_srp_redirect();
     }
     return url_srp();
@@ -225,7 +226,9 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
           << " ExpectTotalCountForAllNavigationMilestones on milestone "
           << ((int)milestone) << " with suffix " << histogram_suffix);
       bool is_redirect =
-          (milestone == NavigationMilestone::kFirstRedirectResponseStart ||
+          (milestone ==
+               NavigationMilestone::kFirstRedirectResponseLoaderCallback ||
+           milestone == NavigationMilestone::kFirstRedirectResponseStart ||
            milestone == NavigationMilestone::kFirstRedirectedRequestStart);
       histogram_tester().ExpectTotalCount(
           GetMilestoneHistogramName(milestone, histogram_suffix),
@@ -299,11 +302,11 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
     } else if (abandon_milestone == NavigationMilestone::kLoaderStart) {
       EXPECT_EQ(navigation.WaitForLoaderStart(), expect_milestone_successful);
     } else if (abandon_milestone ==
-               NavigationMilestone::kFirstRedirectResponseStart) {
+               NavigationMilestone::kFirstRedirectResponseLoaderCallback) {
       EXPECT_EQ(navigation.WaitForRequestRedirected(),
                 expect_milestone_successful);
     } else if (abandon_milestone ==
-               NavigationMilestone::kNonRedirectResponseStart) {
+               NavigationMilestone::kNonRedirectResponseLoaderCallback) {
       EXPECT_EQ(navigation.WaitForResponse(), expect_milestone_successful);
     }
     // TODO(https://crbug.com/347706997): Test for abandonment after the commit
@@ -354,26 +357,49 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
             NavigationMilestone::kFirstRedirectedRequestStart,
             histogram_suffix),
         (has_redirect &&
-         abandon_milestone >= NavigationMilestone::kFirstRedirectResponseStart)
+         abandon_milestone >=
+             NavigationMilestone::kFirstRedirectResponseLoaderCallback)
             ? 1
             : 0);
     histogram_tester.ExpectTotalCount(
         GetMilestoneHistogramName(
-            NavigationMilestone::kFirstRedirectResponseStart, histogram_suffix),
+            NavigationMilestone::kFirstRedirectResponseLoaderCallback,
+            histogram_suffix),
         (has_redirect &&
-         abandon_milestone >= NavigationMilestone::kFirstRedirectResponseStart)
+         abandon_milestone >=
+             NavigationMilestone::kFirstRedirectResponseLoaderCallback)
+            ? 1
+            : 0);
+    histogram_tester.ExpectTotalCount(
+        GetMilestoneHistogramName(
+            NavigationMilestone::kFirstRedirectResponseLoaderCallback,
+            histogram_suffix),
+        (has_redirect &&
+         abandon_milestone >=
+             NavigationMilestone::kFirstRedirectResponseLoaderCallback)
             ? 1
             : 0);
     histogram_tester.ExpectTotalCount(
         GetMilestoneHistogramName(
             NavigationMilestone::kNonRedirectedRequestStart, histogram_suffix),
-        abandon_milestone >= NavigationMilestone::kNonRedirectResponseStart
+        abandon_milestone >=
+                NavigationMilestone::kNonRedirectResponseLoaderCallback
             ? 1
             : 0);
     histogram_tester.ExpectTotalCount(
         GetMilestoneHistogramName(
-            NavigationMilestone::kNonRedirectResponseStart, histogram_suffix),
-        abandon_milestone >= NavigationMilestone::kNonRedirectResponseStart
+            NavigationMilestone::kNonRedirectResponseLoaderCallback,
+            histogram_suffix),
+        abandon_milestone >=
+                NavigationMilestone::kNonRedirectResponseLoaderCallback
+            ? 1
+            : 0);
+    histogram_tester.ExpectTotalCount(
+        GetMilestoneHistogramName(
+            NavigationMilestone::kNonRedirectResponseLoaderCallback,
+            histogram_suffix),
+        abandon_milestone >=
+                NavigationMilestone::kNonRedirectResponseLoaderCallback
             ? 1
             : 0);
     histogram_tester.ExpectTotalCount(
@@ -430,7 +456,8 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
                                                      histogram_suffix),
             abandon_reason, 1);
 
-      } else if (milestone == NavigationMilestone::kNonRedirectResponseStart &&
+      } else if (milestone ==
+                     NavigationMilestone::kNonRedirectResponseLoaderCallback &&
                  abandon_after_hiding_reason.has_value() &&
                  abandon_after_hiding_reason != AbandonReason::kHidden) {
         // If a navigation was initially abandoned by hiding, but then got
@@ -482,8 +509,9 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
                                     histogram_suffix),
           already_hidden ? 1 : 0);
 
-      already_hidden |= (abandon_milestone <
-                         NavigationMilestone::kFirstRedirectResponseStart);
+      already_hidden |=
+          (abandon_milestone <
+           NavigationMilestone::kFirstRedirectResponseLoaderCallback);
       histogram_tester.ExpectTotalCount(
           GetMilestoneHistogramName(
               NavigationMilestone::kFirstRedirectedRequestStart,
@@ -491,12 +519,13 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
           (has_redirect && already_hidden) ? 1 : 0);
       histogram_tester.ExpectTotalCount(
           GetMilestoneHistogramName(
-              NavigationMilestone::kFirstRedirectResponseStart,
+              NavigationMilestone::kFirstRedirectResponseLoaderCallback,
               histogram_suffix),
           (has_redirect && already_hidden) ? 1 : 0);
 
-      already_hidden |= (abandon_milestone <=
-                         NavigationMilestone::kFirstRedirectResponseStart);
+      already_hidden |=
+          (abandon_milestone <=
+           NavigationMilestone::kFirstRedirectResponseLoaderCallback);
       histogram_tester.ExpectTotalCount(
           GetMilestoneHistogramName(
               NavigationMilestone::kNonRedirectedRequestStart,
@@ -504,7 +533,8 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
           already_hidden ? 1 : 0);
       histogram_tester.ExpectTotalCount(
           GetMilestoneHistogramName(
-              NavigationMilestone::kNonRedirectResponseStart, histogram_suffix),
+              NavigationMilestone::kNonRedirectResponseLoaderCallback,
+              histogram_suffix),
           already_hidden ? 1 : 0);
       // The navigation might be abandoned for a second time after hiding. In
       // that case, the milestones after the second abandonment won't be logged,
@@ -819,7 +849,7 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
   TestNavigationAbandonment(
       AbandonReason::kHidden,
       // Test hiding at kNavigationStart, then stop the navigation on
-      // kNonRedirectResponseStart.
+      // kNonRedirectResponseLoaderCallback.
       NavigationMilestone::kNavigationStart, url_srp(),
       /*expect_milestone_successful=*/true,
       /*expect_committed=*/false, web_contents(),
@@ -845,7 +875,7 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
                        SearchTabHiddenThenStopped_NonSRPRedirectToSRP) {
   for (NavigationMilestone milestone :
        {NavigationMilestone::kNavigationStart,
-        NavigationMilestone::kFirstRedirectResponseStart}) {
+        NavigationMilestone::kFirstRedirectResponseLoaderCallback}) {
     // Make sure the WebContents is currently shown, before hiding it later.
     web_contents()->WasShown();
 
@@ -882,7 +912,7 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
   TestNavigationAbandonment(
       AbandonReason::kHidden,
       // Test hiding at kNavigationStart, then stop the navigation on
-      // kNonRedirectResponseStart.
+      // kNonRedirectResponseLoaderCallback.
       NavigationMilestone::kNavigationStart, url_srp(),
       /*expect_milestone_successful=*/true,
       /*expect_committed=*/true, web_contents(),
@@ -960,12 +990,13 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
                   }
                   content::TestNavigationThrottle::ThrottleMethod method =
                       content::TestNavigationThrottle::WILL_START_REQUEST;
-                  if (milestone ==
-                      NavigationMilestone::kFirstRedirectResponseStart) {
+                  if (milestone == NavigationMilestone::
+                                       kFirstRedirectResponseLoaderCallback) {
                     method =
                         content::TestNavigationThrottle::WILL_REDIRECT_REQUEST;
                   } else if (milestone ==
-                             NavigationMilestone::kNonRedirectResponseStart) {
+                             NavigationMilestone::
+                                 kNonRedirectResponseLoaderCallback) {
                     method =
                         content::TestNavigationThrottle::WILL_PROCESS_RESPONSE;
                   }
@@ -1008,17 +1039,18 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
               content::TestNavigationThrottle::ThrottleMethod method =
                   content::TestNavigationThrottle::WILL_START_REQUEST;
               if (milestone ==
-                  NavigationMilestone::kFirstRedirectResponseStart) {
+                  NavigationMilestone::kFirstRedirectResponseLoaderCallback) {
                 method = content::TestNavigationThrottle::WILL_REDIRECT_REQUEST;
-              } else if (milestone ==
-                         NavigationMilestone::kNonRedirectResponseStart) {
+              } else if (milestone == NavigationMilestone::
+                                          kNonRedirectResponseLoaderCallback) {
                 method = content::TestNavigationThrottle::WILL_PROCESS_RESPONSE;
               }
               auto throttle =
                   std::make_unique<content::TestNavigationThrottle>(handle);
               throttle->SetResponse(
                   method, content::TestNavigationThrottle::SYNCHRONOUS,
-                  milestone == NavigationMilestone::kNonRedirectResponseStart
+                  milestone == NavigationMilestone::
+                                   kNonRedirectResponseLoaderCallback
                       ? content::NavigationThrottle::BLOCK_RESPONSE
                       : content::NavigationThrottle::BLOCK_REQUEST);
               return throttle;
@@ -1043,7 +1075,7 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
                        SearchCancelledByRenderProcessGone) {
   TestNavigationAbandonment(
       AbandonReason::kRenderProcessGone,
-      NavigationMilestone::kNonRedirectResponseStart, url_srp(),
+      NavigationMilestone::kNonRedirectResponseLoaderCallback, url_srp(),
 
       /*expect_milestone_successful=*/true,
       /*expect_committed=*/false, web_contents(),

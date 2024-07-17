@@ -41,21 +41,21 @@ class AbandonedPageLoadMetricsObserverBrowserTest
 
  protected:
   std::vector<NavigationMilestone> all_milestones() {
-    // TODO(https://crbug.com/347706997): Once they're handled, include
-    // k{First,Non}RedirectResponseLoaderCallback milestones.
     return {NavigationMilestone::kNavigationStart,
             NavigationMilestone::kLoaderStart,
             NavigationMilestone::kFirstRedirectedRequestStart,
             NavigationMilestone::kFirstRedirectResponseStart,
+            NavigationMilestone::kFirstRedirectResponseLoaderCallback,
             NavigationMilestone::kNonRedirectedRequestStart,
             NavigationMilestone::kNonRedirectResponseStart,
+            NavigationMilestone::kNonRedirectResponseLoaderCallback,
             NavigationMilestone::kCommitSent,
             NavigationMilestone::kDidCommit};
   }
   std::vector<NavigationMilestone> all_testable_milestones() {
     return {NavigationMilestone::kNavigationStart,
             NavigationMilestone::kLoaderStart,
-            NavigationMilestone::kNonRedirectResponseStart};
+            NavigationMilestone::kNonRedirectResponseLoaderCallback};
   }
 
   void SetUpOnMainThread() override {
@@ -112,7 +112,9 @@ class AbandonedPageLoadMetricsObserverBrowserTest
           << " ExpectTotalCountForAllNavigationMilestones on milestone "
           << ((int)milestone) << " with suffix " << histogram_suffix);
       bool is_redirect =
-          (milestone == NavigationMilestone::kFirstRedirectResponseStart ||
+          (milestone ==
+               NavigationMilestone::kFirstRedirectResponseLoaderCallback ||
+           milestone == NavigationMilestone::kFirstRedirectResponseStart ||
            milestone == NavigationMilestone::kFirstRedirectedRequestStart);
       histogram_tester().ExpectTotalCount(
           GetMilestoneHistogramName(milestone, histogram_suffix),
@@ -218,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
     } else if (abandon_milestone == NavigationMilestone::kLoaderStart) {
       EXPECT_TRUE(navigation.WaitForLoaderStart());
     } else if (abandon_milestone ==
-               NavigationMilestone::kNonRedirectResponseStart) {
+               NavigationMilestone::kNonRedirectResponseLoaderCallback) {
       EXPECT_TRUE(navigation.WaitForResponse());
     }
 
@@ -245,6 +247,10 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
         0);
     histogram_tester.ExpectTotalCount(
         GetMilestoneHistogramName(
+            NavigationMilestone::kFirstRedirectResponseLoaderCallback),
+        0);
+    histogram_tester.ExpectTotalCount(
+        GetMilestoneHistogramName(
             NavigationMilestone::kNonRedirectedRequestStart),
         abandon_milestone >= NavigationMilestone::kNonRedirectResponseStart
             ? 1
@@ -253,6 +259,13 @@ IN_PROC_BROWSER_TEST_F(AbandonedPageLoadMetricsObserverBrowserTest,
         GetMilestoneHistogramName(
             NavigationMilestone::kNonRedirectResponseStart),
         abandon_milestone >= NavigationMilestone::kNonRedirectResponseStart
+            ? 1
+            : 0);
+    histogram_tester.ExpectTotalCount(
+        GetMilestoneHistogramName(
+            NavigationMilestone::kNonRedirectResponseLoaderCallback),
+        abandon_milestone >=
+                NavigationMilestone::kNonRedirectResponseLoaderCallback
             ? 1
             : 0);
     histogram_tester.ExpectTotalCount(

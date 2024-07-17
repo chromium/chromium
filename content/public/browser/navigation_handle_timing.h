@@ -91,10 +91,12 @@ struct CONTENT_EXPORT NavigationHandleTiming {
   // until we get a non-redirect response, to avoid confusion.
   base::TimeTicks final_response_start_time;
 
-  // Similar to `final_request_start_time` and `final_response_start_time`, but
-  // only set when we get the final non-redirect response for the navigation.
+  // Similar to `final_request_start_time`, `final_response_start_time`, and
+  // `first_loader_callback_time`, but only set when we get the final
+  // non-redirect response for the navigation.
   base::TimeTicks non_redirected_request_start_time;
   base::TimeTicks non_redirect_response_start_time;
+  base::TimeTicks non_redirect_response_loader_callback_time;
 
   // The time the headers of the final non-informational (non-1xx) HTTP response
   // were received. This is filled with
