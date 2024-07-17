@@ -552,8 +552,10 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructClientRstStreamErrorPacket(
       uint64_t packet_number) {
-    return client_maker_.MakeRstPacket(packet_number, stream_id_,
-                                       quic::QUIC_ERROR_PROCESSING_STREAM);
+    return client_maker_.Packet(packet_number)
+        .AddStopSendingFrame(stream_id_, quic::QUIC_ERROR_PROCESSING_STREAM)
+        .AddRstStreamFrame(stream_id_, quic::QUIC_ERROR_PROCESSING_STREAM)
+        .Build();
   }
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructAckAndRstStreamPacket(

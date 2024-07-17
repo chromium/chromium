@@ -252,9 +252,10 @@ std::unique_ptr<quic::QuicReceivedPacket>
 QuicProxyClientSocketTestBase::ConstructRstPacket(
     uint64_t packet_number,
     quic::QuicRstStreamErrorCode error_code) {
-  return client_maker_.MakeRstPacket(packet_number, client_data_stream_id1_,
-                                     error_code,
-                                     /*include_stop_sending_if_v99=*/true);
+  return client_maker_.Packet(packet_number)
+      .AddStopSendingFrame(client_data_stream_id1_, error_code)
+      .AddRstStreamFrame(client_data_stream_id1_, error_code)
+      .Build();
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>
@@ -349,9 +350,10 @@ std::unique_ptr<quic::QuicReceivedPacket>
 QuicProxyClientSocketTestBase::ConstructServerRstPacket(
     uint64_t packet_number,
     quic::QuicRstStreamErrorCode error_code) {
-  return server_maker_.MakeRstPacket(packet_number, client_data_stream_id1_,
-                                     error_code,
-                                     /*include_stop_sending_if_v99=*/true);
+  return server_maker_.Packet(packet_number)
+      .AddStopSendingFrame(client_data_stream_id1_, error_code)
+      .AddRstStreamFrame(client_data_stream_id1_, error_code)
+      .Build();
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>

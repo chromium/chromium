@@ -580,9 +580,12 @@ TEST_P(QuicChromiumClientSessionTest, CancelStreamRequestBeforeRelease) {
                      client_maker_.MakeInitialSettingsPacket(packet_num++));
   quic_data.AddWrite(
       SYNCHRONOUS,
-      client_maker_.MakeRstPacket(packet_num++,
-                                  GetNthClientInitiatedBidirectionalStreamId(0),
-                                  quic::QUIC_STREAM_CANCELLED));
+      client_maker_.Packet(packet_num++)
+          .AddStopSendingFrame(GetNthClientInitiatedBidirectionalStreamId(0),
+                               quic::QUIC_STREAM_CANCELLED)
+          .AddRstStreamFrame(GetNthClientInitiatedBidirectionalStreamId(0),
+                             quic::QUIC_STREAM_CANCELLED)
+          .Build());
   quic_data.AddRead(ASYNC, ERR_IO_PENDING);
   quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   quic_data.AddSocketDataToFactory(&socket_factory_);
@@ -628,16 +631,16 @@ TEST_P(QuicChromiumClientSessionTest, AsyncStreamRequest) {
           .Build());
   quic_data.AddWrite(
       SYNCHRONOUS,
-      client_maker_.MakeRstPacket(packet_num++,
-                                  GetNthClientInitiatedBidirectionalStreamId(0),
-                                  quic::QUIC_STREAM_CANCELLED,
-                                  /*include_stop_sending_if_v99=*/false));
+      client_maker_.Packet(packet_num++)
+          .AddRstStreamFrame(GetNthClientInitiatedBidirectionalStreamId(0),
+                             quic::QUIC_STREAM_CANCELLED)
+          .Build());
   quic_data.AddWrite(
       SYNCHRONOUS,
-      client_maker_.MakeRstPacket(packet_num++,
-                                  GetNthClientInitiatedBidirectionalStreamId(1),
-                                  quic::QUIC_STREAM_CANCELLED,
-                                  /*include_stop_sending_if_v99=*/false));
+      client_maker_.Packet(packet_num++)
+          .AddRstStreamFrame(GetNthClientInitiatedBidirectionalStreamId(1),
+                             quic::QUIC_STREAM_CANCELLED)
+          .Build());
   // After the STREAMS_BLOCKED is sent, receive a MAX_STREAMS to increase
   // the limit to 100.
   quic_data.AddRead(ASYNC, server_maker_.Packet(1)
@@ -871,11 +874,12 @@ TEST_P(QuicChromiumClientSessionTest, CancelPendingStreamRequest) {
           .Build());
   // This node receives the RST_STREAM+STOP_SENDING, it responds
   // with only a RST_STREAM.
-  quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_.MakeRstPacket(
-                         3, GetNthClientInitiatedBidirectionalStreamId(0),
-                         quic::QUIC_STREAM_CANCELLED,
-                         /*include_stop_sending_if_v99=*/false));
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(3)
+          .AddRstStreamFrame(GetNthClientInitiatedBidirectionalStreamId(0),
+                             quic::QUIC_STREAM_CANCELLED)
+          .Build());
   quic_data.AddRead(ASYNC, ERR_IO_PENDING);
   quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   quic_data.AddSocketDataToFactory(&socket_factory_);
@@ -1061,10 +1065,14 @@ TEST_P(QuicChromiumClientSessionTest, MaxNumStreams) {
           .AddStreamsBlockedFrame(/*control_frame_id=*/1, /*stream_count=*/50,
                                   /*unidirectional=*/false)
           .Build());
-  quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_.MakeRstPacket(
-                         3, GetNthClientInitiatedBidirectionalStreamId(0),
-                         quic::QUIC_RST_ACKNOWLEDGEMENT));
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(3)
+          .AddStopSendingFrame(GetNthClientInitiatedBidirectionalStreamId(0),
+                               quic::QUIC_RST_ACKNOWLEDGEMENT)
+          .AddRstStreamFrame(GetNthClientInitiatedBidirectionalStreamId(0),
+                             quic::QUIC_RST_ACKNOWLEDGEMENT)
+          .Build());
   // For the second CreateOutgoingStream that fails because of hitting the
   // stream count limit.
   quic_data.AddWrite(
@@ -1124,9 +1132,11 @@ TEST_P(QuicChromiumClientSessionTest, PendingStreamOnRst) {
   quic_data.AddWrite(ASYNC,
                      client_maker_.MakeInitialSettingsPacket(packet_num++));
   quic_data.AddWrite(
-      ASYNC, client_maker_.MakeRstPacket(
-                 packet_num++, GetNthServerInitiatedUnidirectionalStreamId(0),
-                 quic::QUIC_RST_ACKNOWLEDGEMENT));
+      ASYNC,
+      client_maker_.Packet(packet_num++)
+          .AddStopSendingFrame(GetNthServerInitiatedUnidirectionalStreamId(0),
+                               quic::QUIC_RST_ACKNOWLEDGEMENT)
+          .Build());
   quic_data.AddRead(ASYNC, ERR_IO_PENDING);
   quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   quic_data.AddSocketDataToFactory(&socket_factory_);
@@ -1151,9 +1161,11 @@ TEST_P(QuicChromiumClientSessionTest, ClosePendingStream) {
   quic_data.AddWrite(ASYNC,
                      client_maker_.MakeInitialSettingsPacket(packet_num++));
   quic_data.AddWrite(
-      ASYNC, client_maker_.MakeRstPacket(
-                 packet_num++, GetNthServerInitiatedUnidirectionalStreamId(0),
-                 quic::QUIC_RST_ACKNOWLEDGEMENT));
+      ASYNC,
+      client_maker_.Packet(packet_num++)
+          .AddStopSendingFrame(GetNthServerInitiatedUnidirectionalStreamId(0),
+                               quic::QUIC_RST_ACKNOWLEDGEMENT)
+          .Build());
   quic_data.AddRead(ASYNC, ERR_IO_PENDING);
   quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   quic_data.AddSocketDataToFactory(&socket_factory_);
@@ -1177,10 +1189,14 @@ TEST_P(QuicChromiumClientSessionTest, MaxNumStreamsViaRequest) {
           .AddStreamsBlockedFrame(/*control_frame_id=*/1, /*stream_count=*/50,
                                   /*unidirectional=*/false)
           .Build());
-  quic_data.AddWrite(SYNCHRONOUS,
-                     client_maker_.MakeRstPacket(
-                         3, GetNthClientInitiatedBidirectionalStreamId(0),
-                         quic::QUIC_RST_ACKNOWLEDGEMENT));
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(3)
+          .AddStopSendingFrame(GetNthClientInitiatedBidirectionalStreamId(0),
+                               quic::QUIC_RST_ACKNOWLEDGEMENT)
+          .AddRstStreamFrame(GetNthClientInitiatedBidirectionalStreamId(0),
+                             quic::QUIC_RST_ACKNOWLEDGEMENT)
+          .Build());
   quic_data.AddRead(ASYNC, server_maker_.Packet(1)
                                .AddMaxStreamsFrame(/*control_frame_id=*/1,
                                                    /*stream_count=*/52,
@@ -1891,9 +1907,13 @@ TEST_P(QuicChromiumClientSessionTest, ResetOnEmptyResponseHeaders) {
   quic_data.AddWrite(ASYNC,
                      client_maker_.MakeInitialSettingsPacket(packet_num++));
   quic_data.AddWrite(
-      ASYNC, client_maker_.MakeRstPacket(
-                 packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
-                 quic::QUIC_STREAM_GENERAL_PROTOCOL_ERROR));
+      ASYNC,
+      client_maker_.Packet(packet_num++)
+          .AddStopSendingFrame(GetNthClientInitiatedBidirectionalStreamId(0),
+                               quic::QUIC_STREAM_GENERAL_PROTOCOL_ERROR)
+          .AddRstStreamFrame(GetNthClientInitiatedBidirectionalStreamId(0),
+                             quic::QUIC_STREAM_GENERAL_PROTOCOL_ERROR)
+          .Build());
   quic_data.AddRead(ASYNC, ERR_IO_PENDING);
   quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   quic_data.AddSocketDataToFactory(&socket_factory_);

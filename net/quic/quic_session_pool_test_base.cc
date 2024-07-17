@@ -331,7 +331,10 @@ QuicSessionPoolTestBase::ConstructClientRstPacket(
     uint64_t packet_number,
     quic::QuicRstStreamErrorCode error_code) {
   quic::QuicStreamId stream_id = GetNthClientInitiatedBidirectionalStreamId(0);
-  return client_maker_.MakeRstPacket(packet_number, stream_id, error_code);
+  return client_maker_.Packet(packet_number)
+      .AddStopSendingFrame(stream_id, error_code)
+      .AddRstStreamFrame(stream_id, error_code)
+      .Build();
 }
 
 std::unique_ptr<quic::QuicEncryptedPacket>

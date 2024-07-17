@@ -697,9 +697,11 @@ class BidirectionalStreamQuicImplTest
   std::unique_ptr<quic::QuicReceivedPacket> ConstructRstStreamCancelledPacket(
       uint64_t packet_number,
       QuicTestPacketMaker* maker) {
-    std::unique_ptr<quic::QuicReceivedPacket> packet(maker->MakeRstPacket(
-        packet_number, stream_id_, quic::QUIC_STREAM_CANCELLED,
-        /*include_stop_sending_if_v99=*/true));
+    std::unique_ptr<quic::QuicReceivedPacket> packet(
+        client_maker_.Packet(packet_number)
+            .AddStopSendingFrame(stream_id_, quic::QUIC_STREAM_CANCELLED)
+            .AddRstStreamFrame(stream_id_, quic::QUIC_STREAM_CANCELLED)
+            .Build());
     DVLOG(2) << "packet(" << packet_number << "): " << std::endl
              << quiche::QuicheTextUtils::HexDump(packet->AsStringPiece());
     return packet;
@@ -1704,10 +1706,11 @@ TEST_P(BidirectionalStreamQuicImplTest, ServerSendsRstAfterHeaders) {
 
   // Server sends a Rst. Since the stream has sent fin, the rst is one way in
   // IETF QUIC.
-  ProcessPacket(server_maker_.MakeRstPacket(
-      1, GetNthClientInitiatedBidirectionalStreamId(0),
-      quic::QUIC_STREAM_CANCELLED,
-      /*include_stop_sending_if_v99=*/false));
+  ProcessPacket(
+      server_maker_.Packet(1)
+          .AddRstStreamFrame(GetNthClientInitiatedBidirectionalStreamId(0),
+                             quic::QUIC_STREAM_CANCELLED)
+          .Build());
 
   delegate->WaitUntilNextCallback(kOnFailed);
 
@@ -1773,10 +1776,11 @@ TEST_P(BidirectionalStreamQuicImplTest, ServerSendsRstAfterReadData) {
 
   // Server sends a Rst. Since the stream has sent fin, the rst is one way in
   // IETF QUIC.
-  ProcessPacket(server_maker_.MakeRstPacket(
-      3, GetNthClientInitiatedBidirectionalStreamId(0),
-      quic::QUIC_STREAM_CANCELLED,
-      /*include_stop_sending_if_v99=*/false));
+  ProcessPacket(
+      server_maker_.Packet(3)
+          .AddRstStreamFrame(GetNthClientInitiatedBidirectionalStreamId(0),
+                             quic::QUIC_STREAM_CANCELLED)
+          .Build());
 
   delegate->WaitUntilNextCallback(kOnFailed);
 
